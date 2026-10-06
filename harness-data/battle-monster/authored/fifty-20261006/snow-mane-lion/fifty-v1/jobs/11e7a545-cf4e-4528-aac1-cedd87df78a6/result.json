@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four actual PNGs, including the native 128px portrait and the labeled native 1x / nearest 3x panels on light, dark and checker backgrounds. The large ivory mane, gold eye and collar, pink nose and turquoise tail tuft make a recognizable right-facing lion boss. Broad upper-left highlights and blue-gray underside/far-leg shadows give readable volume; the mane is somewhat faceted and the body comparatively slender. Four legs are distinguishable in idle, with connected shoulders, limbs, paws and tail; no obvious unintended interior transparency or detached body parts were visible. Standing support paws share a consistent ground line, while deliberately lifted attack/recovery paws remain connected. Windup lowers the mane, move extends the stride, attack opens the jaw and reaches a connected forepaw, recover retracts it, hit recoils, and dead lies low on its side. The move rear legs could convey a stronger push, but the static sequence remains readable. Idle changes are subtle. The additional nine poses read as distinct authored-looking states rather than whole-body tints: skill_a adds a pale cyan mane core and mouth preparation; skill_b opens the mouth and joins two curved cyan gusts to the mouth region; skill_c closes the jaw with three residual flakes. Poison uses a drooping lifted paw and purple mouth droplets, stun closes the eye and changes the head with overhead stars, and sleep folds the body with the head down; sleep is distinguishable from the flatter dead pose. The two local suggestions below are polish, not blockers to retaining this review candidate. Limits: these are static pose previews, not actual battle footage or animation playback; timing, sliding during playback, battle-scale readability and runtime contact cannot be confirmed. PNG appearance does not prove literal pxgrid authorship, absence of synthesized poses or the 18-color source-palette limit. This recommendation is advisory and does not record a user selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 65,
+      "y": 63,
+      "message": "Optional mane polish: the short isolated blue-gray diagonal marks across this central region read somewhat like stone facets at 1x. Join selected marks into tapered overlapping fur locks using the existing shadow and ivory colors, preserving the broad light planes; carry the same lock placement through idle_b and idle_c."
+    },
+    {
+      "pose": "attack",
+      "x": 119,
+      "y": 106,
+      "message": "Optional claw polish: the extended white forepaw reads chiefly as a broad rectangular pad at 1x. Strengthen two small dark separations between the forward toes and give the claw tips staggered one-pixel projections within the existing cell margin, retaining the continuous wrist-to-paw silhouette."
+    }
+  ]
+}

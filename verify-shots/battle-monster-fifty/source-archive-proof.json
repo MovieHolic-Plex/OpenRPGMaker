@@ -506,6 +506,17 @@
     "selectedPackSha256": "31c46d709a8ae772a8b1e30ef2db9efef25ed72a6ad148dab2e9001edccab315"
   },
   {
+    "key": "snow-mane-lion/fifty-v1",
+    "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+    "nativeCell": 128,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "0b8075fd464457574c47033f19731aaab15a91be32108aae61d8931694826c81"
+  },
+  {
     "key": "jade-armor-scorpion/fifty-v1",
     "binding": "5c068c12abbe5d6d1ca86457c8baae5674748dc2ba33fc3c354e17f5b0906551",
     "nativeCell": 128,

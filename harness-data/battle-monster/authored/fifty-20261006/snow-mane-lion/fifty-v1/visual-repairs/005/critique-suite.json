@@ -1,0 +1,37 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed all four actual PNGs, including the native 1x cells and existing nearest 3x panels. The large pale mane, gold collar/eye and turquoise tail tuft read clearly as the same right-facing lion throughout. Broad upper-left highlights and blue underside shadows give useful volume on light, dark and checker backgrounds. Windup lowers the neck, move extends the stride, attack connects the reaching forepaw and opens the jaw, and recover retracts the paw. Planted paws share a consistent ground line; raised paws are intentional. No obvious unintended transparent body holes or detached collar were visible. Skill preparation has a mane core, both curved gusts visibly originate at the open mouth, and recovery closes the jaw with three snow fragments. Poison, stun and sleep use distinct posture/face changes and effects rather than overall tints. Rework the conspicuously rectangular foreleg joints and stun cheek edge identified below. This is a visual recommendation, not the user's selection. Static pose previews cannot establish animation timing, actual battle contact, or literal-grid authorship; no geometry PASS is being treated as visual approval.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 104,
+      "y": 89,
+      "message": "The far foreleg immediately below the jaw has a flat horizontal top and a straight navy outer edge, reading as a rectangular tab behind the reaching leg. Around x=99..110, y=84..95, taper the visible upper limb from the shoulder and curve its outer contour into the occlusion behind the near foreleg; retain its attachment and the planted lower limb. This is an anatomy/volume repair, not a claim that the limb is detached."
+    },
+    {
+      "pose": "skill_b",
+      "x": 97,
+      "y": 98,
+      "message": "The bent front-leg area below the collar changes into two conspicuous vertical rectangular bands with a flat top at y=95 and a squared step at y=101..103. Around x=92..107, y=94..104, redraw the elbow/wrist transition as one continuous tapered limb with a rounded joint and a clear overlap against the supporting foreleg. Remove the square prong appearance while preserving the mouth-attached gusts and grounded paw."
+    },
+    {
+      "pose": "stun_a",
+      "x": 100,
+      "y": 67,
+      "message": "The inner muzzle/cheek boundary runs almost ruler-straight vertically through approximately x=100, y=56..77, giving the drooping face a rectangular slab appearance. Step this boundary into a curved cheek and jaw, and vary the adjacent shadow width to connect the muzzle volume to the forehead and collar. Preserve the small closed eyelid, pink nose and stun stars; compare with the more shaped cheek in stun_b so the pair retains the same head anatomy."
+    }
+  ],
+  "binding": "b2b6411fb15a2ec2b7f29c709f42a6f18b9811c66604af3fbece877076c52a9e",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "7ee86abee59351b3956ade63a78fdb5378d5364ea80e8066e17fb862b06112c8",
+    "preview/suite/light.png": "fe3c009d4b48d18c16f8e98c023860d4f565758195b2a95372ce6491f023fa6e",
+    "preview/suite/dark.png": "203df5ba0eb531de491a3146e3a1a1c49c25a5b69433498d5a01ccf05ee2e5d1",
+    "preview/suite/checker.png": "0779324e149d17262980b40b1834e7180cd3be17c7e8530ebd92a98110b4a1fa"
+  },
+  "jobId": "b4c1ec8f-a72b-4c2a-b1b9-040346209465",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T16:50:19.034754+00:00",
+  "userApproved": false
+}

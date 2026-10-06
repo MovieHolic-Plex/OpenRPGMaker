@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-06T17:04:12.837025+00:00",
+  "passed": false,
+  "key": "golden-feather-garuda/fifty-v1",
+  "binding": "f25c609601e5275aaa0f655f425d4733714e5e04f86712224462df7154c34e45",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-golden-feather-garuda-after-repair-two.png",
+  "nativeContactPngSha256": "72373a4c99ecdef9ccaf9e53814af6d4b494718f494107507186d9ee0835f678",
+  "nativeWriterFilesRead": {
+    "repair.py": "6c028da34746829b79b80c8b509832977dcb8f4ed95d23a41e857a0356f4b935",
+    "feather_revision.py": "055c9ce81ee9e422fa28c0d4910aedd94e8d7904415c103c57fdaaf613614c29",
+    "author.py": "94a2bba99191659c6ad57d3715bbfab9f67e0694bfe6dd42c7f05eba3dfb2179"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "c43f4b65890dd12c4bbe5d09c07131239020a087fe57c610d5a23ffd3a67f96d",
+    "diagnose.py": "a6b6bbf0fba41b7e6199407506d8f45265470abf11aceb30e1ec62b92910c304",
+    "observe_revision.py": "9c27ff663bfe31e71ea24f52f9c1de5ac72524daf3e608b00b11cdf27b1cdfd9"
+  },
+  "observations": [
+    "Actually opened all18 second-repair native128 poses at original1632x1272/native1x/nearest2x. Same gold crest/eyes and pale beak/chest/silver hooked toes. Idle upper wing now has three separate broad layered primaries with rounded stepped ends/shadow creases instead of triangular sail; near lower wing is a wide feather fan attached to shoulder rather than thin bent rod. Three gold tail feathers have wider separate tips under the body. Main upper-left gold highlights and brown inner planes remain.",
+    "Recover/prep/recovery skill retain the same layered wing/tail count and shoulder connections. Move/attack upper wing has extra outer feather ends but large interior planes remain angular, with folded near wing and connected silver legs/talon grip. Windup neck-to-chest notch is filled with tapered gold chest, though folded windup/stun/sleep wing outline is still zigzag ribbon-like; hit/poison have larger upper feather tip layers. Sleep has a distinct curved closed beak edge against white neck/chest rather than a rounded merged chin, with lowered head and subtle breath pair. Dead low piled wing/horizontal head remains separate.",
+    "Skill preparation has two gold-white cores at wing ends, contact three wider golden tapered feather blades with pale center/segmented gold edge starting from visible gold wing endpoints; recovery two separated remnants away from beak. The middle emission feather is more explicit than previous broad-edge ray, but effect shafts are still narrow at native1x and folded main contact wing angular. Poison open beak/bubbles, stun closed eye/stars, lower folded sleep remain distinct. Static poses cannot prove actual battle dash/contact/timing.",
+    "Actually read complete final1649-line feather_revision.py and every rows/ink/save definition and module call fresh, because the earlier569-line draft changed. Loads only own before-feather-revision18 native grids; chosen fixed x/y/literal spans and transparent row padding, with width check/native save, no geometry/transformation/tween. Whole readonly observe_revision46 reads native/PNG hashes/diffs/border/palette/baseline and GIF counts only. Original author/repair and render/diagnose retain full-read exact hashes; current native writers3/readonly helpers3/native18/PNG/check/contact binding guarded."
+  ],
+  "actualIndependentRecommendation": "pending-current-binding",
+  "claimScope": "Actual second-repair native18/full3 current native writers only; current independent keeper/selection/pack/archive/browser/completion pending."
+}

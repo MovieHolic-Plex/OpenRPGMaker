@@ -1,0 +1,43 @@
+{
+  "id": "4ceb91f0-f8df-477f-992d-843fafd25c12",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T16:13:44.707868+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/jobs/4ceb91f0-f8df-477f-992d-843fafd25c12",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/snow-mane-lion/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "d1458d40b90a499ea1e49d0c3086e5d0bb9052629360e0d3fc4312ba4af00c1e",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "6fbd6b922b0305986087409f22f2023c0e41ea3627de31e0579e52de39cde891",
+    "preview/suite/light.png": "f6a7bc6569dbdb87d610ebe5f8e55025c4324860fa381dd71d66e67996bab496",
+    "preview/suite/dark.png": "8bf4b25ad82690e6d1256ea13dc0a4fa3a172c2d7a3a47793ecf6813679cbc08",
+    "preview/suite/checker.png": "86750bcd9c397db27a93b6ed7c18fb27ab14aec215c00532be212dc279528dac"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T16:18:15.086502+00:00"
+}

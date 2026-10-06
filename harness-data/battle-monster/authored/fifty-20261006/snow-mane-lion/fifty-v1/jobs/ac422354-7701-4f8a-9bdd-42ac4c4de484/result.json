@@ -1,0 +1,24 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed all four supplied PNGs, including the native 128px portrait and the sheets' native 1x and nearest 3x views on light, dark and checker backgrounds. The broad ivory mane, blue underside shadows, gold eye/collar and teal tail tip read consistently; upper-left highlights give the rump and mane volume. The body fills the cell, standing support paws share a ground line, and the collar, tail and attacking forepaw remain visibly connected. Windup lowers the mane, move widens the stride, attack opens the jaw and extends a paw, and recover retracts it. Skill contact shows two curved cyan gusts originating at the actual mouth; recovery closes the jaw and leaves three shards. Poison has drool and a lifted paw, stun has closed eyes/head changes and stars, and sleep folds the body down: these are distinct pose states rather than whole-body tints or unrelated attacks. Rework is recommended for the narrowly joined, flat-topped far foreleg, block-shaped folded sleep limbs, and weak visual separation of the charging core from ordinary mane shading. No conspicuous accidental interior transparent holes were visible across the three backgrounds, but diagonal connectivity does not establish convincing anatomy. These static pose previews cannot establish animation timing, playback continuity, actual battle grounding/contact, or the claimed authoring process. This recommendation is advisory; user selection remains separate.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 98,
+      "y": 95,
+      "message": "The far foreleg starts with a long flat horizontal cap at y=95, x=92..105; its only upper attachment is the diagonal step from (91,94) to (92,95). The transparent notch above the cap makes the limb look cut off beneath the jaw. Replace this cap with a tapered upper-leg cluster joined by a visibly wider overlap to the chest behind the mane, preserving the separation between the two forelegs. Carry the repaired anatomical join into idle_b/idle_c and the standing skill/status poses that reuse this shape."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 58,
+      "y": 118,
+      "message": "The lower body around x=49..65, y=110..124 resolves as a tall rectangular blue/white block with a straight base and little folded-limb definition. Shape the haunch/hock with stepped contours and a curved shadow cluster, then distinguish the tucked paw with a toe edge and small claw pixels. Preserve the ground line and collar connection. Apply the same anatomical treatment to sleep_b while retaining its breathing change."
+    },
+    {
+      "pose": "skill_a",
+      "x": 69,
+      "y": 51,
+      "message": "The cyan charging patch around x=67..72, y=49..55 blends into nearby blue mane accents at 1x, so preparation reads mainly as a slightly opened idle mouth. Give this existing core a compact bright cyan-white center and a darker surrounding fur cluster so its boundary reads clearly, using the existing palette and preserving the mane silhouette. Keep skill_b's mouth-originating gusts and skill_c's closed-jaw recovery."
+    }
+  ]
+}

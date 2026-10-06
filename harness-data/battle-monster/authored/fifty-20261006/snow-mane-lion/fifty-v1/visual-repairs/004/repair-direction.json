@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "49fa5271d1325d56fd225f49e1419c10a8c1bd0de1019ed643a8dff5136677f3",
+  "priorReviewJob": "ac422354-7701-4f8a-9bdd-42ac4c4de484",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 98,
+      "y": 95,
+      "message": "The far foreleg starts with a long flat horizontal cap at y=95, x=92..105; its only upper attachment is the diagonal step from (91,94) to (92,95). The transparent notch above the cap makes the limb look cut off beneath the jaw. Replace this cap with a tapered upper-leg cluster joined by a visibly wider overlap to the chest behind the mane, preserving the separation between the two forelegs. Carry the repaired anatomical join into idle_b/idle_c and the standing skill/status poses that reuse this shape."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 58,
+      "y": 118,
+      "message": "The lower body around x=49..65, y=110..124 resolves as a tall rectangular blue/white block with a straight base and little folded-limb definition. Shape the haunch/hock with stepped contours and a curved shadow cluster, then distinguish the tucked paw with a toe edge and small claw pixels. Preserve the ground line and collar connection. Apply the same anatomical treatment to sleep_b while retaining its breathing change."
+    },
+    {
+      "pose": "skill_a",
+      "x": 69,
+      "y": 51,
+      "message": "The cyan charging patch around x=67..72, y=49..55 blends into nearby blue mane accents at 1x, so preparation reads mainly as a slightly opened idle mouth. Give this existing core a compact bright cyan-white center and a darker surrounding fur cluster so its boundary reads clearly, using the existing palette and preserving the mane silhouette. Keep skill_b's mouth-originating gusts and skill_c's closed-jaw recovery."
+    }
+  ],
+  "startedAt": "2026-10-06T16:39:51.817123+00:00"
+}

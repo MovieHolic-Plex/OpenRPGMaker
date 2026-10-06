@@ -1,0 +1,632 @@
+{
+  "attack": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      5,
+      22,
+      125,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 46,
+    "changedPixels": 1862,
+    "sha256": "0a769088bff6855d79e6e447d152e186cd2e5e230e01673885272f4194798894",
+    "components": [
+      {
+        "pixels": 7656,
+        "bounds": [
+          5,
+          22,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "dead": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      7,
+      70,
+      121,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 99,
+    "changedPixels": 0,
+    "sha256": "962e4e5c6d2a48c4ae262e5040796a8e41a94a90b8d5246be9868d92791524be",
+    "components": [
+      {
+        "pixels": 4087,
+        "bounds": [
+          7,
+          70,
+          121,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2015,
+    "sha256": "cc82af65cfe539c6cb612e54ff0f020332386bf125fdef2ffae90ce0bae3aa2b",
+    "components": [
+      {
+        "pixels": 7113,
+        "bounds": [
+          6,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2021,
+    "sha256": "88060d65ec1476a40c790c4d70d92548eb1dc241714419833d07aa432e970669",
+    "components": [
+      {
+        "pixels": 7122,
+        "bounds": [
+          6,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      7,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2034,
+    "sha256": "572cd6bc4f5de9f4af7d759d606ca5e908daaeac2f5d3972ca41f3e1fa86e707",
+    "components": [
+      {
+        "pixels": 7115,
+        "bounds": [
+          7,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "windup": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      34,
+      113,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 3656,
+    "sha256": "7ea04a8ed41090cbe2090f03c15764363eba9e4f3bc61147bdf218ef53a690eb",
+    "components": [
+      {
+        "pixels": 6447,
+        "bounds": [
+          6,
+          34,
+          113,
+          124
+        ]
+      }
+    ]
+  },
+  "hit": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      108,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 66,
+    "changedPixels": 3628,
+    "sha256": "edc7cd42903dd00799a01b42050c1a80cab132699a266d59eacb186ffe8fe6ee",
+    "components": [
+      {
+        "pixels": 6908,
+        "bounds": [
+          6,
+          22,
+          108,
+          124
+        ]
+      }
+    ]
+  },
+  "move": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      125,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 47,
+    "changedPixels": 1714,
+    "sha256": "23765ba7177a464c8c6482802dc9d61f176d62f516a63670f94cceb189085e5a",
+    "components": [
+      {
+        "pixels": 7427,
+        "bounds": [
+          6,
+          22,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "recover": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      117,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 39,
+    "changedPixels": 1889,
+    "sha256": "3d060733ffdea609b41de48127767431c57dd5f1cdf6512368efc1373f2378a6",
+    "components": [
+      {
+        "pixels": 6912,
+        "bounds": [
+          6,
+          22,
+          117,
+          124
+        ]
+      }
+    ]
+  },
+  "stun_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      13,
+      122,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2351,
+    "sha256": "ccb91c3138d1de49ba1805ec4e1b6080edcf04fd763ea59e79c11eaaf852ed7d",
+    "components": [
+      {
+        "pixels": 7052,
+        "bounds": [
+          6,
+          25,
+          116,
+          124
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          90,
+          18,
+          98,
+          25
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          115,
+          13,
+          122,
+          18
+        ]
+      },
+      {
+        "pixels": 4,
+        "bounds": [
+          109,
+          29,
+          111,
+          30
+        ]
+      }
+    ]
+  },
+  "sleep_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      48,
+      115,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 83,
+    "changedPixels": 1763,
+    "sha256": "0acc9af268ee23338514316d7280c2e0c77dfa67b3407ca198684fb430729147",
+    "components": [
+      {
+        "pixels": 5719,
+        "bounds": [
+          6,
+          48,
+          115,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      24,
+      124,
+      124
+    ],
+    "colors": 18,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 46,
+    "changedPixels": 2792,
+    "sha256": "caa0d57171d142949f2dc1eda04f0f1f4c9111221b6c5286d69af27c7d996cb4",
+    "components": [
+      {
+        "pixels": 7058,
+        "bounds": [
+          6,
+          24,
+          124,
+          124
+        ]
+      },
+      {
+        "pixels": 42,
+        "bounds": [
+          114,
+          83,
+          122,
+          88
+        ]
+      },
+      {
+        "pixels": 12,
+        "bounds": [
+          114,
+          92,
+          117,
+          95
+        ]
+      },
+      {
+        "pixels": 11,
+        "bounds": [
+          120,
+          99,
+          123,
+          102
+        ]
+      }
+    ]
+  },
+  "skill_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      118,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 1964,
+    "sha256": "7c92332985a4e530549cbc524c52237b675a08ae61c25519291928563c42def6",
+    "components": [
+      {
+        "pixels": 7148,
+        "bounds": [
+          6,
+          22,
+          118,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      126,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 3791,
+    "sha256": "4ea38aba8ba0f0aa503c6975869963668b5e9d3454de12ac83e5ba31e5858174",
+    "components": [
+      {
+        "pixels": 7591,
+        "bounds": [
+          6,
+          22,
+          126,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      122,
+      124
+    ],
+    "colors": 18,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 47,
+    "changedPixels": 1969,
+    "sha256": "398f8fe58584608ca04725cf98f2e48da7fbb95e7230eb37af2befaca8a2eaa4",
+    "components": [
+      {
+        "pixels": 7114,
+        "bounds": [
+          6,
+          22,
+          122,
+          124
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          111,
+          89,
+          116,
+          95
+        ]
+      },
+      {
+        "pixels": 26,
+        "bounds": [
+          115,
+          79,
+          120,
+          84
+        ]
+      }
+    ]
+  },
+  "sleep_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      50,
+      113,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 83,
+    "changedPixels": 763,
+    "sha256": "e5049a8deae52f5889b985ce544717f855310e1c7bd5dc587ff0ac1e4d0beca6",
+    "components": [
+      {
+        "pixels": 5501,
+        "bounds": [
+          6,
+          50,
+          113,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      126,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2062,
+    "sha256": "8201ff75bfbc6eb6dfb8bef85af85a8839de67e734f414953afd46ad4cca54da",
+    "components": [
+      {
+        "pixels": 7160,
+        "bounds": [
+          6,
+          22,
+          126,
+          124
+        ]
+      },
+      {
+        "pixels": 35,
+        "bounds": [
+          116,
+          81,
+          122,
+          89
+        ]
+      },
+      {
+        "pixels": 31,
+        "bounds": [
+          118,
+          45,
+          124,
+          52
+        ]
+      }
+    ]
+  },
+  "stun_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      14,
+      123,
+      124
+    ],
+    "colors": 16,
+    "unknownSymbols": [],
+    "borderInk": [],
+    "baselinePixels": 54,
+    "changedPixels": 2134,
+    "sha256": "2b17c252575715fff50affcb6a1642df7ce0565df0ea0792cc34ccce4201b724",
+    "components": [
+      {
+        "pixels": 7157,
+        "bounds": [
+          6,
+          24,
+          118,
+          124
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          99,
+          14,
+          107,
+          21
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          116,
+          25,
+          123,
+          30
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "recommendation": "rework",
+  "summary": "Viewed the supplied portrait and light/dark/checker PNGs, including their native 1x and nearest 3x pose panels. The large pale mane, gold eye and collar, pink nose and turquoise tail tuft identify the creature clearly; upper-left highlights and blue underside shadows are broadly consistent. The body fills its cell, planted paws reach the common baseline, and no obvious unintended enclosed transparent holes are visible. Windup lowers the neck, move spreads the stride, attack opens the jaw and extends an attached forelimb, and recover/hit change the stance. However, the thin parallel legs lack convincing feline joints and paw volume, the poison poses terminate one foreleg in a pointed stump, and the fallen mane/head arrangement weakens anatomical continuity. Some scattered mane marks read as a patterned flat panel rather than overlapping fur. Skill contact has two cyan curls visibly connected to the mouth, and recovery closes the jaw with three separate snow fragments; preparation's muzzle core needs a clearer mouth location. Poison changes posture and adds droplets, stun closes the eyes and adds stars with a head change between frames, and sleep folds the body with closed eyes and a small breathing change: these are distinguishable states, not simple tints or unrelated attacks. Static previews cannot establish playback continuity, actual battle presentation, palette-index authorship or source provenance; this is an advisory visual recommendation, not a user selection.",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 82,
+      "y": 108,
+      "message": "Rebuild the front wrist and paw around this anchor with a tapered foreleg, a readable ankle bend and a wider toe mass; similarly articulate the rear hock around (35,106). The present narrow parallel light/dark shafts read like rigid supports. Carry the same limb thickness and near/far anatomy through the three idle frames and the action poses."
+    },
+    {
+      "pose": "idle_a",
+      "x": 61,
+      "y": 69,
+      "message": "Join several isolated cream flecks and short blue slashes into larger overlapping mane locks. Place a continuous shadow under each lock and vary its tapered edge instead of repeating scattered marks across the mane face; preserve the broad upper-left highlight and lower-right shadow masses across frames."
+    },
+    {
+      "pose": "poison_a",
+      "x": 100,
+      "y": 111,
+      "message": "The far foreleg at x98-102 narrows downward to a single pointed pixel near y114 without a paw. Author a bent raised wrist and a small connected curled paw here, with a separate dark underside and light toe cluster. Apply the corresponding repair to poison_b around (99,112), retaining the sick posture and droplets."
+    },
+    {
+      "pose": "skill_a",
+      "x": 109,
+      "y": 76,
+      "message": "The cyan muzzle spot reads beside the nose/cheek while the jaw remains closed. Define a small dark mouth opening and place the blue-white preparation core inside it, preserving the mane glow. Keep that mouth corner as the emission origin of both curls in skill_b, so preparation visibly leads into the existing mouth-attached breath."
+    },
+    {
+      "pose": "dead",
+      "x": 72,
+      "y": 92,
+      "message": "The mane becomes a long upward diagonal slab while the muzzle and ears lie in a different orientation at the right. Reauthor the mane's upper tip and lower edge as collapsed fur locks wrapping the fallen neck, then carry a continuous neck/collar transition toward the head around (87,108). Preserve the low grounded silhouette while making the same lion's head, neck and shoulders traceable."
+    }
+  ],
+  "binding": "b9b4701d03a663492b5ba286ce0b80c853dd946b6a80258c8b6c28f57a95ca44",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "6fbd6b922b0305986087409f22f2023c0e41ea3627de31e0579e52de39cde891",
+    "preview/suite/light.png": "f6a7bc6569dbdb87d610ebe5f8e55025c4324860fa381dd71d66e67996bab496",
+    "preview/suite/dark.png": "8bf4b25ad82690e6d1256ea13dc0a4fa3a172c2d7a3a47793ecf6813679cbc08",
+    "preview/suite/checker.png": "86750bcd9c397db27a93b6ed7c18fb27ab14aec215c00532be212dc279528dac"
+  },
+  "jobId": "4ceb91f0-f8df-477f-992d-843fafd25c12",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T16:18:15.938269+00:00",
+  "userApproved": false
+}

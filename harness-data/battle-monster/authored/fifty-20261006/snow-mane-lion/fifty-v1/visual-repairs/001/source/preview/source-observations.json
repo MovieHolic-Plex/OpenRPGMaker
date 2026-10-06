@@ -1,0 +1,551 @@
+{
+  "attack": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      5,
+      22,
+      119,
+      124
+    ],
+    "colors": 16,
+    "sha256": "6e94b3c9f00312a8919138567467183f6a49b5f0b586776d3c393e8d4729f745",
+    "components": [
+      {
+        "pixels": 7461,
+        "bounds": [
+          5,
+          22,
+          119,
+          124
+        ]
+      }
+    ]
+  },
+  "dead": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      7,
+      70,
+      121,
+      124
+    ],
+    "colors": 16,
+    "sha256": "962e4e5c6d2a48c4ae262e5040796a8e41a94a90b8d5246be9868d92791524be",
+    "components": [
+      {
+        "pixels": 4087,
+        "bounds": [
+          7,
+          70,
+          121,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "sha256": "883e0cd7e177fc564c173ef66f6775374d467c967abf43fef8ec951300c0218e",
+    "components": [
+      {
+        "pixels": 7301,
+        "bounds": [
+          6,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "sha256": "09c61e5717e9c9ee6e54ad1a16a8ce42d9ce3fab45f18d0fe68736566fe4993b",
+    "components": [
+      {
+        "pixels": 7310,
+        "bounds": [
+          6,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "idle_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      7,
+      22,
+      116,
+      124
+    ],
+    "colors": 16,
+    "sha256": "b54006fda33db9ffe90f79edd738521980dd291d4903a7a8ad1cb11a861207b4",
+    "components": [
+      {
+        "pixels": 7303,
+        "bounds": [
+          7,
+          22,
+          116,
+          124
+        ]
+      }
+    ]
+  },
+  "windup": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      27,
+      119,
+      124
+    ],
+    "colors": 16,
+    "sha256": "268b8b9e4239425b1281c72af12be9401e974204ccac5c1075395283ff47da1c",
+    "components": [
+      {
+        "pixels": 7275,
+        "bounds": [
+          6,
+          27,
+          119,
+          124
+        ]
+      }
+    ]
+  },
+  "hit": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      117,
+      124
+    ],
+    "colors": 16,
+    "sha256": "e11f036267d9c1c1c967236e79782201f9fc6562ca40ec60feddd10ba235d4c5",
+    "components": [
+      {
+        "pixels": 7336,
+        "bounds": [
+          6,
+          22,
+          117,
+          124
+        ]
+      }
+    ]
+  },
+  "move": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      125,
+      124
+    ],
+    "colors": 16,
+    "sha256": "ccf360b9e7e5e26c8daab320cf0d328c06771138330b22af9af8c64931043c9c",
+    "components": [
+      {
+        "pixels": 7458,
+        "bounds": [
+          6,
+          22,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "recover": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      117,
+      124
+    ],
+    "colors": 16,
+    "sha256": "461c7898735843a85f610d75b5ed85953bda3896552d635fca99415bbd13d05e",
+    "components": [
+      {
+        "pixels": 7061,
+        "bounds": [
+          6,
+          22,
+          117,
+          124
+        ]
+      }
+    ]
+  },
+  "stun_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      13,
+      122,
+      124
+    ],
+    "colors": 16,
+    "sha256": "dbaa533d7b401fd028cfee1eec2c9d1dae5654f3024a4a531b863e7e3915ae12",
+    "components": [
+      {
+        "pixels": 7238,
+        "bounds": [
+          6,
+          25,
+          116,
+          124
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          90,
+          18,
+          98,
+          25
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          115,
+          13,
+          122,
+          18
+        ]
+      },
+      {
+        "pixels": 8,
+        "bounds": [
+          109,
+          29,
+          111,
+          32
+        ]
+      }
+    ]
+  },
+  "sleep_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      52,
+      115,
+      124
+    ],
+    "colors": 16,
+    "sha256": "a2dc5d9e8f2c38322df7f6b9c26e09da25f23dcab6e228acc04c2259dcb6f08e",
+    "components": [
+      {
+        "pixels": 5442,
+        "bounds": [
+          6,
+          52,
+          115,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      124,
+      124
+    ],
+    "colors": 18,
+    "sha256": "a928fe6e8a89b9f9feffc22812a8bacb5595cb4bcca56f59347c6b555980dafc",
+    "components": [
+      {
+        "pixels": 7215,
+        "bounds": [
+          6,
+          22,
+          124,
+          124
+        ]
+      },
+      {
+        "pixels": 33,
+        "bounds": [
+          116,
+          83,
+          122,
+          88
+        ]
+      },
+      {
+        "pixels": 12,
+        "bounds": [
+          114,
+          92,
+          117,
+          95
+        ]
+      },
+      {
+        "pixels": 11,
+        "bounds": [
+          120,
+          99,
+          123,
+          102
+        ]
+      }
+    ]
+  },
+  "skill_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      117,
+      124
+    ],
+    "colors": 15,
+    "sha256": "5c4568b3eba2069a27cb0002f83003eefa16398026b6d8c4572d6e274f399ca7",
+    "components": [
+      {
+        "pixels": 7308,
+        "bounds": [
+          6,
+          22,
+          117,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_b": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      125,
+      124
+    ],
+    "colors": 14,
+    "sha256": "b1aa0e6f4a3dbb64d9b1c3c5ea4f82c9e1807b72add47e5d33c038494c1c2af0",
+    "components": [
+      {
+        "pixels": 7708,
+        "bounds": [
+          6,
+          22,
+          125,
+          124
+        ]
+      }
+    ]
+  },
+  "poison_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      122,
+      124
+    ],
+    "colors": 18,
+    "sha256": "bdb6ca62b9bce73998f37af42f9651d0b5a3541dac3a02996eed96a91cc96fc4",
+    "components": [
+      {
+        "pixels": 7248,
+        "bounds": [
+          6,
+          22,
+          122,
+          124
+        ]
+      },
+      {
+        "pixels": 26,
+        "bounds": [
+          115,
+          79,
+          120,
+          84
+        ]
+      }
+    ]
+  },
+  "sleep_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      50,
+      113,
+      124
+    ],
+    "colors": 16,
+    "sha256": "5b759b21b3e604e5b5a0ec207c44ff76b7fc4e6600431534cdc97ef9a77a8c09",
+    "components": [
+      {
+        "pixels": 5501,
+        "bounds": [
+          6,
+          50,
+          113,
+          124
+        ]
+      }
+    ]
+  },
+  "skill_c": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      22,
+      126,
+      124
+    ],
+    "colors": 16,
+    "sha256": "09ee1f62f9d6aaca1a8f6f04e5e554a99b19dfbd4fd2d364a4d262b3906bd9cc",
+    "components": [
+      {
+        "pixels": 7352,
+        "bounds": [
+          6,
+          22,
+          126,
+          124
+        ]
+      },
+      {
+        "pixels": 35,
+        "bounds": [
+          116,
+          81,
+          122,
+          89
+        ]
+      },
+      {
+        "pixels": 31,
+        "bounds": [
+          118,
+          45,
+          124,
+          52
+        ]
+      }
+    ]
+  },
+  "stun_a": {
+    "rows": 128,
+    "widths": [
+      128
+    ],
+    "bounds": [
+      6,
+      14,
+      123,
+      124
+    ],
+    "colors": 16,
+    "sha256": "f938c9265fd7dd524ad2b7b7202f5f0b16d5c8cee4980ea760a68a682cb5bfba",
+    "components": [
+      {
+        "pixels": 7257,
+        "bounds": [
+          6,
+          24,
+          116,
+          124
+        ]
+      },
+      {
+        "pixels": 30,
+        "bounds": [
+          99,
+          14,
+          107,
+          21
+        ]
+      },
+      {
+        "pixels": 22,
+        "bounds": [
+          116,
+          25,
+          123,
+          30
+        ]
+      }
+    ]
+  }
+}

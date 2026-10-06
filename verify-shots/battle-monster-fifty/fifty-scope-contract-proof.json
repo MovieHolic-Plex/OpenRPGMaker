@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-06T16:29:49.541797+00:00",
+  "at": "2026-10-06T17:05:24.008066+00:00",
   "expectedNewSpecies": 50,
   "originalSpecies": 23,
   "originalSeedRevision": "cb4e0b7d04^",
@@ -46,9 +46,9 @@
     "mountain-herbalist-fighter",
     "iron-gauntlet-brawler"
   ],
-  "actualPublishedContractAndModelVerifiedSpecies": 48,
-  "progressProof": "verify-shots/battle-monster-fifty/forty-eight-passed-proof.json",
-  "progressProofSha256": "e497a4ebf960b652fc8cda408dfb79873110cf712cc88af499595486908d9327",
+  "actualPublishedContractAndModelVerifiedSpecies": 49,
+  "progressProof": "verify-shots/battle-monster-fifty/forty-nine-passed-proof.json",
+  "progressProofSha256": "df9052b9fae67e66b98441ddddc16bbc6ffdba444f3816198dbf470069ace3c9",
   "all50Complete": false,
   "noSourceOrChoiceWrites": true,
   "claimScope": "Scope/brief/model provenance only; actual native art, selected GIFs, archive and browser are proved separately by the bound progress evidence.",
@@ -638,6 +638,22 @@
         "eb0fe8bf-b3ce-410b-89b0-e4bdd9508888"
       ],
       "actualKeeperJob": "71fceaed-f71d-46a1-bd5c-c9017e709b16"
+    },
+    {
+      "key": "snow-mane-lion/fifty-v1",
+      "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+      "category": "boss",
+      "nativeCell": 128,
+      "briefSha256": "b76c77947b4a5865a01660c7902fd748afdfde7d5f01b415be35e0531c0b1c4d",
+      "actualSuccessfulAuthorJobs": [
+        "3ebec856-7055-4e55-b846-b077af42f6f3",
+        "fd9e9c72-640e-4218-9cae-b714c8adbe30",
+        "4eead246-cf0b-4e9c-8589-bfa8f6439214",
+        "8f83c399-4374-4712-b8cc-c27573103054",
+        "2522a0fc-712c-4fcf-91ac-42a94d92548c",
+        "74d3dd07-90a0-42fd-a596-136e648f5e8e"
+      ],
+      "actualKeeperJob": "11e7a545-cf4e-4528-aac1-cedd87df78a6"
     },
     {
       "key": "jade-armor-scorpion/fifty-v1",

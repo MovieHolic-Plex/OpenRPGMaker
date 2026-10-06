@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재48/50 통과
+# 신규50종 제작 · 현재49/50 통과
 
 ## 최초 두 종 확인
 
@@ -835,3 +835,13 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 설갈사자왕 셋째 수정의 실제18자세를 원본1배/nearest2배로 열고 현재 native writer4개/readonly helper5개의 전체 메서드·흐름을 확인했다. 새 joint_revision는 자기 before-joint-repair와 명시적 joint-*.runs의 y/x/팔레트 검증 후 픽셀 행만 쓴다. 발목/뒷다리 관절·독 자세의 말린 앞발·쓰러진 갈기의 곡선 연결·입 안 충전 핵을 확인했다. 새로운 두 readonly helper는 nearest 진단 crop과 native 구조/실제 진단GIF 픽셀/시간만 읽는다.
 - 실제 독립 `ac422354-7701-4f8a-9bdd-42ac4c4de484` rework3건은 평평하게 끊겨 보이는 먼 앞다리 상단, 수면의 사각 접힌 다리, 갈기의 일반 파란 음영에 섞이는 충전 핵이다. before-fourth source·terminal 작업·검수4PNG·실제 감독18자세를 동일 binding으로 보존했다. 넷째 수정 중이며 keeper가 아니다.
 - 실제 세128px 보스의 스킬 원본(두 냉기 숨결/꼬리 독/세 황금 빛줄기)을64px 검객과 동일2배로 비교하여 사용자에게 보여 주었다. 전갈만 현재 통과, 사자/대붕은 제작 중으로 표시했다. 현재 **48/50종·864자세·384GIF**, 전체50 미완료를 유지한다. 실제 rework를 통과로 세거나 기준을 낮추지 않았다.
+
+
+## 2026-10-06 17:05 UTC — 설갈사자왕 현재 원본까지49/50 통과
+
+- 사자 넷째 수정18자세를 실제 원본1배/nearest2배로 열고 현재 full5 native writer/readonly7을 확인했다. 앞다리의 가슴 연결/접힌 수면 발/명확한 갈기 충전 핵은 개선됐으나 실제 `b4c1ec8f-a72b-4c2a-b1b9-040346209465` rework3건(이동의 사각 앞다리 상단/스킬의 사각 관절/기절의 직선 볼 경계)이 남았다. before-fifth 불변 source·terminal 작업·검수4PNG·감독18자세를 동일 binding으로 보존했다.
+- 다섯째 직접 수정 뒤 실제 GPT6.1sol/high 독립 `11e7a545-cf4e-4528-aac1-cedd87df78a6`는 keep/정식 optional polish2건이다. 현재 binding `2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0`/기술PASS/terminal 작업/검수4PNG/감독18자세·full6 native writer가 일치한다. 이동 앞다리 겹침/스킬의 연속된 굽은 관절/기절 볼의 곡선 경계를 확인했다. 갈기의 돌 면 같은 작은 무늬와 큰 앞발의 발톱 분리, 가는 몸/작은 대기 변화/약한 뒷발 밀기의 실제 keeper 한계는 그대로 보존했다. 새 contour writer는 자기 불변 원본과 명시적 y/x/문자 행만 쓰며 새 readonly2개는 진단 crop/native/GIF 관찰만 한다.
+- 현재 목표의 실제 위임 Allow3단계/선택ZIP/18PNG/디코딩8GIF 픽셀·노출시간과 source archive49종을 다시 읽었다. 감독이 실제 사자 데스크톱pause·375/320px 화면3장을 열어8GIF/정지·재생/같은 배율 사람 비교/오류0·넘침0/선택 버튼 미클릭을 확인했다.
+- 현재 **49/50종·882자세·392GIF**. 동물10/요괴16/사람12(성인 여성6)/보스11, root49/source49/browser49이다. 원래 결정52행/선택8건 보존, 새 위임147행/전체199행. 대시보드 Allow57=기존8+신규49. 현재 keep의 정식 optional/minor13건/8종을 실제 현재 검수에서 합산했다. 전체50 완료는 false다.
+- 금익대붕 둘째 수정의 실제18자세를 원본1배/nearest2배로 열고 최종1649행 feather writer 전체/현재 native writer3개 및 readonly3개의 모든 메서드·흐름을 읽었다. 넓은 세 주깃/앞 깃 부채/세 꼬리깃/채운 목-가슴/굵어진 세 칼날/수면 부리 윤곽은 확인했다. 접힌 날개의 각진 형태와 native1x 효과의 좁은 축도 기록했다. 실제 `f203c624-bdb4-44a2-bafd-4167a18803cd` 독립 검수 중이며 아직 keeper/Allow가 아니다. 새 대기 및 기술 원본 중간판을 같은 배율64px 검객과 비교하여 사용자에게 보여 주었다.569행 중간 writer를 완성본 전체 읽기로 대신하지 않고 바뀐1649행 전체를 새로 읽었다.
+- 근거: `forty-nine-passed-proof.json`, `fifty-scope-contract-proof.json`, `root-review-snow-mane-lion.json`, `root-draft-review-snow-mane-lion-after-repair-five.json`, `browser-proof-snow-mane-lion.json`, `source-archive-proof.json`.

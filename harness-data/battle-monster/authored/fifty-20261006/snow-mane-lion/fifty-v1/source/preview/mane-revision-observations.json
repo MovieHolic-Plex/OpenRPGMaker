@@ -1,0 +1,622 @@
+{
+  "paletteColors": 18,
+  "paletteUnchanged": true,
+  "paletteSha256": "8b80bd95246ac9d480a408a3a90f6330d7c2e4c37cca802f32ac14c16420ced7",
+  "frames": {
+    "attack": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 46,
+      "changedPixelsThisRevision": 1313,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "ed00299b7bd5760e2ad4f33e090553122d114418c29d2fa55af47e8c3afe39ea",
+      "beforeSourceSha256": "0a769088bff6855d79e6e447d152e186cd2e5e230e01673885272f4194798894",
+      "pngSha256": "0dcb658f8cbb69248673ce8db93180181b49a52c21187e466eed4154ca36c209",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "dead": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 99,
+      "changedPixelsThisRevision": 868,
+      "changeBounds": [
+        33,
+        78,
+        104,
+        123
+      ],
+      "sourceSha256": "8a86eb0f587ad041ad465b3bb6e2115363a3baecee5cbaeed451d6552a612c97",
+      "beforeSourceSha256": "962e4e5c6d2a48c4ae262e5040796a8e41a94a90b8d5246be9868d92791524be",
+      "pngSha256": "2a2931440694bf97550cc1c97b29bea60ae37ad52f19c73f0931cb2da40e4ff3",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "hit": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 66,
+      "changedPixelsThisRevision": 749,
+      "changeBounds": [
+        50,
+        39,
+        82,
+        85
+      ],
+      "sourceSha256": "34fac0f838f5ea37adf73939bd53097b2cf41281eb9f45313c90bc9a3ddac488",
+      "beforeSourceSha256": "edc7cd42903dd00799a01b42050c1a80cab132699a266d59eacb186ffe8fe6ee",
+      "pngSha256": "a2d2164be6deb0363e6120dd3d0bf98f62e03d55c8b89e9cdaeddb29ca3a602c",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1340,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "42f59d22c04a50cd53ac3c730d295f1b27045a3d55050bcaad523145d1aaa486",
+      "beforeSourceSha256": "cc82af65cfe539c6cb612e54ff0f020332386bf125fdef2ffae90ce0bae3aa2b",
+      "pngSha256": "6fbd6b922b0305986087409f22f2023c0e41ea3627de31e0579e52de39cde891",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1344,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "d6cd627fd5ef3b7f6d9b61f1bf976d5aea952f50fabfa00defab8470d139a22e",
+      "beforeSourceSha256": "572cd6bc4f5de9f4af7d759d606ca5e908daaeac2f5d3972ca41f3e1fa86e707",
+      "pngSha256": "b8a73ebf1bf4c9fe21656c4f267b44699904bf95f05732ba5e327701ebc359ea",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "idle_c": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1346,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "086434baaf636e084ae00957898de3d6c725aec5b1e6f5f24c285d38cccebbc1",
+      "beforeSourceSha256": "88060d65ec1476a40c790c4d70d92548eb1dc241714419833d07aa432e970669",
+      "pngSha256": "6728ddfe791009f17811d4114d335a015217503b413f3fd493ad6c73a5017b08",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "move": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 47,
+      "changedPixelsThisRevision": 1341,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "39e08e6623d377ba0527298291ee073eb0ce944b2ec857f79ccfa810bd47a9b5",
+      "beforeSourceSha256": "23765ba7177a464c8c6482802dc9d61f176d62f516a63670f94cceb189085e5a",
+      "pngSha256": "cbfec5305431c514ade5ef4c2b8d2f1a0a416a666cce4d7f8ba3cc40529e5419",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "recover": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 39,
+      "changedPixelsThisRevision": 1458,
+      "changeBounds": [
+        50,
+        38,
+        109,
+        108
+      ],
+      "sourceSha256": "bbc9733b11029dc18d87a4ce42158061ae8075f4ebd9ae558f897a57cd5dbf3a",
+      "beforeSourceSha256": "3d060733ffdea609b41de48127767431c57dd5f1cdf6512368efc1373f2378a6",
+      "pngSha256": "c4b77d5e1b12fc5bd0920310baf4ce75fc50cf761c3a8c8b2cbf1f2c575fa926",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "windup": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1055,
+      "changeBounds": [
+        50,
+        43,
+        87,
+        91
+      ],
+      "sourceSha256": "fcb16e7a80a6bbd1f19b979e6d4637d70eea71a63a7562c9ff73d11ba19a008e",
+      "beforeSourceSha256": "7ea04a8ed41090cbe2090f03c15764363eba9e4f3bc61147bdf218ef53a690eb",
+      "pngSha256": "050c1a9dd0e46b40c4d20f9057bd6cc3dd636035e020f9b4b4f06771aafdba7a",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "poison_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 47,
+      "changedPixelsThisRevision": 1340,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "662e10b2da2f45b0c5c15043894690420ff2b86c2aca4bd38dc55c28ae577645",
+      "beforeSourceSha256": "398f8fe58584608ca04725cf98f2e48da7fbb95e7230eb37af2befaca8a2eaa4",
+      "pngSha256": "2bed4804ad8311d96c21f76d55d9ab6fd48d3e6cec9776b4ab4bb6a688eb95b4",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "poison_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 46,
+      "changedPixelsThisRevision": 1307,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "b1f549b1b24632517e61d99a5a30aedd3a170e5a3c56b4373e52eab81345d09f",
+      "beforeSourceSha256": "caa0d57171d142949f2dc1eda04f0f1f4c9111221b6c5286d69af27c7d996cb4",
+      "pngSha256": "3f2c7415418b8c68ae894c82ae8edaa04e068c1e73b0a84c06b88bef8732269a",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1328,
+      "changeBounds": [
+        50,
+        38,
+        91,
+        88
+      ],
+      "sourceSha256": "d0606c51b4207107afd7e1387968db10d3e24d576018bf4bc57639d7242d5880",
+      "beforeSourceSha256": "7c92332985a4e530549cbc524c52237b675a08ae61c25519291928563c42def6",
+      "pngSha256": "9c18db61c23aa00305fa19c42c98b508110dde5220f01af5d81e80237f2dc387",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1202,
+      "changeBounds": [
+        50,
+        38,
+        87,
+        88
+      ],
+      "sourceSha256": "052d1ab4febc1aab0d7efaa543430d6c57f981f781bcea74bf875bc224e33393",
+      "beforeSourceSha256": "4ea38aba8ba0f0aa503c6975869963668b5e9d3454de12ac83e5ba31e5858174",
+      "pngSha256": "f5c87be8d5aa64e82cef5cea44f7afa45ce6e6a07def247f2965acc7e9358a25",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "skill_c": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1339,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "a5642755f90319dd60b995c0b415286212b469cafb729a8b9405356fbd3f388b",
+      "beforeSourceSha256": "8201ff75bfbc6eb6dfb8bef85af85a8839de67e734f414953afd46ad4cca54da",
+      "pngSha256": "3fbc396b9d472be7ac6c3393619910894bb11a9bb9246c1344c4e8db4bf674de",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "sleep_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 83,
+      "changedPixelsThisRevision": 1036,
+      "changeBounds": [
+        50,
+        58,
+        99,
+        122
+      ],
+      "sourceSha256": "44e9dbaa08b1c04af73474d5d9e04276d9d581c6face8a8cf0821b3f706b5a02",
+      "beforeSourceSha256": "e5049a8deae52f5889b985ce544717f855310e1c7bd5dc587ff0ac1e4d0beca6",
+      "pngSha256": "05d1f62ce8cbb1f41b3e39e478998d6c80b821706fd9cb5d0a260407e92a5470",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "sleep_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 83,
+      "changedPixelsThisRevision": 1212,
+      "changeBounds": [
+        50,
+        56,
+        100,
+        122
+      ],
+      "sourceSha256": "3e0134806c6e6dab9461cac8fd1e8b9e1c5f606cc34fb019e3a487cb05e254fe",
+      "beforeSourceSha256": "0acc9af268ee23338514316d7280c2e0c77dfa67b3407ca198684fb430729147",
+      "pngSha256": "5dc410be50f59e43b3838e461330bb853cbc70e8f995b770d2255c27ee5095a3",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "stun_a": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1336,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "1aa0f1eea8ce8b584c92d36f39154b81e9473b10b3765cc6c6a7d8e4b5833f49",
+      "beforeSourceSha256": "2b17c252575715fff50affcb6a1642df7ce0565df0ea0792cc34ccce4201b724",
+      "pngSha256": "3eca1fa2f8863c4c04a4af3633aff9e2457c878e8f6cb930025aa7fef8caf60e",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    },
+    "stun_b": {
+      "rows": 128,
+      "widths": [
+        128
+      ],
+      "unknownSymbols": [],
+      "borderInk": [],
+      "lowestInkY": 124,
+      "bodyBaselinePixels": 54,
+      "changedPixelsThisRevision": 1300,
+      "changeBounds": [
+        50,
+        38,
+        90,
+        88
+      ],
+      "sourceSha256": "a927e31cbbfa81dbd29141b7c6b5e08c2b8865b8e22ff3fab032c6a8a9c563c6",
+      "beforeSourceSha256": "ccb91c3138d1de49ba1805ec4e1b6080edcf04fd763ea59e79c11eaaf852ed7d",
+      "pngSha256": "4de9387cde944a6e597398a6f55e3fe09b9e832082aeabbe031724c0eac28038",
+      "pngAlphaValues": [
+        0,
+        255
+      ]
+    }
+  },
+  "gifs": {
+    "idle": {
+      "sha256": "4229d9613a7652e2f3ff58d789a7d9593ed70b3c36424571c2907ffe7a71e287",
+      "cels": [
+        {
+          "pose": "idle_a",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_b",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_c",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_b",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "attack": {
+      "sha256": "158e5abae4f3fa0e445342abb17b8a33cbd145f6ce64a660840d9212834f7f22",
+      "cels": [
+        {
+          "pose": "idle_a",
+          "holdMs": 300,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "windup",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "move",
+          "holdMs": 100,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "attack",
+          "holdMs": 150,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "recover",
+          "holdMs": 180,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_a",
+          "holdMs": 300,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "hit": {
+      "sha256": "4b01eeb22229c623901e7ca48bde2c5f5df3f88c2907b25ce98e6ad497c8f6d4",
+      "cels": [
+        {
+          "pose": "idle_a",
+          "holdMs": 360,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "hit",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "recover",
+          "holdMs": 200,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_a",
+          "holdMs": 360,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "dead": {
+      "sha256": "f806c72d2b4049a65a36e7b51b095b04e3ce4a7cd399a0fb2c79f940225f061a",
+      "cels": [
+        {
+          "pose": "idle_a",
+          "holdMs": 360,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "hit",
+          "holdMs": 180,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "dead",
+          "holdMs": 1000,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "skill": {
+      "sha256": "ef39ec346f1d77c9ceed768c45282cc1fea8605c2213018419a6c98f75eb389e",
+      "cels": [
+        {
+          "pose": "idle_a",
+          "holdMs": 300,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "skill_a",
+          "holdMs": 320,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "skill_b",
+          "holdMs": 300,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "skill_c",
+          "holdMs": 240,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "idle_a",
+          "holdMs": 300,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "poison": {
+      "sha256": "bfdb6a6d741d0ca9e2300b407d61e706c990186efe3a30ff2e576587189c430f",
+      "cels": [
+        {
+          "pose": "poison_a",
+          "holdMs": 400,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "poison_b",
+          "holdMs": 400,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "stun": {
+      "sha256": "52d7a66b7639145475917dc326f7aae8b62b7fab82d7049987c837b21412b1d5",
+      "cels": [
+        {
+          "pose": "stun_a",
+          "holdMs": 420,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "stun_b",
+          "holdMs": 420,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    },
+    "sleep": {
+      "sha256": "675a5e2c7533b4d0b4f326cac02783adb72f6f662cd1009fa14c8f3be3c1e25e",
+      "cels": [
+        {
+          "pose": "sleep_a",
+          "holdMs": 650,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        },
+        {
+          "pose": "sleep_b",
+          "holdMs": 650,
+          "pixelsDifferentFromNativeOnGifBackground": 0
+        }
+      ]
+    }
+  },
+  "distinctGrids": 18
+}

@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-06T17:01:12.748713+00:00",
+  "passed": true,
+  "key": "snow-mane-lion/fifty-v1",
+  "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+  "actualIndependentReviewJob": "11e7a545-cf4e-4528-aac1-cedd87df78a6",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "7ee86abee59351b3956ade63a78fdb5378d5364ea80e8066e17fb862b06112c8",
+    "preview/suite/light.png": "ab0f92b0e5f445d295998ae1a57d075584fdbc3f706d56ad61fe6e5f5311dda0",
+    "preview/suite/dark.png": "2aae2e84151c4c130594cee29955811cc80c6ebdc3a119122b41482a2dd73e34",
+    "preview/suite/checker.png": "96e8c717d3fea0faee3c24c4dd7743d89d69c84607b9b6c7fb1dea3c5f1457fd"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "idle_a",
+      "x": 65,
+      "y": 63,
+      "message": "Optional mane polish: the short isolated blue-gray diagonal marks across this central region read somewhat like stone facets at 1x. Join selected marks into tapered overlapping fur locks using the existing shadow and ivory colors, preserving the broad light planes; carry the same lock placement through idle_b and idle_c."
+    },
+    {
+      "pose": "attack",
+      "x": 119,
+      "y": 106,
+      "message": "Optional claw polish: the extended white forepaw reads chiefly as a broad rectangular pad at 1x. Strengthen two small dark separations between the forward toes and give the claw tips staggered one-pixel projections within the existing cell margin, retaining the continuous wrist-to-paw silhouette."
+    }
+  ],
+  "retainedIndependentSummary": "Viewed all four actual PNGs, including the native 128px portrait and the labeled native 1x / nearest 3x panels on light, dark and checker backgrounds. The large ivory mane, gold eye and collar, pink nose and turquoise tail tuft make a recognizable right-facing lion boss. Broad upper-left highlights and blue-gray underside/far-leg shadows give readable volume; the mane is somewhat faceted and the body comparatively slender. Four legs are distinguishable in idle, with connected shoulders, limbs, paws and tail; no obvious unintended interior transparency or detached body parts were visible. Standing support paws share a consistent ground line, while deliberately lifted attack/recovery paws remain connected. Windup lowers the mane, move extends the stride, attack opens the jaw and reaches a connected forepaw, recover retracts it, hit recoils, and dead lies low on its side. The move rear legs could convey a stronger push, but the static sequence remains readable. Idle changes are subtle. The additional nine poses read as distinct authored-looking states rather than whole-body tints: skill_a adds a pale cyan mane core and mouth preparation; skill_b opens the mouth and joins two curved cyan gusts to the mouth region; skill_c closes the jaw with three residual flakes. Poison uses a drooping lifted paw and purple mouth droplets, stun closes the eye and changes the head with overhead stars, and sleep folds the body with the head down; sleep is distinguishable from the flatter dead pose. The two local suggestions below are polish, not blockers to retaining this review candidate. Limits: these are static pose previews, not actual battle footage or animation playback; timing, sliding during playback, battle-scale readability and runtime contact cannot be confirmed. PNG appearance does not prove literal pxgrid authorship, absence of synthesized poses or the 18-color source-palette limit. This recommendation is advisory and does not record a user selection.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-snow-mane-lion-after-repair-five.png",
+  "nativeContactPngSha256": "a96616ae416fb82938bbde1a1a3e5131b89e438846d52e0b6be45ae8abacee92",
+  "nativeWriterFilesRead": {
+    "repair.py": "8e3aef2a0b870f25631cf7d7bfa319eff41f2c64b38974e57cf6d0510733751d",
+    "joint_revision.py": "eb1c35fe4bd99b38eba8d360c7d60b4a4fb447b232229d46f7bf3af32f07484f",
+    "revise_mane.py": "85d5c858c2f50587c5519368b5eb790dc77c5a029233d50795c1b6f2f7892ed7",
+    "anatomy_core_revision.py": "5ab76f39dfc50bb2b1d6608888ab49e2100359d8b117b51e50a75938efe2e364",
+    "contour_revision.py": "4c79a3c3b7d237211d597f08ec57de52257968cd8cd261f14f57d6484332f6a0",
+    "author.py": "c48a1c4e9c98d53997b27c9afc90028fd7688113264e19e1ae741763f3fdc34d"
+  },
+  "rootVisualAndSourceMethodObservations": [
+    "Actually opened all18 fifth-repair native128 poses at original1632x1272/native1x/nearest2x. Same ivory lion/gold eye and connected collar/turquoise tail, broad cream highlights and blue underside planes, tapered paws/wrists/hocks. Move far foreleg under the jaw now has a curved stepped upper edge and shadow overlap behind the reaching near foreleg instead of the previous rectangular tab; the planted lower limb remains attached.",
+    "Compact cyan-white mane charge core/dark fur rim plus mouth preparation→two thick mouth-attached curls→three snow flakes remain. Mane is still faceted and body slender, extended paw broad, and rear push/subtle idle and status changes are restrained. Actual keeper retains2 optional polish issues for mane locks and separated claw tips, which are preserved verbatim; not claimed flawless. Static views cannot establish dash/timing/battle contact.",
+    "Actually read whole new contour_revision70-line module/RUNS and native save calls, using only own immutable before-contour-repair native grids and chosen literal y/x rows. Complete contour_focus33/observe_contours72 are readonly nearest comparisons/native palette/bounds/border/hash/diff and opaque diagnostic GIF holds/pixel correspondence. Current native writers6/readonly helpers9 exactly match all whole-read bytes; actual native18/PNG/source/check/contact binding guarded. No procedural anatomy/whole-frame transform/tween. Selected native transparent GIF/ZIP/source archive/browser checked separately.",
+    "Complete original writer/module reading and subsequent complete repair/diff reading are recorded in the binding-specific root drafts; exact current read writer hashes were rechecked. Native18/source/keeper4PNG/current technical binding all agree. Static pose/source review does not prove live battle contact or timing."
+  ],
+  "actualReadRecord": "verify-shots/battle-monster-fifty/root-draft-review-snow-mane-lion-after-repair-five.json",
+  "claimScope": "Actual native18/complete current writers and actual independent keeper binding only. Selected ZIP/native GIF/archive/browser evidence is verified separately; entire50 completion remains pending."
+}

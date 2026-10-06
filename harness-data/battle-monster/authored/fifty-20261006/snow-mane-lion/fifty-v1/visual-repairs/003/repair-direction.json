@@ -1,0 +1,38 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "b9b4701d03a663492b5ba286ce0b80c853dd946b6a80258c8b6c28f57a95ca44",
+  "priorReviewJob": "4ceb91f0-f8df-477f-992d-843fafd25c12",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 82,
+      "y": 108,
+      "message": "Rebuild the front wrist and paw around this anchor with a tapered foreleg, a readable ankle bend and a wider toe mass; similarly articulate the rear hock around (35,106). The present narrow parallel light/dark shafts read like rigid supports. Carry the same limb thickness and near/far anatomy through the three idle frames and the action poses."
+    },
+    {
+      "pose": "idle_a",
+      "x": 61,
+      "y": 69,
+      "message": "Join several isolated cream flecks and short blue slashes into larger overlapping mane locks. Place a continuous shadow under each lock and vary its tapered edge instead of repeating scattered marks across the mane face; preserve the broad upper-left highlight and lower-right shadow masses across frames."
+    },
+    {
+      "pose": "poison_a",
+      "x": 100,
+      "y": 111,
+      "message": "The far foreleg at x98-102 narrows downward to a single pointed pixel near y114 without a paw. Author a bent raised wrist and a small connected curled paw here, with a separate dark underside and light toe cluster. Apply the corresponding repair to poison_b around (99,112), retaining the sick posture and droplets."
+    },
+    {
+      "pose": "skill_a",
+      "x": 109,
+      "y": 76,
+      "message": "The cyan muzzle spot reads beside the nose/cheek while the jaw remains closed. Define a small dark mouth opening and place the blue-white preparation core inside it, preserving the mane glow. Keep that mouth corner as the emission origin of both curls in skill_b, so preparation visibly leads into the existing mouth-attached breath."
+    },
+    {
+      "pose": "dead",
+      "x": 72,
+      "y": 92,
+      "message": "The mane becomes a long upward diagonal slab while the muzzle and ears lie in a different orientation at the right. Reauthor the mane's upper tip and lower edge as collapsed fur locks wrapping the fallen neck, then carry a continuous neck/collar transition toward the head around (87,108). Preserve the low grounded silhouette while making the same lion's head, neck and shoulders traceable."
+    }
+  ],
+  "startedAt": "2026-10-06T16:18:15.974632+00:00"
+}

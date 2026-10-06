@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "b2b6411fb15a2ec2b7f29c709f42a6f18b9811c66604af3fbece877076c52a9e",
+  "priorReviewJob": "b4c1ec8f-a72b-4c2a-b1b9-040346209465",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 104,
+      "y": 89,
+      "message": "The far foreleg immediately below the jaw has a flat horizontal top and a straight navy outer edge, reading as a rectangular tab behind the reaching leg. Around x=99..110, y=84..95, taper the visible upper limb from the shoulder and curve its outer contour into the occlusion behind the near foreleg; retain its attachment and the planted lower limb. This is an anatomy/volume repair, not a claim that the limb is detached."
+    },
+    {
+      "pose": "skill_b",
+      "x": 97,
+      "y": 98,
+      "message": "The bent front-leg area below the collar changes into two conspicuous vertical rectangular bands with a flat top at y=95 and a squared step at y=101..103. Around x=92..107, y=94..104, redraw the elbow/wrist transition as one continuous tapered limb with a rounded joint and a clear overlap against the supporting foreleg. Remove the square prong appearance while preserving the mouth-attached gusts and grounded paw."
+    },
+    {
+      "pose": "stun_a",
+      "x": 100,
+      "y": 67,
+      "message": "The inner muzzle/cheek boundary runs almost ruler-straight vertically through approximately x=100, y=56..77, giving the drooping face a rectangular slab appearance. Step this boundary into a curved cheek and jaw, and vary the adjacent shadow width to connect the muzzle volume to the forehead and collar. Preserve the small closed eyelid, pink nose and stun stars; compare with the more shaped cheek in stun_b so the pair retains the same head anatomy."
+    }
+  ],
+  "startedAt": "2026-10-06T16:50:19.254453+00:00"
+}

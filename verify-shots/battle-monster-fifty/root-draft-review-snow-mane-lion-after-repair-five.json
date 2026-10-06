@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-06T17:01:12.681828+00:00",
+  "passed": false,
+  "key": "snow-mane-lion/fifty-v1",
+  "binding": "2531b8f36af334517b582c798f322908ad0e2ce68621df69a55f63e860dc56a0",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-snow-mane-lion-after-repair-five.png",
+  "nativeContactPngSha256": "a96616ae416fb82938bbde1a1a3e5131b89e438846d52e0b6be45ae8abacee92",
+  "nativeWriterFilesRead": {
+    "repair.py": "8e3aef2a0b870f25631cf7d7bfa319eff41f2c64b38974e57cf6d0510733751d",
+    "joint_revision.py": "eb1c35fe4bd99b38eba8d360c7d60b4a4fb447b232229d46f7bf3af32f07484f",
+    "revise_mane.py": "85d5c858c2f50587c5519368b5eb790dc77c5a029233d50795c1b6f2f7892ed7",
+    "anatomy_core_revision.py": "5ab76f39dfc50bb2b1d6608888ab49e2100359d8b117b51e50a75938efe2e364",
+    "contour_revision.py": "4c79a3c3b7d237211d597f08ec57de52257968cd8cd261f14f57d6484332f6a0",
+    "author.py": "c48a1c4e9c98d53997b27c9afc90028fd7688113264e19e1ae741763f3fdc34d"
+  },
+  "readOnlyHelperFilesRead": {
+    "observe_anatomy_core.py": "6349bc875f94682c40d2300b5eb861d01ed427e7eeece60f16fe1b8d6ffcfb3d",
+    "render.py": "1843105d168c568ce4a002562ace697b631a954ffab012b151c45dbd92404270",
+    "anatomy_core_focus.py": "02cdcdaa5b8b7ba622c7ebd855ac938e8729f1e8c839ea059c4cf291f7e51391",
+    "joint_focus.py": "1b21a2944bc526d30b58c85aec120baf129da934736306965ae840dfb4f039c7",
+    "record_revision.py": "378db2a4f4078e6ce4496af974d198a9ac5b3c860f661ca754a1d714867fee33",
+    "contour_focus.py": "ac802b08bd26610171e24ae331895d6225791c5b6c1b257cb11f9d3c628641fa",
+    "inspect.py": "94360501f6fcbe546b5ef0f25147b4cf15204c4034e04e2f806f5f6df1569183",
+    "observe_contours.py": "c53acf335e3c9c530c267bd85600f0be428df2df98ac715c6e74899629a7b72e",
+    "observe_joints.py": "55cde46b7b283bc0e45a5080964005df525b54b2f832ee03cbfafa56305673ae"
+  },
+  "observations": [
+    "Actually opened all18 fifth-repair native128 poses at original1632x1272/native1x/nearest2x. Same ivory lion/gold eye and connected collar/turquoise tail, broad cream highlights and blue underside planes, tapered paws/wrists/hocks. Move far foreleg under the jaw now has a curved stepped upper edge and shadow overlap behind the reaching near foreleg instead of the previous rectangular tab; the planted lower limb remains attached.",
+    "Skill contact foreleg below the collar now has a continuous tapered elbow/wrist bend and curved dark overlap against the supporting foreleg instead of squared vertical prongs. Mouth-rooted cyan breath curls and grounded paws remain. Stun_a cheek now has a rounded stepped forehead/jaw edge and varying shadow width rather than the ruler-straight slab, preserving closed eye/pink nose/stars. Other15 native grids preserve actually reviewed windup/stride/open jaw/reaching paw/recover/hit, low dead and folded closed-eye sleep/tucked paw/breathing, drooped poison/curled paw/bubbles.",
+    "Compact cyan-white mane charge core/dark fur rim plus mouth preparation→two thick mouth-attached curls→three snow flakes remain. Mane is still faceted and body slender, extended paw broad, and rear push/subtle idle and status changes are restrained. Actual keeper retains2 optional polish issues for mane locks and separated claw tips, which are preserved verbatim; not claimed flawless. Static views cannot establish dash/timing/battle contact.",
+    "Actually read whole new contour_revision70-line module/RUNS and native save calls, using only own immutable before-contour-repair native grids and chosen literal y/x rows. Complete contour_focus33/observe_contours72 are readonly nearest comparisons/native palette/bounds/border/hash/diff and opaque diagnostic GIF holds/pixel correspondence. Current native writers6/readonly helpers9 exactly match all whole-read bytes; actual native18/PNG/source/check/contact binding guarded. No procedural anatomy/whole-frame transform/tween. Selected native transparent GIF/ZIP/source archive/browser checked separately."
+  ],
+  "actualIndependentRecommendation": "keep",
+  "actualIndependentReviewJob": "11e7a545-cf4e-4528-aac1-cedd87df78a6",
+  "actualIndependentIssues": [
+    {
+      "pose": "idle_a",
+      "x": 65,
+      "y": 63,
+      "message": "Optional mane polish: the short isolated blue-gray diagonal marks across this central region read somewhat like stone facets at 1x. Join selected marks into tapered overlapping fur locks using the existing shadow and ivory colors, preserving the broad light planes; carry the same lock placement through idle_b and idle_c."
+    },
+    {
+      "pose": "attack",
+      "x": 119,
+      "y": 106,
+      "message": "Optional claw polish: the extended white forepaw reads chiefly as a broad rectangular pad at 1x. Strengthen two small dark separations between the forward toes and give the claw tips staggered one-pixel projections within the existing cell margin, retaining the continuous wrist-to-paw silhouette."
+    }
+  ],
+  "actualIndependentSummary": "Viewed all four actual PNGs, including the native 128px portrait and the labeled native 1x / nearest 3x panels on light, dark and checker backgrounds. The large ivory mane, gold eye and collar, pink nose and turquoise tail tuft make a recognizable right-facing lion boss. Broad upper-left highlights and blue-gray underside/far-leg shadows give readable volume; the mane is somewhat faceted and the body comparatively slender. Four legs are distinguishable in idle, with connected shoulders, limbs, paws and tail; no obvious unintended interior transparency or detached body parts were visible. Standing support paws share a consistent ground line, while deliberately lifted attack/recovery paws remain connected. Windup lowers the mane, move extends the stride, attack opens the jaw and reaches a connected forepaw, recover retracts it, hit recoils, and dead lies low on its side. The move rear legs could convey a stronger push, but the static sequence remains readable. Idle changes are subtle. The additional nine poses read as distinct authored-looking states rather than whole-body tints: skill_a adds a pale cyan mane core and mouth preparation; skill_b opens the mouth and joins two curved cyan gusts to the mouth region; skill_c closes the jaw with three residual flakes. Poison uses a drooping lifted paw and purple mouth droplets, stun closes the eye and changes the head with overhead stars, and sleep folds the body with the head down; sleep is distinguishable from the flatter dead pose. The two local suggestions below are polish, not blockers to retaining this review candidate. Limits: these are static pose previews, not actual battle footage or animation playback; timing, sliding during playback, battle-scale readability and runtime contact cannot be confirmed. PNG appearance does not prove literal pxgrid authorship, absence of synthesized poses or the 18-color source-palette limit. This recommendation is advisory and does not record a user selection.",
+  "claimScope": "Actual fifth-repair native18/full6 current native writers and current real keeper; selected pack/archive/browser/entire50 proof remains separate."
+}
