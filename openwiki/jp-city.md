@@ -18,7 +18,7 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 정의 모듈 `src/project/defaults/jpCity.ts` — `createJpCityTileset`, `ensureJpCityTileset`, `ensureJpCityReferences`, `isJpCityTileset`.
 - 굽기가 만드는 파일(굽기 담당 소유): `public/assets/jp-city/jp-city-chipset.png`, 시트 메타 `src/assets/jpCitySheet.json`(`count`, `tilesPerRow`), 정의 `src/assets/jpCityTileset.json`(`name`·`tileSize`·`passability`·`priority`·`terrain`·`tileMeta`·`tileGroups`·`autotileGroups`·`animationStrips`·`structureKits`), 굽기 스크립트·소스 `scripts/content/jp-city/`, 자리 키 핀·출처 `tiledata/jp-city/`.
-- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 6용도 47쪽·그림 124장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
+- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 7용도 52쪽·그림 137장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
 - 배선: `src/assets/bundled.ts`(시트 import·항목·`bundledChipsetFrameCount`), `src/assets/bundledChipsetGeometry.ts`(열 수), `src/project/defaults/defaultAssets.ts`(`ensureBundledTilesets` 기존 사본 블록·`bundledEasyRpgTilesetBase`; 새 프로젝트는 `defaultTilesets()` 가 번들 목록을 돌며 자동 포함), `src/project/tilesetFamily.ts`, `src/project/tilesetHarness/combinedTown.ts`(RM2k3 투명 칩 보정 제외), `test/bundledTilesetIdParity.test.ts`.
 
 ## 굽기 규약 (TS 가 기대하는 것)
@@ -176,7 +176,32 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 조수 스킬 원본 `assistant-skills/jp-city-building-authoring/SKILL.md`. 편집기 안 조수가 읽는 `read_assistant_skill` 도구는 **main 에 없다**(agent/atlas-policy 브랜치 미병합, 2026-10-04 확인) — 그래서 조수는 같은 내용을 시스템 프롬프트·도구 설명·오류 문장·참고문서 `jp-*` 로 받는다. 시험 `test/jpCityAssistantWiring.test.ts`.
 
-## AI 참고문서 (6용도 · 47쪽 · 그림 124장)
+## 손 도트 건물 53종 + 상점가 줄 6종 (`jp-bldg-*`, 블록 `buildings`) — 2026-10-06
+
+사용자가 Codex 하네스 그림을 반려한 뒤 Claude 가 칩셋 규약대로 직접 그린 기준 집(사용자 승인 「훨씬 낫다」)을 부품으로 나눠 조립한 일본 동네 건물 통 키트.
+주택 15 · 공동주택 6 · 가게 14 · 음식점 7 · 상업 5 · 공공 5 · 공장·창고 2(분류는 `catalog.py` 의 `cat`).
+
+### 그림 원본 (`scripts/content/jp-city/houses/`)
+- `ref_house.py` — 기준 2층 집(寄棟 기와·下屋·발코니·현관 감실·블록 담 골목 장면). `modern_style_bible_proof` 의 K/Cv/hero/tree 를 쓴다.
+- `house_kit.py` — 레시피 조립기 `build(r)`: 폭(칸) · 층 목록(벽 재료 siding/plaster/vboard/board/tile/panel/brick/curtain + 칸 위치 부품) · 층 사이(lean·lean_bal·belt·corridor·balcony_row·shop_band) · 지붕(hip·gable_side·gable_front·shed·flat + 확장). 확장 모듈이 `PARTS/ROOFS/JOINS` 에 등록한다. 결과 meta 의 `doors` 가 출입구 x.
+- `shop_parts.py` — 간판(JIS 16px 글리프)·차양·노렌·제등·사인폴·쇼윈도·열린 가게·담배 창구·우체통·唐破風·굴뚝·入母屋·鋸屋根·맨션 발코니 줄·세로 간판·団地 계단실·편의점 띠·커튼월.
+- `catalog.py` — 53종 레시피(`CATALOG[id] = (이름, 분류, 레시피)`), `render`/`sheet`/`town` 비교 그림.
+- 간판 글자가 없으면 `scripts/content/jp-city/lib/glyph_tool.py <글자>` 로 `tiledata/jp-city/glyphs.json` 에 더한다(jiskan16).
+
+### 굽기 (`blocks/buildings.py`, `BLOCK_ORDER` 넷째)
+- 건물 그림을 벽 칸 + 양옆 처마 칸 1칸씩으로 잘라 16px 칸으로 나누고, 같은 화소·같은 통행 칸은 하나로 합친다(단품 53 + 줄 6 = 키트 59, 4786자리 → 고유 2363칸, 시트 3747 → 6110칸).
+- 통행: 맨 아래 D줄(2, 3층 이상·큰 건물 3)의 벽 칸 `solid`, 나머지(윗층·지붕·양옆 처마 칸) `star`. 출입구 칸은 맨 아래 줄 `solid` + `entrance` 부품, 접근칸은 키트 바깥 한 줄 아래.
+- 줄지어 세우기: 단품은 다음 x = x + w − 1(처마 칸 1칸 겹침)이 가장 촘촘하고, **벽 사이에 1칸 틈(골목)이 남는다**. x + w − 2 는 벽을 덮는다(참고문서 오류 `wall-overwritten`).
+  칸 하나에 위층 그림이 하나뿐이라 옆 건물 처마를 화소로 겹칠 수 없다(키트 행은 `tiles`/`upperTiles` 두 층뿐).
+- 벽을 맞댄 상점가는 줄 키트 `jp-bldg-row-*` 6종(`buildings.py` 의 `ROWS`): 단품 그림을 땅 줄에 맞춰 다음 건물 처마 칸이 앞 건물 마지막 벽 칸에 겹치게 화소로 합친 뒤 잘랐다(뒤 건물이 앞에 그려진다). 이음 칸만 새 칸이고 나머지는 단품 칸과 합쳐진다.
+- `python3 scripts/content/jp-city/blocks/buildings.py` = selftest(팔레트·알파·칸에서 재조립 == 원본·출입구 막힘·결정성) + `tiledata/jp-city/blocks/buildings/*.png`(통행 덧그림 `-pass-x3`).
+- 참고문서 용도 `jp-buildings-hand`(쓰는 법·사전·정답 조립·정상/오류). 엔진 실측은 `engine_dump.mts` 의 `bldgKits`·`bldgComps`·`bldgOverlap1`.
+- `engine_dump.mts` 는 도구 레지스트리가 끌어오는 `.css` 때문에 tsx 단독으로 못 돈다(2026-10-06 main 기준) — `--import ./tiledata/jp-city/refs/css-stub.mjs` 로 돌린다(`bake_refs.py --dump` 에 반영).
+
+### 한계
+정면 하나(옆·뒷면 없음) · 간판 일본어 고정 · 마당·담·주차장은 키트 밖 · 실내 맵 없음 · 같은 줄에서 높이가 다른 지붕을 붙이면 오른쪽 처마 칸이 왼쪽 처마를 덮는다.
+
+## AI 참고문서 (7용도 · 52쪽 · 그림 137장)
 
 계약 `tiledata/AI-REFERENCE-CONTRACT.md` 8항목을 모두 채운 번들 소유 참고문서다. 범위는 **지금 있는 부품만**(오토타일 17세트 · `build_jp_city_building` · 도로 키트 29 · 상가 키트: 레시피 25·문 9·소품 142)이고, 주택가·역·공원·신사 구역은 그림이 없어 「후속 추가 자리」 한 줄뿐이다.
 
@@ -187,12 +212,13 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 | `jp-building` | 11 | 42 | 도구 사용법·부품 사전·완성 예제 25(전체 배열·그림)·변조 B1~B11 |
 | `jp-road` | 7 | 12 | 키트 사전 29 · 팔 오프셋 공식·정답 조립·오토타일 이음 한계 · 오류 3건 |
 | `jp-shop` | 5 | 15 | 레시피·문·소품 사전(칸 번호 전체) · 문 앞 접근칸·오류 3건 |
+| `jp-buildings-hand` | 5 | 12 | 손 도트 건물 59종(단품 53·상점가 줄 6) 쓰는 법·통행·줄지어 세우기 · 분류별 사전(칸 번호 전체·도달) · 정답 조립 3(상점가 단품·주택가·벽 맞댄 줄 키트) · 오류 2(`door-access-blocked`·`wall-overwritten`) |
 | `jp-errors` | 3 | 1 | 코드 → 문서·그림 지도 · 변조 좌표 전체표 · 엔진 판정 대 정의 층 설명 정정(전/후) |
 
 ### 굽는 법 (한 줄)
 
 ```bash
-npx --no-install tsx tiledata/jp-city/refs/engine_dump.mts    # 실제 도구·엔진 실측 → refs/engine-results.json (약 5분, 저장소 루트)
+npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs tiledata/jp-city/refs/engine_dump.mts    # 실제 도구·엔진 실측 → refs/engine-results.json (약 8분, 저장소 루트)
 python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림·번들 JSON·refs/*.md 사본·refs/check-evidence.json
 ```
 

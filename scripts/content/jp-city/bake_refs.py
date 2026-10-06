@@ -34,7 +34,7 @@ ap.add_argument('--dump', action='store_true', help='engine_dump.mts 를 먼저 
 ARGS = ap.parse_args()
 if ARGS.dump or not os.path.exists(ENGINE_JSON):
     print('engine_dump.mts 실행(약 3분) …', flush=True)
-    subprocess.run(['npx', '--no-install', 'tsx', 'tiledata/jp-city/refs/engine_dump.mts'], cwd=ROOT, check=True)
+    subprocess.run(['npx', '--no-install', 'tsx', '--import', './tiledata/jp-city/refs/css-stub.mjs', 'tiledata/jp-city/refs/engine_dump.mts'], cwd=ROOT, check=True)
 
 D = json.load(open(os.path.join(ROOT, 'src/assets/jpCityTileset.json'), encoding='utf-8'))
 SPEC = json.load(open(os.path.join(ROOT, 'src/assets/jpCityBuildingSpec.json'), encoding='utf-8'))
@@ -290,7 +290,7 @@ for _t in range(COUNT):
     else: REGION[_t] = '?'
 for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
-for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock')):
+for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock')):
     for _t in PIN_BLOCK[_b]: REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -393,6 +393,7 @@ def doc_sheet_map():
         ('at8', '지면 8방 오토타일', '7세트 × 49칸 — 용도 「오토타일」'),
         ('at4', '선형 4방 오토타일', '10세트(블록담·생울타리·철망·가드레일·선로·중앙선·점선·횡단보도 둘·점자블록) — 용도 「오토타일」'),
         ('roadblock', '도로 키트 블록', '도로·교차로·건널목·지하도·육교·표지 키트의 재료 칸 112칸(오토타일 칸을 화소 그대로 복사한 칸 포함) — 용도 「도로·교차로 키트」'),
+        ('bldgblock', '손 도트 건물 키트 블록', f'손 도트 일본 건물 {sum(1 for k in KITS if k.startswith("jp-bldg-"))}종(주택·아파트·가게·음식점·상업·공공·공장)의 재료 칸. **키트로 통째 찍는다** — 용도 「손 도트 건물」'),
     ]
     rows = []
     for key, name, desc in reg:
@@ -1643,6 +1644,182 @@ def img_shop():
 
 
 img_shop()
+
+
+# ====================================================================== 분류 5b — 손 도트 건물 키트(jp-bldg-*)
+BLDG = [k for k in KITS if k.startswith('jp-bldg-')]
+BLDG_EN = {r['id']: r for r in EN['bldgKits']}
+BC = EN['bldgComps']
+_BCAT = collections.OrderedDict((('단독주택', []), ('공동주택', []), ('가게', []), ('음식점', []), ('상업 건물', []), ('공공 건물', []), ('공장·창고', [])))
+for _k in BLDG:
+    _BCAT[KITS[_k]['ai']['tags'][1]].append(_k)
+assert sum(len(v) for v in _BCAT.values()) == len(BLDG), 'jp-bldg 분류 누락'
+C_HB = new_cat('buildings-hand', f'일본 도시 · 손 도트 건물 {len(BLDG)}종',
+               f'손 도트로 그린 일본 동네 건물 {len(BLDG)}종 통 키트(`jp-bldg-*`): 단독주택·목조 아파트·맨션·단지·채소가게·생선가게·빵집·이자카야·소바집·편의점·슈퍼·우체국·파출소·목욕탕·공장 등. '
+               '키트 id·크기·막힘 줄·출입구·문 앞 접근칸·칸 번호 전체 배열·엔진 통행 코드, 줄지어 세우는 공식(다음 x = x + w − 1), 정답 조립(상점가·주택가)과 정상/오류(접근칸 막힘·두 칸 겹침) 그림과 좌표.')
+
+
+def _bfoot(kid):
+    k = KITS[kid]; codes = KIT_CODES[kid]
+    d = sum(1 for r in codes if 'X' in r)
+    return k['width'], k['height'], d
+
+
+def doc_bldg_rules():
+    rows = []
+    for cat, ids in _BCAT.items():
+        for kid in ids:
+            w, h, d = _bfoot(kid); r = BLDG_EN[kid]
+            rows.append([f'`{kid}`', KITS[kid]['name'], cat, f'{w}×{h}', d, '; '.join(f"({a['x'] - 2},{a['y'] - 1})" for a in r['access']) or '-', min((a['reach'] for a in r['access']), default=0)])
+    sr = BC['shopRow']; hr = BC['houseRow']; st = BC['streetRow']
+    return f"""# 일본 도시 — 손 도트 건물 {len(BLDG)}종 · 쓰는 법
+
+{HEAD}
+
+**무엇인가.** 스크립트 손 도트(modern3 팔레트, 빛 왼쪽 위, 정면 고정 3/4 시점, 한 층 32px·문 16×28·사람 16×24 눈금)로 그린 일본 동네 건물 한 채 = 키트 하나.
+그림 원본은 `scripts/content/jp-city/houses/`(기준 집 `ref_house.py` → 조립 키트 `house_kit.py` → 상점 부품 `shop_parts.py` → 목록 `catalog.py`), 굽기 블록은 `blocks/buildings.py`.
+띠 부품 조립 건물(`build_jp_city_building`, `jp-recipe-*`)과 **다른 계열**이다 — 한 거리에 섞어도 되지만 크기 눈금이 같으니 문·창 높이를 비교해 고른다.
+
+**찍는 법(실행 순서).**
+1. 바닥을 먼저 깐다: 보도(`jp:street:sw`)·생활도로·마당(자갈·잔디). 건물 키트에는 바닥(1층) 칸이 없다 — 모든 칸이 3층(위층).
+2. `stamp_object` 로 `kit:jp-bldg-…` 를 찍는다(좌표 = 키트 왼쪽 위). 발 = 왼쪽 위 + (0, h−1). 출입구는 맨 아래 줄.
+3. **줄지어 세우기:** 키트 양 끝 한 칸은 처마만 있는 칸이다. 단품을 나란히 세우는 가장 촘촘한 간격은 **다음 x = x + w − 1**(처마 칸끼리 1칸 겹침)이고,
+   이때 **벽 사이에 1칸 틈(좁은 골목)**이 남는다 — 오른쪽 건물의 처마 칸이 왼쪽 건물의 처마 칸을 덮는다. 다음 x = x + w 면 틈 2칸.
+   **x + w − 2 이하로 겹치면 앞 건물의 벽 칸이 덮여 잘린다**(오류 `wall-overwritten`, 아래 그림). 한 칸에 위층 그림이 하나뿐이라 옆 건물 처마를 화소로 겹칠 수 없다.
+   **벽을 맞댄 상점가(商店街)는 줄 키트 `jp-bldg-row-*` 6종을 쓴다** — 단품 4~5채를 미리 합친 키트다(상점가 A~D·음식점 줄·역 앞 줄). 줄 키트끼리도 x + w − 1 로 이어 세우면 블록 사이에 1칸 골목이 생긴다.
+4. 두 줄 이상이면 **뒷줄(화면 위쪽) 건물부터** 찍는다. 앞줄이 뒷줄 지붕을 덮어야 한다(상가 키트와 같은 규칙, `jp-shop-rules`).
+5. 출입구 바로 아래 한 칸(`access`)은 걸을 수 있는 바닥으로 비운다. 소품·자판기·화분을 그 칸에 놓지 않는다(오류 `door-access-blocked`).
+6. 문과 이벤트는 별개다: 출입구(`parts` 의 `entrance`)는 그림 위치이고, 실내 이동은 그 칸에 이벤트(전이)를 따로 놓는다. 접근칸은 사람이 서는 곳.
+
+**통행(엔진 판정 `codes`).** 맨 아래 D줄(대부분 2, 3층 이상·큰 건물은 3)의 벽 칸만 `X` 막힘. 그 위 지붕·윗층과 양 끝 처마 칸은 `*`(걸음 · 캐릭터 위에 그림) —
+건물 뒤(북쪽)를 지나가는 캐릭터가 지붕에 가려진다. 벽 칸은 실내가 아니다(정면 하나만 그렸고 옆면·뒷면은 없다).
+
+**고정/반복.** 모든 건물 키트는 고정(늘리기 없음). 폭이 다른 건물이 필요하면 다른 키트를 고르거나 같은 계열 둘을 붙여 세운다.
+
+**없는 것(정직한 목록).** 뒷면·옆면 그림 없음 · 간판 글자는 일본어 고정 · 마당·담·주차장·자전거 보관대는 키트 밖(오토타일·소품으로) · 실내 맵 없음 · 밤 조명판 없음.
+
+## 목록 ({len(BLDG)}종)
+{md_table(['키트', '이름', '분류', '폭×높이', '막힘 줄', '접근칸(dx,dy)', '도달(시험판 최소)'], rows)}
+
+도달 = 시험판(보도 + 도로 2줄)에 키트만 찍고 접근칸에서 걸어 갈 수 있는 칸 수(최대 6에서 멈춤). 모든 키트 ≥ 6이면 출입구 앞이 열려 있다.
+
+## 정답 조립 3개(엔진이 실제로 찍은 결과)
+- 상점가 `bldg-shop-row`: {len(sr['placements'])}채, 맵 {sr['W']}×{sr['H']}, 배치 {jline(sr['placements'])}. 그림 `jp-img-bldg-shop-row`, 배열 `jp-bldg-hand-ex`.
+- 주택가 `bldg-house-row`: {len(hr['placements'])}채, 맵 {hr['W']}×{hr['H']}, 배치 {jline(hr['placements'])}. 그림 `jp-img-bldg-house-row`.
+- 벽을 맞댄 상점가 `bldg-street-row`: 줄 키트 {len(st['placements'])}개, 맵 {st['W']}×{st['H']}, 배치 {jline(st['placements'])}. 그림 `jp-img-bldg-street-row`.
+"""
+
+
+assert all(a['reach'] >= 6 for r in EN['bldgKits'] for a in r['access']), [r['id'] for r in EN['bldgKits'] if any(a['reach'] < 6 for a in r['access'])]
+add_doc(C_HB, 'bldg-hand-rules', f'일본 도시 · 손 도트 건물 {len(BLDG)}종 · 쓰는 법·통행·줄지어 세우기', doc_bldg_rules())
+
+
+def _bldg_dict_docs():
+    docs = []; cur = []; size = 0
+    for cat, ids in _BCAT.items():
+        for kid in ids:
+            it = shop_item(kid); it['category'] = cat; it['accessReach'] = [a['reach'] for a in BLDG_EN[kid]['access']]
+            n = len(jline(it))
+            if cur and size + n > 36000: docs.append(cur); cur = []; size = 0
+            cur.append(it); size += n
+    if cur: docs.append(cur)
+    return docs
+
+
+_BD = _bldg_dict_docs()
+for _i, _chunk in enumerate(_BD):
+    add_doc(C_HB, f'bldg-hand-dict-{_i + 1}', f'일본 도시 · 손 도트 건물 사전 {_i + 1}/{len(_BD)}', f"""# 일본 도시 — 손 도트 건물 사전 {_i + 1}/{len(_BD)} ({len(_chunk)}종, 칸 번호 전체)
+
+{HEAD}
+
+항목: `kit` · `name` · `category` · `w`×`h` · `anchor` · `access`(문 앞 접근칸 dx,dy — 키트 바깥 한 줄 아래) · `parts`(`entrance` = 출입구 그림 칸) ·
+`upperTiles`(3층 칸 전체, `-1` = 맵을 건드리지 않는 칸) · `codes`(엔진 판정 `X` 막힘 · `*` ★ 뒤로 지나감 · `.` 걸음 · `_` 빈 칸) · `accessReach`(시험판 도달).
+이 문서의 키트: {', '.join(f'`{it["kit"]}`' for it in _chunk)}. 그림 `jp-img-bldg-dict-*`.
+
+{jfences(_chunk, 13000)}
+""")
+
+
+def doc_bldg_ex():
+    sr = BC['shopRow']; hr = BC['houseRow']; st = BC['streetRow']
+    def arr(c):
+        W = c['W']
+        return {'name': c['name'], 'W': W, 'H': c['H'], 'placements': c['placements'],
+                'tiles': to_rows([tnum(t) for t in c['layers']['1']], W), 'upperTiles': to_rows([tnum(t) for t in c['layers']['3']], W)}
+    return f"""# 일본 도시 — 손 도트 건물 정답 조립(상점가·주택가, 전체 배열)
+
+{HEAD}
+
+입력(배치 목록) → 엔진이 `stamp_object` 로 찍은 **전체 1층·3층 배열** → 원본 해상도 그림(`jp-img-bldg-shop-row`, `jp-img-bldg-house-row`, `jp-img-bldg-street-row`).\n단품 사이는 1칸 골목이 남는다. 벽을 맞댄 상점가는 줄 키트 `jp-bldg-row-*` 로 찍는다.
+바닥: 보도(`jp:street:sw`) 위에 맨 아래 2줄 생활도로. 건물 발은 도로 위 두 줄(보도 줄 바로 위), 접근칸은 보도 줄.
+배치 공식: 첫 키트 x=1, 다음 x = x + w − 1. y = (맵 높이 − 4) − h + 1.
+
+```json
+{jline(arr(sr))}
+```
+
+```json
+{jline(arr(hr))}
+```
+
+벽을 맞댄 상점가(줄 키트 2개, 블록 사이 1칸 골목) — 그림 `jp-img-bldg-street-row`:
+
+```json
+{jline(arr(st))}
+```
+"""
+
+
+add_doc(C_HB, 'bldg-hand-ex', '일본 도시 · 손 도트 건물 정답 조립(상점가·주택가 전체 배열)', doc_bldg_ex())
+
+
+def doc_bldg_errors():
+    be = BC['blockedErr']; oe = BC['overlapErr']
+    return f"""# 일본 도시 — 손 도트 건물 정상/오류(엔진 변조 실험)
+
+{HEAD}
+
+| 오류 코드 | 변조 | 검출 칸(맵 좌표 x,y) | 그림 |
+|---|---|---|---|
+| `door-access-blocked` | 상점 3채 줄에서 두 번째 가게 접근칸 위로 `jp-prop-vend-pair` 를 찍음 | {', '.join(f"({e['x']},{e['y']})" for e in be)} | `jp-img-err-bldg-access` |
+| `wall-overwritten` | 다음 x = x + w − **2**(두 칸 겹침) | {len(oe)}칸, 처음 {', '.join(f"({e['x']},{e['y']})" for e in oe[:8])} | `jp-img-err-bldg-overlap` |
+
+검사 범위: 구조(칸 번호가 키트대로 남았는가)와 통행(접근칸에서 걸어 갈 수 있는 칸 수)만 잰다. 미적 품질·실내 이동 이벤트·건물 사이 간격의 자연스러움은 이 검사로 판정하지 않는다.
+정상 쪽은 같은 줄을 x + w − 1 로 세운 것(오류 0).
+"""
+
+
+assert BC['blockedErr'], '접근칸 막힘 변조가 검출되지 않았다'
+assert BC['overlapErr'], '두 칸 겹침 변조가 검출되지 않았다'
+add_doc(C_HB, 'bldg-hand-errors', '일본 도시 · 손 도트 건물 정상/오류(접근칸 막힘·두 칸 겹침)', doc_bldg_errors())
+
+
+def img_bldg():
+    def kit_im(kid, k=1):
+        w, h, lo, upv = kit_grid(kid)
+        return up(render({'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}, w, h, bg=(0, 0, 0, 0)), k)
+    for cat, ids in _BCAT.items():
+        for i, pg in enumerate(shelf_pack([(k[8:], kit_im(k)) for k in ids])):
+            slug = {'단독주택': 'house', '공동주택': 'apartment', '가게': 'shop', '음식점': 'restaurant', '상업 건물': 'commercial', '공공 건물': 'public', '공장·창고': 'industrial'}[cat]
+            save_img(f'bldg-dict-{slug}-{i + 1}', pg, f'손 도트 건물 도감 — {cat} {len(ids)}종 {i + 1}쪽(원본 해상도, 라벨 = 키트 id 에서 `jp-bldg-` 를 뺀 것, 체크 무늬 = -1 칸). 칸 번호는 `jp-bldg-hand-dict-*`.', C_HB)
+    for key, nm in (('shopRow', 'shop-row'), ('houseRow', 'house-row'), ('streetRow', 'street-row')):
+        c = BC[key]; im = render(c['layers'], c['W'], c['H'])
+        if im.width > 816: im = im.crop((0, 0, 816, im.height))
+        save_img(f'bldg-{nm}', panels([(f'{c["name"]} — 키트 {len(c["placements"])}개를 stamp_object 로 찍은 결과(원본 해상도, {c["W"]}×{c["H"]}칸)', im)]),
+                 f'손 도트 건물 정답 조립 `{c["name"]}`: 배치 {len(c["placements"])}개, 다음 x = x + w − 1(단품 사이는 1칸 골목, 줄 키트 안은 벽을 맞댐). 원본 해상도. 전체 배열은 `jp-bldg-hand-ex`.', C_HB)
+    g = EN['bldgOverlap1']; b = BC['blocked']
+    k = 1
+    gi = render(g['layers'], g['W'], g['H']); bi = render(b['layers'], b['W'], b['H'])
+    mark_cells(bi, [(e['x'], e['y']) for e in BC['blockedErr']], k, width=2)
+    save_img('err-bldg-access', panels([('정상 — 접근칸(보도) 비어 있음', gi), (f'오류 — 접근칸 위 자판기: door-access-blocked {len(BC["blockedErr"])}칸', bi)]),
+             '손 도트 건물 변조 door-access-blocked: 왼쪽 정상(가게 3채 x + w − 1)/오른쪽 오류(두 번째 가게 출입구 아래에 `jp-prop-vend-pair`). 빨강 = 막힌 접근칸. 원본 해상도.', C_HB)
+    o = BC['overlap2']; oi = render(o['layers'], o['W'], o['H'])
+    mark_cells(oi, [(e['x'], e['y']) for e in BC['overlapErr']], 1, width=1)
+    save_img('err-bldg-overlap', panels([('정상 — 다음 x = x + w − 1', gi), (f'오류 — 다음 x = x + w − 2: wall-overwritten {len(BC["overlapErr"])}칸', oi)]),
+             '손 도트 건물 변조 wall-overwritten: 두 칸 겹쳐 세우면 오른쪽 키트의 처마 칸이 왼쪽 건물 벽 칸을 덮는다(빨강). 원본 해상도.', C_HB)
+
+
+img_bldg()
 
 
 # ====================================================================== 분류 6 — 정상/오류·자동 검사(총괄)

@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 도구 `build_jp_city_building` 사용법
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 가변 폭·층수 **상가 건물**(상가·아파트·사무소·마치야·L자 별채)을 **부품 사전 + 순수 조립기 + 맵 도구**로 짓는다. 건물을 낱칸으로 칠하지 않는다. **오류가 하나라도 있으면 맵을 한 칸도 바꾸지 않는다**(복제본에 찍어 엔진 통행으로 다시 확인한 뒤에만 반영). jp_city 맵에서만 동작한다.
 관련 도구: `list_jp_city_building_parts`(읽기 — 부품 사전·`example` 로 완성 예제 입력). 코드: `src/editor/tools/jpCityTools.ts` · 조립기 `src/editor/jpCity/builder.ts` · 사전 `src/assets/jpCityBuildingSpec.json`.
@@ -53,7 +53,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 > 일본 도시 건물 6×11칸을 (2,1)~(7,11) 에 지었다(m) — 문 (4,11) (5,11), 문 앞 접근칸 (4,12) (5,12) 에서 6칸 이상 이어짐 확인, 막힘 칸 12개 엔진 통행과 일치
 
 거부(`L_flats_lot`):
-> 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(3,10) 별채: 부착물 plate.mark.sora 이(가) 0번 층 창 위에 얹힌다(열 1) — 간판·차양·실외기·빨래·광고는 민벽(blank)이나 창이 없는 칸에만 붙는다
+> 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(3,10) 별채: 부착물 plate.mark.sora 이(가) 0번 층 창 위에 얹힌다(열 1) — 간판·차양·실외기·빨래·광고는 민벽(blank)이나 창이 없는 칸에만 붙는다 → 다음: DECO_CLASH: 창 위에 얹은 부착물의 col·row 를 옮기거나 floor 를 바꾸거나 빼고, 한 칸에 위층 칸이 3장 겹치지 않게 한다
 
 ## 높이 = 띠 줄 수의 합 (예제 25, 도구 결과의 사각형 높이와 대조)
 | 예제 | 띠(위→아래)(줄 수) | 줄 수 합 | 도구 결과 높이 |

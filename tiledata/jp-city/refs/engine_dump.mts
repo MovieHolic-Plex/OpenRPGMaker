@@ -1,7 +1,7 @@
 /**
  * jp_city 참고문서용 엔진 실측 덤프 — 문서의 그림·배열·오류 좌표는 전부 여기서 나온 진짜 도구/엔진 결과다(손으로 쓴 값 없음).
  *
- *   npx --no-install tsx tiledata/jp-city/refs/engine_dump.mts        (저장소 루트에서)
+ *   npx --no-install tsx --import ./tiledata/jp-city/refs/css-stub.mjs tiledata/jp-city/refs/engine_dump.mts   (저장소 루트에서; css import 를 빈 모듈로)
  *
  * 출력 tiledata/jp-city/refs/engine-results.json — scripts/content/jp-city/bake_refs.py 가 읽어 PNG·MD 로 굽는다.
  * 쓰는 실제 코드:
@@ -412,9 +412,68 @@ for (const k of KITS.values()) {
   recipes.push({ id: k.id, W, H, stamp: r.summary, access: acc.map((a) => ({ ...a, reach: reach(p, map, a) })), walk, layers: layersOf(map) });
 }
 OUT.recipes = recipes;
+// 손 도트 건물 키트(jp-bldg-*, blocks/buildings.py): 보도 위에 찍고 출입구 접근칸 도달·통행 지도
+const bldgs: unknown[] = [];
+for (const k of KITS.values()) {
+  if (!k.id.startsWith("jp-bldg-")) continue;
+  const kk = k as unknown as { id: string; width: number; height: number; ai: { access?: { dx: number; dy: number }[] }; rows: { tiles: number[]; upperTiles: number[] }[] };
+  const W = kk.width + 4, H = kk.height + 5;
+  const { p, map } = mkProject(W, H, SW);
+  for (let y = kk.height + 2; y < H; y++) for (let x = 0; x < W; x++) map.lowerTiles[y * W + x] = ROAD;
+  const r = stampKit(p, k.id, 2, 1);
+  const acc = (kk.ai.access ?? []).map((a) => ({ x: 2 + a.dx, y: 1 + a.dy }));
+  const walk: string[] = [];
+  for (let y = 0; y <= kk.height + 1; y++) { let s = ""; for (let x = 0; x < W; x++) s += isPassable(p, map, x, y) ? "." : "#"; walk.push(s); }
+  bldgs.push({ id: k.id, W, H, stamp: r.summary, access: acc.map((a) => ({ ...a, reach: reach(p, map, a) })), walk });
+}
+OUT.bldgKits = bldgs;
+// 건물 키트 조립 예제·오류: 보도 위 한 줄(다음 x = x + w − 1, 옆 처마 칸 1칸 겹침 → 벽 사이 1칸 골목).
+// 벽을 맞댄 상점가는 미리 합친 줄 키트(jp-bldg-row-*)로 찍는다.
+{
+  const row = (name: string, ids: string[], overlap: number, extra?: (p: Project, map: GameMap, pl: [string, number, number][]) => unknown) => {
+    const ks = ids.map((id) => kitOf(id));
+    const H = Math.max(...ks.map((k) => k.height)) + 4, W = ks.reduce((a, k) => a + k.width, 0) - overlap * (ks.length - 1) + 2;
+    const pl: [string, number, number][] = []; let x = 1;
+    for (const k of ks) { pl.push([k.id, x, H - 4 - k.height + 1]); x += k.width - overlap; }
+    const c = compose({ name, W, H, under: SW, placements: pl }, (p, map) => {
+      for (let y = H - 2; y < H; y++) for (let xx = 0; xx < W; xx++) map.lowerTiles[y * W + xx] = ROAD;
+      const acc = pl.flatMap(([id, px, py]) => (((KITS.get(id) as unknown as { ai: { access?: { dx: number; dy: number }[] } }).ai.access) ?? []).map((a) => ({ kit: id, x: px + a.dx, y: py + a.dy })));
+      const ex = extra?.(p, map, pl) ?? null;
+      return { access: acc.map((a) => ({ ...a, reach: reach(p, map, a) })), ex };
+    });
+    return c;
+  };
+  const shops = ["jp-bldg-shop-greengrocer", "jp-bldg-shop-fish", "jp-bldg-shop-bakery", "jp-bldg-shop-izakaya", "jp-bldg-shop-cafe"];
+  const houses = ["jp-bldg-house-hip2", "jp-bldg-house-gable-garage", "jp-bldg-house-shed-modern", "jp-bldg-house-hiraya"];
+  const okRow = row("bldg-shop-row", shops, 1);
+  const houseRow = row("bldg-house-row", houses, 1);
+  const streetRow = row("bldg-street-row", ["jp-bldg-row-shotengai-a", "jp-bldg-row-shotengai-d"], 1);
+  // 오류 1: 접근칸 위에 자판기 소품을 찍음
+  const blocked = row("bldg-access-blocked", shops.slice(0, 3), 1, (p, map, pl) => {
+    const [id, px, py] = pl[1]!; const a = (KITS.get(id) as unknown as { ai: { access: { dx: number; dy: number }[] } }).ai.access[0]!;
+    const r = stampKit(p, "jp-prop-vend-pair", px + a.dx - 1, py + a.dy - 1);
+    return { prop: "jp-prop-vend-pair", at: [px + a.dx - 1, py + a.dy - 1], ok: r.ok };
+  });
+  const blockedErr = ((blocked.extra as { access: { x: number; y: number; reach: number }[] }).access).filter((a) => a.reach < 6).map((a) => ({ code: "door-access-blocked", x: a.x, y: a.y }));
+  // 오류 2: 두 칸 겹침(다음 x = x + w − 2) → 앞 건물 벽 칸이 뒤 키트의 처마 칸으로 덮임
+  const over = row("bldg-overlap2", shops.slice(0, 3), 2);
+  const overErr: { code: string; x: number; y: number }[] = [];
+  {
+    const ok3 = row("bldg-overlap1", shops.slice(0, 3), 1);
+    for (const [id, px, py] of over.placements as [string, number, number][]) {
+      const k = kitOf(id);
+      for (let r = 0; r < k.height; r++) for (let c = 1; c < k.width - 1; c++) {
+        const t = k.rows[r]!.upperTiles[c]!; if (t < 0) continue;
+        const x = px + c, y = py + r; if ((over.layers["3"] as number[])[y * over.W + x] !== t) overErr.push({ code: "wall-overwritten", x, y });
+      }
+    }
+    OUT.bldgOverlap1 = ok3;
+  }
+  OUT.bldgComps = { shopRow: okRow, houseRow, streetRow, blocked, blockedErr, overlap2: over, overlapErr: overErr };
+}
 const propCodes: Record<string, string[]> = {};
 for (const k of KITS.values()) {
-  if (!k.id.startsWith("jp-prop-") && !k.id.startsWith("jp-recipe-") && !k.id.startsWith("jp-door-") && !k.id.startsWith("jp-road-") && !k.id.startsWith("jp-fumikiri") && !k.id.startsWith("jp-underpass") && !k.id.startsWith("jp-footbridge")) continue;
+  if (!k.id.startsWith("jp-prop-") && !k.id.startsWith("jp-recipe-") && !k.id.startsWith("jp-door-") && !k.id.startsWith("jp-road-") && !k.id.startsWith("jp-fumikiri") && !k.id.startsWith("jp-underpass") && !k.id.startsWith("jp-footbridge") && !k.id.startsWith("jp-bldg-")) continue;
   const kk = kitOf(k.id);
   propCodes[k.id] = kk.rows.map((r) => r.upperTiles.map((t3, x) => {
     const t1 = r.tiles[x]!;

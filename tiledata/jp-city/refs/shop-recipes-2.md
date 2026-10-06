@@ -1,6 +1,6 @@
 # 일본 도시 — 상가 레시피 사전 2/2 (12종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 완성 상가 건물 키트의 **칸 번호 전체**다. 항목: `kit` · `name` · `w`×`h` · `access`(문 앞 접근칸 오프셋 dx,dy — 키트 왼쪽 위 기준, 건물 사각형 **바깥** 한 줄 아래) · `parts`(`entrance` = 입구/문 칸 dx,dy,w,h · `sign` = 간판 부위) ·
 `tiles`(1층 칸, 있으면) · `upperTiles`(3층 칸, 줄마다) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸) · `accessReach`(시험판 보도 위에서 접근칸마다 걸어 갈 수 있는 칸 수, 최대 7).

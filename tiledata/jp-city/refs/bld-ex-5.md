@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 · 완성 예제 5/5 (`mixed_tenant`, `slim_tower`, `L_office_cafe`, `L_machiya_annex`, `L_flats_lot`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 `list_jp_city_building_parts({"example":"<이름>"})` 의 완성 예제 입력을 **실제 `build_jp_city_building` 도구로 지은 결과**다(`tiledata/jp-city/refs/engine_dump.mts` 가 도구를 호출해 맵 배열을 읽었다).
 시험판 맵: 폭 = 건물 폭 + 4, 높이 = 건물 높이 + 5, 1층 전체가 보도(`sw`), 아래 3줄이 도로(`road_c`), 건물 사각형은 맵 (2,1) 에서 시작한다. 좌표는 맵 칸 0 기준.
@@ -206,7 +206,7 @@ y=14: .........
 ```
 
 ## L_machiya_annex — L자 마치야 + 별채 (그림 `jp-img-ex-L_machiya_annex`)
-- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(4,8) (4,8) 에 위층 칸이 3장 겹친다(447+598+488) — 에디터 위층은 2장(띠 + 부착물 하나)뿐이다
+- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(4,8) (4,8) 에 위층 칸이 3장 겹친다(447+598+488) — 에디터 위층은 2장(띠 + 부착물 하나)뿐이다 → 다음: DECO_CLASH: 창 위에 얹은 부착물의 col·row 를 옮기거나 floor 를 바꾸거나 빼고, 한 칸에 위층 칸이 3장 겹치지 않게 한다
 - 오류 1건: `DECO_CLASH`@(4,8)
 - 맵은 한 칸도 바뀌지 않았다. 아래 배열·그림은 **조립기가 계산한 「지었다면」 결과**(맵에 쓰지 않음, 빨강 테두리 = 오류 칸)다.
 
@@ -265,7 +265,7 @@ y=13: .........
 ```
 
 ## L_flats_lot — L자 아파트 + 주차장 (그림 `jp-img-ex-L_flats_lot`)
-- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(3,10) 별채: 부착물 plate.mark.sora 이(가) 0번 층 창 위에 얹힌다(열 1) — 간판·차양·실외기·빨래·광고는 민벽(blank)이나 창이 없는 칸에만 붙는다
+- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(3,10) 별채: 부착물 plate.mark.sora 이(가) 0번 층 창 위에 얹힌다(열 1) — 간판·차양·실외기·빨래·광고는 민벽(blank)이나 창이 없는 칸에만 붙는다 → 다음: DECO_CLASH: 창 위에 얹은 부착물의 col·row 를 옮기거나 floor 를 바꾸거나 빼고, 한 칸에 위층 칸이 3장 겹치지 않게 한다
 - 오류 1건: `DECO_CLASH`@(3,10)
 - 맵은 한 칸도 바뀌지 않았다. 아래 배열·그림은 **조립기가 계산한 「지었다면」 결과**(맵에 쓰지 않음, 빨강 테두리 = 오류 칸)다.
 

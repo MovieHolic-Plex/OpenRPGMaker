@@ -1,6 +1,6 @@
 # 일본 도시 — 도로 키트 사전 · 철도 건널목 4 · 지하도 · 육교 · 노면 표시(자전거·止まれ 4방향) · 표지 4 · 신호기 4
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 키트 한 종의 **칸 번호 전체**다. 항목: `kit` id · `name` · `w`×`h` · `anchor`(키트의 「발」 기준점 dx,dy — 왼쪽 위가 (0,0)) · `repeat`(이어 붙여도 되는 축, null = 고정) · `arms`(도로가 이어 나가는 변 `N/S/E/W` → 변 위 시작~끝 오프셋, 변 위 칸이 찬 구간이 도로 폭과 같은 곳) ·
 `tiles`(1층 칸, 줄마다) · `upperTiles`(3층 칸, 줄마다, 표시·화살표·표지 칸) · `codes`(칸마다 엔진 판정: `X` 막힘 · `*` 걸음 ★(캐릭터 위) · `.` 걸음 · `_` 빈 칸) · `access`(있으면 문 앞 같은 접근칸 오프셋).
