@@ -13,6 +13,59 @@ LIBRARY = "native_wandshop"
 STATE = ["wand_scene_" + str(i) for i in range(1, 4)]
 
 
+def scene_panel(recipe, state):
+    """Review contact sheets contain other times beside the actual room panel."""
+    if not recipe.get('panels'):
+        require(recipe['canvas'] == [176, 224], 'Unexpected room canvas without panel declarations')
+        return recipe
+    panels = [p for p in recipe['panels'] if p.get('state') == state and 'responseFrame' not in p]
+    require(len(panels) == 1, 'One primary room panel per scene state is required')
+    x, y, w, h = panels[0]['bounds']
+    require([w, h] == [176, 224], 'Primary room panel dimensions changed')
+    placements = []
+    for op in recipe['placements']:
+        ox, oy = op['at']; ow, oh = op['rect'][2:]
+        if ox >= x + w or ox + ow <= x or oy >= y + h or oy + oh <= y:
+            continue
+        require(x <= ox and y <= oy and ox + ow <= x + w and oy + oh <= y + h,
+                'Native placement crosses review panel boundary')
+        placements.append({**op, 'at': [ox - x, oy - y]})
+    require(bool(placements), 'Room panel has no native placements')
+    return {**recipe, 'canvas': [w, h], 'placements': placements, 'runtimePanel': panels[0]}
+
+
+def response_sheet(pack, frozen, response):
+    """Place each unchanged response crop at its authored world anchor."""
+    frames, positions = [], []
+    for step in response['sequence']:
+        crop = frozen.crop(frozen.source(step['nativeSource']), response['slotSourceRects'][step['slot']])
+        at = step.get('at', response.get('sheetTopLeftScreen'))
+        require(at is not None and len(at) == 2, 'Response frame position missing')
+        if 'anchorLocal' in step:
+            require([at[i] + step['anchorLocal'][i] for i in range(2)] == step['anchorScreen'],
+                    'Response native anchor does not meet its screen contact')
+        if 'opaqueBoundsLocal' in step:
+            bounds = crop[0].getchannel('A').getbbox()
+            require((list(bounds) if bounds else None) == step['opaqueBoundsLocal'], 'Response opaque bounds changed')
+        frames.append(crop)
+        positions.append([at[0], at[1] - 32])
+    left, top = min(p[0] for p in positions), min(p[1] for p in positions)
+    width = max(at[0] + frame[0].width for at, frame in zip(positions, frames)) - left
+    height = max(at[1] + frame[0].height for at, frame in zip(positions, frames)) - top
+    padded = []
+    for frame, at in zip(frames, positions):
+        offset = [at[0] - left, at[1] - top]
+        canvas = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        canvas.paste(frame[0], offset)
+        require(canvas.crop((offset[0], offset[1], offset[0] + frame[0].width, offset[1] + frame[0].height)).tobytes()
+                == frame[0].tobytes(), 'Response alignment changed source pixels')
+        padded.append((canvas, sha(wire({'crop': frame[1], 'offset': offset, 'size': [width, height]}))))
+    require(padded[-1][0].getchannel('A').getbbox() is None, 'Response final frame must be transparent')
+    sprite = pack.sheet('wand-native-response', padded, [5, 7], [left, top])
+    return sprite, {'frameWorldTopLeft': positions, 'sheetWorldTopLeft': [left, top],
+                    'paddedFrameSize': [width, height], 'enabledStateIndices': response.get('enabledStateIndices', [3])}
+
+
 def freeze(root, recipes, layout, actors, out):
     require(not out.exists(), "Manifest destination must be new")
     files = {}
@@ -69,7 +122,7 @@ def pack(manifest, out, vacancy_receipt=None):
     f = Frozen(manifest)
     layout, rt = f.read(manifest["layout"]), f.read(manifest["contract"])
     actors = f.read(manifest["actors"])
-    recipes = [f.read(path) for path in manifest["recipes"]]
+    recipes = [scene_panel(f.read(path), i) for i, path in enumerate(manifest["recipes"])]
     require(layout["floorGridSize"] == [11, 12], "Expected11x12ground")
     grid = layout["floorGrid"]
     require(len(grid) == 12 and all(len(row) == 11 for row in grid), "Ground diagram changed")
@@ -159,6 +212,7 @@ def pack(manifest, out, vacancy_receipt=None):
     p.sprites.update(actors["sprites"])
     actor_proofs = []
     actor_events = []
+    scene_branches, trial_branches = [], []
     for ai, delivered in enumerate(actors["actors"]):
         require(len(delivered["actions"]) == 18, "All18native actor frames required")
         role = "elder" if ai == 0 else "student"
@@ -203,24 +257,52 @@ def pack(manifest, out, vacancy_receipt=None):
             direction = {"up": "뒤쪽", "right": "오른쪽", "down": "앞쪽", "left": "왼쪽"}[pose.rsplit("-", 1)[-1]]
             action = "치수 재기" if pose.startswith("measure-") else "지팡이 들어보기" if pose.startswith("wand-raise-") else "상자 들기 동작"
             menus.append((action + " · " + direction, branch))
-        action_menu = choice(menus, "행동 미리보기 · 상자 꺼내기는 준비 중")
+        action_menu = choice(menus, "행동 미리보기 · 상자 꺼내기는 선반에서" if manifest.get("vacancy") else "행동 미리보기 · 상자 꺼내기는 준비 중")
         scene_options = []
-        for s, scene_state in enumerate(rt["fourStates"]):
-            commands = [switch(key, s == index) for index, key in enumerate(STATE, 1)]
-            commands += [switch("wand_state_applied_" + str(index), False) for index in range(4)]
-            for door, status in zip(("entry", "staff"), scene_state[:2]):
-                commands += [switch("wand_" + door + "_closed", status == "closed"), switch("wand_" + door + "_locked", status == "locked")]
-            scene_options.append((str(s + 1) + " · " + scene_state[2], commands))
+        for s in range(4):
+            commands = []  # Filled after both native actor placements are known.
+            scene_branches.append((s, commands))
+            scene_options.append((("상담 준비", "상자 잡기", "상자 들어 올리기", "지팡이 시험 준비")[s], commands))
+        trial_commands = []
+        trial_branches.append(trial_commands)
         commands = [choice([("행동 보기", [action_menu]), ("가게 장면 바꾸기", [choice(scene_options, "가게 장면")]),
-                           ("지팡이 시험", [switch("wand_response_busy", True)])], "지팡이 상점")]
+                           ("지팡이 시험", trial_commands)], "지팡이 상점")]
         pages = [page(id + "_" + str(s), graphic(sprite), commands,
                       [] if s == 0 else [condition(STATE[s - 1])], "same", True) for s, sprite in enumerate(state_sprites)]
         p.events.append(event(id, cell, pages, delivered["title"]))
         actor_events.append((id, states))
         actor_proofs.append({"eventId": id, "source": action_path, "actions": delivered["actions"], "nativeStatePlacements": states,
-                             "limitation": "State2/3 sole changes require runtime event transfer; dispatcher supplied below. Contextual shelf removal unavailable."})
+                             "limitation": "State2/3 sole changes use the authored dispatcher; contextual shelf availability is recorded separately in shelfBindings."})
 
-    # A one-shot autorun dispatcher responds to state switch changes. Each page
+    def enter_scene(state):
+        # Foreground choices await the real transfers. Mark the dispatcher first
+        # so it cannot replace these routes while the menu interpreter waits.
+        commands = [switch('wand_response_busy', False)]
+        commands += [switch('wand_state_applied_' + str(i), i == state) for i in range(4)]
+        commands += [switch(key, state == i) for i, key in enumerate(STATE, 1)]
+        for door, status in zip(('entry', 'staff'), rt['fourStates'][state][:2]):
+            commands += [switch('wand_' + door + '_closed', status == 'closed'),
+                         switch('wand_' + door + '_locked', status == 'locked')]
+        for actor_id, states in actor_events:
+            cell = states[state]['cell']
+            commands.append({'kind': 'moveEvent', 'eventId': actor_id, 'route': {'moves': [
+                {'kind': 'npcTransfer', 'mapId': MAP, 'x': cell[0], 'y': cell[1]}], 'repeat': False, 'wait': True}})
+            commands.append({'kind': 'setEventGraphicPattern', 'eventId': actor_id, 'pattern': 0})
+        return commands
+
+    for state, branch in scene_branches:
+        branch[:] = enter_scene(state)
+    response_commands = []
+    for index, step in enumerate(rt['response']['sequence']):
+        response_commands += [{'kind': 'setEventGraphicPattern', 'eventId': 'wand_response', 'pattern': index},
+                              {'kind': 'wait', 'ms': step['durationMs']}]
+    response_commands += [switch('wand_response_busy', False)]
+    for branch in trial_branches:
+        # Parallel clocks pause during a foreground interaction. Keep placement
+        # and every response frame in this same awaited action interpreter.
+        branch[:] = enter_scene(3) + [switch('wand_response_busy', True)] + response_commands
+
+    # A fallback parallel dispatcher responds to external state switch changes. Each page
     # selects actual recipe collision cell; instance anchor retains exact sole.
     for state in range(4):
         applied = p.add_switch("wand_state_applied_" + str(state))
@@ -258,15 +340,10 @@ def pack(manifest, out, vacancy_receipt=None):
 
     response = rt["response"]
     require(len(response["sequence"]) == 8, "All8responseframesrequired")
-    response_frames = [f.crop(f.source(s["nativeSource"]), response["slotSourceRects"][s["slot"]]) for s in response["sequence"]]
-    sprite = p.sheet("wand-native-response", response_frames, [5, 7], [response["sheetTopLeftScreen"][0], response["sheetTopLeftScreen"][1] - 32], response["origin"])
-    p.events.append(event("wand_response", [5, 7], [page("response_end", graphic(sprite, 7), [switch("wand_response_busy", True)], priority="same")]))
-    response_commands = []
-    for i, slot in enumerate(response["sequence"]):
-        response_commands += [{"kind": "setEventGraphicPattern", "eventId": "wand_response", "pattern": i}, {"kind": "wait", "ms": slot["durationMs"]}]
-    response_commands += [{"kind": "setEventGraphicPattern", "eventId": "wand_response", "pattern": 7}, switch("wand_response_busy", False)]
-    p.events.append(event("wand_response_clock", [2, 4], [page("response_clock_idle", commands=[{"kind": "wait", "ms": 100}], trigger="parallel"),
-                    page("response_clock_active", commands=response_commands, conditions=[condition("wand_response_busy")], trigger="parallel")]))
+    sprite, response_binding = response_sheet(p, f, response)
+    require(response_binding['enabledStateIndices'] == [3], 'Response must be restricted to the trial scene')
+    p.events.append(event("wand_response", [5, 7], [page("response_hidden", graphic(sprite, 7), priority="same"),
+        page("response_active", graphic(sprite, 0), conditions=[condition(STATE[2]), condition('wand_response_busy')], priority="same")]))
     shelf_bindings = {"status": "blocked-native-vacancy-required", "contacts": rt["shelves"]["boxContacts"],
                       "reason": "Current shelf stock is baked into sheet. No native empty-bed crop exists to remove the held box without drawing/duplicate stock.",
                       "required": "hash-bound vacant native shelf slot or layered native shelf+box originals; then contextual actor contact/lift can bind its same18frame delivery"}
@@ -295,10 +372,11 @@ def pack(manifest, out, vacancy_receipt=None):
                 "playerSprite": {"type": "uploaded", "id": next(a for a in actors["actors"] if a["id"] == "trial-student")["walk"]}}
     report = {"version": 1, "status": "prepared-not-approved", "libraryId": LIBRARY, "inputFingerprint": manifest["inputFingerprint"],
               "runtimePassed": False, "canonicalReload": False, "publicRegistered": False, "groundGrid": [11, 12], "groundOffset": [0, 32],
-              "actors": actor_proofs, "doors": door_proofs, "response": response, "shelfBindings": shelf_bindings,
+              "actors": actor_proofs, "doors": door_proofs, "response": response, "responseBinding": response_binding, "shelfBindings": shelf_bindings,
+              "roomPanels": [r.get('runtimePanel', {'bounds': [0, 0, 176, 224], 'state': i}) for i, r in enumerate(recipes)],
               "sources": manifest["files"], "crops": f.crops, "assets": p.asset_proofs, "placements": p.placements,
-              "limitations": ["Bound old four-state recipe; new wall/cutaway/door fullscene review pending. No quality approval.",
-                              "Contextual shelf removal blocked: native vacant-bed slot absent. All18poseframes exist; no duplicate box shown at shelf.",
+              "limitations": ["Frozen four-state source recipes bound; whole-scene approval is separate from runtime preparation.",
+                              ("Reviewed native shelf removal bound; actual runtime QA still required." if manifest.get('vacancy') else "Contextual shelf removal blocked: native vacant-bed slot absent."),
                               "Entry external destination remains unbound; staff door opens actual same-map northern area.",
                               "Camera north headroom supported; source entry threshold extends to188worldpx within192mapheight.",
                               "Y-depth and offgrid actor sole/cell corrections require actual runtime visual QA."]}

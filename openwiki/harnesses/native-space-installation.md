@@ -211,3 +211,26 @@ the same project passed QA at `/player.html`. Always inspect the actual public
 URL without QA instrumentation and check console errors/image responses. Merely
 seeing a title and canvas is insufficient. Both current preview directories were
 re-deployed with their resource base and visually checked at their public URLs.
+
+### Wand scene panels and trial timing
+
+`wand_runtime_prepare.scene_panel` requires exactly one primary 176×224 room panel
+for each declared state when the native review recipe is a contact sheet. Response
+panels beside it are separate moments; they must not become duplicated room objects.
+Placements crossing panel bounds fail preparation, and the selected panel is recorded.
+
+The eight response crops retain their individual native `at` and contact anchors.
+They are padded transparently into a shared union frame without altering source pixels;
+explicit alpha bounds are checked and the last frame must be transparent. The idle
+page retains that transparent native frame to preload the sheet before the first trial. The response
+is enabled only in trial state3 while `wand_response_busy` is true. All eight frames
+run in the same foreground action; parallel clocks pause during an interaction and
+cannot be awaited from it.
+Foreground scene choices wait for both actual actor transfers before starting the trial;
+they mark the dispatcher as applied before changing state, avoiding competing routes.
+The dispatcher still handles state changes originating outside those menu branches.
+
+Draft evidence distinguishes `shelfRemovalBound` from `shelfRemovalResolved`: authoring
+a reviewed vacancy sequence does not prove that it works in the current runtime room.
+Whole-scene acceptance, external doorway connection, publication and canonical reload
+remain separate requirements.
