@@ -261,49 +261,49 @@
    "id": "jp-car-kei-yellow",
    "name": "노란 경차",
    "kind": "kei",
-   "length": 5,
+   "length": 4,
    "image": "/assets/jp-city/vehicles/jp-car-kei-yellow.png",
-   "width": 230,
-   "height": 96,
+   "width": 198,
+   "height": 80,
    "frames": {
     "right": {
      "x": 0,
-     "y": 48,
-     "w": 80,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "left": {
-     "x": 82,
-     "y": 48,
-     "w": 80,
+     "x": 66,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "up": {
-     "x": 164,
+     "x": 132,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     },
     "down": {
-     "x": 198,
+     "x": 166,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     }
    }
@@ -312,49 +312,49 @@
    "id": "jp-car-kei-mint",
    "name": "민트 경차",
    "kind": "kei",
-   "length": 5,
+   "length": 4,
    "image": "/assets/jp-city/vehicles/jp-car-kei-mint.png",
-   "width": 230,
-   "height": 96,
+   "width": 198,
+   "height": 80,
    "frames": {
     "right": {
      "x": 0,
-     "y": 48,
-     "w": 80,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "left": {
-     "x": 82,
-     "y": 48,
-     "w": 80,
+     "x": 66,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "up": {
-     "x": 164,
+     "x": 132,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     },
     "down": {
-     "x": 198,
+     "x": 166,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     }
    }
@@ -414,49 +414,49 @@
    "id": "jp-truck-kei",
    "name": "경트럭",
    "kind": "truck",
-   "length": 5,
+   "length": 4,
    "image": "/assets/jp-city/vehicles/jp-truck-kei.png",
-   "width": 230,
-   "height": 96,
+   "width": 198,
+   "height": 80,
    "frames": {
     "right": {
      "x": 0,
-     "y": 48,
-     "w": 80,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "left": {
-     "x": 82,
-     "y": 48,
-     "w": 80,
+     "x": 66,
+     "y": 32,
+     "w": 64,
      "h": 48,
      "foot": {
-      "w": 5,
+      "w": 4,
       "h": 2
      }
     },
     "up": {
-     "x": 164,
+     "x": 132,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     },
     "down": {
-     "x": 198,
+     "x": 166,
      "y": 0,
      "w": 32,
-     "h": 96,
+     "h": 80,
      "foot": {
       "w": 2,
-      "h": 5
+      "h": 4
      }
     }
    }
