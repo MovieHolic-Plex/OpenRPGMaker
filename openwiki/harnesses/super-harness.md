@@ -983,3 +983,6 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 반복된 projection/style 오류가 있더라도 전체 공간을 calibration으로 되돌리지 않는다.
 종전 경로는 교체된 옛 부품까지 누적 28그룹을 시점 표본으로 다시 승인받게 해 완성 장면 재조립을 지연시켰다.
 `route`와 `ensure_layout_feedback` 모두 scene을 유지하며, 도면 승인·원본 해시·최대 수정 횟수는 그대로 적용한다.
+`require_preparation`도 이전 실행의 policy와 layout이 함께 calibration으로 남은 경우를 거부한다.
+완료된 native 결과는 `resumeMode=collect-existing`으로 보존하고, scene 도면을 새로 독립 검수한 뒤
+수집·전체 장면 조립을 재개한다. 과거 부품/도면 판정을 PASS로 바꾸거나 그림 회차를 초기화하지 않는다.
