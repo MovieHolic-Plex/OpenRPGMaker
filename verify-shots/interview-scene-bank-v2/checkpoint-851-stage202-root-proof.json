@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 851,
+  "remainingAtSnapshot": 606,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T22:53:24.564477+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 851,
+      "manifestSha256": "5ced75a7eaf72dcdfb82ad13f02e0b4048484dfb70b40e90b7f9db187b3bafca",
+      "finishedAt": "2026-10-06T22:53:02.616296+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-851-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--hatch--team--bright--habitat--episode,monster--hatch--team--secret--route--scene,monster--hatch--team--secret--habitat--episode,monster--hatch--team--secret--case--scene,monster--hatch--team--warm--route--short,monster--hatch--team--warm--habitat--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 851,
+      "manifestSha256": "5ced75a7eaf72dcdfb82ad13f02e0b4048484dfb70b40e90b7f9db187b3bafca",
+      "finishedAt": "2026-10-06T22:53:22.861668+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-851-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--hatch--team--bright--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--bright--habitat--episode.png",
+      "sha256": "ea74c96f2bccc36f1d509888c353df6d0593d70fc1353f2133ff24e49a54790b",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--secret--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--secret--route--scene.png",
+      "sha256": "fa271788b34bfadd05a11627778415b226991c91aea2532150bc7e1daa26c011",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--secret--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--secret--habitat--episode.png",
+      "sha256": "fe63dfee436014c7de4e256777829451efa071cfc3deb16b081075e797750779",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--secret--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--secret--case--scene.png",
+      "sha256": "9972344f13a76523c360b0fb4c04db5fd2ff86260ef077ab34ff1a7d2ce1a90c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--warm--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--warm--route--short.png",
+      "sha256": "ccba03772214134ce2cffb49b2208acad1e140ee18f8343c3d3b7f6edcd971e8",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-851-stage202-selected-monster--hatch--team--warm--habitat--episode.png",
+      "sha256": "4cc9fa6db7402fbf06db83e570a33f21694ba8996ea3de5883c628e799fc6d2e",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "851 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. New203 remains private and excluded from this frozen202 snapshot; no all851 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-851-stage202-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-851-stage202-click-proof.json"
+  }
+}

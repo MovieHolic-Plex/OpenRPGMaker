@@ -1,0 +1,123 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 851,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--hatch--team--secret",
+      "sourceSha256": "f064b87dfa993c37f9ce1acf889d0931f39ac1f7a61dca8318adff71a5cd6583",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--secret-f064b87dfa99.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret-2-f064b87dfa99.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "4f39d504143227b2bd0dd814fe05f6e458b07e04ecc8e07adf113fb764da4d56",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--warm",
+      "sourceSha256": "a3f5ea69b6ebb6cd4f64463e0b58b108ac9014a02ed64012e0bb97afdf558f6d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm-a3f5ea69b6eb.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm-1-a3f5ea69b6eb.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "f267621d68a64f5859bc8bc33bf7784585de59c06c2b183448475598c9f12c9b",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--bright--case",
+      "sourceSha256": "e8aa6fd4aaed87232c176c18d2645b65cef5a4c1e2cd4895d179f3d2fd8bca5d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--bright--case-e8aa6fd4aaed.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--bright--case-1-e8aa6fd4aaed.png",
+      "replacementPublished": true,
+      "replacementSha256": "b2b556a98d1de5659bea96456a5ab3846f35f312806ba904dbb30db4b127f408",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--secret--route",
+      "sourceSha256": "dc25f59f7711ba613182cfbf147d456845ecf939ccecebba6adfeef2f9428478",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--secret--route-dc25f59f7711.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret--route-1-dc25f59f7711.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "b5083575c785befdd772c7bd27b7499966f2a398a1eb214aeb30bf5d64f64139",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--secret--habitat",
+      "sourceSha256": "3c942d89e9405fe26c3999d2a5aa32f68777ca00ff303b5eb1226477d766a03b",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--secret--habitat-3c942d89e940.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret--habitat-1-3c942d89e940.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "c4af04e58f73dd0c39cdd7fdd429f39c387545f4086d9dcc6288af63e9f953d6",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--secret--case",
+      "sourceSha256": "fca34be85324f442ff68d8c30a0ac85a7f984300bcc2070d5f19e20a5c1cf696",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--secret--case-fca34be85324.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret--case-1-fca34be85324.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "ccd51d04ca110d24a6689c47d19e4b3a1d9e159ac3e9e321b4962727a09e89de",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--warm--route",
+      "sourceSha256": "4471f6aa14f35058e4f50b19da442733b40c45f334a2b03636f18e0ce470a0b6",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--route-4471f6aa14f3.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--route-1-4471f6aa14f3.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "e81d9c175ee2b3c80e48fe57170ca55847709bdbc86db630386a8308dba7a3e0",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat",
+      "sourceSha256": "bd25c816136ef04e5da6f4b7213ff6213764b42b68568aca1296f9a62eb6cc31",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-bd25c816136e.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-1-bd25c816136e.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    },
+    {
+      "key": "monster--hatch--team--warm--case",
+      "sourceSha256": "2e8950d423bc1229d7f18e4256c3471f409f3b8bb937a39128f88c09e89129fa",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--case-2e8950d423bc.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--case-1-2e8950d423bc.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "replacementSha256": "c0a35f2c73207e3f94e569d1fa914a590b2f2a4f0d5c68e2d51931e1d7bc75e9",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-202"
+    }
+  ],
+  "resolvedCumulative": 208
+}

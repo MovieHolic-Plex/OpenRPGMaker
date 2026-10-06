@@ -1,0 +1,1168 @@
+{
+  "batches": [
+    {
+      "batch": "v2-production-199",
+      "passedAttempts": 8,
+      "rejectedAttempts": 2,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-199",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T21:55:50.591110+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-199",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T21:56:09.670182+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-199",
+          "command": [
+            "/usr/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-199",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T21:56:09.713863+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "monster--hatch--team--bright--case",
+          "nativeSha256": "b2b556a98d1de5659bea96456a5ab3846f35f312806ba904dbb30db4b127f408",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "02708c27f2d67becf95c9395bfcd7ec8e7acb9f7b83980370b25c939631150e9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeEMPTYtrainingcourse stoneCOVER/timberHURDLE/separatedPOSTS MIDwholeprotectednursery crackedegg/plaincloth/BLUEwater LOWwholeOPENcase refuge EMPTYpail/earthtrace SUN/noscope. Pale softcloth now plainly visible over cradle ledge. Different actualNEW198bright UPnurseryLOWcourse no case. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--route--short",
+          "nativeSha256": "1eb863ba9544f4ef1b1aa985d10afc2ec70947bed55c357e7c9d27e764eed404",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "6f192b58e3e933a8c66312711ba3845aa452819f213d694a4f40ff87aba970db",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable protectedcrackedegg/plaincloth/BLUEwater with adjacentWHOLEthree-stationcourse LOWtwoWHOLEdifferenttravelhouses/LEFTtrail SUN/return. Bluehouse left eave genuinely inside native, not falsely failed for smallmargin. Allselectedstationfeatures beforecontrols. Different actual198ROUTE UPcourseMIDnurseryLOWhouses without returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--habitat--scene",
+          "nativeSha256": "2afa3fd97b4118fbf13e2bc07c464fe9020f29084bb2da8288de7c90221c5ac3",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "26bc8621cfb17afabd820c916be3d749a79eecc9b37dc852c96576ea1de6c24d",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPthreeREALWHOLEINNERwetland/forest/ruin MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater SUN/FIRST bareunpaddedapproach. Both actualINNERcolumns/stairs before60.3, no growthmat. Different actual198HAB UPcourseMIDnurseryLOWviews reversed framing. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--habitat--episode",
+          "nativeSha256": "794aa4f6371c45e9d74f3e4b04224539de5c8f3378838b93e48cf0f77810c6bf",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a127b04a2987bb1618bbe28a268f2a157c052b68f18f94a5dfdc8b1692f68672",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPthreeREALhabitatviews MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus largerEMPTYGROUNDmat SUN/growth. Composition ONLY F: actual real RUIN stairs extend beyond actual x60.3 controls; WHOLEnative then read-only NEAREST crop ending at actualboundary shows required stairs continue across panel. Actual arch INNERcolumns do fit, outer freeposts not substituted as innercolumn failures. Other six P; different actual198HAB spatialreverse/growth."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPthreeREALhabitatviews MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus largerEMPTYGROUNDmat SUN/growth. Composition ONLY F: actual real RUIN stairs extend beyond actual x60.3 controls; WHOLEnative then read-only NEAREST crop ending at actualboundary shows required stairs continue across panel. Actual arch INNERcolumns do fit, outer freeposts not substituted as innercolumn failures. Other six P; different actual198HAB spatialreverse/growth. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--habitat--short",
+          "nativeSha256": "58dab9a8c688bd4a57ba784c12e4c3784d10d188b02004977a5cfbc2d81e36c3",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "00363fe4aa4af976e3bcd6b5d626be9a40f71d75599fe6dd8734671c617c46f7",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/emptyvisibleinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/adjacentWHOLEcourse LOWthreeREALINNERhabitatviews SUN/return. Actual ruin INNERcolumns/allsteps before60.3; outerposts do not replaceinnerfeatures. Allactualtacticalposts beforecontrols. Different actual198HAB no returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--case--scene",
+          "nativeSha256": "e092529fdeef9f2180d1eee59b60fe9934085dce72e6b96b260840ab4ff12e8c",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "92351d06f17c994ee70d376b08ee74ffcbda96aa55ec7cacea2ddc86c162513e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENcase refuge EMPTYpail/earthtrace MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater SUN/FIRST bareunpaddedapproach. Full roof/chimney inside native, no invented idealmargin. Different actualNEW199CASE UPcourseMIDnurseryLOWrefuge spatialreverse. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--case--episode",
+          "nativeSha256": "8d8031cfe11440e9c5a35fb2300201f4df1d1adbf327e6c9eace3c510f1d2813",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "86b1f82bc65b6ea295cef4c4906ac9ec299762e03f3f8d99618a4279d6404ce2",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENcase refuge EMPTYpail/earthtrace MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus separatelargerEMPTYprotectedGROUNDstrawrestmat SUN/growth. Straw-edged resting groundmat tangible separateemptyrestarea, no returnhome/table. Different actualNEW199CASE spatialreverse/growth. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--bright--case--short",
+          "nativeSha256": "6c49ac390a9b459fac346d3ffb93711a5d9e1515de9192ee3d28be6ddf24b400",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f26cf6e648ab1d19cb2cc0339c1bb773814b16b290be762533efcf2ae0043501",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/emptyvisibleinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/wholeadjacentthree-stationcourse LOWwholeOPENlocalrefuge EMPTYpail/earthtrace SUN/return. Allstations/wholeforms beforecontrols, no growthmat. Different actualNEW199CASE no returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--route--scene",
+          "nativeSha256": "71608237337c3b875316ed0c13f3971c0d93813ffdc296e92e9bcdd731a0f0be",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "20e3f7ee0109dbf415ed1f4611fba2291d5e5b59216a071a0b5343697bf09f26",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater/twoactualGROUNDmudpawprints MOON/FIRST bareunpaddedapproach. Required CLOSEDplainnotebook missing: allChoices ONLY F. Other six P, no signboard/body/growthmat. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightdistantsettlement."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater/twoactualGROUNDmudpawprints MOON/FIRST bareunpaddedapproach. Required CLOSEDplainnotebook missing: allChoices ONLY F. Other six P, no signboard/body/growthmat. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightdistantsettlement. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--route--episode",
+          "nativeSha256": "4dacaae83be0f5d6879eb3b7d9fd95d19c7f71c524a5825b6ca03c6c7d9dc2e9",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "93548cddd767368d8f3b6073e02fac245de234d2e4fa07c619ef075e7bf193c4",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater/CLOSEDplainnotebook/twoactualGROUNDmudpawprints plus separatelargerEMPTYGROUNDrestmat MOON/growth. Allstationsbeforecontrols, bookbinding/pageedges andphysicalearthpawprints not print. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightsettlement beyond recolor. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-200",
+      "passedAttempts": 7,
+      "rejectedAttempts": 3,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-200",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-200-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:06:15.042404+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-200-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-200",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-200-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:06:32.905305+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-200-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-200",
+          "command": [
+            "/usr/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-200",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:06:32.950866+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "monster--hatch--team--bright--habitat--episode",
+          "nativeSha256": "ddd21b94fecc08105ca0f3fce0dea2ffbfa10b8d1559d485c053d657c3c34478",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "209339e35a6d8c2f3a0baf67117986eb456e5e5ffa80dedf23bcca1d2c36c7d9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPthreeREALINNERwetlandforestRUIN MIDwholeEMPTYcover/hurdle/posts LOWwholeprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater and largerEMPTYGROUNDgrowthmat SUN. Whole actual INNER arch columns and actual stair risers end before60.3; right detached outer column/wall/path are not INNER stairs. WHOLE native then read-only NEAREST diagnostic confirms no recurrence of199 actual stair overlap. Distinct actual198brightHAB UPcourseMIDnurseryLOWhabitats without growth. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--route--scene",
+          "nativeSha256": "d501fcf041baa01e92745b119f5d2fd663e50dbaf084f79a1e501584764e5995",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "abdd2a390a59ca8ccc106fe8a8bc60fa4e7bf252d28401d5672698f05b847671",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPtwoWHOLEdifferenthouses/LEFTtrail MIDwholeEMPTYcover/hurdle/posts LOWsmallprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater plus CLOSEDplainGROUNDnotebook/two physicalmudprints MOON/FIRST BAREunpaddedapproach. Missing notebook repaired; no growthmat. Distinct actualNEW200ROUTE spatialreverse. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret",
+          "nativeSha256": "4f39d504143227b2bd0dd814fe05f6e458b07e04ecc8e07adf113fb764da4d56",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "d97180486f2b3fc964f397b7df31b8d230bd35087d855e0c03bbe0fdd18fdc3c",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPwholeprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints LOWwholeEMPTYcover/hurdle/posts MOON/noscope/progressionunset. Whole selected objects beforecontrols. Actual notebook binding/clasp not lettering/logo. Distinct actual198TEAM UPcourseLOWnursery now spatialreverse/newnight-recording staging, not recolor. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--route",
+          "nativeSha256": "b5083575c785befdd772c7bd27b7499966f2a398a1eb214aeb30bf5d64f64139",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "60ef9cca97063253bfbe7957551287406a0e4d7f5ef6573cb9b2fb0fda05402f",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPwholeEMPTYcover/hurdle/posts MIDwholeprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints LOWtwoWHOLEdifferenthouses/LEFTconnectingtrail MOON/noscope. Whole houses/roofs/chimneys/doors/bases beforecontrols; optional continuing river bridge not selected house or connecting two-house LEFTtrail and not invented extra requirement. Distinct actualNEW200MOOD UPnurseryLOWcourse versus new three-layer journey. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat",
+          "nativeSha256": "c4af04e58f73dd0c39cdd7fdd429f39c387545f4086d9dcc6288af63e9f953d6",
+          "nativeDimensions": [
+            1672,
+            940
+          ],
+          "requestSha256": "c319af1576efce587118572a32eb40d9988e5addc200f2ceb3c43484ac89e967",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPwholeEMPTYcover/hurdle/posts MIDwholeprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints LOWthreeREALWHOLEINNERwetlandforestRUIN MOON/noscope. Both actual INNER arch columns and allactualsteps before60.3, outer free posts not innercolumns. Whole nursery roof inside native margin. Distinct actualNEW200MOOD without habitats. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case",
+          "nativeSha256": "ccd51d04ca110d24a6689c47d19e4b3a1d9e159ac3e9e321b4962727a09e89de",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f2c2be0c5b3549e3921dc320bdf1551f3ca5b8978064e6a210e87ab6e69f9db7",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPwholeEMPTYcover/hurdle/posts MIDwholeprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints LOWWHOLEOPENlocalrefuge EMPTYhollowpail/actualearthtrace MOON/noscope. Whole emptyrefuge innerfloor/threshold visible, allselectedforms beforecontrols. Distinct actualNEW200MOOD without local-case refuge. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--route--short",
+          "nativeSha256": "eb91b861c9639e523db5584aacec6883a2b141c3a8eb7b46bb58805d1d3b5e2e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "7c2b4a5ea9042df35591547ea148df5cb64f37cab32de25fa2c92313439e6357",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome bothdoorleaves outward/clearlyvisibleemptyinnerfloor MIDtidyreturntable/nursery/egg/plaincloth/BLUEwater plus wholeEMPTYcourse LOWtwoWHOLEdifferenthouses/LEFTtrail MOON/return. Required CLOSEDplainnotebook missing and required FIRSTcrack missing on unbroken spottedegg: whole native then read-only NEAREST care diagnostic confirms absence. allChoices ONLY F; return/latestChoice present. All whole houses within native, small true margin not arbitrary fail. Distinct actualNEW200ROUTE no returnhome/table."
+          ],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPWHOLEOPENreturnhome bothdoorleaves outward/clearlyvisibleemptyinnerfloor MIDtidyreturntable/nursery/egg/plaincloth/BLUEwater plus wholeEMPTYcourse LOWtwoWHOLEdifferenthouses/LEFTtrail MOON/return. Required CLOSEDplainnotebook missing and required FIRSTcrack missing on unbroken spottedegg: whole native then read-only NEAREST care diagnostic confirms absence. allChoices ONLY F; return/latestChoice present. All whole houses within native, small true margin not arbitrary fail. Distinct actualNEW200ROUTE no returnhome/table. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat--scene",
+          "nativeSha256": "d601a026aa8f4530b9c3ed5c531fe299990cf50f724acf95140a785aef8a074e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a3cf0057e199602fe831a9456d14e4845332a3ede5aee43865570be0c5a05d12",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPthreeREALINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWnurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints MOON/FIRST BAREunpaddedapproach. Actual nursery roof/eave/leftwall crop at native LEFTedge0 violates OWN whole native building, composition ONLY F. All three INNERviews/course otherwise beforecontrols. Latest FIRST staging/no growth directlyP. Distinct actualNEW200HAB spatialreverse."
+          ],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPthreeREALINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWnurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints MOON/FIRST BAREunpaddedapproach. Actual nursery roof/eave/leftwall crop at native LEFTedge0 violates OWN whole native building, composition ONLY F. All three INNERviews/course otherwise beforecontrols. Latest FIRST staging/no growth directlyP. Distinct actualNEW200HAB spatialreverse. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat--episode",
+          "nativeSha256": "6d512263f84b1cf126f4e8d5730757f8ab5eefd15de38a23c654a8d2a800953b",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "647b22fa4200f686d94ab1e457f8861ad460b982d9ffebc41c9f4a517d89ac0e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPthreeREALINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWwholeprotectednurseryFIRSTcrackegg/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints with separate largerEMPTYGROUNDgrowthmat MOON/growth. Required plainsoftCLOTH missing: whole native then read-only NEAREST care diagnostic shows ONLYstraw/wood floor, not cloth. allChoices ONLY F; actualgrowth/latestChoice present. Both actualINNERcolumns/allsteps and course beforecontrols; bookbindingclasp not print. Distinct actualNEW200HAB spatialreverse/new growthmat."
+          ],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPthreeREALINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWwholeprotectednurseryFIRSTcrackegg/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints with separate largerEMPTYGROUNDgrowthmat MOON/growth. Required plainsoftCLOTH missing: whole native then read-only NEAREST care diagnostic shows ONLYstraw/wood floor, not cloth. allChoices ONLY F; actualgrowth/latestChoice present. Both actualINNERcolumns/allsteps and course beforecontrols; bookbindingclasp not print. Distinct actualNEW200HAB spatialreverse/new growthmat. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat--short",
+          "nativeSha256": "6148db711e4fa3074705d591059cb8fb8db2cb94855fce37f52c593bb1c3730a",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "ed89903eede8d60042be5e2da2b2206acc170f9e71d296468c7e28934abffb56",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULL exact OWN/WHOLE native and FULL exact OWN/WHOLE actual parent, including actual198TEAM/brightHAB and NEW200SECRET/ROUTE/HAB. UPWHOLEOPENreturnhome bothdoorleaves outward/clearlyvisibleemptyinnerfloor MIDtidyreturntable/nurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook plus wholeEMPTYcourse/two actualGROUNDmudprints LOWthreeREALWHOLEINNERviews MOON/return. Rightmost required actualPOST WHOLE before1008 actualcontrols; root exact read-only crop ending1008 confirms small visible margin, no arbitrary idealmargin fail. Actual both INNER arch columns/allstairs beforecontrols, outer freeposts not innercolumns. No growthmat. Distinct actualNEW200HAB without home/table. Remaining checks directlyROOT P: coherent squareclusters/stairsteps/flatshade acrossplanes; no invented protagonist/species/body/text/sign/emblem. Clothtrim/materialhighlights/bookbinding/pageedges/clasp and physicalearthtrace not automatically print. Actual60.3 controls; no invented idealmargin or retroactiveOWN requirements. Native unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-201",
+      "passedAttempts": 7,
+      "rejectedAttempts": 3,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-201",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-201-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:20:27.752876+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-201-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-201",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-201-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:20:44.445263+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-201-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-201",
+          "command": [
+            "/usr/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-201",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:20:44.498637+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "monster--hatch--team--secret--route--short",
+          "nativeSha256": "7fce2e671efb08539e2decbfd698cec711410d8596be5766b854c70616217442",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "6e4b27160c8dccebe9013bb63fa42f2cc9b055f7855a71e18c66301f5bf1757c",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome bothoutwarddoors/clearlyvisibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plaincloth/BLUEwater and physicalGROUNDmudprints plus CLOSEDnotebook LOWtwoWHOLEdifferenthouses/LEFTtrail with wholeEMPTYcourse MOON/return. Missingbook/crack now present. Notebook has an isolated central DIAMONDseal/emblem on topcover, visually separate from outer binding, not a clasp attached to edge. Whole native then read-only NEAREST confirms central seal; OWN forbids printedemblems and explicitly plainundecorated notebook. noText ONLY F. Ordinarypageedges/outerbinding not failure. Different actualNEW200ROUTE by wholeOPENreturnhome/table."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPWHOLEOPENreturnhome bothoutwarddoors/clearlyvisibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plaincloth/BLUEwater and physicalGROUNDmudprints plus CLOSEDnotebook LOWtwoWHOLEdifferenthouses/LEFTtrail with wholeEMPTYcourse MOON/return. Missingbook/crack now present. Notebook has an isolated central DIAMONDseal/emblem on topcover, visually separate from outer binding, not a clasp attached to edge. Whole native then read-only NEAREST confirms central seal; OWN forbids printedemblems and explicitly plainundecorated notebook. noText ONLY F. Ordinarypageedges/outerbinding not failure. Different actualNEW200ROUTE by wholeOPENreturnhome/table. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat--scene",
+          "nativeSha256": "794f7470de78855bb6eadd321e13ffb1fe23e6a2470190ce1745bcd358c54895",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "1dab61c8e2fcac76b6cc497856b9422faf30c29a5ade4729af121240b76ff15c",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPthreeREALWHOLEINNERwetlandforestRUIN MIDwholeEMPTYcover/hurdle/posts LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints MOON/FIRST BAREunpadded/no growth. Nurseryroof/eaves/leftwall/base now whollyinside native; originalcroppedroof fixed. Actual meaningful INNERcolumns/allstairs and allstations before60.3. Distinct actualNEW200HAB spatialreverse. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--habitat--episode",
+          "nativeSha256": "de1a83d34406ce4d8cde1f14069ceae8ba02984edb3ba07ae32487226647ab7d",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "9cd49b3da06b5bdc77e1641be8e0354d90f2ce7c4723f43e8d7d5a8f44033503",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPthreeREALWHOLEINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/plainsoftCLOTH/BLUEwater/CLOSEDplainbook/two physicalGROUNDmudprints with separate largerEMPTYGROUNDgrowthmat MOON/growth. Cloth visiblylaidacrossstraw/drapedoverfront now repaired. Actual both INNER arch columns/allstairs and stations before60.3; outerdetachedposts/wall not INNERcolumns. Distinct actualNEW200HAB spatialreverse/newGROUNDmat. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case--scene",
+          "nativeSha256": "38ce6b68187681f09640d9e614b30d790115c296bc75790488d6cac349ba1490",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "17ef2afe08a583b5640cbd33b6bb121163699e7c311009c80cc8feb330674dcf",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPWHOLEOPENcase-refuge EMPTYhollowpail/actualearthtrace MIDwholeEMPTYcover/hurdle/posts LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater/CLOSEDplainbook/two realGROUNDmudprints MOON/FIRST BAREunpadded/no growth. Wholeallselectedroofs/bases and stations beforecontrols. Distinct actualNEW200CASE spatialreverse. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case--episode",
+          "nativeSha256": "4f5e6f7fb45c6aea7a024fde8db26ceefa7dc0bb700e03570f7a204cb86b1ac6",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "228e19aba280f153ff79f7bc5be609ac2414171cfad7893980c187c2160ab9dc",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENcase-refuge EMPTYhollowpail/actualearthtrace MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/BLUEwater/CLOSEDplainbook/two realGROUNDmudprints plus separate largerEMPTYGROUNDrestmat MOON/growth. Required plainsoftCLOTH missing; whole native shows only straw/stoneledge. allChoices ONLY F, actualgrowth/latestChoiceP. Refuge central emptyfloor/threshold visible; corner barrels not an invented ban on any sidefurniture. Distinct actualNEW200CASE spatialreverse/newmat."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPWHOLEOPENcase-refuge EMPTYhollowpail/actualearthtrace MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/BLUEwater/CLOSEDplainbook/two realGROUNDmudprints plus separate largerEMPTYGROUNDrestmat MOON/growth. Required plainsoftCLOTH missing; whole native shows only straw/stoneledge. allChoices ONLY F, actualgrowth/latestChoiceP. Refuge central emptyfloor/threshold visible; corner barrels not an invented ban on any sidefurniture. Distinct actualNEW200CASE spatialreverse/newmat. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case--short",
+          "nativeSha256": "1fe9505c8f4f0f3deddcaef9a63e554ba245681a21edbd7fcb8f6629bb259f87",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "401ff544bbfc5723559cb613a35cb816977165a08526d201152652640b4e04c9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntableFIRSTcrackegg/plaincloth/BLUEwater/two actualGROUNDmudprints plus wholeEMPTYcourse LOWWHOLEOPENcase-refuge EMPTYhollowpail/physicalsoiltrail MOON/return. Required CLOSEDplainnotebook missing, allChoices ONLY F. Whole houses/roofs/innerfloors/thresholds and tacticalstations beforeactualcontrols. Actualreturn/latestChoice present; no growthmat. Distinct actualNEW200CASE by returnhome/table."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntableFIRSTcrackegg/plaincloth/BLUEwater/two actualGROUNDmudprints plus wholeEMPTYcourse LOWWHOLEOPENcase-refuge EMPTYhollowpail/physicalsoiltrail MOON/return. Required CLOSEDplainnotebook missing, allChoices ONLY F. Whole houses/roofs/innerfloors/thresholds and tacticalstations beforeactualcontrols. Actualreturn/latestChoice present; no growthmat. Distinct actualNEW200CASE by returnhome/table. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--route--scene",
+          "nativeSha256": "fc79c6c9169d702b6624d9f9cf43ec7e93d4ee8591d40205b4d08391ad1db520",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f64662235501af8dc04ead95b0e42a2bacae769d76b39b27e30720a0b2a9e263",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPtwoWHOLEdifferenthouses/LEFTtrail MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater WARM SUNSET/FIRST BAREunpadded/no growth/book. Allselectedforms before60.3, no inventedbody/species. Different actualORIGINALwarmROUTE indoorhugeforeegg/rightdistantsettlement to newthreeLEFTlayers/firstpreparedmoment. Requires directrecomparison if originalparent replaced. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--route--episode",
+          "nativeSha256": "d1eb20fd8de004c90efd7a6750c3d62b97e11d5768be38198247860eaf5c986e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "33bea9524c995e88d64792a8a1b03460c64c0a3354bf9d834fcfed11ec6e3a8a",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPtwoWHOLEdifferenthouses/LEFTtrail MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater plus separate largerEMPTYGROUNDrestmat WARM SUNSET/growth. Mat border is physicalmaterialtrim, not printedemblem/text; no retroplainpaddingban. Allselectedforms beforecontrols. Different actualORIGINALwarmROUTE nearindooregg/rightdistantsettlement with newemptygroundmat. Requires directrecomparison if parent replaced. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--route--short",
+          "nativeSha256": "f5a61d6973b0f8b488ba9c9fef903a85fe73b192a5d513bd4866859800419d6b",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "195eee77fa183a1162aa957ee4196337e66451b2c5bced80bc280a93c5883a5a",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPWHOLEOPENreturnhome outwarddoors/clearlyemptyvisibleinnerfloor MIDtidyreturntableFIRSTcrackegg/plaincloth/BLUEwater plus wholeEMPTYcourse LOWtwoWHOLEdifferenthouses/LEFTtrail WARM SUNSET/return. Wholechimneyinside native21px realmargin, not falseedgecrop; rightrequiredPOST wholebeforecontrols. No growthmat/book. Different actualORIGINALwarmROUTE by WHOLEopenreturnhome/table. Requires directrecomparison if parent replaced. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--habitat--scene",
+          "nativeSha256": "682a7c749fa65595e0eb55bdd32e80385122fbade7fc6eda1efa13e7c824445b",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "7f35a597c39b0110f60e445d9ceb6ec15b15b9d6a9c6ae3d4df21ef3650f3c87",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPthreeREALWHOLEINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater WARM SUNSET/FIRST BAREunpadded/no growth/book. BothactualINNERcolumns/allstairs and stations before60.3; no nativecrop. Different actualORIGINALwarmHAB nearindooregg/threevaults to threeLEFTlayers/newdistantfirstmoment. Requires directrecomparison if parent replaced. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-202",
+      "passedAttempts": 8,
+      "rejectedAttempts": 2,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-202",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:36:00.084916+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-202",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:36:18.392593+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-review-batch.log"
+        },
+        "gate": {
+          "batch": "v2-production-202",
+          "stage": "gate",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "gate"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:41:17.717588+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-gate.log"
+        },
+        "build": {
+          "batch": "v2-production-202",
+          "stage": "build",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:45:53.665661+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-202-build.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-202",
+          "command": [
+            "/home/main/saza-backend/venv/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-202"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T22:45:54.145168+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "monster--hatch--team--secret--route--short",
+          "nativeSha256": "1cf852648624f1c1f8b60d752c624f050721bd1caec7d23c2f7f1bd064ed2c44",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "509060d74b0445332d88890d144c48b73401a90bc0d36d051ddf3d6879a63152",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEOPENreturnhome bothoutwarddoors/emptyvisibleinnerfloor MIDtidyreturntable FIRSTcrackegg/plainPALEdrapedcloth/BLUEwater/CLOSEDplainblankbook and actualGROUNDmudprints LOWtwoWHOLEdifferenthouses/LEFTtrail plus wholeEMPTYCOVER/HURDLE/separatedPOSTS MOON/return. Prior central DIAMONDseal removed, cover plain; visible binding/pageedges not printedemblem. Allselectedforms wholebefore60.3; actualNEW200ROUTE UPcourseMIDcareLOWhouses differs by returnhome/table. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case--episode",
+          "nativeSha256": "a5e5f50ff7b8c691c317ae61d4b50edb02f93212e892a16e264896e4d9216faa",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "107e3f07aa2705b1f218b201a65a2b931d42a10e69215bc01a24c75a3d485eec",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEOPENrefuge EMPTYhollowpail/earthtrace MIDwholeEMPTYcourse LOWWHOLEprotectednursery FIRSTcrackegg/conspicuousplainPALEclothlaidacrossstraw/drapedfront/BLUEwater/CLOSEDplainbook/2actualGROUNDmudprints and separate largerEMPTYGROUNDgrowthmat MOON/growth. Missingcloth repaired. Allmeaningfulforms wholebefore60.3. Distinct actualNEW200CASE UPcourseMIDcareLOWrefuge, reversed/newmat. Cloth/materialshading/bookbinding not printedlogo. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--secret--case--short",
+          "nativeSha256": "47d229692ab39a5db3c0fec219d2d24f1acc1f249ade13bbd4a3ae5681b5d32c",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "505ab2fb5f1edeab4d717a65710c86a776b879f81df7405d2bfcb869cfc6f9f9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plainPALEcloth/BLUEwater and CLOSEDplainbook ON TABLE, wholeEMPTYcourse LOWWHOLEOPENrefuge EMPTYhollowpail/physicalsoiltrace MOON/return. OWN repair explicitly requires notebook on GROUND directly beside returntable; native book is on table and mudprints occur beside refuge instead of nursery. allChoices ONLY F. Other6P including return/latestChoice, wholeforms before60.3 and distinct actualNEW200CASE via returnhome/table. Binding/pageedges not printedlogo."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plainPALEcloth/BLUEwater and CLOSEDplainbook ON TABLE, wholeEMPTYcourse LOWWHOLEOPENrefuge EMPTYhollowpail/physicalsoiltrace MOON/return. OWN repair explicitly requires notebook on GROUND directly beside returntable; native book is on table and mudprints occur beside refuge instead of nursery. allChoices ONLY F. Other6P including return/latestChoice, wholeforms before60.3 and distinct actualNEW200CASE via returnhome/table. Binding/pageedges not printedlogo. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm",
+          "nativeSha256": "f267621d68a64f5859bc8bc33bf7784585de59c06c2b183448475598c9f12c9b",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "b8ead1d80350055756892e94184f94bb3262a3759552e828bf40fe1348c31e72",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEprotectednursery FIRSTcrackegg/plainPALEclothdrapedfront/BLUEwater LOWwholeEMPTYCOVER/HURDLE/separatedPOSTS SUNSET/no progression/scope. Allrequiredstationsbefore60.3, roofwhole. Clothsunshade/purpleedge materialshading not printedlogo. Different actualNEW198TEAM UPcourseLOWnursery through reversed warmcare composition. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--route",
+          "nativeSha256": "e81d9c175ee2b3c80e48fe57170ca55847709bdbc86db630386a8308dba7a3e0",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "298fb748f37f01820303364a6c696a03e388f1affb0f94628ec3e2651cf0391f",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPwholeEMPTYCOVER/HURDLE/separatedPOSTS MIDWHOLEprotectednursery FIRSTcrackegg/plainPALEcloth/BLUEwater LOWtwoWHOLEdifferenthouses fullroofs/chimneys/doors/bases and continuousLEFTtrail SUNSET/noscope. Allselectedformswholebefore60.3; connectedropes not banned. Plainclothfront drape not printedbanner. Different actualNEW202WARMmood by actualjourneyhouses/trail. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--habitat",
+          "nativeSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "949e4f9e68fc486ef55f273a47817a69692cfc19cfd725cf6c7aaeb2a66090e9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPwholeEMPTYcourse MIDWHOLEprotectednursery FIRSTcrackegg/plainPALEcloth/BLUEwater LOWthreeREALOPENwalkableINNERwetlandforestRUIN SUNSET/noscope. BothactualINNERruincolumns/allstairs end before60.3; separateouterposts/wall not INNERcolumns. Allroofswhole. Different actualNEW202WARMmood by threeactualhabitats. Skycloudmaterial not print. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--case",
+          "nativeSha256": "c0a35f2c73207e3f94e569d1fa914a590b2f2a4f0d5c68e2d51931e1d7bc75e9",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "9d205c05b9e25753f0a82a1eb339773b4da629b0c31dd416192030b3dcdbdfb7",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPwholeEMPTYcourse MIDWHOLEprotectednursery FIRSTcrackegg/plainPALEcloth/BLUEwater LOWWHOLEOPENlocalrefuge EMPTYhollowpail/actualsoiltrace SUNSET/noscope. Clearcentralemptyinnerfloor/threshold; cornerhaypile not arbitrarybanonanysideprop. Allwholebefore60.3 and roofinside native. Distinct actualNEW202WARMmood by actualrefuge/localcase. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--habitat--episode",
+          "nativeSha256": "767b3bae2bf2b31131b605ceaba60e00add7369681d505e93cfb438fa4b1cfaa",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "748982f6c8efa9ee33b30132f2962ec5e1d3ed4b6e946ef02589d8fc7ff9bcc9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPthreeREALOPENwalkableINNERwetlandforestRUIN MIDwholeEMPTYCOVER/HURDLE/separatedPOSTS LOWWHOLEprotectednursery FIRSTcrackegg/plainPALEclothlaidacrossstraw/drapedfront/BLUEwater and separate largerEMPTYGROUNDgrowthmat SUNSET/growth. BothactualINNERarchcolumns/allstairs and allcourse stations before60.3; detachedfrontcolumn not INNER. Different actualNEW202WARMHAB UPcourseMIDcareLOWhabitats, reversed plus growthmat. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--habitat--short",
+          "nativeSha256": "c2bc272e8f3d8a16b986e29499532226de2a4d9dda564d2fb2c0ca1a550fa38c",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a8ddf8efa503664b94d895d03a4b3f20d754b3a0e6e6dc6902918aff35d57470",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plainPALEdrapedcloth/BLUEwater plus wholeEMPTYcourse LOWthreeREALOPENwalkableINNERwetlandforestRUIN SUNSET/return. Actual lower ruin stair risers/landing extend right beyond x60.3 actualcontrols boundary (x1008 of1672). composition ONLY F; actualarchinnercolumns beforecontrols, outerfreecolumn not misclassified. Other6P, all actualhabitats/return present and distinct actualNEW202WARMHAB via home/table."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable FIRSTcrackegg/plainPALEdrapedcloth/BLUEwater plus wholeEMPTYcourse LOWthreeREALOPENwalkableINNERwetlandforestRUIN SUNSET/return. Actual lower ruin stair risers/landing extend right beyond x60.3 actualcontrols boundary (x1008 of1672). composition ONLY F; actualarchinnercolumns beforecontrols, outerfreecolumn not misclassified. Other6P, all actualhabitats/return present and distinct actualNEW202WARMHAB via home/table. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        },
+        {
+          "key": "monster--hatch--team--warm--case--scene",
+          "nativeSha256": "e5f3f83cf8d4063d7b399fbb2ab571de6237c0cf0e2fd281504ef43bd506a9fb",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "3968e2ef7c1f4ece13a6c4ea1756f2286872d6abef391c9a90310374aa8dec4e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPWHOLEOPENlocalrefuge EMPTYhollowpail/actualearthtrace MIDwholeEMPTYCOVER/HURDLE/separatedPOSTS LOWWHOLEprotectednursery FIRSTcrackegg/plainPALEclothlaidacrossstraw/drapedfront/BLUEwater SUNSET/FIRST bareunpadded no growthmat/returnhome. Allrequiredformswholebefore60.3, whole roofinside native. Different actualNEW202WARMCASE UPcourseMIDcareLOWrefuge, reversed firstmoment staging. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publishedAtBuild": 851,
+      "publication": "Full official stages actually completed; attempt passes not unique additions"
+    }
+  ],
+  "originalAttemptCount": 40,
+  "passedAttempts": 30,
+  "rejectedAttempts": 10,
+  "nativeUnmodified": true,
+  "whole1457Complete": false,
+  "scope": "Original ROOT decisions at each stage retained, not unique additions. Later original-source correctives preserved separately."
+}

@@ -1,0 +1,281 @@
+{
+  "batch": "v2-production-199",
+  "passedAttempts": 8,
+  "rejectedAttempts": 2,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-199",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T21:55:50.591110+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-199",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T21:56:09.670182+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-199-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-199",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-199",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T21:56:09.713863+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--team--bright--case",
+      "nativeSha256": "b2b556a98d1de5659bea96456a5ab3846f35f312806ba904dbb30db4b127f408",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "02708c27f2d67becf95c9395bfcd7ec8e7acb9f7b83980370b25c939631150e9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeEMPTYtrainingcourse stoneCOVER/timberHURDLE/separatedPOSTS MIDwholeprotectednursery crackedegg/plaincloth/BLUEwater LOWwholeOPENcase refuge EMPTYpail/earthtrace SUN/noscope. Pale softcloth now plainly visible over cradle ledge. Different actualNEW198bright UPnurseryLOWcourse no case. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--route--short",
+      "nativeSha256": "1eb863ba9544f4ef1b1aa985d10afc2ec70947bed55c357e7c9d27e764eed404",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "6f192b58e3e933a8c66312711ba3845aa452819f213d694a4f40ff87aba970db",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/visibleemptyinnerfloor MIDtidyreturntable protectedcrackedegg/plaincloth/BLUEwater with adjacentWHOLEthree-stationcourse LOWtwoWHOLEdifferenttravelhouses/LEFTtrail SUN/return. Bluehouse left eave genuinely inside native, not falsely failed for smallmargin. Allselectedstationfeatures beforecontrols. Different actual198ROUTE UPcourseMIDnurseryLOWhouses without returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--habitat--scene",
+      "nativeSha256": "2afa3fd97b4118fbf13e2bc07c464fe9020f29084bb2da8288de7c90221c5ac3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "26bc8621cfb17afabd820c916be3d749a79eecc9b37dc852c96576ea1de6c24d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPthreeREALWHOLEINNERwetland/forest/ruin MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater SUN/FIRST bareunpaddedapproach. Both actualINNERcolumns/stairs before60.3, no growthmat. Different actual198HAB UPcourseMIDnurseryLOWviews reversed framing. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--habitat--episode",
+      "nativeSha256": "794aa4f6371c45e9d74f3e4b04224539de5c8f3378838b93e48cf0f77810c6bf",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a127b04a2987bb1618bbe28a268f2a157c052b68f18f94a5dfdc8b1692f68672",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPthreeREALhabitatviews MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus largerEMPTYGROUNDmat SUN/growth. Composition ONLY F: actual real RUIN stairs extend beyond actual x60.3 controls; WHOLEnative then read-only NEAREST crop ending at actualboundary shows required stairs continue across panel. Actual arch INNERcolumns do fit, outer freeposts not substituted as innercolumn failures. Other six P; different actual198HAB spatialreverse/growth."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPthreeREALhabitatviews MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus largerEMPTYGROUNDmat SUN/growth. Composition ONLY F: actual real RUIN stairs extend beyond actual x60.3 controls; WHOLEnative then read-only NEAREST crop ending at actualboundary shows required stairs continue across panel. Actual arch INNERcolumns do fit, outer freeposts not substituted as innercolumn failures. Other six P; different actual198HAB spatialreverse/growth. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--habitat--short",
+      "nativeSha256": "58dab9a8c688bd4a57ba784c12e4c3784d10d188b02004977a5cfbc2d81e36c3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "00363fe4aa4af976e3bcd6b5d626be9a40f71d75599fe6dd8734671c617c46f7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/emptyvisibleinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/adjacentWHOLEcourse LOWthreeREALINNERhabitatviews SUN/return. Actual ruin INNERcolumns/allsteps before60.3; outerposts do not replaceinnerfeatures. Allactualtacticalposts beforecontrols. Different actual198HAB no returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--case--scene",
+      "nativeSha256": "e092529fdeef9f2180d1eee59b60fe9934085dce72e6b96b260840ab4ff12e8c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "92351d06f17c994ee70d376b08ee74ffcbda96aa55ec7cacea2ddc86c162513e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENcase refuge EMPTYpail/earthtrace MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater SUN/FIRST bareunpaddedapproach. Full roof/chimney inside native, no invented idealmargin. Different actualNEW199CASE UPcourseMIDnurseryLOWrefuge spatialreverse. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--case--episode",
+      "nativeSha256": "8d8031cfe11440e9c5a35fb2300201f4df1d1adbf327e6c9eace3c510f1d2813",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "86b1f82bc65b6ea295cef4c4906ac9ec299762e03f3f8d99618a4279d6404ce2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENcase refuge EMPTYpail/earthtrace MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater plus separatelargerEMPTYprotectedGROUNDstrawrestmat SUN/growth. Straw-edged resting groundmat tangible separateemptyrestarea, no returnhome/table. Different actualNEW199CASE spatialreverse/growth. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--bright--case--short",
+      "nativeSha256": "6c49ac390a9b459fac346d3ffb93711a5d9e1515de9192ee3d28be6ddf24b400",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f26cf6e648ab1d19cb2cc0339c1bb773814b16b290be762533efcf2ae0043501",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPwholeOPENreturnhome outwarddoors/emptyvisibleinnerfloor MIDtidyreturntable crackedegg/plaincloth/BLUEwater/wholeadjacentthree-stationcourse LOWwholeOPENlocalrefuge EMPTYpail/earthtrace SUN/return. Allstations/wholeforms beforecontrols, no growthmat. Different actualNEW199CASE no returnhome/table. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--secret--route--scene",
+      "nativeSha256": "71608237337c3b875316ed0c13f3971c0d93813ffdc296e92e9bcdd731a0f0be",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "20e3f7ee0109dbf415ed1f4611fba2291d5e5b59216a071a0b5343697bf09f26",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater/twoactualGROUNDmudpawprints MOON/FIRST bareunpaddedapproach. Required CLOSEDplainnotebook missing: allChoices ONLY F. Other six P, no signboard/body/growthmat. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightdistantsettlement."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWsmallprotectednursery crackedegg/plaincloth/BLUEwater/twoactualGROUNDmudpawprints MOON/FIRST bareunpaddedapproach. Required CLOSEDplainnotebook missing: allChoices ONLY F. Other six P, no signboard/body/growthmat. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightdistantsettlement. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    },
+    {
+      "key": "monster--hatch--team--secret--route--episode",
+      "nativeSha256": "4dacaae83be0f5d6879eb3b7d9fd95d19c7f71c524a5825b6ca03c6c7d9dc2e9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "93548cddd767368d8f3b6073e02fac245de234d2e4fa07c619ef075e7bf193c4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual198bright/ROUTE/HAB, NEW199CASE and originalsecretMOOD/ROUTE parents. UPtwoWHOLEdifferenttravelhouses/LEFTtrail MIDwholeEMPTYthree-stationcourse LOWprotectednursery crackedegg/plaincloth/BLUEwater/CLOSEDplainnotebook/twoactualGROUNDmudpawprints plus separatelargerEMPTYGROUNDrestmat MOON/growth. Allstationsbeforecontrols, bookbinding/pageedges andphysicalearthpawprints not print. Different actualoriginalsecretROUTE indoorforeeggleft/MIDcourse/rightsettlement beyond recolor. Coherent coarse squareclusters/stairstepcontours/flatshade allplanes, no inventedidentity/body/writing/logo/sign. Material cloth trim/bookseams/physicalmudimprints not automatically text/logos. OnlyOWN and actual60.3 panel, no retrospective idealmargin/prop/alpha rules. Native unchanged."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}
