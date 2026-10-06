@@ -1,0 +1,98 @@
+{
+ "name": "wandtrial_lights",
+ "item": "wandtrial_lights",
+ "candidate": "h5-A",
+ "source": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_lights/h5-A.png",
+ "sha256": "1bc51c7d42dae7b6fbad2b2ed6f6335a38d47032a6311b2613630e83a9c9be2e",
+ "set": {
+  "id": "wandtrial lights",
+  "name_ko": "황동 벽등 서·동 부착 방향",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "hang",
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "description": "황동 외장과 따뜻한 작은 등불. 바닥 점유 0. 서·동 벽의 높은 선반 사이 상부에 붙임, 문과 선반 윗판을 가리지 않음. 금속 윗면 하이라이트·어두운 남쪽 면으로 황동이 읽힘.",
+  "parent": "wandtrial lights",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "west",
+    "label": "west",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "서쪽 벽 부착판과 실내로 튀어나온 작은 황동 등갓. 아래 통로를 점유하지 않음.",
+    "topMin": 0,
+    "mount": "hang",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial lights west"
+   },
+   {
+    "key": "east",
+    "label": "east",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "동쪽 벽 부착판, 왼쪽 위 광원 유지. 같은 등갓·황동 재료, 반전 복사 금지.",
+    "topMin": 0,
+    "mount": "hang",
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial lights east"
+   }
+  ],
+  "contract": {
+   "era": "medieval British magical shop",
+   "camera": "south above, orthogonal 3/4, no isometric side skew",
+   "light": "upper left",
+   "palette": "theme-3e7ac64c5cf1d943e08a dedicated 42 colors; isolated palette.pal only",
+   "registration": "human choice required; production sheet is not installed as one object",
+   "wallMounts": [
+    [
+     0,
+     6
+    ],
+    [
+     10,
+     6
+    ]
+   ],
+   "groundOccupation": 0,
+   "heightPixelsAboveGround": 48,
+   "attachments": "mount on cutaway sidewall seam between shelf modules, leave shelf cap visible",
+   "coordinateSpace": "floor-local cells; screen px = floor px + (0,32)",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "reuse": "Existing images are geometry reference only; create dedicated native pixels from transparent seed."
+  },
+  "refs": [
+   "wall sconce"
+  ],
+  "tags": [
+   "medieval",
+   "wand-trial"
+  ],
+  "use": [
+   "display"
+  ],
+  "contextRoom": "scholar"
+ }
+}

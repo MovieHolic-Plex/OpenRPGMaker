@@ -1,0 +1,156 @@
+{
+ "name": "wandtrial_wands",
+ "item": "wandtrial_wands",
+ "candidate": "h3-A",
+ "source": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_wands/h3-A.png",
+ "sha256": "f3fb484befb6ef0824ea2705b544ada4b7ace15892fb867b099f2142c3390194",
+ "set": {
+  "id": "wandtrial wands",
+  "name_ko": "시험대 후보 지팡이 두 자루",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "surface",
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "description": "시험대 상면 원점 screen(64,162), surfaceOffset(0,2). 다른 목재 지팡이 두 자루 11~12px×1px를 surface-local y3(화면165)에 놓는다. 실제 밝은 내부 host-local y2..9 중 첫4행을 사용한다.",
+  "parent": "wandtrial wands",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "pair",
+    "label": "pair",
+    "w": 32,
+    "h": 16,
+    "foot": [
+     2,
+     0
+    ],
+    "see": "표면 기준 localAlphaBounds[1,3,31,4); 각 16px 타일에 11~12px 지팡이 한 자루. screen y165, 상자 screen y162..164와 분리; LS/RS 실제 밝은 상면 안. 추가 바닥 점유 없음.",
+    "topMin": 0,
+    "mount": "surface",
+    "origin": [
+     0,
+     0
+    ],
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial wands pair"
+   }
+  ],
+  "contract": {
+   "era": "medieval British magical shop",
+   "camera": "south above, orthogonal 3/4, no isometric side skew",
+   "light": "upper left",
+   "palette": "theme-3e7ac64c5cf1d943e08a dedicated 42 colors; isolated palette.pal only",
+   "registration": "human choice required; production sheet is not installed as one object",
+   "hostSurface": {
+    "table": {
+     "position": [
+      4,
+      8
+     ],
+     "surfaceOffset": [
+      0,
+      2
+     ],
+     "floorPx": [
+      64,
+      130
+     ],
+     "screenPx": [
+      64,
+      162
+     ],
+     "actualTopInteriorHostLocalBounds": [
+      1,
+      2,
+      31,
+      10
+     ],
+     "propBudgetSurfaceLocalBounds": [
+      0,
+      0,
+      32,
+      4
+     ],
+     "closedBoxCells": [
+      [
+       4,
+       8
+      ],
+      [
+       5,
+       8
+      ]
+     ],
+     "closedBoxScreenOrigins": [
+      [
+       64,
+       162
+      ],
+      [
+       80,
+       162
+      ]
+     ],
+     "closedBoxScreenAlphaBounds": [
+      [
+       66,
+       162,
+       78,
+       165
+      ],
+      [
+       82,
+       162,
+       94,
+       165
+      ]
+     ],
+     "wandsScreenAlphaBounds": [
+      65,
+      165,
+      95,
+      166
+     ]
+    }
+   },
+   "localAlphaBounds": [
+    1,
+    3,
+    31,
+    4
+   ],
+   "groundOccupation": 0,
+   "composition": "actual work LS/RS bright interior host-local y2..9; use first four surface-local rows: boxes y0..2(screen162..164), wands y3(screen165); two of each stay separately readable",
+   "coordinateSpace": "screenOriginPx = 16*floorCell + floorToScreenOffset(0,32) + host.surfaceOffset; screenAlphaPx = screenOriginPx + slotLocalAlphaPx - stateOrigin(0,0)",
+   "stateOrigin": [
+    0,
+    0
+   ],
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "reuse": "Existing images are geometry reference only; create dedicated native pixels from transparent seed."
+  },
+  "refs": [
+   "counter 2x1"
+  ],
+  "tags": [
+   "medieval",
+   "wand-trial"
+  ],
+  "use": [
+   "display"
+  ],
+  "contextRoom": "scholar"
+ }
+}

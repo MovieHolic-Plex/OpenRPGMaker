@@ -1,0 +1,160 @@
+{
+ "name": "wandtrial_response",
+ "item": "wandtrial_response",
+ "candidate": "h7-A",
+ "source": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_response/h7-A.png",
+ "sha256": "0235a4f7d4a0eca8404e543718d2f766c3271c5db190631ca36ad2dc1e016439",
+ "set": {
+  "id": "wandtrial response",
+  "name_ko": "짧은 금빛 반응의 시작·흡수·종료",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "flat",
+  "canvas": [
+   160,
+   48
+  ],
+  "footprint": {
+   "w": 10,
+   "h": 3
+  },
+  "description": "시험자→표적 방향 일회 효과. 같은 32×48 캔버스와 원점으로 5프레임. 금빛 불꽃이 짧게 위로 나가 표적 테두리 안으로 흡수하고 마지막은 완전 투명. 사람이나 손을 그리지 않는다.",
+  "parent": "wandtrial response",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "emit",
+    "label": "emit",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "see": "local (8,40)에서 작은 금빛 불꽃 시작; 눈부신 큰 광선 금지.",
+    "topMin": 0,
+    "mount": "floor",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial response emit"
+   },
+   {
+    "key": "travel",
+    "label": "travel",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "see": "local x4..13,y20..34로만 짧은 반응. 옆 통로로 뻗지 않음.",
+    "topMin": 0,
+    "mount": "floor",
+    "x": 32,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial response travel"
+   },
+   {
+    "key": "absorb",
+    "label": "absorb",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "see": "local (8,8) 근처의 표적 내부로 흡수. 표적 뒤를 통과하지 않음.",
+    "topMin": 0,
+    "mount": "floor",
+    "x": 64,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial response absorb"
+   },
+   {
+    "key": "fade",
+    "label": "fade",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "see": "표적 내부 local x4..13,y4..12에서 작게 사라지는 한두 불꽃.",
+    "topMin": 0,
+    "mount": "floor",
+    "x": 96,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial response fade"
+   },
+   {
+    "key": "end",
+    "label": "end",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "see": "효과 종료. 완전 투명 칸이며 다른 칸의 잔상을 남기지 않음.",
+    "topMin": 0,
+    "mount": "floor",
+    "terminal": true,
+    "x": 128,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial response end"
+   }
+  ],
+  "contract": {
+   "era": "medieval British magical shop",
+   "camera": "south above, orthogonal 3/4, no isometric side skew",
+   "light": "upper left",
+   "palette": "theme-3e7ac64c5cf1d943e08a dedicated 42 colors; isolated palette.pal only",
+   "registration": "human choice required; production sheet is not installed as one object",
+   "playback": {
+    "frames": 5,
+    "ms": 100,
+    "loop": false,
+    "terminal": "transparent",
+    "origin": [
+     8,
+     40
+    ]
+   },
+   "worldOrigin": [
+    88,
+    120
+   ],
+   "sceneBox": [
+    80,
+    80,
+    112,
+    128
+   ],
+   "collision": false,
+   "path": "tester (5,7) -> target (5,5), reaction clearance (5..6,6) only",
+   "runtimeStatus": "binding and actual event runtime review pending, native drawing PASS is not runtime PASS",
+   "coordinateSpace": "floor-local cells; screen px = floor px + (0,32)",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "reuse": "Existing images are geometry reference only; create dedicated native pixels from transparent seed."
+  },
+  "refs": [
+   "magic circle"
+  ],
+  "tags": [
+   "medieval",
+   "wand-trial"
+  ],
+  "use": [
+   "display"
+  ],
+  "contextRoom": "scholar"
+ }
+}

@@ -1,0 +1,879 @@
+{
+ "name": "theme_potions_repair_v3_connected_stone_wall",
+ "item": "theme_potions_repair_v3_connected_stone_wall",
+ "candidate": "h1-A",
+ "source": "art-output/repair-v3-world-contract-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v3_connected_stone_wall/h1-A.png",
+ "sha256": "1cdf155dfedc2043e83636bcdd1ee49d37b3e40def68d245d5e07392b057cf37",
+ "set": {
+  "id": "theme potions repair-v3 connected stone-wall",
+  "name_ko": "방향별 큰 석재와 절단벽 연결",
+  "name_en": "theme potions repair-v3 connected stone-wall",
+  "parent": "theme potions repair-v2 scene stone-wall",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "반려 항목 전용 변형",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   128
+  ],
+  "description": "Scene revision3. Use dedicated42 colors and upper-left light. Preserve original north large blocks, door states/hinge/opening, quiet floor and all completed actors. Replace only incompatible E/W/S stone, corners and junctions with large irregular2..3-cell courses, remove small bright flecks/micro-joints. Use explicit directional top/south/contact faces, contact<=2px. Connect north crowns to W side piers and low south cuts via stone-architecture.json. Native review inspects actual candidate and small directional repeated/seam samples1x/3x and writes {PACK}/verdict.json PASS/FAIL with every required slot and concrete pixel evidence. If local sample is missing, create/review it through existing adapter; do not redraw correct originals. Whole four-state room,12 faces/windows/board, work focus and all comparison obligations belong to post-collection art-context-review, not native component prerequisite.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "N",
+    "label": "N",
+    "see": "N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 0,
+    "y": 0
+   },
+   {
+    "key": "E",
+    "label": "E",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "S",
+    "label": "S",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "W",
+    "label": "W",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 112,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 128,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 144,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 160,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 176,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "end-N",
+    "label": "end-N",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 192,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "end-E",
+    "label": "end-E",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 208,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "end-S",
+    "label": "end-S",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 224,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "end-W",
+    "label": "end-W",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 240,
+    "y": 0,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "junction-T",
+    "label": "junction-T",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 16,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "junction-cross",
+    "label": "junction-cross",
+    "see": "Large irregular stone consistent with north, no small bright speckles/microgrid. Direction-specific low cut top4px/south face10px/contact<=2px; E/W preserve actual ground depth and ends. Independent corners/end/junction join adjacent phased courses without rotation.",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 16,
+    "directionalFaces": {
+     "topDepth": 4,
+     "southDepth": 10,
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "door-N",
+    "label": "door-N",
+    "see": "door-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 32,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "N",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-E",
+    "label": "door-E",
+    "see": "door-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 48,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "E",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-S",
+    "label": "door-S",
+    "see": "door-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 64,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "S",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-W",
+    "label": "door-W",
+    "see": "door-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 80,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "W",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "north32",
+    "label": "north32",
+    "see": "north32",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     32
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 96,
+    "y": 16
+   },
+   {
+    "key": "north-large-0",
+    "label": "north-large-0",
+    "see": "north-large-0",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 0,
+    "y": 48
+   },
+   {
+    "key": "north-large-1",
+    "label": "north-large-1",
+    "see": "north-large-1",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 48,
+    "y": 48
+   },
+   {
+    "key": "north-large-2",
+    "label": "north-large-2",
+    "see": "north-large-2",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 96,
+    "y": 48
+   },
+   {
+    "key": "W-course",
+    "label": "W-course",
+    "see": "Large irregular stone2..3 cells long; phase-separated blocks, no bright16px flecks or micro-grid. Source full run is assembled as adjacent16px source slices, no rotation. W/E top depth follows ground Y, south termination separately shaded; S low cut cap top4px, south face10px and contact shadow<=2px.",
+    "w": 16,
+    "h": 48,
+    "x": 0,
+    "y": 80,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "directionalFaces": {
+     "topFace": [
+      0,
+      0,
+      16,
+      46
+     ],
+     "verticalFace": [
+      0,
+      46,
+      16,
+      48
+     ],
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "E-course",
+    "label": "E-course",
+    "see": "Large irregular stone2..3 cells long; phase-separated blocks, no bright16px flecks or micro-grid. Source full run is assembled as adjacent16px source slices, no rotation. W/E top depth follows ground Y, south termination separately shaded; S low cut cap top4px, south face10px and contact shadow<=2px.",
+    "w": 16,
+    "h": 48,
+    "x": 16,
+    "y": 80,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "directionalFaces": {
+     "topFace": [
+      0,
+      0,
+      16,
+      46
+     ],
+     "verticalFace": [
+      0,
+      46,
+      16,
+      48
+     ],
+     "contactShadowMax": 2
+    }
+   },
+   {
+    "key": "S-course",
+    "label": "S-course",
+    "see": "Large irregular stone2..3 cells long; phase-separated blocks, no bright16px flecks or micro-grid. Source full run is assembled as adjacent16px source slices, no rotation. W/E top depth follows ground Y, south termination separately shaded; S low cut cap top4px, south face10px and contact shadow<=2px.",
+    "w": 48,
+    "h": 16,
+    "x": 32,
+    "y": 80,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "directionalFaces": {
+     "topFace": [
+      0,
+      0,
+      48,
+      4
+     ],
+     "verticalFace": [
+      0,
+      4,
+      48,
+      14
+     ],
+     "contactShadowMax": 2
+    }
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-v3-world-contract-sync-prep/scene-contract.json",
+   "instructions": "Scene revision3. Use dedicated42 colors and upper-left light. Preserve original north large blocks, door states/hinge/opening, quiet floor and all completed actors. Replace only incompatible E/W/S stone, corners and junctions with large irregular2..3-cell courses, remove small bright flecks/micro-joints. Use explicit directional top/south/contact faces, contact<=2px. Connect north crowns to W side piers and low south cuts via stone-architecture.json. Native review inspects actual candidate and small directional repeated/seam samples1x/3x and writes {PACK}/verdict.json PASS/FAIL with every required slot and concrete pixel evidence. If local sample is missing, create/review it through existing adapter; do not redraw correct originals. Whole four-state room,12 faces/windows/board, work focus and all comparison obligations belong to post-collection art-context-review, not native component prerequisite. Wall: retained slots locked individually; prior22-slot blanket lock is removed. W/E course16x48, S48x16 and editable directional junctions must agree with preserved north48x32 blocks. Native actual26 legacy slots plus3 new slots required.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "stone-wall",
+   "repairOfCollected": true,
+   "preserveSource": {
+    "path": "art-output/repair-v2-wall-scene-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_scene_stone_wall/h1-A.png",
+    "sha256": "8edeae8ab5540a02a4808fa97f3ff1b1fcedd9f9aa3004b19120cc5a95b5f7da"
+   }
+  }
+ }
+}
