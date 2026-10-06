@@ -128,14 +128,14 @@ export async function versionManifest(db: Db, slug: string, version: number, vie
 }
 
 /** blob 을 내줘도 되는가: 내려가지 않은 상품의 판본이 쓰고 있어야 한다(업로드만 된 파일은 주지 않는다). */
-export async function blobServable(db: Db, sha256: string): Promise<{ mime: string } | null> {
+export async function blobServable(db: Db, sha256: string): Promise<{ mime: string; inR2: boolean } | null> {
   const { rows } = await db.query(
-    `select b.mime from store_blobs b where b.sha256 = $1 and exists (
+    `select b.mime, b.r2_at from store_blobs b where b.sha256 = $1 and exists (
        select 1 from store_version_blobs vb join store_items i on i.id = vb.item_id
        where vb.sha256 = b.sha256 and i.status <> 'removed')`,
     [sha256],
   );
-  return rows[0] ? { mime: String(rows[0].mime) } : null;
+  return rows[0] ? { mime: String(rows[0].mime), inR2: rows[0].r2_at !== null } : null;
 }
 
 async function checkBlobs(db: Db | Tx, store: BlobStore, manifest: StorePackManifest): Promise<number> {
@@ -379,7 +379,7 @@ export async function singleManifest(db: Db, store: BlobStore, input: SingleInpu
  * 아무 판본에도 들지 않은 채 하루가 지난 blob 을 지운다. 올리기 도중 끊긴 것과, 디스크를 채우려고 올린 것을 치운다.
  * 판본에 든 blob 은 판본이 불변이므로 지우지 않는다.
  */
-export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours = 24): Promise<number> {
+export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours = 24, remote?: { remove(sha256: string): Promise<void> } | null): Promise<number> {
   const { rows } = await db.query(
     `delete from store_blobs b where b.created_at < now() - make_interval(hours => $1)
        and not exists (select 1 from store_version_blobs v where v.sha256 = b.sha256)
@@ -387,6 +387,9 @@ export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours 
      returning sha256`,
     [olderThanHours],
   );
-  for (const row of rows) store.remove(String(row.sha256));
+  for (const row of rows) {
+    store.remove(String(row.sha256));
+    if (remote) await remote.remove(String(row.sha256)).catch((error) => console.error("[store] r2 remove", error));
+  }
   return rows.length;
 }

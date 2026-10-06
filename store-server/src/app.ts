@@ -11,12 +11,13 @@ import {
 import { BlobStore } from "./blobStore";
 import type { StoreConfig } from "./config";
 import type { Db } from "./db";
-import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, type Ctx } from "./http";
+import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, setFileOrigin, type Ctx } from "./http";
 import {
   addVersion, adminQueue, adminSetStatus, authorVisibility, blobServable, catalogOverview, createItem, itemDetail, listCatalog, myItems,
   recordDownload, reportItem, singleManifest, sweepOrphanBlobs, versionManifest, type SingleInput,
 } from "./items";
 import { LANG_COOKIE, langFromAcceptLanguage, matchLang, type Lang } from "./web/i18n";
+import { R2 } from "./r2";
 import * as pages from "./web/pages";
 
 export interface App { server: Server; close(): Promise<void> }
@@ -38,7 +39,37 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     // 사람마다 한 시간에 올리는 바이트(기본 1GiB). 요청 수 제한만으로는 32MB×1500 을 막지 못한다.
     bytes: new RateLimiter(config.uploadBytesPerHour, 3_600_000),
   };
-  const sweep = setInterval(() => { void sweepOrphanBlobs(db, blobs).catch((error) => console.error("[store] sweep", error)); }, 3_600_000);
+  // 파일은 서버 디스크(원본·검사용)와 R2(내보내기용) 두 곳에 둔다. R2 가 없으면 디스크에서 바로 보낸다.
+  const r2 = config.r2 ? new R2(config.r2) : null;
+  if (r2) setFileOrigin(r2.origin);
+  const mirroring = new Set<string>();
+  const mirror = async (sha: string, mime: string, bytes?: Uint8Array): Promise<void> => {
+    if (!r2 || mirroring.has(sha)) return;
+    mirroring.add(sha);
+    try {
+      await r2.put(sha, bytes ?? blobs.read(sha), mime);
+      await db.query("update store_blobs set r2_at = now() where sha256 = $1", [sha]);
+    } catch (error) {
+      console.error("[store] r2 put", sha.slice(0, 12), error);
+    } finally {
+      mirroring.delete(sha);
+    }
+  };
+  /** 아직 R2 에 없는 파일을 뒤에서 올린다(처음 켤 때의 이관 + 실패한 것 재시도). */
+  const mirrorBacklog = async (): Promise<void> => {
+    if (!r2) return;
+    const { rows } = await db.query("select sha256, mime from store_blobs where r2_at is null order by created_at limit 5000");
+    const queue = rows.filter((row) => blobs.has(String(row.sha256)));
+    await Promise.all(Array.from({ length: 4 }, async () => {
+      for (let row = queue.shift(); row; row = queue.shift()) await mirror(String(row.sha256), String(row.mime));
+    }));
+    if (queue.length === 0 && rows.length > 0) console.log(`[store] r2 backlog ${rows.length} checked`);
+  };
+  void mirrorBacklog().catch((error) => console.error("[store] r2 backlog", error));
+  const sweep = setInterval(() => {
+    void sweepOrphanBlobs(db, blobs, 24, r2).catch((error) => console.error("[store] sweep", error));
+    void mirrorBacklog().catch((error) => console.error("[store] r2 backlog", error));
+  }, 3_600_000);
   sweep.unref();
   const limit = (limiter: RateLimiter, ctx: Ctx): void => {
     if (!limiter.take(ctx.ip)) throw new HttpError(429, "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.", "rate_limited");
@@ -93,7 +124,11 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const sha = ctx.params.sha!;
     if (!isSha256(sha)) throw new HttpError(400, "주소가 올바르지 않습니다.", "bad_sha");
     const servable = await blobServable(db, sha);
-    if (!servable || !blobs.has(sha)) throw new HttpError(404, "파일을 찾지 못했습니다.", "not_found");
+    if (!servable) throw new HttpError(404, "파일을 찾지 못했습니다.", "not_found");
+    // R2 에 있으면 그쪽 서명 주소로 돌려보낸다(전송량은 R2 가 진다). 주소는 한 시간 단위로 같아 캐시가 맞는다.
+    if (r2 && servable.inR2) return redirect(ctx.res, r2.presign(sha), { "cache-control": "public, max-age=300" });
+    if (!blobs.has(sha)) throw new HttpError(404, "파일을 찾지 못했습니다.", "not_found");
+    if (r2) void mirror(sha, servable.mime);
     // 내용 주소라 바뀌지 않는다. 다만 상품이 내려가면 더 주지 않으므로 공유 캐시 기간은 짧게 둔다.
     sendBytes(ctx.res, blobs.read(sha), servable.mime, { "cache-control": "public, max-age=3600", etag: `"${sha}"` });
   });
@@ -118,6 +153,8 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     if (!mime) throw new HttpError(415, "받지 않는 파일 형식입니다. PNG·JPEG·WebP·OGG·MP3·WAV·M4A 만 받습니다.", "unsupported_media_type");
     blobs.put(sha, bytes);
     await db.query("insert into store_blobs (sha256, mime, bytes, uploaded_by) values ($1, $2, $3, $4) on conflict (sha256) do nothing", [sha, mime, bytes.byteLength, auth.user.id]);
+    const { rows: [known] } = await db.query("select r2_at from store_blobs where sha256 = $1", [sha]);
+    if (!known?.r2_at) await mirror(sha, mime, bytes);
     sendJson(ctx.res, 200, { sha256: sha, mime, bytes: bytes.byteLength });
   });
   router.post("/api/v1/items", async (ctx) => {

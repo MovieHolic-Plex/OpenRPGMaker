@@ -86,6 +86,19 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
   - 신고로 숨겨진 상품은 작가가 다시 공개할 수 없다(409).
   - 운영자 조치는 `/admin` 에서 한다.
 
+### 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
+
+- `src/r2.ts`: S3 SigV4 를 직접 서명한다(SDK 없음). PUT·HEAD·DELETE 와 읽기용 서명 주소(`presign`).
+- `GET /api/v1/blobs/:sha`: `blobServable`(내려지지 않은 상품이 쓰는 파일인가) 확인 → `r2_at` 이 있으면 R2 서명 주소로 303.
+  - 서명 주소는 한 시간 단위로 같은 값(브라우저 캐시가 맞는다), 유효 2시간, 303 응답 자체는 5분 캐시.
+  - R2 객체는 `cache-control: public, max-age=31536000, immutable` 과 원래 mime 으로 올린다.
+  - 아직 R2 에 없으면 디스크에서 내주고 뒤에서 올린다. 올리기(`POST /api/v1/blobs`)도 바로 R2 에 올린다.
+- `migrations/005_r2.sql`: `store_blobs.r2_at`. 켜질 때와 매시간 `r2_at is null` 인 파일을 4개씩 병렬로 올린다.
+- 웹 화면 CSP 의 `img-src`·`media-src` 에 R2 출처를 더한다(`setFileOrigin`). 편집기(Electron 중계)의 fetch 는 303 을 따라가고 sha256 을 검사한다.
+- 설정 `STORE_R2_*` 넷이 없으면 R2 없이 디스크에서 내준다. 운영·스테이징 설정과 토큰 범위는 `store-server/deploy/README.md`.
+  - 스테이징은 `~/.config/systemd/user/oprn-store-staging.service.d/r2.conf` → `~/.config/oprn-store-staging-r2.env`(600).
+- 토큰은 버킷 하나 + 요청 IP 하나로 묶었다. 기존 `master` 토큰은 IP 가 mdc-server(221.155.3.135)로 묶여 seogo 에서 403 이었다.
+
 ## 보안 검토 반영 (2026-10-06)
 
 적대적 검토에서 나온 항목과 막은 방법:
@@ -174,3 +187,4 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - 버들항 타일셋 JSON 은 8.7MB 다. 매니페스트 한도는 24MB(`STORE_LIMITS.manifestBytes`)다.
 - 한글 제목 slug 는 `romanizeHangul` 로 로마자로 바꾼다(`버들항 — 로마풍 항구 도시` → `beodeulhang-romapung-hanggu-dosi-…`).
 - 시드는 같은 제목이 이미 있으면 건너뛴다. 시드 그림을 바꾸려면 데이터 폴더를 새로 만든다.
+- R2 서명 주소는 상품을 내린 뒤에도 최대 약 2시간 유효하다. 바로 막아야 하면 R2 객체를 지운다(`R2.remove`).
