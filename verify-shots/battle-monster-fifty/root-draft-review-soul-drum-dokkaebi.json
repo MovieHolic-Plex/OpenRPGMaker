@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-06T09:42:42.521626+00:00",
+  "passed": false,
+  "key": "soul-drum-dokkaebi/fifty-v1",
+  "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-soul-drum-dokkaebi-before-initial-review.png",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "8c37980c727890fefdb46bcbc4808d8876647b6da178b1b54b387620b2c7dd97"
+  },
+  "observations": "Opened actual18pose native1x/nearest2x1248x984 unresized. Bluegrayhornedbody/redgoldrimdrum/connectedhands andtwosticks, raisedwindup/advancestep/bothsticksdownstrike/recovery, tensecompressedhit/lowhorizontaldead vsseatedclosedeyesleep. Goldcoreindrum/twogoldoutwardcurvedrays/recoverysparks, poisonhunch/slackarmstun withstars andlowclosedeyesleep. Read author blank/rows/replace/save/standing fullbodies, allshortenedcallnames andmodulecontrolflow. Nativeclusters arefixedexplicitrowstrings/xyplacement orindividuallyselectedrowreplacement; no generatedgeometry or wholeframe transformation. Standing reuses unchanged handauthored bodyclusters with separatelyauthored head/limb/state/effect edits; diagnostics BFS/scales do not choose pixels. All18nativePNG RGBA exactlymatch currentASCII/palette. Independentdecision not relied on forrootapproval yet; no Allow/pass/wholegoal claim."
+}
