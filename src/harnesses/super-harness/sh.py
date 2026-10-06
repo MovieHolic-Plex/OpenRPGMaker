@@ -832,7 +832,7 @@ def start_art_demo(c):
         error = read_json(cdir(cid, 'art-demo-error.json'), {})
         if error: prompt += '\n지난 데모 조립의 기술 오류를 고친다: ' + json.dumps(error, ensure_ascii=False)
         start_codex(cid, 'art-demo', 'assemble', prompt, output, write_root=inputs['root'])
-        store.update_concept(cid, status='running', note='실제 타일로 공간 전체 데모 조립 중')
+        store.update_concept(cid, status='running', reasons=[], note='실제 타일로 공간 전체 데모 조립 중')
     except (ValueError, OSError, KeyError, TypeError) as error:
         if theme_production.policy(cid):
             # Missing theme material returns to production with the actual failure;

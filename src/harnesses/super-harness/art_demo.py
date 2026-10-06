@@ -61,11 +61,15 @@ def component_requirements(data, cid, manifest, layout, result):
     previous = [choices.read(p)['result'] for p in archive.glob('*.json')]
     for replacement in replacements:
         old, new, requirement = (replacement[k] for k in ('from', 'to', 'requirement'))
+        # Repeating the exact declaration does not retire a second component.
+        # Conflicting targets still fail below; provenance is checked on its first occurrence.
+        if old in retired and retired[old] == replacement:
+            continue
         if (old not in groups or new not in groups or old == new or old in retired
                 or len(str(replacement.get('reason', '')).strip()) < 12
                 or any(c.get('nativeHarness') == 'charset-actor'
                        for gid in (old, new) for c in groups[gid]['candidates'])):
-            raise ValueError('승인된 동일 재료의 부품 교체 명세가 필요합니다.')
+            raise ValueError('부품 교체 명세 오류: ' + str(old) + ' → ' + str(new) + ' (' + str(requirement) + ') — 누락·상충·자기참조·사유·배우 교체 확인 필요')
         old_hashes = {c['sheet']['sha256'] for c in groups[old]['candidates']}
         new_hashes = {c['sheet']['sha256'] for c in groups[new]['candidates']}
         current_refs = result.get('themeCoverage', {}).get(requirement, [])
