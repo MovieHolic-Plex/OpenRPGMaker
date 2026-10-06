@@ -290,7 +290,7 @@ for _t in range(COUNT):
     else: REGION[_t] = '?'
 for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
-for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand')):
+for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock')):
     for _t in PIN_BLOCK[_b]: REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -302,7 +302,10 @@ ROAD_KITS = [k for k in KITS if k.startswith(('jp-road-', 'jp-fumikiri', 'jp-und
 RECIPES = [k for k in KITS if k.startswith('jp-recipe-')]
 DOORS = [k for k in KITS if k.startswith('jp-door-')]
 PROPS = [k for k in KITS if k.startswith('jp-prop-')]
-STREETH = [k for k in KITS if not re.match(r'jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)', k)]
+KIT_INDEX = json.load(open(os.path.join(ROOT, 'tiledata', 'jp-city', 'kit-index.json'), encoding='utf-8'))['kits']
+EXAMPLE_KITS = {b: [k for k in KITS if (KIT_INDEX.get(k, {}).get('source') or {}).get('block') == b] for b in ('school',)}
+_EXAMPLE_KIT_SET = {k for v in EXAMPLE_KITS.values() for k in v}
+STREETH = [k for k in KITS if not re.match(r'jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)', k) and k not in _EXAMPLE_KIT_SET]
 assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (39, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
 assert len(AT) == 17 and len(SPEC['examples']) == 25 and len(SPEC['decos']) == 73 and len(SPEC['bands']) == 60
 
@@ -396,6 +399,7 @@ def doc_sheet_map():
         ('roadblock', '도로 키트 블록', '도로·교차로·건널목·지하도·육교·표지 키트의 재료 칸 112칸(오토타일 칸을 화소 그대로 복사한 칸 포함) — 용도 「도로·교차로 키트」'),
         ('bldgblock', '손 도트 건물 키트 블록', f'손 도트 일본 건물 {sum(1 for k in KITS if k.startswith("jp-bldg-"))}종(주택·아파트·가게·음식점·상업·공공·공장)의 재료 칸. **키트로 통째 찍는다** — 용도 「손 도트 건물」'),
         ('streethand', '손 도트 거리 시설 블록', f'전봇대·전선·노면 표시·블록 담·문기둥·카포트·생활 소품·도리이 등 {len(STREETH)}종 키트의 재료 칸. **키트로 찍는다**(전봇대·전선 4층, 노면 표시 2층) — 용도 「손 도트 거리 시설」'),
+        ('schoolblock', '손 도트 小学校 블록', f'교정 흙·트랙 선·놀이기구·수영장·정문 등 小学校 키트 {len(EXAMPLE_KITS["school"])}종의 재료 칸. **키트로 찍는다**(트랙 선 2층) — 용도 「손 도트 小学校」'),
     ]
     rows = []
     for key, name, desc in reg:
@@ -1998,6 +2002,167 @@ def img_sh():
 
 
 img_sh()
+
+
+# ====================================================================== 분류 5d — 손 도트 小学校(blocks/school.py + 예제 맵 maps/school.mjs)
+EB = EN['exampleBlocks']['school']
+SCH = EXAMPLE_KITS['school']
+assert sorted(EB['kits']) == sorted(SCH), (len(EB['kits']), len(SCH))
+SCH_GROUPS = [
+    ('ground', '바닥(1층)·트랙 선(2층)', r'^jp-school-(ground|gomu|track)'),
+    ('build', '수영장·정문·창고·사육장·자전거 보관대', r'^jp-(pool|school-gate|souko|shiiku-goya|bike-shelter)'),
+    ('play', '놀이·체육 기구', r'^jp-(tetsubo|noboribou|unte|jungle-gym|tires|goal-|ball-net|chorei-dai|ichirinsha)'),
+    ('garden', '화단·밭·연못·그늘·덤불·관찰', r'^jp-(kadan|asagao|gakkyuen|biotope|fujidana|hyakuyoubako|tsutsuji)'),
+    ('front', '교사 앞 기물', r'^jp-(flagpoles|ninomiya|teaarai)'),
+]
+
+
+def sch_group(kid):
+    for key, _, rx in SCH_GROUPS:
+        if re.search(rx, kid): return key
+    raise AssertionError(kid)
+
+
+C_SCH = new_cat('school', f'일본 도시 · 손 도트 小学校 {len(SCH)}종',
+                f'일본 小学校 교정 키트 {len(SCH)}종(교정 흙·트랙 선·철봉·오르기 봉·운제·정글짐·타이어·골대·방구망·조례대·외발자전거 걸이·25m 수영장·정문·체육 창고·사육장·자전거 보관대·화단·나팔꽃·학급 밭·비오톱·등나무 그늘·百葉箱·게양대·二宮金次郎像·수돗가)과 '
+                f'예제 맵 jp-city-school({EB["W"]}×{EB["H"]}칸, 교사·체육관·수영장·운동장·놀이 구역·정문). 키트 id·크기·층·칸 번호 전체 배열·엔진 통행 코드, 예제 맵 전체 1~4층 배열, 정상/오류(트랙 선 1층·정문 막음·수영장 입구 막음) 그림과 좌표.')
+
+
+def doc_sch_rules():
+    er = EB['errors']; g = EB['good']
+    cnt = collections.Counter(sch_group(k) for k in SCH)
+    rows = []
+    for t in g['targets']: rows.append([t['what'], f"({t['x']},{t['y']})", '도달' if t['reached'] else '**못 감**'])
+    return f'''# 일본 도시 — 손 도트 小学校 {len(SCH)}종 · 쓰는 법 (교정 배치·층·입구)
+
+{HEAD}
+
+**무엇인가.** 일본 小学校 교정의 신호(조사 `tiledata/jp-city/research/03-building-types-dimensions.md` 「소학교」·「校庭」: 가운데 맨흙 운동장, **둘레에** 놀이기구·나무·조례대, 부속 屋外プール·学級農園·観賞池·飼育小屋)를 손 도트 키트로 그린 것이다.
+그림 원본 `scripts/content/jp-city/blocks/school.py`, 예제 맵 생성기 `scripts/content/jp-city/maps/school.mjs`(검사 + 적대적 검증 관문 `scripts/content/jp-city/gate/adversarial_gate.py`). 분류: {', '.join(f'{n} {cnt[k]}' for k, n, _ in SCH_GROUPS)}.
+교사·체육관 건물은 손 도트 건물 키트 `jp-bldg-school`·`jp-bldg-school-gym`(용도 「손 도트 건물」).
+
+## 층
+{md_table(['분류', '찍는 층', '찍는 도구', '왜'], [
+    ['교정 흙 `jp-school-ground-a/b/c`', '**1층**', '`paint_tiles`·`fill_region`(칸 번호) 또는 `stamp_object`', '세 변형을 섞어 깐다(같은 칸 반복은 무늬가 보인다)'],
+    ['트랙 선 `jp-school-track-l`(30×15)', '**2층**', '`stamp_layer_block` layers {{"2": 키트 upperTiles}}', '투명 덧그림 — 1층에 찍으면 흙이 사라지고 검게 보인다(오류 `overlay-in-base-layer`)'],
+    ['수영장 `jp-pool`·연못 `jp-biotope`', '1층 바닥 + 3층', '`stamp_object`', '물 칸은 1층 막힘(solidfloor) — 3층 비움. 철망·탈의실·부들은 3층'],
+    ['나머지 기물', '3층', '`stamp_object`(`kit:jp_city/<id>`)', '밑동 막힘, 윗부분 ★(뒤로 지나감)'],
+])}
+
+## 배치 순서(예제 맵이 이 순서로 지었다)
+1. 1층: 교정 흙(A·B·C 섞어) → 교사·체육관 앞 포장 띠 → 정문 진입로(폭 = 정문 개구부 4칸) → 앞 생활도로.
+2. 뒷줄 건물: 교사 `jp-bldg-school`(昇降口) · 체육관 · 수영장 `jp-pool`(입구 anchor 2칸은 남쪽 철망 가운데).
+3. 교사 앞 줄(포장 띠 바로 아래): 게양대·나팔꽃 화분·화단·조례대(운동장을 본다)·게시판·二宮金次郎像·수돗가. **문 앞 접근칸 열은 비운다**.
+4. 운동장: 트랙 선 2층 → 트랙 안 양 끝 골대 한 쌍 → 둘레(트랙 밖)에 철봉·타이어·등나무 그늘·수돗가 → 길가 담 안쪽에 방구망(가로로 4칸씩 이어 붙임).
+5. 놀이·관찰 구역(진입로 반대쪽): 줄 사이 1칸으로 창고·오르기 봉·운제·철봉·백엽상·그네 / 정글짐·모래밭·미끄럼틀·등나무 그늘·비오톱 / 학급 밭·사육장·화단. 나무는 담 따라.
+6. 정문 `jp-school-gate-l`(개구부 x+2~x+5) → 둘레 철망 오토타일(정문 자리 비움) → 생활도로 노면 표시 2층 → 전봇대·전선 4층(정문 앞은 비운다).
+7. 검사: 정문 앞에서 모든 문 접근칸·수영장 입구에 도달, 막힘 칸이 엔진에서 막힘, 트랙 선이 2층.
+
+## 빈칸
+校庭 맨흙은 아이들이 뛰는 자리라 **비어 있는 것이 기능이다**. 트랙 안은 빈칸 판정에서 빼고, 나머지 17×13 창 빈칸 상한은 0.75(마을은 0.4). 예제 맵 실측 {EB['emptiness']['worst17x13']} (창 왼쪽 위 {tuple(EB['emptiness']['worstAt'])}).
+놀이기구는 운동장 가운데가 아니라 **가장자리**에 모은다.
+
+## 예제 맵 도달 (엔진 `isPassable`, 시작 = 정문 앞 생활도로 ({EB['start']['x']},{EB['start']['y']}), 도달 칸 {g['reachable']})
+{md_table(['목표', '칸', '결과'], rows)}
+
+## 정상/오류 — 자동 좌표 검증 (엔진 변조 실험)
+{md_table(['코드', '변조', '검출 칸(맵 좌표 x,y)', '그림'], [
+    [f"`{er['trackL1']['code']}`", er['trackL1']['title'], f"{len(er['trackL1']['errors'])}칸(1층이 트랙 선 칸으로 바뀜): " + ', '.join(f"({e['x']},{e['y']})" for e in er['trackL1']['errors'][:6]) + ' …', '`jp-img-err-school-track`'],
+    [f"`{er['gateNet']['code']}`", er['gateNet']['title'], ', '.join(f"({e['x']},{e['y']})" for e in er['gateNet']['errors']) + f" (도달 칸 {g['reachable']} → {er['gateNet']['reachable']})", '`jp-img-err-school-gate`'],
+    [f"`{er['poolKadan']['code']}`", er['poolKadan']['title'], ', '.join(f"({e['x']},{e['y']})" for e in er['poolKadan']['errors']), '`jp-img-err-school-pool`'],
+])}
+- 정상 대조: 예제 맵 그대로 — 세 코드 모두 0건(모든 목표 도달).
+- **검사 범위**: 칸 번호·층·통행·도달(구조)만. 그림의 미감·아이들(사람)·밤 조명은 보지 않는다. 미감은 적대적 검증 관문(`tiledata/jp-city/gates/school.json`)이 따로 본다.
+- **레이어 정정 조건**: 트랙 선이 1층에 있으면 1층을 교정 흙으로 다시 깔고 트랙 선은 2층에. 정문·입구 앞 기물은 접근 열 밖으로 옮긴다.
+
+## 없는 것
+교사·체육관 실내 없음(문 칸에 전이 이벤트) · 아이들·선생님 없음 · 밤 조명 없음 · 수영장 물은 막힘(헤엄 없음) · 학교 이름 글자 없음(명판은 무늬만).
+'''
+
+
+add_doc(C_SCH, 'school-rules', f'일본 도시 · 손 도트 小学校 {len(SCH)}종 · 교정 배치·층·입구', doc_sch_rules())
+
+
+def sch_item(kid):
+    it = shop_item(kid)
+    it['layer'] = '2' if kid == 'jp-school-track-l' else '1' if kid.startswith('jp-school-ground') else '3'
+    it['rules'] = KITS[kid]['ai'].get('placementRules', '')
+    return it
+
+
+_SCH_ORDER = sorted(SCH, key=lambda k: ([g[0] for g in SCH_GROUPS].index(sch_group(k)), SCH.index(k)))
+_chunks = []; _cur = []; _size = 0
+for _kid in _SCH_ORDER:
+    _it = sch_item(_kid); _n = len(jline(_it))
+    if _cur and _size + _n > 36000: _chunks.append(_cur); _cur = []; _size = 0
+    _cur.append(_it); _size += _n
+if _cur: _chunks.append(_cur)
+for _i, _chunk in enumerate(_chunks):
+    add_doc(C_SCH, f'school-dict-{_i + 1}', f'일본 도시 · 손 도트 小学校 사전 {_i + 1}/{len(_chunks)}', f"""# 일본 도시 — 손 도트 小学校 사전 {_i + 1}/{len(_chunks)} ({len(_chunk)}종, 칸 번호 전체)
+
+{HEAD}
+
+항목: `kit` · `name` · `w`×`h` · `anchor`(발) · `parts`(입구 anchor) · `tiles`(1층 바닥 칸, 있으면) · `upperTiles`(키트 칸 전체, `-1` = 맵을 건드리지 않는 칸) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸) ·
+`layer`(찍는 층) · `rules`(키트에 적힌 배치 규칙). 규칙은 `jp-school-rules`, 그림 `jp-img-school-dict-*`.
+이 문서의 키트: {', '.join(f'`{it["kit"]}`' for it in _chunk)}.
+
+{jfences(_chunk, 13000)}
+""")
+
+
+def doc_sch_ex():
+    g = EB['good']; W = EB['W']
+    arr = {'name': 'jp-city-school', 'W': W, 'H': EB['H'], 'start': [EB['start']['x'], EB['start']['y']],
+           'placements': [[q['id'], q['x'], q['y'], q['layer']] for q in EB['placed']],
+           **{f'layer{k}': to_rows([tnum(t) for t in g['layers'][k]], W) for k in ('1', '2', '3', '4')}}
+    return f"""# 일본 도시 — 小学校 예제 맵 jp-city-school 전체 1~4층 배열 ({W}×{EB['H']}칸)
+
+{HEAD}
+
+생성기 `scripts/content/jp-city/maps/school.mjs` 의 결과를 엔진에 다시 올려 잰 것이다. `placements` = [키트, 왼쪽 위 x, 왼쪽 위 y, 층], `layer1`~`layer4` = 행 우선 전체 배열(-1 빈 칸).
+그림 `jp-img-school-scene-w`·`jp-img-school-scene-e`(원본 해상도, 서쪽·동쪽 반). 장소 카드 `jp-city-school-68x48` 로도 가져올 수 있다(`import_region_reference`).
+
+```json
+{jline(arr)}
+```
+"""
+
+
+add_doc(C_SCH, 'school-ex', '일본 도시 · 小学校 예제 맵 전체 1~4층 배열', doc_sch_ex())
+assert all(t['reached'] for t in EB['good']['targets']), EB['good']['targets']
+for _k in ('trackL1', 'gateNet', 'poolKadan'): assert EB['errors'][_k]['errors'], f'{_k} 변조가 검출되지 않았다'
+
+
+def img_sch():
+    def kit_im(kid, k):
+        w, h, lo, upv = kit_grid(kid)
+        return up(render({'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}, w, h, bg=(0, 0, 0, 0)), k)
+    for gk, gn, _ in SCH_GROUPS:
+        ids = [k for k in _SCH_ORDER if sch_group(k) == gk]
+        items = [(k[3:], kit_im(k, 2 if max(KITS[k]['width'], KITS[k]['height']) <= 6 else 1)) for k in ids]
+        for i, pg in enumerate(shelf_pack(items)):
+            save_img(f'school-dict-{gk}-{i + 1}', pg, f'손 도트 小学校 도감 — {gn} {len(ids)}종 {i + 1}쪽(작은 키트 ×2, 큰 키트 원본, 라벨 = 키트 id 에서 `jp-` 를 뺀 것). 칸 번호는 `jp-school-dict-*`.', C_SCH)
+    W, H = EB['W'], EB['H']
+    full = render(EB['good']['layers'], W, H)
+    half = W // 2
+    for nm, x0, x1 in (('w', 0, half), ('e', half, W)):
+        save_img(f'school-scene-{nm}', full.crop((x0 * T, 0, x1 * T, H * T)),
+                 f'小学校 예제 맵 jp-city-school {"서쪽" if nm == "w" else "동쪽"} 반(x {x0}~{x1 - 1}, 원본 해상도). 전체 배열 `jp-school-ex`.', C_SCH)
+    er = EB['errors']
+    for key, nm in (('trackL1', 'track'), ('gateNet', 'gate'), ('poolKadan', 'pool')):
+        cells = [(e['x'], e['y']) for e in er[key]['errors']]
+        xs = [c[0] for c in cells]; ys = [c[1] for c in cells]
+        cx0 = max(0, min(xs) - 6); cy0 = max(0, min(ys) - 6); cx1 = min(W, max(xs) + 7); cy1 = min(H, max(ys) + 7)
+        if (cx1 - cx0) * T > 400: cx1 = cx0 + 400 // T
+        if (cy1 - cy0) * T > 760: cy1 = cy0 + 760 // T
+        bi = render(er[key]['layers'], W, H)
+        mark_cells(bi, cells[:200], 1, width=1)
+        crop = lambda im: im.crop((cx0 * T, cy0 * T, cx1 * T, cy1 * T))
+        save_img(f'err-school-{nm}', panels([(f'정상 (x {cx0}~{cx1 - 1}, y {cy0}~{cy1 - 1})', crop(full)), (f'오류 — {er[key]["title"]} · {len(cells)}칸', crop(bi))]),
+                 f'小学校 변조 `{er[key]["code"]}`: 왼쪽 정상/오른쪽 오류, 빨강 = 검출 칸(좌표는 `jp-school-rules` 표). 원본 해상도 잘라낸 것.', C_SCH)
+
+
+img_sch()
 
 
 # ====================================================================== 분류 6 — 정상/오류·자동 검사(총괄)

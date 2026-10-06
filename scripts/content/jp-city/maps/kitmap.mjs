@@ -138,6 +138,8 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
       L2[idx(a, y)] = single("jp-mark-edge-w"); L2[idx(b, y)] = single("jp-mark-edge-e");
     }
   }
+  /** 2층 투명 덧그림 키트를 그대로(노면 표시 등). */
+  function stampL2(id, x, y0) { const k = KIT[id]; for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) { const t = k.rows[r].upperTiles[c]; if (t >= 0) L2[idx(x + c, y0 + r)] = t; } }
   function mark30(x, y0) { const k = KIT["jp-mark-30"]; for (let r = 0; r < k.height; r++) for (let c = 0; c < k.width; c++) { const t = k.rows[r].upperTiles[c]; if (t >= 0) L2[idx(x + c, y0 + r)] = t; } }
 
   // ── 전봇대 줄(4층): 기둥 열이 덮는 건물·기물 칸 + 간격 벌점 최소(동적 계획). 간격 = 전선 키트가 있는 5~20칸.
@@ -218,9 +220,12 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     // emptyIgnore: 목적상 비어 있어야 하는 사각(운동장 트랙 안 등) — 빈칸으로 세지 않는다. 사각은 보고에 그대로 적는다.
     const ignored = (x, y) => emptyIgnore.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
     const isBare = (x, y) => !ignored(x, y) && BARE.has(L1[idx(x, y)]) && L2[idx(x, y)] < 0 && L3[idx(x, y)] < 0 && L4[idx(x, y)] < 0;
+    // 비율의 분모는 무시 칸을 뺀 칸 수다(무시 칸을 분모에 남기면 비율이 낮게 나온다 — 2026-10-07 관문 지적). 남은 칸이 창의 절반 미만이면 그 창은 재지 않는다.
     for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
-      let c = 0; for (let y = y0; y < y0 + 13; y++) for (let x = x0; x < x0 + 17; x++) if (isBare(x, y)) c++;
-      if (c / 221 > worst) { worst = c / 221; worstAt = [x0, y0]; }
+      let c = 0, n = 0;
+      for (let y = y0; y < y0 + 13; y++) for (let x = x0; x < x0 + 17; x++) { if (ignored(x, y)) continue; n++; if (isBare(x, y)) c++; }
+      if (n < 111) continue;
+      if (c / n > worst) { worst = c / n; worstAt = [x0, y0]; }
     }
     report.emptiness = { worst17x13: +worst.toFixed(3), worstAt, ignore: emptyIgnore, max: emptinessMax };
     report.reach = { reachable: reach.size };
@@ -274,5 +279,5 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   }
 
   return { TS, KIT, GRP, W, H, L1, L2, L3, L4, own3, own4, ground, laneSet, reserved, doors, placed, issues, deco, inb, idx, fail, single,
-    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, groupLine, edgeMarks, mark30, poleRow, finish, publish };
+    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, groupLine, edgeMarks, mark30, stampL2, poleRow, finish, publish };
 }
