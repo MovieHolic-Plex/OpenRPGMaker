@@ -847,6 +847,9 @@ native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 
 소비하지 않는다. 실제 covered ID 집합이 늘지 않는 후속 묶음은 반복 실행을 중단하고
 구체 누락 ID를 남긴다. `theme-material-progress.json`은 이 진행 근거를 보존한다.
 전체 coverage와 이후 실제 공간의 시각 검수는 계속 필수이며, 부분 제작은 완성 상태가 아니다.
+마지막 누락 재료가 들어오면 progress의 missing도 빈 배열로 갱신하고 feedback을
+production-collected로 바꾼다. 이전의 누락 품목 추가 제작 지시가 품질 수정 단계까지 남아
+이미 제작된 효과를 다시 주문하지 않는다. 전체 수집은 여전히 품질 합격이나 공간 완료가 아니다.
 
 전용 인물은 `art-actors.json`의 걷기 주문과 `art-actor-actions.json`의 행동 주문을 따로 보존한다.
 `theme_actors.collect`가 새 native 프로세스로 걷기/행동 납품을 확인하여 기존 제작 묶음에 합친다.
