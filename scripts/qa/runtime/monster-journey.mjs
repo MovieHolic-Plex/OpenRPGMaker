@@ -35,7 +35,29 @@ const live = () => page.evaluate(() => {
   const s = window.__oprnHooksScene.session;
   return { map: s.currentMapId, x: s.x, y: s.y, party: (s.monsterParty ?? []).map((id) => ({ id, ...s.monsterInstances[id] })), box: s.monsterBox ?? [], switches: s.switches, inventory: s.inventory };
 });
-const shot = async (name) => { await page.screenshot({ path: join(out, `${name}.png`) }); return `${name}.png`; };
+// 찍을 때마다 전투 문장이 창 안에 들어 있는지 잰다 — 2026-10-06 캡처에서 「…를 사용했다!」 첫 줄이 창 위로 넘쳐
+// 몬스터 위에 겹쳤는데 단계 판정은 모두 통과였다. 넘침은 layout 실패로 남긴다(창 테두리 안쪽 기준).
+const textOverflow = () => page.evaluate(() => {
+  const win = [...document.querySelectorAll(".battle-message-window")].find((n) => n.getClientRects().length && getComputedStyle(n).visibility !== "hidden");
+  if (!win) return null;
+  const box = win.getBoundingClientRect(), style = getComputedStyle(win), out = [];
+  const inner = { top: box.top + parseFloat(style.borderTopWidth), bottom: box.bottom - parseFloat(style.borderBottomWidth), left: box.left + parseFloat(style.borderLeftWidth), right: box.right - parseFloat(style.borderRightWidth) };
+  for (const node of win.querySelectorAll(".battle-message-line")) {
+    const r = node.getBoundingClientRect(), c = getComputedStyle(node);
+    if (!r.width || !r.height || c.visibility === "hidden" || Number(c.opacity) === 0) continue;
+    if (r.top < inner.top - 1 || r.bottom > inner.bottom + 1 || r.left < inner.left - 1 || r.right > inner.right + 1) {
+      const scene = win.closest(".battle-scene")?.dataset ?? {};
+      out.push(`«${(node.textContent ?? "").trim().slice(0, 24)}» y ${Math.round(r.top)}–${Math.round(r.bottom)} · 창 안쪽 y ${Math.round(inner.top)}–${Math.round(inner.bottom)} x ${Math.round(inner.left)}–${Math.round(inner.right)} [step=${scene.battleDirectorStep} busy=${scene.battleSequenceBusy} hold=${scene.pkmnResultHold ?? "-"} lines=${win.querySelectorAll(".battle-message-line").length}]`);
+    }
+  }
+  return out;
+});
+const shot = async (name) => {
+  await page.screenshot({ path: join(out, `${name}.png`) });
+  const overflow = await textOverflow().catch(() => null);
+  if (overflow?.length) step(`layout:${name}`, false, `전투 문장이 창 밖으로 나감: ${overflow.join(" / ")}`, `${name}.png`);
+  return `${name}.png`;
+};
 const step = (id, ok, detail, image) => { report.steps.push({ id, ok, detail, image }); console.log(ok ? "✓" : "✗", id, detail); };
 const present = (testid) => page.locator(`[data-testid="${testid}"]`).count().then((n) => n > 0);
 // 대사·연출 사이 빈 틈에 done 이 잠깐 참이 된다(오프닝 중간에 순간이동한 실측) — 1초 동안 계속 참일 때만 끝으로 본다.

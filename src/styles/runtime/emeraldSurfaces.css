@@ -203,6 +203,12 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-submenu-header { grid-column: 1 / -1; min-height: 16px; height: 16px; line-height: 16px; padding: 0; margin: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-submenu-header) .battle-command { min-height: 24px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="playback"] .battle-message-window { grid-column: 1 / -1; }
+/* 행동·피해 연출 중(busy)에도 문장 창은 띠 전폭, 명령 창은 숨긴다. 반쪽 창에 남으면 「바람삐가 어깨툭을 사용했다!」가 두 줄로 접혀
+   두 문장이 네 줄 — 가운데 정렬로 창 위아래로 넘쳐 몬스터 위에 겹쳤고, 빈 오른쪽엔 「싸운다」 커서 ▶ 만 떠 있었다(2026-10-06 여정 캡처·기하 탐침).
+   넘칠 때는 safe 정렬로 첫 줄이 창 위로 나가지 않는다. 명령 창은 visibility 가 아니라 opacity 로 숨긴다 — 커서 ::before 가
+   visibility: visible 을 따로 걸어 숨긴 창 위로 ▶ 가 남았다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-sequence-busy="true"] .battle-message-window { grid-column: 1 / -1; align-content: safe center; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-sequence-busy="true"]:not(:has(.battle-submenu-header, .battle-target-menu)) .battle-command-host { opacity: 0; pointer-events: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel {
   inset: auto 12px 12px;
   width: auto;

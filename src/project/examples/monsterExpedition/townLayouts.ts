@@ -105,7 +105,7 @@ const OVERWORLD: Record<string, Legend> = {
   P: { prop: "pine_a" },
 };
 
-/** 마을 키 → 판. 없는 마을은 템플릿 그대로. 북·남 출구는 가운데 두 칸(world.ts connect 가 (w/2, 2)·(w/2, h-2) 근처를 고른다). */
+/** 맵 키 → 판(마을과 관측탑). 없는 맵은 템플릿 그대로. 북·남 출구는 가운데 두 칸(world.ts connect 가 (w/2, 2)·(w/2, h-2) 근처를 고른다). */
 export const TOWN_SKETCHES: Record<string, TownSketch> = {
   // 새순 마을: 나무를 심는 마을 — 잎 체육관이 북동쪽을 차지하고, 길가에 과수 줄과 꽃밭.
   grove: {
@@ -207,6 +207,47 @@ export const TOWN_SKETCHES: Record<string, TownSketch> = {
       "##P....P...==..P....P.##",
       "##..R....B.==Q...R....##",
       "##....c....==......c..##",
+    ],
+  },
+  // 옛 별 관측탑(무영과의 마지막 대결): 8번길 유적과 같은 템플릿 복제였다 — 같은 재료로 미로 대신 의식의 홀을 짠다.
+  // 북쪽 제단까지 돌 길, 양옆 기둥 줄, 점자 석판, 제단 앞 두 받침돌. 출구는 템플릿과 같은 (10,14).
+  observatory: {
+    ground: ["ru_sand0", "ru_sand1", "ru_sand2", "ru_sand3"],
+    legend: {
+      L: { tile: ["ru_edge_r"] }, R: { tile: ["ru_edge_l"] },
+      W: { tile: ["ru_wall_up"] }, w: { tile: ["ru_wall_dn"] },
+      P: { tile: ["ru_wall_up_p"] }, p: { tile: ["ru_wall_dn_p"] },
+      G: { tile: ["ru_wall_up_g0"] }, g: { tile: ["ru_wall_dn_g0"] },
+      H: { tile: ["ru_wall_up_g1"] }, h: { tile: ["ru_wall_dn_g1"] },
+      s: { tile: ["ru_sand_s"] },
+      e: { tile: ["ru_fl0_e"] }, f: { tile: ["ru_fl1"] }, E: { tile: ["ru_fl2_e"] }, F: { tile: ["ru_fl3"] },
+      a: { tile: ["ru_edge_rt"] }, b: { tile: ["ru_edge_lt"] }, _: { tile: ["ru_edge_t"] }, M: { tile: ["ru_edge_mat"] },
+      X: { tile: ["ru_exit"] },
+      u: { tile: ["ru_urn"] },
+      r: { tile: ["ru_rubble0", "ru_rubble1"] },
+      "=": { group: "ru_pb" },
+      I: { prop: "ru_pillar" },
+      A: { prop: "ru_altar" },
+      B: { prop: "ru_braille" },
+    },
+    kits: [],
+    rows: [
+      "LWWPWWGWWWWWWWWHWWPWWR",
+      "LwwpwwgwwwwwwwwhwwpwwR",
+      "LsssssssssA.sssssssssR",
+      "Lu..................uR",
+      "L...I.....ef.....I...R",
+      "L.B....==.EF.==...B..R",
+      "L......==.ef.==......R",
+      "L...I.....EF.....I...R",
+      "L.........ef.........R",
+      "L.....r...EF.......r.R",
+      "L...I.....ef.....I...R",
+      "L.........EF...r.....R",
+      "L.u.......ef.......u.R",
+      "L..r......EF..r......R",
+      "L.........X..........R",
+      "a_________M__________b",
     ],
   },
 };

@@ -44,7 +44,7 @@ export interface ExpeditionManifest {
 }
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
-export function authorExpeditionWorld(project: Project): ExpeditionManifest {
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string } = {}): ExpeditionManifest {
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
@@ -87,10 +87,18 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       stamp(map, t.buildings.find(b => b.name === "mart")!, 3, 4);
     }
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
-    if (role === "town" && TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
+    if (TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
+    // 8번길 유적 템플릿은 출구 위 모래에 돌바닥 두 칸이 덩그러니 떠 있었다(2026-10-06 조화 검수 지적, 렌더로 확인) — 모래로 덮는다.
+    if (source === "dungeon/ruins" && !TOWN_SKETCHES[key]) {
+      const stone = new Set(["ru_fl2", "ru_fl3"].map(n => t.names[n]));
+      for (let x = 0; x < map.width; x++) {
+        const cell = (map.height - 3) * map.width + x;
+        if (stone.has(map.lowerTiles[cell]!)) map.lowerTiles[cell] = t.names[x % 2 ? "ru_sand1" : "ru_sand2"]!;
+      }
+    }
     if (source === "overworld/cave") {
       // 쓰지 않는 아래층 구멍도 길처럼 읽히므로 함께 바닥으로.
       const sand = new Set([...Object.entries(t.names).filter(([n]) => n.startsWith("cave_sand")).map(([, v]) => v), t.names.hole_down!]);
@@ -242,12 +250,17 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
     // Visible, inspectable signposts explain interior route entrances.
     // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
+    // 나무 이정표는 바깥(마을·길)에만, 이미 3칸 안에 표지판이 있으면 더 세우지 않는다 — 리그 경기장·배 복도에 나무 이정표가 서고
+    // 서리꽃 마을 북쪽 길목에 셋이 몰렸다(2026-10-06 실제 편집기 조수 실행의 조화 검수 지적, 렌더로 확인).
+    const roleA = manifest.maps.find(m => m.id === a.id)?.role;
+    if (roleA !== "town" && roleA !== "field") return;
     const before = walkable(a).size;
     const wide = connected(a).filter(p => directions.every(([dx, dy]) => canMove(project, a, p.x, p.y, p.x + dx, p.y + dy)))
       .filter(p => !reserved.get(a.id)!.has(coord(p)) && !a.events.some(e => e.x === p.x && e.y === p.y));
     const wanted = { x: atA.x + 1, y: atA.y + 1 };
     wide.sort((p, q) => Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) - Math.abs(q.x - wanted.x) - Math.abs(q.y - wanted.y));
     const spot = wide.find(p => walkable(a, p).size === before - 1) ?? wanted;
+    if (a.events.some(e => /_sign_/.test(e.id) && Math.max(Math.abs(e.x - spot.x), Math.abs(e.y - spot.y)) <= 3)) return;
     npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, spot, [], 4);
   }
 
@@ -524,7 +537,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     }
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
     if (g.key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
-    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, g.type, i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
+    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, i === 0 && options.firstGymType ? options.firstGymType : g.type, i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
       [text(g.after, g.leader), { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text(`${g.badge}를 받았다! 다음 길이 열렸다.`)], puzzleSwitch, audio.trainerBattle);
     const leaderEvent = map.events.find(e => e.id.endsWith("_leader"))!;
     const previous = i === 0 ? "mx_starter" : `mx_badge_${i}`;
