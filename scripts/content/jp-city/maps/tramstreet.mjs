@@ -75,11 +75,11 @@ for (const x of POLES) put("jp-tram-pole-c", x, R.mid + 1, { tag: `tram-pole-${x
 for (let x = 0; x < W; x += 2) for (const ty of [R.trackN, R.trackS]) stamp("jp-tram-wire-h", x, ty - WIRE_UP, { layer: 4, tag: `wire-${ty}-${x}` });
 
 // ── 5. 보도 시설: 북 보도 건물 앞(자판기·자전거·우체통) · 남 보도 가드레일 + 가로수·가로등(4층, 차로 위로 겹쳐 서는 키 큰 것)
-tryPut("jp-prop-vend-pair", 9, R.walkN, "vend-n");
+tryPut("jp-prop-vend-pair", 9, R.walkN + 1, "vend-n");
 tryPut("jp-prop-bike-rack", 26, R.walkN, "bike-n");
 tryPut("jp-prop-bike-rack", 29, R.walkN, "bike-n2");
-tryPut("jp-prop-post-box", 40, R.walkN, "post-n");
-const TREES = [6, 36], LAMPS = [15, 43];
+tryPut("jp-prop-post-box", 40, R.walkN + 1, "post-n");
+const TREES = [6, 39], LAMPS = [15, 45];
 const underTall = (x) => TREES.some((t) => x >= t && x < t + 4) || LAMPS.includes(x);
 m.groupLine("jp-guardrail", range(0, W - 1).filter((x) => (x < CW[0] - 1 || x > CW[1] + 2) && !underTall(x)).map((x) => [x, R.walkS]), "guardrail-s");
 for (const x of TREES) tryPut("jp-prop-tree-zelkova", x, R.walkS + 1, `tree-s-${x}`, { layer: 4, onLane: true });
@@ -121,8 +121,8 @@ console.log(JSON.stringify({ extra: report.extra, ok: report.ok, doors: report.d
 if (!report.ok) process.exitCode = 2;
 if (PUBLISH) m.publish({ MAP, report, placeId: `jp-city-tram-street-${W}x${H}`, name: "일본 도시 · 노면전차 거리 (복선·안전지대·지하철 출입구)", file: "tramstreet", start: [20, 11],
   rules: [
-    `${W}×${H}칸 노면전차 간선. 단면(북→남): 건물 · 보도 3 · 동쪽행 차로 3 · 동쪽행 섬/軌道敷 2 · 동쪽행 궤도 2 · 센터 전주 행 1 · 서쪽행 궤도 2 · 서쪽행 섬/軌道敷 2 · 서쪽행 차로 3 · 보도 2.`,
-    "좌측통행이고 전차 문은 차의 왼쪽 면이라 동쪽행 섬(jp-tram-stop-e)은 동쪽행 궤도 북쪽, 서쪽행 섬(jp-tram-stop)은 서쪽행 궤도 남쪽. 두 섬은 횡단보도 양쪽에 엇갈려 붙고, 섬 상류 끝에 導流帯. 섬 밖 칸·궤도·전주 행은 1층 軌道敷(jp-tram-trackbed) — 차도(생활도로 오토타일)와 띠를 나눈다.",
+    `${W}×${H}칸 노면전차 간선. 단면(북→남): 건물 · 보도 3 · 동쪽행 차로 3 · 동쪽행 궤도 2 · 가운데 띠 2(동쪽행 섬·센터 전주 밑동) · 서쪽행 궤도 2 · 서쪽행 섬/軌道敷 2 · 서쪽행 차로 3 · 보도 2.`,
+    "섬(jp-tram-stop)은 두 방향 모두 각 궤도의 남쪽 — 동쪽행 섬은 두 궤도 사이 가운데 띠, 서쪽행 섬은 서쪽행 궤도 남쪽. 전차 그림은 문이 보이는 남쪽 면에 있고(양 끝 운전대), 3/4 에서 정차한 전차가 궤도 북쪽 칸을 가리기 때문. 두 섬은 횡단보도 양쪽에 엇갈려 붙고 섬 상류 끝에 導流帯. 궤도·가운데 띠·섬 밖 칸은 1층 軌道敷(jp-tram-trackbed) — 차도(생활도로 오토타일)와 띠를 나눈다.",
     "2층: 레일(jp-tram-rail-h, 횡단보도 칸은 jp-tram-rail-h-xwalk)·횡단보도(jp-crosswalk-ns)·정지선(jp-mark-stopline-v, 횡단보도 상류 바로 앞 열)·차로|軌道敷 경계선(jp-tram-lane-line-s/-n)·路側帯. 3층: 건물·섬·센터 전주(jp-tram-pole-c, 칸 태그 foot-dy 로 밑동 줄 y 정렬)·보행 신호기 대각 한 쌍·가드레일. 4층: 가선(jp-tram-wire-h) 두 궤도 각각 윗행 −2.",
     "탈것은 set_map_transit auto { traffic:true, tram:true, tramStops:[{x: 섬 가운데, y: 그 궤도 윗행, at:\"center\", board}] } — 차도 띠는 북 차로 동쪽행·남 차로 서쪽행 일방 둘, 복선 전차 두 방향, 각 전차가 자기 섬 옆에 서서 「조사」로 탄다. 지하철 출입구 계단 두 칸 → 콘코스.",
   ],
