@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.155.0 — 2026-10-06
+
+### 기능
+
+- **monster** — the assistant can name and type all eight gyms and the first route's trainers (`60490f3`)
+
+### 테스트
+
+- **harness** — film save waits for a settled autosave state (`3365fbd`)
+
 ## 0.154.0 — 2026-10-06
 
 ### 기능
