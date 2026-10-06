@@ -17,7 +17,10 @@
   - jp_city
 - 저작권 신고는 admin@openrpgmaker.com 으로 받는다. 운영자 계정은 하나다.
 - 편집기는 **Electron 앱만** 쓴다. 웹 편집기와 팀 호스트 브라우저에는 「데스크톱 앱에서 열 수 있습니다」라고만 보인다.
-- 공개 배포는 아직 하지 않는다. 스테이징은 테일스케일 안의 http://mdc-server:18320 이다
+- **운영: https://store.openrpgmaker.com (2026-10-06 가동, seogo).** 앱의 기본 주소이므로 따로 바꿀 것 없이 바로 보인다.
+  절차·위치·운영자 링크는 `store-server/deploy/README.md`를 따른다.
+  Google 로그인은 아직 꺼져 있어 일반 사용자는 둘러보기·받기만 할 수 있다.
+- 스테이징은 테일스케일 안의 http://mdc-server:18320 이다
   (`store-server/scripts/install-staging.sh`, systemd --user `oprn-store-staging`).
 
 ## 구성 요소

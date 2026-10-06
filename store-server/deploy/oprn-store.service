@@ -9,8 +9,7 @@ User=oprn-store
 Group=oprn-store
 WorkingDirectory=/opt/oprn-store
 EnvironmentFile=/etc/oprn-store/store.env
-Environment=STORE_MIGRATIONS_DIR=/opt/oprn-store/migrations STORE_PUBLIC_DIR=/opt/oprn-store/public
-ExecStart=/usr/bin/node /opt/oprn-store/dist/server.mjs
+ExecStart=/opt/oprn-store/node/bin/node /opt/oprn-store/dist/server.mjs
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true

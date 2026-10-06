@@ -10,6 +10,7 @@ import { basicTilesetFor, buildPack, type PackMeta } from "../../src/assetStore/
 import { bytesToBase64 } from "../../src/assetStore/sniff";
 import type { Project, UploadedAsset } from "../../src/project/types";
 import { createApp, type App } from "../src/app";
+import { createLoginLink, upsertUser } from "../src/auth";
 import { BlobStore } from "../src/blobStore";
 import { sweepOrphanBlobs } from "../src/items";
 import { loadConfig } from "../src/config";
@@ -87,6 +88,7 @@ describe("OPRN asset store server", () => {
   let app: App;
   let base: string;
   let blobDir: string;
+  let storeConfig: ReturnType<typeof loadConfig>;
   let fakeGoogle: Server;
 
   before(async () => {
@@ -114,6 +116,7 @@ describe("OPRN asset store server", () => {
     db = createDb(pg.url);
     await migrate(db, join(ROOT, "migrations"));
     await migrate(db, join(ROOT, "migrations"));
+    storeConfig = config;
     app = createApp(config, db, join(ROOT, "public"));
     await new Promise<void>((done) => app.server.listen(port, "127.0.0.1", () => done()));
   });
@@ -337,5 +340,17 @@ describe("OPRN asset store server", () => {
     assert.ok(removed >= 1);
     assert.equal(store.has(sha(orphan)), false);
     for (const blob of kept.manifest.blobs) assert.equal(store.has(blob.sha256), true, "blobs in a version stay");
+  });
+
+  it("logs the admin in once with a server-issued link", async () => {
+    const boss = await upsertUser(db, storeConfig, { email: "boss@openrpgmaker.com", displayName: "운영자" });
+    const token = await createLoginLink(db, boss.id);
+    const client = new Client(base);
+    assert.equal((await client.fetch(`/auth/link?token=${token}`)).status, 200, "GET only shows a confirm button");
+    const used = await client.form("/auth/link", { token });
+    assert.equal(used.status, 303);
+    assert.equal(used.headers.get("location"), "/admin");
+    assert.equal((await client.fetch("/admin")).status, 200);
+    assert.equal((await new Client(base).form("/auth/link", { token })).status, 410, "single use");
   });
 });

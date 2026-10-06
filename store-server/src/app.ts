@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { isSha256, STORE_LIMITS, type StoreItemStatus } from "../../src/assetStore/format";
 import { sniffMime } from "../../src/assetStore/sniff";
 import {
-  authenticate, createSession, decideDeviceCode, destroySession, findDeviceCode, googleUser, pollDeviceCode,
+  authenticate, consumeLoginLink, createSession, decideDeviceCode, destroySession, findDeviceCode, googleUser, pollDeviceCode,
   requireAdmin, requireWriter, revokeToken, sessionCookie, startDeviceCode, upsertUser, type Auth,
 } from "./auth";
 import { BlobStore } from "./blobStore";
@@ -233,6 +233,16 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     redirect(ctx.res, "/admin");
   });
   router.get("/login", (ctx) => page(ctx, (auth) => pages.login(config, auth, safeNext(ctx.url.searchParams.get("next")))));
+  // 일회용 링크: GET 은 확인 버튼만 보이고(링크 미리보기·보안 검사기가 열어도 쓰이지 않게), POST 가 실제로 쓴다.
+  router.get("/auth/link", (ctx) => sendHtml(ctx.res, 200, pages.loginLink(config, String(ctx.url.searchParams.get("token") ?? ""))));
+  router.post("/auth/link", async (ctx) => {
+    limit(limits.login, ctx);
+    const form = await readForm(ctx.req);
+    const userId = await consumeLoginLink(db, form.get("token") ?? "");
+    if (userId === null) throw new HttpError(410, "로그인 링크가 만료되었거나 이미 쓰였습니다. 새 링크를 받아 주세요.", "link_expired");
+    const session = await createSession(db, userId);
+    redirect(ctx.res, "/admin", { "set-cookie": sessionCookie(config, session.token) });
+  });
   router.post("/auth/dev", async (ctx) => {
     if (!config.devLogin) throw new HttpError(404, "없는 주소입니다.", "not_found");
     limit(limits.login, ctx);

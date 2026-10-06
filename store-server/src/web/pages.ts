@@ -170,8 +170,14 @@ export function login(config: StoreConfig, auth: Auth | null, next: string): str
   const google = config.google ? `<a class="button google" href="/auth/google?next=${encodeURIComponent(next)}" data-testid="google-login">Google 계정으로 로그인</a>` : "";
   const dev = config.devLogin ? `<form method="post" action="/auth/dev" class="stack dev" data-testid="dev-login"><p class="fine">스테이징 전용 개발 로그인입니다. 운영 서버에서는 꺼져 있습니다.</p>
 <input type="hidden" name="next" value="${esc(next)}"><label>이메일 <input type="email" name="email" required data-testid="dev-email"></label><label>이름 <input name="name" maxlength="40" data-testid="dev-name"></label><button class="button" data-testid="dev-submit">로그인</button></form>` : "";
-  const body = `<section class="narrow"><h1>로그인</h1><p class="lead">둘러보기와 받기는 로그인 없이 됩니다. 올리기·내 상품에만 로그인이 필요합니다.</p>${google}${dev}${!google && !dev ? `<p class="notice">아직 로그인 수단이 설정되지 않았습니다.</p>` : ""}</section>`;
+  const body = `<section class="narrow"><h1>로그인</h1><p class="lead">둘러보기와 받기는 로그인 없이 됩니다. 올리기·내 상품에만 로그인이 필요합니다.</p>${google}${dev}${!google && !dev ? `<p class="notice">일반 로그인(Google)은 곧 열립니다. 지금은 둘러보기와 받기만 할 수 있습니다.</p>` : ""}</section>`;
   return layout(config, null, "로그인", body);
+}
+
+export function loginLink(config: StoreConfig, token: string): string {
+  const body = `<section class="narrow"><h1>운영자 로그인</h1><p class="lead">서버에서 발급한 일회용 링크입니다. 아래 단추를 누르면 로그인됩니다(한 번만 쓸 수 있습니다).</p>
+<form method="post" action="/auth/link" class="row"><input type="hidden" name="token" value="${esc(token)}"><button class="button" data-testid="link-login">로그인</button></form></section>`;
+  return layout(config, null, "운영자 로그인", body);
 }
 
 export function device(config: StoreConfig, auth: Auth, code: string, found: { clientName: string; status: string } | null, done: string | null): string {

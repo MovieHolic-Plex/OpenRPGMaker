@@ -15,4 +15,5 @@ const common = {
 };
 await build({ ...common, entryPoints: [resolve(root, "src/main.ts")], outfile: resolve(root, "dist/server.mjs") });
 await build({ ...common, entryPoints: [resolve(root, "scripts/local.ts")], outfile: resolve(root, "dist/local.mjs") });
-console.log("[store build] dist/server.mjs dist/local.mjs");
+await build({ ...common, entryPoints: [resolve(root, "scripts/adminLink.ts")], outfile: resolve(root, "dist/admin-link.mjs") });
+console.log("[store build] dist/server.mjs dist/local.mjs dist/admin-link.mjs");

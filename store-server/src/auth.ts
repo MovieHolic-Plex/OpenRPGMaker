@@ -34,6 +34,22 @@ export async function upsertUser(db: Db, config: StoreConfig, input: { email: st
   return rowUser(rows[0]);
 }
 
+/** 일회용 로그인 링크 토큰(15분). 서버 셸에서만 발급한다(`dist/admin-link.mjs`). */
+export async function createLoginLink(db: Db, userId: number, minutes = 15): Promise<string> {
+  const token = newToken();
+  await db.query("insert into store_login_links (token_hash, user_id, expires_at) values ($1, $2, now() + make_interval(mins => $3))", [hashToken(token), userId, minutes]);
+  return token;
+}
+
+/** 링크를 한 번만 쓴다. 유효하면 사용자 id. */
+export async function consumeLoginLink(db: Db, token: string): Promise<number | null> {
+  const { rows } = await db.query(
+    "update store_login_links set used_at = now() where token_hash = $1 and used_at is null and expires_at > now() returning user_id",
+    [hashToken(token)],
+  );
+  return rows[0] ? Number(rows[0].user_id) : null;
+}
+
 export async function createSession(db: Db, userId: number): Promise<{ token: string; csrf: string }> {
   const token = newToken();
   const csrf = newToken(18);
