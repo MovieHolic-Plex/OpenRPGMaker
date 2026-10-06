@@ -1,0 +1,34 @@
+{
+  "key": "monster--hatch--collect--secret",
+  "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect--secret-3-1a017442e2c7.png",
+  "nativeSha256": "1a017442e2c7415d8891bfe71c8e346c1c2e678673510192206f80ba736b8643",
+  "exactOwnSha256": "a2415b9bb6ae5f6673e17c4ef4bc78c743874ca6c157f09e39d93211550e5762",
+  "preservedDirectVisualReview": {
+    "sourceSha256": "1a017442e2c7415d8891bfe71c8e346c1c2e678673510192206f80ba736b8643",
+    "promptSha256": "74bad5b10f5ece6574caf01fccfa786c524bb5273c3d196d663d704221ca804f",
+    "reviewer": "Codex direct original visual inspection: v2-production-194",
+    "checks": {
+      "pixelArt": true,
+      "composition": true,
+      "allChoices": true,
+      "latestChoice": true,
+      "identityUnset": true,
+      "noText": true,
+      "distinctShot": true
+    },
+    "findings": [],
+    "notes": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPrack/CLOSEDPLAINnotebook actualearthtrace LOWwhole nursery crackedegg/cloth/BLUEwater, continuousMOON. Spatialreversal versus193COLLECT UPnurseryLOWrack, no progression/scope. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+  },
+  "technicalGate": {
+    "ok": false,
+    "width": 1672,
+    "height": 941,
+    "colors": 185615,
+    "findings": [
+      "\uc804\uccb4 \ubc30\uacbd\uc5d0 \ud22c\uba85 \ud53d\uc140\uc774 \uc788\ub2e4."
+    ]
+  },
+  "pixelsWithNonOpaqueAlpha": 1573352,
+  "nativeBytesUnchanged": true,
+  "scope": "194 root visual8P2F retained. This visually accepted candidate failed opaque-background native gate and its descendants are withheld. No flattening/resizing/palette manipulation; regenerate via builtin imagegen. First QA unpublished-path preflight failure retained, then rerun using six actual799 published paths. Future195/196 images are not included in this799 checkpoint."
+}

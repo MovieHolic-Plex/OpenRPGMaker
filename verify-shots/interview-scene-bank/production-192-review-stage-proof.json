@@ -1,0 +1,293 @@
+{
+  "batch": "v2-production-192",
+  "passedAttempts": 2,
+  "rejectedAttempts": 8,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-192",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-192-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:42:34.717750+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-192-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-192",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-192-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:43:02.697519+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-192-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-192",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-192",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:43:02.754993+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--bond--partner--secret--habitat--scene",
+      "nativeSha256": "370d07abbb110acf5901e0740cd9087ade6bb3e2cd327d198b57c78d0cc0e5ca",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7a2654b31fa05b4015f10b0e4c21288faacf19dc23a0b8e5cdf3aa444e3d690d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. WHOLEroof/chimney/body verifiedincludingreadonlyNEARESTleftdiagnostic; no literaledgecut. UP3 actualINNERviews LOWcarecloth separateEMPTYpad BLUEwater CLOSEDbook ecologicaltrace MOON. ScopepreparedGROUNDcare/largeprotectedEMPTYrest respectively; allfeaturesbeforeactual60.3. Differentcamera than191secretHAB UPcare LOW3views. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--bond--partner--secret--habitat--episode",
+      "nativeSha256": "866e47a5c9fe8505afd4ad5af9d9fd603f176f84ec0253517921fd102b4a7018",
+      "nativeDimensions": [
+        1672,
+        940
+      ],
+      "requestSha256": "422ecdf2c6b9f82dbb6045a26b3109ffeb8975262db2487edd64db1280c97c29",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. WHOLEroof/chimney/body verifiedincludingreadonlyNEARESTleftdiagnostic; no literaledgecut. UP3 actualINNERviews LOWcarecloth separateEMPTYpad BLUEwater CLOSEDbook ecologicaltrace MOON. ScopepreparedGROUNDcare/largeprotectedEMPTYrest respectively; allfeaturesbeforeactual60.3. Differentcamera than191secretHAB UPcare LOW3views. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--bond--partner--warm--case--episode",
+      "nativeSha256": "13b54f0e5f56fd2ce16d289bdae1653e0d625fb99a54d65d8e08dae8bfbdaa91",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b47fcf40fd8f4aa0027bc5b139369a26adb848b77f050ea043ddf950efff75fe",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "composition: WHOLErequired localrefuge roof/body intersects nativeLEFTedge."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: WHOLErequired localrefuge roof/body intersects nativeLEFTedge. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--bond--partner--warm--case--short",
+      "nativeSha256": "ea358d50c83f9af553b5106179658553e534105d183de16a81368c486b4dce23",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "dbc651d7479093d3839c0708eebf530021bd9fe8348b0e7759574ac88061bddd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "allChoices: Returncaretable has folded/drapedblanket andBLUEwater but no separateEMPTYpaddedrestmat requiredbyOWN."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. allChoices: Returncaretable has folded/drapedblanket andBLUEwater but no separateEMPTYpaddedrestmat requiredbyOWN. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--scene",
+      "nativeSha256": "5f0ea49d78a227f33f958abe6fcb7899f22e7ec6a3e04d6509068b35e1fc8c50",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a311916f2edbb9fd6785c35909c7ed72d5c7c817970a8f270469bfd57e895ae6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "composition: Requiredcradle and primarynursery physicallycutLEFTedge. allChoices: OPENEMPTYsplitPLAINshell requiredbyauthoritativeOWN is a CLOSEDspeckledcrackedegg."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: Requiredcradle and primarynursery physicallycutLEFTedge. allChoices: OPENEMPTYsplitPLAINshell requiredbyauthoritativeOWN is a CLOSEDspeckledcrackedegg. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--episode",
+      "nativeSha256": "65377fa063777d64e3171e0c2e752c655feb945fa8952ffa1856f3603dcec802",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "666b64b373e8fdd557de1fd71aecb2cee62e25d1d22d17afdf7faacd8d55efbc",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "composition: Selectedprimarynursery roof/body cutnativeLEFT/TOPedge. allChoices: RequiredOPENEMPTYsplitPLAINshell remains CLOSEDspeckledcrackedegg."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: Selectedprimarynursery roof/body cutnativeLEFT/TOPedge. allChoices: RequiredOPENEMPTYsplitPLAINshell remains CLOSEDspeckledcrackedegg. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--short",
+      "nativeSha256": "0a59c534cae378d2f5e5543dc92dbe5f2803bb8ae7f2b6b2d7be7000b6db92ce",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3c01087b7139a5640f3ef19ac03eb5bac0439778de2659daa22c4603ab3160dd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "composition: RequiredWHOLEOPENreturnhome roof/chimney/body nativeTOP/LEFTcut. allChoices: RequiredOPENEMPTYsplitPLAINshell remains CLOSEDspeckledcrackedegg. noText: Actualtwo-armed directionalwoodsignboard byreturntable explicitOWNnoSIGNS."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: RequiredWHOLEOPENreturnhome roof/chimney/body nativeTOP/LEFTcut. allChoices: RequiredOPENEMPTYsplitPLAINshell remains CLOSEDspeckledcrackedegg. noText: Actualtwo-armed directionalwoodsignboard byreturntable explicitOWNnoSIGNS. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--scene",
+      "nativeSha256": "0990eff891520f10e36abe60c814a5b00eb3b7f6f101ab9f7a1930dbafd485db",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "6f3d1821ea78a5bbbafd475b7784c27d52b0063693d1ea6080053baea6622742",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": false
+      },
+      "findings": [
+        "composition: ActualrequiredRUININNERcolumns/steps extendbeyond60.3 undercontrols; selectedshelter/cradle nativeedgecuts. distinctShot: ActualoldHABparent andcandidate both indoorLOWleftcradle/observerbench UPthreefullwidtharches in samewetland/forest/ruin order; alteredrackprops do notestablishdifferentcamera."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: ActualrequiredRUININNERcolumns/steps extendbeyond60.3 undercontrols; selectedshelter/cradle nativeedgecuts. distinctShot: ActualoldHABparent andcandidate both indoorLOWleftcradle/observerbench UPthreefullwidtharches in samewetland/forest/ruin order; alteredrackprops do notestablishdifferentcamera. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--episode",
+      "nativeSha256": "b8b958f1e109e6798a6d23ffc8fd1dbe30df8149ee3d6a6e7e99a0e5e2665a87",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "76abe8952adb35e2315c545e6feb432d54a344459c097f06f4fea57cc6632a84",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": false
+      },
+      "findings": [
+        "composition: RequiredRUININNERfeatures beyond60.3 undercontrols andnurseryshelteredroof nativeedgecut. allChoices: RequiredOPENEMPTYsplitPLAINshell remainsCLOSEDspeckledcrackedegg. distinctShot: Sameindoor LOWleftcradle/bench UPthreearches order/camera asactualoldHABparent; largerpadding/sampleprops alone insufficient."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: RequiredRUININNERfeatures beyond60.3 undercontrols andnurseryshelteredroof nativeedgecut. allChoices: RequiredOPENEMPTYsplitPLAINshell remainsCLOSEDspeckledcrackedegg. distinctShot: Sameindoor LOWleftcradle/bench UPthreearches order/camera asactualoldHABparent; largerpadding/sampleprops alone insufficient. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--short",
+      "nativeSha256": "4118ce6087b141da0cc345ee737521b1efebc6b25eda5726ed81f6aedb6679ef",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "2a63d91859a1e7ba8abdcf39816a9d2946104fec224cbd96df38b12d884c5e7b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "composition: RequiredWHOLEOPENreturnhome roof/chimney cutTOP/LEFT andrequiredRUININNERrightcolumns/steps beyond60.3. allChoices: RequiredOPENEMPTYsplitPLAINshell remainsCLOSEDspeckledcrackedegg."
+      ],
+      "note": "ROOT personally read FULLexactOWN and viewed WHOLEnative plus actualparent191secretHAB/191warmCASE or originalHATCHroute/HAB. composition: RequiredWHOLEOPENreturnhome roof/chimney cutTOP/LEFT andrequiredRUININNERrightcolumns/steps beyond60.3. allChoices: RequiredOPENEMPTYsplitPLAINshell remainsCLOSEDspeckledcrackedegg. Other7checks directlyjudged; no bodies/writing/emblems, allplanescoarsegrid/flatshade, ordinaryclothseams nottext. NewauthoritativeOPENshell countedonlyagainstNEW192OWN, neverOLDeggparents; idealsx10/45/50/52 nothardfails. OriginalOWN and unchangednative retained."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

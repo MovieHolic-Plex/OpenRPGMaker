@@ -1,0 +1,281 @@
+{
+  "batch": "v2-production-193",
+  "passedAttempts": 8,
+  "rejectedAttempts": 2,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-193",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-193-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:58:32.948018+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-193-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-193",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-193-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:58:53.794449+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-193-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-193",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-193",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T19:58:53.842191+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--collect",
+      "nativeSha256": "60058d1c2cc7ee17f166906dbce005ccb01e8bfe5a25b5338ca67f2c4721eda4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a7c9832bc649d9d962bfaa7f2c8287960e37b58a431c289c8aca5adfc668b36f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPwhole nursery/egg/cloth/BLUEwater LOWwhole REEDS/LEAVES/STONES rack, distantterracedview different from originalHATCH intimateindooregg. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright",
+      "nativeSha256": "ad8d201a399f9b5d5b1035ba31e5d5edc81bc088657f45b071fd4241925e7443",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "c4362a4cdb99ffc7ebde24093610294f0f659509040ce954c3aeb53cbb8f1dc7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPwhole sample rack LOWwhole nursery, SUN, spatialreversal/new hillside camera versus193COLLECT UPnursery LOWrack. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route",
+      "nativeSha256": "419f51ab10f4d131a13513cbaae10ad239479e5426016565d5199e2588465dd2",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "bfeffb9abc2caa81fd5e27df3e553fc77429dc6e5297baaf3d52eac3930e9738",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPwhole nursery MIDsample rack LOWtwoWHOLEdifferent villagehouses/continuousLEFTtrail, SUN; new lower journeyplanes versus193MOOD UPsample LOWnursery. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat",
+      "nativeSha256": "88f756207061f0db7a65d3428aed3732c8bcf969fde071ee63fbff2534d0a586",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f573530758e764687c12987aa90b24c1300ad68ded3f5aca37c58693d00798bd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required RUIN actualINNERrightcolumns/steps extend behind actual60.3 controls: composition ONLY F. UPnursery MIDrack LOW3terrainactualviews differ193MOOD no progression."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. Required RUIN actualINNERrightcolumns/steps extend behind actual60.3 controls: composition ONLY F. UPnursery MIDrack LOW3terrainactualviews differ193MOOD no progression. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--scene",
+      "nativeSha256": "0defe28bdb5afe2b7b6af8efa203379d14a0250fed2bfca826d09444a602e4e5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4a384b5fc74206f28475dd91445983606bd0e6a44123cc1b9ba82220a00fea85",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPtwoWHOLEdifferent houses/trail MIDrack LOWsmallpreparedcradle eggFIRSTcrack plaincloth BLUEwater, no growthreturn. Spatialreversal versus193ROUTE UPcradle LOWhouses. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--episode",
+      "nativeSha256": "7b7d42a8a7f96d82dacdcb22c05e92546b89df1443547c64bfae6250653729e6",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b353bbac598f986e524103ab8a871bb98bcfa7dfea46bbaebfb970cb59bb4183",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPtwoWHOLEdifferent houses/trail MIDrack LOWcradle/egg/plaincloth/BLUEwater plus separate largerEMPTYGROUNDrestmat, no return. Spatialreversal versus193ROUTE UPcradle LOWhouses. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--route--short",
+      "nativeSha256": "3502f6f741f33e11286c2b06efb865a6366a97f8646bf2e785cdec19e93b390c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "13aad37c1c3abb4b162197a6c66d0e73d45ef010c15178ec7b6e06155456aa92",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UPwholeOPENreturnhome MIDtidyreturntable cradle/egg/plaincloth/BLUEwater rack LOWtwoWHOLEdifferent houses/LEFTtrail, no growth. New home/returncamera versus193ROUTE UPcradle/no returnhome. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--scene",
+      "nativeSha256": "e5ac37141cb51f645b6d4ca9a07dcd08ab39a63a4b547877a5aa55412d1138ff",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "2ed7520818686b8d8c494513cefaaf8e884d478cea1991d153ac19c9c75a3def",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UP3actualWHOLEINNERwetland/FOREST/RUIN MIDrack LOWsmallpreparedcradle eggFIRSTcrack cloth BLUEwater; actualINNERcolumns/steps allbefore60.3 verifiedreadonlyNEARESTdiagnostic. Differentverticalcamera than193HAB UPcradle LOWviews. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--episode",
+      "nativeSha256": "93d6da244b6d589eed8d71f372073d0b1e5293120228042f15e841adaca16311",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f3ee0fdd200b3d87faa6b3b070089a38569be49481d3b89788783d545a5c4124",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. UP3actualWHOLEINNERwetland/FOREST/RUIN MIDrack LOWcradle eggFIRSTcrack cloth BLUEwater plus separate largerEMPTYGROUNDmat; meaningfulINNERviews allbefore60.3. Spatialreversal versus193HAB UPcradle LOWviews. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--short",
+      "nativeSha256": "2e632b5ea517623eadcce368a6a7a24fdde26f2c933fc456d7a42edfea8466be",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7ad91f21bd0edea7112e27aee179da4f3a11a08ad087777cd6726731c020bf61",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Nativeegg has ONLYnaturalSPOTS, no requiredFIRSTcrack, confirmedreadonlyNEARESTeggdiagnostic: allChoices ONLY F. UPwholeOPENreturnhome MIDtidyreturntable cradle cloth BLUEwater/sample rack LOW3INNERviews. Actual193HAB parent UPcradle/LOWviews no returnhome differs camera."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual originalHATCH or NEW193parent. Nativeegg has ONLYnaturalSPOTS, no requiredFIRSTcrack, confirmedreadonlyNEARESTeggdiagnostic: allChoices ONLY F. UPwholeOPENreturnhome MIDtidyreturntable cradle cloth BLUEwater/sample rack LOW3INNERviews. Actual193HAB parent UPcradle/LOWviews no returnhome differs camera. Allotherchecks directlyROOT judged: coherentcoarseclusters/flatshade allplanes, no inventedbody/writing/logo/sign, OWN egg speckles/clothstripes expressly permitted. RequiredWHOLEroof/chimney/body/bases beforeactualcontrols; ordinary outerstones/shoreline/backgrounddistant silhouettes not selectedINNERcomponents or literal cuts. No newOWN conditions retroappliedtoOLDparent. Nativeunchanged retained."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

@@ -1,0 +1,311 @@
+{
+  "batch": "v2-production-194",
+  "passedAttempts": 8,
+  "rejectedAttempts": 2,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-194",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:23:56.393681+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-194",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:24:16.601753+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-194",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:29:01.793097+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-194",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:33:19.727550+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-194-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-194",
+      "command": [
+        "/home/main/saza-backend/venv/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-194"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T20:33:19.997540+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--collect--bright--case",
+      "nativeSha256": "4d0dc20db2100be69a4110a5f67ccf83117e1e099af985a726a4cb6382acd441",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "66a82b1801c8e9394f976bbee38edd782bdeb647ba18927afd0f5bd33091c695",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwhole nursery crackedegg/cloth/BLUEwater MID3samplerack LOWWHOLEOPENlocalrefuge/pail/earthtrace SUN, no scope. Different193MOOD UPrackLOWnursery no case. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--secret",
+      "nativeSha256": "1a017442e2c7415d8891bfe71c8e346c1c2e678673510192206f80ba736b8643",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a2415b9bb6ae5f6673e17c4ef4bc78c743874ca6c157f09e39d93211550e5762",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPrack/CLOSEDPLAINnotebook actualearthtrace LOWwhole nursery crackedegg/cloth/BLUEwater, continuousMOON. Spatialreversal versus193COLLECT UPnurseryLOWrack, no progression/scope. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--secret--route",
+      "nativeSha256": "4e5c82a35054d8b6a3a7260c0486bfb4ea6cc8a2f4e7c617e16f3fb5da0fd89b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "03f37400f064bff8d688fff9f5389f6020ae05c32b0ec3b8e1928f7ab96c0e8a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwhole nursery crackedegg/cloth/BLUEwater CLOSEDbook actualearthtrace MIDrack LOWtwoWHOLEdifferent houses/LEFTtrail continuousMOON. Actualearthimprint on soil permitted, not printedlogo. Different194secretMOOD UPrackLOWnursery no route. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--secret--habitat",
+      "nativeSha256": "0bcfacdb1878e96dafb0e7b8289fe59b7fb2874c9aca62b9c716f9e9c2577f2d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "74212e06fea257b87be4359671f234d5ed8be1fd2edecfbd02cfd3c1c85113c1",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Requiredwhole nursery roof crosses actualnativeTOPedge confirmedreadonlyNEARESTtopdiagnostic: composition ONLY F. UPnursery/CLOSEDbook/earthtrace MIDrack LOW3actualINNERviews continuousMOON differs194secretMOOD no progression."
+      ],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. Requiredwhole nursery roof crosses actualnativeTOPedge confirmedreadonlyNEARESTtopdiagnostic: composition ONLY F. UPnursery/CLOSEDbook/earthtrace MIDrack LOW3actualINNERviews continuousMOON differs194secretMOOD no progression. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--secret--case",
+      "nativeSha256": "69cbacb6fd630cab1a30bafe522e136cd90fdae6ad6c7e27e4cf8160794d01e8",
+      "nativeDimensions": [
+        1672,
+        940
+      ],
+      "requestSha256": "4f9f0000a6e04ab3edce76247be7068e8aa12916f7d2300cba661d31e092efa2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwhole nursery crackedegg/cloth/BLUEwater CLOSEDbook actualearthtrace MIDrack LOWwholeOPENlocalrefuge/pail/earthtrace continuousMOON, no scope. Different194secretMOOD UPrackLOWnursery/no case. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--bond--partner--warm--case--episode",
+      "nativeSha256": "069c7f7add79a664ed80d7b9607a4813f4d29364319b19a7348d4aa52c6be7f3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "07d7290547e57af4fb0ae9c23b55a4ecdf0a6c7ec022ba000f87563e3603b9cf",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwholeOPENlocalrefuge/pailtrace LOWlargeEMPTYprotectedGROUNDpadding separateplainblanket BLUEwater WARMgrowth, no return. Different191warmCASE UPcareLOWrefuge. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--bond--partner--warm--case--short",
+      "nativeSha256": "1d6a2c4d3a5e0601f7e023f9ed9307023308894718f8a670ecec005b91a6474c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8b3efdbf35c4e2eb52f84d29544af4bd10819d9b6cf9b1fa2aa774b91c1ed772",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwholeOPENhome MIDtidycaretable plainblanket distinctadjacentEMPTYpadding BLUEwater LOWwholeOPENlocalrefuge/pail/earthtrace WARMreturn, no growth. Separateadjacentpadding is actualcarecomponent permitted, not missing. Different191warmCASE UPcareLOWrefuge/no returnhome. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat",
+      "nativeSha256": "bf13a55841599a040cd666a15d414b54ff4c766e8a39706fc8cf8a9d38818a27",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a922a4821d515967fde5a7e08b906bb5098bc2bc28b59d35163a8bfcdef008c1",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwhole nursery clearlycrackedegg/cloth/BLUEwater MIDrack LOW3actualWHOLEINNERwetlandFORESTRUIN, SUN/no scope. BothactualINNERcolumns/stairsbefore60.3; optionalouterstones not INNERfeatures. Different193MOOD UPrackLOWnursery/no habitats. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--habitat--short",
+      "nativeSha256": "322a2cc62bc97cde243d9357121d10074beda052a13d47095b0a1d0ee1325306",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "da2bbc9c3bdf15f155b2dbcf7cbe65b38f232c442c2bcca9f22111b6c1bd75dd",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "RequiredactualRUINarchINNERrightcolumn straddles/extendsbeyondactual60.3 behindcontrols, confirmedreadonlyNEARESTcropendingatactualpanelboundary: composition ONLY F. UPwholeOPENhome MIDtidyreturntable crackedegg/cloth/BLUEwaterrack LOW3INNERviews SUNreturn; different194HABparentUPnursery/no returnhome."
+      ],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. RequiredactualRUINarchINNERrightcolumn straddles/extendsbeyondactual60.3 behindcontrols, confirmedreadonlyNEARESTcropendingatactualpanelboundary: composition ONLY F. UPwholeOPENhome MIDtidyreturntable crackedegg/cloth/BLUEwaterrack LOW3INNERviews SUNreturn; different194HABparentUPnursery/no returnhome. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    },
+    {
+      "key": "monster--hatch--collect--bright--case--scene",
+      "nativeSha256": "5852ec9ad72a68103b1ec9a96e3030ed72019f0e9d2b68eda592a8ee5e59a5e5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "dc2d3f2b77bc681a03417ebe213b3fe008084dea20a38555dcc6b3d6e97df93d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally read FULLexactOWN/viewed WHOLEnative plus FULLexactOWN/WHOLEactual193COLLECT/193brightMOOD/NEW194secretMOOD/NEW194brightHAB/NEW194brightCASE or191warmCASEparent. UPwholeOPENlocalrefuge/pailtrace MIDrack LOWsmallpreparedcradle visiblycrackedegg/cloth/BLUEwater SUNfirstmoment/no growthreturn. Spatialreversal versus194CASE UPnurseryLOWrefuge. Other7checks directlyROOT judged: coherent coarseclusters/flatshade allplanes; no inventedspecies/body or writing/logos/signs. Natural eggspeckles, plainclothtrim and actualgroundimprints permitted by OWN; no latercriteria retroappliedtooldparents. WHOLEform/actual60.3 judged, not arbitraryideal55. Native unchanged retained."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 799,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}
