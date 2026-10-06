@@ -17,11 +17,11 @@ export function writeWandRuntimeDraft(packetDir: string) {
   };
   verify();
   const input = JSON.parse(readFileSync(join(dir, 'authoring-input.json'), 'utf8')) as NativeSceneProjectInput;
-  const bytes = serialize(createNativeSceneProject(input));
+  const bytes = serialize(createNativeSceneProject(input)) + '\n';
   const projectFile = join(dir, 'project.oprn.json');
   if (existsSync(projectFile)) throw new Error('Use a new draft output directory');
   verify();
-  writeFileSync(projectFile, bytes + '\n', { flag: 'wx' });
+  writeFileSync(projectFile, bytes, { flag: 'wx' });
   const proof = { status: 'prepared-not-approved', draftId: `native_wand_${manifest.inputFingerprint.slice(0, 16)}`,
     projectFile, sha256: createHash('sha256').update(bytes).digest('hex'), inputFingerprint: manifest.inputFingerprint,
     authoringValid: true, runtimePassed: false, publicRegistered: false, canonicalReload: false,

@@ -21,11 +21,11 @@ export function writeNativeRuntimeDraft(packetDir: string) {
   verify();
   const input = JSON.parse(readFileSync(join(dir, 'authoring-input.json'), 'utf8')) as NativeSceneProjectInput;
   const project = createNativeSceneProject(input);
-  const bytes = serialize(project);
+  const bytes = serialize(project) + '\n';
   const file = join(dir, 'project.oprn.json');
   if (existsSync(file)) throw new Error('Draft project already exists; use a new packet directory');
   verify();
-  writeFileSync(file, bytes + '\n', { flag: 'wx' });
+  writeFileSync(file, bytes, { flag: 'wx' });
   const proof = { status: 'prepared-not-approved', draftId: `native_potions_${manifest.inputFingerprint.slice(0, 16)}`, projectFile: file,
     sha256: createHash('sha256').update(bytes).digest('hex'), inputFingerprint: manifest.inputFingerprint,
     authoringValid: true, mapIds: Object.keys(project.maps), runtimePassed: false,
