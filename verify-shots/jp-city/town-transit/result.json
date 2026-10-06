@@ -1,0 +1,17 @@
+{
+  "shots": [
+    {
+      "name": "ekimae",
+      "bus": "jp-bus-city x 30~38 y 14",
+      "nearVehicles": 3,
+      "routes": 10
+    },
+    {
+      "name": "school",
+      "bus": "jp-bus-city x 36~44 y 75",
+      "nearVehicles": 3,
+      "routes": 10
+    }
+  ],
+  "ok": true
+}

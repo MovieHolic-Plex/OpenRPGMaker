@@ -4,10 +4,10 @@
 //                         routes = 칸 경로를 직접(굽은 길·순환선·노면전차·전철), clear/removeRouteIds = 지우기.
 // 저장 모양·시뮬레이션은 src/project/mapTransit.ts, 길 띠 찾기는 src/project/transitAuto.ts. 그림 목록은 src/assets/jpCityVehicles.json.
 import {
-  createTransitSim, expandTransitPath, normalizeMapTransit, transitPose, transitRectCells, transitVehicle, transitVehicleCatalog,
+  createTransitSim, expandTransitPath, normalizeMapTransit, transitFootprintRect, transitPose, transitRectCells, transitVehicle, transitVehicleCatalog,
   TRANSIT_ROUTE_VEHICLE_KINDS, type MapTransit, type MapTransitRoute, type MapTransitStop, type TransitDir, type TransitRouteKind,
 } from "@/project/mapTransit";
-import { autoTrafficRoutes, findRoadBands, straightPathIndex, type RoadBand } from "@/project/transitAuto";
+import { autoTrafficRoutes, findRoadBands, headIndexFromCenter, straightPathIndex, type RoadBand } from "@/project/transitAuto";
 import type { GameMap, Project } from "@/project/types";
 import { inMapBounds, requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -18,32 +18,48 @@ const KIND_KO: Record<TransitRouteKind, string> = { road: "차 흐름", bus: "�
 /** 차·버스가 달려도 되는 1층 칸 = 생활도로 오토타일 묶음. */
 const LANE_GROUP = "jp-lane-road";
 const TRAM_RAIL_KITS = ["jp-tram-rail-h", "jp-tram-rail-v", "jp-tram-rail-end"];
+const TRACK_KITS = ["jp-subway-track"];
 
 const vehicleIds = (): string[] => transitVehicleCatalog().map((v) => v.id);
 const vehicleLine = (): string => transitVehicleCatalog().map((v) => `${v.id}(${v.kind}, 길이 ${v.length}칸)`).join(", ");
 
+/** 차가 지나가도 되는 길 칸 = 생활도로 묶음 + 횡단보도(묶음·길 4줄 키트) + 「생활도로」 이름표 키트 칸. 횡단보도로 끊긴 간선도 한 띠로 본다. */
+const CROSSWALK_GROUPS = ["jp-crosswalk-ew", "jp-crosswalk-ns"];
+const CROSSWALK_KITS = ["jp-road-lane-crosswalk-h", "jp-road-lane-crosswalk-v"];
 function laneTileSet(project: Project, map: GameMap): Set<number> {
   const ts = project.tilesets[map.tilesetId];
-  return new Set(ts?.autotileGroups?.find((g) => g.id === LANE_GROUP)?.memberTileIds ?? []);
+  const out = new Set<number>();
+  for (const g of ts?.autotileGroups ?? []) if (g.id === LANE_GROUP || CROSSWALK_GROUPS.includes(g.id)) for (const t of g.memberTileIds) out.add(t);
+  for (const t of kitTileSet(project, map, CROSSWALK_KITS, "tiles")) out.add(t);
+  (ts?.tileMeta ?? []).forEach((m, i) => { if ((m?.label ?? "").startsWith("생활도로")) out.add(i); });
+  return out;
 }
-function tramTileSet(project: Project, map: GameMap): Set<number> {
+function kitTileSet(project: Project, map: GameMap, kitIds: readonly string[], layer: "tiles" | "upperTiles" | "both"): Set<number> {
   const ts = project.tilesets[map.tilesetId];
   const out = new Set<number>();
   for (const k of ts?.structureKits ?? []) {
-    if (!TRAM_RAIL_KITS.includes(k.id)) continue;
-    for (const row of k.rows ?? []) for (const t of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (typeof t === "number" && t >= 0) out.add(t);
+    if (!kitIds.includes(k.id)) continue;
+    for (const row of k.rows ?? []) {
+      const src = layer === "tiles" ? row.tiles ?? [] : layer === "upperTiles" ? row.upperTiles ?? [] : [...(row.tiles ?? []), ...(row.upperTiles ?? [])];
+      for (const t of src) if (typeof t === "number" && t >= 0) out.add(t);
+    }
   }
   return out;
 }
+const tramTileSet = (project: Project, map: GameMap): Set<number> => kitTileSet(project, map, TRAM_RAIL_KITS, "both");
+/** 지하철·전철 선로(1층 jp-subway-track 2줄, 막힘 바닥). */
+const trackTileSet = (project: Project, map: GameMap): Set<number> => kitTileSet(project, map, TRACK_KITS, "tiles");
 const tileAt = (arr: ReadonlyArray<number> | undefined, map: GameMap, x: number, y: number): number => (arr && inMapBounds(map, x, y) ? arr[y * map.width + x] ?? -1 : -1);
 
-export function mapRoadBands(project: Project, map: GameMap): { road: RoadBand[]; tram: RoadBand[] } {
+export function mapRoadBands(project: Project, map: GameMap): { road: RoadBand[]; tram: RoadBand[]; track: RoadBand[] } {
   const lane = laneTileSet(project, map);
   const tram = tramTileSet(project, map);
+  const track = trackTileSet(project, map);
   const overlay = map.lowerOverlayTiles as ReadonlyArray<number> | undefined;
   return {
     road: lane.size ? findRoadBands(map, (x, y) => lane.has(tileAt(map.lowerTiles, map, x, y))) : [],
     tram: tram.size ? findRoadBands(map, (x, y) => tram.has(tileAt(overlay, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
+    track: track.size ? findRoadBands(map, (x, y) => track.has(tileAt(map.lowerTiles, map, x, y)), { minW: 2, maxW: 2, minLen: 6 }) : [],
   };
 }
 
@@ -51,11 +67,12 @@ const describeBand = (b: RoadBand): string => b.axis === "ew"
   ? `동서 띠 y ${b.edge}~${b.edge + b.width - 1}(폭 ${b.width}) x ${b.from}~${b.to}${b.edgeToEdge ? " 가장자리→가장자리" : ""}`
   : `남북 띠 x ${b.edge}~${b.edge + b.width - 1}(폭 ${b.width}) y ${b.from}~${b.to}${b.edgeToEdge ? " 가장자리→가장자리" : ""}`;
 
-/** 차·버스 노선의 맵 안 몸 칸이 차도 밖에 걸리는 곳(최대 6곳). */
+/** 노선의 맵 안 몸 칸이 제 길(차·버스 = 1층 생활도로, 지하철·전철 = 1층 선로, 노면전차 = 2층 레일) 밖에 걸리는 곳(최대 6곳). */
 function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): Array<{ x: number; y: number }> {
-  if (route.kind !== "road" && route.kind !== "bus") return [];
-  const lane = laneTileSet(project, map);
-  if (!lane.size) return [];
+  const onRail = route.kind === "tram";
+  const set = route.kind === "road" || route.kind === "bus" ? laneTileSet(project, map) : route.kind === "tram" ? tramTileSet(project, map) : trackTileSet(project, map);
+  if (!set.size) return [];
+  const layer = onRail ? (map.lowerOverlayTiles as ReadonlyArray<number> | undefined) : map.lowerTiles;
   const cells = expandTransitPath(route.path, route.loop === true) ?? [];
   const bad: Array<{ x: number; y: number }> = [];
   const seen = new Set<string>();
@@ -66,12 +83,30 @@ function offRoadCells(project: Project, map: GameMap, route: MapTransitRoute): A
     for (const p of horizontal ? [c, { x: c.x, y: c.y + 1 }] : [c, { x: c.x + 1, y: c.y }]) {
       if (!inMapBounds(map, p.x, p.y)) continue;
       const k = `${p.x},${p.y}`;
-      if (seen.has(k) || lane.has(tileAt(map.lowerTiles, map, p.x, p.y))) continue;
+      if (seen.has(k) || set.has(tileAt(layer, map, p.x, p.y))) continue;
       seen.add(k); bad.push(p);
       if (bad.length >= 6) return bad;
     }
   }
   return bad;
+}
+
+const WAY_KO: Record<TransitRouteKind, string> = { road: "1층 생활도로(jp-lane-road)", bus: "1층 생활도로(jp-lane-road)", tram: "2층 노면전차 레일(jp-tram-rail-h/v)", train: "1층 선로(jp-subway-track)", subway: "1층 선로(jp-subway-track)" };
+
+/** 정류장마다 「서면 몸이 차지하는 칸」 — 조수가 정문·승강장 앞에 문이 오는지 스스로 고칠 수 있게 돌려준다. */
+function stopBodies(map: GameMap, route: MapTransitRoute): Array<{ name: string; x0: number; x1: number; y0: number; y1: number; inMap: number }> {
+  const cells = expandTransitPath(route.path, route.loop === true) ?? [];
+  const len = Math.max(...route.vehicles.map((id) => transitVehicle(id)?.length ?? 1));
+  return (route.stops ?? []).filter((s) => cells[s.index]).map((s) => {
+    const head = cells[s.index]!;
+    const back = cells[Math.max(s.index - 1, 0)]!, ahead = cells[Math.min(s.index + 1, cells.length - 1)]!;
+    const [from, to] = s.index > 0 ? [back, head] : [head, ahead];
+    const dir: TransitDir = to.x > from.x ? "right" : to.x < from.x ? "left" : to.y > from.y ? "down" : "up";
+    const r = transitFootprintRect(head, dir, len);
+    let inside = 0;
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (inMapBounds(map, x, y)) inside += 1;
+    return { name: s.name ?? `#${s.index}`, x0: r.x, x1: r.x + r.w - 1, y0: r.y, y1: r.y + r.h - 1, inMap: inside / (r.w * r.h) };
+  });
 }
 
 /** 시험 삼아 120초 돌려 노선마다 탈것이 실제로 다니는지 본다. */
@@ -99,8 +134,8 @@ const boardSchema: JsonSchema = {
 };
 const stopSchema: JsonSchema = {
   type: "object",
-  description: "정류장. (x, y) = 탈것 **머리**가 서는 경로 칸(노선 path 위 칸).",
-  properties: { x: { type: "integer" }, y: { type: "integer" }, name: { type: "string" }, waitSec: { type: "number" }, board: boardSchema },
+  description: "정류장. (x, y) = 경로 위 칸. at:\"center\" 면 서 있을 때 **몸 가운데**가 올 칸(정문·계단 앞 칸을 그대로 주면 문이 그 앞에 온다 — 권장), 생략·\"head\" 면 **머리** 칸.",
+  properties: { x: { type: "integer" }, y: { type: "integer" }, at: { type: "string", enum: ["head", "center"], description: "center = (x, y) 가 몸 가운데(권장), head = 머리" }, name: { type: "string" }, waitSec: { type: "number" }, board: boardSchema },
   required: ["x", "y"], additionalProperties: false,
 };
 const routeSchema: JsonSchema = {
@@ -129,8 +164,10 @@ function routeFromArgs(raw: Record<string, unknown>): MapTransitRoute {
   if (!cells) throw new ToolError(`노선 ${String(raw.id)}: path 의 이웃 점이 같은 행·열이 아니다(대각선) — 꺾이는 점마다 가로 또는 세로로만 잇는다`, { code: "invalid-args" });
   const stops: MapTransitStop[] = [];
   for (const s of (raw.stops as Array<Record<string, unknown>> | undefined) ?? []) {
-    const index = cells.findIndex((c) => c.x === s.x && c.y === s.y);
-    if (index < 0) throw new ToolError(`노선 ${String(raw.id)}: 정류장 (${String(s.x)},${String(s.y)}) 이 경로 칸이 아니다 — 머리가 지나는 경로 위 칸을 준다(경로 ${path.map((p) => `(${p.x},${p.y})`).join("→")})`, { code: "invalid-args" });
+    const found = cells.findIndex((c) => c.x === s.x && c.y === s.y);
+    const len = Math.max(...((raw.vehicles as string[]) ?? []).map((id) => transitVehicle(id)?.length ?? 1), 1);
+    const index = found >= 0 && s.at === "center" ? Math.min(headIndexFromCenter(found, len), cells.length - 1) : found;
+    if (found < 0) throw new ToolError(`노선 ${String(raw.id)}: 정류장 (${String(s.x)},${String(s.y)}) 이 경로 칸이 아니다 — 머리가 지나는 경로 위 칸을 준다(경로 ${path.map((p) => `(${p.x},${p.y})`).join("→")})`, { code: "invalid-args" });
     stops.push({ index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) });
   }
   return {
@@ -149,7 +186,7 @@ export const INSPECT_MAP_TRANSIT_TOOL: ToolDefinition = {
   mode: "read",
   domains: ["map", "tile"],
   fillsCurrentMapId: true,
-  description: "맵의 탈것(차 흐름·버스·노면전차·전철·지하철) 상태를 본다 — 길 그림에서 찾은 차도 띠(좌표·폭·가장자리 연결)와 노면전차 레일, 지금 깔린 노선, 120초 미리 돌린 결과(노선별 대수·막힌 차). set_map_transit 전에 띠 좌표를 확인하고, 깐 뒤에는 차가 실제로 다니는지 이것으로 확인한다.",
+  description: "맵의 탈것(차 흐름·버스·노면전차·전철·지하철) 상태를 본다 — 길 그림에서 찾은 차도 띠(좌표·폭·가장자리 연결)·노면전차 레일·지하철/전철 선로, 지금 깔린 노선, 120초 미리 돌린 결과(노선별 대수·막힌 차). set_map_transit 전에 띠 좌표를 확인하고, 깐 뒤에는 차가 실제로 다니는지 이것으로 확인한다.",
   parameters: { type: "object", properties: { mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵)" } }, additionalProperties: false },
   run(project, args): ToolExecResult {
     const map = requireMap(project, String(args.mapId ?? ""));
@@ -159,11 +196,12 @@ export const INSPECT_MAP_TRANSIT_TOOL: ToolDefinition = {
     const lines = [
       `차도 띠 ${bands.road.length}개: ${bands.road.map(describeBand).join(" / ") || "없음(1층 생활도로 칸이 없다)"}`,
       `노면전차 레일 ${bands.tram.length}개: ${bands.tram.map(describeBand).join(" / ") || "없음"}`,
+      `지하철·전철 선로 ${bands.track.length}개: ${bands.track.map((b) => `${describeBand(b)} → 경로 머리 ${b.axis === "ew" ? `행 y=${b.edge}` : `열 x=${b.edge}`}`).join(" / ") || "없음"}${bands.track.length ? " (set_map_transit auto.subway 로 깐다)" : ""}`,
       `노선 ${routes.length}개: ${routes.map((r) => `${r.id}(${KIND_KO[r.kind]}, ${r.cells.length}칸${r.loop ? " 고리" : ""}, 정류장 ${r.stops.length})`).join(", ") || "없음"}`,
       ...(problems.length ? [`문제: ${problems.map((p) => `${p.routeId}: ${p.message}`).join(" / ")}`] : []),
       ...(sim ? [`120초 뒤 탈것 ${sim.vehicles}대${sim.stuck.length ? ` · 막힘 ${sim.stuck.join(", ")}` : ""}`] : []),
     ];
-    return { summary: lines.join("\n"), data: { mapId: map.id, roadBands: bands.road, tramBands: bands.tram, routes: map.transit?.routes ?? [], problems, sim } };
+    return { summary: lines.join("\n"), data: { mapId: map.id, roadBands: bands.road, tramBands: bands.tram, trackBands: bands.track, routes: map.transit?.routes ?? [], problems, sim } };
   },
 };
 
@@ -183,8 +221,9 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
   const auto = args.auto && typeof args.auto === "object" ? (args.auto as Record<string, unknown>) : null;
   if (auto) {
     const bands = mapRoadBands(draft, map);
-    routes = routes.filter((r) => !/^(traffic|bus|tram)-/.test(r.id));
-    if (auto.traffic !== false || Array.isArray(auto.busStops)) {
+    const onlyRail = Boolean(auto.subway || auto.tram === true) && auto.traffic === undefined && !Array.isArray(auto.busStops);
+    routes = routes.filter((r) => !(onlyRail ? (auto.tram === true ? /^tram-/ : /^$/) : /^(traffic|bus|tram)-/).test(r.id));
+    if (!onlyRail && (auto.traffic !== false || Array.isArray(auto.busStops))) {
       const usable = bands.road.filter((b) => b.edgeToEdge);
       if (!usable.length) {
         throw new ToolError(`자동으로 깔 차도가 없다 — 가장자리에서 가장자리까지 이어진 생활도로 띠(1층 ${LANE_GROUP}, 폭 2~8칸)를 찾지 못했다. 찾은 띠: ${bands.road.map(describeBand).join(" / ") || "없음"}. 길을 맵 끝까지 잇거나, routes 로 칸 경로를 직접 준다.`, { code: "no-road", mapId: map.id });
@@ -223,7 +262,7 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
           const stops = ((auto.tramStops as Array<Record<string, unknown>> | undefined) ?? [])
             .map((s) => ({ s, index: straightPathIndex(path, s.x as number, s.y as number) })).filter((e): e is { s: Record<string, unknown>; index: number } => e.index !== null)
             .map((e) => { matchedTramStops.add(e.s); return e; })
-            .map(({ s, index }) => ({ index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) }));
+            .map(({ s, index }) => ({ index: s.at === "center" ? headIndexFromCenter(index, transitVehicle("jp-tram")?.length ?? 12) : index, ...(typeof s.name === "string" ? { name: s.name } : {}), ...(typeof s.waitSec === "number" ? { waitSec: s.waitSec } : {}), ...(s.board ? { board: s.board as MapTransitStop["board"] } : {}) }));
           routes.push({ id: `tram-${band.axis}${band.edge}-${dir}`, name: "노면전차", kind: "tram", path, vehicles: ["jp-tram"], headwaySec: 45, ...(stops.length ? { stops } : {}) });
         }
         if (!mate) warnings.push(`노면전차 레일 ${describeBand(b)} 은 단선이라 한 방향(${b.axis === "ew" ? "서쪽행" : "남쪽행"})만 다닌다 — 양방향이면 레일을 한 줄 더(4칸 안에 나란히) 깐다`);
@@ -232,6 +271,42 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
       if (lost.length) throw new ToolError(`노면전차 정류장 ${lost.map((t) => `(${String(t.x)},${String(t.y)})`).join(" ")} 이 레일 위가 아니다 — 전차 머리가 서는 레일 칸(레일 2줄 중 하나)을 준다. 레일: ${rails.map(describeBand).join(" / ")}`, { code: "invalid-args", mapId: map.id });
       notes.push(`노면전차 레일 ${rails.length}줄`);
     }
+  }
+  const sub = auto && auto.subway && typeof auto.subway === "object" ? (auto.subway as Record<string, unknown>) : null;
+  if (sub) {
+    const bands = mapRoadBands(draft, map).track.filter((b) => b.edgeToEdge);
+    if (!bands.length) throw new ToolError(`지하철·전철 선로가 가장자리→가장자리로 이어지지 않는다 — 1층에 jp-subway-track(2줄)을 맵 끝까지 깔거나 routes 로 kind:"subway" 경로를 직접 준다. 찾은 선로: ${mapRoadBands(draft, map).track.map(describeBand).join(" / ") || "없음"}`, { code: "no-rail", mapId: map.id });
+    const vehicleId = typeof sub.vehicle === "string" ? sub.vehicle : "jp-subway";
+    const def = transitVehicle(vehicleId);
+    if (!def || (def.kind !== "subway" && def.kind !== "train")) throw new ToolError(`auto.subway.vehicle '${vehicleId}' 은 지하철·전철이 아니다 — jp-subway 또는 jp-train-commuter`, { code: "invalid-args", mapId: map.id });
+    const kind: TransitRouteKind = def.kind;
+    routes = routes.filter((r) => !/^(subway|train)-(ew|ns)\d+-/.test(r.id));
+    const len = def.length;
+    const OFF = len + 6;
+    const used = new Set<RoadBand>();
+    for (const b of bands) {
+      if (used.has(b)) continue;
+      const mate = bands.find((o) => o !== b && !used.has(o) && o.axis === b.axis && o.edge > b.edge && o.edge - b.edge <= 6);
+      used.add(b); if (mate) used.add(mate);
+      const lanes: Array<[RoadBand, TransitDir]> = mate
+        ? (b.axis === "ew" ? [[b, "right"], [mate, "left"]] : [[b, "up"], [mate, "down"]])
+        : [[b, b.axis === "ew" ? "right" : "down"]];
+      for (const [band, dir] of lanes) {
+        const along = band.axis === "ew" ? W : H;
+        const forward = dir === "right" || dir === "down";
+        const [a0, z0] = forward ? [-OFF, along - 1 + OFF] : [along - 1 + OFF, -OFF];
+        const path = band.axis === "ew" ? [{ x: a0, y: band.edge }, { x: z0, y: band.edge }] : [{ x: band.edge, y: a0 }, { x: band.edge, y: z0 }];
+        // 몸 가운데 = center(기본 맵 가운데). 몸이 맵 안에 다 들어가게 머리를 조인다(맵이 열차보다 짧으면 가운데 정렬).
+        const want = typeof (band.axis === "ew" ? sub.centerX : sub.centerY) === "number" ? Number(band.axis === "ew" ? sub.centerX : sub.centerY) : Math.floor((along - 1) / 2);
+        const half = Math.floor((len - 1) / 2);
+        let head = forward ? want + half : want - half;
+        if (len <= along) head = forward ? Math.min(Math.max(head, len - 1), along - 1) : Math.max(Math.min(head, along - len), 0);
+        const index = forward ? head - a0 : a0 - head;
+        const stop: MapTransitStop = { index, name: typeof sub.stopName === "string" ? sub.stopName : map.name, waitSec: typeof sub.waitSec === "number" ? sub.waitSec : 12, ...(sub.board ? { board: sub.board as MapTransitStop["board"] } : {}) };
+        routes.push({ id: `${kind}-${band.axis}${band.edge}-${dir}`, name: typeof sub.name === "string" ? sub.name : KIND_KO[kind], kind, path, vehicles: [vehicleId], headwaySec: typeof sub.headwaySec === "number" ? sub.headwaySec : 40, speed: 6, stops: [stop] });
+      }
+    }
+    notes.push(`선로 ${bands.length}줄(${bands.map(describeBand).join(" / ")})`);
   }
   if (Array.isArray(args.routes)) {
     for (const raw of args.routes as Array<Record<string, unknown>>) {
@@ -251,7 +326,8 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
   if (problems.length) throw new ToolError(`노선을 깔지 않았다 — ${problems.map((p) => `${p.routeId}: ${p.message}`).join(" / ")}`, { code: "invalid-route", mapId: map.id });
   for (const r of routes) {
     const off = offRoadCells(draft, map, r);
-    if (off.length) throw new ToolError(`노선을 깔지 않았다 — ${r.id}(${KIND_KO[r.kind]})의 몸이 차도 밖 칸 ${off.map((c) => `(${c.x},${c.y})`).join(" ")} 에 걸린다. 몸 폭 2칸(가로로 달리면 머리 행·그 아래 행, 세로면 머리 열·그 오른쪽 열)이 모두 1층 생활도로여야 한다. inspect_map_transit 로 띠 좌표를 본다.`, { code: "off-road", mapId: map.id, x: off[0]!.x, y: off[0]!.y });
+    if (off.length) throw new ToolError(`노선을 깔지 않았다 — ${r.id}(${KIND_KO[r.kind]})의 몸이 길 밖 칸 ${off.map((c) => `(${c.x},${c.y})`).join(" ")} 에 걸린다. 몸 폭 2칸(가로로 달리면 머리 행·그 아래 행, 세로면 머리 열·그 오른쪽 열)이 모두 ${WAY_KO[r.kind]} 이어야 한다. 경로 머리 행 = 띠의 위 끝 행(세로면 왼쪽 끝 열). inspect_map_transit 로 띠 좌표를 본다.`, { code: r.kind === "road" || r.kind === "bus" ? "off-road" : "off-track", mapId: map.id, x: off[0]!.x, y: off[0]!.y });
+    for (const b of stopBodies(map, r)) if (b.inMap < 0.6) warnings.push(`${r.id} 정류장 ${b.name}: 서면 몸이 x ${b.x0}~${b.x1}, y ${b.y0}~${b.y1} — ${Math.round(b.inMap * 100)}% 만 맵 안이다. 승강장·정문 앞에 오도록 at:"center" 로 몸 가운데 칸을 준다`);
     for (const s of r.stops ?? []) {
       if (!s.board) continue;
       const dest = draft.maps[s.board.mapId];
@@ -268,9 +344,10 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
   domains: ["map", "tile"],
   fillsCurrentMapId: true,
   description: "맵에 탈것을 다니게 한다(게임에서 실제로 움직이고, 주인공 앞에서는 서고, 정류장에서 문을 열고, board 가 있으면 「조사」로 탄다). "
-    + "가장 쉬운 길: auto:{} — 1층 생활도로(jp-lane-road) 그림에서 가장자리→가장자리 곧은 띠를 찾아 좌측통행 두 방향 차 흐름을 깐다. auto.busStops 로 버스 정류장(버스 머리가 서는 차선 칸)을 주면 그 차선에 시내버스 노선이 붙는다. auto.tram:true 면 2층 노면전차 레일(jp-tram-rail-h/v) 위로 노면전차. "
+    + "가장 쉬운 길: auto:{} — 1층 생활도로(jp-lane-road) 그림에서 가장자리→가장자리 곧은 띠를 찾아 좌측통행 두 방향 차 흐름을 깐다. auto.busStops 로 버스 정류장을 주면 그 차선에 시내버스 노선이 붙는다 — 정문 앞에 버스 문이 오게 하려면 {x: 정문 가운데 x, y: 그 앞 차선 행, at:\"center\"}. auto.tram:true 면 2층 노면전차 레일(jp-tram-rail-h/v) 위로 노면전차. "
+    + "지하철·전철 승강장 맵은 auto.subway:{board:{mapId,x,y}, stopName, centerX} 하나면 된다(1층 jp-subway-track 선로를 찾아 30칸 열차를 승강장 가운데에 세운다). 결과 요약의 「서면 몸 x a~b」 로 문 위치를 확인한다. "
     + "굽은 길·순환선·지하철·전철은 routes 로 칸 경로를 직접 준다(먼저 inspect_map_transit 로 띠 좌표를 본다). 차·버스 노선은 몸이 차도 밖에 걸리면 깔지 않는다. "
-    + "지하철·전철 승강장 맵: 선로 위 칸 경로(맵 밖→맵 밖) + stops 에 board(타면 갈 맵·칸). 지상 지하철 출입구(jp-subway-entrance)는 탈것이 아니라 그 안 칸의 이동 이벤트로 승강장 맵에 잇는다. "
+    + "routes 로 지하철을 직접 줄 때: 경로 머리 행 = 선로 2줄의 위 행, 맵 밖 36칸→맵 밖 36칸, stops 는 at:\"center\" + board. 지상 지하철 출입구(jp-subway-entrance)는 탈것이 아니라 그 안 칸의 이동 이벤트로 승강장 맵에 잇는다. "
     + `탈것 목록: ${vehicleLine()}. 노선 종류별 허용 탈것: road=승용·택시·경차·트럭, bus=버스, tram=노면전차, train=전철, subway=지하철.`,
   parameters: {
     type: "object",
@@ -278,7 +355,7 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵)" },
       auto: {
         type: "object",
-        description: "길 그림에서 자동으로 깐다. 이전에 자동으로 깐 노선(traffic-*·bus-*·tram-*)은 바꾼다.",
+        description: "길·레일·선로 그림에서 자동으로 깐다. 이전에 자동으로 깐 노선(traffic-*·bus-*·tram-*, subway 를 주면 subway-*/train-*)은 바꾼다. subway 나 tram 만 주면 차 흐름은 깔지 않는다.",
         properties: {
           traffic: { type: "boolean", description: "차 흐름(기본 true)" },
           headwaySec: { type: "number", description: "차 간격 초(기본 7). 한산한 주택가 10~14, 큰길 4~6" },
@@ -286,7 +363,22 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
           busStops: { type: "array", items: stopSchema, description: "버스 정류장 — (x, y) 는 버스 머리가 서는 차선 칸(그 칸을 지나는 방향 차선)" },
           busHeadwaySec: { type: "number", description: "버스 간격 초(기본 35)" },
           tram: { type: "boolean", description: "2층 노면전차 레일 위로 노면전차(가장자리→가장자리 레일만)" },
-          tramStops: { type: "array", items: stopSchema, description: "노면전차 정류장(전차 머리가 서는 레일 칸) — jp-tram-stop 안전지대 옆" },
+          tramStops: { type: "array", items: stopSchema, description: "노면전차 정류장(레일 칸, at:\"center\" 권장) — jp-tram-stop 안전지대 옆" },
+          subway: {
+            type: "object",
+            description: "지하철·전철 승강장: 1층 선로(jp-subway-track, 맵 끝→끝 2줄)를 찾아 열차가 맵 밖에서 들어와 승강장 앞에 서서 문을 열고 떠나게 한다. 선로가 둘(6칸 안에 나란히)이면 양방향. 차 흐름은 따로 주지 않으면 깔지 않는다.",
+            properties: {
+              vehicle: { type: "string", enum: ["jp-subway", "jp-train-commuter"], description: "기본 jp-subway(30칸). 지상 전철 승강장이면 jp-train-commuter" },
+              name: { type: "string", description: "노선 이름(예: 地下鉄 さくら線)" },
+              stopName: { type: "string", description: "역 이름(기본 맵 이름)" },
+              board: boardSchema,
+              centerX: { type: "integer", description: "가로 선로에서 열차 몸 가운데가 설 x(기본 맵 가운데 — 승강장 계단 앞 등)" },
+              centerY: { type: "integer", description: "세로 선로에서 몸 가운데 y" },
+              waitSec: { type: "number", description: "정차 초(기본 12)" },
+              headwaySec: { type: "number", description: "열차 간격 초(기본 40)" },
+            },
+            additionalProperties: false,
+          },
         },
         additionalProperties: false,
       },
@@ -306,6 +398,8 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
     if (quiet.length) warnings.push(`120초 돌려도 탈것이 나오지 않은 노선: ${quiet.join(", ")} — 간격(headwaySec)·시작 칸이 막혔는지 본다`);
     if (sim?.stuck.length) warnings.push(`오래 막힌 탈것: ${sim.stuck.slice(0, 4).join(", ")} — 경로가 다른 노선과 겹치거나 막다른 곳에서 끝난다`);
     const byKind = routes.reduce<Record<string, number>>((acc, r) => ({ ...acc, [KIND_KO[r.kind]]: (acc[KIND_KO[r.kind]] ?? 0) + 1 }), {});
+    const stopLines = routes.flatMap((r) => stopBodies(map, r).map((b) => `${KIND_KO[r.kind]} 정류장 ${b.name}: 서면 몸 x ${b.x0}~${b.x1}, y ${b.y0}~${b.y1}(문은 ${r.kind === "road" ? "-" : "몸 가운데쯤"})`));
+    if (stopLines.length) notes.push(stopLines.join(" / "));
     return {
       summary: routes.length
         ? `${map.name} 탈것 노선 ${routes.length}개(${Object.entries(byKind).map(([k, n]) => `${k} ${n}`).join(", ")}) — ${notes.join(" · ")}${sim ? ` · 120초 시험: 탈것 ${sim.vehicles}대` : ""}. 게임에서 차는 주인공 앞에서 서고, 정류장에서 문을 연다.`

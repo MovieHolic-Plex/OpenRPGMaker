@@ -48,7 +48,7 @@ const transferEvent = (id, name, x, y, to) => ({
   put("jp-subway-stairs-down", 11, 13, { tag: "platform-stairs" });     // 승강장 계단 x 11~14, 입구 칸 (12,13)(13,13)
   // 점자 유도 블록(2층): 매표기 앞 ― 출구 계단 앞 ― 역무실 앞(4줄), 출구 계단 앞에서 개찰 통로(x 13)를 지나 승강장 계단 앞(10줄)까지
   const line = (x0, y0, x1, y1) => { const out = []; for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) out.push([x, y]); return out; };
-  m.groupLineL2("jp-tactile", [...line(5, 4, 20, 4), ...line(13, 5, 13, 10), [12, 10]]);   // 4줄 = 매표기·출구 계단·역무실 앞(끝·꺾임 = 점형), 13열 = 개찰 통로 → 승강장 계단 앞
+  m.groupLineL2("jp-tactile", [...line(2, 4, 22, 4), ...line(13, 5, 13, 10), [12, 10]]);   // 4줄 = 매표기(x 2~7) 앞부터 역무실(x 19~22) 앞까지·출구 계단·역무실 앞(끝·꺾임 = 점형), 13열 = 개찰 통로 → 승강장 계단 앞
   const events = [
     ...[12, 13].map((x) => transferEvent(`ev_exit_${x}`, "출구 계단(지상)", x, 3, EXIT_TARGET)),
     ...[12, 13].map((x) => transferEvent(`ev_down_${x}`, "승강장으로", x, 13, { mapId: PLATFORM_ID, x: x + 9, y: 11, dir: "down" })),

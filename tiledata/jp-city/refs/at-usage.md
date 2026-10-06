@@ -1,6 +1,6 @@
 # 일본 도시 — 오토타일 사용법 · 도구와 층 · 정상/오류 판정
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8048칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8054칸**, 16px 칸, 시트 768×2688px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 오토타일은 「같은 세트의 칸끼리 이웃을 보고 가장자리·모서리 그림을 스스로 고르는 칸 묶음」이다. 맵에는 **몸통 칸**(8방: `variantMap[255]`, 4방: `variantMap[15]`)을 칠하면 도구가 둘레를 다시 계산해 알맞은 칸으로 바꾼다. 번호를 직접 골라 찍으면 모양이 안 맞는다.
 

@@ -52,6 +52,24 @@
    "cover": 7.9
   }
  ],
+ "transit": {
+  "routes": [
+   "traffic-ew14-right",
+   "traffic-ew14-left",
+   "traffic-ew42-right",
+   "traffic-ew42-left",
+   "traffic-ew55-right",
+   "traffic-ew55-left",
+   "traffic-ew75-right",
+   "traffic-ew75-left",
+   "bus-ew14-right",
+   "bus-ew75-right"
+  ],
+  "notes": [
+   "차도 띠 4개(동서 띠 y 14~17(폭 4) x 0~95 가장자리→가장자리 / 동서 띠 y 42~45(폭 4) x 0~95 가장자리→가장자리 / 동서 띠 y 55~58(폭 4) x 0~95 가장자리→가장자리 / 동서 띠 y 75~78(폭 4) x 0~95 가장자리→가장자리)"
+  ],
+  "warnings": []
+ },
  "doors": {
   "n": 46,
   "allReached": true,
@@ -84,7 +102,7 @@
   "issues": [],
   "l2": 726,
   "l3": 3330,
-  "l4": 902
+  "l4": 958
  },
  "emptiness": {
   "worst17x13": 0.566,
