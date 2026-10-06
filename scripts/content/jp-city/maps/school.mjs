@@ -40,7 +40,6 @@ put("jp-bldg-school-gym", 23, 12);                                 // 문 (28,12
 put("jp-pool", 38, 19, { tag: "pool" });                           // x 38~66, y 1~19, 입구 (51,19)(52,19)
 m.groupLine("jp-hedge", [...range(1, 22)].flatMap((x) => [[x, 1], [x, 2]]), "hedge-north");   // 교사 뒤 생울타리 두 줄
 for (const [id, x] of [["jp-prop-tree-sakura", 24], ["jp-prop-tree-zelkova", 29], ["jp-prop-tree-sakura", 33]]) tryPut(id, x, 6, `tree-gym-${x}`);
-m.groupLine("jp-hedge", [...range(23, 37)].flatMap((x) => [[x, 1], [x, 2]]).filter(([x, y]) => !m.own3[m.idx(x, y)]), "hedge-gym");   // 체육관 뒤까지 생울타리를 잇는다
 
 // ── 3. 교사 앞 줄(y 15~18): 게양대·나팔꽃·외발자전거·화단·조례대·게시판·동상·수돗가 — 문 앞 열(12·28·31)은 비운다
 put("jp-flagpoles", 2, 18, { tag: "flagpoles" });

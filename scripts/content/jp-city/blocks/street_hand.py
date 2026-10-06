@@ -222,7 +222,7 @@ def _draw30n(c, x0=0, y0=0):
     o = K('daidai', 1); d = K('daidai', 0)
     def seg(x, y, w, h): c.R(x0 + x, y0 + y, w, h, o); c.HL(x0 + x, y0 + y + h - 1, w, d)
     x = 0
-    seg(x, 4, 6, 3); seg(x + 4, 6, 2, 24); seg(x + 2, 29, 3, 3); seg(x + 4, 31, 2, 23); seg(x, 55, 6, 3)
+    seg(x, 4, 6, 3); seg(x + 4, 6, 2, 24); seg(x + 1, 29, 4, 3); seg(x + 4, 31, 2, 23); seg(x, 55, 6, 3)
     seg(x, 7, 2, 3); seg(x, 51, 2, 4)                                                           # 3 의 위·아래 갈고리
     x = 9
     seg(x + 1, 4, 4, 3); seg(x, 6, 2, 50); seg(x + 4, 6, 2, 50); seg(x + 1, 55, 4, 3)

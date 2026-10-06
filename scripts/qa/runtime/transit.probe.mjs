@@ -27,6 +27,7 @@ const SCHOOL = "jp-city-school";
 const BLOCK_CELL = { x: 20, y: 44 };   // 동쪽행 차선 윗줄
 const GATE_VIEW = { x: 36, y: 43 };    // 정문 열린 칸 — 아래(길)를 보면 버스 몸 (36,44)
 const BOARD_MAP = "map_lantern_village";
+const PLATFORM = "jp-city-station-platform";
 
 const failures = [];
 const lines = [];
@@ -127,6 +128,28 @@ try {
     const t3 = await transit();
     record(t3 === null || t3.vehicles.length === 0, "다른 맵에서는 탈것을 치운다", t3 ? `${t3.vehicles.length}대` : "시뮬레이션 없음");
   }
+  // 6. 지하철 — 승강장으로 옮겨 열차가 서서 문을 열기를 기다렸다가, 승강장 끝에서 위(열차)를 보고 「조사」로 탄다
+  await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [PLATFORM, 25, 6]);
+  await page.waitForFunction((m) => window.__oprnDebug.readState().currentMapId === m, PLATFORM, { timeout: 15_000 }).catch(() => {});
+  await page.waitForTimeout(800);
+  let train = null;
+  const trainDeadline = Date.now() + 70_000;
+  while (Date.now() < trainDeadline) {
+    const t = await transit();
+    train = t?.vehicles.find((v) => v.id === "jp-subway" && v.open && v.stopAt !== null) ?? null;
+    if (train) break;
+    await page.waitForTimeout(500);
+  }
+  record(!!train, "지하철이 승강장에 서서 문을 연다", train ? `${train.id} x ${train.rect.x}~${train.rect.x + train.rect.w} y ${train.rect.y} 프레임 ${train.sprite?.frame}` : "70초 안에 정차 없음");
+  if (train) {
+    record(train.sprite?.frame === "right_open", "지하철 문 연 프레임", `${train.sprite?.frame}`);
+    await shot("subway-stop.png");
+    await page.evaluate(() => window.__oprnInput.face("up"));
+    await page.evaluate(() => window.__oprnInput.action());
+    await page.waitForFunction((m) => window.__oprnDebug.readState().currentMapId === m, SCHOOL, { timeout: 15_000 }).catch(() => {});
+    const s6 = await state();
+    record(s6.currentMapId === SCHOOL, "지하철을 타면 board 맵(学校前)으로 간다", `${s6.currentMapId} (${s6.x},${s6.y})`);
+  }
   if (log.length) lines.push("", "페이지 오류:", ...log.slice(0, 10).map((l) => `- ${l}`));
 } catch (error) {
   record(false, "probe 완주", String(error?.stack ?? error).split("\n").slice(0, 4).join(" | "));
@@ -144,7 +167,7 @@ const report = [
   "",
   "## 증거 파일",
   "",
-  "- `t0.png`·`t1.png` — 1.5초 간격(차 흐름) · `blocked.png` — 주인공 앞에 선 차 · `bus-stop.png` — 学校前 버스 정차 · `boarded.png` — 탄 뒤 도착 맵",
+  "- `t0.png`·`t1.png` — 1.5초 간격(차 흐름) · `blocked.png` — 주인공 앞에 선 차 · `bus-stop.png` — 学校前 버스 정차 · `boarded.png` — 탄 뒤 도착 맵 · `subway-stop.png` — 승강장에 선 지하철",
 ].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), `${report}\n`, "utf8");
 console.log(report);

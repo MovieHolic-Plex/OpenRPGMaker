@@ -28,6 +28,12 @@ project.tilesets.jp_city = createJpCityTileset();
 school.events = [];
 project.maps[school.id] = school;
 project.mapTree = { ...project.mapTree, children: [...(project.mapTree?.children ?? []), { mapId: school.id, children: [] }] } as typeof project.mapTree;
+// 지하철역(콘코스·승강장) — station.mjs 가 만든 맵. 승강장 지하철을 타면 小学校 앞으로 온다.
+for (const f of ["station-concourse", "station-platform"]) {
+  const m = JSON.parse(readFileSync(`scripts/content/jp-city/maps/out/${f}.map.json`, "utf8"));
+  project.maps[m.id] = m;
+  project.mapTree = { ...project.mapTree, children: [...(project.mapTree?.children ?? []), { mapId: m.id, children: [] }] } as typeof project.mapTree;
+}
 project.startMapId = school.id;
 project.startPos = { ...START };
 

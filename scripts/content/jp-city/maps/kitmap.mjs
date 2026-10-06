@@ -122,6 +122,13 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     (lineCells[gid] ??= []).push(...ok);
     shapeGroup(G, { width: W, height: H, lowerTiles: L3 }, lineCells[gid], new Set(G.memberTileIds));
   }
+  /** 2층(투명 덧그림) 오토타일 선 — 점자 블록(jp-tactile) 등. 1층 바닥 위·3층 소품 아래. */
+  function groupLineL2(gid, cells) {
+    const G = GRP[gid]; if (!G) throw new Error(`오토타일 그룹 없음 ${gid}`);
+    const ok = cells.filter(([x, y]) => inb(x, y));
+    for (const [x, y] of ok) L2[idx(x, y)] = G.variantMap["15"];
+    shapeGroup(G, { width: W, height: H, lowerTiles: L2 }, ok, new Set(G.memberTileIds));
+  }
   /** 생활도로 가장자리 側溝+흰 선(2층). ew=[[y0,y1]] 동서 길, ns=[[x0,x1]] 남북 길. 교차 칸은 비운다. */
   function edgeMarks({ ew = [], ns = [], nsY = [0, H - 1], skip = () => false }) {
     const nsCol = (x) => ns.some(([a, b]) => x >= a && x <= b);
@@ -177,10 +184,10 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   }
 
   // ── 검사·쓰기
-  async function finish({ id, name, start, bare = [T.SW, T.PAVE_A, T.PAVE_B, T.GRAVEL, T.LAWN], extraLayersCheck = null, file, emptyIgnore = [], emptinessMax = null }) {
+  async function finish({ id, name, start, bare = [T.SW, T.PAVE_A, T.PAVE_B, T.GRAVEL, T.LAWN], extraLayersCheck = null, file, emptyIgnore = [], emptinessMax = null, events = [], transit = null }) {
     const project = createEmptyToolProject("jp-kitmap");
     project.tilesets.jp_city = TS;
-    const MAP = { id, name, width: W, height: H, tilesetId: "jp_city", tileSize: 16, lowerTiles: L1, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, events: [], climate: { mode: "inherit" } };
+    const MAP = { id, name, width: W, height: H, tilesetId: "jp_city", tileSize: 16, lowerTiles: L1, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, events, climate: { mode: "inherit" }, ...(transit ? { transit } : {}) };
     project.maps[MAP.id] = MAP;
     fs.mkdirSync(OUT, { recursive: true });
     fs.writeFileSync(join(OUT, `${file}.map.json`), JSON.stringify(MAP));
@@ -280,5 +287,5 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
   }
 
   return { TS, KIT, GRP, W, H, L1, L2, L3, L4, own3, own4, ground, laneSet, reserved, doors, placed, issues, deco, inb, idx, fail, single,
-    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, groupLine, edgeMarks, mark30, stampL2, poleRow, finish, publish };
+    stamp, put, tryPut, fillL1, checker, addLane, shapeLanes, railLine, fenceLine, groupLine, groupLineL2, edgeMarks, mark30, stampL2, poleRow, finish, publish };
 }
