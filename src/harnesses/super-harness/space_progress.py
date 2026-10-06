@@ -112,7 +112,14 @@ def collected(cid):
     folder = Path(sh.cdir(cid))
     root = Path(sh.DATA) / 'art-worktrees' / cid
     manifest = sh.read_json(folder / 'art-choices.json', {}) or {}
-    if manifest.get('demoVersion'): return [], None
+    if manifest.get('demoVersion'):
+        # Whole-scene choices replace the visible component groups, but the
+        # underlying delivered materials remain present during scene repairs.
+        generation = manifest.get('artResultSha256', '')
+        if not re.fullmatch(r'[0-9a-f]{64}', generation): return [], None
+        components = sh.read_json(folder / 'art-demo-history' / generation / 'components.json', {}) or {}
+        if components.get('artResultSha256') != generation: return [], None
+        manifest = components
     for name in ('art-result.json', 'art-result.previous.json'):
         path = folder / name
         if not path.is_file() or gates.digest(path) != manifest.get('artResultSha256'): continue
