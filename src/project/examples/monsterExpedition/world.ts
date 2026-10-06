@@ -87,7 +87,7 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       stamp(map, t.buildings.find(b => b.name === "mart")!, 3, 4);
     }
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
-    if (role === "town" && TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
+    if (TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
