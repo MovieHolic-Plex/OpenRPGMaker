@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-06T15:40:35.833082+00:00",
+  "passed": true,
+  "key": "sea-pearl-serpent/fifty-v1",
+  "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
+  "actualIndependentReviewJob": "7c187596-bd07-43c0-b2ff-1a2e72bf0c3c",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "fb2a6463a3d2652e1aa0e476d0b75f5a874955ae57c175cf7474fbf887997d84",
+    "preview/suite/light.png": "90bb981bae773b4b7b5f9aede4a56f42303f0360e2a140f3962e0ac3c7b76da5",
+    "preview/suite/dark.png": "ce1ceef1fd0040b3dcb496db35dd07eacac73a3bae55b8b1f6ee524b1ed6ce5a",
+    "preview/suite/checker.png": "35b4c98cb890046078568a22a5404b05c26d401a2e62c7837d6b44998dd06c69"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "retainedIndependentSummary": "Reviewed the actual portrait and light, dark and checker PNGs, including native 1x panels and their exact nearest-neighbor 3x counterparts. The large double coil, long right-facing snout, two gold eyes, short ear fins, gold belly and blue-white neck pearl identify the same limbless serpent throughout. Broad turquoise light on the upper-left surfaces and darker lower/right planes give readable volume; the coils are somewhat ribbon-like but their overlaps remain legible. No evident accidental body holes or detached jaw were found: the checker-visible coil centers and open mouth are intentional negative space. The lower coil/belly reaches native y=124 in all 18 poses; feet, hands and tools are inapplicable. Idle poses retain the planted base with small head changes. Windup bends back, move opens the lower coil, attack projects connected upper and lower jaws, and recover draws the tail back. Hit recoils and dead folds the neck and coil onto the ground. Skill preparation contains a luminous core inside the mouth, distinct from the collar pearl; contact sends two joined water lobes from the actual mouth, and recovery closes the jaw with three separated droplets. Poison uses a sagging open mouth and purple bubbles; stun uses a lowered, closed-mouth head and gold sparks; sleep folds the neck farther down and closes the eyes. These are distinct body states, not simple recolors. The paired states show restrained differences. This is a static pose review: animation timing, transition smoothness, dash travel and actual battle contact remain unverified, as do source authorship and palette-index provenance. This recommendation does not record a user selection.",
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-sea-pearl-serpent-after-repair-one.png",
+  "nativeContactPngSha256": "bc513c21ba70c9d3059bac804938ca225000d4145513ffe700aef2838fb3015e",
+  "nativeWriterFilesRead": {
+    "author.py": "762177cd9ad584e9781194b4c306881fb4e38e3d6eaa33ce043cb8e5857bd3e6",
+    "repair-clusters.py": "4cc80e147267f6fdedd4c535253be032202bae86e29cd546e646c16f08ce021b"
+  },
+  "rootVisualAndSourceMethodObservations": [
+    "Actually viewed all18 current first-repair native128 at original1632x1272/native1x/nearest2x. Same turquoise two-coil serpent/gold eye and belly/long muzzle/short fins/neck pearl; lighter upper-left and darker lower/right planes. The broad coils remain comparatively ribbon-like and small paired body changes are restrained, as retained in the actual keeper summary.",
+    "Core within the open mouth is separate from the neck pearl;2 blue outlined joined water streams originate at the mouth and3 separated droplets follow. Poison drooped/open mouth and purple bubbles differ from closed-mouth stunned head/stars and folded sleep. Stream planes are thin and pairs subtle; static views do not prove dash travel/contact/timing.",
+    "Both native writers fully read: original complete author.py exactly matches whole initial read SHA; full new repair-clusters.py module, all PATCHES additions and apply/main are read. Only named move/attack/recover literal x/y/palette-row patches, explicit optional transparent tail padding; it writes current pose rows and appends the same literal blocks to independent sketches for repeatable author.py replay. No generated body geometry/whole-frame transform/tween. Both full readonly render/preview_gifs helpers retain actually read hashes. Current native18/source/PNG/actual keeper binding agree.",
+    "Complete original writer/module reading and subsequent complete repair/diff reading are recorded in the binding-specific root drafts; exact current read writer hashes were rechecked. Native18/source/keeper4PNG/current technical binding all agree. Static pose/source review does not prove live battle contact or timing."
+  ],
+  "actualReadRecord": "verify-shots/battle-monster-fifty/root-draft-review-sea-pearl-serpent-after-repair-one.json",
+  "claimScope": "Actual native18/complete current writers and actual independent keeper binding only. Selected ZIP/native GIF/archive/browser evidence is verified separately; entire50 completion remains pending."
+}

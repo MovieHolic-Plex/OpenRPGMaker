@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>해주영사 · 18자세 / 8동작</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;background:#192530;color:#e1f5ed;font:16px system-ui}h1{font-size:25px;margin:0 0 8px}p{color:#8fbed9}header{margin-bottom:20px}button,select{font:inherit;padding:7px 12px;background:#284857;color:#e1f5ed;border:1px solid #517ead;border-radius:5px}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:16px}figure{margin:0;padding:12px;background:#204858;border-radius:8px}figcaption{margin-bottom:10px}.stage{display:flex;align-items:center;justify-content:center;min-height:268px;background:#f1e8d5}.stage.dark{background:#252c3a}.stage.checker{background-color:#717986;background-image:conic-gradient(#9199a5 25%,transparent 0 50%,#9199a5 0 75%,transparent 0);background-size:16px 16px}img{image-rendering:pixelated;width:256px;height:256px}.native img{width:128px;height:128px}.frames{margin-top:24px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.frames img{width:128px;height:128px}.frames .stage{min-height:140px}a{color:#fff0be}.notes{max-width:900px;line-height:1.6}footer{margin-top:24px;color:#8fbed9}
+</style>
+<header><h1>해주영사</h1><p>직접 저작한 128px 원본 · 18자세 · 8동작 · 검토 후보</p>
+<select aria-label="배경" id="bg"><option value="light">밝은 배경</option><option value="dark">어두운 배경</option><option value="checker">체커 배경</option></select>
+<button id="zoom">원본 1배 보기</button><button id="pause">일시 정지</button></header>
+<section id="motions"></section><h2>18자세 원본</h2><section class="frames" id="frames"></section>
+<footer><a href="../AUTHORING.md">저작 기록</a> · <a href="../TIMING.md">시간표</a> · <a href="all-native-light.png">원본 크기 전체 PNG</a></footer>
+<script>
+const motions=[['idle','대기','idle_a'],['attack','물기','attack'],['hit','피격','hit'],['dead','쓰러짐','dead'],['skill','해주식','skill_b'],['poison','독','poison_a'],['stun','기절','stun_a'],['sleep','수면','sleep_a']];
+for(const [n,label,poster] of motions){const f=document.createElement('figure');f.innerHTML=`<figcaption>${label}</figcaption><div class="stage light"><img alt="${label}" src="motions/${n}.gif" data-motion="${n}" data-poster="${poster}"></div>`;document.querySelector('#motions').append(f)}
+for(const n of ['idle_a','idle_b','idle_c','windup','move','attack','recover','hit','dead','skill_a','skill_b','skill_c','poison_a','poison_b','stun_a','stun_b','sleep_a','sleep_b']){const f=document.createElement('figure');f.innerHTML=`<figcaption>${n}</figcaption><div class="stage light"><img alt="${n}" src="${n}.png"></div>`;document.querySelector('#frames').append(f)}
+document.querySelector('#bg').onchange=e=>document.querySelectorAll('.stage').forEach(s=>s.className='stage '+e.target.value);
+document.querySelector('#zoom').onclick=e=>{const native=document.querySelector('#motions').classList.toggle('native');e.target.textContent=native?'확대 2배 보기':'원본 1배 보기'};
+let paused=false;document.querySelector('#pause').onclick=e=>{paused=!paused;document.querySelectorAll('[data-motion]').forEach(im=>im.src=paused?im.dataset.poster+'.png':'motions/'+im.dataset.motion+'.gif');e.target.textContent=paused?'재생':'일시 정지'};
+</script></html>

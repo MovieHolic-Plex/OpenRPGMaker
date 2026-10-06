@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-06T15:40:33.100512+00:00",
+  "passed": false,
+  "key": "sea-pearl-serpent/fifty-v1",
+  "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/draft-native-contact-sea-pearl-serpent-after-repair-one.png",
+  "nativeContactPngSha256": "bc513c21ba70c9d3059bac804938ca225000d4145513ffe700aef2838fb3015e",
+  "nativeWriterFilesRead": {
+    "author.py": "762177cd9ad584e9781194b4c306881fb4e38e3d6eaa33ce043cb8e5857bd3e6",
+    "repair-clusters.py": "4cc80e147267f6fdedd4c535253be032202bae86e29cd546e646c16f08ce021b"
+  },
+  "readOnlyHelperFilesRead": {
+    "render.py": "c486decc898fcd4af7e1f9325aa12ead5f3de7446bfedd1822a63cfb9e0e1575",
+    "preview_gifs.py": "5e12afd4e4950bc324bf8cebbc223b2c5f5b0994a794baca50fbb8db82195ef7"
+  },
+  "observations": [
+    "Actually viewed all18 current first-repair native128 at original1632x1272/native1x/nearest2x. Same turquoise two-coil serpent/gold eye and belly/long muzzle/short fins/neck pearl; lighter upper-left and darker lower/right planes. The broad coils remain comparatively ribbon-like and small paired body changes are restrained, as retained in the actual keeper summary.",
+    "The lower coil now visibly opens into a connected forward sweep in move/attack; recover gathers it partly back while bottom contact retains y124. Attack extends the connected lower jaw and gold/tooth clusters nearly to the long upper snout; no detached jaw/body part. Recoiling hit, fallen low neck/coil and deeper folded closed-eye sleep are distinct.",
+    "Core within the open mouth is separate from the neck pearl;2 blue outlined joined water streams originate at the mouth and3 separated droplets follow. Poison drooped/open mouth and purple bubbles differ from closed-mouth stunned head/stars and folded sleep. Stream planes are thin and pairs subtle; static views do not prove dash travel/contact/timing.",
+    "Both native writers fully read: original complete author.py exactly matches whole initial read SHA; full new repair-clusters.py module, all PATCHES additions and apply/main are read. Only named move/attack/recover literal x/y/palette-row patches, explicit optional transparent tail padding; it writes current pose rows and appends the same literal blocks to independent sketches for repeatable author.py replay. No generated body geometry/whole-frame transform/tween. Both full readonly render/preview_gifs helpers retain actually read hashes. Current native18/source/PNG/actual keeper binding agree."
+  ],
+  "actualIndependentRecommendation": "keep-pending-final-guard",
+  "actualIndependentReviewJob": "7c187596-bd07-43c0-b2ff-1a2e72bf0c3c",
+  "claimScope": "Actual final native18/complete2 native writers and same-binding real independent keep; root final guard, selected/source archive/browser47 proof separately pending."
+}

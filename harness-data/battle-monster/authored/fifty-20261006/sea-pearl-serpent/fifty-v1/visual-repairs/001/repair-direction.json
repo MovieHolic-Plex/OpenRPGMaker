@@ -1,0 +1,20 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "227042747f96210e39358faaa420e5838dd0b658aedfd2df7937beb130952de8",
+  "priorReviewJob": "83483309-3e42-4987-9ae9-2912af892c07",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 58,
+      "y": 111,
+      "message": "The lower coil remains a closed horizontal ring, and attack preserves the same stacked-ring structure. Redraw this lower-coil section into a visibly opening sweep that drives the connected neck and upper body forward. Carry that released shape into attack and gather it back in recover, retaining a continuous body and grounded contact at y=124. The contracted uncoiling dash should read from the body silhouette as well as the neck lean."
+    },
+    {
+      "pose": "attack",
+      "x": 95,
+      "y": 65,
+      "message": "The lower jaw terminates near x=97 while the upper snout reaches x=111, producing a pronounced upper overhang compared with the closed-mouth poses. Extend and taper the connected lower-jaw silhouette toward a corresponding bite tip, or redraw the hinge angle to make the foreshortening convincing. Continue the gold underside, dark contour and tooth placement through the repaired tip so both jaws read as one consistent long biting mouth."
+    }
+  ],
+  "startedAt": "2026-10-06T15:26:06.547262+00:00"
+}

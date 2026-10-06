@@ -1,0 +1,18 @@
+{
+  "recommendation": "rework",
+  "summary": "Reviewed the actual portrait and light, dark and checker PNGs, including native 1x and nearest 3x panels. The long snout, two gold eyes, short fins, double coils, gold belly and attached blue-white neck pearl identify the same creature throughout. Broad teal planes and upper-left highlights remain readable across backgrounds. Coil openings and the open jaw are intentional negative space; no obvious accidental body holes or detached anatomy are visible. The bottom coil stays grounded; feet, hands and tools are inapplicable. Windup bends the neck back, but move and attack retain two closed stacked coils, weakening the specified uncoiling dash. The attack also exaggerates the difference between upper and lower jaw lengths. Skill preparation has a core inside the mouth; the two branching water waves connect to that mouth, followed by three separate spray remnants and a closed jaw. Poison, stun and sleep have distinct slumped, dazed and closed-eye silhouettes with appropriate effects, rather than simple tints. This is an advisory review, not a user selection. Static pose previews cannot establish animation timing, actual battle contact, in-game boss scale or literal-grid authorship.",
+  "issues": [
+    {
+      "pose": "move",
+      "x": 58,
+      "y": 111,
+      "message": "The lower coil remains a closed horizontal ring, and attack preserves the same stacked-ring structure. Redraw this lower-coil section into a visibly opening sweep that drives the connected neck and upper body forward. Carry that released shape into attack and gather it back in recover, retaining a continuous body and grounded contact at y=124. The contracted uncoiling dash should read from the body silhouette as well as the neck lean."
+    },
+    {
+      "pose": "attack",
+      "x": 95,
+      "y": 65,
+      "message": "The lower jaw terminates near x=97 while the upper snout reaches x=111, producing a pronounced upper overhang compared with the closed-mouth poses. Extend and taper the connected lower-jaw silhouette toward a corresponding bite tip, or redraw the hinge angle to make the foreshortening convincing. Continue the gold underside, dark contour and tooth placement through the repaired tip so both jaws read as one consistent long biting mouth."
+    }
+  ]
+}

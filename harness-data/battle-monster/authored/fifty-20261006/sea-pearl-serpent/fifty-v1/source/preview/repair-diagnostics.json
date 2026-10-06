@@ -1,0 +1,389 @@
+{
+  "attack": {
+    "changedPixelsFromSavedOriginal": 1326,
+    "components": [
+      {
+        "pixels": 4868,
+        "bbox": [
+          8,
+          32,
+          121,
+          124
+        ]
+      }
+    ],
+    "groundInk": 61
+  },
+  "dead": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 2807,
+        "bbox": [
+          11,
+          75,
+          98,
+          124
+        ]
+      }
+    ],
+    "groundInk": 11
+  },
+  "hit": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4106,
+        "bbox": [
+          7,
+          31,
+          91,
+          124
+        ]
+      }
+    ],
+    "groundInk": 42
+  },
+  "idle_a": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4502,
+        "bbox": [
+          12,
+          14,
+          90,
+          124
+        ]
+      }
+    ],
+    "groundInk": 35
+  },
+  "idle_b": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4674,
+        "bbox": [
+          12,
+          13,
+          96,
+          124
+        ]
+      }
+    ],
+    "groundInk": 35
+  },
+  "idle_c": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4482,
+        "bbox": [
+          12,
+          15,
+          90,
+          124
+        ]
+      }
+    ],
+    "groundInk": 35
+  },
+  "move": {
+    "changedPixelsFromSavedOriginal": 1271,
+    "components": [
+      {
+        "pixels": 4323,
+        "bbox": [
+          9,
+          24,
+          116,
+          124
+        ]
+      }
+    ],
+    "groundInk": 55
+  },
+  "recover": {
+    "changedPixelsFromSavedOriginal": 545,
+    "components": [
+      {
+        "pixels": 4256,
+        "bbox": [
+          11,
+          21,
+          92,
+          124
+        ]
+      }
+    ],
+    "groundInk": 49
+  },
+  "windup": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4167,
+        "bbox": [
+          13,
+          18,
+          82,
+          124
+        ]
+      }
+    ],
+    "groundInk": 30
+  },
+  "poison_a": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3843,
+        "bbox": [
+          11,
+          36,
+          89,
+          124
+        ]
+      },
+      {
+        "pixels": 32,
+        "bbox": [
+          92,
+          60,
+          99,
+          66
+        ]
+      },
+      {
+        "pixels": 13,
+        "bbox": [
+          20,
+          41,
+          23,
+          44
+        ]
+      },
+      {
+        "pixels": 12,
+        "bbox": [
+          84,
+          83,
+          87,
+          86
+        ]
+      }
+    ],
+    "groundInk": 43
+  },
+  "poison_b": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3739,
+        "bbox": [
+          12,
+          40,
+          91,
+          124
+        ]
+      },
+      {
+        "pixels": 46,
+        "bbox": [
+          97,
+          49,
+          107,
+          57
+        ]
+      },
+      {
+        "pixels": 26,
+        "bbox": [
+          16,
+          61,
+          22,
+          66
+        ]
+      },
+      {
+        "pixels": 13,
+        "bbox": [
+          83,
+          78,
+          86,
+          81
+        ]
+      }
+    ],
+    "groundInk": 43
+  },
+  "skill_a": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4615,
+        "bbox": [
+          12,
+          16,
+          89,
+          124
+        ]
+      }
+    ],
+    "groundInk": 35
+  },
+  "skill_b": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 5322,
+        "bbox": [
+          10,
+          26,
+          113,
+          124
+        ]
+      }
+    ],
+    "groundInk": 43
+  },
+  "skill_c": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 4097,
+        "bbox": [
+          12,
+          28,
+          93,
+          124
+        ]
+      },
+      {
+        "pixels": 51,
+        "bbox": [
+          94,
+          35,
+          102,
+          44
+        ]
+      },
+      {
+        "pixels": 40,
+        "bbox": [
+          109,
+          56,
+          116,
+          64
+        ]
+      },
+      {
+        "pixels": 37,
+        "bbox": [
+          96,
+          70,
+          101,
+          78
+        ]
+      }
+    ],
+    "groundInk": 43
+  },
+  "sleep_a": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3348,
+        "bbox": [
+          12,
+          55,
+          90,
+          124
+        ]
+      }
+    ],
+    "groundInk": 60
+  },
+  "sleep_b": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3342,
+        "bbox": [
+          12,
+          56,
+          93,
+          124
+        ]
+      }
+    ],
+    "groundInk": 60
+  },
+  "stun_a": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3616,
+        "bbox": [
+          12,
+          48,
+          89,
+          124
+        ]
+      },
+      {
+        "pixels": 45,
+        "bbox": [
+          69,
+          27,
+          78,
+          36
+        ]
+      },
+      {
+        "pixels": 31,
+        "bbox": [
+          21,
+          40,
+          28,
+          47
+        ]
+      }
+    ],
+    "groundInk": 43
+  },
+  "stun_b": {
+    "changedPixelsFromSavedOriginal": 0,
+    "components": [
+      {
+        "pixels": 3504,
+        "bbox": [
+          12,
+          51,
+          91,
+          124
+        ]
+      },
+      {
+        "pixels": 45,
+        "bbox": [
+          86,
+          42,
+          95,
+          51
+        ]
+      },
+      {
+        "pixels": 31,
+        "bbox": [
+          37,
+          27,
+          44,
+          34
+        ]
+      }
+    ],
+    "groundInk": 44
+  }
+}

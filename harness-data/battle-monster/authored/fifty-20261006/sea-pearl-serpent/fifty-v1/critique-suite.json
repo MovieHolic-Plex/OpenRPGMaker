@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the actual portrait and light, dark and checker PNGs, including native 1x panels and their exact nearest-neighbor 3x counterparts. The large double coil, long right-facing snout, two gold eyes, short ear fins, gold belly and blue-white neck pearl identify the same limbless serpent throughout. Broad turquoise light on the upper-left surfaces and darker lower/right planes give readable volume; the coils are somewhat ribbon-like but their overlaps remain legible. No evident accidental body holes or detached jaw were found: the checker-visible coil centers and open mouth are intentional negative space. The lower coil/belly reaches native y=124 in all 18 poses; feet, hands and tools are inapplicable. Idle poses retain the planted base with small head changes. Windup bends back, move opens the lower coil, attack projects connected upper and lower jaws, and recover draws the tail back. Hit recoils and dead folds the neck and coil onto the ground. Skill preparation contains a luminous core inside the mouth, distinct from the collar pearl; contact sends two joined water lobes from the actual mouth, and recovery closes the jaw with three separated droplets. Poison uses a sagging open mouth and purple bubbles; stun uses a lowered, closed-mouth head and gold sparks; sleep folds the neck farther down and closes the eyes. These are distinct body states, not simple recolors. The paired states show restrained differences. This is a static pose review: animation timing, transition smoothness, dash travel and actual battle contact remain unverified, as do source authorship and palette-index provenance. This recommendation does not record a user selection.",
+  "issues": [],
+  "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "fb2a6463a3d2652e1aa0e476d0b75f5a874955ae57c175cf7474fbf887997d84",
+    "preview/suite/light.png": "90bb981bae773b4b7b5f9aede4a56f42303f0360e2a140f3962e0ac3c7b76da5",
+    "preview/suite/dark.png": "ce1ceef1fd0040b3dcb496db35dd07eacac73a3bae55b8b1f6ee524b1ed6ce5a",
+    "preview/suite/checker.png": "35b4c98cb890046078568a22a5404b05c26d401a2e62c7837d6b44998dd06c69"
+  },
+  "jobId": "7c187596-bd07-43c0-b2ff-1a2e72bf0c3c",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T15:38:36.744188+00:00",
+  "userApproved": false
+}

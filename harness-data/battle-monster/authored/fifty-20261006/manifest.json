@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 46,
+  "archivedPassedSpecies": 47,
   "entireGoalComplete": false,
   "items": [
     {
@@ -508,6 +508,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "31c46d709a8ae772a8b1e30ef2db9efef25ed72a6ad148dab2e9001edccab315"
+    },
+    {
+      "key": "sea-pearl-serpent/fifty-v1",
+      "binding": "15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40",
+      "nativeCell": 128,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "3786883c5ad67af12dde3b3da27e4235941f2515cf79c4ef647212c87c4037d1"
     }
   ]
 }

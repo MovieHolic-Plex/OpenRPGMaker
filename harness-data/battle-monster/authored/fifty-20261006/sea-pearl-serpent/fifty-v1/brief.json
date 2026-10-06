@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "sea-pearl-serpent",
+    "name": "해주영사",
+    "cell": 128,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "boss",
+    "idleFrameMs": 240,
+    "silhouette": "거대한 심청 바다 뱀, 긴 주둥이/금빛 두 눈/짧은 두 귀지느러미, 큰 두 겹 코일/금 배판, 머리 아래 목장식의 청백 진주. 뿔/발 없는 수룡 형태. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "목을 뒤로 굽혀 준비 → 하단 코일을 풀어 상체 전진 → 연결된 긴 턱 물기 → 목/코일 회수.",
+    "skill": "해주식: 실제 입 안의 진주빛 핵 → 입부터 큰 두 물결 브레스 → 턱 닫고 세 물보라 잔기.",
+    "resourceId": "jf-enemy-sea-pearl-serpent",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 124,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재46/50 통과
+# 신규50종 제작 · 현재47/50 통과
 
 ## 최초 두 종 확인
 
@@ -790,3 +790,12 @@ draft-independent-rework-abyss-jade-turtle-after-repair-one.json.
 - 확인된128px 보스8종의 현재 원본 GIF64개를 바이트 그대로 비교판에 넣었다. 대기/공격/피격/쓰러짐/스킬/중독/기절/수면 전환과 각 정지·재생을 실제 브라우저에서 확인했고 실제 표시GIF64개의 SHA를 선택 원본과 맞췄다. 정지 PNG는 픽셀·알파를 유지한 압축만 했고 source에는 쓰지 않았다. 승인된64px 검객과 모두 동일2배,375/320px 넘침0·오류0·선택 버튼 미클릭이다. 감독은 실제736px 전체 화면을 열었고 사용자에게 동작 비교 URL을 제공했다. `boss-eight-gallery-proof.json`과3실화면이 근거다.
 - 전갈 첫 수정18자세를 실제 원본1배/nearest2배로 열고 현재8 native writer/오케스트레이터의 모든 메서드·모듈 흐름을 읽었다. 새 실제 독립 `0d998abe-9c9b-44a1-8b85-6830f07f0ee1` rework5건은 대기의 작은 반대쪽 손가락, 두 공격 집게의 큰 속빈 고리와 불연속적인 손가락 질량, 피격/독/기절의 다리처럼 늘어진 집게, 기절의 앞발과 겹치는 닫힌 집게다. 개선된 갑각 비율/꼬리 두께와 별도 상태는 확인됐으나 keeper는 아니다. 실제 before-second source/4검수PNG/terminal 작업과 감독18자세를 동일 binding으로 보존했다. 둘째 수정 중이다.
 - 통과46/50종·828자세·368GIF와 전체50 미완료를 유지한다. 사자·바다뱀은 첫 수정, 전갈은 둘째 수정, 대붕은 다음 자리 대기다.
+
+## 47번째 신규 몬스터 · 해주영사 · 2026-10-06 15:44 UTC
+
+- 바다뱀 첫 직접 수정 뒤 실제 GPT6.1sol/high 독립 `7c187596-bd07-43c0-b2ff-1a2e72bf0c3c`는 **keep/정식 issues0건**이다. 현재 binding `15466a6f872977dde0c933750f498b95665d2111557fedae6f94c1272b084f40`/기술PASS/terminal 작업/검수4PNG가 일치한다. 최초 rework2건은 실제 source/좌표/작업/그림과 보존됐다.
+- 감독이 현재 원본18자세를1632×1272 원본1배/nearest2배로 실제 열고 native writer2파일의 모든 메서드/모듈 흐름을 읽었다. 기존 author.py 전체와 두 readonly helper는 직접 읽었던 해시 그대로이며 새 repair-clusters.py의 모든PATCHES 추가·apply/main을 읽었다. 지정한 move/attack/recover의 명시적 x/y/문자 행만 바꾸고 같은 행을 독립 sketch에 추가하여 재저작 원본을 보존한다. 몸 골격 생성/전체 프레임 이동/보간은 없다.
+- 실제 아래 코일의 풀림→긴 턱의 전진 깨물기→다시 감김, y124 하중 접지, 입 안 핵→발원 물줄기2개→물파편3개와 별도 독/기절/수면 자세를 확인했다. 리본 같은 코일 면과 작은 상태 쌍 변화의 실제 keeper 한계를 유지한다. 실전 전투 접촉/타이밍은 주장하지 않는다.
+- 실제 위임 Allow3단계/선택ZIP/PNG18·디코딩GIF8의 픽셀/시간, 정본 source archive47종, 현재 root47종/browser47종을 다시 읽었다. 감독은 실제 데스크톱pause·375/320px 화면3장을 열었고8GIF/정지·재생/같은 픽셀 배율 사람 비교/오류0·넘침0·선택 버튼 미클릭을 확인했다.
+- 현재 합격 **47/50종 · 846자세 · 376GIF**. 동물10/요괴16/사람12(여성6)/보스9. 남은128px 보스3종은 설갈사자왕/옥갑전갈왕/금익대붕이다. 실제 사자 첫 수정/전갈 둘째 수정/대붕 최초 저작을 이어간다. 원래 결정52행/선택8건 보존, 새 위임141행/전체193행, 이전 정식minor11건 유지. 대시보드 Allow55는 기존8+신규47. 전체50 완료는 false다.
+- 근거: `forty-seven-passed-proof.json`, `root-review-sea-pearl-serpent.json`, `root-draft-review-sea-pearl-serpent-after-repair-one.json`, `browser-proof-sea-pearl-serpent.json`, `source-archive-proof.json`.
