@@ -11,6 +11,7 @@ import { requestsModernMap } from "@/ai/modernTilesetPolicy";
 import { EMERALD_MONSTER_AUTHORING_GUIDE } from "@/project/emeraldMonsterStyle";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { removedMapIds } from "@/ai/approvalPolicy";
 
 beforeEach(() => resetMapEditHistory());
 
@@ -70,5 +71,14 @@ describe("몬스터 칩셋 계열", () => {
 
   it("build_monster_game 은 사람이 고른 출연진을 까는 도구라 캐릭터 선택 검사 대상이 아니다", () => {
     expect(getTool("build_monster_game")?.placesCuratedCast).toBe(true);
+  });
+
+  it("빈 시작 맵을 캠페인으로 갈아 끼우는 것은 맵 소실이 아니다 — 칠한 맵은 여전히 소실", () => {
+    const before = monsterProject();
+    const after = structuredClone(before);
+    delete after.maps.map_blank_start;
+    expect(removedMapIds(before, after)).toEqual([]);
+    before.maps.map_blank_start!.lowerTiles[3] = 4;
+    expect(removedMapIds(before, after)).toEqual(["map_blank_start"]);
   });
 });
