@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "style": {
+    "theme": "조선 설화 판타지",
+    "view": "RM2003 측면 적: 오른쪽 아군을 보는 정면과 옆면의 3/4. 빛은 왼쪽 위.",
+    "authorship": "literal palette-index pxgrid, explicit native pixel clusters; no generated images, vector shapes, resampling or synthesized poses",
+    "maxColors": 18,
+    "poses": [
+      "idle_a",
+      "idle_b",
+      "idle_c",
+      "windup",
+      "move",
+      "attack",
+      "recover",
+      "hit",
+      "dead"
+    ],
+    "authorModel": "gpt-6.1-sol",
+    "reviewerModel": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "monster": {
+    "id": "iron-beak-crane",
+    "name": "철취학",
+    "cell": 64,
+    "grounded": true,
+    "motion": "dash",
+    "tier": "regular",
+    "idleFrameMs": 240,
+    "silhouette": "회백색 두루미, 검은 날개 끝, 붉은 머리 정수리, 길고 검푸른 쇠 부리, 두 긴 다리와 세 갈래 발가락. 왼쪽 위 광원, 넓은 기본색/그림자/빛 면. 윤곽/목/어깨/팔/다리/도구는 실제 픽셀로 이어진다. 큰 빈 상자 안에 작은 몸을 넣지 않는다.",
+    "attack": "목을 굽혀 준비 → 한 발 내딛으며 날개를 반쯤 벌림 → 긴 부리로 쪼기 → 목/날개 접기.",
+    "skill": "철취풍: 부리 옆에 회백 바람을 모음 → 실제 부리부터 두 갈래 날카로운 돌풍 발사 → 목을 들어 바람 잔상 해체.",
+    "resourceId": "jf-enemy-iron-beak-crane",
+    "kind": "creature",
+    "reviewActions": true
+  },
+  "runtime": {
+    "columns": 3,
+    "rows": 3,
+    "baseline": 60,
+    "alpha": [
+      0,
+      255
+    ],
+    "facing": "right",
+    "minimumEdge": 1
+  }
+}

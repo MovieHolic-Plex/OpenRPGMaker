@@ -1,4 +1,4 @@
-# 신규50종 전체 통과 · 현재3/50 완료
+# 신규50종 전체 통과 · 현재5/50 완료
 
 이 기록 시점 실제 전체 감사는 **2/50**,36자세/16GIF이며 exit1/전체 false다.
 금각사슴은 얼굴/가슴3/4 면과 뿔의 전진 방향을 직접 교정한 후 실제 독립 keep를 받았다.
@@ -36,3 +36,28 @@
 초롱도깨비는 손잡이 파지/불꽃 발원점의2개 실제 지적을 직접 고치는 중이다.
 전체 목표는 여전히50종이며 미완성47종을 완료로 보고하지 않는다.
 근거:three-passed-proof.json,pilot-root-review.json,browser-proof-sun-gold-phoenix.json.
+
+## 철취학 통과 · 실제4/50
+
+철취학은 실제 초기 독립 keep이고, 감독이18자세 native/3배 PNG와 native 저작 helper를
+읽었다. 직접 y/x/ASCII 행으로 목/날개/부리·관절을 찍은 원본의 현재 binding을 확인했다.
+전체 감사4/50/72자세/32GIF/exit1, 현재 Allow/선택 ZIP과 source archive 동일 binding
+재로드까지 확인했다. 실제8GIF·일시 정지/재생·1440/375/320 브라우저 오류/넘침0이다.
+원래52판정과8선택 binding은 보존되어 있다.
+현재 목표에 한정한 임시 observer가 기존 하네스/API만 호출해 keep→Allow→팩 감사→
+실제 화면→원본 재로드를 이어간다. 원본/검수를 만들지 않으며 후속 사용자 Modify/Deny를
+보존한다.50종 감사까지 모여도 감독의 최종 그림/저작 코드 검토를 기다리는 상태로 끝난다.
+observer 실제 MainPID479830/ActiveState active를 확인했다. 기존 세 모델 호출도 실제
+프로세스 핸들로 확인했으며 관찰 지연으로 작업을 재시작하지 않았다.
+근거:four-passed-proof.json,root-review-iron-beak-crane.json,browser-proof-iron-beak-crane.json.
+
+## 초롱도깨비 두 번 교정 후 통과 · 실제5/50
+
+초롱도깨비는 준비의 손잡이 파지·불꽃 발원점을 고친 뒤 새 검수에서 지적된 수면 팔꿈치/
+쓰러짐 발 연결·수면 예복선·등불 출구를 다시 직접 고쳤다. 실제 세 번째 별도 검수 keep를
+받았으며 감독이 새18자세1배/3배 PNG와 두 교정 helper의 좌표 문자열 복사 함수를 읽었다.
+현재 binding에 맞는 픽셀/실제 keep/Allow/선택 ZIP/8GIF 픽셀·시간/출처 재로드와 실제
+1440/375/320 브라우저·일시 정지/재생에 오류/넘침0을 확인했다.
+전체 감사5/50/90자세/40GIF/exit1이다. 기존52판정/8선택을 보존했고 신규15행은 위임된
+5종의3단계 Allow다. source archive와 실제 화면 근거가5종에 모였으나 전체50 완료가 아니다.
+근거:five-passed-proof.json,root-review-lantern-goblin.json,browser-proof-lantern-goblin.json.

@@ -1,0 +1,49 @@
+{
+  "recommendation": "rework",
+  "summary": "Supplied portrait.png and all three actual background sheets were viewed at native 1x and their nearest-neighbor 3x panels. The red skin, single horn, dark hair, navy vest, brown trousers and bare feet identify the lantern goblin clearly; the standing silhouette uses most of the cell height. Upper-left hair/skin highlights and the bright paper lantern remain legible across light, dark and checker backgrounds, although torso shading is simple. Windup, step, extended lantern attack, recovery, hit and collapse are distinguishable. Most outlines and ordinary hand/handle contacts are continuous; no widespread transparent pinholes were evident. However, both sleeping tool arms join the body only through dark outline pixels, and the collapsed ankle is connected only along the ground outline, producing visibly severed anatomy despite possible geometry connectivity. Skill preparation, connected branched flame and recovery with two embers are recognizable and belong to the lantern; its emission point reads as the upper-right paper shell rather than a defined opening. Poison uses a hand-to-face posture and green motes, stun uses limp arms and stars, and sleep uses a seated posture with closed eyes: these are distinguishable states, not simple whole-sprite tints or unrelated attacks. Sleep a/b have nearly identical silhouettes and include a distracting broken vest-trim change. Standing feet generally meet the common baseline and the collapsed body rests there. These are static pose previews, not battle footage: hop motion, animation timing, transitions in playback, actual battle scale, palette-index authorship and model provenance cannot be established from these four PNGs. This is an independent rework recommendation, not a user selection or visual approval based on a geometry PASS.",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 56,
+      "y": 77,
+      "message": "At the tool-arm root, torso skin at x53-54 is separated from the forearm skin beginning at x57 by the two dark outline pixels x55-56. Below this joint, the background gap makes the diagonal forearm look detached. Redraw the elbow/upper-arm connection around x54-59, y75-79 with a continuous several-pixel red skin cluster; keep outline on the exterior and preserve the connected hand/lantern."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 56,
+      "y": 77,
+      "message": "The same outline-only elbow connection remains in this frame. Join upper-arm skin to the diagonal tool forearm around x54-59, y75-79, with an explicit elbow bend consistent with repaired sleep_a; do not rely on touching black outlines to establish anatomy."
+    },
+    {
+      "pose": "dead",
+      "x": 72,
+      "y": 88,
+      "message": "The exposed red ankle/foot starts at x74-75 near y86, while the lantern ends at x70 and background occupies x71-72 through y89. Only the dark ground-row bridge around y91 connects the foot to the rest of the silhouette, so it reads as a loose foot. Draw a visible brown trouser/red calf bridge behind the lantern into the heel around x70-75, y85-90, retaining exterior outline and floor contact."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 75,
+      "message": "The yellow vest trim present in sleep_a is replaced by blue highlight pixels around x43-44, y75-77, breaking the trim for this frame while the head and seated silhouette remain essentially fixed. Restore the continuous trim. If breathing is intended, reshape a small connected chest/shoulder cluster consistently between the pair instead of flickering the seam color."
+    },
+    {
+      "pose": "skill_b",
+      "x": 74,
+      "y": 50,
+      "message": "The flame is genuinely attached to the lantern through the bright cluster on y50, but the handle opening above stays unchanged and the jet appears to pierce the upper-right paper shell. Define a readable emission opening near x73-77, y48-52 and run the bright flame root continuously through it into the existing rightward branches; preserve the actual hand/handle connection."
+    }
+  ],
+  "binding": "4ebdaae2a0bfca0d17cc541ca18b25728cb9ab5992142cdd79aa0b8d0abc4879",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "19dd67e7d0a903a55abe7e5b4858c0cbf0d2613a4e7cf5e94993e8f325decafd",
+    "preview/suite/light.png": "35e7c4362f307abd0cc94449297dcad7e03e2c1c45ba78984a8a1eb9a9feef77",
+    "preview/suite/dark.png": "d50ff1b8de708263496b0d040b871c221b6b05ce153b0ef9628f90bc1adf9979",
+    "preview/suite/checker.png": "cdb7868d838023427eaa641715f281139bda754ea60435a57eabd7ce41742c1d"
+  },
+  "jobId": "4241dd1a-a162-47f8-a941-d0b2beefd3c1",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T04:40:16.257776+00:00",
+  "userApproved": false
+}

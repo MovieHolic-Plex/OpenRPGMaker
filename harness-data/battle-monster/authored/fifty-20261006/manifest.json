@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 3,
+  "archivedPassedSpecies": 5,
   "entireGoalComplete": false,
   "items": [
     {
@@ -13,6 +13,28 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "295398f19dfcbb27e695263a692d8acf5b057a9b5dae980896a5341274d97aef"
+    },
+    {
+      "key": "iron-beak-crane/fifty-v1",
+      "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "50593c4cffa5d6d7397e1f2565e81ab08339a52bfa94d45659b8357855467c5d"
+    },
+    {
+      "key": "lantern-goblin/fifty-v1",
+      "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "7a5dd36451f0161da67e963d106d6fc5ca77a0b0208f6fc041aae73a9f987a19"
     },
     {
       "key": "bronze-bell-wraith/fifty-v1",

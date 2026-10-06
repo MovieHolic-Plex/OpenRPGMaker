@@ -1,0 +1,152 @@
+{
+  "idle": {
+    "frameCount": 4,
+    "durationsMs": [
+      240,
+      240,
+      240,
+      240
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "gifSHA256": "801dcc800e05b0ec5839bf27b611b1ea1d03f7358c9f66ffe8db99eb83c375f8"
+  },
+  "attack": {
+    "frameCount": 6,
+    "durationsMs": [
+      240,
+      260,
+      130,
+      170,
+      210,
+      300
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "gifSHA256": "1327f1bd39fa6ba2aa5f274bfc2753493f7079a474e9b30a16a932870d459ecc"
+  },
+  "hit": {
+    "frameCount": 4,
+    "durationsMs": [
+      250,
+      300,
+      210,
+      300
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "gifSHA256": "81bf06f523757dab5f48ac47ba7e668c85180f9a984218fc489a8dec8b70fbab"
+  },
+  "dead": {
+    "frameCount": 3,
+    "durationsMs": [
+      250,
+      220,
+      1200
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0,
+      0
+    ],
+    "gifSHA256": "17b9651142b119267bcd26dd4f511779545343c6f97d648b184867329288f6c1"
+  },
+  "skill": {
+    "frameCount": 4,
+    "durationsMs": [
+      420,
+      260,
+      350,
+      280
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "gifSHA256": "e76086f635d11e4b7e738cc687bb3f7ebbe8174ca3a4748cfdfe5ef7ea486280"
+  },
+  "poison": {
+    "frameCount": 2,
+    "durationsMs": [
+      420,
+      420
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0
+    ],
+    "gifSHA256": "fa625826cc1144f59247aa8f608556d096d692c200bd61d4545dbc8afacb0f30"
+  },
+  "stun": {
+    "frameCount": 2,
+    "durationsMs": [
+      480,
+      480
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0
+    ],
+    "gifSHA256": "3328a22e79be2549f70e17812a4454dcf47cca9803e69caff7edb211ecb5da2b"
+  },
+  "sleep": {
+    "frameCount": 2,
+    "durationsMs": [
+      650,
+      650
+    ],
+    "size": [
+      96,
+      96
+    ],
+    "pixelDifferencesFromSource": [
+      0,
+      0
+    ],
+    "gifSHA256": "4f58c44dd5c5ca6a3d4819054eabfbbbcb0cfe64e0faeec67ab954a3c787ca35"
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "poison_a": {
+    "bbox": [
+      15,
+      21,
+      81,
+      93
+    ],
+    "sourceSHA256": "2994fcab4e57c550604a66cc154a8950c9d8e7fe436a7f63fb5c3b3c76b3b49d",
+    "imageSHA256": "5f60524a5c32a3cf12f1da039334462a1a6b02f18d64337370414d77ef6c43e5"
+  },
+  "poison_b": {
+    "bbox": [
+      13,
+      21,
+      79,
+      93
+    ],
+    "sourceSHA256": "78529c3855da7ba9f3b4440407ed077e53ca31b0bf4353c6e7c66bee9528ab18",
+    "imageSHA256": "b5e688d55b56f16bd41d70e7f514239bcb7b06d6dd7ad63f1604665dd7083527"
+  },
+  "skill_a": {
+    "bbox": [
+      25,
+      10,
+      76,
+      93
+    ],
+    "sourceSHA256": "bf67c5e2753b3e853c293535b291be64a8861664c5fbd564fcfbacb6b1f95ad4",
+    "imageSHA256": "ff91b79f078eeab85244215ed5283839e228125a2a58a6be34f4a8974e23e859"
+  },
+  "skill_b": {
+    "bbox": [
+      25,
+      10,
+      94,
+      93
+    ],
+    "sourceSHA256": "e7504c875bcaa09dcebe5d09ada2c0df04e42f2f3be122cfe5b530e71f20cf27",
+    "imageSHA256": "e0c442759285b34bbc8bf812d15cbbf5d50d2244559afb81e7eb1b535990e8a2"
+  },
+  "skill_c": {
+    "bbox": [
+      25,
+      10,
+      89,
+      93
+    ],
+    "sourceSHA256": "8b2c03a5c07548f3e8b7f7cf7ac96b66ba338f0451613099b9988e88625c5f0c",
+    "imageSHA256": "01f0d0d11c4fa2f98aaffae6743b7547ca3c01b1e204f0b9e33bc7e3ebbf7c4b"
+  },
+  "sleep_a": {
+    "bbox": [
+      25,
+      34,
+      77,
+      93
+    ],
+    "sourceSHA256": "9479609b0285cf5472b232607c4f139130f588e8e6baf968e1c7a5b7b699a132",
+    "imageSHA256": "597330491d5548f89984cebc55fa4d664c4f36ae6f95dce3a224a023bb4c31d0"
+  },
+  "sleep_b": {
+    "bbox": [
+      25,
+      34,
+      77,
+      93
+    ],
+    "sourceSHA256": "1a2a88d5a7d2997ae01fe55a83097fbf1d02dea995ebd2f8eaa4bdbe46c0d2c7",
+    "imageSHA256": "3bab9b1f019d856792aa92c4c63245001994ba3e751db4bef6399da42dfe0685"
+  },
+  "stun_a": {
+    "bbox": [
+      18,
+      20,
+      75,
+      93
+    ],
+    "sourceSHA256": "b009d23699226696345bdc77672acd7e176e5d802d8abc5c80affd0350c31ac3",
+    "imageSHA256": "be3aadba9b7236a709939b5ef64da91a8e34844975493a1f6e7017edffce11aa"
+  },
+  "stun_b": {
+    "bbox": [
+      18,
+      18,
+      73,
+      93
+    ],
+    "sourceSHA256": "10aa04ce5bc21677f930ab15d846e439f0637e0028a9402e681bd7e6b63db166",
+    "imageSHA256": "28ffd6c71381336c892602baf2613b619d2de9408dc879b54c8a99af838c6269"
+  },
+  "attack": {
+    "bbox": [
+      25,
+      10,
+      86,
+      93
+    ],
+    "sourceSHA256": "a3a5dff9eea5d8d791fc1514678855fb631d4e81cfb606ff99fb808e0334ff52",
+    "imageSHA256": "78381b5eba74699305fa9f98c84061683c0c586677ef0ad2768cb13e20edbc20"
+  },
+  "dead": {
+    "bbox": [
+      12,
+      55,
+      83,
+      93
+    ],
+    "sourceSHA256": "d7ef727ff00b704bb97d81a62b7ddc6c6a4d2731998a85d9a217435a3485416b",
+    "imageSHA256": "00c31c6349b2876b6be4725f93cabc89e4795e9af71e3c286f567e645891e189"
+  },
+  "hit": {
+    "bbox": [
+      25,
+      10,
+      74,
+      93
+    ],
+    "sourceSHA256": "c8e4470f27a5a454fe72253a49e4a78a9fef932a7a7951eb2a80f06b79ebdcd6",
+    "imageSHA256": "209abd506d4802e4237f414a9c28096e6eec81bf4f9801b6fbb23fbdbd335e0e"
+  },
+  "idle_a": {
+    "bbox": [
+      25,
+      10,
+      81,
+      93
+    ],
+    "sourceSHA256": "7bc59337ab7cb69d6f209b376f85ec64714cbad723aac6e6e82102ae797ae039",
+    "imageSHA256": "19dd67e7d0a903a55abe7e5b4858c0cbf0d2613a4e7cf5e94993e8f325decafd"
+  },
+  "idle_b": {
+    "bbox": [
+      25,
+      10,
+      81,
+      93
+    ],
+    "sourceSHA256": "a4269722312aa856bdee4c90e63b93d42965bf4bb819dbe0cb09c6d847688465",
+    "imageSHA256": "2d5dd8523d6480b84dff291b0427e4fb560df694403b47e0c40394c333f465e7"
+  },
+  "idle_c": {
+    "bbox": [
+      25,
+      10,
+      81,
+      93
+    ],
+    "sourceSHA256": "382d6e2726edeeb9b81122bcbcbce88e6756f7383688f05f1d6fae1c4d5b9e05",
+    "imageSHA256": "484fe78bb6597f34f33319f3426061e959a040f1d9cb506146abddd7a92cd900"
+  },
+  "move": {
+    "bbox": [
+      23,
+      10,
+      79,
+      93
+    ],
+    "sourceSHA256": "87864c1e0f360bd3e6c6d5f6318a0d0a12de8347905591dfa3706a5e32b4f0d8",
+    "imageSHA256": "831e6cc898d693be7ed62431899e309a8ff4212d1441fb4f9db52a8293418bd4"
+  },
+  "recover": {
+    "bbox": [
+      25,
+      10,
+      63,
+      93
+    ],
+    "sourceSHA256": "7b7c131760702b5e9e7ab0ad0effee7fa8da6bf1944bd9d25ad50f68d7acceb2",
+    "imageSHA256": "8addec9671d3d7875d644e3c7ad19cb64df72560fc553ceb85c0d8186a20184a"
+  },
+  "windup": {
+    "bbox": [
+      9,
+      10,
+      61,
+      93
+    ],
+    "sourceSHA256": "25444c7491e5daa866907e81544a1139e47f8f7a6ad873e015464e0b4264f0ff",
+    "imageSHA256": "a1df8eead2c0aef6ecabd711a5bd8d83f0b9ef30fefad05afd571d00584723d6"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "monster": "iron-beak-crane",
+  "passed": true,
+  "rootViewedActual18PosePng": true,
+  "authorHelperBodiesRead": true,
+  "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+  "reviewJob": "8c9d69e3-574a-4efa-a5c2-e2e99596f88d",
+  "reviewRecommendation": "keep",
+  "actualReviewIssues": 0,
+  "nativeCell": 64,
+  "sourceMethod": "Literal per-pose y/x/index strings, direct row copy. Native author helper bodies read. Own render/diagnostic PNG/GIF code is separate.",
+  "artRead": "Beak/neck/legs connected, attack lunges with supported leg, wing opens, feather fork issues from beak, crouched sleep and horizontal death differ.",
+  "lightPngSha256": "6226154c3f275c02d20affba7cd4c178d4a90475bf7691de722bece67b0a25a8",
+  "authorSha256": "f3d0679de67a1ee95f401575c5ff0dc7aa9ad6fa3e9fdd024103f81933dfd237"
+}

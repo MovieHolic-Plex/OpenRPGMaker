@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-06T03:35:29.496959+00:00",
+  "kind": "new",
+  "userApproved": false,
+  "jobs": [
+    {
+      "id": "963312eb-050d-43a1-a9bd-c0f21450529d",
+      "stage": "author",
+      "phase": "complete",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T04:33:44.119018+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/references/human-size.png",
+        "-"
+      ],
+      "promptSha256": "e59868b2458008989161f3392151fb4e05b05216ba8bd0cdd4c592b5c9cb56f5",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T04:45:42.760901+00:00"
+    },
+    {
+      "id": "8c9d69e3-574a-4efa-a5c2-e2e99596f88d",
+      "stage": "critique",
+      "phase": "suite",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "startedAt": "2026-10-06T04:45:44.639828+00:00",
+      "preparedOnly": false,
+      "command": [
+        "codex",
+        "exec",
+        "--skip-git-repo-check",
+        "--ephemeral",
+        "--sandbox",
+        "workspace-write",
+        "-C",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/jobs/8c9d69e3-574a-4efa-a5c2-e2e99596f88d",
+        "-m",
+        "gpt-6.1-sol",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "--json",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/preview/suite/portrait.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/preview/suite/light.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/preview/suite/dark.png",
+        "-i",
+        "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/iron-beak-crane/fifty-v1/preview/suite/checker.png",
+        "-"
+      ],
+      "promptSha256": "5acac075a0bf058006ed63bdade71d8845c9e8d2dc73468973685b878dd146f5",
+      "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+      "imageHashes": {
+        "preview/suite/portrait.png": "e77665243cee98999011dc8c4be6d3ea2d79e2a98f035b710f5e7b7e777219b8",
+        "preview/suite/light.png": "6226154c3f275c02d20affba7cd4c178d4a90475bf7691de722bece67b0a25a8",
+        "preview/suite/dark.png": "9295abd9b5db879c7b09d2bae5ee210035073b8031d2ad88a8e040b8b8f8d2db",
+        "preview/suite/checker.png": "1173d6e0d19d1b51e1d3d54a6892a0a4550557ba248629a06cbc91397eb2ae44"
+      },
+      "exitCode": 0,
+      "finishedAt": "2026-10-06T04:47:29.207461+00:00"
+    }
+  ]
+}

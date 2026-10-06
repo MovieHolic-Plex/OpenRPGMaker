@@ -1,0 +1,44 @@
+[
+  {
+    "candidate": "iron-beak-crane/fifty-v1",
+    "phase": "suite",
+    "choice": "keep",
+    "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:48:07.417832+00:00",
+    "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "iron-beak-crane/fifty-v1",
+    "phase": "poses",
+    "choice": "keep",
+    "binding": "bb4775864a287456099d209cd594f278121ef166d71e2629a421b9952a0a054c",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:48:07.417832+00:00",
+    "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  },
+  {
+    "candidate": "iron-beak-crane/fifty-v1",
+    "phase": "idle",
+    "choice": "keep",
+    "binding": "24e1b9688a5c42b9420fa6eed18b6c9158ee9edcb5570fbf07c085b3be1a697c",
+    "by": "user-delegated-goal",
+    "note": "사용자 목표 위임: 그래 한 50개 만들고 전부 통과시켜\n실제 픽셀 검사 및 독립 시각 검수 keep 확인 후 Allow 반영. 사용자 마우스 클릭으로 주장하지 않음.",
+    "at": "2026-10-06T04:48:07.417832+00:00",
+    "requestId": "f51f4b14-601b-5f24-8129-f2edac0a7a3a",
+    "delegatedGoal": {
+      "planSha256": "69008455f37439d45b011339e9203e1c5e6cf07f1428f2e0d9d6fb1be1d57433",
+      "originalUserText": "그래 한 50개 만들고 전부 통과시켜"
+    }
+  }
+]

@@ -215,6 +215,14 @@ npm run harness -- battle-monster accept-batch \
 실제 제작 수에는 `battle-monster-fifty-wave/tasks`를 포함한다. 원본/독립 검수/현재 선택/팩 재읽기로
 전체50종을 확인하기 전까지 목표 완료로 보고하지 않는다.
 
+현재50종 작업의 임시 `oprn-battle-fifty-observer-20261006` 실행기는 게시된 현재 keep를 읽고
+기존 `accept-batch`/`audit-batch` 단계와 실제 브라우저 캡처·출처 재로드를 이어간다. 원본을 그리거나
+검수를 만들지 않으며, API의 기존 Deny/Modify 보호를 그대로 사용한다. 부분 audit exit1은 전체
+미완료이고 팩이 준비되면 다시 읽는다. 생산 서비스의 실제 MainPID가 끝나면 부족한 종을 남겨
+수리 대기로 종료한다.50종 감사/출처/실제 화면 확인이 모여도 최종 그림·저작 코드 감독 검토를
+기다리는 상태로 끝나며 목표 완료를 선언하지 않는다. 반복 예약/새 사용자 UI 기능이 아니다.
+
+
 `audit-batch --plan <계획 JSON> --out <근거 JSON>`은 게시된 각 종의18격자를 읽고 현재 실제 keep,
 3단계의 현재 Allow, native 3×6 PNG 각 칸,8GIF의 프레임 픽셀/노출 시간, 현재 요청이 만든
 선택 ZIP과 포함된 PNG/GIF를 다시 읽는다. 소스/검수/ledger를 쓰거나 모델을 호출하지 않는다.

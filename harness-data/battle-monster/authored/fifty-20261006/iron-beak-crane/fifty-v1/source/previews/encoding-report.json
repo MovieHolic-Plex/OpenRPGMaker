@@ -1,0 +1,330 @@
+{
+  "idle_a": {
+    "ink": 759,
+    "bounds": [
+      7,
+      8,
+      58,
+      61
+    ],
+    "sha256_grid": "b97619a2b89699f5a3daa2f84992387a7029c6977549a3f8934701ebaaecf51b",
+    "sha256_png": "e77665243cee98999011dc8c4be6d3ea2d79e2a98f035b710f5e7b7e777219b8"
+  },
+  "idle_b": {
+    "ink": 776,
+    "bounds": [
+      7,
+      7,
+      58,
+      61
+    ],
+    "sha256_grid": "2d5cf97321842b53a4a5793a0c9cf529aa34739adcc1e8dfe8668dcf8abde131",
+    "sha256_png": "962679605a79c8c12bf6501aa02b1a5c8eff8e37024befffed3f0bdfcd3c03b1"
+  },
+  "idle_c": {
+    "ink": 759,
+    "bounds": [
+      7,
+      8,
+      57,
+      61
+    ],
+    "sha256_grid": "77778662fca3163a5af3073ded664ee8c524a92d896718bea1741f24b1ec0028",
+    "sha256_png": "056c4d33a4023bbf76ddf4c14f0d6377557c8cc3c01507fd7472ba0b06717c2c"
+  },
+  "windup": {
+    "ink": 707,
+    "bounds": [
+      6,
+      13,
+      47,
+      61
+    ],
+    "sha256_grid": "eb80dad35c7997817275c7cfab933fb019b47caddea8da1fe35902d376f3f0e6",
+    "sha256_png": "2223c5d52696e3dff76791f237361cc5af94957195c04189bd410514cc2ecb74"
+  },
+  "move": {
+    "ink": 843,
+    "bounds": [
+      5,
+      12,
+      55,
+      61
+    ],
+    "sha256_grid": "55545ab69e08380c9495022890845ea2d4caa886a62733808df0bbfd7b604332",
+    "sha256_png": "42a5a9ed17b93fb470851daf0f1b9247b5a425ebe5930c2619bce307d8b676eb"
+  },
+  "attack": {
+    "ink": 823,
+    "bounds": [
+      4,
+      16,
+      63,
+      61
+    ],
+    "sha256_grid": "74d85e41018af9ff476152d5246d32acc8a26e943fcc81550eabc153f21f4ae5",
+    "sha256_png": "4420f879d9f3c70185d2016bc5045e83c6eeb1056d09f97a7d08eef0e68bdc81"
+  },
+  "recover": {
+    "ink": 722,
+    "bounds": [
+      7,
+      12,
+      57,
+      61
+    ],
+    "sha256_grid": "2a0f3d575e01aa1bc649ae7e48cc058a8cc6c9a0486de92432d261b5df5f1809",
+    "sha256_png": "08d38d6edaa7810373224f676cc681a942344dd5bb5b4867b863846a43bc31d2"
+  },
+  "hit": {
+    "ink": 723,
+    "bounds": [
+      6,
+      10,
+      43,
+      61
+    ],
+    "sha256_grid": "b073174c9470bf026bf8121f301d8ce56258573cd616cbb1890bf421f151d202",
+    "sha256_png": "50c7e8b273bb3d3d16b0989a877375ef6cb9b146bafaa5dcb3ec5b5d50cd70d4"
+  },
+  "dead": {
+    "ink": 539,
+    "bounds": [
+      5,
+      42,
+      63,
+      61
+    ],
+    "sha256_grid": "5b193e157b8b24cc374be83878c5371beb31b2ccd6db955c26aae088ea53406c",
+    "sha256_png": "c47049304ef74f8105fbc2b3e41ee4dbb4603decf03b51dcbf2264e6b66a83a1"
+  },
+  "skill_a": {
+    "ink": 803,
+    "bounds": [
+      7,
+      11,
+      62,
+      61
+    ],
+    "sha256_grid": "e9983d9fab7a1c41aa44f6479ee7328f89a184a4ad1df256619e56c0d33398e6",
+    "sha256_png": "046830af663edf875a2be669e42f20d834066896196172a3d11282e7615cb6c4"
+  },
+  "skill_b": {
+    "ink": 931,
+    "bounds": [
+      6,
+      14,
+      63,
+      61
+    ],
+    "sha256_grid": "ee829d7efaa6cac4948ec85ef90264930455be4cc330cfb9349121a884ae3ff0",
+    "sha256_png": "2a6f954877237183e5b2184abea5078ef368e3a77a7f5b75abd33f6f5a22b539"
+  },
+  "skill_c": {
+    "ink": 793,
+    "bounds": [
+      7,
+      9,
+      62,
+      61
+    ],
+    "sha256_grid": "1a86257bfc12fcd4daf621407360cf32a5137df08b2c44a8bb954e0f619bcd20",
+    "sha256_png": "579682252b340b689870fd719546733737f84fc06ce65402b7a4358bc01d7272"
+  },
+  "poison_a": {
+    "ink": 735,
+    "bounds": [
+      7,
+      12,
+      55,
+      61
+    ],
+    "sha256_grid": "db2eb55ffa366d10857077b574eb5c9cd1c682f6836c1b74fd3b4930df88067b",
+    "sha256_png": "8858b66119e9aa5059074af32a64fef22df08540bb6cf1615add7782620c5354"
+  },
+  "poison_b": {
+    "ink": 717,
+    "bounds": [
+      7,
+      10,
+      58,
+      61
+    ],
+    "sha256_grid": "911d7061315705c61c3964764c7f8391a92fdfcb941175241dd9d16e89ad37a6",
+    "sha256_png": "ed25caba4ea3ac9fcb1b813ff709d94e26eb6e866077ef5e9ae1326219c5514c"
+  },
+  "stun_a": {
+    "ink": 715,
+    "bounds": [
+      6,
+      15,
+      60,
+      61
+    ],
+    "sha256_grid": "cb831a1fc818493615e090db2d902048f2fc1cca7357825ab68bb2e972b3196f",
+    "sha256_png": "e72618d140214bbc1d24c9df2e3b42b2aded803911b182a4f6200b31c6a81a80"
+  },
+  "stun_b": {
+    "ink": 706,
+    "bounds": [
+      6,
+      14,
+      60,
+      61
+    ],
+    "sha256_grid": "5b701d5f27f3945d732b1adfb9776a435cf10603569aae678f6b608dbe6009d2",
+    "sha256_png": "9ad88e1a855d36957e3cc7e734ba22cf2a1549126794b01a120021f0f7fcc9f5"
+  },
+  "sleep_a": {
+    "ink": 564,
+    "bounds": [
+      7,
+      34,
+      43,
+      61
+    ],
+    "sha256_grid": "9f550e81dca2bf25fe67071a27f4b75a820e79242a4d132b902a8956f7887778",
+    "sha256_png": "01caedc31fd05249a702f40dad1ad8b3f61b33c917210481628c842279066bf7"
+  },
+  "sleep_b": {
+    "ink": 587,
+    "bounds": [
+      7,
+      33,
+      43,
+      61
+    ],
+    "sha256_grid": "35b255f0b2306bb00e34b1f123c78950bc20668bb32e8260b7150d4e2411d2c0",
+    "sha256_png": "6f66b8a3285f015b9691665d99be11980e20099f422dbf319b83fc992f72799c"
+  },
+  "motions": {
+    "idle": [
+      {
+        "frame": "idle_a",
+        "holdMs": 240
+      },
+      {
+        "frame": "idle_b",
+        "holdMs": 240
+      },
+      {
+        "frame": "idle_c",
+        "holdMs": 240
+      },
+      {
+        "frame": "idle_b",
+        "holdMs": 240
+      }
+    ],
+    "attack": [
+      {
+        "frame": "idle_a",
+        "holdMs": 300
+      },
+      {
+        "frame": "windup",
+        "holdMs": 220
+      },
+      {
+        "frame": "move",
+        "holdMs": 120
+      },
+      {
+        "frame": "attack",
+        "holdMs": 140
+      },
+      {
+        "frame": "recover",
+        "holdMs": 220
+      },
+      {
+        "frame": "idle_a",
+        "holdMs": 320
+      }
+    ],
+    "hit": [
+      {
+        "frame": "idle_a",
+        "holdMs": 320
+      },
+      {
+        "frame": "hit",
+        "holdMs": 260
+      },
+      {
+        "frame": "recover",
+        "holdMs": 240
+      },
+      {
+        "frame": "idle_a",
+        "holdMs": 320
+      }
+    ],
+    "dead": [
+      {
+        "frame": "idle_a",
+        "holdMs": 300
+      },
+      {
+        "frame": "hit",
+        "holdMs": 180
+      },
+      {
+        "frame": "dead",
+        "holdMs": 1000
+      }
+    ],
+    "skill": [
+      {
+        "frame": "idle_a",
+        "holdMs": 260
+      },
+      {
+        "frame": "skill_a",
+        "holdMs": 280
+      },
+      {
+        "frame": "skill_b",
+        "holdMs": 200
+      },
+      {
+        "frame": "skill_c",
+        "holdMs": 280
+      },
+      {
+        "frame": "idle_a",
+        "holdMs": 320
+      }
+    ],
+    "poison": [
+      {
+        "frame": "poison_a",
+        "holdMs": 480
+      },
+      {
+        "frame": "poison_b",
+        "holdMs": 480
+      }
+    ],
+    "stun": [
+      {
+        "frame": "stun_a",
+        "holdMs": 480
+      },
+      {
+        "frame": "stun_b",
+        "holdMs": 480
+      }
+    ],
+    "sleep": [
+      {
+        "frame": "sleep_a",
+        "holdMs": 600
+      },
+      {
+        "frame": "sleep_b",
+        "holdMs": 600
+      }
+    ]
+  }
+}

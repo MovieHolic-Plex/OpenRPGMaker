@@ -1,0 +1,21 @@
+{
+  "palette.json": "48011f5f7c48b70deb67e778ae036b5dcfdc52a5f84993343827b3a2d7461d97",
+  "poses/attack.pxgrid": "a3a5dff9eea5d8d791fc1514678855fb631d4e81cfb606ff99fb808e0334ff52",
+  "poses/dead.pxgrid": "d7ef727ff00b704bb97d81a62b7ddc6c6a4d2731998a85d9a217435a3485416b",
+  "poses/idle_a.pxgrid": "7bc59337ab7cb69d6f209b376f85ec64714cbad723aac6e6e82102ae797ae039",
+  "poses/idle_c.pxgrid": "382d6e2726edeeb9b81122bcbcbce88e6756f7383688f05f1d6fae1c4d5b9e05",
+  "poses/idle_b.pxgrid": "a4269722312aa856bdee4c90e63b93d42965bf4bb819dbe0cb09c6d847688465",
+  "poses/windup.pxgrid": "2d5c4ccd63229e0ed6fb8edc3e74abdba124b81de7a1c462247cc06aa59e24de",
+  "poses/hit.pxgrid": "c8e4470f27a5a454fe72253a49e4a78a9fef932a7a7951eb2a80f06b79ebdcd6",
+  "poses/move.pxgrid": "87864c1e0f360bd3e6c6d5f6318a0d0a12de8347905591dfa3706a5e32b4f0d8",
+  "poses/recover.pxgrid": "7b7c131760702b5e9e7ab0ad0effee7fa8da6bf1944bd9d25ad50f68d7acceb2",
+  "actions/stun_b.pxgrid": "10aa04ce5bc21677f930ab15d846e439f0637e0028a9402e681bd7e6b63db166",
+  "actions/sleep_b.pxgrid": "1a2a88d5a7d2997ae01fe55a83097fbf1d02dea995ebd2f8eaa4bdbe46c0d2c7",
+  "actions/poison_b.pxgrid": "78529c3855da7ba9f3b4440407ed077e53ca31b0bf4353c6e7c66bee9528ab18",
+  "actions/skill_a.pxgrid": "bf67c5e2753b3e853c293535b291be64a8861664c5fbd564fcfbacb6b1f95ad4",
+  "actions/skill_b.pxgrid": "3b372fa5e3a86a61067b16b0a9b15ae2ecac89a8af314bcbbab1d621de4c1738",
+  "actions/poison_a.pxgrid": "2994fcab4e57c550604a66cc154a8950c9d8e7fe436a7f63fb5c3b3c76b3b49d",
+  "actions/sleep_a.pxgrid": "9479609b0285cf5472b232607c4f139130f588e8e6baf968e1c7a5b7b699a132",
+  "actions/skill_c.pxgrid": "8b2c03a5c07548f3e8b7f7cf7ac96b66ba338f0451613099b9988e88625c5f0c",
+  "actions/stun_a.pxgrid": "b009d23699226696345bdc77672acd7e176e5d802d8abc5c80affd0350c31ac3"
+}

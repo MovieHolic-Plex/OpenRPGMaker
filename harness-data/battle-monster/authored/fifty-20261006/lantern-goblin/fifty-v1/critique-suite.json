@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four actual PNGs, including the native 96px portrait and the sheets' native 1x and nearest 3x views. The red face, single horn, black hair, navy vest, brown trousers and bare feet remain identifiable at 1x. The right-projecting nose and asymmetric facial features establish the required right-facing three-quarter view. Upper-left highlights on the hair, horn, skin and cloth give consistent volume; the yellow paper lantern has a separate luminous core. Neck, shoulders, limbs and lantern grips read as connected, with no obvious accidental transparent holes or missing outline segments across the three backgrounds; the handle openings and spaces between limbs read as intentional. The standing poses share a ground line, the stepping pose lifts the trailing foot, and the collapsed pose rests on the ground. Windup draws the lantern back across the body, attack extends it right with a wider stance, and recovery brings it toward the hip; silhouette and costume remain consistent. Skill preparation presents the illuminated lantern, contact has a bright path through the lantern into branching orange flame at its upper-right rim, and recovery lowers the lantern with two departing embers. The effect visibly belongs to the lantern. Poison uses a bent, throat-clutching posture and green particles; stun uses a tilted head, slack arms and alternating stars; sleep uses seated folded legs and closed eyes with a small head change. These are readable authored pose changes rather than color swaps or unrelated attacks. No specific pixel repair is required from these stills. This recommendation is advisory and does not record the user's selection. Static previews cannot establish GIF timing, hop translation, actual battle contact or runtime placement, and PNG inspection cannot establish literal pxgrid authorship or model provenance.",
+  "issues": [],
+  "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "19dd67e7d0a903a55abe7e5b4858c0cbf0d2613a4e7cf5e94993e8f325decafd",
+    "preview/suite/light.png": "afe4361e9b0d2d9f66acfc7c288b0fc8cf9bf91d18b770cbcd925e68262d8331",
+    "preview/suite/dark.png": "79aedd67f56d370e545fd5443034cc944468ed3db700ead0364b53c29318524e",
+    "preview/suite/checker.png": "b77e8794255a25deb47bd9b1bf3ace5773b78b0885a30ac08732ab4921cb9b1b"
+  },
+  "jobId": "2a5f2d39-811f-4374-bc85-7d16252b9d2d",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T04:49:30.195065+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,308 @@
+{
+  "poison_a": [
+    {
+      "pixels": 1715,
+      "bboxInclusive": [
+        28,
+        21,
+        74,
+        92
+      ]
+    },
+    {
+      "pixels": 32,
+      "bboxInclusive": [
+        73,
+        29,
+        80,
+        34
+      ]
+    },
+    {
+      "pixels": 20,
+      "bboxInclusive": [
+        15,
+        40,
+        19,
+        44
+      ]
+    },
+    {
+      "pixels": 12,
+      "bboxInclusive": [
+        21,
+        58,
+        24,
+        61
+      ]
+    }
+  ],
+  "poison_b": [
+    {
+      "pixels": 1718,
+      "bboxInclusive": [
+        28,
+        21,
+        74,
+        92
+      ]
+    },
+    {
+      "pixels": 20,
+      "bboxInclusive": [
+        74,
+        23,
+        78,
+        27
+      ]
+    },
+    {
+      "pixels": 32,
+      "bboxInclusive": [
+        13,
+        34,
+        20,
+        39
+      ]
+    },
+    {
+      "pixels": 12,
+      "bboxInclusive": [
+        19,
+        51,
+        22,
+        54
+      ]
+    }
+  ],
+  "skill_a": [
+    {
+      "pixels": 1997,
+      "bboxInclusive": [
+        25,
+        10,
+        75,
+        92
+      ]
+    }
+  ],
+  "skill_b": [
+    {
+      "pixels": 2338,
+      "bboxInclusive": [
+        25,
+        10,
+        93,
+        92
+      ]
+    }
+  ],
+  "skill_c": [
+    {
+      "pixels": 1794,
+      "bboxInclusive": [
+        25,
+        10,
+        62,
+        92
+      ]
+    },
+    {
+      "pixels": 16,
+      "bboxInclusive": [
+        80,
+        48,
+        84,
+        53
+      ]
+    },
+    {
+      "pixels": 12,
+      "bboxInclusive": [
+        85,
+        67,
+        88,
+        71
+      ]
+    }
+  ],
+  "sleep_a": [
+    {
+      "pixels": 1411,
+      "bboxInclusive": [
+        25,
+        34,
+        76,
+        92
+      ]
+    }
+  ],
+  "sleep_b": [
+    {
+      "pixels": 1414,
+      "bboxInclusive": [
+        25,
+        34,
+        76,
+        92
+      ]
+    }
+  ],
+  "stun_a": [
+    {
+      "pixels": 1641,
+      "bboxInclusive": [
+        26,
+        20,
+        72,
+        92
+      ]
+    },
+    {
+      "pixels": 25,
+      "bboxInclusive": [
+        18,
+        21,
+        24,
+        27
+      ]
+    },
+    {
+      "pixels": 13,
+      "bboxInclusive": [
+        70,
+        35,
+        74,
+        39
+      ]
+    }
+  ],
+  "stun_b": [
+    {
+      "pixels": 25,
+      "bboxInclusive": [
+        66,
+        18,
+        72,
+        24
+      ]
+    },
+    {
+      "pixels": 1655,
+      "bboxInclusive": [
+        26,
+        20,
+        72,
+        92
+      ]
+    },
+    {
+      "pixels": 13,
+      "bboxInclusive": [
+        18,
+        35,
+        22,
+        39
+      ]
+    }
+  ],
+  "attack": [
+    {
+      "pixels": 2062,
+      "bboxInclusive": [
+        25,
+        10,
+        85,
+        92
+      ]
+    }
+  ],
+  "dead": [
+    {
+      "pixels": 1173,
+      "bboxInclusive": [
+        12,
+        55,
+        82,
+        92
+      ]
+    }
+  ],
+  "hit": [
+    {
+      "pixels": 1834,
+      "bboxInclusive": [
+        25,
+        10,
+        73,
+        92
+      ]
+    }
+  ],
+  "idle_a": [
+    {
+      "pixels": 1947,
+      "bboxInclusive": [
+        25,
+        10,
+        80,
+        92
+      ]
+    }
+  ],
+  "idle_b": [
+    {
+      "pixels": 1961,
+      "bboxInclusive": [
+        25,
+        10,
+        80,
+        92
+      ]
+    }
+  ],
+  "idle_c": [
+    {
+      "pixels": 1961,
+      "bboxInclusive": [
+        25,
+        10,
+        80,
+        92
+      ]
+    }
+  ],
+  "move": [
+    {
+      "pixels": 2036,
+      "bboxInclusive": [
+        23,
+        10,
+        78,
+        92
+      ]
+    }
+  ],
+  "recover": [
+    {
+      "pixels": 1792,
+      "bboxInclusive": [
+        25,
+        10,
+        62,
+        92
+      ]
+    }
+  ],
+  "windup": [
+    {
+      "pixels": 1959,
+      "bboxInclusive": [
+        9,
+        10,
+        60,
+        92
+      ]
+    }
+  ]
+}

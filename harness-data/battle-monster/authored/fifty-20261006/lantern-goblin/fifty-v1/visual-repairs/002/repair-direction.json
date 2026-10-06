@@ -1,0 +1,38 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "4ebdaae2a0bfca0d17cc541ca18b25728cb9ab5992142cdd79aa0b8d0abc4879",
+  "priorReviewJob": "4241dd1a-a162-47f8-a941-d0b2beefd3c1",
+  "issues": [
+    {
+      "pose": "sleep_a",
+      "x": 56,
+      "y": 77,
+      "message": "At the tool-arm root, torso skin at x53-54 is separated from the forearm skin beginning at x57 by the two dark outline pixels x55-56. Below this joint, the background gap makes the diagonal forearm look detached. Redraw the elbow/upper-arm connection around x54-59, y75-79 with a continuous several-pixel red skin cluster; keep outline on the exterior and preserve the connected hand/lantern."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 56,
+      "y": 77,
+      "message": "The same outline-only elbow connection remains in this frame. Join upper-arm skin to the diagonal tool forearm around x54-59, y75-79, with an explicit elbow bend consistent with repaired sleep_a; do not rely on touching black outlines to establish anatomy."
+    },
+    {
+      "pose": "dead",
+      "x": 72,
+      "y": 88,
+      "message": "The exposed red ankle/foot starts at x74-75 near y86, while the lantern ends at x70 and background occupies x71-72 through y89. Only the dark ground-row bridge around y91 connects the foot to the rest of the silhouette, so it reads as a loose foot. Draw a visible brown trouser/red calf bridge behind the lantern into the heel around x70-75, y85-90, retaining exterior outline and floor contact."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 43,
+      "y": 75,
+      "message": "The yellow vest trim present in sleep_a is replaced by blue highlight pixels around x43-44, y75-77, breaking the trim for this frame while the head and seated silhouette remain essentially fixed. Restore the continuous trim. If breathing is intended, reshape a small connected chest/shoulder cluster consistently between the pair instead of flickering the seam color."
+    },
+    {
+      "pose": "skill_b",
+      "x": 74,
+      "y": 50,
+      "message": "The flame is genuinely attached to the lantern through the bright cluster on y50, but the handle opening above stays unchanged and the jet appears to pierce the upper-right paper shell. Define a readable emission opening near x73-77, y48-52 and run the bright flame root continuously through it into the existing rightward branches; preserve the actual hand/handle connection."
+    }
+  ],
+  "startedAt": "2026-10-06T04:40:16.277550+00:00"
+}

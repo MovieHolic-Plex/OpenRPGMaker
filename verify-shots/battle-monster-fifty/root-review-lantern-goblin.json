@@ -1,0 +1,15 @@
+{
+  "monster": "lantern-goblin",
+  "passed": true,
+  "rootViewedActual18PosePng": true,
+  "authorHelperBodiesRead": true,
+  "binding": "ef40e1d0d1412528c3b053e3acde5ccc7e0772893f33f20b3427cbee691925df",
+  "nativeCell": 96,
+  "sourceMethod": "Explicit ASCII body/limb blocks and x/y/pixel-string targeted two repairs. Shared head/body literal copy; no native geometry/rotation/scaling. Inspector rectangles are checker-background diagnostics only.",
+  "artRead": "Lantern grip and outlet connected. Repaired sleeping elbow has red joint volume; exposed ankle joins visible trouser/calf behind fallen lantern. Sleeping vest trim remains continuous.",
+  "reviewJob": "2a5f2d39-811f-4374-bc85-7d16252b9d2d",
+  "reviewRecommendation": "keep",
+  "actualReviewIssues": 0,
+  "realVisualRepairCount": 2,
+  "lightPngSha256": "afe4361e9b0d2d9f66acfc7c288b0fc8cf9bf91d18b770cbcd925e68262d8331"
+}

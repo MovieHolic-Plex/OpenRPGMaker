@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Supplied portrait, light, dark and checker PNGs were viewed at native resolution; the suite includes native 1x and nearest-neighbor 3x views. The pale crane, black wing tips, red crown, long blue-black bill and two connected legs with splayed toes remain identifiable across the poses. Broad cream upper-left highlights and cool lower/right shadows give the neck and folded wing volume; the bill has a distinct cool metallic highlight. No obvious unintended transparent hole, detached body part or severed outline is visible on the checker background. Thin legs and dark wing edging have less contrast on the dark background, but their connections remain readable. Windup bends the neck, move spreads the wing and stance, attack extends the neck and bill to the right, recover folds back, hit recoils, and dead lies flattened at ground level. Standing toes remain on native y=60. Skill preparation gathers pale wind beside the actual bill; the release connects a forked gust to the bill, and recovery raises the neck while breaking the wind into fragments. Poison has a drooping head and green bubbles, stun has a lowered neck/head and stars, and sleep crouches with folded legs and a tucked head. These are readable shape changes rather than simple tints; their paired frames have restrained changes. The bill looks broader in the downward stun poses, but remains visibly connected and recognizable. This is a recommendation for the pose preview only, not a user selection or visual approval of actual battle playback. Static PNGs cannot establish animation timing, foot sliding during playback, target contact, runtime placement, or the claimed literal-grid authorship/model provenance.",
+  "issues": [],
+  "binding": "625a59ffb666c2bb24da542cc5eb53aff62def49aedd40beff3a06696859f2d8",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "e77665243cee98999011dc8c4be6d3ea2d79e2a98f035b710f5e7b7e777219b8",
+    "preview/suite/light.png": "6226154c3f275c02d20affba7cd4c178d4a90475bf7691de722bece67b0a25a8",
+    "preview/suite/dark.png": "9295abd9b5db879c7b09d2bae5ee210035073b8031d2ad88a8e040b8b8f8d2db",
+    "preview/suite/checker.png": "1173d6e0d19d1b51e1d3d54a6892a0a4550557ba248629a06cbc91397eb2ae44"
+  },
+  "jobId": "8c9d69e3-574a-4efa-a5c2-e2e99596f88d",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T04:47:29.401780+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "monster": "jade-mantis",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/jade-mantis/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "fb95bebbbe72378e88316d291cec27320fba1d955234316c88b75ca742b7bb93",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "iron-beak-crane",
+    "source": "qa-runs/harnesses/battle-monster/iron-beak-crane/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "b97619a2b89699f5a3daa2f84992387a7029c6977549a3f8934701ebaaecf51b",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  },
+  {
+    "monster": "lantern-goblin",
+    "source": "qa-runs/battle-monster-fifty-early-wave/candidates/lantern-goblin/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "7bc59337ab7cb69d6f209b376f85ec64714cbad723aac6e6e82102ae797ae039",
+    "cell": 96,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "completedOrApprovedClaim": false
+  }
+]
