@@ -89,6 +89,15 @@ def preserved_sources(data, cid, layout, result):
     folder = Path(data) / 'concepts' / cid
     root = Path(data) / 'art-worktrees' / cid
     art_layout.require_completed(root, choices.read(folder / 'art-execution.json'), layout)
+    return validate_preserved_sources(data, cid, layout, result)
+
+
+def validate_preserved_sources(data, cid, layout, result):
+    """Check receipt links before review; this does not grant layout approval."""
+    preserved = layout.get('layout', {}).get('preservedSources', [])
+    if not preserved: return []
+    folder = Path(data) / 'concepts' / cid
+    root = Path(data) / 'art-worktrees' / cid
     bound = {(r['path'], r['sha256']) for r in layout['layout']['sources']}
     evidence = set()
     for path in (folder / 'art-batches').glob('*.json'):

@@ -1013,3 +1013,7 @@ space_progress는 DATA 내부 프로젝트 파일의 현재 해시와 HTTP(S) �
 
 새 picks 출력 폴더가 누락되면 격리 워크트리 내부 경로 확인 후 빈 폴더만 만든다.
 기존 선택 DB와 native 실행 입력은 수정하지 않으며 data 등 필수 입력 폴더 누락은 계속 거절한다.
+
+### 보존 원본 영수증 사전 확인 (2026-10-06)
+
+`on_art`가 준비 결과를 받는 즉시 `validate_preserved_sources`로 현재 도면의 보존 PNG·재료 ID·동일 테마 native 영수증·보존 사유를 확인한다. 선반 PNG를 상자 재료 ID에 잘못 연결한 입력을 도면 검수와 재수집 이후에야 발견하던 반복을 막는다. 사전 확인은 도면 승인이 아니며, 데모 준비의 `preserved_sources`는 기존 `require_completed`와 동일 출처 검사를 다시 수행한다.

@@ -735,6 +735,7 @@ def on_art(meta, code, result):
             write_json(request_path, request)
             layout = art_layout.build_input(wt, request)
             art_repair.require_preparation(wt, Path(cdir(cid)), layout['layout'], feedback)
+            art_demo.validate_preserved_sources(DATA, cid, layout, result)
             write_json(cdir(cid, 'art-layout-input.json'), layout)
             store.update_concept(cid, stage='art-layout-review', status='queued', note='제작 전 배치·비례·여백 적대적 검수 대기')
         except (OSError, ValueError, TypeError, KeyError) as error:
