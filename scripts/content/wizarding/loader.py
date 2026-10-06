@@ -5,6 +5,7 @@ sys.path.insert(0, HERE)
 import wzlib  # noqa: E402
 
 PIECES_DIR = os.path.join(HERE, 'pieces')
+sys.path.insert(0, PIECES_DIR)  # 모듈끼리 공유하는 도우미(_<모듈>_*.py)
 
 
 def module_names(include_private=False):
