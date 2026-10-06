@@ -20,6 +20,26 @@ def required(data, cid):
     return bool(manifest.get('groups')) and not any(c.get('phase') == 'calibration' for g in manifest['groups'] for c in g['candidates'])
 
 
+def added_action_frames(root, layout):
+    """Bind newly commissioned poses to the approved order, not a worker claim."""
+    delivery = layout.get('actorActionDelivery')
+    if not delivery: return {}
+    manifest = choices.read(choices.verified(root, delivery['manifest']))
+    approved = {r['path']: r for r in layout['sources']}
+    frames = {}
+    for order in manifest['orders']:
+        path = Path(order['request']).resolve()
+        relative = str(path.relative_to(Path(root).resolve()))
+        request = choices.read(choices.verified(root, approved[relative]))
+        previous = set(request.get('preserveActions', {}).get('frames', []))
+        if not previous: raise ValueError('추가 행동 주문에 보존 프레임 목록이 필요합니다.')
+        added = {f"{pose['id']}-{index}" for pose in request['poses']
+                 for index in range(pose['frames'])} - previous
+        if not added: raise ValueError('추가 행동 주문에 새 프레임이 없습니다.')
+        frames['actor:' + order['actor']] = added
+    return frames
+
+
 def component_requirements(data, cid, manifest, layout, result):
     """Retire a replaced component only through the approved scene specification.
 
@@ -199,6 +219,8 @@ def accept(data, cid, result):
         previews = []
         actor_uses = {c['nativeSheets'][1]['sha256']: set() for c in selected
                       if c.get('nativeHarness') == 'charset-actor'}
+        new_actions = added_action_frames(root, inputs.get('layout', {}).get('layout', {}))
+        new_action_uses = {gid: set() for gid in new_actions}
         for index, recipe_ref in enumerate(recipes):
             path = choices.verified(root, recipe_ref); recipe = choices.read(path)
             # New pixels, flattened context screenshots, and swapped candidates are not source tiles.
@@ -232,9 +254,15 @@ def accept(data, cid, result):
                         actor_uses[action['sha256']].add('walk')
                     if source == action['sha256'] and any(rect == f['rect'] for f in frames['actions']):
                         actor_uses[action['sha256']].add('action')
+                        for gid, candidate_id in components.items():
+                            if originals[gid][candidate_id] is c and gid in new_actions:
+                                new_action_uses[gid].update(f['id'] for f in frames['actions']
+                                    if rect == f['rect'] and f['id'] in new_actions[gid])
             previews.append(choices.ref(root, dest, recipe.get('label') or '실제 타일 공간 데모'))
         if any(uses != {'walk', 'action'} for uses in actor_uses.values()):
             raise ValueError('전용 인물마다 걷기/정지와 행동을 실제 공간의 별도 상태로 보여야 합니다. 전체 프레임 원본을 사용하세요.')
+        if any(len(new_action_uses[gid]) < min(2, len(frames)) for gid, frames in new_actions.items()):
+            raise ValueError('새로 주문한 행동의 서로 다른 프레임을 공간에서 보여야 합니다. 기존 행동만 배치하면 추가 동작 검수를 할 수 없습니다.')
         passed = all(c['passed'] for c in selected)
         candidates.append(dict(id=f'demo-{number}', title=demo.get('title') or f'공간 데모 {number}',
             passed=passed, summary='데모 조립 완료 · 독립 검수 대기',
