@@ -1,0 +1,154 @@
+{
+ "module": "infirmary",
+ "sealed": "2026-10-07T08:52:51.472009+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-inf-wall-n": {
+   "verdict": "PASS",
+   "hash": "7f3709114b861487458812bb0b7e85053c99a998ff03260c6b4ad12c50631a7f",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-n-window": {
+   "verdict": "PASS",
+   "hash": "2f88290d057025745a1b118fa6ffd803acf6a65472cb9644533fca37f41d6a4e",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘. 아치 창문 유리 하이라이트·창턱 명암 정상."
+  },
+  "wz-inf-wall-n-window-big": {
+   "verdict": "PASS",
+   "hash": "12286702785ca8e8f8c334c0ff0a0f505b2b8bdfd76124f3a004b2586f5d5923",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘. 아치 창문 유리 하이라이트·창턱 명암 정상."
+  },
+  "wz-inf-wall-w": {
+   "verdict": "PASS",
+   "hash": "6b426707721a07ef1d013acfc8c48d2954f1f87e46473cc97e3b2bcedbcad3ce",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-e": {
+   "verdict": "PASS",
+   "hash": "0282fd961ce2cb8b5b6e4f646cc2ef44552bb3b34b094e08e2447019b229bc56",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-s": {
+   "verdict": "PASS",
+   "hash": "6ab328e8ef6682c572bfa35814a4dd2273c58960b7d985b860f58d33025760c6",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-sw": {
+   "verdict": "PASS",
+   "hash": "c698a5e9b86d5312d9d0e3a970fd1021cf2158581bd02595ac761ccba3f5d515",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-se": {
+   "verdict": "PASS",
+   "hash": "209b5415839a83056d4945dcbbcaf66d024e3db5fa04de153dd75ff191122049",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-nw": {
+   "verdict": "PASS",
+   "hash": "e95e7f920ec21e80e95b7deba635f4817cd390ffadfcf04dbc817be719ea8af2",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-wall-ne": {
+   "verdict": "PASS",
+   "hash": "7d9fab987d215496db874563800e4e818a7d07e287d74444efcd561bfb4505dc",
+   "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+  },
+  "wz-inf-door-closed": {
+   "verdict": "PASS",
+   "hash": "8b4753560c71909554be60d9e863b281728c7f42262903b836aa40e2943cddb8",
+   "reason": "아치형 나무문+철띠, 높이 4칸(32~40px 규격), 나무 결·철 반사 style-ref 문과 동일 화풍. SSSS, states 같은 크기·피벗."
+  },
+  "wz-inf-door-open": {
+   "verdict": "PASS",
+   "hash": "9e92de36be5974552bd0ad22945be283239f146ef9cfe325b7f346423f6a4cc1",
+   "reason": "열린 문짝이 옆으로 접히고 어두운 안쪽이 보임. 하단 S·상부 C 로 통행 가능, 닫힘 상태와 같은 크기·피벗."
+  },
+  "wz-inf-door-locked": {
+   "verdict": "PASS",
+   "hash": "73b601c6098d7f686ab7013e00594a1a0b99c7197f4d0c8f194d2c6064f5862e",
+   "reason": "닫힌 문과 같은 틀에 자물쇠·가로 철띠가 추가돼 잠김으로 읽힘. 크기·피벗 동일."
+  },
+  "wz-inf-floor-a": {
+   "verdict": "PASS",
+   "hash": "fa0085e2f7a524af9dd507a7abbb7ab07784a756a27df7bb7977454b2f45c64d",
+   "reason": "석재 바닥 판석, 벽과 같은 팔레트, 윤곽 없이 타일링 가능, F."
+  },
+  "wz-inf-floor-b": {
+   "verdict": "PASS",
+   "hash": "ab7e290fd181ff05e2e8a52eca4034f62166d7d0d18646be56083c1d050c2b85",
+   "reason": "floor-a 변형 판석, 같은 명도대라 반복 시 튀지 않음, F."
+  },
+  "wz-inf-bed-shadow": {
+   "verdict": "PASS",
+   "hash": "3952504c1bccf079405f0c72ebf6aca5cd610394cb525e93f17e62da81b678a2",
+   "reason": "재검: 불투명 회색 슬래브·체커 디더가 사라지고 안쪽이 투명한 얇은 L자 그림자 띠(좌 1px 옅게, 우·하 2px 짙게)만 남음. 바닥 판석 위에 합성하면 잡음 없이 침대 아래 접지 그림자로 읽히고, 병상을 덮으면 발치·우측 가장자리만 살짝 보여 3/4 시점·좌상단 빛(우·하 그림자)과 맞음. f 통행 가능, 2x3 크기가 병상과 일치. 단독으로는 가는 선이지만 병상 전용 오버레이라 문제 없음."
+  },
+  "wz-inf-bed-empty": {
+   "verdict": "PASS",
+   "hash": "75579d4ba0ea1ec6fccc7b5897ac2424035f4b70a0b24c66c51244c8ea2a1584",
+   "reason": "2x3 병상: 흰 시트·베개·나무 틀, 윗면+남쪽 정면 3/4, 좌우 대칭, 1배로도 침대로 읽힘. 명암 3~4단, S 통행 차단."
+  },
+  "wz-inf-bed-patient": {
+   "verdict": "PASS",
+   "hash": "027cfaf0ae4968937684b09b24d30bd2d55828a568efa4b7b507c956470f08f3",
+   "reason": "빈 침대와 같은 틀에 담요 덮은 환자 머리가 보임. 얼굴이 약간 각져도 환자로 읽힘. 크기·시점 일치."
+  },
+  "wz-inf-curtain-closed": {
+   "verdict": "PASS",
+   "hash": "2becf67b867355aef1f741e7ded737ab64f5eca8c9489eaae308053625a28e12",
+   "reason": "1x3 닫힌 커튼, 세로 주름·상단 레일 명암, 하단 단차 정상. 시점·화풍 일치, S."
+  },
+  "wz-inf-curtain-open": {
+   "verdict": "PASS",
+   "hash": "b26045c0d720999c3cec229de2be251ad716cc4794ff08aafa7302b97ac9e4e8",
+   "reason": "묶어 모은 커튼이 한쪽에 서고 윗부분 레일이 닫힘 상태와 같은 크기·피벗. C 로 통과 가능. 하단 단이 약간 거칠지만 읽힘에는 지장 없음."
+  },
+  "wz-inf-screen": {
+   "verdict": "PASS",
+   "hash": "696ffb75b6f4d6e0e6d4b9f0dc705a2b699b11a7f0292fa94300fd0951e5f82e",
+   "reason": "2x2 접이 칸막이, 패널 주름·나무 틀, 윗면 보임, 병동 가리개로 읽힘. S."
+  },
+  "wz-inf-cart": {
+   "verdict": "PASS",
+   "hash": "c055b956930b45bd6aa701ea295cdf6f4c53c8e0fff3d62a122741d464ab1c48",
+   "reason": "1x2 수레: 금속 상판+선반+바퀴, 상판이 윗면으로 보이고 의료 수레로 읽힘. S."
+  },
+  "wz-inf-bandage": {
+   "verdict": "PASS",
+   "hash": "4cd9132f5542b06ee229ad9ff2ead3646321b3df90e0285683c14dbafc2bfc56",
+   "reason": "바닥에 놓인 붕대 롤과 풀린 끝자락, 흰·회 명암 4단과 유색 윤곽. 종이 롤처럼 보일 여지는 있으나 꼬리와 심 때문에 붕대로 읽힘. f 통행 가능."
+  },
+  "wz-inf-splint": {
+   "verdict": "PASS",
+   "hash": "ec80059c7b25e7051a62c2364fa4ec6496c4b389748a134a8661e9d0ae99bc13",
+   "reason": "나무 부목+감은 천 띠, 바닥 소품 f. 1배 읽힘 양호, 화풍 일치."
+  },
+  "wz-inf-basin": {
+   "verdict": "PASS",
+   "hash": "1943bff54f2ed97ceba5dffcf8025ea6470e883e784285862f47bb69d17e7a66",
+   "reason": "금속 세면대야, 윗면 타원+물 푸른 하이라이트, 재질 반사·3/4 윗면 확인. 상판 크기 규격. S."
+  },
+  "wz-inf-shelf": {
+   "verdict": "PASS",
+   "hash": "3ec0ec436400863381a005fcb9e15bd39242bd33da5ec66542a37fd04c01caff",
+   "reason": "2x2 약장: 나무 틀 선반에 병·붕대 소품, 정면 3/4 대칭, 병 색이 팔레트 안. S."
+  },
+  "wz-inf-chart": {
+   "verdict": "PASS",
+   "hash": "6f9846aa897e5842ea43eb769a98034abaaabfc4b7a861cb4574fee7b06da147",
+   "reason": "나무 판에 종이 차트·눈금 선, 소품으로 읽힘, 윤곽·명암 화풍 일치. S."
+  },
+  "wz-inf-candle": {
+   "verdict": "PASS",
+   "hash": "2341146be773423324487dcd0cd48a785fd00fb03704869201466aedbf30ac88",
+   "reason": "촛대 위 초와 불꽃, 폭이 좁고 회색 위주이나 양초로 읽히며 윤곽·명암 일치. S."
+  },
+  "wz-inf-table": {
+   "verdict": "PASS",
+   "hash": "503cfcfbb9d27f75df43337e52f8524294b9553160dee9fdd769ba4aac5bee56",
+   "reason": "나무 협탁, 상판 윗면 14~16px 규격, 나무 결 3단 명암, 앞면 보임. S."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}
