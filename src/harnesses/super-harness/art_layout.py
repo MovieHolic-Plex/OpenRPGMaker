@@ -239,10 +239,15 @@ def freeze_generated_previews(root, request):
     import shutil
     root=Path(root).resolve(); original=verified(root,request['layout'])
     layout=json.loads(original.read_text()); changed={}
+    active_data=(root/request['data']).resolve()
     for ref in layout['sources']:
-        if ref.get('role')!='generated-preview': continue
+        candidate=(root/ref['path']).resolve()
+        relative=candidate.relative_to(active_data).parts if candidate.is_relative_to(active_data) else ()
+        runtime_output=bool(relative and (relative[0]=='logs' or
+            (len(relative)>3 and relative[0]=='rounds' and relative[2]=='review')))
+        if ref.get('role')!='generated-preview' and not runtime_output: continue
         src=verified(root,ref)
-        if src.suffix.lower() not in ('.png','.json') or not src.is_relative_to(root/'art-output'):
+        if not src.is_relative_to(root/'art-output') or (not runtime_output and src.suffix.lower() not in ('.png','.json')):
             raise ValueError('생성 미리보기는 art-output 안 PNG/JSON만 허용합니다.')
         frozen=root/'art-output'/'approved-previews'/ref['sha256']/src.name
         frozen.parent.mkdir(parents=True,exist_ok=True)
