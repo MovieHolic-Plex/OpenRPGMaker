@@ -1,0 +1,135 @@
+{
+  "publishedSnapshot": 691,
+  "remainingAtSnapshot": 766,
+  "whole1457Complete": false,
+  "stageReceipts": {
+    "import-batch": {
+      "batch": "v2-production-149",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:22:45.358677+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-149",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:23:13.035695+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-149",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:27:24.552839+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-149",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:31:21.296993+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-149",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-149"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:31:21.685903+00:00"
+    }
+  },
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T08:35:39.636457+00:00"
+  },
+  "screens": [
+    {
+      "key": "romance--town--choice--secret--routes--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--secret--routes--scene.png",
+      "sha256": "5d608ab136778bb9cc2df42e8cf588dce8146cfb5bd0e27245eabca28ba85626",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--secret--routes--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--secret--routes--episode.png",
+      "sha256": "6960575677c26659c481bdc454e11e8232abbd61b8aab4c1c463e6ebdbc28de1",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--secret--perspectives--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--secret--perspectives--episode.png",
+      "sha256": "429b792750623b3673598eeaf67214e15465ae42c7621282f766dfbca8afedc0",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--bittersweet--routes--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--bittersweet--routes--scene.png",
+      "sha256": "19dce80ee53063bf9c30437ccc97d5ed4082be076916cde10e0bae946f5369be",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--bittersweet--routes--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--bittersweet--routes--short.png",
+      "sha256": "de8e268fcd62764e4b483f34c68f15f97c1c2ba00e8e067e78d0cebea514fe9d",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--bittersweet--perspectives--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-691-selected-romance--town--choice--bittersweet--perspectives--short.png",
+      "sha256": "dea6ac842fde82554ae7a76809f933d97ab8495b7bc395c1d99536eeac07d8c0",
+      "rootViewed": true
+    }
+  ],
+  "scope": "691 file/record integrity and six production-dialog paths / 36 clicks; root personally viewed six settled screens; not all-published visual rescan, full app boot or AI handoff. Five historical MON parents have newly found private negative reviews pending official application; this snapshot is not an assertion all691 pass new visual review."
+}

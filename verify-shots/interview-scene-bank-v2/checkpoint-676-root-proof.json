@@ -1,0 +1,99 @@
+{
+  "published": 676,
+  "remaining": 781,
+  "manifestSha256": "089bd863de8cf1dab2eadf2aefd01f5f3b72cc165c8dad2c451674c0527a0b85",
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-147",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T07:52:32.475856+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-147",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T07:52:58.927242+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-147",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T07:57:30.589239+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-147",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:05:40.857053+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-147-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-147",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-147",
+        "--finish-build-only"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:05:41.020181+00:00"
+    }
+  },
+  "rootDirectNativeInspections": 10,
+  "nativePasses": 6,
+  "nativeFailures": 4,
+  "reviewMatchesOfficial": true,
+  "buildRecovery": "First invocation interrupted after gate before build receipt; preserved interrupted history and early QA preflight failure. Build-only resume completed actual exit0.",
+  "integrityAllCurrentPublished": true,
+  "browserQA": "Six explicitly selected paths, 36 actual clicks, zero generation requests/errors; isolated production dialog, not full app boot or AI handoff.",
+  "rootViewedSettledScreens": [
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--memory--bittersweet--perspectives--short.png",
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--choice--warm--single--short.png",
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--choice--warm--perspectives--episode.png",
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--choice--warm--perspectives--short.png",
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--choice--secret--single--episode.png",
+    "verify-shots/interview-scene-bank-v2/checkpoint-676-selected-romance--town--choice--secret--single--short.png"
+  ],
+  "visualObservation": "Selected scene cores and private doors remain left of controls; lower caption shades floor/legs in some views. No claim of zero overlay anywhere.",
+  "completeWholePlan": false
+}

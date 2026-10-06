@@ -1,0 +1,287 @@
+{
+  "batch": "v2-production-157",
+  "passedAttempts": 0,
+  "rejectedAttempts": 10,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-157",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-157-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:16:08.614455+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-157-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-157",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-157-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:16:40.147014+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-157-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-157",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-157",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:16:40.195086+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "57fb5bae6d5e23bb40633adb63459929de5d8f12d882dccd6ea2f2f3fbd80d24",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "135b5078af5fec86823340420994c2300ec0e82aee93a8410f548c373463a683",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "The actual third ruin aperture/view is at x75-97 behind actual controls beginningx60.3; forest edge and near physical pawtrail also extend into controls. Near-court vegetation conflicts with own bare-court brief. Three jars/two books and cream fold ON workbench are present; do not falsely report missing fold."
+      ],
+      "note": "The actual third ruin aperture/view is at x75-97 behind actual controls beginningx60.3; forest edge and near physical pawtrail also extend into controls. Near-court vegetation conflicts with own bare-court brief. Three jars/two books and cream fold ON workbench are present; do not falsely report missing fold."
+    },
+    {
+      "key": "monster--wild--collect--secret--route--short",
+      "nativeSha256": "4cf98c30df34f7c05cdc87155795527ced95c8659142c33d0fca015ebbac722d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4f503cc9bb0629c4acfabea70b6abd04f0824d3d9a3911005853607d06ee94f4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required cream return fold ON SAME bench is absent. Actual continuous physical pawtrail near x61-75 is behind actual controls; village and full three-jar/two-book kit are left/visible, and the continuous earth route is now connected without retaining barrier."
+      ],
+      "note": "Required cream return fold ON SAME bench is absent. Actual continuous physical pawtrail near x61-75 is behind actual controls; village and full three-jar/two-book kit are left/visible, and the continuous earth route is now connected without retaining barrier."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "nativeSha256": "b4992dac9e9ef5e5dbdcf0653fa9d496e6ba8a6328e4b79a7ff10de6357e2b3e",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a0cff02b94dd0ecf8d37293400f3d1d87866caec8833cf45bf648ca1c572fa92",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Third actual ruin aperture/outside view near x58-70 and near pawtrail extend behind actual controls beginningx60.3; hanging GREEN fabric banners contradict own no-banner brief (no claim of readable letters). Three jars/two books and growth nest/water/white care cloth are present on ground BESIDE bench, not on its table."
+      ],
+      "note": "Third actual ruin aperture/outside view near x58-70 and near pawtrail extend behind actual controls beginningx60.3; hanging GREEN fabric banners contradict own no-banner brief (no claim of readable letters). Three jars/two books and growth nest/water/white care cloth are present on ground BESIDE bench, not on its table."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--short",
+      "nativeSha256": "68ef717ad3d33c06c030eef1d059ea3838baf66dcbff637680fedeb2dda519ac",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "cdfd20f4da0845376ea4b162e1e6eebc64c18e88d5991b4104c2b5687de17a9c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Cream return fold ON SAME bench is absent. Third ruin/main view predominantly RIGHT behind actual panel. Both covers have decorative rectangular borders/corner motifs contrary own plain no-ornament request, not readable writing. Three jars/two books present; near-court plant tufts also conflict with own bare foreground."
+      ],
+      "note": "Cream return fold ON SAME bench is absent. Third ruin/main view predominantly RIGHT behind actual panel. Both covers have decorative rectangular borders/corner motifs contrary own plain no-ornament request, not readable writing. Three jars/two books present; near-court plant tufts also conflict with own bare foreground."
+    },
+    {
+      "key": "monster--wild--collect--secret--route",
+      "nativeSha256": "50737e62bd8a7351e1d0e0136ba868240f3e747c78109ca26da4120b12579578",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "806ec90d3b5a9258a8bee4e85427d7aae8445cc1a618eb819061a10992453de7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Complete village destination at x64-92 and required continuous physical trail mostly x61-82 are behind actual controls. Left concealed habitat and three-jar/two-book/full kit visible. Near-court grass tufts conflict with own bare-court request; no imaginary missing creatures or scope props are imposed."
+      ],
+      "note": "Complete village destination at x64-92 and required continuous physical trail mostly x61-82 are behind actual controls. Left concealed habitat and three-jar/two-book/full kit visible. Near-court grass tufts conflict with own bare-court request; no imaginary missing creatures or scope props are imposed."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "nativeSha256": "8f7c3558ac7f6d9f285ef240c530eafabc51e330bfd150293ecbf26edf4f6baf",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "40657e52f384356b7c48dde1ce322dd7b166053850418dbe3ada1248170d34c6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual third ruin aperture/view at x60-75 and part of connected near pawtrail extend behind actual panel. Blue hanging heraldic banner with gold emblem violates own no-banner/no-crest/no-symbol brief. All three jars/two books visible; no care/ending props required at this prefix."
+      ],
+      "note": "Actual third ruin aperture/view at x60-75 and part of connected near pawtrail extend behind actual panel. Blue hanging heraldic banner with gold emblem violates own no-banner/no-crest/no-symbol brief. All three jars/two books visible; no care/ending props required at this prefix."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--short",
+      "nativeSha256": "6cb25dcf0f25df98d8adb72c5839eda9957f7d83105a3485f4a1b21654437e5d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "2ce89a94885c2f923460f49b72204446d74c418efbea06f71330bad85387ab14",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Both OPEN private trust alcoves and their selected contents at x73-97 sit behind controls. Additional CLOSED pass door is BEHIND FAR mug pair instead of SAME NEAR chosen box pair; table corners are clipped/octagonal instead own four-corner SQUARE tables. Six full wood-backed chairs and NEAR box+gray fold/MIDDLE green tin/FAR mug+soft cloth are present; no false collapse of those three distinct cues."
+      ],
+      "note": "Both OPEN private trust alcoves and their selected contents at x73-97 sit behind controls. Additional CLOSED pass door is BEHIND FAR mug pair instead of SAME NEAR chosen box pair; table corners are clipped/octagonal instead own four-corner SQUARE tables. Six full wood-backed chairs and NEAR box+gray fold/MIDDLE green tin/FAR mug+soft cloth are present; no false collapse of those three distinct cues."
+    },
+    {
+      "key": "monster--wild--collect--secret--case",
+      "nativeSha256": "b7141e66ddef81cf02110e271bb87deefbb9487008aa2586de222e0b66f89dd6",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d5422b7c5492f3a8062a37795c6a5fbae5f8ef9e8e99e153602413bf11e2da1a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual loose rope/tipped empty pail at x69-79 and local physical pawtrail continuingx61-74 are behind controls beginningx60.3. Left open refuge and full three-jar/two-book kit are visible. Near-court moss/grass violates own bare court; no false missing actors or required scope props."
+      ],
+      "note": "Actual loose rope/tipped empty pail at x69-79 and local physical pawtrail continuingx61-74 are behind controls beginningx60.3. Left open refuge and full three-jar/two-book kit are visible. Near-court moss/grass violates own bare court; no false missing actors or required scope props."
+    },
+    {
+      "key": "monster--wild--collect--secret--case--scene",
+      "nativeSha256": "e5850cfda62bbdc33c9e356e75c9d2f07f3c809a79c9872529d5a324fd6ac4a3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "711e376abb11a6c144ef5253839371456bd7a31dbc2e0be17891083feff47a2c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual entire workbench kit extendsx45-98: net/binoculars/three jars/two books behind controls. Left local refuge/loose rope/tipped pail/physical local trail visible. Near-court vegetation conflicts with own bare-court brief. Untouched first encounter does not invent care/return props; shot differs from high reverse case parent."
+      ],
+      "note": "Actual entire workbench kit extendsx45-98: net/binoculars/three jars/two books behind controls. Left local refuge/loose rope/tipped pail/physical local trail visible. Near-court vegetation conflicts with own bare-court brief. Untouched first encounter does not invent care/return props; shot differs from high reverse case parent."
+    },
+    {
+      "key": "monster--wild--collect--secret--case--episode",
+      "nativeSha256": "2c1d972ca0e50bb540177ee6a2900317b3979adc4ac46740145ed29262642e1d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4fe59929baae88c250471a2835077ceb8ca32cb99204fe16efc8f8029fdd0439",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual near pawtrail continues aroundx61-73 behind controls beginningx60.3; open refuge, loose rope/tipped empty pail, three-jar/two-book capture kit and leaf nest/water/white cloth all LEFT visible. Care items beside bench are permitted and not falsely called missing or on table. Near-court moss/grass violates own bare court; no creature identity invented."
+      ],
+      "note": "Actual near pawtrail continues aroundx61-73 behind controls beginningx60.3; open refuge, loose rope/tipped empty pail, three-jar/two-book capture kit and leaf nest/water/white cloth all LEFT visible. Care items beside bench are permitted and not falsely called missing or on table. Near-court moss/grass violates own bare court; no creature identity invented."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

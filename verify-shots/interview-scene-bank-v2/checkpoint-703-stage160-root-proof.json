@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 703,
+  "remainingAtSnapshot": 754,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T11:10:29.753436+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 703,
+      "manifestSha256": "247f2bebeaca77c7c77eb3de3b4c227b37c49344f1572f9fd24fb552210a2c79",
+      "finishedAt": "2026-10-06T11:10:08.557359+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-703-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--bright--case--short,monster--wild--collect--bright--case--episode,romance--campus--choice--bittersweet--perspectives--scene,romance--campus--choice--bittersweet--routes,romance--palace--talk--warm--single--scene,romance--palace--talk--warm--single--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 703,
+      "manifestSha256": "247f2bebeaca77c7c77eb3de3b4c227b37c49344f1572f9fd24fb552210a2c79",
+      "finishedAt": "2026-10-06T11:10:28.455499+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-703-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--campus--choice--bittersweet--routes",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-romance--campus--choice--bittersweet--routes.png",
+      "sha256": "474f987d6c08913937d574bf582dcacac384da0ee2f795d8195cefa05a75e4f4",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-romance--campus--choice--bittersweet--perspectives--scene.png",
+      "sha256": "8b81b1c03c59c8944bb5fd0104ce381b20ec18bb03b63c7effa0082b07bcfbfb",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-romance--palace--talk--warm--single--scene.png",
+      "sha256": "3130886a34376e1588b3ed1cbd66b967b738a291512c21bac0216219b38a997b",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-romance--palace--talk--warm--single--episode.png",
+      "sha256": "60be360fdc872143b549ed4dbee916ab7caefea2c9b90f7225eaf9b68ab0ee5f",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-monster--wild--collect--bright--case--episode.png",
+      "sha256": "a3e43fdaef85318de078c9d5229caf8a07f5fd9fb694d7667bc5261ebc43a7be",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-stage160-selected-monster--wild--collect--bright--case--short.png",
+      "sha256": "ef8e9cd6be8a8cdc41d4876d91c96d42049f1c3d4ebf753cfd4fa5fcd02fd2a8",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "703 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. Privately confirmed original team-route visibility failure pending official review; no all703 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-703-stage160-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-703-stage160-click-proof.json"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--collect--secret--case,monster--wild--collect--secret--route,monster--wild--collect--secret--route--scene,monster--wild--collect--secret--route--episode,monster--wild--collect--secret--route--short,romance--palace--talk--warm--single--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 711,
+  "manifestSha256": "dd57ab35310d2cd37fb45c8f7b5f75ff7bd466fab7af65e33b55ae8471bacfee",
+  "finishedAt": "2026-10-06T10:54:15.309731+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-711-click-proof.json",
+  "completeWholePlan": false
+}

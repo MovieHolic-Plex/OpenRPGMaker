@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 721,
+  "remainingAtSnapshot": 736,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T12:04:40.133170+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 721,
+      "manifestSha256": "0e917160b6f0b507e28a7c668dd91be9646b6b44dd2b1234e314ca63a1d8d5b2",
+      "finishedAt": "2026-10-06T12:04:06.968546+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-721-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--team--bright--route--short,monster--wild--team--bright--habitat--episode,monster--wild--team--bright--habitat--short,monster--wild--collect--warm--case--short,monster--wild--collect--secret--habitat--episode,monster--wild--collect--warm--case--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 721,
+      "manifestSha256": "0e917160b6f0b507e28a7c668dd91be9646b6b44dd2b1234e314ca63a1d8d5b2",
+      "finishedAt": "2026-10-06T12:04:37.592918+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-721-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--collect--secret--habitat--episode.png",
+      "sha256": "1a4d4ce7df46878bff2acc9daad6bc2173a150df313c62fefb457963752dd65f",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--collect--warm--case--episode.png",
+      "sha256": "6e4471d62d446d02eda734fb0784debb21059ca9ab2ca620718d59c209452fed",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--collect--warm--case--short.png",
+      "sha256": "1eec28ab6e17cfae3d96c3c73e0eee7bb3758a0df0be177635a7782521995f8f",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--team--bright--route--short.png",
+      "sha256": "92378e0ab3e60aa0b35bf3a2ca61e66f051c0450dfd50753447eb8c57d47974e",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--team--bright--habitat--episode.png",
+      "sha256": "e736a896aa7d399b764b572c9966191f5b0c22b77f30cbee4eb1f64f2a4d1e01",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-selected-monster--wild--team--bright--habitat--short.png",
+      "sha256": "aa5696e0446c667a836b1c7c4318e8365e5f238d6c886be0189a720f689a32aa",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "721 file/record integrity and six production-dialog paths, 36 actual clicks; six settled screens actually viewed by root. Left-caption overlap remains. Two previously private parent visibility negatives were applied through actual official review-batch before full163 build; selected children of those parents are withheld. No all721 fresh visual audit/fullappboot/AIhandoff claim.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-721-stage163-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-721-stage163-click-proof.json"
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 676,
+  "removedThisCheckpoint": [
+    {
+      "key": "romance--town--choice--secret",
+      "sourceSha256": "e7013d5500ef6901e58bcb889aa47567cc4c06d562a1543c595362e58fc1df1a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--secret-e7013d5500ef.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--secret-1-e7013d5500ef.png",
+      "replacementPublished": true,
+      "replacementSha256": "55c894fdd9ea0548e9c3c3163100e11277f4e452a8154fb9a0006ee2c0ca7b91",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--bittersweet",
+      "sourceSha256": "ddc6c81c5691c0e15e6096a4396c03174de8b8d96da0c452df3a7b4658364132",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet-ddc6c81c5691.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--bittersweet-1-ddc6c81c5691.png",
+      "replacementPublished": true,
+      "replacementSha256": "ab607ba4f697e0c1e3c448f1eca667d2b8cab9f727fcc298ff5c1bdd53536548",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--memory--bittersweet--routes",
+      "sourceSha256": "bae05b15a376ce152fc2517f8eaa68d19c164afa5a3b62f29e346b211feb9608",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes-bae05b15a376.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes-1-bae05b15a376.png",
+      "replacementPublished": true,
+      "replacementSha256": "4c7e6ccbada57f0769cebcb07116c45c243f41fecc36051b7a9769512323b873",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--memory--bittersweet--perspectives",
+      "sourceSha256": "71cfb56ad673e35f3d7f216234998e259cc478e9dc9c4e3585606a6bf5bf01c5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives-71cfb56ad673.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives-2-71cfb56ad673.png",
+      "replacementPublished": true,
+      "replacementSha256": "9056af2d639f30f120016f9a6de0cb9a3e36666a560b270c19bd7fe9cb9f3985",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--warm--single",
+      "sourceSha256": "4bb5dfbc86c815035b2314084ccd0b8dc42331d42e8bb619daabb0dbf9ca7456",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single-4bb5dfbc86c8.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--warm--single-1-4bb5dfbc86c8.png",
+      "replacementPublished": true,
+      "replacementSha256": "8eef2ec76d4687dd8746477195db84de94e309ab00f0dc5f6aa29b590a51c028",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--warm--perspectives",
+      "sourceSha256": "6f6182ff7b7de7fb756eae4ce52d65e1e8d8608eda9630c27367e93575c69c0c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-6f6182ff7b7d.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-1-6f6182ff7b7d.png",
+      "replacementPublished": true,
+      "replacementSha256": "ed0304160ad129349f325a259094d66100d46728da40c8d88171690d7f6eb081",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--secret--single",
+      "sourceSha256": "04dbdb41cc787adf10765b92967b65fe7780ffaa52e1b7d0d089161da79a0a8d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single-04dbdb41cc78.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--secret--single-2-04dbdb41cc78.png",
+      "replacementPublished": true,
+      "replacementSha256": "5dc56fcf25c3f888c3024f3b9b1f11b752ae73cd737e08bc5fa6a8886f4dc486",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--secret--routes",
+      "sourceSha256": "aec4d3e859d930c5a264913d71ac24ac73ada5c8191105236c34550f36ab32ef",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes-aec4d3e859d9.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--secret--routes-2-aec4d3e859d9.png",
+      "replacementPublished": true,
+      "replacementSha256": "b655b958e5dac5dd2f087db6e4548496999f93257638b5d780565a414bcd65c9",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--secret--perspectives",
+      "sourceSha256": "d57cec4ecc5debdb8393a7156783157068b26323472ec352fc0fc5561eea37cc",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives-d57cec4ecc5d.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives-2-d57cec4ecc5d.png",
+      "replacementPublished": true,
+      "replacementSha256": "d4ef9b0e14ef0d244683a53445c59d45ea499edb47c4a49f3330a19841dc821b",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--bittersweet--single",
+      "sourceSha256": "4348033776770ee57d9f44eb41118c11eba3b776d7a4bec86d73dc8c6bded131",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single-434803377677.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single-1-434803377677.png",
+      "replacementPublished": true,
+      "replacementSha256": "ad28bc72e539d88ef5446f02f74b67592074e5ca8cb73a185228ed396cb426b5",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--bittersweet--routes",
+      "sourceSha256": "8e6cb3f25c2d607c7ccfd9e933e1b2ed08b8cbaed868e68cd994b387ba99add6",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes-8e6cb3f25c2d.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes-2-8e6cb3f25c2d.png",
+      "replacementPublished": true,
+      "replacementSha256": "11cefedfb416515455b31a17293ee831d8ba980e4e29cec9fd7367940e8b67d2",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    },
+    {
+      "key": "romance--town--choice--bittersweet--perspectives",
+      "sourceSha256": "37471d73ef2d3c6300e17a713753a8ee44cd875e1f7cb37f22ffcd8c476303c9",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives-37471d73ef2d.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives-2-37471d73ef2d.png",
+      "replacementPublished": true,
+      "replacementSha256": "531136b670d103dfdc36dc3af40f4bc2399946e2eaa82c56b632790f261e4f73",
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-147"
+    }
+  ],
+  "resolvedCumulative": 116
+}

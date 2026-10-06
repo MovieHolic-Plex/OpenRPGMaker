@@ -1,0 +1,311 @@
+{
+  "batch": "v2-production-156",
+  "passedAttempts": 3,
+  "rejectedAttempts": 7,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-156",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:56:20.234419+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-156",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:56:45.030207+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-156",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:00:46.911857+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-156",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:04:46.900580+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-156-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-156",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-156"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:04:47.267234+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "ad156deb6607e8ff47d6d28c0cefe638998635ba0f610e98ed60798416819261",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e22c56a32737629be53e85ee081b3aaf2d6bf674531cd40927e3fa9543ac6d0b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "FOUR closed empty jars rather than exact THREE. Diagnostic also confirms decorative bordered/corner-ornament book covers contrary to own plain-unmarked/no marks requirement, not readable writing. Two volumes/full kit/creamfold samebench/three full LEFThabitatviews/leftreturntrail/daylight retained; bare front court, native distinct high return overlook."
+      ],
+      "note": "FOUR closed empty jars rather than exact THREE. Diagnostic also confirms decorative bordered/corner-ornament book covers contrary to own plain-unmarked/no marks requirement, not readable writing. Two volumes/full kit/creamfold samebench/three full LEFThabitatviews/leftreturntrail/daylight retained; bare front court, native distinct high return overlook."
+    },
+    {
+      "key": "monster--wild--collect--secret--route--short",
+      "nativeSha256": "b6ab78cb3b095c78ad2569b3c74d58aac4f7e70c1749f6eb7429cdf3217748d3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ad24e6a8cab1b8da713ca715941eda7d420deb9b9a38d40114c7e175eda32f33",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual near homebase/earth return impressions and full packed kit/THREE jars/TWO plain closed books/creamfold samebench all LEFT. However unbroken stone retaining wall behind bench separates near court from distant village path; no continuous walkable EARTH connection shown, selected travel condition incomplete. No body/text; new higher side settled-base view."
+      ],
+      "note": "Actual near homebase/earth return impressions and full packed kit/THREE jars/TWO plain closed books/creamfold samebench all LEFT. However unbroken stone retaining wall behind bench separates near court from distant village path; no continuous walkable EARTH connection shown, selected travel condition incomplete. No body/text; new higher side settled-base view."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--scene",
+      "nativeSha256": "f1b2b4f7437c14e2ff128cca34f5cbeb16808f41d605cb51bb8f2802fbbac395",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5323dcd0b2f58857df2486529b3ecab194cc1390317483cebef744edcc6834e2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Three complete actual OPEN wetland/forest/ruin habitat views now LEFT before actual controls, continuous walkable earth floor/whole physical left pawtrail; full open basket/net/binoculars/THREEclosed emptyjars/TWOplain books. Bare near floor/coarse pixel moonlit/untouched first/no care-return/glyph/body; independent upper-side outpost. Parent rejected, withhold until repaired."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "nativeSha256": "7ce8ace3c8b5d95e6c9f19da0967d670bfde6e6c484e9c37286f88ea352cd44d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "37afd41fc97451d1ed4385aab250750288fa97a74516084e46e198f565e444b9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Diagnostic confirms ornamented bordered covers with corner flourishes on TWO closed books; own plain blank/no golddecor/letter/icon/marks fails noText, not invented readable writing. THREEjars/fullleftkit/EMPTYleafnest/waterbowl/soft WHITEcloth GROUND BESIDEbench, whole three actual LEFTopenings and pawtrail all visible; selected growth otherwise retained/native/no body."
+      ],
+      "note": "Diagnostic confirms ornamented bordered covers with corner flourishes on TWO closed books; own plain blank/no golddecor/letter/icon/marks fails noText, not invented readable writing. THREEjars/fullleftkit/EMPTYleafnest/waterbowl/soft WHITEcloth GROUND BESIDEbench, whole three actual LEFTopenings and pawtrail all visible; selected growth otherwise retained/native/no body."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--short",
+      "nativeSha256": "62ac2caf7e4c2846fa25b11879c7840b2c5da3c9759c4f6fb3ddc5ff57e02094",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b82cd53df3ed8f11a44cd8fb38cb726dbeecf1f5cd24003fcd850524a0733340",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Full kit/THREEclosedjars/TWOplainbooks/softCREAMfold SAMEbench, all three actualLEFThabitats/fullLEFTreturntrail and OPENleftbase now visible. Small green near left-edge ground tufts below base wall and beside front bench remain despite explicit ZERO near grass/edge framing. Reject composition for own foreground condition; no invented counts/text/body."
+      ],
+      "note": "Full kit/THREEclosedjars/TWOplainbooks/softCREAMfold SAMEbench, all three actualLEFThabitats/fullLEFTreturntrail and OPENleftbase now visible. Small green near left-edge ground tufts below base wall and beside front bench remain despite explicit ZERO near grass/edge framing. Reject composition for own foreground condition; no invented counts/text/body."
+    },
+    {
+      "key": "monster--wild--collect--secret--route",
+      "nativeSha256": "e578618e43e1b129202be452ebc2fc1fbe32b36570cd61a5a6b6c879a82baee4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fd473db03313e6405bcfddd3cf4612584f02e79c5620be0d1d3fbf9d12e32b87",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Full kit/THREEclosedemptyjars/TWOplainbooks, continuous actual EARTHpath to LEFTsettlement/concealedhabitat. Final physical paw impressions extend at x60-65 behind actual controls starting60.3, so entire selected trail remains partially hidden. Village itself visible; do not falsely claim whole destination hidden. Native/blank/unset/no scope, independent upper field-station route."
+      ],
+      "note": "Full kit/THREEclosedemptyjars/TWOplainbooks, continuous actual EARTHpath to LEFTsettlement/concealedhabitat. Final physical paw impressions extend at x60-65 behind actual controls starting60.3, so entire selected trail remains partially hidden. Village itself visible; do not falsely claim whole destination hidden. Native/blank/unset/no scope, independent upper field-station route."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "nativeSha256": "236d43ea858477143534d92cb7e75c918b374e35bb32b5b3c179cd03aa1cdbf2",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3a7e454cd60ff863364a0e2cd36aa0ee5e12f8b216899df7e2651fc9c6605a35",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Three actual LEFT wetland/forest/ruin openings and full kit/THREEclosedjars/TWOplainbooks/pawimpressions present. Unbroken stone retaining wall separates foreground kit/pawtrail court from three habitat paths, no continuous walkable branch access shown. Reject selected physical access condition; not missing views or body/text. Independent higher station court."
+      ],
+      "note": "Three actual LEFT wetland/forest/ruin openings and full kit/THREEclosedjars/TWOplainbooks/pawimpressions present. Unbroken stone retaining wall separates foreground kit/pawtrail court from three habitat paths, no continuous walkable branch access shown. Reject selected physical access condition; not missing views or body/text. Independent higher station court."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--short",
+      "nativeSha256": "3195d6b3709165d6e832bc5d86b46138be780e8e2f39166ecef347368fc709aa",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "99ccaf1cf8c6e1168816738223f21363ad0a46d1493a08f5b239a175da6cbb1a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "MIDDLE selected paired table EMPTY; required GREENtin moved onto FAR mug/fabric table, collapsing separate route cues. CLOSED ending pass behind FAR mug pair rather than SAME chosen NEAR commonWOODBOXpair. Six full empty backedchairs/three square tables/nearcommonBOX+grayfold/twoOPENtrustdoorsGRAYalt+TWOplainbooks vsSCARF/autumn retained. Reject allChoices and latest ending staging, no invented glyph/body."
+      ],
+      "note": "MIDDLE selected paired table EMPTY; required GREENtin moved onto FAR mug/fabric table, collapsing separate route cues. CLOSED ending pass behind FAR mug pair rather than SAME chosen NEAR commonWOODBOXpair. Six full empty backedchairs/three square tables/nearcommonBOX+grayfold/twoOPENtrustdoorsGRAYalt+TWOplainbooks vsSCARF/autumn retained. Reject allChoices and latest ending staging, no invented glyph/body."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--scene",
+      "nativeSha256": "f60b89ad19f2787b32a82d73eaa5f1fb7f2c276b2ded65f4873d8951097e2a37",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "facbc2a7565d67f9d6e01251bcf556cf5ea5386b6d77f503a696fdcbce56ef28",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "TWO full empty BLUEbackedchairs/LOWfour-corner square separateTABLE/raised commonWOODBOX, first OPENtrustdoor GRAYaltBOX+TWOplainPAGEbooks versus secondSOFTscarf. Actual perpendicular SIDEwindow at wallcorner versus differently framed REAROPENcourtyardview retained; full meaningful aperture beforeactualcontrols, minor outer jamb edge may overlap. Untouchedfirst/autumn/native/no text/body; new low blue-chair Lvestibule distinct actual high woodRECTparent."
+    },
+    {
+      "key": "romance--palace--talk--warm--single--episode",
+      "nativeSha256": "cbd67ea54e6c3932c73d48dab42bf68590f67d26eb51da43b1bc852c631384ad",
+      "nativeDimensions": [
+        1672,
+        940
+      ],
+      "requestSha256": "12565ce9fbb51ecbdbb6ca528ab99d5da23074f5ada958a4d98beaaf80e4645c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "TWO full BLUEupholsteredBACKEDchairs/LOWsquareTABLE with distinctlegs/raised commonWOODBOX/TWOremovableEYEmasks PLUS tippedplainCUP/local redspill/separateSOFTdrycloth on SAMEtable. Candles/freshroses/oneprivatepass/plainpalacewalls retained, no identity/glyph/ending. Fresh lower opposite-side blue-chair event salon vs actual high red-chair rectangular parent."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 708,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

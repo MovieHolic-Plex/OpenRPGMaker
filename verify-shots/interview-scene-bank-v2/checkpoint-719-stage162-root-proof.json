@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 719,
+  "remainingAtSnapshot": 738,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T11:48:29.613654+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 719,
+      "manifestSha256": "903a8106b7611523639b6eb933a9523dc54249aac4e2d2bb29677730da3b4948",
+      "finishedAt": "2026-10-06T11:48:01.606062+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-719-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--secret--habitat--episode,monster--wild--collect--warm--case--scene,monster--wild--collect--warm--case--episode,monster--wild--team--bright--habitat--scene,monster--wild--team--bright--route--episode,monster--wild--collect--warm--route"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 719,
+      "manifestSha256": "903a8106b7611523639b6eb933a9523dc54249aac4e2d2bb29677730da3b4948",
+      "finishedAt": "2026-10-06T11:48:28.141527+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-719-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--collect--secret--habitat--episode.png",
+      "sha256": "9b3c67e1f8ee6bcad2d8da84c042177067ae39b1b54a27403e99b35c9f73bb35",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--collect--warm--route.png",
+      "sha256": "30b4eeca778062b76e18084baeed7785eb7ad087f58eb2d96e01f5d74df5b32c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--collect--warm--case--scene.png",
+      "sha256": "233367777c16e642df4cd6545bc502dd40bd6ebcf1e0008d4a13d6db6ed4db42",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--collect--warm--case--episode.png",
+      "sha256": "8234528c0f80ab662ac5f7c48997281de0bd5d2139b20f5c77baf8e798f09929",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--team--bright--route--episode.png",
+      "sha256": "4ababe81005913cead136f6a053779f1742ff4e94bc1591f0ca03d69f05019ef",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-719-stage162-selected-monster--wild--team--bright--habitat--scene.png",
+      "sha256": "14f2907d4ab9a025718057207834434b7ace142c0159e59295307257287e0f0f",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "719 file/record integrity and six production-dialog paths, 35 actual clicks and six settled screens actually viewed by root. Left-caption overlap remains. Private original bright-team-case and secret-team-route visibility failures pending official review at this frozen snapshot. No all719 fresh visual audit/fullappboot/AIhandoff claim.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-719-stage162-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-719-stage162-click-proof.json"
+  }
+}

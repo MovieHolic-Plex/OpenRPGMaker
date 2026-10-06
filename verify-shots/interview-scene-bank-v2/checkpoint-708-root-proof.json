@@ -1,0 +1,93 @@
+{
+  "publishedSnapshot": 708,
+  "remainingAtSnapshot": 749,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T10:08:53.241745+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 708,
+      "manifestSha256": "36c29904e60eb3a48f66839ffe0fd67ebd662c6cdf3206cb9dfe84ec9dc2a955",
+      "finishedAt": "2026-10-06T10:08:32.466724+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-708-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "romance--campus--choice--bittersweet--routes--scene,romance--campus--choice--bittersweet--routes--episode,romance--campus--choice--bittersweet--perspectives--scene,romance--campus--choice--bittersweet--perspectives--short,romance--palace--talk--warm--single--scene,romance--palace--talk--warm--single--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 708,
+      "manifestSha256": "36c29904e60eb3a48f66839ffe0fd67ebd662c6cdf3206cb9dfe84ec9dc2a955",
+      "finishedAt": "2026-10-06T10:08:51.900057+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-708-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--campus--choice--bittersweet--routes--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--campus--choice--bittersweet--routes--scene.png",
+      "sha256": "263e4d19c094850094886dcdcfda12510569d24f4cf54fb93b8ba0b8450a8aea",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--campus--choice--bittersweet--routes--episode.png",
+      "sha256": "c88fc00d910308245e02b919d8fc3fd000ec47171377698ab5ed3f832c85ce70",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--campus--choice--bittersweet--perspectives--scene.png",
+      "sha256": "db715b641ded1fe6b1603aaa15c18983a6d9e740b2529d2ff4397b43dd34045d",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--campus--choice--bittersweet--perspectives--short.png",
+      "sha256": "360f9a8783a7f3704bec1b044805d6949b8046644bdf20186bf6c54e9a2d441d",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--palace--talk--warm--single--scene.png",
+      "sha256": "0d9319ea518b4ab64754c1c8c825b5fbc2478482f245ddd6ed6cdcaf43847c33",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-708-selected-romance--palace--talk--warm--single--episode.png",
+      "sha256": "5088bfbbc128c7954d36003b5429801090ed083e03f926874c75626e6426da9e",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "708 file/record integrity plus six production-dialog paths. Root viewed all six settled screens. Some left-caption overlap and the perspective-scene outer right doorway-frame edge overlap remain, meaningful outside view remains visible. One old MON secret case parent has privately confirmed partial trail visibility failure pending official review; not assertion all708 pass fresh visual audit. Not all-published visual rescan/full app boot/AI handoff."
+}

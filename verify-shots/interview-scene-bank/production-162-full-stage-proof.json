@@ -1,0 +1,373 @@
+{
+  "batch": "v2-production-162",
+  "passedAttempts": 7,
+  "rejectedAttempts": 3,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-162",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:36:15.605462+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-162",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:36:39.415793+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-162",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:40:36.298480+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-162",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:44:46.619330+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-162-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-162",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-162"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:44:47.071402+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--secret",
+      "nativeSha256": "39e85fa10727176b0e0f2e2709b9c327683a8c5401c2e742d8b52d79874fc9bf",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "abaace87b1213414303c2525b5e8b0c901f65c88183aa1ebb88b7531d4557390",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Native hard moonlit pixel clusters. Four distinct EMPTY dark cave apertures wholeLEFT, prominent mesh capture net/open EMPTY basket/closed EMPTY transparent collection jar on protected LEFT stone work surface and physical paw trail entirely visible before actual controls60.3. New high reverse cliff discovery approach vs actual old close cage-research nook and preceding low side cliff. No progression/care/return/actor/emblems invented; raised basket lid explicitly allowed in OWN new request."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "nativeSha256": "812be8af8e8b6e1c2b4b3a397555d583e3c2999057ac8d77df1004cea60178a5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f5e8ea06c46e5f37377e3be70d0f16fee4a14b417b6d98aa7cad8a31f22297bf",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Native moonlit hard squares, full mesh net/open empty raised-lid basket/closed empty collection jar LEFT. Whole actual wetland/forest/ruin passages and walking connections LEFT before actual controls60.3; entire physical paw trail before controls, last impression approx51 rather than ideal left-third target. New opposite forest-side outpost frame vs cliff prefix. No scope/care/glyphs/body; prior lidless/count restrictions not imposed on new own request."
+    },
+    {
+      "key": "monster--wild--collect--warm--route",
+      "nativeSha256": "df88942ee34e56519c62fd641118f03e925f02ad7c932d6591bfaf175c342cbf",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "6c2fe5b3a7130b385025eff05b01615b80a79bd0787d978030770106b3415c3c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Entire physical paw route and different village all LEFT before actual controls60.3, full mesh net/open EMPTY transport basket/closed EMPTY collection jar/plain helpful cloth/open water bowl LEFT. Bowl on ground BESIDE basket, not falsely ON bench. Warm late-afternoon mainland travel shot; small distant inland river is not an ocean. New far high opposite hillside frame vs actual warm indoor restnook, no scope/event/return/actor."
+    },
+    {
+      "key": "monster--wild--collect--warm--case",
+      "nativeSha256": "98f8ea158fe34013dbbcf5461a85cf7e4697f91a2fbbb6641fc9b350e5e04777",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "832147ff2357dfb11bf95728c27e618edb41a4f41ffc34fff9d6cc46c8d73172",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "OPEN LEFT local refuge with loose unknotted rope coil hung beside threshold and tipped EMPTY wooden pail mouth visible; no gate or tied obstacle. Whole LEFT physical local paw trace, full capture mesh net/open empty basket/closed empty collection jar/plain cloth and open water bowl LEFT before actual controls60.3. Warm close local refuge foreground view differs from actual inside-threshold parent. Ground water BESIDE basket qualifies; raised lid allowed, no jar/book counts or event/return invented."
+    },
+    {
+      "key": "monster--wild--team--bright--habitat",
+      "nativeSha256": "420e581288faaccedd5edcb93275b055760d0c0015ef7bdecae4b26604628204",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e3176c4a550c54f314190fbf0f7ce635837585226b1d7d6726e1b9397ce161df",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Three real whole OPEN wetland/forest/ruin views and continuous walking connections LEFT. Main distinct hurdle/posts/low climb station bodies LEFT before actual controls60.3; ramp approx47-59 differs ideal center but whole meaningful chosen group is visible. Whole mesh net/open empty transport basket and LEFT physical pawn trail visible. New high reverse court outdoors vs actual old intimate inside outpost with huge kit and farRIGHT tactical stations. No glyphs/banners/body/scope/unselected collection jars."
+    },
+    {
+      "key": "monster--wild--team--bright--route--episode",
+      "nativeSha256": "3fae63b9a24c528204e4f69daf14dfea7b88c1f2399feebaaba1d25099a394d8",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "277e06ab9555a86729550587465269099a60c974de47989341a5278e6b959fe2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Native daylight coarse squares. Whole different village/continuous LEFT paw route, full hurdle/posts/climbing ramp meaningful bodies before controls60.3, net/open empty basket LEFT. EMPTY leaf-lined rest hollow with water and soft WHITE care cloth GROUND BESIDE kit, allLEFT, clear first growth. New near care foreground/main village far upperLEFT shot differs from actual current high wide arena parent. Raised lid allowed, no ending fold/species/emblems."
+    },
+    {
+      "key": "monster--wild--team--bright--route--short",
+      "nativeSha256": "fca51dd7d335b9a2da973ec58d9ad9705213e603013c46be6525d73d16cf5cba",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8b6aced3e3b8b6ccf9c872cd0f425e65dfaee3f42a8b2f5abccdaeaa367310f3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Whole village/OPEN returning homebase/LEFT return trace and tactical hurdle/posts/ramp plus capture net/open empty basket visible. Required soft CREAM fold is draped over basket rim and inside basket, not visibly a folded cloth ON SAME capture bench as own return request. Do not falsely report missing homebase or hidden tactical stations; no unselected growth nest required."
+      ],
+      "note": "Whole village/OPEN returning homebase/LEFT return trace and tactical hurdle/posts/ramp plus capture net/open empty basket visible. Required soft CREAM fold is draped over basket rim and inside basket, not visibly a folded cloth ON SAME capture bench as own return request. Do not falsely report missing homebase or hidden tactical stations; no unselected growth nest required."
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--scene",
+      "nativeSha256": "34671c811eb1c7b062dc1fea9cfb5b3d5abce101138e2b82e16fc6e30185e301",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "da833e8e33011e4a463ce83c3e3d651f2adb49b1c17c23e487d38e30c11059e2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Whole actual wetland/forest/ruin passages LEFT and continuous shared court, full empty tactical hurdle/posts/climbing ramp LEFT before actual controls60.3, net/open empty basket and entire physical paw trail LEFT. Untouched first-encounter capture station with no growth/return, no bodies/glyphs. Distinct outside forest-trunk portal/high small-kit view vs actual intimate inside parent and new all-stone three-arch high court parent."
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--episode",
+      "nativeSha256": "067e859ec8b64a25c81562ad92f7ce6bebc0e7d0fc1da19f23cd30e3e6c7cd3e",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "82bd3dfcee324f269b1472e6aea9a2b5b94770a2f76c5cb3df0dd9a7156b98f3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Full net/open empty basket, LEFT physical paw trail, three real habitat views LEFT and empty leaf-lined nest/water/WHITEcloth GROUND BESIDE kit show first growth. Main low climbing ramp extendsx53-67 partly behind actual controls60.3, meaningful descending section concealed. Hurdle/posts visibleLEFT; no false missing restnest/net or book/jar count imposed."
+      ],
+      "note": "Full net/open empty basket, LEFT physical paw trail, three real habitat views LEFT and empty leaf-lined nest/water/WHITEcloth GROUND BESIDE kit show first growth. Main low climbing ramp extendsx53-67 partly behind actual controls60.3, meaningful descending section concealed. Hurdle/posts visibleLEFT; no false missing restnest/net or book/jar count imposed."
+    },
+    {
+      "key": "monster--wild--team--bright--habitat--short",
+      "nativeSha256": "484a7d2930253b1e7c20485cabb65e89a2a669ad626bf9a4553e2f2d5c01aaed",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "995c23736cd0ec22cce96e7842752f163720da623525ba46f974493d51a96ddf",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Whole three habitat views/low hurdle/posts/climbing ramp LEFT before actual controls60.3, full capture net/open empty basket and LEFT physical return trail with LEFT open homebase visible. Cream cloth draped over basket rim/inside basket, not clearly a soft CREAM fold ON SAME bench required by own short-return request. No false missing net/return trace/hidden ruin or lidless restriction."
+      ],
+      "note": "Whole three habitat views/low hurdle/posts/climbing ramp LEFT before actual controls60.3, full capture net/open empty basket and LEFT physical return trail with LEFT open homebase visible. Cream cloth draped over basket rim/inside basket, not clearly a soft CREAM fold ON SAME bench required by own short-return request. No false missing net/return trace/hidden ruin or lidless restriction."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 719,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

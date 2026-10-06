@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--collect--bright--habitat--scene,monster--wild--collect--bright--habitat--episode,monster--wild--collect--bright--route--short,monster--wild--collect--bright--route,romance--town--choice--warm--routes--short,romance--town--choice--bittersweet--routes--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 695,
+  "manifestSha256": "2f8dad91fd9836d8f239d68c6b99f4cc0a774ba22be35bf9acf37f1c9a05079e",
+  "finishedAt": "2026-10-06T09:19:50.102658+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-695-click-proof.json",
+  "completeWholePlan": false
+}

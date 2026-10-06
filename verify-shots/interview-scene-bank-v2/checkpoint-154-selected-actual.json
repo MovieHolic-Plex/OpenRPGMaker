@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--collect--bright--case,monster--wild--collect--bright--case--scene,monster--wild--collect--bright--case--episode,monster--wild--collect--bright--case--short,romance--campus--choice--secret--routes--scene,romance--campus--choice--bittersweet--single--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 703,
+  "manifestSha256": "4e42476af46706c15501fc44682bbd6ec4d0b7179420b40f7e30172c48bfac78",
+  "finishedAt": "2026-10-06T09:45:13.027402+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-703-click-proof.json",
+  "completeWholePlan": false
+}

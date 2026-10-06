@@ -1,0 +1,236 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 703,
+  "targets": [
+    "romance--campus--choice--bittersweet--routes",
+    "romance--campus--choice--bittersweet--perspectives--scene",
+    "romance--palace--talk--warm--single--scene",
+    "romance--palace--talk--warm--single--episode",
+    "monster--wild--collect--bright--case--episode",
+    "monster--wild--collect--bright--case--short"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "romance--campus--choice--bittersweet--routes",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 22.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 16.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--choice",
+          "ms": 11.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice-be064a7036cb.png"
+        },
+        {
+          "key": "romance--campus--choice--bittersweet",
+          "ms": 9.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet-55d302f9664e.png"
+        },
+        {
+          "key": "romance--campus--choice--bittersweet--routes",
+          "ms": 14.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes-4bf81989b9da.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--campus--choice--bittersweet--perspectives--scene",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 6.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--choice",
+          "ms": 6.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice-be064a7036cb.png"
+        },
+        {
+          "key": "romance--campus--choice--bittersweet",
+          "ms": 13.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet-55d302f9664e.png"
+        },
+        {
+          "key": "romance--campus--choice--bittersweet--perspectives",
+          "ms": 5.899999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives-d65587656a1e.png"
+        },
+        {
+          "key": "romance--campus--choice--bittersweet--perspectives--scene",
+          "ms": 10.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives--scene-f60b89ad19f2.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--palace--talk--warm--single--scene",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.199999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 6.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--talk",
+          "ms": 9.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk-779e1d3f49d2.png"
+        },
+        {
+          "key": "romance--palace--talk--warm",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm-05bad5eb3a7a.png"
+        },
+        {
+          "key": "romance--palace--talk--warm--single",
+          "ms": 7.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single-3f1f3574f890.png"
+        },
+        {
+          "key": "romance--palace--talk--warm--single--scene",
+          "ms": 7.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single--scene-a7f4637fce6d.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--palace--talk--warm--single--episode",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--palace",
+          "ms": 16.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png"
+        },
+        {
+          "key": "romance--palace--talk",
+          "ms": 6.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk-779e1d3f49d2.png"
+        },
+        {
+          "key": "romance--palace--talk--warm",
+          "ms": 6.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm-05bad5eb3a7a.png"
+        },
+        {
+          "key": "romance--palace--talk--warm--single",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single-3f1f3574f890.png"
+        },
+        {
+          "key": "romance--palace--talk--warm--single--episode",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single--episode-cbd67ea54e6c.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--collect--bright--case--episode",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 12.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--collect",
+          "ms": 10.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect-5c05c4822a33.png"
+        },
+        {
+          "key": "monster--wild--collect--bright",
+          "ms": 8.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright-f97f2e6c8e3c.png"
+        },
+        {
+          "key": "monster--wild--collect--bright--case",
+          "ms": 7.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case-a7a4890ee798.png"
+        },
+        {
+          "key": "monster--wild--collect--bright--case--episode",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case--episode-6b56e8d984db.png"
+        }
+      ]
+    },
+    {
+      "target": "monster--wild--collect--bright--case--short",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 3.9000000953674316,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png"
+        },
+        {
+          "key": "monster--wild",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild-e75fbbd8c352.png"
+        },
+        {
+          "key": "monster--wild--collect",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect-5c05c4822a33.png"
+        },
+        {
+          "key": "monster--wild--collect--bright",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright-f97f2e6c8e3c.png"
+        },
+        {
+          "key": "monster--wild--collect--bright--case",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case-a7a4890ee798.png"
+        },
+        {
+          "key": "monster--wild--collect--bright--case--short",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case--short-692201c95b3d.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

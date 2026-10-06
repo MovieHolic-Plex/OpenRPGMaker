@@ -1,0 +1,116 @@
+{
+  "batches": [
+    {
+      "batch": "v2-production-145",
+      "originals": 10,
+      "rootNativeAndOwnRequestInspection": true,
+      "allSevenPassed": 6,
+      "actualImportReviewWrapperReceipts": [
+        {
+          "batch": "v2-production-145",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-145-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:33:07.172588+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-145-import-batch.log"
+        },
+        {
+          "batch": "v2-production-145",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-145-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:33:34.115841+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-145-review-batch.log"
+        },
+        {
+          "batch": "v2-production-145",
+          "command": [
+            "/usr/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-145",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:33:34.184369+00:00"
+        }
+      ],
+      "exactOfficialReviewsMatch": true,
+      "gateBuildDeferredUntil147": true
+    },
+    {
+      "batch": "v2-production-146",
+      "originals": 10,
+      "rootNativeAndOwnRequestInspection": true,
+      "allSevenPassed": 9,
+      "actualImportReviewWrapperReceipts": [
+        {
+          "batch": "v2-production-146",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-146-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:42:35.856024+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-146-import-batch.log"
+        },
+        {
+          "batch": "v2-production-146",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-146-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:42:58.753149+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-146-review-batch.log"
+        },
+        {
+          "batch": "v2-production-146",
+          "command": [
+            "/usr/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-146",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-06T07:42:58.787886+00:00"
+        }
+      ],
+      "exactOfficialReviewsMatch": true,
+      "gateBuildDeferredUntil147": true
+    }
+  ],
+  "publishedCountNotClaimed": true,
+  "completeWholePlan": false
+}

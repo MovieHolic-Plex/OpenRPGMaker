@@ -1,0 +1,241 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 676,
+  "targets": [
+    "romance--town--memory--bittersweet--perspectives--short",
+    "romance--town--choice--warm--single--short",
+    "romance--town--choice--warm--perspectives--episode",
+    "romance--town--choice--warm--perspectives--short",
+    "romance--town--choice--secret--single--episode",
+    "romance--town--choice--secret--single--short"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "romance--town--memory--bittersweet--perspectives--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 22.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 10.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--memory",
+          "ms": 9.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--memory-023bf66883c2.png"
+        },
+        {
+          "key": "romance--town--memory--bittersweet",
+          "ms": 10.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet-8fbe180590e6.png"
+        },
+        {
+          "key": "romance--town--memory--bittersweet--perspectives",
+          "ms": 12.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives-9056af2d639f.png"
+        },
+        {
+          "key": "romance--town--memory--bittersweet--perspectives--short",
+          "ms": 16.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives--short-61d564fd2593.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--warm--single--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 10.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 6.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 4.400000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png"
+        },
+        {
+          "key": "romance--town--choice--warm",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm-43b58af04182.png"
+        },
+        {
+          "key": "romance--town--choice--warm--single",
+          "ms": 10.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single-8eef2ec76d46.png"
+        },
+        {
+          "key": "romance--town--choice--warm--single--short",
+          "ms": 11.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single--short-500304462d67.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--warm--perspectives--episode",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 8.099999904632568,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 6,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png"
+        },
+        {
+          "key": "romance--town--choice--warm",
+          "ms": 5.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm-43b58af04182.png"
+        },
+        {
+          "key": "romance--town--choice--warm--perspectives",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-ed0304160ad1.png"
+        },
+        {
+          "key": "romance--town--choice--warm--perspectives--episode",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives--episode-c9e5b99f8173.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--warm--perspectives--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 6.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 8.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png"
+        },
+        {
+          "key": "romance--town--choice--warm",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm-43b58af04182.png"
+        },
+        {
+          "key": "romance--town--choice--warm--perspectives",
+          "ms": 10.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-ed0304160ad1.png"
+        },
+        {
+          "key": "romance--town--choice--warm--perspectives--short",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives--short-59d9468440d6.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--secret--single--episode",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 7,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 10.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 6.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png"
+        },
+        {
+          "key": "romance--town--choice--secret",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret-55c894fdd9ea.png"
+        },
+        {
+          "key": "romance--town--choice--secret--single",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single-5dc56fcf25c3.png"
+        },
+        {
+          "key": "romance--town--choice--secret--single--episode",
+          "ms": 6.300000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single--episode-5ae9d7eeeb11.png"
+        }
+      ]
+    },
+    {
+      "target": "romance--town--choice--secret--single--short",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--town",
+          "ms": 6.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town-269880336292.png"
+        },
+        {
+          "key": "romance--town--choice",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png"
+        },
+        {
+          "key": "romance--town--choice--secret",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret-55c894fdd9ea.png"
+        },
+        {
+          "key": "romance--town--choice--secret--single",
+          "ms": 6.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single-5dc56fcf25c3.png"
+        },
+        {
+          "key": "romance--town--choice--secret--single--short",
+          "ms": 8,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single--short-fa968cbbafa7.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

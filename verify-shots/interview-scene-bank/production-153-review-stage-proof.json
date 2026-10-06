@@ -1,0 +1,238 @@
+{
+  "batch": "v2-production-153",
+  "passedAttempts": 4,
+  "rejectedAttempts": 6,
+  "nativeUnmodified1672x941": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-153",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-153-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:29:22.621513+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-153-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-153",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-153-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:29:48.802480+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-153-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-153",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-153",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:29:48.844906+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--case",
+      "nativeSha256": "ff5a940466a73226624b6b2356945ec63d0b04795dab11e566063a4b7884aee0",
+      "requestSha256": "86da421e80b6d8f5fb28c2d8fd25a048cbc7693b6ddc59bd5505573695ed5d40",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "FOUR closed empty transparent specimen jars rather than exact THREE. Foreground now bare and entire local refuge/rope/tilted empty pail/open basket/net/binoculars/two plain books/physical trail left and visible. No invented species or text."
+      ],
+      "note": "FOUR closed empty transparent specimen jars rather than exact THREE. Foreground now bare and entire local refuge/rope/tilted empty pail/open basket/net/binoculars/two plain books/physical trail left and visible. No invented species or text."
+    },
+    {
+      "key": "monster--wild--collect--bright--route--scene",
+      "nativeSha256": "fc6d14ebd3f86214d0557b531f6e35ee70447b2df56c230cac104eac524c7db6",
+      "requestSha256": "efaab0be5b110577366060378d533c069ca13133ecba45288becc6f40fbc43c9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full untouched open basket/net/binoculars/three closed empty jars/two genuinely plain closed books, whole continuous walkable left earthen trail to different left village. Gold cover ornament removed, bare foreground, coarse square clusters and independent higher reverse side ridge shot."
+    },
+    {
+      "key": "monster--wild--collect--bright--route--episode",
+      "nativeSha256": "0551307ada13bcafe51c909eca8f39d16968b99c53bc972051b6059a0b2adf16",
+      "requestSha256": "008d09396cab90104c904fa609f076784bed7708f2f34ad59e248a51b1d5b305",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Three closed empty jars/two plain books/open basket/net/binoculars plus tiny EMPTY leaf-lined nest/water bowl/soft white carecloth, all left. Continuous actual earthen travel path now links kit and different left settlement, no bridge/river gap or foreground tree. Clear day, no identity/text; fresh high open field-care alcove."
+    },
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "fefe17aed4dc1ad37c16b2ee8cdc8e8bcf321137bd7c8d2ebb9d1300f057ca6f",
+      "requestSha256": "96caf99f1cdffe961fdfad3efc0f11fc6ca00990dd76f0e26ac6d1af316b264f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Three actual decorative hanging BANNERS with leaf/tree/ruin EMBLEMS above habitat openings violate exact no flags/banners/crests/marks requirement. Correct left three physical habitats/three closed jars/two books/packed kit/soft cream fold same workbench/return trail otherwise retained. Not claimed as readable letters."
+      ],
+      "note": "Three actual decorative hanging BANNERS with leaf/tree/ruin EMBLEMS above habitat openings violate exact no flags/banners/crests/marks requirement. Correct left three physical habitats/three closed jars/two books/packed kit/soft cream fold same workbench/return trail otherwise retained. Not claimed as readable letters."
+    },
+    {
+      "key": "monster--wild--collect--bright--case--scene",
+      "nativeSha256": "28b72fc308cf14ab2984421f559c5051b8674f4fc7b0475d1f3e560faf615f36",
+      "requestSha256": "1c7317a7f86eb2ac41a1b4140591a3dba3ac0ad24caa2bd646a08762062cb484",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full left local refuge/loose rope/tilted EMPTY pail, untouched open basket/net/binoculars/exact three closed empty jars/two plain books/left physical earthen trail. Bare near court/independent lower-side patio shot, no care/ending or creature identity. Publication remains withheld until parent passes."
+    },
+    {
+      "key": "romance--campus--choice--secret--routes--scene",
+      "nativeSha256": "549af1f7151481f1a3d39fa9eda1bc80bd5682caee3e7c203d4fc682903157fb",
+      "requestSha256": "f8df0a8fa16df59d7ccdf6db372c9a5bd7316986cc8d38551304a8daf383bf00",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "NIGHT glass remains clearly transparent to outside autumn trees; exact requested FROSTED opaque glazing/no exterior scene not met. Six full backed empty chairs/three square paired tables/near common wooden box/middle blue tin/far mug-soft cloth/two private trust thresholds otherwise visible left. Do not invent missing common box or hidden scarf."
+      ],
+      "note": "NIGHT glass remains clearly transparent to outside autumn trees; exact requested FROSTED opaque glazing/no exterior scene not met. Six full backed empty chairs/three square paired tables/near common wooden box/middle blue tin/far mug-soft cloth/two private trust thresholds otherwise visible left. Do not invent missing common box or hidden scarf."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--scene",
+      "nativeSha256": "dc8ca45f4dd1d4aa3d623863c50bade273af6dedad96c87c148e0bf09c87ed94",
+      "requestSha256": "1c8d462e65b20517901fcfd0e85b772253679da99c7322ab06e27dcc664cabe7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Main second trust door/soft scarf at approximately x60-66% falls substantially behind actual controls at x60.3%. Six complete backed chairs/three square tables/near common box/middle green tin/far mug-soft cloth/first gray alternative box/two closed books retained. Golden autumn afternoon not retro rejected as forbidden sunset because own brief did not ban it."
+      ],
+      "note": "Main second trust door/soft scarf at approximately x60-66% falls substantially behind actual controls at x60.3%. Six complete backed chairs/three square tables/near common box/middle green tin/far mug-soft cloth/first gray alternative box/two closed books retained. Golden autumn afternoon not retro rejected as forbidden sunset because own brief did not ban it."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--episode",
+      "nativeSha256": "761e4cf5741962e910cf333abcda3606201d924d74a0f5ecc612a7cab8dece8d",
+      "requestSha256": "4439f6def26ae0fa0895718ec240d72753f45ce6570754796aaaabc1288f3aca",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Six full backed empty chairs/three square paired tables, raised near common brown box now retained with tipped cup/actual local brown spill and soft drying cloth; middle green tin/far upright mug-soft fabric, distinct first gray alternative box/two page-facing closed books and second open private scarf door all left before controls. Quiet wet autumn campus and fresh near-event low gallery angle versus high parent. Held until failed parent is repaired."
+    },
+    {
+      "key": "monster--wild--collect--bright--case--episode",
+      "nativeSha256": "888cbb1f24090e42d00cb8895301824dd8aed57759b700db4142f12b5abfbd54",
+      "requestSha256": "849b409e9d76aab381cc69387cff0ccb3ecff46f3320db8ffc14f8da3452031a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required tilted empty wooden pail is upright at local refuge threshold. Otherwise all left full kit/three closed jars/two books, empty leaf-lined rest nest/open water bowl/soft white carecloth and local physical pawtrail visible; bare foreground, no text or body."
+      ],
+      "note": "Required tilted empty wooden pail is upright at local refuge threshold. Otherwise all left full kit/three closed jars/two books, empty leaf-lined rest nest/open water bowl/soft white carecloth and local physical pawtrail visible; bare foreground, no text or body."
+    },
+    {
+      "key": "monster--wild--collect--bright--case--short",
+      "nativeSha256": "622594a35eeb2721331d45dbd3cee7767f92801b9a01557b13c4ba757a23e491",
+      "requestSha256": "e5735c5d719d0fbda3a344579f2060fa15a08f0347ee1d1316c8fff08ec25d06",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required separate soft CREAM folded carecloth on SAME packed-kit workbench missing; pail upright rather than tilted. Three jars/two books/open basket/net/binoculars/left open base and physical return trail retained. Latest return staging incomplete without required ending cloth; no text/body."
+      ],
+      "note": "Required separate soft CREAM folded carecloth on SAME packed-kit workbench missing; pail upright rather than tilted. Three jars/two books/open basket/net/binoculars/left open base and physical return trail retained. Latest return staging incomplete without required ending cloth; no text/body."
+    }
+  ],
+  "publication": "official import/review only; build deferred, no new published count claimed"
+}

@@ -1,0 +1,466 @@
+[
+  {
+    "batch": "v2-production-150",
+    "passedAttempts": 2,
+    "rejectedAttempts": 8,
+    "nativeUnmodified1672x941": true,
+    "stages": {
+      "import-batch": {
+        "batch": "v2-production-150",
+        "stage": "import-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "import-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-150-import.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:51:07.073763+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-150-import-batch.log"
+      },
+      "review-batch": {
+        "batch": "v2-production-150",
+        "stage": "review-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-150-reviews.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:51:33.007160+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-150-review-batch.log"
+      },
+      "wrapper": {
+        "batch": "v2-production-150",
+        "command": [
+          "/usr/bin/python3",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+          "v2-production-150",
+          "--defer-build"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:51:33.044529+00:00"
+      }
+    },
+    "records": [
+      {
+        "key": "romance--town--choice--warm--routes--short",
+        "nativeSha256": "4d58f0da6f25b24aceab9e99768720c3252f3cb2a9334b3b425a6147826b4873",
+        "requestSha256": "f756650dd2fe3ebf130d06358611198892d267a365949660348e4bfa5f6ef27c",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": []
+      },
+      {
+        "key": "romance--town--choice--bittersweet--routes--episode",
+        "nativeSha256": "8967448c26b38dd85bb0d1c637bc8c384e78f8a0036701fdc752d90b6b3c76d8",
+        "requestSha256": "6dae69168c8211a05f95764a5498b2d4367a32ca53fecbbf235a9e62a9c355fe",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": []
+      },
+      {
+        "key": "monster",
+        "nativeSha256": "489fc69617abc3a1296ae0899e84d25a51c6db8ab6373257042f5e1e4ddf0095",
+        "requestSha256": "86c47265de21a17f8b3e5608d11f97586d2fa7fd40385a0757c72c9fea8d5226",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Near-camera fern and white flower foliage frames lower left foreground in front of the bench, contrary to this exact request forbidding near-camera foliage/flower framing. Field bag, left earthen tracks, forest/wetland/hills and unset identity retained."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright",
+        "nativeSha256": "7813c31b846d8133c51b4e4538655da426b35d36095e4a21744ddd072e0abd79",
+        "requestSha256": "ac69de5ee81f76767749ad147e1e70108739229f48edfd6f43bf83ac96a135c0",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Basket has closed flush lid instead of required empty open basket. Near-camera foliage frames bottom left and part of earthen track continues right under controls; visible left tracks remain. Three closed empty jars, two books and clear daylight retained."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route",
+        "nativeSha256": "b5a0edc00849eed82d3b32d1c87b0a4fe041033ac57a4b8ab5d5f02a1e618c5e",
+        "requestSha256": "c8b28c2b6f5a18ab8d76d9c98fbe74a5a98b31a58c23a9c7be19b3f1eca48d0d",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Basket lid closed instead of required open empty basket. Near-camera foliage frames near stone ledge. Entire travel destination is now left. Book diagnostic shows gold rectangular ornament and parallel binding strokes, not clearly readable writing; do not invent text failure."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--habitat",
+        "nativeSha256": "842bd7b0268cf67097e0e2a1ef8fd9d954a3ea29261147fbf4d6bb19e376264d",
+        "requestSha256": "c96d43525926034187e49f695c2e5d6ac16379976495bb930f7879dbd8246cbd",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Required third ruin aperture extends across approximately x49-73%; right pillar and part of actual view lie behind controls at x60.3%. Left wetland and forest apertures and full capture/collection kit present. Part of earthen trail also extends right; not all tracks hidden."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--case",
+        "nativeSha256": "ad9238fe4f163ca02fc5dece581762bac07e696bae62c6a6f7cbb086cf92dc16",
+        "requestSha256": "1450688cd28952b2d603f09e68144dcfe2674358d8ce871d7ab1f5522129fed5",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Part of physical paw trail continues to approximately x61-72% behind controls despite exact request placing whole trail left. Near-camera fern framing also conflicts with own request. Open basket/net/three closed empty jars/two books/binoculars/local rope and tilted empty pail retained."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--scene",
+        "nativeSha256": "113c80b904722cf7d5891d8b2de6edff0987420b799945ba2edee65e7d0d73b9",
+        "requestSha256": "d1a1e3fc0d6674e2d10e6b885a579139bed8c78b676ffd0921aec4c8ee4418a2",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Near-camera plants and white flowers frame lower stone ledge contrary to own request. Left destination/path, open basket/net/three closed empty jars/two books/binoculars and first-moment scope retained. Far-left destination and higher viewpoint differ from parent route shot."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--episode",
+        "nativeSha256": "2cfea0c6e29807b692d54e5642924b313e6dff33dbf0b4323b68c69a07915461",
+        "requestSha256": "6d55c1e99108d35b27964f6d6ba8acabde5f40002fc1f144403cef4702700a21",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Four closed empty specimen jars instead of exact three; large near-camera ferns frame ledge and trail partly extends right. Book spine diagnostic has character-like gold rectangular and parallel binding marks, insufficient to claim readable writing. Empty leaf-lined rest nest, water bowl and white care cloth retained."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--short",
+        "nativeSha256": "d0e80493406340a51e017be0e68f60a81fd9b33f1619085f58c3cdfa521c8d60",
+        "requestSha256": "82a7ee97e6a2f22b99f4e88a15c17fd5f817354733738af44098495000a874f3",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Actual homebase open threshold mostly cropped to a far-left sliver; entire opening not shown. Required return/paw trail extends to approximately x64-70% behind controls; near-left framing jamb conflicts with own request. Open basket/net/three closed jars/two books/binoculars and separate soft cream fold on workbench retained."
+        ]
+      }
+    ],
+    "publication": "official import/review only; build deferred, no new published count claimed"
+  },
+  {
+    "batch": "v2-production-151",
+    "passedAttempts": 2,
+    "rejectedAttempts": 8,
+    "nativeUnmodified1672x941": true,
+    "stages": {
+      "import-batch": {
+        "batch": "v2-production-151",
+        "stage": "import-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "import-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-151-import.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:56:24.416443+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-151-import-batch.log"
+      },
+      "review-batch": {
+        "batch": "v2-production-151",
+        "stage": "review-batch",
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-151-reviews.json"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:56:48.208482+00:00",
+        "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-151-review-batch.log"
+      },
+      "wrapper": {
+        "batch": "v2-production-151",
+        "command": [
+          "/usr/bin/python3",
+          "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+          "v2-production-151",
+          "--defer-build"
+        ],
+        "returncode": 0,
+        "finishedAt": "2026-10-06T08:56:48.248037+00:00"
+      }
+    },
+    "records": [
+      {
+        "key": "monster",
+        "nativeSha256": "fcb6bed80307574f53462050a94e83663d19a7218fe833b34bac7799d4796420",
+        "requestSha256": "8bac8e826da76f8e15cb69c2881eea8bb911daca19dc93abd568c39daf613f41",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": []
+      },
+      {
+        "key": "monster--wild--collect--bright",
+        "nativeSha256": "e6ed3e32e1405d0be829da94d805251aab9702951c77f93acaa237f0c8ccdf39",
+        "requestSha256": "1ee3c6ff2ae09f29ef1bc9a29457483f2cf24c1452084b3342e4c6f47e4a2cc0",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Near-camera grass tufts occur in front of supplies along lower ledge and image bottom left despite exact clean bare foreground requirement. Open basket/net/binoculars/three closed empty jars/two books/daylight/left physical trail/single nearby shelter otherwise retained. Functional parallel spine-binding bands are not claimed as readable writing."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route",
+        "nativeSha256": "44a61f7566e82677ded200c806d24edd2925bec51e1ec26fbae5cc301e79c289",
+        "requestSha256": "f6055eed4bcd8ec80c41c784e4f0fdba1ca5a26cdf03f02e481f49e4b44f8ca9",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": []
+      },
+      {
+        "key": "monster--wild--collect--bright--habitat",
+        "nativeSha256": "22b978625d46a85d794212c798375611f6c6015bf8a08001a99ae1110eff1038",
+        "requestSha256": "6dcbc038e171a4232b870f089e5f46df1fc0be19e01b994ce27caa538335f7b2",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Four closed empty specimen jars and three actual closed books instead of exact three jars/two books. Third ruin aperture/right pillar crosses actual controls at x60.3%; required complete ruin view partly hidden. Wetland/forest openings present; no creatures/text."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--case",
+        "nativeSha256": "ef9397ee387f2bee9b384fb974b7899c40a6a175a0cd407b00c9da2c80878c44",
+        "requestSha256": "e60e24dc3e685ff10217ffa6f283c0d0f21dd98753fb325320c7ae4a63890ab5",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Visible left physical paw trail continues to lower right behind controls around x61-72%; grass tufts frame near bottom ledge despite own clean bare foreground. Open basket/net/three closed jars/two books/binoculars/local rope/tilted empty pail/refuge otherwise correct."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--scene",
+        "nativeSha256": "18de9ea02c42b77a22593a1d40a48d919e18cdc9cda8080c16e0059fa0adbda2",
+        "requestSha256": "d0feb89a3d1a7dee7c3ba5490d876663a6f1cb263960553f0af374e129429c68",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Required two-book stack extends around x52-64%; right book portions fall behind actual x60.3% controls, rather than full kit left as own request. Many left paw impressions remain visible; no claim entire trail hidden. Open basket/net/three closed jars/binoculars/first moment/left village retained; new higher reverse arrangement."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--episode",
+        "nativeSha256": "cb7474e53f8ca25d6694f5be7c8d622c9bac4af0e5e99755d3e815966f3426e7",
+        "requestSha256": "8eead87dc622ef7438df3d080b197b6f0ab88dc336abe92ece3dbd109ebe5371",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "Required white carecloth at approximately x55-67% and part of empty leaf-lined rest nest lie behind actual x60.3% controls. Three jars now correct; open basket/net/two books/binoculars/water bowl/left journey and physical trail retained. No visible creature identity or readable writing."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--route--short",
+        "nativeSha256": "c776ace0f26e19362370247a727bdbac435f169633165abb72c1dbcd5ad39ff4",
+        "requestSha256": "ba604ace7e318b15218cab4554e0037e5d3c62e6e0f9967f1a5e18a2d209d471",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "Jars/books/cream folded carecloth mostly positioned right behind controls; only basket/net near left. Added forbidden physical paper map on wall. Full open left homebase threshold and return trail now visible. Native distinct interior return view, no inferred writing from plain functional binding."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--habitat--scene",
+        "nativeSha256": "5fa64c3c7424830415b6ff8ab4c81fafc623e4e64de689e0cf94ea960e08e4ad",
+        "requestSha256": "340baba944b01380d05a8ab2a17e3b019cea2fba9f0fd08e9d9540d0f3edc110",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "Third actual ruin aperture/right pillar at approximately x55-78% partly hidden behind controls; physical trail also continues right under panel. Added forbidden banner with gold emblem. Correct open basket/net/three closed jars/two books/binoculars and untouched first moment otherwise."
+        ]
+      },
+      {
+        "key": "monster--wild--collect--bright--habitat--episode",
+        "nativeSha256": "9b52b10e9cb18c657c77f2d475eab21689b05b1e673936792aa34cb77378b8f8",
+        "requestSha256": "64fa941cc161e31c79d9dc42953e13f6da6ed1eaaa474c9c10db6d28e8ce1b2d",
+        "rootViewedNativeAndOwnFullRequest": true,
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "Third ruin opening at approximately x63-87% wholly under actual panel; part of physical paw trail continues right under panel. Added forbidden paper map on right wall. Correct full kit and empty resting nest/water bowl/white carecloth on left, no fixed creature identity."
+        ]
+      }
+    ],
+    "publication": "official import/review only; build deferred, no new published count claimed"
+  }
+]

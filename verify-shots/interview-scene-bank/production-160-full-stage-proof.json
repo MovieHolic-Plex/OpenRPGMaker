@@ -1,0 +1,387 @@
+{
+  "batch": "v2-production-160",
+  "passedAttempts": 0,
+  "rejectedAttempts": 10,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-160",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:59:40.557788+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-160",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:00:05.808579+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-160",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:04:24.446978+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-160",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:08:31.448872+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-160-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-160",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-160"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T11:08:31.748714+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--secret",
+      "nativeSha256": "8d76306361315f89300d771f7f67b36bd642e22725c402687aefce54a66322e7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b454384a493cfafe3c1e476230e6d79518cffa5089eeccb21bf2b01543f44d8f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Three whole dark empty caves and full net/basket/binoculars/three jars/two books LEFT now visible. No actual physical paw impressions on selected trail: steps/stone texture do not satisfy own physical-paw requirement. No falsely hidden caves verdict."
+      ],
+      "note": "Three whole dark empty caves and full net/basket/binoculars/three jars/two books LEFT now visible. No actual physical paw impressions on selected trail: steps/stone texture do not satisfy own physical-paw requirement. No falsely hidden caves verdict."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "nativeSha256": "2ff86c6050a9d6fd0c5cd3a755917968db77ab844e0efa66de87a100484f8235",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "6177c8ceb610c2ba060f34a23529914be79fd626fef6f70a57e03e7258a12126",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Three wetland/forest/ruin openings and capture net/full kit LEFT before actual controls. Required physical paw impressions absent. Brown book cover contains ornamental rectangular border/corner design forbidden by own plain-undecorated-cover request, not readable writing."
+      ],
+      "note": "Three wetland/forest/ruin openings and capture net/full kit LEFT before actual controls. Required physical paw impressions absent. Brown book cover contains ornamental rectangular border/corner design forbidden by own plain-undecorated-cover request, not readable writing."
+    },
+    {
+      "key": "monster--wild--collect--warm--route",
+      "nativeSha256": "762ab0bf3e7788e4d5117f09ef9bc94efea4237c4e29471a4a0749f1713f04e8",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fd1ccda313185db61d789cc4c36fc781e4ac926c5d1dd2ed81662bf22070fa95",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Entire physical paw trail, small village, full net/basket/binoculars/three jars/two closed books and cloth/water LEFT before actual controls. Green top cover has decorative gold border/motif, confirmed read-only nearest diagnostic; own no border/flourish request fails. Binding/page edges are not misidentified as writing."
+      ],
+      "note": "Entire physical paw trail, small village, full net/basket/binoculars/three jars/two closed books and cloth/water LEFT before actual controls. Green top cover has decorative gold border/motif, confirmed read-only nearest diagnostic; own no border/flourish request fails. Binding/page edges are not misidentified as writing."
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat",
+      "nativeSha256": "a83dea475c3dbb70db253491580907690e522dedd836537f1eb2f0b0b951b0ca",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a6da9d3a636685d681e228861cf0ef1c4cbf11187e5b87e03a212f81c10fd2e2",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "All three actual wetland/forest/ruin openings and three jars/two plain closed books plus cloth/water LEFT visible. Required empty capture net absent and no actual physical paw impressions visible. Peripheral trees/grass do not invalidate this own request absent core occlusion."
+      ],
+      "note": "All three actual wetland/forest/ruin openings and three jars/two plain closed books plus cloth/water LEFT visible. Required empty capture net absent and no actual physical paw impressions visible. Peripheral trees/grass do not invalidate this own request absent core occlusion."
+    },
+    {
+      "key": "monster--wild--collect--warm--case",
+      "nativeSha256": "f172f80d3f5c7a7708c0ba8bb4f0d8e16a50dd2cb96c63e4b41de5a8cfefcfed",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "701c4ed09c2c968cc79a86bfbcd874d0f727b2558418342529850f702066a878",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Open local refuge LEFT, tipped empty pail/rope LEFT threshold, vertical LEFT physical paw trail and three empty jars/cloth/water present. Whole two-book group extendsx52-65 behind actual controls at60.3. Capture net absent; black small strap/ring is not a woven capture net."
+      ],
+      "note": "Open local refuge LEFT, tipped empty pail/rope LEFT threshold, vertical LEFT physical paw trail and three empty jars/cloth/water present. Whole two-book group extendsx52-65 behind actual controls at60.3. Capture net absent; black small strap/ring is not a woven capture net."
+    },
+    {
+      "key": "monster--wild--collect--warm--route--episode",
+      "nativeSha256": "0a16f9d93b52a4b089fdbe5e62759656f7001e31c4650b094c9ced61ebb18f48",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "372ba17e9fce62488313c3bc6c8eceec40207e2a15986536ff64d556b4297066",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "LEFT continuous paw path and small village, exact jars/books/binoculars/lidless basket and leaf-lined empty nest/water/white cloth BESIDE bench show first growth. Required empty capture net absent; no fictitious missing nest or misplaced ground-care verdict."
+      ],
+      "note": "LEFT continuous paw path and small village, exact jars/books/binoculars/lidless basket and leaf-lined empty nest/water/white cloth BESIDE bench show first growth. Required empty capture net absent; no fictitious missing nest or misplaced ground-care verdict."
+    },
+    {
+      "key": "monster--wild--collect--warm--route--short",
+      "nativeSha256": "2e9be9ee0eeca3522b7b8a0e465877b0509feb122c3367467a59e19c3b3d3502",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "fd1eed6dc13b97d3f99aba0edeb792483c7e26232d183b1aa3104759c31f21e0",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "LEFT whole village/physical trail/open upper homebase, jars/books/binoculars/basket/water and soft cream cloth ON SAME bench present. Required net absent; near black loop is a strap. Green cover contains decorative gold cover motif forbidden by own plain no-flourish request."
+      ],
+      "note": "LEFT whole village/physical trail/open upper homebase, jars/books/binoculars/basket/water and soft cream cloth ON SAME bench present. Required net absent; near black loop is a strap. Green cover contains decorative gold cover motif forbidden by own plain no-flourish request."
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat--scene",
+      "nativeSha256": "4b5d1225d7f03b4f9fcb1512a4d9408a8dcb849059a45d71e990961f3474448b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a532e0634fb836d59e0951160cb8147136061ab1201564267c049e17ef38418d",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Forest and ruin LEFT visible; selected wetland opening extends acrossx55-67 behind actual controls at60.3. Kit has three jars/two books/cloth/water but required capture net and physical paw impressions absent. No unselected growth/return claimed."
+      ],
+      "note": "Forest and ruin LEFT visible; selected wetland opening extends acrossx55-67 behind actual controls at60.3. Kit has three jars/two books/cloth/water but required capture net and physical paw impressions absent. No unselected growth/return claimed."
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat--episode",
+      "nativeSha256": "7bc536603f38412607f7658d6c52dd00c4120f4186ff1ec33238d9e70d4771f5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "eba55487e643cba41fe60c46e7cfb61b551a254c2d979a000865ad4fb5bf8ec5",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual LEFT wetland/forest/ruin views with three jars/two books/net/binoculars/basket and leaf rest/water/whitecloth BESIDE bench visible. Physical paw impressions absent. Blue reed-emblem and purple arch-emblem banners directly violate own no flags/banners/crests request; these are graphical emblems, not readable text."
+      ],
+      "note": "Actual LEFT wetland/forest/ruin views with three jars/two books/net/binoculars/basket and leaf rest/water/whitecloth BESIDE bench visible. Physical paw impressions absent. Blue reed-emblem and purple arch-emblem banners directly violate own no flags/banners/crests request; these are graphical emblems, not readable text."
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat--short",
+      "nativeSha256": "1b59ecb955378d8c06156a2afcc54326e84c90fcf79681fb0f436548100de6f0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ce3de4da045a6af349e8abab34c71bf0725df2c35ed75fa41178dff607b08eae",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "LEFT three actual habitat views, full capture net/basket/binoculars/three jars/two plain closed books/water and cream fold ON SAME bench visible. No physical paw impressions/return trace and no separately recognizable open returning homebase beyond the three habitat portals; own short-return staging not established. Minor empty bench edge behind controls is not a whole-book occlusion."
+      ],
+      "note": "LEFT three actual habitat views, full capture net/basket/binoculars/three jars/two plain closed books/water and cream fold ON SAME bench visible. No physical paw impressions/return trace and no separately recognizable open returning homebase beyond the three habitat portals; own short-return staging not established. Minor empty bench edge behind controls is not a whole-book occlusion."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 703,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

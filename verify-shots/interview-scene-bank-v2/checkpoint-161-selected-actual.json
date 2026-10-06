@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--wild--collect--warm--habitat,monster--wild--team--bright--route,monster--wild--collect--bright--case--short,romance--campus--choice--bittersweet--perspectives--scene,romance--palace--talk--warm--single--scene,romance--palace--talk--warm--single--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 704,
+  "manifestSha256": "26ad27897a9213189b274a5a9b2d5e86bcca859178a78523ee89f6fe8b1b6777",
+  "finishedAt": "2026-10-06T11:25:37.120390+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-704-click-proof.json",
+  "completeWholePlan": false
+}

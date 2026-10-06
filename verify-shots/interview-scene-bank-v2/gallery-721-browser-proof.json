@@ -1,0 +1,133 @@
+{
+  "results": [
+    {
+      "width": 320,
+      "images": [
+        {
+          "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        },
+        {
+          "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 288
+        }
+      ],
+      "state": {
+        "count": "721 / 1457",
+        "pressed": 1,
+        "width": 288,
+        "scrollWidth": 288
+      }
+    },
+    {
+      "width": 736,
+      "images": [
+        {
+          "label": "몬스터 수집: 야생 발견 · 새 종 수집 · 밝은 탐험 · 한 지역 사건 · 첫 도전과 거점 귀환",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 같은 사건의 다른 이해 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 다시 만난 옛 친구 · 갈등 속 선택 · 아련함 · 가까워질 상대 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 첫 만남 한 장면",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "연애: 가면무도회 · 대화 · 따뜻함 · 한 관계 · 관계가 달라지는 첫 사건",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 새로운 종 수집 · 따뜻한 동행 · 거점에서 서식지 선택",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "몬스터 수집: 야생 발견 · 팀 구성과 도전 · 밝은 발견 · 마을과 도전을 잇는 여행",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        },
+        {
+          "label": "모험: 소중한 사람을 찾아 · 전투와 성장 · 경이롭고 신비롭게",
+          "nativePreviewWidth": 800,
+          "visibleWidth": 704
+        }
+      ],
+      "state": {
+        "count": "721 / 1457",
+        "pressed": 1,
+        "width": 704,
+        "scrollWidth": 704
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "rootViewedFourActualScreens": true,
+  "publishedSnapshot": 721,
+  "scope": "Eight currently published representatives clicked at320/736 with decoding/state/overflow checks, four actual screens viewed by root. Preview-only WEBP resizing; native production PNGs unchanged. No full app boot/AI handoff.",
+  "screens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-gallery-320.png",
+      "sha256": "38fdc680d00c41f4d21941697627d7b7e56241abf9cd8f91abfdc1a01f88b590",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-gallery-736.png",
+      "sha256": "5ff0bad8d246df79a9b17d42fa711b4e5223cb4156dbfbfed3661e54f4e3dee9",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-gallery-latest-320.png",
+      "sha256": "8b28df618a1aa35794d0a63abe3ddf867fa0f349c5a0e874c7b7674a0ebb3437",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-721-stage163-gallery-latest-736.png",
+      "sha256": "4baf18b2cc09b8e8f90ab71c4dab1c35b38adaf850906d972b113b4cf4fa6362",
+      "rootViewed": true
+    }
+  ]
+}

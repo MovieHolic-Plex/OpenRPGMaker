@@ -1,0 +1,265 @@
+{
+  "batch": "v2-production-154",
+  "passedAttempts": 6,
+  "rejectedAttempts": 4,
+  "nativeUnmodified1672x941": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-154",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:34:53.020655+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-154",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:35:19.093916+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-154",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:39:29.165820+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-154",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:43:19.100518+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-154-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-154",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-154"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:43:19.488503+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--case",
+      "nativeSha256": "a7a4890ee79809d26bdd4f1d3fb3416e329d8cdd6f2e6749f765587654fe58a1",
+      "requestSha256": "f2ecc3087c937b32a4489fbaa07e570a60f0713a918e80e18cad3f3bee9f6607",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Exact three closed empty jars/two plain books, full open basket/net/binoculars/left earth trail, local bare refuge court/rope/visibly tilted empty pail. Near court bare; woodland behind selected group. Fresh higher reverse refuge overlook. No growth/return/identity/text."
+    },
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "952e9da675c72c9ed2b0e55eb04c4111119f9dc315288a910266eb9b1fadf21c",
+      "requestSha256": "2b7b03be6b47ffed67791da72f8071e59d05472f0ccf88b8c73406e81354c696",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Diagnostic confirms THREE independent closed books: green plus red plus brown, instead of exact TWO. Three closed jars/empty basket/net/binoculars, actual left wetland/forest/ruin openings and ending cream fold/return trail otherwise clear, decorative banners removed. Reject book-count; do not invent readable writing."
+      ],
+      "note": "Diagnostic confirms THREE independent closed books: green plus red plus brown, instead of exact TWO. Three closed jars/empty basket/net/binoculars, actual left wetland/forest/ruin openings and ending cream fold/return trail otherwise clear, decorative banners removed. Reject book-count; do not invent readable writing."
+    },
+    {
+      "key": "romance--campus--choice--secret--routes--scene",
+      "nativeSha256": "695ce60496e91703d8a70f225e7216f2f1d43844eb597ab76b67aca17284428e",
+      "requestSha256": "2d0c2f5afa3856e3d9b815a278bc022bcbfe716e34819c9688bf8439b3ba55d0",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full six empty backed wooden chairs/three square paired tables, near common wood box/middle blue tin/far mug-soft cloth and two actual open private trust thresholds: gray alternative box plus TWO page-faced closed books versus soft scarf. Frosted moon glass hides exterior trees/buildings. All selected content before actual controls. Fresh near-box low linear gallery versus actual upper-box high parent."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--scene",
+      "nativeSha256": "2df92f886593641b33f6a564a10e62af50e73b72fa113f074dd7e507258c72bf",
+      "requestSha256": "4bc3df6c98bdc51a09396b08a80bd9d22c9497234d84e0dd4bc06c5bcb006030",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Both entire actual open private trust doors/scarf now before controls, gray alternative box/exact two page-faced books, six full empty backed chairs/three square tables/near common box/middle green tin/far mug-soft cloth. Wet autumn campus; untouched first encounter. Fresh near-box low side gallery distinct from upper-box high parent candidate; held until parent repair passes."
+    },
+    {
+      "key": "monster--wild--collect--bright--case--episode",
+      "nativeSha256": "6b56e8d984db6f670f0aa6f7f49f6123ea0ba2d0c0289adab9afd385b15acd4f",
+      "requestSha256": "9101c2309b4276375f73aed844b5d087b7a0fa66333dc6e4ba1c5a9327836772",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full local empty refuge/loose rope/visibly tilted EMPTY side-facing pail, three closed empty jars/two plain books/open basket/net/binoculars/entire physical left earth trail. Empty leaf-lined nest/water bowl/soft white carecloth actually on GROUND BESIDE workbench, qualifying placement while selected growth motif fully visible. Bare foreground/no body/glyph; independent near-side care patio versus higher reverse parent."
+    },
+    {
+      "key": "monster--wild--collect--bright--case--short",
+      "nativeSha256": "692201c95b3d18ddb1acf2fa381b623c8c67677d0cb57cda51c809a827333a38",
+      "requestSha256": "62d499ce97c1f38da6578c00aac7a32d01205741e18c219c220e1e2ad45374f6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full packed capturekit/exact three closed empty jars/two plain books, separate soft cream folded stack on SAME bare workbench; actual open left homebase and earth return impressions. Rope/empty tilted pail retained; no species or text, bare court. Fresh low doorway-facing settled-base shot versus higher reverse parent."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes",
+      "nativeSha256": "1ea2d61c03281a5f55ba6d8b3784ca6682cebff0ffa5d4cb683ffd751575e8d4",
+      "requestSha256": "13da8d90af03f6997313db5ffdc14109262c361288fbc0df0a9b9200b9d1fc63",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Diagnostic confirms only ONE page-faced closed book beside gray alternative metal box at first trust threshold, rather than exact TWO. Other open scarf door, six full backed wooden chairs/three oval tables/upper common wood box/middle green tin/near mug-soft cloth visible. Tin has small gold marks whose semantics are not assumed; rejection rests on missing second book."
+      ],
+      "note": "Diagnostic confirms only ONE page-faced closed book beside gray alternative metal box at first trust threshold, rather than exact TWO. Other open scarf door, six full backed wooden chairs/three oval tables/upper common wood box/middle green tin/near mug-soft cloth visible. Tin has small gold marks whose semantics are not assumed; rejection rests on missing second book."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--single--episode",
+      "nativeSha256": "090ebdf81cd19d3fccb3506b68467530fd632324e987060f78b87f46c55b181f",
+      "requestSha256": "6dcd3654db2ab2fbc7a849fadbad50e6b6da513b19e9218707a8c0006e6189bf",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Exact two whole blue upholstered backed chairs/low square separate table, small raised common wooden box PLUS tipped cup/actual local spill/separate soft drying cloth. Two actual open private trust doors gray alternative box/TWO page-faced books versus soft scarf, autumn campus. Entire selected group left, no text/body. Independent low blue-chair square vestibule versus actual high wooden octagonal/closed-door parent."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--short",
+      "nativeSha256": "06bfc03fa00c1ed81febe862126992c606c00bcf825716398a7f4d4a44c0bea3",
+      "requestSha256": "4b50acf23e459bc8eac8619f4aa9d02ab304ab1625fbfdf1891484ff02ec6963",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Closed ending pass door at x54-63% has substantial right section/handle behind actual controls starting x60.3%; required whole closed pass not fully visible. Two blue chairs/low square table/raised common box/soft gray tidy cloth and two open trust doors/gray alternate box/TWO page-faced books/scarf otherwise retained. Actual side window/rear-room corner gives contrasted views; no falsely missing side corner."
+      ],
+      "note": "Closed ending pass door at x54-63% has substantial right section/handle behind actual controls starting x60.3%; required whole closed pass not fully visible. Two blue chairs/low square table/raised common box/soft gray tidy cloth and two open trust doors/gray alternate box/TWO page-faced books/scarf otherwise retained. Actual side window/rear-room corner gives contrasted views; no falsely missing side corner."
+    },
+    {
+      "key": "romance--palace--talk--warm--single--scene",
+      "nativeSha256": "6895f9427f2d1aac6c953255606f9d80b093054e9b4a7b310aef8940986966e4",
+      "requestSha256": "391057e1e3b343caf0f7d6f01d39646cf9159790e4babff39a820354cb77c898",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual selected tabletop is OCTAGONAL with clipped corners, rather than own specified SQUARE table. Two full blue upholstered backed chairs/raised common wood box/two removable eye masks/candles/fresh roses/private pass otherwise clear, bare undecorated palace walls. Native coarse hard pixel clusters/no identity/glyph; independent low blue-chair salon versus actual high red-chair rectangular parent."
+      ],
+      "note": "Actual selected tabletop is OCTAGONAL with clipped corners, rather than own specified SQUARE table. Two full blue upholstered backed chairs/raised common wood box/two removable eye masks/candles/fresh roses/private pass otherwise clear, bare undecorated palace walls. Native coarse hard pixel clusters/no identity/glyph; independent low blue-chair salon versus actual high red-chair rectangular parent."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 703,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

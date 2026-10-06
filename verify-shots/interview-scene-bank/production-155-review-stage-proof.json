@@ -1,0 +1,237 @@
+{
+  "batch": "v2-production-155",
+  "passedAttempts": 5,
+  "rejectedAttempts": 5,
+  "nativeUnmodified1672x941": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-155",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-155-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:51:16.478799+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-155-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-155",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-155-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:51:49.594016+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-155-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-155",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-155",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:51:49.650227+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "0968911e046110440f7785c2f8cee309ca49f32b272e7ef02e6fbcbd928677b4",
+      "requestSha256": "0624ea397638f3ec653fa63f9a7b8233a3d19af64471c4831bc1e523a9e7d61b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Three closed empty jars/TWO plain closed books side by side/soft cream fold and full capturekit SAME workbench, actual three LEFT wetland/forest/ruin openings and return trail. Reject composition: small foreground grass clumps near bottom-left courtyard and immediately before table remain despite own zero near plants/bare foreground. No inferred writing from binding edges."
+      ],
+      "note": "Three closed empty jars/TWO plain closed books side by side/soft cream fold and full capturekit SAME workbench, actual three LEFT wetland/forest/ruin openings and return trail. Reject composition: small foreground grass clumps near bottom-left courtyard and immediately before table remain despite own zero near plants/bare foreground. No inferred writing from binding edges."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes",
+      "nativeSha256": "4bf81989b9da6263ad4cb3d7cf0b366b561d53b815f870f853322e85b4183089",
+      "requestSha256": "33ef4a6bf3c2e8e02756922e51a74f6ddf007894ed3b5b603515d2e3f4465920",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full SIX wooden backed empty chairs/three oval paired tables/upper raised common wood box/middle plain green tin/near upright white mug-soft cloth and two full OPEN private trust doors LEFT. First gray metal box now has TWO separate page-faced plain books (stacked rather than target side by side, selected count correct); second soft scarf. Autumn/native/no body/glyph; independent far high oval upper-box group, suitable replacement for low near-box children."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--short",
+      "nativeSha256": "eb202cfb1daa1f1c371aa7a725ec29f80b383b9f69df5d8baeab7b5599ec48a7",
+      "requestSha256": "2685124e66995f05b9f531570cd556dac1d81ecb066a327996133cf10d28c259",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Whole additional CLOSED ending pass with handle BOTH jambs now LEFT before controls behind chosen TWO full blue backed chairs, LOW square table/raised common wood box/soft gray tidy cloth. Two actual OPEN private trust doors first gray metalbox/TWO plain page books versus soft scarf; actual perpendicular SIDEwindow/rearroom corner. Three actual doors total/no spill/glyph; independent low blue-chair L vestibule vs actual high wooden parent."
+    },
+    {
+      "key": "romance--palace--talk--warm--single--scene",
+      "nativeSha256": "a7f4637fce6d3958d199766c9f2ae8b064837ac61c40c9bedc8ab8308a492fb6",
+      "requestSha256": "9b72eab11238b5c0047afb30f53f1e49f3b949fc2714baea6226894393e7d7eb",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Four-corner square table now retained, raised small common wooden box between TWO physical removable eye masks, exactly TWO full blue upholstered backed chairs/candles/fresh roses/one intimate pass behind pair. Bare palacewalls native coarse pixel clusters/no identity/glyph; new low blue-chair square salon versus actual high red-chair rectangular parent."
+    },
+    {
+      "key": "monster--wild--collect--secret--route--scene",
+      "nativeSha256": "4c5c214409bc98a5d0b2b24abad97038fe7a8111a163be25cfaf99fb61e1034c",
+      "requestSha256": "52da01694da7750195c9425cf163dc1c264c344811d434b1f751f51ac4a52116",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full empty open basket/net/binoculars/exact THREE closed empty jars/TWO plain closed books single layer. Entire continuous actual EARTHpawtrail and different left rural settlement visible before controls in single moonlit scene; untouched first moment/no care/return/no body/glyph. Fresh low stone-alcove travel view. Old parent trail negative audit pending; withhold publication until parent repaired."
+    },
+    {
+      "key": "monster--wild--collect--secret--route--episode",
+      "nativeSha256": "ea75664ab165c9bd9416a69369a9552cb08fcaba37220b9e2665f28a3602c28d",
+      "requestSha256": "4f9cf58b2f2cd187eb1944ad3d1385d96dd78de4ade4fb3f78a8f0e51688ab42",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Full moonlit capturekit/three closed empty jars/TWO plain books side by side, whole continuous EARTHtrail to different left settlement; empty leaf-lined restnest/plain waterbowl/SOFTWHITEcarecloth actually on GROUND BESIDE bench, qualifying selected growth staging. Bare near court, no body/glyph; independent care courtyard. Old route parent audit pending; withhold until repaired."
+    },
+    {
+      "key": "monster--wild--collect--secret--route--short",
+      "nativeSha256": "7dcd21bf1a029b3ebcc549cf090aa4fb86afd7176b1b77c44b69358689850e98",
+      "requestSha256": "ab57a487fa88ec454972b92c23afb144e297d05401faa510bd3e6b9cd0564d96",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Required discovery/return pawtrail continues primarily at x61-77 behind actual controls beginningx60.3; full trail not visible LEFT. Correct full kit/three closed jars/two plain books/soft cream folded stack SAME table and OPENleft base/distant left village otherwise retained; native/no text/identity. Independent settled-base doorway shot."
+      ],
+      "note": "Required discovery/return pawtrail continues primarily at x61-77 behind actual controls beginningx60.3; full trail not visible LEFT. Correct full kit/three closed jars/two plain books/soft cream folded stack SAME table and OPENleft base/distant left village otherwise retained; native/no text/identity. Independent settled-base doorway shot."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--scene",
+      "nativeSha256": "011dabba81fa328fcc4051270d2d73951d309653adc8e3075d75a728df8f9847",
+      "requestSha256": "0801923ab075a175773161fe2724e20898b160df74738e84c3df0f7c5336ce79",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Entire third selected RUIN habitat opening/view x76-100 lies behind actual controls; some discovery pawtrail also continues right under panel. Correct three closed empty jars/two plain books/open basket/net/binoculars/untouched first moment/moonlit wetland-forest retained. No falsely missing capturekit or text; new low outpost framing."
+      ],
+      "note": "Entire third selected RUIN habitat opening/view x76-100 lies behind actual controls; some discovery pawtrail also continues right under panel. Correct three closed empty jars/two plain books/open basket/net/binoculars/untouched first moment/moonlit wetland-forest retained. No falsely missing capturekit or text; new low outpost framing."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "nativeSha256": "3c334503b76a804cf47cd53cd539b523e8cee02aa691ab4e27f6430c9a1d6ae2",
+      "requestSha256": "20c45cd59c6e87d6b256765676d1a38364cb1dade51ce88164ae1a8b0424e7f4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Whole full capturekit/nest/waterbowl/soft WHITEcloth predominantly RIGHT behind controls and third RUIN view also RIGHT. FOUR closed empty jars rather than exact THREE. Two plain closed books/native moonlight/physical pawtrail visible; reject composition/allChoices, no invented species/text. Independent reversed care porch."
+      ],
+      "note": "Whole full capturekit/nest/waterbowl/soft WHITEcloth predominantly RIGHT behind controls and third RUIN view also RIGHT. FOUR closed empty jars rather than exact THREE. Two plain closed books/native moonlight/physical pawtrail visible; reject composition/allChoices, no invented species/text. Independent reversed care porch."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--short",
+      "nativeSha256": "f95dd83412821b6501ccc9c72cc5722b7b28853337f022139da516a4ea115c7a",
+      "requestSha256": "65380a711d743a15688aac23c206d1110c521d1c9cadf6b00b834e14713eb083",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Entire jar/book/binocular/cream-fold part of packed kit and whole third RUIN habitat view RIGHT behind controls. Correct THREEclosed emptyjars/TWO plainclosedbooks/empty basket/net, actual left returnpawtrail wetland/forest. Native/no body/text; reject composition rather than invent count error. New lateral settled outpost porch."
+      ],
+      "note": "Entire jar/book/binocular/cream-fold part of packed kit and whole third RUIN habitat view RIGHT behind controls. Correct THREEclosed emptyjars/TWO plainclosedbooks/empty basket/net, actual left returnpawtrail wetland/forest. Native/no body/text; reject composition rather than invent count error. New lateral settled outpost porch."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "romance--campus--choice--bittersweet--routes--scene,romance--campus--choice--bittersweet--routes--episode,romance--campus--choice--bittersweet--perspectives--scene,romance--campus--choice--bittersweet--perspectives--short,romance--palace--talk--warm--single--scene,romance--palace--talk--warm--single--episode"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 708,
+  "manifestSha256": "36c29904e60eb3a48f66839ffe0fd67ebd662c6cdf3206cb9dfe84ec9dc2a955",
+  "finishedAt": "2026-10-06T10:08:51.900057+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-708-click-proof.json",
+  "completeWholePlan": false
+}

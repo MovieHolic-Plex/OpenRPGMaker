@@ -1,0 +1,57 @@
+{
+  "batch": "148",
+  "rootDirectNativeInspections": 10,
+  "ownExactPromptCompared": true,
+  "nativePasses": 7,
+  "nativeFailures": 3,
+  "officialReviewMatches": true,
+  "actualCompletedStages": {
+    "import-batch": {
+      "batch": "v2-production-148",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-148-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:15:35.056679+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-148-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-148",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-148-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:16:05.361510+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-148-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-148",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-148",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:16:05.403831+00:00"
+    }
+  },
+  "publicationClaim": false,
+  "scope": "148 import/review deferred gate/build to149;149 build still pending at this receipt. No new unique publication count asserted."
+}

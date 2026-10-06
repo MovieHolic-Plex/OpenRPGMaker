@@ -1,0 +1,61 @@
+{
+  "batch": "149",
+  "rootDirectNativeInspections": 10,
+  "ownExactPromptCompared": true,
+  "nativePasses": 8,
+  "nativeFailures": 2,
+  "officialReviewMatches": true,
+  "actualCompletedStages": {
+    "import-batch": {
+      "batch": "v2-production-149",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:22:45.358677+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-149",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:23:13.035695+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-149",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T08:27:24.552839+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-149-gate.log"
+    }
+  },
+  "publicationClaim": false,
+  "scope": "148 import/review deferred gate/build to149;149 build still pending at this receipt. No new unique publication count asserted."
+}

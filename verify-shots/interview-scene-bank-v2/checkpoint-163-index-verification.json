@@ -1,0 +1,7 @@
+{
+  "actualIndexPublishedPngAndExactRequestHashesVerified": 721,
+  "manifestMatchesFrozenQaSha256": true,
+  "stagedChangedPaths": 366,
+  "unrelatedStagedPaths": 0,
+  "scope": "Actual Git index PNG and exact request hashes for all721 published scenes matched the frozen163 QA manifest; checked staged filenames against explicit task-owned list and diff whitespace excluding untouched exact request whitespace. This evidence file was added after that check; no published bytes or manifest changed."
+}

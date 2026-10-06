@@ -519,6 +519,11 @@
       "sha256": "033379a1403a52056e63bb250234a1834227a78411f32734f9de78440ee019bc",
       "promptSha256": "a1196652d7c18342e63aa5922bf95130250a8a7ad3388b865cdae4055e548fc2"
     },
+    "romance--campus--choice--secret--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--secret--routes--scene-695ce60496e9.png",
+      "sha256": "695ce60496e91703d8a70f225e7216f2f1d43844eb597ab76b67aca17284428e",
+      "promptSha256": "6872e1bb1b85461a1b00706020738248a510aa1425648ab80b0401ff6cdea584"
+    },
     "romance--campus--choice--secret--routes--episode": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--secret--routes--episode-4d2decd0deff.png",
       "sha256": "4d2decd0deff749c6300faafa9c2d3a3edfbc964cabcb847d836eb615f3caf77",
@@ -564,20 +569,50 @@
       "sha256": "4af7d7e758ae76f605cb172166fc68c689f302af174cb71569c93bc9a660cace",
       "promptSha256": "9e90d594baa1fa283b13a1d2e8517a933be749ab172470ca323d20fb970c2e57"
     },
+    "romance--campus--choice--bittersweet--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--single--episode-090ebdf81cd1.png",
+      "sha256": "090ebdf81cd19d3fccb3506b68467530fd632324e987060f78b87f46c55b181f",
+      "promptSha256": "eebc789ffa62513abdf2130aa0fa503bed44584257ac3f1d639a665ca13850f7"
+    },
     "romance--campus--choice--bittersweet--single--short": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--single--short-719e5cecbd19.png",
       "sha256": "719e5cecbd19f0de71262c380eb590b58986278b1cbbf1062176484dd7d5c803",
       "promptSha256": "241fe95655d729baf4797e2acd771e00484e0d210bfd6f9550c84d4892b81a50"
+    },
+    "romance--campus--choice--bittersweet--routes": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes-4bf81989b9da.png",
+      "sha256": "4bf81989b9da6263ad4cb3d7cf0b366b561d53b815f870f853322e85b4183089",
+      "promptSha256": "1284da01896013d4f091871271a99009c00f4ed82d47d54e9ad21955d408f8b9"
+    },
+    "romance--campus--choice--bittersweet--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes--scene-2df92f886593.png",
+      "sha256": "2df92f886593641b33f6a564a10e62af50e73b72fa113f074dd7e507258c72bf",
+      "promptSha256": "c9f68439ec0fc1de613d36d88dcfd99acf34dbe9ac8ddfa6970d56ab623310a1"
+    },
+    "romance--campus--choice--bittersweet--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--routes--episode-761e4cf57419.png",
+      "sha256": "761e4cf5741962e910cf333abcda3606201d924d74a0f5ecc612a7cab8dece8d",
+      "promptSha256": "4657edcf1048228dce91cbc90ca14c7b46e0942f9db33d72770df497b927f35a"
     },
     "romance--campus--choice--bittersweet--perspectives": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives-d65587656a1e.png",
       "sha256": "d65587656a1ec62d4c1ec2033dde4a22c8fb00330baff6608a1bcbe84d33b58a",
       "promptSha256": "472a990fcbefdfac1a5355647da0dd69172f4921f1916c84522faa8533340b93"
     },
+    "romance--campus--choice--bittersweet--perspectives--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives--scene-f60b89ad19f2.png",
+      "sha256": "f60b89ad19f2787b32a82d73eaa5f1fb7f2c276b2ded65f4873d8951097e2a37",
+      "promptSha256": "1ac2966e2db9ffa36eb0433d182de2f2bf5fbe2bd54f9cef49a2b6695b1b61eb"
+    },
     "romance--campus--choice--bittersweet--perspectives--episode": {
       "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives--episode-6edf96b1bab8.png",
       "sha256": "6edf96b1bab8d48b27930db424443e9763128ba99f4f58870c0c765a2652a258",
       "promptSha256": "f239c3543eafd97d70576ab23a816357381eb85a19d15c2f4df1b5902e36840a"
+    },
+    "romance--campus--choice--bittersweet--perspectives--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--campus--choice--bittersweet--perspectives--short-eb202cfb1daa.png",
+      "sha256": "eb202cfb1daa1f1c371aa7a725ec29f80b383b9f69df5d8baeab7b5599ec48a7",
+      "promptSha256": "ac89f694c01e3d65b0f3ef4414228b2c94fa5cec62de158deb5b54e686a83208"
     },
     "romance--palace": {
       "url": "/assets/harnesses/interview-scene-bank/romance--palace-ba60506dd743.png",
@@ -598,6 +633,16 @@
       "url": "/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single-3f1f3574f890.png",
       "sha256": "3f1f3574f890424ea1a42319de6336327c055c2c9e5271109782dc037227c33a",
       "promptSha256": "4cdc1082f21d36603c929c15435dc6677211b657ff92a4e7531e5c2d671bc022"
+    },
+    "romance--palace--talk--warm--single--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single--scene-a7f4637fce6d.png",
+      "sha256": "a7f4637fce6d3958d199766c9f2ae8b064837ac61c40c9bedc8ab8308a492fb6",
+      "promptSha256": "b60225a2f149eaf918a3e2e714872934f2c8fee1bc5d27fbee7a8103ac454782"
+    },
+    "romance--palace--talk--warm--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single--episode-cbd67ea54e6c.png",
+      "sha256": "cbd67ea54e6c3932c73d48dab42bf68590f67d26eb51da43b1bc852c631384ad",
+      "promptSha256": "1d456a5cb630290942cdcb70e4f1505d85cc0bb941c2318af69509756c078aa7"
     },
     "romance--palace--talk--warm--single--short": {
       "url": "/assets/harnesses/interview-scene-bank/romance--palace--talk--warm--single--short-8452bfc42050.png",
@@ -1359,6 +1404,11 @@
       "sha256": "96a23bc27ebeadc9ea73040d7fe04929f01968f4a0438402b15f1114ebd5db94",
       "promptSha256": "d7a11bdc36ea5efc3b8cd8b06e282626542a0567ec9afa507180040bc6fa1461"
     },
+    "romance--town--memory--secret--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--secret--routes--episode-86d66adbff60.png",
+      "sha256": "86d66adbff60ed2d4c95e6b1c6971ad3f1e72036b8014de93c261a3dacec2c47",
+      "promptSha256": "06a9f68d3f4679521a7cb127524efd55918a04dd733b140f1a6cceb089232a2b"
+    },
     "romance--town--memory--secret--routes--short": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--secret--routes--short-8167bf1b4f54.png",
       "sha256": "8167bf1b4f54b8c86a46119594786ba1546a960a81df8e314d48f7c37305311b",
@@ -1399,15 +1449,55 @@
       "sha256": "f24814e18fb462c821cd86ad654f6f0830eb9003ef29c883c817b8bbccca7ef0",
       "promptSha256": "3ae001b1ab468f38e9222ee01dac9be209073dab5dfece21196e19c6d8c640f3"
     },
+    "romance--town--memory--bittersweet--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--single--episode-b79c1721df77.png",
+      "sha256": "b79c1721df7708292dfa4bed514876ff347e81c1cdf486ba651d73abdf0cd5a1",
+      "promptSha256": "bbfe69bc97e58b5caf955d78554b29a29ed93c6e5e69da126c099f102519ac27"
+    },
+    "romance--town--memory--bittersweet--single--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--single--short-21b75a7fb176.png",
+      "sha256": "21b75a7fb1763b53754024ea4f2a50d29ade31b689e7b3b2cb73d2c3a04d2481",
+      "promptSha256": "7597fc5f2636e1e98066188ff962a56070a23d4058a6ce83c1f75f042c9bd50e"
+    },
     "romance--town--memory--bittersweet--routes": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes-bae05b15a376.png",
-      "sha256": "bae05b15a376ce152fc2517f8eaa68d19c164afa5a3b62f29e346b211feb9608",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes-4c7e6ccbada5.png",
+      "sha256": "4c7e6ccbada57f0769cebcb07116c45c243f41fecc36051b7a9769512323b873",
       "promptSha256": "8226441d966fd61d65acbec9e9df293a56128e87cdfcd36677520978112d8ec4"
     },
+    "romance--town--memory--bittersweet--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes--scene-56dfc69ee86e.png",
+      "sha256": "56dfc69ee86e48e70b4af792396cc61cdd4fc3aae9ea72a7167ec00855f701f2",
+      "promptSha256": "409a7076867d33a9e5e988ed4f98b03a2c3312ff06cfc5f282b637c21dd20b6e"
+    },
+    "romance--town--memory--bittersweet--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes--episode-bb80ab615e4d.png",
+      "sha256": "bb80ab615e4db766522a6e3b3f9d3a7a8dfdb1a2669c4244d2d7349083a94a10",
+      "promptSha256": "453d1fb740a542096e88cb527200ed0475dc65851331ea51aa845886f5699ade"
+    },
+    "romance--town--memory--bittersweet--routes--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--routes--short-9d3d3828e506.png",
+      "sha256": "9d3d3828e5065a2e39083cf4a41e90ccc673b3c21b10d7782928ebf74b01083c",
+      "promptSha256": "ae5c13dc3a444c8f1c24b3e618336e117758acffeae01a4719a7097af482b0c2"
+    },
     "romance--town--memory--bittersweet--perspectives": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives-71cfb56ad673.png",
-      "sha256": "71cfb56ad673e35f3d7f216234998e259cc478e9dc9c4e3585606a6bf5bf01c5",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives-9056af2d639f.png",
+      "sha256": "9056af2d639f30f120016f9a6de0cb9a3e36666a560b270c19bd7fe9cb9f3985",
       "promptSha256": "b1d77669cb19dcc07f8c10f779814674c40d71e757cfac0b534430d470dbe83c"
+    },
+    "romance--town--memory--bittersweet--perspectives--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives--scene-068ce10f9ae9.png",
+      "sha256": "068ce10f9ae9fa04781e36bfa1eb57079df00d12bf4b85c823a095a0fbb94672",
+      "promptSha256": "c9e256de8bb4a10eff435c485c4680fb7a8607457d0c5a1b0f7df04ad9eca0af"
+    },
+    "romance--town--memory--bittersweet--perspectives--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives--episode-07fad90374eb.png",
+      "sha256": "07fad90374eb6561685e1f9007d9e78762a12760e0a2c886eb2da478aac4aa6a",
+      "promptSha256": "28aadb1bb2b6e21a59ba580ca41029c880df8599cf60770d61db4b5f5ed6cb88"
+    },
+    "romance--town--memory--bittersweet--perspectives--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--memory--bittersweet--perspectives--short-61d564fd2593.png",
+      "sha256": "61d564fd25930a8cda40ff5fd7eb26a6bf3cd41d3cf0ae714f8f64717d369754",
+      "promptSha256": "481cbe5a12e69d6b202f8a5a3382537a507ca885bc56cf1fd59afb3ada18f2bd"
     },
     "romance--town--choice": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--choice-6f7487a75485.png",
@@ -1420,63 +1510,198 @@
       "promptSha256": "5e8fdbfcde0f46cbfb0529e436fcc5ddf3c7ba520adb88e905f4efcf54e9f1b7"
     },
     "romance--town--choice--warm--single": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single-4bb5dfbc86c8.png",
-      "sha256": "4bb5dfbc86c815035b2314084ccd0b8dc42331d42e8bb619daabb0dbf9ca7456",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single-8eef2ec76d46.png",
+      "sha256": "8eef2ec76d4687dd8746477195db84de94e309ab00f0dc5f6aa29b590a51c028",
       "promptSha256": "db44c62453329fc9d147f21555c5fbd82672048cacfccc01e218d8f7e7c1331d"
+    },
+    "romance--town--choice--warm--single--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single--scene-a69b937bfc5a.png",
+      "sha256": "a69b937bfc5a90b8b9524e52a16a8a63dc84776462ed74fe197ccf82ca57a2e4",
+      "promptSha256": "74c72db0bebaab00a2790cb3d9a41ec6516c703ea45def4463463334d9000375"
+    },
+    "romance--town--choice--warm--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single--episode-a252519ab230.png",
+      "sha256": "a252519ab230d550e401d63c5a534739e0ca28ef0403d795284d50e184c70bed",
+      "promptSha256": "a09ab8305c5528013b5960168a2957a82ea8f485f869d16674d782fc10d3825e"
+    },
+    "romance--town--choice--warm--single--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--single--short-500304462d67.png",
+      "sha256": "500304462d677faf49bdcbfdf283a616486ccf139c7924a35017fa18786d7e1d",
+      "promptSha256": "a8f6762a762895f1f344afc6002f4c5406c72317e8cf1c04a013428e3939799e"
     },
     "romance--town--choice--warm--routes": {
       "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--routes-92a30a66f2b2.png",
       "sha256": "92a30a66f2b2dfa42cf854a73c4fb378ab81317f3b4914d4884688e80a172212",
       "promptSha256": "a6ec15dee3461ef8e7567a4b1651028b1c6adf088c3d89ee7093d74080e983a2"
     },
+    "romance--town--choice--warm--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--routes--scene-4beaeaf2499d.png",
+      "sha256": "4beaeaf2499d8fbe4e8db0a1bcff673e905378d5cb1eab677f18f65aecfacf3b",
+      "promptSha256": "c2b068b6923679c054d538fd6b50a9f16a937bbce61d521f84c7108470362972"
+    },
+    "romance--town--choice--warm--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--routes--episode-257562c16a94.png",
+      "sha256": "257562c16a941b04c40e7c36587236b4c1b80141ab5b521f60cc620aafc23e06",
+      "promptSha256": "e77c70e21803806681d49372052a1f0957133ec26cb91d70d2417b7b4a5f422a"
+    },
+    "romance--town--choice--warm--routes--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--routes--short-4d58f0da6f25.png",
+      "sha256": "4d58f0da6f25b24aceab9e99768720c3252f3cb2a9334b3b425a6147826b4873",
+      "promptSha256": "22e79bff6a55c6f3be2d7ea072d019949cab30df9d4a33f91b741b80de697317"
+    },
     "romance--town--choice--warm--perspectives": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-6f6182ff7b7d.png",
-      "sha256": "6f6182ff7b7de7fb756eae4ce52d65e1e8d8608eda9630c27367e93575c69c0c",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives-ed0304160ad1.png",
+      "sha256": "ed0304160ad129349f325a259094d66100d46728da40c8d88171690d7f6eb081",
       "promptSha256": "799385f02581ae4488a24aa746ef9d583393ec10b7322c3cdd99fce7229ec2b7"
     },
+    "romance--town--choice--warm--perspectives--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives--scene-541f1027c58d.png",
+      "sha256": "541f1027c58d6c9252b484ecf3ca5678c51a0a52e743d8024f188f5a1b3b0bb0",
+      "promptSha256": "4980d49f5d97e5ea2d02f0fdfafbcf329d599c86d1d7f3ca6faedbfc05e9c5a6"
+    },
+    "romance--town--choice--warm--perspectives--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives--episode-c9e5b99f8173.png",
+      "sha256": "c9e5b99f81736b4f3ec9d4c24e3dee170d3eeac2139f8e49e327051177016f4b",
+      "promptSha256": "1d9f15e4babf5476360a24881a96614f2ed433f7d5bad02ef14092038c847e96"
+    },
+    "romance--town--choice--warm--perspectives--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--warm--perspectives--short-59d9468440d6.png",
+      "sha256": "59d9468440d61e6a1e369e3b4c8cdd727fa6653c2bc5038675b394f5104fcf32",
+      "promptSha256": "2bd2ca42830e8d8622e6d4a945052ed5206e3d70b24e1612c1aa0685d1ab4676"
+    },
     "romance--town--choice--secret": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret-e7013d5500ef.png",
-      "sha256": "e7013d5500ef6901e58bcb889aa47567cc4c06d562a1543c595362e58fc1df1a",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret-55c894fdd9ea.png",
+      "sha256": "55c894fdd9ea0548e9c3c3163100e11277f4e452a8154fb9a0006ee2c0ca7b91",
       "promptSha256": "932612d20400efa218ac0c9cf7afaeba3c538fdcc573ef16b191fe54fcd7d97d"
     },
     "romance--town--choice--secret--single": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single-04dbdb41cc78.png",
-      "sha256": "04dbdb41cc787adf10765b92967b65fe7780ffaa52e1b7d0d089161da79a0a8d",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single-5dc56fcf25c3.png",
+      "sha256": "5dc56fcf25c3f888c3024f3b9b1f11b752ae73cd737e08bc5fa6a8886f4dc486",
       "promptSha256": "d54aa5d8d4b59d0034638820657601a6029c478105c24b04ef7bcabc6b02e5a9"
     },
+    "romance--town--choice--secret--single--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single--scene-93b2a6c22122.png",
+      "sha256": "93b2a6c22122d2e83c05b58ba0cc704cc89e39610eb5e0d4a093a89ce5653bf9",
+      "promptSha256": "0d70605f4724e61007a058072efb672c4aeda749a2ae1954f9ca55468116fe27"
+    },
+    "romance--town--choice--secret--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single--episode-5ae9d7eeeb11.png",
+      "sha256": "5ae9d7eeeb11c04032da60bbe37c778d2e6a2f3a2cae9cc46663d24122faf1ca",
+      "promptSha256": "ac5cd6a1feddb2985a17404b30a2e70493f63056686682235786b8e462f82d9e"
+    },
+    "romance--town--choice--secret--single--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--single--short-fa968cbbafa7.png",
+      "sha256": "fa968cbbafa733c537942675998c73113cf6e3b3611f38e0d12b7cb34aed75e8",
+      "promptSha256": "e74e83992c055b549da3985309242cb4b0d8e3298f67afbf22f6e142ac3998cb"
+    },
     "romance--town--choice--secret--routes": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes-aec4d3e859d9.png",
-      "sha256": "aec4d3e859d930c5a264913d71ac24ac73ada5c8191105236c34550f36ab32ef",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes-b655b958e5da.png",
+      "sha256": "b655b958e5dac5dd2f087db6e4548496999f93257638b5d780565a414bcd65c9",
       "promptSha256": "4fd3f1cffb30b5eb2a011edeefe1aa542eda9023b905cd858729b0d18c385f0f"
     },
+    "romance--town--choice--secret--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes--scene-ca50b9f09b11.png",
+      "sha256": "ca50b9f09b11605e151deff2367d267066f2dc6aa392f32cb8ffdada4da8651e",
+      "promptSha256": "36c3327ee8cc02f8a345366664f713a4668825d1edc1413136e35214145761de"
+    },
+    "romance--town--choice--secret--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes--episode-af2ac19dc5ab.png",
+      "sha256": "af2ac19dc5ab9742817cf8867e5af26b1e119a96c876ca5f2baeb9fd4529b436",
+      "promptSha256": "a87c8dc07f9fe8eae06430c16b984c6a97dbfd5282a10ab1fbb6fcb6d34cfb30"
+    },
+    "romance--town--choice--secret--routes--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--routes--short-e9b1ab447770.png",
+      "sha256": "e9b1ab447770a9ab1ae987db8a4ba866e5527fc77eda410ca4fb431d0a2a1870",
+      "promptSha256": "027263ba9ea7bf3b6b0b7c8af995bf446c8541d44a2b4308d4a777c2ba3a3d4c"
+    },
     "romance--town--choice--secret--perspectives": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives-d57cec4ecc5d.png",
-      "sha256": "d57cec4ecc5debdb8393a7156783157068b26323472ec352fc0fc5561eea37cc",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives-d4ef9b0e14ef.png",
+      "sha256": "d4ef9b0e14ef0d244683a53445c59d45ea499edb47c4a49f3330a19841dc821b",
       "promptSha256": "b0bad4e8a8a2ec060c546b049518d5f9ebb78e32df5c6995c02fab19243d0449"
     },
+    "romance--town--choice--secret--perspectives--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives--scene-86b61e20f62f.png",
+      "sha256": "86b61e20f62f73460040ded8550e35865939c511eedbced3e78508ef0c30619d",
+      "promptSha256": "392799c43f54e28a0c82bde38754451c85ba0f4b9838f0ac81140f579d045527"
+    },
+    "romance--town--choice--secret--perspectives--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives--episode-58dda6a2d77d.png",
+      "sha256": "58dda6a2d77d3c96d98b3fc3f4a2cb38892c332474932cd5990c333c125b0e37",
+      "promptSha256": "97088d8a5ed213497311a1800334442d750efebd7afff245ec4ae2850b440b04"
+    },
+    "romance--town--choice--secret--perspectives--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--secret--perspectives--short-459cb2c2a5c7.png",
+      "sha256": "459cb2c2a5c7dd30f12812143f65388e0d9780ffb5587fa92fbcd33d8707f45d",
+      "promptSha256": "bca1a6e711fb6cea595619b7e30ac1f220c0092108db44c68735a4117a91349c"
+    },
     "romance--town--choice--bittersweet": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet-ddc6c81c5691.png",
-      "sha256": "ddc6c81c5691c0e15e6096a4396c03174de8b8d96da0c452df3a7b4658364132",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet-ab607ba4f697.png",
+      "sha256": "ab607ba4f697e0c1e3c448f1eca667d2b8cab9f727fcc298ff5c1bdd53536548",
       "promptSha256": "65cf7425b12dd9dace437555567f46c9c8727427615e519b8f8e8d3a7a8f6c6e"
     },
     "romance--town--choice--bittersweet--single": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single-434803377677.png",
-      "sha256": "4348033776770ee57d9f44eb41118c11eba3b776d7a4bec86d73dc8c6bded131",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single-ad28bc72e539.png",
+      "sha256": "ad28bc72e539d88ef5446f02f74b67592074e5ca8cb73a185228ed396cb426b5",
       "promptSha256": "a6d2ef966a36a6e825ea7264691ec8cb9aa671cae81db1de1bd8b6af7e7619fa"
     },
+    "romance--town--choice--bittersweet--single--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single--scene-b180187bfbe3.png",
+      "sha256": "b180187bfbe33770274f49ad668f794afcce8521490586af66f2546bb52e8b3e",
+      "promptSha256": "01e0f1cb73a318ca43afedf34735bb668beea2b224fe4454826d32561c4d22b1"
+    },
+    "romance--town--choice--bittersweet--single--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single--episode-6080deb84b1e.png",
+      "sha256": "6080deb84b1e5159ebd62f8560a75a9898f4a4233da57a9d82b783fbbcc697ad",
+      "promptSha256": "9f4732df6c5455a8c78ac24cb53ecb94072119341a33936f3e2b887aac230fcb"
+    },
+    "romance--town--choice--bittersweet--single--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--single--short-069e6cce9eeb.png",
+      "sha256": "069e6cce9eeb65a27ce8caec7e769f201e9627d624bcba642e8b82f2550bc48f",
+      "promptSha256": "057e3b975aec6c34eac8ae78ad8fa2c97cd1a132892734b8f5bc8fd44240885b"
+    },
     "romance--town--choice--bittersweet--routes": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes-8e6cb3f25c2d.png",
-      "sha256": "8e6cb3f25c2d607c7ccfd9e933e1b2ed08b8cbaed868e68cd994b387ba99add6",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes-11cefedfb416.png",
+      "sha256": "11cefedfb416515455b31a17293ee831d8ba980e4e29cec9fd7367940e8b67d2",
       "promptSha256": "a4eb2ad9f3213ba609fa4c34582350e0e5068b83be2c9dfd8aa60b609c09a69e"
     },
+    "romance--town--choice--bittersweet--routes--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes--scene-a1c38d319a34.png",
+      "sha256": "a1c38d319a348937c0061e6a6c211fa4b47deca0d68bc4156ce66dfc3179cd36",
+      "promptSha256": "36a614c922cf1531f5d2cef4ae423129552a0ed6e7344e88be9538f070c2f83d"
+    },
+    "romance--town--choice--bittersweet--routes--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes--episode-8967448c26b3.png",
+      "sha256": "8967448c26b38dd85bb0d1c637bc8c384e78f8a0036701fdc752d90b6b3c76d8",
+      "promptSha256": "ca7bebc422d3325fd34367dfd88af141202b19c19269f0e407435197c7b091d3"
+    },
+    "romance--town--choice--bittersweet--routes--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--routes--short-972078ab0ef3.png",
+      "sha256": "972078ab0ef322475e03f8f01d279e09b188cd160ea838fdecec3540e20f2daa",
+      "promptSha256": "6c2f0a2923bff43c8d7e76ad5306108d64b73f300fff9c264526c68d86796075"
+    },
     "romance--town--choice--bittersweet--perspectives": {
-      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives-37471d73ef2d.png",
-      "sha256": "37471d73ef2d3c6300e17a713753a8ee44cd875e1f7cb37f22ffcd8c476303c9",
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives-531136b670d1.png",
+      "sha256": "531136b670d103dfdc36dc3af40f4bc2399946e2eaa82c56b632790f261e4f73",
       "promptSha256": "dcba8541003f5f1fe146c3648e2a072d9359307fa5bd11db5866e2f531530503"
     },
+    "romance--town--choice--bittersweet--perspectives--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives--scene-d4e9c8e9b1a2.png",
+      "sha256": "d4e9c8e9b1a2e0f9481d2483d8bc8348127aa6573f1162de449f17ed77f264e5",
+      "promptSha256": "148b500e143f7453e94c37af3ae0c552814a71b54b939fcc432fc320a7fcd3a1"
+    },
+    "romance--town--choice--bittersweet--perspectives--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives--episode-ec0ad539c204.png",
+      "sha256": "ec0ad539c204f2dc7332e9d7f92ba1d48ffe2ee55fcd6059e0898f65480d4cc3",
+      "promptSha256": "cc05abd05c703f2a232499bedf1540fa1f8b860e33550ab9ca5bb39a309c1aba"
+    },
+    "romance--town--choice--bittersweet--perspectives--short": {
+      "url": "/assets/harnesses/interview-scene-bank/romance--town--choice--bittersweet--perspectives--short-06f140787115.png",
+      "sha256": "06f140787115f7fa33fdb7b2ac321ae85c9c156344428c1daab10bb54d1a80bb",
+      "promptSha256": "b5a9108df86bddd72a63e99be4f0bb2b08c18b47cdadebe3419e6a90ffe78284"
+    },
     "monster": {
-      "url": "/assets/harnesses/interview-scene-bank/monster-d617a6f7ec71.png",
-      "sha256": "d617a6f7ec718aede0449f8a91aaec7feb0e63692bee57e5fcb70ac381b04031",
+      "url": "/assets/harnesses/interview-scene-bank/monster-fcb6bed80307.png",
+      "sha256": "fcb6bed80307574f53462050a94e83663d19a7218fe833b34bac7799d4796420",
       "promptSha256": "18f84cffe20d87feaf30b2b13049e92330c78dec1c17fe0b5fe00405c1a8cc5a"
     },
     "monster--wild": {
@@ -1490,43 +1715,108 @@
       "promptSha256": "817408b3ebdf0a94a5d5fc753c4189949d56b2be5443f1e145eed2f0fa97dd6e"
     },
     "monster--wild--collect--bright": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright-7d94d17c0c3d.png",
-      "sha256": "7d94d17c0c3d11c7da21b45c654fa089f8378df64aeb6e1cea1c321cd559c570",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright-f97f2e6c8e3c.png",
+      "sha256": "f97f2e6c8e3c72132bd6a9196bcaee256437fc321262941b8e8ba81caf631b5e",
       "promptSha256": "b20b903c6f633f6cec71eb489d6075dddd8e649513bc618676a111a598c09fff"
     },
     "monster--wild--collect--bright--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route-44f8ea0248f8.png",
-      "sha256": "44f8ea0248f8a763afdb1ce809d20539d37a4f6e2ac8c81c9db235f0e63a236e",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route-44a61f7566e8.png",
+      "sha256": "44a61f7566e82677ded200c806d24edd2925bec51e1ec26fbae5cc301e79c289",
       "promptSha256": "0ca4007e2286ca420aa826912f43d922f407e3c6f7b40a5ddff7c1a0ffbe420a"
     },
+    "monster--wild--collect--bright--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route--scene-fc6d14ebd3f8.png",
+      "sha256": "fc6d14ebd3f86214d0557b531f6e35ee70447b2df56c230cac104eac524c7db6",
+      "promptSha256": "a6a6fbe2e20f303c3cba8e0243f13d41202b6a0d93063fea5ce26d4386d83a2e"
+    },
+    "monster--wild--collect--bright--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route--episode-0551307ada13.png",
+      "sha256": "0551307ada13bcafe51c909eca8f39d16968b99c53bc972051b6059a0b2adf16",
+      "promptSha256": "c9aa25e4b3fe06464f2bf8973a36e4c15d86ed7da94622a401bb68f39980b33e"
+    },
+    "monster--wild--collect--bright--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--route--short-d3d438d3de56.png",
+      "sha256": "d3d438d3de56c83920b7a2d0ca42b0c4c38a4c087ab5614b78205aa16a39f08a",
+      "promptSha256": "2bf611f08024e1678ebda048e2a8733367e0cbb35be11bfcf3a427fcd26de9aa"
+    },
     "monster--wild--collect--bright--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--habitat-c211de199d55.png",
-      "sha256": "c211de199d550ae51058225f0bfba59743852b3fe915fae90bab55168f45c360",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--habitat-2c3bffb33f96.png",
+      "sha256": "2c3bffb33f96823ead953f04300038d3f75aa4078225f96f08a23ce349d320d6",
       "promptSha256": "dc9c9059b49844c7744705fd8367ea6922506e20905565423feb24cf3dd89a14"
     },
+    "monster--wild--collect--bright--habitat--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--habitat--scene-5f017d81c07d.png",
+      "sha256": "5f017d81c07d7795c6da2d85420716db3adc95cecf56cfec6114f5c4315a9b98",
+      "promptSha256": "a60c9f212cd67ededa9bdc3800123c6e73ff9ef2939a2ec137dccdb7c48a932c"
+    },
+    "monster--wild--collect--bright--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--habitat--episode-b6617a2d291b.png",
+      "sha256": "b6617a2d291bcdd7460f2d50788a23a613bee57912c8f4e8e9500151d1649edf",
+      "promptSha256": "ddfd57f8bd46f6a719774514d882cba5c9a32947e6146ef13fe684034ffc7fa0"
+    },
     "monster--wild--collect--bright--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case-b811e3aa0908.png",
-      "sha256": "b811e3aa0908a242dff5d2fda34ed633646b5e90f438b52c8a1a9a65e94064e1",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case-a7a4890ee798.png",
+      "sha256": "a7a4890ee79809d26bdd4f1d3fb3416e329d8cdd6f2e6749f765587654fe58a1",
       "promptSha256": "46f802aa0103291e2838fd66fa88e8e582459bff0a9b9eb897b575e72ca479f9"
     },
+    "monster--wild--collect--bright--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case--scene-28b72fc308cf.png",
+      "sha256": "28b72fc308cf14ab2984421f559c5051b8674f4fc7b0475d1f3e560faf615f36",
+      "promptSha256": "ee988faa8a562a1db7fe366d010af9163221198e9cc253ea331412056479c9b7"
+    },
+    "monster--wild--collect--bright--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case--episode-6b56e8d984db.png",
+      "sha256": "6b56e8d984db6f670f0aa6f7f49f6123ea0ba2d0c0289adab9afd385b15acd4f",
+      "promptSha256": "58d59636ac21366f0e5deda7314b23886d3fb5f0235b0e947836219311e4a021"
+    },
+    "monster--wild--collect--bright--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--bright--case--short-692201c95b3d.png",
+      "sha256": "692201c95b3d18ddb1acf2fa381b623c8c67677d0cb57cda51c809a827333a38",
+      "promptSha256": "af5c0785c821ad21fdfdb6fb351f19fdf261a2f05d8ffd65e112cded7f9d73d2"
+    },
     "monster--wild--collect--secret": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret-7c723d41507f.png",
-      "sha256": "7c723d41507fa35dd015ec468478e697da34a6984313f8d509ef2824271524a3",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret-39e85fa10727.png",
+      "sha256": "39e85fa10727176b0e0f2e2709b9c327683a8c5401c2e742d8b52d79874fc9bf",
       "promptSha256": "44037c9816699c476fe0deae3cd7f29740a0491377893dd1d6eaaa21c07ab650"
     },
     "monster--wild--collect--secret--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--route-5188bb951c06.png",
-      "sha256": "5188bb951c0623dfe9ddc73652cb75b7f928eb9696905d0289576a159a16b278",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--route-48f9692f5461.png",
+      "sha256": "48f9692f546134a26d26e40878f8e0dc75e0bd7931041c49890c5bf2b7e91cde",
       "promptSha256": "6eba50666abda99d6e5ea2deefc1e6e6ee2a7b1909caca7c1d67f47b281b2172"
     },
+    "monster--wild--collect--secret--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--route--scene-4c5c214409bc.png",
+      "sha256": "4c5c214409bc98a5d0b2b24abad97038fe7a8111a163be25cfaf99fb61e1034c",
+      "promptSha256": "2a1f3e10ac6329dda224e9e4f82d8d93f8efff40eb4cf45860ea097d9cd2bfeb"
+    },
+    "monster--wild--collect--secret--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--route--episode-ea75664ab165.png",
+      "sha256": "ea75664ab165c9bd9416a69369a9552cb08fcaba37220b9e2665f28a3602c28d",
+      "promptSha256": "ef267977c718ecec6db95a7ce869ecb963dc60e99c49a1125b7e8187d89b70db"
+    },
+    "monster--wild--collect--secret--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--route--short-d481e48fc817.png",
+      "sha256": "d481e48fc8179dec6a37f0b92f7cf6e8bb997454191bfb90cd4e044860a59ee0",
+      "promptSha256": "1a513d9df72d2d2d5a5b8430b67889b72d676be9046624d9399e628cd90793b6"
+    },
     "monster--wild--collect--secret--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--habitat-c97412420628.png",
-      "sha256": "c97412420628c8e6da77db011459cde0c6079f741aba9e37b5ab4fdf5b44529e",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--habitat-812be8af8e8b.png",
+      "sha256": "812be8af8e8b6e1c2b4b3a397555d583e3c2999057ac8d77df1004cea60178a5",
       "promptSha256": "1acf63a05f7b8942663830f47cdf1818e0d970179cf18ecdff4814896c044e81"
     },
+    "monster--wild--collect--secret--habitat--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--habitat--scene-f1b2b4f7437c.png",
+      "sha256": "f1b2b4f7437c14e2ff128cca34f5cbeb16808f41d605cb51bb8f2802fbbac395",
+      "promptSha256": "2737b743cfc87dee4ec06e2627822b9bd5d064d2fd5bee4319b52be9242bb02d"
+    },
+    "monster--wild--collect--secret--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--habitat--episode-8b7d4aa27e5a.png",
+      "sha256": "8b7d4aa27e5a872134f930ad1d20e598e4a1365c32b52217b21a1ec9c0dd6e24",
+      "promptSha256": "8091db7e8fbf8869287e57cd7f0f722c454b88f7663ec020560f8acf8428b001"
+    },
     "monster--wild--collect--secret--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--case-92df8f13bbd2.png",
-      "sha256": "92df8f13bbd29e5217e89174fd8a24c95f0058214a7722e3f00a95ccf4c3df27",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--secret--case-ec3773f8cf22.png",
+      "sha256": "ec3773f8cf22729c451b6207feb62c14a48eab6a05f4d5073c309a30b8bb446f",
       "promptSha256": "f0925943c4948a88be901549d8bf50a1727608c326d869049ccf512cc35e9aa3"
     },
     "monster--wild--collect--warm": {
@@ -1535,19 +1825,34 @@
       "promptSha256": "768d72eb67ef71dca712ebe411513b6eac13b837bba0198a6bbb1bd5815ae7f0"
     },
     "monster--wild--collect--warm--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--route-d0be7604d72d.png",
-      "sha256": "d0be7604d72dccefed885dfb6d83599af5c445ae799c807d6eba3bad80dbe00c",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--route-df88942ee34e.png",
+      "sha256": "df88942ee34e56519c62fd641118f03e925f02ad7c932d6591bfaf175c342cbf",
       "promptSha256": "ae9e1d57e67257465d062c9e82a0ca4a20c8f82f15a641eac2ef680a331ff336"
     },
     "monster--wild--collect--warm--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--habitat-7904e2a64be1.png",
-      "sha256": "7904e2a64be16143e4ec719adc26af71ea6858353c6e82116ec834006476d122",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--habitat-7a2ae87ea1ec.png",
+      "sha256": "7a2ae87ea1ec8a0f7ce3e88e9c186b95913118ec26dbd5f2b7313e400f9cc615",
       "promptSha256": "a05b3f74d7522ee815a0721d1dd19fc55194129365c76e7a5cb34dcfbe75ebc6"
     },
     "monster--wild--collect--warm--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--case-eb9cc4fb7920.png",
-      "sha256": "eb9cc4fb792041f2657e5b56945ccea67907b459234a5e3a07a298295df57b4e",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--case-98f8ea158fe3.png",
+      "sha256": "98f8ea158fe34013dbbcf5461a85cf7e4697f91a2fbbb6641fc9b350e5e04777",
       "promptSha256": "db977dbed2505d13fc79cf5b20f196bd403e43a55724bdfa535e109e051caa1f"
+    },
+    "monster--wild--collect--warm--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--case--scene-9ba5a8cb3697.png",
+      "sha256": "9ba5a8cb3697eeaa730f1e3473d4ccb7849241ebc64c9aa9013fb6fca86159ba",
+      "promptSha256": "d735caf9858d42bf93073552bfef9c4af797dbfe62e8b9b3520c84ee07eaf60f"
+    },
+    "monster--wild--collect--warm--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--case--episode-e8e212fd1962.png",
+      "sha256": "e8e212fd196225828109be09a50e8f387aa22a8bbc1bcf3b2331bca58b3ffe8b",
+      "promptSha256": "092cf658b717d5d1cdbfcac5d6a7e2fe12b342251162842a6af9e7318ec744a2"
+    },
+    "monster--wild--collect--warm--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--collect--warm--case--short-b97f977d7aea.png",
+      "sha256": "b97f977d7aeab2a14bf3421695c7fdb610adec9afda31343173a8801356fccda",
+      "promptSha256": "608957bc610492232b7aaf5b8ac62dc83d9e5bd31b65386ee82eb0babc415969"
     },
     "monster--wild--team": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--team-049ea8dedbe9.png",
@@ -1560,29 +1865,44 @@
       "promptSha256": "bdf5830d77a866fb30d026544c7c35e72855877ec1b76e16aa9001dc501215bb"
     },
     "monster--wild--team--bright--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--route-3d53c1b875b9.png",
-      "sha256": "3d53c1b875b96897bac8f7b357b386163ba6215229e88cc4b81169042e58c6b9",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--route-30729c73ddaf.png",
+      "sha256": "30729c73ddaf25685c52f13fe20b9b99d304ae2db97b066d3fc8e4b588fb83dd",
       "promptSha256": "ded102cd063d3de97032eb73193214712978318c8be6a37038ada73950226f89"
     },
+    "monster--wild--team--bright--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--route--episode-3fae63b9a24c.png",
+      "sha256": "3fae63b9a24c528204e4f69daf14dfea7b88c1f2399feebaaba1d25099a394d8",
+      "promptSha256": "85e4ca22e310869e29a72ff024b35acef825391dde7866f59f88e2a08563b5af"
+    },
+    "monster--wild--team--bright--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--route--short-062e9177cce3.png",
+      "sha256": "062e9177cce39ea1d0d941f66a2eca821550b8ece826cc9793184c6df5537936",
+      "promptSha256": "6ab0d8c53f6e346fc77de69cb55bdaed5953543f164350daa50d87476568e020"
+    },
     "monster--wild--team--bright--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--habitat-918df2e190ed.png",
-      "sha256": "918df2e190edbc44bfffbb8cb378b5a0e45363f1e64d2ae5809b2ceddd0a566b",
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--habitat-420e581288fa.png",
+      "sha256": "420e581288faaccedd5edcb93275b055760d0c0015ef7bdecae4b26604628204",
       "promptSha256": "4385e06ab42215407178331da7f02c37b7bd1d35d6117ef28512f0acebdeaf69"
     },
-    "monster--wild--team--bright--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--case-9a85d5ab738b.png",
-      "sha256": "9a85d5ab738bc363eeaa6b24249e521908260e286dbbc20806b5b64c0173f340",
-      "promptSha256": "3a67f606d178f750ead2003ca9583c95c376c0ba93500b68f94559449bfefbc3"
+    "monster--wild--team--bright--habitat--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--habitat--scene-34671c811eb1.png",
+      "sha256": "34671c811eb1c7b062dc1fea9cfb5b3d5abce101138e2b82e16fc6e30185e301",
+      "promptSha256": "348b592048f4fa92c42a9d6bbd197344a7f8d134f21970492b739cf71db6e697"
+    },
+    "monster--wild--team--bright--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--habitat--episode-6052105705ec.png",
+      "sha256": "6052105705ecdfe55fe169f3937eff86b79c5a8233efc775d77db8a52111dddb",
+      "promptSha256": "f2cb1b5d677a9bd6fc6bb199d63ad8c420f67f27d5dde8442f676595426a7a0a"
+    },
+    "monster--wild--team--bright--habitat--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--bright--habitat--short-2189d7384003.png",
+      "sha256": "2189d7384003be6c65c035c26f1cf05033b1449f12914a5f4b74ab5ab5e04ef2",
+      "promptSha256": "ac229ff7669ca4b1d96c616aef0e907f9a9dadee3cd1cdb4e79babd1138785f4"
     },
     "monster--wild--team--secret": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret-8d911727dea9.png",
       "sha256": "8d911727dea9dd5925abedd3bb9c3f8077814b310e1c312358c4e2d3921930aa",
       "promptSha256": "6741f299b04b75548a9c152eb62d4c87bd710ad3998e2a23f029bb3aabff672b"
-    },
-    "monster--wild--team--secret--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--route-040c07b0a10c.png",
-      "sha256": "040c07b0a10cf0bb17cd8d76ccda7502110d4cf1137004822fc69891be4376aa",
-      "promptSha256": "21cafe6c70e64a9fadbadc5957eb544ef5f6f052a59389c607afe2d7bafc9101"
     },
     "monster--wild--team--secret--habitat": {
       "url": "/assets/harnesses/interview-scene-bank/monster--wild--team--secret--habitat-13b6ec21de3a.png",

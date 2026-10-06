@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 711,
+  "remainingAtSnapshot": 746,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T10:54:16.763590+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 711,
+      "manifestSha256": "dd57ab35310d2cd37fb45c8f7b5f75ff7bd466fab7af65e33b55ae8471bacfee",
+      "finishedAt": "2026-10-06T10:53:50.967452+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-711-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--secret--case,monster--wild--collect--secret--route,monster--wild--collect--secret--route--scene,monster--wild--collect--secret--route--episode,monster--wild--collect--secret--route--short,romance--palace--talk--warm--single--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 711,
+      "manifestSha256": "dd57ab35310d2cd37fb45c8f7b5f75ff7bd466fab7af65e33b55ae8471bacfee",
+      "finishedAt": "2026-10-06T10:54:15.309731+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-711-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--palace--talk--warm--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-romance--palace--talk--warm--single--episode.png",
+      "sha256": "522e18eec2dbc9ed4166eb79612bd235021d856005faa9c09eadd7a64ab34d62",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-monster--wild--collect--secret--route.png",
+      "sha256": "3724b3cb1ba755a4219b9de4126e7b01294ffc59f35cf2e779627f905d4e6886",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-monster--wild--collect--secret--route--scene.png",
+      "sha256": "fe86d728f7b539954cdf573eb7f02d974c102baae5df21e7332f001ccb40e03a",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--route--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-monster--wild--collect--secret--route--episode.png",
+      "sha256": "06fe4350e24cdd4a2aaad4938af346963248e22e5db4d7d76a99be208585b2a8",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-monster--wild--collect--secret--route--short.png",
+      "sha256": "5f0a8ee7257ac1253396f6c279dcb11e8c9843abbbee52f0051adcc46a534214",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--secret--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-711-stage159-selected-monster--wild--collect--secret--case.png",
+      "sha256": "db22b8524b3cb05505b895850a20222d7ebef2f308925ee18672699ca2a9edb1",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 34,
+  "scope": "711 file/record integrity and six production-dialog paths, six settled screens viewed by root. Left-caption overlap remains. Three privately confirmed original parent visibility failures pending official review: no all711 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-711-stage159-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-711-stage159-click-proof.json"
+  }
+}

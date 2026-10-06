@@ -1,0 +1,383 @@
+{
+  "batch": "v2-production-159",
+  "passedAttempts": 2,
+  "rejectedAttempts": 8,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-159",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:40:06.523068+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-159",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:40:35.782720+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-159",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:44:55.058195+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-159",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:49:27.696873+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-159-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-159",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-159"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T10:49:28.119871+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--wild--collect--bright--habitat--short",
+      "nativeSha256": "9087b2a14ac295b05df7b71bcc8fb4c4f1a09707187706f2331ad716529123a4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "8ab9729c27b7737724e82ec992449822664a4e091119febf812b203db7de47e8",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--bright--habitat--short.png",
+          "sha256": "0d3b2708caba85989466393159c2350a0122b97c4d2043863f0c6c82a04e7feb",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Third ruin actual main view now LEFT before actual panel, but last foreground physical pawprints still atx61-70 behind actual x60.3 controls. Three jars/two plain books/full capture kit and cream soft return fold ON SAME bench all present LEFT; no false count/cream/ruin-total-hidden claim."
+      ],
+      "note": "Third ruin actual main view now LEFT before actual panel, but last foreground physical pawprints still atx61-70 behind actual x60.3 controls. Three jars/two plain books/full capture kit and cream soft return fold ON SAME bench all present LEFT; no false count/cream/ruin-total-hidden claim."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--episode",
+      "nativeSha256": "8b7d4aa27e5a872134f930ad1d20e598e4a1365c32b52217b21a1ec9c0dd6e24",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "79a5687719db5d1b219e8aa0504db8ee72bc49c3fb5cfcfc528845c6bdbc5f74",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--secret--habitat--episode.png",
+          "sha256": "0f08771842fdda45d14e9590f336c1436bd92c2ea594f87725c8f889351fa3d5",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Root inspected complete native and OWN full exact request/target. Whole three jars/two plain closed books/empty open wicker basket/empty net/binoculars, EMPTY leaf nest/open water bowl/SOFT WHITE care cloth BESIDE bench LEFT. ENTIRE physical pawtrail now LEFT and connected across open earth court to THREE visible actual wetland/forest/ruin apertures/views. Thin far outer ruin-stone edge may extend beyond idealx45 target, meaningful aperture view before actual x60.3 panel; not a mechanicalx45 veto. Moonlit concealed habitat mystery/no actor/species/text/cover ornament. Wetland/forest frames and lower foreground care staging independently redrawn versus habitat parent; publication waits for parent actual pass."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat--short",
+      "nativeSha256": "fd6478eed6c525c58c1f34dea0ac554b42425aa0eb1181c3a3afed8b6c59effd",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "62f34a9feecea60fc23d425d2ac62f6e5b45152e090cfa63bbcdfc35aae5bbd6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--secret--habitat--short.png",
+          "sha256": "908b2a719a0a93f2617c6107a6355969bf45a545dbad83e926efad479bdfa45d",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "Physical near pawprints now corrected LEFT and cream fold ON SAME bench/three-jar two-book kit preserved. Actual third ruin aperture/view partly atx59-66 under actual panel. Both book covers retain centered gold rectangular label motifs contrary OWN no-rectangle/no-symbol/plain covers, not readable writing. No false remaining right-paw/count/cream claim."
+      ],
+      "note": "Physical near pawprints now corrected LEFT and cream fold ON SAME bench/three-jar two-book kit preserved. Actual third ruin aperture/view partly atx59-66 under actual panel. Both book covers retain centered gold rectangular label motifs contrary OWN no-rectangle/no-symbol/plain covers, not readable writing. No false remaining right-paw/count/cream claim."
+    },
+    {
+      "key": "monster--wild--collect--secret--habitat",
+      "nativeSha256": "b62aa50047e5e3f8bf63e01312b60c1c2643ec628374bcb2a68657b74bb18416",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "122dd7cf8edb03db27e0da65853fb24da9ee501ed16df0c6188c8677592f604e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--secret--habitat.png",
+          "sha256": "7cd01b9723a11c801c5933529b1a72c5d771af89a31a5c65792f9203ff774711",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "All actual habitat views and physical pawtrail now LEFT before actual panel, three jars/two books/capture kit and bare near court correct. Read-only nearest diagnostic confirms decorative rectangular borders/corner flourishes on both covers remain despite OWN no-cover-rectangle/no-ornament repair. Not readable letters and no native pixels edited for diagnosis. Scope items not imposed at this parent prefix."
+      ],
+      "note": "All actual habitat views and physical pawtrail now LEFT before actual panel, three jars/two books/capture kit and bare near court correct. Read-only nearest diagnostic confirms decorative rectangular borders/corner flourishes on both covers remain despite OWN no-cover-rectangle/no-ornament repair. Not readable letters and no native pixels edited for diagnosis. Scope items not imposed at this parent prefix."
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--routes--short",
+      "nativeSha256": "92e2b480d0ae6d96c04e838e6530e17a94ae930dfdfdd810a1ad8fa402bd8091",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b41fb42d7127e9946d2539018e20f88b62ac7420b28dc4e0726c06ef9812cf11",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-romance--campus--choice--bittersweet--routes--short.png",
+          "sha256": "dca20e646d420f56e837054de2bd5acc86d7d2b557d9b6a716610932aa204b6d",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "All six full wood-backed chairs and three tables/three doors/private alt box+two page-faced books/scarf now visible LEFT before actual panel. Closed additional passdoor is physically directly BEHIND MIDDLE GREENtin pair rather than SAME NEAR BOX+GRAY-fold pair. Table tops retain clipped/octagonal corners instead OWN four-corner square no clipped corners. NEAR box/gray fold/MIDDLE green tin/FAR mug/soft cloth correctly distinct; no false scarf-hidden/count verdict."
+      ],
+      "note": "All six full wood-backed chairs and three tables/three doors/private alt box+two page-faced books/scarf now visible LEFT before actual panel. Closed additional passdoor is physically directly BEHIND MIDDLE GREENtin pair rather than SAME NEAR BOX+GRAY-fold pair. Table tops retain clipped/octagonal corners instead OWN four-corner square no clipped corners. NEAR box/gray fold/MIDDLE green tin/FAR mug/soft cloth correctly distinct; no false scarf-hidden/count verdict."
+    },
+    {
+      "key": "monster--wild--collect--secret--case",
+      "nativeSha256": "ec3773f8cf22729c451b6207feb62c14a48eab6a05f4d5073c309a30b8bb446f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "9d3b1900f07e7119beb673a661f978e887d4c7a7208be881e92874ade8382b53",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--secret--case.png",
+          "sha256": "2314421cd8fc008b2ced0cc62ebaae0a95a9df3852114a8b0dfba196c0228b92",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "Root inspected native and exact own request/target, compared actual secret-prefix parent native/OWN original. Full LEFT empty open wicker basket/net/binoculars/THREE closed empty jars/TWO plain closed books. Local LEFT woodland physical pawtrail continuous to OPEN local refuge, loose rope/tipped EMPTY pail LEFT beside accessible open threshold. Near court bare; remaining peripheral near tufts from previous target removed. No care/return props imposed at this prefix; no actor/species/glyph/UI. High reverse local court with actual village-request refuge differs from old protected cliff collection/caves scene, not a recolor."
+    },
+    {
+      "key": "monster--wild--collect--secret--case--scene",
+      "nativeSha256": "8bcd127a30940ec5c50e5cd98ca340754afbf92e0eae5ff192b4c0ff36ee9159",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "b0ea7dd557a9bfc24b625fa6e003916eed61f3f7f50a1df6e63332a7272a4cff",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-158-monster--wild--collect--secret--case--scene.png",
+          "sha256": "e2628231f514c2216861764d101030ea140acd46498ac7308bc141029da5fd29",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Both complete books/full bench now before actual controls (whole kit corrected LEFT), actual local refuge/rope/tipped empty pail/continuous left local pawtrail intact. Read-only nearest ground diagnostic confirms small green grass/moss tufts around bench legs persist contrary OWN exact bare-court/no-near-grass brief. No false selected-prop hidden or count defect; much narrower cosmetic remaining failure than previous target."
+      ],
+      "note": "Both complete books/full bench now before actual controls (whole kit corrected LEFT), actual local refuge/rope/tipped empty pail/continuous left local pawtrail intact. Read-only nearest ground diagnostic confirms small green grass/moss tufts around bench legs persist contrary OWN exact bare-court/no-near-grass brief. No false selected-prop hidden or count defect; much narrower cosmetic remaining failure than previous target."
+    },
+    {
+      "key": "monster--wild--collect--warm--route",
+      "nativeSha256": "6fa0b4b762822a9535ec5fa993f561f4aff2cae4103918efaafeb36effe2b310",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "1ba5587bda0d7f66d9f7286de9818a415a078d8341e6e92a60d92587040d9125",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/monster--wild--collect--warm--route-2-d0be7604d72d.png",
+          "sha256": "d0be7604d72dccefed885dfb6d83599af5c445ae799c807d6eba3bad80dbe00c",
+          "role": "edit target: rejected native for this SAME scene id only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Complete selected village moved LEFT and near kit/carecloth/water/three jars/two books remain correct. Required physical near pawtrail still continuesx62-85 behind actual x60.3 controls. Actual continuous village path exists, no false village-still-hidden or barrier/count claim. Own plain protected warm near architecture is not retro compared against later bare-court/exact-green-brown rules."
+      ],
+      "note": "Complete selected village moved LEFT and near kit/carecloth/water/three jars/two books remain correct. Required physical near pawtrail still continuesx62-85 behind actual x60.3 controls. Actual continuous village path exists, no false village-still-hidden or barrier/count claim. Own plain protected warm near architecture is not retro compared against later bare-court/exact-green-brown rules."
+    },
+    {
+      "key": "monster--wild--collect--secret--case--short",
+      "nativeSha256": "98609ea0dd424b3b756ebc0331963f43d5fdbcb8041f8e09f7dfca37314e08e9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "9d299aee577e0a675a7623341e0ea2657e969e4563225e2f5a03c9b3d24b2dd4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual two books and outer workbench end extendx61-69 behind actual controls beginningx60.3. Near foreground framing plant/grass clusters conflict with OWN no-foreground-framing request. Three jars/two books/full empty capture kit, local OPEN homebase/loose rope/tipped EMPTY pail/whole LEFT return trail and SOFT CREAM cloth ON SAME bench present; no false missing-return/care requirement."
+      ],
+      "note": "Actual two books and outer workbench end extendx61-69 behind actual controls beginningx60.3. Near foreground framing plant/grass clusters conflict with OWN no-foreground-framing request. Three jars/two books/full empty capture kit, local OPEN homebase/loose rope/tipped EMPTY pail/whole LEFT return trail and SOFT CREAM cloth ON SAME bench present; no false missing-return/care requirement."
+    },
+    {
+      "key": "monster--wild--collect--warm--route--scene",
+      "nativeSha256": "00d61560dcc8929fbea008103404f208db03c408ec98d7341f23a5a0d702c647",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3e636da8eb3e9231046adb3ca920630677da063b4bdb6f8b92fee500470a8ade",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        {
+          "path": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/style-reference-v2.png",
+          "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "role": "pixel-craft style only"
+        }
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual village extendsx61-68 with last main house behind controls, and near physical pawtrail extendsx61-71 under same actual panel. Full three-jar/two-book capture kit LEFT with helpful undecorated warm-tone water/softcloth BESIDE basket retained, no growth restnest or ending fold invented. Foreground framing tree/near plants contradict OWN no framing plants; no actor/body/species/glyph invented. Far-high view differs from intimate warmroute parent but fails visibility."
+      ],
+      "note": "Actual village extendsx61-68 with last main house behind controls, and near physical pawtrail extendsx61-71 under same actual panel. Full three-jar/two-book capture kit LEFT with helpful undecorated warm-tone water/softcloth BESIDE basket retained, no growth restnest or ending fold invented. Foreground framing tree/near plants contradict OWN no framing plants; no actor/body/species/glyph invented. Far-high view differs from intimate warmroute parent but fails visibility."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 711,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

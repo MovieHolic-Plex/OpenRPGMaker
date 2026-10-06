@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 704,
+  "remainingAtSnapshot": 753,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T11:25:38.433308+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 704,
+      "manifestSha256": "26ad27897a9213189b274a5a9b2d5e86bcca859178a78523ee89f6fe8b1b6777",
+      "finishedAt": "2026-10-06T11:25:15.255703+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-704-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--warm--habitat,monster--wild--team--bright--route,monster--wild--collect--bright--case--short,romance--campus--choice--bittersweet--perspectives--scene,romance--palace--talk--warm--single--scene,romance--palace--talk--warm--single--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 704,
+      "manifestSha256": "26ad27897a9213189b274a5a9b2d5e86bcca859178a78523ee89f6fe8b1b6777",
+      "finishedAt": "2026-10-06T11:25:37.120390+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-704-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--campus--choice--bittersweet--perspectives--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-romance--campus--choice--bittersweet--perspectives--scene.png",
+      "sha256": "826c553799dacec87d64f341c8b3460d271b9e5f19e7f8542f45bef3fb3fbc10",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-romance--palace--talk--warm--single--scene.png",
+      "sha256": "50f60e576bbdd6d722af277af425232efdcbd683b25ed3554691e4fe986a2616",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--palace--talk--warm--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-romance--palace--talk--warm--single--episode.png",
+      "sha256": "d977afbc50b1c303d29d8349bcb3c4b2dbcd81aad3cae689dbb302e0bd52df5c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-monster--wild--collect--bright--case--short.png",
+      "sha256": "79e52f8da0d056fe0703c8470220340467b2972135f61df42ec06627864eede3",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--warm--habitat",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-monster--wild--collect--warm--habitat.png",
+      "sha256": "6305327e1b52feb019f51bc1779635f06cf1b3b3f94c5bb538fad8d486ab484b",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--team--bright--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-704-stage161-selected-monster--wild--team--bright--route.png",
+      "sha256": "d2a67ed1057821ec3fee6f301a469a64e89304ee63767b9ea755bccb69dcb30b",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 34,
+  "scope": "704 file/record integrity and six production-dialog paths, 34 clicks, six settled screens actually viewed by root. Left-caption overlap remains. Privately confirmed original team-habitat visibility failure pending official review at this snapshot; no all704 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-704-stage161-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-704-stage161-click-proof.json"
+  }
+}

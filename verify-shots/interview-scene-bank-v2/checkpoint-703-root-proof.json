@@ -1,0 +1,94 @@
+{
+  "publishedSnapshot": 703,
+  "remainingAtSnapshot": 754,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T09:45:14.354740+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 703,
+      "manifestSha256": "4e42476af46706c15501fc44682bbd6ec4d0b7179420b40f7e30172c48bfac78",
+      "finishedAt": "2026-10-06T09:44:49.354417+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-703-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--bright--case,monster--wild--collect--bright--case--scene,monster--wild--collect--bright--case--episode,monster--wild--collect--bright--case--short,romance--campus--choice--secret--routes--scene,romance--campus--choice--bittersweet--single--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 703,
+      "manifestSha256": "4e42476af46706c15501fc44682bbd6ec4d0b7179420b40f7e30172c48bfac78",
+      "finishedAt": "2026-10-06T09:45:13.027402+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-703-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--campus--choice--secret--routes--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-romance--campus--choice--secret--routes--scene.png",
+      "sha256": "a6bef2ddbfd3d5991793a3a21b70d809c752a905b019ead63bc0371ffbe311ae",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--campus--choice--bittersweet--single--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-romance--campus--choice--bittersweet--single--episode.png",
+      "sha256": "d324eb1eb668dd11edbb238b9fa0d35eb97826690cde5783a9f67b531490809c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-monster--wild--collect--bright--case.png",
+      "sha256": "bb7937d96fbe1237eb8dbd08f1353b7ebc185a1e3d5563c7000f757a7c92ebfb",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-monster--wild--collect--bright--case--scene.png",
+      "sha256": "e6359a5cb62a0fe0d8e68e91eced2e7e801e38630408f2c5be1dc0d148139189",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-monster--wild--collect--bright--case--episode.png",
+      "sha256": "084c25bf5a96f92d6321c9dd5192eb7ac1c61eaf328b19bd89a970d157e43d9d",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-703-selected-monster--wild--collect--bright--case--short.png",
+      "sha256": "c9ed7acec3497326b9e7ef140f6233bf749745096b1d5d5d6708075726a1daab",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "703 file/record integrity and six production-dialog paths. Root viewed six settled screens. Some left-caption overlap remains. Two old MON secret parent visibility failures found privately, pending official review; not an assertion all703 pass fresh visual audit. Not all-published visual rescan/full app boot/AI handoff.",
+  "countAliasScope": "Historical stage154 receipts and hash-bound screenshots remain valid. Count-only published-703-integrity-proof.json and selected-703-click-proof.json were overwritten at stage160 because count703 recurred; their current contents are NOT stage154 snapshot evidence. Use stage160-qualified copies only for stage160. No attempt to reconstruct lost full stage154 count-alias contents."
+}

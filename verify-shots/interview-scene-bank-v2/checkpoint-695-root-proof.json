@@ -1,0 +1,170 @@
+{
+  "publishedSnapshot": 695,
+  "remainingAtSnapshot": 762,
+  "whole1457Complete": false,
+  "manifestSha256": "2f8dad91fd9836d8f239d68c6b99f4cc0a774ba22be35bf9acf37f1c9a05079e",
+  "stageReceipts": {
+    "import-batch": {
+      "batch": "v2-production-152",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:07:56.153557+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-152",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:08:21.331202+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-152",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:12:24.050711+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-152",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:16:30.388852+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-152-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-152",
+      "command": [
+        "/usr/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-152"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-06T09:16:30.726192+00:00"
+    }
+  },
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-06T09:19:51.547106+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 695,
+      "manifestSha256": "2f8dad91fd9836d8f239d68c6b99f4cc0a774ba22be35bf9acf37f1c9a05079e",
+      "finishedAt": "2026-10-06T09:19:27.755783+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-695-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--wild--collect--bright--habitat--scene,monster--wild--collect--bright--habitat--episode,monster--wild--collect--bright--route--short,monster--wild--collect--bright--route,romance--town--choice--warm--routes--short,romance--town--choice--bittersweet--routes--episode"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 695,
+      "manifestSha256": "2f8dad91fd9836d8f239d68c6b99f4cc0a774ba22be35bf9acf37f1c9a05079e",
+      "finishedAt": "2026-10-06T09:19:50.102658+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-695-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "romance--town--choice--warm--routes--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-romance--town--choice--warm--routes--short.png",
+      "sha256": "1c571a7238fa6acdcfb582780488cf639d7fdc5e3f5f518e83bd55c2c5c0604e",
+      "rootViewed": true
+    },
+    {
+      "key": "romance--town--choice--bittersweet--routes--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-romance--town--choice--bittersweet--routes--episode.png",
+      "sha256": "b4ccc252206634b8c236dcc638e60e504d8ebe652f15297361871fe22f1c0c8e",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--route",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-monster--wild--collect--bright--route.png",
+      "sha256": "ef19f20d616b0fc798854de6b1907e8ae4f03d80959662553850a22a31d2e5b1",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-monster--wild--collect--bright--route--short.png",
+      "sha256": "1777cd3b4677a414099f2d931b6710769380e8e52794ae53069f55425cf6d8e5",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-monster--wild--collect--bright--habitat--scene.png",
+      "sha256": "42b99195325ee90b58cb27b76b2ccba59fafb1c2f287a7c139269d6c6c618382",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--wild--collect--bright--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-695-selected-monster--wild--collect--bright--habitat--episode.png",
+      "sha256": "0a5e47239cfecfedb6bc841bf510cee7fe6410363d427e4a16fc1a649ef8f959",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 35,
+  "scope": "File/record integrity for 695 published backgrounds and six production-dialog paths. Root personally viewed all six settled screens. Not all-published visual rescan, full app boot or AI handoff."
+}
