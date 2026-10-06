@@ -9,6 +9,9 @@ import { EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from 
 import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as routes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
+import { composeTown, TOWN_SKETCHES } from "./townLayouts";
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { repairExpeditionResidents } from './residents';
@@ -74,16 +77,21 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
       map.width += insert; map.lowerTiles = lower; map.upperTiles = upper;
       stamp(map, t.buildings.find(b => b.name === "mart")!, 3, 4);
     }
-    if (["grove", "dune", "moon"].includes(key)) {
-      const alternatives = key === "grove" ? ["house_b", "house_e"] : key === "dune" ? ["house_d", "house_f"] : ["house_g", "house_c"];
-      stamp(map, t.buildings.find(b => b.name === alternatives[0])!, 4, 3);
-      stamp(map, t.buildings.find(b => b.name === alternatives[1])!, 14, 3);
+    // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
+    if (role === "town" && TOWN_SKETCHES[key]) composeTown(project, map, t, TOWN_SKETCHES[key]!);
+    // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
+    if (source === "overworld/route") {
+      const clearing = autotileGroupsForTileset(project.tilesets[map.tilesetId]).find(g => g.id === "clearing")!;
+      const sand = new Set(Object.entries(t.names).filter(([n]) => n.startsWith("sand_at")).map(([, v]) => v));
+      const changed: Point[] = [];
+      map.lowerTiles.forEach((tile, i) => { if (sand.has(tile)) { map.lowerTiles[i] = clearing.variantMap["255"]!; changed.push({ x: i % map.width, y: Math.floor(i / map.width) }); } });
+      shapeAllAutotileGroupsAround(map, [clearing], changed);
     }
     project.maps[map.id] = map;
     sources.set(map.id, t);
     reserved.set(map.id, new Set());
     const gymStart = source.startsWith("gyms/") ? { x: ["grass", "ice", "dojo", "ghost"].some(k => source.endsWith(k)) ? 8 : 9, y: source.endsWith("grass") || source.endsWith("ice") ? 19 : source.endsWith("dojo") ? 18 : 17 } : undefined;
-    const p = gymStart ?? nearest(map, { x: map.width >> 1, y: map.height - 2 });
+    const p = gymStart ?? anchor(map, { x: map.width >> 1, y: map.height - 2 });
     entries.set(map.id, p);
     reserve(map, p);
     manifest.maps.push({ id: map.id, name, template: source, entry: p, role });
@@ -100,6 +108,16 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
         if (tile >= 0 || layer === "upper") (layer === "lower" ? map.lowerTiles : map.upperTiles)[cell] = tile;
       }
     }
+  }
+
+  // 드나드는 칸은 가까운 길 위로 — 맵 가운데 아래를 그대로 쓰면 1번길 남쪽 문이 길 옆 풀숲 속에 섰다(2026-10-06 실플레이).
+  function anchor(map: GameMap, wanted: Point, component?: Point[]): Point {
+    const walkway = new Set(autotileGroupsForTileset(project.tilesets[map.tilesetId])
+      .filter(g => ["clearing", "path", "snowpath", "ashpath"].includes(g.id)).flatMap(g => g.memberTileIds));
+    const near = (component ?? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) })))
+      .filter(p => walkway.has(map.lowerTiles[p.y * map.width + p.x]!) && Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) <= 4
+        && !reserved.get(map.id)?.has(coord(p)) && !map.events.some(e => e.x === p.x && e.y === p.y));
+    return near.length ? nearest(map, wanted, near, true) : nearest(map, wanted, component, component !== undefined);
   }
 
   function connected(map: GameMap, start = entries.get(map.id) ?? mid(map)): Point[] {
@@ -153,11 +171,31 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: landing, ...(required ? { required } : {}) });
   }
 
+  // 입구에서 걸어 닿는 칸 — 막는 사람·표지판 칸은 지나지 못하고, 이동 칸(문)은 닿기만 하고 넘어가지 않는다.
+  function walkable(map: GameMap, extraBlock?: Point): Set<string> {
+    const solid = new Set(map.events.filter(e => e.pages?.[0]?.overlapForbidden).map(e => coord(e)));
+    if (extraBlock) solid.add(coord(extraBlock));
+    const doors = new Set(map.events.filter(e => e.id.includes("_to_")).map(e => coord(e)));
+    const start = entries.get(map.id)!;
+    const queue = [start], seen = new Set([coord(start)]);
+    for (let n = 0; n < queue.length; n++) {
+      const p = queue[n]!;
+      if (n > 0 && doors.has(coord(p))) continue;
+      for (const [dx, dy] of directions) {
+        const q = { x: p.x + dx, y: p.y + dy };
+        if (!seen.has(coord(q)) && !solid.has(coord(q)) && canMove(project, map, p.x, p.y, q.x, q.y)) { seen.add(coord(q)); queue.push(q); }
+      }
+    }
+    return seen;
+  }
+
   function connect(a: GameMap, b: GameMap, required?: string): void {
-    const ca = connected(a), cb = connected(b);
+    // 이미 선 표지판·사람 뒤로 문을 두지 않는다 — 새순·달그림자 마을에서 둘째 북쪽 문이 첫 표지판에 막혔다(2026-10-06).
+    const reachA = walkable(a);
+    const ca = connected(a).filter(p => reachA.has(coord(p))), cb = connected(b);
     const harborExit = a.id === id("harbor") ? ({ mx_map_river: { x: 15, y: 9 }, mx_map_ship_deck: { x: 16, y: 9 }, mx_map_beach: { x: 8, y: 10 }, mx_map_sea_cave: { x: 23, y: 10 } }[b.id]) : undefined;
-    const atA = harborExit ?? nearest(a, { x: a.width >> 1, y: 2 }, ca, true);
-    const atB = nearest(b, { x: b.width >> 1, y: b.height - 2 }, cb, true);
+    const atA = harborExit ?? anchor(a, { x: a.width >> 1, y: 2 }, ca);
+    const atB = anchor(b, { x: b.width >> 1, y: b.height - 2 }, cb);
     reserve(a, atA); reserve(b, atB);
     const landA = harborExit ? { x: harborExit.x, y: harborExit.y + (b.id === id("river") ? 1 : -1) } : nearest(a, { x: atA.x, y: atA.y + 1 }, ca, true);
     reserve(a, landA);
@@ -165,7 +203,14 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     reserve(b, landB);
     portal(a, b, atA, landB, required); portal(b, a, atB, landA);
     // Visible, inspectable signposts explain interior route entrances.
-    npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, { x: atA.x + 1, y: atA.y + 1 }, [], 4);
+    // 표지판은 길목이 아닌 칸에 세운다 — 그 칸 하나 말고는 걸어 닿는 칸이 줄지 않아야 한다.
+    const before = walkable(a).size;
+    const wide = connected(a).filter(p => directions.every(([dx, dy]) => canMove(project, a, p.x, p.y, p.x + dx, p.y + dy)))
+      .filter(p => !reserved.get(a.id)!.has(coord(p)) && !a.events.some(e => e.x === p.x && e.y === p.y));
+    const wanted = { x: atA.x + 1, y: atA.y + 1 };
+    wide.sort((p, q) => Math.abs(p.x - wanted.x) + Math.abs(p.y - wanted.y) - Math.abs(q.x - wanted.x) - Math.abs(q.y - wanted.y));
+    const spot = wide.find(p => walkable(a, p).size === before - 1) ?? wanted;
+    npc(a, `sign_${b.id}`, "길 안내", `북쪽 길: ${b.name}`, spot, [], 4);
   }
 
   function doorways(map: GameMap): { x: number; y: number; name: string }[] {
@@ -313,7 +358,10 @@ export function authorExpeditionWorld(project: Project): ExpeditionManifest {
     const doors = doorways(map);
     const centerDoor = doors.find(d => /center|centre/.test(d.name));
     const martDoor = doors.find(d => /mart|shop/.test(d.name));
-    const residential = doors.filter(d => d !== centerDoor && d !== martDoor);
+    const others = doors.filter(d => d !== centerDoor && d !== martDoor);
+    // 체육관 건물 킷이 있으면 그 문이 체육관이다 — 없으면(옛 판) 두 번째 집.
+    const gymDoor = others.find(d => /^gym_/.test(d.name)) ?? others[1];
+    const residential = [others.find(d => d !== gymDoor), gymDoor].filter((d): d is NonNullable<typeof d> => d !== undefined);
     if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Current references lack four public building entrances in ${map.id}: ${JSON.stringify(doors)}`);
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
     attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)!, residential[1]!);
