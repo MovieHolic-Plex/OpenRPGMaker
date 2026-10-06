@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "soul-drum-dokkaebi",
+    "source": "qa-runs/harnesses/battle-monster/soul-drum-dokkaebi/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "09ea0eed6c2ee80727eec5f48e9c9a3b3f83636632dad92a35158ad5494299bf",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T09:44:51.512513+00:00",
+    "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+    "entireGoalCompleteClaim": false
+  }
+]

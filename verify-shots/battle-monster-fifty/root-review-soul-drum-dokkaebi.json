@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-06T09:45:47.595773+00:00",
+  "passed": true,
+  "key": "soul-drum-dokkaebi/fifty-v1",
+  "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+  "actualIndependentReviewJob": "11145db8-b8c7-41c7-a793-3011eaba9f59",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "d3572b984aa10b3db2398045c8663fb645f7fca4d1be88f94218e431fb9bea10",
+    "preview/suite/light.png": "a25d70fc327076e032780931b5cfdd29d1122cd7dd0c238c1e6d47bca1c33638",
+    "preview/suite/dark.png": "c9b3c3d6cf5951d07d892a7acf4b248b61b0a4b8efd71ec6a8ad2e2e67a805d1",
+    "preview/suite/checker.png": "b114deadbc8601426da7b4d03157d1e63767f6b928ef298b12bf5a795fa71161"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-soul-drum-dokkaebi.png",
+  "nativeContactPngSha256": "171efde28359bcc2344fb14e3c9d60c9768fce6bfc08c919ad49eb3e6723ca99",
+  "nativeWriterFilesRead": {
+    "author_pixels.py": "8c37980c727890fefdb46bcbc4808d8876647b6da178b1b54b387620b2c7dd97"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actual18pose native1x/nearest2x1248x984 unresized. Bluegrayhornedbody/redgoldrimdrum/connectedhands andtwosticks, raisedwindup/advancestep/bothsticksdownstrike/recovery, tensecompressedhit/lowhorizontaldead vsseatedclosedeyesleep. Goldcoreindrum/twogoldoutwardcurvedrays/recoverysparks, poisonhunch/slackarmstun withstars andlowclosedeyesleep. Read author blank/rows/replace/save/standing fullbodies, allshortenedcallnames andmodulecontrolflow. Nativeclusters arefixedexplicitrowstrings/xyplacement orindividuallyselectedrowreplacement; no generatedgeometry or wholeframe transformation. Standing reuses unchanged handauthored bodyclusters with separatelyauthored head/limb/state/effect edits; diagnostics BFS/scales do not choose pixels. All18nativePNG RGBA exactlymatch currentASCII/palette. Actual finalsource/nativePNG board/nativewriter hashes exactlysame asactuallyviewed18poses beforeinitialreview; actual firstkeeper0issues. Keepersummary retains modestbodyrecoil andsubtlearm/drumbreathing withstationarysleephead, not actualbattle timing/contact approval. Current actualselection/nativeGIF/archive/browser audit remains separate.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

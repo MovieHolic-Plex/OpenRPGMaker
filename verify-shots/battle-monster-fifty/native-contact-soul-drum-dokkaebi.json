@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-06T09:39:55.754691+00:00",
+  "at": "2026-10-06T09:45:03.395526+00:00",
   "key": "soul-drum-dokkaebi/fifty-v1",
   "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
   "nativeCell": 96,
@@ -15,7 +15,7 @@
   "background": "#e5e2d7",
   "noSourceWrites": true,
   "approvalClaim": false,
-  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates",
+  "sourceRoot": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/harnesses/battle-monster",
   "pngSha256": "171efde28359bcc2344fb14e3c9d60c9768fce6bfc08c919ad49eb3e6723ca99",
   "frames": [
     {

@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재25/50 통과
+# 신규50종 제작 · 현재26/50 통과
 
 ## 최초 두 종 확인
 
@@ -321,3 +321,21 @@ native-contact-dusk-paper-falcon*,browser-proof-dusk-paper-falcon.json,지속 �
 세지 않는다. 현재25종의 정본 source/선택/감독/브라우저 확인에는 변화가 없다.
 근거:draft-native-contact-red-pine-guardian-after-sleep-repair1.*,draft-independent-rework-red-pine-after-sleep-repair1.json,
 root-draft-review-red-pine-after-sleep-repair1.json.
+
+## 혼고도깨비 최초 검수 통과 · 실제26/50
+
+혼고도깨비는 최초 독립 keep0지적이다. 감독이 실제18자세 native1배/최근접2배 시트를 직접 열고
+blank/rows/replace/save/standing 전체 쓰기 본문·호출 목록·모듈 제어 흐름을 읽었다. 최종 원본/
+검수 binding, 현재 PNG 시트와 writer 해시가 실제 열람한 초기 시트/원본과 정확히 같음을 확인했다.
+청회 몸/흰 갈기와 뿔/금테 붉은 북/어깨 띠/붙은 손과 북채, 올린 준비·벌린 전진·내린 북채 타격·
+회수, 머리 움츠림과 낮은 쓰러짐, 북 핵/두 금빛 길/회수 잔광, 아픈 손동작·처진 팔 기절·감긴
+눈의 앉은 수면을 확인했다. 실제 고른 좌표와 ASCII 군집/개별 행 수정이며 형상 생성이나 몸 전체
+변환이 없다. PNG/GIF/진단 연결 검사는 원본 격자를 바꾸지 않는다. 작은 몸 피격과 수면의
+고정된 머리/미세한 팔·북 변화는 실제 검수 관찰로 유지하며 실전 접촉/타이밍을 승인하지 않는다.
+
+현재26/50/468자세/208GIF/전체false다. 같은26종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0,
+현재 감독 그림/직접 저작 방식 확인을 마쳤다. 원래52판정/8선택 보존, 신규78행은 목표 위임 Allow다.
+화린독사·매화정의 작은 지적 각1개를 유지한다. 남은24종까지 목표는 동일하며 전체 완료나 게임
+설치를 주장하지 않는다. 근거:twenty-six-passed-proof.json,root-review-soul-drum-dokkaebi.json,
+native-contact-soul-drum-dokkaebi.*,browser-proof-soul-drum-dokkaebi.json,지속 출처26종.

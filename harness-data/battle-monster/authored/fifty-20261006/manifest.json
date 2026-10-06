@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 25,
+  "archivedPassedSpecies": 26,
   "entireGoalComplete": false,
   "items": [
     {
@@ -255,6 +255,17 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "49d71501e10ee7144be551c79018cb6018d0e4adc3eef1b5453de9524ec1fd88"
+    },
+    {
+      "key": "soul-drum-dokkaebi/fifty-v1",
+      "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+      "nativeCell": 96,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "1d1b28b207884e28373388025f7449f8ee856a7c8f9b35aac09230f6170a7ede"
     },
     {
       "key": "red-tassel-swordswoman/fifty-v1",

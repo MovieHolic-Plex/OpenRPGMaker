@@ -1,0 +1,18 @@
+{
+  "recommendation": "keep",
+  "summary": "Viewed all four supplied PNGs at native 1x and the supplied nearest-neighbor 3x scale. The right-facing blue dokkaebi, white mane/horn, red drum with gold rim, shoulder strap and two sticks remain recognizable across the suite. Broad blue highlight and shadow clusters support upper-left lighting; the pale horn, warm rim and red skin separate clearly on light, dark and checker backgrounds. No obvious unintended transparent holes, detached limbs or detached held sticks are visible. Standing soles share the ground line; the dead pose has a low, connected body silhouette. Windup raises both sticks, move widens the stance, attack lowers connected sticks toward the drum, and recover withdraws them beside the shoulders. Hit reads through closed eyes and head recoil, although the body recoil is modest. Skill preparation adds a gold nucleus adjoining the descending stick tip; the two outgoing gold paths remain connected through the drum glow, and raised-stick recovery leaves two detached afterglow fragments. Poison changes the hands to face/abdomen gestures, stun drops both arms with head stars, and sleep crouches with closed eyes and lowered tools. These are readable pose changes rather than palette tints. The sleep pair has subtle arm/drum changes with an unchanged head, so its breathing strength needs playback review. This is a still pose preview, not battle footage: animation timing, hop motion, runtime contact and authored-source/model provenance cannot be established from these PNGs. This recommendation does not record a user selection.",
+  "issues": [],
+  "binding": "955f3e7139886dfe83d3047cfa21aa12a76004f68e8e342d6bde40ed7f0307e9",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "d3572b984aa10b3db2398045c8663fb645f7fca4d1be88f94218e431fb9bea10",
+    "preview/suite/light.png": "a25d70fc327076e032780931b5cfdd29d1122cd7dd0c238c1e6d47bca1c33638",
+    "preview/suite/dark.png": "c9b3c3d6cf5951d07d892a7acf4b248b61b0a4b8efd71ec6a8ad2e2e67a805d1",
+    "preview/suite/checker.png": "b114deadbc8601426da7b4d03157d1e63767f6b928ef298b12bf5a795fa71161"
+  },
+  "jobId": "11145db8-b8c7-41c7-a793-3011eaba9f59",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T09:41:38.492026+00:00",
+  "userApproved": false
+}

@@ -1,0 +1,153 @@
+{
+  "idle": [
+    {
+      "frame": "idle_a",
+      "durationMs": 240,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_b",
+      "durationMs": 240,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_c",
+      "durationMs": 240,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_b",
+      "durationMs": 240,
+      "exactRgba": true
+    }
+  ],
+  "attack": [
+    {
+      "frame": "idle_a",
+      "durationMs": 220,
+      "exactRgba": true
+    },
+    {
+      "frame": "windup",
+      "durationMs": 280,
+      "exactRgba": true
+    },
+    {
+      "frame": "move",
+      "durationMs": 140,
+      "exactRgba": true
+    },
+    {
+      "frame": "attack",
+      "durationMs": 180,
+      "exactRgba": true
+    },
+    {
+      "frame": "recover",
+      "durationMs": 240,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_a",
+      "durationMs": 280,
+      "exactRgba": true
+    }
+  ],
+  "hit": [
+    {
+      "frame": "idle_a",
+      "durationMs": 300,
+      "exactRgba": true
+    },
+    {
+      "frame": "hit",
+      "durationMs": 280,
+      "exactRgba": true
+    },
+    {
+      "frame": "recover",
+      "durationMs": 220,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_a",
+      "durationMs": 300,
+      "exactRgba": true
+    }
+  ],
+  "dead": [
+    {
+      "frame": "idle_a",
+      "durationMs": 240,
+      "exactRgba": true
+    },
+    {
+      "frame": "hit",
+      "durationMs": 180,
+      "exactRgba": true
+    },
+    {
+      "frame": "dead",
+      "durationMs": 1100,
+      "exactRgba": true
+    }
+  ],
+  "skill": [
+    {
+      "frame": "skill_a",
+      "durationMs": 380,
+      "exactRgba": true
+    },
+    {
+      "frame": "skill_b",
+      "durationMs": 260,
+      "exactRgba": true
+    },
+    {
+      "frame": "skill_c",
+      "durationMs": 320,
+      "exactRgba": true
+    },
+    {
+      "frame": "idle_a",
+      "durationMs": 320,
+      "exactRgba": true
+    }
+  ],
+  "poison": [
+    {
+      "frame": "poison_a",
+      "durationMs": 450,
+      "exactRgba": true
+    },
+    {
+      "frame": "poison_b",
+      "durationMs": 450,
+      "exactRgba": true
+    }
+  ],
+  "stun": [
+    {
+      "frame": "stun_a",
+      "durationMs": 480,
+      "exactRgba": true
+    },
+    {
+      "frame": "stun_b",
+      "durationMs": 480,
+      "exactRgba": true
+    }
+  ],
+  "sleep": [
+    {
+      "frame": "sleep_a",
+      "durationMs": 700,
+      "exactRgba": true
+    },
+    {
+      "frame": "sleep_b",
+      "durationMs": 850,
+      "exactRgba": true
+    }
+  ]
+}
