@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.152.1 — 2026-10-06
+
+### 수정
+
+- bind native wand scene panels and serialize trial animation (`53bc294`)
+
 ## 0.152.0 — 2026-10-06
 
 ### 기능
