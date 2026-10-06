@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T11:30:19.184196+00:00",
+  "passed": false,
+  "key": "silver-sword-matron/fifty-v1",
+  "binding": "1a11119bbe12a67a429556c408789af57c899edd0719d541f41ac32a1d294863",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-silver-sword-matron-before-initial-review.png",
+  "nativeContactPngSha256": "4b20113053f63d35cba206af82e3537f3223b15248d6ecd113fb0b6294ebc68d",
+  "nativeWriterFilesRead": {
+    "author.py": "13c8fd200a5f1e32616960fc5afa8322f07a964a976e9d3a22aa9ac8df8a4dfa"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized. Adultolderwoman/silverwhiteboundhair/blackpin/quietrightface/longtealcoat/navylowergarment/goldbelt, one longsilverblade+shortscabbard peractualbrief. Connectedhand/guard/blade, backwardwaistdraw/forwardstep/lowhorizontalcut/recovery. Bentbackhit/lowhorizontalfallenbody, seatedlowclosed-lid-intended sleeppair withsmallhead/shoulder changes; independentstateface/headreadabilitystillpending. Skillactualbladeend/twosilverwhitebentpaths/remainderfragments, poisonhandface+purpleparticles, slackstarstun. Read complete write_sources/read_more andallmoduleflow/calls: blank64rows filledonlyexplicitliteral y/x/pixelstrings fromnativeframe/literal-rows.txt/repair-rows.txt withbounds andpalettechecks. No shapegeometry/automaticwholeframe transforms. RendereronlyPNG/GIF/diagnostics/decodedreadback. All18nativePNG match ASCII/palette. Actualindependentdecisionpending, noKeep/Allowclaim."
+}

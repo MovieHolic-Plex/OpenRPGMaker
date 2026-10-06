@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "sun-gold-phoenix",
+    "source": "qa-runs/harnesses/battle-monster/sun-gold-phoenix/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "5b724acbb0c69413a4ad8779b8248e11228e24d3b74a6bfddf2101e90aa7a671",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T11:25:16.298565+00:00",
+    "binding": "f0383d34fe5fea0c8ced2175130788d0e530324cc7f6185a982c1c1542e3bce1",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "abyss-jade-turtle",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/abyss-jade-turtle/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "20c66ceb118303178907f09056a212061933896baaf99bf84ccdcab307ebcfd1",
+    "cell": 128,
+    "pose": "idle_a",
+    "writtenGridCount": 1,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T11:25:16.298565+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
