@@ -149,3 +149,10 @@ production 묶음의 모든 칸이 `layer:0`, `topMin:0`인 바닥/무늬는 `ki
 불투명 석판·목재 타일에 가구의 투명 귀퉁이 검사를 적용하지 않는다. 검사 코드를 약화하거나
 바닥에 투명 구멍을 뚫지 말고 분류를 바로잡는다. 입체 기물/벽은 실제 설치 레이어와 종류를 유지한다.
 변경된 sets.json·시드·코드를 도면 sources에 묶고 독립 도면 검수를 받는다.
+
+## 병렬 제작의 받침 의존성
+카운터/탁자 등 이번에 만드는 받침 위에 놓이는 소품은 그림 제작을 병렬로 하되 검수 순서를 명시한다.
+interior-props `data/seed.json`의 `reviewDependencies`에 소품 id별 `[{"item":"받침 id","candidate":"h8-A"}]`를 기록한다.
+실제 주문 round/letter에 맞춰 지정하고 seed 및 `src/harnesses/interior-props/review_dependencies.py`를 layout.sources에 묶는다.
+받침의 실제 PNG가 기계·독립검수 PASS인 뒤 소품 검수가 시작된다. 빈 v5.png를 받침으로 사용하지 않는다.
+후보가 여러 개면 임의 자동선택하지 말고 이번 검수에 쓸 후보를 계약에 명시한다. 이미 완성된 받침도 실제 PNG·해시를 근거에 연결한다.
