@@ -1,0 +1,38 @@
+[
+  {
+    "monster": "blue-robe-spear-master",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "166c778a69b67edef368e7218035155ac249e41a50c4da757d26736017320d79",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T09:52:27.174161+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "jade-flute-martial-artist",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "9df56225bb69dd1f88a71b5ebd07cc38f009007ef7502b8957427026c0bb7a14",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T09:52:27.174161+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "black-lotus-assassin",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/source/poses/idle_a.pxgrid",
+    "sha256": "74aaf61941c2a04a4416f57943869b147297a50fea9500de41993ac4347e8e09",
+    "cell": 64,
+    "pose": "idle_a",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T09:52:27.174161+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "at": "2026-10-06T10:01:03.518624+00:00",
+  "actualMiddleVisual": "progress-idle_a-blue-robe-spear-master-jade-flute-martial-artist-black-lotus-assassin.png",
+  "wholeGoalComplete": false,
+  "approvalClaim": false,
+  "items": [
+    {
+      "monster": "blue-robe-spear-master",
+      "writers": [
+        {
+          "file": "qa-runs/battle-monster-fifty-wave/candidates/blue-robe-spear-master/fifty-v1/source/author_rows.py",
+          "sha256": "22dfee9f1a47d9f0be2f77312a328f21539638da83bc992aa7edf389a9b6f4d3",
+          "methodsActuallyRead": [
+            "export"
+          ],
+          "nativeWriterMethodsInspected": true,
+          "scope": "current draft methods; final source binding and all18 native previews still require review"
+        }
+      ],
+      "idleMiddleVisualOpened": true,
+      "passed": false
+    },
+    {
+      "monster": "jade-flute-martial-artist",
+      "writers": [
+        {
+          "file": "qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/source/author.py",
+          "sha256": "2346679df6e7a9300fbba6efd5c084af51c0609e30bd4a6f7cdd9d139cd175a0",
+          "methodsActuallyRead": [
+            "frame",
+            "patch"
+          ],
+          "nativeWriterMethodsInspected": true,
+          "scope": "current draft methods; final source binding and all18 native previews still require review"
+        }
+      ],
+      "idleMiddleVisualOpened": true,
+      "passed": false
+    },
+    {
+      "monster": "black-lotus-assassin",
+      "writers": [
+        {
+          "file": "qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/source/author_rows.py",
+          "sha256": "2496f6612aaa56b164388bb69b073dfcd8068f4f11679ae85296806d15325706",
+          "methodsActuallyRead": [
+            "write_frames"
+          ],
+          "nativeWriterMethodsInspected": true,
+          "scope": "current draft methods; final source binding and all18 native previews still require review"
+        },
+        {
+          "file": "qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/source/author_rows_first_pass.py",
+          "sha256": "a5b06b439d6144d308ec57d3343dba468c23247d04d996530b648b14871bdaf5",
+          "methodsActuallyRead": [
+            "write_frames"
+          ],
+          "nativeWriterMethodsInspected": true,
+          "scope": "current draft methods; final source binding and all18 native previews still require review"
+        }
+      ],
+      "idleMiddleVisualOpened": true,
+      "passed": false
+    }
+  ]
+}
