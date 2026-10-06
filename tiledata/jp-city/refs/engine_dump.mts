@@ -473,7 +473,6 @@ OUT.bldgKits = bldgs;
 }
 const propCodes: Record<string, string[]> = {};
 for (const k of KITS.values()) {
-  if (!k.id.startsWith("jp-prop-") && !k.id.startsWith("jp-recipe-") && !k.id.startsWith("jp-door-") && !k.id.startsWith("jp-road-") && !k.id.startsWith("jp-fumikiri") && !k.id.startsWith("jp-underpass") && !k.id.startsWith("jp-footbridge") && !k.id.startsWith("jp-bldg-")) continue;
   const kk = kitOf(k.id);
   propCodes[k.id] = kk.rows.map((r) => r.upperTiles.map((t3, x) => {
     const t1 = r.tiles[x]!;
@@ -596,6 +595,72 @@ OUT.kitCodes = propCodes;
     matrix.push(row);
   }
   OUT.atMatrix = matrix;
+}
+
+// =============================================================================================== 8. 손 도트 거리 시설(blocks/street_hand.py): 전봇대·전선 4층 · 노면 표시 2층 · 블록 담·문기둥 3층
+{
+  const HAND = [...KITS.values()].map((k) => k.id).filter((id) => !/^jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)/.test(id));
+  const up = (id: string) => kitOf(id).rows.map((r) => r.upperTiles);
+  const stampL = (p: Project, id: string, x: number, y: number, layer: string) => call(p, "stamp_layer_block", { mapId: "m", x, y, layers: { [layer]: up(id) }, reshape: false });
+  const W = 24, H = 18, LANE = [13, 16], HOUSE = "jp-bldg-house-hip2", HX = 3;
+  const hk = KITS.get(HOUSE) as unknown as { width: number; height: number; parts?: { kind: string; dx: number; dy: number }[]; ai: { access?: { dx: number; dy: number }[] } };
+  const HY = 10 - hk.height + 1, WALL_Y = 11;
+  const doorCol = HX + hk.parts!.find((q) => q.kind === "entrance")!.dx;
+  const POLES: [number, number][] = [[1, 16], [13, 16], [21, 16]];
+  type Opt = { wireLayer?: string; poleLayer?: string; wireShift?: number; closeGate?: boolean };
+  const scene = (o: Opt = {}) => {
+    const { p, map } = mkProject(W, H, SW);
+    for (let y = LANE[0]; y <= LANE[1]; y++) for (let x = 0; x < W; x++) map.lowerTiles[y * W + x] = ROAD;
+    const log: { kit: string; x: number; y: number; layer: string; ok: boolean; summary: string }[] = [];
+    const st = (id: string, x: number, y: number, layer: string) => { const r = layer === "3" ? stampKit(p, id, x, y) : stampL(p, id, x, y, layer); log.push({ kit: id, x, y, layer, ok: r.ok, summary: r.summary }); };
+    st(HOUSE, HX, HY, "3");
+    for (let x = HX; x < HX + hk.width; x++) {
+      if (x === doorCol && !o.closeGate) continue;
+      st(x === doorCol - 1 ? "jp-gatepost" : x === HX ? "jp-bwall-end-l" : x === HX + hk.width - 1 ? "jp-bwall-end-r" : (x - HX) % 4 === 2 ? "jp-bwall-sukashi" : "jp-bwall-plain", x, WALL_Y, "3");
+    }
+    st("jp-propane", HX + hk.width, WALL_Y - 1, "3");
+    st("jp-mirror2", 16, 10, "3");
+    let g = 0;
+    for (let x = 0; x < W; x++) {
+      if (x === 18 || x === 19) continue;
+      const gr = ++g % 7 === 0 ? "-grate" : "";
+      st("jp-mark-edge-n" + gr, x, LANE[0], "2"); st("jp-mark-edge-s" + gr, x, LANE[1], "2");
+    }
+    st("jp-mark-30", 18, LANE[0], "2");
+    const pk = kitOf("jp-pole"), top = 16 - pk.height + 1;
+    for (const [x, f] of POLES) st("jp-pole", x, f - pk.height + 1, o.poleLayer ?? "4");
+    for (let i = 0; i + 1 < POLES.length; i++) { const L = POLES[i + 1]![0] - POLES[i]![0]; st("jp-wire-" + L, POLES[i]![0] + 3 + (o.wireShift ?? 0), top, o.wireLayer ?? "4"); }
+    const acc = { x: doorCol, y: WALL_Y };
+    return { p, map, log, layers: layersOf(map), access: { ...acc, reach: reach(p, map, acc) } };
+  };
+  const good = scene();
+  const diff = (a: number[], b: number[], only?: (i: number) => boolean) => a.flatMap((t, i) => (t !== b[i] && (!only || only(i)) ? [{ x: i % W, y: Math.floor(i / W) }] : []));
+  const houseCells = (i: number) => { const x = i % W, y = Math.floor(i / W); return x >= HX && x < HX + hk.width && y >= HY && y <= 10; };
+  const onL3 = scene({ wireLayer: "3", poleLayer: "3" });
+  const shift = scene({ wireShift: -1 });
+  const gate = scene({ closeGate: true });
+  const poleArm = (i: number) => good.layers["4"][i]! >= 0 && POLES.some(([x]) => i % W >= x && i % W <= x + 2);
+  // 엔진 통행: 전봇대 밑동(4층 solid)은 막힘, 노면 표시(2층 flat)는 걸음, 4층 ★ 칸 아래 3층 벽은 여전히 막힘(엔진은 ★ 칸을 건너뛰고 아래층을 본다)
+  const pass = (x: number, y: number) => isPassable(good.p, good.map, x, y);
+  // 4층 전봇대 ★ 칸 밑 3층 블록 담: 작은 판(6×12)에 담을 (2,5) 에 세우고 전봇대 키트를 (1,2) 4층에 — 기둥 열 x=2 의 ★ 칸이 담 위에 온다
+  const pk = kitOf("jp-pole");
+  const starOverWall = (() => {
+    const { p, map } = mkProject(6, 12, SW);
+    stampKit(p, "jp-bwall-plain", 2, 5); stampL(p, "jp-pole", 1, 2, "4");
+    const t4 = map.upperOverlayTiles?.[5 * 6 + 2] ?? -1;
+    const walk = (x: number, y: number) => isPassable(p, map, x, y);
+    return [{ x: 2, y: 5, l3: map.upperTiles[5 * 6 + 2], l4: t4, l4Passage: t4 >= 0 ? TS.tileMeta![t4]!.passage : null, passable: walk(2, 5) }, { x: 2, y: 4, l3: map.upperTiles[4 * 6 + 2], l4: map.upperOverlayTiles?.[4 * 6 + 2] ?? -1, l4Passage: null, passable: walk(2, 4) }];
+  })();
+  OUT.streetHand = {
+    kits: HAND, W, H, house: { id: HOUSE, x: HX, y: HY }, wallY: WALL_Y, doorCol, poles: POLES, lane: LANE,
+    good: { log: good.log, layers: good.layers, access: good.access },
+    probes: { poleFoot: POLES.map(([x, f]) => ({ x: x + 1, y: f, passable: pass(x + 1, f) })), mark: { x: 8, y: LANE[0], passable: pass(8, LANE[0]) }, wall: { x: HX + 3, y: WALL_Y, passable: pass(HX + 3, WALL_Y) }, starOverWall },
+    errors: {
+      onL3: { layers: onL3.layers, log: onL3.log, errors: diff(good.layers["3"], onL3.layers["3"], houseCells).map((c) => ({ code: "upper-overwritten", ...c })) },
+      shift: { layers: shift.layers, errors: diff(good.layers["4"], shift.layers["4"], poleArm).map((c) => ({ code: "pole-arm-overwritten", ...c })) },
+      gate: { layers: gate.layers, access: gate.access, errors: gate.access.reach < 6 ? [{ code: "door-access-blocked", x: gate.access.x, y: gate.access.y }] : [] },
+    },
+  };
 }
 
 fs.writeFileSync(path.join(HERE, "engine-results.json"), JSON.stringify(OUT));

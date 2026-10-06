@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 띠 사전 · 지붕 13 · 옥상 간판 3 · 처마 2 · 테라스 1 · 1층 11
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6110칸**, 16px 칸, 시트 768×2048px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **6926칸**, 16px 칸, 시트 768×2320px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 띠(band) 한 종의 **칸 번호 전체**다. 항목: `band` id · `kind` · `rows`(띠 줄 수) · `modw`(몸통 모듈 폭) · `L`(왼쪽 끝 칸, 줄마다) · `R`(오른쪽 끝 두 열: `R[0]`=끝에서 둘째 열, `R[1]`=맨 끝 열, 줄마다) ·
 `mods`(몸통 변형 번호 → 모듈 열들 → 줄마다 칸) · `F`(남는 칸 채움, 줄마다, 없으면 null).

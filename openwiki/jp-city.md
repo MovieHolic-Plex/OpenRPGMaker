@@ -18,7 +18,7 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 정의 모듈 `src/project/defaults/jpCity.ts` — `createJpCityTileset`, `ensureJpCityTileset`, `ensureJpCityReferences`, `isJpCityTileset`.
 - 굽기가 만드는 파일(굽기 담당 소유): `public/assets/jp-city/jp-city-chipset.png`, 시트 메타 `src/assets/jpCitySheet.json`(`count`, `tilesPerRow`), 정의 `src/assets/jpCityTileset.json`(`name`·`tileSize`·`passability`·`priority`·`terrain`·`tileMeta`·`tileGroups`·`autotileGroups`·`animationStrips`·`structureKits`), 굽기 스크립트·소스 `scripts/content/jp-city/`, 자리 키 핀·출처 `tiledata/jp-city/`.
-- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 7용도 52쪽·그림 137장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
+- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 8용도 55쪽·그림 147장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
 - 배선: `src/assets/bundled.ts`(시트 import·항목·`bundledChipsetFrameCount`), `src/assets/bundledChipsetGeometry.ts`(열 수), `src/project/defaults/defaultAssets.ts`(`ensureBundledTilesets` 기존 사본 블록·`bundledEasyRpgTilesetBase`; 새 프로젝트는 `defaultTilesets()` 가 번들 목록을 돌며 자동 포함), `src/project/tilesetFamily.ts`, `src/project/tilesetHarness/combinedTown.ts`(RM2k3 투명 칩 보정 제외), `test/bundledTilesetIdParity.test.ts`.
 
 ## 굽기 규약 (TS 가 기대하는 것)
@@ -176,7 +176,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 
 조수 스킬 원본 `assistant-skills/jp-city-building-authoring/SKILL.md`. 편집기 안 조수가 읽는 `read_assistant_skill` 도구는 **main 에 없다**(agent/atlas-policy 브랜치 미병합, 2026-10-04 확인) — 그래서 조수는 같은 내용을 시스템 프롬프트·도구 설명·오류 문장·참고문서 `jp-*` 로 받는다. 시험 `test/jpCityAssistantWiring.test.ts`.
 
-## 손 도트 건물 53종 + 상점가 줄 6종 (`jp-bldg-*`, 블록 `buildings`) — 2026-10-06
+## 손 도트 건물 69종 + 상점가 줄 8종 (`jp-bldg-*`, 블록 `buildings`) — 2026-10-06
 
 사용자가 Codex 하네스 그림을 반려한 뒤 Claude 가 칩셋 규약대로 직접 그린 기준 집(사용자 승인 「훨씬 낫다」)을 부품으로 나눠 조립한 일본 동네 건물 통 키트.
 주택 15 · 공동주택 6 · 가게 14 · 음식점 7 · 상업 5 · 공공 5 · 공장·창고 2(분류는 `catalog.py` 의 `cat`).
@@ -198,16 +198,40 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 참고문서 용도 `jp-buildings-hand`(쓰는 법·사전·정답 조립·정상/오류). 엔진 실측은 `engine_dump.mts` 의 `bldgKits`·`bldgComps`·`bldgOverlap1`.
 - `engine_dump.mts` 는 도구 레지스트리가 끌어오는 `.css` 때문에 tsx 단독으로 못 돈다(2026-10-06 main 기준) — `--import ./tiledata/jp-city/refs/css-stub.mjs` 로 돌린다(`bake_refs.py --dump` 에 반영).
 
+### 조사 반영 (2026-10-06 둘째 판)
+- **간판 가나 섞기**: 한자만 쓴 간판 23개를 やおや·さかな·お肉·フラワー·ブックス·くすり·洗たく·ラーメン·いざかや·喫茶ルナ·とこや·すし·めし処·だんご·だがし·酒のヤマ·サイクル·住まい·ヘアー·やま医院·さくら園·いちば·カラオケ 로 바꿨다(한자만이면 중국으로 읽힌다 — 조사 README 2절). 칸 번호는 덧붙이기라 옛 간판 칸도 시트에 남는다.
+- **셔터 가게**: `catalog.py` 의 `_shut(src, paper, sign)` 이 가게 앞(shopopen/shopglass)을 `shop_parts.shutter`(골판 셔터, `paper` = 「テナント募集」 종이)로 바꾼 변형 `*_shut` 8종 + 빈 점포 `shop_vacant`. 셔터 가게는 **출입구가 없다**(`access` 빈 목록). 줄 키트 `row-shutter-a/b` 는 영업 가게 사이에 셔터 1~2칸을 섞은 것(빈 점포율 13.6%).
+- **동네 거점**: `landmark_parts.py`(세탁기 줄·새전함·방울 줄·금줄·시계·기둥) + `coin_laundry` · `machikoba_home`(町工場, 1층 셔터+2층 주거) · `station_small`(작은 지상 역사) · `school`(3층 교사, 층 38px) · `school_gym` · `shrine_haiden`(拝殿) · `gas_office`.
+
 ### 한계
 정면 하나(옆·뒷면 없음) · 간판 일본어 고정 · 마당·담·주차장은 키트 밖 · 실내 맵 없음 · 같은 줄에서 높이가 다른 지붕을 붙이면 오른쪽 처마 칸이 왼쪽 처마를 덮는다.
+
+## 손 도트 거리 시설 60종 (블록 `street_hand`, `BLOCK_ORDER` 다섯째) — 2026-10-06
+
+조사의 「일본」 신호를 키트로 그린 것. 그림·굽기 `scripts/content/jp-city/blocks/street_hand.py`(`@prop(id, 이름, w, h, solid, other, tags, rules)` → 키트 `jp-<id>`, 그룹 `jp:hand-marking`). 칸 6926(블록 고유 383칸).
+- 전봇대 `jp-pole`(3×10, 변압기·완목·노란 지선 커버) · `jp-pole-guy` · `jp-pole-wood`(3×9). 전선 `jp-wire-5`~`jp-wire-20`(폭 L−3 × 3): **왼쪽 전봇대 키트 x + 3, 맨 위 줄 y 에 4층**. 세로 `jp-wire-v6/8/10`.
+- 노면(2층 투명 덧그림, `pc=flat`): `jp-mark-edge-{n,s,w,e}`(側溝 + 路側帯 흰 선) · `-grate` · `jp-mark-line-*` · `jp-mark-30`(2×4 주황) · `jp-mark-lockplate`(코인 주차 잠금판).
+- 담·문: `jp-bwall-{plain,sukashi,end-l,end-r}` · 펜스 얹은 `jp-bwallf-*`(1×2) · `jp-gatepost`(표찰·인터폰·우편함, 1×1) · `jp-gate` · `jp-carport`(4×3) · `jp-tsukigime`(月極 표지).
+- 생활·길가: `jp-propane` · `jp-ac-unit` · `jp-pots` · `jp-monohoshi` · `jp-keijiban` · `jp-gomi-box` · `jp-jizo` · `jp-mirror2`(주황 커브미러) · `jp-hydrant-sign` · `jp-bus-stop`. 거점: `jp-torii` · `jp-gas-canopy` · `jp-school-gate`.
+- `ai.role` 은 enum(`building castle fence roof terrain water wall prop`) 안이어야 한다(`bake_lib.py` 검사) — 전선·표시는 `prop`, 담·문은 `wall`.
+- **층 규칙**: 전봇대·전선은 건물 앞에 서므로 4층(3층에 찍으면 건물 칸을 지운다 — 참고문서 `upper-overwritten`). 엔진 통행은 4→1층 순으로 빈칸·★ 를 건너뛰므로 4층 ★ 가 3층 막힘 칸을 풀지 않는다.
+
+## 동네 한 장 예제 (`scripts/content/jp-city/maps/town.mjs`) — 2026-10-06
+
+96×80칸. 선로·철망 → 역 앞 줄(交番·역 앞 상가 줄·작은 역사·편의점·코인 주차·우체국·의원) → 판석 광장·간선(횡단보도·버스·택시) → 상점가 북쪽 줄(셔터 섞인 줄 키트·입구 아치 둘)·판석 길(노보리·입간판·화분·자전거) → 銭湯·코인 세탁소·町工場·슈퍼 → 생활도로 → 주택가(블록 담·문기둥·카포트·프로판) → 생활도로 → 신사(拝殿·도리이·手水舎·참배길)·小学校(교사·체육관·운동장)·공원.
+- 층: 1층 바닥 · 2층 노면 표시 · 3층 건물·소품 · 4층 전봇대·전선(+차를 밑에 둔 카포트).
+- 전봇대 자리는 `poleRow` 가 고른다: 기둥 열이 덮는 건물 칸(기물 0.6) + 완목 열 ×0.3 + `0.02·(L−12)²` 을 최소로 하는 동적 계획(간격 L = 전선 키트가 있는 5~20칸, 교차로 열·다른 4층 칸 제외).
+- 꾸밈 소품은 `tryPut` 으로 빈 자리에만(문·접근칸·길 제외, 실패는 건너뛰고 셈). `TOWN_DEBUG=1` 이면 건너뛴 이유를 찍는다.
+- 검사(생성기 안): 문 46곳 접근칸 도달 · 막힘 칸 전부 엔진이 막음 · 3/4층 겹침 0 · 오토타일(생활도로·선로·철망) 마스크 어긋남 0 · 빈칸 창(17×13) 최댓값. `--publish` 가 장소(`jp-city-town-96x80`, `jpCityPlaceReferences.ts` + `regionReferences/jp-city-town.json` + `public/assets/region-references/jp-city-town.*`)를 쓴다. 로더 항목은 `regionReferenceSnapshots.ts`.
+- 그림: `python3 scripts/content/jp-city/maps/render.py scripts/content/jp-city/maps/out/town.map.json town` → `verify-shots/jp-city/town-1x.png`·`town-x3.png`. 편집기 증거 `verify-shots/jp-city/editor-town-full.png`(새 맵에 `stamp_layer_block` 4층으로 옮겨 찍고 원본과 4층 모두 일치).
 
 ## 실제 거리 조사 (2026-10-06)
 
 `tiledata/jp-city/research/` — 상점가·역 앞·요코초 / 주택가 생활도로·가로 시설 / 건물 유형별 치수 / 도트 게임 선례 웹 조사 4편(출처 URL)과 요약 `README.md`(축척 1칸≈0.9~1m, 「일본」 신호 우선순위·흔한 실수, 블록 구성, 현재 번들 대조, 다음 작업 순서). 새 건물·소품·거리 키트를 그리기 전에 먼저 읽는다.
 
-## AI 참고문서 (7용도 · 52쪽 · 그림 137장)
+## AI 참고문서 (8용도 · 55쪽 · 그림 147장)
 
-계약 `tiledata/AI-REFERENCE-CONTRACT.md` 8항목을 모두 채운 번들 소유 참고문서다. 범위는 **지금 있는 부품만**(오토타일 17세트 · `build_jp_city_building` · 도로 키트 29 · 상가 키트: 레시피 25·문 9·소품 142)이고, 주택가·역·공원·신사 구역은 그림이 없어 「후속 추가 자리」 한 줄뿐이다.
+계약 `tiledata/AI-REFERENCE-CONTRACT.md` 8항목을 모두 채운 번들 소유 참고문서다. 범위는 **지금 있는 부품만**(오토타일 17세트 · `build_jp_city_building` · 도로 키트 29 · 상가 키트: 레시피 25·문 9·소품 142 · 손 도트 건물 77 · 손 도트 거리 시설 60)이다. 공원은 전용 키트 없이 소품(나무·놀이기구·벤치)으로 짓는다.
 
 | 용도 id | 쪽 | 그림 | 내용 |
 |---|---|---|---|
@@ -216,7 +240,8 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 | `jp-building` | 11 | 42 | 도구 사용법·부품 사전·완성 예제 25(전체 배열·그림)·변조 B1~B11 |
 | `jp-road` | 7 | 12 | 키트 사전 29 · 팔 오프셋 공식·정답 조립·오토타일 이음 한계 · 오류 3건 |
 | `jp-shop` | 5 | 15 | 레시피·문·소품 사전(칸 번호 전체) · 문 앞 접근칸·오류 3건 |
-| `jp-buildings-hand` | 5 | 12 | 손 도트 건물 59종(단품 53·상점가 줄 6) 쓰는 법·통행·줄지어 세우기 · 분류별 사전(칸 번호 전체·도달) · 정답 조립 3(상점가 단품·주택가·벽 맞댄 줄 키트) · 오류 2(`door-access-blocked`·`wall-overwritten`) |
+| `jp-buildings-hand` | 5 | 13 | 손 도트 건물 77종(단품 69·상점가 줄 8, 셔터 가게는 출입구 없음) 쓰는 법·통행·줄지어 세우기 · 분류별 사전(칸 번호 전체·도달) · 정답 조립 3(상점가 단품·주택가·벽 맞댄 줄 키트) · 오류 2(`door-access-blocked`·`wall-overwritten`) |
+| `jp-street-hand` | 3 | 9 | 손 도트 거리 시설 60종: 층(전봇대·전선 4층·노면 2층)·전봇대/전선 공식(전선 x = 전봇대 x + 3)·생활도로 노면·집 앞 담 · 사전(칸 번호 전체·`layer`·`rules`) · 정답 조립 1(전체 1~4층 배열) · 오류 3(`upper-overwritten`·`pole-arm-overwritten`·`door-access-blocked`) · 엔진 실측 `engine_dump.mts` 의 `streetHand` |
 | `jp-errors` | 3 | 1 | 코드 → 문서·그림 지도 · 변조 좌표 전체표 · 엔진 판정 대 정의 층 설명 정정(전/후) |
 
 ### 굽는 법 (한 줄)
@@ -232,4 +257,4 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 층 정정(2026-10-03, **정의 정정 완료**): 그룹 `defaultLayer` 와 엔진 칸 홈이 어긋난 칸이 있었다(투명 덧그림 5그룹 74칸 = 그룹 lower·엔진 upper, 소품·육교 8그룹의 아래층 칸 103개 = 그룹 upper·엔진 lower). **엔진이 정본**이다 — 엔진은 커스텀 타일셋의 칸 홈을 칸 단위(`tileLayerHome`: 잠긴 칸의 `defaultLayer`, 아니면 `priority`)로만 정하고 그룹 `defaultLayer` 는 홈 판정에 안 쓴다(칸 쪽 값은 처음부터 엔진과 일치). 그래서 굽기 `bake_lib.derive_group_layer` 가 **그룹 층을 멤버 칸 홈에서 유도**한다(전부 위 `upper`·전부 아래 `lower`·섞이면 `mixed`+`layerHome: perCell`) — 투명 덧그림 5그룹 → `upper`, 소품 7그룹(`street` `green` `gate` `shrine` `stairs` `storefront` `play`)·`underpass-footbridge` → `mixed`. 정의 검사 `group-layer-vs-tile-home` 가 일치를 굽기마다 지키고, `engine_dump.mts` 가 엔진 함수로 다시 잰다(어긋남 0). 칸 번호·시트 PNG·`pins.json`·칸 `priority`/`passability` 는 불변. **동작 변화 하나**: 위층 그룹은 `fill_region` 재료가 아니므로(`tileVocabulary.isFlatFillGroup`) 투명 덧그림 5그룹의 `fill_region`(예: `layer:"2"` 로 깔던 경로)은 이제 `material-not-found` 로 거부되고 `paint_tiles` layer "2" 만 남는다(그룹 `placementRules` 에 적어 둠). 이미 만든 프로젝트의 사본은 형태 서명이 그룹 층을 안 봐 갱신되지 않는다(새 프로젝트부터; 칠하는 결과는 칸 홈이 정하므로 같다).
 - 계단 54칸(`star` + stair·계단·사다리 태그)은 정정 대상이 아니다 — 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`). 처음 어긋남으로 센 것은 덤프의 기대값 오류였고 `engine_dump.mts` 가 이 규칙을 안다.
 - 한계(문서에 명시): 도로 키트 칸(3616~)은 오토타일 멤버가 아니라 이음새에서 끊긴다 · 예제 3개(`machiya_izakaya` `L_machiya_annex` `L_flats_lot`)는 도구가 `DECO_CLASH` 로 거부한다 · `stamp_layer_block` 은 3층 오토타일을 재성형하지 않는다 · 투명 덧그림을 layer "1"·"3" 로 칠하면 도구가 3층으로 돌려 놓고 재성형하지 않는다.
-- 주택가·역·공원·신사 구역이 들어오면 `bake_refs.py` 에 용도·문서를 덧붙이고 이 표를 갱신한다.
+- 새 블록·키트 계열을 더하면 `bake_refs.py` 에 용도·문서를 덧붙이고 이 표를 갱신한다. `finalize` 가 **모든 키트가 문서에 나왔는지** 단언하므로 문서 없이 키트만 더하면 굽기가 실패한다(키트 id 접두로 계열을 가르는 정규식은 `jp-prop-` 처럼 **하이픈까지** 써야 한다 — `jp-prop` 만 쓰면 `jp-propane` 이 빠진다).
