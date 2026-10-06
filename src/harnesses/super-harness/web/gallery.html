@@ -256,6 +256,7 @@ function outputHtml(item, out) {
   const stale = Date.now()/1000-out.updated > 35;
   const images = [...out.images].sort((a,b)=>(a.kind==='기획도')-(b.kind==='기획도')).slice(0,4);
   return `${stale?'<p class="live-offline">산출물 확인이 지연되었습니다. 아래는 마지막 확인 결과입니다.</p>':''}
+    ${out.runtimePreview?`<div class="choice-notice"><a class="header-link" href="${esc(out.runtimePreview.url)}" target="_blank" rel="noopener">▶ ${esc(out.runtimePreview.label)}</a><p>${esc(out.runtimePreview.note)}</p><small>${out.runtimePreview.checks.map(esc).join(' · ')}</small></div>`:''}
     <h4>${count.spaces?'실제 타일로 조립한 최신 초안':'지금까지 나온 그림'}</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
     ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
     <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)} · 크게 보기 ↗</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>

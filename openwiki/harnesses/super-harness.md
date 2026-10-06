@@ -1000,3 +1000,10 @@ charset-actor의 `chr.pack_single_actor`가 72×128 원본을 288×256 RM2000 �
 `art_layout.build_input`은 실행 요청의 picks 폴더에 있는 picks.sqlite/WAL/SHM을 sources로 받지 않는다.
 새 도면에서만 선택 DB 참조를 제거하고 독립 검수를 다시 받는다. 후보 실행 DB·주문서·그림 해시는
 계속 확인하며 과거 승인 해시를 고치거나 선택 기록을 삭제하지 않는다. 해시 오류에는 원본 경로도 표시한다.
+
+### 실행 가능한 초안 노출 (2026-10-06)
+
+개념 폴더 runtime-preview.json은 url, project {path,sha256}, note, checks를 갖는다.
+space_progress는 DATA 내부 프로젝트 파일의 현재 해시와 HTTP(S) 주소를 확인한 경우에만
+공간 카드에 플레이 초안 링크를 표시한다. 초안 실행은 시각 합격·공용 등록·정본 저장 진행률을 올리지 않는다.
+플레이어 전용 진입으로 열며, 벽 수정·외부 계단 미연결 등 남은 문제는 링크 옆에도 표시한다.

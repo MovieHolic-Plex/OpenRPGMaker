@@ -154,6 +154,24 @@ def collected(cid):
     return [], None
 
 
+def runtime_preview(folder):
+    """An executable draft is visible progress, never a quality/save approval."""
+    from urllib.parse import urlsplit
+    info = sh.read_json(folder / 'runtime-preview.json', {}) or {}
+    try:
+        url = urlsplit(info['url'])
+        if url.scheme not in ('http', 'https') or url.username or url.password or not url.hostname:
+            return None
+        artifact = local(Path(sh.DATA), info['project']['path'])
+        if gates.digest(artifact) != info['project']['sha256']:
+            return None
+        return dict(url=info['url'], label='플레이 초안 열기',
+                    note=str(info.get('note', '완성 검수·정본 저장 전 초안입니다.')),
+                    checks=list(info.get('checks', [])), draft=True)
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
 def describe(c, item):
     cid, folder = c['id'], Path(sh.cdir(c['id']))
     plan = gates.planning_report(folder, approved=False)
@@ -207,7 +225,7 @@ def describe(c, item):
         imageNote=image_note,
         native=progress['counts'], nativeAvailable=progress['available'], nativeOutputAgeSeconds=progress['outputAgeSeconds'],
         layoutVerdict=fresh_verdict, missing=[g.get('what') or g.get('id') for g in gaps][:12], missingCount=len(gaps),
-        actorActions=actor_progress.snapshot(sh.DATA, cid),
+        actorActions=actor_progress.snapshot(sh.DATA, cid), runtimePreview=runtime_preview(folder),
         events=activity.events(cid), updated=time.time())
 
 
