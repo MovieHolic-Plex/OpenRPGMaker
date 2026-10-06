@@ -109,6 +109,9 @@ def prepare(data, cid):
                     description='같은 전용 인물의 걷기와 행동 포즈입니다. 공간 접합 검수 전입니다.',
                     candidates=[dict(id='native',title=actor['title'],passed=True,nativeHarness='charset-actor',
                         nativeSheets=actor['sheets'],sheet=actor['sheets'][0],sources=[receipt_ref,*actor['sources']],
+                        actorFrames=dict(walkSize=actor['frame'],walkAnchor=actor.get('walkAnchor',[12,31]),
+                            actionSize=actor['actionFrame'],actions=[dict(f,rect=f.get('rect',
+                                [i*actor['actionFrame'][0],0,*actor['actionFrame']])) for i,f in enumerate(actor['actions'])]),
                         images=[dict(actor['preview'],label='걷기 12프레임'),dict(actor['sheets'][1],label='직접 저작 행동 포즈')],
                         summary='기술 검사 통과 · 공간 시각 검수 전',reasons=[],repairFixes=[],
                         caution='사람의 Allow나 실제 공간의 접촉 검수를 뜻하지 않습니다.')]))

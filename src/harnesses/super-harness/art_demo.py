@@ -107,6 +107,8 @@ def accept(data, cid, result):
         recipes = demo.get('recipes', [])
         if not 1 <= len(recipes) <= 4: raise ValueError('전체 공간 및 필요한 문 상태의 조립 배치표가 필요합니다.')
         previews = []
+        actor_uses = {c['nativeSheets'][1]['sha256']: set() for c in selected
+                      if c.get('nativeHarness') == 'charset-actor'}
         for index, recipe_ref in enumerate(recipes):
             path = choices.verified(root, recipe_ref); recipe = choices.read(path)
             # New pixels, flattened context screenshots, and swapped candidates are not source tiles.
@@ -126,7 +128,23 @@ def accept(data, cid, result):
                         raise ValueError('데모는 실제 후보와 검증된 기존 아틀라스만 사용할 수 있습니다.')
             dest = root / inputs['outputDirectory'] / f'demo-{number}-{index}.png'
             refs.extend(compose(root, recipe, dest, required_images)); refs.append(recipe_ref)
+            # Walking alone cannot demonstrate the commissioned actor action.
+            # Require a complete frame crop, not one token pixel from its sheet.
+            for c in selected:
+                if c.get('nativeHarness') != 'charset-actor': continue
+                walking, action = c['nativeSheets']
+                frames = c['actorFrames']
+                for op in recipe['placements']:
+                    source = recipe['sources'][op['source']]['sha256']
+                    rect = op['rect']
+                    if (source == walking['sha256'] and rect[2:] == frames['walkSize']
+                            and rect[0] % frames['walkSize'][0] == 0 and rect[1] % frames['walkSize'][1] == 0):
+                        actor_uses[action['sha256']].add('walk')
+                    if source == action['sha256'] and any(rect == f['rect'] for f in frames['actions']):
+                        actor_uses[action['sha256']].add('action')
             previews.append(choices.ref(root, dest, recipe.get('label') or '실제 타일 공간 데모'))
+        if any(uses != {'walk', 'action'} for uses in actor_uses.values()):
+            raise ValueError('전용 인물마다 걷기/정지와 행동을 실제 공간의 별도 상태로 보여야 합니다. 전체 프레임 원본을 사용하세요.')
         passed = all(c['passed'] for c in selected)
         candidates.append(dict(id=f'demo-{number}', title=demo.get('title') or f'공간 데모 {number}',
             passed=passed, summary='데모 조립 완료 · 독립 검수 대기',
