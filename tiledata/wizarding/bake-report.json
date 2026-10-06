@@ -1,0 +1,50 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 320,
+  "kits_checked": 168,
+  "groups_checked": 8,
+  "autotiles_checked": 0
+ },
+ "reassembly": {
+  "kits": 168,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 320,
+  "rows": 7,
+  "sheetPx": [
+   768,
+   112
+  ],
+  "strips": 14,
+  "kits": 168,
+  "groups": 8,
+  "autotiles": 0
+ },
+ "adopted": {
+  "pieces": 168,
+  "autotiles": 0,
+  "characters": 5
+ },
+ "by_module": {
+  "native": {
+   "adopted": 168,
+   "total": 168
+  }
+ },
+ "rejected": [],
+ "load_errors": {},
+ "charsets": {
+  "sheets": 1,
+  "characters": 5
+ },
+ "examples": [],
+ "reassembly_from_files": 0
+}

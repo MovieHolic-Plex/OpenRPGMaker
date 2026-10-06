@@ -1,11 +1,10 @@
 너는 해리포터풍 공용 타일셋 `wizarding_world` 의 손 도트 작업자다. 저장소(워크트리)는 `/home/main/z-project/rpg-zzu-hp-assets` 이고 모든 명령은 거기서 절대경로로 실행한다.
 
-먼저 `scripts/content/wizarding/CONTRACT.md` 를 끝까지 읽고, 0절 자료를 실제로 연다:
-- 승인된 같은 화풍 native 조각 `tiledata/wizarding/native/**/*.png`(최소 마법약 작업대·가마솥·석벽·지팡이 카운터·문·걷기 시트 몇 장은 Read 로 확대해 본다)
-- 콘셉트 그림 `~/.local/share/oprn/super-harness/keyword-seeds/3e7ac64c5cf1d943e08a/theme/concept-art/799b64d9f4821fa5a33d44bc3133108d458b2d9d45933d7facd1c2485a5ecb63.png`
-- 기획 `brief.json`(같은 theme 폴더)의 artDirection 과 네 담당 family/space 항목
-- 스킬 `~/.claude/skills/pixel-object-authoring/SKILL.md` 와 `refs/rejected/*.png` 몇 장(사용자가 반려한 이유)
-- `scripts/content/wizarding/wzlib.py`, `pieces/_example.py`
+**읽기 예산(지키지 않으면 컨텍스트가 넘쳐 작업이 죽는다 — 앞선 작업자 7명이 이렇게 죽었다):**
+- 텍스트: `scripts/content/wizarding/CONTRACT.md`, `scripts/content/wizarding/pieces/_example.py`, `wzlib.py` 는 `grep -n "def \|^RAMPS\|^    '" wzlib.py` 로 API·램프 이름만 본다(통째로 읽지 말 것). brief.json·SKILL.md 는 열지 않는다(필요한 규칙은 CONTRACT 1절에 요약돼 있다).
+- 그림: `tiledata/wizarding/style/style-ref.png`(승인 native 조각 3배 모음 — 이 화풍에 맞춘다) 1장 + 네 공간에 해당하는 콘셉트 1장(`tiledata/wizarding/style/concept-potions-classroom.png` · `concept-forest-carriage.png` · `concept-snow-postoffice.png` 중, 성 실내면 potions-classroom). **`tiledata/wizarding/native/` 의 개별 PNG 를 여러 장 Read 하지 말 것**(필요하면 python 으로 잘라 한 장으로 합쳐 본다). `tiledata/wizarding/review/native*.png` 는 열지 말 것.
+- 한 번에 Read 하는 그림은 1~2장, 긴 변 1400px 이하. 검수 시트는 `review/<모듈>.png`, `<모듈>-p2.png` … 쪽으로 나뉜다 — 한 쪽씩 본다. 확대가 더 필요하면 python 으로 해당 조각만 잘라 8배로 저장해 본다.
+- 셸 출력은 `| tail -40` 처럼 줄인다.
 
 규칙:
 - 네 파일은 `scripts/content/wizarding/pieces/{MODULE}.py` 하나(필요하면 같은 폴더에 `_{MODULE}_*.py` 보조 파일 허용). 그 밖에는 `tiledata/wizarding/review/{MODULE}*` 만 쓴다. wzlib.py 를 고치지 말고, 도구가 부족하면 네 모듈 안에 함수로 만든다.

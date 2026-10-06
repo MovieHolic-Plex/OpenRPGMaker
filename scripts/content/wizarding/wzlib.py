@@ -457,6 +457,12 @@ def check_img(img):
 
 def check_piece(p):
     errs = []
+    seen = set()
+    for f in range(p['frames']):
+        im = render_piece(p, f).img()
+        for y in range(p['h']):
+            for x in range(p['w']):
+                if np.asarray(im)[y * T:(y + 1) * T, x * T:(x + 1) * T, 3].any(): seen.add((x, y))
     for f in range(p['frames']):
         im = render_piece(p, f).img()
         errs += ['f%d %s' % (f, e) for e in check_img(im)]
@@ -464,8 +470,9 @@ def check_piece(p):
             for x in range(p['w']):
                 cell = np.asarray(im)[y * T:(y + 1) * T, x * T:(x + 1) * T]
                 ch = p['walk'][y][x]; empty = not cell[:, :, 3].any(); full = (cell[:, :, 3] == 255).all()
-                if ch == '.' and not empty: errs.append(f'f{f} 칸({x},{y}) walk "." 인데 그림이 있다')
-                if ch != '.' and empty: errs.append(f'f{f} 칸({x},{y}) walk "{ch}" 인데 비었다')
+                if ch == '.' and not empty and p['frames'] == 1: errs.append(f'f{f} 칸({x},{y}) walk "." 인데 그림이 있다')
+                if ch != '.' and empty and (p['frames'] == 1 or (x, y) not in seen): errs.append(f'f{f} 칸({x},{y}) walk "{ch}" 인데 비었다')
+                if ch == '.' and p['frames'] > 1 and (x, y) in seen: errs.append(f'f{f} 칸({x},{y}) 다른 프레임에 그림이 있는데 walk "."')
                 if ch in 'FX' and not full: errs.append(f'f{f} 칸({x},{y}) 땅(F/X)은 불투명이어야 한다 → f/S/C 로')
     return errs
 
@@ -513,39 +520,49 @@ def review_sheet(module, out_path=None, zoom=4, bg=(52, 51, 56, 255)):
         cards.append((a['id'], a['name'] + ' (오토타일 무작위 맵)', [demo], None))
     for ch in REG.characters.values():
         cards.append((ch['id'], ch['name'], [render_character(ch).img()], None))
-    W = 1600
-    rows, x, y, rh = [], 8, 8, 0
-    pos = []
-    for cid, name, frames, p in cards:
+    W, PAGE_H = 1400, 1300
+    pages, x, y, rh = [[]], 8, 8, 0
+    for card in cards:
+        cid, name, frames, p = card
         fw = sum(f.width * zoom + 6 for f in frames) + (actor.width * zoom + 8 if actor and p else 0)
         fw = max(fw, 7 * min(60, len(cid) + len(name) + 1))
         fh = max(f.height for f in frames) * zoom + 22
+        z = zoom
+        if fw > W - 16:   # 너무 큰 조각은 배율을 낮춘다
+            z = max(1, (W - 16) * zoom // fw); fw = fw * z // zoom; fh = (fh - 22) * z // zoom + 22
         if x + fw > W: x = 8; y += rh + 10; rh = 0
-        pos.append((x, y)); x += fw + 14; rh = max(rh, fh)
-    H = y + rh + 8
-    nat_h = max([n.height for n in natives] + [0]) * zoom + 30
-    S = Image.new('RGBA', (W, H + nat_h), bg)
-    d = ImageDraw.Draw(S)
-    for (cid, name, frames, p), (px, py) in zip(cards, pos):
-        d.text((px, py), f'{cid} {name}'[:60], fill=(230, 230, 230, 255), font=font)
-        xx = px
-        for f in frames:
-            z = f.resize((f.width * zoom, f.height * zoom), Image.NEAREST)
-            S.alpha_composite(z, (xx, py + 14))
-            if p:   # 칸 격자
-                for gx in range(0, f.width + 1, T): d.line([(xx + gx * zoom, py + 14), (xx + gx * zoom, py + 14 + f.height * zoom)], fill=(255, 255, 255, 40))
-                for gy in range(0, f.height + 1, T): d.line([(xx, py + 14 + gy * zoom), (xx + f.width * zoom, py + 14 + gy * zoom)], fill=(255, 255, 255, 40))
-            xx += f.width * zoom + 6
-        if actor and p:
-            S.alpha_composite(actor.resize((actor.width * zoom, actor.height * zoom), Image.NEAREST), (xx + 2, py + 14 + max(0, frames[0].height * zoom - actor.height * zoom)))
-    xx = 8
-    d.text((8, H), '비교: 승인된 native 조각(같은 화풍이어야 한다)', fill=(230, 230, 230, 255), font=font)
-    for n in natives:
-        S.alpha_composite(n.resize((n.width * zoom, n.height * zoom), Image.NEAREST), (xx, H + 16)); xx += n.width * zoom + 10
+        if y + fh > PAGE_H and pages[-1]: pages.append([]); x, y, rh = 8, 8, 0
+        pages[-1].append((card, (x, y), z)); x += fw + 14; rh = max(rh, fh)
     out_path = out_path or os.path.join(TD, 'review', f'{module}.png')
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    S.save(out_path)
-    return out_path
+    stem = out_path[:-4]
+    import glob as _g
+    for old in _g.glob(stem + '-p*.png'): os.remove(old)
+    for pi, page in enumerate(pages):
+        H = max(py + max(f.height for f in c[2]) * z + 30 for c, (px, py), z in page) if page else 40
+        last = pi == len(pages) - 1
+        nat_h = (max([n.height for n in natives] + [0]) * 3 + 30) if last else 0
+        S = Image.new('RGBA', (W, H + nat_h), bg)
+        d = ImageDraw.Draw(S)
+        for (cid, name, frames, p), (px, py), z in page:
+            d.text((px, py), f'{cid} {name}'[:60], fill=(230, 230, 230, 255), font=font)
+            xx = px
+            for f in frames:
+                zi = f.resize((f.width * z, f.height * z), Image.NEAREST)
+                S.alpha_composite(zi, (xx, py + 14))
+                if p:
+                    for gx in range(0, f.width + 1, T): d.line([(xx + gx * z, py + 14), (xx + gx * z, py + 14 + f.height * z)], fill=(255, 255, 255, 40))
+                    for gy in range(0, f.height + 1, T): d.line([(xx, py + 14 + gy * z), (xx + f.width * z, py + 14 + gy * z)], fill=(255, 255, 255, 40))
+                xx += f.width * z + 6
+            if actor and p:
+                S.alpha_composite(actor.resize((actor.width * z, actor.height * z), Image.NEAREST), (xx + 2, py + 14 + max(0, frames[0].height * z - actor.height * z)))
+        if last:
+            xx = 8
+            d.text((8, H), '비교: 승인된 native 조각(같은 화풍이어야 한다)', fill=(230, 230, 230, 255), font=font)
+            for n in natives:
+                S.alpha_composite(n.resize((n.width * 3, n.height * 3), Image.NEAREST), (xx, H + 16)); xx += n.width * 3 + 10
+        S.save(out_path if pi == 0 else f'{stem}-p{pi + 1}.png')
+    return out_path + (f' (+{len(pages) - 1}쪽: {os.path.basename(stem)}-p2.png …)' if len(pages) > 1 else '')
 
 
 def _autotile_demo(tiles, n=10, seed=7):

@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "sheets": 1,
+ "characters": [
+  {
+   "id": "wz-chr-elder-wandmaker",
+   "name": "노년 지팡이 장인",
+   "space": "wandshop",
+   "spaceName": "다이애건 앨리 지팡이 가게",
+   "desc": "노년 지팡이 장인 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 0,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-trial-student",
+   "name": "지팡이 시험 학생",
+   "space": "wandshop",
+   "spaceName": "다이애건 앨리 지팡이 가게",
+   "desc": "지팡이 시험 학생 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 1,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-master",
+   "name": "마법약 교사",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 교사 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 2,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-student",
+   "name": "마법약 학생",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 학생 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 3,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-assistant",
+   "name": "마법약 조교",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 조교 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 4,
+   "source": "native"
+  }
+ ]
+}
