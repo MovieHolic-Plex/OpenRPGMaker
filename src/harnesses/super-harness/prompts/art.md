@@ -156,3 +156,15 @@ interior-props `data/seed.json`의 `reviewDependencies`에 소품 id별 `[{"item
 실제 주문 round/letter에 맞춰 지정하고 seed 및 `src/harnesses/interior-props/review_dependencies.py`를 layout.sources에 묶는다.
 받침의 실제 PNG가 기계·독립검수 PASS인 뒤 소품 검수가 시작된다. 빈 v5.png를 받침으로 사용하지 않는다.
 후보가 여러 개면 임의 자동선택하지 말고 이번 검수에 쓸 후보를 계약에 명시한다. 이미 완성된 받침도 실제 PNG·해시를 근거에 연결한다.
+
+## 부품 검수와 전체 장면 검수의 순서
+전용 부품 제작은 병렬이므로 아직 제작되지 않은 다른 부품과 최종 네 상태 장면을
+개별 품목의 native PASS 선행 조건으로 요구하지 않는다. reviewTemplate는 현재 품목의
+실제 PNG/필수 슬롯, 시점·비례·접합·반복 이음과 그 품목에 필요한 작은 실제 조립 표본을 검사한다.
+벽의 연속 이음, 문의 실제 개구폭/평행성, 수납 띠와 사람의 국소 접근은 실제 표본으로 확인한다.
+해당 국소 표본이 없으면 그 표본 생성/검수 작업으로 돌리고 그림을 이유 없이 다시 그리지 않는다.
+모든 부품/인물의 보존, 방 전체 네 상태, 전체 동선·명암·공간 정체성은 art-demo 조립 후
+art-context-review에서 필수로 확인한다. 이를 native 부품 PASS에 끌어와 순환 대기를 만들지 않는다.
+전체 검수 의무는 layout/completionRepairs에 보존하며 최종 공간 PASS 전에 해소한다.
+기존 FAIL 판정이나 원본을 덮어 PASS로 바꾸지 않는다. 새로 승인받은 검수 입력과 범위로
+별도 검수 영수증을 남기고, 실제 픽셀 결함이 없는 품목은 원본을 보존한다.
