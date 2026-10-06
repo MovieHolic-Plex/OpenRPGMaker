@@ -13,10 +13,11 @@ export function configureMonsterPresentation(project: Project): { defaultOpening
   project.system.menuUiStyle = 'field-list';
   project.meta.oprnFieldMenu = collectorFieldMenu();
   project.meta.oprnShopPreset = 'collector';
+  const hud = project.system.fieldHud;
   project.system.fieldHud = {
-    ...project.system.fieldHud,
     theme: 'collector', font: 'pixel', menuStyle: 'project',
-    vitals: false, hideEmpty: true,
+    clock: hud?.clock ?? false, vitals: false, tools: hud?.tools ?? false, objective: hud?.objective ?? false, hideEmpty: true,
+    ...(hud?.widgets ? { widgets: hud.widgets } : {}),
   };
   const opening = project.system.opening;
   const defaultOpening = opening?.scenes.length === BUILTIN_OPENING_TEXTS.length

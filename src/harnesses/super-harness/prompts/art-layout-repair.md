@@ -99,3 +99,37 @@ interior-props `data/seed.json`의 `reviewDependencies`에 소품 id별 `[{"item
 실제 주문 round/letter에 맞춰 지정하고 seed 및 `src/harnesses/interior-props/review_dependencies.py`를 layout.sources에 묶는다.
 받침의 실제 PNG가 기계·독립검수 PASS인 뒤 소품 검수가 시작된다. 빈 v5.png를 받침으로 사용하지 않는다.
 후보가 여러 개면 임의 자동선택하지 말고 이번 검수에 쓸 후보를 계약에 명시한다. 이미 완성된 받침도 실제 PNG·해시를 근거에 연결한다.
+# 교체된 부품의 보존과 실제 사용
+현재 공간에서 더 이상 사용하지 않는 옛 부품도 PNG/영수증은 보존한다. 새 부품을 만들 때 네이티브
+품목 이름이 달라졌다면 전체 데모가 두 품목을 모두 강제로 사용하지 않도록 layout.componentReplacements에
+[{"from":"기존 art-choices 그룹 ID","to":"새 native 품목 그룹 ID","requirement":"동일한 기획 재료 ID","reason":"교체 이유와 보존할 역할"}]를 명시한다.
+현재 수집 전에는 to가 새 네이티브 품목 ID여야 한다. 새 부품이 그 재료의 필수 기능을 전부 대체하는
+경우만 쓰며, 기존 가마솥/후드와 새 배기 지지대처럼 역할을 나눠 사용하는 품목은 함께 보존한다.
+이 명세는 새 도면 독립 검수에 포함한다. 감독은 이전 납품과 새 coverage가 같은 재료인지 확인한다.
+예전 문을 수집 자료로 보존하기 위해 승인 도면에 없는 문을 방 안에 덧붙이지 않는다.
+
+## 부품 검수와 전체 장면 검수의 순서
+전용 부품 제작은 병렬이므로 아직 제작되지 않은 다른 부품과 최종 네 상태 장면을
+개별 품목의 native PASS 선행 조건으로 요구하지 않는다. reviewTemplate는 현재 품목의
+실제 PNG/필수 슬롯, 시점·비례·접합·반복 이음과 그 품목에 필요한 작은 실제 조립 표본을 검사한다.
+벽의 연속 이음, 문의 실제 개구폭/평행성, 수납 띠와 사람의 국소 접근은 실제 표본으로 확인한다.
+해당 국소 표본이 없으면 그 표본 생성/검수 작업으로 돌리고 그림을 이유 없이 다시 그리지 않는다.
+모든 부품/인물의 보존, 방 전체 네 상태, 전체 동선·명암·공간 정체성은 art-demo 조립 후
+art-context-review에서 필수로 확인한다. 이를 native 부품 PASS에 끌어와 순환 대기를 만들지 않는다.
+전체 검수 의무는 layout/completionRepairs에 보존하며 최종 공간 PASS 전에 해소한다.
+기존 FAIL 판정이나 원본을 덮어 PASS로 바꾸지 않는다. 새로 승인받은 검수 입력과 범위로
+별도 검수 영수증을 남기고, 실제 픽셀 결함이 없는 품목은 원본을 보존한다.
+
+## 같은 품목을 부분 수정할 때 원본 보존
+새 후보가 이전 후보의 일부만 바꾸면 보존할 나머지 조각을 누락시키지 않는다.
+layout.preservedSources에 {path,sha256,requirement,reason}를 기록하고 layout.sources에도 같은 원본을 묶는다.
+requirement는 기존 themeCoverage의 재료 ID, reason은 보존할 부분과 배치 사유다.
+원본은 동일 테마 art-batches의 native 영수증 candidateImages와 themeCoverage 양쪽에서 확인돼야 한다.
+예: 양옆 낮은 선반을 새로 그려도 기존 북쪽 선반 crop은 보존 원본으로 명시한다.
+도면 독립 승인 이후에만 사용 가능하다. 실행 중인 승인 도면을 직접 수정하지 않는다.
+
+## 전체 공간 수정의 범위 유지
+이전 반려 대상이 space-demo이면 시점 결함도 phase=scene 안에서 고친다.
+교체된 옛 부품을 각각 다시 승인받는 calibration으로 되돌아가지 않는다.
+이름이 달라진 교체 부품은 componentReplacements로 연결하고, 보존할 일부 원본은 preservedSources로 명시한다.
+도면을 새로 승인받은 뒤 현재 전체 공간 데모와 독립 검수를 다시 제출한다.

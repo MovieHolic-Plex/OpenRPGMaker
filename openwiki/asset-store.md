@@ -19,7 +19,7 @@
 - 편집기는 **Electron 앱만** 쓴다. 웹 편집기와 팀 호스트 브라우저에는 「데스크톱 앱에서 열 수 있습니다」라고만 보인다.
 - **운영: https://store.openrpgmaker.com (2026-10-06 가동, seogo).** 앱의 기본 주소이므로 따로 바꿀 것 없이 바로 보인다.
   절차·위치·운영자 링크는 `store-server/deploy/README.md`를 따른다.
-  Google 로그인은 아직 꺼져 있어 일반 사용자는 둘러보기·받기만 할 수 있다.
+  Google 로그인이 켜져 있다(2026-10-06, state 쿠키 + PKCE S256 + 확인된 이메일만).
 - 스테이징은 테일스케일 안의 http://mdc-server:18320 이다
   (`store-server/scripts/install-staging.sh`, systemd --user `oprn-store-staging`).
 
@@ -112,7 +112,7 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
 
 ```bash
 npm --prefix store-server run build                 # dist/server.mjs, dist/local.mjs
-npm --prefix store-server test                      # 서버 통합 11건 (임시 Postgres 클러스터)
+npm --prefix store-server test                      # 서버 통합 12건 (가짜 Google 이 PKCE 를 검사한다) (임시 Postgres 클러스터)
 node store-server/scripts/typecheck.mjs             # 이 패키지 파일 오류만
 npx vitest run test/assetStorePack.test.ts test/assetStoreClient.test.ts test/titleLicenseNotice.test.ts  # 팩 형식·주소 규칙·크레딧 창 18건
 # 실제 앱 e2e — 사전 빌드: npm run build:app && npm run build:electron

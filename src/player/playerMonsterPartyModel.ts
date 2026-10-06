@@ -11,14 +11,14 @@ export function usesMonsterParty(project: Project): boolean {
 }
 
 export function monsterTypeLabel(project: Project, types: readonly string[] | undefined): string {
-  return (types ?? []).map(id => project.database.elements.find(element => element.id === id)?.name ?? id).join(" / ") || "미분류";
+  return (types ?? []).map(id => (project.database.elements ?? []).find(element => element.id === id)?.name ?? id).join(" / ") || "미분류";
 }
 
 /** Localize authored '<element id> 타입' tokens without changing arbitrary prose. */
 export function monsterMoveDescription(project: Project, description: string | undefined): string | undefined {
   if (!description) return description;
   return description.replace(/([^\s/·]+)(\s+타입)/g, (token, id: string, suffix: string) => {
-    const element = project.database.elements.find(record => record.id === id);
+    const element = (project.database.elements ?? []).find(record => record.id === id);
     return element ? element.name + suffix : token;
   });
 }

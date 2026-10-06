@@ -138,6 +138,11 @@ export function ensureSharedContent(project: Project): boolean {
       if(!id.startsWith('shared_')) continue;
       if(!jsonEqual(project.tilesets[id],t)&&!isMergedKitForm(project.tilesets[id],t)){project.tilesets[id]=structuredClone(t);changed=true;}
     }
+    for(const[id,sprite]of Object.entries(lib.sprites ?? {})) {
+      if(!id.startsWith('shared_') || sprite.id !== id) continue;
+      if(sprite.image.type === 'uploaded' && !lib.assets[sprite.image.id]) continue;
+      if(!jsonEqual(project.assets.sprites[id],sprite)){project.assets.sprites[id]=structuredClone(sprite);changed=true;}
+    }
     for(const[id,a]of Object.entries(lib.assets)) {
       if(!id.startsWith('shared_')) continue;
       const current=project.assets.uploaded[id];

@@ -90,12 +90,24 @@ describe("OPRN asset store server", () => {
   let blobDir: string;
   let storeConfig: ReturnType<typeof loadConfig>;
   let fakeGoogle: Server;
+  let googleChallenge = "";
 
   before(async () => {
     pg = await startPostgres();
     blobDir = mkdtempSync(join(tmpdir(), "oprn-store-blobs-"));
     fakeGoogle = createServer((req, res) => {
-      if (req.url === "/token") { res.writeHead(200, { "content-type": "application/json" }); res.end(JSON.stringify({ access_token: "fake-access" })); return; }
+      if (req.url === "/token") {
+        // 실제 Google 처럼 PKCE 를 확인한다: code_verifier 의 S256 이 인가 단계 code_challenge 와 같아야 토큰을 준다.
+        let body = "";
+        req.on("data", (chunk) => { body += chunk; });
+        req.on("end", () => {
+          const verifier = new URLSearchParams(body).get("code_verifier") ?? "";
+          const ok = verifier.length >= 43 && createHash("sha256").update(verifier).digest("base64url") === googleChallenge;
+          res.writeHead(ok ? 200 : 400, { "content-type": "application/json" });
+          res.end(JSON.stringify(ok ? { access_token: "fake-access" } : { error: "invalid_grant" }));
+        });
+        return;
+      }
       if (req.url === "/userinfo" && req.headers.authorization === "Bearer fake-access") {
         res.writeHead(200, { "content-type": "application/json" });
         res.end(JSON.stringify({ email: "boss@openrpgmaker.com", email_verified: true, name: "운영자", sub: "google-sub-1" }));
@@ -147,7 +159,10 @@ describe("OPRN asset store server", () => {
     const browser = new Client(base);
     const start = await browser.fetch("/auth/google?next=/me");
     assert.equal(start.status, 303);
-    const state = new URL(start.headers.get("location")!).searchParams.get("state")!;
+    const authorize = new URL(start.headers.get("location")!).searchParams;
+    const state = authorize.get("state")!;
+    assert.equal(authorize.get("code_challenge_method"), "S256");
+    googleChallenge = authorize.get("code_challenge")!;
     const callback = await browser.fetch(`/auth/google/callback?code=abc&state=${state}`);
     assert.equal(callback.status, 303);
     assert.equal(callback.headers.get("location"), "/me");

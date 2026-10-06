@@ -5,7 +5,6 @@ import type { Project, CinematicSequence } from './types';
  * A legacy client's intentional scene edit invalidates that restoration, rather than being overwritten.
  */
 export type CinematicWireCapsule = { version: 1; entries: { target: string; authored: CinematicSequence; fallback: CinematicSequence }[]; monsterCampaign?: Project['system']['monsterCampaign'] };
-const KEY = 'oprnCinematicTimelines';
 function stable(v: unknown): string { return JSON.stringify(v, (_k, x) => x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.keys(x).sort().map(k => [k, x[k]])) : x); }
 function slots(p: Project): { target: string; sequence: CinematicSequence | undefined; set: (s: CinematicSequence) => void }[] {
   return [

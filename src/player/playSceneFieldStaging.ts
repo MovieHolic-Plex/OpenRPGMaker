@@ -1,3 +1,4 @@
+import { characterBaseOrigin } from "./characterOrigin";
 import type Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
@@ -277,13 +278,14 @@ function lookTargets(scene: PlaySceneContext): Array<[Phaser.GameObjects.Sprite,
 function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, raw: SpriteLook | undefined, now: number): void {
   const look = raw ? normalizeSpriteLook(raw) : undefined;
   const state = applied.get(sprite);
+  const baseOrigin = characterBaseOrigin(sprite);
   if (isEmptySpriteLook(look)) {
     if (!state) return;
-    // 풀기 — 맵 동기화가 쓰는 기본값(원점 0.5,1 · 정비율 · 회전 0)으로 되돌린다.
+    // 풀기 — 맵 동기화가 쓰는 기본값(저작 발 기준점 · 정비율 · 회전 0)으로 되돌린다.
     sprite.clearTint();
     sprite.setFlipX(false);
     sprite.setAngle(0);
-    sprite.setOrigin(0.5, 1);
+    sprite.setOrigin(baseOrigin.x, baseOrigin.y);
     sprite.setScale(sprite.scaleX);
     sprite.setAlpha(state.alpha);
     applied.delete(sprite);
@@ -299,14 +301,15 @@ function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, r
   } else sprite.clearTint();
   sprite.setFlipX(definite.flip === true);
   const pose = definite.pose ? POSE_ORIGIN[definite.pose] : { x: 0.5, y: 1, angle: 0 };
-  let originY = pose.y;
+  const fallen = definite.pose === "fallen" || definite.pose === "fallenLeft";
+  let originY = fallen ? pose.y : baseOrigin.y;
   if (definite.pose === "float") {
     // 위로 3~7px 오르내림. 원점으로 올리므로 걷기 트윈의 y 와 다투지 않는다.
     const height = Math.max(1, sprite.height);
     const lift = (5 + 2 * Math.sin(now / 420)) * runtimeMapWorldScale(scene) / Math.max(0.0001, sprite.scaleY || 1);
-    originY = 1 + lift / height;
+    originY = baseOrigin.y + lift / height;
   }
-  sprite.setOrigin(pose.x, originY);
+  sprite.setOrigin(fallen ? pose.x : baseOrigin.x, originY);
   sprite.setAngle(pose.angle + (definite.angle ?? 0));
   sprite.setScale(sprite.scaleX, definite.pose === "crouch" ? sprite.scaleX * 0.75 : sprite.scaleX);
   sprite.setAlpha(definite.alpha ?? current.alpha);

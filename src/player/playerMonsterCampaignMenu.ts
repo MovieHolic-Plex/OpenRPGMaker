@@ -157,7 +157,7 @@ export function buildCampaignRegionMap(project: Project, session: PlaySession, c
   const adjacency = new Map<string, Set<string>>();
   for (const map of Object.values(project.maps)) {
     const targets = new Set<string>();
-    transferTargets(map.events.map((event) => event.pages.map((page) => page.commands)), targets);
+    transferTargets(map.events.map((event) => (event.pages ?? []).map((page) => page.commands)), targets);
     adjacency.set(map.id, targets);
   }
   const regionIds = new Set(campaign.locations.map((location) => location.mapId));

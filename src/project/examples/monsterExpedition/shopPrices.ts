@@ -3,5 +3,5 @@ import type {Project} from '@/project/types';
 export function repairExpeditionShopPrices(project:Project):void {
  const item=project.database.items.find(item=>item.id==='item_capture_orb');
  const row=project.system.sellPrices?.find(row=>row.itemId==='item_capture_orb');
- if(item?.price===80&&row?.price===0)row.price=40;
+ if(item?.price===80&&row?.price===0){const prices=project.system.sellPrices!;const i=prices.findIndex(entry=>entry.itemId==='item_capture_orb');if(i>=0)prices[i]={...prices[i]!,price:40};}
 }

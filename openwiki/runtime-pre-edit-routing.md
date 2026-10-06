@@ -813,6 +813,18 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 `scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
 공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.
 
+## 자유 크기 인물 프레임의 발 기준점 (2026-10-06)
+
+`SpriteDef.anchor?: {x,y}`는 프레임 안의 원본 픽셀 좌표다. 생략하면 기존 하단 중앙이다.
+48×40 행동 프레임의 `{x:24,y:31}`을 보존하여 발 아래 도구 픽셀을 자르거나 그림 전체를
+9px 위로 밀지 않는다. 로드 검사는 유한 값·양수 프레임·프레임 안 좌표를 확인한다.
+`eventSpriteResources`는 정규화 원점으로 변환하고, 이벤트 생성/재사용·편집기 표시·
+조수 지도 이미지가 같은 원점을 쓴다. `characterOrigin`의 별도 기준점 위에 체공량을
+더하며 착지/모습 효과 해제 때 저작 기준점으로 돌아온다. 넘어짐은 기존 명시적 포즈
+원점을 사용한다. 접지 worldY와 depth/통행 좌표를 옮기지 않는다.
+회귀 사례는 `test/spriteFrameAnchor.test.ts`에 추가했으며 이 작업에서 테스트 실행은
+요청되지 않아 실행하지 않았다. 실제 테마 프로젝트 설치/플레이 확인은 별도 완료 조건이다.
+
 ## Independent opening timelines
 
 See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant tools, shared renderer, poses, audio, preview evidence, and entry timing; [opening-reference-study.md](opening-reference-study.md) holds source-qualified research.
@@ -822,3 +834,8 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - `terrainLandingRecovery.ts` recovers only a player footprint whose originally passable authored floor was made solid by `session.mapOverrides`. Completed `changeTile` events call it once after all commands; save restoration calls it after session reconciliation. Vehicles, explicit through routes, intentional authored wall starts, and still-passable enclosed rooms are preserved. Candidate floors are local (radius 8), respect active blocking events and footprint passage, and need an exit. Device flags and changed tiles are never undone. No safe candidate means no relocation. Correct device authoring still keeps the operator outside its changed cells; the campaign pivot is now (8,17).
 - `showBattleAdmissionError` marks only `BATTLE_MONSTER_PARTY_EMPTY` overlays as recoverable. Restoring a real party refresh clears that marked error; unrelated errors persist. Applying a new loaded session clears the prior session's transient overlay. Event, wild, field-spawn, and scheduled battles share this presentation.
 - Scene simulation intentionally does not use terrain recovery. It must expose an unsafe authored operator position; shipping recovery and corrected authoring are separate safeguards.
+
+이동 경로의 그래픽 교체·동료 생성/재사용에도 같은 기준점을 적용한다. 주인공은 기존에
+지원하는 288×256 업로드 charset을 사용하며, upload id와 같은 SpriteDef에 발 기준점을
+기록하면 생성/자원 변경/세션 복원에 반영한다. 다른 키의 upload alias 또는 자유 크기
+행동 시트가 주인공 걷기 자원이 되는 기능은 포함하지 않는다.

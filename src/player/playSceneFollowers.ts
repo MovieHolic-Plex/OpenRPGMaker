@@ -1,3 +1,4 @@
+import { setCharacterBaseOrigin } from "./characterOrigin";
 import { mapTileSize } from "@/project/tileGeometry";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
@@ -96,7 +97,7 @@ export function syncFollowerSprites(
       : position;
     const texture = resolveEventSpriteTexture(project, spriteRef.id, position.follower.graphic.pattern);
     const direction = position.direction ?? position.follower.graphic.direction ?? "down";
-    const charsetFrame = texture && isFollowerCharsetTexture(texture.texture) && typeof texture.frame === "number"
+    const charsetFrame = texture && (texture.charset || isFollowerCharsetTexture(texture.texture)) && typeof texture.frame === "number"
       ? texture.frame
       : undefined;
     const frame = charsetFrame !== undefined ? charsetIdleFrameIndex(charsetFrame, direction) : numericFollowerFrame(texture?.frame);
@@ -126,6 +127,8 @@ export function syncFollowerSprites(
     // 같은 캐릭터로 보이지 않는다. 자동 배율은 현재 맵에서 다시 계산한다.
     sprite.setScale(eventSpriteScale(texture, sprite, position.follower.graphic.scale, mapTileSize(scene.map), position.follower.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterSizeFactor(scene.map)));
     sprite.setFrame(frame);
+    setCharacterBaseOrigin(sprite, texture?.origin);
+    placeCharacterSprite(sprite, "same");
   }
   for (const key of [...scene.followerSprites.keys()]) {
     if (!expected.has(key)) destroyFollowerSprite(scene, key);

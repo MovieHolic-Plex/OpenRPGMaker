@@ -10,7 +10,9 @@
 좁고 기능적인 실제 공간: 벽/경계/출입/목적 기물/보행 길과 접합을 포함한다. 주차장/교실/묘역/감옥의 실제 용도가 읽혀야 한다.
 기존 native context/scene 조립 함수와 계약을 참고하여 좌표를 얻되, 최종 제출은 아래 결정적 배치표다.
 새 픽셀을 그리거나 새 이미지 생성/타일 변형/확대축소하지 않는다. 원본 타일을 잘라 좌표에 alpha composite만 한다.
-반드시 모든 품목의 실제 candidate.sheet PNG를 데모에 사용한다. 다른 후보/이전 판/완성 스크린샷을 원본 타일로 쓰지 않는다.
+반드시 모든 품목의 실제 candidate.sheet PNG를 데모에 사용한다. 다른 후보/이전 판/완성 스크린샷을 임의로 원본 타일로 쓰지 않는다.
+예외는 INPUT.preservedSources에 명시된 승인 보존 조각이다. 각 원본의 보존 부분을 도면에 따라 모든 상태에 배치한다.
+이 목록은 기존 영수증과 도면 승인을 검증한 결과이며, 같은 품목의 새 후보에 없는 북쪽 선반 등을 보존한다.
 부족한 바닥·벽은 layout.sources의 실제 아틀라스 또는 git에 저장된 원형 assets/public/assets PNG만 사용한다.
 
 출력 폴더는 INPUT.outputDirectory. 그림이 아닌 recipe JSON을 준비한다:
@@ -22,7 +24,10 @@ canvas 16px 단위 64~2048px. rect는 원본의 x,y,w,h, at은 장면의 x,y. �
 
 {{OUTPUT}}에:
 {"fingerprint":"INPUT.fingerprint 그대로","demos":[{"title":"실제 공간 예시","components":{"원본 그룹 id":"그 그룹의 후보 id"},"recipes":[{"path":"recipe 상대 경로","sha256":"..."}]}]}
-components는 모든 원본 그룹을 포함한다. 데모 1~3개. json 저장 후 원본 참조/해시/좌표를 확인한다.
+components는 INPUT.requiredGroups의 모든 그룹을 포함한다(필드가 없으면 모든 원본 그룹).
+INPUT.retiredComponents는 승인된 같은 재료의 교체 기록이다. 그 옛 부품은 원본/영수증으로 보존하며,
+화면에 억지로 배치하지 않는다. 예를 들어 새 E/W 문이 정면 문을 대체했다면 옛 문을 북벽에 추가하지 않는다.
+임의로 그룹을 생략하거나 교체 명세를 수정하지 않는다. 데모 1~3개. 원본 참조/해시/좌표를 확인한다.
 
 타일 배치 전 현재 타일셋 참고문서/조립 계약을 확인한다. 원본 칩과 실제 데모 PNG를 직접 열어 확인한다.
 감독 renderer: `python3 {{RENDERER}} ROOT RECIPE DEST`

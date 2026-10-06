@@ -1,3 +1,4 @@
+import { setCharacterBaseOrigin } from "./characterOrigin";
 import { syncTerrainVision } from "./terrainVision";
 import { syncTerrainWater } from "./terrainWater";
 import { prepareFieldAbility } from "@/player/fieldAbility";
@@ -300,6 +301,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       this.playerSprite.texture,
       this.playerSprite.idleFrameFor("down")
     );
+    setCharacterBaseOrigin(this.player, this.playerSprite.origin);
     placeCharacterSprite(this.player, "same");
     syncPlayerCharacterScale(this);
     installReliefSpriteLift(this);
@@ -503,10 +505,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     clearRecoveredMonsterPartyError(this);
     const nextPlayerSprite = resolvePlayerSpriteResource(project, this.session);
-    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId || this.playerSprite.characterIndex !== nextPlayerSprite.characterIndex) {
+    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId || this.playerSprite.characterIndex !== nextPlayerSprite.characterIndex
+      || this.playerSprite.origin?.x !== nextPlayerSprite.origin?.x || this.playerSprite.origin?.y !== nextPlayerSprite.origin?.y) {
       this.playerSprite = nextPlayerSprite;
       this.player.setTexture(this.playerSprite.texture);
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));
+      setCharacterBaseOrigin(this.player, this.playerSprite.origin);
+      placeCharacterSprite(this.player, "same");
     }
     refreshSceneRuntimeSurfaces(this);
     syncPlayerCharacterScale(this);
@@ -683,6 +688,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       footprintSpriteX(this.tileX, resolvePlayerBody(project, this.session).footprint, mapTileSize(this.map)),
       characterSpriteY(this.tileY, mapTileSize(this.map))
     );
+    setCharacterBaseOrigin(this.player, this.playerSprite.origin);
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();

@@ -148,6 +148,18 @@ def sheet_rgba(pal, frames) -> Image.Image:
     return im
 
 
+def pack_single_actor(sprite: Image.Image) -> Image.Image:
+    """Lossless RM2000 slot-zero pack; preserve the native direction/frame order."""
+    sprite = sprite.convert('RGBA')
+    if sprite.size != (72, 128):
+        raise ValueError('Native actor sheet must be 72x128')
+    sheet = Image.new('RGBA', (288, 256), (0, 0, 0, 0))
+    sheet.paste(sprite, (0, 0))
+    if sheet.crop((0, 0, 72, 128)).tobytes() != sprite.tobytes():
+        raise ValueError('Native actor pixels changed while packing')
+    return sheet
+
+
 def sheet_keyed(pal, frames) -> Image.Image:
     """RM2000 CharSet 블록(72×128, 배경 키 색)."""
     bg = Image.new('RGBA', (FW * 3, FH * 4), KEY + (255,))

@@ -155,11 +155,12 @@ button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-off
 <header>
   <h1>슈퍼하네스</h1>
   <span id="line">불러오는 중…</span>
+  <a class="header-link" href="#keyword-seeds">새 키워드·세계관 기획</a>
 <details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
 </header>
+<section id="live-board" aria-label="공간별 제작 진행"><h2>공간별 진행을 확인하고 있습니다…</h2></section>
 <section id="keyword-seeds" aria-label="키워드로 공간 만들기"></section>
 <p id="seed-filter-label" class="seed-filter-label" hidden></p>
-<section id="live-board" aria-label="공간별 제작 진행"><h2>공간별 진행을 확인하고 있습니다…</h2></section>
 <section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
 <details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
 <div class="tabs" id="tabs"></div>
@@ -255,14 +256,15 @@ function outputHtml(item, out) {
   const stale = Date.now()/1000-out.updated > 35;
   const images = [...out.images].sort((a,b)=>(a.kind==='기획도')-(b.kind==='기획도')).slice(0,4);
   return `${stale?'<p class="live-offline">산출물 확인이 지연되었습니다. 아래는 마지막 확인 결과입니다.</p>':''}
+    <h4>${count.spaces?'실제 타일로 조립한 최신 초안':'지금까지 나온 그림'}</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
+    ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
+    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)} · 크게 보기 ↗</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
     <div class="live-meter"><span>산출물·검수 확인 ${out.completed}/${out.total}</span><b>${out.percent}%</b></div>
     <progress max="100" value="${out.percent}" aria-label="산출물·검수 확인률"></progress>
     <ul class="live-checks">${out.milestones.map(m=>`<li class="${m.done?'complete':''}">${m.done?'✓':'○'} ${esc(m.label)}</li>`).join('')}</ul>
     <p class="subtle">시간 기준 진행률은 아닙니다. 현재 근거가 확인된 공정 수이며 재수정 시 낮아질 수 있습니다.</p>
-    <h4>지금까지 나온 그림</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
-    ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
-    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)} · 크게 보기 ↗</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
     ${out.nativeAvailable?`<p class="subtle">최근 준비된 후보 큐 · ${Object.entries(out.native).map(([k,n])=>esc(({queued:'대기',running:'제작 중',drawing:'제작 중',reviewing:'검수 중',done:'처리 완료',failed:'실행 실패'})[k]||k)+' '+n).join(' · ')}<br>후보 처리 완료는 품질 합격과 다릅니다.</p>`:''}
+    ${(out.actorActions||[]).map(a=>`<div class="progress-job"><b>인물 동작 · ${esc(a.actor)} · ${esc(a.phase)}</b><p>그림 출력 ${a.rendered}/${a.total}프레임${a.attempt?' · 시도 '+a.attempt:''}${a.outputAgeSeconds!=null?' · 마지막 출력 '+duration(a.outputAgeSeconds)+' 전':''}</p>${a.model?`<p>모델 ${esc(a.model)}</p>`:''}<p>프레임 출력은 공간 검수 합격과 다릅니다.</p></div>`).join('')}
     ${out.missingCount?`<details data-live-section="materials"><summary>부족한 재료 ${out.missingCount}종</summary><ul>${out.missing.map(m=>`<li>${esc(m)}</li>`).join('')}</ul></details>`:''}`;
 }
 function paintLiveBoard() {
@@ -287,9 +289,9 @@ function paintLiveBoard() {
     const events=out?.events?.slice(0,3)||[];
     el.innerHTML=`<header><h3>${esc(item.title)}</h3><span class="live-phase">${esc(item.label)}</span></header>
       <p class="doing">${esc(out?.task||item.note||item.label)}</p>
+      ${outputHtml(item,out)}
       ${item.jobs.map(j=>jobHtml(j.kind==='art-native' && out?.nativeOutputAgeSeconds!=null?{...j,outputAgeSeconds:Math.min(j.outputAgeSeconds??Infinity,out.nativeOutputAgeSeconds),outputLabel:'하위 제작 포함 마지막 출력'}:j)).join('')}
       ${(!item.jobs.length||item.waitKind==='provider-backoff')?`<p class="live-problem">${esc(item.reason||item.note)}</p>`:''}
-      ${outputHtml(item,out)}
       ${out?.layoutVerdict?`<p class="subtle">최근 제작 전 도면 검수: ${out.layoutVerdict==='PASS'?'통과':out.layoutVerdict==='FAIL'?'반려 · 수정 필요':esc(out.layoutVerdict)}</p>`:''}
       ${item.reasons.length?`<p class="live-problem">최근 반려 기록: ${esc(reasons[0].slice(0,150))}${reasons[0].length>150?'…':''}</p><details data-live-section="reasons"><summary>반려 근거 ${item.reasons.length}건 보기</summary><ul>${item.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>`:''}
       <h4>최근 바뀐 점</h4>${events.length?events.map(e=>`<p class="live-event">${esc(e.at.slice(11))} · ${esc(e.text)}</p>`).join(''):'<p class="subtle">처리 기록 확인 중…</p>'}

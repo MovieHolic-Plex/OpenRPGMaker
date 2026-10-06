@@ -1,3 +1,4 @@
+import { characterBaseOrigin } from "./characterOrigin";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot, type RuntimeActionReceipt, type RuntimeDomOverlay } from "@/player/runtimeDom";
@@ -738,12 +739,12 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
 
 /**
  * 원점 채널에 실린 체공 높이를 되읽는다. `applyCharacterLift` 의 역함수 —
- * originY = 1 + lift/(height×scaleY) 이므로 lift = (originY − 1) × height × scaleY 다.
+ * originY = baseOriginY + lift/(height×scaleY). 기본 발 기준점과 임시 체공을 분리한다.
  */
 function spriteLiftPx(sprite: Phaser.GameObjects.Sprite): number {
   const denominator = sprite.height * sprite.scaleY;
   if (!Number.isFinite(denominator)) return 0;
-  return Math.max(0, Math.round((sprite.originY - 1) * denominator));
+  return Math.max(0, Math.round((sprite.originY - characterBaseOrigin(sprite).y) * denominator));
 }
 
 function isSpriteDebugScene(scene: Phaser.Scene): scene is SpriteDebugScene {

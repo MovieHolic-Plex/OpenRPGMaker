@@ -5,6 +5,157 @@
 
 <!-- releases -->
 
+## 0.148.0 — 2026-10-06
+
+### 기능
+
+- prepare lossless native actor assets for playable space demos (`3dee886`)
+
+### 수정
+
+- retain full scene scope when repairing completed space demos (`926bf84`)
+- preserve approved partial assets and validate native brief paths (`dba898d`)
+- retain native frame definitions in shared content libraries (`139d55c`)
+- preserve player native charset anchors across session changes (`e356481`)
+- keep native component review independent of later scene assembly (`d55f8a5`)
+- retain native anchors on route swaps and followers (`cd186e0`)
+- preserve authored frame anchors for native action sprites (`a135cd5`)
+
+## 0.147.0 — 2026-10-06
+
+### 기능
+
+- **asset-store** — 운영 Google 로그인 — PKCE(S256) 추가, 자격 증명 적용·검증 절차 기록 (#2237) (`11c41eb`)
+- **monster** — keep new campaigns on the bright monster kit and give it its own family (`dfd5433`)
+- adopt approved field monster, Emerald UI and music into campaign (`5d63e57`)
+- add standalone field monster UI and music review harness (`6b3c913`)
+- author distinct professor ranger and captain walking variants (`c1456eb`)
+- redesign merchant silhouette and add original-to-revision walk comparison (`f83727c`)
+- extract portable Pokemon-like character authoring and review harness (`12d8965`)
+- create full template-derived walking cast and reusable review collection (`db07142`)
+- support verified character template edits and comparative review (`075571e`)
+- author Naru NPC pixel grids and four-direction walking review (`0cd82ec`)
+- add native NPC candidate harness with persistent user Allow and Deny (`68ffa0e`)
+- preserve generated clip rows with common source raster sampling (`1a2e338`)
+- gate native trainer portraits through motion harness lifecycle (`b459c15`)
+- add standalone native pokemon motion quality probe (`8c1ec42`)
+- import generated opening clips through motion harness lifecycle (`83924fb`)
+- add pokemon character motion harness with provenance and strict gates (`e5bdd5b`)
+- animate authored professor poses within confirm opening pages (`7a15e33`)
+- preserve generated monster candidates and document verified art repair (`ec51fe6`)
+- replace schematic NPC art with generated walking and battle views (`68b010c`)
+- show authored Emerald trainer portraits during battle introduction (`1050ca3`)
+- animate Emerald opening atmosphere with authored title effects and quiet cues (`0fd3ff6`)
+- refine all original monster sprites and add native party icons (`126df64`)
+- evaluate ordinary monster game requests through actual Pi routing (`be1159d`)
+- adopt native Emerald atlases while preserving authored tile layers (`006eca4`)
+- add Emerald battle dialogue and monster menu surfaces (`e65fc86`)
+- ship seven native Emerald monster tile variants and assembly references (`2a934ea`)
+- replace stock fantasy people with original Emerald field cast (`182a88c`)
+- provide original pixel title art and compact Emerald title menu (`1e1b1af`)
+- produce complete Emerald monster games through the editor assistant (`1f6f6d5`)
+- add Emerald shop quantity and confirmation workflow (`26d4047`)
+- use the Emerald profile in every fresh monster campaign (`cba45db`)
+- restore reusable monster campaign generator and bundled tile definitions (`1f44565`)
+- author shared pixel professor introductions for Emerald monster games (`5589097`)
+- define reusable Emerald monster production profile and evidence contract (`763b458`)
+- require a fresh system review before assistant completion (`6b16773`)
+- author collector menus original WAV scores and narrative openings (`839003b`)
+- add monster expedition journal and campaign menus (`13ad0c4`)
+- give opening assistant independent animatic timelines and researched references (`a20ef87`)
+
+### 수정
+
+- HUD 필수 값·파티 칸 속성·마을 체육관 키를 타입에 맞춘다 (`9b4c103`)
+- show assembled space drafts before concept planning (`49b3ca6`)
+- 테마 장부 병합이 깨뜨린 타입을 맞춘다 (`640e590`)
+- recover completed materials and retire replaced demo components (`fdf87ee`)
+- expose parallel native actor action progress in spaces (`8e34778`)
+- **assistant** — replacing an untouched blank map is not map loss (`c7206d1`)
+- **assistant** — let build_monster_game place its curated cast and point retired chipset refusals at same-family sheets (`fee0380`)
+- **assistant** — keep monster-kit maps out of the PAW-only modern gate (`c83a42a`)
+- adopt template NPCs and replace portal arrows with natural entrances (`6a42c94`)
+- shorten merchant scarf tail and remove dark back stripe (`fa1c807`)
+- use distinct NPC bodies and reject shared-body casting candidates (`0df3072`)
+- adopt original Brendan walking pixels with per-pose fidelity gate (`edec4e7`)
+- rebuild hero silhouette and alternate native walking poses (`f7363fd`)
+- refine hero face cap backpack and walking footwear (`879ec6a`)
+- redraw native hero against actual Pokemon character chipsets (`714960c`)
+- refine one native hero through hostile GIF quality review (`107a0c6`)
+- redraw Emerald characters with native Python pixels (`e73a08e`)
+- enforce native Emerald sprite dimensions and ship reviewed motion (`a4d9458`)
+- compare torso area in one idle-relative canonical band (`1cccae8`)
+- fit shared raster scale to anchored source extents (`4fdb2a4`)
+- measure stable skull roots and register motion comparisons (`a798e59`)
+- separate Emerald native sprite dimensions from editor containers (`1065b21`)
+- render native emerald trainer portraits at uniform scale (`5153be2`)
+- preserve character frame coherence during source sampling (`f6bc217`)
+- revise monster candidates and preserve paired atlas extraction (`ad56b5b`)
+- preserve alpha sprite foreground and support reviewed import grid (`121f147`)
+- show actual monster EXP progress on battle victory (`e5e40f0`)
+- preserve transparent pixels and consistent block size when extracting generated sprites (`69648a7`)
+- preserve script MIME types in compiled shop QA (`5645032`)
+- ship implicit monster battle backdrops and observe compiled shop (`080918a`)
+- target an existing map in whole-game AI change receipts (`c897013`)
+- apply current bundled effect migration to campaign exports (`7c3ee5c`)
+- keep Emerald detail pages still during menu transitions (`b761e0e`)
+- contain Emerald victory rewards in the handheld stage (`975fb21`)
+- isolate Emerald shop map and complete pending trade rows (`3dabbef`)
+- preserve canonical campaign data during Emerald art adoption (`c3a8d66`)
+- refresh shared monster artwork and preserve integer battle sprite scaling (`7feca11`)
+- align astralhart battle anatomy with quadruped title stag (`2323592`)
+- restore authored ice and arrow tile sliding in current runtime (`804629a`)
+- retain indirect Emerald party icon resources in game exports (`281513a`)
+- resolve native atlas catalog integration and restore slide rule lookup (`8ff3fb3`)
+- inherit authored camera zoom when a saved follow state omits zoom (`c4386d3`)
+- retain authored pixel animation resources in existing monster games (`dfe764e`)
+- accept legacy monster types and require unique introduction pages (`7c13e3d`)
+- record native presentation QA and canonical publication evidence (`a8757c9`)
+- keep collector item descriptions visible on compact screens (`b934fb7`)
+- distinguish rival and key NPC appearances from the professor (`3184d82`)
+- expose actual shop prices and verify native opening controls (`8d8bf16`)
+- author readable openings collector shops and safe resident patrols (`360c65c`)
+- obtain headless bridge credentials without mounting the editor (`a45a62b`)
+- review actual animatic illustrations text and audio references (`0266e05`)
+- return real ID candidates for empty exact database lookups (`2766e99`)
+- resolve empty read filters and expose actual opening actor identity (`e7b607a`)
+- retain widescreen panel proportions in storybook framing (`291832b`)
+- handle empty optional fields from structured assistant calls (`83f6318`)
+- retain scene session lookup on menu back navigation (`4f03985`)
+- keep actor equipment out of collector bags (`6861323`)
+- select the first authored menu entry on initial open (`7dcd0a4`)
+- preserve authored maps during nonspatial system tools (`dc110b4`)
+- keep score hashing within synchronous tool transactions (`6100618`)
+- accept structured preset menu calls and report effective skin (`51ef091`)
+- show live monster party across common menus and shop previews (`6296033`)
+- dogfood collector authoring and recover terrain-blocked saves (`f0bcf45`)
+- target party monsters with field medicine and restore move PP (`8f24e2d`)
+- preserve animatic timelines through older project hosts (`fe98332`)
+- preserve title music across cursor redraws with attract openings (`27d962d`)
+- preserve authored monster campaign in assistant preview loads (`e81d914`)
+- register monster campaign textures in assistant preview (`a5dd919`)
+- keep Korean opening captions together and maintain tool budget metadata (`52e93ce`)
+- make Pi opening production generate, inspect and verify real shots (`de6ccc2`)
+
+### 성능
+
+- **persistence** — share field pieces between save text and roundtrip projection (`5aa77a1`)
+
+### 문서
+
+- record Emerald AI production canonical saves and native player QA (`4e4f5e9`)
+
+### 테스트
+
+- record the current opening tool family and the unavailable-generator contract (`562db00`)
+- verify generated clip raster coherence and negative controls (`91c2f31`)
+- distinguish torso band rounding from actual body drift (`0bb25d4`)
+- cover common anchored fit without bypassing gait checks (`eea1c05`)
+- guard motion registration against hair tips and two-pixel jumps (`f967d21`)
+- verify Emerald native sprite contracts and source raster controls (`1c3a9d6`)
+- replay real monster game output through native Pi client application (`ed57d49`)
+- record native Continue of genuine predecessor monster saves (`c7e07f2`)
+
 ## 0.146.1 — 2026-10-06
 
 ### 수정

@@ -25,6 +25,8 @@ export interface SharedContentLibrary {
   places: Record<string, PlaceDesign>;
   tilesets: Record<string, TilesetDef>;
   assets: Project['assets']['uploaded'];
+  /** Frame geometry and ground anchors travel with shared native image assets. */
+  sprites?: Project['assets']['sprites'];
   /** Full authored source is retained, including events, alongside reusable raster kits. */
   maps: Record<string, GameMap>;
   sourceProjectId: string;

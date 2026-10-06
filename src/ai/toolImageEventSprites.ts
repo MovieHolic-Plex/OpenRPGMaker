@@ -1,3 +1,4 @@
+import { spriteFrameOrigin, type SpriteFrameOrigin } from "@/project/spriteFrameAnchor";
 import { uploadedSpriteFrame } from "@/project/uploadedSpriteGeometry";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -33,11 +34,13 @@ export type RegionEventSprite = {
   readonly imageUrl: string;
   readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
-  /** Destination top-left in region canvas pixels (origin feet at bottom-center). */
+  /** Destination top-left in region canvas pixels (origin at authored ground anchor). */
   readonly destX: number;
   readonly destY: number;
   readonly destW: number;
   readonly destH: number;
+  readonly groundX?: number;
+  readonly groundY?: number;
 };
 
 export type RegionEventSpritesResult =
@@ -47,6 +50,7 @@ export type RegionEventSpritesResult =
 type RegionBox = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
 type ClaimedPageVisual = {
+  readonly origin?: SpriteFrameOrigin;
   readonly imageUrl: string;
   readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
@@ -77,7 +81,8 @@ export function resolveRegionEventSprites(
   sprites.sort((a, b) => {
     const priority = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority];
     if (priority !== 0) return priority;
-    return a.destY - b.destY || a.destX - b.destX || a.eventId.localeCompare(b.eventId);
+    return (a.groundY ?? a.destY + a.destH) - (b.groundY ?? b.destY + b.destH)
+      || (a.groundX ?? a.destX) - (b.groundX ?? b.destX) || a.eventId.localeCompare(b.eventId);
   });
   return { ok: true, sprites };
 }
@@ -134,10 +139,12 @@ function resolveEventSprite(
       imageUrl: visual.imageUrl,
       preserveAlpha: visual.preserveAlpha,
       frame: visual.frame,
-      destX: feetX - destW / 2,
-      destY: feetY - destH,
+      destX: feetX - destW * (visual.origin?.x ?? 0.5),
+      destY: feetY - destH * (visual.origin?.y ?? 1),
       destW,
       destH,
+      groundX: feetX,
+      groundY: feetY,
     },
   };
 }
@@ -221,6 +228,8 @@ function pageVisualKey(visual: ClaimedPageVisual): string {
     visual.frame.y,
     visual.frame.width,
     visual.frame.height,
+    visual.origin?.x ?? 0.5,
+    visual.origin?.y ?? 1,
     visual.scale,
     visual.footprint.width,
     visual.footprint.height,
@@ -233,7 +242,7 @@ function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
     && event.y >= region.y && event.y < region.y + region.h;
 }
 
-function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number } | null {
+function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number; origin?: SpriteFrameOrigin } | null {
   const id = graphic.sprite?.id;
   if (!id) return null;
   const def = project.assets.sprites[id];
@@ -246,10 +255,10 @@ function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl:
   if (asset?.kind === "sprite") {
     const frame = uploadedSpriteFrame(asset, graphic.pattern ?? 0);
     const imageUrl = uploadedAssetUrl(asset);
-    return frame && imageUrl ? { imageUrl, frame, preserveAlpha: true } : null;
+    return frame && imageUrl ? { imageUrl, frame, preserveAlpha: true, origin: spriteFrameOrigin(def) } : null;
   }
   const imageUrl = charsetImageUrl(project, id);
-  return imageUrl ? { imageUrl, frame: frameSourceForGraphic(graphic) } : null;
+  return imageUrl ? { imageUrl, frame: frameSourceForGraphic(graphic), origin: spriteFrameOrigin(def) } : null;
 }
 
 async function loadUnkeyedSpriteImage(url: string): Promise<HTMLImageElement> {
