@@ -220,6 +220,9 @@ def accept(data, cid, result):
         actor_uses = {c['nativeSheets'][1]['sha256']: set() for c in selected
                       if c.get('nativeHarness') == 'charset-actor'}
         new_actions = added_action_frames(root, inputs.get('layout', {}).get('layout', {}))
+        for gid, candidate_id in components.items():
+            added = originals[gid][candidate_id].get('actorFrames', {}).get('requiredNewActionFrames', [])
+            if added: new_actions.setdefault(gid, set()).update(added)
         new_action_uses = {gid: set() for gid in new_actions}
         for index, recipe_ref in enumerate(recipes):
             path = choices.verified(root, recipe_ref); recipe = choices.read(path)
