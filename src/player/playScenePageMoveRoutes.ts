@@ -202,9 +202,9 @@ function configurePageMover(
   animationType: EventAnimationType
 ): void {
   mover.strategy = strategy;
-  // 생활 이동만 계산된 경로다(routeForLivingMovement 의 BFS 결과). 작가가 쓴 custom 경로는
-  // 막히면 걸음을 소비하는 기존 동작을 유지한다 — playSceneTypes §retryBlockedSteps.
-  mover.retryBlockedSteps = movement.type === "living";
+  // 생활 이동과 명시적으로 skippable:false인 순찰은 막힌 걸음을 보존한다.
+  mover.preserveBlockedSteps = movement.type === "custom" && movement.route?.skippable === false;
+  mover.retryBlockedSteps = movement.type === "living" || mover.preserveBlockedSteps;
   mover.livingRoute = movement.type === "living";
   mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
   mover.speedRank = clampNpcSetting(movement.speed);

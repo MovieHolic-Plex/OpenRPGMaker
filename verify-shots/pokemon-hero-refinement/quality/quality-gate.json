@@ -1,0 +1,50 @@
+{
+  "sheetSha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
+  "gifSha256": "c9ca9fb1accecd0b6d380deaf3feb0371fb0c13b3c1ee8d593e73e9abfcb11c9",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "implementationSha256": "62c3e3020cf72d0c92f67bd9cffd8277b4c10ac7b3a6fe312982c9e42c067d91",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "opaqueColors": 15,
+  "nativeGifPoseComparisons": 16,
+  "structuralPass": true,
+  "structuralWarnings": [
+    "up: whole-frame exact color/pose change 0.835; semantic playback required",
+    "right: whole-frame exact color/pose change 0.863; semantic playback required",
+    "down: whole-frame exact color/pose change 0.743; semantic playback required",
+    "left: whole-frame exact color/pose change 0.856; semantic playback required"
+  ],
+  "pass": true,
+  "judgments": [
+    {
+      "reviewer": "hero_hostile_review",
+      "score": 85,
+      "criticalFailures": []
+    },
+    {
+      "reviewer": "root",
+      "score": 86,
+      "criticalFailures": []
+    }
+  ],
+  "packageSha256": "b35ca1c9a50eb7a9dd83dc573b757c153932f59a6334963fbd724cf04a0adf2a",
+  "independentReviewSha256": "7544c6ed88ac08ef39a8921b4f6860b11657a504cce270ddf1d2e8d44eddaac1",
+  "rootReviewSha256": "908f7f52170108b5bc8f6b465693be72bacd2fe8d596aea5d1eb0132e0f77c36",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/native-contact.png",
+      "sha256": "5228d31fdaf31c439741e8716e8aa9f9d20c542e6367eea5c7fdce1a7b517c4a"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/decoded-gif-contact.png",
+      "sha256": "b4439a9ac4f83e2b946b42560dff733476683cd84f6720d3a96b793cc072b265"
+    }
+  ],
+  "limitations": "Hashes bind recorded judgments to actual GIF/PNG bytes; they cannot prove aesthetic truth or authenticate that a reviewer viewed the images."
+}

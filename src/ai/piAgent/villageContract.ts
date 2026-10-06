@@ -1,3 +1,4 @@
+import { requestsEmeraldMonsterGame } from './monsterGameRequest';
 import { packTownTargetFor } from "./packTownRoute";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import { withVillageMorphologyDefault } from "@/editor/tools/village/defaultMorphology";
@@ -35,7 +36,7 @@ export function resolveVillageContract(project: Project, intent: IntentDeclarati
   selection: IntentSelectionFact | null, requestText?: string): VillageContract | undefined {
   // 장르 기획 요청은 게임 전체 저작이다. 2026-09-24 몬스터 수집 gen3: 의도 선언이 마을만 골라 계약이 걸렸고,
   // configure_monster_system·set_opening·set_title_screen 이 「마을 계약」으로 거부된 채 73초 만에 마을만 남았다.
-  if (isGenrePresetBriefRequest(requestText)) return;
+  if (isGenrePresetBriefRequest(requestText) || requestsEmeraldMonsterGame(requestText ?? "")) return;
   if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return;
   // 팩 도시 타일셋(Rasak 등) 마을은 build_pack_town 이 짠다 — 계약을 걸면 author_village 만 허용돼 숲마을로 바뀐다(packTownRoute).
   if (packTownTargetFor(project, requestText, intent.targetMapId ?? currentMapId)) return;

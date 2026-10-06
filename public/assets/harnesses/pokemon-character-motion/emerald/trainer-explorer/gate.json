@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:35.542Z",
+    "role": "explorer",
+    "sourceSha256": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0",
+    "promptSha256": "c68561ebd296860a95f38eb1878d64f5dac2586034d1bb0180639a4b628ec03a",
+    "finalSha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0",
+    "prompt.txt": "c68561ebd296860a95f38eb1878d64f5dac2586034d1bb0180639a4b628ec03a",
+    "portrait.png": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "6f5c69967ca19242807690e24705a6124a4ad571450180b99a99477b450f8099",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 12,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 15,
+      "y": 3,
+      "width": 32,
+      "height": 60
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.958Z",
+  "reviewSha256": "1cf145a95333a54624aaf39b272d911c0b902ccdb7c455cbb50145af9a99ccd0"
+}

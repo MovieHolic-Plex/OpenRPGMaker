@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "verifiedExport": "/tmp/pokemon-hero-refine/export",
+  "backup": "/home/main/claude-viz/monster-expedition-before-hero-quality-v4",
+  "public": "/home/main/claude-viz/monster-expedition",
+  "exactCopiedFiles": 3292,
+  "projectSha256": "73b3626ff83c0359aaa7fcdb0261f3465b9cd88691a7596ea4279bf749b86988",
+  "playerSha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+  "exactVerifiedFiles": {
+    "project.json": "73b3626ff83c0359aaa7fcdb0261f3465b9cd88691a7596ea4279bf749b86988",
+    "player.html": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c"
+  },
+  "allFileFingerprintSha256": "ae0d30f221452a8bbc5a567495d492de99c543dee770d1400e77e5012c02b7f5"
+}

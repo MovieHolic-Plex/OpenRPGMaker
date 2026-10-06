@@ -1,0 +1,146 @@
+{
+  "pass": true,
+  "scope": "Isolated copied candidate store exercises synthetic browser Allow/Deny. Production browser viewing and pending registrar rejection are read-only with zero real decisions.",
+  "productionData": "/home/main/.local/share/oprn/pokemon-character-casting",
+  "fixtureData": "/tmp/pokemon-casting-qa-BSyewu/fixture",
+  "productionDecisionCount": 0,
+  "checks": [
+    {
+      "name": "production has six structurally checked candidates and no automated decisions",
+      "pass": true
+    },
+    {
+      "name": "pending candidate cannot build",
+      "pass": true
+    },
+    {
+      "name": "Allow stays disabled until four observations checked",
+      "pass": true
+    },
+    {
+      "name": "frame slider freezes visible native/correct integer-scale previews",
+      "pass": true
+    },
+    {
+      "name": "frame slider produces native68x32 texture pixels",
+      "pass": true
+    },
+    {
+      "name": "GIF animation can resume",
+      "pass": true
+    },
+    {
+      "name": "server rejects Allow with missing observations",
+      "pass": true
+    },
+    {
+      "name": "browser Allow persists and enables native gate/build",
+      "pass": true
+    },
+    {
+      "name": "approved build preserves native/output dimensions and receipt",
+      "pass": true
+    },
+    {
+      "name": "decision survives browser reload",
+      "pass": true
+    },
+    {
+      "name": "approved package download is actual zip",
+      "pass": true
+    },
+    {
+      "name": "Deny revokes old approval and blocks download",
+      "pass": true
+    },
+    {
+      "name": "role has one current Allow and switching variants invalidates old build permission",
+      "pass": true
+    },
+    {
+      "name": "changed GIF makes approval stale",
+      "pass": true
+    },
+    {
+      "name": "mutation requires active same-origin browser session/CSRF",
+      "pass": true
+    },
+    {
+      "name": "browser has no JavaScript/resource errors",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "SQLite reopening preserves approvals and deny reasons",
+      "pass": true
+    },
+    {
+      "name": "shared registrar blocks unapproved changed NPC before any writes",
+      "pass": true
+    },
+    {
+      "name": "live review fits1100px and preserves native68x32 GIF",
+      "pass": true,
+      "details": {
+        "documentWidth": 1100,
+        "viewport": 1100,
+        "gifs": [
+          {
+            "native": [
+              68,
+              32
+            ],
+            "display": [
+              272,
+              128
+            ]
+          },
+          {
+            "native": [
+              68,
+              32
+            ],
+            "display": [
+              68,
+              32
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "live review fits320px and preserves native68x32 GIF",
+      "pass": true,
+      "details": {
+        "documentWidth": 320,
+        "viewport": 320,
+        "gifs": [
+          {
+            "native": [
+              68,
+              32
+            ],
+            "display": [
+              272,
+              128
+            ]
+          },
+          {
+            "native": [
+              68,
+              32
+            ],
+            "display": [
+              68,
+              32
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "live page never auto-approves real candidates",
+      "pass": true
+    }
+  ]
+}

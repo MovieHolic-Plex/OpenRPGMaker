@@ -1,0 +1,36 @@
+{
+  "canonicalRevision": 25,
+  "canonicalSha256": "4811a4afff1e1a6508e810ff25ddeb2245b08b4e8f007d4e028d1d62cb288937",
+  "artifact": "4162d202d42e72f5",
+  "source": "678d5a937a2fee64",
+  "saveNamespace": "starlight-islands-v1",
+  "files": {
+    "project.json": "10b303aead3f3d7cc4f349560094427113d2de17fbe405c95434f0820ae18a17",
+    "player.js": "c9c333b69bb883ed470b9a194fcefbb1f5d5ea7cdd4042ac45e86aafbe08761a",
+    "player.html": "cb02140a23f92a0014d0ba54fab8a61eb4de3e5fbce99021302526221f97033c",
+    "assets/player-pZcJYO_U.css": "ecc5047a0d428957e69527311e0167f82fc6cfba92841aed14d7cfa30a9c9617"
+  },
+  "servedUrl": "http://mdc-server:18301/monster-expedition/player.html?build=presentation-20261004",
+  "servedFileChecks": {
+    "project.json": {
+      "sha256": "10b303aead3f3d7cc4f349560094427113d2de17fbe405c95434f0820ae18a17",
+      "bytes": 24534734,
+      "sameAsVerifiedExport": true
+    },
+    "player.js": {
+      "sha256": "c9c333b69bb883ed470b9a194fcefbb1f5d5ea7cdd4042ac45e86aafbe08761a",
+      "bytes": 41195077,
+      "sameAsVerifiedExport": true
+    },
+    "player.html": {
+      "sha256": "cb02140a23f92a0014d0ba54fab8a61eb4de3e5fbce99021302526221f97033c",
+      "bytes": 506,
+      "sameAsVerifiedExport": true
+    },
+    "assets/player-pZcJYO_U.css": {
+      "sha256": "ecc5047a0d428957e69527311e0167f82fc6cfba92841aed14d7cfa30a9c9617",
+      "bytes": 633193,
+      "sameAsVerifiedExport": true
+    }
+  }
+}

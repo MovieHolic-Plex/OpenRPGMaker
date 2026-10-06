@@ -1,0 +1,172 @@
+{
+  "version": "pokemon-motion-2",
+  "base": "/tmp/pokemon-portrait-verifier-MNIhvL",
+  "candidate": "/tmp/pokemon-portrait-verifier-MNIhvL/candidates/portrait-hero_back-1791107911020-f4ccaea8",
+  "preview": "/tmp/pokemon-portrait-verifier-MNIhvL/candidates/portrait-hero_back-1791107911020-f4ccaea8/preview.html",
+  "output": "/tmp/pokemon-portrait-verifier-MNIhvL/output/portraits/hero_back",
+  "results": [
+    {
+      "name": "legacy64x96 extracts uniform nearest fit within62ink",
+      "pass": true
+    },
+    {
+      "name": "unconverted64x96 rejects native portrait check",
+      "pass": true
+    },
+    {
+      "name": "16opaque colors rejects",
+      "pass": true
+    },
+    {
+      "name": "empty portrait rejects",
+      "pass": true
+    },
+    {
+      "name": "partial alpha rejects",
+      "pass": true
+    },
+    {
+      "name": "missing transparent margin rejects",
+      "pass": true
+    },
+    {
+      "name": "alpha127 dropped and128 retained binary",
+      "pass": true
+    },
+    {
+      "name": "CLI direct portrait check rejects 64x96",
+      "pass": true
+    },
+    {
+      "name": "CLI direct portrait check rejects 16colors",
+      "pass": true
+    },
+    {
+      "name": "CLI direct portrait check rejects empty",
+      "pass": true
+    },
+    {
+      "name": "CLI direct portrait check rejects partial-alpha",
+      "pass": true
+    },
+    {
+      "name": "unknown role rejects",
+      "pass": true
+    },
+    {
+      "name": "empty source import rejects",
+      "pass": true
+    },
+    {
+      "name": "source prompt final hashes are preserved",
+      "pass": true
+    },
+    {
+      "name": "portrait bypasses only field16 contract",
+      "pass": true
+    },
+    {
+      "name": "structural-only passes",
+      "pass": true
+    },
+    {
+      "name": "structural pass alone cannot build",
+      "pass": true
+    },
+    {
+      "name": "missing review blocks gate",
+      "pass": true
+    },
+    {
+      "name": "preview produces static native scales",
+      "pass": true
+    },
+    {
+      "name": "current fixture evidence permits review",
+      "pass": true
+    },
+    {
+      "name": "review alone cannot bypass failed gate",
+      "pass": true
+    },
+    {
+      "name": "full review gate build lifecycle",
+      "pass": true
+    },
+    {
+      "name": "build has portrait contract and no field adapter",
+      "pass": true
+    },
+    {
+      "name": "implementation fingerprint includes portrait helper",
+      "pass": true
+    },
+    {
+      "name": "source.png mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "prompt.txt mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "portrait.png mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "stale version review blocks gate",
+      "pass": true
+    },
+    {
+      "name": "stale implementation review blocks gate",
+      "pass": true
+    },
+    {
+      "name": "stale contract review blocks gate",
+      "pass": true
+    },
+    {
+      "name": "mutated review evidence blocks gate",
+      "pass": true
+    },
+    {
+      "name": "mutated preview blocks gate",
+      "pass": true
+    },
+    {
+      "name": "stale preview implementation blocks new review",
+      "pass": true
+    },
+    {
+      "name": "restored exact ledger can gate and build again",
+      "pass": true
+    },
+    {
+      "name": "browser static1x2x3x PNG geometry and pixelated display",
+      "pass": true
+    }
+  ],
+  "count": 35,
+  "limitations": "Synthetic extraction pixels and fixture review evidence. Ledger verification, never shipping art approval.",
+  "previewScales": [
+    {
+      "scale": 1,
+      "width": 64,
+      "height": 64,
+      "rendering": "pixelated"
+    },
+    {
+      "scale": 2,
+      "width": 128,
+      "height": 128,
+      "rendering": "pixelated"
+    },
+    {
+      "scale": 3,
+      "width": 192,
+      "height": 192,
+      "rendering": "pixelated"
+    }
+  ],
+  "browserErrors": []
+}

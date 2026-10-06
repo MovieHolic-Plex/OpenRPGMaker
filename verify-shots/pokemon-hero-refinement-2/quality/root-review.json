@@ -1,0 +1,74 @@
+{
+  "sheetSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+  "gifSha256": "2824de459ecbcb19723d067be118a9b36fd9e9f0e63dcac5c04e1d9f32340242",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "reviewer": "root",
+  "author": "root",
+  "observationPackageSha256": "45734ac8c91993dbbf705d7fc504d2eb893ebd279f275aee2ab126fc11563412",
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "criticalFailures": [],
+  "verdict": "pass",
+  "scores": {
+    "silhouette": {
+      "score": 17,
+      "reason": "All12 native poses retain compact reference-scale human proportions; cap crown now has a connected left light/right shade, and the shortened rear hair exposes the nape rather than a dark wall. Broad frontal ear contour remains stylized."
+    },
+    "anatomy": {
+      "score": 18,
+      "reason": "Upper/lower frontal pupil pixels now share x5/x10 instead of the former1px lower-eye shift. Warm rounded chin no longer forms an all-shadow stripe. Profile eye is consistently two rows; short nape connects to collar and articulated sleeve/hand remains attached in all poses."
+    },
+    "walking": {
+      "score": 17,
+      "reason": "Decoded stepA-idle-stepB-idle keeps opposite hand action and clear supporting vsraised soles. Compact red shoe uppers and cream soles make native ground contact readable. Side idle preserves distinct overlapping near/far toes; the restrained stride is still economical."
+    },
+    "pixelCraft": {
+      "score": 13,
+      "reason": "Cap light and shaded planes, a single white front brim, tapered small rearhair highlight, tan/brown backpack planes and lower2x2 pocket organize color clusters. Existing15palette/binary alpha retained. Cloth shading and profile depth remain simpler than official references."
+    },
+    "identity": {
+      "score": 14,
+      "reason": "Red cap/white brim, cream shirt/blue vest, tan leather pack with red lower pocket and red cream-soled shoes form one coherent character across12views. Sidepack volume and rearattachment preserve the wardrobe; accessory details remain simplified."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Native front/back/both profiles preserve scale, cap band and clothing/accessory orientation. Nape and side cheek now agree more closely, although mirror-symmetric profiles and broad ears remain stylized."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "Every decoded140ms frame equals its native pose in all4directions, idle1/3 repeats exactly, and only the intended1px bob occurs. Real browserGIF14samples per1x/4x observe all3distinct sourceposes without errors or pixel changes."
+    }
+  },
+  "total": 88,
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/native-contact.png",
+      "sha256": "5e976220e1e0e12bd9c8da031533d2fba4fdee26396cc0894f60de0d8bf4660e"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/quality/decoded-gif-contact.png",
+      "sha256": "0b11370e73b35f90f56bee8d7f947d522c63f9da19f5ac2d25ce93da1faf54af"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/browser-gif/record.json",
+      "sha256": "4bb442536fd26b079e8fe55f3007aa751da2b7e489372085e8a7d75fb689be93"
+    }
+  ],
+  "browserProof": {
+    "file": "/home/main/z-project/pokemon-hero-refinement-2/v14/browser-gif/record.json",
+    "sha256": "4bb442536fd26b079e8fe55f3007aa751da2b7e489372085e8a7d75fb689be93"
+  },
+  "limitations": [
+    "Manual judgment; not a guarantee of official-art equivalence or user acceptance.",
+    "Broad ears, simplified cloth/accessory planes and restrained three-pose walking remain.",
+    "All decodedframes and actualbrowsercaptures inspected; no live-video viewing claim."
+  ]
+}

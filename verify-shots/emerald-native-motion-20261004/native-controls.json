@@ -1,0 +1,210 @@
+{
+  "version": "pokemon-motion-2",
+  "results": [
+    {
+      "name": "valid 12-pose fixture",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "name": "native x0 and feet bottom32 legitimate",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "name": "wrong Emerald top and ink height",
+      "pass": true,
+      "errors": [
+        "up: head jitter 0,3",
+        "up: Emerald native ink bounds/height/top/feet contract"
+      ]
+    },
+    {
+      "name": "too-short body and wrong feet baseline",
+      "pass": true,
+      "errors": [
+        "up: Emerald native ink bounds/height/top/feet contract",
+        "up: gross head/torso size drift"
+      ]
+    },
+    {
+      "name": "sixteen opaque colors forbidden in native field",
+      "pass": true,
+      "errors": [
+        "palette union 19>15"
+      ]
+    },
+    {
+      "name": "legitimate arms extend 4px while stable core",
+      "pass": true,
+      "errors": []
+    },
+    {
+      "name": "small hair-tip rounding registers stable pixels rather than rounded request",
+      "pass": true
+    },
+    {
+      "name": "two-pixel skull shift rejected before registration",
+      "pass": true,
+      "errors": [
+        "up: head jitter 2,1",
+        "up: discontinuous cycle/seam 0.471"
+      ]
+    },
+    {
+      "name": "19/19/20px ink heights use same three torso rows despite foot phase",
+      "pass": true
+    },
+    {
+      "name": "20/21/21px ink heights use same four torso rows despite hair tip",
+      "pass": true
+    },
+    {
+      "name": "actual narrowed torso still fails unchanged area ratio threshold after canonical registration",
+      "pass": true,
+      "errors": [
+        "up: gross head/torso size drift"
+      ]
+    },
+    {
+      "name": "duplicate step freeze",
+      "pass": true,
+      "errors": [
+        "up: duplicate/frozen lower body (0)"
+      ]
+    },
+    {
+      "name": "large head jump",
+      "pass": true,
+      "errors": [
+        "up: head jitter 4,1",
+        "up: gross head/torso size drift",
+        "up: discontinuous cycle/seam 0.701"
+      ]
+    },
+    {
+      "name": "shuffled inconsistent frame roots",
+      "pass": true,
+      "errors": [
+        "up: head jitter 3,1",
+        "up: gross head/torso size drift",
+        "up: discontinuous cycle/seam 0.594",
+        "left: head jitter 3,1",
+        "left: gross head/torso size drift",
+        "left: discontinuous cycle/seam 0.589"
+      ]
+    },
+    {
+      "name": "gross head scale change",
+      "pass": true,
+      "errors": [
+        "up: gross head/torso size drift",
+        "up: discontinuous cycle/seam 0.400"
+      ]
+    },
+    {
+      "name": "nonbinary alpha",
+      "pass": true,
+      "errors": [
+        "alpha: 1 non-binary pixels"
+      ]
+    },
+    {
+      "name": "palette union overflow",
+      "pass": true,
+      "errors": [
+        "palette union 33>15"
+      ]
+    },
+    {
+      "name": "clipped silhouette",
+      "pass": true,
+      "errors": [
+        "up: head jitter 6,9",
+        "up: Emerald native ink bounds/height/top/feet contract",
+        "up: gross head/torso size drift",
+        "up: discontinuous cycle/seam 0.591"
+      ]
+    },
+    {
+      "name": "truncated sheet",
+      "pass": true,
+      "errors": [
+        "Error: charset dimensions 47x128; expected native48x128 or editor72x128/288x256"
+      ]
+    },
+    {
+      "name": "hard cycle seam color jump",
+      "pass": true,
+      "errors": [
+        "up: discontinuous cycle/seam 1.000"
+      ]
+    },
+    {
+      "name": "authored distinct clip",
+      "pass": true
+    },
+    {
+      "name": "drawn claim on translated still rejected",
+      "pass": true
+    },
+    {
+      "name": "clip crop bounds rejected",
+      "pass": true
+    },
+    {
+      "name": "clip negative duration rejected",
+      "pass": true
+    },
+    {
+      "name": "clip union palette overflow rejected",
+      "pass": true
+    },
+    {
+      "name": "clip nonbinary alpha rejected",
+      "pass": true
+    },
+    {
+      "name": "clip silhouette clipping rejected",
+      "pass": true
+    },
+    {
+      "name": "gate blocks missing semantic review",
+      "pass": true
+    },
+    {
+      "name": "build blocks failed gate",
+      "pass": true
+    },
+    {
+      "name": "review alone cannot bypass stale failed gate",
+      "pass": true
+    },
+    {
+      "name": "source/final mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "raw source mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "evidence mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "generated six-frame clip full lifecycle",
+      "pass": true
+    },
+    {
+      "name": "generated final clip mutation blocks build",
+      "pass": true
+    },
+    {
+      "name": "generated clip metadata mutation blocks build",
+      "pass": true
+    }
+  ],
+  "count": 36,
+  "base": "/tmp/pokemon-motion-verifier-sbT36x"
+}

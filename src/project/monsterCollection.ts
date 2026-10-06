@@ -17,6 +17,7 @@ import type {
   Project,
 } from "@/project/types";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import { recordMonsterCaught } from "@/project/monsterJournal";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { transitionItemState } from "@/project/itemTransitions";
 
@@ -228,6 +229,7 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     currentHp: input.currentHp ?? maxHp,
   });
   session.monsterInstances[instanceId] = hydrated;
+  recordMonsterCaught(project, session, species.id);
   if (session.monsterParty.length < MONSTER_PARTY_MAX) {
     session.monsterParty.push(instanceId);
     syncMonsterPartyFollowers(project, session);
@@ -552,6 +554,8 @@ export function evolveMonster(project: Project, session: PlaySession, input: Evo
     ? transitionItemState(session, project.database.items, { kind: "remove", itemId: consumedItemId, amount: 1 })
     : undefined;
   session.monsterInstances[input.instanceId] = evolved;
+  recordMonsterCaught(project, session, fromSpecies.id);
+  recordMonsterCaught(project, session, toSpecies.id);
   if (itemTransition) {
     session.inventory = itemTransition.inventory;
     session.itemUseCharges = itemTransition.itemUseCharges;

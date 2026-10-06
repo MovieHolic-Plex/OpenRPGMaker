@@ -1,3 +1,4 @@
+import { createOpeningAnimaticWorkbench } from "./openingAnimaticWorkbench";
 import { cinematicPresentationForm } from './databaseCinematicPresentationForm';
 import { cinematicLayersForm } from './databaseCinematicLayersForm';
 import { store } from "@/project/store";
@@ -57,8 +58,12 @@ export function cinematicSceneForm(options: FormContext & {
   kindInput.addEventListener("change", () => {
     if (!usable()) return;
     const next = kindInput.value;
-    if (next !== "text" && next !== "image" && next !== "video") return;
-    if (next === "text") {
+    if (next !== "text" && next !== "image" && next !== "video" && next !== "animatic") return;
+    if (next === "animatic") {
+      setPendingKind(undefined);
+      const sequence = actions.read();
+      if (sequence) actions.applySequence({ ...sequence, scenes: sequence.scenes.map(s => s.id === scene.id ? { id: s.id, kind: "animatic", narration: s.narration, durationMs: Math.max(1, s.durationMs || 4000), composition: { width: 1280, height: 720, layers: [] } } : s) }, "애니메틱 샷 만들기");
+    } else if (next === "text") {
       setPendingKind(undefined);
       actions.convertToText(scene.id);
     } else {
@@ -88,7 +93,7 @@ export function cinematicSceneForm(options: FormContext & {
   const commitDuration = (): void => {
     if (usable() && duration.value !== "") actions.setDuration(scene.id, Number(duration.value));
   };
-  duration.addEventListener("input", commitDuration);
+  if (scene.kind !== "animatic") duration.addEventListener("input", commitDuration);
   duration.addEventListener("change", () => {
     if (!usable()) return;
     commitDuration();
@@ -115,15 +120,17 @@ export function cinematicSceneForm(options: FormContext & {
     el("div", { class: "db-cinematic-scene-toolbar", children: [up, down, remove] }),
     field("장면 종류", kindInput),
   ];
-  if (kind !== "text") {
+  if (kind === "image" || kind === "video") {
     children.push(mediaField(
       "resource",
       kind === "image" ? "이미지" : "동영상",
       { kind, sceneId: scene.id },
-      scene.kind === kind ? scene.resourceId : undefined,
+      (scene.kind === "image" || scene.kind === "video") && scene.kind === kind ? scene.resourceId : undefined,
     ));
     if (pendingKind) children.push(note("미디어를 선택하거나 가져온 뒤 장면 종류가 변경됩니다."));
   }
+  if (scene.kind === 'animatic') children.push(createOpeningAnimaticWorkbench({ project: store.getCurrent(), composition: scene.composition, durationMs: scene.durationMs, usable,
+    commit: composition => { const sequence = actions.read(); if (sequence && usable()) { actions.applySequence({ ...sequence, scenes: sequence.scenes.map(s => s.id === scene.id && s.kind === 'animatic' ? { ...s, composition } : s) }, '애니메틱 동작 키'); redraw(); } } }));
   children.push(
     field("내레이션", narration),
     mediaField("voice", "내레이션 음성", { kind: "voice", sceneId: scene.id }, scene.narrationAudioResourceId),

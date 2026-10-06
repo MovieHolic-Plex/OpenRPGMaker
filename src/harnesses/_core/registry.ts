@@ -15,8 +15,13 @@ import { CHARSET_ACTOR_HARNESS } from "../charset-actor/harness";
 import { WORLDMAP_ICONS_HARNESS } from "../worldmap-icons/harness";
 import { ASSISTANT_CAPABILITY_HARNESS } from "../assistant-capability/harness";
 
+import { POKEMON_CHARACTER_MOTION_HARNESS } from "../pokemon-character-motion/harness";
+import { POKEMON_CHARACTER_CASTING_HARNESS } from "../pokemon-character-casting/harness";
+
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
+  POKEMON_CHARACTER_MOTION_HARNESS,
+  POKEMON_CHARACTER_CASTING_HARNESS,
   MODERN_CHIPSET_HARNESS,
   INTERIOR_PROPS_HARNESS,
   JP_CITY_HARNESS,

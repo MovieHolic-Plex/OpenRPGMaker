@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:36.730Z",
+    "role": "student",
+    "sourceSha256": "348934931a8992b899a9413698d9a37980c02e4c363273512f481eba13a93fcc",
+    "promptSha256": "f90dfe223008f07be75ce4922815594d648f8c619d9fa24ae906ec09c9cbed17",
+    "finalSha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "348934931a8992b899a9413698d9a37980c02e4c363273512f481eba13a93fcc",
+    "prompt.txt": "f90dfe223008f07be75ce4922815594d648f8c619d9fa24ae906ec09c9cbed17",
+    "portrait.png": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "36b87c2b042915378769e629e17d05e2700c73b35073decf20be74bef2a1e337",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 14,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 18,
+      "y": 5,
+      "width": 29,
+      "height": 58
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.964Z",
+  "reviewSha256": "67a49d9298bbe0b39830c3ae758b77239fc74a946cd01f6aac107ee6902dd29d"
+}

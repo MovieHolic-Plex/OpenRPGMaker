@@ -1,0 +1,315 @@
+{
+  "generatedAt": "2026-10-04T10:29:18.405Z",
+  "scope": "Real selected native PNGs at1×/3×, actual browser animation; separate from exported-game QA.",
+  "models": [
+    {
+      "id": "hero",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/hero-1791107303405-18e331e0",
+      "nativeSha256": "5eece3daabc47bcf03fc64d4f71187bc04ef3d6efbb0c8537ca182a4c6ca8ce2",
+      "files": [
+        "hero-phase-0.png",
+        "hero-phase-1.png",
+        "hero-phase-2.png"
+      ]
+    },
+    {
+      "id": "rival",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/rival-1791107304411-bc312baf",
+      "nativeSha256": "6d78d4a02f25b9b115ca58bf2ef13be27ac1e4b36d6396ffef44817022bd67d2",
+      "files": [
+        "rival-phase-0.png",
+        "rival-phase-1.png",
+        "rival-phase-2.png"
+      ]
+    },
+    {
+      "id": "professor",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/professor-1791107305387-a86576eb",
+      "nativeSha256": "1b1aac225bcbffb141a9731d714c45bd2e5035e0babfa73ced4041bad14175c1",
+      "files": [
+        "professor-phase-0.png",
+        "professor-phase-1.png",
+        "professor-phase-2.png"
+      ]
+    },
+    {
+      "id": "nurse",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/nurse-1791107306505-2173f39b",
+      "nativeSha256": "51fd64722f24dee63464d076d1ec4360cee0711e9de58826692a23550c67ed04",
+      "files": [
+        "nurse-phase-0.png",
+        "nurse-phase-1.png",
+        "nurse-phase-2.png"
+      ]
+    },
+    {
+      "id": "merchant",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/merchant-1791107307521-63a7f5f6",
+      "nativeSha256": "db3828618a756ad49c0911ebbfcbed901c0a9cc300c1025587ea228ac25148b5",
+      "files": [
+        "merchant-phase-0.png",
+        "merchant-phase-1.png",
+        "merchant-phase-2.png"
+      ]
+    },
+    {
+      "id": "mother",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/mother-1791107308465-05b506cb",
+      "nativeSha256": "6040bffd90a680a7f45ddfe3d9e984d4ea0fe97712e96c279c0cdf741868f5e9",
+      "files": [
+        "mother-phase-0.png",
+        "mother-phase-1.png",
+        "mother-phase-2.png"
+      ]
+    },
+    {
+      "id": "resident",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/resident-1791107309412-099ea13f",
+      "nativeSha256": "164bbdf26cf1af2fe348cfb2e4a7ca41c51a71d6b26fd0539cd4a3ffd0705fb3",
+      "files": [
+        "resident-phase-0.png",
+        "resident-phase-1.png",
+        "resident-phase-2.png"
+      ]
+    },
+    {
+      "id": "gym_leader",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/gym_leader-1791107431692-dabfe5d8",
+      "nativeSha256": "5f92ad97053167911580aa69131000be11ce150bd96c5349cf902795422b2470",
+      "files": [
+        "gym_leader-phase-0.png",
+        "gym_leader-phase-1.png",
+        "gym_leader-phase-2.png"
+      ]
+    },
+    {
+      "id": "company_agent",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/company_agent-1791107310357-f8f600bf",
+      "nativeSha256": "0cd8230f55d0aa109d39e9da21c419d5582bcb040fcc3eec208034328849dfcd",
+      "files": [
+        "company_agent-phase-0.png",
+        "company_agent-phase-1.png",
+        "company_agent-phase-2.png"
+      ]
+    },
+    {
+      "id": "captain",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/captain-1791107311361-f7f33799",
+      "nativeSha256": "751e39f47ad177292a4ee7a5a69c76f073764e158f19558ee2852e0ab0862400",
+      "files": [
+        "captain-phase-0.png",
+        "captain-phase-1.png",
+        "captain-phase-2.png"
+      ]
+    },
+    {
+      "id": "worker",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/worker-1791107312383-6e9338c9",
+      "nativeSha256": "497c1d131ff1ee8820c8abbdeaaffff31cd7158f333a36bf513dab4ab34c3268",
+      "files": [
+        "worker-phase-0.png",
+        "worker-phase-1.png",
+        "worker-phase-2.png"
+      ]
+    },
+    {
+      "id": "explorer",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/explorer-1791107313351-499fc170",
+      "nativeSha256": "e9f21d7281537f05f3a3b61bcfd1f44fbcdac73512f5a34050b1df1931502020",
+      "files": [
+        "explorer-phase-0.png",
+        "explorer-phase-1.png",
+        "explorer-phase-2.png"
+      ]
+    },
+    {
+      "id": "student",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/student-1791107314385-ca2e90c2",
+      "nativeSha256": "e7d1440b9901418df4df5e90cd8dbe86460c1041e0babf3150fca53b8ab187ce",
+      "files": [
+        "student-phase-0.png",
+        "student-phase-1.png",
+        "student-phase-2.png"
+      ]
+    },
+    {
+      "id": "ranger",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/ranger-1791107315345-506f7e17",
+      "nativeSha256": "6b717c96c6c8cf65069b48a9c1d65096fd1a6f9aa776df6cdc28d8ea4e61b2ef",
+      "files": [
+        "ranger-phase-0.png",
+        "ranger-phase-1.png",
+        "ranger-phase-2.png"
+      ]
+    },
+    {
+      "id": "moon_leader",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/moon_leader-1791107316488-cf5fefe2",
+      "nativeSha256": "2d4092a41488b62ef022a7b1b22c40074910b3fd183a0838635c60f58fa88ee6",
+      "files": [
+        "moon_leader-phase-0.png",
+        "moon_leader-phase-1.png",
+        "moon_leader-phase-2.png"
+      ]
+    },
+    {
+      "id": "hiker",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/hiker-1791107432813-da70113f",
+      "nativeSha256": "14f304600467a8dfbc8e0e4ef932ee9d30aa0a537772e774a50e18f63f21c886",
+      "files": [
+        "hiker-phase-0.png",
+        "hiker-phase-1.png",
+        "hiker-phase-2.png"
+      ]
+    },
+    {
+      "id": "trainer-hero",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero-1791107892443-329871a5",
+      "nativeSha256": "0fb3aa38772e1e58e5e05ba531b3d1c509e38d0fa91c03735b470997e91feb5e",
+      "files": [
+        "trainer-hero-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-rival",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-rival-1791107892905-a6e4ab1b",
+      "nativeSha256": "4ba0ba3ae7cb154afa9979d9736d65bbf4ad3607db070c91f13c1b3132b5a171",
+      "files": [
+        "trainer-rival-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-professor",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-professor-1791107893352-c428e668",
+      "nativeSha256": "f7c022f34ba4fd063bbd82bd44646220d05b9a0a0f194d91e4a6cb960bb00583",
+      "files": [
+        "trainer-professor-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-nurse",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-nurse-1791109386380-7164e1f4",
+      "nativeSha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
+      "files": [
+        "trainer-nurse-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-merchant",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-merchant-1791107894196-906e9e79",
+      "nativeSha256": "734befcc5b7cad680233b18609944742716f5935b94c3d46b9a611bd0d0d64ea",
+      "files": [
+        "trainer-merchant-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-mother",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-mother-1791107894603-0bc4ca7d",
+      "nativeSha256": "66daea271097efbb8588c8b7b771556895ad6ed0ae65d934781fd2f2a42a9464",
+      "files": [
+        "trainer-mother-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-resident",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-resident-1791108479082-11934266",
+      "nativeSha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
+      "files": [
+        "trainer-resident-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-gym_leader",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-gym_leader-1791107895386-6b67d376",
+      "nativeSha256": "20e701d3006f727e6452b4902626f3ae9bf0e2a4286ab24c6b6812d5e2d56ccb",
+      "files": [
+        "trainer-gym_leader-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-company_agent",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-company_agent-1791107895749-65c95df7",
+      "nativeSha256": "ffe3e7e76f366a7e56d64e907b431f4897b83134ec1d0b62bb157289c914b51b",
+      "files": [
+        "trainer-company_agent-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-captain",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-captain-1791107896113-cd9ae919",
+      "nativeSha256": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8",
+      "files": [
+        "trainer-captain-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-worker",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-worker-1791107896495-3643459d",
+      "nativeSha256": "0ff6b4097d06923a5647151e2adb1d4d677bf9e5ae84c89d87a194846e151869",
+      "files": [
+        "trainer-worker-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-explorer",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-explorer-1791107896879-e6018dd0",
+      "nativeSha256": "16014fce358972f6fb1ed87cfe33ac2e7a6ae57c0b9881944c06ddc45a94e516",
+      "files": [
+        "trainer-explorer-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-student",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-student-1791107897268-ee96bd7a",
+      "nativeSha256": "adf1f1f3587261559280824a7fae57333b143b0fe4957542c6397c7390d17859",
+      "files": [
+        "trainer-student-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-ranger",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-ranger-1791107897644-ded15da5",
+      "nativeSha256": "2dbd4af8dc5d95f08a668b10e1917f390ffe3bb9b48c34265c7d2592988c4164",
+      "files": [
+        "trainer-ranger-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-moon_leader",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-moon_leader-1791107898013-1706436e",
+      "nativeSha256": "95fd8fb40f5806a1ff822c0a1bd3ecdb8e90e1b46f99212f005a637b56908311",
+      "files": [
+        "trainer-moon_leader-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-hiker",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hiker-1791107898402-6f7acc25",
+      "nativeSha256": "3a49691580f1c381d619b400b35c188885dde697fce513fe6c6a18edad18e57f",
+      "files": [
+        "trainer-hiker-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-hero_back",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero_back-1791108198897-9bf298f5",
+      "nativeSha256": "04e76ad26aee4566e06ae0c016e2357fdd00ec2ccf33bb6983651ecebc70ef37",
+      "files": [
+        "trainer-hero_back-phase-0.png"
+      ]
+    },
+    {
+      "id": "professor-intro",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/clip-professor-intro-1791109661101-7658e1fe",
+      "nativeSha256": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
+      "files": [
+        "professor-intro-phase-0.png",
+        "professor-intro-phase-1.png",
+        "professor-intro-phase-2.png",
+        "professor-intro-phase-3.png",
+        "professor-intro-phase-4.png",
+        "professor-intro-phase-5.png"
+      ]
+    }
+  ]
+}

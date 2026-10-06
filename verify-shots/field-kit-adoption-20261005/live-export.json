@@ -1,0 +1,17 @@
+{
+  "url": "http://mdc-server:18301/monster-expedition/player.html?build=field-kit-20261005",
+  "matchesCandidate": [
+    {
+      "file": "player.html",
+      "sha256": "9f30d6afb3a8f2c7c2041661a62683dfba96c04b52fdcf9bf568429b9215492d"
+    },
+    {
+      "file": "player.js",
+      "sha256": "1b845b7f79ff198a821e87b590426ae460bcf60d6cbc3d2eaf69d70b9ad3a5f1"
+    },
+    {
+      "file": "project.json",
+      "sha256": "db87abb3b6e3ad095b3574f7fd19713d28b2c82c28ed63cfbb78b6de02f9622e"
+    }
+  ]
+}

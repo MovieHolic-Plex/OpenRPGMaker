@@ -1,0 +1,117 @@
+{
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "createdAt": "2026-10-05T00:01:20.010Z",
+    "role": "hero",
+    "sourceSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+    "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "finalSha256": "99d6ce3ef1fd296f2bb66d7898ed492b161c70de895ab744073ab043e34e8310",
+    "contract": {
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "columns": [
+        "stepA",
+        "idle",
+        "stepB"
+      ],
+      "rows": [
+        "up",
+        "right",
+        "down",
+        "left"
+      ],
+      "idle": 1,
+      "runtimeOrder": [
+        0,
+        1,
+        2,
+        1
+      ],
+      "frameMs": 140,
+      "nativeSheetWidth": 48,
+      "nativeSheetHeight": 128,
+      "editorAdapter": {
+        "frameWidth": 24,
+        "paddingX": 4,
+        "sheetWidth": 72,
+        "sheetHeight": 128,
+        "resize": false
+      },
+      "reference": "pret/pokeemerald graphics/object_events/pics/people/*; frame16x32, ink~14x20..21"
+    },
+    "limits": {
+      "paletteUnionMax": 15,
+      "inkHeightMin": 18,
+      "inkHeightMax": 22,
+      "topMin": 10,
+      "topMax": 13,
+      "feetBottomMin": 30,
+      "feetBottomMax": 32,
+      "fitInkHeight": 21,
+      "headJitterMax": 1,
+      "bodySizeRatioMax": 1.25,
+      "areaRatioMax": 1.3,
+      "seamChangeMax": 0.36,
+      "stepChangeMin": 4,
+      "margin": 0
+    },
+    "mode": "native",
+    "slot": 0,
+    "scale": 1,
+    "clip": null
+  },
+  "hashes": {
+    "source.png": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+    "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "charset.png": "99d6ce3ef1fd296f2bb66d7898ed492b161c70de895ab744073ab043e34e8310"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "c24b858b62474915c44730de314046cb8ecbc09b95fb6a3ea34fd1a321643021",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "paletteUnionMax": 15,
+    "inkHeightMin": 18,
+    "inkHeightMax": 22,
+    "topMin": 10,
+    "topMax": 13,
+    "feetBottomMin": 30,
+    "feetBottomMax": 32,
+    "fitInkHeight": 21,
+    "headJitterMax": 1,
+    "bodySizeRatioMax": 1.25,
+    "areaRatioMax": 1.3,
+    "seamChangeMax": 0.36,
+    "stepChangeMin": 4,
+    "margin": 0
+  },
+  "createdAt": "2026-10-05T00:05:35.461Z",
+  "verdict": "pass",
+  "who": "supervisor",
+  "why": "Actual Emerald/FireRed reference comparison, all12native poses and all4GIFframes at1x4x, realbrowserGIF pixel playback, compactface-shoulder-hip-shoe geometry, planted/swing support, oppositearm and sleeve layers checked. Manual art approval85; simplepack/vest remain.",
+  "evidence": [
+    {
+      "file": "review-evidence-0.png",
+      "sha256": "f27eebe773a45628ab6c4114c9563b64360f34af057f109ffdbc2cb7c7ad1963"
+    },
+    {
+      "file": "review-evidence-1.png",
+      "sha256": "8a18a8ce985b203d53a5b818419c9be4bc7b6dd7ed17cd0a16d1d1cc3b3fc3a2"
+    },
+    {
+      "file": "review-evidence-2.json",
+      "sha256": "9daed41b7d0f718e6ea04d92cd336801a5c69e503c5db594d7e2d920dace8479"
+    },
+    {
+      "file": "review-evidence-3.json",
+      "sha256": "60f7685f44ab7b422e60fa328d19a4c04a622dcb82a99fcf13fad47a6e86531f"
+    }
+  ],
+  "semanticChecklist": [
+    "correct four directions",
+    "alternating feet read while walking",
+    "head/body identity stable",
+    "loop seam natural",
+    "clip is actual drawn poses if advertised drawn"
+  ],
+  "previewSha256": "d4800a79d390e206d03683363e6da31d8a17a91b23126057c154f126b7ac023d"
+}

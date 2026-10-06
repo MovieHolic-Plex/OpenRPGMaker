@@ -153,7 +153,7 @@ Fields:
 - "clarifyOptions": clarify 가 있을 때 2~4개의 짧은 선택지 라벨. 없으면 [].
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. author_house 한 호출이 부속 실내와 출입구까지 만드는 것은 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
-- "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
+- "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 []. 포켓몬/Pokemon/에메랄드 같은 전체 게임 생성·보수는 read_monster_game, configure_monster_style, build_monster_game, review_monster_game을 선택한다. 이 요청은 needsPlan:true이며 author_village 한 마을로 축소하지 않는다. 기존 캠페인 보수는 재생성하지 않는다.
 - "viewNavigation": 사용자가 편집 화면에서 특정 맵·NPC·장소의 위치를 찾아 보여달라고 요청했을 때만 true. 예: '상점 어디야?', '그 NPC 찾아줘', '만든 마을 보여줘'. '마을 만들어줘', '버그 찾아줘', '타일 목록 보여줘', '화면 옮기지 말고 위치만 알려줘'는 false. 작업·검수·진행 보고를 위한 화면 이동을 추론하지 않는다.
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true,"world":true,"characters":true,"appearance":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 또는 "중세 게임 RPG를 만들어줘"처럼 프로젝트 전체를 처음 만드는 요청은 세계관·핵심 인물·주인공 외형/장비를 먼저 저작해야 하므로 world/characters/appearance를 true로 선언한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목과 새 세 항목 모두 true다.

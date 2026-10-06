@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-10-03",
+  "tool": "image_gen.imagegen",
+  "mode": "built-in brand-new generation",
+  "prompt": "Use case: stylized-concept. Asset type: original fullscreen landscape pixel-art title and opening background for a Korean monster-collecting adventure called Starlight Island Monster Expedition; the name is context only, never render letters. Primary request: ONE polished original 4:3 landscape illustration, preferably 1536 by 1152, depicting a twilight archipelago. On the middle-right a lighthouse stands atop a rocky island; its warm beacon watches the sea. Exactly eight small bright stars, restrained individually legible pinpoints, trace a curved chain of sea routes between the islands. A warm sleepy starting village with a few glowing cottage windows nestles on a green shore in the foreground. Far to the north along the distant horizon a subtle bank of darkness is draining the starlight, suggesting mystery without dominating the scene. Style/medium: richly composed restrained retro pixel art, deliberate crisp pixel clusters and stepped silhouettes, finely crafted game key art, coherent small palette of dark teal and indigo with warm amber accents, no soft painted brushwork. Composition: the lighthouse/islands and visible route stars concentrate on the right half; reserve the upper-left third and center-left as darker quiet negative space of sky and sea for a Korean title overlay. The bottom quarter is quiet low-detail dark shore and water suitable for narrative overlay; no key subject or bright star there. The village is on the lower-middle/right green shore above that overlay area. Gentle depth layers, calm sea reflecting the lighthouse. Constraints: no text, no letters, no logos, no watermarks, no UI, no border; no famous Pokemon or recognizable existing creatures, no armored warriors or people; not a tile atlas or sprite sheet. Landscape 4:3 aspect ratio is essential.",
+  "source": "/home/main/.codex/generated_images/01a0ff7d-fb94-7de0-9969-fafd7721b0d7/exec-8f386235-f976-4de3-ab44-7ecc0f0ba6d1.png",
+  "asset": "starlight-prologue.png",
+  "width": 1448,
+  "height": 1086,
+  "bytes": 1955168,
+  "sha256": "807a13f6cbe5318fb39866bccb0827393db3cd254afed46c38fa9c0befaeace1",
+  "postprocessing": "none; copied original PNG bytes",
+  "visualReview": {
+    "inspected": true,
+    "composition": "Twilight archipelago, right lighthouse and warm starting village, distant north darkness, dark quiet left space, no lettering or logos.",
+    "limit": "Eight route stars requested; seven clearly prominent stars and smaller light points observed. Exact count eight is not verified."
+  }
+}

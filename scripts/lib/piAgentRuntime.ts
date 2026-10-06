@@ -1,3 +1,8 @@
+import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
+import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
+import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
+import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
 import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
@@ -63,6 +68,10 @@ import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
+import { runTool } from '../../src/editor/tools/index.ts';
+import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
+import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
+import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
 setWorldmapBuilder(buildWorldmap);
@@ -90,6 +99,7 @@ export interface RunPiAgentOptions {
    */
   readonly codexApiKey?: string;
   readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
+  readonly generateOpeningImage?: (project: Project, args: Record<string, unknown>, signal?: AbortSignal) => Promise<CinematicStillResult>;
   /**
    * Headless runners only: a model object resolved outside the bundled catalog (e.g. a provider from the user's local
    * ~/.omp/agent/models.yml, scripts/qa/beodeul-assistant-run.mts). Absent = the exact catalog resolution below.
@@ -239,6 +249,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
+  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && requestsEmeraldMonsterGame(request.task));
+  const gameSystemProduction = new PiGameSystemProduction();
+  const npcLayoutProduction = new PiNpcLayoutProduction();
+  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && requestsOpeningProduction(request.task), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
   // let: 얼린 인자가 도구 규칙에 막히면 실행 도중 계약을 푼다(releaseContract). 풀린 뒤에는 일반 실행과 같다.
   let contract = request.readOnly || options.readOnlyTools || modernTilesetPolicy ? undefined : request.villageContract;
@@ -318,6 +332,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
   let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
   const recordCall = (record: PiToolCallRecord): void => {
+    openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
+    gameSystemProduction.record(record.name, record.result, ctx.project);
+    monsterGameProduction.record(record.name, record.result, ctx.project);
+    npcLayoutProduction.record(record.name,record.result,ctx.project);
     // 체크포인트 사이에 쓰기가 여러 번이면(단계 적용·비배타 도구) 같은 맵 기록을 순서대로 잇는다.
     if (record.constructionLogs?.length) pendingConstructionLogs = mergeConstructionLogs([...(pendingConstructionLogs ?? []), ...record.constructionLogs]);
     interiorCompletion.record(ctx.project, record);
@@ -426,7 +444,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped;
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -440,7 +458,24 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (contract && PI_PRESENTATION_GENERATORS.some(name => name === tool.name)) throw new Error('마을 계약 실행에서 타이틀/오프닝을 변경할 수 없습니다.');
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       try {
-        result = await tool.execute(id, params, signal);
+        if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
+          const args = params as Record<string, unknown>;
+          const brief = (tool.name === 'generate_opening_layer' ? prepareOpeningLayerRequest : prepareOpeningImageRequest)(args, ctx.project);
+          if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
+          if (!options.generateOpeningImage) throw new Error('오프닝 그림 생성 경로가 없습니다. 생성 미완료입니다.');
+          const still = await options.generateOpeningImage(openingImageProject(ctx.project, brief.referenceResourceIds), args, signal ?? options.signal);
+          signal?.throwIfAborted();
+          if (!still.ok) {
+            const failure = { ok: false, summary: still.summary };
+            recordCall({ toolCallId: id, name: tool.name, args, result: failure });
+            throw new Error(still.summary);
+          }
+          const applied = runTool(ctx, 'upsert_resource', { resource: { id: still.resourceId, name: still.name, kind: 'backdrop', dataUrl: still.dataUrl } });
+          const execution = applied.ok ? { ...applied, summary: `그림 ${still.resourceId}를 실제 생성·등록했습니다. 연결 전에 그림을 검토하세요.`, data: { status: 'generated', resourceId: still.resourceId, name: still.name } } : applied;
+          recordCall({ toolCallId: id, name: tool.name, args, result: execution });
+          if (!execution.ok) throw new Error(execution.summary);
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else result = await tool.execute(id, params, signal);
       } catch (error) {
         // 이 호출이 계약을 풀었으면 모델이 읽는 바로 그 실패 결과에 해제 사실을 붙인다 — 다음 수를 여기서 정한다.
         if (heldContract && !contract && contractReleased) {
@@ -448,6 +483,32 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           throw new Error(`${message}\n${systemPrompt[contractPromptIndex] ?? ""}`);
         }
         throw error;
+      }
+      if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
+        if (!options.renderToolImage) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');
+        const data = (result.details as { data?: { resourceId?: string } } | undefined)?.data;
+        const png = await options.renderToolImage(openingImageProject(ctx.project, data?.resourceId ? [data.resourceId] : []), 'show_opening_image', data, signal ?? options.signal);
+        if (!png) throw new Error('오프닝 그림을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        if (data?.resourceId) {openingProduction.saw(ctx.project, data.resourceId);monsterGameProduction.saw(ctx.project, data.resourceId);}
+        emit({ type: 'execution_status', name: 'opening.image.delivered', ok: true, summary: '실제 오프닝 그림을 모델에게 전달했습니다.', data: { resourceId: data?.resourceId, toolCallId: id } });
+      }
+      if (tool.name === 'preview_opening_reference') {
+        if (!options.renderToolImage) throw new Error('참고 프레임 전달 경로 없음.');
+        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const png = await options.renderToolImage(openingImageProject(ctx.project, []), tool.name, data, signal ?? options.signal);
+        if (!png) throw new Error('참고 프레임을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+      }
+      if (tool.name === 'preview_opening_animatic') {
+        if (!options.renderToolImage) throw new Error('애니메틱 프레임 전달 경로가 없습니다.');
+        const data = (result.details as { data?: { shotId: string; atMs: number[]; resourceIds: string[] } } | undefined)?.data;
+        if (!data) throw new Error('애니메틱 프레임 요청 없음.');
+        const png = await options.renderToolImage(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal);
+        if (!png) throw new Error('애니메틱 프레임을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        openingProduction.sawAnimatic(ctx.project, data.shotId, data.atMs);
+        emit({ type: 'execution_status', name: 'opening.animatic.delivered', ok: true, summary: '실제 합성 시간 표본을 모델에게 전달했습니다.', data: { shotId: data.shotId, atMs: data.atMs, toolCallId: id } });
       }
       if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
@@ -514,6 +575,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL && !PI_PRESENTATION_GENERATORS.some(name => name === tool.name)).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  for (const tool of tools) exposed.add(tool.name);
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']) {
+    const shape = shapeFor(name); if (shape) declare(shape);
+  }
+  if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
+  if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}
+  if (/시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
   for (const name of PI_PRESENTATION_GENERATORS) {
     if (!registryTools.some(tool => tool.name === name)) continue;
     const shape = shapeFor(name);
@@ -572,9 +640,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+  if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
+  if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT, EMERALD_MONSTER_AUTHORING_GUIDE);
+  else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
+  if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
+  if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
+  if (/음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) systemPrompt.push('[음악 저작] 기존 recommend_bgm은 곡 선택이다. 새 곡 요청이면 get_music_composer -> compose_music -> get_music_score -> set_game_audio로 실제 원문 음표와 독립 파트를 만든다. 모티프/응답/쉼/구간별 악기 진입을 설계한다. 다른 게임의 곡을 복사하지 않는다. WAV 바이트와 측정값은 실제 합성이며 모델은 소리를 듣지 않는다. 원곡 수준/청취 완료/스튜디오 오케스트라라고 주장하지 않는다. 세션/M2 전투곡 우선순위를 확인한다.');
   if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
-    systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
+    const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);
+    systemPrompt.push(buildToolCapabilityIndex(openingProduction.requested ? allowedDefinitions.filter(t => /opening|animatic/.test(t.name) || openingSupport.has(t.name)) : allowedDefinitions));
   }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
@@ -789,6 +864,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    let previousOpeningIssues = '';
+    for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
+      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
+      if (!issues.length || signature === previousOpeningIssues) break;
+      previousOpeningIssues = signature;
+      emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
+    }
     // One repair owner, one turn/time budget; unchanged failures stop immediately.
     let previousIssues = "";
     for (let attempt = 0; !fatal && !rejected && (contract || villageMapIds.size) && attempt < 2; attempt++) {
@@ -857,6 +940,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {
+    ...(monsterGameProduction.requested ? { monsterGameProduction: { issues: monsterGameProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
+    ...(gameSystemProduction.requested ? { gameSystemProduction: { issues: gameSystemProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
+    ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",

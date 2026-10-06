@@ -1,0 +1,1023 @@
+{
+  "version": "pokemon-motion-2",
+  "base": "/tmp/pokemon-raster-verifier-JkUt5K",
+  "results": [
+    {
+      "name": "upscaled twelve-frame direct raster valid",
+      "pass": true,
+      "detail": {
+        "scale": 0.25,
+        "phase": 0.5,
+        "fit": {
+          "anchorX": 7.5,
+          "anchorY": 11,
+          "halfWidth": 8,
+          "fitInkHeight": 21,
+          "widthScale": 0.4444444444444444,
+          "heightScale": 0.25,
+          "scale": 0.25,
+          "iterations": [
+            {
+              "scale": 0.25,
+              "leftScale": 0.5,
+              "rightScale": 0.4
+            }
+          ],
+          "frames": [
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 80,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 80,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 80,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 80,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 80
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 84,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 80
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "head roots and real stride change remain valid",
+      "pass": true,
+      "detail": {
+        "up": {
+          "jitterX": 0,
+          "jitterY": 1,
+          "widthRatio": 1,
+          "heightRatio": 1,
+          "areaRatio": 1,
+          "headWidthRatio": 1,
+          "headAreaRatio": 1,
+          "stepChange": 6,
+          "changes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "alphaChanges": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "comparisonRegistration": [
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ],
+          "wholeExactChanges": [
+            0.21739130434782608,
+            0.22857142857142856,
+            0.22857142857142856,
+            0.21739130434782608
+          ],
+          "upperEnd": 24,
+          "bounds": [
+            {
+              "x": 4,
+              "y": 12,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 11,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 12,
+              "width": 9,
+              "height": 20
+            }
+          ],
+          "head": [
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 11,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            }
+          ],
+          "torso": [
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ]
+        },
+        "right": {
+          "jitterX": 0,
+          "jitterY": 1,
+          "widthRatio": 1,
+          "heightRatio": 1,
+          "areaRatio": 1,
+          "headWidthRatio": 1,
+          "headAreaRatio": 1,
+          "stepChange": 6,
+          "changes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "alphaChanges": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "comparisonRegistration": [
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ],
+          "wholeExactChanges": [
+            0.21739130434782608,
+            0.22857142857142856,
+            0.22857142857142856,
+            0.21739130434782608
+          ],
+          "upperEnd": 24,
+          "bounds": [
+            {
+              "x": 4,
+              "y": 12,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 11,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 12,
+              "width": 9,
+              "height": 20
+            }
+          ],
+          "head": [
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 11,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            }
+          ],
+          "torso": [
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ]
+        },
+        "down": {
+          "jitterX": 0,
+          "jitterY": 1,
+          "widthRatio": 1,
+          "heightRatio": 1,
+          "areaRatio": 1,
+          "headWidthRatio": 1,
+          "headAreaRatio": 1,
+          "stepChange": 6,
+          "changes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "alphaChanges": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "comparisonRegistration": [
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ],
+          "wholeExactChanges": [
+            0.21739130434782608,
+            0.22857142857142856,
+            0.22857142857142856,
+            0.21739130434782608
+          ],
+          "upperEnd": 24,
+          "bounds": [
+            {
+              "x": 4,
+              "y": 12,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 11,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 12,
+              "width": 9,
+              "height": 20
+            }
+          ],
+          "head": [
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 11,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            }
+          ],
+          "torso": [
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ]
+        },
+        "left": {
+          "jitterX": 0,
+          "jitterY": 1,
+          "widthRatio": 1,
+          "heightRatio": 1,
+          "areaRatio": 1,
+          "headWidthRatio": 1,
+          "headAreaRatio": 1,
+          "stepChange": 6,
+          "changes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "alphaChanges": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "comparisonRegistration": [
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": -1,
+              "requestedX": 0,
+              "requestedY": -1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ],
+          "wholeExactChanges": [
+            0.21739130434782608,
+            0.22857142857142856,
+            0.22857142857142856,
+            0.21739130434782608
+          ],
+          "upperEnd": 24,
+          "bounds": [
+            {
+              "x": 4,
+              "y": 12,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 11,
+              "width": 8,
+              "height": 20
+            },
+            {
+              "x": 4,
+              "y": 12,
+              "width": 9,
+              "height": 20
+            }
+          ],
+          "head": [
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 11,
+              "width": 8,
+              "skullCenter": 7.5
+            },
+            {
+              "x": 8,
+              "y": 12,
+              "width": 8,
+              "skullCenter": 7.5
+            }
+          ],
+          "torso": [
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            },
+            {
+              "width": 8,
+              "core": 28,
+              "headArea": 72
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "native48x128 and exact x4 editor72x128 adapter, no stretch",
+      "pass": true
+    },
+    {
+      "name": "editor ink outside central16 rejected rather than cropped",
+      "pass": true
+    },
+    {
+      "name": "legacy pack central16 extraction and outside-ink rejection",
+      "pass": true
+    },
+    {
+      "name": "foreground alpha128 remains visible",
+      "pass": true
+    },
+    {
+      "name": "foreground alpha127 is background",
+      "pass": true
+    },
+    {
+      "name": "hidden transparent RGB invariant",
+      "pass": true
+    },
+    {
+      "name": "alpha127 background invariant",
+      "pass": true
+    },
+    {
+      "name": "opaque flat magenta background removed honestly",
+      "pass": true
+    },
+    {
+      "name": "asymmetric large arm cannot fit native bounds and baseline together",
+      "pass": true
+    },
+    {
+      "name": "moderate asymmetry imports without clipping using one shared scale; gait gate stays independent",
+      "pass": true,
+      "detail": {
+        "scale": 0.2222222222222222,
+        "fit": {
+          "anchorX": 7.5,
+          "anchorY": 11,
+          "halfWidth": 8,
+          "fitInkHeight": 21,
+          "widthScale": 0.3076923076923077,
+          "heightScale": 0.22826086956521738,
+          "scale": 0.2222222222222222,
+          "iterations": [
+            {
+              "scale": 0.22826086956521738,
+              "leftScale": 0.2222222222222222,
+              "rightScale": 0.4
+            },
+            {
+              "scale": 0.2222222222222222,
+              "leftScale": 0.2222222222222222,
+              "rightScale": 0.4
+            }
+          ],
+          "frames": [
+            {
+              "skullCenter": 35.5,
+              "leftExtent": 36,
+              "rightExtent": 16,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 52,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 88,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 88,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 88,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 16,
+              "topRelativeHeight": 88,
+              "ink": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              }
+            },
+            {
+              "skullCenter": 15.5,
+              "leftExtent": 16,
+              "rightExtent": 20,
+              "topRelativeHeight": 92,
+              "ink": {
+                "x": 0,
+                "y": 4,
+                "width": 36,
+                "height": 88
+              }
+            }
+          ]
+        },
+        "gaitGateErrors": [
+          "right: duplicate/frozen lower body (2)",
+          "down: duplicate/frozen lower body (2)",
+          "left: duplicate/frozen lower body (2)"
+        ]
+      }
+    },
+    {
+      "name": "empty alpha source head rejected",
+      "pass": true
+    },
+    {
+      "name": "background-only magenta source rejected",
+      "pass": true
+    },
+    {
+      "name": "actual CLI raster provenance and exact native bytes",
+      "pass": true
+    },
+    {
+      "name": "raster full gate blocks absent semantic review",
+      "pass": true
+    },
+    {
+      "name": "actual raster CLI complete local lifecycle",
+      "pass": true
+    },
+    {
+      "name": "obsolete version1 provenance cannot check or build",
+      "pass": true
+    },
+    {
+      "name": "unknown sampling rejected",
+      "pass": true
+    },
+    {
+      "name": "actual CLI refuses incompatible asymmetric source",
+      "pass": true
+    },
+    {
+      "name": "actual CLI refuses empty head source",
+      "pass": true
+    }
+  ],
+  "count": 21,
+  "candidate": "/tmp/pokemon-raster-verifier-JkUt5K/candidates/hero-1791109714897-97add214"
+}

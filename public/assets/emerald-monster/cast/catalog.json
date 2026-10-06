@@ -1,0 +1,276 @@
+[
+  {
+    "id": "oprn_emerald_field_cast_1",
+    "kind": "charset",
+    "file": "cast-1.png",
+    "sha256": "ea8bb33750e3bcb9147724e30d58868a6f983b46ca19978aa0ed60933f3cc8b7",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96,
+      "heroReferenceAdoption": {
+        "role": "hero",
+        "name": "Pokémon Emerald Brendan",
+        "source": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+        "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+        "independentlyAuthored": false,
+        "minimumExactRatio": 1
+      }
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_field_cast_2",
+    "kind": "charset",
+    "file": "cast-2.png",
+    "sha256": "bf6e40f19d55ff86d438afc8f6fa59df2d7be2d1a271943ee2f7880e3dba7174",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_signpost",
+    "kind": "charset",
+    "file": "sign.png",
+    "sha256": "11c47bb3366f6df4415319a5c1f0b95f5702b078d7caadd4dfbc7892fdc58690",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hero",
+    "kind": "picture",
+    "file": "trainer-hero.png",
+    "sha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_rival",
+    "kind": "picture",
+    "file": "trainer-rival.png",
+    "sha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_professor",
+    "kind": "picture",
+    "file": "trainer-professor.png",
+    "sha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_nurse",
+    "kind": "picture",
+    "file": "trainer-nurse.png",
+    "sha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_merchant",
+    "kind": "picture",
+    "file": "trainer-merchant.png",
+    "sha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_mother",
+    "kind": "picture",
+    "file": "trainer-mother.png",
+    "sha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_resident",
+    "kind": "picture",
+    "file": "trainer-resident.png",
+    "sha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_gym_leader",
+    "kind": "picture",
+    "file": "trainer-gym_leader.png",
+    "sha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_company_agent",
+    "kind": "picture",
+    "file": "trainer-company_agent.png",
+    "sha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_captain",
+    "kind": "picture",
+    "file": "trainer-captain.png",
+    "sha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_worker",
+    "kind": "picture",
+    "file": "trainer-worker.png",
+    "sha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_explorer",
+    "kind": "picture",
+    "file": "trainer-explorer.png",
+    "sha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_student",
+    "kind": "picture",
+    "file": "trainer-student.png",
+    "sha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_ranger",
+    "kind": "picture",
+    "file": "trainer-ranger.png",
+    "sha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_moon_leader",
+    "kind": "picture",
+    "file": "trainer-moon_leader.png",
+    "sha256": "39ae0d6bab08f30e3b91215200971bc22feb245886a89deccac50e234d405c98",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hiker",
+    "kind": "picture",
+    "file": "trainer-hiker.png",
+    "sha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hero_back",
+    "kind": "picture",
+    "file": "trainer-hero_back.png",
+    "sha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 64
+    },
+    "source": "public/assets/harnesses/pokemon-character-motion/emerald/generation.json",
+    "pipeline": "scripts/content/register-pokemon-character-motion.mjs"
+  }
+]

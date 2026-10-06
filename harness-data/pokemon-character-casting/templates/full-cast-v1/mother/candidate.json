@@ -1,0 +1,11 @@
+{
+  "role": "mother",
+  "label": "어머니",
+  "variant": "유나 · 판형 수정",
+  "description": "붉은 갈색 머리와 금빛 머리핀, 살구색 블라우스와 청록 치마",
+  "identity": "붉은 갈색 머리와 금빛 머리핀, 살구색 블라우스와 청록 치마 · 원작 체형과 발 교대 유지",
+  "collection": "full-cast-v1",
+  "base": "mom-mother-full-cast-v1",
+  "templateId": "mom",
+  "sourceNote": "에메랄드 mom 원작을 판형으로 삼아 Codex가 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

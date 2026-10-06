@@ -1,0 +1,117 @@
+{
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "createdAt": "2026-10-05T00:31:39.690Z",
+    "role": "hero",
+    "sourceSha256": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+    "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "finalSha256": "ca99e8da2e2c9e43c2d8955f0f6f0600d889f127140e10afe35b464adab5c5bc",
+    "contract": {
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "columns": [
+        "stepA",
+        "idle",
+        "stepB"
+      ],
+      "rows": [
+        "up",
+        "right",
+        "down",
+        "left"
+      ],
+      "idle": 1,
+      "runtimeOrder": [
+        0,
+        1,
+        2,
+        1
+      ],
+      "frameMs": 140,
+      "nativeSheetWidth": 48,
+      "nativeSheetHeight": 128,
+      "editorAdapter": {
+        "frameWidth": 24,
+        "paddingX": 4,
+        "sheetWidth": 72,
+        "sheetHeight": 128,
+        "resize": false
+      },
+      "reference": "pret/pokeemerald graphics/object_events/pics/people/*; frame16x32, ink~14x20..21"
+    },
+    "limits": {
+      "paletteUnionMax": 15,
+      "inkHeightMin": 18,
+      "inkHeightMax": 22,
+      "topMin": 10,
+      "topMax": 13,
+      "feetBottomMin": 30,
+      "feetBottomMax": 32,
+      "fitInkHeight": 21,
+      "headJitterMax": 1,
+      "bodySizeRatioMax": 1.25,
+      "areaRatioMax": 1.3,
+      "seamChangeMax": 0.36,
+      "stepChangeMin": 4,
+      "margin": 0
+    },
+    "mode": "native",
+    "slot": 0,
+    "scale": 1,
+    "clip": null
+  },
+  "hashes": {
+    "source.png": "d9ad055a39c8ad88d1106cdfce8f9f78b3d74e12b2d8376300a31ea266b7d516",
+    "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "charset.png": "ca99e8da2e2c9e43c2d8955f0f6f0600d889f127140e10afe35b464adab5c5bc"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "22c1ed7bc93b6dbf07fffe4f640c149c50ae033f4d9d1f9ca8ff614bddc40dd8",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "paletteUnionMax": 15,
+    "inkHeightMin": 18,
+    "inkHeightMax": 22,
+    "topMin": 10,
+    "topMax": 13,
+    "feetBottomMin": 30,
+    "feetBottomMax": 32,
+    "fitInkHeight": 21,
+    "headJitterMax": 1,
+    "bodySizeRatioMax": 1.25,
+    "areaRatioMax": 1.3,
+    "seamChangeMax": 0.36,
+    "stepChangeMin": 4,
+    "margin": 0
+  },
+  "createdAt": "2026-10-05T00:34:36.490Z",
+  "verdict": "pass",
+  "who": "supervisor",
+  "why": "Native12poses and decodedGIF4frames compared with actualEmerald references; frontpupils aligned atx5/x10, shortnape/collar, capvolume, leatherbagplanes/pocket, redshoe/creamsole groundcontact and oppositearm walking; current realbrowser1x4x exactplayback proof. Remaining broadears/simplecloth planes retained.",
+  "evidence": [
+    {
+      "file": "review-evidence-0.png",
+      "sha256": "5e976220e1e0e12bd9c8da031533d2fba4fdee26396cc0894f60de0d8bf4660e"
+    },
+    {
+      "file": "review-evidence-1.png",
+      "sha256": "0b11370e73b35f90f56bee8d7f947d522c63f9da19f5ac2d25ce93da1faf54af"
+    },
+    {
+      "file": "review-evidence-2.json",
+      "sha256": "1d4dcd0d6fb5ebf48cb8ac92c9eba6bfa01a8ff3ba2f122566dc5e17a53d1452"
+    },
+    {
+      "file": "review-evidence-3.json",
+      "sha256": "4bb442536fd26b079e8fe55f3007aa751da2b7e489372085e8a7d75fb689be93"
+    }
+  ],
+  "semanticChecklist": [
+    "correct four directions",
+    "alternating feet read while walking",
+    "head/body identity stable",
+    "loop seam natural",
+    "clip is actual drawn poses if advertised drawn"
+  ],
+  "previewSha256": "5da7e997f9661ed42a6a6d1ca6aace6fb4ed3b0c6149050e6c33d8a1c7296d14"
+}

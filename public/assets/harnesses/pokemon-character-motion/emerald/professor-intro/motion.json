@@ -1,0 +1,58 @@
+{
+  "id": "professor-intro",
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "fps": 6,
+  "frameOrder": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "sourceRects": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 64,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 128,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 192,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 256,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 320,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    }
+  ],
+  "kind": "drawn",
+  "paletteUnionMax": 15,
+  "role": "professor",
+  "sourceSha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+  "clipSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+  "gateSha256": "2aa5c01f067c366f1214ef13d9e6e536c8b2c380918e050d7ee7eefd8b268b5c"
+}

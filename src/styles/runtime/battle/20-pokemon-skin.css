@@ -1565,3 +1565,9 @@
   animation: none;
   filter: none;
 }
+
+/* The pixel result window is more specific than the base collector button rule. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin][data-battle-skin-family][data-battle-layout] .battle-result-panel.battle-result-pixel .battle-result-confirm {
+  color: var(--pkmn-text, #24313b);
+  text-shadow: none;
+}

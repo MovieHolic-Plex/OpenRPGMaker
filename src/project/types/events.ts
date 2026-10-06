@@ -187,7 +187,7 @@ export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly" | "repair" | "appraisal" | "pawn" | "blackMarket" | "consignment";
 /** Runtime shop surface selected by the author in the event/database editor. */
-export type ShopUiPreset = "pixel" | "classic" | "tabs" | "grid" | "compare" | "split" | "cart" | "stock" | "story" | "baram";
+export type ShopUiPreset = "collector" | "pixel" | "classic" | "tabs" | "grid" | "compare" | "split" | "cart" | "stock" | "story" | "baram";
 export type ShopMessageType = "welcome" | "business" | "direct" | "festival" | "closingSale" | "vip";
 export type ShopServiceKind = "repair" | "appraisal" | "pawn";
 export type ShopRestockPolicy = "daily" | "weekly" | "onDemand";

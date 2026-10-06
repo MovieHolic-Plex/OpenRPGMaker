@@ -1,8 +1,11 @@
+import { monsterPartyEntries, usesMonsterParty } from "@/player/playerMonsterPartyModel";
+import { FIELD_MENU_COMMANDS, fieldMenu } from '@/project/fieldMenu';
 import { defaultActorFaceResourceId, normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { monsterCampaign, monsterJournalEntry } from "@/project/monsterJournal";
 import { currentChapterLabel } from "@/project/newGamePlus";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
@@ -13,25 +16,8 @@ import { buildQuestLog } from "@/player/questLog";
 import type { SaveSlotReadResult } from "@/player/saveSlots";
 import type { MenuSkinRailStyle } from "@/player/menuSkins/types";
 
-export const STATUS_MENU_COMMAND_IDS = [
-  "items",
-  "skills",
-  "equipment",
-  "monsters",
-  "save",
-  "load",
-  "status",
-  "row",
-  "formation",
-  "battle-reports",
-  "quests",
-  "relationships",
-  "gallery",
-  "life-ledger",
-  "options",
-  "wait",
-  "to-title",
-] as const;
+export const STATUS_MENU_COMMAND_IDS = FIELD_MENU_COMMANDS;
+
 
 export type StatusMenuCommandId = (typeof STATUS_MENU_COMMAND_IDS)[number];
 
@@ -48,7 +34,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -136,6 +122,7 @@ export function statusMenuRailIdForCommand(
   session?: PlaySession,
 ): StatusMenuRailId {
   if (isStatusMenuGroupEntryId(commandId)) return commandId;
+  if (project && fieldMenu(project)) return commandId;
   const groupId = commandGroupIdOf(commandId);
   if (project && session && statusMenuRailStyle(project) === "flat") {
     if (listStatusMenuRailIds(project, session).includes(commandId)) return commandId;
@@ -147,6 +134,7 @@ export function statusMenuRailIdForCommand(
 
 /** 레일 순서 = 화면 순서 = ↑↓ 이동 순서. */
 export function listStatusMenuRailIds(project: Project, session: PlaySession): StatusMenuRailId[] {
+  if (fieldMenu(project)) return listStatusMenuCommandIds(project, session);
   if (statusMenuRailStyle(project) === "flat") return flatRailIds(listStatusMenuCommandIds(project, session));
   const collapsedGroupIds = new Set(COLLAPSED_GROUPS.map((group) => group.groupId));
   const expanded = listStatusMenuCommandIds(project, session)
@@ -183,6 +171,8 @@ export type StatusMenuCommand = {
 
 export type PlayerStatusMenuPartyRow = {
   readonly actorId: string;
+  readonly monsterInstanceId?: string;
+  readonly resourceLabel?: "PP";
   readonly name: string;
   readonly levelLabel: string;
   /** 직업 이름과 숫자 레벨 — 파티 개요(첫 화면)가 "전사 · Lv 12" 로 쓴다. */
@@ -232,7 +222,11 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
   const saveDisabled = session.m2Runtime?.access?.save === false;
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
-  return STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds).filter((id) => {
+  const authored = fieldMenu(project);
+  return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
+    if (id === 'trainer-card') return Boolean(authored);
+    if (id === "monster-dex" || id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
+    if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
     if (id === "relationships") return showRelationships;
     if (id === "gallery") return isGalleryEnabled(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
@@ -264,7 +258,18 @@ export function createPlayerStatusMenuSnapshot(
   const terms = resolveTerms(project);
   const hpTerm = terms.hp;
   const mpTerm = terms.mp;
-  const partyRows = session.partyActorIds.flatMap((actorId): PlayerStatusMenuPartyRow[] => {
+  const partyRows = usesMonsterParty(project) ? monsterPartyEntries(project, session).map((entry): PlayerStatusMenuPartyRow => {
+    const hpRatio = vitalRatio(entry.hp, entry.maxHp);
+    return {
+      actorId: entry.instance.instanceId, monsterInstanceId: entry.instance.instanceId, resourceLabel: "PP",
+      name: entry.name, levelLabel: `L${entry.instance.level}`, level: entry.instance.level, className: entry.typeLabel,
+      condition: entry.stateNames.join(" · ") || "정상", stateNames: entry.stateNames,
+      faceResourceId: entry.species?.graphic.monsterResourceId,
+      hpLabel: `HP ${entry.hp}/${entry.maxHp}`, hpValueLabel: `${entry.hp}/${entry.maxHp}`,
+      mpLabel: `PP ${entry.pp.before}/${entry.pp.maximum}`, mpValueLabel: `${entry.pp.before}/${entry.pp.maximum}`,
+      hpRatio, hpLevel: partyVitalLevel(hpRatio), mpRatio: vitalRatio(entry.pp.before, entry.pp.maximum), nextLevel: entry.nextLevel,
+    };
+  }) : session.partyActorIds.flatMap((actorId): PlayerStatusMenuPartyRow[] => {
     const actor = actorsById.get(actorId);
     if (!actor) return [];
     const vitals = session.actorVitals[actorId];
@@ -305,7 +310,7 @@ export function createPlayerStatusMenuSnapshot(
     const opensGroup = isStatusMenuGroupEntryId(id);
     const groupId = opensGroup ? collapsedGroupIdOf(id) : commandGroupIdOf(id);
     // 접힌 그룹 열기 항목은 그 자체가 그룹을 대표하므로 별도 그룹 라벨을 앞세우지 않는다.
-    const groupStart = !opensGroup && !seenGroups.has(groupId);
+    const groupStart = !fieldMenu(project) && !opensGroup && !seenGroups.has(groupId);
     seenGroups.add(groupId);
     return {
       id,
@@ -324,16 +329,22 @@ export function createPlayerStatusMenuSnapshot(
     goldLabel: `${terms.goldPrefix}${session.gold}${terms.gold}`,
     timeLabel: formatElapsedTime(options.elapsedMs ?? 0),
     chapterLabel: currentChapterLabel(project, session),
-    emptyPartyLabel: partyRows.length === 0 ? "파티원이 없습니다" : null,
+    emptyPartyLabel: partyRows.length === 0 ? usesMonsterParty(project) ? "아직 동료가 없습니다" : "파티원이 없습니다" : null,
   };
 }
 
 export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {
+  const authored = project && fieldMenu(project)?.entries.find(row => row.command === commandId);
+  if (authored) return authored.label;
   switch (commandId) {
+    case 'trainer-card': return '원정 수첩';
     case "items": return "아이템";
     case "skills": return "스킬";
     case "equipment": return "장비";
     case "monsters": return "몬스터";
+    case "monster-dex": return "몬스터 도감";
+    case "region-map": return "지역 지도";
+    case "campaign-progress": return "배지·목표";
     case "save": return "저장";
     case "load": return "로드";
     case "status": return "상태";
@@ -391,8 +402,11 @@ export function statusMenuCommandSummary(
   slots: readonly SaveSlotReadResult[],
   waitModeEnabled = true,
 ): string {
-  const party = session.partyActorIds.length;
+  const monsterParty = usesMonsterParty(project);
+  const party = monsterParty ? monsterPartyEntries(project, session).length : session.partyActorIds.length;
+  const countLabel = `${party}${monsterParty ? "마리" : "명"}`;
   switch (id) {
+    case 'trainer-card': return project.meta.author || '원정 기록';
     case "items":
       return `${Object.values(session.inventory).filter((count) => (count ?? 0) > 0).length}종`;
     case "skills":
@@ -400,9 +414,18 @@ export function statusMenuCommandSummary(
     case "status":
     case "row":
     case "formation":
-      return `${party}명`;
+      return countLabel;
     case "monsters":
       return `${session.monsterParty.length}마리`;
+    case "monster-dex": {
+      const ids = monsterCampaign(project)?.speciesIds ?? [];
+      return `${ids.filter((id) => monsterJournalEntry(session, id).caught).length}/${ids.length}종`;
+    }
+    case "region-map": return project.maps[session.currentMapId]?.name ?? "";
+    case "campaign-progress": {
+      const badges = monsterCampaign(project)?.badges ?? [];
+      return `${badges.filter((badge) => session.switches[badge.switchId] === true).length}/${badges.length}배지`;
+    }
     case "battle-reports":
       return `${session.battleReports?.length ?? 0}전투`;
     case "quests":
@@ -420,7 +443,7 @@ export function statusMenuCommandSummary(
       return `${listGalleryUnlocks(session).length}장`;
     case "party-menu": {
       const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
-      return crit > 0 ? `위험 ${crit} · ${party}명` : `${party}명 양호`;
+      return crit > 0 ? `위험 ${crit} · ${countLabel}` : `${countLabel} 양호`;
     }
     case "record-menu":
     case "system-menu":

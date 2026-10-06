@@ -624,3 +624,210 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   세 명령 모두 저장 왕복을 고정하는 계약 테스트가 `test/commandContracts/`에 있다.
 
 검증: `test/mgL7sys*.test.ts` 6개와 계약 테스트 6개. 출하 플레이어 화면 증거는 `scripts/qa/runtime/masterpiece-system.scenario.mjs`(난이도 선택 → 흑백 필터 → 롤링 HP·움직이는 배경 → 라이브라).
+
+
+## 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
+
+`cinematicSequence.ts`는 pan/zoom에 전체 장면 유지 시간(`--cinematic-motion-ms`)을 쓰고,
+fade에는 별도 `--cinematic-fade-ms`(최대 600ms, 더 짧은 장면은 해당 시간)를 쓴다.
+기존 fade는 6초 장면의 끝에야 그림이 온전히 보였고 수동 장면은 8초 동안 어두웠다.
+양의 타이머, durationMs:0 확인 대기, 키보드 소유권, 음악 수명, reduced-motion은 유지한다.
+실제 출하 브라우저에서 수정 전 1.4초 투명도 0.25/0.20과 수정 후 0.7초 투명도 1을 확인했다.
+증거와 재현: `verify-shots/monster-assistant-opening-2026-10-03/`,
+`scripts/qa/runtime/opening-assistant-native.cjs`. 전체 테스트/게이트 실행 결과가 아니다.
+
+한국어 시네마틱 자막은 `word-break: keep-all`로 단어 사이에서 줄을 바꾸고,
+한 단어 자체가 무대보다 길 때는 기존 `overflow-wrap:anywhere`로 넘침을 피한다.
+24.5초 도입의 초대 문장에서 “기다린/다”로 갈라지던 실제960×720 화면을 근거로 수정했다.
+
+## Original monster campaign journal and field menus (2026-10-03)
+
+Optional `system.monsterCampaign` exposes ESC → 기록 → 몬스터 도감 / 지역 지도 / 배지·목표.
+Journal seen/caught receipts persist in the existing session switches, remain after
+boxing/release/evolution, and use actual revealed enemies and committed captures.
+The map follows authored coordinates and real transfer connections; badges and
+next objectives read live switches. Unknown species hide name and art. Ownership,
+source routing and bounded browser evidence: [monster-campaign-menu.md](monster-campaign-menu.md).
+
+## Monster party common UI dogfood follow-up (2026-10-03)
+
+When `system.battleParty === "monsters"` or legacy `monsterBattleParty === true`,
+common menu overview/status/skills and medicine shop previews derive from live
+`monsterParty` instances rather than the field actor. `playerMonsterPartyModel.ts`
+normalizes legacy missing skill/PP data using the same monster collection rules
+as combat, resolves types through authored database element names, and exposes
+current HP, current total PP, battle stats and known moves. Actor RPG projects
+retain their actor paths. Actor equipment/row/formation commands are hidden only
+for monster party projects because those controls cannot modify monster battlers.
+
+ESC → 파티 → 몬스터 → Enter opens the current instance detail (art, type, HP,
+effective stats, known moves/current PP); explicit 보관함/파티 이동 is a separate
+row. Esc returns to the prior list and preserves its cursor. Pending move replace
+and reject choices remain available. The menu rejects boxing the last valid party
+monster in monster battle mode, gives a reason, and refreshes runtime surfaces
+following successful party movement. This UI guard does not forbid authored
+interpreter commands or external tools from intentionally clearing a party.
+
+Save `partyLevel` metadata follows the leading monster in monster party mode.
+Medicine purchase previews model one virtual owned copy without mutating session,
+and call the shared `previewMonsterMedicine` eligibility/HP/PP rules. Shop party
+cards use current monster identity/art; unavailable effects keep their reason.
+Regression coverage is authored in `test/monsterPartyMenuDogfood.test.ts` (both
+party flags, empty party, inspect-before-move, known moves/PP, last-member reason,
+shop preview purity, save/load UI state, element labels, actor path compatibility).
+Tests were not run by the worktree agent under AGENTS.md session restrictions;
+shipping-player dogfood verification is owned by the integrating supervisor.
+
+## Collector supply shop (2026-10-04)
+
+`collector` is an authored white pixel supply-counter skin, sharing native commerce,
+quantity selection, buy/sell, budget, inventory and keyboard handlers. It removes
+actor equipment party preview from this surface; prices/merchant budgets are unchanged.
+`effectiveShopUiPreset(step, project)` resolves explicit `meta.oprnShopPreset`, then
+event preset, then pixel. The project override is serialized through older hosts
+without writing an unsupported enum into their shop commands. `configure_shop_presentation`
+selects it or clears it with event-default; read_game_systems shows effective counts.
+The editor command picker also exposes collector for hosts that accept the current
+schema. configureMonsterPresentation authors collector for future collector games.
+
+Native supply-shop QA found a preserved0G capture-ball sell-price override, despite
+an80G catalog buy price. `set_sell_prices` changes that real authored table; this
+campaign now authors40G. Presentation tools do not invent prices. read_game_systems
+exposes sellPriceOverrides and the system review fingerprint includes that table.
+Collector detail uses one column and omits equipment comparison controls for supplies.
+Native Tab→ArrowRight→Enter switches buy/sell. Real pointer clicks remain blocked by
+the existing runtime input policy; test with the supported keyboard, not synthetic clicks.
+
+At390×640 the game still mounts a320×240 shop stage. Collector compact CSS must
+clear generic stacked-shop side max-height42% and description max-height2.6em,
+keep its two columns, compact hero/icon/text, and preserve full supply description.
+Quantity/transaction checks alone do not prove that the detail is readable.
+
+## Emerald reference shop stages (2026-10-04)
+
+`meta.oprnMonsterStyle={version:1,reference:'emerald'}` opts ordinary shops into
+`src/player/playSceneEmeraldShop.ts`. `emeraldShopDom.ts` owns the window model,
+`emeraldShopInput.ts` owns one keyboard lifetime across every phase, and
+`styles/runtime/emeraldShop.css` is imported by that runtime module in the runtime
+cascade layer. Collector without this authored profile retains its current flow.
+Specialist shopkeeper, repair/appraisal/pawn and haggle handlers retain their
+existing economics and UI; the profile does not reinterpret these services.
+
+The reference is [pret/pokeemerald src/shop.c](https://github.com/pret/pokeemerald/blob/master/src/shop.c):
+entry Buy/Sell/Quit, a map view beside goods and money, then separate quantity,
+confirmation and transaction-message windows. Its 240×160 screen geometry is
+scaled to a natural 480×320 shell. A ResizeObserver fits that shell inside the
+actual canvas/viewport bounds, including narrow displays. Buying snapshots the
+actual Phaser game canvas on the next rendered frame; the transparent panel
+keeps the live field visible if a snapshot is unavailable. There is no synthetic
+map. Selling derives positive owned stacks from the existing goods index.
+
+The shop phases are menu → items → quantity → confirm → receipt → items.
+Confirm commits only at Yes through the original `handleShopTransaction`; money,
+merchant budget, inventory limits, sell-price overrides, loyalty and event branch
+receipts keep their existing owners. Quantity preserves authored single/select
+mode. Up/Down changes one, Left/Right ten. Escape from confirmation returns to
+quantity, quantity/receipt to the list, list to entrance, entrance to the field.
+Repeated confirm/cancel events cannot cross phases. No modern mode tabs,
+permanent numeric input or action footer is mounted. Item descriptions can scroll
+with PageUp/PageDown/Home/End; an overflow triangle identifies longer text while
+the owned count stays visible. Scene shutdown/destroy or surface replacement
+releases listeners, ResizeObserver, snapshot handoff and the pending promise;
+an abandoned session does not receive later merchant-ledger writes.
+
+Focused reproduction: first build the player (`npm run build:player`) and start the
+assigned worktree through `npm run dev:worktree`, then set `OPRN_QA_URL` and run
+`node scripts/qa/runtime/emerald-shop-native.probe.mjs`. The optional
+`OPRN_SHOP_PLAYER_DIR` selects an already built player; `OPRN_SHOP_QA_OUT` selects
+the evidence folder. This uses a detached existing engine fixture and the actual
+`player.html` export-store path. Read `SUMMARY.md` first. The probe checks quantity,
+No, confirmation cancellation, a held Enter, exact buy/sell arithmetic, last-stack
+deletion, empty owned bag, long-description scroll, insufficient funds, 390px
+bounds and the unchanged collector flow without the profile. It proves neither canonical game
+storage nor old-save Continue; those remain supervisor-owned integration checks.
+## Default camera zoom during new game and Continue (2026-10-04)
+
+`createInitialSession` always includes a follow-player camera without a `zoom`.
+`centerRuntimeCamera` seeds its internal authored zoom to 1 on each map. Therefore
+`applyStoredCameraState` must resolve missing saved zoom from `system.cameraZoom`;
+otherwise the presence of the ordinary follow-player state silently suppresses
+the project default. Explicit saved cinematic zoom still takes precedence.
+The fix preserves session bytes and existing optional-zoom camera commands.
+For Emerald profiles, 480×320 with cameraZoom2 must actually show 15×10 native
+16px tiles; authored metadata alone is insufficient evidence. Verify the player
+camera/world viewport in shipping-browser evidence after new game and transfer.
+
+## Authored sliding floors restored in the current engine (2026-10-04)
+
+`TilesetDef.slideTiles?: Record<string, SlideRule>` uses the original optional
+`up | down | left | right | ice | stop` contract. `project/slideTiles.ts` reads
+upper overlay → upper stack/base → lower overlay → lower stack/base. Arrows
+redirect and continue across ordinary floor until wall/stop; ice preserves the
+incoming direction only while on ice. An absent table preserves ordinary walking.
+This engine feature applies to any authored project; it has no Emerald profile check.
+
+`playSceneMovement` queues a transient `playerSlide` after an ordinary completed
+step, then uses the existing footprint passage/event blocking and step animation
+on the next logic tick. Each slide tile is a real completed field step, retaining
+follower trail, step states, terrain damage, care, poison, location/touch triggers
+and encounter bookkeeping. Rendering, life simulation, logic timing and tile-window
+performance paths are unchanged. The map/coordinate stamp discards stale queued
+steps after relocation. Dialogue/cutscene pauses at a tile boundary; menu already
+pauses the scene. Forced routes own movement ahead of slides and clear pending
+slide state on replacement. Transfer, placement, map reset and both movement-cancel
+handlers clear slide/kind. Vehicles and side-view maps ignore slide tables.
+Slide state is scene-local and is not added to persistent PlaySession/save bytes.
+
+The exporter and canonical wire view already copy the complete tileset record.
+Restoring type + `io/shapeResourceFields.validateTileset` is sufficient: table keys
+must be integer tile indices in range, and values must be one of the six rules.
+No schema/release version bump and no normalization/default table injection are
+needed. `serialize`, `serializePretty`, `deserialize` and `prepareWebExport` retain
+all authored tables; author reference stripping does not strip gameplay metadata.
+
+Focused reproduction uses `npm run dev:worktree -- --config vite.player-qa.config.ts`
+and `OPRN_QA_URL`, `OPRN_QA_PROJECT`, optional `OPRN_QA_OUT`, followed by
+`node scripts/qa/runtime/slide-tiles-native.probe.mjs`. The probe positions a read-only
+full-campaign copy on existing authored floor, taps a physical direction for35ms,
+releases input and observes native automatic completed steps. It authors no tiles
+or maps. Read SUMMARY before PNGs.
+
+Receipt: `/tmp/oprn-emerald-20261004/slide-browser/SUMMARY.md` and `report.json`.
+72 maps /60species: frost gym ice `(3,6)→(3,15)` nine steps→wall;
+hideout left arrow `(5,6)→(8,8)` nine steps including turns→stop;
+hideout down arrow `(19,6)→(19,6)` four-step loop→wall. Endpoints remained still400ms.
+Compact/pretty/export roundtrip retains authored tables; invalid rule rejected;
+page/HTTP errors0. Route/cancel/vehicle/dialogue boundaries were inspected in source;
+the browser proves released-input movement and wall/stop termination. It does not
+prove an entire puzzle solution, canonical storage or a compiled player build.
+
+### Emerald shop confirmation backdrop and pending row (2026-10-04)
+
+Actual72map campaign QA exposed two copies of the player/shopkeeper: the real
+field crop was recentered on the left, while unused space below the shortened
+stock window exposed the original centered Phaser canvas. `emeraldShop.css` now
+makes unused buy-shell space opaque once the real snapshot exists, leaving the
+single actual crop visible. A failed/unavailable snapshot keeps the transparent
+shell and original single live field; no invented map or second crop is drawn.
+Sell phases use the same opaque shell around their owned-bag window. Entrance
+Buy/Sell/Quit remains on the actual field.
+
+Quantity/confirm/receipt shows only its selected inactive goods row in a complete
+64px window. Other rows are hidden until returning to the full stock list, so a
+partial fourth row cannot leak under Yes/No. `playSceneEmeraldShop.render` focuses
+the selected confirmation action rather than the earlier inactive stock button.
+The original phase owner, pending transaction, atomic commit, prices, budget,
+inventory and keyboard lifetime are unchanged.
+
+Reproduce with the standalone source player config, then
+`OPRN_QA_URL=<worktree-url> OPRN_QA_PROJECT=<actual-project.json> OPRN_QA_SLOT=<genuine-slot.json>`
+and `node scripts/qa/runtime/emerald-shop-backdrop.probe.mjs` (optional `OPRN_QA_OUT`).
+Receipt: `/tmp/oprn-emerald-20261004/shop-backdrop-source/SUMMARY.md`, read before PNGs.
+Exact unchanged project/slot SHA is in `report.json`. Native older-slot Continue,
+town-door entry, counter interaction and authored shop were used; only setup
+teleported to town(5,16). Desktop1280×960/narrow390×844 showed one real crop and
+one complete pending stock row, including a later selected technical ether.
+Buy2 changed1600→1440G/orbs10→12; No, Escape and Quit kept state unchanged;
+page/HTTP errors0. Snapshot-failure fallback was inspected in source. This is
+source exportEntry/store-shim evidence; final compiled player and canonical
+storage remain supervisor integration work.

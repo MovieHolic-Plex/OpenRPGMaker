@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "id": "merchant-246f53bcdb027e7d",
+  "role": "merchant",
+  "label": "상인",
+  "variant": "도윤 v2 · 시장 상인",
+  "description": "청록 두건과 뒤 매듭, 콧수염, 가죽 작업 조끼와 짧은 모래색 앞치마",
+  "identity": "머리의 둥근 앞머리를 두건과 매듭으로 교체. 얼굴에 콧수염. 셔츠·긴 앞치마를 가죽 조끼·작업 앞치마로 재설계.",
+  "collection": "merchant-redesign-v2",
+  "base": "mart_employee-merchant-v2",
+  "templateId": "mart_employee",
+  "sourceNote": "에메랄드 mart_employee의 보행·접지를 판형으로 유지하고 Codex가 머리·얼굴·몸통의 픽셀 행을 다시 저작한 파생 후보입니다. 원작 기반임을 명시합니다.",
+  "author": "Codex GPT-6",
+  "kind": "walking",
+  "files": {
+    "charset.png": "d2baeef949878d2093672ccd1ee07e61bdbedd7e4f90738f9a2f67695414a104",
+    "walk.gif": "06cbd10b88d1b1fb367b457832753c1fc9167c4ae1026124967a425fe263262a",
+    "context.png": "0d67cd00a5bfa636f72f9987fe79ecc85e230df7e5625da91656498cfe21e461",
+    "origin.txt": "2dd9e37ec24a33a73eacb27bedfc11aaf406e6bb954966c4964a67972344518f",
+    "recipe.json": "85809a89c888883510e9efff9608d9f1ad3828cbc5d8b39158b4cd137d2e3448",
+    "template.png": "b642bb915fe9adf8e671c33fb128aed21cba749c5b782d6666daed685019e72d",
+    "changes.png": "04d44deb5bc2aa80b4e793cfb51f18ee85bf70f43413f9f70edee46ebcc20e3d"
+  },
+  "nativeFiles": {
+    "source.png": "d2baeef949878d2093672ccd1ee07e61bdbedd7e4f90738f9a2f67695414a104",
+    "prompt.txt": "2dd9e37ec24a33a73eacb27bedfc11aaf406e6bb954966c4964a67972344518f",
+    "charset.png": "4132a9a641d332a162bb11dc491534cd2ea34b629f519bc83397befecf99de8c",
+    "provenance.json": "c44776990d4730dc6825aaaba53e8d8b802c56dc6f83cb48c0e4178e06a962e6",
+    "preview.html": "2909ed6189709421b1ed60803f2ae63f6edc5c6bb9e6764aa9a3d9e209378064",
+    "preview-receipt.json": "3bf5c5f2dad5c5045100ba661192aea5c9056a03659d37091828feaa87fe2672"
+  },
+  "implementationSha256": "0ba29c0ede065a1655f01810eff22aecdb7b3ce4189397825ccf5b55fb291d0b",
+  "structural": {
+    "pass": true,
+    "errors": []
+  },
+  "media": {
+    "templateId": "mart_employee",
+    "gifFrames": 4,
+    "sourcePixelsExact": true,
+    "durationMs": 130,
+    "paletteMax": 15,
+    "resizing": false
+  },
+  "sourceSha256": "d2baeef949878d2093672ccd1ee07e61bdbedd7e4f90738f9a2f67695414a104",
+  "scope": "Native walking candidate. Light/dark/background contrast preview, not runtime gameplay QA."
+}

@@ -1,3 +1,5 @@
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { playEmeraldShop } from "@/player/playSceneEmeraldShop";
 import { changeGold, changeItemsAtomically, GOLD_MAX } from "@/project/session";
 import {
   isSafeEconomyRecord,
@@ -72,6 +74,7 @@ export function playShop(
   if (step.economy?.shopkeeperEnabled === true) {
     return playShopkeeper(scene, step, identity);
   }
+  const emerald = isEmeraldMonsterStyle(store.getCurrent()) && !step.shopServiceKind && step.economy?.haggleEnabled !== true;
   const closed = shopIsClosed(scene.session, step);
   const stockItems = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
@@ -87,11 +90,20 @@ export function playShop(
     return showShopNotice(scene, terms, "지금은 해 드릴 일이 없습니다.").then(failedResult);
   }
   // 빈 상점도 안내는 띄운다 — 예전에는 아무것도 안 보여줘서 이벤트가 조용히 지나갔다(유령 상점).
-  if (stockItems.length === 0) {
+  if (stockItems.length === 0 && !emerald) {
     return showShopNotice(scene, terms, "지금은 팔 물건이 없습니다.").then(failedResult);
   }
   // 방문마다 상인 소지금을 명령값(기본 100G) × 투자 레벨 배수로 초기화. 방문 중 매입/매도로 증감.
   let merchantGold = beginShopVisit(scene, step, identity);
+  if (emerald) return playEmeraldShop({
+    scene, step, stockItems, terms, merchantGold,
+    transact: (item, mode, count, budget) => {
+      const result = handleShopTransaction(scene, item, mode, count, budget);
+      if (result.ok && mode === "buy") accrueShopLoyalty(scene, step, item.price * clampQuantity(count));
+      return result;
+    },
+    onFinish: budget => endShopVisit(scene, step, budget, identity),
+  });
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
     const preset = shopUiPresetOf(step);
@@ -298,7 +310,7 @@ export function playShop(
               showMenu,
               category,
               categorySource: baseForMode(mode),
-              onDetail: () => openDetail(),
+              onDetail: preset === "collector" ? undefined : () => openDetail(),
               // 파티 카드 — 이후 커서를 옮겨도 이 동료 기준으로 비교한다(상세 창에서 고른 것과 같다).
               onActor: preset === "pixel" ? (actorId) => {
                 comparisonActor = actorId;

@@ -1,0 +1,113 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "clip",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:41.371Z",
+  "role": "professor",
+  "clipId": "professor-intro",
+  "sourceSha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+  "promptSha256": "c67f2cf9e0dbd174458ded947c25295250ccfdd0c704019a913bfef41a6e3091",
+  "finalSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+  "metadataSha256": "4a12707dba15f43d39dd29e5470cb4f70d382e79aab55d8ebd013f83d20db1fb",
+  "columns": 6,
+  "rows": 1,
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "frameCount": 6,
+  "sourceRects": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 64,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 128,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 192,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 256,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 320,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    }
+  ],
+  "commonScale": 1,
+  "headAlignment": "top silhouette root, native translations only",
+  "scale": 1,
+  "sampling": "native-pixels-unchanged",
+  "rects": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 64,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 128,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 192,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 256,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "x": 320,
+      "y": 0,
+      "width": 64,
+      "height": 64
+    }
+  ],
+  "limits": {
+    "paletteUnionMax": 15,
+    "inkHeightMin": 18,
+    "inkHeightMax": 22,
+    "topMin": 10,
+    "topMax": 13,
+    "feetBottomMin": 30,
+    "feetBottomMax": 32,
+    "fitInkHeight": 21,
+    "headJitterMax": 1,
+    "bodySizeRatioMax": 1.25,
+    "areaRatioMax": 1.3,
+    "seamChangeMax": 0.36,
+    "stepChangeMin": 4,
+    "margin": 0
+  }
+}

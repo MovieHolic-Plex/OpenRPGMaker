@@ -1,0 +1,1 @@
+Merchant v2.1: corrected a dark teal scarf tail drawn across the back. Changed explicit up/side rows; feet preserved. Native and media checks passed during queue, all actual GIF frames visually inspected. New package reloaded from standalone SQLite; no votes written. Preview: http://mdc-server:18326/?wave=merchant-tail-fix&candidate=merchant-2d36fdaf6bdd88be

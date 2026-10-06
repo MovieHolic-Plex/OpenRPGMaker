@@ -1,0 +1,262 @@
+{
+  "url": "http://127.0.0.1:18301/monster-expedition/player.html",
+  "projectSha256": "6871c8dd6ec27ede4682c6b89cdce7b35e3ec64c13931ba91f93cc5c6bde4972",
+  "scope": "Unmodified shipping player, private browser context, native keys. QA BOOT observation only; no session injection.",
+  "errors": [],
+  "pages": [
+    {
+      "id": "emerald_starlight_welcome",
+      "style": "emerald",
+      "narration": "안녕! 나는 천문박사란다.\n여기는 사람과 몬스터가 함께 사는 별빛섬이지.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 3.588726,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_grass",
+      "style": "emerald",
+      "narration": "이 친구는 새싹토야. 풀숲을 좋아하지.\n작은 친구도 든든한 동료가 된단다.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 4.138693,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_fire",
+      "style": "emerald",
+      "narration": "숯비늘은 따뜻한 불을 품고 있어.\n잘하는 기술도, 사는 곳도 다르단다.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 5.265555,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_water",
+      "style": "emerald",
+      "narration": "여울랑은 물길을 자유롭게 헤엄친단다.\n너와 함께할 첫 친구는 네가 직접 고르렴.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 5.832849,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_beacon",
+      "style": "emerald",
+      "narration": "우리 등대의 별빛은 먼 배들의 길잡이였지.\n그런데 요즘은 밤이 되어도 빛이 희미하구나.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 6.364721,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_company",
+      "style": "emerald",
+      "narration": "밤막회사가 별빛을 거둔다는구나.\n섬을 돌아다니며 무슨 일인지 살펴보렴.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 6.90783,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_journey",
+      "style": "emerald",
+      "narration": "함께 체육관에 도전해 배지를 모아 보렴.\n사라진 등대의 빛도 찾을 수 있겠지.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 7.448568,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_starlight_departure",
+      "style": "emerald",
+      "narration": "별싹 마을 북동쪽 연구소에서 기다리마.\n너와 첫 친구의 모험을 시작하렴!",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 64,
+          "height": 96
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 7.989343,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    }
+  ],
+  "title": {
+    "reference": "emerald",
+    "menu": [
+      "모험 시작",
+      "불러오기",
+      "크레딧",
+      "그만두기"
+    ],
+    "bounds": {
+      "width": 480,
+      "height": 320
+    }
+  },
+  "field": {
+    "map": "mx_map_home",
+    "x": 10,
+    "y": 10,
+    "text": "별싹 마을\nmx_map_home_to_mx_map_home_center_page\nmx_map_home_to_mx_map_home_center_page\nmx_map_home_to_mx_map_home_mart_page\nmx_map_home_to_mx_map_home_mart_page\nmx_map_home_to_mx_map_home_house_page\nmx_map_home_to_mx_map_home_house_page\nmx_map_home_to_mx_map_lab_page\nmx_map_home_to_mx_map_lab_page\nmx_map_home_guide_page\nmx_map_home_guide_page\nmx_map_home_local_page\nmx_map_home_local_page\nmx_map_home_visit\nmx_map_home_to_mx_map_meadow_page\nmx_map_home_to_mx_map_meadow_page\nmx_map_home_sign_mx_map_meadow_page\nmx_map_home_sign_mx_map_meadow_page\nmx_map_home_to_mx_map_school_page\nmx_map_home_to_mx_map_school_page\nmx_map_home_sign_mx_map_school_page\nmx_map_home_sign_mx_map_school_page\nmx_map_home_opening\nmx_map_home_ambient_resident_1_page\nmx_map_home_ambient_resident_1_page\nmx_map_home_ambient_resident_2_page\nmx_map_home_ambient_resident_2_page"
+  },
+  "completed": true
+}

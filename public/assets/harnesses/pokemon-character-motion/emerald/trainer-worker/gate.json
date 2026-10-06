@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:34.398Z",
+    "role": "worker",
+    "sourceSha256": "054d4785fb788fd5689cca24a34f3d46c54c4670370ab46ba974075eaa576c91",
+    "promptSha256": "50ae8367c8ea5132faefb2296c61451ddc4cef0e9fd1f410919a0e14724c0103",
+    "finalSha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "054d4785fb788fd5689cca24a34f3d46c54c4670370ab46ba974075eaa576c91",
+    "prompt.txt": "50ae8367c8ea5132faefb2296c61451ddc4cef0e9fd1f410919a0e14724c0103",
+    "portrait.png": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "517b2a0b4acae748df65f91cf10b5b392559488223e6f5a9e85b0cf3c444de86",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 13,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 18,
+      "y": 3,
+      "width": 37,
+      "height": 60
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.953Z",
+  "reviewSha256": "671fe2ca16bbed09daab629277f54b56fdda90a69c335ad9f10b8e98dad55610"
+}

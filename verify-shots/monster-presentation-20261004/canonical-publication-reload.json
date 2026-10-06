@@ -1,0 +1,12 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+  "host": "http://mdc-server:18364",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "url": "http://mdc-server:18364/?hostProject=649482df-81ca-4af9-806b-2613f7d7bebb",
+  "revision": 25,
+  "sha256": "4811a4afff1e1a6508e810ff25ddeb2245b08b4e8f007d4e028d1d62cb288937",
+  "reloadedThroughFreshConnection": true,
+  "mediaByteReloads": [],
+  "maps": 72
+}

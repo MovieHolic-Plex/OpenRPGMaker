@@ -6,6 +6,8 @@
 | id | 무엇 | 범위 | 시드 | 문서 |
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
+| `pokemon-character-motion` | 몬스터 수집 캐릭터 모션 | 장르 `monster-collect` 전용 | `harness-data/pokemon-character-motion/seed.json` | `openwiki/harnesses/pokemon-character-motion.md` |
+| `pokemon-character-casting` | 포켓몬 캐릭터 후보 승인 | 장르 `monster-collect` 전용 | `harness-data/pokemon-character-casting/seed.json` | `openwiki/harnesses/pokemon-character-casting.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
@@ -35,6 +37,45 @@
 - `build` — 번들 굽기: 골라 둔 격자 원본을 112 캔버스로 맞춰 public/assets/harnesses/ 아래에 쓰고, 대기·동작 스트립과 anim.json 을 만들고 검사한다.
 - `check` — 검사: 번들 스프라이트의 색 수·마젠타 잔점·윤곽·앞뒤 색 일치, 애니메이션 프레임(대기 0번=원본·발 고정, 동작 색·몸집)을 검사한다.
 - `preview` — 미리보기: 번들 스프라이트의 대기·동작을 전투 배율로 재생하는 HTML 한 쪽을 만든다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## pokemon-character-motion — 몬스터 수집 캐릭터 모션
+
+Emeraldnative16×32 걷기·실제 오프닝 클립·64×64 트레이너를15색 후보로 가져오고 시각 검수와 해시에 묶인 관문을 통과한 결과만 굽는다.
+
+**이럴 때 쓴다:**
+- 몬스터 수집 게임의 주인공·NPC 걷기 도트나 오프닝 그림 모션을 생성·교체할 때
+- 픽셀 수치가 방향·다리 교대 의미를 증명하지 않는다. 애니메이션 재생 증거를 남긴다.
+
+**단계** (`npm run harness -- pokemon-character-motion <단계>`):
+- `status` — 현황: 역할별 후보와 관문·검수·결과 해시 상태를 읽는다.
+- `import` — 가져오기: 생성 아틀라스 또는 기존 네이티브 시트를 불변 출처와 함께 후보로 저장한다.
+- `clip-import` — 오프닝 생성 클립: 생성 아틀라스 또는 직접 저작한 native 포즈를 스트립과 불변 출처로 가져온다. --native는 정확한 cell을 변형 없이 보존한다.
+- `portrait-import` — 트레이너 가져오기: 기존 그림을64×64·15색 후보로 가져온다. --native는 직접 저작한64×64를 그대로 보존하고, 생성 원본의 기본 경로는 비율 보존 nearest fit을 쓴다.
+- `check` — 구조 검사: 걷기16×32·오프닝 클립·트레이너64×64의 별도 계약과15색·이진 알파를 검사한다.
+- `preview` — 시각 검수: 걷기·클립은 재생하고 트레이너는 정적1·2·3배로 검수하는 HTML을 만든다.
+- `review` — 시각 판정: 재생 증거·검수자·이유를 출처와 최종 그림 해시에 묶어 기록한다.
+- `gate` — 출하 관문: 구조 검사와 현재 해시의 시각 판정을 확인한다. 실패는 종료 코드 1이다.
+- `build` — 굽기: 현재 관문·검수의 해시가 같은 결과만 로컬 출력 폴더에 복사한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## pokemon-character-casting — 포켓몬 캐릭터 후보 승인
+
+역할별 원작 판형의 머리·복장을 수정한 16역할 후보를 원본·수정본·GIF로 비교하고 Allow/Deny한다. 현재 그림에 묶인 승인만 결과를 굽고 공용 등록한다.
+
+**이럴 때 쓴다:**
+- 포켓몬류 NPC 후보를 브렌던 규격으로 만들고 사용자가 승인·반려할 때
+- 감독자·조수는 사용자의 Allow를 대신 기록하지 않는다.
+
+**단계** (`npm run harness -- pokemon-character-casting <단계>`):
+- `prepare-cast` — 전체 16역할 준비: 역할별 판형에 명시한 머리·복장 수정을 적용하고 네이티브·GIF·출처 검사를 거쳐 16역할 검토 묶음으로 저장한다. 자동 승인하지 않는다.
+- `prepare` — 후보 준비: 명시한 시드의 서로 다른 native 전신 후보를 굽고 중복 몸체 검사와 기존 네이티브 모션 구조 검사와 미리보기를 연결한다.
+- `queue` — 후보 등록: 외부 native48×128과 GIF를 불변 후보 패키지로 가져온다. 검증된 판형 공유는 표시하고, 출처가 확인되지 않은 복제와 같은 그림의 중복 등록은 거부한다.
+- `serve` — 사용자 검토 화면: SQLite에 보존되는 Allow/Deny, 반려 이유, 방향·프레임 검토, 승인 결과 다운로드.
+- `status` — 승인 현황: 미결정·승인·반려·오래된 승인과 역할별 현재 선택을 읽는다.
+- `build` — 승인 결과 굽기: 현재 패키지의 사용자 Allow와 네이티브 구조·재생 검수를 다시 확인한다. 미결정·Deny·변조는 거부한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 

@@ -1,3 +1,4 @@
+import { animaticResourceIds, validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES } from '@/project/cinematicPresentation';
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 import { parseCinematicDirection } from '@/project/cinematicDirection';
@@ -17,6 +18,9 @@ import {
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
 import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import type { Project } from "@/project/types";
+import { openingAuthoringStatus } from "@/project/openingAuthoringStatus";
+import { reviewOpeningAuthoring } from "@/project/openingAuthoringReview";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 const OPENING_MEDIA_KINDS = ["image", "movie", "sound", "music"] as const;
@@ -44,7 +48,7 @@ const MOTIONS: readonly CinematicMotion[] = ["none", "fade", "pan", "zoom"];
 const MEDIA_RESULT_LIMIT_MAX = 200;
 
 const OPENING_FIELD_NAMES = [
-  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion", "direction", "presentation",
+  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion", "composition", "direction", "presentation",
 ] as const;
 
 function requireRecord(value: unknown, label: string): Record<string, unknown> {
@@ -70,7 +74,7 @@ function stillGrouper(project: Project): (id: string) => string {
 }
 
 /** kind별 피커 카탈로그 조회 — 한 호출 안에서 종류별로 한 번만 만든다(카탈로그 스캔이 수백 개 id를 돈다). */
-function catalogLookup(project: Project): (kind: OpeningMediaKind, id: string) => boolean {
+export function catalogLookup(project: Project): (kind: OpeningMediaKind, id: string) => boolean {
   const cache = new Map<OpeningMediaKind, Set<string>>();
   return (kind, id) => {
     let ids = cache.get(kind);
@@ -83,9 +87,9 @@ function catalogLookup(project: Project): (kind: OpeningMediaKind, id: string) =
 }
 
 function sceneKind(value: unknown, index: number): CinematicScene["kind"] {
-  if (value === "text" || value === "image" || value === "video") return value;
+  if (value === "text" || value === "image" || value === "video" || value === "animatic") return value;
   throw new ToolError(
-    `scenes[${index}].kind는 text/image/video 중 하나여야 합니다: ${JSON.stringify(value)}`,
+    `scenes[${index}].kind는 text/image/video/animatic 중 하나여야 합니다: ${JSON.stringify(value)}`,
     { code: "invalid-args" },
   );
 }
@@ -119,6 +123,8 @@ function resolveResourceId(
   field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.layers.resourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
+  // Optional voice pickers and several model transports serialize no selection as "".
+  if (field === 'narrationAudioResourceId' && typeof raw === 'string' && !raw.trim()) return '';
   if (typeof raw !== "string" || raw.trim().length === 0) {
     throw new ToolError(
       `scenes[${index}].${field}는 비어 있지 않은 리소스 id여야 합니다.`,
@@ -170,6 +176,14 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
     ...(presentation ? { presentation } : {}),
   };
 
+  if (kind === "animatic") {
+    try { validateOpeningAnimatic(scene.composition, durationMs); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+    if (scene.resourceId !== undefined || scene.motion !== undefined) throw new ToolError("animatic은 composition을 사용합니다.", { code: "invalid-args" });
+    for (const layer of scene.composition.layers) if (layer.kind === 'image' && !hasOpeningImage(project, layer.resourceId!)) throw new ToolError("그림 리소스 없음: " + layer.resourceId, { code: "resource-not-found" });
+    for (const cue of scene.composition.audioCues ?? []) if (!isKnown('sound', cue.resourceId) && !isKnown('music', cue.resourceId)) throw new ToolError("오디오 큐 리소스 없음: " + cue.resourceId, { code: "resource-not-found" });
+    return { ...common, kind: "animatic", composition: structuredClone(scene.composition) };
+  }
+  if (scene.composition !== undefined) throw new ToolError("composition은 animatic 전용입니다.", { code: "invalid-args" });
   if (kind === "text") {
     for (const forbidden of ["resourceId", "motion", "direction"] as const) {
       if (scene[forbidden] !== undefined) {
@@ -247,6 +261,7 @@ function buildSequence(project: Project, args: Record<string, unknown>): { seque
   // 인자를 생략하면 기존 배경음악을 유지하고, 빈 문자열이면 지운다(enabled/skippable 과 같은 규칙).
   const music = musicResourceId === undefined ? existing?.musicResourceId : musicResourceId;
   const sequence = normalizeCinematicSequence({
+    ...(existing?.entry ? { entry: existing.entry } : {}),
     enabled,
     skippable,
     ...(music ? { musicResourceId: music } : {}),
@@ -288,7 +303,7 @@ function resolveMusicId(
 function countByKind(sequence: CinematicSequence): string {
   const counts = new Map<CinematicScene["kind"], number>();
   for (const scene of sequence.scenes) counts.set(scene.kind, (counts.get(scene.kind) ?? 0) + 1);
-  const label: Record<CinematicScene["kind"], string> = { text: "텍스트", image: "이미지", video: "영상" };
+  const label: Record<CinematicScene["kind"], string> = { text: "텍스트", image: "이미지", video: "영상", animatic: "애니메틱" };
   return [...counts.entries()].map(([kind, count]) => `${label[kind]} ${count}`).join("·");
 }
 
@@ -298,12 +313,13 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
   required: ["kind"],
   properties: {
     id: { type: "string" },
-    kind: { type: "string", enum: ["text", "image", "video"] },
+    kind: { type: "string", enum: ["text", "image", "video", "animatic"] },
     narration: { type: "string" },
     durationMs: { type: "integer", minimum: 0, maximum: CINEMATIC_DURATION_MAX_MS },
     resourceId: { type: "string" },
     motion: { type: "string", enum: MOTIONS },
-    narrationAudioResourceId: { type: "string" },
+    composition: { type: "object" },
+    narrationAudioResourceId: { type: "string", description: "음성 없음:빈 값." },
     presentation: {
       type: 'object', additionalProperties: false,
       description: '모든 text/image/video 장면의 글자·페이드 연출. preset의 기본값에 text/transition을 덮어쓴다. 영상/실제 배우 동작은 별도로 저작한다.',
@@ -363,13 +379,15 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
 
 const getOpening: ToolDefinition = {
   name: "get_opening",
-  description: "현재 오프닝 시네마틱(system.opening)을 그대로 반환한다. 없으면 opening:null 이며 기본값을 만들지 않는다.",
+  description: "오프닝 조회.",
   mode: "read",
   parameters: { type: "object", properties: {}, additionalProperties: false },
   run(project): ToolExecResult {
+    const generatedStills = Object.values(project.assets.uploaded).filter(a => (a.id.startsWith('opening_still_') || a.id.startsWith('opening_layer_'))).reverse().slice(0, 20)
+      .map(a => ({ resourceId: a.id, name: a.name, usedInOpening: (project.system.opening?.scenes ?? []).some(s => s.kind === "animatic" ? animaticResourceIds(s.composition).includes(a.id) : (s.kind === "image" || s.kind === "video") && s.resourceId === a.id) }));
     const opening = project.system.opening;
     if (!opening) {
-      return { summary: "오프닝 시네마틱이 아직 없습니다(새 게임 시작 시 재생되는 연출 없음).", data: { opening: null, sceneCount: 0 } };
+      return { summary: "오프닝 시네마틱이 아직 없습니다(새 게임 시작 시 재생되는 연출 없음).", data: { opening: null, sceneCount: 0, generatedStills } };
     }
     const warnings: string[] = [];
     if (!opening.enabled && opening.scenes.length > 0) {
@@ -377,8 +395,11 @@ const getOpening: ToolDefinition = {
     }
     const isKnown = catalogLookup(project);
     const missing = opening.scenes
-      .flatMap(scene => (scene.kind === "text" ? [] : [[scene.kind === "video" ? "movie" : "image", scene.resourceId] as const]))
-      .filter(([kind, id]) => !isKnown(kind, id))
+      .flatMap(scene => [
+        ...((scene.kind === "image" || scene.kind === "video") ? [[scene.kind === "video" ? "movie" : "image", scene.resourceId] as const] : scene.kind === "animatic" ? scene.composition.layers.filter(l => l.kind === "image").map(l => ["image", l.resourceId!] as const) : []),
+        ...(scene.narrationAudioResourceId ? [["sound", scene.narrationAudioResourceId] as const] : []),
+      ])
+      .filter(([kind, id]) => kind === "image" ? !hasOpeningImage(project, id) : !isKnown(kind, id))
       .map(([, id]) => id);
     if (opening.musicResourceId && !isKnown("music", opening.musicResourceId)) missing.push(opening.musicResourceId);
     if (missing.length > 0) warnings.push(`프로젝트에서 찾을 수 없는 미디어 참조가 있습니다: ${[...new Set(missing)].join(", ")}`);
@@ -387,12 +408,41 @@ const getOpening: ToolDefinition = {
         + `${opening.musicResourceId ? `, 배경음악 ${opening.musicResourceId}` : ", 배경음악 없음"}.`,
       data: {
         opening,
+        generatedStills,
         sceneCount: opening.scenes.length,
         enabled: opening.enabled,
         skippable: opening.skippable,
         musicResourceId: opening.musicResourceId ?? null,
+        review: reviewOpeningAuthoring(project),
       },
       ...(warnings.length > 0 ? { warnings } : {}),
+    };
+  },
+};
+
+const reviewOpening: ToolDefinition = {
+  name: "review_opening",
+  description: "반복·문구·시간·참조 구성 검토. 실제 그림·재생 검증은 별도.",
+  mode: "read",
+  parameters: { type: "object", properties: {}, additionalProperties: false },
+  run(project): ToolExecResult {
+    const review = reviewOpeningAuthoring(project);
+    const isKnown = catalogLookup(project);
+    const missingMedia = review.scenes.flatMap(scene => [
+      ...(scene.resourceId && !isKnown(scene.kind === "video" ? "movie" : "image", scene.resourceId) ? [scene.resourceId] : []),
+      ...scene.imageResourceIds.filter(id => !hasOpeningImage(project, id)),
+      ...(scene.narrationAudioResourceId && !isKnown("sound", scene.narrationAudioResourceId) ? [scene.narrationAudioResourceId] : []),
+    ]);
+    for (const scene of project.system.opening?.scenes ?? []) if (scene.kind === 'animatic') {
+      for (const cue of scene.composition.audioCues ?? []) if (!isKnown('sound', cue.resourceId) && !isKnown('music', cue.resourceId)) missingMedia.push(cue.resourceId);
+    }
+    if (review.musicResourceId && !isKnown("music", review.musicResourceId)) missingMedia.push(review.musicResourceId);
+    const warnings = [...review.warnings];
+    if (missingMedia.length) warnings.push(`찾을 수 없는 미디어 참조: ${[...new Set(missingMedia)].join(", ")}`);
+    return {
+      summary: `오프닝 구성 검토: ${review.sceneCount}장면, 서로 다른 그림 ${review.distinctImageCount}개, ${review.automaticDurationMs === null ? "총 재생 시간은 입력/영상에 따라 달라짐" : `자동 진행 ${review.automaticDurationMs / 1000}초`}. 실제 그림·재생 검증은 별도입니다.`,
+      data: { ...review, warnings, missingMedia: [...new Set(missingMedia)] },
+      ...(warnings.length ? { warnings } : {}),
     };
   },
 };
@@ -414,7 +464,7 @@ const setOpening: ToolDefinition = {
     properties: {
       enabled: { type: "boolean" },
       skippable: { type: "boolean" },
-      musicResourceId: { type: "string", description: "시퀀스 배경음악(list_opening_media kind:music). 빈 문자열은 제거." },
+      musicResourceId: { type: "string", description: "전체 반복 음악. 빈 값: 제거." },
       scenes: { type: "array", items: OPENING_SCENE_SCHEMA },
     },
   },
@@ -431,9 +481,11 @@ const setOpening: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const { sequence, warnings } = buildSequence(draft, args);
     draft.system.opening = sequence;
+    const review = reviewOpeningAuthoring(draft);
+    warnings.push(...review.warnings);
     return {
       summary: `오프닝 장면 ${sequence.scenes.length}개를 저장했습니다(${countByKind(sequence) || "빈 시퀀스"}), 사용 ${sequence.enabled ? "켜짐" : "꺼짐"}, 건너뛰기 ${sequence.skippable ? "가능" : "불가"}.`,
-      data: { opening: sequence },
+      data: { opening: sequence, authoringStatus: openingAuthoringStatus(draft), review },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -441,7 +493,7 @@ const setOpening: ToolDefinition = {
 
 const removeOpening: ToolDefinition = {
   name: "remove_opening",
-  description: "오프닝 시퀀스를 프로젝트에서 제거한다(작성한 장면을 전부 지움). 장면을 잠시 끄려면 set_opening(enabled:false)을 쓴다.",
+  description: "장면 전부 제거. 잠시 끄기는 edit_opening settings enabled:false.",
   mode: "write",
   parameters: { type: "object", properties: {}, additionalProperties: false },
   run(draft): ToolExecResult {
@@ -456,12 +508,7 @@ const removeOpening: ToolDefinition = {
 
 const listOpeningMedia: ToolDefinition = {
   name: "list_opening_media",
-  description:
-    "오프닝 장면에 쓸 미디어 후보를 DB 「오프닝」 탭과 같은 목록에서 반환한다. "
-    + "kind image(그림)/movie(영상)/sound(내레이션 음성)/music(배경음악) — 결과에 없는 id 는 저장이 거부된다. "
-    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image. "
-    + "스틸은 description(실제 그림), mood(분위기), useCases(서사 용도), series(같은 세계관), cautions(그림에 포함된 제약)를 반환한다. "
-    + "query는 공백으로 나눈 단어를 모두 검색한다. 같은 series의 그림을 조합하고 설명과 맞는 내레이션을 작성한다.",
+  description: "미디어 ID·mood·useCases·series·cautions. query:AND. 그림:show_opening_image.",
   mode: "read",
   parameters: {
     type: "object",
@@ -493,10 +540,14 @@ const listOpeningMedia: ToolDefinition = {
     }
 
     const needles = (rawQuery ?? "").trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const projectOrder = new Map(Object.keys(project.assets.uploaded).map((id, index) => [id, index]));
     const all = listDatabaseResourceOptions(PICKER_KIND[kind], project)
       .filter(entry => {
         const text = [entry.id, entry.name, ...(entry.searchTerms ?? [])].join(" ").toLocaleLowerCase();
         return needles.every(needle => text.includes(needle));
+      }).sort((a, b) => {
+        const rank = (id: string) => projectOrder.has(id) ? (id.startsWith('opening_still_') ? 0 : 1) : 2;
+        return rank(a.id) - rank(b.id) || (rank(a.id) < 2 ? (projectOrder.get(b.id) ?? 0) - (projectOrder.get(a.id) ?? 0) : 0);
       });
     const group = kind === "image" ? stillGrouper(project) : undefined;
     const matches = all.slice(offset, offset + limit).map(entry => {
@@ -504,6 +555,8 @@ const listOpeningMedia: ToolDefinition = {
       return {
         id: entry.id,
         name: entry.name,
+        origin: projectOrder.has(entry.id) ? 'project' : 'bundled',
+        usedInOpening: (project.system.opening?.scenes ?? []).some(s => s.kind === "animatic" ? animaticResourceIds(s.composition).includes(entry.id) : (s.kind === "image" || s.kind === "video") && s.resourceId === entry.id),
         ...(group ? { group: group(entry.id) } : {}),
         ...(still ? { description: still.description, tags: still.tags, mood: still.mood,
           useCases: still.useCases, series: still.series, cautions: still.cautions,
@@ -560,9 +613,7 @@ function sceneIndexById(scenes: readonly CinematicScene[], sceneId: string): num
 
 const editOpening: ToolDefinition = {
   name: "edit_opening",
-  description:
-    "오프닝 장면 하나만 고친다(전체 재작성 불필요). op: append/insert(index)/update(sceneId)/remove(sceneId)/"
-    + "move(sceneId,index)/settings(enabled·skippable·musicResourceId). 장면 규칙은 set_opening 과 같다.",
+  description: "추가/삽입(index)/수정·삭제·이동(sceneId), 설정 변경.",
   mode: "write",
   parameters: {
     type: "object",
@@ -670,9 +721,11 @@ const editOpening: ToolDefinition = {
     const warnings = !sequence.enabled && sequence.scenes.length > 0
       ? ["오프닝 사용이 꺼져 있어 실제 게임에서는 재생되지 않습니다. edit_opening(op:\"settings\", enabled:true)로 켜세요."]
       : [];
+    const review = reviewOpeningAuthoring(draft);
+    warnings.push(...review.warnings);
     return {
-      summary,
-      data: { opening: sequence, sceneCount: sequence.scenes.length, sceneIds: sequence.scenes.map(scene => scene.id) },
+      summary: `${summary} 새 게임 오프닝 재생 ${sequence.enabled ? "켜짐" : "꺼짐"}.`,
+      data: { opening: sequence, sceneCount: sequence.scenes.length, sceneIds: sequence.scenes.map(scene => scene.id), authoringStatus: openingAuthoringStatus(draft), review },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -684,7 +737,24 @@ export const GAME_OVER_IMAGE_TOOL = "generate_game_over_image";
 const OPENING_PROMPT_MIN_LENGTH = 4;
 
 /** 툴·편집기 핸드오프가 같은 검사를 쓰게 하는 순수 준비 함수. */
-export function prepareOpeningImageRequest(args: Record<string, unknown>): { readonly prompt: string; readonly name: string } {
+export type OpeningImageBrief = {
+  readonly prompt: string; readonly name: string;
+  readonly shot: "wide" | "medium" | "close-up";
+  readonly aspectRatio: "16:9" | "4:3" | "1:1";
+  readonly layerRole?: "background" | "actor" | "prop" | "foreground";
+  readonly artStyle: string;
+  readonly referenceResourceIds: readonly string[];
+};
+
+/** SQLite media references are valid even when the worker has no browser URL bridge. */
+export function hasOpeningImage(project: Project, id: string): boolean {
+  const asset = project.assets.uploaded[id];
+  if (asset?.ref) return asset.ref.mime.startsWith('image/');
+  if (asset?.dataUrl) return /^data:image\//.test(asset.dataUrl) || (!!resolveAssetResourceUrl(id, { project }) && !['music', 'sound', 'movie'].includes(asset.kind));
+  return !!resolveAssetResourceUrl(id, { project });
+}
+
+export function prepareOpeningImageRequest(args: Record<string, unknown>, project?: Project): OpeningImageBrief {
   const raw = args.prompt;
   if (typeof raw !== "string" || raw.trim().length < OPENING_PROMPT_MIN_LENGTH) {
     throw new ToolError(
@@ -700,7 +770,30 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>): { rea
   if (args.role !== undefined && args.role !== 'backdrop' && args.role !== 'foreground') throw new ToolError('role은 backdrop/foreground입니다.', { code: 'invalid-args' });
   const prompt = raw.trim();
   const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
-  return { prompt, name };
+  const shot = args.shot ?? "wide";
+  const aspectRatio = args.aspectRatio ?? "16:9";
+  const artStyle = args.artStyle ?? "hand-painted 2D game art";
+  if (shot !== "wide" && shot !== "medium" && shot !== "close-up") throw new ToolError("shot은 wide/medium/close-up입니다.", { code: "invalid-args" });
+  if (aspectRatio !== "16:9" && aspectRatio !== "4:3" && aspectRatio !== "1:1") throw new ToolError("aspectRatio는16:9/4:3/1:1입니다.", { code: "invalid-args" });
+  if (typeof artStyle !== "string" || !artStyle.trim() || artStyle.length > 120) throw new ToolError("artStyle은 1~120자 문자열입니다.", { code: "invalid-args" });
+  const references = args.referenceResourceIds ?? [];
+  if (!Array.isArray(references) || references.some(id => typeof id !== "string" || !id.trim())) {
+    throw new ToolError("referenceResourceIds는 실제 그림 ID 최대 2개입니다.", { code: "invalid-args" });
+  }
+  // referenceResourceId(단일)와 referenceResourceIds(최대 2개)는 같은 참고 목록으로 합친다.
+  const single = typeof args.referenceResourceId === "string" ? [args.referenceResourceId] : [];
+  const referenceResourceIds = [...new Set([...(references as string[]), ...single].map(id => id.trim()))];
+  if (referenceResourceIds.length > 2) throw new ToolError("referenceResourceIds는 실제 그림 ID 최대 2개입니다.", { code: "invalid-args" });
+  if (project) for (const id of referenceResourceIds) {
+    if (!hasOpeningImage(project, id)) throw new ToolError(`참고 그림을 찾을 수 없습니다: ${id}`, { code: "resource-not-found" });
+  }
+  return { prompt, name, shot, aspectRatio, artStyle: artStyle.trim(), referenceResourceIds };
+}
+
+export function prepareOpeningLayerRequest(args: Record<string, unknown>, project?: Project): OpeningImageBrief {
+  const { role, ...clean } = args;
+  if (role !== 'background' && role !== 'actor' && role !== 'prop' && role !== 'foreground') throw new ToolError('role은 background/actor/prop/foreground입니다.', { code: 'invalid-args' });
+  return { ...prepareOpeningImageRequest(clean, project), layerRole: role };
 }
 
 /** 게임오버 배경 생성도 같은 프롬프트 계약을 쓰되 기본 리소스 이름을 구분한다. */
@@ -723,27 +816,26 @@ export function prepareGameOverImageRequest(args: Record<string, unknown>): { re
 
 const generateOpeningImage: ToolDefinition = {
   name: "generate_opening_image",
-  description:
-    "오프닝용 전체화면 그림을 이미지 모델로 만들어 리소스로 등록하고 resourceId 를 돌려준다(image 장면에 바로 쓴다). "
-    + "기존 배경화로 충분하면 list_opening_media 를 먼저 본다. 장면당 한 장.",
-  mode: "read",
+  description: "그림 생성·등록. 구도·비율·화풍·참고 그림 지정. ID와 그림 반환.",
+  mode: "write",
   parameters: {
     type: "object",
     additionalProperties: false,
     required: ["prompt"],
     properties: {
-      prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명(분위기·시간대·장소). 글자는 넣지 않는다." },
+      prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명. 글자 금지." },
       name: { type: "string" },
+      shot: { type: "string", enum: ["wide", "medium", "close-up"] },
+      aspectRatio: { type: "string", enum: ["16:9", "4:3"] },
+      artStyle: { type: "string", maxLength: 120, description: "화풍. 기본 hand-painted 2D." },
+      referenceResourceIds: { type: "array", items: { type: "string" }, description: "실제 그림 ID 최대2개." },
       referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
       role: { type: 'string', enum: ['backdrop', 'foreground'], description: '기본 backdrop은 전체 배경. foreground는 독립 움직임용 투명 배경의 단일 물체·실루엣 그림. 잘린 신체/그림자 바닥/체커보드 금지.' },
     },
   },
-  run(_project, args): ToolExecResult {
-    const { prompt, name } = prepareOpeningImageRequest(args);
-    return {
-      summary: "그림 생성 요청을 준비했습니다. 생성에는 편집기가 필요하며 아직 만들어지지 않았습니다.",
-      data: { status: "ui-required", prompt, name },
-    };
+  run(project, args): ToolExecResult {
+    prepareOpeningImageRequest(args, project);
+    throw new ToolError("그림 생성 실행 경로가 연결되지 않았습니다. 실제 이미지와 등록된 resourceId 없이 생성 성공으로 보고할 수 없습니다.", { code: "image-generation-unavailable" });
   },
 };
 
@@ -845,8 +937,47 @@ const setGameOver: ToolDefinition = {
   },
 };
 
+const planOpening: ToolDefinition = {
+  name: "plan_opening",
+  description: "샷 사건·구도·연속성·첫 행동 설계. 적용은 별도.",
+  mode: "read",
+  parameters: {
+    type: "object", additionalProperties: false, required: ["intent", "shots", "entry"],
+    properties: {
+      intent: { type: "string" },
+      entry: { type: "string", description: "첫 플레이/선택으로 이어지는 끝 장면." },
+      shots: { type: "array", items: { type: "object", additionalProperties: false, required: ["event", "composition", "continuity"], properties: {
+        event: { type: "string" },
+        composition: { type: "string" },
+        continuity: { type: "string" },
+      } } },
+    },
+  },
+  run(_project, args): ToolExecResult {
+    for (const key of ["intent", "entry"] as const) if (typeof args[key] !== "string" || args[key].trim().length < 2 || args[key].length > 1200) throw new ToolError(`${key}는 2~1200자 문장이어야 합니다.`, { code: "invalid-args" });
+    if (!Array.isArray(args.shots) || !args.shots.length || args.shots.length > CINEMATIC_SCENE_LIMIT) throw new ToolError("샷은 1~100개여야 합니다.", { code: "invalid-args" });
+    for (const shot of args.shots) for (const key of ["event", "composition", "continuity"]) if (!shot || typeof shot[key] !== "string" || shot[key].trim().length < 2 || shot[key].length > 1200) throw new ToolError(`각 샷의 ${key}는 2~1200자 문장이어야 합니다.`, { code: "invalid-args" });
+    return { summary: "샷 제작 계획을 확인했습니다. 이제 실제 그림과 장면을 제작하세요.", data: { plan: args, applied: false } };
+  },
+};
+
+const showOpeningImage: ToolDefinition = {
+  name: "show_opening_image",
+  description: "장면/캐릭터의 실제 그림을 모델에게 전달한다.",
+  mode: "read",
+  parameters: { type: "object", additionalProperties: false, required: ["resourceId"], properties: { resourceId: { type: "string" } } },
+  run(project, args): ToolExecResult {
+    const resourceId = typeof args.resourceId === "string" ? args.resourceId.trim() : "";
+    if (!resourceId || !hasOpeningImage(project, resourceId)) throw new ToolError("그림 리소스를 찾을 수 없습니다.", { code: "resource-not-found" });
+    return { summary: `그림 ${resourceId}를 시각 전달 경로로 요청했습니다.`, data: { resourceId } };
+  },
+};
+
 export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
+  planOpening,
+  showOpeningImage,
   getOpening,
+  reviewOpening,
   setOpening,
   editOpening,
   removeOpening,

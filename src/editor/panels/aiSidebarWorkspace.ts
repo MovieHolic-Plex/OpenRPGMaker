@@ -8,12 +8,13 @@ import { store } from "@/project/store";
 import { createLeftFavoritesPane } from "./leftFavoritesPane";
 import { createLeftLinksPane } from "./leftLinksPane";
 import { createLeftProgressPane } from "./leftProgressPane";
+import { createLeftStorePane } from "./leftStorePane";
 import { createLeftWorkshopPane } from "./leftWorkshopPane";
 import { createMapSidebarSection } from "./mapSidebarSection";
 
 const COLLAPSED_KEY = "oprn:ai-sidebar-collapsed";
 const PANE_KEY = "oprn:left-activity-pane";
-const PANES = ["tools", "maps", "favorites", "progress", "links", "workshop"] as const;
+const PANES = ["tools", "maps", "favorites", "progress", "links", "workshop", "store"] as const;
 type Pane = (typeof PANES)[number];
 type PaneSurface = { readonly root: HTMLElement; show(): void; dispose(): void };
 
@@ -42,6 +43,7 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     progress: createLeftProgressPane(journeyScope),
     links: createLeftLinksPane(),
     workshop: createLeftWorkshopPane(),
+    store: createLeftStorePane(),
   };
   tools.classList.add("ai-chat-sidebar-tools");
   const item = (icon: DeckIconName, label: string, testid: string, onClick: () => void, shortLabel = label): HTMLButtonElement => el("button", {
@@ -58,6 +60,7 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     progress: item("flag", "진행", "sidebar-progress", () => activate("progress")),
     links: item("link", "연결", "sidebar-links", () => activate("links")),
     workshop: item("wrench", "공방", "sidebar-workshop", () => activate("workshop")),
+    store: item("shop", "에셋 스토어", "sidebar-store", () => activate("store"), "스토어"),
   };
   const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
   const inspectButton = item("alert", "검사", "sidebar-inspect", () => {

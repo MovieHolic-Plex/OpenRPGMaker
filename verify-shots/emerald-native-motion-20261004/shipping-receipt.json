@@ -1,0 +1,23 @@
+{
+  "projectSha256": "0b2c62d5aab54015faa608e80d51c117178b12119f12d9825a8eeaab1a59faef",
+  "exactVerifiedFiles": {
+    "project.json": "0b2c62d5aab54015faa608e80d51c117178b12119f12d9825a8eeaab1a59faef",
+    "player.html": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+    "dependency-collector.js": "46bb18a0e2bf468f4637b6ba587d6926a5e32f19a119e1171fb04e4029fbdd5a",
+    "player.js": "9b2b7b48c3d4b3269dc0a0cdebcee1334a724a0daeface3b7dec4a8726d52c5b",
+    "assets/player-Dv-H9esX.css": "e454abb901d3adc4779696876b0c6799f73af70f7e376f04f311ccad02b8a2f9"
+  },
+  "nativeRuntimeChecks": 39,
+  "battleRuntimeCompleted": true,
+  "structuralControls": 107,
+  "exportAndAiRepairControls": 10,
+  "canonicalRevision": 28,
+  "canonicalFreshConnectionReload": true,
+  "imagegenMode": "builtin",
+  "sourceAndPromptSelection": "/home/main/z-project/pokemon-character-motion-review-20261004/selection.json",
+  "limits": [
+    "Private runtime gait routes and prepared battle parties are described in the summaries; no whole-campaign completion claim.",
+    "Original 60 monster-species illustrations preserved pending human candidate selection.",
+    "Hero/student/resident side strides subtle at1x; nurse face and professor shading still have minor visual limitations."
+  ]
+}

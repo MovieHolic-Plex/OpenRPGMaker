@@ -16,6 +16,8 @@ import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityRefere
 import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramReferences, ensureJoseonBaramTileset } from "./joseonBaram";
 import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
 import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
+import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
+import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
 import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -219,6 +221,9 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureJpCityReferences(project.tilesets[id]) || changed;
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
+      // 몬스터 수집 손 도트 시트(지역별): 다시 구운 시트면 칸 표를 번들 것으로, 아니면 빠진 번들 킷만 더한다.
+      if (isMonsterKitTexture(asset.textureKey)) changed = ensureMonsterKitTileset(project.tilesets[id]) || changed;
+      if (isEmeraldMonsterKitTexture(asset.textureKey)) changed = ensureEmeraldMonsterKitTileset(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       // 생성 칩셋 공용 실내(손 도트 v5): 옛 정의(Tibo 번호 기반)는 새 정의로 통째로 바꾼다. 옛 칩셋을 쓰던 맵은 그대로 두고 경고만.
       if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) changed = ensureAtlasBiomeInteriorCurrent(project, id) || changed;
@@ -380,6 +385,8 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
   if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
+  if (isMonsterKitTexture(asset.textureKey)) return createMonsterKitTileset(asset.textureKey);
+  if (isEmeraldMonsterKitTexture(asset.textureKey)) return createEmeraldMonsterKitTileset(asset.textureKey);
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) {

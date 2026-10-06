@@ -473,6 +473,8 @@ export interface MaterialSlotOverride {
   passage?: "passable" | "solid";
 }
 
+export type SlideRule = "up" | "down" | "left" | "right" | "ice" | "stop";
+
 export interface TilesetDef {
   /** 용도별 MD와 이미지. 미작성 레거시 프로젝트에는 필드를 만들지 않는다. */
   referenceDocuments?: import("../tilesetReferences").TilesetReferenceCategory[];
@@ -507,6 +509,12 @@ export interface TilesetDef {
    * 주인공이 2칸 뛰어 넘고, 다른 방향으로는 막힌다. 생략 = 턱 없음(기존 동작).
    */
   ledgeDirections?: Record<string, "up" | "down" | "left" | "right">;
+  /**
+   * 미끄러지는 바닥(포켓몬 회전 화살표·얼음). 타일 인덱스(문자열) → 규칙.
+   * 방향(up/down/left/right) 칸에 서면 그 방향으로, `ice` 칸에 서면 들어온 방향 그대로 다음 칸으로 저절로 미끄러지고,
+   * `stop` 칸이나 막힌 칸 앞에서 멈춘다. 생략 = 미끄러짐 없음(기존 동작). 판정은 `@/project/slideTiles`.
+   */
+  slideTiles?: Record<string, SlideRule>;
   priority: ("lower" | "upper")[];
   terrain: number[];
   // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.
@@ -612,6 +620,8 @@ export interface UploadedAsset {
     frames?: number;
     frameWidth?: number;
     frameHeight?: number;
+    /** Uploaded charset gait cadence; omitted retains the legacy 80ms walk frames. */
+    walkFrameMs?: number;
     width?: number;
     height?: number;
     transparentColor?: string;
@@ -623,6 +633,8 @@ export interface UploadedAsset {
     sheetCell?: number;
     sheetSourceId?: string;
   };
+  /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
+  origin?: import("../../assetStore/format").StoreAssetOrigin;
 }
 
 export interface AssetSet {

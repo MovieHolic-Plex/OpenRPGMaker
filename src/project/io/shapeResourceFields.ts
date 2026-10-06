@@ -1,4 +1,8 @@
 import { validateTilesetReferences } from "../tilesetReferences";
+import { isShopUiPreset } from '../shopUiPresets';
+import { validateFieldMenu } from '../fieldMenu';
+import { validateMusicScore } from '../musicScore';
+import { validateOpeningPortraitMotion } from '../openingPortraitMotion';
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 import { parsePublication } from "../publication";
 import {
@@ -21,6 +25,35 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
+  if (meta.oprnMonsterStyle !== undefined) {
+    const style = requireRecord('meta.oprnMonsterStyle', meta.oprnMonsterStyle);
+    assert(style.version === 1 && style.reference === 'emerald', 'Invalid monster style reference');
+    assert(Object.keys(style).every(key => key === 'version' || key === 'reference'), 'Unknown monster style field');
+  }
+  if(meta.oprnShopPreset!==undefined)assert(isShopUiPreset(requireString('shop preset',meta.oprnShopPreset)),'Unknown shop preset');
+  if(meta.oprnOpeningBook!==undefined){
+    const book=requireRecord('opening book',meta.oprnOpeningBook);
+    assert(book.version===1&&['amber','ivory'].includes(String(book.ink)),'Invalid opening book');
+    const ids=requireArray('opening book sceneIds',book.sceneIds);
+    assert(ids.length>=1&&ids.length<=64&&new Set(ids).size===ids.length,'Invalid opening book pages');
+    for(const id of ids)assert(requireString('opening page id',id).length>0,'Empty page id');
+    if(book.portraitResourceId!==undefined)assert(requireString('opening portrait',book.portraitResourceId).length>0,'Empty opening portrait');
+    if(book.portraitMotion!==undefined){
+      assert(typeof book.portraitResourceId==='string'&&book.portraitResourceId.length>0,'Portrait motion needs a still portrait fallback');
+      validateOpeningPortraitMotion(book.portraitMotion, ids as string[]);
+    }
+  }
+  if (meta.oprnFieldMenu !== undefined) validateFieldMenu(meta.oprnFieldMenu);
+  if(meta.oprnMenuSounds!==undefined) {
+    const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);
+    assert(Object.keys(sounds).every(k=>['cursor','confirm','cancel'].includes(k)),'Unknown menu sound cue');
+    for(const value of Object.values(sounds))requireString('menu sound resource',value);
+  }
+  if (meta.oprnMusicScores !== undefined) {
+    const scores = requireRecord('meta.oprnMusicScores', meta.oprnMusicScores);
+    assert(Object.keys(scores).length <= 32, 'At most32 music scores');
+    for(const value of Object.values(scores)) validateMusicScore(requireRecord('music score', value).score);
+  }
   if (meta.publication !== undefined) parsePublication(meta.publication);
   repairTerms(meta);
 }
@@ -74,7 +107,13 @@ export function validateAssets(value: unknown): void {
         `${id}.anchor must lie within its positive frame dimensions`);
     }
   }
-  requireRecord("assets.uploaded", assets.uploaded);
+  const uploaded = requireRecord("assets.uploaded", assets.uploaded);
+  for (const [id, value] of Object.entries(uploaded)) {
+    if (!isRecord(value) || !isRecord(value.meta) || value.meta.walkFrameMs === undefined) continue;
+    const cadence = requireNumber(`${id}.meta.walkFrameMs`, value.meta.walkFrameMs);
+    assert(value.kind === 'charset' && Number.isFinite(cadence) && cadence >= 50 && cadence <= 1000,
+      `${id}.meta.walkFrameMs requires a charset cadence of 50..1000ms`);
+  }
 }
 
 export function validateResourceProfiles(value: unknown): void {
@@ -175,6 +214,14 @@ export function validateTileset(id: string, value: unknown): void {
       const index = Number(tile);
       assert(Number.isInteger(index) && index >= 0 && index < count, `tileset ${id}: ledgeDirections 타일 ${tile} 범위 밖`);
       assert(dir === "up" || dir === "down" || dir === "left" || dir === "right", `tileset ${id}: ledgeDirections[${tile}] 방향 오류`);
+    }
+  }
+  if (tileset.slideTiles !== undefined) {
+    const slides = requireRecord(`tileset ${id}.slideTiles`, tileset.slideTiles);
+    for (const [tile, rule] of Object.entries(slides)) {
+      const index = Number(tile);
+      assert(Number.isInteger(index) && index >= 0 && index < count, `tileset ${id}: slideTiles 타일 ${tile} 범위 밖`);
+      assert(["up", "down", "left", "right", "ice", "stop"].includes(rule as string), `tileset ${id}: slideTiles[${tile}] 규칙 오류`);
     }
   }
   if (tileset.suppressedHarnessGroupIds !== undefined) {

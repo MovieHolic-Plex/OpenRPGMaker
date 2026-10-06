@@ -65,6 +65,23 @@ export const OPRN_CHANNELS = {
   assetBrowserBounds: "oprn:assetBrowser.bounds",
   assetBrowserClose: "oprn:assetBrowser.close",
   assetBrowserDownload: "oprn:assetBrowser.download",
+  /** 에셋 스토어(openwiki/asset-store.md). 렌더러는 스토어 서버에 직접 붙지 않고 이 채널로 메인에 맡긴다. */
+  storeStatus: "oprn:store.status",
+  storeSetUrl: "oprn:store.setUrl",
+  storeCatalog: "oprn:store.catalog",
+  storeItem: "oprn:store.item",
+  storeBlob: "oprn:store.blob",
+  storeInstalled: "oprn:store.installed",
+  storeInstall: "oprn:store.install",
+  storeUninstall: "oprn:store.uninstall",
+  storePackage: "oprn:store.package",
+  storeMine: "oprn:store.mine",
+  storeLogin: "oprn:store.login",
+  storeLogout: "oprn:store.logout",
+  storeUpload: "oprn:store.upload",
+  /** 메인 → 렌더러 알림: 받기·올리기 진행, 설치·로그인 변화. */
+  storeProgress: "oprn:store.progress",
+  storeChanged: "oprn:store.changed",
 } as const;
 
 export type OprnChannel = (typeof OPRN_CHANNELS)[keyof typeof OPRN_CHANNELS];

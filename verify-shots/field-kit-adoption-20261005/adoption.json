@@ -1,0 +1,225 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "sourceSha256": "a8c2b6b63aca60c3d4135c732a8a4af61bfdc880c6648c0c93e1c345519602d0",
+  "approval": {
+    "monster": {
+      "id": "c2c29da4-7517-4691-99cb-ba190912b1d8",
+      "at": "2026-10-05T07:57:45.286Z",
+      "group": "monster",
+      "decision": "allow",
+      "note": "",
+      "checks": [
+        true,
+        true
+      ],
+      "package": "a3221e323f4241a856073448dab04ebee7228838c08deabc8e49757875d63f6b",
+      "source": "human-browser"
+    },
+    "ui": {
+      "id": "10e9290b-630e-4649-8fe7-9e7358054094",
+      "at": "2026-10-05T07:57:47.566Z",
+      "group": "ui",
+      "decision": "allow",
+      "note": "",
+      "checks": [
+        true,
+        true
+      ],
+      "package": "b8df49f7001d51687a7b4be2fac65638084d5920b5d4e2e9a49126526f2bfd95",
+      "source": "human-browser"
+    },
+    "music": {
+      "id": "9754875f-c0e6-4ea8-8575-c50a7e2cab5a",
+      "at": "2026-10-05T07:57:49.391Z",
+      "group": "music",
+      "decision": "allow",
+      "note": "",
+      "checks": [
+        true,
+        true
+      ],
+      "package": "9b01c3c3f05bf9b294d216ef998cdcfb8891e05d4a78e9cb4bcb7b90561a7eac",
+      "source": "human-browser"
+    }
+  },
+  "newAssets": [
+    {
+      "id": "mx_field_flurrykit_approved_v1",
+      "sha256": "0efd623e3a7fb91ae592f478d8fe3169c0a1d1cc468e69cf449d89520df59ae7",
+      "bytes": 2946
+    },
+    {
+      "id": "composed_music_fieldkit_town_v1",
+      "sha256": "8fba6d8a1a76781deccbd9478dd95adfa685e7c77c366a3be5c8c611c9301ab4",
+      "bytes": 3848772
+    },
+    {
+      "id": "composed_music_fieldkit_route_v1",
+      "sha256": "18aaa90d7ecd401123231ccb1006fa85c839be50e891cfdeff14765a107f10f2",
+      "bytes": 2731400
+    },
+    {
+      "id": "mx_fieldkit_cursor_v1",
+      "sha256": "39808338835d4764f7e929af22bcd7c3ce4a11128567843d667cef836e02171b",
+      "bytes": 11512
+    },
+    {
+      "id": "mx_fieldkit_confirm_v1",
+      "sha256": "4470352c209db6248d27d6e8f7d85ce55dbc812c2e6c7747386f8d60960a5826",
+      "bytes": 21212
+    },
+    {
+      "id": "mx_fieldkit_cancel_v1",
+      "sha256": "62e120d6b87d582cd40ca9168cb3bd3270b045bf75a910b2ba8ff2dc0bcfb9c4",
+      "bytes": 21212
+    }
+  ],
+  "packing": {
+    "sourceSha256": "18dcf75ebe7c0a586c6e3cb1f3a67156fdadbdcede8c01d9cc69b85f2cd9e992",
+    "adapterSha256": "0efd623e3a7fb91ae592f478d8fe3169c0a1d1cc468e69cf449d89520df59ae7",
+    "native": [
+      32,
+      32
+    ],
+    "runtimeCell": [
+      24,
+      32
+    ],
+    "sheet": [
+      288,
+      256
+    ],
+    "nativePixelsCompared": 12288,
+    "lossless": true,
+    "removedTransparentColumns": [
+      4,
+      4
+    ],
+    "sourceAnchor": [
+      16,
+      32
+    ],
+    "runtimeAnchor": [
+      12,
+      32
+    ]
+  },
+  "bindings": [
+    "system.defaultBgmResourceId",
+    "maps.mx_map_home.bgm.resourceId",
+    "maps.mx_map_ember.bgm.resourceId",
+    "maps.mx_map_prism.events.16.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_prism.events.16.pages.0.commands.0.else.0.then.2.victoryBranch.4.resourceId",
+    "maps.mx_map_prism.bgm.resourceId",
+    "maps.mx_map_dune.bgm.resourceId",
+    "maps.mx_map_lab.events.2.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_lab.events.2.pages.0.commands.0.else.0.then.2.victoryBranch.4.resourceId",
+    "maps.mx_map_lab.bgm.resourceId",
+    "maps.mx_map_museum.bgm.resourceId",
+    "maps.mx_map_school.bgm.resourceId",
+    "maps.mx_map_home_center.bgm.resourceId",
+    "maps.mx_map_home_mart.bgm.resourceId",
+    "maps.mx_map_home_house.bgm.resourceId",
+    "maps.mx_map_grove_center.bgm.resourceId",
+    "maps.mx_map_grove_mart.bgm.resourceId",
+    "maps.mx_map_grove_house.bgm.resourceId",
+    "maps.mx_map_harbor_center.bgm.resourceId",
+    "maps.mx_map_harbor_mart.bgm.resourceId",
+    "maps.mx_map_harbor_house.bgm.resourceId",
+    "maps.mx_map_ember_center.bgm.resourceId",
+    "maps.mx_map_ember_mart.bgm.resourceId",
+    "maps.mx_map_ember_house.bgm.resourceId",
+    "maps.mx_map_prism_center.bgm.resourceId",
+    "maps.mx_map_prism_mart.bgm.resourceId",
+    "maps.mx_map_prism_house.bgm.resourceId",
+    "maps.mx_map_dune_center.bgm.resourceId",
+    "maps.mx_map_dune_mart.bgm.resourceId",
+    "maps.mx_map_dune_house.bgm.resourceId",
+    "maps.mx_map_frost_center.bgm.resourceId",
+    "maps.mx_map_frost_mart.bgm.resourceId",
+    "maps.mx_map_frost_house.bgm.resourceId",
+    "maps.mx_map_moon_center.bgm.resourceId",
+    "maps.mx_map_moon_mart.bgm.resourceId",
+    "maps.mx_map_moon_house.bgm.resourceId",
+    "maps.mx_map_summit_center.bgm.resourceId",
+    "maps.mx_map_summit_mart.bgm.resourceId",
+    "maps.mx_map_summit_house.bgm.resourceId",
+    "maps.mx_map_meadow.events.3.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_meadow.events.3.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_meadow.events.4.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_meadow.events.4.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_meadow.events.5.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_meadow.events.5.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_meadow.bgm.resourceId",
+    "maps.mx_map_mountain.events.3.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_mountain.events.3.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_mountain.events.4.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_mountain.events.4.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_mountain.events.5.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_mountain.events.5.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_mountain.bgm.resourceId",
+    "maps.mx_map_desert.events.3.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_desert.events.3.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_desert.events.4.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_desert.events.4.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_desert.events.5.pages.0.commands.0.then.1.options.0.branch.2.victoryBranch.2.resourceId",
+    "maps.mx_map_desert.events.5.pages.0.commands.0.else.2.victoryBranch.4.resourceId",
+    "maps.mx_map_desert.bgm.resourceId"
+  ],
+  "placements": [
+    {
+      "mapId": "mx_map_home",
+      "x": 11,
+      "y": 10,
+      "body": "천문박사가 북쪽에서 데려온 눈송냥이다.\n차가운 코로 네 손을 살짝 건드렸다."
+    },
+    {
+      "mapId": "mx_map_frost",
+      "x": 6,
+      "y": 9,
+      "body": "눈송냥이 눈 냄새를 맡으며 걷고 있다.\n작은 발자국이 뒤를 따라 이어진다."
+    }
+  ],
+  "sessionUnchanged": true,
+  "openingUnchanged": true,
+  "status": "saved-and-fresh-reloaded",
+  "canonicalReceipt": {
+    "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+    "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+    "host": "http://mdc-server:9888",
+    "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+    "bridgeProject": "",
+    "url": "http://mdc-server:9888/",
+    "revision": 35,
+    "sha256": "85fb2d5b0bde403c319e13d972e6268dc11e8786e3026decf90a0c89fc34b418",
+    "reloadedThroughFreshConnection": true,
+    "mediaByteReloads": [
+      {
+        "id": "mx_field_flurrykit_approved_v1",
+        "sha256": "0efd623e3a7fb91ae592f478d8fe3169c0a1d1cc468e69cf449d89520df59ae7"
+      },
+      {
+        "id": "composed_music_fieldkit_town_v1",
+        "sha256": "8fba6d8a1a76781deccbd9478dd95adfa685e7c77c366a3be5c8c611c9301ab4"
+      },
+      {
+        "id": "composed_music_fieldkit_route_v1",
+        "sha256": "18aaa90d7ecd401123231ccb1006fa85c839be50e891cfdeff14765a107f10f2"
+      },
+      {
+        "id": "mx_fieldkit_cursor_v1",
+        "sha256": "39808338835d4764f7e929af22bcd7c3ce4a11128567843d667cef836e02171b"
+      },
+      {
+        "id": "mx_fieldkit_confirm_v1",
+        "sha256": "4470352c209db6248d27d6e8f7d85ce55dbc812c2e6c7747386f8d60960a5826"
+      },
+      {
+        "id": "mx_fieldkit_cancel_v1",
+        "sha256": "62e120d6b87d582cd40ca9168cb3bd3270b045bf75a910b2ba8ff2dc0bcfb9c4"
+      }
+    ],
+    "maps": 72,
+    "preparedDocumentMatches": true
+  }
+}

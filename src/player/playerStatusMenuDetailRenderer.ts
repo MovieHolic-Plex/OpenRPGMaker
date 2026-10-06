@@ -1,3 +1,4 @@
+import { renderCampaignRegionMap } from "@/player/playerMonsterCampaignMenu";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
 import type { Project } from "@/project/types";
@@ -43,12 +44,17 @@ export function renderStatusMenuDetailPanel(
   });
   detailContexts.set(panel, { project, detail, showcase: options.showcase ?? false });
   if (detail.tabs?.length) panel.classList.add("life-ledger-detail");
+  if (detail.layout?.startsWith("campaign-")) {
+    panel.classList.add("campaign-menu-detail");
+    panel.dataset.campaignPage = detail.layout.slice("campaign-".length);
+  }
   if (detail.layout === "gallery") panel.classList.add("is-gallery");
   panel.append(el("h2", {
     class: "status-menu-detail-title",
     text: detail.title,
     dataset: { testid: "status-menu-detail-title" },
   }));
+  if (detail.regionMap) panel.append(renderCampaignRegionMap(detail.regionMap));
   if (detail.artwork) {
     panel.append(el("figure", {
       class: "life-ledger-artwork",
@@ -162,7 +168,7 @@ function renderDetailEntry(options: {
   // 조작 가능한 행(아이템/스킬/장비 후보)의 설명은 푸터가 대신 보여준다 → 행을 1줄로 압축해
   // 리스트가 잘린 글자로 끝나는 문제를 없앤다. 정보성 행(상태 화면 등)은 설명을 그대로 붙인다
   // — 그쪽은 푸터로 옮길 대상이 여러 개 동시에 필요해서 대체가 안 된다.
-  const inlineDescription = Boolean(entry.description) && !entry.onActivate;
+  const inlineDescription = Boolean(entry.description) && (!entry.onActivate || entry.attributes?.["data-campaign-information"] === "true");
   const rowClasses = [
     "status-menu-detail-row",
     inlineDescription ? "has-description" : "",
@@ -195,7 +201,7 @@ function renderDetailEntry(options: {
       });
   if (selected) row.classList.add("selected");
   if (entry.vitals) {
-    if (entry.face) row.append(renderDetailFace(project, entry.face, 24));
+    if (entry.face) row.append(renderDetailFace(project, entry.face, entry.attributes?.partySlot === undefined ? 24 : 48));
     row.append(el("span", { class: "status-menu-target-name", text: entry.label }));
     // 상태 줄 — 걸린 상태는 빨강, 이 아이템이 푸는 상태는 「→ 정상」 초록. 비어 있으면 「정상」.
     if (entry.vitals.stateNames) {
@@ -416,6 +422,8 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "hp%": return `HP ${value}%`;
     case "mp": return `MP +${value}`;
     case "mp%": return `MP ${value}%`;
+    case "pp": return `각 기술 PP +${value}`;
+    case "pp%": return `각 기술 PP ${value}%`;
     case "heal": return `치료 ${project.database.states.find((state) => state.id === value)?.name ?? value}`;
     case "state": return `상태 ${project.database.states.find((state) => state.id === value)?.name ?? value} ${amount}%`;
     case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;

@@ -1,3 +1,4 @@
+import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { actorOwnedSkillIds, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
@@ -55,6 +56,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
   let selectedCommand: StatusMenuRailId = "items";
+  let initialMenuSelection = true;
   // 접힌 그룹을 통해 들어온 경우의 부모 — 취소하면 레일이 아니라 그룹 목록으로 돌아간다.
   let openGroupId: StatusMenuGroupEntryId | undefined;
   let mode: "main" | "function" = "main";
@@ -71,6 +73,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let equipmentSlotId: keyof ActorInitialEquipment | undefined;
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
+  let campaignSpeciesId: string | undefined;
+  let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
@@ -78,7 +82,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let waitModeEnabled = true;
 
   const reset = (): void => {
-    selectedCommand = "items";
+    initialMenuSelection = true;
+    const session = options.getActiveScene()?.getSession();
+    selectedCommand = session ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? 'items' : 'items';
     openGroupId = undefined;
     mode = "main";
     selectedDetailActionIndex = 0;
@@ -100,6 +106,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     equipmentSlotId = undefined;
     formationActorId = undefined;
     battleReportIndex = undefined;
+    campaignSpeciesId = undefined;
+    monsterInstanceId = undefined;
     monsterView = "party";
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
@@ -127,7 +135,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const project = store.getCurrent();
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
-    selectedCommand = nextCommand;
+    const available = listStatusMenuRailIds(project, session);
+    selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
       project,
@@ -148,6 +158,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       equipmentSlotId,
       formationActorId,
       battleReportIndex,
+      campaignSpeciesId,
+      monsterInstanceId,
       monsterView,
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
@@ -179,6 +191,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onLoadSlot: loadSlot,
         onSelectItemTarget: (itemId) => {
           rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
+          itemActionId = undefined;
           targetItemId = itemId;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "items"));
         },
@@ -252,6 +265,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "formation"));
         },
         onMoveFormationActor: moveFormationActor,
+        onSelectCampaignSpecies: (speciesId) => {
+          if (speciesId) rememberDetailCursorFromTestId(`campaign-dex-${speciesId}`);
+          campaignSpeciesId = speciesId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monster-dex"));
+        },
+        onSelectMonster: (instanceId) => {
+          if (instanceId) rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
+          monsterInstanceId = instanceId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+        },
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
         onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
@@ -341,7 +364,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
+    selectedCommand = initialMenuSelection && session
+      ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? "items"
+      : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
     openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
@@ -583,6 +608,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function toggleMonsterView(): void {
+    monsterInstanceId = undefined;
     monsterView = monsterView === "party" ? "box" : "party";
     options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
   }
@@ -591,7 +617,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const scene = options.getActiveScene();
     if (!scene) return;
     rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
+    const reason = to === "box" ? monsterBoxUnavailableReason(store.getCurrent(), scene.getSession(), instanceId) : undefined;
+    if (reason) { rejectInput(reason); return; }
     const result = moveMonster(scene.getSession(), instanceId, to, store.getCurrent());
+    if (result.ok) {
+      monsterInstanceId = undefined;
+      scene.refreshRuntimeSurfaces();
+      scene.syncRuntimeState();
+    }
     const message = result.ok
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
@@ -673,6 +706,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "skills":
       case "equipment":
       case "monsters":
+      case "monster-dex":
+      case "region-map":
+      case "campaign-progress":
+      case "trainer-card":
       case "options":
       case "load":
       case "status":
@@ -774,11 +811,19 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           return true;
         }
         return false;
+      case "monster-dex":
+        if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
+        return false;
       case "monsters":
+        if (monsterInstanceId) { monsterInstanceId = undefined; return true; }
+        return false;
+      case "region-map":
+      case "campaign-progress":
         return false;
       case "battle-reports":
         if (battleReportIndex !== undefined) { battleReportIndex = undefined; return true; }
         return false;
+      case "trainer-card":
       case "options":
       case "load":
       case "quests":
@@ -916,11 +961,15 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
         return formationActorId ? `formation:${formationActorId}:moving` : "formation:list";
+      case "monster-dex": return `monster-dex:${campaignSpeciesId ?? "list"}`;
+      case "region-map": return "region-map";
+      case "campaign-progress": return "campaign-progress";
       case "monsters":
-        return `monsters:${monsterView}`;
+        return `monsters:${monsterView}:${monsterInstanceId ?? "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":
+      case "trainer-card":
       case "options":
       case "load":
       case "quests":

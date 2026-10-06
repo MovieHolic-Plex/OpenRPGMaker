@@ -1,0 +1,42 @@
+{
+  "errors": [],
+  "layouts": [
+    {
+      "width": 960,
+      "scrollWidth": 960,
+      "images": 9,
+      "finalNative": {
+        "w": 68,
+        "h": 32
+      },
+      "finalLarge": {
+        "w": 272,
+        "h": 128
+      }
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "images": 9,
+      "finalNative": {
+        "w": 68,
+        "h": 32
+      },
+      "finalLarge": {
+        "w": 272,
+        "h": 128
+      }
+    }
+  ],
+  "files": [
+    {
+      "name": "project.json",
+      "sha256": "73b3626ff83c0359aaa7fcdb0261f3465b9cd88691a7596ea4279bf749b86988"
+    },
+    {
+      "name": "player.html",
+      "sha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c"
+    }
+  ],
+  "pass": true
+}

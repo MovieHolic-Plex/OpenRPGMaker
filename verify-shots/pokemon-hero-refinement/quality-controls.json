@@ -1,0 +1,136 @@
+{
+  "pass": true,
+  "checks": 26,
+  "records": [
+    {
+      "name": "genuine-current-two-reviews",
+      "accepted": true
+    },
+    {
+      "name": "axis-below-minimum",
+      "accepted": false,
+      "reason": "Quality axis below minimum: walking"
+    },
+    {
+      "name": "quality-total-below85",
+      "accepted": false,
+      "reason": "Quality score below85"
+    },
+    {
+      "name": "critical-anatomy-failure",
+      "accepted": false,
+      "reason": "Critical artwork failure or missing critical review"
+    },
+    {
+      "name": "redo-verdict",
+      "accepted": false,
+      "reason": "Reviewer rejected artwork"
+    },
+    {
+      "name": "missing-axis",
+      "accepted": false,
+      "reason": "Every quality axis required"
+    },
+    {
+      "name": "empty-reason",
+      "accepted": false,
+      "reason": "Specific visual reason required"
+    },
+    {
+      "name": "false-total",
+      "accepted": false,
+      "reason": "Reviewer total does not match axis sum"
+    },
+    {
+      "name": "boolean-score",
+      "accepted": false,
+      "reason": "Invalid axis score"
+    },
+    {
+      "name": "artist-as-independent",
+      "accepted": false,
+      "reason": "Independent/root reviewers required"
+    },
+    {
+      "name": "artist-with-whitespace",
+      "accepted": false,
+      "reason": "Independent/root reviewers required"
+    },
+    {
+      "name": "stale-sheet-review",
+      "accepted": false,
+      "reason": "Review stale or incomplete: sheetSha256"
+    },
+    {
+      "name": "stale-gif-review",
+      "accepted": false,
+      "reason": "Review stale or incomplete: gifSha256"
+    },
+    {
+      "name": "stale-rubric-review",
+      "accepted": false,
+      "reason": "Review stale or incomplete: rubricSha256"
+    },
+    {
+      "name": "incomplete-gif-review",
+      "accepted": false,
+      "reason": "Review stale or incomplete: decodedFrames"
+    },
+    {
+      "name": "wrong-timing-review",
+      "accepted": false,
+      "reason": "Review stale or incomplete: durationsMs"
+    },
+    {
+      "name": "not-all-poses-viewed",
+      "accepted": false,
+      "reason": "Complete native/display observation declaration required"
+    },
+    {
+      "name": "not-native-and-enlarged",
+      "accepted": false,
+      "reason": "Complete native/display observation declaration required"
+    },
+    {
+      "name": "missing-browser-proof",
+      "accepted": false,
+      "reason": "Root actual browser playback proof missing"
+    },
+    {
+      "name": "stale-implementation",
+      "accepted": false,
+      "reason": "Prepared evidence stale: implementationSha256"
+    },
+    {
+      "name": "arbitrary-contact-evidence",
+      "accepted": false,
+      "reason": "Prepared contact images do not depict current native/GIF pixels"
+    },
+    {
+      "name": "stale-visual-evidence",
+      "accepted": false,
+      "reason": "Visual evidence changed"
+    },
+    {
+      "name": "opaque-gif-gutter",
+      "accepted": false,
+      "reason": "GIF gutters must stay transparent"
+    },
+    {
+      "name": "wrong-gif-pose-order",
+      "accepted": false,
+      "reason": "GIF frame0 directionup differs from actual native pose"
+    },
+    {
+      "name": "false-idle-walking",
+      "accepted": false,
+      "reason": "GIF must contain the complete four-frame cycle"
+    },
+    {
+      "name": "lowered-rubric-threshold",
+      "accepted": false,
+      "reason": "Frozen rubric changed"
+    }
+  ],
+  "scope": "Focused gate controls. Only genuine recorded v4 judgments supply positive art approval. Negative mutations are disposable fixtures; no project or asset registration writes."
+}

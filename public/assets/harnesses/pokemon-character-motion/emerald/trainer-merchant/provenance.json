@@ -1,0 +1,34 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "portrait",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:27.678Z",
+  "role": "merchant",
+  "sourceSha256": "1ab272ed5854acd475324cffafc8c5b50b8ed7c6f3b1be551cd7f6446707a5f4",
+  "promptSha256": "0717fa152bdd810efdc67d3493ce3af5a012ca7d0cb6a7680a5409268045bf90",
+  "finalSha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+  "sourceDimensions": {
+    "width": 64,
+    "height": 64
+  },
+  "contract": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
+}

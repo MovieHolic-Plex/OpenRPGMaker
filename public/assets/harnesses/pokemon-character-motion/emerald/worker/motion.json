@@ -1,0 +1,38 @@
+{
+  "role": "worker",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "1ee64e7bb0c6ca1413657992fad4f146dc2a071faae8fecad50207e448bbc52e",
+  "charsetSha256": "96f9ee9f271f650967f2aba37444a294775b065091a632e4e2dc1b8f255a83e4",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "95ecef2ab4a17963d58ebafaeb2b729651a81d90056444d59730edc7d5be20fd"
+  },
+  "gateSha256": "f96a2fdf32a2ac24c2d7a7c4baf1f527a581142f1653ae1f0bf7b6012322b7e9",
+  "clip": null
+}

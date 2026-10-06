@@ -1,0 +1,10 @@
+{
+  "role": "ranger",
+  "label": "레인저",
+  "variant": "C · 야영소년",
+  "description": "작은 녹색 모자 · 조끼 · 야영 장비와 반바지",
+  "identity": "소년 · 작은 등짐 · 가벼운 걸음",
+  "collection": "distinct-v2",
+  "base": "camper",
+  "sourceNote": "에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님."
+}

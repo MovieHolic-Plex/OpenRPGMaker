@@ -1482,6 +1482,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - The play status menu is a stage-mounted, map-preserving edge-dock UI owned by `src/player/playerStatusMenuController.ts`, `src/player/playerStatusMenuDetails.ts`, and the final `src/styles/runtime/statusMenuEdgeDock.css` cascade. The primary dock remains exactly six entries (items, skills, equipment, party, record, system) and since 2026-09-03 it is a **left-anchored vertical rail** (`--status-rail-*` / `--status-area-*` tokens at the top of `statusMenuEdgeDock.css`): rail left 7px width 56px, party glance folds to a 2×2 grid top-right of the rail, the full detail panel fills the right area below the party, and party/record/system disclose their nested commands in a **vertical fly-out tray** (width 104px) anchored bottom-left of the right area beside the rail. 예전 배치(하단 가로 독 bottom 16 h46 + 상단 4열 파티)로 되돌리지 말 것 — 아이템·상세 창이 두 띠 사이에 끼었다. 기하 회귀는 `node scripts/qa/runtime/status-menu-layout.probe.mjs` (레일 세로·비겹침·잔림 판정 + 스샷 5장, `verify-shots/runtime-qa/status-menu-layout/`). Full work panels appear only after a concrete command is selected. **작업 패널은 쇼케이스를 갖는다 (2026-09-03):** `renderStatusMenuDetailPanel({ showcase: true })` 가 커서가 올라간 항목의 그림(아이콘 28px / 얼굴 32px)·이름·수치·설명 전문을 목록 오른쪽 86px 칸(`status-menu-detail-showcase`, 패널 `has-showcase`)에 그린다. 트레이·확인 카드는 `showcase:false`. 설명을 행 안에 다시 넣지 않는 계약(행 높이 2배 사고)은 그대로다 — 쇼케이스는 목록 바깥이다. 목록 행 아이콘은 10→14px, 행 22px, 스냅 단계 `--oprn-menu-row-step: 24px`(행+간격, 실측값 — 놓치면 마지막 행이 잘린다). 파티 얼굴 22→30px. 본문 글자는 8→7px(설명 6.5px) — 스테이지 3~4배 확대에서 8px 가 크다는 피드백. 회귀: `test/playerStatusMenuEdgeDock.test.ts`(쇼케이스 DOM), 프로브(쇼케이스 그림·설명 미잘림·행 정수배·7px). 파티 카드·상세 패널·명령 독은 **저작 윈도스킨을 그리지 않는다** (2026-08-30, PR #301). `--runtime-window-*` 토큰이 `src/styles/runtime/system.css` 의 `--runtime-glass-*` 를 가리키게 재정의되어, 런타임 인터페이스 전체가 rm2003 전투 HUD 의 글래스 크롬 하나로 통일된다. 즉 **데이터베이스 → 시스템에서 고른 윈도스킨은 전투 창 5개에만 적용된다** — 필드·메뉴·상점·타이틀은 글래스 고정이며 이것이 의도된 제품 결정이다(사용자 확인 완료). 배관과 프로젝트 데이터는 그대로 살아 있어 `--runtime-window-skin` 은 여전히 심어지고(`test/runtimePlayWindowSkins.test.ts:224-232` 가 고정), `_windowskin.css` 의 전투 5창 계약도 그대로다(`:95-110`). 메뉴는 여전히 불투명 전체 화면 창이 아니라 무대에 마운트된 맵 보존 엣지 독이다. Returning to title is destructive: the system tray exposes a visible warning and the controller requires a second confirmation in a compact confirmation card before leaving play. The primary dock or active detail list keeps real DOM focus after every render and exposes its selected child through `aria-activedescendant`; keep that state synchronized with roving child `tabIndex` and `aria-current`. Its keyboard cancel stack is one level at a time: item target or equipment candidate list -> slot/actor list -> group context tray or command rail -> close. Detail cursors are preserved per submenu key, and invalid Enter on empty/disabled detail lists should emit the menu invalid feedback without changing state.
 - **ESC 메뉴 모션은 켜고 끌 때만 (2026-09-01).** `.oprn-status-menu` 에 `juice-menu-open` / `juice-menu-close` 만 움직임을 준다. 커서·결정·뒤로·거절은 소리와 클래스만 남기고 오버레이 `filter`/`transform`/`outline` 을 걸지 않는다 — 부모가 움직이면 `backdrop-filter` 가 맵을 같이 흔든다. 상점 행 거절 흔들림(`.juice-menu-invalid` 가 행에 붙음)은 그대로다. 선택 표시는 독 `.selected` 배경·밑줄과 상세 행 inset 막대만 쓴다. 커서 이동 때 오버레이 루트를 제거하지 않는다(`adoptStatusMenuPanel`) — 통째로 갈아끼우면 맵이 한 프레임 드러난다. 회귀: `test/runtimeJuiceSelectCss.test.ts`, `test/playerStatusMenuClosingGuard.test.ts`.
 - **아이템 탭은 소지 장비도 보여 준다 (2026-09-01).** 예전 목록은 `database.items` 인벤토리만 그려서 장착 중인 검·갑옷이 안 보였다. 목록 맨 위 `장착 중` 행(`status-menu-owned-equipment-worn`)은 보기 전용이라 첫 결정 칸은 회복약 같은 아이템에 남긴다. 가방에만 있는 장비는 `N개` 행으로 아이템 아래에 붙이고 Enter 는 그 부위 장비 화면으로 간다. `status-menu-item-*` 접두와 분리해 아이템 행 수 단정을 깨지 않는다. 회귀: `test/playerStatusMenu.test.ts`.
+- **Monster field medicine (2026-10-03):** when `battleParty:"monsters"` (or its legacy flag) is enabled, ordinary `medicine` with ally/allAllies scope targets live party instances in the native item target menu. `project/monsterMedicine.ts` shares read-only eligibility previews and HP/status/PP mutation; actor/class-restricted medicine remains ineligible for monsters. Cures clear persistent `stateTurns`, ordinary medicine rejects fainted targets, and an ineffective use consumes nothing. `allAllies` applies to eligible party monsters and commits one inventory use. Care-profile items retain their separate care path. Optional `ppRecovery` restores each known move's capped PP in field and battle; MP recovery remains independent. PP-only medicine is included in battle commands and uses a special timeline message, so PP gains never count as HP/MP healing.
 - Player save slots are runtime-session snapshots in `src/player/saveSlots.ts`. Optional slot metadata such as `mapName`, `partyLevel`, and `playTimeSeconds` is non-breaking and must remain load-compatible with older snapshots that omit those fields.
 - Exported web players set the save-slot localStorage namespace to `oprn-export:<projectId>` before showing the title screen (saves left under the pre-2026-09 `rpgzzu-export:` namespace are copied to the new one on the first boot, old keys kept), so standalone builds do not collide with editor/dev save slots. Keep `setSaveSlotStorageNamespace()` in `src/player/saveSlots.ts` compatible with the existing default `oprn:save-slot:*` keys.
 - Session checkpoints live in `src/player/checkpoints.ts` as a single WeakMap-backed slot per active `PlaySession`. `checkpointSave` stores a save-slot-style snapshot for retry, but checkpoints are intentionally not serialized into save files or project JSON; normal save/load starts without a checkpoint.
@@ -1756,6 +1757,60 @@ Completed runtime timelines persist into bounded session reports accessible from
 적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
 새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
 
+### Emerald trainer portraits (2026-10-04)
+
+`introDirectorState` marks only the first trainer sentence with the local
+`trainerIntroduction` presentation flag. The following `sendOutDirectorState`
+still uses `step: intro`, without that flag; no project/save schema is added.
+`battleDom` mounts `emeraldTrainerIntro` only on the authored Emerald surface
+outside on-field battles, using the existing audio context's live play session.
+`mx_troop_${event.id}` identifies the event in the current map. The active page
+is selected with live session conditions and battle switches/variables/self
+switches, rather than assuming page zero or reading the editor start session.
+
+Only uploaded `oprn_emerald_field_cast_1` / `_2` graphics are supported. For a
+finite integer pattern in 0..95, character index is
+`floor(floor(pattern/12)/4)*4 + floor((pattern%12)/3)`. Slots map to hero, rival,
+professor, nurse, merchant, mother, resident, gym_leader, company_agent, captain,
+worker, explorer, student, ranger, moon_leader, hiker. The pair requires uploaded
+picture IDs `oprn_emerald_trainer_<role>` and `oprn_emerald_trainer_hero_back`,
+with width64/height64 metadata for native Emerald poses and resolvable URLs.
+Explicit older height96 pictures remain a separate `legacy-tall` compatibility
+profile. Each picture's actual decoded width/height must exactly match its
+accepted metadata; unknown dimensions, metadata/decode mismatch and broken URLs
+retain the native battle fallback. The pair can mix the two supported profiles.
+There is no placeholder art, implicit resizing or custom-sheet inference.
+
+The separate `emeraldTrainerIntro.css` renders native64×64 portraits at128×128 and
+legacy64×96 portraits at128×192, exact integer2× in both dimensions with
+`object-fit:contain`. Width/height attributes and CSS height agree with each
+picture's metadata. Bottom anchors remain240px for the hero and210px for the
+opponent in the240px battle field. A short32px stepped entrance is disabled for
+reduced motion. Only after both
+images load does its root marker hide native monster groups and HP cards.
+Missing/corrupt pictures retain the native scene. Send-out immediately removes
+that marker; roster nodes are never replaced. Destruction removes the portrait
+layer and handlers, and late loads cannot revive a removed introduction.
+Focused native source-player evidence:
+`/tmp/oprn-emerald-20261004/trainer-intro-source/SUMMARY.md` (missing-art and
+custom-sheet fallback, first/sending-out distinction, repeated destroy). Real
+generated portrait appearance requires standalone QA after asset registration.
+
+The original [Emerald trainer front picture](https://github.com/pret/pokeemerald/blob/master/graphics/trainers/front_pics/brendan.png)
+is64×64; the [back picture](https://github.com/pret/pokeemerald/blob/master/graphics/trainers/back_pics/brendan.png)
+is a64×256 vertical strip of four64×64 poses. The current intro supports one
+static pose resource, not that full back strip. Send-out still removes trainer
+portraits and reveals native monster battlers; this dimension correction does
+not add back-pose/send-out animation.
+
+Focused renderer/CSS fixture gate:
+`node scripts/qa/runtime/emerald-trainer-dimensions.mjs /tmp/trainer-dimensions`.
+It verifies native, legacy and mixed profiles at uniform2×, bottom anchors,
+send-out visibility, rejected dimensions/full strips, decoded mismatch, broken
+images and late-load destruction. Read `SUMMARY.md` first. Its synthetic PNGs
+and fixture URL resolver prove geometry/fallback mechanics only; final generated
+art, canonical load and shipping battle playback require separate evidence.
+
 ## 포획 불가 전투의 가방 목록 (2026-09-25)
 
 `battleCommandDom.captureItems`는 `snapshot.troopId`의 `trainerBattle` 또는
@@ -1829,3 +1884,31 @@ Completed runtime timelines persist into bounded session reports accessible from
 
 기존 도트 연출 레코드에 `movement`, 스킬에 `battleGimmick`을 추가했다. 미리보기·실전의 순수 이동 계산,
 배우별 경로, 전투 장부와 조건 분기, 공용 기본 데이터와 편집/조수 저작은 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## Emerald authored monster profile
+
+See [Emerald runtime surfaces](emerald-runtime-surfaces.md). `meta.oprnMonsterStyle.reference=emerald` uses its own480×320 surface binder and scoped pale status/message/text-command geometry. Existing640×480 scaling, normal Pokemon fan skin, battler animation ownership and Gen1 mechanics retain their contracts.
+
+## Monster result EXP gauge (2026-10-04)
+
+`BattleSnapshot.eventState.monsterCollection.instances` is an optional read-only
+projection of the battle's original `partyMonsters` EXP/level/species/instance
+IDs. `runtime.snapshot()` publishes only those four fields for the at-most-six
+battle party; it does not copy the box, graphics or nested move data. These are
+pre-reward values for presentation and are never a reward write-back source.
+
+`battleDirectorDom.expGaugeProgress()` uses `monsterInstanceId` to select that
+instance, its authored species EXP curve (or `DEFAULT_MONSTER_EXP_CURVE`), and
+`participatingActorIds` to preview the same collected EXP the monster reward
+path awards. The gauge animates within the current level interval, reaching
+100% when the existing level-up preview crosses the next threshold. It does not
+modify instances or award EXP. The ordinary actor branch still uses its existing
+actor EXP curve and `expForRewardActor` policy. Missing monster snapshots remain
+an empty gauge rather than reading editor start-state or guessing XP from Lv.
+
+
+### Emerald trainer source dimensions correction (2026-10-04)
+
+Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (128×128) using the existing bottom platform anchors. Explicit legacy64×96 custom portraits remain supported as128×192; that transport is not Emerald native. The native image dimensions are validated after decode as well as authored metadata. Original rawtrainer paintings are normalized by the reviewed portrait lifecycle; source art and pixels are not painted by the converter. Standalone game QA verifies actual trainer visibility, handoff, Continue and victory; colored-rectangle dimension fixtures are separate layout checks.
+
+Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.

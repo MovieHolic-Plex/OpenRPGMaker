@@ -1,0 +1,34 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "portrait",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:40.763Z",
+  "role": "hero_back",
+  "sourceSha256": "eb87e06b569b551bf879cbb5568916124e988c5274d9c57395256a903ffbbfa8",
+  "promptSha256": "f97d9958a2819df6af9d2606664c6d8176df63a4941fd41be1be1094464c7a10",
+  "finalSha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+  "sourceDimensions": {
+    "width": 64,
+    "height": 64
+  },
+  "contract": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
+}

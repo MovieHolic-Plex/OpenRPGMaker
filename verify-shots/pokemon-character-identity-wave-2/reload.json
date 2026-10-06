@@ -1,0 +1,57 @@
+{
+  "store": "/home/main/z-project/harness/pokemon-like-characters/.data",
+  "items": [
+    {
+      "id": "professor-479d1212ea8f0489",
+      "role": "professor",
+      "state": "pending",
+      "structural": {
+        "pass": true,
+        "errors": []
+      },
+      "media": {
+        "templateId": "prof_birch",
+        "gifFrames": 4,
+        "sourcePixelsExact": true,
+        "durationMs": 130,
+        "paletteMax": 15,
+        "resizing": false
+      }
+    },
+    {
+      "id": "ranger-80f567f41e112a38",
+      "role": "ranger",
+      "state": "pending",
+      "structural": {
+        "pass": true,
+        "errors": []
+      },
+      "media": {
+        "templateId": "bug_catcher",
+        "gifFrames": 4,
+        "sourcePixelsExact": true,
+        "durationMs": 130,
+        "paletteMax": 15,
+        "resizing": false
+      }
+    },
+    {
+      "id": "captain-bb9f0b056960c728",
+      "role": "captain",
+      "state": "pending",
+      "structural": {
+        "pass": true,
+        "errors": []
+      },
+      "media": {
+        "templateId": "sailor",
+        "gifFrames": 4,
+        "sourcePixelsExact": true,
+        "durationMs": 130,
+        "paletteMax": 15,
+        "resizing": false
+      }
+    }
+  ],
+  "votesWritten": 0
+}

@@ -561,3 +561,7 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
   `resolveReferenceImageDataUrl` 로 보낼 때만 바이트로 바꾼다(`TilesetReferenceEvidence.imagesForRead` 는 async).
   Node(헤드리스·테스트)에서는 체크아웃의 `public/` 을 읽는다. `export-tileset-references.mjs` 도 경로를 `public/` 에서 읽는다.
 - 플레이어 빌드는 `publicDir: false` 이고 내보내기는 참고문서를 지우므로 이 파일들은 게임 산출물에 들어가지 않는다.
+
+### Emerald 몬스터 원본 도트 변형 (2026-10-04)
+
+`emerald_monster_*` 7종은 원본 `monster_*`의 번호·킷·통행을 유지하고 그림만 native 좌표 레시피에서 다시 저작한다. 파생 참조 포인터를 쓰면 원본 용도만 보여 새 표본이 가려지므로, `defaults/emeraldMonsterKit.ts`가 전체 조립 용도와 Emerald 판본 안내를 직접 복제한다. 공용 소스는 `tiledata/emerald-monster`, prepare는 `scripts/content/prepare-emerald-monster.py`, 배포는 `src/assets/emeraldMonsterReferences.json`과 `public/assets/emerald-monster/references`. 54개 정상 맵을 동일 전체 lower/upper 배열로 새 atlas에서 렌더했고, 오류 진단 38 이미지는 원본색임을 caption에 명시했다. 참조 JSON에 이미지 바이트를 넣지 않는다. 기존 프로젝트의 빠진 용도는 보충하되 저자 용도와 의도적으로 비운 배열은 보존한다.

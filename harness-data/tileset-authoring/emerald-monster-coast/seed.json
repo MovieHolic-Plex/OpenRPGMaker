@@ -1,0 +1,122 @@
+{
+  "extends": "monster-coast",
+  "nativeSource": "monster-coast",
+  "id": "emerald-monster-coast",
+  "tilesetId": "emerald_monster_coast",
+  "textureKey": "tex_emerald_monster_coast",
+  "tilesetName": "에메랄드 몬스터 · coast",
+  "title": "에메랄드 몬스터 · coast",
+  "palette": {
+    "grass": [
+      "#477b53",
+      "#66976d",
+      "#87b98a",
+      "#94c596",
+      "#a5d1a5"
+    ],
+    "grass_light": [
+      "#8fbb91",
+      "#afd2a7",
+      "#b9dcb2",
+      "#c5e4be"
+    ],
+    "leaf": [
+      "#254c43",
+      "#356550",
+      "#4e8760",
+      "#6ba875",
+      "#8ac28b"
+    ],
+    "tall": [
+      "#264c3c",
+      "#3b7450",
+      "#579764",
+      "#83b580"
+    ],
+    "cut_shadow": [
+      "#4e8058"
+    ],
+    "water": [
+      "#377fba",
+      "#468fc4",
+      "#67afd6",
+      "#90cce4"
+    ],
+    "sea": [
+      "#327ead",
+      "#418bb9",
+      "#62aad1",
+      "#8bc5df",
+      "#b4dce8"
+    ],
+    "sea_deep": [
+      "#28577b",
+      "#336c94",
+      "#518db4",
+      "#73aacb",
+      "#98c7db"
+    ],
+    "roof_green": [
+      "#315647",
+      "#4b7861",
+      "#659b77",
+      "#7baf89",
+      "#9ac39e"
+    ],
+    "roof_purple": [
+      "#454265",
+      "#61597d",
+      "#807299",
+      "#9a89ac",
+      "#b6a4c6"
+    ],
+    "roof_red": [
+      "#733d42",
+      "#a04f54",
+      "#c86a68",
+      "#df8980",
+      "#eca79b"
+    ],
+    "roof_blue": [
+      "#355673",
+      "#507995",
+      "#699ab5",
+      "#89b5cb",
+      "#a9d0df"
+    ],
+    "wood": [
+      "#584b3c",
+      "#7b644a",
+      "#a48560",
+      "#bba47e"
+    ],
+    "trunk": [
+      "#554a39",
+      "#786345",
+      "#9a835c",
+      "#b4a176"
+    ],
+    "steel": [
+      "#536877",
+      "#7d909d",
+      "#aabcc6",
+      "#e0eaf0"
+    ],
+    "i2_steel": [
+      "#627584",
+      "#97abb8",
+      "#c7d5df"
+    ],
+    "rm_fl_lab": [
+      "#b7c8d1",
+      "#d0dce2",
+      "#e6eef1"
+    ],
+    "wfloor": [
+      "#406c51",
+      "#4d7d5b",
+      "#5c8c68",
+      "#729e7c"
+    ]
+  }
+}

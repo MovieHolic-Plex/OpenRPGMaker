@@ -12,18 +12,38 @@ import { projectWireView } from "./serialize";
  * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB · 타일셋 82MB · 업로드 66MB): AI 체크포인트 적용 한 번의 저장 왕복 검사가
  * 문서 전체를 직렬화해 약 1.4s, 턴마다 무거운 키 해시가 또 한 번 타일셋 전체를 직렬화했다. 체크포인트 사이에 바뀌는 타일셋은 거의 없다.
  */
-const pieces = new WeakMap<object, string | null>();
+/**
+ * 항목 객체 → 필드별 `"키":글` 조각. 항목 글은 쓸 때마다 조각을 이어 만든다(버려지는 글).
+ * 필드 단위로 쥐는 까닭: 저장 왕복 검사의 투영본(참고문서를 뺀 같은 항목, 아래 roundtripTilesetPiece)이 같은 조각을 함께 쓴다.
+ * 항목 글과 투영본 글을 따로 쥐면 같은 타일셋 내용이 두 벌 남았다(2026-10-05 실측: 조수 턴 시작 뒤 렌더러 힙에서 약 205MB + 280MB).
+ */
+const fieldPieces = new WeakMap<object, readonly string[]>();
+/** 배열 항목처럼 필드로 나누지 않는 항목의 글. */
+const wholePieces = new WeakMap<object, string | null>();
 
 function hasToJson(value: object): boolean {
   return typeof (value as { toJSON?: unknown }).toJSON === "function";
 }
 
+function fieldsOf(entry: Record<string, unknown>): readonly string[] {
+  const hit = fieldPieces.get(entry);
+  if (hit) return hit;
+  const fields: string[] = [];
+  for (const key of Object.keys(entry)) {
+    const text = JSON.stringify(entry[key]) as string | undefined;
+    if (text !== undefined) fields.push(`${JSON.stringify(key)}:${text}`);
+  }
+  fieldPieces.set(entry, fields);
+  return fields;
+}
+
 function pieceOf(entry: unknown): string | undefined {
   if (entry === null || typeof entry !== "object" || hasToJson(entry)) return JSON.stringify(entry);
-  const hit = pieces.get(entry);
+  if (isPlainRecord(entry)) return `{${fieldsOf(entry).join(",")}}`;
+  const hit = wholePieces.get(entry);
   if (hit !== undefined) return hit ?? undefined;
   const text = JSON.stringify(entry) as string | undefined;
-  pieces.set(entry, text ?? null);
+  wholePieces.set(entry, text ?? null);
   return text;
 }
 
@@ -88,22 +108,32 @@ export function markRoundtripPassed(project: Project): void {
  * tileGrafts, count, rules and group knowledge): spatial validation and reference
  * repair read these across entries. A replacement entry takes the full path once.
  */
-const roundtripPieces = new WeakMap<object, string>();
-function roundtripTilesetPiece(entry: unknown): string | undefined {
-  if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return pieceOf(entry);
-  const hit = roundtripPieces.get(entry);
-  if (hit !== undefined) return hit;
-  const { referenceDocuments: _documents, structureKits, ...rest } = entry;
-  const projection = { ...rest, ...(Array.isArray(structureKits) ? {
-    structureKits: structureKits.map(kit => {
+/** 참고문서를 뺀 structureKits 조각 — 키트에 참고문서가 있을 때만 따로 쥔다(없으면 항목 조각을 그대로 쓴다). */
+const strippedKitPieces = new WeakMap<object, string | null>();
+const REFERENCE_DOCUMENTS_FIELD = `${JSON.stringify("referenceDocuments")}:`;
+const STRUCTURE_KITS_FIELD = `${JSON.stringify("structureKits")}:`;
+function strippedKitsField(entry: Record<string, unknown>, field: string): string {
+  let hit = strippedKitPieces.get(entry);
+  if (hit === undefined) {
+    const kits = entry.structureKits;
+    const withDocs = Array.isArray(kits) && kits.some(kit => isPlainRecord(kit) && Object.hasOwn(kit, "referenceDocuments"));
+    hit = withDocs ? `${STRUCTURE_KITS_FIELD}${JSON.stringify((kits as unknown[]).map(kit => {
       if (!isPlainRecord(kit)) return kit;
       const { referenceDocuments: _kitDocuments, ...fields } = kit;
       return fields;
-    }),
-  } : structureKits === undefined ? {} : { structureKits }) };
-  const text = JSON.stringify(projection);
-  roundtripPieces.set(entry, text);
-  return text;
+    }))}` : null;
+    strippedKitPieces.set(entry, hit);
+  }
+  return hit ?? field;
+}
+function roundtripTilesetPiece(entry: unknown): string | undefined {
+  if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return pieceOf(entry);
+  const parts: string[] = [];
+  for (const field of fieldsOf(entry)) {
+    if (field.startsWith(REFERENCE_DOCUMENTS_FIELD)) continue;
+    parts.push(field.startsWith(STRUCTURE_KITS_FIELD) ? strippedKitsField(entry, field) : field);
+  }
+  return `{${parts.join(",")}}`;
 }
 
 /**

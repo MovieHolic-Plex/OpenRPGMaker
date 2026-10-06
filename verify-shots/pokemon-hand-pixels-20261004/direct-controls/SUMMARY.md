@@ -1,0 +1,40 @@
+# Direct native Python art controls
+
+- PASS hero native16x32 field bytes unchanged
+- PASS hero native64 trainer bytes unchanged
+- PASS rival native16x32 field bytes unchanged
+- PASS rival native64 trainer bytes unchanged
+- PASS professor native16x32 field bytes unchanged
+- PASS professor native64 trainer bytes unchanged
+- PASS nurse native16x32 field bytes unchanged
+- PASS nurse native64 trainer bytes unchanged
+- PASS merchant native16x32 field bytes unchanged
+- PASS merchant native64 trainer bytes unchanged
+- PASS mother native16x32 field bytes unchanged
+- PASS mother native64 trainer bytes unchanged
+- PASS resident native16x32 field bytes unchanged
+- PASS resident native64 trainer bytes unchanged
+- PASS gym_leader native16x32 field bytes unchanged
+- PASS gym_leader native64 trainer bytes unchanged
+- PASS company_agent native16x32 field bytes unchanged
+- PASS company_agent native64 trainer bytes unchanged
+- PASS captain native16x32 field bytes unchanged
+- PASS captain native64 trainer bytes unchanged
+- PASS worker native16x32 field bytes unchanged
+- PASS worker native64 trainer bytes unchanged
+- PASS explorer native16x32 field bytes unchanged
+- PASS explorer native64 trainer bytes unchanged
+- PASS student native16x32 field bytes unchanged
+- PASS student native64 trainer bytes unchanged
+- PASS ranger native16x32 field bytes unchanged
+- PASS ranger native64 trainer bytes unchanged
+- PASS moon_leader native16x32 field bytes unchanged
+- PASS moon_leader native64 trainer bytes unchanged
+- PASS hiker native16x32 field bytes unchanged
+- PASS hiker native64 trainer bytes unchanged
+- PASS native64 player back bytes unchanged
+- PASS all6 native64 professor poses unchanged
+- PASS native64 clip rejects mismatched declared grid
+- PASS native portrait rejects partial alpha without automatic repair
+- PASS native portrait rejects64x96 instead of shrinking it
+- PASS native portrait rejects excess palette instead of quantizing

@@ -1,0 +1,32 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>별빛섬 상점·NPC·오프닝 개선</title><style>
+*{box-sizing:border-box}body{margin:0;background:#111b22;color:#e5edf0;font:16px/1.65 system-ui,sans-serif}main{max-width:1040px;margin:auto;padding:32px 20px}h1{font-size:30px;line-height:1.3}h2{font-size:22px;margin-top:36px}a{color:#9ddfd6}article,.card{background:#1d2b35;padding:20px;border:1px solid #425660;border-radius:10px;margin:16px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}figure{margin:0}img{display:block;width:100%;height:auto;border:1px solid #425660}figcaption{padding:10px 0;color:#c7d5dc}table{width:100%;border-collapse:collapse}td,th{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #425660}code{overflow-wrap:anywhere;font-size:13px}.pill{display:inline-block;background:#c5e7d9;color:#12281f;border-radius:4px;padding:6px 12px;text-decoration:none}small{color:#bdd0d8}</style></head><body><main>
+<small>2026-10-04 · 정본 revision25 · 실제 플레이 확인</small>
+<h1>상점 스킨, 움직이는 주민,<br>Enter로 읽는 오프닝</h1>
+<p>이전 결과에는 전용 상점 프리셋 누락, 고정 NPC 생성, 자동 페이드 기본값 문제가 있었습니다. 현재 게임과 조수 도구·생성 규칙을 함께 수정했습니다.</p>
+<p><a class="pill" href="/monster-expedition/player.html?build=presentation-20261004">수정 게임 플레이</a>　<a href="http://mdc-server:18364/?hostProject=649482df-81ca-4af9-806b-2613f7d7bebb">조수 편집기</a>　<a href="/monster-presentation-evidence/SUMMARY.md">상세 확인 기록</a></p>
+<div class="grid"><article><h2>상점 9곳</h2><p>흰 픽셀 프레임의 수집 게임 전용 스킨을 추가했습니다. 구매·판매, 가격·보유 수량을 표시하고 장비 비교를 제거했습니다. 작은 화면의 상품 설명 잘림과 포획구 판매가 0G도 고쳤습니다.</p></article><article><h2>주민 27명 순찰</h2><p>9개 마을의 주민 27명이 안전한 경로를 걷습니다. 고정 NPC 7명의 위치를 수정했고 박사·라이벌·상인 외형을 구분했습니다. 플레이어가 길을 막으면 기다렸다가 같은 경로로 돌아갑니다.</p></article><article><h2>오프닝 8쪽</h2><p>짧은 이야기를 읽고 Enter로 다음 문장을 넘깁니다. 같은 그림에서 다음 문장으로 넘어갈 때 그림을 유지합니다. 반복 페이드와 자동 진행을 없애고 음악이 계속 재생되게 했습니다.</p></article></div>
+<h2>실제 화면</h2><div class="grid">
+<figure><img src="/monster-presentation-evidence/opening-first.png" alt="Enter로 넘기는 첫 이야기"><figcaption>첫 쪽은 9초 기다려도 자동으로 넘어가지 않습니다.</figcaption></figure>
+<figure><img src="/monster-presentation-evidence/opening-last.png" alt="연구소로 이어지는 마지막 이야기"><figcaption>마지막 문장에서 연구소와 첫 동료를 안내합니다.</figcaption></figure>
+<figure><img src="/monster-presentation-evidence/shop-desktop.png" alt="흰 픽셀 상점"><figcaption>전용 상점 스킨: 상품·가격·소유 수량·거래 조작.</figcaption></figure>
+<figure><img src="/monster-presentation-evidence/shop-compact.png" alt="390픽셀 상점"><figcaption>390×640에서도 전체 설명과 수량·구매·취소가 보입니다.</figcaption></figure>
+<figure><img src="/monster-presentation-evidence/npc-blocked.png" alt="길이 막혀 기다리는 주민"><figcaption>실제 이동으로 길을 약 25초 막아도 NPC가 경로를 벗어나지 않습니다.</figcaption></figure>
+<figure><img src="/monster-presentation-evidence/continue-professor-rival.png" alt="기존 저장 불러오기"><figcaption>기존 실제 저장 불러오기: 박사와 라이벌 외형 구분, 동료와 아이템 유지.</figcaption></figure></div>
+<h2>조수가 같은 문제를 반복하지 않도록</h2><article><ul>
+<li><code>configure_shop_presentation</code>: 전용 스킨 설정. 시스템 조회에 실제 판매가 덮어쓰기 표도 노출.</li>
+<li><code>read_npc_layout</code>: 시작점·출입구·NPC·통행·대화 접근성을 함께 조회.</li>
+<li><code>configure_npc_patrol</code>: 닫힌 경로, 양방향 통행, 다른 주민·순찰·입구와의 간섭 검사.</li>
+<li>오프닝 기본 진행을 Enter 확인으로 변경. 자동 애니메이틱은 명시적으로 선택.</li>
+<li>실제 Pi/LLM 도그푸딩: 오프닝 14호출, NPC/상점 6호출. 오류 0. 이 결과를 정본 저장과 브라우저 재생 근거로 따로 확인.</li>
+</ul></article>
+<h2>확인 결과와 범위</h2><article><table><thead><tr><th>확인</th><th>결과</th></tr></thead><tbody>
+<tr><td>오프닝</td><td>8쪽 Enter 진행, 반복 키 입력 무시, 동일 그림 유지, WASD에서 BGM 재시작 없음.</td></tr>
+<tr><td>NPC</td><td>시작 마을 3명의 실제 순찰·장시간 길막·충돌·재개 확인. 연구소 입장 및 박사 대화 정상.</td></tr>
+<tr><td>상점 거래</td><td>포획구 2개×80G 구매: 1600→1440G. 2개×40G 판매: 1440→1520G. 수량0→2→0.</td></tr>
+<tr><td>작은 화면</td><td>390×640와 960×720에서 이름·전체 설명·보유 수량·조작 버튼 실측 및 직접 화면 확인.</td></tr>
+<tr><td>이전 저장</td><td>동일한 기존 실제 저장에서 동료 Lv5/HP20, 기술 PP30×2, 포획구10, 회복약5 유지. 오프닝 재실행 없음.</td></tr>
+<tr><td>정본</td><td>공식 SQLite 호스트 저장 후 새 연결로 재로드. revision25, 72개 맵.</td></tr>
+</tbody></table><p>27개 경로는 실제 맵 통행 데이터로 검사했습니다. 장시간 실제 이동 관찰은 시작 마을 3명, 상점 거래는 시작 마을 상점에서 수행했습니다. 이번 수정으로 전체 캠페인의 품질이 검증된 것은 아닙니다. NPC 관찰용 사본은 읽기 계측만 켰으며 순간이동·가짜 저장·상태 변경은 사용하지 않았습니다. 자세한 수정 전 발견과 재확인 범위는 아래 기록에 남겼습니다.</p>
+<p><a href="/monster-presentation-evidence/NPC-SUMMARY.md">NPC·기존 저장 근거</a> · <a href="/monster-presentation-evidence/SHOP-TRANSACTIONS-SUMMARY.md">거래 확인 및 수정 전 설명 잘림</a> · <a href="/monster-presentation-evidence/SHOP-COMPACT-SUMMARY.md">최종 작은 화면 확인</a></p></article>
+<h2>저장·빌드 식별</h2><article><p>project id <code>fca4b134-ed34-4365-9021-450c7ee24894</code><br>host project <code>649482df-81ca-4af9-806b-2613f7d7bebb</code><br>artifact <code>4162d202d42e72f5</code> · source <code>678d5a937a2fee64</code></p><p>정본 SHA <code>4811a4afff1e1a6508e810ff25ddeb2245b08b4e8f007d4e028d1d62cb288937</code>. 저장 이름공간 <code>starlight-islands-v1</code> 유지.</p><p><a href="/monster-presentation-evidence/canonical-publication-reload.json">최종 정본 재조회</a> · <a href="/monster-presentation-evidence/published-build.json">출하 파일 SHA</a></p></article>
+</main></body></html>

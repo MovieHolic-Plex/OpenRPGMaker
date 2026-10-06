@@ -64,6 +64,8 @@ import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
+import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldSurfaces";
+import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
@@ -74,6 +76,7 @@ export interface BattleDomOptions {
   readonly host: HTMLElement;
   readonly runtime: BattleRuntime;
   readonly audioContext?: BattleAudioContext;
+  readonly onSnapshot?: (snapshot: BattleSnapshot) => void;
   readonly onResult: (result: BattleResult, snapshot: BattleSnapshot) => void;
   readonly introHold?: boolean;
   readonly showEventText?: (request: Extract<BattleEventPauseSnapshot, { kind: "text" }>, signal: AbortSignal) => Promise<void>;
@@ -146,6 +149,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const root = document.createElement("section");
   root.className = "battle-scene";
   root.dataset.testid = "battle-scene";
+  const emerald = stampEmeraldSurface(root, store.getCurrent(), "battle");
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
   // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 등록 스킨을 갈아입힌다.
@@ -189,11 +193,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   stage.append(root);
   options.host.append(stage);
   // Fit the 640×480 UI inside an opaque, host-sized battle surface.
-  const stageScale = bindBattleStageScale(options.host, root);
+  const stageScale = emerald
+    ? bindEmeraldBattleSurface(options.host, root)
+    : bindBattleStageScale(options.host, root);
   // 전투가 소유한 지연 콜백의 스코프를 연다 — teardown 이 남은 것을 한 번에 끊는다.
   openBattleTimerScope();
 
   const initialSnapshot = options.runtime.snapshot();
+  const trainerIntro = emerald && !options.onField
+    ? mountEmeraldTrainerIntro(root, store.getCurrent(), options.audioContext?.session, initialSnapshot)
+    : undefined;
+  options.onSnapshot?.(initialSnapshot);
   let destroyed = false;
   /** 포켓몬 피해 박자: 대상별로 돌고 있는 박자의 마무리(숫자 끝값·HP 지연 해제·쓰러짐 보류 해제).
    *  같은 대상의 다음 피드백과 배속 전환이 먼저 부른다(finishPokemonPhase). setSpeed 가 마운트 중에도 불리므로 위에 둔다. */
@@ -1191,6 +1201,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
+    options.onSnapshot?.(snapshot);
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);
@@ -1242,6 +1253,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot, showingResult);
     applyBattleDirectorState(root, directorState, snapshot);
+    trainerIntro?.sync(directorState);
     // 명령 국면에 들어오면 커서 버튼이 포커스를 갖는다. acting 중 host 가 display:none 이라
     // rebuild 시점의 focus() 가 실패하고, 이후 시그니처가 같아 재포커스가 없었다(실측 BODY).
     if (directorState.step === "command" && !sequenceBusy && !commandHost.contains(document.activeElement)) {
@@ -1863,6 +1875,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       animationBlendObserver.disconnect();
       stopRetroClassSkill(field);
       impactContact.destroy();
+      trainerIntro?.destroy();
       clearBattleTimerScope();
       rollingHpTicker?.stop();
       choiceController?.abort();

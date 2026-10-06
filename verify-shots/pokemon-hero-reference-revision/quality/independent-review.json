@@ -1,0 +1,171 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+  "gifSha256": "b88f1ce94a24e1e3fff18e3865746294796c6a62c5d324a23b2eec2004009caa",
+  "observationPackageSha256": "c802b69b5d1a0f5a2c72c658c096da20d5e963ad29045dd212fbe1750faac798",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-reference-revision/v12/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 16,
+      "reason": "Deep cap, shaped ears/cheeks, reference-relative face/shoulder placement and compact dressed hips now read as one coherent native hero. Back hair remains a large stylized dark mass and the costume contour is simpler than some references, limiting expression without obscuring the human form."
+    },
+    "anatomy": {
+      "score": 16,
+      "reason": "Warm cheek/ear shadows, connected profile nose/chin, outlined sleeve/hand roots and compact limb proportions are anatomically readable at 1x. Near/far shoe overlap no longer suggests one undifferentiated lower block. Facial and side cloth planes remain stylized and less detailed than the reference protagonists."
+    },
+    "walking": {
+      "score": 17,
+      "reason": "All directions have genuine opposing arm and planted/swing foot action. Profile idle shoes now overlap as distinct near/far toe/heel shapes; phase B forearm moves diagonally forward/down with a visible gray cuff at its joint. The actual native sequence reads as a restrained walk rather than the prior sideways bar or fused footwear."
+    },
+    "pixelCraft": {
+      "score": 14,
+      "reason": "Navy contour, warm skin shadow, connected tapered hair highlight/nape, dark shoes with red toes, and sculpted side cuff/hand/shoe clusters create clear planes at native size. No distracting detached highlight or silhouette break remains. Vest and pack retain a simple original design rather than reference-level dense detail."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Red cap, blue vest/white shirt and gold-red pack are consistent and recognizable through all views. Attachment and direction are coherent. Vest construction and pack pocket/shadow planes remain relatively simplified; this is a retained design limitation rather than loss of costume identity."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Front, back and both profiles preserve the same scale, palette and accessory position. The larger rear hair mass and simpler profile facial planes make turn volume more stylized than the references, but direction and identity are clear."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All four 140ms decoded frames repeat with identical idle at 1/3, coherent step bob and no unexplained seam. All 16 native/GIF pose comparisons match and gutters are transparent. Root browser record/screenshot show all three poses at 1x/4x; record has 14 samples at each scale and no errors. No new live browser session is claimed by this critic."
+    }
+  },
+  "criticalFailures": [],
+  "total": 85,
+  "verdict": "pass",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/quality/native-contact.png",
+      "sha256": "f27eebe773a45628ab6c4114c9563b64360f34af057f109ffdbc2cb7c7ad1963"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/quality/decoded-gif-contact.png",
+      "sha256": "8a18a8ce985b203d53a5b818419c9be4bc7b6dd7ed17cd0a16d1d1cc3b3fc3a2"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/v12-reference-comparison.png",
+      "sha256": "e75135ca6ae81ce7c389a96af7bfa97ba00d49e4a5dddff83d78d95d714802d5"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/firered-reference-contact.png",
+      "sha256": "3896ba5fde7e9181d0e5a09b9e16a3ccc17895a5ae3b66abcc18bd80460c1791"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/record.json",
+      "sha256": "60f7685f44ab7b422e60fa328d19a4c04a622dcb82a99fcf13fad47a6e86531f"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/browser-playback.png",
+      "sha256": "6ebfb7b4baf93050b1e90ac0f3e79952f908d2d4c347c77e8c58f3a9b9af2cd7"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "browserRecordAndScreenshotInspected": true,
+  "rootGeneratedBrowserProof": {
+    "file": "/home/main/z-project/pokemon-hero-reference-revision/v12/browser-gif/record.json",
+    "sha256": "60f7685f44ab7b422e60fa328d19a4c04a622dcb82a99fcf13fad47a6e86531f",
+    "checks": [
+      {
+        "scale": 1,
+        "samples": 14,
+        "observedGifFrames": [
+          1,
+          1,
+          1,
+          2,
+          0,
+          1,
+          1,
+          0,
+          2,
+          1,
+          1,
+          2,
+          0,
+          1
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      },
+      {
+        "scale": 4,
+        "samples": 14,
+        "observedGifFrames": [
+          1,
+          2,
+          0,
+          1,
+          1,
+          0,
+          2,
+          0,
+          1,
+          1,
+          0,
+          2,
+          1,
+          1
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      }
+    ],
+    "errors": []
+  },
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "rgbaSha256": "a725dc4b14dea49e7c8b7b4a47ccbd3fe216311105b8a164104f237462b56a82"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "rgbaSha256": "245525cfe933ec18b95749bdf9e5df3d1e41c1a0cc9aef178602df0b3776298c"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "rgbaSha256": "dc8181b24665afc169eacde36d16ee7ef53fde5f6698aac194e7043af31eaf68"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "rgbaSha256": "245525cfe933ec18b95749bdf9e5df3d1e41c1a0cc9aef178602df0b3776298c"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no different-model or decorrelated aesthetic independence is claimed.",
+  "requiredCorrections": [],
+  "nonblockingLimitations": [
+    "Rear hair remains a large stylized dark mass.",
+    "Vest, white-shirt construction and pack pocket/shadow planes are simpler than the official protagonist references.",
+    "Facial/profile planes are stylized and less detailed; this is not a claim of exact official-art equivalence."
+  ],
+  "decisionReason": "Meets unchanged 85 total threshold, all axis minima and zero critical failures. Reference-relative compact geometry, face/ear clusters, contour/value planes and corrected profile foot/arm construction supply actual visual support; no score or threshold exception was used.",
+  "comparisonScope": "Complete Emerald/FireRed reference contacts plus an independently assembled native/5x front/back/profile comparison. Nintendo images remain external inspection material, not shipped artwork.",
+  "approvalScope": "Only these reviewed native PNG/GIF bytes and their prepared observation package. This does not claim canonical save/reload, player integration, authenticated reviewer independence or user acceptance.",
+  "scope": "Read-only source/art/store inspection plus requested report/contact artifacts."
+}

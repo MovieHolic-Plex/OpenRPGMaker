@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:33.325Z",
+    "role": "captain",
+    "sourceSha256": "895e9b6400b8e0898d10be1fe80a020854e2982d4e50704c8f6bfe3cca9707e6",
+    "promptSha256": "67fd26e37a1dff60a48c96abfe386d290e778ecba51e9d57fad6af1ff1fb9c47",
+    "finalSha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "895e9b6400b8e0898d10be1fe80a020854e2982d4e50704c8f6bfe3cca9707e6",
+    "prompt.txt": "67fd26e37a1dff60a48c96abfe386d290e778ecba51e9d57fad6af1ff1fb9c47",
+    "portrait.png": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "6fbdfff8c915369e83b5ebe1b008e25a55d5d92f4d6275fbbe46a4eb2277ca09",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 13,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 18,
+      "y": 3,
+      "width": 32,
+      "height": 60
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.949Z",
+  "reviewSha256": "bdce71b5f1d1cde970faf37d306e9306d6c8e9a2b11ecd7f80f2a62c02aff5c9"
+}

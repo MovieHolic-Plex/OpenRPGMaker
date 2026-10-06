@@ -1,0 +1,11 @@
+{
+  "role": "moon_leader",
+  "label": "월영단장",
+  "variant": "백야 · 판형 수정",
+  "description": "보랏빛 중절모와 은빛 문장, 짙은 보라 코트와 금색 브로치",
+  "identity": "보랏빛 중절모와 은빛 문장, 짙은 보라 코트와 금색 브로치 · 원작 체형과 발 교대 유지",
+  "collection": "full-cast-v1",
+  "base": "gentleman-moon_leader-full-cast-v1",
+  "templateId": "gentleman",
+  "sourceNote": "에메랄드 gentleman 원작을 판형으로 삼아 Codex가 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

@@ -1,0 +1,10 @@
+{
+  "role": "explorer",
+  "label": "탐험가",
+  "variant": "D · 선원",
+  "description": "넓은 흰 모자 · 세일러복 · 굵은 팔과 짧은 바지",
+  "identity": "성인 · 팔 노출 · 넓은 발",
+  "collection": "distinct-v2",
+  "base": "sailor",
+  "sourceNote": "에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님."
+}

@@ -1,3 +1,4 @@
+import { MONSTER_KIT_CHIPSET_ASSETS, monsterKitSheet } from "./monsterKitAssets";
 import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import sharedVillageObjects from "./sharedVillageObjects.json";
 import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from './cc0IconAssets';
@@ -59,6 +60,7 @@ import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
+import { EMERALD_MONSTER_KIT_CHIPSET_ASSETS, emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
@@ -236,6 +238,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture.png", name: "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)" },
   { textureKey: LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture-16px.png", name: LPC_WOODEN_FURNITURE_16_NAME },
   ...SCARLOXY_CHIPSET_ASSETS,
+  ...MONSTER_KIT_CHIPSET_ASSETS,
+  ...EMERALD_MONSTER_KIT_CHIPSET_ASSETS,
   { textureKey: "tex_atlas_cartography", path: "assets/atlas-cartography/chipset.png", name: "지도 지형 · 새 손 도트 32px" },
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -263,6 +267,8 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
+  const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
+  if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;
   if (key === "tex_worldmap_authoring") return worldmapAuthoringSheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;

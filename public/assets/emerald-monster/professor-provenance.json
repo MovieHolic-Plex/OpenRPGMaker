@@ -1,0 +1,12 @@
+{
+  "tool": "image_gen.imagegen (built-in)",
+  "outputWidth": 1122,
+  "outputHeight": 1402,
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "sha256": "c3477e80742fb57cb2cb52d901b0d610a570d54d779dfc0a1049cca3c87c540f",
+  "scope": "Original professor sprite for shared Emerald-reference production preset; original PNG preserved, no raster post-edit",
+  "prompt": "Original friendly astronomy/field professor, GBA Emerald era hard pixel clusters, 16-color target, 64x80 logical sprite enlarged8x, green shirt/field coat/beige trousers/brown shoes, transparent alpha, no text/logo/existing Pokemon character. Used as a sprite on pale introduction stage."
+}

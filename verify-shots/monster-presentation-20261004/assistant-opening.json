@@ -1,0 +1,29 @@
+{
+  "stats": {
+    "ms": 178132,
+    "turns": 10,
+    "toolCalls": 14,
+    "toolErrors": 0,
+    "usage": {
+      "input": 224939,
+      "output": 3329,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 228268,
+      "calls": 10
+    }
+  },
+  "openingProduction": {
+    "issues": [],
+    "playbackVerified": false
+  },
+  "changedKeys": [
+    "meta",
+    "system"
+  ],
+  "mapsPreserved": true,
+  "databasePreserved": true,
+  "sessionPreserved": true,
+  "canonicalSaved": false,
+  "playbackVerified": false
+}

@@ -1,0 +1,11 @@
+{
+  "role": "hero",
+  "label": "주인공",
+  "variant": "해솔 · 판형 수정",
+  "description": "호박색 헤드밴드와 남색 여행복, 밝은 모자 무늬",
+  "identity": "호박색 헤드밴드와 남색 여행복, 밝은 모자 무늬 · 원작 체형과 발 교대 유지",
+  "collection": "full-cast-v1",
+  "base": "brendan-walking-hero-full-cast-v1",
+  "templateId": "brendan-walking",
+  "sourceNote": "에메랄드 brendan-walking 원작을 판형으로 삼아 Codex가 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

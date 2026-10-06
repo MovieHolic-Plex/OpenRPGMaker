@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "templateId": "black_belt",
+  "templateSourceSha256": "5e6dd34ff0760090a322f9f420bb40b080a5ed60ca5fec9364a6d97bfb767eaa",
+  "paletteOverrides": {
+    "B": "#d5d5cb",
+    "C": "#979da1",
+    "D": "#4a515d",
+    "5": "#b5514d",
+    "6": "#79383e",
+    "7": "#422d3c",
+    "8": "#e5bb63",
+    "9": "#a47b3d",
+    "A": "#614c38",
+    "E": "#d57865"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "...DCBDCCBBD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 15,
+      "rows": [
+        "...DDCCBBBBDD..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "rows": [
+        ".7E655E88E5557.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        ".4224EE88EE574.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "...DCBDCCBBD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 14,
+      "rows": [
+        "...DDCCBBBBDD..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "rows": [
+        "427655E88E556724"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        "43765EE88EE56734"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "...DCBDCCBBD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 15,
+      "rows": [
+        "...DDCCBBBBDD..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "rows": [
+        "..7555E88E556E7."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "..475EE88EE4224."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "...DBBBCDBCD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 15,
+      "rows": [
+        "...DDCCBBBCDD..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "...767E88EE7...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "...DBBBCDBCD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 14,
+      "rows": [
+        "...DDCCBBBCDD..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "...76788E6E7...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "...DBBBCDBCD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 15,
+      "rows": [
+        "...DDCCBBBCDD..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "...76788E7E7...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 15,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        "..75EE8338EE5E7."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 25,
+      "rows": [
+        "..475EE88EE4224."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 14,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        "4275EE8338EE5724"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        "43475EE88EE57434"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 15,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        ".7E5EE8338EE57.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        ".4224EE88EE574.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 15,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....7EE88E767..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 14,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....7E6E88767..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....DCBDCBBBD..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 15,
+      "rows": [
+        "...DDCBBBCCDD..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....7E7E88767..."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "은회색 머리와 붉은 머리띠, 짙은 도복과 금빛 띠",
+  "editSource": "author-cast-wave.py explicit substring replacements, expanded at original pose positions; source symmetric right view contract retained."
+}

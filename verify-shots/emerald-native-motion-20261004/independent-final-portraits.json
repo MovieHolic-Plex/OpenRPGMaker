@@ -1,0 +1,70 @@
+{
+  "reviewType": "independent-read-only-final-portrait-followup",
+  "approvalGranted": false,
+  "reviewedAt": "2026-10-04T10:25:32.198760+00:00",
+  "finding": "Observed final three portraits resolve the previously reported identity/composition problems. No new blocking field/trainer mismatch observed in these three. This is not an approval ledger or a runtime QA pass.",
+  "sources": [
+    {
+      "role": "nurse",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-nurse-1791109386380-7164e1f4",
+      "file": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-nurse-1791109386380-7164e1f4/portrait.png",
+      "sha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
+      "actualDecodedSize": [
+        64,
+        64
+      ],
+      "evidence": "independent-nurse-r2.png",
+      "viewed": "direct native PNG and browser integer3x, against existing walking atlas"
+    },
+    {
+      "role": "resident",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-resident-1791108479082-11934266",
+      "file": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-resident-1791108479082-11934266/portrait.png",
+      "sha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
+      "actualDecodedSize": [
+        64,
+        64
+      ],
+      "evidence": "independent-resident-r2.png",
+      "viewed": "direct native PNG and browser integer3x, against existing walking atlas"
+    },
+    {
+      "role": "hero_back",
+      "candidate": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero_back-1791108198897-9bf298f5",
+      "file": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero_back-1791108198897-9bf298f5/portrait.png",
+      "sha256": "04e76ad26aee4566e06ae0c016e2357fdd00ec2ccf33bb6983651ecebc70ef37",
+      "actualDecodedSize": [
+        64,
+        64
+      ],
+      "evidence": "independent-hero_back-r2.png",
+      "viewed": "direct native PNG and browser integer3x, against existing walking atlas"
+    }
+  ],
+  "roles": {
+    "nurse": {
+      "identity": "White cap, pink two low side bunches, mint/white apron dress and teal shoes match field nurse cues. Old long ponytail silhouette mismatch resolved.",
+      "nativeReadability": "Hat/pink head/mint-white uniform/teal shoes legible at1x. Eyes and face details are very small and high light contrast; character silhouette remains recognizable. This is an art caution, not identity failure.",
+      "blockingIdentityMismatchObserved": false
+    },
+    "resident": {
+      "identity": "Dark ponytail and orange one-piece dress match field resident. Old mint blouse/yellow skirt mismatch resolved.",
+      "nativeReadability": "Orange outfit and dark hair recognizable at1x; body remains slender full-body composition. No claim that native size fixes anatomy or all art quality.",
+      "blockingIdentityMismatchObserved": false
+    },
+    "hero_back": {
+      "identity": "Navy hair and red cap band, orange backpack, pale jacket and raised ball read as field hero viewed from rear.",
+      "nativeReadability": "Waist-up silhouette suitable for native64x64 back view, resolves old full-body candidate. Ball/hand remain readable.",
+      "blockingIdentityMismatchObserved": false
+    }
+  },
+  "preservedRejections": [
+    "Old nurse/resident source mismatches remain recorded as superseded findings.",
+    "Old professor3x2 and r2 unstable-foot findings remain intact in independent-review and professor metrics. New6x1 corrected-raster professor not yet reviewed."
+  ],
+  "limits": [
+    "No ledger/editor/canonical/shared assets/code writes. /tmp notes and private browser captures only.",
+    "Actual export-player deployment, animation, BGM and story input not exercised by this portrait review.",
+    "No blanket endorsement of Emerald-level anatomy/pixel quality. Root must record its own review of exact final source SHA."
+  ]
+}

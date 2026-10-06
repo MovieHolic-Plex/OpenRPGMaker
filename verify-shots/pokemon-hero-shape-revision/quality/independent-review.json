@@ -1,0 +1,189 @@
+{
+  "reviewer": "hero_shape_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "5faca17ef291c1d3ae427b52ac2251b55fba6b6028b73f74b70a2b84ab2fe524",
+  "gifSha256": "9257ec516800810e25abbecf9e2f45c37e591869561d777d7bb38310caa863b4",
+  "observationPackageSha256": "fb061bcf671936c4b00f1635044f251102cb7296ebcc6cb0b3b0158d60470c90",
+  "observationPackageFile": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/quality-evidence.json",
+  "scores": {
+    "silhouette": {
+      "score": 17,
+      "reason": "All twelve native poses read as a compact human with a broad cap/head, attached shoulders, dressed hips and shoe masses. Front head at y12-21 and torso/legs at y22-31 are balanced; front shoulder arms span x2-13 beneath the x1-14 head. Profiles keep bag mass behind the torso. Shape remains simpler and less expressive than the Emerald protagonists."
+    },
+    "anatomy": {
+      "score": 17,
+      "reason": "Cheeks narrow into a skin chin at y21 and a connected collar at y22; sleeve/hand clusters remain connected. Profile collar broadens under the chin without an exposed neck peg. Hip and upper-leg chains at y27-28 now bend and shift by phase, continuing to traceable shoes. The face and some cloth transitions remain intentionally geometric."
+    },
+    "walking": {
+      "score": 17,
+      "reason": "All directions exchange support and swing roles. Front stepA has left upper-leg bend at x3-5/y28 and the longer left shoe chain through y31; stepB mirrors the support depth with a right upper-leg bend. Back reverses those roles for its heading. Right stepA plants x10-13/y31 while the far shoe ends y30; stepB plants x3-6/y31 while the opposite shoe ends y30, with exchanged near/far trouser chains. Left mirrors this. Arm action opposes leg phase. Gait is restrained and fixed in head height rather than highly expressive."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Cap lights form connected clusters, the softened chin avoids a horizontal outline barrier, and the vest has continuous cream and blue planes through y23-26. Profile pack bulges at x2/y24-25 and tapers at x3/y26 instead of a straight pillar. Shoe and limb pixels remain attached. Dark contour and trouser shades are close, and some sleeve/face transitions retain visible geometric stepping, limiting craft score."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Front cap and blue vest with cream undershirt are coherent across phases. Back has a gold plane with brown side and red lower pocket. Profiles give the same pack a gold bulge, red pocket and lower brown corner behind the torso. Costume shape and accessory attachment are consistent, although material shaping and character specificity are simpler than official protagonist references."
+    },
+    "directionContinuity": {
+      "score": 5,
+      "reason": "All four headings retain the same head/body scale, red cap, blue vest, dark trousers/shoes and rear gold-red pack. The bag stays behind the profile torso and the two profiles follow the same mirrored lighting convention. No heading loses identity or scale."
+    },
+    "loop": {
+      "score": 4,
+      "reason": "Every decoded frame lasts 140ms and personally matches the intended native stepA-idle-stepB-idle sequence in each heading. Head stays fixed at y12; arm and leg changes are phase-related, not garment recolors or unexplained jumps. Final idle matches the first idle and returns to stepA without a data seam. Repeated neutral frames and restrained weight transfer give a deliberate simple cycle rather than the strongest motion nuance. Root-generated browser record and screenshot were inspected; no live playback observation is claimed."
+    }
+  },
+  "criticalFailures": [],
+  "total": 85,
+  "verdict": "pass",
+  "evidence": [
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/native-contact.png",
+      "sha256": "9a3384deda05d85c1924c22a06893f6b9df0a91bced6a95346d4b2aaea31e2c4"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/quality/decoded-gif-contact.png",
+      "sha256": "56c08b7a460a7d1c60d76e7db0886cb01698b922382422ecde786fee853db123"
+    },
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/browser-gif/record.json",
+      "sha256": "e9291c96bca4c884f47691978ae6b9ebf148d1fb646867b28dc58daa719c1158"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/browser-gif/browser-playback.png",
+      "sha256": "460c84cb67d8f1f963a34759f7fc6885c54ba6898db412c3bb5e532665b1b94d"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "browserRecordAndScreenshotInspected": true,
+  "rootGeneratedBrowserProof": {
+    "file": "/home/main/z-project/pokemon-hero-shape-revision/v18/browser-gif/record.json",
+    "sha256": "e9291c96bca4c884f47691978ae6b9ebf148d1fb646867b28dc58daa719c1158",
+    "checks": [
+      {
+        "scale": 1,
+        "samples": 14,
+        "observedGifFrames": [
+          1,
+          2,
+          0,
+          2,
+          0,
+          2,
+          1,
+          1,
+          0,
+          1,
+          1,
+          1,
+          2,
+          1
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      },
+      {
+        "scale": 4,
+        "samples": 14,
+        "observedGifFrames": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          2,
+          0,
+          2,
+          1,
+          1
+        ],
+        "distinctNativePoses": 3,
+        "nativePixelsMatch": true
+      }
+    ],
+    "errors": []
+  },
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        12,
+        65,
+        32
+      ],
+      "rgbaSha256": "20bb922851ce6b780641a395e585d19b953791fb9f5e41fe1e7b755f5df53d4e"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        12,
+        65,
+        31
+      ],
+      "rgbaSha256": "5c88594a412ac3edcf571bdded83eb5a501aa97519d5d99a20c3458d3ec6068f"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        12,
+        65,
+        32
+      ],
+      "rgbaSha256": "c6c0a8a08b0df796af8d6052329caeeb3d30672323517dc15165f1d9719539ac"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "bbox": [
+        1,
+        12,
+        65,
+        31
+      ],
+      "rgbaSha256": "5c88594a412ac3edcf571bdded83eb5a501aa97519d5d99a20c3458d3ec6068f"
+    }
+  ],
+  "nativeGifPoseComparisonsPersonallyChecked": 16,
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only; no different-model or decorrelated aesthetic independence is claimed.",
+  "rootScoreOrReasoningUsed": false,
+  "requiredCorrections": [],
+  "nonblockingLimitations": [
+    "Face and sleeve shaping remain more geometric and less expressive than the actual Emerald reference protagonists.",
+    "Contour and trouser darks have limited visual separation.",
+    "The fixed-height four-frame walk is deliberately restrained; repeated neutral phases limit motion nuance."
+  ],
+  "decisionReason": "85 meets the frozen threshold, every axis minimum and zero critical failures. Specific native evidence for shaped shoulder/chin/vest masses, a rounded rear profile bag, shifted upper-leg chains and genuine profile support exchange supports the result. Previous v14 scores and iteration count were not art anchors. Structural checks do not earn aesthetic points.",
+  "referenceMaterialPolicy": "Nintendo reference contact stays external inspection material under /tmp; it is not a game asset or intended public shipping evidence.",
+  "approvalScope": "Only the reviewed v18 native PNG/GIF bytes and prepared observation package. No canonical save/reload, runtime integration, live playback observation or user acceptance is asserted.",
+  "scope": "Read-only source/art/store inspection plus requested v18 review JSON and Markdown.",
+  "reportWriter": "hero_shape_review"
+}

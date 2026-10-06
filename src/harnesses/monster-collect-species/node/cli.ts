@@ -6,7 +6,7 @@
  *   back   --species <id> [--n 3]              고른 앞모습으로 뒷모습 후보 생성
  *   action --species <id> --side front|back --action <동작> [--n 2]
  *                                              큰 동작(공격·피격) 한 줄 후보 생성 (sprite-gen 방식, anim/row.ts)
- *   import --species <id> --side front|back [--action <동작>] --raw <png[,png…]> [--prompt <text>]
+ *   import --species <id> --side front|back [--action <동작>] --raw <png[,png…]> [--prompt <text>] [--block <2..40>]
  *                                              이미 있는 생성 원본을 후보 run 으로 등록
  *   pick   --species <id> --side front|back [--action <동작>] --run <run> --candidate <k> [--note <text>]
  *   build                                      골라 둔 격자 → public/assets/harnesses/... 스프라이트·대기·동작 스트립 + 검사
@@ -18,6 +18,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFi
 import { join, relative, resolve } from "node:path";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
+import type { GridOptions } from "../pixel/grid";
 import { SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
 import { checkDirection, checkFrames, checkPair, checkSprite, type CheckIssue } from "../checks/checks";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
@@ -138,10 +139,10 @@ function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaIma
 }
 
 type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
-type RunRecord = { species: string; side: SpriteSide; prompt: string; reference: string; candidates: Candidate[] };
+type RunRecord = { species: string; side: SpriteSide; prompt: string; reference: string; fixedBlock?: number; candidates: Candidate[] };
 
 /** 원본 PNG 바이트들을 도트화해 run 폴더에 후보로 쓰고, 비교 시트를 만든다. */
-function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, prompt: string, reference: string, raws: (Buffer | null)[]): string {
+function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, prompt: string, reference: string, raws: (Buffer | null)[], gridOptions: GridOptions = {}): string {
   const id = runId();
   const dir = join(PATHS.runs, species.id, which, id);
   mkdirSync(dir, { recursive: true });
@@ -152,7 +153,7 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
     const raw = join(dir, `raw-${k}.png`);
     writeFileSync(raw, bytes);
     try {
-      const { grid, block, colors } = pixelize(readPng(raw), seed.style.maxColors);
+      const { grid, block, colors } = pixelize(readPng(raw), seed.style.maxColors, gridOptions);
       const sprite = toSprite(grid, which, species.stage).sprite;
       writePng(join(dir, `grid-${k}.png`), grid);
       writePng(join(dir, `sprite-${k}.png`), sprite);
@@ -161,7 +162,7 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
       console.error(`후보 ${k} 도트화 실패: ${error instanceof Error ? error.message : error}`);
     }
   });
-  const record: RunRecord = { species: species.id, side: which, prompt, reference, candidates };
+  const record: RunRecord = { species: species.id, side: which, prompt, reference, fixedBlock: gridOptions.block, candidates };
   writeFileSync(join(dir, "run.json"), JSON.stringify(record, null, 2) + "\n");
   writeFileSync(join(dir, "sheet.html"), sheetHtml(species, which, id, candidates));
   console.log(`후보 ${candidates.length}개 → ${relativeToRepo(join(dir, "sheet.html"))}`);
@@ -181,9 +182,9 @@ figure{margin:0;background:#d6e4cd;color:#1d2a1d;padding:6px}img{image-rendering
 }
 
 type ActionCandidate = { k: number; raw: string; grid: string; strip: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
-type ActionRunRecord = { species: string; side: SpriteSide; action: string; frames: number; prompt: string; candidates: ActionCandidate[] };
+type ActionRunRecord = { species: string; side: SpriteSide; action: string; frames: number; prompt: string; fixedBlock?: number; candidates: ActionCandidate[] };
 
-function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, actionId: string, prompt: string, raws: (Buffer | null)[]): string {
+function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, actionId: string, prompt: string, raws: (Buffer | null)[], gridOptions: GridOptions = {}): string {
   const action = actionOf(seed, actionId);
   const base = pickedSprite(loadLedger(), species, which);
   const id = runId();
@@ -199,7 +200,7 @@ function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSi
     try {
       const source = readPng(raw);
       const around = rowBlockHint(source, cropToInk(base).width);
-      const { grid, block, colors } = pixelize(source, seed.style.maxColors, { around });
+      const { grid, block, colors } = pixelize(source, seed.style.maxColors, { around, ...gridOptions });
       writePng(join(dir, `grid-${k}.png`), grid);
       const { frames, clipped } = actionFramesFromGrid(seed, actionId, grid, which, species.stage, base);
       writePng(join(dir, `strip-${k}.png`), toStrip(frames));
@@ -210,7 +211,7 @@ function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSi
       console.error(`후보 ${k} 처리 실패: ${error instanceof Error ? error.message : error}`);
     }
   });
-  const record: ActionRunRecord = { species: species.id, side: which, action: actionId, frames: action.frames, prompt, candidates };
+  const record: ActionRunRecord = { species: species.id, side: which, action: actionId, frames: action.frames, prompt, fixedBlock: gridOptions.block, candidates };
   writeFileSync(join(dir, "run.json"), JSON.stringify(record, null, 2) + "\n");
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
@@ -283,17 +284,23 @@ async function stageBack(args: Args): Promise<void> {
 }
 
 function stageImport(args: Args): void {
+  const blockArg = args.flags.get("block");
+  const block = blockArg === undefined ? undefined : Number(blockArg);
+  if (block !== undefined && (!Number.isInteger(block) || block < 2 || block > 40)) {
+    throw new Error("--block 은 2~40 사이의 정수여야 한다");
+  }
+  const gridOptions: GridOptions = block === undefined ? {} : { block };
   const seed = loadSeed();
   const species = speciesOf(seed, need(args, "species"));
   const actionId = args.flags.get("action");
   if (actionId) {
     // 동작 줄은 쉼표로 여러 장을 한 run 으로 (같은 동작 후보 비교)
     const raws = need(args, "raw").split(",").map((path) => readFileSync(resolve(path)));
-    writeActionRun(seed, species, side(args), actionId, args.flags.get("prompt") ?? "(가져온 원본 — 프롬프트 기록 없음)", raws);
+    writeActionRun(seed, species, side(args), actionId, args.flags.get("prompt") ?? "(가져온 원본 — 프롬프트 기록 없음)", raws, gridOptions);
     return;
   }
   const raw = resolve(need(args, "raw"));
-  writeRun(seed, species, side(args), args.flags.get("prompt") ?? "(가져온 원본 — 프롬프트 기록 없음)", "import", [readFileSync(raw)]);
+  writeRun(seed, species, side(args), args.flags.get("prompt") ?? "(가져온 원본 — 프롬프트 기록 없음)", "import", [readFileSync(raw)], gridOptions);
 }
 
 function stagePick(args: Args): void {

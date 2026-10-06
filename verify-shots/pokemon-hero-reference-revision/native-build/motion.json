@@ -1,0 +1,38 @@
+{
+  "role": "hero",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "83ba4ccc11d62b6c2179e0355cd620bc7eee6f36d44311fd667db111c6774440",
+  "charsetSha256": "99d6ce3ef1fd296f2bb66d7898ed492b161c70de895ab744073ab043e34e8310",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "0c9c2f97d71cc47918ad4a9ebd2825ace08529b10a5af406903c4759c138b542"
+  },
+  "gateSha256": "21020a697a23addfeff57d680763749166b63e82e6b99c3f020acf3f10f3fd18",
+  "clip": null
+}

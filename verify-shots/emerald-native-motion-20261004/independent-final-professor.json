@@ -1,0 +1,84 @@
+{
+  "reviewType": "independent-read-only-final-professor-native",
+  "reviewedAt": "2026-10-04T10:30:38.910087+00:00",
+  "verdict": "No blocking identity, clipping, camera/stance drift, or missing pose found in observed final native strip; minor redraw variation remains. This is not an approval ledger or actual export-player runtime QA pass.",
+  "approvalGranted": false,
+  "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/clip-professor-intro-1791109661101-7658e1fe/clip.png",
+  "sourceSha256": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
+  "selectionSha256AtReview": "1fe4a23b62a089bbdd41601794164711121b1c2a1a77fb877be95e8610f8f393",
+  "decodedSize": [
+    384,
+    64
+  ],
+  "frames": 6,
+  "frameSize": [
+    64,
+    64
+  ],
+  "actualOpaqueColors": 14,
+  "alphaValues": [
+    0,
+    255
+  ],
+  "evidence": [
+    "independent-professor-final.png",
+    "independent-professor-final-metrics.json"
+  ],
+  "identity": {
+    "fieldCompared": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/professor-1791107305387-a86576eb/charset.png",
+    "trainerCompared": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-professor-1791107893352-c428e668/portrait.png",
+    "result": "Grey hair/bun, glasses, white coat, purple long inner dress, elderly professor silhouette coherent with field and battle trainer. No identity mismatch observed."
+  },
+  "poseFindings": [
+    {
+      "frame": 0,
+      "observed": "Neutral eyes open and hand/prop held near torso."
+    },
+    {
+      "frame": 1,
+      "observed": "Eyes closed; blink identifiable at1x and clear at3x."
+    },
+    {
+      "frame": 2,
+      "observed": "Mouth opening/talking variant, visible at3x; subtle at1x."
+    },
+    {
+      "frame": 3,
+      "observed": "Palm/arm extended horizontally for presentation; clearly differs from torso hand."
+    },
+    {
+      "frame": 4,
+      "observed": "Raised orange orb/ball in outward hand; clearly drawn gesture."
+    },
+    {
+      "frame": 5,
+      "observed": "Raised open hand/invitation gesture without orb; distinguishable from4."
+    }
+  ],
+  "anchorFindings": {
+    "allSixFullTop": 2,
+    "allSixFullBottomExclusive": 62,
+    "allSixFullInkHeight": 60,
+    "allSixHeadDiagnosticBbox": [
+      20,
+      2,
+      44,
+      21
+    ],
+    "visualResult": "Previous2-3px vertical foot drop in rejected r2 no longer visible. Same shoe baseline and consistent torso/leg scale across6poses. Hand/prop extension stays inside64x64 frame.",
+    "remainingVariation": "Not pixel-identical static feet: bottom window frame4 x23..37 inclusive versus0 x23..38, alpha18/RGBA39 pixels differ. Other bottom windows alpha5..9 pixels differ. Head shading/glasses/hair RGBA varies; diagnostic head alpha2..9 pixels differs. These small redraws do not produce the previously observed major camera/stance jump.",
+    "segmentationCaution": "Head rectangle includes neck and may overlap raised hand/orb; bottom window includes shoes/hem. Raw delta counts alone are not a semantic quality gate."
+  },
+  "readability": {
+    "native1x": "Silhouette, face direction, eye blink, arm gestures and orb readable; talking mouth subtle.",
+    "integer3x": "Blink/talk and3distinctgestures clearly observable. Slight face/shading/shoe redraw remains."
+  },
+  "limits": [
+    "Review used exact native clipPNG direct and private browser display at native1x/integer3x; no resampling or image editing of source.",
+    "No editor/canonical/shared-assets/approval-ledger/source-code writes. Only /tmp private display/metrics/report files.",
+    "Structural palette/dimension measurements were not substituted for visual observation.",
+    "Original raw6x1 source raster/importer transform was not independently reconstructed in this visual task. Root-provided raw metrics are separate evidence.",
+    "Final export-player timing, sceneFrames routing, persistent controller/audio, Enter/WASD/reducedmotion/cleanup require actual runtime probe.",
+    "Old3x2 and r2 rejected findings remain preserved; this final SHA alone is the reviewed candidate."
+  ]
+}

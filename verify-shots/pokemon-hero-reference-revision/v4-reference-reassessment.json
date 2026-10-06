@@ -1,0 +1,429 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
+  "gifSha256": "c9ca9fb1accecd0b6d380deaf3feb0371fb0c13b3c1ee8d593e73e9abfcb11c9",
+  "scores": {
+    "silhouette": {
+      "score": 11,
+      "reason": "Reference front silhouettes have dense rounded head/cheek masses and14px Brendan/May widths; v4 is12px wide, with narrower tapered head-to-neck and a small box torso. Its last5rows hold22opaque pixels versus48Brendan/40May, so the lower silhouette becomes exposed skin sticks instead of a compact dressed body."
+    },
+    "anatomy": {
+      "score": 11,
+      "reason": "Reference faces integrate ears/cheeks and2-row dark eyes into overlapping hat/hair/face clusters; Brendan eyes occupy y19/20, while v4 interior eyes are1px on one row(y16). V4 profile nose is an added point on a flat face wedge, and long bare skin columns below a one-row shorts band overstate shins rather than describing hips/thighs/ankles."
+    },
+    "walking": {
+      "score": 12,
+      "reason": "V4 does alternate limbs, but compared with all reference step pairs its upper body remains a near-identical box and forearms read as hinged pale rails. Bent rear shoe fixes semantic alternation without the reference clothing/hip/shoe cluster deformation and depth overlap. Side strides still change isolated skin columns and small shoe blocks more than a coherent dressed leg."
+    },
+    "pixelCraft": {
+      "score": 8,
+      "reason": "Reference pixels combine near-black contours, deliberate strong value ramps and connected planes for cap/hair/face/clothing/shoes. V4 spends several colors on closely spaced navy shades, with flat blue chest and orange/gold/red horizontal bands. Sparse isolated details and repeated rectangle clusters do not create comparable volume at1x."
+    },
+    "identity": {
+      "score": 10,
+      "reason": "The nominal cap/vest/gold-red bag is consistent, but reference costume details have shaped brims/hair breaks, front clothing structure and pack mass occlusion. V4 cap remains a generic slanted red patch above dark hair, vest a blue square, bag a gold rectangle with a red stripe. Color labels establish identity but not finished character design."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "Heading and costume continuity remain valid across four directions. The references create more convincing front/profile/back volume, but v4 is not a direction-order or identity-swap failure."
+    },
+    "loop": {
+      "score": 5,
+      "reason": "All4decoded140ms frames and repeated idle form a consistent sequence without a file-level seam or unexplained root jump. This score concerns repeat continuity; it does not excuse the weak articulated gait captured by walking."
+    }
+  },
+  "criticalFailures": [],
+  "total": 61,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/tmp/pokemon-hero-reference-revision/emerald-reference-contact.png",
+      "sha256": "bebfc30e5b354f76804a1b7ff985b4933372665e44a18e32946b1bd01f4cdd6c"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/native-contact.png",
+      "sha256": "5228d31fdaf31c439741e8716e8aa9f9d20c542e6367eea5c7fdce1a7b517c4a"
+    },
+    {
+      "file": "/home/main/z-project/pokemon-hero-refine/quality/decoded-gif-contact.png",
+      "sha256": "b4439a9ac4f83e2b946b42560dff733476683cd84f6720d3a96b793cc072b265"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "durationMs": 140,
+      "rgbaSha256": "45d98e43954c839ac20aecd95a2cfdaf0f52f728689d53d8eec7745d3b037611"
+    },
+    {
+      "index": 1,
+      "durationMs": 140,
+      "rgbaSha256": "a82f02a997be159adaac7b49a76dbfcd6c9744676750c116140e0fb1c46dd65f"
+    },
+    {
+      "index": 2,
+      "durationMs": 140,
+      "rgbaSha256": "b345830178e0f19a7bbbaf58f4a2d50be02f989049f1b39c791d8987641fa2ba"
+    },
+    {
+      "index": 3,
+      "durationMs": 140,
+      "rgbaSha256": "a82f02a997be159adaac7b49a76dbfcd6c9744676750c116140e0fb1c46dd65f"
+    }
+  ],
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "referenceReview": {
+    "roles": [
+      "brendan",
+      "may",
+      "professor",
+      "woman"
+    ],
+    "posesPerRole": 9,
+    "all36ReferencePosesViewed": true,
+    "nativeAnd4xViewed": true,
+    "rawPaletteIndex0RemovedOnlyForMeasurement": true,
+    "referenceMeasurements": {
+      "brendan": {
+        "source": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/brendan.png",
+        "sha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+        "paletteIndex0TreatedAsTransparency": true,
+        "frontIdle": {
+          "bbox": [
+            1,
+            10,
+            15,
+            31
+          ],
+          "inkWidth": 14,
+          "inkHeight": 21,
+          "opaquePixels": 214,
+          "lastFiveRowsRange": [
+            26,
+            30
+          ],
+          "lastFiveRowsOpaquePixels": 48,
+          "lastFiveRowsInkCounts": [
+            12,
+            10,
+            10,
+            10,
+            6
+          ],
+          "rowInkCounts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            3,
+            8,
+            10,
+            10,
+            10,
+            12,
+            12,
+            14,
+            14,
+            12,
+            10,
+            10,
+            12,
+            14,
+            14,
+            12,
+            10,
+            10,
+            10,
+            6,
+            0
+          ]
+        }
+      },
+      "may": {
+        "source": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/may.png",
+        "sha256": "7f185cda9854f7812545c306795b454dc750be440e582974518ba8a63c9b7e87",
+        "paletteIndex0TreatedAsTransparency": true,
+        "frontIdle": {
+          "bbox": [
+            1,
+            11,
+            15,
+            31
+          ],
+          "inkWidth": 14,
+          "inkHeight": 20,
+          "opaquePixels": 214,
+          "lastFiveRowsRange": [
+            26,
+            30
+          ],
+          "lastFiveRowsOpaquePixels": 40,
+          "lastFiveRowsInkCounts": [
+            10,
+            10,
+            8,
+            8,
+            4
+          ],
+          "rowInkCounts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            6,
+            12,
+            12,
+            10,
+            12,
+            12,
+            14,
+            14,
+            14,
+            14,
+            12,
+            8,
+            10,
+            12,
+            12,
+            10,
+            10,
+            8,
+            8,
+            4,
+            0
+          ]
+        }
+      },
+      "professor": {
+        "source": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/professor.png",
+        "sha256": "6618f1249880bd3672c453512351f63b173cb655fb136ceea84fdb2c9cd76c15",
+        "paletteIndex0TreatedAsTransparency": true,
+        "frontIdle": {
+          "bbox": [
+            0,
+            11,
+            16,
+            31
+          ],
+          "inkWidth": 16,
+          "inkHeight": 20,
+          "opaquePixels": 251,
+          "lastFiveRowsRange": [
+            26,
+            30
+          ],
+          "lastFiveRowsOpaquePixels": 53,
+          "lastFiveRowsInkCounts": [
+            14,
+            12,
+            11,
+            10,
+            6
+          ],
+          "rowInkCounts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            6,
+            10,
+            12,
+            14,
+            12,
+            14,
+            16,
+            14,
+            12,
+            12,
+            14,
+            14,
+            16,
+            16,
+            16,
+            14,
+            12,
+            11,
+            10,
+            6,
+            0
+          ]
+        }
+      },
+      "woman": {
+        "source": "/tmp/oprn-pokemon-motion-20261004/emerald-reference/woman.png",
+        "sha256": "b8953e355faa1ede48ee7c57e432b73fb792fbdbfb2900e5b21d8452023ebdf7",
+        "paletteIndex0TreatedAsTransparency": true,
+        "frontIdle": {
+          "bbox": [
+            0,
+            11,
+            16,
+            31
+          ],
+          "inkWidth": 16,
+          "inkHeight": 20,
+          "opaquePixels": 224,
+          "lastFiveRowsRange": [
+            26,
+            30
+          ],
+          "lastFiveRowsOpaquePixels": 44,
+          "lastFiveRowsInkCounts": [
+            12,
+            10,
+            10,
+            8,
+            4
+          ],
+          "rowInkCounts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4,
+            8,
+            10,
+            12,
+            14,
+            16,
+            14,
+            16,
+            14,
+            10,
+            10,
+            12,
+            12,
+            14,
+            14,
+            12,
+            10,
+            10,
+            8,
+            4,
+            0
+          ]
+        }
+      },
+      "v4": {
+        "source": "/home/main/z-project/pokemon-hero-refine/source/hero/charset.png",
+        "sha256": "08569511118bae2d0c6f3d4bcb3a2b405e33f9353a6b2b7f53d7f61773300599",
+        "frontIdle": {
+          "bbox": [
+            2,
+            10,
+            14,
+            31
+          ],
+          "inkWidth": 12,
+          "inkHeight": 21,
+          "opaquePixels": 171,
+          "lastFiveRowsRange": [
+            26,
+            30
+          ],
+          "lastFiveRowsOpaquePixels": 22,
+          "lastFiveRowsInkCounts": [
+            4,
+            4,
+            4,
+            4,
+            6
+          ],
+          "rowInkCounts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            6,
+            10,
+            11,
+            10,
+            12,
+            12,
+            9,
+            9,
+            8,
+            6,
+            8,
+            11,
+            11,
+            11,
+            8,
+            7,
+            4,
+            4,
+            4,
+            4,
+            6,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "previousTotal": 85,
+  "previousVerdict": "pass",
+  "supersedesPreviousAestheticApproval": true,
+  "historicalApprovalFileUnmodified": "/home/main/z-project/pokemon-hero-refine/quality/independent-review.json",
+  "rubricUnchanged": true,
+  "threshold": 85,
+  "reviewIndependence": "Same-model organizational/task separation only. No different-model or decorrelated aesthetic independence is claimed.",
+  "whyPriorScoreWasExcessive": [
+    "I scored repairs relative to the old poor sprite and presence of cap/limb/bag features too generously, rather than calibrating completed native game craft against actual reference sprites.",
+    "I gave silhouette16/anatomy16/walking17/pixelCraft13/identity14 despite box torso, sparse skin-column lower body, one-row eyes and flat color bands; these visible defects conflict with the frozen finished-art anchors.",
+    "Hashes and two review records ensured traceability, not aesthetic truth; same-model root/critic organization did not provide decorrelated quality judgment."
+  ],
+  "requiredRedesign": [
+    "Rebuild proportions from measured compact dressed silhouettes: fuller head/cheeks, shorter exposed shin region and connected shorts/trouser/shoe clusters.",
+    "Draw eye/face/hair/hat overlap as deliberate contrasting clusters rather than isolated dot eyes on a flat wedge.",
+    "Redesign entire front/side torso, hips and steps as overlapping cloth/limb masses with planted contact and compact swing, not bare-column rearrangements.",
+    "Reduce redundant navy colors, use meaningful dark contours/value ramps, and sculpt cap/vest/pack volumes as a coherent original design."
+  ],
+  "scope": "Read-only reassessment plus requested report files. No original/reference artwork, source code, historical approval, gate or canonical store was changed.",
+  "measurementInterpretation": "These measurements diagnose missing lower-body mass and mismatched proportion; they are not added numeric gate thresholds and do not require copying a reference silhouette or palette. Judge the redesigned original at native size under the same frozen rubric."
+}

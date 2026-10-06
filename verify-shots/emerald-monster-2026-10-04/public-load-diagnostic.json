@@ -1,0 +1,28 @@
+{
+  "hostnameLoad": {
+    "url": "http://mdc-server:18301/monster-expedition/player.html",
+    "state": {
+      "ready": "complete",
+      "text": "별빛섬 몬스터 원정\n모험 시작\n불러오기\n크레딧\n그만두기\n작은 동료와 여덟 빛의 약속",
+      "app": "<div class=\"player-layout system-shell\" data-play-input-owner=\"keyboard-only\"><div class=\"play-viewport\" data-testid=\"play-viewport\" data-scale-mode=\"integer\" data-scale=\"2.000\" style=\"--play-logical-width: 480px; --play-logical-height: 320px; --play",
+      "boot": {
+        "projectUrl": "./project.json",
+        "saveNamespace": "starlight-islands-v1"
+      }
+    },
+    "events": [],
+    "note": "Uninstrumented public mdc-server URL loaded actual title normally. Instrumented native sequence is recorded separately on the same public server loopback URL."
+  },
+  "instrumentedHostnameAttempts": {
+    "opening-public": {
+      "completed": false,
+      "failure": "Instrumented title wait exceeded90s on mdc-server hostname",
+      "pageErrors": []
+    },
+    "continue-public-retry": {
+      "completed": false,
+      "failure": "Instrumented title wait exceeded90s on mdc-server hostname",
+      "pageErrors": []
+    }
+  }
+}

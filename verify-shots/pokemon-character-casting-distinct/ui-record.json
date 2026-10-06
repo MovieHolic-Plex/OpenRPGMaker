@@ -1,0 +1,149 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "six new bodies and six preserved producer withdrawals",
+      "pass": true
+    },
+    {
+      "name": "body sources differ for every current candidate",
+      "pass": true
+    },
+    {
+      "name": "all source/gif/native gates passed",
+      "pass": true
+    },
+    {
+      "name": "all15color-independent pair controls pass",
+      "pass": true
+    },
+    {
+      "name": "distinct-body Allow has five required human observations",
+      "pass": true
+    },
+    {
+      "name": "server rejects old four-checkbox Allow lacking distinct identity",
+      "pass": true
+    },
+    {
+      "name": "withdrawn original variants cannot become Allow from browser API",
+      "pass": true
+    },
+    {
+      "name": "six color/black silhouette pairs visible",
+      "pass": true
+    },
+    {
+      "name": "native black silhouette images differ across all six views",
+      "pass": true
+    },
+    {
+      "name": "old art remains viewable without defaulting to old candidates",
+      "pass": true
+    },
+    {
+      "name": "withdrawn UI cannot activate Allow even after observations",
+      "pass": true
+    },
+    {
+      "name": "hiding withdrawn art selects a current candidate",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for wally",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for may-walking",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for hiker",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for sailor",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for camper",
+      "pass": true
+    },
+    {
+      "name": "frame stepping and five-observation Allow for expert_m",
+      "pass": true
+    },
+    {
+      "name": "mobile overview and current candidate have no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "live browser resource and script errors absent",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "no user votes written by production QA",
+      "pass": true
+    }
+  ],
+  "productionVotesWrittenByQA": 0,
+  "productionDecisionCount": 0,
+  "gifs": [
+    {
+      "id": "rival-3394266c334e7a3b",
+      "base": "wally",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    },
+    {
+      "id": "rival-dabaad1f37aa5ffd",
+      "base": "may-walking",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    },
+    {
+      "id": "explorer-944e9e1c66436c77",
+      "base": "hiker",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    },
+    {
+      "id": "explorer-898efd82a8c0c04b",
+      "base": "sailor",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    },
+    {
+      "id": "ranger-b631c623822c8a93",
+      "base": "camper",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    },
+    {
+      "id": "ranger-8e232070c9f418b2",
+      "base": "expert_m",
+      "loaded": true,
+      "native": [
+        68,
+        32
+      ]
+    }
+  ],
+  "scope": "Old voting lifecycle fixture copied storage; live UI viewed only. Six original NPC body sources. Source originality/art quality is not claimed."
+}

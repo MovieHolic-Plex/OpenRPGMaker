@@ -10,10 +10,13 @@ import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function startPlayerRoute(
-  scene: Pick<PlaySceneContext, "playerRoute">,
+  scene: Pick<PlaySceneContext, "playerRoute" | "playerSlide" | "playerSlideKind">,
   moves: readonly MoveCommand[],
   repeat: boolean
 ): void {
+  // Scripted routes take ownership from a pending terrain slide.
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   if (moves.length === 0) {
     scene.playerRoute = null;
     return;

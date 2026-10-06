@@ -1,0 +1,121 @@
+{
+  "pass": true,
+  "http": [
+    {
+      "url": "/monster-expedition/project.json",
+      "sha256": "1a3641104074b7cd5f595944974c900fb5725b5e71ca77c4eb9c51a2bbfe9ac5",
+      "exact": true
+    },
+    {
+      "url": "/monster-expedition/player.html",
+      "sha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+      "exact": true
+    },
+    {
+      "url": "/emerald-hero-reference-evidence/walk.gif",
+      "sha256": "b88f1ce94a24e1e3fff18e3865746294796c6a62c5d324a23b2eec2004009caa",
+      "exact": true
+    }
+  ],
+  "unmodifiedPublicPlayer": {
+    "title": "별빛섬 몬스터 원정",
+    "canvas": 1,
+    "errors": []
+  },
+  "reportDimensions": [
+    {
+      "viewport": 960,
+      "documentWidth": 960,
+      "gifs": [
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            272,
+            128
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            68,
+            32
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            272,
+            128
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            68,
+            32
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "documentWidth": 320,
+      "gifs": [
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            272,
+            128
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            68,
+            32
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            272,
+            128
+          ]
+        },
+        {
+          "native": [
+            68,
+            32
+          ],
+          "display": [
+            68,
+            32
+          ]
+        }
+      ]
+    }
+  ],
+  "gifPauseResume": true,
+  "errors": []
+}

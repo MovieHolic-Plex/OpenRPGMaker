@@ -28,5 +28,14 @@ await step('clone lint roundtrip', () => M.warmRoundtripCheck(clone));
 await step('clone heavy wire plan', () => M.planHeavyWire({ project: clone }));
 await step('untrusted re-digest (save receipt / visual fingerprint)', () => M.jsonContentDigest(clone));
 await step('save serialize (reuse)', () => M.serializeReusingSharedDictionaries(clone).length);
+// 글자 동일성: 조립한 글이 JSON.stringify 와 같아야 해시·저장이 그대로다.
+for (const [name, p] of [['project', project], ['clone', clone]]) {
+  const same = M.serializeReusingSharedDictionaries(p) === M.serialize(p)
+    && M.stringifySharedDictionary(p.tilesets) === JSON.stringify(p.tilesets)
+    && M.stringifyAssets(p.assets) === JSON.stringify(p.assets);
+  M.deserialize(M.serializeForRoundtripCheck(p));
+  console.log(`byte-identical ${name}:`, same);
+  if (!same) process.exitCode = 1;
+}
 console.table(rows);
 console.log('TOTAL retained over seed:', Math.round(last - rows[0].heapMB), 'MB', plan ? `heavy keys ${[...plan.blobs.values()].map(s => s.key).join(',')}` : '');

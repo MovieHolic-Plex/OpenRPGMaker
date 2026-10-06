@@ -1,0 +1,666 @@
+{
+  "action": {
+    "viewport": {
+      "width": 390,
+      "height": 640
+    },
+    "wait": 800,
+    "name": "buy-390",
+    "shot": "03-buy-390",
+    "bounds": true,
+    "detailBounds": true
+  },
+  "result": {
+    "title": false,
+    "debug": "undefined",
+    "text": "별싹 마을 · 도구점\n상점\n구매 · 상인의 진열 상품\n구입\n판매\n소지금\n1600G\n포획 구슬\nx0\n80G\n회복약\nx0\n50G\n상급 회복약\nx0\n180G\n기술 에테르\nx0\n120G\n해독초\nx0\n30G\n각성초\nx0\n40G\n포획 구슬\n약해진 몬스터를 포획하는 기본 구슬입니다.\n보유\n0\n무엇을 구매하시겠습니까?\n합계 80G\n거래 후 잔액 1520G\n구입\n취소",
+    "tests": [
+      {
+        "id": "play-viewport",
+        "text": "별싹 마을 · 도구점\n상점\n구매 · 상인의 진열 상품\n구입\n판매\n소지금\n1600G\n포획 구슬\nx0\n80G\n회복약\nx0\n50G\n상급 회복약\nx0\n180G\n기술 에테르\nx0\n120G\n해독초\nx0\n30G\n각성초\nx0\n40G\n포획 구슬\n약해진 몬스터를 포획하는 기본 구슬입니다.\n보유\n0\n무엇을 구매하시겠습니까?\n합계 80G\n거래"
+      },
+      {
+        "id": "play-stage",
+        "text": "별싹 마을 · 도구점"
+      },
+      {
+        "id": "play-canvas",
+        "text": ""
+      },
+      {
+        "id": "field-hud",
+        "text": "별싹 마을 · 도구점"
+      },
+      {
+        "id": "hud-widget-location",
+        "text": "별싹 마을 · 도구점"
+      },
+      {
+        "id": "picture-layer",
+        "text": ""
+      },
+      {
+        "id": "shop-scene",
+        "text": "상점\n구매 · 상인의 진열 상품\n구입\n판매\n소지금\n1600G\n포획 구슬\nx0\n80G\n회복약\nx0\n50G\n상급 회복약\nx0\n180G\n기술 에테르\nx0\n120G\n해독초\nx0\n30G\n각성초\nx0\n40G\n포획 구슬\n약해진 몬스터를 포획하는 기본 구슬입니다.\n보유\n0\n무엇을 구매하시겠습니까?\n합계 80G\n거래 후 잔액 1520G\n"
+      },
+      {
+        "id": "shop-brand-subtitle",
+        "text": "구매 · 상인의 진열 상품"
+      },
+      {
+        "id": "shop-tab-buy",
+        "text": "구입",
+        "value": ""
+      },
+      {
+        "id": "shop-tab-sell",
+        "text": "판매",
+        "value": ""
+      },
+      {
+        "id": "shop-gold-panel",
+        "text": "소지금\n1600G"
+      },
+      {
+        "id": "shop-player-gold",
+        "text": "소지금\n1600G"
+      },
+      {
+        "id": "shop-buy-item_capture_orb",
+        "text": "포획 구슬\nx0\n80G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_capture_orb",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_capture_orb",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_capture_orb",
+        "text": "80G"
+      },
+      {
+        "id": "shop-buy-item_potion",
+        "text": "회복약\nx0\n50G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_potion",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_potion",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_potion",
+        "text": "50G"
+      },
+      {
+        "id": "shop-buy-item_hi_potion",
+        "text": "상급 회복약\nx0\n180G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_hi_potion",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_hi_potion",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_hi_potion",
+        "text": "180G"
+      },
+      {
+        "id": "shop-buy-item_ether",
+        "text": "기술 에테르\nx0\n120G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_ether",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_ether",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_ether",
+        "text": "120G"
+      },
+      {
+        "id": "shop-buy-item_antidote",
+        "text": "해독초\nx0\n30G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_antidote",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_antidote",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_antidote",
+        "text": "30G"
+      },
+      {
+        "id": "shop-buy-item_wake_herb",
+        "text": "각성초\nx0\n40G",
+        "value": ""
+      },
+      {
+        "id": "shop-item-icon-item_wake_herb",
+        "text": ""
+      },
+      {
+        "id": "shop-owned-item_wake_herb",
+        "text": "x0",
+        "count": "0"
+      },
+      {
+        "id": "shop-price-item_wake_herb",
+        "text": "40G"
+      },
+      {
+        "id": "shop-detail-card",
+        "text": "포획 구슬\n약해진 몬스터를 포획하는 기본 구슬입니다.\n보유\n0"
+      },
+      {
+        "id": "shop-hero-slot",
+        "text": "포획 구슬"
+      },
+      {
+        "id": "shop-detail-hero",
+        "text": "포획 구슬"
+      },
+      {
+        "id": "shop-item-icon-item_capture_orb",
+        "text": ""
+      },
+      {
+        "id": "shop-help-line",
+        "text": "약해진 몬스터를 포획하는 기본 구슬입니다."
+      },
+      {
+        "id": "shop-owned-slot",
+        "text": "보유\n0"
+      },
+      {
+        "id": "shop-owned-panel",
+        "text": "보유\n0"
+      },
+      {
+        "id": "shop-status-text",
+        "text": "무엇을 구매하시겠습니까?"
+      },
+      {
+        "id": "shop-quantity-input",
+        "text": "",
+        "value": "1"
+      },
+      {
+        "id": "shop-quantity-total",
+        "text": "합계 80G"
+      },
+      {
+        "id": "shop-balance-after",
+        "text": "거래 후 잔액 1520G"
+      },
+      {
+        "id": "shop-confirm",
+        "text": "구입",
+        "value": ""
+      },
+      {
+        "id": "shop-item-cancel",
+        "text": "취소",
+        "value": ""
+      }
+    ],
+    "active": "shop-buy-item_capture_orb",
+    "bounds": [
+      {
+        "id": "shop-tab-buy",
+        "text": "구입",
+        "x": 154,
+        "y": 221.796875,
+        "width": 32,
+        "height": 27,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-tab-sell",
+        "text": "판매",
+        "x": 190,
+        "y": 221.796875,
+        "width": 32,
+        "height": 27,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-buy-item_capture_orb",
+        "text": "포획 구슬특수x080G",
+        "x": 54,
+        "y": 266.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-buy-item_potion",
+        "text": "회복약약x050G",
+        "x": 54,
+        "y": 314.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-buy-item_hi_potion",
+        "text": "상급 회복약약x0180G",
+        "x": 54,
+        "y": 362.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": false
+      },
+      {
+        "id": "shop-buy-item_ether",
+        "text": "기술 에테르약x0120G",
+        "x": 54,
+        "y": 410.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": false
+      },
+      {
+        "id": "shop-buy-item_antidote",
+        "text": "해독초약x030G",
+        "x": 54,
+        "y": 458.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": false
+      },
+      {
+        "id": "shop-buy-item_wake_herb",
+        "text": "각성초약x040G",
+        "x": 54,
+        "y": 506.59375,
+        "width": 174.734375,
+        "height": 44,
+        "visible": true,
+        "inViewport": true,
+        "hit": false
+      },
+      {
+        "id": "shop-quantity-input",
+        "text": "",
+        "x": 54,
+        "y": 399.5,
+        "width": 24,
+        "height": 24,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-confirm",
+        "text": "구입",
+        "x": 232,
+        "y": 398,
+        "width": 40,
+        "height": 27,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      },
+      {
+        "id": "shop-item-cancel",
+        "text": "취소",
+        "x": 280,
+        "y": 398,
+        "width": 40,
+        "height": 27,
+        "visible": true,
+        "inViewport": true,
+        "hit": true
+      }
+    ],
+    "detailGeometry": [
+      {
+        "selector": ".runtime-shop-detail-name",
+        "text": "포획 구슬",
+        "box": {
+          "x": 276.859375,
+          "y": 269.390625,
+          "width": 54,
+          "height": 14.390625,
+          "right": 330.859375,
+          "bottom": 283.78125
+        },
+        "clips": [
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-panel runtime-shop-detail-panel",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 239.734375,
+              "y": 262.59375,
+              "width": 104.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-side",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 236.734375,
+              "y": 262.59375,
+              "width": 107.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-shell runtime-shop-items-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 43,
+              "y": 208,
+              "width": 304,
+              "height": 224,
+              "right": 347,
+              "bottom": 432
+            }
+          },
+          {
+            "tag": "SECTION",
+            "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 35,
+              "y": 200,
+              "width": 320,
+              "height": 240,
+              "right": 355,
+              "bottom": 440
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "play-viewport",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "player-layout system-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          }
+        ],
+        "characters": 4,
+        "visibleCharacters": 4,
+        "allCharactersVisible": true,
+        "failedCharacters": []
+      },
+      {
+        "selector": "[data-testid=\"shop-help-line\"]",
+        "text": "약해진 몬스터를 포획하는 기본 구슬입니다.",
+        "box": {
+          "x": 245.734375,
+          "y": 290.59375,
+          "width": 92.265625,
+          "height": 39,
+          "right": 338,
+          "bottom": 329.59375
+        },
+        "clips": [
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-panel runtime-shop-detail-panel",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 239.734375,
+              "y": 262.59375,
+              "width": 104.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-side",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 236.734375,
+              "y": 262.59375,
+              "width": 107.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-shell runtime-shop-items-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 43,
+              "y": 208,
+              "width": 304,
+              "height": 224,
+              "right": 347,
+              "bottom": 432
+            }
+          },
+          {
+            "tag": "SECTION",
+            "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 35,
+              "y": 200,
+              "width": 320,
+              "height": 240,
+              "right": 355,
+              "bottom": 440
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "play-viewport",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "player-layout system-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          }
+        ],
+        "characters": 19,
+        "visibleCharacters": 19,
+        "allCharactersVisible": true,
+        "failedCharacters": []
+      },
+      {
+        "selector": "[data-testid=\"shop-owned-panel\"]",
+        "text": "보유0",
+        "box": {
+          "x": 275.359375,
+          "y": 333.59375,
+          "width": 33,
+          "height": 14.5,
+          "right": 308.359375,
+          "bottom": 348.09375
+        },
+        "clips": [
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-panel runtime-shop-detail-panel",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 239.734375,
+              "y": 262.59375,
+              "width": 104.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-side",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 236.734375,
+              "y": 262.59375,
+              "width": 107.265625,
+              "height": 109.90625,
+              "right": 344,
+              "bottom": 372.5
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "runtime-shop-shell runtime-shop-items-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 43,
+              "y": 208,
+              "width": 304,
+              "height": 224,
+              "right": 347,
+              "bottom": 432
+            }
+          },
+          {
+            "tag": "SECTION",
+            "class": "runtime-overlay runtime-shop-overlay runtime-shop-preset-collector",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 35,
+              "y": 200,
+              "width": 320,
+              "height": 240,
+              "right": 355,
+              "bottom": 440
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "play-viewport",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          },
+          {
+            "tag": "DIV",
+            "class": "player-layout system-shell",
+            "overflowX": "hidden",
+            "overflowY": "hidden",
+            "box": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 640,
+              "right": 390,
+              "bottom": 640
+            }
+          }
+        ],
+        "characters": 3,
+        "visibleCharacters": 3,
+        "allCharactersVisible": true,
+        "failedCharacters": []
+      }
+    ]
+  },
+  "errors": []
+}

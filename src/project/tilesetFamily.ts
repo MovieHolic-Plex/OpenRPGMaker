@@ -16,6 +16,8 @@ const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
   "oprn-joseon": "조선 칩셋",
   "oprn-modern": "현대 도시(도트)",
   "oprn-jp": "일본 도시(도트)",
+  "oprn-monster": "몬스터 수집(포켓몬풍)",
+  "oprn-monster-emerald": "몬스터 수집(에메랄드풍)",
   "rasak-fantasy": "Rasak Fantasy",
   "rasak-modern": "Rasak Modern",
 };

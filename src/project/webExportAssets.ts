@@ -17,6 +17,7 @@ import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioId
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
@@ -27,6 +28,12 @@ const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
   const ids = collectProjectStrings(project);
+  // These backgrounds are selected by battleBackdrop at runtime, so they need
+  // not appear in an authored troop or terrain row. Export their real bytes.
+  if (project.system.battleUiStyle === "pokemon") ids.add("battle-skin-pokemon-backdrop");
+  if (Object.values(project.maps).some((map) => map.climate?.mode === "fixed" && map.climate.weather === "snow")) {
+    ids.add("scarloxy-backdrop-ice");
+  }
   // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
   for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);
@@ -174,6 +181,24 @@ function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
   if ([project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)].some(settings => !settings?.backgroundResourceId)) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
+  // This resource is read only by the persistent confirm-page portrait controller.
+  // Keep it explicit even if export's general project-string walk changes later.
+  if (project.meta.oprnOpeningBook?.portraitMotion?.resourceId) values.add(project.meta.oprnOpeningBook.portraitMotion.resourceId);
+  // Party menus resolve a separately authored sibling icon at runtime. Retain
+  // those indirect dependencies when pruning uploaded assets for publication.
+  if (isEmeraldMonsterStyle(project)) for (const species of project.database.monsterSpecies ?? []) {
+    const front = species.graphic.monsterResourceId;
+    const icon = front?.replace(/_front$/u, '_icon');
+    if (icon && icon !== front && project.assets.uploaded[icon]) values.add(icon);
+  }
+  // Trainer portraits are resolved from the event's shared charset slot at runtime.
+  // Their resource IDs are implicit, just like sibling party icons.
+  if (isEmeraldMonsterStyle(project) && ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'].some(id => values.has(id))) {
+    for (const [id, asset] of Object.entries(project.assets.uploaded)) {
+      if (id.startsWith('oprn_emerald_trainer_') && asset.kind === 'picture' &&
+          asset.meta.width === 64 && (asset.meta.height === 64 || asset.meta.height === 96)) values.add(id);
+    }
+  }
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
   const skinId = resolveSkinId(project.system.battleUiStyle);

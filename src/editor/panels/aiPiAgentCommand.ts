@@ -797,10 +797,12 @@ ${contractReleased.message}`);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
     return !failed;
   }
-  // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵, 그것도 없으면 프로젝트의 첫 맵.
-  // 마지막 후보가 없으면 맵 없는 프로젝트에서 영수증이 통째로 사라진다(그림은 못 그려도 이름은 남아야 한다).
-  const receiptMapId = changedKeys.find((key) => key.startsWith("maps."))?.slice("maps.".length)
-    ?? command.mapIds[0] ?? surface.getCurrentMapId() ?? Object.keys(merged.project.maps)[0] ?? null;
+  // 삭제된 시작 맵은 전체 생성의 첫 변경이 될 수 있다. 적용 후 존재하는 맵만 영수증에 쓴다.
+  const receiptMapId = [
+    ...changedKeys.filter(key => key.startsWith("maps.")).map(key => key.slice("maps.".length)),
+    command.mapIds[0], surface.getCurrentMapId(), merged.project.startMapId,
+    ...Object.keys(merged.project.maps),
+  ].find(id => typeof id === "string" && Object.hasOwn(merged.project.maps, id)) ?? null;
   const receiptTitle = "변경 내용";
   // 카운터가 없는 영역(퀘스트·스토리 플래그·캐릭터·맵 연결…)까지 한 줄에 — 검토 카드와 영수증이
   // 같은 칩을 쓴다. 이게 없으면 그런 턴은 "적용/버리기" 만 있는 빈 카드로 끝났다.

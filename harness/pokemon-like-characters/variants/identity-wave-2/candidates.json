@@ -1,0 +1,17 @@
+[
+  {
+    "role": "professor",
+    "id": "professor-479d1212ea8f0489",
+    "autoApproved": 0
+  },
+  {
+    "role": "ranger",
+    "id": "ranger-80f567f41e112a38",
+    "autoApproved": 0
+  },
+  {
+    "role": "captain",
+    "id": "captain-bb9f0b056960c728",
+    "autoApproved": 0
+  }
+]

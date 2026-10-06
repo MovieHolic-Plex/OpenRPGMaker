@@ -1,3 +1,9 @@
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
+import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
+import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
+import { monsterCampaign, monsterJournalEntry } from '@/project/monsterJournal';
 import { inventoryViewEntries } from '@/player/playerInventoryView';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
@@ -10,7 +16,7 @@ import { actorOwnedSkillIds } from '@/project/growth/runtime';
 import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
-import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
+import { menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -59,12 +65,29 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
     case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
+    case 'trainer-card': {
+      const { project, session } = options;
+      const campaign = monsterCampaign(project), ids = campaign?.speciesIds ?? [];
+      const leader = project.database.actors.find(a => a.id === session.partyActorIds[0]);
+      const trainer = leader ?? project.database.actors[0];
+      return { title: `원정 수첩 · ${trainer ? resolveActorName(session, trainer) : '여행자'}`, entries: [
+        { label: '현재 위치', value: project.maps[session.currentMapId]?.name ?? '알 수 없는 장소' },
+        { label: '동료', value: `${session.monsterParty.length}마리` },
+        { label: '발견', value: `${ids.filter(id => monsterJournalEntry(session,id).seen).length} / ${ids.length}종` },
+        { label: '포획', value: `${ids.filter(id => monsterJournalEntry(session,id).caught).length} / ${ids.length}종` },
+        { label: '배지', value: `${(campaign?.badges ?? []).filter(b => session.switches[b.switchId] === true).length} / ${campaign?.badges.length ?? 0}` },
+        { label: '소지금', value: String(session.gold) },
+      ], hint: session.monsterParty.length ? '도감과 배지는 저장 기록에 함께 남습니다.' : '연구소에서 첫 동료를 만나 원정을 시작하세요.' };
+    }
     case "skills": return skillDetail(options);
     case "equipment": return equipmentDetail(options);
     case "monsters": return monsterDetail(options);
+    case "monster-dex":
+    case "region-map":
+    case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
     case "load": return loadDetail(options.slots, options.onLoadSlot);
-    case "status": return statusDetail(options.project, options.session);
+    case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
     case "battle-reports": return battleReportDetail(options);
@@ -106,6 +129,9 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
 }
 
 const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
+  "monster-dex": "발견·포획한 몬스터의 생태와 기술을 봅니다.",
+  "region-map": "현재 위치와 섬의 길을 봅니다.",
+  "campaign-progress": "모은 배지와 다음 원정 목표를 봅니다.",
   "battle-reports": "최근 전투 결과와 실제 행동 기록을 읽습니다.",
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
@@ -149,6 +175,7 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
       value: "",
       unavailableReason: menuItemUnavailableReason(item),
       testId: `status-menu-item-use-${itemId}`,
+      ...(isEmeraldMonsterStyle(project) ? { icon: itemEntryIcon(item), description: item.description, facts: itemFacts(project, session, item) } : {}),
       onActivate: needsTarget && options.onSelectItemTarget
         ? () => options.onSelectItemTarget?.(itemId)
         : options.onUseItem ? () => options.onUseItem?.(itemId) : undefined,
@@ -177,8 +204,11 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
       onActivate: options.onCombineItems ? () => options.onCombineItems?.(itemId, partnerId) : undefined,
     });
   }
+  if (item && isEmeraldMonsterStyle(project) && entries.length === 0) {
+    entries.push({ label: "정보", value: "", description: item.description, icon: itemEntryIcon(item), facts: itemFacts(project, session, item), onActivate: () => undefined });
+  }
   return {
-    title: `${item?.name ?? itemId} · 다른 행동`,
+    title: isEmeraldMonsterStyle(project) ? item?.name ?? itemId : `${item?.name ?? itemId} · 다른 행동`,
     entries,
     emptyLabel: "할 수 있는 행동이 없습니다",
     hint: "Enter 실행 · Esc 아이템 목록",
@@ -227,6 +257,34 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         hint: "사용할 대상을 선택하세요.",
       };
     }
+    if (targetsPartyMonsters(project, item)) {
+      const anyTarget = item.scope === "allAllies" && (session.monsterParty ?? []).some(id => !previewMonsterMedicine(project, session, item, id).reason);
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
+        entries: (session.monsterParty ?? []).flatMap(instanceId => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewMonsterMedicine(project, session, item, instanceId);
+          const stateName = (id: string) => project.database.states.find(state => state.id === id)?.name ?? id;
+          const remaining = preview.stateIds.filter(id => !preview.curedStateIds.includes(id));
+          const states = preview.stateIds.map(stateName).join(" · ") || "정상";
+          const after = remaining.map(stateName).join(" · ") || "정상";
+          const pp = item.ppRecovery ? `PP ${preview.pp}/${preview.maxPp} → ${preview.ppAfter}/${preview.maxPp}` : "";
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: `HP ${preview.hp}/${preview.maxHp}${preview.hpAfter !== preview.hp ? ` → ${preview.hpAfter}/${preview.maxHp}` : ""}`,
+            description: anyTarget ? "사용 가능한 파티 몬스터 모두에게 적용됩니다." : preview.reason ?? [pp, preview.curedStateIds.length ? `${states} → ${after}` : states].filter(Boolean).join(" · "),
+            disabled: !anyTarget && Boolean(preview.reason),
+            unavailableReason: anyTarget ? undefined : preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterMedicineTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 사용 · Esc 아이템 목록",
+      };
+    }
     return {
       title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
       entries: partyActors(project, session).map((actor) => {
@@ -238,7 +296,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
           label: resolveActorName(session, actor),
-          value: `HP ${preview.hp}/${preview.maxHp}  MP ${preview.mp}/${preview.maxMp}`,
+          value: `HP ${preview.hp}/${preview.maxHp}  ${item.ppRecovery ? `PP ${preview.pp}/${preview.maxPp} → ${preview.ppAfter}/${preview.maxPp}` : `MP ${preview.mp}/${preview.maxMp}`}`,
           vitals: { ...preview, stateNames, curedStateNames },
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
@@ -263,7 +321,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
-      && (itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
+      && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
     if (hasOtherActions) {
       return {
         label: item.name,
@@ -289,9 +347,10 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         : options.onUseItem ? () => options.onUseItem?.(item.id) : undefined,
     };
   });
-  const { wornSummary, bagEntries } = ownedEquipmentEntries(options);
+  const { wornSummary, bagEntries } = usesMonsterParty(project)
+    ? { wornSummary: undefined, bagEntries: [] } : ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
-  return { title: "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  return { title: usesMonsterParty(project) ? "가방" : "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
@@ -341,6 +400,7 @@ function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
 }
 
 function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  if (usesMonsterParty(options.project)) return monsterPartySkillDetail(options);
   const { project, session } = options;
   if (options.skillActorId) {
     const actor = partyActors(project, session).find((record) => record.id === options.skillActorId);
@@ -556,7 +616,6 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const view = options.monsterView ?? "party";
   const ids = view === "party" ? options.session.monsterParty : options.session.monsterBox;
-  const target = view === "party" ? "box" : "party";
   const entries = [
     {
       label: view === "party" ? "보관함 보기" : "파티 보기",
@@ -574,10 +633,9 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         {
           label: monsterDisplayName(options.project, instance),
           value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-          description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
+          description: "선택하면 현재 능력·기술·PP를 봅니다",
           testId: `status-menu-monster-${instanceId}`,
-          onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
-          disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
+          onActivate: options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined,
         },
         ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
           const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
@@ -608,6 +666,22 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ];
     }),
   ];
+  const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
+  if (detail) return detail;
+  if (isEmeraldMonsterStyle(options.project) && view === "party") {
+    const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index) => {
+      const raw = options.session.monsterInstances[ids[index] ?? ""];
+      if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true" }, disabled: true };
+      const member = monsterUiEntry(options.project, raw);
+      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
+        testId: `status-menu-monster-${raw.instanceId}`,
+        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp) },
+        vitals: { hp: member.hp, maxHp: member.maxHp, hpAfter: member.hp, mp: 0, maxMp: 0, mpAfter: 0, stateNames: member.stateNames },
+        face: { resourceId: monsterMenuIconResourceId(options.project, member.species?.graphic.monsterResourceId), alt: member.name, testId: `status-menu-monster-art-${raw.instanceId}` },
+        onActivate: () => options.onSelectMonster?.(raw.instanceId) };
+    });
+    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
+  }
   return {
     title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",
     entries,
@@ -748,7 +822,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile ? "partyMonster"
+  const scope = item.careProfile || targetsPartyMonsters(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -781,6 +855,8 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.hpRecovery.percentMax > 0) tokens.push(`hp%:${item.hpRecovery.percentMax}`);
   if (item.mpRecovery.flat > 0) tokens.push(`mp:${item.mpRecovery.flat}`);
   if (item.mpRecovery.percentMax > 0) tokens.push(`mp%:${item.mpRecovery.percentMax}`);
+  if (item.ppRecovery?.flat && item.ppRecovery.flat > 0) tokens.push(`pp:${item.ppRecovery.flat}`);
+  if (item.ppRecovery?.percentMax && item.ppRecovery.percentMax > 0) tokens.push(`pp%:${item.ppRecovery.percentMax}`);
   const healedStateIds = new Set(item.healStateIds);
   for (const stateId of healedStateIds) tokens.push(`heal:${encodeURIComponent(stateId)}`);
   for (const effect of item.stateEffects) {

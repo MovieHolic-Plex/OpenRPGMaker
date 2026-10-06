@@ -4,6 +4,7 @@ export const CINEMATIC_KIND_NAMES = {
   text: "텍스트",
   image: "이미지",
   video: "동영상",
+  animatic: "애니메틱",
 } as const;
 
 export function cinematicButton(

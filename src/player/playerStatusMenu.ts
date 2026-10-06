@@ -23,6 +23,7 @@ import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
+import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 
 export {
   createPlayerStatusMenuSnapshot,
@@ -62,6 +63,16 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ...(skin.partyStats ? { menuSkinStats: "true" } : {}),
     },
   });
+  const emerald = stampEmeraldSurface(panel, options.project, "menu");
+  if (emerald) {
+    panel.dataset.emeraldPage = selectedCommand === "monsters"
+      ? options.monsterInstanceId ? "summary" : options.monsterView === "box" ? "box" : "party"
+      : selectedCommand === "items"
+        ? options.targetItemId ? "item-target" : options.itemActionId ? "item-context" : "bag"
+        : selectedCommand;
+    panel.dataset.bagPocket = options.inventoryView?.filter ?? "all";
+    panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
+  }
   applySystemGraphic(panel);
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
@@ -88,7 +99,11 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     formationActorId: options.formationActorId,
     battleReportIndex: options.battleReportIndex,
     onSelectBattleReport: options.actions.onSelectBattleReport,
+    campaignSpeciesId: options.campaignSpeciesId,
+    onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
     monsterView: options.monsterView,
+    monsterInstanceId: options.monsterInstanceId,
+    onSelectMonster: options.actions.onSelectMonster,
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
     confirmToTitle: options.confirmToTitle,
@@ -133,18 +148,23 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
   const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    showcase: !detail.layout?.startsWith("campaign-") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
   detailPanel.dataset.statusMenuCommand = selectedCommand;
+  if (emerald && selectedCommand === "items" && !options.targetItemId) {
+    detailPanel.append(el("div", { class: "emerald-bag", attrs: { role: "img", "aria-label": "가방" }, children: [
+      el("span", { class: "emerald-bag-handle" }), el("span", { class: "emerald-bag-pocket" }),
+    ] }));
+  }
   // 첫 화면이 작업 패널이 아닌 스킨(파티 퍼스트·허브·시트)은 main 모드에서 작업 패널을 그리지 않는다.
   const landingOnly = mode === "main" && skin.landing !== "work";
   if (mode === "main") {
@@ -291,6 +311,10 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "row": return "↔";
     case "formation": return "◆";
     case "monsters": return "♢";
+    case "monster-dex": return "▣";
+    case "region-map": return "▧";
+    case "campaign-progress": return "◆";
+    case "trainer-card": return "▤";
     case "battle-reports": return "▤";
     case "quests": return "✓";
     case "relationships": return "∞";
@@ -319,6 +343,10 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "row": return "next";
     case "formation": return "shield";
     case "monsters": return "shard";
+    case "monster-dex": return "book-magic";
+    case "region-map": return "map";
+    case "campaign-progress": return "shield";
+    case "trainer-card": return "book-magic";
     case "battle-reports": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
@@ -350,6 +378,10 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "skills":
     case "equipment":
     case "monsters":
+    case "monster-dex":
+    case "region-map":
+    case "campaign-progress":
+    case "trainer-card":
     case "save":
     case "load":
     case "status":
@@ -402,8 +434,8 @@ function renderPartyRow(
         el("span", { class: "status-menu-actor-subline", text: row.levelLabel }),
       ],
     }),
-    renderVitalLine(row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`),
-    renderVitalLine(row.mpValueLabel, row.mpRatio, "mp", `status-menu-mp-gauge-${index}`)
+    renderVitalLine(row.monsterInstanceId ? `HP ${row.hpValueLabel}` : row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`),
+    renderVitalLine(row.resourceLabel ? `${row.resourceLabel} ${row.mpValueLabel}` : row.mpValueLabel, row.mpRatio, "mp", `status-menu-mp-gauge-${index}`)
   );
   return el("article", {
     class: "status-menu-party-row",
@@ -453,6 +485,7 @@ function renderPartyFace(
 
 /** The same actor appearance and session override as the field sprite. */
 function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], row: PlayerStatusMenuPartyRow, index: number, faceSize: number): HTMLElement {
+  if (row.monsterInstanceId) return renderPartyFace(project, row, index, faceSize, `status-menu-overview-face-${index}`);
   // 도트 창 스킨(partyStats)은 상점 파티 창과 같은 정면 걷기 그림을 쓴다 — 멈춘 한 프레임이 아니라 걷는다.
   if (menuSkinFor(project).partyStats) {
     const walker = partyWalker(project, session, row.actorId, row.name, { className: "status-menu-character", testId: `status-menu-overview-character-${index}` });
@@ -518,7 +551,7 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
                 })]
               : []),
             renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
-            renderOverviewVital("MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
+            renderOverviewVital(row.resourceLabel ?? "MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
             ...(stats && row.nextLevel
               ? [renderOverviewVital("EX", `다음 ${row.nextLevel.remaining}`, row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
               : []),

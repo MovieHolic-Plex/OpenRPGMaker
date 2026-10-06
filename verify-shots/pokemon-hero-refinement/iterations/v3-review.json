@@ -1,0 +1,116 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "rubricSha256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "sheetSha256": "742c46a5cb015399c376623a5a80813a8b937ced9c543caa14d2fa5c93c3f8c1",
+  "gifSha256": "5ce1971f0f3571254a27e39b9940ef3c331b1cbbcca9c33dc727c8681dac3d54",
+  "scores": {
+    "silhouette": {
+      "score": 15,
+      "reason": "Cap taper and temple hair now produce a clear compact person instead of a mushroom helmet. Overall form remains a large rounded head above a boxy torso; the front shoulders/arms and shorts have little expressive contour."
+    },
+    "anatomy": {
+      "score": 15,
+      "reason": "Jaw/neck transition and profile nose are now legible; sleeve/hand/waist no longer form the previous cream angular block. At native size wrist and lower arm clusters remain difficult to distinguish from skin beside the shorts. Thigh/knee/shin differentiation in up/down steps is still weak."
+    },
+    "walking": {
+      "score": 14,
+      "reason": "Real support/swing exchange persists and profile idle soles are now visibly separated. Up/down steps mostly splay into straight diagonal skin columns, with little convincing bent swing knee or weight transfer; wrist motion reads as tiny skin flicker at the waist rather than strong opposed arm action. The repeated1px bob is regular but does not replace articulated steps."
+    },
+    "pixelCraft": {
+      "score": 12,
+      "reason": "Cleaner cap/face and bag contacts are serviceable. Profile crown still sits above a long flat dark-red underside band; scattered orange crown highlights and several nearly adjacent navy shades fragment head volume. Vest/shorts remain flat blue clusters with ambiguous arm contact pixels."
+    },
+    "identity": {
+      "score": 13,
+      "reason": "Cap/vest/gold-red pack are coherent and identifiable in all directions. The cap now has a brim but its crown/underside/hair read as layered color bands rather than confident cap volume; backpack remains a mostly flat gold/red plaque from behind."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "reason": "All directions retain matching proportions and costume, with a meaningful side nose and coherent pack position. Profile/front head shading still describes different degrees of depth."
+    },
+    "loop": {
+      "score": 4,
+      "reason": "All four140ms frames repeat coherently, idle1/3 are identical, no unexplained root jump or file-level seam. Splayed-to-idle leg silhouettes and weak wrist changes make the cycle mechanical."
+    }
+  },
+  "criticalFailures": [],
+  "total": 77,
+  "verdict": "redo",
+  "evidence": [
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v3-gif-contact-native.png",
+      "sha256": "27f362d553347163d842d7769c36e42990896cfb0f6013b6a90ea9ff1a7ed9f6"
+    },
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v3-gif-contact-4x.png",
+      "sha256": "1cba6e61d8c7c42d614d5ee0a301ef374d34d86a53c6ece02323eef2a26c61fe"
+    },
+    {
+      "file": "/tmp/pokemon-hero-critic-20261004/v3-sheet-4x.png",
+      "sha256": "ed5ff7cc8970a4f69c25267d303d80f89c55f052aec6aef0ea35263c13d904a4"
+    }
+  ],
+  "decodedFrames": 4,
+  "durationsMs": [
+    140,
+    140,
+    140,
+    140
+  ],
+  "loop": 0,
+  "rubricUnchanged": true,
+  "allTwelvePosesViewed": true,
+  "nativeAnd4xViewed": true,
+  "browserPlaybackWatched": false,
+  "decodedFrameDetails": [
+    {
+      "index": 0,
+      "bbox": [
+        2,
+        11,
+        64,
+        31
+      ],
+      "rgbaSha256": "c93e9d0c71d5f68fa9d3f9498ca13ad22c9be29e2c5b0b1c4298ac46fbfad8fd"
+    },
+    {
+      "index": 1,
+      "bbox": [
+        2,
+        10,
+        64,
+        31
+      ],
+      "rgbaSha256": "d55633d53a164e8aaf20902ea11c96005ba3b3d6f319b606fc3c269f0f285434"
+    },
+    {
+      "index": 2,
+      "bbox": [
+        2,
+        11,
+        64,
+        31
+      ],
+      "rgbaSha256": "7b56b707ad15cf603cf1d9bb4277201a62ed89bb3abc6fde68fb26983ec19e5b"
+    },
+    {
+      "index": 3,
+      "bbox": [
+        2,
+        10,
+        64,
+        31
+      ],
+      "rgbaSha256": "d55633d53a164e8aaf20902ea11c96005ba3b3d6f319b606fc3c269f0f285434"
+    }
+  ],
+  "qualityPackHashesMatch": true,
+  "requiredCorrections": [
+    "Redesign up/down stepA/B as one planted leg and one compact bent swing leg, retaining anatomically connected knees and a coherent shoe cluster. Current rows27..29 primarily spread straight skin columns outward.",
+    "Make opposed arm action read as attached sleeve-forearm-hand clusters at native size. Current front/back wrist pixels aroundy24..26 disappear into skin beside the waist/shorts; avoid merely toggling individual tan pixels.",
+    "Simplify cap highlight and dark-blue hair clusters to show one crown volume and a shorter selective brim/underside. The profile long dark-red horizontal underside currently competes with the nose and eye for defining the heading.",
+    "Give torso/shorts and back bag selective contour/attachment depth rather than adding more tiny color patches. Keep the now-correct jaw/nose, idle shoe gap and gold-red bag placement."
+  ],
+  "failureReason": "77/100 below immutable85; no critical failures assigned. All axis minima are met; serviceable art is not automatically excellent finished art."
+}

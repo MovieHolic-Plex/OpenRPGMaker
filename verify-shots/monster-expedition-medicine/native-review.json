@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "single HP medicine targets instance",
+    "actor vitals unchanged",
+    "status cure clears turns",
+    "full HP no consumption",
+    "ordinary medicine rejects fainted",
+    "group consumes one for two monsters",
+    "PP capped without changing HP",
+    "full PP no consumption",
+    "legacy items omit optional PP",
+    "project save/load retains PP effect",
+    "battle PP-only medicine restores known move",
+    "battle PP narration"
+  ],
+  "instance": "monster_1",
+  "move": "mx_skill_normal_1",
+  "cap": 30
+}

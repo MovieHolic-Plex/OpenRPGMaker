@@ -1,3 +1,4 @@
+import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { store } from "@/project/store";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import type { FieldSpawnDef } from "@/project/types";
@@ -115,7 +116,7 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {
-      scene.showRuntimeOverlay("runtime-error", error.message);
+      showBattleAdmissionError(scene, error);
     }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {

@@ -1,0 +1,10 @@
+{
+  "role": "explorer",
+  "label": "탐험가",
+  "variant": "C · 산악인",
+  "description": "넓은 어깨와 배 · 등산모 · 조끼와 큰 배낭",
+  "identity": "성인 · 넓은 몸통 · 무게감 있는 보폭",
+  "collection": "distinct-v2",
+  "base": "hiker",
+  "sourceNote": "에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님."
+}

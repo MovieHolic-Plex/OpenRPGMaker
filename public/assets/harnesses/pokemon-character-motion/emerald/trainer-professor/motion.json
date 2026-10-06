@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "professor",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "0c1988c64edb9e1e4a486fd2e39c888aa824b04800a9fab13737c3a779965515",
+  "promptSha256": "89d8a6734c8d440d79e2ade303266d89418143e5e6bfc2c3bd77751900125bad",
+  "portraitSha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6",
+  "gateSha256": "821b830f29d1a0b5835e05577f87bd81bfa143409e29f725207426abc29437cd"
+}

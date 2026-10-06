@@ -1,0 +1,104 @@
+[
+  {
+    "role": "hero",
+    "sha256": "5ca145c8a0f260c5a5298b6e5c5fbc5c0971b031888333d8d612ebcc6e63fc4e",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "rival",
+    "sha256": "cf1568f670ea21e5589168cd8be9a41b22eb27fcae13660e2060594b167c9a68",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "professor",
+    "sha256": "a98ec9479f7bf63a4ca8b534ee17e4b7abd051583767e511492e94996aed10b5",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "nurse",
+    "sha256": "825afe11d16366b21166ee1bc30de34132ec322527208065e17e600ae35031fd",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "merchant",
+    "sha256": "ce6632df60e90cbe0d8cedf4f47b7234715e0e6af89fe4011ebdede0ef86abb3",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "mother",
+    "sha256": "3d0c399dfb5b1b52a6cb0c12410792c8e32039fc0f5943678bb1199774c513f4",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "resident",
+    "sha256": "603b6f1136bc26afb34cf81626d407f7cf097c32af35591cdeb6fd9b1cb9b7ef",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "gym_leader",
+    "sha256": "44c2a8a1a3cdd4d9a15216fde91d1f2f0427611e42b744647975d562aeb82090",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "company_agent",
+    "sha256": "1b8f4584148cd7c63645387fd16b432902fd0d9c12753cf060658c489380785d",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "captain",
+    "sha256": "6fa4bcb69c9296ad5b12606853355a9c5155984d24a05f4dd1eebadabb3be617",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "worker",
+    "sha256": "093a0ebe2cc5b89f27b6a51c167f43ca245e4c2f6ed4d88a640b2f871d64ec5a",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "explorer",
+    "sha256": "20b7cabb83ca7220c688de527255500bdb90ab67071a4da87d9e3fb98f38114a",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "student",
+    "sha256": "7ccc660c6a0f437fd79e4ff1abec98429b7088db33473ef226fabfcbc0839686",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "ranger",
+    "sha256": "1b1217cef03d6b796487b8bfb43883d1044a8dbb5cc4f6dbbfb18d14139a71d1",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "moon_leader",
+    "sha256": "3dff8cfd723913a142deaeacdbf97ce8c9697deb1d7e41618e4a65cd8a7b5685",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "hiker",
+    "sha256": "a8bb4c5b9d02731ebe716d90c9a8c30831fec2aacf6b8ce90814ed1de829b649",
+    "frames": 4,
+    "nativePixelsPreserved": true
+  },
+  {
+    "role": "professor-opening",
+    "frames": 6,
+    "nativePixelsPreserved": true,
+    "sha256": "25d4c221965445db3d4fbed1277a3f165fd40942317bbe546a9429944b4b3ee4"
+  }
+]

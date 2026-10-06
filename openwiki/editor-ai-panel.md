@@ -3940,6 +3940,130 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
 `browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.
 
+
+## 실제 Pi 오프닝 제작 경로 복구 (2026-10-03)
+
+일반 채팅은 Pi를 실행한다. `AssistantSession`의 생성 분기나 `contextBuilder`의 연출 규칙,
+`buildTaskRecipes()`만 수정해 일반 채팅이 개선됐다고 보고하면 안 된다. 2026-10-03 실제
+Astra 실행에서 `generate_opening_image`가 `ui-required`만 반환하고 새 그림이 하나도
+등록되지 않았던 실패를 재현했다. 이전 수동 제작 오프닝 보고서는 이 평가의 근거가 아니다.
+
+현재 경로:
+
+- `piAgentRuntime.ts`가 제작 의도에만 `OPENING_PRODUCTION_PROMPT`와 소수의 오프닝 도구를 노출한다.
+- `plan_opening`은 샷의 사건·구도·연속성·첫 행동을 받는다. 실제 콘텐츠 적용은 별도다.
+- 워커의 `generateOpeningImage` → `requestPiOpeningGeneration` → 기존 `render_request` 왕복 →
+  `client.ts`의 `generateOpeningStill`이다. 브라우저의 실제 이미지 제공자·모델 설정을 유지하며,
+  참고 그림을 실제 바이트로 읽는다. 새로운 API 키 전달 경로를 만들지 않는다.
+- 워커가 성공 결과를 `upsert_resource`로 등록한다. 생성 도구는 **write/exclusive**다.
+  읽기 전용·도구 목록 제한·맵 한정 실행에서는 쓰기를 허용하지 않는다.
+- 생성 그림 및 `show_opening_image` 결과를 512px PNG로 모델 응답에 넣는다.
+  전사/활동 이벤트에는 원본 바이트를 기록하지 않는다. SQLite ref의 존재 검사는 브라우저 URL
+  브리지가 없는 워커에서도 가능하며 실제 읽기 실패는 시각 전달 실패로 처리한다.
+- 실행기가 계획, 실제 이미지 전달, 마지막 구성 검토를 기록한다. 변경된 그림/장면은 검토를
+  무효화한다. 최대 두 차례 수리하고 남은 문제를 `done.openingProduction.issues`에 반환한다.
+  클라이언트는 이를 완료로 처리하지 않는다. 팀 실행도 제작자 결과를 병합해 검사한다.
+
+이 증거는 **구성·이미지 전달 증거**다. 모델이 그림을 제대로 이해했다는 점수나 출하 플레이어의
+재생·음악·Skip 검증을 자동으로 보장하지 않는다. `playbackVerified`는 false로 유지하며 실제
+플레이어 QA는 별도 수행한다. 오프닝 끄기/삭제/단순 진단을 제작 의도로 확대하지 않는다.
+
+
+후속 실제 도그푸딩에서 발견한 두 경계도 수정했다. `get_opening.generatedStills`와 프로젝트 우선
+`list_opening_media`는 이미 만든 그림을 다음 턴에서 다시 찾게 한다. 제작 의도 판정은
+“오프닝 제작을 마무리해. 별빛이 꺼지는 사건”을 기능 끄기로 오인하지 않는다.
+
+그림 왕복은 저장할 프로젝트와 분리된 `openingImageProject` 투영을 사용한다. 요청한 업로드
+그림만 남기고 맵·타일셋·DB는 보내지 않는다. 이 투영을 store/checkpoint 제안으로 저장하지 않는다.
+39MB 사본에서 6개 실제 브라우저 검토를 동시에 호출했을 때 약 43.8초에서 2.1초로 줄었으며,
+6개 모두 기존 45초 제한 안에 유효한 PNG로 반환됐다. 제한을 늘린 결과가 아니다.
+
+재현 도구: `scripts/qa/opening-assistant-run.mts` + 브라우저 sidecar는 실제 Pi/LLM/이미지 제공자를
+사용하되 정본에 쓰지 않는다. 기본 `--mode opening`은 초기 intent 노출을 고정한 오프닝 제작 평가다. 실제 클라이언트
+NDJSON 이미지 전달은 별도 브라우저 실행으로 확인했다. 오프닝의 실제 품질·내용, 정본 저장 후
+재로드, 출하 플레이어 검수는 `verify-shots/monster-assistant-opening-2026-10-03/REPORT.md`에 기록한다.
+
+## 일반 포켓몬형 요청의 전체 제작 계약 (2026-10-04)
+
+`monsterGameRequest.ts`의 공유 판정은 「포켓몬 같은 게임 만들어」와
+「Make a Pokemon-like game」 같은 명확한 전체 제작·보수 요청을 에메랄드 참고
+기본으로 해석한다. 질문·단일 NPC/상점 수정·명시 다른 포켓몬 판은 이 계약으로
+축소/승격하지 않는다. `classifyPlainPiTurn`이 전체 제작 도구와 공용 안내를 전달하며
+전체 DB/맵을 한 제작자가 소유하도록 단독 실행한다. `villageContract`도 이 범위를
+한 마을로 좁히지 않는다. 읽기 전용/계획 자율성 제한은 유지한다.
+
+실제 Pi runtime이 동일 요청 판정과 `PiMonsterGameProduction`를 사용한다. 설정만
+바꾸거나 완료 산문을 써도 전체 제작 성공이 되지 않는다. 실제 build 영수증,
+마지막 변경 뒤 read/review, 오프닝 그림 전달/검토, 실제 전체 프로젝트 검사 결과를
+수집한다. 공용 기본 생성/기존 오프닝 보수는 이 생산 계약이 맡으며 별도 오프닝
+생산기의 「변경되지 않은 오프닝」검사로 보존된 이야기까지 재생성을 강요하지 않는다.
+최대2회·기존 턴/시간 예산의 bounded repair를 공유하며 client는 캠페인/시스템/
+오프닝 미완료를 오류로 돌려 완료 처리하지 않는다. `playbackVerified:false`는
+실제 출하 플레이·정본 저장 증거가 필요하다는 뜻이다. 기존 heavy replay와 strict
+map bundle merge 계약은 변경하지 않았다.
+
+### 일반 문장 실제 Pi 평가 러너 (2026-10-04)
+
+기존 `opening-assistant-run.mts`에 `--mode monster-game`을 주면 기본 사용자 문장은
+「포켓몬 같은 게임 만들어」다. 공용 `classifyPlainPiTurn` → `composePiTask` →
+`buildPiRunRequest`를 호출해 실제 평문 요청의 도구·제작 안내를 전달한다. 고정 오프닝
+의도를 붙이지 않으며 `--focused-opening`과 `--map-id`로 전체 제작을 좁히는 옵션은 거절한다.
+`--fresh-project 1`은 공용 `createBlankProject()`의 빈 프로젝트를 사용한다. 기존 게임은
+기존 `--project-json`/SHA 검증 `--media-json`으로 평가할 수 있다.
+
+```bash
+# 준비된 dev 서버의 origin을 준다. 이 명령은 실제 모델을 호출한다.
+bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
+  --browser-url http://127.0.0.1:9912 --model opencodex/gpt-6-astra \
+  --task '포켓몬 같은 게임 만들어' --out /tmp/oprn-monster-assistant-real
+
+# 모델·브라우저·자격 파일을 읽지 않는 요청 조립 확인
+bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
+  --route-only 1 --out /tmp/oprn-monster-assistant-route
+```
+
+실행은 자율 다이얼(추론medium)·단독 제작·전체 프로젝트 범위이며 개인 후보에 YOLO 적용 모드를 명시한다.
+별도 Ultrabrain 계획 턴은 생략한다. 기본 전체 제작 턴 상한은300이고 `--max-turns`와
+`--timeout-ms`로 줄일 수 있다. 오프닝 기본 모드의32턴·기존 문장·도구 노출은 유지한다.
+모델 자격은 런 내부에서 `~/.omp/agent/models.yml`을 읽고 출력에서는 키와 미디어 바이트를
+가린다. 후보 파일은 모드0600, 출력 폴더는0700이며 정본에 저장하지 않는다.
+
+브라우저 sidecar는 클라이언트와 같은 `generateOpeningStill`, `renderOpeningImage`,
+`renderOpeningAnimaticPreview`, `renderOpeningReferencePreview`, `renderPiMapImage`를
+호출하고 실제 `requestPiOpeningGeneration`/`requestPiRender`/`resolvePiRender` 브로커로
+이미지를 돌려준다. `broker-results.json`은 브로커가 수락한 그림의resourceId·renderId를
+남긴다. `SUMMARY.json`은 실제72맵/60종/배지/상점/표현 검사와 `monsterGameProduction`
+영수증을 담으며 영수증이 없거나 미완료가 있으면 exit1이다. 기존 오프닝/시스템 검사도
+유지한다. 실제 모델·이미지 호출 증거는 이 명령을 실행한 출력이며 route-only 출력은
+요청 조립 증거에 한정한다. 클라이언트 NDJSON·store 적용·정본 저장/재로드·출하 플레이는
+이 개인 후보 러너의 검증 범위 밖이다.
+
+### 기록된 실제 모델 결과의 프런트엔드 적용 재생 (2026-10-04)
+
+`scripts/qa/emerald-monster-client-replay.mjs`는 실제 Pi 러너의 `candidate-private.json`,
+`SUMMARY.json`, `setup.json`, `broker.json`을 읽고 별도 모델 호출 없이 private browser에서
+공유 평문 분류 → `plainPiCommand` → `runPiCommand` → 실제 NDJSON client를 실행한다.
+원본 러너는 checkpoint 이벤트를 보관하지 않으므로 전송 봉투는 QA에서 재구성하며,
+새 live 요청이나 원본 checkpoint 타이밍 재현으로 보고하지 않는다. 실제 최종 후보의
+72맵/60종/4그림 ID가 final done 적용과 checkpoint 발행 두 경로에서 유지되는지 확인한다.
+공용 compact-wire/restore와 assets/database/tilesets 생략 ACK, 실제 브라우저 opening
+PNG 전달, `stale-base` 거절, native final receipt callback을 함께 기록한다.
+전체 생성에서 삭제된 `map_blank_start`가 첫 변경으로 잡히던 영수증 대상은 수정했다.
+`aiPiAgentCommand.ts`는 변경 맵 → 요청/현재/시작 맵 → 나머지 맵 순서에서 적용 후
+실제로 존재하는 ID를 선택한다. 재생 하네스도 영수증의 `after.maps[mapId]` 존재를 확인한다.
+
+```bash
+node scripts/qa/emerald-monster-client-replay.mjs --browser-url http://127.0.0.1:9853 \
+  --real-run /tmp/oprn-emerald-20261004/monster-runner-real \
+  --out /tmp/oprn-emerald-20261004/monster-client-replay-browser
+```
+
+93MB 결과는 별도 임시 read-only HTTP stream으로 전달하며 마지막에 닫는다. headless
+Chromium의 loopback 권한 차단은 private QA browser에서만 해제한다. 저장 bridge 없는
+빈 페이지의 repository는 memory/target:null이며 관측 disk POST도 private route에서
+막는다. 결과는 실제 적용 메모리/영수증·NDJSON 복원 증거이며 정본 저장/재로드, 실제
+compose 입력·전체 편집기 패널, 이어받기 장애·원격 ACK 서버·출하 플레이 증거가 아니다.
+
 ## 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
 
 `aiCanvasProgress.ts`는 사용자 전송 클릭 안에서 실제 문장과 준비 상태를 캔버스에 먼저 붙이고 다음 화면 그리기를 양보한다. 의도 분류·기획 저장·제안 기준선 계산보다 먼저 보인다. 모델이 도구를 실행하면 같은 표시가 실제 `tool_start`/`tool_end`의 사용자용 문구로 바뀐다. 준비 상태는 제작 완료나 저장 증거가 아니다. 가짜 타일·타이머 진행률·주인공 변경을 만들지 않는다. 패널의 대화·프로젝트 전환, 실패, 중단, 정착은 표시를 닫으며 이전 실행의 이벤트가 새 표시를 지우거나 덮지 못한다.

@@ -1,3 +1,4 @@
+import { animaticResourceIds } from "@/project/openingAnimatic";
 import { listOpeningStillPackIds } from "@/assets/openingStillPackRuntime";
 import type {
   ActorRecord,
@@ -133,7 +134,8 @@ function validateCinematicResources(label: string, sequence: CinematicSequence |
   validateOptionalResource(`${label}.musicResourceId`, sequence?.musicResourceId, resourceIds);
   for (const [index, scene] of (sequence?.scenes ?? []).entries()) {
     const sceneLabel = `${label}.scenes[${index}]`;
-    if (scene.kind !== "text") validateOptionalResource(`${sceneLabel}.resourceId`, scene.resourceId, resourceIds);
+    if (scene.kind === "image" || scene.kind === "video") validateOptionalResource(`${sceneLabel}.resourceId`, scene.resourceId, resourceIds);
+    if (scene.kind === "animatic") for (const id of animaticResourceIds(scene.composition)) validateOptionalResource(`${sceneLabel}.composition`, id, resourceIds);
     validateOptionalResource(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId, resourceIds);
     if (scene.kind === 'image') validateOptionalResource(`${sceneLabel}.direction.soundResourceId`, scene.direction?.soundResourceId, resourceIds);
     if (scene.kind === 'image') for (const [i, layer] of (scene.direction?.layers ?? []).entries()) validateOptionalResource(`${sceneLabel}.direction.layers[${i}].resourceId`, layer.resourceId, resourceIds);

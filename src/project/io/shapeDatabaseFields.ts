@@ -1,3 +1,5 @@
+import { validateOpeningAnimatic } from "@/project/openingAnimatic";
+import { validateMonsterCampaign } from "./shapeMonsterCampaign";
 import { parseCinematicPresentation } from '@/project/cinematicPresentation';
 import { validateFieldHud } from "./shapeFieldHud";
 import { parseCinematicDirection } from '../cinematicDirection';
@@ -135,6 +137,7 @@ export function validateSystem(value: unknown): void {
     }
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
@@ -213,10 +216,16 @@ export function validateSystem(value: unknown): void {
 
 function validateCinematicSequence(label: string, value: unknown): void {
   const sequence = requireRecord(label, value);
-  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes"]);
+  requireOnlyFields(label, sequence, ["enabled", "skippable", "musicResourceId", "scenes", ...(label === "system.opening" ? ["entry"] : [])]);
   requireBoolean(`${label}.enabled`, sequence.enabled);
   requireBoolean(`${label}.skippable`, sequence.skippable);
   if (sequence.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, sequence.musicResourceId);
+  if (sequence.entry !== undefined) {
+    const entry = requireRecord(`${label}.entry`, sequence.entry);
+    requireOnlyFields(`${label}.entry`, entry, ["mode", "idleMs", "repeatDelayMs"]);
+    assert(entry.mode === "new-game" || entry.mode === "before-title" || entry.mode === "attract", `${label}.entry.mode invalid`);
+    for (const key of ["idleMs", "repeatDelayMs"]) if (entry[key] !== undefined) assertSafeIntegerInRange(`${label}.entry.${key}`, entry[key], 1000, 300000);
+  }
   const scenes = requireArray(`${label}.scenes`, sequence.scenes);
   assert(scenes.length <= CINEMATIC_SCENE_LIMIT, `${label}.scenes must contain at most ${CINEMATIC_SCENE_LIMIT} scenes.`);
   const ids = new Set<string>();
@@ -227,10 +236,11 @@ function validateCinematicSequence(label: string, value: unknown): void {
     assert(!ids.has(id), `${sceneLabel}.id is duplicated: ${id}`);
     ids.add(id);
     const kind = requireString(`${sceneLabel}.kind`, scene.kind);
-    assert(kind === "text" || kind === "image" || kind === "video", `${sceneLabel}.kind is invalid.`);
+    assert(kind === "text" || kind === "image" || kind === "video" || kind === "animatic", `${sceneLabel}.kind is invalid.`);
     requireOnlyFields(sceneLabel, scene, [
       "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "presentation",
-      ...(kind !== "text" ? ["resourceId"] : []),
+      ...((kind === "image" || kind === "video") ? ["resourceId"] : []),
+      ...(kind === "animatic" ? ["composition"] : []),
       ...(kind === "image" ? ["motion", "direction"] : []),
     ]);
     if (scene.presentation !== undefined) {
@@ -240,7 +250,8 @@ function validateCinematicSequence(label: string, value: unknown): void {
     requireString(`${sceneLabel}.narration`, scene.narration);
     assertSafeIntegerInRange(`${sceneLabel}.durationMs`, scene.durationMs, 0, CINEMATIC_DURATION_MAX_MS);
     if (scene.narrationAudioResourceId !== undefined) requireNonBlankString(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId);
-    if (kind !== "text") requireNonBlankString(`${sceneLabel}.resourceId`, scene.resourceId);
+    if (kind === "image" || kind === "video") requireNonBlankString(`${sceneLabel}.resourceId`, scene.resourceId);
+    if (kind === "animatic") validateOpeningAnimatic(scene.composition, Number(scene.durationMs), sceneLabel + ".composition");
     if (kind === "image") {
       assert(scene.motion === "none" || scene.motion === "fade" || scene.motion === "pan" || scene.motion === "zoom", `${sceneLabel}.motion is invalid.`);
       if (scene.direction !== undefined) {

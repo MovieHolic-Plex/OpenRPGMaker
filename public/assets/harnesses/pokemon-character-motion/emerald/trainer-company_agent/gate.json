@@ -1,0 +1,70 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:32.206Z",
+    "role": "company_agent",
+    "sourceSha256": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+    "promptSha256": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+    "finalSha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 64
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
+  },
+  "hashes": {
+    "source.png": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+    "prompt.txt": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+    "portrait.png": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124"
+  },
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "39a94ec6f248f34d5798735b06bdf6df0c89cb3da2e3f601f2844fe51e072260",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 13,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 18,
+      "y": 5,
+      "width": 32,
+      "height": 58
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T14:41:36.944Z",
+  "reviewSha256": "4b701733e825f933f11ba6a342674c7f2ec7b89d616ad6463957be404713378c"
+}

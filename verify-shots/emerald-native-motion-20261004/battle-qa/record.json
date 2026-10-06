@@ -1,0 +1,251 @@
+{
+  "evidenceCopy": {
+    "originalRecordSha256": "abab9451c1c817596976be7b62568ce23b3d3f2e4655b5a5b9e1324d15a353fc",
+    "largeMediaStrings": "Replaced by original string SHA and length; the full temporary record is preserved."
+  },
+  "scope": "Unmodified compiled player, original project and styles; HTML adds QA instrumentation only; native Continue; genuine predecessor slot copied byte-for-byte into isolated browser localStorage. Native Continue compatibility is unchanged; subsequent battle preparation is explicitly described in battleSetup.",
+  "slotSha256": "f07cd4691462db7479cead6f350a0b5af696a84bf0f81b5b757d640b11cc8b0f",
+  "storageKey": "starlight-islands-v1:save-slot:v5:1",
+  "errors": [],
+  "camera": {
+    "zoom": 2,
+    "width": 480,
+    "height": 320
+  },
+  "loaded": {
+    "map": "mx_map_lab",
+    "x": 7,
+    "y": 7,
+    "gold": 1600,
+    "party": [
+      {
+        "instanceId": "monster_1",
+        "speciesId": "mx_species_spriglet",
+        "level": 5,
+        "exp": 190,
+        "ivs": {
+          "hp": 11,
+          "atk": 4,
+          "def": 9,
+          "spd": 10
+        },
+        "friendship": 70,
+        "caughtAt": {
+          "mapId": "mx_map_lab",
+          "x": 7,
+          "y": 6
+        },
+        "currentHp": 20,
+        "skillIds": [
+          "mx_skill_normal_1",
+          "mx_skill_grass_1"
+        ],
+        "skillPp": {
+          "mx_skill_normal_1": 30,
+          "mx_skill_grass_1": 30
+        }
+      }
+    ],
+    "inventory": {
+      "item_capture_orb": 10,
+      "item_potion": 5
+    }
+  },
+  "projectSha256": "0b2c62d5aab54015faa608e80d51c117178b12119f12d9825a8eeaab1a59faef",
+  "preparation": "Private browser: genuine old Continue slot byte-for-byte; replay naturally earned Coalbit/Spriglet party. Teleport lab and invoke original rival trainer troop through native scene.playBattle. Second battle explicit near-level Coalbit level5 EXP264 seed, fully restored naturally earned party, teleport meadow original wild troop. No enemy HP, moves, result or rewards changed. HTML QA observer flag only, no code/project/CSS aliases or replacements.",
+  "trainerIntro": {
+    "message": "나루가 승부를 걸어왔다!",
+    "role": "rival",
+    "shown": "true",
+    "images": [
+      {
+        "class": "emerald-trainer-intro-hero",
+        "naturalWidth": 64,
+        "naturalHeight": 64,
+        "width": "128px",
+        "height": "128px",
+        "animation": "emerald-trainer-arrive-left",
+        "top": 112,
+        "bottom": 240
+      },
+      {
+        "class": "emerald-trainer-intro-opponent",
+        "naturalWidth": 64,
+        "naturalHeight": 64,
+        "width": "128px",
+        "height": "128px",
+        "animation": "emerald-trainer-arrive-right",
+        "top": 82,
+        "bottom": 210
+      }
+    ],
+    "battlerVisibility": "hidden"
+  },
+  "sendOut": {
+    "message": "가라, 숯비늘!",
+    "hidden": true,
+    "shown": null,
+    "battlerVisibility": "visible"
+  },
+  "trainerVictory": {
+    "before": {
+      "gold": 1600,
+      "party": [
+        {
+          "id": "monster_1",
+          "exp": 190,
+          "level": 5
+        },
+        {
+          "id": "monster_2",
+          "exp": 121,
+          "level": 4
+        }
+      ]
+    },
+    "turns": [
+      {
+        "turn": 0,
+        "text": "새싹토가 새싹치기를 사용했다!\n새싹토\n레벨5\n숯비늘\n레벨 5\n 16/20"
+      },
+      {
+        "turn": 1,
+        "text": "승리\n경험치\n+30\n확인"
+      }
+    ],
+    "layout": {
+      "result": "victory",
+      "text": "승리\n경험치\n+30\n골드\n+80\n확인",
+      "heightLogical": 116,
+      "panelTopLogical": 192,
+      "contained": true,
+      "bars": [
+        {
+          "height": "4px",
+          "data": {
+            "testid": "battle-result-exp-bar",
+            "expLevelUp": "false"
+          },
+          "fill": "35.7143%",
+          "fillPixels": 138.5625
+        }
+      ],
+      "images": [
+        {
+          "class": "battle-enemy-image",
+          "visible": "1",
+          "top": 6.749061584472656,
+          "bottom": 139.22904205322266,
+          "intersectsPanel": false
+        },
+        {
+          "class": "battle-actor-image battle-monster-image battle-monster-back battle-monster-authored-back",
+          "visible": "1",
+          "top": 7.589998245239258,
+          "bottom": 140.06999397277832,
+          "intersectsPanel": false
+        }
+      ],
+      "deathBadges": [
+        "none"
+      ]
+    },
+    "after": {
+      "gold": 1680,
+      "party": [
+        {
+          "id": "monster_1",
+          "exp": 220,
+          "level": 5
+        },
+        {
+          "id": "monster_2",
+          "exp": 121,
+          "level": 4
+        }
+      ]
+    },
+    "rewardAmount": 30
+  },
+  "wildVictory": {
+    "before": {
+      "gold": 1680,
+      "party": [
+        {
+          "id": "monster_1",
+          "exp": 264,
+          "level": 5
+        },
+        {
+          "id": "monster_2",
+          "exp": 121,
+          "level": 4
+        }
+      ]
+    },
+    "turns": [
+      {
+        "turn": 0,
+        "text": "새싹토가 어깨툭을 사용했다!\n새싹토\n레벨4\n숯비늘\n레벨 5\n 16/20"
+      },
+      {
+        "turn": 1,
+        "text": "승리\n경험치\n+20\n확인"
+      }
+    ],
+    "layout": {
+      "result": "victory",
+      "text": "승리\n경험치\n+20\n골드\n+0\n숯비늘 레벨 업!\nLv.5→6\n확인",
+      "heightLogical": 150,
+      "panelTopLogical": 158,
+      "contained": true,
+      "bars": [
+        {
+          "height": "4px",
+          "data": {
+            "testid": "battle-result-exp-bar",
+            "expLevelUp": "true"
+          },
+          "fill": "100%",
+          "fillPixels": 388
+        }
+      ],
+      "images": [
+        {
+          "class": "battle-enemy-image",
+          "visible": "1",
+          "top": 6.749061584472656,
+          "bottom": 139.22904205322266,
+          "intersectsPanel": false
+        },
+        {
+          "class": "battle-actor-image battle-monster-image battle-monster-back battle-monster-authored-back",
+          "visible": "1",
+          "top": 7.589998245239258,
+          "bottom": 140.06999397277832,
+          "intersectsPanel": false
+        }
+      ],
+      "deathBadges": [
+        "none"
+      ]
+    },
+    "after": {
+      "gold": 1680,
+      "party": [
+        {
+          "id": "monster_1",
+          "exp": 284,
+          "level": 6
+        },
+        {
+          "id": "monster_2",
+          "exp": 121,
+          "level": 4
+        }
+      ]
+    },
+    "rewardAmount": 20
+  },
+  "completed": true
+}

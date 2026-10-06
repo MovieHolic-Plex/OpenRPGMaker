@@ -1,0 +1,12 @@
+{
+  "version":1,
+  "reference":"Emerald Brendan native16x32 walking; original-derived bodies and explicitly edited heads/palettes",
+  "candidates":[
+    {"role":"rival","label":"라이벌","variant":"A","head":"hair","description":"갈색 짧은 머리 · 남색 재킷 · 초록 가방","palette":{"5":"57433b","9":"9a6844","E":"c09262","A":"769950","B":"466c43","C":"7497b9","D":"46688b"}},
+    {"role":"rival","label":"라이벌","variant":"B","head":"hair","description":"짙은 회갈색 머리 · 붉은 재킷 · 회색 가방","palette":{"5":"373a46","9":"595361","E":"81777e","A":"8994a0","B":"596978","C":"df7861","D":"a64e4c"}},
+    {"role":"explorer","label":"탐험가","variant":"A","head":"brim","description":"모래색 챙 모자 · 청록 재킷 · 갈색 장비","palette":{"5":"5c5145","9":"b99a63","E":"e7ca8b","A":"d4b477","B":"92774f","C":"6dabb0","D":"427a8c"}},
+    {"role":"explorer","label":"탐험가","variant":"B","head":"brim","description":"남색 챙 모자 · 황토색 재킷 · 청록 장비","palette":{"5":"354862","9":"59738c","E":"96b2c4","A":"739d97","B":"416e74","C":"d8ad68","D":"9f794b"}},
+    {"role":"ranger","label":"레인저","variant":"A","head":"cap","description":"숲색 모자 · 올리브 제복 · 갈색 가방","palette":{"5":"3b5548","9":"71956a","E":"a7ba88","A":"ad9563","B":"726343","C":"88a36d","D":"5b7654"}},
+    {"role":"ranger","label":"레인저","variant":"B","head":"cap","description":"푸른 모자 · 회색 제복 · 주황 가방","palette":{"5":"3b4e70","9":"789abb","E":"b7cbda","A":"d3a267","B":"966441","C":"acb4bb","D":"77838e"}}
+  ]
+}

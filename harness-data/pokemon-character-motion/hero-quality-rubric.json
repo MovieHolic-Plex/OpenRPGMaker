@@ -1,0 +1,29 @@
+{
+  "rubricVersion": "hostile-hero-v1-20261004",
+  "frozenBeforeCandidate": true,
+  "reviewProtocol": {
+    "required": ["Decode every GIF frame and its duration", "Inspect the complete 12-pose native sheet at 1x and nearest-neighbor 4x", "Inspect all four directions over the complete stepA-idle-stepB-idle cycle", "Compare leg chains and shoe contact in stepA and stepB; changes in pixel count alone are insufficient"],
+    "structuralContract": {"cell": [16,32], "sheet": [48,128], "rows": ["up","right","down","left"], "columns": ["stepA","idle","stepB"], "cycle": [0,1,2,1], "inkHeight": [18,22], "inkTop": [10,13], "bottomExclusive": [30,32], "maxOpaquePaletteUnion": 15},
+    "structuralPassDoesNotScoreArt": true
+  },
+  "criticalFailures": [
+    {"id":"CF1","name":"Unreadable human silhouette","condition":"At native size the head, shoulders, torso/hip transition and two legs cannot be read as one compact human; a pole torso, detached ornament or unstructured blob dominates."},
+    {"id":"CF2","name":"Impossible anatomy","condition":"A pose contains detached/floating hands or shoes, an extra apparent limb, a broken limb attachment, or a foot whose leg cannot be traced plausibly to the hip. Deliberate occlusion in a profile is allowed."},
+    {"id":"CF3","name":"False walking","condition":"StepA and stepB fail to exchange support/swing roles plausibly; translating the whole sprite, wiggling arms, changing shoe pixels or spreading legs without genuine limb alternation is insufficient."},
+    {"id":"CF4","name":"Lost hero identity","condition":"The cap, vest and gold-red backpack do not form a consistent costume across views: front must read cap/vest, back must read a shaped gold-red pack, sides must place the same pack behind the torso rather than as a gold stripe or arbitrary belt."},
+    {"id":"CF5","name":"Distracting loop fault","condition":"The complete cycle has an unexplained head/body jump, changing limb length or costume recolor, foot popping, or a visible seam from final idle to stepA."},
+    {"id":"CF6","name":"Contract or evidence failure","condition":"The native contract fails, any frame/direction is omitted from review, or only a static first GIF frame is reviewed."}
+  ],
+  "axes": [
+    {"id":"silhouette","weight":20,"minimum":14,"criteria":"Compact expressive human silhouette; intentional head/shoulder/hip balance; readable at 1x; no geometric scarecrow effect."},
+    {"id":"anatomy","weight":20,"minimum":14,"criteria":"Clear face/profile, shoulders, arm attachment, hands, hip division and shoes; controlled chunky anatomy rather than parallel one-pixel sticks or random elbows."},
+    {"id":"walking","weight":20,"minimum":14,"criteria":"Opposed arm/leg action with traceable alternating legs and believable foot contact; purposeful restrained stride and weight transfer in every direction."},
+    {"id":"pixelCraft","weight":15,"minimum":11,"criteria":"Purposeful connected color clusters, selective contours, clean diagonal rhythm, restrained shading; no noisy singleton highlights, doubled outlines or stripe soup."},
+    {"id":"identity","weight":15,"minimum":11,"criteria":"Coherent recognizable cap/vest/gold-red pack with volume, attachment and orientation; attractive distinguishing shape, not color labels alone."},
+    {"id":"directionContinuity","weight":5,"minimum":4,"criteria":"Unambiguous direction and same character, scale, proportions and accessory placement through all turns."},
+    {"id":"loop","weight":5,"minimum":4,"criteria":"All decoded frames and timing produce smooth repeating steps, stable intentional upper-body action and no contact/phase seam."}
+  ],
+  "passRule": {"minimumTotal":85,"everyAxisMinimumRequired":true,"zeroCriticalFailuresRequired":true,"structuralPassRequired":true},
+  "ratingAnchors": {"full":"Cohesive finished native game sprite with no visible repair request", "seventyPercent":"Readable and serviceable but a specific visible craft weakness remains", "half":"Recognizable placeholder with substantial geometric/anatomical/motion shortcomings", "zero":"Missing or semantically invalid"},
+  "changePolicy":"Do not change weights, minima, critical conditions or pass threshold in response to the candidate. A failed candidate requires revised artwork. Record uncertain readings explicitly rather than award assumed points."
+}

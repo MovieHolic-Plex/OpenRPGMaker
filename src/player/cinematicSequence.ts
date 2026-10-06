@@ -8,6 +8,10 @@ import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
 import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 import { getPlayerPreferences } from './playerPreferences';
+import { playOpeningAnimatic } from "./openingAnimaticRenderer";
+import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
+import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
+import { createOpeningPortraitMotion, type PortraitMotionPlayback } from './openingPortraitMotion';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -60,6 +64,7 @@ export function playCinematicSequence(options: {
   readonly holdMusicOnComplete?: boolean;
   readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
+  readonly dismissOnAnyInput?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
@@ -74,6 +79,15 @@ export function playCinematicSequence(options: {
   const view = host.ownerDocument.defaultView ?? window;
   const reducedMotion = view.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
   const detachPointer = installPlayPointerBlocker(root);
+  const book = project.meta.oprnOpeningBook;
+  const isBook = book?.version===1 && sequence.scenes.every((s,i)=>s.id===book.sceneIds[i] && s.durationMs===0 && (s.kind==='image'||s.kind==='text')) && sequence.scenes.length===book.sceneIds.length;
+  if(isBook){root.dataset.presentation='storybook';root.dataset.ink=book!.ink;root.setAttribute('aria-label','이야기 오프닝');}
+  const isEmeraldIntro = isBook && isEmeraldMonsterStyle(project) && Boolean(book?.portraitResourceId);
+  if (isEmeraldIntro) { root.dataset.monsterStyle = 'emerald'; root.setAttribute('aria-label','교수와 몬스터 소개'); }
+  const atmosphere = isEmeraldIntro ? createEmeraldOpeningAtmosphere(host, project, reducedMotion) : undefined;
+  let bookImage:HTMLImageElement|undefined;
+  let bookImageId:string|undefined;
+  let portraitMotion:PortraitMotionPlayback|undefined;
   let index = 0;
   let settled = false;
   let cleanScene = (): void => undefined;
@@ -124,6 +138,8 @@ export function playCinematicSequence(options: {
     cleanScene();
     if (!options.assets) assets.dispose();
     if (result !== 'completed' || !options.holdMusicOnComplete) stopMusic(result === 'completed' ? 600 : 0);
+    atmosphere?.dispose();
+    portraitMotion?.dispose();
     observer.disconnect();
     signal.removeEventListener("abort", abort);
     view.removeEventListener("keydown", onKeyDown, true);
@@ -137,6 +153,7 @@ export function playCinematicSequence(options: {
   };
   const abort = (): void => { stopMusic(); finish("aborted"); };
   const next = (): void => {
+    if (index + 1 < sequence.scenes.length) atmosphere?.cue('page');
     cleanScene();
     index += 1;
     if (index === sequence.scenes.length) {
@@ -154,6 +171,7 @@ export function playCinematicSequence(options: {
     event.preventDefault();
     event.stopImmediatePropagation();
     if (event.isComposing) return;
+    if (options.dismissOnAnyInput && !event.repeat) { finish("skipped"); return; }
     const key = normalizeKey(event.key);
     if (music?.dataset.playback === 'blocked') void music.play().then(() => { if (music) delete music.dataset.playback; }, () => undefined);
     if (scrollNarration(key) || event.repeat) return;
@@ -288,10 +306,16 @@ export function playCinematicSequence(options: {
       frame = el('div', { class: 'cinematic-frame', children: [...(visual ? [visual] : []), narration] });
       const presentation = scene.presentation ? resolveCinematicPresentation(scene.presentation) : undefined;
       frame.dataset.presented = String(Boolean(presentation));
-      frame.style.backgroundColor = presentation?.backgroundColor ?? '#000';
+      // The storybook page owns its paper/background on the root.
+      frame.style.backgroundColor = isBook ? 'transparent' : presentation?.backgroundColor ?? '#000';
       frame.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
       if (presentation?.letterbox) frame.append(el('div', { class: 'cinematic-letterbox', attrs: { 'aria-hidden': 'true' } }));
       root.replaceChildren(frame, status);
+      // Book overlays live on the root so they survive page changes.
+      if (atmosphere) root.append(atmosphere.layer);
+      if (portraitMotion) root.append(portraitMotion.element);
+      if (isBook) frame.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   Enter 다음${sequence.skippable?' · Esc 건너뛰기':''}`}));
+      root.dataset.page = String(index + 1);
       if (previous) {
         previous.dataset.previousFrame = 'true';
         const shot = previous.querySelector<HTMLElement>('.cinematic-shot');
@@ -303,6 +327,8 @@ export function playCinematicSequence(options: {
       delete root.dataset.pendingSceneId;
       root.dataset.mediaState = scene.kind === 'video' ? 'loading' : 'ready';
       root.style.setProperty('--cinematic-motion-ms', `${scene.durationMs || 8000}ms`);
+      // A fade reveals a shot; its hold time must not keep the whole picture dim.
+      root.style.setProperty('--cinematic-fade-ms', `${Math.min(600, scene.durationMs || 600)}ms`);
       status.textContent = '';
       const startVisibleScene = (): void => {
         const visibleFrame = frame;
@@ -371,7 +397,7 @@ export function playCinematicSequence(options: {
         if (scene.narrationAudioResourceId && mediaActive) {
           const audio = el('audio', {}); root.append(audio); addMedia(audio, scene.narrationAudioResourceId);
         }
-        if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
+        if (scene.kind !== 'animatic' && scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
       };
       // Establish the new composition before its clock/letter animation consumes any time.
       // A software GPU or a heavy previous title can otherwise swallow a short prologue.
@@ -389,9 +415,28 @@ export function playCinematicSequence(options: {
     switch (scene.kind) {
       case "text": ready(); break;
       case "image": {
+        // Keep the same illustration node mounted while its dialogue pages change.
+        const imageResourceId = isEmeraldIntro ? book!.portraitResourceId! : scene.resourceId;
+        const keepImage = isBook && bookImageId === imageResourceId && bookImage !== undefined;
+        const showcase = (): HTMLImageElement | undefined => {
+          if (!isEmeraldIntro || scene.resourceId === imageResourceId) { delete root.dataset.showcase; return; }
+          const creature = el('img', { class: 'cinematic-creature', attrs: { alt: '소개하는 몬스터', draggable: 'false' } });
+          const creatureUrl = resolveAssetResourceUrl(scene.resourceId, { project });
+          creature.addEventListener('error', () => { creature.remove(); fail('error'); }, { signal: lifetime.signal });
+          if (creatureUrl) creature.src = creatureUrl; else fail('error');
+          root.dataset.showcase = 'monster';
+          return creature;
+        };
+        if (keepImage) {
+          const creature = showcase();
+          ready(el('div', { class: 'cinematic-shot', children: [bookImage!, ...(creature ? [creature] : [])] }));
+          portraitMotion?.setScene(scene.id);
+          break;
+        }
+        portraitMotion?.dispose(); portraitMotion = undefined; bookImage = undefined; bookImageId = undefined;
         const image = el("img", { class: "cinematic-image", attrs: { alt: "", draggable: "false" } });
         image.dataset.motion = reducedMotion || scene.direction?.camera ? "none" : scene.motion;
-        const url = resolveAssetResourceUrl(scene.resourceId, { project });
+        const url = resolveAssetResourceUrl(imageResourceId, { project });
         root.querySelector('.cinematic-status')?.remove();
         root.append(status);
         root.dataset.mediaState = 'loading';
@@ -422,10 +467,26 @@ export function playCinematicSequence(options: {
             shot.append(effects);
           }
           shot.append(...layerImages);
+          const creature = showcase();
+          if (creature) shot.append(creature);
+          if (isBook) { bookImage = image; bookImageId = imageResourceId; }
           ready(shot);
+          if (isEmeraldIntro && book?.portraitMotion) {
+            portraitMotion = createOpeningPortraitMotion({ root, image, project, motion: book.portraitMotion, sceneIds: book.sceneIds, sceneId: scene.id, reducedMotion });
+          }
           flattenFrame = layers.length ? () => flattenCinematicFrame(shot) ?? prepared.url : undefined;
           options.onFrame?.(prepared.url, scene.presentation ? resolveCinematicPresentation(scene.presentation).transition.exitMs : 500);
         }).catch(() => { if (alive && !settled) { fail('error'); status.textContent = '장면을 읽을 수 없습니다. R 키로 재시도하거나 Enter로 넘어가세요.'; } });
+        break;
+      }
+      case "animatic": {
+        const canvas = el("canvas", { class: "cinematic-animatic", dataset: { testid: "opening-animatic-stage" } });
+        canvas.setAttribute('aria-label', '레이어와 카메라로 구성한 오프닝');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
+        ready(canvas); beginLoading();
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
+          onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
+          onError: message => { if (!alive || !mediaActive) return; fail('error'); status.textContent = message; }, onDone: () => { if (alive) next(); } });
         break;
       }
       case "video": {
@@ -486,5 +547,6 @@ export function playCinematicSequence(options: {
   observer.observe(host.ownerDocument, { childList: true, subtree: true });
   root.focus({ preventScroll: true });
   renderScene();
+  atmosphere?.cue('entry');
   return { done, teardown: abort, releaseMusic: stopMusic };
 }

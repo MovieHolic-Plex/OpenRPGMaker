@@ -92,6 +92,8 @@ export type AutonomousMover = {
    * 이번엔 건너뛴다" 를 전제로 경로를 짠다.
    */
   retryBlockedSteps?: boolean;
+  /** Authored non-skippable patrols never consume a blocked absolute step. */
+  preserveBlockedSteps?: boolean;
 };
 
 export type AutonomousMoveTween = {
@@ -264,6 +266,10 @@ export interface PlaySceneContext extends Phaser.Scene {
   characterHopScales?: Map<string, import("@/player/characterHop").HopScale>;
   /** 주인공의 진행 중인 체공. null 이면 접지 상태다. */
   playerHop: PlayerHopState | null;
+  /** 미끄러지는 바닥(tileset.slideTiles) 위에서 다음에 저절로 갈 방향. null·생략이면 미끄러지지 않는다. */
+  playerSlide?: { readonly dx: number; readonly dy: number; readonly kind: "arrow" | "ice"; readonly mapId: string; readonly x: number; readonly y: number } | null;
+  /** 직전 걸음이 미끄러짐이었는지(화살표 미끄러짐은 일반 바닥에서도 이어진다). */
+  playerSlideKind?: "arrow" | "ice" | null;
   /** 재생성·카메라 스냅 계수기. QA 훅 `__oprnPerf` 가 읽는다. */
   perfCounters?: RuntimePerfCounters;
   getMapId(): MapId;

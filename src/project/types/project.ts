@@ -754,11 +754,19 @@ export interface Project {
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
   meta: {
+    oprnMonsterStyle?: import('../emeraldMonsterStyle').EmeraldMonsterStyle;
+    oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory';portraitResourceId?:string;portraitMotion?:import('../openingPortraitMotion').OpeningPortraitMotion};
+    oprnShopPreset?: import('./events').ShopUiPreset;
+    oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
+    oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
+    oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;
     author: string;
     terms: Terms;
     publication?: import("../publication").Publication;
     /** 부팅 정규화를 마친 «빌드·공용 판본» 짝. 짝이 맞으면 다음 로드가 정규화기를 건너뛴다(bootNormalization.ts). */
+    /** Full timelines preserved through older host schema validators. */
+    oprnCinematicTimelines?: import("../cinematicWire").CinematicWireCapsule;
     bootNormalization?: { v: number; lib: string };
   };
   assets: AssetSet;

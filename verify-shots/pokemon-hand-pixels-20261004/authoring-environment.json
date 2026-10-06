@@ -1,0 +1,9 @@
+{
+  "python": "3.12.3",
+  "pillow": "12.1.1",
+  "finalSharedNativeMediaByteMatchesCanonical": 22,
+  "sourceMethod": "python-native-pixel-authoring",
+  "imageGeneration": false,
+  "sourceResizing": false,
+  "quantization": false
+}

@@ -1,3 +1,6 @@
+import { usesMonsterParty, monsterUiEntry } from "@/player/playerMonsterPartyModel";
+import { previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { activeItemEffects } from "@/project/itemUsage";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { ShopGoods } from "@/player/playSceneShopGoods";
@@ -89,7 +92,9 @@ export function bestFitActorId(fits: readonly ShopActorFit[] | null): string | u
 
 export interface ShopRecoveryRow {
   readonly actorId: string;
-  readonly kind: "hp" | "mp";
+  readonly kind: "hp" | "mp" | "pp";
+  readonly name?: string;
+  readonly reason?: string;
   readonly current: number;
   readonly max: number;
   readonly next: number;
@@ -101,12 +106,29 @@ export interface ShopRecoveryRow {
  */
 export function recoveryPreview(
   project: Project,
-  session: Pick<PlaySession, "partyActorIds" | "actorVitals">,
+  session: Pick<PlaySession, "partyActorIds" | "actorVitals"> & Partial<Pick<PlaySession, "monsterParty" | "monsterInstances" | "inventory">>,
   goods: ShopGoods,
 ): readonly ShopRecoveryRow[] | null {
   if (goods.source !== "item") return null;
-  const item = project.database.items.find(record => record.id === goods.id);
-  if (!item) return null;
+  const authored = project.database.items.find(record => record.id === goods.id);
+  if (!authored) return null;
+  const item = activeItemEffects(authored);
+  if (usesMonsterParty(project)) {
+    if (!targetsPartyMonsters(project, item)) return null;
+    const kind = recoveryKind(item.hpRecovery) ? "hp" : recoveryKind(item.ppRecovery) ? "pp" : undefined;
+    if (!kind) return null;
+    // Buying preview models one owned copy while preserving eligibility, HP and PP rules.
+    const previewSession = { monsterParty: session.monsterParty ?? [], monsterInstances: session.monsterInstances ?? {},
+      inventory: { ...session.inventory, [item.id]: Math.max(1, session.inventory?.[item.id] ?? 0) } };
+    return previewSession.monsterParty.flatMap(actorId => {
+      const instance = previewSession.monsterInstances[actorId];
+      if (!instance) return [];
+      const preview = previewMonsterMedicine(project, previewSession, item, actorId);
+      return [{ actorId, kind, name: monsterUiEntry(project, instance).name, reason: preview.reason,
+        current: kind === "hp" ? preview.hp : preview.pp, max: kind === "hp" ? preview.maxHp : preview.maxPp,
+        next: kind === "hp" ? preview.hpAfter : preview.ppAfter }];
+    });
+  }
   const kind = recoveryKind(item.hpRecovery) ? "hp" : recoveryKind(item.mpRecovery) ? "mp" : undefined;
   if (!kind) return null;
   const recovery = kind === "hp" ? item.hpRecovery : item.mpRecovery;

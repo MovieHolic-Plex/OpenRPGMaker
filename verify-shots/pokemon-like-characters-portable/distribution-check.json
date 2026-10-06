@@ -1,0 +1,11 @@
+{
+  "portableRoot": "/home/main/z-project/harness/pokemon-like-characters",
+  "sourceMatches": 88,
+  "hasNodeModules": false,
+  "runningOutsideEditor": true,
+  "url": "http://mdc-server:18326/?wave=full-cast-v1",
+  "candidates": 16,
+  "states": {
+    "pending": 16
+  }
+}

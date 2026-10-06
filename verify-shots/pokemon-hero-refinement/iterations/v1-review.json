@@ -1,0 +1,140 @@
+{
+  "reviewer": "hero_hostile_review",
+  "author": "root",
+  "candidate": "/tmp/pokemon-hero-refine/review-v1/candidates/hero-1791126518186-f6241fca",
+  "rubricPath": "/tmp/pokemon-hero-critic-20261004/rubric.json",
+  "rubricSHA256": "2cf097d80cc9d8f17110fcebd21b7493b7320bc101596126cebd5cff66dcd5ec",
+  "pngPath": "/tmp/pokemon-hero-refine/v1/charset.png",
+  "pngSHA256": "f6241fca9929d5ef54aef2c4772b0e1f7fa712f0c6961943758108bf93d91775",
+  "gifPath": "/tmp/pokemon-hero-refine/v1/walk.gif",
+  "gifSHA256": "e551b80538b81ef370d5ab4826a9fac76d5b911ff62223f05afe62895dbd6252",
+  "structuralPass": "reported by root; this critic did not run suites",
+  "scores": {
+    "silhouette": {
+      "score": 14,
+      "max": 20,
+      "reason": "A compact human now reads at1x, but the broad cap and pointed lower head dominate a very short torso. The profile has a mushroom head/stump body balance rather than an intentional adventurer silhouette."
+    },
+    "anatomy": {
+      "score": 12,
+      "max": 20,
+      "reason": "Jaw tapers directly into a narrow collar; front shoulders and vest compress into a six-row block. At side stepA the cream sleeve/skin projection and leg root are hard to parse. Two-row legs have little distinction between thigh, knee and ankle, and merged profile idle feet form one broad wedge."
+    },
+    "walking": {
+      "score": 12,
+      "max": 20,
+      "reason": "StepA/B exchange lower shoe contact and opposed arms, so real alternation exists. The stride still reads as abrupt spreading/rejoining of short legs with shoe replacement rather than weight transfer; profile idle shoe mass jumps to separated soles in steps. The1px body bob is coherent but does not solve this."
+    },
+    "pixelCraft": {
+      "score": 11,
+      "max": 15,
+      "reason": "Main clusters are much cleaner than the baseline, but layered cap highlight pixels and several similar dark blues spend palette budget on weak volume. Thin stair outlines in cheek/neck and sleeve/hand contacts remain diagrammatic."
+    },
+    "identity": {
+      "score": 12,
+      "max": 15,
+      "reason": "Red cap, blue vest and gold-red pack are consistently present, including actual side bag volume. The full-width red cap rim still reads more like a mushroom/helmet than a distinct cap brim; pack attachment/straps are compressed and back pack is a flat plaque."
+    },
+    "directionContinuity": {
+      "score": 4,
+      "max": 5,
+      "reason": "All four directions are unambiguous and retain the same costume/proportions. Profiles are mechanically mirrored and offer limited convincing depth."
+    },
+    "loop": {
+      "score": 4,
+      "max": 5,
+      "reason": "All four GIF frames decode at140ms, frames1/3 match, and the intentional1px step bob repeats without a file-level seam. Foot shape/contact changes remain visually abrupt."
+    }
+  },
+  "criticalFailureIDs": [],
+  "total": 69,
+  "verdict": "reject",
+  "failureReasons": [
+    "Total69 is below frozen minimum85",
+    "anatomy12 is below minimum14",
+    "walking12 is below minimum14"
+  ],
+  "evidence": {
+    "nativeSheet": [
+      48,
+      128
+    ],
+    "allTwelvePosesViewed": true,
+    "nativeAnd4xViewed": true,
+    "decodedFrameCount": 4,
+    "gifDimensions": [
+      68,
+      32
+    ],
+    "loop": 0,
+    "frames": [
+      {
+        "index": 0,
+        "durationMs": 140,
+        "bbox": [
+          1,
+          11,
+          65,
+          31
+        ],
+        "decodedRGBAsha256": "4bdaeb3a9754d469c215be3c2e84f391ab0f94cba329c0f9a16314d676eb884e"
+      },
+      {
+        "index": 1,
+        "durationMs": 140,
+        "bbox": [
+          1,
+          10,
+          65,
+          31
+        ],
+        "decodedRGBAsha256": "c0430294e500c5efcc813c360b23d0d2186f8ac98dc65d1f4df02b150985747e"
+      },
+      {
+        "index": 2,
+        "durationMs": 140,
+        "bbox": [
+          1,
+          11,
+          65,
+          31
+        ],
+        "decodedRGBAsha256": "0c354c753d79f0e9a2cd2aadd1cbae8e94c480a41d02586fc5a82b1ba5d422ab"
+      },
+      {
+        "index": 3,
+        "durationMs": 140,
+        "bbox": [
+          1,
+          10,
+          65,
+          31
+        ],
+        "decodedRGBAsha256": "c0430294e500c5efcc813c360b23d0d2186f8ac98dc65d1f4df02b150985747e"
+      }
+    ],
+    "contactImages": [
+      {
+        "path": "/tmp/pokemon-hero-critic-20261004/v1-gif-contact-native.png",
+        "sha256": "560fcbea9e3574ad51d5a637467c17aa55c5ff5caa99c48df89153897ecc0f2f"
+      },
+      {
+        "path": "/tmp/pokemon-hero-critic-20261004/v1-gif-contact-4x.png",
+        "sha256": "2d058f03ad6136bad4d51cd9fc0b80f45b3c306801dc8fcc2c829ae698e93e35"
+      },
+      {
+        "path": "/tmp/pokemon-hero-critic-20261004/v1-sheet-4x.png",
+        "sha256": "dc18cb23c5fb7b12c9419a3838e66837fa0480ef9d839eae17832ad752e9ff45"
+      }
+    ],
+    "browserPlaybackWatched": false
+  },
+  "necessaryCorrections": [
+    "Redraw front/profile lower head and collar to produce a clear jaw-neck-shoulder transition; reduce cap dominance or increase readable torso proportion without violating native bounds.",
+    "Make cap brim a distinct directional projection instead of an uninterrupted full-width dark-red rim; simplify cap highlight cluster.",
+    "Resolve profile sleeve, elbow/hand and shorts-to-leg attachment so limb roots are readable at native size; the right stepA region roughlyx8..11/y23..28 currently interleaves these forms.",
+    "Redraw the entire hip-to-foot sequence with a stable shoe design and contact plane; retain distinct support/swing roles, avoid idle broad black wedge versus sudden separated step soles.",
+    "Give the gold-red back pack a clearer edge/strap attachment and modest depth; do not lose the improved profile bag mass."
+  ],
+  "rubricAltered": false
+}
