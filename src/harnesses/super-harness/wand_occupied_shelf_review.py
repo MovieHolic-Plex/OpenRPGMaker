@@ -1,6 +1,7 @@
 """Native re-review of unchanged occupied shelf against frozen current recipes."""
 import argparse
 import copy
+import inspect
 import json
 from pathlib import Path
 import shutil
@@ -200,9 +201,34 @@ def render_context(out):
         fullRoomApproved=False))
 
 
+def normalize_native_reason(harness):
+    """Preserve raw verdict bytes; adapt only the native recorder's text field."""
+    source = inspect.getsource(harness._finish)
+    original = "v['reasons'] = '[둘째 검수] ' + (v.get('reasons') or '')"
+    if original not in source:
+        return
+    normalized = "v['reasons'] = '[둘째 검수] ' + ('; '.join(map(str, v.get('reasons'))) if isinstance(v.get('reasons'), list) else (v.get('reasons') or ''))"
+    namespace = {}
+    exec(compile(source.replace(original, normalized), '<native-review-reason-adapter>', 'exec'), harness.__dict__, namespace)
+    harness._finish = namespace['_finish']
+
+
 def run(out):
     vacancy.verify_frozen(out)
     harness=vacancy.environment(out)
+    normalize_native_reason(harness)
+    existing=harness.store.runs()[0]
+    recovery=None
+    if existing['status'] in ['failed','done'] and existing['phase']=='review2' and not existing['ok'] and 'TypeError' in (existing.get('error') or ''):
+        recovery=dict(error=existing['error'],phase='review2',operation='native recorder reasons list-to-text compatibility; raw verdict unchanged')
+        # The native pool cleared ok when its recorder crashed. Re-run the
+        # original native machine/lock inspection instead of forcing ok=true.
+        harness._finish(dict(existing,phase='draw'),0)
+        checked=harness.store.runs()[0]
+        if not checked['ok']:
+            raise ValueError('Native machine recovery failed: '+str(checked.get('error')))
+        harness.store.update_run(existing['id'],phase='review2')
+        harness._finish(existing,0)
     harness.pool()
     vacancy.verify_frozen(out)
     for proof in json.loads((out/'context-evidence.json').read_text())['generated']:
@@ -224,7 +250,7 @@ def run(out):
                        dict(phase='review2',file=str(second/'verdict.json'),sha256=vacancy.sha(second/'verdict.json'))]
     else:
         verdict_files=[dict(phase='review',file=str(pack/'verdict.json'),sha256=vacancy.sha(pack/'verdict.json'))]
-    vacancy.save(out/'receipt.json',dict(requiredNativeVerdicts=verdict_files,status='reviewed-not-selected',item=ITEM,originalCandidate='h2-A',
+    vacancy.save(out/'receipt.json',dict(technicalRecovery=recovery,requiredNativeVerdicts=verdict_files,status='reviewed-not-selected',item=ITEM,originalCandidate='h2-A',
         originalSourceSha256=vacancy.SHELF_SHA,candidate=str(candidate),candidateSha256=vacancy.sha(candidate),
         verdict=verdict,initialVerdictFile=str(out/'initial-READ-verdict.json'),
         initialVerdictSha256=vacancy.sha(out/'initial-READ-verdict.json'),
