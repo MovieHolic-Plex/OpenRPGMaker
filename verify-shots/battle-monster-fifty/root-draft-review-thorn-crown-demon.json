@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-06T09:08:15.028215+00:00",
+  "passed": false,
+  "key": "thorn-crown-demon/fifty-v1",
+  "binding": "ec36204828086ee0ffc41661b2ee3afae4f36e2e8f84d262da994cf360595efa",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-thorn-crown-demon-after-arm-repair1.png",
+  "nativeWriterFilesRead": {
+    "render.py": "529a7c1cf1ff68665b267c97c8bba79eb84c8b476c1e098b3956c6c23db411f5",
+    "refine.py": "ab2d9ece595fcb6c9364fb0ec29e2a16f8184ef306e8cbeaebfae1f36a8a70d9",
+    "final_coordinates.py": "227120e5e2404da7c016614ec9978cd076df0a778f410ef9fb683c04e2df2b21",
+    "repair_arm_clusters.py": "4f76b02e5d5be7eafcabf603598d25dabdc63ffc5c4130f77bbd397303ba5f9c",
+    "repair_hook_tips.py": "5d65ae2be3c1091545c6e4f63160d5bdc9542f794e7b354bc0ad57e9d898e787"
+  },
+  "observations": "Opened exactnative1x/nearest2x18pose sheet afterarm/hook repair1. Purple muscularcrownedbody/greenbelt/grayhoof, forearmseparated fromtorso withnarrowmidtoneplane, threeslantedhookfingers inattack connectedtowrist, bentwindup/lowforwardstep/fullreachattack/recoveredarm, tightenedbackwardhit/fallenhorizontalbody. Shorthandcore/twoforked thornbranches/returnfragments, bellyclutch poison/lowclosedeyestunandseatedsleep. Read render.expand fullblank96 rows literalspanplacement, refine/final_coordinates literalreplacement/spans, bothrepairwriters full apply bodies; only perpose explicit y/x/strings, nogeometric body or wholeframe translation. Diagnostic rectangle/crop/nearest scale are preview only. Current independent repair review not yet final and no rootpass/Allow claim."
+}

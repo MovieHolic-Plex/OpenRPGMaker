@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "red-pine-guardian",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/red-pine-guardian/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "09daa5419245da9b685170146ede5889f4a2d7416c7291607a9b62998acb5465",
+    "cell": 96,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T08:59:46.699915+00:00",
+    "binding": null,
+    "entireGoalCompleteClaim": false
+  }
+]
