@@ -231,6 +231,17 @@
     "selectedPackSha256": "2a32f89f4e4a3e83914503c4cafbe395dbdfe61ae1f611653b3522cec3f11bf6"
   },
   {
+    "key": "thorn-crown-demon/fifty-v1",
+    "binding": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+    "nativeCell": 96,
+    "poses": 18,
+    "motionGifs": 8,
+    "independentRecommendation": "keep",
+    "currentAllow": true,
+    "sourceArchiveReread": true,
+    "selectedPackSha256": "bed41f91533b4a817f2a7e2ec4dd26bd338083c568f4539a724d6fe311114107"
+  },
+  {
     "key": "red-tassel-swordswoman/fifty-v1",
     "binding": "5027d3e2046f8e18a06b28b0c2dbe6e471ae299ed2b46df0e01246234e0b63c3",
     "nativeCell": 64,

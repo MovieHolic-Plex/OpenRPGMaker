@@ -1,4 +1,4 @@
-# 신규50종 제작 · 현재23/50 통과
+# 신규50종 제작 · 현재24/50 통과
 
 ## 최초 두 종 확인
 
@@ -271,3 +271,25 @@ native-contact-frost-ribbon-maiden.*,browser-proof-frost-ribbon-maiden.json,지�
 재확인하며 --expect-passed로 현재 종 수와 파일명을 맞춘다.
 근거:twenty-three-passed-proof.json,root-review-ember-mask-goblin.json,native-contact-ember-mask-goblin*,
 browser-proof-ember-mask-goblin.json,지속 출처23종. 같은 배율의 사람64/요괴96/봉황128 비교도 보존한다.
+
+## 가시관마귀 두 차례 교정 통과 · 실제24/50
+
+가시관마귀는 실제 두 차례 좌표 교정 뒤 독립 keep0지적이다. 감독이 현재18자세 native1배/최근접2배
+시트를 직접 열고 여섯 native writer의 실제 쓰기 본문·호출 연결을 읽었다. 앞 손과 허벅지 경계,
+무릎 밖으로 내려간 두 준비 손, 손바닥에 붙은 꺾인 갈고리 끝, 수면의 무릎과 이완된 손을
+확인했다. 실제 ASCII 행/좌표/팔레트와18PNG가 정확히 같다. 회수/피격의 손목 및 수면 허리 세부의
+작은 겹침은 실제 검수 관찰로 유지한다. 초기 원안/첫 교정의 rework·감독 draft(false)를 보존한다.
+
+현재24/50/432자세/192GIF/전체false다. 같은24종의 현재 Allow/선택 ZIP nativePNG/GIF
+픽셀·시간, 지속 출처 동일 해시 재로드, 실제8GIF·정지/재생·1440/375/320px 오류/넘침0과
+현재 감독 그림/저작 방식 확인을 마쳤다. 원래52판정/8선택 보존, 신규72행은 목표 위임 Allow다.
+화린독사·매화정의 작은 지적 각1개를 유지한다. 남은26종까지 목표는 동일하며 전체 완료나 게임
+설치를 주장하지 않는다. 근거:twenty-four-passed-proof.json,root-review-thorn-crown-demon.json,
+native-contact-thorn-crown-demon.*,browser-proof-thorn-crown-demon.json,지속 출처24종.
+
+적송목령 초기18자세의 실제 native 시트/author_pixels 쓰기 본문도 열고 읽었으나 첫 독립 검수는
+수면의 녹는 몸/합쳐진 뿌리/납작해진 수관을 rework로 지적했다. 감독 draft(false)와 실제 검수
+job/result를 보존한다. 수면에서도 붙은 가지 팔·두 뿌리·겹친 수관과 감긴 눈, 손목/손바닥/가늘어
+꺾인 손가락의 연결을 유지하도록 다음 새 저작 호출 지침에 반영했다. 이미 실행 중인 모델의 원본/
+현재 검수/선택을 바꾸지 않았다. 황혼부적매의 skill_b 중간안은 제작 중으로 표시하며 통과 수에
+넣지 않는다. 실제 재교정·새 keep·팩/저장/화면/감독 확인 전에는 이 두 종을 합격으로 세지 않는다.

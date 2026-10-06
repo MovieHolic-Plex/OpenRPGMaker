@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "thorn-crown-demon",
+    "source": "qa-runs/harnesses/battle-monster/thorn-crown-demon/fifty-v1/source/poses/attack.pxgrid",
+    "sha256": "d70d2e55432f69190d14be2cb2abfd96a87159a91a81d6b605cf61098d1ccabe",
+    "cell": 96,
+    "pose": "attack",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T09:20:54.934658+00:00",
+    "binding": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+    "entireGoalCompleteClaim": false
+  }
+]

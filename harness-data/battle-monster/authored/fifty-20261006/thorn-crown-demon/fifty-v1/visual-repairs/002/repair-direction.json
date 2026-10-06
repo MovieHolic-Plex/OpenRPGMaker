@@ -1,0 +1,32 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "ec36204828086ee0ffc41661b2ee3afae4f36e2e8f84d262da994cf360595efa",
+  "priorReviewJob": "6cdea21f-0389-44f4-8748-7987957df40a",
+  "issues": [
+    {
+      "pose": "idle_a",
+      "x": 56,
+      "y": 69,
+      "message": "Around x50-63, y64-76, the forward wrist, hooked fingers and thigh contour collapse into one jagged purple shape beside a narrow zigzag transparent gap. Redraw the wrist into a continuous palm, give the thumb/fingers a clear hooked silhouette, and separate the hand from the thigh with a deliberate dark contour. Preserve an anatomically justified arm/hip gap rather than filling all negative space. Carry the clarification through idle_b and idle_c."
+    },
+    {
+      "pose": "windup",
+      "x": 56,
+      "y": 77,
+      "message": "The crouch lowers the body, but the forward hand still overlaps the front thigh/knee while the rear hand stays close to its idle placement. Around x49-65, y70-82, draw a distinct low palm and hooked fingertips outside the knee contour; also shift the rear hand into a visibly deliberate preparation position. Both lowered hands should read independently at 1x before the stepping attack."
+    },
+    {
+      "pose": "attack",
+      "x": 80,
+      "y": 58,
+      "message": "The extended arm is connected, but its terminal claw reads as a broad rounded mitten with short horizontal projections. Around x74-87, y52-63, taper the finger clusters into clearly down-curving hooks and retain dark gaps between them, with each finger visibly rooted in the palm. This will make the contracted long-finger hook slash clearer at native size."
+    },
+    {
+      "pose": "sleep_a",
+      "x": 61,
+      "y": 83,
+      "message": "Around x48-71, y78-89, the forward forearm/hand ends in a triangular projection and the pelvis becomes a dark flattened band above the two feet. Articulate a relaxed hand resting on a bent knee, then separate the knee from the belly with a short contour and a coherent light/shadow plane. Preserve the closed eyes and low resting silhouette, and apply the same anatomical clarification to sleep_b."
+    }
+  ],
+  "startedAt": "2026-10-06T09:10:08.727884+00:00"
+}

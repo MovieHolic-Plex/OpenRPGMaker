@@ -1,0 +1,318 @@
+{
+  "scope": "source only",
+  "frames": {
+    "idle_a": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 84,
+      "inkExtentsInclusive": [
+        12,
+        9,
+        74,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "0b2cfc5ebc86e0433fdcc3d3a16280e05d133945873b87d2019e7fa9b20e0bb7",
+      "changeExtentsInclusive": [
+        52,
+        44,
+        62,
+        68
+      ]
+    },
+    "idle_b": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 84,
+      "inkExtentsInclusive": [
+        12,
+        9,
+        74,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "6579d465553bc12a6686ba0d44614d17e5f361cf47ede228911de90238a7f6b9",
+      "changeExtentsInclusive": [
+        53,
+        44,
+        63,
+        68
+      ]
+    },
+    "idle_c": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 82,
+      "inkExtentsInclusive": [
+        12,
+        10,
+        74,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "b86f1a3e9afea72bedc48c04fcfb9fcf9f4ae86361088382639ac8c6ba5c7fea",
+      "changeExtentsInclusive": [
+        51,
+        45,
+        62,
+        68
+      ]
+    },
+    "windup": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        11,
+        18,
+        69,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "7125ed0c7f54abe4aec9c12d29a55d97628a96b543fc148e7f39311f13f325da"
+    },
+    "move": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        17,
+        12,
+        72,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "b228d4771a4e2e20cf8ed8fee93fdcc3af60a39a6eef88ff099dcf4cbff0707d"
+    },
+    "attack": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 182,
+      "inkExtentsInclusive": [
+        17,
+        15,
+        88,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "05a9655789c3ab1509ee803f74b00e3ef595c931561624307feafdea575a69a5",
+      "changeExtentsInclusive": [
+        65,
+        50,
+        88,
+        66
+      ]
+    },
+    "recover": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        15,
+        12,
+        74,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "54f29e77ef6ab023604a3dbcaf8df56d9db5b0266cfbc993dbf2fb0bbc0f25b4"
+    },
+    "hit": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        10,
+        16,
+        74,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "bf3abea5282d21deb7344f05bdf121038f255dd27fef2ae1001c47277cd15d78"
+    },
+    "dead": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        7,
+        58,
+        90,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "a1b9475d41517c1fc0e174d7aec7be44d2bd3d99fe6f0efd6f1d8e7e6c6b94d2"
+    },
+    "skill_a": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        11,
+        10,
+        72,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "b9d0cc8597a7541ec362a663e3d1cde14cabc8ef37ea4c28c088116e28ebec31"
+    },
+    "skill_b": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        10,
+        9,
+        93,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "80296a784a644ee873ab0c4eecaef8fa157411b492c0bbe6828a66f525e22e0d"
+    },
+    "skill_c": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        13,
+        15,
+        89,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "7ff988cb71e406946db548589f718e40979b94ce6ab333c34a5766b134b1acda"
+    },
+    "poison_a": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        13,
+        17,
+        87,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "622165d7f8644d65cfa02633e9a0495461e0354d37b8eb21580eb686984494a8"
+    },
+    "poison_b": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        13,
+        14,
+        85,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "4b883a489334b791cea83ff18a14757dfe986f8b93ef7222626a572e57b6e128"
+    },
+    "stun_a": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        12,
+        10,
+        80,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "54fa9b8dea8c7a43aca96d48b64fc8f4c0fdc15b258254809084d35744c8cc60"
+    },
+    "stun_b": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        12,
+        9,
+        71,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "bd39201dd9dfca4024b07201e3d66e2aedebd6f748503545e12fc04f4242085a"
+    },
+    "sleep_a": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        17,
+        28,
+        71,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "4d706442b042f544ae5a5b32e67a03686762bd13733e50c1c28cdac4bebce69c"
+    },
+    "sleep_b": {
+      "rows": 96,
+      "rowWidths": [
+        96
+      ],
+      "changedPixels": 0,
+      "inkExtentsInclusive": [
+        17,
+        28,
+        72,
+        92
+      ],
+      "edgeInk": [],
+      "bottomInkY": 92,
+      "sha256": "a7f7d06a0049f9cfb9a20ff98a3150014cc17841fec759ed3e72ac0cd2e2aeae"
+    }
+  },
+  "paletteUnchanged": true
+}

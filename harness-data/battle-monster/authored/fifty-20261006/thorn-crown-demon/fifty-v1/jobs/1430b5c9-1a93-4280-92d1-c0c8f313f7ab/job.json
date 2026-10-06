@@ -1,0 +1,37 @@
+{
+  "id": "1430b5c9-1a93-4280-92d1-c0c8f313f7ab",
+  "stage": "author",
+  "phase": "complete",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T08:59:41.842874+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/reference.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/references/human-size.png",
+    "-"
+  ],
+  "promptSha256": "d6db6487f566cf14e55dfd9b7baf8da778ce88b6e18eb706392fad0d4922e088",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "reference.png": "b782f51f77e5ddea28e06636177284cccd5b2fcde3dc27e6b41b945d0f1f2587",
+    "references/human-size.png": "4eb5dfbb9ee7de37ac4cbe665830024b1dea33c5f570e99540b4c04dd9a08e60"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T09:06:58.720273+00:00"
+}

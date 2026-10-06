@@ -1,0 +1,14 @@
+[
+  {
+    "monster": "dusk-paper-falcon",
+    "source": "qa-runs/battle-monster-fifty-wave/candidates/dusk-paper-falcon/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "470c3d6be6f31a899acc813f8e18c52a4c05a1973a148801e2c234e205d93f76",
+    "cell": 96,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": false,
+    "auditAt": "2026-10-06T08:59:46.699915+00:00",
+    "binding": "0670e7309fbf6bc653b4d357c1c5518742fd41d3cefc5dfbae929e64e620857f",
+    "entireGoalCompleteClaim": false
+  }
+]

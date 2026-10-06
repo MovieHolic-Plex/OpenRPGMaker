@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-06T09:21:46.899336+00:00",
+  "passed": true,
+  "key": "thorn-crown-demon/fifty-v1",
+  "binding": "41d99be3fd9ffa3a748a456d80b225b603e0aad6a90b6e1b732c08b75fa907f2",
+  "actualIndependentReviewJob": "066a1c1f-ea1d-4407-8ce5-20632cf80c95",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "66918fae8d3ba68ebd8fa6404e575ec07ca8f5d90d2a59e0878b51cff65d0d60",
+    "preview/suite/light.png": "eeae61f1bae43686d1a7b9b054295b8b3b0b8dc5efa37b9855f0bbfe3bbe1110",
+    "preview/suite/dark.png": "505a1d06ce52ff2d4639a26a8fa218d553b717ed40a1e3ea0d9ef5dc8a36d533",
+    "preview/suite/checker.png": "3d74f4dd23587e1b64ed69c1da9f678245f2516cfd30d2e7d18f47c36a96754d"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-thorn-crown-demon.png",
+  "nativeContactPngSha256": "66cc6c5819f0cb2cd8993fcf499f7a946d49cef537d968c3b6840d50c02c35d7",
+  "nativeWriterFilesRead": {
+    "render.py": "529a7c1cf1ff68665b267c97c8bba79eb84c8b476c1e098b3956c6c23db411f5",
+    "refine.py": "ab2d9ece595fcb6c9364fb0ec29e2a16f8184ef306e8cbeaebfae1f36a8a70d9",
+    "final_coordinates.py": "227120e5e2404da7c016614ec9978cd076df0a778f410ef9fb683c04e2df2b21",
+    "repair_arm_clusters.py": "4f76b02e5d5be7eafcabf603598d25dabdc63ffc5c4130f77bbd397303ba5f9c",
+    "repair_hook_tips.py": "5d65ae2be3c1091545c6e4f63160d5bdc9542f794e7b354bc0ad57e9d898e787",
+    "repair_hand_knee.py": "5e33b6362858ec95157b8bd78f8695af289bf7e3576216c16b0503003b7a2eca"
+  },
+  "rootVisualAndSourceMethodObservations": "Opened actual final18pose native1x/nearest2x1248x984 sheet unresized afterrepair2. Purplemuscularcrownedbody/tealbelt/grayhoof withupperleft volume. Idleforepalm now separated fromthigh; windup loweredtwohands outsideknees, forwardclaw rootedinpalm withdowncurvedtips inattack; actualforearm/wrist connected. Hunchedbackwardhit/horizontallowdead, kneerestingrelaxedsleephand/bentknee distinct fromflatdead. Handcore/twobranchedcurvedthornstems/returnedremnantfragments, bellyhunchpoison/slackarmstun/closedeyeseatedsleep withsubtlepairchanges. Keepersummary retains overlappedrecover/hitwristand sleepwaist detail atnative1x, notlimbseverance; no actualbattlecontact/timing claim. Read sixnativewriter methods, originalfive hashes unchanged fromactualdraftread andnew repair_hand_knee apply fullbody: only explicity/x/palette strings tofullgrids/authored_rows, no generatedgeometricbody or wholeframe/bodytransformation; diagnosticrectangle/crop/scale preview only. All18nativePNG exactly matchASCII/palette; actual keep0issues after2repairs.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

@@ -1,0 +1,43 @@
+{
+  "id": "33321fcf-e19c-47f1-86d6-124edd37d5f1",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T08:57:29.403849+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/jobs/33321fcf-e19c-47f1-86d6-124edd37d5f1",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/thorn-crown-demon/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "f768f96eeadf9451b9eeba4eb05b9872d27281c3ddb18ab4fc8ac2b7482a3aa3",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "cabb3250b46f87805704a322827acc41b51ee4e699b5b2cb392a0858372802a2",
+    "preview/suite/light.png": "c3bb9980e0f9e4128370d4210086b8905c60c7fa8ef6ed401aaff5b8079f546c",
+    "preview/suite/dark.png": "963c77727b50650fdc25555665a6e555493da79124b689a39f608ef3bdbae433",
+    "preview/suite/checker.png": "b782f51f77e5ddea28e06636177284cccd5b2fcde3dc27e6b41b945d0f1f2587"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T08:59:41.379574+00:00"
+}
