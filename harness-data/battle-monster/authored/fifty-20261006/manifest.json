@@ -1,6 +1,6 @@
 {
   "expectedSpecies": 50,
-  "archivedPassedSpecies": 28,
+  "archivedPassedSpecies": 30,
   "entireGoalComplete": false,
   "items": [
     {
@@ -299,6 +299,28 @@
       "currentAllow": true,
       "sourceArchiveReread": true,
       "selectedPackSha256": "e3292398919bbcecbdb8fe92a24738ae81b5f62b66c063710b54d0cad5d6cc90"
+    },
+    {
+      "key": "jade-flute-martial-artist/fifty-v1",
+      "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "d3e73db0e9763a68416a3d75438bf970f0b9fa2dda07d633ab526bb003616d04"
+    },
+    {
+      "key": "black-lotus-assassin/fifty-v1",
+      "binding": "3be3541b59b8b6b79e7f30b75ee48b17ed5562be13d79adbf6baed26645b3134",
+      "nativeCell": 64,
+      "poses": 18,
+      "motionGifs": 8,
+      "independentRecommendation": "keep",
+      "currentAllow": true,
+      "sourceArchiveReread": true,
+      "selectedPackSha256": "7f6123f34fae92958eda04108f7c7eece55fa1212b332b24f90b67c6a30620d2"
     },
     {
       "key": "sun-gold-phoenix/fifty-v1",

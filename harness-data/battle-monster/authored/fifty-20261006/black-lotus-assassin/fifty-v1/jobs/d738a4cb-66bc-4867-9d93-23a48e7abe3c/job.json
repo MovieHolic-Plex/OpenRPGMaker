@@ -1,0 +1,43 @@
+{
+  "id": "d738a4cb-66bc-4867-9d93-23a48e7abe3c",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T10:06:56.634360+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/jobs/d738a4cb-66bc-4867-9d93-23a48e7abe3c",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/black-lotus-assassin/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "495e1b1c0e14e89c7b6d16d0f3b1646dddca22d4625190c0b05a2d98af7f78f9",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "148714c7cb10e52b16177c494c5504d28320979f36402363cd8b7ccb2bdcba14",
+    "preview/suite/light.png": "0ca336c820689786c5e426b952feffa0d93cfa850c2c706d952e9a6a2e73afa3",
+    "preview/suite/dark.png": "e55c85abbd2138334b4525dfd758b8406318383941524a237c84c7b08d4929f3",
+    "preview/suite/checker.png": "42c3b7cf997937ab4ad70656069745f1f83f66a4083b576edee21fca387655c1"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T10:09:34.403338+00:00"
+}

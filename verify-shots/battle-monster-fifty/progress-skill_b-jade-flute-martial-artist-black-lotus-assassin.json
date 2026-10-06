@@ -1,0 +1,26 @@
+[
+  {
+    "monster": "jade-flute-martial-artist",
+    "source": "qa-runs/harnesses/battle-monster/jade-flute-martial-artist/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "b65390b9c57bdbeb71db952831077679b434f6d698ed85e313814fa392c0d598",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:21:05.376669+00:00",
+    "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+    "entireGoalCompleteClaim": false
+  },
+  {
+    "monster": "black-lotus-assassin",
+    "source": "qa-runs/harnesses/battle-monster/black-lotus-assassin/fifty-v1/source/actions/skill_b.pxgrid",
+    "sha256": "9bb875abf234dac0320034f0cdef950a5150a91833fed2e23ec790decc351428",
+    "cell": 64,
+    "pose": "skill_b",
+    "writtenGridCount": 18,
+    "currentPackAuditPassed": true,
+    "auditAt": "2026-10-06T10:21:05.376669+00:00",
+    "binding": "3be3541b59b8b6b79e7f30b75ee48b17ed5562be13d79adbf6baed26645b3134",
+    "entireGoalCompleteClaim": false
+  }
+]

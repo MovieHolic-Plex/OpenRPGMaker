@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-06T10:14:50.804765+00:00",
+  "passed": false,
+  "key": "black-lotus-assassin/fifty-v1",
+  "binding": "3be3541b59b8b6b79e7f30b75ee48b17ed5562be13d79adbf6baed26645b3134",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-black-lotus-assassin-after-repair1.png",
+  "nativeContactPngSha256": "3c7d0c182cb1161ee522ac36b7aca33c777b2df653a9f84f016280ca874552f5",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "731a581b24a75216b33dea446465cfccb7ae3e2e80c869e02bd4732c0ff8cb79",
+    "repair_sleep_b.py": "937581b9c0344d3f3a7444eab11f1e71d650d962b6dff4ec9752f898c33a4d1f"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized after first real repair. Navyblack masked adult/quiet right small eyes/longheadtie/redbelt/connectedshortknife. Same strikingarm windup/advance/lunge/retract, lowdeadvsseatedsleep, rootedmagenta threepetalburst/recovery, poisonsickarm/slackstun. Sleep_b has compressedlower shoulder/chest/sleeve boundary with connected mask-neck/collar/hands and stable floor kneelingfeet/knife; closedeyelid/headtie retained. Read full author.write_frames and repair_sleep_b.repair/module flows/allcallnames. Explicit selected literalrows preserve unchanged body; repair writes exact64grid and updates same literalframe record. No generatedgeometry or wholeframe transforms. All18nativePNG RGBA exactlymatch canonicalASCII/palette. Independentreview pending; noAllow/pass claim."
+}

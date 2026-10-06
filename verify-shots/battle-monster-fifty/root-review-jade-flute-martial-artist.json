@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-06T10:17:00.623717+00:00",
+  "passed": true,
+  "key": "jade-flute-martial-artist/fifty-v1",
+  "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+  "actualIndependentReviewJob": "9f99c37c-26ea-4d9f-8d05-f23e26dd0977",
+  "actualIndependentReviewModel": "gpt-6.1-sol",
+  "actualIndependentReviewEffort": "high",
+  "actualPreviewHashes": {
+    "preview/suite/portrait.png": "103f728a982d9ce3ae4d375094535b20ee19957bc19fb1fb7c5228c58868403f",
+    "preview/suite/light.png": "d5db5e71cb11bce463edcae0d5a7c85b9af3743ba6678bd78421c9b22e8ba5b2",
+    "preview/suite/dark.png": "37f9bab8c90b9f1aee801a550e4c4b32b07183e4a14b39875ace2234f8fdf47c",
+    "preview/suite/checker.png": "06897790ba5bd9aa3b386daddbf4a7539731277b433ace1bc10a1fc4067e3608"
+  },
+  "nativePoses": 18,
+  "retainedIndependentMinorIssues": [
+    {
+      "pose": "attack",
+      "x": 47,
+      "y": 37,
+      "message": "The skin cluster at x=46-49, y=35-37 rests above the flute ridge at y=38, so the strike hand reads more like a flat palm pressing the shaft than a firm grip. Wrap one or two finger pixels over the ridge near x=47, y=38 and retain a dark separator to the right. The current hand and tool are connected; this is a grip-readability repair."
+    },
+    {
+      "pose": "hit",
+      "x": 30,
+      "y": 28,
+      "message": "The upright torso and nearly neutral face make this read mainly as lowering the flute, with only slight recoil from idle. Offset the head/neck and upper shoulder clusters a further 1-2 pixels left around x=24-37, y=16-32, reconnect the collar, and tighten the eye/brow clusters near x=29-34, y=18-19 into a wince. Keep both shoe soles on y=60 so the reaction remains grounded."
+    }
+  ],
+  "actualUnresizedNativeContact": "verify-shots/battle-monster-fifty/native-contact-jade-flute-martial-artist.png",
+  "nativeContactPngSha256": "13b2225c1e658d22cd617ad792b0fbdcf64bcc31217da5d0190b675467484812",
+  "nativeWriterFilesRead": {
+    "author.py": "ab2ab1429d16b534bff7553d90c796ada6f11f43477cbc93ddbe6d440cf3c246",
+    "repair.py": "bfa9fd7b4fbe3270d22a0d5ec9f4d01bc346c5d98b3bcf778af122d32be664ac"
+  },
+  "rootVisualAndSourceMethodObservations": "Actually opened all18 native1x/nearest2x864x696 unresized after first real repair. Small right-facing lips now reach the actual jade flute mouthpiece in both skill_a/b; removed old internal mouth marks. Sleep_b has one-pixel lower crown contour/headband/chin, connected neck/closedeyes and compressed shoulder/sleeve boundary with same kneelingfeet/hand/flute. Three different-length tip-rooted cyan sound rays and earlier full18 identities remain. Read full author.frame/patch bodies/currentcalls and newrunpy invocation, then full repair.py module spans loop: only named explicit y/x/strings over existing rows. No wholeframe transforms/generatedgeometry. All18PNG exactlymatch nativeASCII/palette.  Actual first repair keeper retains two minor grip-readability/hit-recoil suggestions; dark hair/shoe edge contrast and restrained paired motion remain limited. These are preserved and not claimed fixed.",
+  "claimScope": "Current native art/source method and actual18PNG. Separate nativeGIF/selectedZIP/archive/browser audit. Full50 incomplete."
+}

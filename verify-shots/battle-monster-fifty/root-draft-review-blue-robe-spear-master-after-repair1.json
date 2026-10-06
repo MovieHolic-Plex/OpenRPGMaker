@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-06T10:18:08.619140+00:00",
+  "passed": false,
+  "key": "blue-robe-spear-master/fifty-v1",
+  "binding": "7d3e8f7d866833d1e1ea81547640331b7729139009a882e819f8b64fa6a2620a",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-blue-robe-spear-master-after-repair1.png",
+  "nativeContactPngSha256": "e75f9c78cb1c06f1bc3304ad716c4a953d9eeb75edd072932298545e1a3971ac",
+  "nativeWriterFilesRead": {
+    "author_rows.py": "764d2ee260c02c1e76823e04c466eff9620c47d7ffe9e9c6bbccba569d88defa"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized after first real repair. Adultquiet rightface/navyheadcloth/bluecoat andconnectedlongwoodgoldtipspear. Lowwindup/lunge/horizontalthrust/retraction, tensehandhit/lowpronebodydead distinct from seatedclosedeyesleep. Skill_b goldblade atfarfront joinslongshaftbehindgrip andtip-rooted two curvedcyanpaths; skill_c maintainslongshaft bothbehindwaist andinfront withtipresiduals. Sleep_b crown/headcontour slightlydown andshoulder/sleeve contracted, collarconnected, seatedknees/feet/groundedspear preserved. Read full export body/currentcallnames/two revisedrow loops plusREVIEWER_REPAIR_ROWS loop; independentlyspecified rowspans selected byname/y only, no generatedgeometry/wholeframe transforms. Render/inspect onlydiagnosticPNG/GIF/readback. All18nativePNG RGBA exactlymatch ASCII/palette. Newindependentreview pending; noAllow/passclaim."
+}

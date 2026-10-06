@@ -1,0 +1,336 @@
+{
+  "scope": "source-only artifact diagnostics; not independent review or approval",
+  "paletteColors": 18,
+  "cell": 64,
+  "frames": {
+    "idle_a": {
+      "bounds": [
+        18,
+        8,
+        51,
+        60
+      ],
+      "ink": 932,
+      "gridSha256": "74aaf61941c2a04a4416f57943869b147297a50fea9500de41993ac4347e8e09",
+      "pngSha256": "148714c7cb10e52b16177c494c5504d28320979f36402363cd8b7ccb2bdcba14"
+    },
+    "idle_b": {
+      "bounds": [
+        18,
+        8,
+        50,
+        60
+      ],
+      "ink": 931,
+      "gridSha256": "544e23d222a303f8bf352ccf7522a4d75f3c2f11c482498698eb3f658c8215b1",
+      "pngSha256": "793a9b2b53f058bee4156eaa34835afa8c33f91d3e9ff9cac8d3c15126e3b90b"
+    },
+    "idle_c": {
+      "bounds": [
+        18,
+        8,
+        51,
+        60
+      ],
+      "ink": 935,
+      "gridSha256": "ca640f3e780d3521cbf13e5f94303d0831c8d3568a5f6c057db356fe8fc27a82",
+      "pngSha256": "9db295785b71dbb576f52b582d3d6aec43bf32147f495b3926522c179d9a6d5c"
+    },
+    "windup": {
+      "bounds": [
+        11,
+        12,
+        41,
+        60
+      ],
+      "ink": 869,
+      "gridSha256": "65117405815ea49bd1317274eb1e0e02752ac7ccd744ca59a05d144f50f929d0",
+      "pngSha256": "5efde4f3f77c368b5f76ab14dea2b317d985ccda49b3afa8dc5b6d4b9f73ce82"
+    },
+    "move": {
+      "bounds": [
+        11,
+        15,
+        52,
+        60
+      ],
+      "ink": 886,
+      "gridSha256": "12649aaeea78dab041c7dbf46a6e340682261880517db316099be52a9d4afabf",
+      "pngSha256": "eec9ae5b36fc92aa26d3f4d95a05905198b6eb89555abc1ac1f6363cf409fdc9"
+    },
+    "attack": {
+      "bounds": [
+        12,
+        13,
+        62,
+        60
+      ],
+      "ink": 910,
+      "gridSha256": "fc4cbfcdcc70527269128b488961a364f727f85c11fab787bba2961d3cdc7428",
+      "pngSha256": "dce02016fb7c69a5e4b42cc6dba8f384d8af97cb5506de9b6e93195aad1be5f4"
+    },
+    "recover": {
+      "bounds": [
+        17,
+        10,
+        48,
+        60
+      ],
+      "ink": 905,
+      "gridSha256": "191f8837d1bb29bea6d07e1bb416c61c414b9fa2d43901c8823cf1f0a000df43",
+      "pngSha256": "0e064075742edf12311d9ba5313d93b4aec64db945dee465ff8d5a482b672025"
+    },
+    "hit": {
+      "bounds": [
+        14,
+        10,
+        45,
+        60
+      ],
+      "ink": 909,
+      "gridSha256": "89a9784b34ca4647d769508219c3d72b9c6cc19cfe9afcad59b4273ad500154f",
+      "pngSha256": "70a11a9c3a7179833d1f4566d35fb0cf244493eb1e94fdbd587cc28bd1fd7c25"
+    },
+    "dead": {
+      "bounds": [
+        7,
+        39,
+        53,
+        60
+      ],
+      "ink": 568,
+      "gridSha256": "fce99c69abb6485a8ba92c787598f256ac6e59039512cb23a8799334c43d68b0",
+      "pngSha256": "9ff3c0d0f27426dc9705e419af53e7cf807298999127236c636c1bc5b623c93e"
+    },
+    "skill_a": {
+      "bounds": [
+        18,
+        10,
+        49,
+        60
+      ],
+      "ink": 936,
+      "gridSha256": "f1927d43b8c9844aa67a66bb123c8d8b6bf10da672382b9f1284d95bc8ba8210",
+      "pngSha256": "b16b0e32fc27bd4c5955013ea26deb3a03c7e94ce5c8f91450dfb4b54e99308e"
+    },
+    "skill_b": {
+      "bounds": [
+        10,
+        12,
+        62,
+        60
+      ],
+      "ink": 1097,
+      "gridSha256": "9bb875abf234dac0320034f0cdef950a5150a91833fed2e23ec790decc351428",
+      "pngSha256": "0e64619c92d514587762e3a498824f81aa9ae72419657b3e672857d9846a7fb3"
+    },
+    "skill_c": {
+      "bounds": [
+        16,
+        11,
+        58,
+        60
+      ],
+      "ink": 942,
+      "gridSha256": "f8ae5aab70a6a88cf43daad094c9d0fda59c1938f9bc5862c6fef2d173c1aa5f",
+      "pngSha256": "5e7dfb7753bb4f4ecb529383ae1b735c56b7aa71767063499405b9b77ef094a9"
+    },
+    "poison_a": {
+      "bounds": [
+        19,
+        12,
+        58,
+        60
+      ],
+      "ink": 917,
+      "gridSha256": "3a6510c0c81da3aea6b14998378d6d8bcb45173d1d26ad5f966f42155654bd0b",
+      "pngSha256": "538775df179f824cf40ddb3e33f0e302ae79f5e94e6c9d0535add27ceb6e7c91"
+    },
+    "poison_b": {
+      "bounds": [
+        20,
+        12,
+        59,
+        60
+      ],
+      "ink": 910,
+      "gridSha256": "afd7b585518dfb96c8bf5fb6ba8925b11e293aa53a8bf1ea5e2ba78727da108e",
+      "pngSha256": "26d34ccd53602291a4c5214e55fa013d9b776f65f90f33ed87ac89d9d0398cd4"
+    },
+    "stun_a": {
+      "bounds": [
+        18,
+        4,
+        53,
+        60
+      ],
+      "ink": 901,
+      "gridSha256": "e0134442f5cd6d5260cff5384e5fbe9dc5185e92036c94e1daed9c39b7815556",
+      "pngSha256": "f35a044d4e9bd0e0e0b1420239c0b8ff390fe01d03a498361d9fa3f0b24dbecc"
+    },
+    "stun_b": {
+      "bounds": [
+        13,
+        4,
+        50,
+        60
+      ],
+      "ink": 888,
+      "gridSha256": "19624cbe5605a1be5191132cb9c01a332f48648fb69c98144124513c520c706c",
+      "pngSha256": "de578ccbdc3776a850b56a5ed89effafed1a4d4360ed028636aaa5a75a3a435c"
+    },
+    "sleep_a": {
+      "bounds": [
+        13,
+        22,
+        50,
+        60
+      ],
+      "ink": 862,
+      "gridSha256": "0588ed556c6cb278de499c4213f115c5cafbf3e8994476b8543f288fb71484e1",
+      "pngSha256": "65ca36b805160b20f3d20839ad7fc6910d60b55c0d465740a1c06a6de9585995"
+    },
+    "sleep_b": {
+      "bounds": [
+        13,
+        23,
+        50,
+        60
+      ],
+      "ink": 824,
+      "gridSha256": "c7f3a4211f45d9aefc97c12e3da88e7009863b539cd3be2fec25a8df103cf64b",
+      "pngSha256": "4caf11ac2f4902ba0a0d8619581d2eb20d1eca5a26e8bf242154d9bc6bdbf333"
+    }
+  },
+  "gifs": {
+    "idle": [
+      {
+        "pose": "idle_a",
+        "ms": 240
+      },
+      {
+        "pose": "idle_b",
+        "ms": 240
+      },
+      {
+        "pose": "idle_c",
+        "ms": 240
+      },
+      {
+        "pose": "idle_b",
+        "ms": 240
+      }
+    ],
+    "attack": [
+      {
+        "pose": "idle_a",
+        "ms": 240
+      },
+      {
+        "pose": "windup",
+        "ms": 180
+      },
+      {
+        "pose": "move",
+        "ms": 90
+      },
+      {
+        "pose": "attack",
+        "ms": 140
+      },
+      {
+        "pose": "recover",
+        "ms": 180
+      },
+      {
+        "pose": "idle_a",
+        "ms": 300
+      }
+    ],
+    "hit": [
+      {
+        "pose": "idle_a",
+        "ms": 240
+      },
+      {
+        "pose": "hit",
+        "ms": 260
+      },
+      {
+        "pose": "recover",
+        "ms": 180
+      },
+      {
+        "pose": "idle_a",
+        "ms": 320
+      }
+    ],
+    "dead": [
+      {
+        "pose": "idle_a",
+        "ms": 240
+      },
+      {
+        "pose": "hit",
+        "ms": 180
+      },
+      {
+        "pose": "dead",
+        "ms": 1200
+      }
+    ],
+    "skill": [
+      {
+        "pose": "idle_a",
+        "ms": 240
+      },
+      {
+        "pose": "skill_a",
+        "ms": 360
+      },
+      {
+        "pose": "skill_b",
+        "ms": 240
+      },
+      {
+        "pose": "skill_c",
+        "ms": 280
+      },
+      {
+        "pose": "idle_a",
+        "ms": 320
+      }
+    ],
+    "poison": [
+      {
+        "pose": "poison_a",
+        "ms": 420
+      },
+      {
+        "pose": "poison_b",
+        "ms": 420
+      }
+    ],
+    "stun": [
+      {
+        "pose": "stun_a",
+        "ms": 440
+      },
+      {
+        "pose": "stun_b",
+        "ms": 440
+      }
+    ],
+    "sleep": [
+      {
+        "pose": "sleep_a",
+        "ms": 700
+      },
+      {
+        "pose": "sleep_b",
+        "ms": 700
+      }
+    ]
+  },
+  "paletteSha256": "69184444c33d424503807bb4b361986891a4831199109a6492584dffe467dee9"
+}

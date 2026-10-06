@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>옥적무인 후보</title>
+<style>
+:root{font:16px system-ui;color:#edf0db;background:#232a36}body{max-width:1100px;margin:auto;padding:24px}h1{font-size:24px}.motions{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}figure{margin:0;padding:12px;background:#e6e1d1;color:#19212a;border-radius:8px}figcaption{margin-bottom:8px}.large{width:192px;height:192px;image-rendering:pixelated}.native{width:64px;height:64px;image-rendering:pixelated;vertical-align:bottom}label{display:inline-block;margin-bottom:20px}button{font:inherit;padding:8px 16px}.sheets img{max-width:100%;image-rendering:pixelated}a{color:#82c5a1}
+</style>
+<h1>옥적무인 · 18자세 / 8동작 후보</h1><p>64px 원본. 왼쪽은 3배 표시, 오른쪽은 1배입니다.</p>
+<button id="toggle">일시 정지</button><p></p><section class="motions">
+<figure><figcaption>대기</figcaption><img class="large" data-motion="idle" data-still="idle_a" src="idle.gif"><img class="native" data-motion="idle" data-still="idle_a" src="idle.gif"></figure>
+<figure><figcaption>공격</figcaption><img class="large" data-motion="attack" data-still="attack" src="attack.gif"><img class="native" data-motion="attack" data-still="attack" src="attack.gif"></figure>
+<figure><figcaption>피격</figcaption><img class="large" data-motion="hit" data-still="hit" src="hit.gif"><img class="native" data-motion="hit" data-still="hit" src="hit.gif"></figure>
+<figure><figcaption>쓰러짐</figcaption><img class="large" data-motion="dead" data-still="dead" src="dead.gif"><img class="native" data-motion="dead" data-still="dead" src="dead.gif"></figure>
+<figure><figcaption>옥음살</figcaption><img class="large" data-motion="skill" data-still="skill_b" src="skill.gif"><img class="native" data-motion="skill" data-still="skill_b" src="skill.gif"></figure>
+<figure><figcaption>독</figcaption><img class="large" data-motion="poison" data-still="poison_a" src="poison.gif"><img class="native" data-motion="poison" data-still="poison_a" src="poison.gif"></figure>
+<figure><figcaption>기절</figcaption><img class="large" data-motion="stun" data-still="stun_a" src="stun.gif"><img class="native" data-motion="stun" data-still="stun_a" src="stun.gif"></figure>
+<figure><figcaption>수면</figcaption><img class="large" data-motion="sleep" data-still="sleep_a" src="sleep.gif"><img class="native" data-motion="sleep" data-still="sleep_a" src="sleep.gif"></figure>
+</section><section class="sheets"><h2>18자세 원본 크기</h2><img src="native.png"><h2>투명·윤곽 확인</h2><img src="sheet-checker.png"></section>
+<script>let paused=false;document.getElementById('toggle').onclick=function(){paused=!paused;document.querySelectorAll('[data-motion]').forEach(im=>im.src=paused?im.dataset.still+'.png':im.dataset.motion+'.gif');this.textContent=paused?'재생':'일시 정지';};</script>
+</html>

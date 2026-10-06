@@ -1,0 +1,31 @@
+{
+  "recommendation": "keep",
+  "summary": "Reviewed the four supplied actual PNGs at native 1x and nearest 3x; the three sheets contain exact nearest-neighbor enlargements. The adult male SD silhouette, right-facing three-quarter head, jade headband/flute, pale martial clothing and small shoes remain recognizable at 1x. Upper-left hair, face and cloth highlights give coherent volume; jade has a separate dark edge and light ridge. No obvious unintended interior transparent holes or broken body outlines are visible across the light, dark and checker backgrounds, although the darkest hair and shoe edges lose contrast on dark. Standing feet share the native y=60 ground line. Windup brings the grip to the shoulder, move opens a long lunge, attack lowers the connected flute into a lateral strike, and recover closes the stance; dead reads as a grounded prone collapse. The attack grip and hit recoil are the weaker details described below. Skill preparation places the flute at the mouth, contact emits three unequal cyan branches from its actual tip, and recovery lowers the flute with small residual particles. Poison uses a hand across the chest, stun uses slack arms and overhead sparks, and sleep crouches with closed eyes; these are distinct visible states rather than palette tints or unrelated attacks. Pair changes are restrained but visible. This is a static pose preview, not actual battle footage: timing, sliding, contact with a target and runtime continuity were not verified. PNGs alone cannot establish literal pxgrid authorship. This recommendation is advisory; selection remains with the user.",
+  "issues": [
+    {
+      "pose": "attack",
+      "x": 47,
+      "y": 37,
+      "message": "The skin cluster at x=46-49, y=35-37 rests above the flute ridge at y=38, so the strike hand reads more like a flat palm pressing the shaft than a firm grip. Wrap one or two finger pixels over the ridge near x=47, y=38 and retain a dark separator to the right. The current hand and tool are connected; this is a grip-readability repair."
+    },
+    {
+      "pose": "hit",
+      "x": 30,
+      "y": 28,
+      "message": "The upright torso and nearly neutral face make this read mainly as lowering the flute, with only slight recoil from idle. Offset the head/neck and upper shoulder clusters a further 1-2 pixels left around x=24-37, y=16-32, reconnect the collar, and tighten the eye/brow clusters near x=29-34, y=18-19 into a wince. Keep both shoe soles on y=60 so the reaction remains grounded."
+    }
+  ],
+  "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+  "phase": "suite",
+  "imageHashes": {
+    "preview/suite/portrait.png": "103f728a982d9ce3ae4d375094535b20ee19957bc19fb1fb7c5228c58868403f",
+    "preview/suite/light.png": "d5db5e71cb11bce463edcae0d5a7c85b9af3743ba6678bd78421c9b22e8ba5b2",
+    "preview/suite/dark.png": "37f9bab8c90b9f1aee801a550e4c4b32b07183e4a14b39875ace2234f8fdf47c",
+    "preview/suite/checker.png": "06897790ba5bd9aa3b386daddbf4a7539731277b433ace1bc10a1fc4067e3608"
+  },
+  "jobId": "9f99c37c-26ea-4d9f-8d05-f23e26dd0977",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "finishedAt": "2026-10-06T10:15:15.006998+00:00",
+  "userApproved": false
+}

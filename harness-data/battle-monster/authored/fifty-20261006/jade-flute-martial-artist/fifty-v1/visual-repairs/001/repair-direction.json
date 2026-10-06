@@ -1,0 +1,26 @@
+{
+  "authorization": "사용자 원문: 그래 한 50개 만들고 전부 통과시켜\n신규50종의 기술/독립 시각 검수 통과를 위해 지적 좌표를 실제로 교정하고, 이후 사용자 위임으로 Allow한다. 검수 결과를 꾸미지 않고 기존 판정을 보존한다.\n",
+  "priorBinding": "3b097e8fde564c32f794a18ce14db0687e8d78021c52d497f33e817c2ec3ad23",
+  "priorReviewJob": "fcb62332-b261-493d-bcf6-15a86540df75",
+  "issues": [
+    {
+      "pose": "skill_a",
+      "x": 39,
+      "y": 23,
+      "message": "The mouth mark is at (36,23)-(37,23), while the mouthpiece starts at (41,23); two skin pixels separate the lips from the cheek-edge connection. Redraw a small right-facing lip cluster through (38,23)-(40,23) touching the mouthpiece and remove the old detached mouth mark, so the preparation visibly plays the flute rather than holding it against the cheek. Preserve the connected wrist and tip effect."
+    },
+    {
+      "pose": "skill_b",
+      "x": 37,
+      "y": 23,
+      "message": "The contact frame repeats the cheek contact: lips at (34,23)-(35,23), skin at (36,23)-(37,23), and mouthpiece at (39,23). Reauthor the lips at the right face edge around (37,23)-(38,23), directly meeting the mouthpiece; keep this relationship consistent with the repaired skill_a and retain the three tip-attached rays."
+    },
+    {
+      "pose": "sleep_b",
+      "x": 37,
+      "y": 44,
+      "message": "Compared with sleep_a, only (38,37), (39,43), (37,44), (36,45) and (35,46) change interior colors. Author a visible second sleeping pose with a small head/chin droop and a coherent shoulder or sleeve contour change, while retaining closed eyes, connected neck/hand/flute and grounded kneeling legs. The current shading substitutions do not read as a distinct state or breathing motion at 1x or 3x."
+    }
+  ],
+  "startedAt": "2026-10-06T10:07:11.648766+00:00"
+}

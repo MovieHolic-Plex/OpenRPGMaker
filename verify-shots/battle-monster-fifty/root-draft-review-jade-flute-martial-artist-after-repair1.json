@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-06T10:14:00.140794+00:00",
+  "passed": false,
+  "key": "jade-flute-martial-artist/fifty-v1",
+  "binding": "b4fde7f9299b5b309414ec011c401c4ad1a97605fb24080e48c666f89e6c642a",
+  "nativePosesActuallyViewed": 18,
+  "actualUnresizedContact": "verify-shots/battle-monster-fifty/draft-native-contact-jade-flute-martial-artist-after-repair1.png",
+  "nativeContactPngSha256": "13b2225c1e658d22cd617ad792b0fbdcf64bcc31217da5d0190b675467484812",
+  "nativeWriterFilesRead": {
+    "author.py": "ab2ab1429d16b534bff7553d90c796ada6f11f43477cbc93ddbe6d440cf3c246",
+    "repair.py": "bfa9fd7b4fbe3270d22a0d5ec9f4d01bc346c5d98b3bcf778af122d32be664ac"
+  },
+  "observations": "Actually opened all18 native1x/nearest2x864x696 unresized after first real repair. Small right-facing lips now reach the actual jade flute mouthpiece in both skill_a/b; removed old internal mouth marks. Sleep_b has one-pixel lower crown contour/headband/chin, connected neck/closedeyes and compressed shoulder/sleeve boundary with same kneelingfeet/hand/flute. Three different-length tip-rooted cyan sound rays and earlier full18 identities remain. Read full author.frame/patch bodies/currentcalls and newrunpy invocation, then full repair.py module spans loop: only named explicit y/x/strings over existing rows. No wholeframe transforms/generatedgeometry. All18PNG exactlymatch nativeASCII/palette. New independent review pending; no Allow/pass claim."
+}

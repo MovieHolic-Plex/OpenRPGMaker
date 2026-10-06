@@ -1,0 +1,43 @@
+{
+  "id": "fcb62332-b261-493d-bcf6-15a86540df75",
+  "stage": "critique",
+  "phase": "suite",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "startedAt": "2026-10-06T10:04:45.052061+00:00",
+  "preparedOnly": false,
+  "command": [
+    "codex",
+    "exec",
+    "--skip-git-repo-check",
+    "--ephemeral",
+    "--sandbox",
+    "workspace-write",
+    "-C",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/jobs/fcb62332-b261-493d-bcf6-15a86540df75",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"high\"",
+    "--json",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/portrait.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/light.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/dark.png",
+    "-i",
+    "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/qa-runs/battle-monster-fifty-wave/candidates/jade-flute-martial-artist/fifty-v1/preview/suite/checker.png",
+    "-"
+  ],
+  "promptSha256": "88a205637d1be3219b3cc60982d079f0e86d5b637f548dd7a8ae667e49e3cf1a",
+  "toolSha256": "d3204cd2cc3c1a45a04e7062a2fe5409c98aad3b4626ff44185d1de93c43dcd5",
+  "imageHashes": {
+    "preview/suite/portrait.png": "103f728a982d9ce3ae4d375094535b20ee19957bc19fb1fb7c5228c58868403f",
+    "preview/suite/light.png": "ae0ff72c1fdcf92e6036d9236f519196f3bea92ff8bf0badf60ab4d1ecd2b60a",
+    "preview/suite/dark.png": "7fc4fcddc36ec82e2b74e0fa315b76598466555317b7f17434936235ad5a24c6",
+    "preview/suite/checker.png": "fe6a4494b9627a3c34ca108a2d77f5555c967a457c1f9c64ecca59c891b3b907"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-10-06T10:07:11.387885+00:00"
+}
