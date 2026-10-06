@@ -135,3 +135,10 @@ layout.sources의 해당 ref에 role="generated-preview"를 지정한다. 감독
 `implementationRequired`에 남은 품목의 명시적 구현 계약 JSON 경로를 남긴다.
 감독은 준비된 묶음을 도면 검수 후 실행한다. 준비되지 않은 인물/효과도 요구사항에서 유지한다.
 전체 `themeCoverage`를 만족하기 전에는 데모 조립을 시작하지 않으며 부분 그림을 완성으로 표시하지 않는다.
+
+`theme-material-feedback.json.kind=missing-production`이면 기획된 미제작 재료의 후속 묶음이다.
+covered/기존 art-batches의 원본은 보존하고 missing 항목만 별도 data/content/picks에 준비한다.
+현재 승인된 공간 기하를 유지하고 새 재료의 접지·시점·부착 계약을 추가하여 독립 도면 검수를 받는다.
+실행기·전용 시드·작업 지시서는 새 묶음을 가리켜야 한다. 이전 묶음을 통째로 queued로 돌리지 않는다.
+별도 캐릭터 주문 art-actors.json이 있으면 해당 상태/실제 산출물을 확인하고 같은 인물을 중복 주문하지 않는다.
+이 단계는 처음 만드는 재료이며 품질 수정 횟수를 소비하거나 초기화하지 않는다.

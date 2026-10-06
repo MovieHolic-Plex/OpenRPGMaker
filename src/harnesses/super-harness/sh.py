@@ -35,6 +35,7 @@ import gates  # noqa: E402
 import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_demo
+import art_batches
 import keyword_seeds
 import theme_production
 import production_strategy
@@ -765,8 +766,17 @@ def on_art(meta, code, result):
                 valid = False
     if valid:
         try:
-            art_choices.prepare(DATA, cid)
-        except (OSError, ValueError, KeyError, StopIteration) as error:
+            result = art_batches.collect(DATA, cid, result)
+            components = art_choices.prepare(DATA, cid)
+            missing = art_batches.queue_missing(DATA, cid, result, components)
+            if missing:
+                stopped = missing['repeated']
+                store.update_concept(cid, stage='blocked' if stopped else 'art', status='idle' if stopped else 'queued',
+                    note='누락 재료 제작이 진전되지 않음 · 기존 칩 보존' if stopped else '기존 칩 보존 · 누락 재료 추가 제작 대기',
+                    reasons=['제작 필요: ' + ', '.join(missing['missing'])])
+                store.log(cid, '전용 세트 누적 제작: 확보 ' + str(len(missing['covered'])) + ' / 미제작 ' + str(len(missing['missing'])))
+                return
+        except (OSError, ValueError, KeyError, TypeError, StopIteration) as error:
             store.log(cid, '선택 예시 준비 필요: ' + str(error))
             store.update_concept(cid, stage='blocked', status='idle', note='조립 예시 준비 오류', reasons=[str(error)])
             return
