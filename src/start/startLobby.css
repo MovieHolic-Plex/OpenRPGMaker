@@ -1,5 +1,8 @@
 /* Cinematic home owns its presentation; project creation and team forms retain their existing layout. */
 @layer start-lobby {
+  .start-app.is-first-world.is-interview-start .start-main { padding: 0; gap: 0; justify-content: flex-start; }
+  .start-interview-host { position: relative; width: 100%; min-height: calc(100dvh - 100px); background: var(--cinema-night); }
+  .start-interview-loading { margin: 0; padding: 32px; color: var(--cinema-paper); font-size: 28px; }
   .start-app { display: flex; flex-direction: column; }
   .start-rail {
     position: relative;
@@ -97,6 +100,49 @@
   .start-lobby-feature-list details[open] summary { color: var(--st-accent); }
   .start-lobby-feature-list p { font-size: 12px; color: var(--st-sub); line-height: 1.7; margin: 7px 0; }
   .start-footer { background: var(--bg-surface); box-shadow: none; clip-path: none; color: var(--st-text); }
+
+  /* The first sentence lives inside one full-window scene, including header and secondary routes. */
+  .start-app.is-first-world {
+    isolation: isolate;
+    min-height: 100vh;
+    min-height: 100svh;
+    background: var(--cinema-night);
+    color: var(--cinema-paper);
+    --st-bg: var(--cinema-night);
+    --st-bg-2: #fff9eb0a;
+    --st-panel-solid: #101a29ed;
+    --st-line: #fff9eb26;
+    --st-line-2: #fff9eb38;
+    --st-text: var(--cinema-paper);
+    --st-sub: #e3ddcf;
+    --st-faint: #d3cebf;
+    --st-accent: var(--cinema-accent);
+    --st-accent-2: var(--cinema-paper);
+    --st-accent-soft: #fff9eb18;
+    --st-danger: #ffb4a9;
+    --focus-outline: 2px solid var(--cinema-accent);
+  }
+  .start-app.is-first-world .start-rail { background: transparent; border-bottom-color: transparent; }
+  .start-app.is-first-world .start-main { flex: 1; justify-content: center; gap: 0; max-width: none; min-height: 0; padding: 8px clamp(20px,4vw,64px) 24px; }
+  .start-app.is-first-world .start-brand-tag { color: var(--st-faint); }
+  .start-app.is-first-world .start-logo { color: var(--cinema-night); }
+  .start-app.is-first-world .start-nav-item.is-active { color: var(--cinema-paper); }
+  .start-app.is-first-world .start-nav-item:hover { background: #fff9eb18; }
+  .start-app.is-first-world .start-btn { background: #101a2966; border-color: var(--st-line-2); color: var(--cinema-paper); }
+  .start-app.is-first-world .start-btn:hover { background: #fff9eb18; }
+  .start-app.is-first-world .start-btn-primary { background: var(--cinema-accent); border-color: var(--cinema-accent); color: var(--cinema-night); }
+  .start-app.is-first-world .start-btn-primary:hover { background: var(--cinema-paper); }
+  .start-app.is-first-world :is(.start-locale-select,.start-arrival-fields .start-input) { background: #101a2999; color: var(--cinema-paper); border-color: var(--st-line-2); }
+  .start-app.is-first-world .start-arrival-settings { width: min(1120px,100%); margin: 0 auto; padding: 12px 0; }
+  .start-app.is-first-world .start-arrival-alternatives { padding-top: 12px; }
+  .start-app.is-first-world .start-main > .start-error { width: min(780px,100%); margin: 12px auto 0; }
+  @media(min-width:581px) and (max-height:950px) {
+    .start-app.is-first-world .start-main { padding-block: 0 16px; }
+    .start-app.is-first-world .start-arrival-settings { padding-block: 8px; }
+    .start-app.is-first-world .start-arrival-alternatives { padding-top: 8px; }
+  }
+  @media(min-width:581px) and (max-height:820px) { .start-app.is-first-world .start-rail { padding-block: 12px; } }
+  @media(max-width:580px) { .start-app.is-first-world .start-main { padding: 0 16px 20px; } }
 
   @keyframes start-cinema-drift { from { transform: scale(1); } to { transform: scale(1.055); } }
   @keyframes start-cinema-light { from { opacity: .35; transform: rotate(-4deg); } to { opacity: .85; transform: rotate(3deg); } }

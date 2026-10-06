@@ -1,0 +1,27 @@
+{
+  "initialTools": [
+    "list_authoring_presets",
+    "read_authoring_preset"
+  ],
+  "piPromptConnected": true,
+  "firstPlayReads": [
+    "list_authoring_presets",
+    "read_authoring_preset"
+  ],
+  "unknownTools": [],
+  "wronglyClassifiedWrites": [],
+  "lifeStateCollections": [
+    {
+      "key": "fishSpecies",
+      "accountedFor": true
+    },
+    {
+      "key": "crops",
+      "accountedFor": true
+    },
+    {
+      "key": "lifeSkills",
+      "accountedFor": true
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
@@ -13,7 +15,7 @@ import { normalizeMapClimate } from "@/project/mapClimate";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
-import { plainGrassTileFor } from "@/project/defaults/defaultMaps";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -42,6 +44,7 @@ import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundF
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import {
@@ -152,6 +155,13 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
    return mixed === 0 ? 1 : mixed;
  }
 
+function assertInstalledMapBgm(resourceId: string, mapId: string): void {
+  if (!isCatalogBgmAvailable(resourceId)) throw new ToolError(
+    `미설치 BGM '${resourceId}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르거나 bgm.mode를 none으로 설정하세요.`,
+    { code: 'resource-not-found', mapId },
+  );
+}
+
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
@@ -170,12 +180,14 @@ export function assignCreatedMapBgm(
         throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
       }
       bgm.resourceId = resourceId;
+      assertInstalledMapBgm(resourceId, map.id);
     }
     map.bgm = bgm;
     return bgm.mode === "custom" ? (bgm.resourceId ?? bgm.mode) : bgm.mode;
   }
   const explicitId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
   if (explicitId) {
+    assertInstalledMapBgm(explicitId, map.id);
     map.bgm = { mode: "custom", resourceId: explicitId };
     return explicitId;
   }
@@ -255,7 +267,7 @@ const createMap: ToolDefinition = {
       // 타일셋 크기를 따라가므로, 생성 경로만 규칙에서 빠져 있었다).
       tileSize: tileset.tileSize,
       // 버들항은 합본 마을 번호가 아니라 자기 잔디(737)로 채운다 — 예전엔 빈칸(-1)으로 남아 새 맵이 검었다.
-      lowerTiles: new Array<number>(size).fill(plainGrassTileFor(tilesetId) ?? (isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY)),
+      lowerTiles: new Array<number>(size).fill(blankFillTileFor(tilesetId, isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY)),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };
@@ -276,7 +288,7 @@ const createMap: ToolDefinition = {
     adoptStartIfNeeded(draft, map);
     const warnings = blankNamesake
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
-        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(run_dungeon_room_pipeline 등 방 파이프라인은 빈 맵을 그대로 이어받습니다).`]
+        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
@@ -1849,6 +1861,15 @@ const cloudShadowSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+const sunlightSchema: JsonSchema = {
+  type: "object", description: "고정 태양의 지형·집·나무 그림자. 생략한 설정은 유지. enabled:true로 켠다. azimuth는 태양이 있는 방향(0 북,90 동,180 남,270 서). 통행/시야 차단과 독립.",
+  properties: {
+    enabled: { type: "boolean" }, azimuth: { type: "number", minimum: 0, maximum: 359 },
+    altitude: { type: "number", minimum: 12, maximum: 85 }, opacity: { type: "number", minimum: 0, maximum: .65 },
+    softness: { type: "number", minimum: 0, maximum: 4 }, heightScale: { type: "number", minimum: .25, maximum: 2 },
+  }, additionalProperties: false,
+};
+
 /**
  * `background` 인자 → 저작값. `layerSet` 이 있으면 세트를 펴고(`mapBackgroundFromLayerSet`), 같이 준
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
@@ -1921,7 +1942,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1952,8 +1973,11 @@ const setMapProperties: ToolDefinition = {
       clearMinimap: { type: "boolean" },
       cloudShadows: cloudShadowSchema,
       clearCloudShadows: { type: "boolean" },
+      sunlight: sunlightSchema,
+      clearSunlight: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
+      characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -1971,7 +1995,7 @@ const setMapProperties: ToolDefinition = {
       // — 침대·나무 바닥 그대로, 입구는 마을 집 문, 진짜 던전 맵은 빈 채 미연결로 남았다.
       const namesake = Object.values(draft.maps).find(other => other.id !== map.id && other.name.trim() === nextName);
       if (namesake && map.name.trim() !== nextName) {
-        const empty = namesake.events.length === 0 ? " 그 맵은 아직 이벤트가 없습니다 — 그 맵을 시공·연결하세요(던전은 run_dungeon_room_pipeline mapId:" + JSON.stringify(namesake.id) + ")." : "";
+        const empty = namesake.events.length === 0 ? " 그 맵은 아직 이벤트가 없습니다 — 그 맵을 시공·연결하세요(" + JSON.stringify(namesake.id) + " 에 등록 장소를 붙이려면 import_region_reference mapId)." : "";
         throw new ToolError(
           `'${nextName}' 은 이미 맵 ${namesake.id}(${namesake.width}×${namesake.height})의 이름입니다. 다른 맵(${map.id} '${map.name}')의 이름을 바꿔 같은 장소로 쓰지 마세요.${empty}`,
           { code: "map-name-taken", mapId: map.id },
@@ -2009,6 +2033,7 @@ const setMapProperties: ToolDefinition = {
     } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
       const bgm = structuredClone(args.bgm) as GameMap["bgm"];
       if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      if (bgm?.mode === 'custom' && bgm.resourceId) assertInstalledMapBgm(bgm.resourceId, map.id);
       map.bgm = bgm;
       changed.push(`BGM=${bgm?.mode}`);
     }
@@ -2077,6 +2102,15 @@ const setMapProperties: ToolDefinition = {
         saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
       }
     }
+    if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
+      if (args.characterScale >= 1) {
+        delete map.characterScale;
+        changed.push("캐릭터 크기=기본");
+      } else {
+        map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
+        changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
+      }
+    }
     if (args.loop === "none") {
       delete map.loop;
       changed.push("반복=끔");
@@ -2102,6 +2136,12 @@ const setMapProperties: ToolDefinition = {
       if (!climate) throw new ToolError("climate.mode는 inherit, indoor, fixed 중 하나여야 합니다.", { code: "invalid-args" });
       map.climate = climate;
       changed.push(`기후=${climate.mode}`);
+    }
+    if (args.clearSunlight === true) {
+      delete map.sunlight; changed.push("태양 그림자 지움");
+    } else if (args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight)) {
+      map.sunlight = patchSunlight(map.sunlight, args.sunlight as Partial<MapSunlight>);
+      changed.push(`태양 그림자 ${map.sunlight.enabled ? "켬" : "끔"} · 방향 ${map.sunlight.azimuth}° · 고도 ${map.sunlight.altitude}°`);
     }
     if (args.clearCloudShadows === true) {
       delete map.cloudShadows;

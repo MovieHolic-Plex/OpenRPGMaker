@@ -5,6 +5,8 @@ import { NPC_PATROL_TOOLS } from './npcPatrolTools';
 import { GAME_SYSTEM_AUTHORING_TOOLS } from './gameSystemAuthoringTools';
 import { OPENING_STORYBOOK_TOOLS } from './openingStorybookTools';
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { AUTHORING_PRESET_TOOLS } from './authoringPresetTools';
+import { AUTHORING_HARNESS_TOOLS } from '../../harnesses/_core/authoringRegistry';
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
 import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
@@ -35,6 +37,9 @@ import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
+import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
+import { WORLD_ATLAS_TOOLS } from "./worldAtlasTools";
+import { WORLDMAP_ICON_TOOLS } from "./worldmapIconTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
@@ -45,6 +50,7 @@ import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
 import { LAYER_TOOLS } from "./layerTools";
 import { RELIEF_TOOLS } from "./reliefTools";
+import { TERRAIN_TOOLS } from "./terrainTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { WILD_ROUTE_TOOLS } from "./wildRouteTool";
@@ -80,9 +86,11 @@ import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
+import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
 import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
+import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
@@ -106,6 +114,7 @@ import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
@@ -189,6 +198,14 @@ function retireOldInteriorTool(tool: ToolDefinition): ToolDefinition {
   return { ...tool, deprecated: true, supersededBy: "build_hand_interior_room" };
 }
 
+/**
+ * EasyRPG 칩셋 번호를 깔고 그 칩셋 맵을 만드는 생성기(던전 방 파이프라인·generate_map) — 대체 생성 칩셋이 생기기 전까지 조수에게 숨긴다
+ * (2026-10-06 사용자 결정, retiredEasyRpgTilesets.ts). 던전·숲·들판은 등록 장소를 import_region_reference 로 가져온다. 편집기 실행 호환은 남긴다.
+ */
+function retireEasyRpgGenerator(tool: ToolDefinition): ToolDefinition {
+  return { ...tool, deprecated: true, supersededBy: "import_region_reference" };
+}
+
 function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): readonly ToolDefinition[] {
   return tools.map((tool) => ({
     ...tool,
@@ -203,6 +220,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   FIND_TOOLS,
+  ...AUTHORING_PRESET_TOOLS,
   ...PROJECT_WIKI_TOOLS,
   ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
@@ -212,6 +230,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_BEODEUL_TOWN_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
+  BUILD_CONCEPT_EXAMPLE_TOOL,
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
@@ -225,7 +244,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
-  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
+  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile").map(retireEasyRpgGenerator),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
@@ -235,14 +254,16 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
   ...withDomain(LAYER_TOOLS, "map"),
   ...withDomain(RELIEF_TOOLS, "map"),
+  ...withDomain(TERRAIN_TOOLS, "map"),
   ...withDomain(MAP_LOCATION_TOOLS, "map"),
   ...withDomain(ACTION_TOOLS, "map"),
-  ...withDomain(MAP_GEN_TOOLS, "map"),
+  ...withDomain(MAP_GEN_TOOLS, "map").map(retireEasyRpgGenerator),
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
+  ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
@@ -250,6 +271,9 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
+  ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
+  ...withDomain(WORLD_ATLAS_TOOLS, "world"),
+  ...withDomain(WORLDMAP_ICON_TOOLS, "world"),
   // 충돌 전용 지름길은 script_cutscene_staged 하나로 합친다(2026-10-02 조수 시험: 두 도구가 있으면 모델은 전용 쪽만 쓰고
   // 일반 도구를 외면했다). 실행·코드 호환은 getTool 로 유지 — 오프라인 사슬·옛 세션 재생.
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
@@ -299,8 +323,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
+  ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
+  ...withDomain(ORIGINAL_MUSIC_TOOLS, 'system'),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),

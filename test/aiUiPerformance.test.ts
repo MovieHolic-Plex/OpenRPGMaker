@@ -69,7 +69,7 @@ it('retains member button identity and focus during text updates', () => {
   try {
     const state = team(); publishTeamActivity(state);
     const rows = [...sidebar.root.querySelectorAll<HTMLElement>('.ai-team-member')]; rows[0]!.focus();
-    publishTeamActivity({ ...state, agents: state.agents.map((a, i) => i === 0 ? { ...a, lastLine: '새 진행' } : a) });
+    publishTeamActivity(reduceTeamBoard(state, { type: 'agent_event', agentId: 'a0', event: { type: 'execution_status', name: 'work.progress', summary: '새 진행' } }));
     expect(sidebar.root.querySelectorAll('.ai-team-member')[0]).toBe(rows[0]); expect(document.activeElement).toBe(rows[0]);
     expect(sidebar.root.querySelectorAll('.ai-team-member')[2]).toBe(rows[2]);
     expect(rows[0]!.textContent).toContain('새 진행');

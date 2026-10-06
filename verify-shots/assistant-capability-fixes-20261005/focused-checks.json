@@ -1,0 +1,416 @@
+{
+  "kind": "focused-native-regressions",
+  "realInstructions": 3,
+  "results": [
+    {
+      "schemaVersion": 1,
+      "caseId": "inspect-readonly",
+      "title": "조회만 하기",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "67b857c13a52e7ddbd6764df6a6ad6a7dc2d70f7",
+      "harnessDigest": "c3e213144dc73686654f61b7677dc8c7480e1fd3c7a5e058179f933827f0dac6",
+      "startedAt": "2026-10-04T23:41:00.152Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "answer-grounded",
+              "ok": true,
+              "detail": "NPC 이름·위치·첫 대사·15G를 원문 답에서 확인"
+            },
+            {
+              "id": "read-only",
+              "ok": true,
+              "detail": "조회 후 게임 콘텐츠 전체 불변"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"03b46b0c-1337-4518-ab13-fcf5533c2119\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/inspect-readonly/project\",\"beforeRevision\":3,\"afterRevision\":3,\"afterSha256\":\"8806189e7455157d3a5bff10e345e9cebafb109970a47674eeab9268aac624db\",\"reloadedSha256\":\"8806189e7455157d3a5bff10e345e9cebafb109970a47674eeab9268aac624db\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-independent-observer",
+          "notes": "조회 답변의 NPC 이름·좌표·첫 대사·15G를 실제 화면에서 읽었다. 지도 이벤트 표식과 잔디가 변경 뒤와 새 context 재로드 모두 정상으로 보이며 잘림이나 겹침이 없다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png"
+          ]
+        }
+      },
+      "elapsedMs": 96494,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791157423141
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "78d6a6ef-ffe3-4df6-9100-764261352f56",
+          "at": 1791157429643
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "78d6a6ef-ffe3-4df6-9100-764261352f56",
+          "at": 1791157433763
+        }
+      ],
+      "projectId": "03b46b0c-1337-4518-ab13-fcf5533c2119",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/inspect-readonly/project",
+      "finishedAt": "2026-10-04T23:45:20.524Z",
+      "status": "pass"
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "item-price",
+      "title": "아이템 가격만 수정",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "1f8827f5ec96dd50edf83ff62a89778e7835d96a",
+      "harnessDigest": "23cf01541e33f73eb2a9a1f0a0f1b85913b403c64283857bc20744f389e3ec9b",
+      "startedAt": "2026-10-04T23:50:55.329Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "exact-price",
+              "ok": true,
+              "detail": "동일 회복약 가격 30"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "not-required",
+          "evidence": []
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"4c80ff01-5611-4a2b-a55f-20ef5bb345cc\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/item-price/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"479217e039fdff39934083b1455bae9641a24afb5ac1d92ad70f4dd2465e10b0\",\"reloadedSha256\":\"479217e039fdff39934083b1455bae9641a24afb5ac1d92ad70f4dd2465e10b0\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-independent-observer",
+          "notes": "실제 변경 영수증과 자료집에서 회복약 가격 30과 HP 회복 50을 읽었다. 지도·새 context 재로드는 잔디와 이벤트 표식을 정상 표시하며 DB 입력·도움말·목록은 겹치거나 잘리지 않는다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "database.png"
+          ]
+        }
+      },
+      "elapsedMs": 134033,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791158034213
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "eee510d3-04a9-4cfe-b911-dc54809fe1c6",
+          "at": 1791158040026
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "eee510d3-04a9-4cfe-b911-dc54809fe1c6",
+          "at": 1791158046711
+        }
+      ],
+      "projectId": "4c80ff01-5611-4a2b-a55f-20ef5bb345cc",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/item-price/project",
+      "finishedAt": "2026-10-04T23:56:09.109Z",
+      "status": "pass"
+    },
+    {
+      "schemaVersion": 1,
+      "caseId": "dialogue-choice",
+      "title": "선택지 양쪽과 취소",
+      "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+      "codeCommit": "1f8827f5ec96dd50edf83ff62a89778e7835d96a",
+      "harnessDigest": "23cf01541e33f73eb2a9a1f0a0f1b85913b403c64283857bc20744f389e3ec9b",
+      "startedAt": "2026-10-04T23:56:09.146Z",
+      "gates": {
+        "execution": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "native-pi-run",
+              "ok": true,
+              "detail": "입력창 POST와 실제 Pi done 영수증"
+            },
+            {
+              "id": "no-editor-errors",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "no-model-errors",
+              "ok": true,
+              "detail": ""
+            }
+          ]
+        },
+        "requirements": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "two-choices",
+              "ok": true,
+              "detail": "요청 질문·선택지 두 개·순서(선행 질문 대사도 허용)"
+            },
+            {
+              "id": "both-branches",
+              "ok": true,
+              "detail": "두 분기에 서로 다른 정확한 대사"
+            },
+            {
+              "id": "no-reward",
+              "ok": true,
+              "detail": "보상·전역 상태 변경·이동 없음(취소 분기 포함)"
+            }
+          ]
+        },
+        "adversarial": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "protected-document",
+              "ok": true,
+              "detail": "허용 필드 이외의 프로젝트 전체 보존"
+            }
+          ]
+        },
+        "runtime": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "title",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "start",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "question",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "choices",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "east-branch",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "east-close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "reopen",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "inn-branch",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "inn-close",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "reopen-cancel",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "id": "cancel",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "errors": [],
+          "evidence": [
+            "runtime/01-title.png",
+            "runtime/02-start.png",
+            "runtime/03-question.png",
+            "runtime/04-choices.png",
+            "runtime/05-east-branch.png",
+            "runtime/06-east-close.png",
+            "runtime/07-reopen.png",
+            "runtime/08-inn-branch.png",
+            "runtime/09-inn-close.png",
+            "runtime/10-reopen-cancel.png",
+            "runtime/11-cancel.png"
+          ],
+          "requiredVisualEvidence": [
+            "runtime/03-question.png",
+            "runtime/04-choices.png",
+            "runtime/05-east-branch.png",
+            "runtime/08-inn-branch.png",
+            "runtime/11-cancel.png"
+          ]
+        },
+        "persistence": {
+          "status": "pass",
+          "checks": [
+            {
+              "id": "same-target-reload",
+              "ok": true,
+              "detail": "{\"projectId\":\"43ee23a6-b4f8-447c-ad91-f98d7af4f2c2\",\"projectDir\":\"/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/dialogue-choice/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"323e4bde81d1e322a12841e895e08cf4b956a2e68b9dfb4f2676e1d69d4da9a9\",\"reloadedSha256\":\"323e4bde81d1e322a12841e895e08cf4b956a2e68b9dfb4f2676e1d69d4da9a9\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+            }
+          ]
+        },
+        "visual": {
+          "status": "pass",
+          "reviewer": "codex-independent-observer",
+          "notes": "변경·새 context 재로드 지도와 필수 플레이 다섯 장을 실제로 읽었다. 질문은 타자 진행 장면이며 저장 원문과 런타임 텍스트 검사로 질문을 확인했다. 동문·여관 선택지가 둘 다 보이고 양쪽 대사가 완전히 표시된다. 실제 Esc 뒤 대화창과 선택지가 사라지고 플레이 화면으로 복귀한다. 잘림·겹침이 없다.",
+          "evidence": [
+            "after.png",
+            "reloaded.png",
+            "runtime/03-question.png",
+            "runtime/04-choices.png",
+            "runtime/05-east-branch.png",
+            "runtime/08-inn-branch.png",
+            "runtime/11-cancel.png"
+          ]
+        }
+      },
+      "elapsedMs": 132673,
+      "models": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": 1791158330601
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "73711b3e-6b6e-42a2-afb1-e9bfc7bb2439",
+          "at": 1791158335506
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "runId": "73711b3e-6b6e-42a2-afb1-e9bfc7bb2439",
+          "at": 1791158340712
+        }
+      ],
+      "projectId": "43ee23a6-b4f8-447c-ad91-f98d7af4f2c2",
+      "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-fixed-r1/dialogue-choice/project",
+      "finishedAt": "2026-10-05T00:03:01.527Z",
+      "status": "pass"
+    }
+  ],
+  "scopeDeltas": {
+    "inspect-readonly": {
+      "changedRasterCells": 0
+    },
+    "item-price": {
+      "changedRasterCells": 0
+    },
+    "dialogue-choice": {
+      "changedRasterCells": 0
+    }
+  },
+  "limitations": [
+    "단일 모델·단일 표현의 확인 시험이며 전체 기능 성공률이 아니다.",
+    "plan-readonly의 입력 전 기동 실패와 npc-line의 브라우저 종료로 관측하지 못한 시도는 원본에 보존했으며 성공으로 세지 않는다."
+  ]
+}

@@ -1,5 +1,6 @@
 import { genId } from "@/util/id";
 import type { GameMap, MapId, MapTreeNode } from "../types";
+import { DEFAULT_TERRAIN_GAMEPLAY } from "../terrainDesign";
 import { dirtLikeTiles } from "./chipsetMapping";
 import {
   DEFAULT_TILE_SIZE,
@@ -102,8 +103,9 @@ export function plainGrassTileFor(tilesetId: string): number | undefined {
   return tilesetId === DEFAULT_TILESET_ID ? BEODEUL_PLAIN_GRASS_TILE : undefined;
 }
 
-function blankFillTileFor(tilesetId: string): number {
-  return plainGrassTileFor(tilesetId) ?? TILE.GRASS;
+export function blankFillTileFor(tilesetId: string, fallback: number = TILE.GRASS): number {
+  if (tilesetId === "worldmap_authoring") return 0;
+  return plainGrassTileFor(tilesetId) ?? fallback;
 }
 
 export function createBlankMap(
@@ -124,6 +126,8 @@ export function createBlankMap(
     lowerTiles: new Array<number>(n).fill(blankFillTileFor(tilesetId)),
     upperTiles: new Array<number>(n).fill(TILE.EMPTY),
     events: [],
+    // 시야 차단은 선택 기능이다. 새 맵은 OFF를 명시적으로 저장한다.
+    terrainDesign: { gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY } },
   };
 }
 

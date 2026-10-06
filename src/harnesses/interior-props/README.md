@@ -1,6 +1,8 @@
-# 소품 하네스 — 여러 명이 찍고, 사용자가 고른다
+# 슈퍼하네싱 · 기물·파생 — 여러 명이 찍고, 사용자가 고른다
 
 16px 손 도트 실내 기물(`atlas_biome_interior`, 손 도트 v5 계열)을 고칠 때 쓴다.
+**다음 에이전트의 필독:** [기물 파생 설계·구현 계약](../../../openwiki/harnesses/interior-prop-derivations.md)
+→ [실행·복구·이관](../../../openwiki/harnesses/interior-prop-derivations-operations.md).
 **취향 판단은 사용자만 한다.** 감독(세션 에이전트)은 판을 열고, 깨짐만 거르고, 사용자가 고른 것을 굽는다.
 감독이 후보를 골라 시트에 끼워 넣지 않는다 — 2026-10-01 전수조사에서 감독이 고르고 고친 그림 다수가 「더 이상해졌다」로 되돌려졌다(`tiledata/atlas-pick/modern-style-bible.md` §11-4b).
 
@@ -10,65 +12,77 @@
 사용자: 화면에서 기물 고르기(+메모) ──► 판 h<N> 생성 + 작업지시서(brief)
                                        │
                                        ▼
-             Sonnet 5.5 · effort medium × 5 (동시 5) — 방향 A·B 최소 수정, C·D 기준 맞추기, E 자유
+             현재 코드 기본: Codex · effort medium, 후보 2장 — 원본/새 기물/파생별 작업지시서
                                        │  각자 candidates/<기물>/h<N>-<글자>.pxg 하나 + 메모
                                        ▼
             깨짐 검사(check_candidate.py — 팔레트·캔버스·접지선·투명) ──불합격──┐
                                        │ 통과                             │
                                        ▼                                  │
-   독립 검수자(Sonnet 5.5 · effort high, review.md) — 3/4 시점 + 「지금보다 나빠졌나」  │
+   독립 대화 검수(review.md, 엔진 설정에 따름) — 3/4·퇴보·새 기물/파생 전용 계약     │
    지금|후보 8배 나란히 · 같은 방 안 4배 · 짝·화풍 기준·합격/불합격 견본을 보고 verdict.json
                                        │ PASS            FAIL ──────────────┤
                                        │                                  ▼
                                        │        이유·고칠 것을 들고 같은 작업자가 지난 시도에서 다시 그림
                                        │        (지난 시도는 h<N>-<글자>.a<k>.* 로 남는다, 최대 3번 — PROP_HARNESS_ATTEMPTS)
                                        ▼        3번 다 떨어지면 빨간 「3/4 ✗」 와 이유를 달고 화면에 그대로 나온다(그래도 고를 수 있다)
-사용자: /harness 에서 지금 그림 vs 후보 5장(단품·방 안) → 확정 / 지금 그대로 / 버림+이유 / 다시 뽑기(+메모)
+사용자: /harness 의 기물·파생에서 지금 그림 vs 후보(단품·방 안) → 확정 / 지금 그대로 / 버림+이유 / 다시 뽑기(+메모)
                                        │
                                        ▼
-감독: harness.py bake → 시트 굽기 → 방 전·후 확인 → PR
+자동: 확정 저장 → 격리 굽기·검사 → 공용 SQLite 등록·재로드 → 화면에 완료 표시
 ```
 
 ## 쓰는 법
 
 ### 화면 (사용자)
-- `http://mdc-server:18302/harness` (고르기 서버 `hand-interior-pick.service` 에 붙어 있다).
-- **기물 골라 새로 뽑기** 탭: 414종 그림 목록 — 찾기·분류 칩으로 좁히고, 눌러서 여러 개 고르고, 메모를 달아 「후보 5장씩 뽑기」.
-- **후보 고르기** 탭: 왼쪽 = 고를 차례 / 그리는 중 / 끝남. 가운데 = `0 지금 그림` + `1~5` 후보.
+- 현재 서버: `http://mdc-server:18315/harness` (`super-harness/unified.py` 한 서비스; 18312는 이동 전용).
+- 통합 화면의 **기물·파생 / 공간·개념 / 재료 주문서 / 공용 재료**로 오간다.
+  기물 화면만 직접 열려면 `/harness/props`. 기존 공간 하네스의 실행과 검수는 그대로 연결한다.
+  워크트리 간 연결과 공용 재료 전달 계약은 [슈퍼하네싱 통합](../../../openwiki/harnesses/super-harness-integration.md).
+- **기물 골라 새로 뽑기** 탭: 실제 등록 기물 목록 — 찾기·분류 칩으로 좁히고, 여러 개 고르고 메모를 달아 후보를 주문한다(현재 화면 기본 2장).
+- **후보 고르기** 탭: 왼쪽 = 고를 차례 / 그리는 중 / 끝남. 가운데 = `0 지금 그림` + 해당 판의 후보.
   - 숫자 키로 고르고 `Enter` 로 확정 → 다음 기물로 넘어간다. `0` → `Enter` = 지금 그대로.
   - 카드의 `✕`(또는 `X`) = 버림 → 이유 칩(시점 이상·크기·화풍·안 읽힘·지저분함·원래가 나음)을 누른다. 버린 것과 이유는 다음 판 작업지시서에 「하지 말 것」으로 들어간다.
   - `V` 단품/방 안, `B` 배경, `+`/`-` 확대, `Space` 누르고 있기 = 고른 후보 자리에 지금 그림 겹쳐 보기, `↑`/`↓` 기물 이동.
   - 아래 메모 + 「다시 뽑기」 = 같은 기물 새 판(5장). 「고른 후보에서 출발」을 켜면 고른 후보를 출발점으로 다듬는다.
 - 고른 것은 `picks.sqlite`(정본)에 사용자 선택(client=web)으로 들어간다 → 다음 판의 화풍 기준(anchors)이 된다.
+- **확정하면 공용 DB에 자동 등록한다.** 화면 위 「공용 반영 완료」를 확인한다. 연속 확정은 합쳐 반영하고, 실패해도 선택은 남으며 자동 재시도한다. 같은 호스트의 다른 프로젝트를 다시 열면 「실내 · 사용자가 고른 공용 기물」 팩을 받는다.
+- 배치: `list_spatial_designs(kind:object)` → `stamp_object(kit:shared_hand_interior_harness/...)`. 현재 앱 번들의 실내 조립 도구는 별도 사양이다.
+- 대기열·판본 보존·재시도·수동 재등록은 [OpenWiki](../../../openwiki/harnesses/interior-props.md) 「서버 확정 → 공용 SQLite 자동 등록」.
 
 ### 명령 (감독 세션)
 ```bash
-python3 src/harnesses/interior-props/harness.py draw "chair E" "chair W" --note "…"   # 화면 대신 명령으로 판 열기
+python3 src/harnesses/interior-props/harness.py draw "chair E" "chair W" --note "…"   # 쓰기·유료 제작: 화면 대신 판 열기
 python3 src/harnesses/interior-props/harness.py status                               # 판·작업자 상태
 python3 src/harnesses/interior-props/harness.py review 3 4                           # 이미 그린 판을 (다시) 검수에 — 떨어지면 다시 그린다
 python3 src/harnesses/interior-props/harness.py redo [기물…] [--dry]                # 안 고른 판을 지우고 새 작업지시서로 다시 뽑기(기물을 안 주면 화면 「고를 차례」 위에서부터)
 python3 src/harnesses/interior-props/harness.py bake                                 # 고른 것 굽기(build_tileset → prepare-references)
 ```
-굽고 나면: 방 전·후를 `~/claude-viz/` 에 올려 사용자에게 보이고, 사용자가 괜찮다고 할 때 커밋·PR.
-**고르기 서버가 도는 워크트리**(지금 `/home/main/z-project/rpg-zzu-interior-pick`)에 후보가 쌓인다 — 굽기·커밋도 거기서(브랜치를 따서) 한다.
+`bake`는 체크아웃 산출물을 바꾸는 수동 명령이다. 현재 선택 확정의 공용 등록은 격리 publish 경로가 자동 수행한다.
+**고르기 서버의 실제 WorkingDirectory**에 후보가 쌓인다. 서버를 옮겼다면 DB의 판 경로와 후보 파일도 대조한다.
+문서/코드 PR에 실행 중인 후보·선택 export를 통째로 섞지 않는다. 운영 경로는 필독 운영 문서에서 확인한다.
 
 ## 파일
 
 | 파일 | 하는 일 |
 |---|---|
-| `harness.py` | 명령줄: `draw`·`pool`·`status`·`bake`. `pool` = 대기열 일꾼(동시 `PROP_HARNESS_PAR`=16, 한 명 `PROP_HARNESS_TIMEOUT`=40분) — `draw` 가 알아서 띄운다 |
+| `harness.py` | 명령줄: `draw`·`pool`·`status`·`bake`. 코드 기본 후보 2·동시 `PROP_HARNESS_PAR`=32·한 작업 `PROP_HARNESS_TIMEOUT`=40분; 실제 설정 우선. `draw`가 pool을 띄운다 |
 | `brief.py` | 판마다 작업지시서: 지금 그림·방 안·**같은 물건의 짝(family/)**·화풍 기준(anchors/ = 사용자가 고른 것, 모자라면 같은 분류 v5 원본)·버린 후보와 이유·사용자 메모. 방향 5개(`DIRECTIONS`) |
 | `prompt.md` | 작업자 지시문 틀(한 장만, 자기 파일만, 3바퀴 자기 검수, git·테스트 금지) |
 | `examples/` | 작업지시서 `view34/` 에 8배로 들어가는 3/4 예시 — `good-*`(칩셋 책장·옷장·찬장·벽난로, 손으로 고친 투구 선반) / `bad-*`(같은 물건의 정면도). 벽면 걸이·바닥 무늬 판에는 넣지 않는다 |
 | `review.md` | 검수자 지시문 틀 — **꼭대기 면 규칙**(가구의 가장 높은 수평 면 윗면 ≥3행, 안쪽 선반판은 대신 못 함, 얹힌 물건도 윗면, 「벽에 붙임」≠벽면 걸이; 하네스 `_top_gate` 가 `top_rows<3` 이면 PASS 를 FAIL 로 뒤집는다, 판정 그림 `ref-x8.png` = 칩셋 합격 가구|후보) · 3/4 계약(옆을 보는 물건의 L자 옆모습은 정상), 사유 코드 FRONT·THIN·TOPDOWN·CAP·MIXED·SIDE·WORSE·READ, verdict.json 형식 |
 | `store.py` | `~/.local/share/oprn/prop-harness/harness.sqlite` — rounds·runs·feedback (추가만) |
-| `api.py` | 고르기 서버에 붙는 경로: `/harness`, `/api/harness/{state,objects,thumb,decide,draw}` |
+| `api.py` | `/harness` 통합 입구·`/harness/props` 기물 화면·상태/제안/주문/확정/공용 재게시 API |
+| `derive.py` | 파생 정의·제안·묶음 검사·자식 분할 저장 |
+| `shared_publish.py`, `publish_shared.mjs` | 선택판 격리 굽기·판본 번호 보존·공용 SQLite 게시 |
+| `super_bridge.py`, `web/super.html` | 기존 공간 화면 읽기 연결·실제 공용 자료 전달 |
 | `web/index.html` | 고르는 화면 |
 
 저장소 밖 데이터(워크트리가 지워져도 남는다): `~/.local/share/oprn/prop-harness/` — `harness.sqlite`, `rounds/h<N>/`(작업지시서·그림), `logs/h<N>-<글자>.log`(작업자 출력), `logs/pool.log`.
 
 ## 바꿀 수 있는 것
-- 모델·노력: `PROP_HARNESS_MODEL`(기본 `claude-sonnet-5-5`), `PROP_HARNESS_EFFORT`(그리기, 기본 `medium`), `PROP_HARNESS_REVIEW_EFFORT`(검수, 기본 `high`), `PROP_HARNESS_ATTEMPTS`(한 장 최대 그리기 횟수, 기본 3). 고르기 서버 유닛 환경에 넣으면 화면에서 연 판에도 적용된다.
+- 모델·노력: 코드 기본 엔진은 `PROP_HARNESS_ENGINE=codex`, Codex 모델은 `PROP_HARNESS_CODEX_MODEL=gpt-6.1-sol`.
+  `PROP_HARNESS_MODEL`은 엔진별 모델을 덮는다. 그리기 effort 기본 medium, 검수 effort 기본 codex=medium/claude=high, 시도 기본 3.
+  유닛 환경/기존 판 설정도 확인한다. 전체 변수·격리 범위는 운영 문서에 있다.
 - 방향: `brief.py` 의 `DIRECTIONS`. 버림 이유 칩: `REASONS`.
 
 ## 새 기물 (아직 고른 그림이 없는 `tiledata/hand-interior/new/items.json` 항목)
@@ -76,6 +90,30 @@ python3 src/harnesses/interior-props/harness.py bake                            
 - 항목의 `refs`(가장 닮은 기존 기물)가 화풍 기준 맨 앞에 들어간다 — 보물상자 → 상자·왕실 상자.
 - 검수는 「지금보다 나빠졌나」 대신 「설명대로 읽히나」(`READ`·`STYLE`), 설명의 수치(높이·윗면 행 수)를 잰다.
 - **설명이 곧 그림 명세다.** 「16px 솟음」 처럼 높이만 적으면 키 큰 정면 상자가 나온다(큰 보물상자 h14) — 넓적한 물건은 전체 높이와 윗면 행 수를 적는다.
+
+## 파생 — 방향 4 · 상태 · 움직임 · 큰 판 (2026-10-04)
+
+고른 기물에서 같은 물건의 다른 그림을 뽑는다. 고르는 화면에서 기물 이름 밑 「＋ 파생 만들기」(키 `D`), 또는 「기물 골라 새로 뽑기」에서 하나만 골라 「＋ 파생 만들기」.
+**「자동 제안」 탭**에서 기존 기물의 필요한 파생을 먼저 보여준다. 이름·분류로 찾거나 방향/상태/움직임을 거를 수 있다.
+원본 선택을 마친 새 기물도 포함한다. 이미 주문한 파생은 별도 표시하고, 새 제안에서 확인 창을 열면 기존 주문은 기본 체크에서 뺀다.
+후보 화면에도 자동 제안 줄을 표시한다.
+체크 기본값은 쓰임새로 정한 제안이다(sit·sleep → 방향, open·switch → 상대 상태, light → 움직임).
+열린 상자는 닫힘, 꺼진 불빛은 켬 상태를 제안한다. 크기는 기본 체크하지 않고 창에서 더한다.
+「제안 확인」에서 더하거나 빼고 「주문」하면 후보를 만든다. 코드는 `derive.py`.
+
+- **묶음(방향·상태·움직임)**: 한 장에 칸 여럿을 나란히 그리는 하네스 전용 기물(`tiledata/hand-interior/new/sets.json`, id `<원본> #facing|#state-<영문>|#loop`).
+  원본 칸은 `seed.png` 그대로 고정이고(검사 `derive.lock_check` 가 화소를 잰다), 작업자 한 명이 나머지 칸을 한 판에 그린다 — 칸끼리 같은 물건으로 맞추려고.
+  검수는 묶음 전용 기준(같은 물건인가·방향/상태/움직임이 맞나·빛은 왼쪽 위)으로 본다.
+- **고르면 자른다**: 묶음 후보를 확정하면 칸을 잘라 자식 기물의 고른 그림으로 넣는다(`derive.slice_pick`). 방향은 짝 기물이 있으면 그 기물(chair S → chair E·N·W),
+  없으면 새 기물 `<원본> ~E` 들(`new/items.json`, parent·derive·slot 이 메타에 남는다). 상태는 `<원본> ~open` 같은 새 기물.
+  묶음 자체는 칩셋에 굽지 않는다(install_picks 가 건너뛴다). 움직임을 고르면 별도의 자식 `<원본> ~motion`가 등록된다.
+  첫 프레임·원본 기물은 그대로 두고, 고른 4프레임 띠와 150ms 간격을 `h<N>-<글자>.loop.png`·`.loop.json`에 함께 저장한다.
+  `harness.py bake`는 이 자식의 움직이는 칸을 `animationStrips`(4프레임·1000/150 fps)로 굽는다. 몸통처럼 모든 프레임이 같은 칸은 정지 칸으로 공유한다.
+  재로드 때 띠·프레임 수·간격·캔버스·화소 해시·첫 프레임을 확인한다. 손상·누락이면 이유를 남기고 건너뛰며, 정지 그림으로 대신 굽지 않는다.
+  고른 묶음의 `parent`·`derive`·`setId`·`slot`은 조수용 `handInteriorSpec.json`의 자식 항목과 `derivationSets`에 남는다(기존 의자 E·N·W에도 붙는다).
+- **칸만 다시**: 묶음 후보를 고른 상태에서 아래 바 「칸만 다시 [동][북]…」 → 그 후보에서 출발해 그 칸만 다시 그린다(다른 칸이 바뀌면 검사가 떨어뜨린다, `lock.json`).
+- **큰 판**: 묶음이 아니라 자식 새 기물 `<원본> ~2x2` 하나. 원본의 고른 그림을 출발 그림(`<후보>@<원본>`)으로 새 칸 수에 다시 그린다(늘리기 금지). 깊이·대형 규칙은 `resize_spec` 그대로.
+- id 는 영문만 — `slug()` 가 한글을 지워서 `chair S #방향` 이 `chair_S` 와 겹쳤다.
 
 ## 검수의 한계 (2026-10-01 보정 시험)
 v5 원본을 일부러 후보로 넣어 검수자를 시험했다(`PROP_HARNESS_DATA` 를 임시 폴더로 바꿔서). 대리석 기둥(머리가 정면 띠)은 떨어뜨리고 다시 그리게 해서 머리 윗면이 두꺼워진 그림으로 합격,

@@ -1,11 +1,11 @@
-# 일본 도시 — 도로 키트 사전 · 철도 건널목 4 · 지하도 · 육교 · 노면 표시 · 표지 4
+# 일본 도시 — 도로 키트 사전 · 철도 건널목 4 · 지하도 · 육교 · 노면 표시(자전거·止まれ 4방향) · 표지 4 · 신호기 4
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3728칸**, 16px 칸, 시트 768×1248px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 키트 한 종의 **칸 번호 전체**다. 항목: `kit` id · `name` · `w`×`h` · `anchor`(키트의 「발」 기준점 dx,dy — 왼쪽 위가 (0,0)) · `repeat`(이어 붙여도 되는 축, null = 고정) · `arms`(도로가 이어 나가는 변 `N/S/E/W` → 변 위 시작~끝 오프셋, 변 위 칸이 찬 구간이 도로 폭과 같은 곳) ·
 `tiles`(1층 칸, 줄마다) · `upperTiles`(3층 칸, 줄마다, 표시·화살표·표지 칸) · `codes`(칸마다 엔진 판정: `X` 막힘 · `*` 걸음 ★(캐릭터 위) · `.` 걸음 · `_` 빈 칸) · `access`(있으면 문 앞 같은 접근칸 오프셋).
 -1 칸(위 배열에서는 -1 로 적힌 칸)은 **찍을 때 맵을 건드리지 않는다** — 키트 밖 땅(집 앞 보도·콘크리트)은 비어 있으니 먼저 깔고 겹쳐 찍는다. 찍는 법: `stamp_object({"objectId":"kit:jp_city/<kit id>","mapId":"<맵>","x":<왼쪽 위 x>,"y":<왼쪽 위 y>})`(기본 layers both).
-건널목: 폭 4칸 생활도로 × 선로 한 줄, 경보기 둘 + 차단기 둘 + 바닥판 + 정지선. `-closed` 는 차단기 팔이 내려와 접근 차선을 막은 상태(열차 통과 연출용). 위층(경보기 머리·올라간 차단기 팔)은 지나갈 수 있고 기둥·본체·내려온 팔은 막힌다. 지하도·육교는 북쪽을 향한 한 방향. 신호기·가로등은 시트의 기존 소품(`jp-prop-signal`·`jp-prop-lamp-post` 등)을 쓴다.
+건널목: 폭 4칸 생활도로 × 선로 한 줄, 경보기 둘 + 차단기 둘 + 바닥판 + 정지선. `-closed` 는 차단기 팔이 내려와 접근 차선을 막은 상태(열차 통과 연출용). 위층(경보기 머리·올라간 차단기 팔)은 지나갈 수 있고 기둥·본체·내려온 팔은 막힌다. 지하도·육교는 북쪽을 향한 한 방향. 신호기 1×2: `jp-road-signal-car`(차량 3색 머리, 青 켜짐)·`-car-red`(赤 켜짐)·`jp-road-signal-ped`(보행 신호, 赤 선 사람)·`-ped-green`(青 걷는 사람) — 머리칸(★ 지나감) 아래 기둥 받침(막힘). 큰 신호기·가로등은 시트의 기존 소품(`jp-prop-signal`·`jp-prop-lamp-post` 등)을 쓴다. 노면 글자 `jp-road-mark-tomare-n/e/s/w`(止まれ, 운전자가 북·동·남·서쪽으로 가며 읽는 방향)는 흰 칠 투명 오버레이라 도로(아래층) 위에 `stamp_object`(3층)로 얹는다.
 | 키트 id | 이름 | 크기 w×h | 반복/고정 | 앵커(dx,dy) | 팔(변:시작~끝 오프셋) |
 |---|---|---|---|---|---|
 | `jp-fumikiri-v` | 철도 건널목 · 세로 도로 × 가로 선로 (열림) | 8×9 | 고정 | (4,8) | N:2~5 S:2~5 |
@@ -18,6 +18,14 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | `jp-road-sign-mirror` | 커브 미러 | 1×2 | 고정 | (0,1) | - |
 | `jp-road-sign-post` | 도로 표지 기둥(지시 표지) | 1×2 | 고정 | (0,1) | - |
 | `jp-road-sign-coin` | 코인 파킹 표지 | 1×2 | 고정 | (0,1) | - |
+| `jp-road-signal-car` | 차량 신호기(青) | 1×2 | 고정 | (0,1) | - |
+| `jp-road-signal-car-red` | 차량 신호기(赤) | 1×2 | 고정 | (0,1) | - |
+| `jp-road-signal-ped` | 보행자 신호기(赤) | 1×2 | 고정 | (0,1) | - |
+| `jp-road-signal-ped-green` | 보행자 신호기(青) | 1×2 | 고정 | (0,1) | - |
+| `jp-road-mark-tomare-n` | 노면 止まれ (북행 차량이 읽는 방향) | 1×3 | 고정 | (0,2) | - |
+| `jp-road-mark-tomare-e` | 노면 止まれ (동행 차량이 읽는 방향) | 3×1 | 고정 | (1,0) | - |
+| `jp-road-mark-tomare-s` | 노면 止まれ (남행 차량이 읽는 방향) | 1×3 | 고정 | (0,2) | - |
+| `jp-road-mark-tomare-w` | 노면 止まれ (서행 차량이 읽는 방향) | 3×1 | 고정 | (1,0) | - |
 | `jp-road-mark-bike-stop` | 자전거 정차선 | 1×1 | 고정 | (0,0) | - |
 
 ```json
@@ -32,6 +40,14 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 {"kit":"jp-road-sign-mirror","name":"커브 미러","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3722],[3723]],"codes":["*","X"]},
 {"kit":"jp-road-sign-post","name":"도로 표지 기둥(지시 표지)","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3724],[3721]],"codes":["*","X"]},
 {"kit":"jp-road-sign-coin","name":"코인 파킹 표지","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3725],[3726]],"codes":["*","X"]},
+{"kit":"jp-road-signal-car","name":"차량 신호기(青)","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3728],[3732]],"codes":["*","X"]},
+{"kit":"jp-road-signal-car-red","name":"차량 신호기(赤)","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3730],[3732]],"codes":["*","X"]},
+{"kit":"jp-road-signal-ped","name":"보행자 신호기(赤)","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3733],[3732]],"codes":["*","X"]},
+{"kit":"jp-road-signal-ped-green","name":"보행자 신호기(青)","w":1,"h":2,"anchor":{"dx":0,"dy":1},"repeat":null,"arms":{},"tiles":[[-1],[-1]],"upperTiles":[[3734],[3732]],"codes":["*","X"]},
+{"kit":"jp-road-mark-tomare-n","name":"노면 止まれ (북행 차량이 읽는 방향)","w":1,"h":3,"anchor":{"dx":0,"dy":2},"repeat":null,"arms":{},"tiles":[[-1],[-1],[-1]],"upperTiles":[[3735],[3736],[3737]],"codes":[".",".","."]},
+{"kit":"jp-road-mark-tomare-e","name":"노면 止まれ (동행 차량이 읽는 방향)","w":3,"h":1,"anchor":{"dx":1,"dy":0},"repeat":null,"arms":{},"tiles":[[-1,-1,-1]],"upperTiles":[[3740,3739,3738]],"codes":["..."]},
+{"kit":"jp-road-mark-tomare-s","name":"노면 止まれ (남행 차량이 읽는 방향)","w":1,"h":3,"anchor":{"dx":0,"dy":2},"repeat":null,"arms":{},"tiles":[[-1],[-1],[-1]],"upperTiles":[[3743],[3742],[3741]],"codes":[".",".","."]},
+{"kit":"jp-road-mark-tomare-w","name":"노면 止まれ (서행 차량이 읽는 방향)","w":3,"h":1,"anchor":{"dx":1,"dy":0},"repeat":null,"arms":{},"tiles":[[-1,-1,-1]],"upperTiles":[[3744,3745,3746]],"codes":["..."]},
 {"kit":"jp-road-mark-bike-stop","name":"자전거 정차선","w":1,"h":1,"anchor":{"dx":0,"dy":0},"repeat":null,"arms":{},"tiles":[[-1]],"upperTiles":[[3727]],"codes":["."]}
 ]
 ```

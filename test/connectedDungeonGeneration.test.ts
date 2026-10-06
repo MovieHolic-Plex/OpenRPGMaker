@@ -6,7 +6,7 @@ import { runRoomPipeline, startRoomSession, advanceRoomBuild } from "@/editor/ro
 import { evaluateConnectedDungeon } from "@/editor/dungeonGeneration/connected";
 import { dungeonFloorMask, resolveDungeonPath, validateDungeonGraph, type DungeonGraph } from "@/editor/dungeonGeneration/topology";
 import { runTool } from "@/editor/tools/toolRunner";
-import { toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import type { DungeonRoomPlan } from "@/editor/dungeonRoomPipeline";
 
 const kit = getRoomKit("dungeon-room-v1")!;
@@ -106,7 +106,8 @@ describe("connected dungeon production generation", () => {
     const loaded = { project: deserialize(serialize(ctx.project)) };
     const evaluation = runTool(loaded, "evaluate_dungeon_room", { mapId: "tool_dungeon" });
     expect((evaluation.data as { report: { issues: string[] } }).report.issues).toEqual([]);
-    const schema = toOpenAiTools().find(t => t.function.name === "run_dungeon_room_pipeline")!;
+    // 2026-10-06 조수에게서 숨겼다(EasyRPG 칩셋 폐기) — 스키마 계약은 숨김을 풀었을 때를 지킨다.
+    const schema = toOpenAiTools([{ ...getTool("run_dungeon_room_pipeline")!, deprecated: false }])[0]!;
     expect(schema.function.parameters.properties).toHaveProperty("graph");
     expect(schema.function.parameters.properties).toHaveProperty("path");
   });

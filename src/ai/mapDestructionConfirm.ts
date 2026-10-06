@@ -1,16 +1,16 @@
 // ai/mapDestructionConfirm.ts
 // 맵 규모 파괴(clear_map)의 **사용자 허가 요청**을 만든다. 순수 판정 + 문안(DOM 금지) —
-// 모달 그리기는 editor/ui/modal 의 showConfirm 이 맡는다(overInsertionReview 와 같은 분업).
+// 결정 카드는 editor/panels/aiDecisionPrompt 가 맡는다.
 //
-// 왜 이 계열만 팝업인가 (2026-09 정책 예외): 일반 파괴(remove_event·clear_region 등)는 즉시 적용하고
+// 왜 이 계열만 별도 확인인가 (2026-09 정책 예외): 일반 파괴(remove_event·clear_region 등)는 즉시 적용하고
 // 복구는 되돌리기다. 실측 근거는 approvalPolicy 머리말에 있다 — 사용자는 승인 카드를 항상 수락했고
 // 카드는 마찰만 남겼다. 그 판단이 성립하는 전제는 "무엇이 사라졌는지 사용자가 화면에서 봤다"이다.
 // clear_map 은 그 전제를 깬다: 한 콜로 맵 전체가 바뀌므로, 적용 전 화면과 결과가 **다른 맵**이고
 // 되돌리기 한 번이 놓치면 작업 단위 자체가 사라진다. 그래서 이 계열만 사람이 한 번 본다.
 //
 // 이 모듈은 판정과 문안만 한다. 실제 거부는 두 곳이 집행한다:
-//  - chat: aiProposalCard 가 적용 전에 showConfirm 을 띄우고, 취소면 적용하지 않는다.
-//  - 자율 런: AssistantSession.maybeAutoApplyMilestone 이 자동 적용을 거부한다(모달을 띄울 사람이 없다).
+//  - chat: aiProposalCard 가 적용 전에 인라인 결정 카드를 보여 주고, 취소면 적용하지 않는다.
+//  - 자율 런: AssistantSession.maybeAutoApplyMilestone 이 자동 적용을 거부한다(결정 카드를 기다릴 실행 표면이 없다).
 //  - 그 외 모든 경로: applyProposedProject 가 mapDestructionApproved 없이는 거부한다(안전망).
 
 import type { ProposedCall } from "./assistantSession";
@@ -51,7 +51,7 @@ function destroyedMapLines(call: ProposedCall): string {
 }
 
 /**
- * 허가 모달 요청. 맵 규모 파괴가 없으면 null — 호출부가 모달 없이 그대로 적용한다.
+ * 허가 카드 요청. 맵 규모 파괴가 없으면 null — 호출부가 그대로 적용한다.
  * fail-closed: 툴 결과에서 수치를 못 꺼내도 요청 자체는 만든다(모르는 채 지나가지 않는다).
  */
 export function mapDestructionConfirmRequest(

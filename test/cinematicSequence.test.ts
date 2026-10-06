@@ -4,6 +4,8 @@ import { playCinematicSequence, type CinematicPlayback } from "@/player/cinemati
 import { createBlankProject } from "@/project/defaults";
 import type { CinematicScene, CinematicSequence, Project } from "@/project/types";
 
+vi.mock('@/player/cinematicAssets', () => ({ createCinematicAssets: () => ({ prepare: async (url: string) => ({ url, width: 16, height: 9 }), prepareAudio: async (url: string) => url, warm: () => undefined, dispose: () => undefined }) }));
+
 const text: CinematicScene = { id: "text", kind: "text", narration: "<b>literal</b>\nline", durationMs: 0 };
 const image: CinematicScene = { id: "image", kind: "image", resourceId: "image", narration: "caption", durationMs: 0, motion: "pan" };
 const video: CinematicScene = { id: "video", kind: "video", resourceId: "video", narration: "", durationMs: 0 };
@@ -51,6 +53,7 @@ beforeEach(() => {
   host = document.createElement("div"); document.body.append(host);
   controller = new AbortController();
   play.mockReset().mockResolvedValue(); pause.mockClear(); load.mockClear();
+  vi.spyOn(HTMLImageElement.prototype, "decode").mockResolvedValue();
   vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
   vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(pause);
   vi.spyOn(HTMLMediaElement.prototype, "load").mockImplementation(load);
@@ -72,7 +75,7 @@ describe("shared sequence playback", () => {
     expect(key("Enter", true).defaultPrevented).toBe(true);
     expect(root().dataset.sceneId).toBe("text");
     key("e"); expect(root().dataset.sceneId).toBe("text");
-    key("z"); expect(root().dataset.sceneId).toBe("image");
+    key("z"); await vi.advanceTimersByTimeAsync(0); expect(root().dataset.sceneId).toBe("image");
     expect(root().querySelector("img")?.src).toBe(project.assets.uploaded.image.dataUrl);
     key(" "); expect(root().dataset.sceneId).toBe("last");
     key("Enter"); expect(await playback.done).toBe("completed");
@@ -92,6 +95,7 @@ describe("shared sequence playback", () => {
   });
   it.each([text, image, video])("scrolls overflowing $kind narration synchronously without advancing or leaking keys", async scene => {
     start([{ ...scene, narration: Array.from({ length: 40 }, (_, i) => `line ${i}`).join("\n") }, text], true);
+    await vi.advanceTimersByTimeAsync(0);
     const narration = root().querySelector<HTMLElement>(".cinematic-narration");
     if (!narration) throw new Error("Missing narration");
     // happy-dom has no layout or scroll clamping; model only the browser geometry boundary.
@@ -139,6 +143,37 @@ describe("shared sequence playback", () => {
     expect(root().dataset.sceneId).toBe("image");
     await vi.advanceTimersByTimeAsync(200);
     expect(root().dataset.sceneId).toBe("last");
+    expect(vi.getTimerCount()).toBe(0);
+  });
+  it("starts a picture deadline only after decode", async () => {
+    let prepared!: (value: { url: string; width: number; height: number }) => void;
+    const promise = new Promise<{ url: string; width: number; height: number }>(resolve => { prepared = resolve; });
+    const assets = { prepare: () => promise, warm: () => undefined, dispose: () => undefined };
+    playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable: true, scenes: [{ ...image, durationMs: 100 }, text] }, signal: controller.signal, assets });
+    await vi.advanceTimersByTimeAsync(500);
+    expect(root().dataset.mediaState).toBe('loading');
+    prepared({ url: project.assets.uploaded.image.dataUrl!, width: 16, height: 9 });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(root().dataset.sceneId).toBe('image');
+    await vi.advanceTimersByTimeAsync(99);
+    expect(root().dataset.sceneId).toBe('image');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(root().dataset.sceneId).toBe('text');
+    playback.teardown();
+    await promise;
+    expect(host.children).toHaveLength(0);
+  });
+  it("does not display or advance a decoded picture after the sequence was cancelled", async () => {
+    let prepared!: (value: { url: string; width: number; height: number }) => void;
+    const promise = new Promise<{ url: string; width: number; height: number }>(resolve => { prepared = resolve; });
+    const onFrame = vi.fn();
+    playback = playCinematicSequence({ host, project, sequence: { enabled: true, skippable: true, scenes: [image] }, signal: controller.signal, onFrame, assets: { prepare: () => promise, prepareAudio: async (url: string) => url, warm: () => undefined, dispose: () => undefined } });
+    controller.abort();
+    prepared({ url: project.assets.uploaded.image.dataUrl!, width: 16, height: 9 });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(await playback.done).toBe('aborted');
+    expect(onFrame).not.toHaveBeenCalled();
+    expect(host.children).toHaveLength(0);
     expect(vi.getTimerCount()).toBe(0);
   });
   it("advances video on ended once, clears sources and rejects stale ended events", async () => {
@@ -189,6 +224,7 @@ describe("shared sequence playback", () => {
   });
   it.each([image, video])("permits continuation with a missing $kind reference", async scene => {
     start([{ ...scene, resourceId: "missing" }]);
+    await vi.advanceTimersByTimeAsync(0);
     expect(root().dataset.mediaState).toBe("error");
     key("Enter"); expect(await playback.done).toBe("completed");
     expect(vi.getTimerCount()).toBe(0);

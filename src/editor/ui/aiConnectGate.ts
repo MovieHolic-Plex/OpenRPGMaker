@@ -4,7 +4,7 @@
 // 왜 관문인가 (2026-09-27): 새 프로젝트는 대부분 프리셋 포스터·「새 프로젝트」 장르로 시작한다. 그 경로는
 // 기획 인터뷰 → 저장 → 첫 생성을 AI 팀에 맡기는데, AI 가 없으면 인터뷰를 다 하고 나서야 「입력창에 담았습니다」
 // 토스트와 빈 맵만 남았다. 프리셋의 약속(팀이 첫 마을·이벤트를 만든다)은 AI 없이는 지킬 수 없으므로,
-// 인터뷰 **전에** 막고 어디를 누르면 되는지를 한 화면에서 말한다. AI 없이 시작하는 길(⚙ 시스템 프리셋·빈 프로젝트)은
+// 메뉴·웰컴은 인터뷰 전에, 런처는 최종 확정 뒤에 연결을 안내한다. AI 없이 시작하는 길(⚙ 시스템 프리셋·빈 프로젝트)은
 // 이 관문을 지나지 않는다.
 //
 // 흐름: 「AI 연결하기」 → 관문을 숨기고 AI 설정을 연다 → 설정이 닫히면 연결을 다시 조회한다 →
@@ -14,8 +14,9 @@ import { el } from "@/util/dom";
 import { loadAiConfig } from "@/ai/llmClient";
 import { isAssistantEndpointReady } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus, refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
-import { AI_SETTINGS_CLOSED_EVENT, openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { AI_SETTINGS_CLOSED_EVENT } from "@/editor/panels/aiSettingsEvents";
 import { registerModal, unregisterModal } from "./modalStack";
+import "@/styles/components/app-modal.css";
 
 export const AI_CONNECT_GATE_TESTIDS = {
   host: "ai-connect-gate",
@@ -116,7 +117,7 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
         el("div", { class: "app-modal-title", text: "AI 를 먼저 연결해 주세요", attrs: { id: "ai-connect-gate-title" } }),
         el("div", {
           class: "app-modal-message",
-          text: "프리셋으로 시작하면 AI 팀이 첫 마을과 이벤트를 함께 만듭니다. 연결을 마치면 이 자리에서 바로 이어서 기획을 정해요.",
+          text: "AI가 게임을 만들려면 계정 연결이 필요해요. 연결을 마치면 선택한 내용으로 이어서 진행해요.",
           attrs: { id: "ai-connect-gate-message" },
         }),
         roster,
@@ -155,8 +156,18 @@ export async function ensureAiConnectedForPreset(options: AiConnectGateOptions =
       connectButton.focus();
     }
 
-    connectButton.addEventListener("click", () => {
+    connectButton.addEventListener("click", async () => {
+      if (settled || connectButton.disabled) return;
+      connectButton.disabled = true;
+      let openAiSettingsModal: typeof import("@/editor/panels/aiSettingsModal").openAiSettingsModal;
+      try {
+        ({ openAiSettingsModal } = await import("@/editor/panels/aiSettingsModal"));
+      } catch {
+        if (!settled) { connectButton.disabled = false; status.textContent = "연결 설정을 열지 못했어요. 다시 눌러 주세요."; }
+        return;
+      }
       if (settled) return;
+      connectButton.disabled = false;
       // 관문은 숨기기만 한다 — 설정 창 위아래로 두 창이 겹쳐 보이지 않게 하고, 닫히면 같은 자리로 돌아온다.
       overlay.hidden = true;
       // 대기 표시는 설정 창을 **연 뒤에** 켠다. openAiSettingsModal 은 먼저 closeAiSettingsModal() 을 불러

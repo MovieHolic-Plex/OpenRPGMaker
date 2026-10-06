@@ -1,0 +1,61 @@
+{
+  "guidance": "AI 조수용 플레이 작성 프리셋 24종: 탐험·장치(exploration), NPC 생활(npc-life), 생활·경제(life-economy), 전투 구성(combat).\n제작·수정 요청의 행동에 해당하는 패턴을 조수가 스스로 선택한다. 사용자가 프리셋 이름을 말하거나 메뉴에서 고를 필요는 없다. 일반 요청도 먼저 list_authoring_presets({category})로 후보를 읽고 read_authoring_preset({presetId})로 적용할 지침을 읽는다. 이미 ID를 알면 상세를 바로 읽는다.\n여러 행동이 필요하면 관련 프리셋을 각각 읽고 기존 인물·아이템·스위치·맵을 공유해 조합한다. 예: 밤에만 거래하는 약상은 night-shop, 재료 기부로 다리 복구는 bundle-unlock. 사용자 범위와 현재 프로젝트에 맞는 단계만 적용한다.\n실제 작성 도구는 find_tools로 스키마를 확인한 뒤 호출하고 지침의 정상·실패·취소·재방문 항목을 확인한다. 설명·조회 요청은 읽기와 설명까지 수행한다. 프리셋 조회 자체는 게임 작성·검증·저장 완료가 아니다.",
+  "piReceivesGuidance": true,
+  "legacyReceivesGuidance": true,
+  "initialReadTools": [
+    "list_authoring_presets",
+    "read_authoring_preset"
+  ],
+  "lifeCandidates": [
+    "craft-and-sell",
+    "crop-shipping",
+    "fish-museum",
+    "season-forage",
+    "maker-processing",
+    "bundle-unlock"
+  ],
+  "npcCandidates": [
+    "workday",
+    "guard-patrol",
+    "night-shop",
+    "seasonal-visitor",
+    "progress-reactions",
+    "activity-dialogue"
+  ],
+  "selectionGuidance": "사용자 요청의 행동과 후보 설명을 비교해 필요한 프리셋을 조수가 선택하고 read_authoring_preset으로 읽는다. 복합 요청은 관련 지침을 각각 읽어 필요한 단계만 조합한다. 검색 결과가 없으면 category만 지정하거나 더 짧은 query로 다시 조회한다.",
+  "selected": [
+    {
+      "presetId": "bundle-unlock",
+      "rules": [
+        "최신 사용자 원문과 편집 범위가 우선한다. 필요한 패턴만 적용하고 요청하지 않은 퀘스트·보스·장르 시스템을 추가하지 않는다.",
+        "제작·수정 요청에 맞는 프리셋은 조수가 선택한다. 사용자가 프리셋 이름을 모르거나 메뉴에서 선택하지 않아도 요청의 행동에 맞게 조회한다. 여러 패턴이 필요하면 각 지침을 읽고 공통 인물·아이템·상태를 재사용해 조합한다.",
+        "조회한 ID와 현재 도구 스키마만 쓴다. 없는 도구 인자는 find_tools로 확인하며 상태 이름을 임의의 엔진 필드로 쓰지 않는다.",
+        "기존 전체 페이지와 참조 데이터를 먼저 읽고 관련 부분만 병합한다. 같은 대상의 후속 작업은 최신 결과에서 시작한다.",
+        "정상·실패·취소·재방문에서 실제 입력과 상태 변화의 근거를 기록한다. 아직 실행하지 않은 checks는 미검증이다.",
+        "게임 콘텐츠 완료는 연결된 SQLite 저장 서비스에 저장하고 같은 대상을 재로드한 뒤 보고한다. 메모리 프리뷰는 정본 저장이 아니다."
+      ],
+      "next": "사용자 범위에 맞는 단계만 선택하고 현재 데이터를 읽는다. 다른 행동도 요청받았다면 관련 프리셋을 읽어 공통 대상과 상태를 공유한다. 제작·수정 요청이면 실제 작성 도구의 스키마를 확인해 호출한 뒤 checks를 실행하고 근거를 보고한다. 설명·조회 요청은 읽기와 설명까지 수행한다.",
+      "verificationStatus": "not-run"
+    },
+    {
+      "presetId": "night-shop",
+      "rules": [
+        "최신 사용자 원문과 편집 범위가 우선한다. 필요한 패턴만 적용하고 요청하지 않은 퀘스트·보스·장르 시스템을 추가하지 않는다.",
+        "제작·수정 요청에 맞는 프리셋은 조수가 선택한다. 사용자가 프리셋 이름을 모르거나 메뉴에서 선택하지 않아도 요청의 행동에 맞게 조회한다. 여러 패턴이 필요하면 각 지침을 읽고 공통 인물·아이템·상태를 재사용해 조합한다.",
+        "조회한 ID와 현재 도구 스키마만 쓴다. 없는 도구 인자는 find_tools로 확인하며 상태 이름을 임의의 엔진 필드로 쓰지 않는다.",
+        "기존 전체 페이지와 참조 데이터를 먼저 읽고 관련 부분만 병합한다. 같은 대상의 후속 작업은 최신 결과에서 시작한다.",
+        "정상·실패·취소·재방문에서 실제 입력과 상태 변화의 근거를 기록한다. 아직 실행하지 않은 checks는 미검증이다.",
+        "게임 콘텐츠 완료는 연결된 SQLite 저장 서비스에 저장하고 같은 대상을 재로드한 뒤 보고한다. 메모리 프리뷰는 정본 저장이 아니다."
+      ],
+      "next": "사용자 범위에 맞는 단계만 선택하고 현재 데이터를 읽는다. 다른 행동도 요청받았다면 관련 프리셋을 읽어 공통 대상과 상태를 공유한다. 제작·수정 요청이면 실제 작성 도구의 스키마를 확인해 호출한 뒤 checks를 실행하고 근거를 보고한다. 설명·조회 요청은 읽기와 설명까지 수행한다.",
+      "verificationStatus": "not-run"
+    }
+  ],
+  "modes": [
+    "read",
+    "read"
+  ],
+  "errors": [],
+  "canonicalContentChanged": false,
+  "modelSelectionExecuted": false
+}

@@ -28,9 +28,9 @@ describe("charset label overrides", () => {
         entry.textureKey === ACTOR4_0.textureKey &&
         entry.characterIndex === ACTOR4_0.characterIndex,
     );
-    expect(base?.label).toBe("보라 머리 청년");
+    expect(base?.label).toBe("파란 머리 청년");
     expect(findCharsetSemantic(ACTOR4_0.textureKey, ACTOR4_0.characterIndex)?.label).toBe(
-      "보라 머리 청년",
+      "파란 머리 청년",
     );
   });
 
@@ -55,7 +55,7 @@ describe("charset label overrides", () => {
     ]);
     expect(applied).toHaveLength(CHARSET_SEMANTICS.length);
     expect(findCharsetSemantic(ACTOR4_0.textureKey, ACTOR4_0.characterIndex)?.label).toBe(
-      "보라 머리 청년",
+      "파란 머리 청년",
     );
   });
 

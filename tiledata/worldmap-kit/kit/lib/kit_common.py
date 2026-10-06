@@ -39,6 +39,22 @@ def load_journey(jid):
     return d
 
 
+def journey_for_world(journey, world):
+    """생성 지형의 world.json 이면 여정 사본에 그 세계의 장소 좌표·시작 칸·길을 입힌다(맞춤이 바꾼 것). 손 대륙이면 그대로."""
+    lay = world.get('layout') if isinstance(world, dict) else None
+    if not lay or lay.get('base') != 'generate':
+        return journey
+    import copy
+    j = copy.deepcopy(journey)
+    for p in j['places']:
+        if p['id'] in lay.get('places', {}):
+            p['x'], p['y'] = lay['places'][p['id']]
+    j['start']['cell'] = list(world['start'])
+    j['roads'] = [dict(id=i, via=[], **{'from': a, 'to': b}) for i, a, b in lay.get('road_ends', [])]
+    j['terrain_nodes'] = dict(ramps=[])
+    return j
+
+
 class IconSet:
     def __init__(self, sid):
         # sid 가 경로(폴더가 실제로 있는 것)면 그 폴더를, 아니면 iconsets/<sid> 를 연다 — 새 세트를 저장소에 넣기 전에 시험할 수 있다

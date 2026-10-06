@@ -1,0 +1,1978 @@
+{
+  "set": "class",
+  "browserGraphics": "default",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": true,
+  "variant": "normal",
+  "clips": [
+    {
+      "skill": "skill_cleric_holy_smite",
+      "start": 21.44,
+      "duration": 3.52,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime-holy-warm/skill-skill_cleric_holy_smite.gif",
+      "bytes": 1366572
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_cleric_holy_smite",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 22408,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 22526,
+          "fx": "cleric_holy_orbs_back",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px",
+            "-1280px 0px",
+            "-1408px 0px"
+          ],
+          "plane": "behind",
+          "fieldWidth": 640,
+          "backgroundSize": "1536px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 22532,
+          "fx": "cleric_holy_orbs_front",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px",
+            "-1280px 0px",
+            "-1408px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "1536px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 22724,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23055,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23400,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23577,
+          "fx": "cleric_holy_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "768px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 23686,
+          "fx": "cleric_holy_field",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 21994,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 23214,
+          "actor": "actor_cleric",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 23552,
+          "actor": "actor_cleric",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 23638,
+          "actor": "actor_cleric",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 23913,
+          "actor": "actor_cleric",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 21924.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 13.600000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 21969,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 29,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 21997.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 88.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22024.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 95.40000009536743,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22054.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 121.70000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22082.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 151.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22112,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 179.80000007152557,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22141.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 209,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22181.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 240.80000007152557,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22208.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 278.90000009536743,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22238.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 305.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22272.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 335.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22303.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 370.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22333.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 401,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22358.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 430.40000009536743,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22387.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 456.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22422.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 494.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22453.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 520,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22485,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 553.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22539.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:0",
+            "cleric_holy_orbs_back:0",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 621.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22573.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:0",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 663.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22604.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:0",
+            "cleric_holy_orbs_front:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 691,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22636.600000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 723.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22671.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 765.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22703.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_orbs_back:1",
+            "cleric_holy_orbs_front:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 796.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22730.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:2",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 823.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22760.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:2",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 850.9000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22789.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:2",
+            "cleric_holy_orbs_front:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 883,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22819.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 909.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22847.600000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 940.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22885.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:3",
+            "cleric_holy_orbs_front:3",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 972.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22921.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:4",
+            "cleric_holy_orbs_front:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1015.100000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22950.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:4",
+            "cleric_holy_orbs_front:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1043,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 22980.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1073.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23010.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:5",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1100.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23038.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:5",
+            "cleric_holy_orbs_front:5",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1132.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23076.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1167,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23117.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1203.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23145.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:6",
+            "cleric_holy_orbs_front:6",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1235.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23175.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:7",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1267.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23216.299999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:7",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1310.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23250.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:7",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1341.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23260.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1355,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23287.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1379,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23320.899999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:8",
+            "cleric_holy_orbs_front:8",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1411.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23359.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:9",
+            "cleric_holy_orbs_front:9",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1453.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23417,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:9",
+            "cleric_holy_orbs_front:9",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1509.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23480,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:10",
+            "cleric_holy_orbs_front:9",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1574.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23533.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:10",
+            "cleric_holy_orbs_front:10",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1603.9000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23552.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:11",
+            "cleric_holy_orbs_front:11",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1646.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23584.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_back:11",
+            "cleric_holy_orbs_front:11",
+            "cleric_holy_field:1",
+            "cleric_holy_hit:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1673.3000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23614.100000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_orbs_front:11",
+            "cleric_holy_field:1",
+            "cleric_holy_hit:0"
+          ],
+          "poses": [
+            "cast_raise"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1707.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23712.799999952316,
+          "held": true,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1760.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 23754.799999952316,
+          "held": true,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1760.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 23786.199999928474,
+          "held": true,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_hit:1",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1760.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-1px",
+              "scale": "1.02 0.98"
+            }
+          ]
+        },
+        {
+          "at": 23872.600000023842,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_field:1",
+            "cleric_holy_hit:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "cast_release"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1819.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23930.5,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 1,
+          "fx": [
+            "cleric_holy_hit:2",
+            "cleric_holy_field:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1870.8000000715256,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 23993.199999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:3",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1927.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24072,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [
+            "cleric_holy_hit:4",
+            "cleric_holy_field:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2012.100000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24164.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2105,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24221,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2125,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24304.799999952316,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2175.100000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24326.399999976158,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2273,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24361.699999928474,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2276.4000000953674,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 24406,
+          "held": false,
+          "skill": "skill_cleric_holy_smite",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2312.600000023842,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 21442.199999928474,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 21545.199999928474,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 21621.399999976158,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 21690.600000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 21778.199999928474,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 21871.299999952316,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 22399.600000023842,
+          "duration": 2.0742403628117914,
+          "rate": 1
+        },
+        {
+          "at": 23639.100000023842,
+          "duration": 0.63718820861678,
+          "rate": 1
+        },
+        {
+          "at": 23655.699999928474,
+          "duration": 0.5552380952380952,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 23686,
+          "target": "enemy-1",
+          "text": "-107",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 23686,
+          "on": true
+        },
+        {
+          "at": 23816,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">성직자는 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">성직자가 심판의 빛을 사용했다!",
+        ">성직자가 심판의 빛을 사용했다!슬라임 1에게 107 피해!",
+        ">궁수는 무엇을 할까?"
+      ],
+      "statuses": [
+        "actor_hero-death:전투불능",
+        "actor_hero-death:전투불능"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "cleric_holy_field",
+        "cleric_holy_orbs_back",
+        "cleric_holy_orbs_front",
+        "cleric_holy_hit"
+      ],
+      "problems": []
+    }
+  ],
+  "passed": true
+}

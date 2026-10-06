@@ -1,0 +1,57 @@
+{
+  "checks": [
+    "each visible ground/cliff pixel receives sunlight opacity once; hidden receivers are excluded",
+    "native rough height brush casts terrain shadows with no building/tree caster",
+    "flat native roads never cast a terrain/building shadow",
+    "height brush casts ground shadows for all four sun directions"
+  ],
+  "results": [
+    {
+      "mapId": "shadow_receivers",
+      "before": {
+        "duplicates": 0,
+        "pixels": 1350,
+        "hidden": 115,
+        "unique": 1350
+      },
+      "after": {
+        "duplicates": 0,
+        "pixels": 1212,
+        "hidden": 0,
+        "unique": 1212
+      }
+    },
+    {
+      "mapId": "houses_native",
+      "before": {
+        "duplicates": 0,
+        "pixels": 10948,
+        "hidden": 10,
+        "unique": 10948
+      },
+      "after": {
+        "duplicates": 0,
+        "pixels": 11063,
+        "hidden": 0,
+        "unique": 11063
+      }
+    },
+    {
+      "azimuth": 0,
+      "groundShadowSamples": 128
+    },
+    {
+      "azimuth": 90,
+      "groundShadowSamples": 251
+    },
+    {
+      "azimuth": 180,
+      "groundShadowSamples": 120
+    },
+    {
+      "azimuth": 270,
+      "groundShadowSamples": 104
+    }
+  ],
+  "userProjectWritten": false
+}

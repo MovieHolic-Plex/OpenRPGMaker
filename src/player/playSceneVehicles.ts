@@ -6,7 +6,7 @@ import type { Dir } from "@/player/input";
 import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import { findBlockingEventForPlayerBody } from "@/player/playSceneMovement";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { mapCharacterScale } from "@/project/characterScale";
+import { mapCharacterScale, mapCharacterSizeFactor } from "@/project/characterScale";
 import { inBounds, isPassable } from "@/project/collision";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { resolvePlayerBody } from "@/project/playerFootprint";
@@ -116,7 +116,7 @@ export function syncVehicleSprites(scene: PlaySceneContext): void {
       sprite.setPosition(x, y);
       updateCharacterDepth(sprite, "same");
     }
-    sprite.setScale(mapCharacterScale(sprite.width, tileSize, projectReferenceTileSize(project)));
+    sprite.setScale(mapCharacterScale(sprite.width, tileSize, projectReferenceTileSize(project)) * mapCharacterSizeFactor(scene.map));
   }
 }
 

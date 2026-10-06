@@ -1,0 +1,13 @@
+{
+  "sourceVideo": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/opening-production/video/page@1315f26a766a03b3b4238ba2a921e115.webm",
+  "sourceVideoSha256": "292d5a2ae512fe4deabffc427456b71b35b9eb75ea9b3ce4d9ba299285038f69",
+  "sourceAudio": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/opening-production/native-audio.webm",
+  "sourceAudioSha256": "fddcd796d17c6ac7e27828b6977112ed900b7aee2f69a832635f0585ec98cdc4",
+  "clipStartSeconds": 8.235,
+  "clipEndSeconds": 67.251,
+  "audioStartOffsetMs": 5254,
+  "audioSync": "native audio capture start aligned to browser recording clock; approximate screencast synchronization",
+  "changed": "crop, scale, encode and native audio mux; no respeed, fabricated frames, narration or dubbed score",
+  "mp4Sha256": "8c265c846b51f67a0b8472cbc404cb0172e933a6f950872fc53802e9f779458e",
+  "gifSha256": "7de24b7fbc7db48f151f7bd47d0def54e24ab0d92332804bbbd0cb0684bae2d0"
+}

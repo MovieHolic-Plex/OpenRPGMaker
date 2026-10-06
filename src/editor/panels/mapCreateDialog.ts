@@ -14,6 +14,8 @@ import { store } from "@/project/store";
 import type { MapId, MapTreeNode, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { openWorldAtlasCreateDialog } from './worldAtlasCreateDialog';
+import { WORLDMAP_AUTHORING_ID } from '@/project/defaults/worldmapAuthoring';
 
 export function openMapCreateDialog(request: MapCreateRequest = {}): void {
   const project = store.getCurrent();
@@ -69,6 +71,8 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
       };
 
       const presets = el("div", { class: "map-create-presets" });
+      presets.append(el('button',{class:'btn',text:'빈 월드맵',attrs:{type:'button'},dataset:{testid:'map-create-worldmap-blank'},
+        on:{click:()=>{applyPreset('blank');tileset.value=WORLDMAP_AUTHORING_ID;width.value='48';height.value='36';}}}));
       for (const [value, label] of [
         ["blank", "빈 맵"],
         ["inherit-parent", "부모와 같게"],
@@ -128,6 +132,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
             dataset: { testid: "map-create-confirm" },
             on: { click: submit },
           }),
+          el('button', {class:'btn',text:'세계 지도 만들기',attrs:{type:'button'},dataset:{testid:'map-create-world-atlas'},on:{click:()=>{close();openWorldAtlasCreateDialog();}}}),
           el("button", {
             class: "btn",
             text: "분류만 만들기",

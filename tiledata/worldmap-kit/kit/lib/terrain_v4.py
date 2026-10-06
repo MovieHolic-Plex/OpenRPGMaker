@@ -552,8 +552,10 @@ def render_water(M, img):
                         fr = np.maximum(fr, np.tile(prof[None, :], (16, 1)) if dx else np.tile(prof[:, None], (1, 16)))
                 if fr.max() > 0:
                     sea = water_tile(M, x, y, SEA)
-                    bay = (BAYER[np.arange(16)[:, None] % 4, np.arange(16)[None, :] % 4] + .5) / 16
-                    use = bay < (fr ** 1.3)
+                    # 바이어 디더 대신 칸 안에서 굽이치는 한 줄 경계 — 디더는 어귀가 체크무늬 네모로 떠 보였다(QA 2026-10-03)
+                    yy, xx = np.mgrid[0:16, 0:16]
+                    wav = .5 + .13 * np.sin((yy + y * 16) / 2.6 + x * 1.7) + .09 * np.sin((xx + x * 16) / 2.1 + y * 2.3)
+                    use = fr > wav
                     tile[use] = sea[use]
             img[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = tile
     return img
@@ -700,8 +702,10 @@ def render_shade4(M, img):
 
 
 # ═════════════ 길 ═════════════
+DUST = np.array((0xd3, 0xec, 0xec), np.uint8)   # 눈길 킷의 눈가루 색(terrain_extra.road_kits 'snow')
+# 화산재·현무암 길은 흙길 — 눈길 킷이라 길가에 흰 눈가루 점이 찍혔다(사용자 지적 2026-10-03)
 ROAD_STYLE = {GRASS: 'grass', JUNGLE: 'grass', FARM: 'grass', CROP: 'grass', SAVANNA: 'sand', SWAMP: 'grass', MARSH: 'grass', TUNDRA: 'grass',
-              SAND: 'sand', DUNE: 'sand', DIRT: 'dirt', BADLANDS: 'dirt', ASH: 'snow', BASALT: 'snow', SNOW: 'snow', GLACIER: 'snow',
+              SAND: 'sand', DUNE: 'sand', DIRT: 'dirt', BADLANDS: 'dirt', ASH: 'dirt', BASALT: 'dirt', SNOW: 'snow', GLACIER: 'snow',
               CRATER: 'dirt', CHASM: 'dirt'}
 
 
@@ -709,6 +713,7 @@ def render_roads(M, img, road, bridge, foot, skip=()):
     import terrain_extra as X
     H, W = M.H, M.W
     R = road | foot
+    lab = getattr(M, '_label_px', None)
     for y in range(H):
         for x in range(W):
             if not road[y, x] or (x, y) in bridge or (x, y) in skip:
@@ -723,6 +728,9 @@ def render_roads(M, img, road, bridge, foot, skip=()):
                 aq = a[qy * 8:(qy + 1) * 8, qx * 8:(qx + 1) * 8]
                 rq = rgb[qy * 8:(qy + 1) * 8, qx * 8:(qx + 1) * 8]
                 px0, py0 = x * 16 + qx * 8, y * 16 + qy * 8
+                if style == 'snow' and lab is not None:      # 길가 눈가루는 실제로 눈인 픽셀에만(경계 v9 라벨) — 아니면 흰 점으로 보였다
+                    lq = lab[py0:py0 + 8, px0:px0 + 8]
+                    aq = aq & ~(np.all(rq == DUST, axis=2) & ~np.isin(lq, (SNOW, GLACIER)))
                 dst = img[py0:py0 + 8, px0:px0 + 8]
                 dst[aq] = rq[aq]
     return img

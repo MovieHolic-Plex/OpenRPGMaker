@@ -1,4 +1,5 @@
 import { store, type ProjectChangeCell } from "@/project/store";
+import { worldmapAutoTile, worldmapBrushMaterial, worldmapEraseTile } from '@/project/worldmapAutoBrush';
 import { brushRelief, type ReliefBrushMode } from "@/project/relief/edit";
 import { commitReliefEdit } from "@/editor/reliefActions";
 import { TILE } from "@/project/defaults";
@@ -43,6 +44,7 @@ type RoadPoint = { readonly x: number; readonly y: number };
 export type TileLayer = "lower" | "upper";
 export type TilePaintOptions = {
   readonly autoConnect?: boolean;
+  readonly worldmapAutoBackground?: boolean;
   /** Source stamps keep authored cells without terrain shaping or tree-pair repair. */
   readonly preservePattern?: boolean;
   /** false면 hard 클러스터 동반 타일 확장을 건너뛴다 — 스탬프처럼 "고른 그대로" 찍는 도구용. */
@@ -116,7 +118,9 @@ export function paintTilesBulk(
 
   const planned: PlannedTileEdit[] = [];
   let rejection: TilePaintRejection | null = null;
-  for (const stroke of strokes) {
+  for (const source of strokes) {
+    const stroke = options.worldmapAutoBackground && tileset && !exactPlacement && !options.preservePattern
+      ? { ...source, tile: worldmapAutoTile(currentMap, tileset, source.tile, source.x, source.y, strokes) } : source;
     const targetLayer = effectiveLayer(tileset, stroke.layer, stroke.tile);
     const plan = exactPlacement
       ? planExactPlacement(current, currentMap, targetLayer, stroke.x, stroke.y, stroke.tile)
@@ -173,8 +177,13 @@ export function paintTilesBulk(
   // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
   const shapeAutotile = !options.preservePattern
     && lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
+  const lowerGroups = shapeAutotile ? autotileGroupsForTileset(tileset).filter(group=>autotileGroupLayer(group)==='lower'
+    && edits.some(edit=>edit.layer==='lower'&&autotileEditTriggersGroup(group,tileAt(currentMap,'lower',edit.x,edit.y),edit.tile))) : [];
   // 바닥 위에 겹치는 투명 오토타일(울타리·주차선)은 상위 붓질에서 모양을 맞춘다.
-  const upperGroups = options.preservePattern ? [] : upperAutotileGroupsTriggered(currentMap, tileset, edits);
+  // Whole icon stamps keep their exact pixels, but replacing a forest still
+  // changes the silhouettes of forest cells outside the stamped footprint.
+  const upperGroups = upperAutotileGroupsTriggered(currentMap, tileset, edits)
+    .filter(group => !options.preservePattern || group.id.startsWith('worldmap-brush-'));
   // 정확 배치는 나무 짝 보정도 지난다 — 안 그러면 y=0 밑동은 지워지고, 밑동 위 칸에는
   // 수관이 강제로 심겨 "고른 칸만 바꾼다"는 계약이 그 자리에서 깨진다(OPRN-OUT-017).
   const repairTrees = !options.preservePattern && !exactPlacement
@@ -182,30 +191,20 @@ export function paintTilesBulk(
 
   store.updateMapTiles(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
-    let lowerPrevious: number | undefined;
-    let lowerNext: number | undefined;
     for (const edit of edits) {
-      const previousTile = tileAt(m, edit.layer, edit.x, edit.y);
       setTileSafe(m, edit.layer, edit.x, edit.y, edit.tile);
       if (edit.layer === "lower") {
         lowerPoints.push({ x: edit.x, y: edit.y });
-        // autotile trigger: 첫 previous/임의의 next 로 그룹 매칭 (bulk 동일 타일 페인트 가정)
-        if (lowerPrevious === undefined) lowerPrevious = previousTile;
-        lowerNext = edit.tile;
       }
     }
     if (lowerPoints.length > 0 && shapeAutotile) {
-      shapeTerrainAfterLowerEdit(m, tileset, {
-        autoConnect: true,
-        layer: "lower",
-        nextTile: lowerNext ?? TILE.EMPTY,
-        points: lowerPoints,
-        previousTile: lowerPrevious,
-      });
+      for(const group of lowerGroups)shapeAutotileGroupAround(m,group,lowerPoints);
     }
     if (upperGroups.length > 0) {
       const upperPoints = edits.filter((edit) => edit.layer === "upper").map((edit) => ({ x: edit.x, y: edit.y }));
-      for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, upperPoints);
+      const stamped = options.preservePattern ? new Set(upperPoints.map(p => `${p.x},${p.y}`)) : undefined;
+      for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, upperPoints,
+        stamped ? (x, y) => !stamped.has(`${x},${y}`) : undefined);
     }
     if (repairTrees) {
       repairTreePairsOnMap(m, tileset, {
@@ -335,6 +334,7 @@ export function eraseTilesBulk(
     tile: write.tile,
   }));
   const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, eraseEdits, autoConnect);
+  const upperGroups = upperAutotileGroupsTriggered(currentMap,tileset,eraseEdits);
 
   store.updateMapTiles(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
@@ -358,12 +358,13 @@ export function eraseTilesBulk(
         previousTile: lowerPrevious,
       });
     }
+    for(const group of upperGroups)shapeAutotileGroupAround(autotileGroupLayerView(m,group),group,eraseEdits.filter(edit=>edit.layer==='upper'));
     // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
     repairTreePairsOnMap(m, tileset, {
       canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
     });
   }, {
-    cells: writes.flatMap((write) => changedTileCellsForEdit(mapId, write.layer, [{ x: write.x, y: write.y }], shapeAutotile)),
+    cells: writes.flatMap((write) => changedTileCellsForEdit(mapId, write.layer, [{ x: write.x, y: write.y }], shapeAutotile || upperGroups.length>0)),
   });
 }
 
@@ -392,7 +393,9 @@ function planEraseWrites(
       layer: stroke.layer,
       x: stroke.x,
       y: stroke.y,
-      tile: restoreGround
+      tile: stroke.layer === 'lower' && previous !== undefined && worldmapEraseTile(tileset, previous) !== undefined
+        ? worldmapEraseTile(tileset, previous)!
+        : restoreGround
         ? groundTileNear(map, tileset, stroke.x, stroke.y, erasingLower) ?? TILE.GRASS
         : TILE.EMPTY,
     };
@@ -563,6 +566,10 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
   const current = store.getCurrent();
   const currentMap = current.maps[mapId];
   const tileset = currentMap ? current.tilesets[currentMap.tilesetId] : undefined;
+  if (options.worldmapAutoBackground && tileset && currentMap && worldmapBrushMaterial(tileset, newTile)) {
+    paintTilesBulk(mapId, fillPlan.points.map(p => ({ ...p, layer: fillPlan.layer, tile: newTile })), options);
+    return;
+  }
   const autoConnect = options.autoConnect ?? true;
   const prevAtStart =
     currentMap && fillPlan.points[0]
@@ -574,6 +581,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       autoConnect
       || editTriggersAnyAutotile(tileset, prevAtStart, newTile)
     );
+  const upperGroups=fillPlan.layer==='upper'?autotileGroupsForTileset(tileset).filter(group=>autotileGroupLayer(group)==='upper'&&autotileEditTriggersGroup(group,prevAtStart,newTile)):[];
   store.updateMapTiles(mapId, (m) => {
     if (!inMap(m, x, y)) return;
     const targetLayer = effectiveLayer(tileset, layer, newTile);
@@ -611,6 +619,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       nextTile: newTile,
       autoConnect: shapeAutotile,
     });
+    for(const group of upperGroups)shapeAutotileGroupAround(autotileGroupLayerView(m,group),group,changedPoints);
     // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
     if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
       repairTreePairsOnMap(m, tileset, {
@@ -618,7 +627,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       });
     }
   }, {
-    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile),
+    cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile || upperGroups.length>0),
   });
 }
 

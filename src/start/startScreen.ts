@@ -5,10 +5,11 @@
 // 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 경로였고, 「새 프로젝트」는 장르도 묻지 않고 빈 편집기로
 // 넘어간 뒤 캔버스 위 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다. 이 화면이 그 질문을 가져간다.
 //
-// 번들을 가볍게 둔다: 장르 씨앗·인터뷰·AI 모듈은 편집기 몫이다(편집기 트리를 import 하면 수십 MB 가 된다).
-// 여기서는 폴더만 만들고, 고른 장르·한 문장은 startIntent 로 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
+// 장르 씨앗·저장소·편집기 셸은 편집기 몫이다. 인터뷰 UI만 지연 로드해 폴더를 만들기 전에 기획을 받는다.
+// 확정한 기획 전체는 startIntent로 해당 폴더의 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
 
 import "./startScreen.css";
+import { mountWindowControls } from "./windowControls";
 import { createStartLobby, createLobbyWays, createLobbyFeatures } from "./startLobby";
 import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
 import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
@@ -17,8 +18,8 @@ import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
-import { START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
-import { createFirstWorldArrival, type FirstWorldArrival } from "./firstWorldArrival";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
@@ -68,6 +69,7 @@ type State = {
   error: string;
   joinUrl: string;
   teams: readonly RecentTeamEntry[];
+  confirmedBrief?: GameDesignBrief;
 };
 
 /** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
@@ -201,7 +203,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     showHidden: false,
     choiceId: null,
     startMode: "example",
-    screenSize: "classic",
+    screenSize: DEFAULT_START_SCREEN_SIZE,
     intent: "",
     // 입력칸 값은 번역 계층이 건드리지 않으므로 기본 제목은 여기서 직접 번역한다.
     title: t(DEFAULT_TITLE),
@@ -216,7 +218,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   host.dataset.testid = START_SCREEN_TESTIDS.root;
   const errorBox = el("p", { class: "start-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
   const main = el("section", { class: "start-main", attrs: { "aria-live": "polite" } });
-  let firstArrival: FirstWorldArrival | undefined;
+  let interviewAbort: AbortController | undefined;
+  let interviewDismissed = false;
 
   const setError = (message: string): void => {
     state.error = message;
@@ -236,7 +239,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const controls = Array.from(host.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>("button, input, textarea, select"));
     const disabledBefore = controls.map(control => control.disabled);
     controls.forEach(control => { control.disabled = true; });
-    firstArrival?.setBusy(true);
     setError("");
     try {
       await work();
@@ -246,7 +248,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       state.busy = false;
       host.classList.remove("is-busy");
       controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
-      firstArrival?.setBusy(false);
     }
   };
 
@@ -284,7 +285,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example"): void => {
+    if (state.busy) return;
     state.view = view;
+    state.confirmedBrief = undefined;
     if (view === "new") state.choiceId = choiceId ?? null;
     else if (choiceId !== undefined) state.choiceId = choiceId;
     if (view === "new") {
@@ -308,32 +311,46 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     }
   };
 
-  const create = (): void => void run(async () => {
-    if (state.startMode === "ai" && !state.intent.trim()) {
-      throw new Error("만들고 싶은 게임을 한 문장으로 적어 주세요.");
-    }
+  const createConfirmedProject = async (confirmed?: GameDesignBrief): Promise<boolean> => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const title = state.title.trim() || t(DEFAULT_TITLE);
-    // A free concept enters the existing interview, whose author can still choose any genre.
-    if (state.startMode === "ai" && state.choiceId === null) state.choiceId = "story-cutscene";
+    if (state.startMode === "ai") {
+      const { interviewBeforeProject } = await import("./startInterview");
+      const brief = confirmed ?? state.confirmedBrief ?? await interviewBeforeProject(state.choiceId, state.intent.trim());
+      // Cancelling or declining connection must not create a folder or open the editor.
+      if (!brief) return false;
+      state.confirmedBrief = brief;
+      state.choiceId = brief.presetId;
+      // Planning is immediately usable. Account readiness belongs to the final build,
+      // and declining it retains the confirmed draft for the next attempt.
+      const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+      if (!await ensureAiConnectedForPreset({ presetLabel: NEW_PROJECT_CHOICES.find(choice => choice.id === brief.presetId)?.label })) return false;
+      // Check storage before creating a folder; silently opening a blank project loses the plan.
+      const key = "oprn:start-handoff-storage-check";
+      window.sessionStorage.setItem(key, JSON.stringify({ gameDesignBrief: brief, intent: state.intent }) + " ".repeat(1024));
+      window.sessionStorage.removeItem(key);
+    }
     if (!state.projectDir) await refreshLocation();
     if (!state.projectDir) throw new Error("저장 위치를 정하지 못했습니다. 「위치 바꾸기」로 위치를 골라 주세요.");
     const created = await bridge.createProject({ title, projectDir: state.projectDir });
     if (!created) throw new Error("새 게임 폴더를 만들지 못했습니다.");
-    try {
-      writeStartScreenIntent(window.sessionStorage, {
-        projectDir: created.projectDir,
-        title,
-        choiceId: state.choiceId,
-        intent: state.intent.trim(),
-        startMode: state.startMode,
-        screenSize: state.screenSize,
-      });
-    } catch {
-      // sessionStorage 를 못 쓰면 빈 프로젝트로 연다 — 폴더는 이미 만들어졌다.
+    const handoff = {
+      projectDir: created.projectDir,
+      title,
+      choiceId: state.choiceId,
+      intent: state.intent.trim(),
+      startMode: state.startMode,
+      screenSize: state.screenSize,
+      ...(state.startMode === "ai" && state.confirmedBrief ? { gameDesignBrief: state.confirmedBrief } : {}),
+    };
+    if (state.startMode === "ai") writeStartScreenIntent(window.sessionStorage, handoff);
+    else {
+      try { writeStartScreenIntent(window.sessionStorage, handoff); } catch { /* Preserve the existing non-AI folder opening fallback. */ }
     }
     goEditor();
-  });
+    return true;
+  };
+  const create = (): void => void run(async () => { await createConfirmedProject(); });
 
   const chooseRoot = (): void => void run(async () => {
     if (!bridge?.chooseProjectRoot) return;
@@ -359,7 +376,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     attrs: { type: "button" },
     dataset: { testid: START_SCREEN_TESTIDS.navRecent },
     children: [icon("clock"), "홈"],
-    on: { click: () => showView("home") },
+    on: { click: () => { interviewDismissed = true; showView("home"); } },
   });
   const navNew = el("button", {
     class: "start-nav-item",
@@ -446,14 +463,32 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   const renderAiArrival = (): HTMLElement[] => {
     state.startMode = "ai";
-    firstArrival = createFirstWorldArrival({
-      choiceId: state.choiceId, intent: state.intent,
-      inputTestId: START_SCREEN_TESTIDS.intentInput,
-      submitTestId: START_SCREEN_TESTIDS.create,
-      genreTestId: choice => `${START_SCREEN_TESTIDS.genreOption}-${choice.id}`,
-      onChoice: choiceId => { state.choiceId = choiceId; },
-      onIntent: text => { state.intent = text; },
-      onSubmit: (choiceId, text) => { state.choiceId = choiceId; state.intent = text; create(); },
+    const container = el("div", { class: "start-interview-host", children: [el("h1", { class: "start-interview-loading", text: "어떤 게임을 만들까요?" })] });
+    const controller = new AbortController();
+    interviewAbort = controller;
+    queueMicrotask(() => {
+      void import("./startInterview").then(({ interviewBeforeProject }) => interviewBeforeProject(state.choiceId, state.intent, {
+        container, signal: controller.signal,
+        onConfirm: async brief => {
+          state.busy = true; host.classList.add("is-busy"); setError("");
+          const controls = [...host.querySelectorAll<HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("button, input, select, textarea")];
+          const disabledBefore = controls.map(control => control.disabled);
+          controls.forEach(control => { control.disabled = true; });
+          try { return await createConfirmedProject(brief); }
+          finally {
+            state.busy = false; host.classList.remove("is-busy");
+            controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
+          }
+        },
+      })).then(brief => {
+        if (!brief && !controller.signal.aborted && container.isConnected) {
+          interviewDismissed = true; showView("home");
+        }
+      }).catch(error => {
+        if (controller.signal.aborted) return;
+        container.replaceChildren(el("p", { attrs: { role: "alert" }, text: "인터뷰를 열지 못했습니다. 새 게임 만들기를 다시 눌러 주세요." }));
+        setError(error instanceof Error ? error.message : String(error));
+      });
     });
     const titleInput = el("input", { class: "start-input", value: state.title,
       attrs: { id: "start-title", type: "text", maxlength: "80", autocomplete: "off" }, dataset: { testid: START_SCREEN_TESTIDS.titleInput },
@@ -471,8 +506,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         el("label", { class: "start-field", children: [
           el("span", { class: "start-label", text: "화면 크기" }),
           el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [
+            el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }),
             el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }),
-            el("option", { text: "와이드 · 640 × 360 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }),
           ], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } }),
         ] }),
       ] }),
@@ -482,7 +517,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("button", { class: "start-link", text: "예제 둘러보기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.back }, on: { click: () => showView("new", null, "example") } }),
       el("button", { class: "start-link", text: "빈 프로젝트", attrs: { type: "button" }, dataset: { testid: "start-blank-project" }, on: { click: () => showView("new", null, "blank") } }),
     ] });
-    return [firstArrival.element, settings, alternatives];
+    return [container, settings, alternatives];
   };
 
   const renderHome = (): HTMLElement[] => {
@@ -493,7 +528,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const first = visible[0];
     const rest = list.filter((entry) => entry !== first);
     const actions = lobbyActions(first);
-    const out: HTMLElement[] = first ? [
+    const out: HTMLElement[] = first || interviewDismissed ? [
       createStartLobby(first, first ? entryMeta(first) : "", actions),
       createLobbyWays(actions),
       createLobbyFeatures(),
@@ -570,7 +605,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const fields = el("div", { class: "start-seed-fields", children: [
       el("label", { class: "start-field", children: [el("span", { class: "start-label", attrs: { for: "start-title" }, text: "게임 이름" }), titleInput, el("small", { class: "start-hint", text: "나중에 바꿀 수 있어요." })] }),
       el("div", { class: "start-field", children: [el("span", { class: "start-label", text: "저장 위치" }), el("p", { class: "start-location", children: [icon("folder"), el("code", { text: state.projectDir ?? "…", dataset: { testid: START_SCREEN_TESTIDS.location } }), el("button", { class: "start-link", text: "위치 바꾸기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.changeLocation }, on: { click: chooseRoot } })] }), el("small", { class: "start-hint", text: "이 폴더에 프로젝트와 작업 내용이 저장돼요." })] }),
-      el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }), el("option", { text: "와이드 · 640 × 360 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
+      el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }), el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
     ] });
     return [el("div", { class: "start-new-head", children: [el("button", { class: "start-btn start-btn-icon", attrs: { type: "button", "aria-label": "시작 방식 다시 고르기" }, dataset: { testid: START_SCREEN_TESTIDS.back }, children: [icon("back")], on: { click: () => showView("new", null, "example") } }), el("h1", { class: "start-title", text: "이 장면으로 시작해 볼까요?" })] }),
       el("div", { class: "start-seed-layout", children: [preview, fields] }),
@@ -605,7 +640,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
           attrs: { type: "button", "aria-label": "최근 작업으로 돌아가기" },
           dataset: { testid: START_SCREEN_TESTIDS.back },
           children: [icon("back")],
-          on: { click: () => showView("home") },
+          on: { click: () => { interviewDismissed = true; showView("home"); } },
         }),
         el("h1", { class: "start-title", text: "팀에 참여" }),
       ] }),
@@ -658,9 +693,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     else { navNew.removeAttribute("aria-current"); navRecent.removeAttribute("aria-current"); }
     main.classList.toggle("is-home", home);
     host.dataset.view = state.view;
-    firstArrival?.dispose();
-    firstArrival = undefined;
+    interviewAbort?.abort();
+    interviewAbort = undefined;
     main.replaceChildren(...renderView(), errorBox);
+    host.classList.toggle("is-first-world", Boolean(interviewAbort));
+    host.classList.toggle("is-interview-start", Boolean(interviewAbort));
   };
 
   /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
@@ -713,7 +750,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.view !== "home" && !state.busy) showView("home");
+    if (event.key === "Escape" && state.view !== "home" && !state.busy) { interviewDismissed = true; showView("home"); }
   });
 
   host.replaceChildren(rail, main);
@@ -741,4 +778,4 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
 const host = typeof document !== "undefined" ? document.getElementById("start-app") : null;
 // 편집기와 같은 번역 계층을 먼저 켠다 — 한국어면 카탈로그도 옵서버도 없다.
-if (host) void initI18n().finally(() => mountStartScreen(host, window.oprn?.start));
+if (host) { mountWindowControls(); void initI18n().finally(() => mountStartScreen(host, window.oprn?.start)); }

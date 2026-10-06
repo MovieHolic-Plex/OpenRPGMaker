@@ -5,9 +5,11 @@ import type { Project } from "@/project/types";
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
-import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
+import { createPiAgentLineDecoder, PI_AGENT_HEARTBEAT_MS, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
+import { defaultYieldToUi } from "../yieldToUi";
+import { loadAiConfig } from '../llmClient';
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -43,6 +45,10 @@ function newRunId(): string {
  * 실행을 연다. 무거운 키(타일셋·DB·에셋)는 해시로 보내고, 호스트가 모르는 해시만 내용을 싣는다(heavyWire).
  * 호스트가 409 heavy-missing 이면 그 해시만 실어 한 번 더 보낸다. 옛 호스트(해시를 모르는)는 heavy 필드를 무시하고
  * 빈 키를 받게 되므로, 해시 전송은 실행 기록 헤더(X-Oprn-Run-Id)를 돌려주는 호스트에서만 기억한다.
+ *
+ * 첫 시도는 내용 없이 해시만 보낸다 — 이 탭이 아직 안 보낸 해시라도. 호스트 캐시는 탭·새로고침보다 오래 살아서
+ * (2026-10-04 실측) 새로고침 뒤 첫 턴마다 이미 가진 150MB 를 다시 gzip·업로드·해제·파싱했다: 보내기 쪽 약 5s,
+ * 호스트 쪽 약 6s. 호스트가 정말 모르면 409 한 번(작은 몸통 왕복)으로 그 해시만 받는다.
  */
 async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof fetch, signal: AbortSignal | undefined): Promise<Response> {
   const url = companionAuthUrl("/v1/agent/run", request.provider);
@@ -53,12 +59,12 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
     return doFetch(url, { method: "POST", ...wire, headers: { ...wire.headers, ...companionTokenHeaders() }, ...(signal ? { signal } : {}) });
   };
   if (!plan) return post({ ...request, runId });
-  let response = await post({ ...withHeavyBlobs(plan, origin), runId });
+  let response = await post({ ...(await withHeavyBlobs(plan, origin, [])), runId });
   if (response.status === 409) {
     const payload = await readError(response.clone());
     if (payload.error === "heavy-missing" && Array.isArray(payload.missing)) {
       forgetHeavySent(origin, payload.missing);
-      response = await post({ ...withHeavyBlobs(plan, origin, payload.missing), runId });
+      response = await post({ ...(await withHeavyBlobs(plan, origin, payload.missing)), runId });
     }
   }
   if (response.ok && response.headers.get("X-Oprn-Run-Id")) markHeavySent(origin, plan);
@@ -71,6 +77,9 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
 }
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
+  const imageConfig = loadAiConfig();
+  request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
+    imageModel: request.imageModel ?? imageConfig.imageModel };
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();
@@ -134,7 +143,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
             ? await (await import('../../editor/openingAnimaticPreview')).renderOpeningAnimaticPreview(draft, event.data, options.signal)
             : event.toolName === 'show_opening_image'
             ? await (await import('../../editor/openingImageGeneration')).renderOpeningImage(draft, event.data, options.signal)
-            : await (await import('../toolImageRenderer')).renderPiMapImage(draft, event.data);
+            : await (await import('../toolImageRenderer')).renderPiToolImage(draft, event.toolName, event.data);
           png = url.replace(/^data:image\/png;base64,/, '');
         }
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
@@ -166,6 +175,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         try {
           options.signal?.throwIfAborted();
           if (!options.onCheckpoint) throw new Error("이 호출자는 실시간 적용을 지원하지 않습니다.");
+          // 적용은 메인 스레드를 수 초 잡는다. 그 전에 한 번 그리게 해서 방금 받은 줄(「맵에 반영 중」)이 먼저 보이게 한다.
+          await defaultYieldToUi();
+          options.signal?.throwIfAborted();
           project = await options.onCheckpoint(event);
         } catch (error) {
           checkpointError = error;
@@ -197,15 +209,33 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let stopped = false;
   const abortStream = () => { stopped = true; void reader.cancel().catch(() => undefined); };
   const text = new TextDecoder();
-  // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 실행 상한(PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)까지 「실행 중」이 떠 있는다.
+  // The host journal can already contain done while a live reader has stalled.
+  // Resume that same run before declaring it dead; never launch another authoring worker.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
+  let idleResumeRequested = false;
+  /** 워치독을 건 시각. 타이머가 이보다 한참 늦게 울렸으면 페이지 주 스레드가 멈춰 있었던 것이다. */
+  let armedAt = Date.now();
+  const arm = (ms: number) => { armedAt = Date.now(); watchdog = setTimeout(onStale, ms); };
   const onStale = () => {
     // 우리가 응답 중이거나, 타이머가 늦게 울렸을 뿐 마지막 줄 이후 staleMs 가 안 지났으면 다시 건다.
-    if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { watchdog = setTimeout(onStale, staleMs); return; }
+    if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { arm(staleMs); return; }
+    // 타이머가 제때보다 heartbeat 한 번 넘게 늦었다 = 페이지가 멈춰 있었다. 그동안 도착한 줄은 아직 읽기 대기열에 있고
+    // 브라우저는 밀린 타이머를 그보다 먼저 돌릴 수 있다. 침묵은 워커가 아니라 우리 쪽이므로 heartbeat 두 번만큼 더 듣는다.
+    // 실측(2026-10-05 연애 팀 첫 생성): 편집기가 86초 멈췄다 풀린 순간 워치독이 먼저 울려 「워커에서 80초 동안 신호가
+    // 없어」로 실행을 끊었다 — 워커는 그 사이에도 줄을 쓰고 있었고(빌더 완료·run_lint) 결과는 이미 저장돼 있었다.
+    if (Date.now() - armedAt > staleMs + Math.min(PI_AGENT_HEARTBEAT_MS, staleMs / 2)) { arm(Math.min(PI_AGENT_HEARTBEAT_MS * 2, staleMs)); return; }
+    if (done) { abortStream(); return; }
+    if (resumable && !stopped && !options.signal?.aborted && failures < resumeAttempts) {
+      idleResumeRequested = true;
+      dropError = new Error('실시간 연결에서 신호를 받지 못해 실행 기록을 이어 받습니다.');
+      void reader.cancel().catch(() => undefined);
+      return;
+    }
     stale = true;
     abortStream();
   };
   let watchdog = setTimeout(onStale, staleMs);
+  armedAt = Date.now();
   const resumeAttempts = options.resumeAttempts ?? 6;
   const resumeBase = options.resumeDelayMs ?? 2_000;
   let failures = 0;
@@ -217,18 +247,20 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           const { value, done: finished } = await reader.read();
           if (finished) break;
           if (value) {
-            clearTimeout(watchdog);
-            watchdog = setTimeout(onStale, staleMs);
-            lastLineAt = Date.now();
             failures = 0;
             decoder.push(text.decode(value, { stream: true }));
+            // 줄 처리(적용 대기열·화면 갱신)에 쓴 시간은 워커의 침묵이 아니다 — 처리 뒤에 잰다.
+            clearTimeout(watchdog);
+            arm(staleMs);
+            lastLineAt = Date.now();
           }
         }
-        dropError = null;
+        if (!idleResumeRequested) dropError = null;
       } catch (error) {
         // 연결이 도중에 끊겼다(와이파이·절전·네트워크 변경, Firefox 「Error in input stream」). 호스트는 실행을 계속 들고 있다.
         dropError = error;
       }
+      idleResumeRequested = false;
       decoder.push(text.decode());
       decoder.flush();
       // 끝까지 받았거나, 우리가 끊었거나, 이어 받을 수 없는 호스트면 멈춘다.
@@ -252,7 +284,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       reader = resumed.body.getReader();
       lastLineAt = Date.now();
       clearTimeout(watchdog);
-      watchdog = setTimeout(onStale, staleMs);
+      arm(staleMs);
     }
   } finally {
     clearTimeout(watchdog);
@@ -265,7 +297,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     throw new PiAgentClientError("AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다: " + (dropError instanceof Error ? dropError.message : String(dropError)));
   }
   // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
-  if (checkpointError && !stale) throw checkpointError;
+  // done 이 왔으면 워커가 거절을 받아 넘긴 것이다(적용 검증 거부·맵 소실 거절은 그 변경만 되돌리고 계속한다) —
+  // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
+  if (checkpointError && !stale && !done) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
   if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));
   if (done?.gameSystemProduction?.issues.length) throw new PiAgentClientError('게임 시스템 제작 미완료: ' + done.gameSystemProduction.issues.join(' '));

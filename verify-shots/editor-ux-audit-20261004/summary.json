@@ -1,0 +1,14 @@
+{
+  "commit": "d7a3f0136eca4239fc5c340c8237048bfa848e25",
+  "uniqueAgents": 10,
+  "originalCodeCandidates": 24,
+  "agentReportsIncludingUndoFollowup": 11,
+  "nativeMeasurementWindows": 59,
+  "pageErrors": 0,
+  "typingItems1000": {
+    "inputToTwoRafMedianMs": 1291,
+    "rowsRecreatedPerCharacter": 1000
+  },
+  "undo512MedianMs": 860,
+  "event1000OpenMs": 3521
+}

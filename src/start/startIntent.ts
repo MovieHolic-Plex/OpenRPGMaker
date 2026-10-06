@@ -8,6 +8,7 @@
 
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { ProjectStartMode, ProjectStartScreenSize } from "./projectStart";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_INTENT_KEY = "oprn:start-screen-intent";
 /** 만들기 → 편집기 부팅은 수 초다. 10분이 지난 값은 다른 작업의 찌꺼기로 본다. */
@@ -25,6 +26,8 @@ export type StartScreenIntent = {
   readonly createdAt: number;
   readonly startMode?: ProjectStartMode;
   readonly screenSize?: ProjectStartScreenSize;
+  /** Full confirmed interview; the editor validates it before seeding and saving. */
+  readonly gameDesignBrief?: GameDesignBrief;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">;

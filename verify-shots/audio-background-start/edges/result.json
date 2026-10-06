@@ -1,0 +1,1307 @@
+{
+  "mode": "isolated shipping-player fixtures with actual saved art/audio",
+  "cases": [
+    {
+      "audio": [
+        {
+          "at": 1791162719424,
+          "src": "http://127.0.0.1:36867/assets/easyrpg/sound/Decision2.wav",
+          "loop": false,
+          "played": false,
+          "currentTime": 0,
+          "bytes": 46612,
+          "sha256": "920e6a8ab89fd6c85baa6b5a1723b2f70b2f3b1a38867c346c0e4b2784565c0e"
+        },
+        {
+          "at": 1791162719593,
+          "src": "blob:http://127.0.0.1:36867/8f4e7cc6-07f3-45ca-93cf-183040ef0830",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.040955,
+          "bytes": 6220,
+          "sha256": "11a1e61c9899a09b961823e32da5e3e2dd8a79694e26277ce5358225548c3421"
+        },
+        {
+          "at": 1791162719797,
+          "src": "blob:http://127.0.0.1:36867/8f4e7cc6-07f3-45ca-93cf-183040ef0830",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.070023,
+          "bytes": 6220,
+          "sha256": "11a1e61c9899a09b961823e32da5e3e2dd8a79694e26277ce5358225548c3421"
+        },
+        {
+          "at": 1791162719888,
+          "src": "blob:http://127.0.0.1:36867/84d6dd96-20cf-4fe0-b348-a81e40d82fcd",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.125242,
+          "bytes": 15920,
+          "sha256": "587943131ae1e9a7adefb575868232dd5ef9a08e01745daf7a1d84606606cc55"
+        },
+        {
+          "at": 1791162720331,
+          "src": "blob:http://127.0.0.1:36867/ab097bd5-b3d2-4dcb-8f77-7d1377ce555b",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.140045,
+          "bytes": 12396,
+          "sha256": "e85fbcc0e00ea940e769eec33df3d78ffaf812867fbfc02c80fc222482b7aba3"
+        },
+        {
+          "at": 1791162720340,
+          "src": "blob:http://127.0.0.1:36867/8f4e7cc6-07f3-45ca-93cf-183040ef0830",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.070023,
+          "bytes": 6220,
+          "sha256": "11a1e61c9899a09b961823e32da5e3e2dd8a79694e26277ce5358225548c3421"
+        },
+        {
+          "at": 1791162720442,
+          "src": "blob:http://127.0.0.1:36867/8f4e7cc6-07f3-45ca-93cf-183040ef0830",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.070023,
+          "bytes": 6220,
+          "sha256": "11a1e61c9899a09b961823e32da5e3e2dd8a79694e26277ce5358225548c3421"
+        },
+        {
+          "at": 1791162720538,
+          "src": "blob:http://127.0.0.1:36867/84d6dd96-20cf-4fe0-b348-a81e40d82fcd",
+          "loop": false,
+          "played": true,
+          "currentTime": 0.172586,
+          "bytes": 15920,
+          "sha256": "587943131ae1e9a7adefb575868232dd5ef9a08e01745daf7a1d84606606cc55"
+        },
+        {
+          "at": 1791162724944,
+          "src": "blob:http://127.0.0.1:36867/8a29f5e7-89a9-4168-9fec-c1bb7dc16f0d",
+          "loop": true,
+          "played": true,
+          "currentTime": 0,
+          "bytes": 4342200,
+          "sha256": "813ee4161cb1a9f4ba3b7ee87260e0fa4d006be401fd29ae1ea4b09ddbe56524"
+        },
+        {
+          "at": 1791162769431,
+          "src": "blob:http://127.0.0.1:36867/ed5b5628-8185-4d3d-9b25-bfe6c02c3280",
+          "loop": true,
+          "played": true,
+          "currentTime": 0.077276,
+          "bytes": 2228256,
+          "sha256": "e67220cadaf3bfe9c17d6ad5f00905604b3083a5a106d4592baa5bb440ebf06b"
+        }
+      ],
+      "name": "cold actual map ready during opening; input, events and clock frozen; natural handoff",
+      "passed": true,
+      "timeline": [
+        {
+          "at": 1791162713654,
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162725454,
+          "scene": "prepared-0",
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162733734,
+          "scene": "prepared-0",
+          "cover": false,
+          "dialogue": false,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        },
+        {
+          "at": 1791162747822,
+          "scene": "prepared-1",
+          "cover": false,
+          "dialogue": false,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        },
+        {
+          "at": 1791162768905,
+          "cover": true,
+          "dialogue": false,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        },
+        {
+          "at": 1791162769509,
+          "cover": false,
+          "dialogue": true,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "short opening with pending engine retains cover",
+      "passed": true,
+      "timeline": [
+        {
+          "at": 1791162770444,
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162781661,
+          "scene": "prepared-0",
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162786117,
+          "scene": "prepared-1",
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162795551,
+          "cover": true,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162805620,
+          "cover": true,
+          "dialogue": false,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        },
+        {
+          "at": 1791162806206,
+          "cover": false,
+          "dialogue": true,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "early skip with pending engine retains cover",
+      "passed": true,
+      "timeline": [
+        {
+          "at": 1791162806534,
+          "cover": false,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162817384,
+          "cover": true,
+          "dialogue": false,
+          "state": null
+        },
+        {
+          "at": 1791162828054,
+          "cover": false,
+          "dialogue": true,
+          "state": {
+            "x": 10,
+            "y": 12,
+            "switches": {
+              "sw_0001": false,
+              "sw_0002": false,
+              "sw_0003": false,
+              "sw_0004": false,
+              "sw_0005": false,
+              "sw_0006": false,
+              "sw_0007": false,
+              "sw_0008": false,
+              "sw_0009": false,
+              "sw_0010": false,
+              "sw_0011": false,
+              "sw_0012": false,
+              "sw_0013": false,
+              "sw_0014": false,
+              "sw_0015": false,
+              "sw_0016": false,
+              "sw_0017": false,
+              "sw_0018": false,
+              "sw_0019": false,
+              "sw_0020": false,
+              "sw_gen2_sun_relay": false,
+              "sw_gen2_moon_relay": false,
+              "sw_gen2_bridge_relay": false,
+              "sw_gen2_seal_relay": false,
+              "sw_catalog_gate_open": false,
+              "sw_catalog_lighthouse_lit": false,
+              "sw_catalog_mine_lift": false,
+              "sw_catalog_fountain_flow": false,
+              "sw_catalog_archive_unlock": false,
+              "sw_catalog_beacon_lit": false,
+              "sw_catalog_aqueduct_route": false,
+              "switch_shared_relay_sun": false,
+              "switch_shared_relay_moon": false,
+              "switch_shared_relay_tide": false,
+              "switch_shared_relay_earth": false,
+              "sw_segment_key": false
+            },
+            "variables": {
+              "var_0001": 0,
+              "var_0002": 0,
+              "var_0003": 0,
+              "var_0004": 0,
+              "var_0005": 0,
+              "var_0006": 0,
+              "var_0007": 0,
+              "var_0008": 0,
+              "var_0009": 0,
+              "var_0010": 0,
+              "var_0011": 0,
+              "var_0012": 0,
+              "var_0013": 0,
+              "var_0014": 0,
+              "var_0015": 0,
+              "var_0016": 0,
+              "var_0017": 0,
+              "var_0018": 0,
+              "var_0019": 0,
+              "var_0020": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "actual engine failure aborts opening and reveals recovery",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "previousCaseReceiptSha256": "27d12e904db7df8313d0e8a3f72a651abcf6a6249d25cccd7b702a9cdc77a8b7",
+  "caseRun": "Recovery only; three successful prior cases retained by receipt hash for the same shipping package",
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "[player] failed to start play game: Error: Failed to load http://127.0.0.1:35719/assets/phaser.min-CwlHMuXa.js\n    at l.onerror (http://127.0.0.1:35719/player.js:292:56110)",
+    "[play-boot] [play-boot] stage=error fail map=map_blank_start stale-module-reload err=Failed to load http://127.0.0.1:35719/assets/phaser.min-CwlHMuXa.js {kind: play-boot, stage: error, ok: false, mapId: map_blank_start, elapsedMs: 432}",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "[player] failed to start play game: Error: Failed to load http://127.0.0.1:35719/assets/phaser.min-CwlHMuXa.js\n    at l.onerror (http://127.0.0.1:35719/player.js:292:56110)",
+    "[play-boot] [play-boot] stage=error fail map=map_blank_start bootPlayGame catch err=Failed to load http://127.0.0.1:35719/assets/phaser.min-CwlHMuXa.js {kind: play-boot, stage: error, ok: false, mapId: map_blank_start, elapsedMs: 269}"
+  ],
+  "passed": true,
+  "requests": [
+    {
+      "path": "/player.html",
+      "at": 1791163316813
+    },
+    {
+      "path": "/assets/player-DKsgBNDc.css",
+      "at": 1791163316889
+    },
+    {
+      "path": "/player.js",
+      "at": 1791163316986
+    },
+    {
+      "path": "/project.json",
+      "at": 1791163324577
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision2.wav",
+      "at": 1791163329387
+    },
+    {
+      "path": "/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg",
+      "at": 1791163329395
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision2.wav",
+      "at": 1791163329737
+    },
+    {
+      "path": "/assets/uploaded/original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e.wav",
+      "at": 1791163329994
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163329995
+    },
+    {
+      "path": "/assets/uploaded/original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4.wav",
+      "at": 1791163329997
+    },
+    {
+      "path": "/assets/uploaded/opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28.png",
+      "at": 1791163330012
+    },
+    {
+      "path": "/assets/uploaded/opening_still_eb637001-a738-49d8-8631-2e09fe9fd822.png",
+      "at": 1791163330016
+    },
+    {
+      "path": "/assets/uploaded/original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd.wav",
+      "at": 1791163330020
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163330385
+    },
+    {
+      "path": "/assets/easyrpg-chipset-exterior.png",
+      "at": 1791163330393
+    },
+    {
+      "path": "/assets/uploaded/original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55.wav",
+      "at": 1791163330405
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163330478
+    },
+    {
+      "path": "/assets/dialogue-frame.png",
+      "at": 1791163330480
+    },
+    {
+      "path": "/assets/generated-emotes.png",
+      "at": 1791163330539
+    },
+    {
+      "path": "/assets/beodeul-city/beodeul-city-chipset.png",
+      "at": 1791163330696
+    },
+    {
+      "path": "/assets/atlas-interior/interior-chipset.png",
+      "at": 1791163330781
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor1.png",
+      "at": 1791163330932
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor2.png",
+      "at": 1791163330967
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor3.png",
+      "at": 1791163330967
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor4.png",
+      "at": 1791163331002
+    },
+    {
+      "path": "/assets/easyrpg/charset/Animal.png",
+      "at": 1791163331003
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster2.png",
+      "at": 1791163331042
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster1.png",
+      "at": 1791163331046
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster3.png",
+      "at": 1791163331090
+    },
+    {
+      "path": "/assets/easyrpg/charset/Object2.png",
+      "at": 1791163331132
+    },
+    {
+      "path": "/assets/easyrpg/charset/People1.png",
+      "at": 1791163331167
+    },
+    {
+      "path": "/assets/easyrpg/charset/People2.png",
+      "at": 1791163331174
+    },
+    {
+      "path": "/assets/easyrpg/charset/People3.png",
+      "at": 1791163331205
+    },
+    {
+      "path": "/assets/easyrpg/charset/People4.png",
+      "at": 1791163331214
+    },
+    {
+      "path": "/assets/easyrpg/charset/Vehicles.png",
+      "at": 1791163331276
+    },
+    {
+      "path": "/assets/easyrpg/charset/People5.png",
+      "at": 1791163331276
+    },
+    {
+      "path": "/assets/generated/charsets/Monster5.png",
+      "at": 1791163331336
+    },
+    {
+      "path": "/assets/generated/charsets/Monster4.png",
+      "at": 1791163331336
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_e308195ddc056c1d20bc28f6.png",
+      "at": 1791163338302
+    },
+    {
+      "path": "/assets/generated/charsets/Monster6.png",
+      "at": 1791163338302
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_a4c18b71095e2d66817b07ba.png",
+      "at": 1791163338439
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_0f0ad0287c16dcf426e35e04.png",
+      "at": 1791163338439
+    },
+    {
+      "path": "/player.html",
+      "at": 1791163338492
+    },
+    {
+      "path": "/assets/player-DKsgBNDc.css",
+      "at": 1791163342162
+    },
+    {
+      "path": "/player.js",
+      "at": 1791163342309
+    },
+    {
+      "path": "/project.json",
+      "at": 1791163347590
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision2.wav",
+      "at": 1791163350848
+    },
+    {
+      "path": "/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg",
+      "at": 1791163350850
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision2.wav",
+      "at": 1791163350852
+    },
+    {
+      "path": "/assets/uploaded/original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e.wav",
+      "at": 1791163351026
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163351026
+    },
+    {
+      "path": "/assets/uploaded/opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28.png",
+      "at": 1791163351028
+    },
+    {
+      "path": "/assets/uploaded/original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4.wav",
+      "at": 1791163351029
+    },
+    {
+      "path": "/assets/uploaded/opening_still_eb637001-a738-49d8-8631-2e09fe9fd822.png",
+      "at": 1791163351030
+    },
+    {
+      "path": "/assets/uploaded/original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd.wav",
+      "at": 1791163351037
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163351046
+    },
+    {
+      "path": "/assets/dialogue-frame.png",
+      "at": 1791163351107
+    },
+    {
+      "path": "/assets/easyrpg-chipset-exterior.png",
+      "at": 1791163351108
+    },
+    {
+      "path": "/assets/uploaded/original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55.wav",
+      "at": 1791163351109
+    },
+    {
+      "path": "/assets/uploaded/original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b.wav",
+      "at": 1791163351110
+    },
+    {
+      "path": "/assets/generated-emotes.png",
+      "at": 1791163351171
+    },
+    {
+      "path": "/assets/beodeul-city/beodeul-city-chipset.png",
+      "at": 1791163351219
+    },
+    {
+      "path": "/assets/atlas-interior/interior-chipset.png",
+      "at": 1791163351302
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor1.png",
+      "at": 1791163351380
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor2.png",
+      "at": 1791163351409
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor3.png",
+      "at": 1791163351425
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor4.png",
+      "at": 1791163351444
+    },
+    {
+      "path": "/assets/easyrpg/charset/Animal.png",
+      "at": 1791163351447
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster1.png",
+      "at": 1791163351471
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster2.png",
+      "at": 1791163351473
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster3.png",
+      "at": 1791163351491
+    },
+    {
+      "path": "/assets/easyrpg/charset/Object2.png",
+      "at": 1791163351493
+    },
+    {
+      "path": "/assets/easyrpg/charset/People1.png",
+      "at": 1791163351532
+    },
+    {
+      "path": "/assets/easyrpg/charset/People2.png",
+      "at": 1791163351533
+    },
+    {
+      "path": "/assets/easyrpg/charset/People4.png",
+      "at": 1791163351555
+    },
+    {
+      "path": "/assets/easyrpg/charset/People3.png",
+      "at": 1791163351556
+    },
+    {
+      "path": "/assets/easyrpg/charset/Vehicles.png",
+      "at": 1791163351600
+    },
+    {
+      "path": "/assets/easyrpg/charset/People5.png",
+      "at": 1791163351600
+    },
+    {
+      "path": "/assets/generated/charsets/Monster4.png",
+      "at": 1791163351634
+    },
+    {
+      "path": "/assets/generated/charsets/Monster5.png",
+      "at": 1791163351642
+    },
+    {
+      "path": "/assets/generated/charsets/Monster6.png",
+      "at": 1791163351664
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_e308195ddc056c1d20bc28f6.png",
+      "at": 1791163351672
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_0f0ad0287c16dcf426e35e04.png",
+      "at": 1791163351698
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_a4c18b71095e2d66817b07ba.png",
+      "at": 1791163351699
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_0ab0b1e12952f33797c9ddc7.png",
+      "at": 1791163351732
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_c8c8e0acc9bfba977fe6266b.png",
+      "at": 1791163351736
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_bc1e08b1e81d03d690a506cc.png",
+      "at": 1791163351781
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_9c21cd8ba052bfd1266c0e81.png",
+      "at": 1791163351781
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_87dee29135875f78ac54074b.png",
+      "at": 1791163351819
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_dbe853f2d5e9b089df46c2da.png",
+      "at": 1791163351823
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_401339656b215fa7fc6e9a60.png",
+      "at": 1791163351891
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_56a2cdca9cb3ca991d34cd74.png",
+      "at": 1791163351904
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_626e013c6e4eb9f092f65318.png",
+      "at": 1791163351944
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_397395f7a42fd9e55bf3b57f.png",
+      "at": 1791163351944
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_2f48cef433e6a3d0c9da92e2.png",
+      "at": 1791163356806
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_93f9ee14f8acb228e25ef9f9.png",
+      "at": 1791163356807
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_6f0dedbc49ab83dc84934330.png",
+      "at": 1791163356926
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_4756c3689dcaa1a196dc5751.png",
+      "at": 1791163356926
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_cd6c16904f0fdf83082efcd1.png",
+      "at": 1791163357196
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_aed976ab2df94f4fff9fbe59.png",
+      "at": 1791163357197
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_283da73a0f13600d3c339061.png",
+      "at": 1791163357222
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_03b6fa6cb856a0141829fc6f.png",
+      "at": 1791163357224
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_6fd470043363bf3ac41a20a7.png",
+      "at": 1791163357242
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_381d3a80a0234ade2eea7034.png",
+      "at": 1791163357243
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_f3c69c410efda9f1507667af.png",
+      "at": 1791163357268
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_f80c1690f53b215a6f57083c.png",
+      "at": 1791163357269
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_ee544faa3c4e7b52b098445a.png",
+      "at": 1791163357288
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_17ab019339467e191ee50e09.png",
+      "at": 1791163357290
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_aa7aaa2d60ffab3e9a1b32bf.png",
+      "at": 1791163357317
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_fa326ab8803e05fc3f977b62.png",
+      "at": 1791163357321
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_e5d1eff501e2d85ea1f85c09.png",
+      "at": 1791163357344
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_a4d919d5284623e98c838068.png",
+      "at": 1791163357346
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_9e7d0c2812327b6204cd9f19.png",
+      "at": 1791163357369
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_95ea826ba2295e79e542430d.png",
+      "at": 1791163357372
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_770ec05303967db67d6a467e.png",
+      "at": 1791163357391
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_3b08541741b00d9bcefd57ff.png",
+      "at": 1791163357394
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_4c0b1b28de28be1054442ec6.png",
+      "at": 1791163357405
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_93179924207ba6ac8a6f0463.png",
+      "at": 1791163357408
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_78f18c284ed7989320a03daa.png",
+      "at": 1791163357428
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_e24b1904d7206f6b67742650.png",
+      "at": 1791163357432
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_0e6e611b752feb5ea9f3fe96.png",
+      "at": 1791163357444
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_c1efc0a7dc127cd870df416b.png",
+      "at": 1791163357445
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_22115041551bc9f213a95d5e.png",
+      "at": 1791163357467
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_5325958566a48e7bb7cd72d1.png",
+      "at": 1791163357469
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_cd16c274f98a1bc06d1356e4.png",
+      "at": 1791163357490
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_5624ea240544ac2f51638b6e.png",
+      "at": 1791163357490
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_5e8f0cd454ef21215d4cac63.png",
+      "at": 1791163357512
+    },
+    {
+      "path": "/assets/uploaded/shared_charset_actor_e87fd01fcad8bad5de951a99.png",
+      "at": 1791163357515
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/potion-red.png",
+      "at": 1791163357533
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/capture-orb.png",
+      "at": 1791163357533
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/antidote-green.png",
+      "at": 1791163357555
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/ether-blue.png",
+      "at": 1791163357556
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/wake-herb.png",
+      "at": 1791163357575
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/poison-dart.png",
+      "at": 1791163357577
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/old-key.png",
+      "at": 1791163357610
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/hi-potion.png",
+      "at": 1791163357611
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/panacea.png",
+      "at": 1791163357661
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/elixir.png",
+      "at": 1791163357661
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/throwing-knife.png",
+      "at": 1791163357684
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/smelling-salts.png",
+      "at": 1791163357686
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/warp-scroll.png",
+      "at": 1791163357711
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/poison-vial.png",
+      "at": 1791163357712
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/book-sword.png",
+      "at": 1791163357730
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/book-magic.png",
+      "at": 1791163357731
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/talisman.png",
+      "at": 1791163357752
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/repair-kit.png",
+      "at": 1791163357752
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/mystic-cloth.png",
+      "at": 1791163357784
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/traveler-badge.png",
+      "at": 1791163357785
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/ale.png",
+      "at": 1791163357809
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/lucky-charm.png",
+      "at": 1791163357809
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/antidote-plus.png",
+      "at": 1791163357839
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/apple.png",
+      "at": 1791163357845
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/bandages.png",
+      "at": 1791163357869
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/bread.png",
+      "at": 1791163357871
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/cheese.png",
+      "at": 1791163357907
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/candy.png",
+      "at": 1791163357907
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/coffee.png",
+      "at": 1791163358029
+    },
+    {
+      "path": "/assets/cc0/jetrel/icons/cookie.png",
+      "at": 1791163358029
+    }
+  ]
+}

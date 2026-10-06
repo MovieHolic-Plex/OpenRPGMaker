@@ -1,0 +1,197 @@
+{
+  "scenarioId": "worldmap-autotile-visual",
+  "projectPath": "qa-runs/worldmap-autotile-visual-20261005/shipping-runtime.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "정본을 내보낸 플레이어의 타이틀",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "coast",
+      "note": "해안·오목 만·1칸 지협",
+      "shot": "02-coast.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "qa_coast",
+        "x": 12,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "bridge-bank",
+      "note": "가로 다리 왼쪽 강둑",
+      "shot": "03-bridge-bank.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "qa_water",
+        "x": 4,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "qa_water",
+          "x": 4,
+          "y": 10
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "qa_water",
+          "x": 4,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "bridge-deck",
+      "note": "실제 입력으로 다리 위에 진입",
+      "shot": "04-bridge-deck.png",
+      "failures": [
+        "op waitForPosition 실패: page.waitForFunction: Timeout 4000ms exceeded.",
+        "x: 기대 5, 실제 4"
+      ],
+      "state": {
+        "currentMapId": "qa_water",
+        "x": 4,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 80
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "qa_water",
+          "x": 5,
+          "y": 10,
+          "timeoutMs": 4000
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "bridge-water-blocked",
+      "note": "다리에서 위쪽 물 칸으로 빠지지 않는다",
+      "shot": "05-bridge-water-blocked.png",
+      "failures": [
+        "x: 기대 5, 실제 4"
+      ],
+      "state": {
+        "currentMapId": "qa_water",
+        "x": 4,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 450
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "bridge-exit",
+      "note": "다리 반대편으로 건넌다",
+      "shot": "06-bridge-exit.png",
+      "failures": [
+        "op waitForPosition 실패: page.waitForFunction: Timeout 4000ms exceeded.",
+        "x: 기대 6, 실제 4"
+      ],
+      "state": {
+        "currentMapId": "qa_water",
+        "x": 4,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 80
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "qa_water",
+          "x": 6,
+          "y": 10,
+          "timeoutMs": 4000
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "forest",
+      "note": "숲·산의 구멍과 서로 다른 바닥",
+      "shot": "07-forest.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "qa_forest",
+        "x": 18,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "qa_forest",
+          "x": 18,
+          "y": 10
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "qa_forest",
+          "x": 18,
+          "y": 10
+        }
+      ]
+    }
+  ]
+}

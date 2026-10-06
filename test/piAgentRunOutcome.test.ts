@@ -34,7 +34,7 @@ const h = vi.hoisted(() => ({
     maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } },
   } as unknown,
   piApply: "default" as "yolo" | "auto" | "default" | "review" | "step",
-  /** showConfirm 의 대답. 맵 소실 확인 모달을 사람 없이 굴린다. */
+  /** 인라인 결정의 대답. 맵 소실 확인 카드를 사람 없이 굴린다. */
   confirmAnswer: true,
   /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
   checkpoint: false,
@@ -107,9 +107,9 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
-// 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
-vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
+// 실제 결정 카드를 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
@@ -321,6 +321,24 @@ describe("Pi 경로 실행 결과 4축", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "다듬어라" }, surface());
 
     expect(outcomeCalls.at(-1)).toMatchObject({ execution: "response-final", goal: "unassessed", delivery: "no-change" });
+  });
+
+  it("변경 없는 팀의 실패한 조수는 최종 보고·캡션·반환값에서 실패로 남는다", async () => {
+    h.results.push({ project: h.project, toolCalls: 0 });
+    h.toolEvents.push(
+      { type: "agent_spawn", agentId: "builder-1", role: "builder", mapId: "map_a", task: "조회" },
+      { type: "agent_done", agentId: "builder-1", ok: false, summary: "도구 정의를 거부해 조회하지 못했습니다.",
+        stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] },
+      { type: "team_report", text: "안내판 조회 미완료: 조수 실행 실패." },
+    );
+    const { outcomeCalls, surface } = harness();
+    const ok = await runPiCommand({ mode: "team", mapIds: [], task: "맵 조회" }, surface());
+    expect(ok).toBe(false);
+    expect(outcomeCalls.at(-1)).toMatchObject({ execution: "blocked", delivery: "no-change" });
+    expect(h.boardStates.at(-1)).toMatchObject({ phase: "실패", applied: expect.stringContaining("끝내지 못했어요") });
+    expect(h.bubbles).toContain("assistant:안내판 조회 미완료: 조수 실행 실패.");
+    expect(h.bubbles.some(line => line.includes("확인을 마쳤어요"))).toBe(false);
+    expect(h.statuses.at(-1)).toBe("작업 실패");
   });
 
   // 깨질 것: 질문 턴(툴 0 · 변경 0 · 답 본문)이 「적용됨」 배지와 실패 톤 캡션으로 끝나면

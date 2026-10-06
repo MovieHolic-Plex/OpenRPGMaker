@@ -54,6 +54,14 @@ function packTownProblems(project: Project, map: GameMap): string[] {
 export function measureLayoutQuality(project: Project, map: GameMap): LayoutQualityStats | null {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return null;
+  // Kit terrain includes forests, relief and roads in its actual lower material tiles.
+  // Generated props now live separately in upperTiles; a village density metric still doesn't describe a continent.
+  if (map.worldmapSource?.tilemap?.version === 1 && tileset.family === 'worldmap-kit') return null;
+  // The world kit bakes trees, buildings and roads into one image cell per map cell.
+  // Counting only upper layers calls that authored scenery empty and asks the model to cover it.
+  if (map.worldmapSource && tileset.image.type === 'uploaded' && tileset.tileSize === 16
+    && tileset.tilesPerRow === map.width && tileset.count >= map.width * map.height
+    && map.lowerTiles.every((tile, index) => tile === index)) return null;
   const { width: w, height: h } = map;
   const n = w * h;
   const floor = new Uint8Array(n);

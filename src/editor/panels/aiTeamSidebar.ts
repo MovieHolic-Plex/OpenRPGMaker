@@ -4,17 +4,20 @@ import { createActivityMedia } from "./aiActivityMedia";
 import { createActivityView } from "./aiActivityView";
 import { bindActivityLevel, createActivityLevelControl } from "./aiActivityPreference";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
-// Live team members have a separate right rail. Opening a member never replaces
-// the main conversation. Follow-ups use the existing scoped lane/apply lifecycle.
+// Live team members share the workspace and retain their scoped follow-up lifecycle.
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { currentTeamReviewActions, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { LaneState } from "@/ai/piAgent/lane";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
+import { enabledMembers, type PiTeamMember } from "@/ai/piAgent/teamSpec";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { createTeamTranscript } from "./aiTeamTranscript";
 import { laneSession } from "./aiLaneSession";
+import { teamActivityAge, teamObservation, type TeamObservation } from "./aiTeamObservation";
+import { canOpenEditorMap, selectEditorMap } from "@/editor/mapSelection";
+import type { AiLogSelection } from "./aiWorkspaceLogs";
 
 interface Member {
   key: string;
@@ -23,6 +26,7 @@ interface Member {
   icon: DeckIconName;
   agent?: TeamBoardAgent;
   lane?: LaneState;
+  pending?: PiTeamMember;
 }
 
 const laneLabel: Record<LaneState["status"], string> = {
@@ -30,14 +34,18 @@ const laneLabel: Record<LaneState["status"], string> = {
   discarded: "버림", failed: "실패", stopped: "중단",
 };
 const terminalPhases = new Set(["적용됨", "완료", "버림", "중단", "실패"]);
+const COLLAPSED_KEY = "oprn:ai-team-sidebar-collapsed";
 
-export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; dispose(): void } {
+export function createAiTeamSidebar(options: { settings: HTMLElement }): { root: HTMLElement; openSettings(): void; openFirstMember(): void; getLogSelection(): AiLogSelection | undefined; setEmbedded(on: boolean): void; dispose(): void } {
   const manager = laneSession();
   let activity: TeamBoardState | null = null;
   let selected: string | null = null;
   let view: "team" | "settings" = "team";
   let tab: "chat" | "changes" = "chat";
   let disposed = false;
+  let collapsed = false;
+  let embedded = false;
+  try { collapsed = localStorage.getItem(COLLAPSED_KEY) === "1"; } catch { /* Storage can be unavailable. */ }
   const drafts = new Map<string, string>();
   const followUps = new Map<string, string>();
   const notices = new Map<string, string>();
@@ -47,8 +55,19 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const processBody = el("div", { class: "ai-team-process-body" });
   const process = el("details", { class: "ai-team-process", dataset: { testid: "ai-member-process" }, children: [el("summary", { text: "작업 과정" }), processBody] });
   const resultText = el("p", { class: "ai-team-result", dataset: { testid: "ai-member-result" } });
+  const nextText = el("p", { class: "ai-team-next-action", dataset: { testid: "ai-member-next" } });
+  const reportText = el("p", { class: "ai-team-report-text" });
+  const report = el("details", { class: "ai-team-member-report", children: [el("summary", { text: "보고서" }), reportText] });
   const activityControl = createActivityLevelControl();
-  const conversation = el("div", { children: [activityControl, resultText, activityView.root, process] });
+  const assignment = el("p", { class: "ai-team-member-assignment", dataset: { testid: "ai-member-assignment" }, attrs: { translate: "no" } });
+  const currentAction = el("p", { class: "ai-team-current-action", dataset: { testid: "ai-member-current-action" }, attrs: { role: "status", "aria-live": "polite" } });
+  const recent = el("ol", { class: "ai-team-recent", dataset: { testid: "ai-member-recent" }, attrs: { "aria-label": "최근 활동" } });
+  const records = el("details", { class: "ai-team-member-records", dataset: { testid: "ai-member-records" }, children: [el("summary", { text: "작업 기록" }), report, recent, activityControl, activityView.root, process] });
+  const conversation = el("div", { children: [assignment, el("dl", { class: "ai-team-work-summary", children: [
+    el("dt", { text: "지금" }), el("dd", { children: [currentAction] }),
+    el("dt", { text: "결과" }), el("dd", { children: [resultText] }),
+    el("dt", { text: "다음" }), el("dd", { children: [nextText] }),
+  ] }), records] });
   let hasDetailedTrace = false;
   let processOwner: string | null = null;
   bindActivityLevel(conversation, level => { process.hidden = hasDetailedTrace || level === "none" || level === "brief"; process.open = level === "detail" || level === "trace"; });
@@ -77,17 +96,33 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     dataset: { testid: "ai-member-close" }, children: [deckIcon("x")],
     on: { click: () => closeDetail() },
   });
+  const mapView = el("button", { class: "ai-team-member-map", text: "맵 보기", attrs: { type: "button" }, dataset: { testid: "ai-member-map" }, on: { click: () => {
+    const m = member(); const mapId = m?.agent?.mapId ?? m?.lane?.spec.mapIds[0];
+    if (mapId && selectEditorMap(mapId, { checkoutForEditing: false })) root.dispatchEvent(new Event("oprn:ai-workspace-map", { bubbles: true }));
+  } } }) as HTMLButtonElement;
   const tabs = el("div", { class: "ai-team-member-tabs", attrs: { "aria-label": "팀원 보기" } });
   for (const [id, label] of [["chat", "대화 · 진행"], ["changes", "변경 내용"]] as const) tabs.append(el("button", {
     attrs: { type: "button", "aria-pressed": String(id === tab) }, text: label, dataset: { memberTab: id },
     on: { click: () => { tab = id; renderDetail(); } },
   }));
   const detail = el("section", {
-    class: "ai-team-member-detail", attrs: { hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
-    children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), close] }), tabs, content, notice, actions, composer],
+    class: "ai-team-member-detail", attrs: { id: "ai-team-sidebar-detail", hidden: "", "aria-label": "선택한 팀원" }, dataset: { testid: "ai-member-detail" },
+    children: [el("header", { class: "ai-team-member-head", children: [avatar, el("div", { children: [title, stateText] }), mapView, close] }), tabs, content, notice, actions, composer],
   });
-  const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { view = "team"; render(); } } });
-  const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { "aria-label": "팀원" } });
+  const team = el("button", { class: "ai-team-rail-tab", attrs: { type: "button", "aria-pressed": "true" }, text: "AI 팀", on: { click: () => { setCollapsed(false); view = "team"; render(); } } });
+  const counts = el("span", { class: "ai-team-counts", dataset: { testid: "ai-team-counts" } });
+  const collapseStatus = el("span", { class: "ai-team-collapse-status", attrs: { "aria-hidden": "true" } });
+  const collapse = el("button", {
+    class: "ai-team-collapse", attrs: { type: "button", "aria-controls": "ai-team-sidebar-roster ai-team-sidebar-detail" },
+    dataset: { testid: "ai-team-sidebar-collapse" }, children: [deckIcon("chevron-right"), collapseStatus],
+    on: { click: () => setCollapsed(!collapsed) },
+  });
+  const request = el("p", { class: "ai-team-request", attrs: { translate: "no" } });
+  const leadText = el("span");
+  const lead = el("div", { class: "ai-team-lead", dataset: { testid: "ai-team-lead" }, children: [deckIcon("user"), leadText] });
+  const overview = el("div", { class: "ai-team-overview", children: [el("span", { class: "ai-team-overview-label", text: "팀에 맡긴 일" }), request, lead] });
+  const outcome = el("p", { class: "ai-team-outcome", dataset: { testid: "ai-team-outcome" }, attrs: { role: "status" } });
+  const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { id: "ai-team-sidebar-roster", "aria-label": "팀원" } });
   const empty = el("p", { class: "ai-team-sidebar-empty", text: "팀 작업\n없음" });
   const settings = el("button", {
     class: "ai-team-settings-button", attrs: { type: "button", "aria-label": "AI 팀 설정", title: "AI 팀 설정" },
@@ -96,8 +131,27 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   });
   const root = el("aside", {
     class: "ai-team-sidebar", dataset: { testid: "ai-team-sidebar" }, attrs: { "aria-label": "AI 팀 패널" },
-    children: [el("div", { class: "ai-team-rail-tabs", children: [team] }), roster, empty, settings, detail],
+    children: [el("div", { class: "ai-team-rail-tabs", children: [team, counts, collapse] }), overview, roster, empty, detail, outcome, settings],
   });
+
+  function syncCollapsed(): void {
+    const shut = collapsed && !embedded;
+    root.classList.toggle("is-collapsed", shut);
+    root.dataset.collapsed = String(shut);
+    const label = collapsed ? "AI 팀 펼치기" : "AI 팀 접기";
+    collapse.setAttribute("aria-expanded", String(!collapsed));
+    collapse.setAttribute("aria-label", label);
+    collapse.setAttribute("title", label);
+    // Keep the same live nodes and drafts; hidden controls must leave the tab order.
+    for (const node of [overview, roster, empty, detail, outcome, settings]) node.inert = shut;
+  }
+  function setCollapsed(next: boolean): void {
+    if (next === collapsed) return;
+    collapsed = next;
+    try { localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0"); } catch { /* Folding still works without storage. */ }
+    syncCollapsed();
+    root.dispatchEvent(new Event("oprn:ai-team-sidebar-collapse", { bubbles: true }));
+  }
 
   const members = (): Member[] => [
     ...(activity?.mode === "team" ? activity.agents : []).filter(a =>
@@ -109,9 +163,13 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       icon: (agent.role === "reviewer" ? "shield" : /장식|정원|숲/.test(agent.roleLabel) ? "tree" : /이벤트|대화/.test(agent.roleLabel) ? "user" : "house") as DeckIconName, agent,
     })),
     ...manager.lanes().map(lane => ({ key: `lane:${lane.spec.id}`, name: lane.spec.agentLabel, state: laneLabel[lane.status], icon: (lane.spec.readOnly ? "shield" : "user") as DeckIconName, lane })),
+    ...(activity?.mode === "team" && !terminalPhases.has(activity.phase) ? enabledMembers(loadTeamSpec()).filter(spec =>
+      !activity?.agents.some(agent => agent.memberId === spec.id),
+    ).map(pending => ({ key: `pending:${pending.id}`, name: pending.label, state: "대기", icon: (pending.kind === "reviewer" ? "shield" : "house") as DeckIconName, pending })) : []),
   ];
   const member = (): Member | undefined => members().find(m => m.key === selected);
   function blocked(m: Member): string | null {
+    if (m.pending) return "팀장의 작업 배정을 기다리고 있어요.";
     if (activity && !terminalPhases.has(activity.phase)) return activity.phase === "검토 대기" ? "팀 결과를 적용하거나 버린 뒤 보낼 수 있어요." : "현재 팀 작업이 끝나면 보낼 수 있어요.";
     if (manager.lanes().some(l => l.status === "running")) return "진행 중인 작업이 끝나면 보낼 수 있어요.";
     if (m.lane?.status === "review") return "결과를 적용하거나 버린 뒤 보낼 수 있어요.";
@@ -134,7 +192,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (disposed) return;
     detail.hidden = view === "team" && selected === null;
     if (detail.hidden) return;
-    tabs.hidden = view !== "team"; composer.hidden = view !== "team"; notice.hidden = true; actions.replaceChildren();
+    tabs.hidden = view !== "team"; composer.hidden = view !== "team"; mapView.hidden = view !== "team"; notice.hidden = true; actions.replaceChildren();
     if (view === "settings") {
       title.textContent = "AI 팀 설정"; stateText.textContent = "역할 · 모델 · 작업 범위"; avatar.replaceChildren(deckIcon("gear"));
       if (!content.contains(options.settings)) content.replaceChildren(options.settings);
@@ -144,7 +202,10 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     }
     const m = member();
     if (!m) { selected = null; detail.hidden = true; return; }
-    title.textContent = m.name; stateText.textContent = m.state;
+    const observed = observe(m);
+    title.textContent = m.name; stateText.textContent = `${m.state} · ${observed.scope}`;
+    const mapId = m.agent?.mapId ?? m.lane?.spec.mapIds[0];
+    mapView.disabled = !mapId || !canOpenEditorMap(mapId);
     avatar.replaceChildren(deckIcon(m.icon)); avatar.dataset.state = m.state;
     receiver.textContent = `${m.name}에게 · 후속 요청`;
     // Keep the textarea node, selection and draft intact during streamed updates.
@@ -154,9 +215,15 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     hasDetailedTrace = Boolean(m.agent ? activity?.trace : m.lane?.trace);
     if (tab === "chat") {
       if (!content.contains(conversation)) content.replaceChildren(conversation);
+      assignment.textContent = observed.assignment || "아직 작업을 배정받지 않았어요.";
+      if (currentAction.textContent !== observed.action) currentAction.textContent = observed.action;
+      recent.replaceChildren(...observed.recent.map(entry => el("li", {
+        class: entry.failed ? "is-failed" : "", children: [el("span", { text: entry.failed ? "!" : "·", attrs: { "aria-hidden": "true" } }),
+          el("span", { text: entry.label }), el("time", { text: entry.at ? new Date(entry.at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "", attrs: { translate: "no" } })],
+      })));
       activityControl.dispatchEvent(new Event("ai-activity-level"));
       if (m.agent) {
-        resultText.textContent = m.agent.summary || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
+        resultText.textContent = observed.report || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
         if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
         if (!hasDetailedTrace && !process.hidden && process.open) transcript.update(m.agent);
         activityView.update(activity?.trace, m.agent.agentId);
@@ -177,10 +244,16 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
           ...lane.steps.map(step => el("p", { class: `ai-team-member-step is-${step.kind}`, text: step.text })),
           ...(lane.error ? [el("p", { text: lane.error })] : []),
           ...(notices.has(m.key) ? [el("p", { text: notices.get(m.key)! })] : []));
+      } else {
+        activityView.update(undefined); resultText.textContent = "아직 처리 결과가 없어요"; processBody.replaceChildren();
       }
+      reportText.textContent = resultText.textContent;
+      report.hidden = !reportText.textContent || reportText.textContent === observed.result;
+      resultText.textContent = observed.result;
+      nextText.textContent = blocked(m) ?? (terminalPhases.has(m.state) ? "후속 요청을 보낼 수 있어요." : "완료 후 결과를 확인하세요.");
     } else {
       const keys = m.agent?.changedKeys ?? m.lane?.result?.changedKeys ?? [];
-      changes.replaceChildren(el("p", { text: m.agent?.summary || m.lane?.result?.answer || (keys.length ? "변경 내용이 있어요. 적용하기 전에 확인해 주세요." : "변경한 내용이 없어요.") }));
+      changes.replaceChildren(el("p", { text: observed.report || (keys.length ? "변경 내용이 있어요. 적용하기 전에 확인해 주세요." : "변경한 내용이 없어요.") }));
       if (m.agent?.review) changes.append(el("p", { text: m.agent.review.ok ? "확인을 마쳤어요." : m.agent.review.findings.join("\n") }));
       if (!content.contains(changes)) content.replaceChildren(changes);
     }
@@ -204,26 +277,33 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     updateSend();
   }
   process.addEventListener("toggle", () => { if (process.open && !process.hidden) renderDetail(); });
-  const taskText = (m: Member): string => m.agent?.lastLine || m.agent?.summary || m.agent?.task || m.lane?.progress.lastLine || m.lane?.spec.instruction || "요청을 기다리고 있어요";
+  const observe = (m: Member): TeamObservation => m.pending
+    ? { scope: "배정 전", assignment: m.pending.summary, action: "팀장의 작업 배정을 기다리는 중", result: "아직 실행하지 않았어요", recent: [] }
+    : teamObservation(m.agent, m.agent ? activity?.trace : m.lane?.trace, m.lane);
   const mediaFor = (m: Member) => m.agent
     ? activity?.trace && activityEntryIndex(activity.trace).mediaByActor.get(m.agent.agentId)
     : m.lane?.trace && activityEntryIndex(m.lane.trace).latestMedia;
   const reconcileRoster = createKeyedRows(roster, (m: Member, previous) => {
     const mark = m.state === "완료" || m.state === "적용됨" ? "✓" : m.state === "실패" || m.state === "검토 대기" ? "!" : "";
     const media = mediaFor(m);
+    const observed = observe(m);
+    const label = `${m.name} · ${m.state} · ${observed.scope} · ${observed.action} · 활동 보기`;
+    const texts = { badge: mark, name: m.name, state: m.state, scope: observed.scope, task: observed.action,
+      assignment: observed.assignment, result: `최근 처리 · ${observed.result}`, signal: m.pending ? "배정 후 시작합니다" : teamActivityAge(observed.lastAt) };
     if (previous) {
       previous.setAttribute("aria-pressed", String(view === "team" && selected === m.key));
-      previous.setAttribute("aria-label", `${m.name} · ${m.state} · 대화 열기`);
+      previous.setAttribute("aria-label", label);
       previous.dataset.state = m.state;
       const avatar = previous.querySelector<HTMLElement>(".ai-team-member-avatar")!;
       if (avatar.dataset.icon !== m.icon) {
         avatar.replaceChildren(deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", attrs: { "aria-hidden": "true" } }));
         avatar.dataset.icon = m.icon;
       }
-      for (const [selector, text] of [["badge", mark], ["name", m.name], ["state", m.state], ["task", taskText(m)]] as const) {
+      for (const [selector, text] of Object.entries(texts)) {
         const node = previous.querySelector<HTMLElement>(`.ai-team-member-${selector}`)!;
         if (node.textContent !== text) node.textContent = text;
       }
+      previous.querySelector<HTMLElement>(".ai-team-member-signal")!.dataset.at = String(observed.lastAt ?? "");
       const mediaId = media?.at(-1)?.id ?? "";
       if (previous.dataset.mediaId !== mediaId) {
         previous.querySelector(".ai-activity-media")?.remove();
@@ -233,21 +313,52 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       return previous;
     }
     return el("button", {
-      class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": `${m.name} · ${m.state} · 대화 열기` },
+      class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": label },
       dataset: { testid: "ai-team-member", agentId: m.key, state: m.state, mediaId: media?.at(-1)?.id ?? "" },
-      children: [...(media?.length ? [createActivityMedia(media, "", true)] : []), el("span", { class: "ai-team-member-avatar", dataset: { icon: m.icon }, children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state }), el("span", { class: "ai-team-member-task", text: taskText(m) })],
-      on: { click: () => { selected = selected === m.key && view === "team" ? null : m.key; view = "team"; tab = "chat"; render(); } },
+      children: [...(media?.length ? [createActivityMedia(media, "", true)] : []), el("span", { class: "ai-team-member-avatar", dataset: { icon: m.icon }, children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }),
+        ...Object.entries(texts).filter(([key]) => key !== "badge").map(([key, text]) => el("span", {
+          class: `ai-team-member-${key}`, text, ...(key === "signal" ? { dataset: { at: String(observed.lastAt ?? "") } } : {}),
+          ...(["scope", "assignment"].includes(key) ? { attrs: { translate: "no" } } : {}),
+        }))],
+      on: { click: () => { selected = m.key; view = "team"; tab = "chat"; render(); } },
     });
   });
   function render(): void {
     if (disposed) return;
     const rows = members();
-    reconcileRoster(rows, m => m.key, m => JSON.stringify([m.name, m.state, m.icon, taskText(m), mediaFor(m)?.at(-1)?.id, view === "team" && selected === m.key]));
+    if (selected?.startsWith("pending:")) {
+      const assigned = rows.find(m => m.agent?.memberId === selected?.slice("pending:".length));
+      if (assigned) {
+        const pendingKey = selected;
+        const draft = input.dataset.owner === pendingKey ? input.value : drafts.get(pendingKey);
+        if (draft !== undefined) drafts.set(assigned.key, draft);
+        drafts.delete(pendingKey);
+        if (input.dataset.owner === pendingKey) input.dataset.owner = assigned.key;
+        selected = assigned.key;
+      }
+    }
+    if (selected && !rows.some(m => m.key === selected)) selected = null;
+    reconcileRoster(rows, m => m.key, m => JSON.stringify([m.name, m.state, m.icon, observe(m), mediaFor(m)?.at(-1)?.id, view === "team" && selected === m.key]));
     empty.hidden = rows.length > 0;
+    overview.hidden = !activity || activity.mode !== "team";
+    request.textContent = activity?.task ?? "";
+    const leader = activity?.agents.find(agent => agent.role === "orchestrator");
+    leadText.textContent = leader ? `팀장 · ${teamObservation(leader, activity?.trace).action}` : "팀장 · 작업 배정을 준비하는 중";
+    const running = rows.filter(m => m.state === "실행 중").length;
+    const waiting = rows.filter(m => m.state === "대기").length;
+    const complete = rows.filter(m => ["완료", "적용됨"].includes(m.state)).length;
+    counts.textContent = [`활동 중 ${running}`, waiting ? `대기 ${waiting}` : "", complete ? `완료 ${complete}` : ""].filter(Boolean).join(" · ");
+    collapseStatus.textContent = running ? String(running) : "";
+    collapse.setAttribute("aria-description", counts.textContent);
+    outcome.hidden = !activity || activity.mode !== "team";
+    outcome.textContent = activity?.error ? friendlyExecutionError(activity.error) : activity?.applied || (activity ? `팀 작업 · ${activity.phase}` : "");
+    root.classList.toggle("has-detail", selected !== null || view === "settings");
     // 팀 작업이 없으면 레일을 톱니 하나 폭으로 접는다 — 84px 가 「팀 작업 없음」 한 줄을 위해 늘 캔버스를 먹었다.
     root.classList.toggle("is-idle", rows.length === 0 && view === "team" && selected === null);
     team.setAttribute("aria-pressed", String(view === "team"));
     renderDetail();
+    syncCollapsed();
+    root.dispatchEvent(new Event("oprn:ai-member-selection", { bubbles: true }));
   }
   async function sendFollowUp(): Promise<void> {
     const m = member(); const text = input.value.trim();
@@ -295,17 +406,32 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     }
     if (!disposed) render();
   }
-  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !detail.hidden && root.contains(document.activeElement)) { event.stopPropagation(); closeDetail(); } };
+  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !collapsed && !detail.hidden && root.contains(document.activeElement)) { event.stopPropagation(); closeDetail(); } };
   root.addEventListener("keydown", onKey);
   const unsubscribeTeam = subscribeTeamActivity(next => {
-    if (activity?.task !== next?.task) { if (!selected?.startsWith("lane:")) selected = null; followUps.clear(); }
+    // A task label can change within a run; the trace identifies the execution.
+    if ((activity?.trace?.id ?? activity?.task) !== (next?.trace?.id ?? next?.task)) {
+      if (!selected?.startsWith("lane:")) selected = null;
+      followUps.clear();
+    }
     activity = next; render();
   });
   const unsubscribeLanes = manager.subscribe(() => render());
+  // Tick clocks without rebuilding cards, transcript, focus or drafts.
+  const clock = setInterval(() => {
+    if (document.hidden || !root.isConnected) return;
+    roster.querySelectorAll<HTMLElement>(".ai-team-member-signal[data-at]").forEach(node => {
+      if (node.dataset.at) node.textContent = teamActivityAge(Number(node.dataset.at));
+    });
+  }, 1000);
 
   const unsubscribeStore = store.subscribe((_project, change) => {
     if (change?.projectSwitch) { selected = null; view = "team"; drafts.clear(); followUps.clear(); activity = null; render(); }
   });
   render();
-  return { root, openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } }, openSettings: () => { view = "settings"; render(); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
+  return { root,
+    getLogSelection: () => { const m = member(); return m ? { name: m.name, trace: m.agent ? activity?.trace : m.lane?.trace, actor: m.agent?.agentId } : undefined; },
+    setEmbedded: on => { embedded = on; root.classList.toggle("is-embedded", on); syncCollapsed(); },
+    openFirstMember: () => { if (!selected && view === "team") { selected = members()[0]?.key ?? null; render(); } },
+    openSettings: () => { setCollapsed(false); view = "settings"; render(); root.dispatchEvent(new Event("oprn:ai-workspace-team", { bubbles: true })); options.settings.querySelector<HTMLElement>("button")?.focus(); }, dispose: () => { disposed = true; clearInterval(clock); unsubscribeTeam(); unsubscribeLanes(); unsubscribeStore(); root.removeEventListener("keydown", onKey); root.remove(); } };
 }

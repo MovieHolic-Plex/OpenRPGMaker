@@ -146,11 +146,35 @@ const MIN_WORKER_HEAP_MB = 3584;
  * 무거운 파일이 동시에 여러 워커에 걸리는 일이 드물기 때문이다. 이론 천장으로 워커를 깎으면
  * CPU 가 논다 — 그 실행은 8코어를 줬는데 CPU 를 5.2코어어치만 썼다.
  *
- * 그래서 이론 천장이 예산의 2배까지는 허용한다. 넘치면 cgroup 이 받아낸다 —
- * 상한이 걸린 뒤로 OOM 은 전역이 아니라 이 슬라이스 안에서 나고, memory.events 로 관측된다
- * (`scripts/ci-resource-report.mjs`). 관측 가능한 초과는 노는 코어보다 낫다.
+ * 후보 워커 수는 그래서 이론 천장이 예산의 2배까지인 쪽으로 잡는다.
+ * 그 합이 75% 예산을 넘으면 워커를 줄인다. 2배 허용은 실측 RSS 가 이론의 절반일 때만
+ * 맞았다. 12GB 슬라이스(ci-full, 2026-10-04)에서는 서비스가 물려 준 힙 4096MB × 워커 3 이
+ * memory.max 와 같아서 피크 12.00GiB, OOM kill 1 (run 37183989815) 로 JSON 리포트가 사라졌다.
  */
 const OVERCOMMIT_FACTOR = 2;
+
+function explicitHeapMb(nodeOptions) {
+  const match = /--max-old-space-size(?:=|\s+)(\d+)/.exec(nodeOptions ?? "");
+  if (!match) return null;
+  const value = Number(match[1]);
+  return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+/**
+ * `withHeapOption` 이 실제로 남기는 힙.
+ * 사용자가 `--max-old-space-size` 를 줬으면(서비스 NODE_OPTIONS 포함) 그 값이 우선이다.
+ */
+function inheritedHeapMb() {
+  const fromNode = explicitHeapMb(process.env.NODE_OPTIONS);
+  if (fromNode != null) return fromNode;
+  const override = Number.parseInt(process.env.OPRN_VITEST_HEAP_MB ?? "", 10);
+  if (Number.isFinite(override) && override > 0) return override;
+  return null;
+}
+
+function heapForWorkers(usableMb, workers) {
+  return Math.min(FALLBACK_HEAP_MB, Math.max(MIN_WORKER_HEAP_MB, Math.floor(usableMb / workers)));
+}
 
 /**
  * cgroup 메모리 상한에서 (워커 수, 워커당 힙)을 함께 결정한다.
@@ -182,7 +206,22 @@ function cgroupBudget(args) {
   // 힙은 최악 파일(피크 3.13GB)을 담을 수 있어야 한다 — 이 아래로 내리면 그 파일이
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
   if (usableMb != null) {
-    heapMb = Math.min(FALLBACK_HEAP_MB, Math.max(MIN_WORKER_HEAP_MB, Math.floor(usableMb / workers)));
+    const memoryMaxMb = memoryMax / 1024 / 1024;
+    // 16GB 이하에서는 워커를 하나 둔다. 8GB 힙도 `invalid table size` 로 죽었다
+    // (run 37190574621). 슬라이스 상한은 16GB 이고, 워커 힙은 그 75% 인 12GB 다.
+    if (memoryMaxMb <= 16 * 1024) {
+      workers = 1;
+      heapMb = Math.min(12288, Math.floor(memoryMaxMb * 0.75));
+    } else {
+      heapMb = heapForWorkers(usableMb, workers);
+      const inherited = inheritedHeapMb();
+      if (inherited != null) heapMb = inherited;
+      while (workers > 1 && workers * heapMb > usableMb) {
+        workers -= 1;
+        if (inherited == null) heapMb = heapForWorkers(usableMb, workers);
+      }
+      if (workers * heapMb > usableMb) heapMb = heapForWorkers(usableMb, workers);
+    }
   }
   return { workers, heapMb, usableMb, cpus };
 }
@@ -195,8 +234,18 @@ function heapMbFor(budget) {
 
 function withHeapOption(nodeOptions, budget) {
   const current = nodeOptions ?? "";
-  if (/--max-old-space-size/.test(current)) return current;
-  return `${current} --max-old-space-size=${heapMbFor(budget)}`.trim();
+  const pinned = explicitHeapMb(current);
+  const wanted = heapMbFor(budget);
+  // 상한이 없으면 사용자가 준 힙을 그대로 둔다.
+  if (budget == null) {
+    if (pinned != null) return current;
+    return `${current} --max-old-space-size=${wanted}`.trim();
+  }
+  // cgroup 예산이 있으면 그 힙을 쓴다. 러너 서비스의 4096 은 워커를 그 값에 묶어
+  // 8GB 가 필요한 파일을 heap limit 으로 죽인다.
+  if (pinned === wanted) return current;
+  const stripped = current.replace(/--max-old-space-size(?:=|\s+)\d+/, "").trim();
+  return `${stripped} --max-old-space-size=${wanted}`.trim();
 }
 
 /** cgroup 이 허용하는 것보다 많은 워커를 요청했으면 낮춰 준다. 상한이 없으면 손대지 않는다. */

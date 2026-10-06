@@ -5,6 +5,7 @@
 // `workSink`(작업 띠, aiWorkStrip) 에 넘긴다 — 대화 창에는 말풍선·질문·시각 자료만 남는다.
 
 import type { AuditEntry } from "@/ai/assistantSession";
+import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
@@ -110,8 +111,11 @@ export function markPriorTurns(log: HTMLElement): void {
     body.append(node);
   }
 
+  // 맵별 대기열에서 아직 돌거나 기다리는 실행 카드(aiMapRunCard)는 다음 요청을 보냈다고 접지 않는다 — 진행이 보여야 한다.
+  const liveRun = '.ai-map-run-card[data-state="running"], .ai-map-run-card[data-state="waiting"]';
+  const keepOpen = toWrap.some((node) => node.matches?.(liveRun) || node.querySelector?.(liveRun));
   const group = el("div", {
-    class: "ai-turn-group is-prior-turn is-collapsed",
+    class: keepOpen ? "ai-turn-group is-prior-turn" : "ai-turn-group is-prior-turn is-collapsed",
     dataset: { testid: "ai-turn-group" },
   });
   const toggle = el("button", {
@@ -119,11 +123,11 @@ export function markPriorTurns(log: HTMLElement): void {
     attrs: {
       type: "button",
       title: "이전 턴 펼치기/접기",
-      "aria-expanded": "false",
+      "aria-expanded": String(keepOpen),
       "aria-label": "이전 턴 펼치기/접기",
     },
     dataset: { testid: "ai-turn-group-toggle" },
-    text: `▸ ${preview}`,
+    text: `${keepOpen ? "▾" : "▸"} ${preview}`,
     on: {
       click: () => {
         const collapsed = group.classList.toggle("is-collapsed");
@@ -145,10 +149,11 @@ export function appendConversationBubble(options: {
   readonly at?: Date | string | null;
   readonly scroll?: boolean;
 }): HTMLElement {
+  const scrolling = conversationScroll(options.log);
   options.removeStartScreen();
   if (options.role === "user") {
     ensureDayDivider(options.log, parseAiDayDate(options.at));
-    markPriorTurns(options.log);
+    if (scrolling.following()) markPriorTurns(options.log);
   }
   const body = el("div", {
     class: "ai-command-row-body",
@@ -171,7 +176,7 @@ export function appendConversationBubble(options: {
   if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
-  if (options.scroll !== false) options.log.scrollTop = options.log.scrollHeight;
+  if (options.scroll !== false) scrolling.changed();
   return body;
 }
 
@@ -231,6 +236,7 @@ export function createConversationLogHost(options: {
   readonly workSink?: ConversationWorkSink;
 }): ConversationLogHost {
   const { log, removeStartScreen, workSink } = options;
+  conversationScroll(log);
 
   let replaying = false;
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
@@ -254,7 +260,7 @@ export function createConversationLogHost(options: {
       lastReasoning.state.count += 1;
       // hidden 은 lib.dom 에서 string | boolean 이다("until-found") — 접힘 여부는 참·거짓으로 본다.
       lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, Boolean(lastReasoning.body.hidden));
-      log.scrollTop = log.scrollHeight;
+      followConversationLog(log);
       return { box: lastReasoning.box, body: appendReasoningItem(lastReasoning.body) };
     }
     const body = el("div", { class: "ai-reasoning-body", dataset: { testid: "ai-reasoning-body" } });
@@ -272,7 +278,7 @@ export function createConversationLogHost(options: {
     const box = el("div", { class: "ai-command-attachment ai-reasoning", dataset: { testid: "ai-reasoning" }, children: [toggle, body] });
     attachToLastRow(log, box);
     lastReasoning = { box, body, toggle, state };
-    log.scrollTop = log.scrollHeight;
+    followConversationLog(log);
     return { box, body: appendReasoningItem(body) };
   };
 
@@ -361,7 +367,7 @@ export function createConversationLogHost(options: {
       ),
     });
     attachToLastRow(log, bubble);
-    log.scrollTop = log.scrollHeight;
+    followConversationLog(log);
   };
 
   // AI 리치 문서(present_doc)를 마지막 커맨드 줄에 붙인다.
@@ -373,7 +379,7 @@ export function createConversationLogHost(options: {
       children: [renderAiDocument(documentData, store.getCurrent().tilesets)],
     });
     attachToLastRow(log, bubble);
-    log.scrollTop = log.scrollHeight;
+    followConversationLog(log);
   };
 
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
@@ -410,7 +416,7 @@ export function createConversationLogHost(options: {
       ],
     });
     attachToLastRow(log, bubble);
-    log.scrollTop = log.scrollHeight;
+    followConversationLog(log);
   };
 
   // 변경 카드는 작업 띠로 간다 — 대화 창에는 「무엇이 바뀌었나」 를 말로만 남긴다.
@@ -436,7 +442,7 @@ export function createConversationLogHost(options: {
       try { for (const entry of entries) renderConversationEntry(entry); }
       finally {
         replaying = wasReplaying;
-        if (!replaying) log.scrollTop = log.scrollHeight;
+        if (!replaying) followConversationLog(log);
       }
     },
     clearLastReasoning: () => {

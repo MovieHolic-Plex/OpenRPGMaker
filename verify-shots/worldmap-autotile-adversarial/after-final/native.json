@@ -1,0 +1,71 @@
+{
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-autotile-visual-20261005/after-project",
+  "errors": [],
+  "captures": [
+    {
+      "mapId": "qa_coast",
+      "file": "coast.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_water",
+      "file": "water.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_forest",
+      "file": "forest.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "qa_roads",
+      "file": "roads.png",
+      "origin": {
+        "x": 538,
+        "y": 254
+      },
+      "width": 64,
+      "height": 40
+    },
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "file": "original-map.png",
+      "origin": {
+        "x": 750,
+        "y": 286
+      },
+      "width": 48,
+      "height": 36
+    }
+  ],
+  "nativeEdits": [],
+  "captureOnly": true,
+  "saved": {
+    "projectId": "e1fb8b8b-f276-4158-a378-de9dc15da5b1",
+    "revision": 12,
+    "sha256": "6b0bb7c2d11bbbc50eb07824fd6e5c481b1227cfb0e78e05484e50bbc9acc4af"
+  },
+  "loadedDocument": {
+    "sha256": "6b0bb7c2d11bbbc50eb07824fd6e5c481b1227cfb0e78e05484e50bbc9acc4af",
+    "revision": 12
+  },
+  "sameSavedDocument": true,
+  "reloaded": true,
+  "reloadDifferences": [],
+  "passed": true
+}

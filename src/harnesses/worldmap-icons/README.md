@@ -17,7 +17,7 @@ review ── 독립 검수자(Codex CLI gpt-6.1-sol medium, 동시 8) — revie
    │
 export ── harness-data/worldmap-icons/decisions.json (client=web 결정 + 검수 요약)
    │
-감독: 결정 파일을 읽고 다음 단계 — 버린 것은 다시 그리기 판, 받은 것은 등록 작업(따로 확인받고)
+감독: 결정 파일을 읽고 다음 단계 — 버린 것은 다시 그리기 판, 받은 것은 build → check → 공용 등록
 ```
 
 ## 시점 계약 (review.md)
@@ -67,7 +67,14 @@ systemd-run --user --unit=worldmap-icon-harness -p Restart=on-failure /usr/bin/p
 사용자: 후보 카드에서 「이걸로」(decision=pick) / 「✕ 버림」(이유 칩, 다음 판 지시서에 들어간다) / 「이걸로 다시 그리기」(그 후보에서 출발하는 새 판)
 ```
 고른 후보는 `decisions.json` 의 `picked`(예: `r3/B`)로 남고, 그림은 `~/.local/share/oprn/worldmap-icon-harness/rounds/r3/B/a<시도>/cand.png` 다.
-**시트·번들에 굽는 건 아직 없다** — 사용자가 고른 것이 모이면 굽기 단계를 따로 연다.
+**시트·번들 굽기:** `npm run harness -- worldmap-icons build` → `check`. 현재 사람이 고른 그림만 굽고 칸 번호는 고정한다.
+
+**호스트 공용 DB:** `npm run harness -- worldmap-icons publish-shared --icons-only`로 선택 시트·참고문서를 등록하고
+같은 SQLite 판본을 재읽는다. `--joseon <정본 폴더> --yucatan <정본 폴더>`를 주면 실제 지형 사례도 함께 등록한다.
+지역 사례는 요청 시 로드하며, 새 맵으로 가져온 사본은 지형 설정·크기·업로드 그림과 전용 타일셋을 가진다.
+호스트의 새 세계 지도 생성도 `--selected-icons selected/selected.json`을 사용한다. 미선택 후보는 붙이지 않고
+논리 위치·`iconSelection.pending`만 돌려준다. 하네스 검수 그림과 일반 키트 CLI의 후보 미리보기는 유지한다.
+원본 사본·전체 칸 배열·참고문서도 함께 만든다. 자세한 계약은 `openwiki/harnesses/worldmap-icons.md`.
 명령으로도 연다: `python3 src/harnesses/worldmap-icons/harness.py draw <세트/이름> --note "…" [--base r3/B] [-n 5]` (일꾼은 알아서 뜨고, 1분 놀면 내려간다).
 엔진을 Claude 로: `WMI_HARNESS_ENGINE=claude` (기본 모델 `claude-sonnet-5-5`).
 
@@ -110,6 +117,10 @@ medium 으로 한 바퀴(토큰 1.6만)에 끝냈고, 검수는 시점만 봤다
 - `harness.py hand <아이템> <스크립트>` — 감독이 직접 고친 그림을 후보 H 로 올린다(`hand/town_bell.py` 가 선례: 원래 화소로 탑 가운데·종, 집 넷 우진각 정면).
   렌더 후보처럼 떨어져도 숨기지 않는다.
 
-## 아직 없는 것
-- **굽기.** 고른 후보를 세트 시트(`iconsets/<세트>/sheet.png`)의 그 칸에 넣고 manifest·키트 자체 시험을 다시 돌리는 단계.
-- 하네스 레지스트리(`src/harnesses/_core`, PR #1832) 등록 — 그 PR 이 main 에 들어오면 한 줄 등록한다.
+## 공용 등록 (2026-10-04)
+- 공통 레지스트리에 등록됐다. `npm run harness -- worldmap-icons <단계>`로 기존 Python 명령도 실행한다.
+- `bake.py build/check`는 사람 선택 79개만 1,620칸 RGBA 시트로 굽는다. 기존 후보 세트 시트를 덮지 않는다.
+  원본 지형 0~479 뒤의 번호는 `slots.json`에 고정하며 미선택 칸은 비운다. 선택 그림 해시가 바뀌면 새 선택 없이 굽지 않는다.
+- `worldmap_selected`는 새·기존 프로젝트 모두 참고문서·스탬프를 갖는다.
+  조수: `list_worldmap_icons`·`stamp_worldmap_icon`·`inspect_worldmap_icon`. 생성 지도에는 타일 이식으로 넣는다.
+- 에디터 공방 내부 실행기는 아직 없다. 사람 선택 화면은 기존 18313 서버다.

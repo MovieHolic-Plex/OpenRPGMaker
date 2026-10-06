@@ -1,0 +1,23 @@
+{
+  "realSdkPayload": true,
+  "offlineNoProviderRequest": true,
+  "observations": [
+    {
+      "model": "gemini-3.7-flash",
+      "toolCount": 35,
+      "nullableIntegerEnumPreserved": true,
+      "sourceUnchanged": true,
+      "idempotent": true,
+      "broadenedEnumAndLostNullRejected": true
+    },
+    {
+      "model": "claude-opus-4-6",
+      "toolCount": 35,
+      "nullableIntegerEnumPreserved": true,
+      "sourceUnchanged": true,
+      "idempotent": true,
+      "broadenedEnumAndLostNullRejected": true
+    }
+  ],
+  "malformedSchemasRejected": 5
+}

@@ -32,6 +32,7 @@ export interface ActionProjectile {
   y: number;
   readonly dirX: number;
   readonly dirY: number;
+  readonly flightHeight: number;
   readonly speedTilesPerMs: number;
   readonly damage: number;
   readonly elementId: string | undefined;

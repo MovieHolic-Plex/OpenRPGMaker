@@ -1,0 +1,73 @@
+/* One overlay workspace; the map keeps the same width when it opens. */
+.ai-right-dock { flex: 0 0 44px; width: 44px; min-width: 44px; z-index: 43; }
+/* The conversation overlay must leave map controls clickable. */
+.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar {
+  right: min(348px, calc(100vw - 80px));
+  max-width: calc(100% - 360px);
+}
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
+  position: absolute; inset: 0 0 0 auto; width: min(380px, calc(100vw - 48px));
+  min-width: 0; max-width: none; height: 100%; max-height: none;
+  border-left: 1px solid var(--border-default); box-shadow: -12px 0 32px color-mix(in srgb, var(--text-1) 12%, transparent);
+}
+.ai-workspace-tabs { display: flex; gap: 4px; flex: 0 0 auto; padding: 4px 12px 8px; border-bottom: 1px solid var(--border-subtle); }
+.ai-chat-panel.is-workspace .ai-chat-body { position: relative; }
+.ai-workspace-tabs button { flex: 1; border: 0; border-radius: var(--radius-s); padding: 8px; background: transparent; color: var(--text-2); font: 600 13px var(--font-ui); cursor: pointer; }
+.ai-workspace-tabs button[aria-selected="true"] { background: var(--accent-muted); color: var(--accent); }
+.ai-workspace-tabs button:focus-visible, .ai-workspace-logs button:focus-visible { outline: var(--focus-outline); }
+.ai-chat-panel.is-workspace :is(.ai-chat-body,.ai-command-bar,.ai-conversation-outcome,.ai-workspace-tabs,.ai-workspace-logs,.ai-team-sidebar)[hidden] { display: none !important; }
+.ai-right-dock .ai-chat-panel.is-workspace .ai-deck-rail { gap: 6px; padding-inline: 12px; }
+.ai-right-dock .ai-chat-panel.is-workspace .ai-deck-rail-ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-workspace-log-trigger { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; border: 0; border-radius: var(--radius-s); padding: 6px; color: var(--text-2); background: transparent; font: 500 12px var(--font-ui); cursor: pointer; }
+.ai-workspace-log-trigger:hover { background: var(--bg-inset); }
+.ai-workspace-log-trigger svg { width: 16px; height: 16px; }
+.ai-workspace-logs { flex: 0 0 auto; max-height: 40%; overflow: auto; padding: 12px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-inset); font: 12px/1.5 var(--font-ui); }
+.ai-workspace-logs-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.ai-workspace-logs-head button { border: 0; background: transparent; color: var(--text-2); padding: 4px; cursor: pointer; }
+.ai-workspace-logs select { width: 100%; min-width: 0; padding: 7px; border: 1px solid var(--border-default); border-radius: var(--radius-s); color: var(--text-1); background: var(--bg-raised); font: inherit; }
+.ai-workspace-logs p { margin: 8px 0; overflow-wrap: anywhere; color: var(--text-2); }
+.ai-workspace-log-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ai-workspace-log-actions button { padding: 7px 9px; border: 1px solid var(--border-default); border-radius: var(--radius-s); color: var(--text-1); background: var(--bg-raised); font: inherit; cursor: pointer; }
+.ai-workspace-log-actions button:disabled { opacity: .45; cursor: default; }
+.ai-workspace-logs textarea { box-sizing: border-box; width: 100%; height: 100px; margin-top: 8px; color: var(--text-1); background: var(--bg-raised); }
+.ai-workspace-logs textarea[hidden] { display: none; }
+.ai-team-sidebar.is-embedded { flex: 1; width: 100%; min-width: 0; border: 0; z-index: auto; }
+.ai-team-sidebar.is-embedded > .ai-team-rail-tabs { display: none; }
+.ai-team-sidebar.is-embedded.is-idle > .ai-team-sidebar-empty { display: block; font-size: 13px; line-height: 1.7; }
+.ai-team-sidebar.is-embedded .ai-team-settings-button { padding: 8px; margin-top: 0; }
+.ai-team-sidebar.is-embedded .ai-team-settings-button > span { display: inline; }
+.ai-team-sidebar.is-embedded > .ai-team-avatar-list { padding: 8px 12px; gap: 6px; }
+.ai-team-sidebar.is-embedded.has-detail > .ai-team-avatar-list { max-height: 200px; }
+.ai-team-sidebar.is-embedded .ai-team-member { padding: 8px; gap: 3px 6px; }
+.ai-team-sidebar.is-embedded .ai-team-member :is(.ai-team-member-assignment,.ai-team-member-result,.ai-team-member-signal,.ai-activity-media) { display: none; }
+.ai-team-sidebar.is-embedded .ai-team-member-task { font-size: 12px; }
+.ai-team-sidebar.is-embedded .ai-team-member-head { padding: 10px 12px; gap: 8px; }
+.ai-team-member-map { flex: 0 0 auto; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); padding: 7px; }
+.ai-team-member-map:disabled { opacity: .45; cursor: default; }
+.ai-team-sidebar.is-embedded .ai-team-member-content { padding: 12px; }
+.ai-team-sidebar.is-embedded .ai-team-member-assignment { margin: 0 0 12px; font-size: 12px; }
+.ai-team-work-summary { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 8px; margin: 0 0 12px; font-size: 13px; line-height: 1.6; }
+.ai-team-work-summary dt { color: var(--text-3); }
+.ai-team-work-summary dd { margin: 0; }
+.ai-team-work-summary :is(.ai-team-current-action,.ai-team-result,.ai-team-next-action) { margin: 0; font-size: inherit; line-height: inherit; }
+.ai-team-member-report { margin-bottom: 12px; font-size: 12px; }
+.ai-team-member-report summary { padding: 6px 0; cursor: pointer; color: var(--text-2); }
+.ai-team-member-report p { white-space: pre-wrap; line-height: 1.7; }
+.ai-team-sidebar.is-embedded .ai-team-member-composer { margin: 8px 12px; }
+.ai-team-sidebar.is-embedded .ai-team-outcome { font-size: 12px; padding: 8px 12px; }
+
+/* The first request has one starting point; detailed controls stay available on demand. */
+.ai-chat-panel.is-workspace.has-workspace-starter:not(.is-history-open) .ai-deck > .ai-chat-body:not([hidden]) { display: flex; }
+.ai-workspace-starter { flex: 0 0 auto; padding: 24px 16px 18px; font: 13px/1.6 var(--font-ui); }
+.ai-workspace-starter[hidden] { display: none; }
+.ai-workspace-starter h3 { margin: 0 0 8px; color: var(--text-1); font-size: 18px; }
+.ai-workspace-starter p { margin: 0 0 16px; color: var(--text-2); }
+.ai-workspace-starter button { display: block; width: 100%; margin-top: 8px; padding: 10px 12px; text-align: left; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); font: inherit; cursor: pointer; }
+.ai-workspace-starter button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-muted); }
+.ai-workspace-starter button:disabled { opacity: .5; cursor: default; }
+.ai-workspace-starter button:focus-visible { outline: var(--focus-outline); }
+.ai-workspace-view-options { flex: 0 0 auto; border-bottom: 1px solid var(--border-subtle); font: 12px var(--font-ui); }
+.ai-workspace-view-options > summary { padding: 8px 12px; color: var(--text-3); cursor: pointer; }
+.ai-chat-panel.is-assistant-idle .ai-workspace-view-options { display: none; }
+.ai-team-member-records > summary { padding: 8px 0; color: var(--text-2); cursor: pointer; font: 12px var(--font-ui); }
+.ai-team-member-records > summary:focus-visible, .ai-workspace-view-options > summary:focus-visible { outline: var(--focus-outline); }

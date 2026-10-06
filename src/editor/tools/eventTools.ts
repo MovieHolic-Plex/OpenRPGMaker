@@ -8,6 +8,7 @@ import { shadowedPageWarnings } from "@/project/eventPageShadow";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
@@ -34,7 +35,7 @@ import {
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
-import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
+import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
 import {
@@ -70,19 +71,29 @@ const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 }
 const STALK: EventPage["movement"] = { type: "approach", speed: 3, frequency: 3 };
 
 /** NPC 이름 기반 이동 아키타입. 명시 movement가 없을 때만 추론한다(명시 우선). */
-type NpcMovementArchetype = "anchored" | "roaming" | "stalking" | "ambiguous";
+type NpcMovementArchetype = "anchored" | "roaming" | "stalking" | "default";
 
+/**
+ * 이름에서 이동 아키타입을 고른다. **정지는 기본값이 아니다.**
+ *
+ * 2026-10-05 사용자 실측: AI 조수가 흔한 이름("농부"·"촌장 보좌"·"나그네")으로 NPC 를 깔면
+ * 경고도 없이 전부 제자리에 얼어붙었다(place_npc 9개 중 7개 fixed). 원인은 이 함수가 매치
+ * 실패를 "ambiguous" 로 보고 `resolveNpcMovement` 가 그것을 fixed 로 되돌린 것이다.
+ * 확실히 고정인 역할(상점·문지기·간판·동상·접수)만 anchored 로 남기고, 표지가 없는 이름은
+ * 배회로 둔다 — 제자리에 세우려면 호출자가 movement:"fixed" 를 명시해야 한다.
+ */
 function inferNpcMovementArchetype(name: string): NpcMovementArchetype {
   const spaced = name.trim().toLowerCase();
   const needle = spaced.replace(/\s+/g, "");
-  if (!needle) return "ambiguous";
+  if (!needle) return "default";
   // 스토커가 최우선: "경비 추격자"는 다가와야지 문지기가 아니다.
   if (/추격|습격|매복|스토커|stalker|ambush|chaser/u.test(needle)) return "stalking";
-  if (isShopRoleNpcName(name) || /문지기|경비|간판|안내판|안내인|gatekeeper|guard|signboard/u.test(needle)) return "anchored";
+  if (isShopRoleNpcName(name)
+    || /문지기|경비|간판|안내판|안내인|접수|점주|주인|여관|주막|동상|석상|표지판|기념비|현수막|gatekeeper|guard|signboard|signpost|statue|receptionist|innkeeper|shopkeeper/u.test(needle)) return "anchored";
   // 한 글자 토큰(개·새)은 독립 단어일 때만 친다 — "소개"가 배회하는 오탐 방지.
   if (spaced.split(/\s+/).includes("개") || spaced.split(/\s+/).includes("새")) return "roaming";
   if (/아이|꼬마|어린이|행상|떠돌이|배회|유랑|방랑|동물|강아지|고양이|닭|돼지|kid|child|peddler|wanderer|stray|dog|cat|chicken/u.test(needle)) return "roaming";
-  return "ambiguous";
+  return "default";
 }
 
 /**
@@ -110,8 +121,9 @@ function resolveNpcMovement(
     case "anchored":
       warnings.push(`이동 추론 → fixed(제자리): '${name}' 대화 거점 아키타입. 배회시키려면 movement:"random" 명시.`);
       return PASSIVE;
-    case "ambiguous":
-      return PASSIVE;
+    case "default":
+      warnings.push(`이동 추론 → random(배회): '${name}' 에 고정·추격 표지가 없어 기본 배회로 두었습니다. 제자리면 movement:"fixed", 추격이면 movement:"approach" 명시.`);
+      return WANDER;
   }
 }
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
@@ -140,6 +152,32 @@ function resolvePlaceNpcFaceArg(
   return undefined;
 }
 const LOW_LEVEL_TOOL_DESCRIPTION_PREFIX = "먼저 위 고수준 툴이 목적에 맞는지 확인하라(트랩=place_trap, 퍼즐=compile_puzzle, 컷신=script_cutscene 등). 이 툴은 커스텀 로직 전용.";
+
+/** Change this NPC's first portrait while retaining authored dialogue, conditions, and quest branches. */
+function updateNpcPagePortrait(project: Project, page: EventPage, template: Extract<Command, { kind: "changeFace" }> | undefined, warnings: string[]): void {
+  const hasDialogue = (commands: readonly Command[]): boolean => commands.some(command =>
+    DIALOGUE_COMMAND_KINDS.has(command.kind) || nestedCommandLists(command).some(hasDialogue));
+  if (!hasDialogue(page.commands)) return;
+  let face = template ? { ...template } : undefined;
+  const graphic = page.graphic ? resolveEventAppearanceGraphic(project, page.graphic) : undefined;
+  if (face?.resourceId && graphic?.sprite?.type === "bundled") {
+    const checked = reconcileFaceWithCharset(face.resourceId, graphic.sprite.id, decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex);
+    if (checked.warning) warnings.push(checked.warning);
+    face = checked.faceResourceId ? { ...face, resourceId: checked.faceResourceId } : undefined;
+  }
+  const replaceFirst = (commands: Command[]): boolean => {
+    for (let i = 0; i < commands.length; i += 1) {
+      const command = commands[i]!;
+      if (command.kind === "changeFace") {
+        commands.splice(i, 1, ...(face ? [face] : []));
+        return true;
+      }
+      for (const branch of nestedCommandLists(command)) if (replaceFirst(branch as Command[])) return true;
+    }
+    return false;
+  };
+  if (!replaceFirst(page.commands) && face) page.commands.unshift(face);
+}
 const UPSERT_EVENT_NPC_HINT = "NPC 배치가 목적이면 place_npc {mapId,x,y,name,pages}를 사용하세요.";
 const PLACE_NPC_OBJECT_GIMMICK_HINT = "보물상자·보관 상자·세이브포인트 등 오브젝트 기믹은 place_chest/place_storage_chest/place_savepoint를 사용하세요 — place_npc로 흉내내지 마세요.";
 const DIRS: readonly Dir[] = ["down", "left", "right", "up"];
@@ -377,11 +415,12 @@ function applyEventLevelGraphic(draft: Project, map: GameMap, event: GameEvent, 
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return;
   let graphic: EventPageGraphic;
   try {
-    graphic = "query" in raw || "textureKey" in raw
+    graphic = "query" in raw || "textureKey" in raw || 'selectionId' in raw
       ? resolveGraphic(raw as GraphicSpec, { avoidKeys: usedCharsetGraphicKeysOnMap(map), seed: `${map.id}:${event.id}`, overrides: draft.charsetLabels })
       : structuredClone(raw) as EventPageGraphic;
   } catch (error) {
     if (!(error instanceof ToolError)) throw error;
+    if ('selectionId' in raw) throw error;
     warnings.push(`event.graphic 을 해석하지 못해 버렸습니다: ${error.message}`);
     return;
   }
@@ -560,6 +599,50 @@ function unguardedItemSpendWarnings(event: GameEvent): string[] {
 }
 
 /**
+ * 전투 승리 분기에서 골드를 또 준다 — 적 그룹의 전투 보상 골드(enemy.rewards.gold)는 승리 때 이미 지급된다.
+ * 2026-10-05 스트레스 실측: 「이기면 500G」를 적 보상 500 과 victoryBranch changeGold +500 으로 둘 다 넣어
+ * 실제로는 1000G 가 들어왔다. 일부러 추가 보상을 주는 경우도 있으니 거부하지 않고 합계를 알린다.
+ */
+function doubleBattleGoldWarnings(project: Project, event: GameEvent): string[] {
+  const warnings: string[] = [];
+  const troopGold = (troopId: unknown): number => {
+    const troop = project.database.troops.find((entry) => entry.id === troopId);
+    if (!troop) return 0;
+    const enemyIds = troop.members?.length ? troop.members.map((member) => member.enemyId) : troop.enemyIds ?? [];
+    return enemyIds.reduce((sum, enemyId) => sum + (project.database.enemies.find((enemy) => enemy.id === enemyId)?.rewards?.gold ?? 0), 0);
+  };
+  const branchGold = (commands: readonly Command[] | undefined): number => {
+    let total = 0;
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object" || command.kind !== "changeGold") continue;
+      const amount = (command as { amount?: unknown }).amount;
+      const op = (command as { op?: unknown }).op;
+      if (typeof amount === "number" && amount > 0 && op !== "-=") total += amount;
+    }
+    return total;
+  };
+  const walk = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "battleProcessing") {
+        const rewarded = troopGold((command as { troopId?: unknown }).troopId);
+        const extra = branchGold((command as { victoryBranch?: readonly Command[] }).victoryBranch);
+        if (rewarded > 0 && extra > 0) {
+          warnings.push(`이벤트 '${event.id}': 적 그룹 ${(command as { troopId?: string }).troopId} 의 전투 보상 골드 ${rewarded} 가 승리 때 이미 지급되는데 `
+            + `victoryBranch 에서 changeGold +${extra} 를 또 줍니다 — 실제 합계 ${rewarded + extra}G. 요청한 보상이 한 번이면 적의 rewards.gold 나 이 changeGold 중 하나를 빼세요.`);
+        }
+      }
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const list of nested) walk(list);
+    }
+  };
+  walk(event.commands);
+  for (const page of event.pages ?? []) walk(page.commands);
+  return warnings;
+}
+
+/**
  * 모든 선택지의 분기가 비어 있는 choices 명령 — 무엇을 골라도 아무 일도 없다.
  *
  * 2026-09-23 등대지기 재시험: 동료 카일의 「동행을 제안한다」와 보스의 「정령과 맞선다!」가 둘 다
@@ -701,6 +784,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
     for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
+    if (project) for (const warning of doubleBattleGoldWarnings(project, event)) warnings?.push(warning);
     if (project && (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "pages") || Object.prototype.hasOwnProperty.call(supplied, "commands"))) {
       relocateImpassableTransfers(project, event, warnings);
     }
@@ -712,7 +796,12 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
   }
 }
 
+// 이 두 함수는 형식 검사(assertEventShape) **앞에서** 돈다 — 플래그를 먼저 만들어야 참조 검사가 통과하기 때문이다.
+// 그래서 모양이 틀린 명령(then 없는 fork, options 없는 choices)을 만나도 던지지 말고 건너뛴다. 던지면 모델은
+// 「undefined is not an object (evaluating 'command of commands')」만 받고, 뒤의 형식 검사가 주는 고칠 방법을 못 본다
+// (2026-10-05 스트레스 실측: place_npc 의 victoryBranch/otherwiseBranch fork).
 function ensureConditionStoryFlags(project: Project, condition: Condition, eventId: string, warnings: string[]): void {
+  if (!condition || typeof condition !== "object") return;
   if (condition.kind === "switch") {
     if (!project.switches.some((entry) => entry.id === condition.switchId)) {
       ensureNamedSwitch(project, condition.switchId, `이벤트 ${eventId}: ${condition.switchId}`);
@@ -724,14 +813,16 @@ function ensureConditionStoryFlags(project: Project, condition: Condition, event
       warnings.push(`미등록 variableId 자동 생성: ${condition.variableId}`);
     }
   } else if (condition.kind === "all" || condition.kind === "any") {
-    for (const child of condition.conditions) ensureConditionStoryFlags(project, child, eventId, warnings);
+    for (const child of Array.isArray(condition.conditions) ? condition.conditions : []) ensureConditionStoryFlags(project, child, eventId, warnings);
   } else if (condition.kind === "not") {
     ensureConditionStoryFlags(project, condition.condition, eventId, warnings);
   }
 }
 
-function ensureCommandStoryFlags(project: Project, commands: readonly Command[], eventId: string, warnings: string[]): void {
+function ensureCommandStoryFlags(project: Project, commands: readonly Command[] | undefined, eventId: string, warnings: string[]): void {
+  if (!Array.isArray(commands)) return;
   for (const command of commands) {
+    if (!command || typeof command !== "object") continue;
     if (command.kind === "setSwitch") {
       if (!project.switches.some((entry) => entry.id === command.switchId)) {
         ensureNamedSwitch(project, command.switchId, `이벤트 ${eventId}: ${command.switchId}`);
@@ -743,10 +834,10 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
         warnings.push(`미등록 variableId 자동 생성: ${command.variableId}`);
       }
     } else if (command.kind === "choices") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "presentItem") {
-      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      for (const option of Array.isArray(command.options) ? command.options : []) ensureCommandStoryFlags(project, option?.branch, eventId, warnings);
       if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "fork") {
@@ -761,9 +852,9 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
 
 function ensureEventStoryFlags(project: Project, event: GameEvent, warnings: string[]): void {
   ensureCommandStoryFlags(project, event.commands, event.id, warnings);
-  for (const page of event.pages ?? []) {
-    for (const condition of page.conditions) ensureConditionStoryFlags(project, condition, event.id, warnings);
-    ensureCommandStoryFlags(project, page.commands, event.id, warnings);
+  for (const page of Array.isArray(event.pages) ? event.pages : []) {
+    for (const condition of Array.isArray(page?.conditions) ? page.conditions : []) ensureConditionStoryFlags(project, condition, event.id, warnings);
+    ensureCommandStoryFlags(project, page?.commands, event.id, warnings);
   }
 }
 
@@ -1199,7 +1290,7 @@ const placeNpc: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 대화 거점(상점 주인·문지기·간판)→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형(추격자·매복)→approach, 고정 거점(상점 주인·문지기·간판·안내판·동상)→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
       pages: {
         type: "array",
         description:
@@ -1283,7 +1374,7 @@ const placeNpc: ToolDefinition = {
     const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
     const specQuery = "query" in graphicSpec ? graphicSpec.query : undefined;
-    const recurring = specQuery !== undefined ? recurringCharacterLook(draft, map.id, name) : undefined;
+    const recurring = specQuery !== undefined && !('selectionId' in graphicSpec) ? recurringCharacterLook(draft, map.id, name) : undefined;
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
@@ -1425,7 +1516,8 @@ const makeVillager: ToolDefinition = {
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       home: COORD_SCHEMA,
-      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·대화 거점→fixed, 모호하면 fixed. 명시가 추론보다 우선." },
+      face: FACE_SCHEMA,
+      movement: { type: "string", enum: ["fixed", "random", "approach"], description: "자율 이동. 생략 시 이름 아키타입 추론: 배회형(아이·행상·동물)→random, 추격형→approach, 상점 주인·고정 거점→fixed, 표지가 없으면 random(배회). 명시가 추론보다 우선." },
       schedule: npcScheduleSchema,
       dailyRoutine: {
         type: "object",
@@ -1610,6 +1702,13 @@ const makeVillager: ToolDefinition = {
         event.pages = pages;
       } else if (args.graphic !== undefined) {
         for (const page of event.pages ?? []) page.graphic = structuredClone(graphic);
+      }
+      if (!replacesDialoguePages && args.face !== undefined) {
+        const requestedFace = resolvePlaceNpcFaceArg(args.face);
+        if (requestedFace === undefined) throw new ToolError("face에는 resourceId 또는 검토된 textureKey/characterIndex가 필요합니다.", { code: "invalid-args" });
+        const template = requestedFace ? { kind: "changeFace" as const, ...requestedFace } : undefined;
+        for (const page of event.pages ?? []) updateNpcPagePortrait(draft, page, template, warnings);
+        warnings.push("초상 갱신 → 기존 대사·조건·퀘스트 분기 유지");
       }
       if (shopStock) setShopStockOnEvent(event, shopStock);
       event.characterId = characterId;
@@ -2876,6 +2975,13 @@ const makeChaseScene: ToolDefinition = {
     // 스위치로 깨우는 추격(「금고를 열자 달려온다」)은 주인공이 벽 너머에 있어도 와야 한다. 추적 정책을 안 정했으면
     // persistent 로 둔다 — lastSeen 은 직접 봐야 움직여서, 깨운 추격자가 복도에 가만히 서 있었다(2026-09-24).
     const parsedPursuit = args.pursuit === undefined ? undefined : parsePursuit(args.pursuit);
+    // 포기 스위치는 다시 발견하는 순간 꺼진다 — 깨우는 스위치와 같으면 추격자가 주인공을 보자마자 자기 페이지를 끈다
+    // (2026-10-05 스트레스 g-ashen-chase: lostSwitchId=activateSwitch=switch_chase 라 추격자가 복도에서 한 칸도 안 움직였다).
+    for (const key of ["lostSwitchId", "followSwitchId"] as const) {
+      if (activateSwitch && parsedPursuit?.[key] === activateSwitch) {
+        throw new ToolError(`pursuit.${key} 에 activateSwitch(${activateSwitch})를 쓸 수 없습니다 — ${key === "lostSwitchId" ? "다시 발견하면 꺼지므로 추격자가 주인공을 보는 순간 사라집니다" : "넘어오기 연출 스위치이지 추격을 켜는 스위치가 아닙니다"}. 연출용 스위치를 따로 쓰거나 빼세요.`);
+      }
+    }
     const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
       ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];

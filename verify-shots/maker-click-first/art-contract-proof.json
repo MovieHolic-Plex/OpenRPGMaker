@@ -1,0 +1,29 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "mode": "retry-pass",
+      "generated": 2,
+      "reviewed": 2,
+      "accepted": true
+    },
+    {
+      "mode": "budget-exhausted",
+      "generated": 3,
+      "reviewed": 3,
+      "accepted": false,
+      "error": "도트 검수를 통과하지 못했어요. 다시 그릴 수 있어요."
+    },
+    {
+      "mode": "no-receipt",
+      "generated": 1,
+      "reviewed": 1,
+      "accepted": false,
+      "error": "그림이 검수자에게 전달됐는지 확인하지 못했어요."
+    }
+  ],
+  "malformedRejected": true,
+  "latestWins": true,
+  "closeCancels": true,
+  "passed": true
+}

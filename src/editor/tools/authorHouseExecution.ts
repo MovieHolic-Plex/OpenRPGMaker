@@ -35,6 +35,9 @@ export function executeAuthorHouse(draft: Project, rawArgs: Record<string, unkno
   if (targetMap === undefined) {
     throw new ToolError(`맵을 찾을 수 없습니다: ${request.mapId}`, { code: "missing-map", mapId: request.mapId });
   }
+  if (targetMap.tilesetId === "beodeul_city") {
+    throw new ToolError("버들항 집은 inspect_terrain의 houseStyles를 조회하고 place_terrain_house로 조립하세요. author_house의 옛 재료 키트는 버들항 칩셋과 호환되지 않습니다.", { code: "tileset-house-route", mapId: targetMap.id });
+  }
   validatePlans(request);
   validateAuthorHouseTreeClearance(targetMap, request);
 

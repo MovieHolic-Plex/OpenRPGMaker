@@ -9,7 +9,7 @@
 //  - prefers-reduced-motion: reduce 면 t=0 한 장만 그리고 애니메이션하지 않는다.
 //  - rAF 는 canvas 가 DOM 에서 분리되면 다음 프레임에 스스로 해제된다.
 
-import type { TitleBackgroundFit, TitleEffect } from "@/project/types";
+import type { TitleBackgroundFit, TitleBackgroundRendering, TitleEffect } from "@/project/types";
 import { TITLE_EFFECT_DEFAULT_COLORS, activeTitleEffects } from "@/project/titleEffects";
 import {
   TITLE_EFFECT_FRAGMENT_SHADER,
@@ -136,13 +136,14 @@ export interface TitleEffectsCanvasOptions {
   readonly imageUrl: string;
   /** 생략 = "stretch" — 배경(applyTitleScreenBackground)의 기본과 같아야 효과를 켜도 그림이 안 움직인다. */
   readonly fit?: TitleBackgroundFit;
+  readonly rendering?: TitleBackgroundRendering;
   /** 깊이 시차용 깊이 지도(흰색 = 가까움). 없거나 못 읽으면 셰이더가 「아래가 가깝다」 기본값을 쓴다. */
   readonly depthUrl?: string;
   /** 고정 시각(초). 주면 애니메이션하지 않고 그 순간만 그린다(QA·미리보기 썸네일). */
   readonly freezeAtSec?: number;
 }
 
-type RendererHandle = { stop: () => void };
+type RendererHandle = { stop: () => void; freeze: () => void };
 const running = new WeakMap<HTMLCanvasElement, RendererHandle>();
 /** 살아 있는 캔버스의 효과 값만 바꾸는 함수 — 편집기 드래그·슬라이더가 WebGL 문맥을 새로 만들지 않게. */
 const uniformSetters = new WeakMap<HTMLCanvasElement, (uniforms: TitleEffectUniforms) => void>();
@@ -164,6 +165,7 @@ export function updateTitleEffectsCanvas(canvas: HTMLCanvasElement, effects: rea
 export function createTitleEffectsCanvas(options: TitleEffectsCanvasOptions): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.className = "rm-title-effects";
+  canvas.style.imageRendering = options.rendering === 'smooth' ? 'auto' : 'pixelated';
   canvas.dataset.testid = "title-effects";
   canvas.setAttribute("aria-hidden", "true");
   canvas.dataset.titleEffectsRenderer = "pending";
@@ -176,6 +178,11 @@ export function createTitleEffectsCanvas(options: TitleEffectsCanvasOptions): HT
 export function stopTitleEffects(canvas: HTMLCanvasElement): void {
   running.get(canvas)?.stop();
   running.delete(canvas);
+}
+
+/** Keep the last composited frame for a cut/dissolve. Dispose only after removing the canvas. */
+export function freezeTitleEffects(canvas: HTMLCanvasElement): void {
+  running.get(canvas)?.freeze();
 }
 
 function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffectUniforms, options: TitleEffectsCanvasOptions): void {
@@ -197,7 +204,11 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
   let lastSeconds = options.freezeAtSec ?? 0;
   let started: number | undefined;
   const remember = (next: TitleEffectUniforms) => { uniforms = next; };
-  const handle: RendererHandle = { stop: () => {
+  const handle: RendererHandle = { freeze: () => {
+    stopped = true;
+    cancelAnimationFrame(frame);
+    canvas.dataset.titleEffectsAnimated = 'false';
+  }, stop: () => {
     stopped = true;
     cancelAnimationFrame(frame);
     canvas.removeEventListener("webglcontextlost", onLost);
@@ -317,7 +328,7 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
 
     const draw = (seconds: number) => {
       if (stopped || lost) return;
-      resizeCanvas(canvas, context, scale);
+      resizeCanvas(canvas, context, scale, options.rendering === 'smooth');
       motes?.draw(seconds);
       context.useProgram(program);
       context.viewport(0, 0, canvas.width, canvas.height);
@@ -362,10 +373,14 @@ function titleEffectsResolutionScale(gl: WebGL2RenderingContext): number {
   return debug && /swiftshader|llvmpipe/i.test(String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL))) ? 0.5 : 1;
 }
 
-function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, resolutionScale: number): void {
+function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, resolutionScale: number, smooth: boolean): void {
   const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
-  let width = Math.max(1, Math.round((canvas.clientWidth || 320) * dpr));
-  let height = Math.max(1, Math.round((canvas.clientHeight || 240) * dpr));
+  // The play stage scales logical pixels with a CSS transform. Painted art needs
+  // the displayed size, not a 320px backing stretched over a 1200px window.
+  // Measure the stable parent; the canvas itself can animate a camera push.
+  const bounds = smooth ? canvas.parentElement?.getBoundingClientRect() : undefined;
+  let width = Math.max(1, Math.round((bounds?.width || canvas.clientWidth || 320) * dpr));
+  let height = Math.max(1, Math.round((bounds?.height || canvas.clientHeight || 240) * dpr));
   const edge = Math.max(width, height);
   if (edge > TITLE_EFFECTS_MAX_CANVAS_EDGE) {
     const scale = TITLE_EFFECTS_MAX_CANVAS_EDGE / edge;
@@ -501,5 +516,5 @@ function buildProgram(gl: WebGL2RenderingContext, fragmentSource: string): WebGL
 
 /** 재사용 판정용 서명 — 같으면 기존 캔버스(진행 중 애니메이션)를 그대로 쓴다. */
 export function titleEffectsSignature(options: TitleEffectsCanvasOptions): string {
-  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "stretch", d: options.depthUrl, z: options.freezeAtSec });
+  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "stretch", r: options.rendering ?? 'pixelated', d: options.depthUrl, z: options.freezeAtSec });
 }

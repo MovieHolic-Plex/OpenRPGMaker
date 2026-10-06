@@ -29,6 +29,17 @@ const FACTS: IntentFacts = {
 };
 
 describe("parseIntentDeclaration", () => {
+  it("enables navigation only for an explicit true declaration without clarification", () => {
+    const parse = (viewNavigation: unknown, clarify: string | null = null) => parseIntentDeclaration(
+      JSON.stringify({ mode: "question", tools: [], viewNavigation, clarify }), FACTS,
+    ).intent?.viewNavigation;
+    expect(parse(true)).toBe(true);
+    expect(parse("true")).toBe(false);
+    expect(parse(undefined)).toBe(false);
+    expect(parse(true, "어느 상점인가요?")).toBe(false);
+    expect(continuationIntentDeclaration(FACTS).viewNavigation).not.toBe(true);
+    expect(fallbackIntentDeclaration(FACTS).viewNavigation).not.toBe(true);
+  });
   it("정상 JSON 을 선언으로 옮기고 source 는 llm 이다", () => {
     const raw = JSON.stringify({
       mode: "create", space: "interior", facility: "여관", targetMapId: null, useSelection: false,

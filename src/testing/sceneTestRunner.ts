@@ -20,7 +20,8 @@ import {
 } from "@/project/session";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import type { Command, Dir, GameMap, Project } from "@/project/types";
+import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/project/types";
+import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { useItemFromMenu } from "@/player/playerItemUse";
@@ -262,6 +263,8 @@ export interface SceneTestInput {
 
 /** 모델 입력(SceneTestInput)과 따로 두는 러너 설정 — run_scene_test 도구에는 드러나지 않는다. */
 export interface SceneRunnerOptions {
+  /** Host-only resumed save state; never accepted by the model-facing scene tool. */
+  readonly initialSession?: PlaySession;
   /**
    * 무작위 인카운터 직전마다 파티를 전부 회복한다(QA 자동 플레이 전용 — 플레이어가 여관·포션으로 버티는 것을 흉내).
    * 스크립트 전투(보스)는 회복하지 않고 들어간다 — 보스 앞에서 체력을 관리하는 것은 설계의 몫이다.
@@ -331,7 +334,7 @@ export interface SceneTestResult {
 
 type PumpStop =
   | { stop: "done" }
-  | { stop: "choices"; choiceCount: number }
+  | { stop: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior }
   | { stop: "present"; itemIds: readonly string[] }
   | { stop: "animation" }
   | { stop: "shop"; step: ShopStep }
@@ -387,7 +390,7 @@ interface RunnerState {
   readonly messages: string[];
   gameOver: boolean;
   held: ({ interp: Interpreter; currentEventId?: string } & (
-    { mode: "choices"; choiceCount: number } | { mode: "present"; itemIds: readonly string[] }
+    { mode: "choices"; choiceCount: number; cancelBehavior?: ChoiceCancelBehavior } | { mode: "present"; itemIds: readonly string[] }
     | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
@@ -520,6 +523,16 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   goldDelta: "정수 또는 {atLeast:정수}", inventoryDelta: "{아이템id: 정수 또는 {atLeast}}", ownedMonsterDelta: "{종id: 정수 또는 {atLeast}}",
   interactionComplete: "true/false", messageShown: "true/false", gameOver: "true/false", cutsceneLocked: "true/false",
   lastTransfer: "{fromMapId,eventId,toMapId}", timePhase: "시간대 이름", weatherKind: "none|rain|storm|snow|fog",
+  // 아래는 거부 문구가 「값 형식이 맞지 않습니다」만 말하던 expect 필드 — 모델이 모양을 추측하며 같은 시험을 거듭 다시 불렀다
+  // (2026-10-05 스트레스 p-shop: shopStock 에 [{itemId,price}] → [id…] 를 차례로 넣고 둘 다 거부).
+  shopStock: "{eventId, itemIds:[아이템id…], prices?:{아이템id: 가격}, mapId?}",
+  friendshipAtLeast: "{npcKey: 숫자} 또는 {npcKey,value}",
+  followerCount: "0 이상의 정수", lightCount: "0 이상의 정수", fieldSpawnCount: "0 이상의 정수", spawnedCount: "0 이상의 정수",
+  partyIncludes: "배우 id 또는 id 배열", partyExcludes: "배우 id 또는 id 배열",
+  followerAt: "{name,x,y}", cameraAt: "{cx,cy,tolerance?}", lightingAmbient: "숫자 또는 {value,tolerance?}",
+  lightAt: "{x,y,expected?}", animationPlaying: "true/false", bgmPlaying: "BGM 리소스 id 문자열",
+  pictureVisible: "그림 id 문자열 또는 {id,resourceId?}", gameTimeAt: "{minute?,hour?,day?,season?,year?}",
+  cropStageAt: "{x,y,stage,mapId?}",
 };
 
 // 모델이 자주 쓰는 틀린 필드 이름 → 올바른 이름.
@@ -623,7 +636,7 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
 }
 
 export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof, runnerOptions: SceneRunnerOptions = {}): SceneTestResult {
-  const session = startSession(project, 1);
+  const session = runnerOptions.initialSession ? structuredClone(runnerOptions.initialSession) : startSession(project, 1);
   const inputProblem = sceneTestInputProblem(input);
   if (inputProblem) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
@@ -1117,9 +1130,11 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   const held = state.held;
   if (!held || held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   if (!Number.isInteger(index) || index < -1 || index >= held.choiceCount) return `Choice index ${index} is out of range (${held.choiceCount} options).`;
+  const resolvedIndex = index === -1 ? cancelChoiceIndex(held.cancelBehavior, held.choiceCount) : index;
+  if (resolvedIndex === null) return "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다.";
   state.held = null;
   state.executingEventId = held.currentEventId;
-  const stop = pump(state, held.interp, held.interp.resume(index));
+  const stop = pump(state, held.interp, held.interp.resume(resolvedIndex));
   refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
@@ -1188,7 +1203,7 @@ function updateHeldInterpreter(
   }
   if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
-      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }
+      ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount, cancelBehavior: stop.cancelBehavior }
       : stop.stop === "present" ? { interp, mode: "present", currentEventId, itemIds: stop.itemIds }
       : stop.stop === "shop" ? { interp, mode: "shop", currentEventId, step: stop.step }
       : { interp, mode: "animation", currentEventId };
@@ -1210,7 +1225,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "openLoadMenu":
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
-        return { stop: "choices", choiceCount: step.options.length };
+        return { stop: "choices", choiceCount: step.options.length, cancelBehavior: step.cancelBehavior };
       case "presentItem":
         if (step.prompt) state.messages.push(step.prompt);
         // 보여줄 것이 없으면 실플레이어처럼 prompt 만 띄우고 닫힘(취소)으로 이어 간다.

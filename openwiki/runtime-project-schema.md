@@ -1,5 +1,30 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 세계 지도 연결 정의 — 선택 필드 `project.worldAtlases` (2026-10-05)
+
+6종의 이동 구조·실제 mapId·입구/문·연결·관문 switch id·핀을 보존한다.
+방 노드의 선택 `roomShape?:number`(정수0–9)는 실제 방/미니맵 윤곽의 고정 식별자다. 노드 삭제 뒤 배열 순번이 바뀌어도 다른 모양을 그리지 않는다. 없는 기존 방은 실제 맵 이미지의 기존 사각 전도를 유지한다.
+없는 기존 프로젝트는 그대로 읽는다. `worldAtlas.normalizeWorldAtlases`는 외부 정의를 검사하고
+맵 삭제는 해당 노드/연결/핀을 정리한다. 발견·클리어·능력·핀의 현재 상태는 기존 session.switches와
+세이브 슬롯에 저장한다. 도구·런타임·SQLite 재로드 근거는 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
+## 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
+
+0.25~1 배율. 없으면 1(기존과 같음). 그 맵에서 걷는 주인공·동료·탈것·캐릭터 칩 이벤트에만 곱한다(상자·그림 이벤트는 칸 크기 그대로).
+월드맵처럼 땅을 멀리서 보는 지도에서 캐릭터를 줄이는 선택 옵션 — 기본은 꺼짐. 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로,
+곱하는 자리는 `playerCharacterScale`·`syncVehicleSprites`·`eventSpriteScale(..., mapCharacterFactor)`(이벤트·동료·이동 경로 그림 바꾸기) 다섯 곳.
+편집: 맵 속성 「일반」 탭 「캐릭터 크기」(100·75·50%), 조수 `set_map_properties.characterScale`. 발밑 기준점은 그대로라 줄여도 칸 바닥에 선다.
+50% 는 가장 가까운 화소로 줄이므로 도트가 거칠다. 증거: `verify-shots/runtime-qa/worldmap-generate`(korea 세계, 100%/50% 비교).
+
+## 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
+
+`edit_world_terrain` 이 만든 맵만 갖는다: `{ theme, ops, terrainId?, palette?, base?, fitSalt? }`.
+`base` 는 `"shared-v9"`(손 대륙, 생략 시) 또는 `"generate"`(새 구조), `fitSalt` 는 생성 구조의 자동 맞춤 배치 번호 — 다시 빌드할 때 같은 세계를 낸다.
+`ops` 는 `worldmap-terrain/1` 작업 목록(테마 자체 지형 아래 깔림은 빼고 조수가 얹은 것만). 이 필드가 있으면
+그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
+없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
+자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+
 ## 캐릭터별 전투 동작 (2026-10-03)
 
 `ActorRecord.battleMotion?: {style?, anticipation?, travel?, recovery?, reach?, jump?, recoil?}`와
@@ -82,6 +107,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
 - **첫 문장 입구(2026-10-03)**: 숨기지 않은 최근 프로젝트가 없으면 홈에 `src/start/firstWorldArrival.ts`의 장르 참고 장면 3개를 표시한다. 새 게임의 AI 경로도 같은 컴포넌트다. 장르 선택은 그림 전환과 입력창 열기만 하고, ‘이 이야기로 시작’을 눌러야 폴더 생성·인계를 시작한다. 이름·저장 위치·해상도는 ‘게임 이름과 저장 위치’를 펼쳐 바꾼다. 예제·빈 프로젝트도 접근할 수 있다. 폴더 생성 실패는 선택과 문장을 유지한다. 예제·빈 프로젝트로 갔다가 새 게임으로 돌아와도 문장은 유지한다. 원문·선택·제목은 기존 `startIntent.ts` 계약으로 전달하며, 무장르 문장은 인터뷰를 열기 위해 `story-cutscene`으로 시작한다(인터뷰에서 변경 가능).
+  `startScreen.ts`는 실제 입구가 마운트된 동안만 `.start-app.is-first-world`를 켠다. `startLobby.css`가 전체 창의 스택·어두운 헤더·보조 설정을 소유하고, 공유 장면의 고정 배경이 네 모서리까지 채운다. 참고 장면 자체에는 카드 테두리/폭 제한이 없다. 입력은 780px, 내용은 1120px까지 제한한다. 예제·팀 참여·기존 최근 작업 화면으로 이동하면 이 표시를 제거한다. 전체 화면 증거: `verify-shots/first-world-fullscreen/`.
 - **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
   `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
   첫 문장 입구는 기존 `project-interview`의 세계 지도 영상/포스터와 장르별 그림을 쓰고, 일반 로비의 공용 장면은 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png`다.
@@ -271,6 +297,15 @@ Electron IPC와 브라우저 HTTP가 같은 서비스로 SQLite·에셋을 사�
 아래 9월 16일의 «웹은 QA 전용», «로컬 단일 작성자라 잠금 없음» 설명은 과거 상태다.
 
 ## 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
+
+렌더러 맵 패치 준비 보강(2026-10-04): `projectPatch`는 일반 JSON 가지를 참조/구조로
+비교하며 첫 차이에서 멈춘다. `diffProjectDocumentsSliced`와 `withWirePatchValuesSliced`는
+맵 내부의 긴 배열도 256항목마다 양보 시간을 확인한다. Electron 저장소는 두 단계를 모두
+사용한다. 타일셋 요약·기준 SHA·호스트 CAS 계약은 유지한다. 와이어 값은 소유된 JSON 사본이며
+제출 중 새 store 편집은 쓰기 시 복제로 분리된다. 비표준 값의 비교와 custom `toJSON`은
+기존 직렬화 경로로 처리한다. 크기가 큰 custom serializer 자체는 동기 실행이라는 한계가 있다.
+브라우저 증거는 `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`이며,
+이 수치는 호스트 저장·SQLite 재로드 지연이 아니라 렌더러 패치 준비 비용이다.
 
 정본이 "원격 Postgres 프로젝트 행"에서 "사용자가 고른 폴더의 `project.sqlite`"로 옮겨가는 중이다.
 설계는 `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, P1(포트 추출)은
@@ -1176,6 +1211,8 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - `Project.world` is optional authored worldview data. Its canonical shape is `ProjectWorld` in `src/project/world/` (`entities` plus `relations`), normalized through `normalizeWorld` when present and treated as an empty world when absent for legacy projects. Editor UI should commit changes through the project store and keep runtime session state out of worldview records.
 - `Project.worldGraph` is optional authored declarative map topology data. Its canonical shape lives in `src/project/worldGraph/`: nodes are `{mapId, role: "town"|"field"|"dungeon"|"interior", label?}` and edges connect `from.mapId/exit` to `to.mapId/entry` with kind `"transfer"` or `"adjacent"` (`"transfer"` default). The graph is normalized on load, permits planned nodes before maps exist as warnings, and `projectLint` includes `lintWorldGraph` for transfer destination/event-overlap errors plus adjacent boundary passability warnings. Actual player travel still uses normal event `transfer` commands; `link_maps`/`build_world` generate those events with stable IDs.
 - Web export treats authored project JSON as the source of truth but strips editor-only event drafts and prunes `assets.uploaded` to statically referenced resource ids before writing `project.json`. `prepareWebExport()` must deserialize the serialized JSON once for shape validation before any package/download path reports success.
+  As of 2026-10-05 it also keeps only map-owned tilesets and their transitive graft source definitions (source record ID or image ID), before cloning/serialization. Canonical editor definitions remain intact. This prevents unused bundled tileset dictionaries from exhausting the player while loading a six-map worldmap QA export; the retained saved maps and graft sources are compared in `verify-shots/worldmap-autotile-adversarial/export-checked.json`.
+- **SQLite media in shipped ZIPs (2026-10-03):** `webUploadedAssetPath` is the shared filename contract for the writer and exported player. `exportEntry` installs `exportUploadedAssets` before rendering, so an uploaded asset's content-addressed `ref` resolves to the adjacent `assets/uploaded/` file. The player has no editor SQLite bridge. Opening a game with inline media clears the previous ref resolver. `prepareWebExport` strips authoring references and unused uploaded assets before its deep clone, and keeps retained assets isolated from the open project. It preserves retained runtime tileset definitions and the existing image-catalog inclusion policy.
 - **Export resource completeness (2026-09-06):** `src/battle/partySpriteResources.ts` owns party back-view/fallback selection for both battle rendering and export. `webExportAssets` includes derived resources for reserve actors and both fallback slot parities, then adds idle strips from the runtime catalog. Derived uploaded overrides must survive `prepareWebExport` pruning; a party texture key or successful combat result is not proof that its image decoded.
 - **Export URL ownership:** `exportEntry` registers the game directory in `inlineAssetStore` before boot. `withInlineAsset` prefers embedded data, then rebases local `assets/` paths for exported players only. Editor paths, external URLs and SVG fragments remain unchanged. Image warmup, minimap tileset URLs and movie fallbacks use the same boundary. Catalog BGM may be fetched from the editor's configured CDN, but is packaged at the player's canonical local fallback path so exported playback needs no CDN setting.
 - **Invalid ingredients do not produce success artifacts:** standalone rejects missing/empty/HTML bundle or media bytes; ZIP additional media rejects empty/HTML bytes while its existing manifest/hash checks remain authoritative for the player bundle. `url(#battle-flash-tint)` is a document fragment, not a file to fetch. The standalone CLI delegates to the same exporter.
@@ -1499,3 +1536,50 @@ Absent values preserve the80ms legacy cadence. Autonomous NPCs and party followe
 read the value by their uploaded texture ID; it does not change tile movement speed,
 frame geometry or idle pose. Runtime fallback also rejects nonfinite/out-of-range
 values. Approved field-kit snow cats use150ms; see `pokemon-like-field-kit.md`.
+
+## 재편집 지형과 게임 높이 규칙 (2026-10-03)
+
+`map.terrainDesign.features?`는 절벽/길/능선/계곡/호수의 id·점·옵션·희소 before/after 칸 패치를
+보관한다. `gameplay?`는 visionBlocking/highGroundVision/projectileHeight와 visionRadius/visionGain/eyeHeight다.
+`terrainDesign.ts`가 불러오기 때 구조/범위/칸 수를 검사한다. 기존 맵에는 새 필드가 필수가 아니다.
+cloneExtraLayers는 설계 정보를 깊이 복사한다. remap/crop은 잠금/수심/게임 규칙을 옮기고 원점과 패치는
+제거하여 잘못된 칸 복원을 막는다. 상세 저작 계약은 [terrain-design-suite.md](terrain-design-suite.md).
+공용 사용자 도장은 별도 IndexedDB `oprn-terrain-library`에 두며 사용 시 project.terrainStamps에 복사한다.
+
+## Optional internal authoring contract
+
+`gameDesignBrief.implementation` optionally persists a registered `harnessId` and harness-normalized `contract`; unknown harnesses or malformed contracts are rejected rather than silently discarded. Existing briefs without this field remain valid. Romance first-scene contracts use the same native events, switches, variables, endings and player save slots as normal games. `SceneRunnerOptions.initialSession` is a host-only restored-session input for save-resume QA, not model-authored expected state in scene-test arguments. See [romance-scene](harnesses/romance-scene.md).
+
+### Desktop fullscreen and mouse controls (2026-10-04)
+
+`electron/main/main.ts::createWindow` creates the main app window with
+`fullscreen:true` and `autoHideMenuBar:true`. The start page and editor both mount
+`src/start/windowControls.ts`, with visible `화면 전환` and `앱 닫기` buttons.
+The narrow `oprn:window.control` IPC accepts only toggle-fullscreen/close, affects
+only the caller's local app window, and rejects non-app documents. Closing uses
+the existing flush-before-close lifecycle. The optional bridge method is absent
+from browser/team-host pages; no native IPC is exposed to remote team content.
+Browser pages fill the viewport but cannot force OS fullscreen before a gesture.
+
+Launcher form typography/color reset is scoped to `.start-app`; its former global
+`button` reset overrode native window-control colors and the interview's primary
+button text across the start document's CSS layers.
+
+### Cinematic image direction (2026-10-04)
+
+Image 장면의 선택 direction은 camera.from/to([초점x,초점y,배율]), transition,
+최대4개 effects, soundResourceId, narrationDelayMs를 저장한다. `cinematicDirection.ts`가
+허용 필드·범위·효과별 필수 좌표를 파일 로드와 저작 도구 양쪽에서 검사한다.
+기존 direction 없는 장면은 그대로 읽는다. resourceReferenceValidation은 SE를 확인하고
+웹 내보내기의 사용 문자열 순회가 별도 SE 업로드도 포함한다. 정본 저장/재로드에서 direction을 버리지 않는다.
+세부 범위와 재생 순서는 [title-opening-effects.md](title-opening-effects.md).
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 text/image/video 장면에 선택 `presentation`을 저장한다. 기존 필드가 없으면 기존
+재생을 유지한다. 기본형 subtitle/prologue/chapter/memory/credits, 글자 등장 6종,
+장면 등장 6종, 독립적인 글자·장면 퇴장 시간·색·글꼴·위치·상하 띠를 지원한다.
+`cinematicPresentation.ts`의 엄격 파서를 프로젝트 로드와 AI 도구가 공유하며
+DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
+전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
+[title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.

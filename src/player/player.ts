@@ -74,6 +74,7 @@ import {
   listTitleMenuOptions,
   playTitleTransition,
   renderTitleScreen,
+  updateTitleSelection,
   type TitleMenuOptionId,
 } from "@/player/titleScreen";
 import { openLicenseDialog } from "@/player/titleLicenseNotice";
@@ -86,6 +87,11 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import { createCinematicAssets } from './cinematicAssets';
+import { warmPlayGameRuntime } from './createPlayGame';
+import { createRuntimeAudioWarmup } from './runtimeAudioWarmup';
+import { resolveMapBgm } from './mapBgm';
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import {
   recordPlayBootDiagnostic,
   type PlayBootDiagnosticSink,
@@ -123,8 +129,8 @@ export type RenderPlayerOptions = {
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
   // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
   readonly hostBridge?: HostBridge;
-  // 플레이 서피스 배율 정책. 배포/커뮤니티 플레이어는 정수 배율(기본)을 유지하고,
-  // 에디터 테스트 플레이 창만 "fit" 으로 창을 가득 채운다.
+  // 플레이 서피스 배율 정책. 내보낸 게임과 테스트 플레이는 fit으로 창에 맞춘다.
+  // 명시적인 integer 호스트는 정수 배율을 유지한다.
   readonly surfaceScaleMode?: PlaySurfaceScaleMode;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
@@ -166,6 +172,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let attractTimer: ReturnType<typeof setTimeout> | undefined;
   let detachAttractInput: (() => void) | undefined;
   let openingController: AbortController | null = null;
+  let openingMusicPlayback: ReturnType<typeof playCinematicSequence> | undefined;
+  const cinematicAssets = createCinematicAssets();
+  const audioWarmup = createRuntimeAudioWarmup();
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
@@ -204,6 +213,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const stopGame = (): void => {
     clearTimeout(attractTimer); attractTimer = undefined; detachAttractInput?.(); detachAttractInput = undefined;
+    openingMusicPlayback?.teardown();
+    openingMusicPlayback = undefined;
     openingController?.abort();
     openingController = null;
     clearTimeout(titleConfirmTimer);
@@ -273,28 +284,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const opening = store.getCurrent().system.opening;
     const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId
       || options.shouldPlayOpening?.() === false;
-    if (!bypass && opening?.enabled && (!opening.entry || opening.entry.mode === "new-game") && opening.scenes.length > 0) {
-      stopTitleBgm();
-      clearChildren(layout);
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
-      playStage = surface.stage;
-      cleanupPlaySurface = surface.cleanup;
-      layout.append(surface.viewport);
-      surface.sync();
-      const controller = new AbortController();
-      openingController = controller;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal });
-      void playback.done.then(result => {
-        if (result === "aborted" || !shellActive || openingController !== controller) return;
-        openingController = null;
-        bootRun(request);
-      });
-      return;
-    }
-    bootRun(request);
+    bootRun(request, !bypass && opening?.enabled && (!opening.entry || opening.entry.mode === "new-game") && opening.scenes.length ? opening : undefined);
   };
 
-  const bootRun = (request: PlayBootRequest): void => {
+  const bootRun = (request: PlayBootRequest, opening?: NonNullable<ReturnType<typeof store.getCurrent>['system']['opening']>): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
@@ -323,6 +316,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
     const loading = mountPlayLoadingOverlay(layout, "engine");
+    // Normal opening boots have no visible loading card. Recovery can reveal this same overlay.
+    if (opening) { loading.root.hidden = true; loading.root.style.display = 'none'; }
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
@@ -346,7 +341,43 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (history) session.clearHistory = history;
     else delete session.clearHistory;
     if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
-    void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
+    if (!opening) {
+      void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
+      return;
+    }
+    stopTitleBgm();
+    const controller = new AbortController();
+    openingController = controller;
+    let lastFrame = '#000', handoffFadeMs = 500;
+    const playback = playCinematicSequence({ host: surface.stage, project: bootProject, sequence: opening,
+      signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main,
+      musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm,
+      onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
+    openingMusicPlayback = playback;
+    // Start the real engine, decode textures and assemble the map during the cinematic.
+    // PlayScene gates time, events, input and map audio until the presentation handoff.
+    const prepared = bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs, true);
+    void playback.done.then(async result => {
+      if (result === 'aborted' || run !== startRun || !shellActive) return;
+      openingController = null;
+      // Retain the last composition if a short opening/early skip beats map readiness.
+      const cover = el('div', { class: 'cinematic-sequence', dataset: { testid: 'opening-map-handoff' } });
+      if (lastFrame.startsWith('#')) cover.style.background = lastFrame;
+      else cover.append(el('img', { class: 'cinematic-image', attrs: { src: lastFrame, alt: '' } }));
+      surface.stage.append(cover);
+      await prepared;
+      if (run !== startRun || !shellActive) { cover.remove(); return; }
+      const scene = activeScene();
+      if (!scene || loading.root.dataset.stage === 'error') { cover.remove(); return; }
+      playback.releaseMusic(result === 'skipped' ? 0 : 600);
+      // No gameplay advances behind the departing cover, even the start-map autorun.
+      const fadeMs = result === 'skipped' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : handoffFadeMs;
+      if (fadeMs > 0) await cover.animate([{ opacity: 1 }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' }).finished.catch(() => undefined);
+      cover.remove();
+      if (run !== startRun || !shellActive) return;
+      scene.activateInitialPresentation();
+      surface.stage.focus({ preventScroll: true });
+    });
   };
 
   // 예비검사가 시작 맵/좌표를 재배선했으면 그 결과가 곧 이번 런의 스폰이다.
@@ -367,9 +398,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     repairs: readonly string[],
   ): void => {
     if (run !== startRun) return;
+    openingController?.abort();
+    openingController = null;
+    openingMusicPlayback?.releaseMusic(600);
     const described = describeBootFailure(context);
     // 부팅이 ready 를 지나 오버레이를 이미 걷어낸 뒤 터졌을 수도 있다 → 그때는 새로 올린다.
     const overlay = loading.root.isConnected ? loading : mountPlayLoadingOverlay(layout, "error");
+    overlay.root.hidden = false;
+    overlay.root.style.removeProperty('display');
     overlay.showRecovery({
       title: described.title,
       reason: described.reason,
@@ -396,7 +432,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     loading: PlayLoadingOverlay,
     run: number,
     startedAt: number,
-    repairs: readonly string[]
+    repairs: readonly string[],
+    presentationPending = false
   ): Promise<void> => {
     let resolveReady: (() => void) | null = null;
     const diagnosticOwner = diagnosticToken();
@@ -404,6 +441,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       resolveReady = resolve;
     });
     const signalReady = (): void => {
+      if (resolveReady && !presentationPending) openingMusicPlayback?.releaseMusic(600);
       resolveReady?.();
       resolveReady = null;
     };
@@ -432,6 +470,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       loading.setProgress(0.08);
       bootDiag("engine", true, { detail: "startPlayGame" });
       const nextGame = await startPlayGame(phaserContainer, session, {
+        initialPresentationPending: presentationPending,
         qaInstrumentation: options.qaInstrumentation,
         keyboardOnly: true,
         initialEventTestId: eventTestId,
@@ -523,6 +562,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       markPlayRender(startedAt);
       loading.remove();
       bootDiag("ready", true, { detail: "boot complete" });
+      signalReady();
       clearStaleModuleReloadMark();
       try {
         options.onPlayBootSuccess?.();
@@ -705,7 +745,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const handleTitleKey = (key: RuntimeMenuKey): boolean => {
     // 불러오기 패널도 testid=title-screen 이지만 data-screen 을 달고 있다(자체 커서 메뉴가
     // 키를 처리). 이걸 진짜 타이틀로 오인하면 방향키가 renderTitle 로 패널을 덮어쓴다(B1).
-    const titleEl = layout.querySelector("[data-testid='title-screen']");
+    const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
     if (game || !titleEl || titleEl.hasAttribute("data-screen")) return false;
     if (titleConfirming) return true;
     const project = store.getCurrent();
@@ -716,10 +756,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const titleDir = directionForKey(key);
     if (titleDir === "down" || titleDir === "up") {
       titleMenuIndex = moveTitleSelection(titleMenuIndex, titleDir === "down" ? "ArrowDown" : "ArrowUp", visibleCount);
-      renderTitle({ emitEnterJuice: false });
+      updateTitleSelection(titleEl, titleMenuIndex);
       emitTitleJuice("title-select");
       return true;
     }
+    // Horizontal arrows are also title input, never browser scrolling.
+    if (titleDir) return true;
     if (!isConfirmKey(key)) return false;
     const selected = options[titleMenuIndex];
     // 크레딧은 타이틀을 떠나지 않는다 — 확정 연출·BGM 정지 없이 창만 띄운다.
@@ -752,6 +794,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 텍스트 입력 컨트롤(런타임 디버그 패널의 숫자 입력 등)에 치는 글자는 게임 키가 아니다. 여기서
     // 걸러야 손 슬롯 숫자키가 preventDefault 로 글자를 삼키지 않고, Escape 가 메뉴를 열지 않는다.
     if (event.isComposing || isTextEntryTarget(event.target)) return;
+    if (openingController || game?.registry.get('initialPresentationPending') === true || layout.querySelector('[data-testid="opening-map-handoff"]')) return;
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const menu = currentStatusMenu(layout);
     if (menu && event.key === "Tab") {
@@ -839,7 +882,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    void warmBundledPlayAssets(project);
     const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
     clearChildren(surface.stage);
     playStage = surface.stage;
@@ -861,6 +903,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     focusSelectedTitleOption(title);
     surface.sync();
     if (!redrawOfTitle) startTitleBgm(titleProject);
+    // Let the title paint before scans/engine imports. No game/session starts in the background.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!shellActive || !firstEnter) return;
+      cinematicAssets.warm(project, project.system.opening);
+      const field = resolveMapBgm(project, project.startMapId);
+      audioWarmup.warm(project, [titleProject.system.titleScreen?.musicResourceId,
+        ...Object.values(titleProject.system.titleScreen?.sounds ?? {}),
+        field.kind === 'play' ? field.resourceId : undefined]);
+      void warmBundledPlayAssets(project);
+      void warmPlayGameRuntime().catch(() => undefined); // Actual boot retains normal recovery/retry.
+    }));
     if (firstEnter) emitTitleJuice("title-enter");
     armTitleAttract(title, surface.stage, titleProject);
   };
@@ -905,8 +958,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const openTitleCredits = (): void => {
-    emitTitleJuice("title-select");
+    emitTitleJuice("title-confirm");
     openLicenseDialog(() => {
+      emitTitleJuice('menu-back');
       const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
       if (titleEl) focusSelectedTitleOption(titleEl);
     });
@@ -1009,12 +1063,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const emitTitleJuice = (event: RuntimeJuiceEvent): void => {
     const sounds = store.getCurrent().system.titleScreen?.sounds;
-    // cursor/confirm overrides only; title-enter stays default; cancel SE is never played here.
+    // Credits returning to the title uses the authored cancel cue.
     const soundResourceId =
       event === "title-select"
         ? sounds?.cursorSeResourceId
         : event === "title-confirm"
           ? sounds?.confirmSeResourceId
+          : event === 'menu-back'
+            ? sounds?.cancelSeResourceId
           : undefined;
     emitRuntimeJuice({
       event,
@@ -1028,19 +1084,40 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (titleConfirming) return;
     titleConfirming = true;
     emitTitleJuice("title-confirm");
-    stopTitleBgm();
-    const transitionMs = withTransition
-      ? playTitleTransition(
-          layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
-          store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
-        )
-      : null;
-    titleConfirmTimer = setTimeout(() => {
-      titleConfirmTimer = undefined;
-      if (!shellActive) return;
-      titleConfirming = false;
-      callback();
-    }, transitionMs ?? TITLE_CONFIRM_JUICE_MS);
+    const title = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+    const generation = startRun;
+    const beginTransition = (): void => {
+      if (!shellActive || startRun !== generation) return;
+      clearTimeout(titleConfirmTimer);
+      title?.removeAttribute('aria-busy');
+      title?.querySelector('.title-preparing')?.remove();
+      stopTitleBgm();
+      const transitionMs = withTransition
+        ? playTitleTransition(
+            layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
+            store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
+          )
+        : null;
+      titleConfirmTimer = setTimeout(() => {
+        titleConfirmTimer = undefined;
+        if (!shellActive) return;
+        titleConfirming = false;
+        callback();
+      }, transitionMs ?? TITLE_CONFIRM_JUICE_MS);
+    };
+    const project = store.getCurrent();
+    const first = withTransition && project.system.opening?.enabled ? project.system.opening.scenes[0] : undefined;
+    const url = first?.kind === 'image' ? resolveAssetResourceUrl(first.resourceId, { project }) : null;
+    if (url) {
+      // A fast confirmation or slow network keeps the animated title visible until the first shot is decoded.
+      title?.setAttribute('aria-busy', 'true');
+      titleConfirmTimer = setTimeout(() => {
+        if (shellActive && startRun === generation && title?.isConnected) {
+          title.append(el('div', { class: 'title-preparing', text: '이야기를 준비하고 있습니다…', attrs: { role: 'status' } }));
+        }
+      }, 800);
+      void cinematicAssets.prepare(url).catch(() => undefined).then(beginTransition);
+    } else beginTransition();
   };
 
   const exitPlayer = (): void => {
@@ -1069,6 +1146,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   document.addEventListener("keydown", onKeyDown);
   teardownShell = () => {
     shellActive = false;
+    cinematicAssets.dispose();
+    audioWarmup.dispose();
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     stopGame();

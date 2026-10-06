@@ -1,0 +1,20 @@
+{
+  "url": "http://mdc-server:18312/harness",
+  "name": "슈퍼하네싱",
+  "panes": [
+    "props",
+    "spaces",
+    "orders",
+    "materials"
+  ],
+  "propsDraftPreserved": true,
+  "spacePaused": true,
+  "sharedRevision": "9478673f5896a1a0922d17e47ab748298c65178066249c3b4dbd162ee4d2760e",
+  "sharedKits": 759,
+  "downloadBytes": 5923469,
+  "offlineVisible": true,
+  "postRequests": 0,
+  "pageErrors": [],
+  "spaceCardsLoaded": 90,
+  "ordersHeading": "그림 주문서"
+}

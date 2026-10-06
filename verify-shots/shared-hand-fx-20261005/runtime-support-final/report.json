@@ -1,0 +1,440 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": false,
+  "variant": "normal",
+  "clips": [
+    {
+      "skill": "skill_fx_guard_crystal",
+      "start": 165.08,
+      "duration": 4.76,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/shared-hand-fx-20261005/runtime-support-final/skill-skill_fx_guard_crystal.gif",
+      "bytes": 991575
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_fx_guard_crystal",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 40589,
+          "fx": "hand_guard_crystal",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 40432,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 40437,
+          "actor": "actor_hero",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 40581,
+          "actor": "actor_hero",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 40591,
+          "actor": "actor_hero",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 40605,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 39998.200000047684,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 8.599999904632568,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40032.700000047684,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 24.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40327.39999997616,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 55.799999952316284,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40554.799999952316,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "cast_charge"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 454.59999990463257,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40604.89999997616,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [
+            "hand_guard_crystal:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 622.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-blessed battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40746.799999952316,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [
+            "hand_guard_crystal:2"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 710.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-blessed battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40758.299999952316,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [
+            "hand_guard_crystal:4"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 775.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-blessed battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40805.299999952316,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [
+            "hand_guard_crystal:4"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 799.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-blessed battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 40850.700000047684,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [
+            "hand_guard_crystal:6"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 862.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-blessed battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 41046.89999997616,
+          "held": false,
+          "skill": "skill_fx_guard_crystal",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1035.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 38573.39999997616,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 39172.10000002384,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 39645.89999997616,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 39881.799999952316,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 39997.200000047684,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 40440.39999997616,
+          "duration": 3.004489795918367,
+          "rate": 1
+        },
+        {
+          "at": 40580.39999997616,
+          "duration": 3.004489795918367,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 41394,
+          "target": "actor_hero",
+          "text": "프로텍트",
+          "heal": false
+        }
+      ],
+      "hitStops": [],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">주인공: 대상을 고른다.주인공을 노린다.",
+        ">주인공이 수정 방벽을 사용했다!",
+        ">주인공은 프로텍트에 걸렸다!",
+        ">주인공은 무엇을 할까?"
+      ],
+      "statuses": [
+        "actor_hero-protect:프로텍트",
+        "actor_hero-protect:프로텍트"
+      ],
+      "sounds": 2,
+      "remainingFx": 0,
+      "layerKeys": [
+        "hand_guard_crystal"
+      ],
+      "problems": []
+    }
+  ],
+  "custom": {
+    "file": "docs/experiments/shared-hand-fx-20261005/runtime-fixture.json",
+    "contract": [
+      {
+        "id": "skill_fx_impact",
+        "actorId": "actor_hero",
+        "motion": "dash-strike",
+        "layers": [
+          "hand_impact"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_heal_drop",
+        "actorId": "actor_hero",
+        "motion": "cast",
+        "layers": [
+          "hand_heal_drop"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_guard_crystal",
+        "actorId": "actor_hero",
+        "motion": "buff",
+        "layers": [
+          "hand_guard_crystal"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_fx_comet",
+        "actorId": "actor_hero",
+        "motion": "cast",
+        "layers": [
+          "hand_comet"
+        ],
+        "level": 1
+      },
+      {
+        "id": "skill_hand_summon_review",
+        "actorId": "actor_hero",
+        "motion": "finisher",
+        "layers": [
+          "monk_dragon_aura",
+          "monk_dragon_hit"
+        ],
+        "level": 1
+      }
+    ]
+  },
+  "passed": true
+}

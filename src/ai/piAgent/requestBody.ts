@@ -1,3 +1,5 @@
+import { yieldToTask } from "@/util/yieldToTask";
+
 /**
  * Preserve reference images while keeping large project requests below the wire limit.
  *
@@ -93,7 +95,7 @@ async function gzipPieces(pieces: readonly Piece[], signal?: AbortSignal): Promi
         if (!piece) { controller.close(); return; }
         if (offset >= piece.text.length) { pieceIndex += 1; offset = 0; continue; }
         if (nowMs() - sliceStart >= YIELD_AFTER_MS) {
-          await yieldToEventLoop();
+          await yieldToTask();
           sliceStart = nowMs();
         }
         if (signal?.aborted) { controller.error(signal.reason); return; }
@@ -110,8 +112,4 @@ async function gzipPieces(pieces: readonly Piece[], signal?: AbortSignal): Promi
     },
   });
   return new Response(source.pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
-}
-
-function yieldToEventLoop(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
 }

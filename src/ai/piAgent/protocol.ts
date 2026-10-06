@@ -3,6 +3,7 @@ import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
+import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
 // 요청/이벤트 모양을 쓴다. 전송은 NDJSON 한 줄 = 이벤트 하나.
 //
@@ -29,7 +30,12 @@ export interface PiAgentRequest {
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;
   readonly roleModels?: SpecialistModels;
+  /** The user's image slot, inherited by every specialist; credentials stay on the companion. */
+  readonly imageProvider?: string;
+  readonly imageModel?: string;
   readonly provider: string;
+  /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
+  readonly projectKey?: string;
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
   readonly task: string;
@@ -136,6 +142,12 @@ export const PI_AGENT_STALE_MS = 30_000;
  */
 export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
 
+/**
+ * 체크포인트 거절 사유 머리 — 맵 소실 확인에서 사용자가 그 변경을 거절했다. 워커는 이 머리를 보면 실행을 멈추지 않고
+ * 그 변경만 되돌린 뒤 모델에게 알린다. 다른 거절(권위·기준선·단계 중단)은 그대로 실행을 멈춘다.
+ */
+export const PI_MAP_LOSS_DECLINED_PREFIX = "[맵 소실 거절]";
+
 export interface PiTeamAgentStats extends PiAgentStats {}
 
 /**
@@ -157,6 +169,11 @@ export interface PiProjectCheckpoint {
    * 지나며 101MB 체크포인트가 되어 브라우저 워치독(30초)이 연결을 끊었다.
    */
   readonly unchangedTilesetIds?: readonly string[];
+  /**
+   * 이 체크포인트를 낳은 도구가 실제로 밟은 시공 단계(constructionLog). 저장하지 않는다 — 편집기가 맵 위에서
+   * 그 순서대로 다시 틀 때만 쓴다(마을 짓기처럼 도구 한 번이 맵 전체를 짓는 경우).
+   */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
 type PiAgentEventPayload =
@@ -170,7 +187,7 @@ type PiAgentEventPayload =
   | { readonly type: "agent_spawn"; readonly agentId: string; readonly role: PiTeamRoleId; readonly mapId: string | null; readonly mapName: string | null; readonly task: string; readonly memberId?: string; readonly label?: string; /** 검수 지적을 고치러 간 배정이면 그 검수 에이전트 id. 보드가 두 행을 잇는다. */ readonly fixOf?: string }
   | { readonly type: "agent_event"; readonly agentId: string; readonly event: PiAgentEvent }
   | { readonly type: "agent_done"; readonly agentId: string; readonly ok: boolean; readonly summary: string; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spills: readonly string[]; readonly conflicts: readonly string[] }
-  | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[] }
+  | { readonly type: "review"; readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly findings: readonly string[]; readonly artChecks?: unknown }
   | { readonly type: "team_report"; readonly text: string }
   | { readonly type: "turn"; readonly index: number }
   /** 연결이 살아 있음. 내용은 없다 — 유휴 타임아웃을 지나가게 하고 브라우저 워치독의 시계가 된다. 보드는 무시한다. */

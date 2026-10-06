@@ -46,7 +46,7 @@
     word-break: keep-all;
   }
 
-  button, input, textarea { font: inherit; color: inherit; }
+  .start-app :is(button, input, textarea) { font: inherit; color: inherit; }
 
   .start-app {
     display: grid;

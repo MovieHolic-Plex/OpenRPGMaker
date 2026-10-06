@@ -5,6 +5,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { AudioChannel } from "@/project/session";
 import type { Project } from "@/project/types";
+import { preparedRuntimeAudioUrl } from '../runtimeAudioWarmup';
 
 // 오디오로 취급하는 업로드 리소스 kind. 그 외(타일 그림판/그림 등)는 재생 대상이 아니다.
 const AUDIO_RESOURCE_KINDS: ReadonlySet<string> = new Set(["music", "sound"]);
@@ -38,5 +39,6 @@ export function resolveAudioSource(
   if (resourceId === undefined || resourceId.trim().length === 0) return null;
   const uploaded = project.assets?.uploaded?.[resourceId];
   if (uploaded !== undefined && !AUDIO_RESOURCE_KINDS.has(uploaded.kind)) return null;
-  return resolveAssetResourceUrl(resourceId, { project });
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  return url ? preparedRuntimeAudioUrl(url) : null;
 }

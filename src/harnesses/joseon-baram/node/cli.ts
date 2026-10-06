@@ -201,13 +201,13 @@ function stageBuild(io: CliIo, seed: JoseonSeed, args: Args): number {
 
   line(io, "재굽기 계획 (bash scripts/content/rebuild-joseon.sh, 약 70초):");
   if (regen) line(io, "  0) 마을 20호 기준 시트를 지금 카탈로그로 다시 굽는다(demo20.py, 약 40초) — 경고: 기준 시트 칸 번호가 바뀌어 이미 배포된 맵이 어긋난다.");
-  line(io, "  1) build-joseon-tileset.py  시트 3장 합치기·통행·오토타일·키트·맵 JSON");
+  line(io, `  1) build-joseon-tileset.py  시트 ${seed.maps.length}장 합치기(기준 시트 번호 불변, 새 조각은 꼬리에)·통행·오토타일·키트·맵 JSON`);
   line(io, "  2) prepare-joseon-baram-references.py  참고문서 6용도·그림·오류 변조 검출");
   line(io, "  3) save-joseon-baram.mjs  임시 폴더 저장 → 재로드 deepEqual → 엔진 통행·마스크 대조");
   line(io, "  4) prepare-joseon-regions.mjs  장소 카드·스냅숏");
   line(io, "  5) 목록 축소본(catalog-thumbs)");
   line(io, `환경: ${envNotes.length ? envNotes.join(" ") : "(기본 입력 위치)"}`);
-  for (const { map, dir } of inputs) line(io, `입력 ${map.id.padEnd(13)} ${relative(REPO_ROOT, dir)}`);
+  for (const { map, dir } of inputs) line(io, `입력 ${map.id.padEnd(22)} ${relative(REPO_ROOT, dir)}`);
   line(io, `팔레트 잠금: ${palette.status === 0 ? "OK" : "FAIL"}`);
   if (palette.status !== 0) io.err(palette.stdout);
   if (missing.length) {
@@ -264,6 +264,8 @@ function stageMap(io: CliIo, seed: JoseonSeed, args: Args): number {
   const seedNumber = flagValue(args, "seed") ?? String(map.builderSeed);
   const env: NodeJS.ProcessEnv = { ...process.env, JS_PROFILE: map.profile, JS_SEED: seedNumber };
   const builderArgs = [repoPath(map.builder)];
+  // 실내 방 빌더(demo_interior.py·demo_palace_in.py)는 방 이름을 인자로 받는다 — 인자 없이 돌리면 같은 스크립트의 방을 모두 굽는다.
+  if (map.profile === "interior") builderArgs.push(map.id);
   let outDir = resolve(REPO_ROOT, map.out);
   if (isV20) {
     if (args.flags.has("candidate")) builderArgs.push("--candidate");
@@ -278,7 +280,14 @@ function stageMap(io: CliIo, seed: JoseonSeed, args: Args): number {
   const profile = seed.mapGate.profiles[map.profile]!;
   line(io, `지도 ${map.id} (${map.name}, ${map.size[0]}x${map.size[1]}칸) 빌드 계획:`);
   line(io, `  python3 ${map.builder}${builderArgs.length > 1 ? " " + builderArgs.slice(1).join(" ") : ""}   (cwd ${seed.toolchain.dir}, JS_PROFILE=${map.profile} JS_SEED=${seedNumber}${env.JS_OUT ? ` JS_OUT=${env.JS_OUT}` : ""})`);
-  line(io, `  1) 조각 게이트(${isV20 ? (args.flags.has("candidate") ? "A 만 건너뜀" : "A 포함 — 지금은 A 가 전부 막아 --candidate 가 필요") : "A 만 건너뜀"})  2) 지도 관문 M1~M7 임계: 맨 잔디 창 ≤${profile.lawnMax} · 수관 ≥${profile.treeMin} · 물체 ≥${profile.objMin} · 건물 밀도 ≥${profile.bldMin} · 겹침 ≥${profile.depthMin}`);
+  const pieceGate = map.profile === "field" || map.profile === "cave"
+    ? "조각 게이트는 돌지 않고 빌더 단언(시트 재조립 pixelDiff 0·통행·빈 광장)이 막는다"
+    : `조각 게이트(${isV20 ? (args.flags.has("candidate") ? "A 만 건너뜀" : "A 포함 — 지금은 A 가 전부 막아 --candidate 가 필요") : "A 만 건너뜀"})`;
+  const indoor = map.profile === "interior_b" || map.profile === "palace_int";
+  const gateLine = indoor
+    ? `2) 지도 관문은 M3 물체 피복 ≥${profile.objMin} 만 건다(M1·M2·M4~M7 은 방에 뜻이 없어 건너뜀). 방 전용 점검(문 앞 BFS·막힘·일렬·맨바닥)은 ${map.profile === "interior_b" ? "inb_checks.py" : "pal_checks.py"}`
+    : `2) 지도 관문 M1~M7 임계: 맨 잔디 창 ≤${profile.lawnMax} · 수관 ≥${profile.treeMin} · 물체 ≥${profile.objMin} · 건물 밀도 ≥${profile.bldMin} · 겹침 ≥${profile.depthMin}`;
+  line(io, `  1) ${pieceGate}  ${gateLine}`);
   line(io, `  산출: ${shown(outDir)}/ ${isV20 && !write ? "(추적 파일이 아니다)" : "(추적 파일을 덮어쓴다)"}`);
   if (map.overwritesTracked && write) line(io, `  경고: ${map.role}`);
   if (args.flags.has("dry")) {

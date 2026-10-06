@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "kind": "product-regression-controls",
+  "pass": true,
+  "checks": [
+    {
+      "id": "move_event:executes",
+      "ok": true,
+      "detail": "이벤트 'ev_ember_child' → (9, 7)"
+    },
+    {
+      "id": "move_event:map_ember_village:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_mist_forest:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_mist_forest:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_dry_mine:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_dry_mine:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_ash_pass:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_ash_pass:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_flame_sanctum:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "move_event:map_flame_sanctum:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:executes",
+      "ok": true,
+      "detail": "renamed 속성 변경 — 이름='renamed'"
+    },
+    {
+      "id": "set_map_properties:map_ember_village:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_mist_forest:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_mist_forest:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_dry_mine:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_dry_mine:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_ash_pass:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_ash_pass:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_flame_sanctum:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "set_map_properties:map_flame_sanctum:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:executes",
+      "ok": true,
+      "detail": "control에 이벤트 'ev_ember_child' 수정 — 런타임 제한 커맨드 0건"
+    },
+    {
+      "id": "upsert_event:map_ember_village:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_mist_forest:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_mist_forest:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_dry_mine:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_dry_mine:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_ash_pass:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_ash_pass:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_flame_sanctum:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_event:map_flame_sanctum:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:executes",
+      "ok": true,
+      "detail": "아이템 '회복약' 수정"
+    },
+    {
+      "id": "upsert_item:map_ember_village:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_mist_forest:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_mist_forest:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_dry_mine:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_dry_mine:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_ash_pass:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_ash_pass:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_flame_sanctum:raster-preserved",
+      "ok": true
+    },
+    {
+      "id": "upsert_item:map_flame_sanctum:document-preserved",
+      "ok": true
+    },
+    {
+      "id": "paint:false:executes",
+      "ok": true,
+      "detail": "control에 타일 290 페인트(cells, 1층 lower, 1칸) · 나무 상·하 보정: 수관 보완 2칸"
+    },
+    {
+      "id": "paint:false:other-maps-preserved",
+      "ok": true
+    },
+    {
+      "id": "paint:false:repair-or-dryrun",
+      "ok": true
+    },
+    {
+      "id": "paint:true:executes",
+      "ok": true,
+      "detail": "control에 타일 290 페인트(cells, 1층 lower, 1칸) · 나무 상·하 보정: 수관 보완 2칸"
+    },
+    {
+      "id": "paint:true:other-maps-preserved",
+      "ok": true
+    },
+    {
+      "id": "paint:true:repair-or-dryrun",
+      "ok": true
+    },
+    {
+      "id": "cancel:branch:semantics",
+      "ok": true
+    },
+    {
+      "id": "cancel:choice1:semantics",
+      "ok": true
+    },
+    {
+      "id": "cancel:choice2:semantics",
+      "ok": true
+    },
+    {
+      "id": "cancel:disallow:semantics",
+      "ok": true,
+      "detail": "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다."
+    },
+    {
+      "id": "cancel:choice5:semantics",
+      "ok": true,
+      "detail": "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다."
+    },
+    {
+      "id": "cancel:undefined:semantics",
+      "ok": true,
+      "detail": "선택지 취소가 허용되지 않습니다. 선택지는 열린 상태입니다."
+    },
+    {
+      "id": "choice:writer-contract",
+      "ok": true
+    },
+    {
+      "id": "choice:tool-contract",
+      "ok": true
+    },
+    {
+      "id": "error:provider-message",
+      "ok": true
+    }
+  ]
+}

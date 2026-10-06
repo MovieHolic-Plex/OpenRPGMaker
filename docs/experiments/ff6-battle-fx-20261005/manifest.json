@@ -1,0 +1,58 @@
+[
+  {
+    "key": "fire-column",
+    "name": "홍염 기둥",
+    "frame": 128,
+    "frames": 24,
+    "frameMs": 60,
+    "opaqueColors": 11,
+    "alpha": [
+      0,
+      255
+    ],
+    "productRegistered": false,
+    "reviewStatus": "rejected-by-user"
+  },
+  {
+    "key": "ice-shatter",
+    "name": "빙정 파쇄",
+    "frame": 128,
+    "frames": 24,
+    "frameMs": 60,
+    "opaqueColors": 6,
+    "alpha": [
+      0,
+      255
+    ],
+    "productRegistered": false,
+    "reviewStatus": "rejected-by-user"
+  },
+  {
+    "key": "thunder-impact",
+    "name": "창뢰 연타",
+    "frame": 128,
+    "frames": 24,
+    "frameMs": 60,
+    "opaqueColors": 9,
+    "alpha": [
+      0,
+      255
+    ],
+    "productRegistered": false,
+    "reviewStatus": "rejected-by-user"
+  },
+  {
+    "key": "winged-dragon",
+    "name": "성익룡 소환",
+    "frame": 128,
+    "frames": 24,
+    "frameMs": 60,
+    "opaqueColors": 14,
+    "alpha": [
+      0,
+      255
+    ],
+    "productRegistered": false,
+    "reviewStatus": "rejected-by-user"
+  }
+]

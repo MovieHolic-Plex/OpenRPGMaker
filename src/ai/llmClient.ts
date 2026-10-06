@@ -1,5 +1,5 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
-import { normalizePiApplyMode } from "./piAgent/applyMode";
+import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
@@ -10,7 +10,7 @@ import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRo
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { DEFAULT_ULTRABRAIN_PROVIDER, DEFAULT_ULTRABRAIN_MODEL, DEFAULT_ULTRABRAIN_EFFORT } from "./ultrabrainConfig";
-import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE, type PiApplyMode } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaults";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
@@ -142,6 +142,31 @@ export function isAutonomyLevel(raw: unknown): raw is AutonomyLevel {
 const LEGACY_DEFAULT_MAX_TOKENS = new Set([2048, 10240, 32768]);
 const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
 
+/**
+ * 옛 공장 기본 모델. 2026-09-26 에 기본을 3.7-flash → 3.8-flash 로 옮길 때 상수·카탈로그만
+ * 바뀌고 **저장된 설정에는 적용되지 않아**, 이미 저장된 사용자는 3.7 에 그대로 남았다
+ * (loadAiConfig 는 저장값을 존중하고, 예전 방식만 소급 승격했다). 그래서 그 옛 공장 기본만
+ * 새 기본으로 소급한다 — 사용자가 직접 고른 다른 모델(`gemini-9-...`·`glm-5.3` 등)은
+ * 손대지 않는다.
+ */
+const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tiered"]);
+
+/** Antigravity 의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
+function promoteLegacyFactoryModel(model: string, providerId: string): string {
+  if (providerId !== DEFAULT_OH_MY_PI_PROVIDER) return model;
+  return LEGACY_FACTORY_MODELS.has(model) ? DEFAULT_MODEL : model;
+}
+
+function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
+  const result: SpecialistModels = {};
+  for (const role of ["vision", "writer", "deep"] as const) {
+    const entry = roles[role];
+    if (!entry) continue;
+    result[role] = { ...entry, model: promoteLegacyFactoryModel(entry.model, entry.provider) };
+  }
+  return result;
+}
+
 // envApiKey()/envBaseUrl() 은 제거했다. `VITE_LLM_API_URL` 이 에디터의 authMode·baseUrl 을 정하던
 // 통로였고, 그게 AI 를 반복적으로 죽인 원인이다(근거는 defaultAiConfig 주석). OAuth 는 클라이언트
 // 키를 쓰지 않으므로 `VITE_LLM_API_KEY`/`VITE_YUNWU_API_KEY` 폴백도 함께 없앴다 — 번들에 키를
@@ -180,8 +205,8 @@ export function defaultAiConfig(): AiConfig {
     apiKey: "",
     maxToolCalls: DEFAULT_MAX_TOOL_CALLS,
     maxTokens: DEFAULT_MAX_TOKENS,
-    // 감독 단계 기본 추론 강도. 벽시계·비용을 아끼려고 낮게 시작한다(실행 단계는 off).
-    reasoningEffort: "low",
+    // 감독 단계 기본 추론 강도. 감독 지시(2026-10-05)로 기본을 「높음」으로 둘다 — 실행 단계는 off.
+    reasoningEffort: "high",
     agentMode: "auto",
     autonomyLevel: "balanced",
     piTeam: DEFAULT_PI_TEAM,
@@ -275,16 +300,18 @@ export function loadAiConfig(): AiConfig {
     // TS 가 string 으로 확정한다(아래 isModelValidForAuthMode 가 string 을 요구). base.liteModel 은
     // AiConfig 의 선택 필드지만 defaultAiConfig() 가 항상 DEFAULT_LITE_MODEL 을 채우므로 ?? base.model 로
     // undefined 여지만 없앤다. 런타임 값은 이전 삼항 표현식과 동일하다.
-    const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
-    const model: string = storedModel || base.model;
-    const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
-    const liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
     // 제공자는 **Antigravity 와 Codex 둘 중 하나**다. 저장된 선택은 그대로 존중하고,
     // 레지스트리에 없는 값(옛 zai/xiaomi/… 나 오타)은 parseOhMyPiProvider 가 기본 제공자로
     // 스냅한다 — 사라진 제공자 id 가 살아남아 동반 서비스에 그대로 실려 나가는 것을 막는다.
     // providerId 가 없는 옛 blob 도 같은 경로로 기본 제공자가 된다.
     // authMode 는 위에서 이미 "chatgpt" 로 고정돼 있다.
+    // 모델 승격이 제공자를 알아야 하므로 providerId 를 먼저 푼다.
     const providerId = parseOhMyPiProvider(parsed.providerId);
+    const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
+    const model: string = promoteLegacyFactoryModel(storedModel, providerId) || base.model;
+    const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
+    const liteModel: string = promoteLegacyFactoryModel(storedLiteModel, providerId)
+      || promoteLegacyFactoryModel(storedModel, providerId) || (base.liteModel ?? base.model);
     // Preserve explicit selections; the companion rejects unsupported IDs without substitution.
     return {
       authMode,
@@ -301,8 +328,8 @@ export function loadAiConfig(): AiConfig {
       model,
       liteModel,
       roleModels: parsed.roleModelsPolicyVersion === 1
-        ? parseRoleModels(parsed.roleModels)
-        : withoutLegacySeededDeepRole(parseRoleModels(parsed.roleModels), providerId, liteModel || model),
+        ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels))
+        : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.
       modelSelectionOverrides: Object.fromEntries(
@@ -316,8 +343,10 @@ export function loadAiConfig(): AiConfig {
         }).map(slot => [slot, true as const]),
       ),
       ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
-      ultrabrainModel: typeof parsed.ultrabrainModel === "string" && parsed.ultrabrainModel.trim()
-        ? parsed.ultrabrainModel.trim() : DEFAULT_ULTRABRAIN_MODEL,
+      ultrabrainModel: promoteLegacyFactoryModel(
+        typeof parsed.ultrabrainModel === "string" ? parsed.ultrabrainModel.trim() : "",
+        parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
+      ) || DEFAULT_ULTRABRAIN_MODEL,
       ultrabrainReasoningEffort: parsed.ultrabrainReasoningEffort === "low" || parsed.ultrabrainReasoningEffort === "medium"
         ? parsed.ultrabrainReasoningEffort : DEFAULT_ULTRABRAIN_EFFORT,
       // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.

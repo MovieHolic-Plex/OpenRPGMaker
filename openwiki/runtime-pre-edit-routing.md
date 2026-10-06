@@ -1,3 +1,31 @@
+## 태양 지형 그림자 (2026-10-04)
+
+선택적 `map.sunlight`는 기본 off, 편집기와 내보낸 게임이 `project/sunlight.ts`를 공유한다.
+캐릭터 아래의 줄별 마스크·카메라 창 캐시·타일 제자리 수정 무효화·shutdown 정리는
+[sunlight-shadows.md](sunlight-shadows.md)를 읽는다. 통행/시야 계산과 독립이다.
+
+## 내보낸 게임은 창에 맞춘다 (2026-10-04)
+
+`exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는
+1280×900 창에 960×720만 그렸다(면적 60%). fit은 원래 화면 비율을 유지하며 창의 최대 contain
+배율을 쓴다(320×240이면 1200×900). 게임/UI를 자르거나 늘려 왜곡하지 않는다. 정수 배율을
+명시한 다른 호스트의 선택은 유효하다. 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
+넘기지 않고 출하 player.html에서 자연 재생/첫 조작을 녹화한다.
+
+생성 원화 타이틀의 효과 캔버스는 `backgroundRendering:smooth`를 상속하고,
+논리 320px가 아닌 무대에 표시되는 부모 크기로 그린다(1920px 상한·소프트웨어 GPU 0.5 배율 유지).
+캔버스 자신의 카메라 push 크기로 측정하면 매 프레임 재할당되므로 안정된 부모를 측정한다.
+기존 pixelated 설정은 논리 해상도를 유지한다. 오프닝 정지 그림은 cover로 무대를 채우며 영상은 contain이다.
+
+## 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+
+기존 `CC0_ICON_ASSETS`의 그림 id는 이벤트 `graphic.sprite`로 사용할 수 있다.
+`eventSpriteResources`는 charset frame을 적용하지 않고 `__BASE` 전체 그림을 16px 상자에 맞춘다.
+`bundled.ts`는 맵 이벤트/공간 구조가 참조한 아이콘만 로드한다(도감의 아이템 1,000개 그림 전체를 미리 싣지 않는다). `toolImageEventSprites`도 같은 크기/원본 알파로
+그린다. `ensureBundledProjectTextures`도 새 사물 참조를 로드하여 편집 직후 재로드 없이 보이게 한다. 기존 공용 그림의 표시 경로를 재사용한다. 회중시계 예: `cc0-jetrel-clock`.
+
+- **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 긴 선택지는 내부 리스트에서 줄바꿈/스크롤하며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
+
 - **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.
   회귀는 `test/runtimeLagFixes.test.ts`(예전 구현과 같은 답을 내는지 대조한다).
   - QA 상태 미러(`runtime-state-json`)는 **읽을 때만** 만든다(`RuntimeDomOverlay.syncRuntimeStateSource`).
@@ -406,6 +434,12 @@
 - **Blocking text/input lifetime (2026-09-08):** `DialogueTextRequest.signal` aborts text with `AbortError`. Hide, close, and surface replacement cancel pending text too; successful page completion still schedules the normal exit. Cancellation detaches keys and cancels entry/typewriter timers. Fresh text advance ignores repeat/composition/text-entry targets and consumes its accepted key. `eventInput.waitForEventKey(signal)` shares the RM2K3 key-code mapping between field and battle input waits, removes its capture listener on settlement, and consumes the accepted event. Field input waits subscribe to shutdown/destroy and verify the captured session before resuming the interpreter. Social gift/talk feedback follows the same ownership rule: cleanup must not reset input/running state or close dialogue after session replacement or scene deactivation, and an abandoned original talk must not grant friendship or open follow-up text. Public `runEvent` consumes only lifecycle `AbortError` (replaced session or inactive scene); genuine failures and active-scene aborts still reject. Contracts: `dialogueTextCancellation`, `playSceneInterpreterCutsceneSkip`, `socialDialogueCancellation` (real DialogueUI and keyboard input through `PlayScene.runEvent`).
  **Export portrait URL contract (R13):** `safeResourceImageUrl` accepts resolver-produced HTTP(S) PNG/JPEG URLs as well as existing root paths and PNG/JPEG data URLs; it rejects quoted-CSS escape characters and unsafe schemes. `inlineAssetStore` still owns deployment-base/inline resolution, so do not strip export subpaths in dialogue. `test/dialogueImageUrls.test.ts` exercises real `createDialogueUI` with editor-root, root/nested/encoded exports and inline assets. Dedicated-player image-load proof: `.omo/evidence/dialogue-face-url-r13/README.md`.
 - Dialogue escape parsing/playback is owned by `parseDialogueText` + `createDialogueUI` in `src/player/dialogue.ts`, with zero-width controls preserved through `dialoguePagination.ts`. `\v[n]`, `\n[n]`, and `\c[n]` resolve variables/actor names/colors; `\s[n]` sets a clamped 1–20 typing delay (`n × 8ms`); `\.`/`\|` wait 250/1000ms; `\!` pauses until an advance key; `\>`/`\<` enter/leave instant typing; `\$` opens a live-session gold window; and `\^` closes after typing without another input. `\_` becomes a half-width space and `\\` remains a literal backslash. Raw escape syntax must never render in play or the editor preview. When speaker is set, createDialogueUI mounts a floating nameplate (.speaker.speaker-nameplate, testid dialogue-speaker) on the dialogue box rim so the name is visually separated from chat body text. The runtime uses the `--runtime-dialogue-*` dark-glass token family: speaker names mount as compact rim tabs; normal faces stay 48×48 chips drawn from one file per face (no sheet cropping); bust/full resources are stage-logical fixed sizes with left/right text reservation; choices, number input, gold, transparent mode, and top/center/bottom placement remain variants of the same component. Keep `dialogueBodyWidth` deductions synchronized with CSS padding, border, chip gap, and bust/full reserves.
+- **초상 모드·출하 글꼴 (2026-10-04).** `project/facePresentation.ts`가 리소스 이름의
+  얼굴/흉상/전신 규약을 소유한다. 편집기 `faceDisplayModeOf`와 플레이어 `dialoguePortraitMode`,
+  조수 검색의 `portraitMode` 필터가 공유한다. 명시한 presentation은 이 규약보다 우선한다.
+  웹·단일 HTML의 `exportEntry.startPlayer`도 `syncProjectFontTheme(project)`를 호출한다.
+  편집기 boot만 호출하면 출하 게임의 `system.fonts`가 무시된다. 공통 토큰과 runtime 별칭은
+  문서 루트에서 연결한다. 대화창 `joseon`은 스타일 목록과 공유 CSS에 등록하며 기존 페이지 계산을 쓴다.
 - **대화창 연출 계약 (2026-08-30).** 「문장 표시」의 `emotion` 은 감정 태그가 아니라 **연출 프로파일 선택자**다.
   `src/player/dialoguePresentation.ts` 가 순수 모델(5종 표 + `reducedMotion` 주입)을 갖고, `dialogue.ts` 는
   프로파일을 상자에 `data-dialogue-emotion` / `-phase` / `-motion` / `-shake` / `-flash` / `-charReveal` 과

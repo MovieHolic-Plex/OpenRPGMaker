@@ -3,6 +3,8 @@
 
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRelay.mjs";
+// 정적 import — vite 설정 로드 뒤 모듈 러너가 닫혀 요청 처리 중 동적 import 가 「Vite module runner has been closed」 로 죽었다.
+import { buildWorldmap } from "./worldmapBuild.mjs";
 
 applyLegacyEnvAliases();
 
@@ -41,6 +43,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/agent/cancel"
     || path === "/v1/agent/render"
     || path === "/v1/agent/checkpoint"
+    || path === "/v1/worldmap/build"
   );
 }
 
@@ -242,6 +245,11 @@ export async function handleCompanionRequest(req, adapters) {
     });
   }
 
+  if (method === "POST" && path === "/v1/worldmap/build") {
+    // 조수의 지형 편집(edit_world_terrain) — 월드맵 키트(Python)를 호스트에서 돌린다.
+    return json(200, await buildWorldmap(body));
+  }
+
   if (method === "POST" && path === "/v1/agent/render") {
     if (typeof adapters.resolveRender !== "function") return json(501, { error: "맵 이미지 응답을 지원하지 않습니다." });
     return json(200, await adapters.resolveRender(body));
@@ -257,7 +265,11 @@ export async function handleCompanionRequest(req, adapters) {
     }
     // 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(piRunRelay). 연결이 끊겨도 에이전트는 계속 돌고,
     // 브라우저가 GET 으로 이어 받는다. 중단 버튼은 /v1/agent/cancel 로 온다.
-    const result = await startRelayedRun(body, (request, signal) => adapters.runAgent(provider, request, { signal }));
+    const result = await startRelayedRun(
+      body,
+      (request, signal, heavy) => adapters.runAgent(provider, request, { signal, ...(heavy ? { heavy } : {}) }),
+      { heavyRefs: adapters.runAgentHeavyRefs === true },
+    );
     if (!result.stream) return json(result.status, result.body);
     return { status: 200, stream: true, ndjson: result.ndjson, headers: result.headers, body: null };
   }

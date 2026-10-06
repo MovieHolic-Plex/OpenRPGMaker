@@ -1,0 +1,17 @@
+{
+  "options": [
+    "기본 · 기존 대륙 월드맵",
+    "포켓몬풍 · 마을과 도로",
+    "축척 월드 · 대륙 걷기",
+    "필드 · 지형과 능력",
+    "스테이지 · 클리어와 비밀길",
+    "방 · 발견과 재탐색",
+    "런 · 일방향 분기"
+  ],
+  "generalSelection": "default",
+  "themeCount": 17,
+  "pokemonSelection": "region-routes",
+  "pokemonCreated": true,
+  "errors": [],
+  "note": "Real editor controls and Pokemon creation; default dispatch and real host build are separately saved/reopened in canonical-readback.json."
+}

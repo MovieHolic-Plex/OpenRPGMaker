@@ -39,7 +39,7 @@ The live welcome DOM keeps AI creation and manual system setup separate. Choosin
 
 Controls (including keyboard input) are blocked during the interview and saving. Cancelling the interview is a no-op. `finishEditorBoot` applies the selected engine settings before handoff; `applyWelcomeGenrePresetToOpenProject` skips the fixed world-canon seed whenever a confirmed game brief exists, so a horror collection game does not regain the default hopeful/fairytale tone.
 
-**AI handoff ordering:** the menu's new-project seed carries `gameDesignBrief.generationPending: true` into `createProjectFolderWithSeed`. The bridge creates the folder and the page reloads. Only the new project's boot consumes this marker in `src/editor/projectInterviewStartup.ts`: clear and save the claim, check the same project/brief is still open, then queue the prompt. Saving must succeed first; disconnected AI gets a draft instead of auto-send. A normal subsequent reload cannot auto-send again. A crash between claiming and publishing can leave the brief unsent; `프로젝트 → 게임 기획...` can reopen and hand it back to the composer. The panel's registered boot target still awaits `whenAiChatPanelSettled()` before applying an intent, so history adoption cannot erase a premature send. Do not send to the old store before the folder reload.
+**AI handoff ordering:** the menu's new-project seed carries `gameDesignBrief.generationPending: true` into `createProjectFolderWithSeed`. The bridge creates the folder and the page reloads. The new project's boot saves its preparation while keeping this marker, waits for authentication status, then queues the full prompt. Disconnected AI gets a short visible draft with hidden full instructions; connection recovery automatically resumes the same confirmed brief. The execution route claims and saves the marker before capturing its proposal base. A transport failure before worker startup restores and saves the marker; an accepted build is not automatically repeated on reload. The panel awaits `whenAiChatPanelSettled()` and an idle turn slot before classification. Scope checks stop an old handoff after project switching. Do not send to the old store before the folder reload.
 
 ## Preset AI connection gate and first team build (2026-09-27)
 
@@ -69,10 +69,10 @@ AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27
 
 ## Cinematic interview in the actual app (2026-10-03)
 
-- Before the interview, `src/start/firstWorldArrival.ts` supplies the same world-preview stage to first-time launcher Home, launcher New Game, and editor welcome. The three engine choices remain canonical. Choosing one changes the reference background and focuses a local first-sentence draft; only explicit submission starts connection/planning. Welcome passes that draft as `initialAnswer` and preserves it on connection/interview cancellation. Later interview choices may change or mix author genres and determine the confirmed engine. Image characters and scenes remain references, never authored project content.
-- `src/editor/ui/projectInterviewDialog.ts` is the production interview, shared by menu creation, welcome posters, launcher handoff, and saved-brief editing. New Game opens AI planning by default; examples and blank projects remain under “시작 방식 다시 고르기”. The launcher still creates/opens the SQLite folder before the editor's connection gate and interview; its lightweight bundle does not import editor/AI code.
+- First-time launcher Home and launcher New Game embed the first genre question directly, with a pixel still and optional ambient motion. Genre and answer buttons advance in one click; idea entry, genre mixing, custom answers and extra planning fields stay available in disclosures. `src/start/firstWorldArrival.ts` remains the editor welcome's world-preview stage. Later interview choices determine the confirmed engine. Image characters and scenes remain references, never authored project content.
+- `src/editor/ui/projectInterviewDialog.ts` is the production interview, shared by menu creation, welcome posters, launcher planning, and saved-brief editing. New Game opens AI planning by default; examples and blank projects remain under “시작 방식 다시 고르기”. The launcher lazy-loads the draft-only interview on `start-screen.html` before creating a folder. Only final confirmation and account readiness create/open the SQLite project. Legacy launcher payloads without a confirmed brief retain their old editor-side interview route.
 - Four author-facing genres: relationship/romance, monster collection/growth, adventure, mystery. No life/management option. `projectInterviewScenes.json` owns five questions and three illustrated choices per genre; `cinematicInterviewQuestions.ts` maps them onto existing brief slots. Genre mixing adds an explicit connection question. Custom concept/answers, recommendation provenance, back/edit, cancellation, and editable final summary remain local drafts until confirmation. No automatic AI extraction is performed in this new choice-driven flow; the full original concept is preserved for the assistant.
-- Every preset click cuts to a reviewed pixel-art scene. `public/assets/project-interview/` ships 45 WebPs and the user's world-map video/poster; `reviews.json` records reviewed-original and shipped hashes. Image preloading uses a request token to discard late responses. Motion toggle, reduced-motion default, image failure fallback, modal-stack Escape, focus restoration and tab containment are supported. Image characters never define the protagonist.
+- The film runs only for arrival. An explicit genre/answer choice stops and hides it; generation publishes only a freshly reviewed pixel scene. The world-map poster is the first pending still. Later pending requests retain the prior accepted scene with an explicit “이전 장면” status, rather than returning to the video. The bundled branch gallery remains historical evidence and is not the production choice background. Request tokens discard late responses. Motion toggle, reduced-motion default, image failure fallback, modal-stack Escape, focus restoration and tab containment are supported. Image characters never define the protagonist.
 - `Project.gameDesignBrief` remains version 1 with optional `interview` metadata, validated by `project/gameInterview.ts`: author genre, secondary genre, original concept, protagonist, notes, choice IDs, and blend answer/source. Legacy briefs stay valid and reopen through `legacyProjectInterviewDialog.ts`, preserving old question wording and the legacy free-text extraction path. Do not reinterpret an old transcript as new preset choices.
 - Engine preset is separate from author genre: any monster component uses `monster-collect`; otherwise any adventure component uses `adventure-jrpg`; romance/mystery use `story-cutscene` with their own author instructions. Menu, welcome plan, and launcher defaults all follow the **confirmed** engine. On launcher genre change only the fresh seed's system defaults are replaced; maps, project identity and selected viewport stay intact. Saved-brief editing restricts engine changes rather than silently changing a running project.
 - Only direction/answers/summary appear in the confirmation screen. The detailed execution contract is derived internally by `gameDesignBriefContext`, passed to the assistant after the existing save-first `generationPending` handoff. The newest edited summary takes priority. Changing answers after editing a summary blocks confirmation until the author refreshes or edits that summary; no stale handoff. Choosing a new preset never itself starts a model call.
@@ -81,6 +81,8 @@ AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27
 Browser evidence: `verify-shots/cinematic-interview/` and `scripts/capture-cinematic-interview.mjs` exercise the real production components in isolation: menu → mixed interview → confirmed engine/brief, four genre branches, custom answer/recommendation provenance, stale summary, reopen/cancel/focus, narrow viewport and reduced motion. No live model or canonical content writes; JSON normalization is not SQLite reload evidence. Those regressions were initially authored under the session test restriction. The user explicitly authorized execution on 2026-10-03; focused tests and actual-app checks are recorded in `verify-shots/interview-adversarial/validation.json` and the three `interview-*` evidence folders.
 
 First-sentence browser evidence: `verify-shots/first-world-arrival/`, generated by `scripts/capture-first-world-arrival.mjs`, covers preview-only selection, explicit launcher handoff, draft retention on connection/interview/create cancellation or failure, confirmed engine changes, manual save waiting, returning-author continuation, narrow viewport, reduced motion and en/ja/zh. Bridge and save callbacks are isolated; no live AI or canonical SQLite writes.
+
+Full-window correction: `verify-shots/first-world-fullscreen/` uses the same capture with `FIRST_WORLD_CAPTURE_DIR`. The scene spans the viewport behind launcher/editor chrome; owners provide the isolated stack and the shared scene uses a fixed background. Cards and the dark composer remain bounded within that scene. Browser evidence checks all four edges at 320×780, 1280×720, 1440×900 and 1920×1080, plus no desktop scroll at 1280×720 and 1440×900. Captures show the actual viewport rather than stitching a scrolling page.
 
 ### Internal execution handoff (2026-10-03)
 
@@ -92,11 +94,33 @@ QA limitation (2026-10-03): the dedicated player initially failed four of five b
 
 The dialog retries the same scene after image failure, responds to reduced-motion changes while open, and resets both desktop body and mobile panel scrolling on a new step. At widths up to 850px editable text is 16px and touch controls are at least 44px. The cinematic palette uses three documented `--cinema-*` tokens.
 
-The user confirms only the editable game direction. Detailed TODOs, tool contracts and evidence requirements are model-only context, not another approval screen or a copy/export workflow. `gameDesignExecution.ts` derives a 29-task scaffold from the saved brief; `gameDesignBriefContext` appends it to the existing initial-generation and builder/team/Writer/reviewer routes. Human `welcomeGenrePresetDisplayText` uses the selected creative genre(s) and authored summary; the engine seed's older label is a legacy-brief fallback. The 4000-character summary limit is unchanged; internal instructions are composed separately and are never saved into that field.
+The user confirms only the editable game direction. Detailed TODOs, tool contracts and evidence requirements are model-only context, not another approval screen or a copy/export workflow. `gameDesignExecution.ts` keeps the 29-task common scaffold and appends the detailed manual's section tasks (57 tasks for one interview genre, 73 for two). `gameDesignBriefContext` embeds the complete common and selected genre manuals in the existing initial-generation and builder/team/Writer/reviewer routes. Human `welcomeGenrePresetDisplayText` uses the selected creative genre(s) and authored summary; the engine seed's older label is a legacy-brief fallback. The 4000-character summary limit is unchanged; internal instructions are composed separately and are never saved into that field.
 
 Tasks carry dependencies, answer-slot provenance, actions, outputs and acceptance criteria. The model expands them for the actual maps/events/branches/assets within the confirmed scope and reconciles edited summary versus earlier answers before building. Later read-only requests and role-limited Writer/reviewer work must not trigger a full build. No persisted execution ledger, new automatic-send trigger or runtime evidence verifier is introduced here: these are model instructions, not enforced completion receipts. Existing save-first/endpoint-readiness handoff and apply/persistence boundaries remain the execution owners.
 
 Regression cases: `test/gameDesignExecution.test.ts` passed in the explicitly authorized 2026-10-03 QA. The startup/boot preparation cases also exercise failed save, project switching before claim and during save, disconnected prefill and duplicate startup. The standalone cinematic preview now keeps the execution pack behind its confirmation action and shows no task list or instruction-copy/export controls; it still does not create a live project.
+
+### Confirmed brief automatic execution (2026-10-03)
+
+Startup joins the actual shared auth probe: a cold `checking` cache no longer permanently reduces a confirmed build to a draft. A connection-change listener resumes only the queued project identity and unchanged brief. A per-boot queue key prevents duplicate startup calls; this is not a lock shared across browser tabs.
+
+`projectInterviewExecutionClaim.ts` saves the execution claim before Pi's proposal capture. An HTTP/transport failure before worker `start`/`team_start` restores and saves the retry marker. Read-only/planning turns do not claim a build. Once the worker starts, later errors do not automatically repeat the request. Completion and publishing remain separate contracts.
+
+The boot target claims its turn slot before classification and checks project identity after awaits. Confirmed genre production bypasses the generic house/village graphic-choice gate. The human composer shows the creative summary; the production request receives the complete execution prompt.
+
+### Detailed authoring manuals (2026-10-03)
+
+`src/project/gameAuthoringPresets/*.md` owns the common production manual and four author-facing genre manuals. Each section contains input, action, output and acceptance, followed by detailed implementation, failure and retry guidance. Romance covers independent character goals, trust/affinity, distinct choice reactions, remembered re-dialogue and relationship progression. Monster covers real species versus owned individuals, capture/bond/hatching, party participation, growth and duplicate rewards. Adventure covers exploration, obstacles, companions, battle outcomes and return paths. Mystery covers internal truth versus player knowledge, evidence/testimony/contradiction, actual case tooling and wrong-answer recovery. Common guidance covers 16-bit pixel-art rejection, schema lookup, first-map writes, state/event contracts, canonical save/reload and independent play evidence.
+
+Run `node scripts/content/prepare-game-authoring-presets.mjs` after editing the source manuals. It builds `documents.json`, used by both Vite and the Bun worker, with full text, section contracts and SHA-256 hashes. `--check` detects stale bundles. `gameAuthoringPresets/index.ts` embeds every selected document between begin/end hash markers; a two-genre interview receives both full genre documents once. There is no retrieval dependency or summary-only substitution. Legacy story briefs do not imply a romance choice; unsupported legacy engines retain their previous context.
+
+`choices.ts` maps all 60 illustrated choices to actionable section references and implementation rules. Unknown/custom choices use the latest free text. Choice IDs are original-choice hints; the edited summary and subsequent explicit user instructions have precedence. The original protagonist, concept and notes remain intact. The initial request header uses the actual author genre rather than the story engine label, and legacy short genre guides are not appended to a cinematic interview's full manuals.
+
+`detailedAuthoringTasks` supplies section-level dependencies, inputs, outputs, acceptance and original answer-slot provenance. Optional modules are applied only when the current scope requires them; skipped is distinct from verified. The existing generic scaffold remains a model planning spine. These documents and TODOs are **model instructions**, not a new persisted task ledger or enforced gameplay verifier. The existing claim, checkpoint, skeleton gate and SQLite persistence boundaries still own execution. Full preset delivery does not prove that the model completed the whole game.
+
+Focused source/variant/graph audit: `node scripts/qa/detailed-authoring-presets.mjs`. Actual packaged editor → production interview → live provider → SQLite evidence: `node scripts/qa/detailed-authoring-live.mjs`, using its own local project folder. The capture observes provider-normalized `prompt_inspection` events, not mocked responses. Read the evidence reports for the exact observed roles and completion scope; do not infer full game completion from the first write.
+
+`scripts/capture-confirmed-brief-autostart.mjs` produces browser evidence in `verify-shots/confirmed-brief-autostart/`: actual panel/startup modules with intercepted authentication/worker responses and stubbed fixture persistence. Its cases cover complete prompt delivery, connection recovery, pre-worker failure restoration, worker acceptance, project switching and save refusal. This does not prove live model output, canonical game persistence or runtime playability. Focused unit cases were authored; this session did not run Vitest or gates.
 
 ## Vocabulary and readiness
 
@@ -193,3 +217,100 @@ When extending packs, add capability requirements that the shared runtime alread
 교수 소개 안내를 포함한다. AI 없는 「예제로 시작」는 기존 작은 플레이 구간이며
 완성 캠페인으로 표시하지 않는다. 공유 계약/실제 출하 증거는
 [emerald-monster-production.md](emerald-monster-production.md)를 따른다.
+
+### Executable first romance scene (2026-10-03)
+
+The bounded romance/talk/single/scene route now prepares a provisional one-map conversation and internal registered contract before the saved AI handoff. `author_romance_scene` builds native commands atomically; the final acceptance gate freezes identities, choice labels and source, executes both branches/revisit/cancel/ending and player-save resumption, and requires a current image-backed `review_map` verdict in the team runner. Draft names or a model completion statement are insufficient. Other genres retain their existing route. Scope, extraction limits, ownership and reproduction: [romance-scene](harnesses/romance-scene.md).
+
+### Click-first interview and fresh art (2026-10-04)
+
+The production `projectInterviewDialog.ts` no longer maps answers to bundled branch
+illustrations. Genre/answer controls are text buttons, with a full-viewport motion
+background on arrival and a pixel still after the first explicit choice. `interviewSceneGeneration.ts` sends the
+actual concept, choices, blend, protagonist and notes to the selected account's
+image provider. It asks for a fresh composition with locked 16-bit pixel direction;
+unset identities must remain absent. These images are ephemeral interview art,
+not playable maps, sprites or facts added to the saved brief.
+
+A 750ms debounce, request identity, abort controller and disposed-dialog check keep
+old responses from replacing the current selection. On a changed choice, prior art
+is visibly labeled as the previous scene until the reviewed replacement arrives.
+Opening the interview alone does not generate an unspecified scene. Repeated unchanged renders do not spend another request;
+`다시 그리기` explicitly requests a fresh variant. Each result must decode, pass
+size/aspect checks, and be delivered to the configured vision model. All six
+checks (pixel grid, limited palette, composition, selected facts, identity, no text)
+must be true with no findings. Rejection triggers a fresh generation containing
+its findings, up to three attempts. Malformed/unacknowledged reviews fail closed.
+An unavailable provider or exhausted gate never disables navigation and never
+falls back to the old branch image bank. Model judgment is not a mathematical
+certification of historical hardware bit depth.
+
+The header and navigation are outside the scrolling content, including the final
+confirmation. The launcher `create()` also accepts an empty idea after genre
+selection; it must not retain the old mandatory one-sentence guard. The shared first-world arrival permits selecting a genre and
+starting with no typing; optional prose and example text remain available. There
+are no shortcut hints in these early surfaces. New-project name and screen-size
+controls remain visible with a separate scrolling content area and fixed actions.
+The full detailed authoring brief still passes internally to the AI assistant;
+the interface does not show the execution checklist.
+
+Desktop image calls now use `companionRequestBaseUrl()` like chat calls. A relative
+`/v1` request from `app://oprn` previously targeted the asset protocol instead of
+the Electron companion. Browser calls still use their own origin.
+
+New cinematic interviews seed `pixel-cinematic` dialogue when no style is authored.
+Legacy briefs keep the preset-specific recommendation and existing style overrides
+are untouched. The automatically generated garden QA exposed the prior default
+`story-cutscene → gold`; an art prompt alone did not correct that product default.
+
+### Launcher planning before project creation (2026-10-04)
+
+The cinematic interview controls use the custom pixel-corner frame and metallic
+accent treatment in `styles/shell/dialogs/cinematic-interview.css`. Text remains
+native/selectable; decorative layers ignore pointer events. Input fields use an
+inset writing surface with a strong focus border, and the existing focus outline
+remains visible. Reduced motion and the interview motion toggle stop the metal
+sweep and control transitions. The motion button retains its absolute position.
+Presentation evidence: `verify-shots/interview-ornate-controls/`. The component
+capture accepts `LAUNCHER_INTERVIEW_CAPTURE_DIR` to preserve earlier receipts.
+
+`start/startInterview.ts` loads only the existing draft interview. The launcher
+does not navigate to `index.html`, create a project folder, boot Phaser, or load
+the store while answers are being chosen. Its account gate runs after final
+confirmation; declining connection or failing folder creation retains the
+confirmed draft for retry. Menu/welcome connection ordering is unchanged.
+The launcher mounts it inline with `container`, `signal` and `clickThrough`,
+without a preliminary idea form or modal focus trap. No movie autoplays. The
+`onConfirm` callback disables controls while connecting/creating; declining or
+failing leaves the same confirmation screen, and navigation aborts pending art
+when leaving the interview. Busy navigation is blocked for pointer and keyboard.
+Cancelling returns to recent projects even when that list is empty, rather than
+immediately reopening the first question.
+
+`StartScreenIntent.gameDesignBrief` carries the complete confirmed metadata,
+answers, summary, protagonist and notes, not a shortened visible sentence. Boot
+validates it against the selected engine, saves it with `generationPending`, and
+uses `prepareProjectInterviewStartup` for the normal internal execution handoff.
+It skips a second interview and the launcher sentence-only send. A mismatched,
+expired or differently targeted intent never applies to another folder.
+
+`prepareProjectInterviewStartup` prefills an empty, mounted AI composer before
+asset preparation, preserving the full internal prompt and first-turn team
+option behind the concise visible request. This first apply does not send.
+Canonical save and account readiness still precede the later execution handoff;
+human drafts are not replaced by the early prefill. The pending generation
+marker retains the existing retry semantics.
+
+The lightweight import boundary matters: `llmClient` must read team/apply defaults
+from `piAgent/executionDefaults` and `applyMode`, not `executionRoute`, which pulls
+intent acceptance, runtime DOM and the project store. The connection gate imports
+settings events from `aiSettingsEvents` and loads the settings window only on an
+explicit connection click. It owns its app-modal stylesheet outside the editor.
+
+Component evidence and reproduction: `verify-shots/launcher-interview-flow/`
+and `scripts/qa/launcher-interview-flow.mjs`. Auth/provider failures there are
+synthetic and do not certify art quality or a real assistant run. The separate
+`scripts/qa/launcher-interview-native.mjs` records the actual built native app,
+real companion requests and owned SQLite folder; its report separates planning
+success from saved-brief/assistant handoff. Gates/Vitest are not implied by a
+successful UI check.

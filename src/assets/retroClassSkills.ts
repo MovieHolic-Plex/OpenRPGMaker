@@ -36,6 +36,14 @@ export interface RetroFxLayer {
   readonly tint?: string;
   /** 층이 시작될 때 울리는 효과음 id. */
   readonly se?: string;
+  /** Authored exposure per cel; omitted layers keep the original fixed interval. */
+  readonly frameDurationsMs?: readonly number[];
+  /** Background and orbiting rear cels use the same battle clock as the front cels. */
+  readonly plane?: "backdrop" | "behind";
+  readonly opacity?: number;
+  /** Ambient layers do not cause a hit or contribute a damage contact time. */
+  readonly ambient?: boolean;
+  readonly contactFrame?: number;
 }
 
 export interface RetroClassSkill {
@@ -70,10 +78,10 @@ export const RETRO_CLASS_SKILLS: readonly RetroClassSkill[] = [
   { id: "skill_guard_holy_shield", classId: "class_guardian", actorId: "actor_guardian", name: "성스러운 방패", level: 12, motion: "cast", description: "빛의 방패로 아군 하나를 지키고 치유한다", layers: [{ key: "guard_holy_shield", anchor: "target", frame: 64, frames: 10 }] },
   { id: "skill_guard_quake", classId: "class_guardian", actorId: "actor_guardian", name: "지진 내려찍기", level: 16, motion: "leap-strike", description: "땅을 내려찍어 모든 적에게 충격파를 보낸다", layers: [{ key: "guard_quake", anchor: "allTargets", frame: 64, frames: 10 }, { key: "guard_quake_ring", anchor: "screen", frame: 128, frames: 8 }] },
   { id: "skill_guard_fortress", classId: "class_guardian", actorId: "actor_guardian", name: "요새", level: 22, motion: "finisher", description: "거대한 방패벽을 세워 적을 짓누르는 필살기", layers: [{ key: "guard_fortress_wall", anchor: "screen", frame: 128, frames: 12 }, { key: "guard_fortress_slam", anchor: "allTargets", frame: 64, frames: 8 }] },
-  { id: "skill_mage_fireball", classId: "class_mage", actorId: "actor_mage", name: "파이어볼", level: 1, motion: "cast", description: "지팡이 끝에서 불덩이를 쏘아 터뜨린다", layers: [{ key: "mage_fireball_orb", anchor: "projectile", frame: 32, frames: 4 }, { key: "mage_fire_burst", anchor: "target", frame: 64, frames: 10 }] },
+  { id: "skill_mage_fireball", classId: "class_mage", actorId: "actor_mage", name: "파이어볼", level: 1, motion: "cast", description: "불덩이가 닿은 자리에서 긴 불기둥이 솟고 갈라져 떨어진다", layers: [{ key: "mage_fireball_orb", anchor: "projectile", frame: 32, frames: 4 }, { key: "mage_fire_burst", anchor: "target", frame: 64, frames: 8, frameDurationsMs: [40,60,100,70,60,60,100,50], contactFrame: 2 }] },
   { id: "skill_mage_magic_missile", classId: "class_mage", actorId: "actor_mage", name: "매직 미사일", level: 3, motion: "cast", description: "빛의 탄 세 발이 곡선을 그리며 날아간다", layers: [{ key: "mage_missile_orb", anchor: "projectile", frame: 32, frames: 4 }, { key: "mage_missile_hit", anchor: "target", frame: 64, frames: 8 }] },
-  { id: "skill_mage_blizzard", classId: "class_mage", actorId: "actor_mage", name: "블리자드", level: 5, motion: "cast", description: "모든 적 위에 눈보라와 얼음 기둥을 내린다", layers: [{ key: "mage_blizzard", anchor: "allTargets", frame: 64, frames: 10 }, { key: "mage_snow", anchor: "screen", frame: 128, frames: 8 }] },
-  { id: "skill_mage_chain_lightning", classId: "class_mage", actorId: "actor_mage", name: "연쇄 번개", level: 7, motion: "cast", description: "번개가 적에서 적으로 튀어 나간다", layers: [{ key: "mage_chain_bolt", anchor: "allTargets", frame: 64, frames: 8 }] },
+  { id: "skill_mage_blizzard", classId: "class_mage", actorId: "actor_mage", name: "블리자드", level: 5, motion: "cast", description: "서리에서 솟은 결정 조각들이 적을 감싸고 파편으로 흩어진다", layers: [{ key: "mage_blizzard", anchor: "allTargets", frame: 64, frames: 8, frameDurationsMs: [80,80,100,60,60,80,80,60], contactFrame: 3 }] },
+  { id: "skill_mage_chain_lightning", classId: "class_mage", actorId: "actor_mage", name: "연쇄 번개", level: 7, motion: "cast", description: "굵은 낙뢰가 두 번 꺾여 내려오고 잔전류가 끊어진다", layers: [{ key: "mage_chain_bolt", anchor: "allTargets", frame: 64, frames: 7, frameDurationsMs: [40,60,40,60,60,80,60], contactFrame: 1 }] },
   { id: "skill_mage_gravity", classId: "class_mage", actorId: "actor_mage", name: "그라비티", level: 10, motion: "cast", description: "검은 중력구로 적을 짓눌러 오그라뜨린다", layers: [{ key: "mage_gravity", anchor: "target", frame: 64, frames: 12 }] },
   { id: "skill_mage_mana_shield", classId: "class_mage", actorId: "actor_mage", name: "마나 실드", level: 12, motion: "buff", description: "푸른 마법진 방벽을 두른다", layers: [{ key: "mage_mana_shield", anchor: "user", frame: 64, frames: 10 }] },
   { id: "skill_mage_meteor", classId: "class_mage", actorId: "actor_mage", name: "메테오", level: 16, motion: "cast", description: "하늘에서 불타는 운석을 모든 적에게 떨어뜨린다", layers: [{ key: "mage_meteor_rock", anchor: "projectile", frame: 32, frames: 4 }, { key: "mage_meteor_blast", anchor: "allTargets", frame: 64, frames: 10 }] },
@@ -87,7 +95,12 @@ export const RETRO_CLASS_SKILLS: readonly RetroClassSkill[] = [
   { id: "skill_scout_knife_storm", classId: "class_scout", actorId: "actor_scout", name: "비수 폭풍", level: 16, motion: "cast", description: "수십 자루의 비수를 모든 적에게 쏟아붓는다", layers: [{ key: "scout_knife", anchor: "projectile", frame: 32, frames: 4 }, { key: "scout_knife_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
   { id: "skill_scout_assassinate", classId: "class_scout", actorId: "actor_scout", name: "암살", level: 22, motion: "finisher", description: "화면을 가르는 일섬으로 적을 베는 필살기", layers: [{ key: "scout_assassin_cut", anchor: "screen", frame: 128, frames: 12 }, { key: "scout_assassin_hit", anchor: "target", frame: 64, frames: 8 }] },
   { id: "skill_cleric_heal_light", classId: "class_cleric", actorId: "actor_cleric", name: "치유의 빛", level: 1, motion: "cast", description: "아군 하나에게 부드러운 빛을 내려 치유한다", layers: [{ key: "cleric_heal", anchor: "target", frame: 64, frames: 10 }] },
-  { id: "skill_cleric_holy_smite", classId: "class_cleric", actorId: "actor_cleric", name: "심판의 빛", level: 3, motion: "cast", description: "적 위에 빛기둥을 내리꽂는다", layers: [{ key: "cleric_smite", anchor: "target", frame: 64, frames: 10 }] },
+  { id: "skill_cleric_holy_smite", classId: "class_cleric", actorId: "actor_cleric", name: "심판의 빛", level: 3, motion: "cast", description: "푸른 물결 속 세 구슬이 나선으로 내려와 큰 빛으로 터진다", layers: [
+    { key: "cleric_holy_field", anchor: "screen", frame: 128, frames: 2, startMs: 480, repeat: 5, frameDurationsMs: [160,160], plane: "backdrop", opacity: 0.82, ambient: true },
+    { key: "cleric_holy_orbs_back", anchor: "target", frame: 64, frames: 12, startMs: 600, frameDurationsMs: [90,90,90,90,90,90,90,90,90,90,90,90], plane: "behind", ambient: true },
+    { key: "cleric_holy_orbs_front", anchor: "target", frame: 64, frames: 12, startMs: 600, frameDurationsMs: [90,90,90,90,90,90,90,90,90,90,90,90], ambient: true },
+    { key: "cleric_holy_hit", anchor: "target", frame: 64, frames: 6, startMs: 1640, frameDurationsMs: [60,80,80,60,80,60], contactFrame: 1 },
+  ] },
   { id: "skill_cleric_purify", classId: "class_cleric", actorId: "actor_cleric", name: "정화", level: 5, motion: "cast", description: "빛의 고리로 아군의 상태이상을 씻어낸다", layers: [{ key: "cleric_purify", anchor: "target", frame: 64, frames: 10 }] },
   { id: "skill_cleric_blessing", classId: "class_cleric", actorId: "actor_cleric", name: "축복", level: 7, motion: "buff", description: "깃털이 내리며 아군 전체의 힘을 북돋는다", layers: [{ key: "cleric_blessing", anchor: "allAllies", frame: 64, frames: 10 }] },
   { id: "skill_cleric_mass_heal", classId: "class_cleric", actorId: "actor_cleric", name: "대치유", level: 10, motion: "cast", description: "아군 전체에게 치유의 빛을 쏟는다", layers: [{ key: "cleric_mass_heal", anchor: "allAllies", frame: 64, frames: 10 }, { key: "cleric_halo", anchor: "screen", frame: 128, frames: 8 }] },
@@ -126,7 +139,11 @@ export const RETRO_CLASS_SKILLS: readonly RetroClassSkill[] = [
   { id: "skill_monk_whirl_kick", classId: "class_monk", actorId: "actor_monk", name: "선풍각", level: 10, motion: "spin", description: "회전 발차기로 모든 적을 걷어찬다", layers: [{ key: "monk_whirl_kick", anchor: "allTargets", frame: 64, frames: 10 }] },
   { id: "skill_monk_meditate", classId: "class_monk", actorId: "actor_monk", name: "명상", level: 12, motion: "buff", description: "호흡을 가다듬어 HP를 회복한다", layers: [{ key: "monk_meditate", anchor: "user", frame: 64, frames: 10 }] },
   { id: "skill_monk_earth_palm", classId: "class_monk", actorId: "actor_monk", name: "파산장", level: 16, motion: "dash-strike", description: "땅을 울리는 장타로 적을 날려 버린다", layers: [{ key: "monk_earth_palm", anchor: "target", frame: 128, frames: 10 }] },
-  { id: "skill_monk_dragon_fist", classId: "class_monk", actorId: "actor_monk", name: "용권 멸살", level: 22, motion: "finisher", description: "황금 용의 기운을 실은 일격 필살기", layers: [{ key: "monk_dragon_aura", anchor: "screen", frame: 128, frames: 12 }, { key: "monk_dragon_hit", anchor: "target", frame: 128, frames: 10 }] },
+  { id: "skill_monk_dragon_fist", classId: "class_monk", actorId: "actor_monk", name: "용권 멸살", level: 22, motion: "finisher", description: "머리 셋의 히드라 원화가 나타나 파동과 연속 착탄을 일으킨다", layers: [
+    { key: "monk_dragon_aura", anchor: "screen", frame: 128, frames: 1, startMs: 1060, frameDurationsMs: [1400], ambient: true },
+    { key: "monk_dragon_wave", anchor: "screen", frame: 128, frames: 2, startMs: 1600, repeat: 3, frameDurationsMs: [160,160], plane: "backdrop", opacity: 0.85, ambient: true },
+    { key: "monk_dragon_hit", anchor: "target", frame: 64, frames: 6, startMs: 1820, frameDurationsMs: [60,80,60,80,80,60], contactFrame: 1 },
+  ] },
   { id: "skill_bard_battle_song", classId: "class_bard", actorId: "actor_bard", name: "전투의 노래", level: 1, motion: "buff", description: "힘찬 선율로 아군 공격력을 올린다", layers: [{ key: "bard_notes_red", anchor: "allAllies", frame: 64, frames: 10 }] },
   { id: "skill_bard_lullaby", classId: "class_bard", actorId: "actor_bard", name: "자장가", level: 3, motion: "cast", description: "잔잔한 선율로 모든 적을 재운다", layers: [{ key: "bard_notes_blue", anchor: "allTargets", frame: 64, frames: 10 }] },
   { id: "skill_bard_sonic", classId: "class_bard", actorId: "actor_bard", name: "소닉 붐", level: 5, motion: "cast", description: "음파를 증폭시켜 적을 친다", layers: [{ key: "bard_sonic_wave", anchor: "projectile", frame: 32, frames: 4 }, { key: "bard_sonic_hit", anchor: "target", frame: 64, frames: 8 }] },

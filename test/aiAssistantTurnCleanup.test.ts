@@ -8,6 +8,7 @@ import { appendAgentGhostPreviewForToolCall, clearAgentGhostPreview, getAgentGho
 import { getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
 import { installFakeDom } from "./fakeDom";
 
 const observed = vi.hoisted(() => ({ activity: vi.fn(async () => ({})), gate: vi.fn() }));
@@ -60,6 +61,18 @@ function setup() {
 }
 
 describe("assistant owner-turn presentation cleanup", () => {
+  it.each(["final", "aborted"] as const)("keeps a later human selection after highlight cleanup on %s", async ending => {
+    const h = setup();
+    const selection = { mapId: spec.mapId, x: 1, y: 2, width: 3, height: 2 };
+    await h.runner.executeTurn(h.session, "inspect", async onEvent => {
+      onEvent({ type: "tool_call", name: "highlight_map_region", args: { mapId: spec.mapId, x: 4, y: 4, w: 2, h: 2 }, result: { ok: true, summary: "highlight", data: { mapId: spec.mapId, x: 4, y: 4, w: 2, h: 2 } } });
+      editorState.set({ selection });
+      return { assistantText: "answer", proposedCalls: [], stoppedReason: ending };
+    }, { composerMode: "ask" });
+    expect(editorState.get().selection).toEqual(selection);
+    editorState.set({ selection: null });
+  });
+
   it.each(["final", "error", "aborted", "throw", "abort-throw"] as const)("retires visible planning on %s without changing retained data", async (ending) => {
     const h = setup();
     const before = store.getCurrent();

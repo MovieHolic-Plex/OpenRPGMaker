@@ -1,0 +1,15 @@
+{
+  "persisted": "1 / 1개 선택 완료",
+  "stale": {
+    "ok": false,
+    "error": "후보가 바뀌었습니다. 새로고침 후 다시 선택해 주세요."
+  },
+  "failedCandidate": {
+    "ok": false,
+    "error": "현재 검수를 통과한 후보만 선택할 수 있습니다."
+  },
+  "cleared": "0 / 1개 선택 완료",
+  "openFrame": "후보 D 문·차단기 열림",
+  "paused": true,
+  "errors": []
+}

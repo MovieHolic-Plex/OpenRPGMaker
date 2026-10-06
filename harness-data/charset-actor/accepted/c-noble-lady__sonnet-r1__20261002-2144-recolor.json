@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-noble-lady__sonnet-r1",
+ "brief": "c-noble-lady",
+ "name": "귀족 아가씨",
+ "base": "Actor3:5",
+ "base_label": "Actor3 6번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-noble-lady__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-noble-lady__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "금발 진홍 드레스 귀족 아가씨",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "금발"
+  },
+  "role": "귀족 아가씨 (영애)",
+  "appearance": "풍성하고 뻗친 금발이 어깨 아래로 내려오고, 진홍색 옷에 흰 속옷 깃과 금색 어깨·소매 장식을 달았다. 얼굴은 흰 피부에 푸른 눈과 붉은 입술이며, 발에는 짙은 갈색 신발을 신었다.",
+  "colors": [
+   "금발 머리",
+   "진홍색 드레스",
+   "흰 속옷 깃",
+   "금색 어깨·소매 장식",
+   "짙은 갈색 신발"
+  ],
+  "tags": [
+   "귀족",
+   "아가씨",
+   "영애",
+   "금발",
+   "궁정",
+   "중세",
+   "서양풍",
+   "부유층"
+  ],
+  "fits": "저택·궁정·무도회장·귀족 거리 같은 부유한 장소에서 영애나 귀부인 NPC 로 두기 좋다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:52+00:00"
+ }
+}

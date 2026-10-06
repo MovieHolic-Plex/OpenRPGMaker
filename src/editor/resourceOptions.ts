@@ -28,6 +28,7 @@ import {
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import type { Project, ResourceKind } from "@/project/types";
+import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
 
 export type DatabaseResourcePickerKind =
   | "icon"
@@ -91,6 +92,12 @@ export function listDatabaseResourceOptions(
   const options = new Map<string, DatabaseResourceOption>();
   const add = (id: string, name: string, searchTerms?: readonly string[]): void => {
     if (!id || options.has(id)) return;
+    if (kind === "faceset") {
+      if (!isAuthorableFaceReference(id, project)) return;
+      const metadata = faceReferenceMetadata(id, name, project);
+      name = metadata.name;
+      searchTerms = [...metadata.searchTerms, metadata.description];
+    }
     options.set(id, { id, name, searchTerms });
   };
 
@@ -180,6 +187,14 @@ export function listDatabaseResourceOptions(
       add(id, uploaded.name || id);
     }
   }
+  if (kind === "faceset") for (const profile of project.resourceProfiles) {
+    if (profile.kind === "faceset" && profile.assetId) add(profile.assetId, profile.name || profile.assetId);
+  }
+  if (kind === "picture") {
+    // Static map objects use the same whole-image resource as item pictures.
+    // Keep existing browse order, and make actual objects discoverable by name/id.
+    for (const asset of CC0_ICON_ASSETS) add(asset.id, asset.name);
+  }
   if (kind === "still") {
     // 호환 꼬리: 아이콘으로 저작된 기존 오프닝·게임 오버 배경이 "종류 불일치"로 사라지지 않게 한다.
     for (const option of listDatabaseResourceOptions("image", project)) {
@@ -205,7 +220,9 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
-    return resourceKind === "faceset" || (id.startsWith("generated-actor-") && id.endsWith("-face"));
+    return resourceKind === "faceset" || Boolean(findSharedPortrait(id))
+      || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full"
+      || (id.startsWith("generated-actor-") && id.endsWith("-face"));
   }
   if (kind === "charset") return resourceKind === "charset" || (id.startsWith("generated-actor-") && id.endsWith("-charset"));
   if (kind === "battleCharset") {

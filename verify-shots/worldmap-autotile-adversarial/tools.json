@@ -1,0 +1,14 @@
+{
+  "directTools": true,
+  "newModelCall": false,
+  "stamp": {
+    "summary": "QA 03 · 森林 / 山脈 / 地面変更 (23,4) 에 층 블록 찍기 — 3층 9칸",
+    "afterStamp": 0,
+    "exact": true
+  },
+  "erase": {
+    "summary": "QA 03 · 森林 / 山脈 / 地面変更 (4,6) 1×1 정리(upper) — 1/1칸.",
+    "afterErase": 0
+  },
+  "groundPreserved": true
+}

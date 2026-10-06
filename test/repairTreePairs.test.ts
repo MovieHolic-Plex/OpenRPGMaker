@@ -33,7 +33,7 @@ describe("repairTreePairs", () => {
     expect(map.lowerTiles[0 * map.width + 3]).toBe(TILE.GRASS);
   });
 
-  it("runTool write post-hook repairs orphan trunks after place_props", () => {
+  it("event writes preserve pre-existing orphan trunks", () => {
     const ctx = { project: createBlankProject() };
     const mapId = "map_tree_hook";
     runTool(ctx, "create_map", { id: mapId, name: "훅", width: 12, height: 12 });
@@ -42,7 +42,7 @@ describe("repairTreePairs", () => {
     map.lowerTiles[6 * map.width + 4] = 290;
     map.upperTiles[5 * map.width + 4] = TILE.EMPTY;
 
-    // 아무 쓰기 툴이나 한 번 돌리면 post-hook 이 맵 전체를 보정
+    // Event-only writes must not repair the existing raster.
     const result = runTool(ctx, "place_npc", {
       mapId,
       x: 1,
@@ -51,8 +51,21 @@ describe("repairTreePairs", () => {
       pages: [{ lines: ["ok"] }],
     });
     expect(result.ok).toBe(true);
-    expect(ctx.project.maps[mapId].upperTiles[5 * map.width + 4]).toBe(260);
-    expect(result.summary).toMatch(/수관 보완|나무 상·하/);
+    expect(ctx.project.maps[mapId].upperTiles[5 * map.width + 4]).toBe(TILE.EMPTY);
+    expect(result.summary).not.toMatch(/수관 보완|나무 상·하/);
+  });
+
+  it("tile writes repair only the raster map changed by the tool", () => {
+    const ctx = { project: createBlankProject() };
+    const other = structuredClone(ctx.project.maps[MAP]);
+    other.id = "map_unrelated";
+    other.lowerTiles[3 * other.width + 3] = 290;
+    ctx.project.maps[other.id] = other;
+    const sentinel = structuredClone(other);
+    const result = runTool(ctx, "paint_tiles", { mapId: MAP, layer: "lower", mode: "cells", tile: 290, cells: [{ x: 5, y: 5 }] });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps[MAP].upperTiles[4 * other.width + 5]).toBe(260);
+    expect(ctx.project.maps[other.id]).toEqual(sentinel);
   });
 
   it("repairTreePairsOnProject scans all maps", () => {

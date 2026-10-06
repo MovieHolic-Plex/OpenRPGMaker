@@ -186,3 +186,67 @@ test("a content rejection reverts only that write and the run continues", async 
   const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
   expect(failed?.summary).toContain("되돌렸습니다");
 });
+
+// 2026-10-05 스트레스 g-ashen-chase: 맵 소실 확인에서 「그만두기」를 고르자 실행이 통째로 끝났다.
+test("a declined map-loss checkpoint reverts only that write and the run continues", async () => {
+  const { PI_MAP_LOSS_DECLINED_PREFIX } = await import("../src/ai/piAgent/protocol.ts");
+  const calls: ScriptedCall[] = [];
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ applyMode: "default" }), {
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream(calls, [
+      { name: "set_project_settings", args: { title: "declined" } },
+      { name: "set_project_settings", args: { title: "kept" } },
+    ]) as never,
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.project.meta.title === "declined") throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} 맵 1개 삭제를 취소했습니다 — 프로젝트는 그대로입니다.`);
+    },
+  });
+  expect(calls.length).toBe(3);
+  expect(done.project.meta.title).toBe("kept");
+  const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
+  expect(failed?.summary).toContain("거절해 되돌렸습니다");
+  expect(failed?.summary).not.toContain(PI_MAP_LOSS_DECLINED_PREFIX);
+});
+
+// 2026-10-05 스트레스 r4 p-inn·r7 g-ashen-chase: 워커의 event_command_assist 가 편집기 기본 주소(상대 /v1)로 LLM 을 불러
+// 매번 「fetch() URL is invalid」 네트워크 오류로 끝났다. 이제 이 실행의 제공자로 부른다(스텁 응답은 JSON 이 아니라 검증 실패).
+test("event_command_assist inside a Pi run asks the run's own provider", async () => {
+  const previous = process.env.OPRN_OH_MY_PI_TEST_STUB;
+  process.env.OPRN_OH_MY_PI_TEST_STUB = "1";
+  try {
+    const project = createBlankProject();
+    project.maps[project.startMapId]!.events.push({ id: "ev_t", x: 2, y: 2, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: "p1", conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }] } as never);
+    const events: PiAgentEvent[] = [];
+    await runPiAgent(request({ project, toolDomains: ["core", "event"] }), {
+      onEvent: event => events.push(event),
+      streamFn: scriptedStream([], [
+        { name: "event_command_assist", args: { mapId: project.startMapId, eventId: "ev_t", pageId: "p1", prompt: "인사 한 줄" } },
+      ]) as never,
+    });
+    const end = events.find(event => event.type === "tool_end" && (event as { name?: string }).name === "event_command_assist") as { summary?: string } | undefined;
+    expect(end?.summary ?? "").not.toContain("네트워크 오류");
+  } finally {
+    if (previous === undefined) delete process.env.OPRN_OH_MY_PI_TEST_STUB; else process.env.OPRN_OH_MY_PI_TEST_STUB = previous;
+  }
+});
+
+// 2026-10-05 스트레스 p-team-delete-declined: 팀장 get_database_records 가 시작 사본만 읽어 끝까지 「maps 1건」 —
+// 팀원이 만든 「작은 숲」을 못 보고 같은 맵을 두 번 더 짓게 배정했다.
+test("liveProject lets a read-only lead see members' published maps", async () => {
+  const base = createBlankProject();
+  const live = structuredClone(base);
+  live.maps.map_forest = { ...structuredClone(base.maps[base.startMapId]!), id: "map_forest", name: "작은 숲" };
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ project: base }), {
+    toolNames: ["get_database_records"],
+    liveProject: () => live,
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream([], [{ name: "get_database_records", args: { collection: "maps" } }]) as never,
+  });
+  const end = events.find(event => event.type === "tool_end" && (event as { name?: string }).name === "get_database_records") as { summary?: string } | undefined;
+  expect(end?.summary).toContain("2건");
+  // 도구가 끝나면 제 사본으로 돌아간다 — 남의 변경을 이 실행의 결과로 내보내지 않는다.
+  expect(done.project.maps.map_forest).toBeUndefined();
+});

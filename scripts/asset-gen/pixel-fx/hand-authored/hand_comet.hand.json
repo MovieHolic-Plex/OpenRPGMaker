@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "key": "hand_comet",
+  "width": 64,
+  "height": 64,
+  "anchor": "allTargets",
+  "frameMs": 60,
+  "palette": {
+    "A": "#483049",
+    "B": "#893951",
+    "C": "#c95649",
+    "D": "#f88a48",
+    "E": "#ffc66c",
+    "F": "#fff2b4",
+    "G": "#fffbe6"
+  },
+  "frames": [
+    {
+      "phase": "발동",
+      "pieces": [
+        {
+          "x": 39,
+          "y": 2,
+          "rows": [
+            "BC",
+            "BCD",
+            ".CDE",
+            "..CDD",
+            "...BC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접근",
+      "pieces": [
+        {
+          "x": 30,
+          "y": 7,
+          "rows": [
+            "BC",
+            "BCD",
+            ".CDE",
+            "..CDE",
+            "...CDEE",
+            "....CDEEC",
+            ".....CDFFC",
+            "......CEFFC",
+            ".......CDDC",
+            "........CC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접촉",
+      "pieces": [
+        {
+          "x": 16,
+          "y": 4,
+          "rows": [
+            "BC",
+            "BCD",
+            ".CDE",
+            "..CDE",
+            "...CDE",
+            "....CDE",
+            ".....CDEE",
+            "......CDEE",
+            ".......CDEEC",
+            "........CDEEC",
+            ".........CDEFFC",
+            "..........CDEFFC",
+            "...........CDEFFDC",
+            "............CDEFFEDC",
+            "...........CDEFFFFEDC",
+            "..........CDEFFGGFEEDC",
+            "..........CDEFGGGFEEDC",
+            "...........CDEFFFEEDC",
+            "............CDDEEEDC",
+            ".............CCCCCC"
+          ]
+        },
+        {
+          "x": 22,
+          "y": 30,
+          "rows": [
+            "..C..................C",
+            ".CDE................EDC",
+            "CDEFE..............EFEDC",
+            ".CDEEEEEEEEEEEEEEEEEDC",
+            "..CDDDDDDDDDDDDDDDDC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "전개",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 25,
+          "rows": [
+            "....CC....................CC",
+            "...CDDC..................CDDC",
+            "..CDEEDC................CDEEDC",
+            ".CDEFFEDC..............CDEFFEDC",
+            "CDEFFFEEDCC..........CDDEFFFEDC",
+            ".CDEFFFFEEDDCCCCCCCCDDEEFFFFEDC",
+            "..CDEFFFFFEEEEEEEEEEEEFFFFEDC",
+            "...CDDEEEEEEEEEEEEEEEEEEDDC",
+            ".....CCDDDDDDDDDDDDDDDDCC",
+            "........CCCCCCCCCCCCCC"
+          ]
+        },
+        {
+          "x": 24,
+          "y": 21,
+          "rows": [
+            "CD........CD",
+            "CDE......EDC",
+            ".CD......DC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "분해",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 22,
+          "rows": [
+            "BCC.........................CCB",
+            "BCDC.......................CDCB",
+            ".BCC.......................CCB"
+          ]
+        },
+        {
+          "x": 19,
+          "y": 33,
+          "rows": [
+            "BCC................CCB",
+            "BCDC..............CDCB",
+            ".BCC..............CCB",
+            "..BB..............BB"
+          ]
+        },
+        {
+          "x": 26,
+          "y": 42,
+          "rows": [
+            "BBCCCCCCBB",
+            "..BBBBBB"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "잔상",
+      "pieces": [
+        {
+          "x": 7,
+          "y": 19,
+          "rows": [
+            "BB..............................BB",
+            "BCB............................BCB",
+            ".B..............................B"
+          ]
+        },
+        {
+          "x": 18,
+          "y": 38,
+          "rows": [
+            "BB..................BB",
+            ".B..................B"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "소멸",
+      "pieces": [
+        {
+          "x": 8,
+          "y": 17,
+          "rows": [
+            "A"
+          ]
+        },
+        {
+          "x": 51,
+          "y": 17,
+          "rows": [
+            "A"
+          ]
+        },
+        {
+          "x": 20,
+          "y": 42,
+          "rows": [
+            "B"
+          ]
+        },
+        {
+          "x": 43,
+          "y": 43,
+          "rows": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "끝",
+      "pieces": [
+        {
+          "x": 21,
+          "y": 45,
+          "rows": [
+            "A"
+          ]
+        },
+        {
+          "x": 44,
+          "y": 46,
+          "rows": [
+            "A"
+          ]
+        }
+      ]
+    }
+  ]
+}

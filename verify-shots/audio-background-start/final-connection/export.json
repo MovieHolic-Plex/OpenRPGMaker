@@ -1,0 +1,91 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "revision": 78,
+  "generationMode": "actual assistant map OST and UI/opening sound design in the saved game",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "started": "2026-10-05T00:53:16.750Z",
+  "errors": [],
+  "networkFailures": [
+    {
+      "path": "/assets/easyrpg/charset/People1.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/easyrpg/charset/People2.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/easyrpg/charset/People3.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/easyrpg/charset/People4.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/easyrpg/charset/People5.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/easyrpg/charset/Vehicles.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/generated/charsets/Monster4.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/generated/charsets/Monster5.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/assets/generated/charsets/Monster6.png",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/25c5f11a2309df37bb32211c72629c289ab945fc29f202836e1707302ec23a9f",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/5ae315aa1ac152a8014a537fbff638b399fd3109b6a717c35bafd1da30b285eb",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/3642e9cea0a3ce90c6189190bec95edcc9d0f5d88d6d24f6a9b4cb17ec080941",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/179e699f2d3020dfaba136c06eef79d58c9f7c3d6be74a43e619705293b02507",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/493b06de147f86a905bab4e335f4747d1124858b8dcb35b6e23f23c009e4cf63",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/daa9215bcfe5692f5aaf61d0e29f93df26544188d962ea849c7651e3db40a67a",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/61f75482b1cfba2e74df170b9ead0d52f727d914b476a70996ea917eea5afca2",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/42f13fe9ab2403119d821a33bb6bd65f6a122a7f2642019ae420585eb31d922d",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/c214e0cb5d956b8b1ba6bf0b3491d54cb2ff8ebda01d7dec9b64cc102d5491fe",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "path": "/__oprn/asset/ed85bb3b-e221-4955-8fd6-e0afdc2ce590/467e08b4205f59106b61c7816d57a9c03bf77fa1c406699b4d8099ee2e6cdd7f",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "exportStarted": "2026-10-05T00:53:46.117Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/audio-background-start/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 75.463,
+  "passed": true
+}

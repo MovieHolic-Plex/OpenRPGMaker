@@ -1,0 +1,53 @@
+{
+  "actualSavedProject": "qa-runs/worldmap-authoring-20261005/native-height-r1/live.json",
+  "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+  "icons": [
+    {
+      "id": "town_red",
+      "ok": true
+    },
+    {
+      "id": "city_capital",
+      "ok": true
+    },
+    {
+      "id": "log_village",
+      "ok": true
+    },
+    {
+      "id": "desert_temple",
+      "ok": true
+    },
+    {
+      "id": "harbor_town",
+      "ok": true
+    },
+    {
+      "id": "flame_fortress",
+      "ok": true
+    }
+  ],
+  "families": {
+    "worldmap-brush-grass-sea": 18,
+    "worldmap-brush-sand-sea": 13,
+    "worldmap-brush-snow-sea": 13,
+    "worldmap-brush-sand-grass": 15,
+    "worldmap-brush-snow-grass": 11,
+    "worldmap-brush-tundra-grass": 17,
+    "worldmap-brush-river-grass": 11,
+    "worldmap-brush-road-grass": 6,
+    "worldmap-brush-ash-sand": 13,
+    "worldmap-brush-road-sand": 2,
+    "worldmap-brush-road-snow": 2,
+    "worldmap-brush-forest-any": 20,
+    "worldmap-brush-snowforest-any": 11,
+    "worldmap-brush-mountain-any": 4,
+    "worldmap-brush-volcano-any": 11
+  },
+  "riverBlocked": true,
+  "seaBlocked": true,
+  "bridgeOpen": true,
+  "crossBridge": true,
+  "townToCapitalViaRoad": true,
+  "roadCutWithoutBridge": true
+}

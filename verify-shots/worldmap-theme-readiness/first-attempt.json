@@ -1,0 +1,41 @@
+{
+  "projectId": "44d90684-bac7-45b6-ba82-95312a6725b1",
+  "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-space-theme-20261004-20261004",
+  "revision": 2,
+  "counts": {
+    "read_project_wiki": 1,
+    "get_project_summary": 2,
+    "find_tools": 3,
+    "list_spatial_designs": 4,
+    "list_worldmap_icons": 1,
+    "get_database_records": 1,
+    "read_world_terrain": 1,
+    "get_map_region": 2,
+    "list_tileset_references": 3,
+    "tile_query": 1,
+    "edit_world_terrain": 1,
+    "show_map_region": 1
+  },
+  "failures": [
+    {
+      "name": "list_tileset_references",
+      "summary": "'list_tileset_references' 실행 실패: 타일셋을 찾을 수 없습니다."
+    }
+  ],
+  "stats": {
+    "ms": 164435,
+    "turns": 9,
+    "toolCalls": 22,
+    "toolErrors": 1,
+    "usage": {
+      "input": 376733,
+      "output": 1418,
+      "cacheRead": 52864,
+      "cacheWrite": 0,
+      "totalTokens": 431015,
+      "calls": 9
+    }
+  },
+  "passed": false,
+  "savedAndReopened": true
+}

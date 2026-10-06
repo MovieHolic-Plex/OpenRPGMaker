@@ -1,0 +1,454 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "title": "멈춘 시계의 기억",
+  "canonicalContentMatched": true,
+  "automaticBuildCompleted": true,
+  "projectJsonSha256": "44a449ce4cf00293349aad7b556bf2bab87217d02f835d8b96143efd240698fc",
+  "projectJsonBytes": 91724104,
+  "openingSkipped": false,
+  "reducedMotion": false,
+  "normalKeyboardOnly": true,
+  "recordedReadingPauseMs": 2500,
+  "snapshotReadingPauseMs": 1800,
+  "recordingTimeline": [
+    {
+      "shot": "01-title.png",
+      "atSec": 12.239
+    },
+    {
+      "shot": "02-opening-1.png",
+      "atSec": 19.25
+    },
+    {
+      "shot": "03-field.png",
+      "atSec": 36.338
+    },
+    {
+      "shot": "04-clock.png",
+      "atSec": 47.834
+    },
+    {
+      "shot": "05-response.png",
+      "atSec": 51.774
+    },
+    {
+      "shot": "06-route.png",
+      "atSec": 61.172
+    },
+    {
+      "shot": "07-ending.png",
+      "atSec": 81.723
+    }
+  ],
+  "presentationAssets": [
+    {
+      "resourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+      "sha256": "592fda3962811b6366063b852b17f945086a4ed924dbe1e9114f69e41823adcc",
+      "bytes": 723537,
+      "canonicalForm": "asset-ref"
+    },
+    {
+      "resourceId": "opening_still_e080e045-5db1-43c0-bb73-0ddd9067fcf5",
+      "sha256": "b071f0960ee323d7d1f4f04eb58dcda09bf74314896e481ad4e903e0f04be77a",
+      "bytes": 768588,
+      "canonicalForm": "asset-ref"
+    }
+  ],
+  "presentationEvidence": [
+    {
+      "branch": "keep",
+      "kind": "title",
+      "sequence": "done",
+      "effects": {
+        "testid": "title-effects",
+        "titleEffectsRenderer": "webgl",
+        "titleEffectsCount": "4",
+        "titleEffectsSignature": "{\"e\":[{\"kind\":\"godRays\",\"intensity\":1.2,\"color\":\"#fff3d1\",\"source\":[0.72,0.05],\"toward\":[0.52,0.72]},{\"kind\":\"motes\",\"intensity\":1.1,\"color\":\"#ffe89c\",\"source\":[0.72,0.05],\"toward\":[0.52,0.72]},{\"kind\":\"glow\",\"intensity\":1.3,\"color\":\"#ffd885\",\"source\":[0.53,0.67],\"spread\":0.15},{\"kind\":\"camera\",\"speed\":0.4}],\"u\":\"http://127.0.0.1:36105/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg\",\"f\":\"cover\",\"r\":\"smooth\"}",
+        "titleEffectsImage": "http://127.0.0.1:36105/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg",
+        "titleEffectsFit": "cover",
+        "titleEffectsRendering": "smooth",
+        "titleEffectsResolutionScale": "0.5",
+        "titleEffectsAnimated": "true"
+      },
+      "imageRendering": "auto",
+      "canvasWidth": 600,
+      "canvasHeight": 450,
+      "stageWidth": 1200,
+      "text": "멈춘 시계의 기억새 게임불러오기크레딧종료멈춘 시간 속 잃어버린 기억을 찾아서{\"selectedIndex\":0}",
+      "defaultEditorialCopy": false
+    },
+    {
+      "branch": "keep",
+      "kind": "opening",
+      "sceneId": "op_scene_watch",
+      "width": 1376,
+      "height": 768,
+      "motion": "zoom",
+      "objectFit": "cover",
+      "narration": "조용한 서재, 주인을 잃고 멈춰 선 회중시계에서 아련한 기억의 빛이 피어오른다.",
+      "narrationWordBreak": "keep-all",
+      "mediaState": "ready"
+    },
+    {
+      "branch": "release",
+      "kind": "title",
+      "sequence": "done",
+      "effects": {
+        "testid": "title-effects",
+        "titleEffectsRenderer": "webgl",
+        "titleEffectsCount": "4",
+        "titleEffectsSignature": "{\"e\":[{\"kind\":\"godRays\",\"intensity\":1.2,\"color\":\"#fff3d1\",\"source\":[0.72,0.05],\"toward\":[0.52,0.72]},{\"kind\":\"motes\",\"intensity\":1.1,\"color\":\"#ffe89c\",\"source\":[0.72,0.05],\"toward\":[0.52,0.72]},{\"kind\":\"glow\",\"intensity\":1.3,\"color\":\"#ffd885\",\"source\":[0.53,0.67],\"spread\":0.15},{\"kind\":\"camera\",\"speed\":0.4}],\"u\":\"http://127.0.0.1:36105/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg\",\"f\":\"cover\",\"r\":\"smooth\"}",
+        "titleEffectsImage": "http://127.0.0.1:36105/assets/uploaded/title_art_b3914fa0-d433-440d-a779-d61f6f8ae361.jpg",
+        "titleEffectsFit": "cover",
+        "titleEffectsRendering": "smooth",
+        "titleEffectsResolutionScale": "0.5",
+        "titleEffectsAnimated": "true"
+      },
+      "imageRendering": "auto",
+      "canvasWidth": 600,
+      "canvasHeight": 450,
+      "stageWidth": 1200,
+      "text": "멈춘 시계의 기억새 게임불러오기크레딧종료멈춘 시간 속 잃어버린 기억을 찾아서{\"selectedIndex\":0}",
+      "defaultEditorialCopy": false
+    },
+    {
+      "branch": "release",
+      "kind": "opening",
+      "sceneId": "op_scene_watch",
+      "width": 1376,
+      "height": 768,
+      "motion": "zoom",
+      "objectFit": "cover",
+      "narration": "조용한 서재, 주인을 잃고 멈춰 선 회중시계에서 아련한 기억의 빛이 피어오른다.",
+      "narrationWordBreak": "keep-all",
+      "mediaState": "ready"
+    }
+  ],
+  "paths": {
+    "clock": {
+      "steps": [
+        {
+          "x": 11,
+          "y": 12,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 12,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 11,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "key": "ArrowUp"
+        }
+      ],
+      "position": {
+        "x": 12,
+        "y": 9
+      },
+      "face": "ArrowUp",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_starter",
+        "x": 12,
+        "y": 8
+      }
+    },
+    "gate": {
+      "steps": [
+        {
+          "x": 13,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 17,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 9,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "key": "ArrowUp"
+        }
+      ],
+      "position": {
+        "x": 18,
+        "y": 8
+      },
+      "trigger": "playerTouch",
+      "target": {
+        "id": "ev_gate_f863f782-16d8-4cbd-b982-d1cf6a74facc",
+        "x": 18,
+        "y": 8
+      }
+    },
+    "ending": {
+      "steps": [
+        {
+          "x": 1,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 8,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 17,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 19,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 20,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 21,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 22,
+          "y": 7,
+          "key": "ArrowRight"
+        }
+      ],
+      "position": {
+        "x": 22,
+        "y": 7
+      },
+      "face": "ArrowUp",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_end",
+        "x": 22,
+        "y": 6
+      }
+    },
+    "arrival": {
+      "kind": "transfer",
+      "mapId": "map_segment_route",
+      "x": 0,
+      "y": 7,
+      "fade": "black"
+    }
+  },
+  "choices": [
+    "기억을 간직한다",
+    "놓아준다"
+  ],
+  "branches": [
+    {
+      "name": "keep",
+      "seconds": 83.504,
+      "passed": true,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening-1",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": [
+        {
+          "url": "http://127.0.0.1:36105/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+          "error": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    {
+      "name": "release",
+      "seconds": 48.611,
+      "passed": true,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening-1",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": [
+        {
+          "url": "http://127.0.0.1:36105/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "http://127.0.0.1:36105/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3",
+          "error": "net::ERR_ABORTED"
+        }
+      ]
+    }
+  ],
+  "stageBox": {
+    "x": 40,
+    "y": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "videoPath": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/first-presentation-v3/video/page@97f3ac8cb91ed6f019813fadac2ed43a.webm",
+  "passed": true
+}

@@ -1,0 +1,405 @@
+{
+  "version": 1,
+  "id": "examples_field_overview",
+  "name": "필드 · 지형과 능력",
+  "structure": "field-overview",
+  "seed": 7,
+  "width": 120,
+  "height": 90,
+  "startNodeId": "examples_field_overview_n6",
+  "nodes": [
+    {
+      "id": "examples_field_overview_n0",
+      "name": "북서 숲",
+      "mapId": "examples_field_overview_map0",
+      "kind": "field",
+      "x": 0,
+      "y": 0,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit0",
+      "clearSwitchId": "examples_field_overview_clear0",
+      "grants": [
+        "examples_field_overview_ability0"
+      ]
+    },
+    {
+      "id": "examples_field_overview_n1",
+      "name": "산길",
+      "mapId": "examples_field_overview_map1",
+      "kind": "field",
+      "x": 40,
+      "y": 0,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit1",
+      "clearSwitchId": "examples_field_overview_clear1",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n2",
+      "name": "고대 성문",
+      "mapId": "examples_field_overview_map2",
+      "kind": "field",
+      "x": 80,
+      "y": 0,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit2",
+      "clearSwitchId": "examples_field_overview_clear2",
+      "grants": [
+        "examples_field_overview_ability1"
+      ]
+    },
+    {
+      "id": "examples_field_overview_n3",
+      "name": "서쪽 강변",
+      "mapId": "examples_field_overview_map3",
+      "kind": "field",
+      "x": 0,
+      "y": 30,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit3",
+      "clearSwitchId": "examples_field_overview_clear3",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n4",
+      "name": "중앙 들판",
+      "mapId": "examples_field_overview_map4",
+      "kind": "field",
+      "x": 40,
+      "y": 30,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit4",
+      "clearSwitchId": "examples_field_overview_clear4",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n5",
+      "name": "동쪽 호수",
+      "mapId": "examples_field_overview_map5",
+      "kind": "field",
+      "x": 80,
+      "y": 30,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit5",
+      "clearSwitchId": "examples_field_overview_clear5",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n6",
+      "name": "시작 마을",
+      "mapId": "examples_field_overview_map6",
+      "kind": "town",
+      "x": 0,
+      "y": 60,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit6",
+      "clearSwitchId": "examples_field_overview_clear6",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n7",
+      "name": "나루터",
+      "mapId": "examples_field_overview_map7",
+      "kind": "field",
+      "x": 40,
+      "y": 60,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit7",
+      "clearSwitchId": "examples_field_overview_clear7",
+      "grants": []
+    },
+    {
+      "id": "examples_field_overview_n8",
+      "name": "묻힌 신전",
+      "mapId": "examples_field_overview_map8",
+      "kind": "dungeon",
+      "x": 80,
+      "y": 60,
+      "w": 40,
+      "h": 30,
+      "entry": {
+        "x": 20,
+        "y": 15
+      },
+      "visitSwitchId": "examples_field_overview_visit8",
+      "clearSwitchId": "examples_field_overview_clear8",
+      "grants": []
+    }
+  ],
+  "edges": [
+    {
+      "id": "examples_field_overview_edge0",
+      "from": "examples_field_overview_n6",
+      "to": "examples_field_overview_n3",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_field_overview_edge1",
+      "from": "examples_field_overview_n3",
+      "to": "examples_field_overview_n0",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_field_overview_edge2",
+      "from": "examples_field_overview_n0",
+      "to": "examples_field_overview_n1",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge3",
+      "from": "examples_field_overview_n1",
+      "to": "examples_field_overview_n2",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge4",
+      "from": "examples_field_overview_n3",
+      "to": "examples_field_overview_n4",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge5",
+      "from": "examples_field_overview_n4",
+      "to": "examples_field_overview_n1",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_field_overview_edge6",
+      "from": "examples_field_overview_n6",
+      "to": "examples_field_overview_n7",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge7",
+      "from": "examples_field_overview_n7",
+      "to": "examples_field_overview_n4",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_field_overview_edge8",
+      "from": "examples_field_overview_n4",
+      "to": "examples_field_overview_n5",
+      "requires": [
+        "examples_field_overview_ability0"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge9",
+      "from": "examples_field_overview_n5",
+      "to": "examples_field_overview_n2",
+      "requires": [],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    },
+    {
+      "id": "examples_field_overview_edge10",
+      "from": "examples_field_overview_n7",
+      "to": "examples_field_overview_n8",
+      "requires": [
+        "examples_field_overview_ability1"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 39,
+        "y": 15
+      },
+      "toExit": {
+        "x": 0,
+        "y": 15
+      }
+    },
+    {
+      "id": "examples_field_overview_edge11",
+      "from": "examples_field_overview_n8",
+      "to": "examples_field_overview_n5",
+      "requires": [
+        "examples_field_overview_ability1"
+      ],
+      "oneWay": false,
+      "fromExit": {
+        "x": 20,
+        "y": 0
+      },
+      "toExit": {
+        "x": 20,
+        "y": 29
+      }
+    }
+  ],
+  "abilities": [
+    {
+      "name": "수문 열쇠",
+      "switchId": "examples_field_overview_ability0"
+    },
+    {
+      "name": "유적 열쇠",
+      "switchId": "examples_field_overview_ability1"
+    }
+  ],
+  "pins": [
+    {
+      "nodeId": "examples_field_overview_n0",
+      "switchId": "examples_field_overview_pin0"
+    },
+    {
+      "nodeId": "examples_field_overview_n1",
+      "switchId": "examples_field_overview_pin1"
+    },
+    {
+      "nodeId": "examples_field_overview_n2",
+      "switchId": "examples_field_overview_pin2"
+    },
+    {
+      "nodeId": "examples_field_overview_n3",
+      "switchId": "examples_field_overview_pin3"
+    },
+    {
+      "nodeId": "examples_field_overview_n4",
+      "switchId": "examples_field_overview_pin4"
+    },
+    {
+      "nodeId": "examples_field_overview_n5",
+      "switchId": "examples_field_overview_pin5"
+    },
+    {
+      "nodeId": "examples_field_overview_n6",
+      "switchId": "examples_field_overview_pin6"
+    },
+    {
+      "nodeId": "examples_field_overview_n7",
+      "switchId": "examples_field_overview_pin7"
+    },
+    {
+      "nodeId": "examples_field_overview_n8",
+      "switchId": "examples_field_overview_pin8"
+    }
+  ]
+}

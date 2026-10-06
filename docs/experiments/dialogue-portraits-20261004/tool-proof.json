@@ -1,0 +1,20 @@
+{
+  "firstPage": {
+    "count": 20,
+    "bust": 5,
+    "full": 5
+  },
+  "bust": {
+    "total": 76,
+    "firstPage": 50,
+    "secondPage": 26
+  },
+  "full": {
+    "total": 76,
+    "firstPage": 50,
+    "secondPage": 26
+  },
+  "modeRejectedForOtherKinds": true,
+  "selectedBustCompilesAndReloads": true,
+  "villagerFaceSchema": true
+}

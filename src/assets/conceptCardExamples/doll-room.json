@@ -1,0 +1,542 @@
+{
+  "neutral-nursery/dolls-bedroom-full": [
+    {
+      "name": "build_hand_interior_room",
+      "args": {
+        "mapId": "map_doll_room",
+        "name": "인형과 장난감이 있는 아이 방",
+        "plan": [
+          "####################",
+          "###.....#....#######",
+          "###.....#....#######",
+          "###.....#....#######",
+          "###.....#....#######",
+          "#####........#######",
+          "#####.......########",
+          "#####.......########",
+          "#####.......########",
+          "#####.......########",
+          "########...#########",
+          "########...#########",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################"
+        ],
+        "floor": "plank",
+        "wall": "plaster",
+        "ceiling": "wood",
+        "objects": [
+          {
+            "id": "child bed",
+            "x": 3,
+            "y": 3
+          },
+          {
+            "id": "toy box",
+            "x": 6,
+            "y": 5
+          },
+          {
+            "id": "music box",
+            "x": 10,
+            "y": 4
+          },
+          {
+            "id": "rocking horse",
+            "x": 10,
+            "y": 7
+          },
+          {
+            "id": "green rug",
+            "x": 7,
+            "y": 7
+          },
+          {
+            "id": "shelf:toy",
+            "x": 9,
+            "y": 1
+          },
+          {
+            "id": "shelf:toy",
+            "x": 12,
+            "y": 1
+          }
+        ],
+        "start": [
+          {
+            "x": 9,
+            "y": 11
+          }
+        ]
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_bed_inspect",
+          "name": "아이 침대 조사",
+          "x": 3,
+          "y": 4,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_bed_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "별 무늬 머리판 아래에 이불과 베개가 가지런히 놓여 있다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_playthings_inspect",
+          "name": "놀이용품 조사",
+          "x": 6,
+          "y": 6,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_playthings_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "공과 인형, 나무칼이 정리되어 있다. 놀이가 끝나면 여기에 돌려놓는다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_music_inspect",
+          "name": "오르골 조사",
+          "x": 10,
+          "y": 5,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_music_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "뚜껑 안에 작은 춤추는 인형이 있다. 반짝이는 옷자락과 나무 무늬가 보인다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_horse_inspect",
+          "name": "목마 조사",
+          "x": 10,
+          "y": 8,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_horse_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "흰 나무 목마에 작은 안장과 둥근 손잡이가 달려 있다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_doll_inspect",
+          "name": "인형 보관 조사",
+          "x": 9,
+          "y": 3,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_doll_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "개인용 벽 선반 두 개에 인형이 앉아 있다. 각각 다른 옷과 리본을 달고 있다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "set_start_position",
+      "args": {
+        "mapId": "map_doll_room",
+        "x": 9,
+        "y": 11
+      }
+    }
+  ],
+  "abandoned-nursery/silent-dolls-full": [
+    {
+      "name": "build_hand_interior_room",
+      "args": {
+        "mapId": "map_doll_room",
+        "name": "폐저택의 아이 방",
+        "plan": [
+          "####################",
+          "###.....#....#######",
+          "###.....#....#######",
+          "###.....#....#######",
+          "###.....#....#######",
+          "#####........#######",
+          "#####.......########",
+          "#####.......########",
+          "#####.......########",
+          "#####.......########",
+          "########...#########",
+          "########...#########",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################",
+          "####################"
+        ],
+        "floor": "dplank",
+        "wall": "plaster",
+        "ceiling": "dark",
+        "objects": [
+          {
+            "id": "child bed",
+            "x": 3,
+            "y": 3
+          },
+          {
+            "id": "toy box",
+            "x": 6,
+            "y": 5
+          },
+          {
+            "id": "music box",
+            "x": 10,
+            "y": 4
+          },
+          {
+            "id": "rocking horse",
+            "x": 10,
+            "y": 7
+          },
+          {
+            "id": "green rug",
+            "x": 7,
+            "y": 7
+          },
+          {
+            "id": "old doll",
+            "x": 11,
+            "y": 4
+          },
+          {
+            "id": "old doll",
+            "x": 6,
+            "y": 7
+          },
+          {
+            "id": "old doll",
+            "x": 11,
+            "y": 9
+          },
+          {
+            "id": "torn portrait",
+            "x": 5,
+            "y": 1
+          },
+          {
+            "id": "cobweb",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "id": "cobweb",
+            "x": 12,
+            "y": 1
+          }
+        ],
+        "start": [
+          {
+            "x": 9,
+            "y": 11
+          }
+        ]
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_bed_inspect",
+          "name": "빈 침대 조사",
+          "x": 3,
+          "y": 4,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_bed_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "이불 위에는 아이 대신 작은 인형 하나가 누웠던 자국만 남아 있다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_playthings_inspect",
+          "name": "놀이용품 조사",
+          "x": 6,
+          "y": 6,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_playthings_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "공과 나무칼이 먼지에 묻혀 있다. 보물을 주는 상자가 아니라 아이가 쓰던 장난감 보관함이다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_music_inspect",
+          "name": "오르골 조사",
+          "x": 10,
+          "y": 5,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_music_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "태엽은 끝까지 감겨 있다. 뚜껑 속 작은 인형은 멈춰 있고, 노랫소리는 들리지 않는다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_horse_inspect",
+          "name": "목마 조사",
+          "x": 10,
+          "y": 8,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_horse_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "흰 칠이 벗겨진 목마다. 다른 인형들과 떨어진 놀이 자리에서 움직이지 않는다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_doll_room",
+        "event": {
+          "id": "ev_doll_inspect",
+          "name": "낡은 인형 조사",
+          "x": 11,
+          "y": 5,
+          "trigger": {
+            "kind": "action"
+          },
+          "commands": [],
+          "pages": [
+            {
+              "id": "ev_doll_inspect_p1",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "한쪽 눈이 없는 인형이다. 드레스에 아이의 이름이 수놓아져 있다. 다른 인형들도 빈 침대를 향해 앉아 있다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "set_start_position",
+      "args": {
+        "mapId": "map_doll_room",
+        "x": 9,
+        "y": 11
+      }
+    }
+  ]
+}

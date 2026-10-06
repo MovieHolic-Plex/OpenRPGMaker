@@ -6,6 +6,7 @@
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { worldmapAutoTile, worldmapEraseTile, worldmapMaterialGroup } from '@/project/worldmapAutoBrush';
 import { autotileGroupLayer, shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { isPassable, tilePassability } from "@/project/collision";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
@@ -702,7 +703,7 @@ function autotileGroupForVocab(tileset: TilesetDef, group: TileGroupMetadata): A
 const layPath: ToolDefinition = {
   name: "lay_path",
   description:
-    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·벽 같은 건물을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회 우선·불가 시 건넌다. 우회로가 없어 길이 끊기면 막힌 좌표와 함께 실패한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 월드맵 연결 붓은 material=길 하나로 초원·사막·설원 바탕을 자동으로 맞추며 강 횡단은 방향에 맞는 다리로 놓는다(4방향 길 지원). 정확한 경로·폭은 fill_region(material=길,path,width)을 쓴다. 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·벽 같은 건물을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회 우선·불가 시 건넌다. 우회로가 없어 길이 끊기면 막힌 좌표와 함께 실패한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
   mode: "write",
   version: 3,
   parameters: {
@@ -725,7 +726,8 @@ const layPath: ToolDefinition = {
     if (points.length < 2) failWithExample("points는 경유점 2개 이상이어야 합니다", PATH_EXAMPLE);
     const { group, softConfirm } = requireMaterialGroup(tileset, args.material, PATH_EXAMPLE, { preferRoles: ["terrain"] });
     const autotile = autotileGroupForVocab(tileset, group);
-    if (!autotile || (autotile.neighborhood ?? 4) !== 8) {
+    const worldmapAuto = worldmapMaterialGroup(tileset, args.material)?.id === group.id;
+    if (!autotile || (autotile.neighborhood ?? 4) !== 8 && !group.id.startsWith('worldmap-brush-road-')) {
       throw new ToolError(
         `길 어휘 '${group.name}'(${group.id})에 8-이웃 variantMap 오토타일 정의가 없습니다. 승인 시 오토타일 정의가 필요합니다(inner corner 마감용) — 타일셋 오토타일 편집기에서 8방향 그룹을 정의하세요. — 다시 보낼 형식 예시: ${JSON.stringify(PATH_EXAMPLE)}`,
         { code: "path-needs-autotile", mapId: map.id }
@@ -743,7 +745,7 @@ const layPath: ToolDefinition = {
     const painted: Point[] = [];
     for (const cell of repair.cells) {
       if (!inMapBounds(map, cell.x, cell.y)) continue;
-      paintRoadGround(map, tileset, cell.x, cell.y, body);
+      paintRoadGround(map, tileset, cell.x, cell.y, worldmapAuto ? worldmapAutoTile(map, tileset, body, cell.x, cell.y, repair.cells) : body);
       painted.push(cell);
     }
     if (painted.length === 0) {
@@ -756,7 +758,8 @@ const layPath: ToolDefinition = {
       }
       failWithExample("경로가 전부 맵 밖입니다 — points 좌표를 맵 안으로 고치세요", PATH_EXAMPLE);
     }
-    const reshaped = resolveAutotile(autotile, painted, map, (x, y) => mask(x, y) !== "structure");
+    const reshaped = worldmapAuto ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), painted)
+      : resolveAutotile(autotile, painted, map, (x, y) => mask(x, y) !== "structure");
     const warnings = roadRepairWarnings(repair);
     return withSoftConfirm({
       summary: `${map.name}에 '${group.name}' 길 ${painted.length}칸 — 자연도 ${naturalnessLabel(naturalness)}, 오토타일 재계산 ${reshaped}칸(inner corner 포함).`
@@ -1067,7 +1070,7 @@ const fillRegion: ToolDefinition = {
       shape: {
         type: "string",
         enum: ["rect", "ellipse", "circle"],
-        description: "기본 rect. 원형 호수/둥근 연못=circle, 타원 호수=ellipse. '원형' 요청에 rect 금지",
+        description: "월드맵은 재료 이름(강/길/호수/숲/산맥)만으로 바탕과 기본 층을 맞춘다. 길 path는 강 횡단에 다리를 놓는다. 기본 rect. 원형 호수/둥근 연못=circle, 타원 호수=ellipse. '원형' 요청에 rect 금지",
       },
       clearUpper: {
         type: "boolean",
@@ -1112,12 +1115,16 @@ const fillRegion: ToolDefinition = {
     if (body === null) {
       throw new ToolError(`채울 타일을 찾을 수 없습니다: ${group.name}(${group.id})`, { code: "fill-empty-group", mapId: map.id });
     }
+    const worldmapAuto = worldmapMaterialGroup(tileset, args.material)?.id === group.id;
+    // Read context once before writing: a preceding cell must not change the next cell's background/bridge axis.
+    const worldmapContext = worldmapAuto ? structuredClone(map) : map;
 
     const bboxCells = cellsInRect(map, rect);
     const maskCells = pathCells ?? cellsInFillShape(map, rect, shape);
     // 벽과의 1칸 틈 메우기는 MV 팩에서 끈다 — 건물·울타리·물체가 모두 「벽」이라 옥상이 울타리 쪽으로 혹처럼 자라고
     // 이웃 건물과 붙어 버린다(2026-09-25 헤드리스 실측: 7×3 옥상이 30칸). 조수가 준 사각형 그대로 칠한다.
-    const allCells = tileset.mvPack ? maskCells : expandCellsAgainstWalls(draft, map, maskCells);
+    const allCells = tileset.mvPack || tileset.autotileGroups?.some(g => g.id === 'worldmap-brush-grass-sea')
+      ? maskCells : expandCellsAgainstWalls(draft, map, maskCells);
     const gapCells = allCells.length - maskCells.length;
     if (allCells.length === 0) {
       throw new ToolError(
@@ -1144,7 +1151,7 @@ const fillRegion: ToolDefinition = {
     const paintCell = (cell: Point): void => {
       const index = cell.y * map.width + cell.x;
       if (layerNo === 1) {
-        map.lowerTiles[index] = body;
+        map.lowerTiles[index] = worldmapAuto ? worldmapAutoTile(worldmapContext, tileset, body, cell.x, cell.y, pathCells ?? maskCells) : body;
         setLayerTileAt(map, 2, index, TILE.EMPTY);
         if (clearUpper) {
           map.upperTiles[index] = TILE.EMPTY;
@@ -1177,7 +1184,7 @@ const fillRegion: ToolDefinition = {
     }
     // MV 팩 재료는 서로 다른 오토타일끼리 맞닿으면 양쪽이 가장자리를 그린다 — 흙 속 잔디·보도 속 화단의
     // 둘레 흙·보도 칸도 다시 맞춘다. 내장 타일셋은 기존 결과(재료 자신만 재계산)를 그대로 둔다.
-    const neighborsReshaped = tileset.mvPack
+    const neighborsReshaped = (tileset.mvPack || tileset.autotileGroups?.some(candidate=>candidate.id.startsWith('worldmap-brush-')))
       ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset).filter((candidate) => candidate.id !== autotile?.id), exit.cells)
       : 0;
     // 3×3 테두리 바닥은 채운 면의 가장자리에 테두리를, 안쪽에 몸통을 둔다(1칸 폭 줄은 몸통 그대로).
@@ -1445,7 +1452,7 @@ const tileErase: ToolDefinition = {
     const groundTile = scope.ground ? baseGroundTile(map, rect, tileset) : null;
     const eraseCell = (cell: Point): void => {
       const index = cell.y * map.width + cell.x;
-      if (groundTile !== null) map.lowerTiles[index] = groundTile;
+      if (groundTile !== null) map.lowerTiles[index] = worldmapEraseTile(tileset, map.lowerTiles[index]!) ?? groundTile;
       for (const no of scope.layers) setLayerTileAt(map, no, index, TILE.EMPTY);
       if (scope.shadow) setShadowAt(map, index, 0);
     };
@@ -1456,7 +1463,8 @@ const tileErase: ToolDefinition = {
       cleared += 1;
     }
     // MV 팩: 지운 자리 둘레의 울타리·차선·흙 가장자리를 다시 맞춘다(지운 끝이 끊긴 모양으로 남지 않게).
-    const reshaped = tileset?.mvPack ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), filtered.cells) : 0;
+    const reshaped = tileset?.mvPack || tileset?.autotileGroups?.some(group => group.id.startsWith('worldmap-brush-'))
+      ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), filtered.cells) : 0;
     compactMapLayers(map);
     return {
       summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${groundTile === null ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,

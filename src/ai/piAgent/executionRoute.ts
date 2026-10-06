@@ -8,8 +8,11 @@
 // 하나이고, 컴포저 「팀」 토글과 설정 「Pi 팀 실행」 이 같은 값을 읽는다. 경로 enum 으로 한 번 더
 // 인코딩하면 라우트 → `/pi team` 문자열 → 파서 왕복이 생겨 한 비트를 네 곳에서 표현하게 된다.
 
+import { conceptCardsForText, formatConceptCardNote } from "../conceptCards";
+import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
+import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { formatVillageReferenceNote, villageReferenceExamples } from "@/ai/villageReferenceExamples";
@@ -25,7 +28,7 @@ import type { PiAgentThinkingLevel } from "./protocol";
 
 export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
 /** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
-export const DEFAULT_PI_TEAM = false;
+export { DEFAULT_PI_TEAM } from "./executionDefaults";
 
 /**
  * 옛 blob 호환 어휘. 경로 enum 이 있던 시절 `executionRoute` 키가 저장돼 있다:
@@ -33,9 +36,11 @@ export const DEFAULT_PI_TEAM = false;
  * 쓰지 않는다 — 읽는 곳은 `loadAiConfig` 의 승격 한 곳뿐이다(옛 값을 지우면 사용자의 팀 설정이
  * 조용히 사라지고, 남겨 두면 두 어휘가 살아 있는 것처럼 보인다).
  */
-export const LEGACY_PI_TEAM_ROUTE = "pi-team";
+export { LEGACY_PI_TEAM_ROUTE } from "./executionDefaults";
 /** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
 export interface PiRunPlan {
+  /** Request-local location guidance, declared from the user's instruction. */
+  readonly viewNavigation?: boolean;
   readonly villageContract?: import("./villageContract").VillageContract;
   /** 이 턴을 어떻게 읽었는지 한 줄(classifyPlainPiTurn). 활동 로그의 「의도 판정」 행이 된다. 실행은 이 값을 읽지 않는다. */
   readonly routingAudit?: string;
@@ -74,7 +79,7 @@ export interface PiIntentNoteTargetMap extends IntentNoteTargetMap {
 /** 선언 → Pi 본문 노트 재료. 전부 코드가 아는 값이다. */
 export interface PiIntentNoteInput {
   readonly intent: IntentDeclaration;
-  readonly project?: Pick<Project, "defaultVillagePresetId" | "villagePresets">;
+  readonly project?: Pick<Project, "defaultVillagePresetId" | "villagePresets"> & { system?: Pick<Project['system'], 'genre'> } & Partial<Pick<Project, 'maps' | 'tilesets' | 'startMapId'>>;
   /** 선언이 가리킨 맵, 없으면 지금 열린 맵. 시공 규모 노트가 «키워라/충분하다» 를 이 크기로 판단한다. */
   readonly targetMap: PiIntentNoteTargetMap | null;
   /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계와 author_village target 을 못박는다. */
@@ -83,6 +88,8 @@ export interface PiIntentNoteInput {
   readonly packTown?: PackTownTarget | null;
   /** 요청이 버들항 계열 마을이면 그 대상 — 숲마을 노트 대신 author_beodeul_town 노트(beodeulTownRoute). */
   readonly beodeulTown?: BeodeulTownTarget | null;
+  /** 요청·대상 맵이 일본 도시(jp_city) 칩셋이면 그 대상 — 숲마을 노트 대신 build_jp_city_building 노트(jpCityPolicy). */
+  readonly jpCity?: JpCityTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -103,20 +110,24 @@ export interface PiIntentNoteInput {
  * 첫 문장에 밝혀라» 가 정직한 지시다.
  */
 export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
+  // 개념 카드(미궁·카타콤…)는 맨 앞 — 재료·이벤트·금지 규칙이 뒤의 일반 노트보다 먼저 읽혀야 한다.
+  const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
+  const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const preset = defaultVillageDesign(input);
   // Generic scale advice must not override a saved design or resize before its validation.
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
   const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
+    : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : formatPiVillageNote(input);
-  const referenceNote = !input.packTown && !input.beodeulTown && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
+  const referenceNote = !input.packTown && !input.beodeulTown && !input.jpCity && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
     ? formatVillageReferenceNote(villageReferenceExamples(input.project as Project, input.requestText))
     : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
-  const parts = [intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  const parts = [conceptNote, worldmapNote, intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
   return parts.length > 0 ? parts.join("\n") : null;
 }
 

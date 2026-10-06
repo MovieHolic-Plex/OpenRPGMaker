@@ -1,4 +1,5 @@
 import { playerTextDelay } from '@/player/playerPreferences';
+import { cancelChoiceIndex } from '@/project/choiceCancellation';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
@@ -6,6 +7,7 @@ import { playerTextDelay } from '@/player/playerPreferences';
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { dialogueFaceForEmotion, findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
@@ -1003,6 +1005,13 @@ export function createDialogueUI(
         });
         const selected = buttons[selectedIndex];
         if (selected?.isConnected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+        if (selected?.isConnected && overlay.dataset.dialogueStyle === 'pixel-cinematic') {
+          // Scroll only the compact choice list, never the page/game stage.
+          const item = selected.getBoundingClientRect(), list = choicesEl.getBoundingClientRect();
+          const scale = choicesEl.clientHeight > 0 ? list.height / choicesEl.clientHeight : 1;
+          if (scale > 0 && item.bottom > list.bottom) choicesEl.scrollTop += (item.bottom - list.bottom) / scale;
+          else if (scale > 0 && item.top < list.top) choicesEl.scrollTop -= (list.top - item.top) / scale;
+        }
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
@@ -1637,33 +1646,9 @@ function effectivePosition(model: {
   return model.settings.position;
 }
 
-function cancelChoiceIndex(
-  behavior: ChoiceCancelBehavior | undefined,
-  optionCount: number
-): number | null {
-  if (!behavior || behavior === "disallow") return null;
-  if (behavior === "branch") return -1;
-  const index = Number(behavior.replace("choice", "")) - 1;
-  if (Number.isInteger(index) && index >= 0 && index < optionCount) return index;
-  return null;
-}
-
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
   if (!face?.resourceId) return "face";
-  if (face.presentation) return face.presentation;
-  const id = face.resourceId.trim().toLowerCase();
-  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
-    return "full";
-  }
-  if (
-    id.includes("-bust")
-    || id.includes("-portrait")
-    || id.startsWith("generated-face-")
-    || id.endsWith("/bust")
-  ) {
-    return "bust";
-  }
-  return "face";
+  return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
 function renderFace(face: FaceGraphic): HTMLElement {

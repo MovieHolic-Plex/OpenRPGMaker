@@ -1,7 +1,6 @@
-import { awaitGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
-import { keyedTilesetImage } from "@/ai/toolImageCanvas";
+import { loadActivityTilesetAtlas } from "@/ai/toolImageCanvas";
 import type { ActivityVisual, ActivityVisualRef } from "@/ai/activityVisual";
 import { readActivityMedia, saveActivityMediaBlob, setActivityMediaPreparer } from "@/ai/activityMediaArchive";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -24,9 +23,19 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 const pending = new Map<string, Promise<Blob | undefined>>();
 const rasterLanes: Promise<unknown>[] = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
 let nextLane = 0;
+/**
+ * 그림 굽기는 한가할 때 시작한다. 960px 맵 렌더·toBlob 이 체크포인트 적용 직후에 몰리면 그 사이 조수창·캔버스가
+ * 멈춰 보였다(2026-10-03 조사). 그림은 기록이라 1.5초 늦어도 된다 — 모자라면 timeout 이 시작을 보장한다.
+ */
+function whenIdle(): Promise<void> {
+  return new Promise(resolve => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(() => resolve(), { timeout: 1500 });
+    else setTimeout(resolve, 0);
+  });
+}
 function rasterQueued(visual: ActivityVisual): Promise<Blob | undefined> {
   const lane = nextLane++ % rasterLanes.length;
-  const job = rasterLanes[lane]!.then(() => raster(visual));
+  const job = rasterLanes[lane]!.then(whenIdle).then(() => raster(visual));
   rasterLanes[lane] = job.catch(() => undefined);
   return job;
 }
@@ -36,17 +45,16 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
     // Both map and tileset are execution snapshots, never the current editor project.
     let atlas: HTMLImageElement | HTMLCanvasElement | undefined;
     if (visual.tileset.image.type === "uploaded" || visual.tileset.tileGrafts?.length) {
-      let url = visual.tileset.image.type === "uploaded" ? visual.uploaded || (visual.uploadedAsset && uploadedAssetUrl(visual.uploadedAsset)) : tilesetBaseImageUrl(visual.tileset);
+      const url = visual.tileset.image.type === "uploaded" ? visual.uploaded || (visual.uploadedAsset && uploadedAssetUrl(visual.uploadedAsset)) : tilesetBaseImageUrl(visual.tileset);
       if (!url) throw new Error("Uploaded atlas snapshot unavailable");
-      if (visual.tileset.tileGrafts?.length) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        try { url = await awaitGraftedTilesetImageUrl(visual.tileset, url, controller.signal) ?? undefined; }
-        finally { clearTimeout(timer); }
-        if (!url) throw new Error("Graft atlas snapshot unavailable");
+      const sources = new Map<string, string>();
+      for (const [id, asset] of Object.entries(visual.graftAssets ?? {})) {
+        const capturedUrl = uploadedAssetUrl(asset);
+        if (!capturedUrl) throw new Error("Graft source snapshot unavailable");
+        sources.set(id, capturedUrl);
       }
-      const image = await loadImage(url);
-      atlas = keyedTilesetImage(visual.tileset, image);
+      // No live-store graft resolver: missing legacy uploaded sources fail closed.
+      atlas = await loadActivityTilesetAtlas(visual.tileset, url, sources);
     }
     canvas = await renderRegionSnapshot({ tilesets: { [visual.tileset.id]: visual.tileset } } as Project, visual.map, { x: 0, y: 0, width: visual.map.width, height: visual.map.height }, { targetWidth: 960, image: atlas });
   } else {

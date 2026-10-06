@@ -14,6 +14,8 @@ export interface JsonSchema {
   readonly properties?: Record<string, JsonSchema>;
   readonly required?: readonly string[];
   readonly items?: JsonSchema;
+  readonly minItems?: number;
+  readonly maxItems?: number;
   readonly enum?: readonly (string | number)[];
   readonly minLength?: number;
   readonly maxLength?: number;
@@ -48,6 +50,11 @@ export interface ToolContext {
   readonly currentMapId?: string;
   /** 사용자가 이 대화에서 승인한 목표 칩셋 계열(`tilesetFamily`). 이 계열로의 변경은 계열 검사가 통과시킨다. */
   readonly approvedTilesetFamilies?: readonly string[];
+  /**
+   * 조수(모델)가 부르는 실행인가. 켜면 조수 전용 정책을 실행기가 집행한다 — 폐기된 EasyRPG 계열 칩셋으로 새 맵을 만들거나
+   * 맵 칩셋을 바꾸는 쓰기를 거부한다(retiredEasyRpgTilesets.ts). 편집기 UI·예제·콘텐츠 스크립트는 켜지 않는다.
+   */
+  readonly assistantRun?: boolean;
 }
 
 // 툴 내부 실행이 돌려주는 값. runner가 diff/lint/커밋을 처리한다.
@@ -88,7 +95,8 @@ export interface ToolDefinition {
   // 이 툴이 노출되는 컨텍스트 모드(§2.2). 레지스트리가 패밀리 단위로 일괄 태깅한다.
   readonly domains?: readonly ToolDomain[];
   // run 앞에서 기다릴 지연 데이터(청크를 따로 받는 참고 자료 등). 비동기 실행 경로(prepareTool)만 부른다.
-  readonly prepare?: (args: Record<string, unknown>) => Promise<void>;
+  // project 는 실행 직전의 프로젝트(읽기 전용) — 맵에 쌓인 원본을 읽어 무엇을 준비할지 정하는 도구(edit_world_terrain)가 쓴다. 없을 수도 있다.
+  readonly prepare?: (args: Record<string, unknown>, project?: Project) => Promise<void>;
   // true 면 실행기의 업로드 타일셋 바꿔치기 검사(toolRunner.rejectUploadedTilesetSwap)를 건너뛴다.
   // 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구(revert_last_edit·reset_project)만 켠다 — 그 도구의 계약이
   // "이전/새 프로젝트 그대로"라 칩셋이 달라지는 것이 정상이고, tilesetId 인자를 받을 수도 없다.
@@ -98,7 +106,7 @@ export interface ToolDefinition {
    * 이 도구가 tilesetId 인자 없이 불렸을 때 쓰는 자기 기본 칩셋(2026-09-25, create_map 만 켠다).
    * 실행기는 ctx.currentMapId 가 있고 이 기본값이 지금 보는 맵과 **다른 계열**이면 인자에 지금 보는 맵의 tilesetId 를 넣는다.
    * 같은 계열이면 도구 기본값을 그대로 둔다(EasyRPG 실내를 보며 만든 새 맵이 실내 칩셋이 되지 않게).
-   * EasyRPG 타일 번호를 가정하는 도구(generate_map·방 파이프라인)는 켜지 마라 — 계열 검사가 막는다.
+   * EasyRPG 타일 번호를 가정하는 도구(generate_map·방 파이프라인)는 켜지 마라 — 계열 검사가 막는다(두 도구는 2026-10-06 조수에게서 숨겼다).
    */
   readonly defaultTilesetId?: (project: Project) => string;
   /**

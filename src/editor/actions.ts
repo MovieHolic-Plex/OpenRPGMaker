@@ -1,3 +1,5 @@
+import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
+import { patchSunlight } from "@/project/sunlight";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
@@ -395,6 +397,17 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
   }, { scope: "map", mapId });
 }
 
+/** 이 맵의 걷는 캐릭터 크기 배율(0.25~1). undefined 나 1 이면 지워서 기본 크기로 돌아간다. */
+export function setMapCharacterScale(mapId: MapId, scale: number | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (scale === undefined || !Number.isFinite(scale) || scale >= 1) delete map.characterScale;
+    else map.characterScale = Math.max(MAP_CHARACTER_SCALE_MIN, scale);
+  }, { scope: "map", mapId });
+}
+
 /** 맵 성격을 고른다. undefined 면 지워서 자동 추정으로 돌아간다. */
 export function setMapRole(mapId: MapId, role: import("@/project/types").MapRoleKind | undefined): void {
   if (!allowMapMutation(mapId)) return;
@@ -511,6 +524,16 @@ export function setMapCloudShadows(mapId: MapId, patch: Partial<MapCloudShadowSe
       map.cloudShadows = next;
     }
   }, { scope: "map", mapId });
+}
+
+export function setMapSunlight(mapId: MapId, patch: Partial<import("@/project/sunlight").MapSunlight> | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch === null) delete map.sunlight;
+    else map.sunlight = patchSunlight(map.sunlight, patch);
+  }, { scope: "map", mapId, label: "태양과 지형 그림자" });
 }
 
 function allowMapMutation(mapId: MapId): boolean {

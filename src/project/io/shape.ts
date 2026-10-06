@@ -4,6 +4,7 @@ import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/command
 import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
+import { normalizeSunlight } from "../sunlight";
 import { normalizeAiAuthoring } from "../aiAuthoring";
 import { normalizeGameDesignBrief } from "../gameDesignBrief";
 import { assertGrowthShape } from "@/project/growth/validation";
@@ -23,6 +24,7 @@ import { normalizeWorld } from "../world/guards";
 import { normalizeProjectFactions } from "../factions";
 import type { ProjectWorld } from "../world/types";
 import { normalizeWorldGraph } from "../worldGraph";
+import { normalizeWorldAtlases } from "../worldAtlas";
 import { normalizePalettePresetId } from "../tilesetPalette";
 import { normalizeFarmAnimalStartInstances } from "../p1FoundationRecords";
 import { normalizeFarmBuildingPlacements, normalizeHomeDecorationPlacements } from "../spatialPlacements";
@@ -185,6 +187,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   normalizeProjectMapBackgrounds(project);
   normalizeProjectRelief(project);
   for (const map of Object.values(project.maps)) {
+    if (map.sunlight !== undefined) map.sunlight = normalizeSunlight(map.sunlight);
     const climate = normalizeMapClimate(map.climate);
     if (climate) map.climate = climate;
     else delete map.climate;
@@ -198,6 +201,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   }
   if (data.factions !== undefined) project.factions = normalizeProjectFactions(project.factions);
   if (data.worldGraph !== undefined) project.worldGraph = normalizeWorldGraph(data.worldGraph);
+  if (data.worldAtlases !== undefined) project.worldAtlases = normalizeWorldAtlases(data.worldAtlases);
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);

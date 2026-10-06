@@ -1,0 +1,525 @@
+{
+  "version": 1,
+  "key": "mage_fire_burst",
+  "width": 64,
+  "height": 64,
+  "anchor": "target",
+  "frameMs": 60,
+  "palette": {
+    "A": "#3c1022",
+    "B": "#a52631",
+    "C": "#ed5328",
+    "D": "#ffa63a",
+    "E": "#ffd970",
+    "F": "#fff6cc",
+    "G": "#ffffff",
+    "H": "#4c4250",
+    "I": "#72666e"
+  },
+  "frames": [
+    {
+      "phase": "착화",
+      "pieces": [
+        {
+          "x": 23,
+          "y": 40,
+          "rows": [
+            "........C",
+            ".......CD",
+            ".......DE.C",
+            "....C.CEF.D",
+            "....DDEFFED",
+            "...CDEFGFEDC",
+            "..CDEFGGGFEDC",
+            "..BCDEFGFEDCB",
+            "...BCDFFFDCB",
+            "....BCDDECB",
+            "......BBBC",
+            ".......C"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "파열",
+      "pieces": [
+        {
+          "x": 16,
+          "y": 28,
+          "rows": [
+            "................D",
+            "...............DE",
+            ".............C.DF",
+            ".....C........DEFD",
+            "......DC.....DEFFD",
+            "......DED...CEFFFD",
+            "..C....DFDDDEFFFD",
+            "...DC..DFFFEEFFFD..DC",
+            "....DEEFFFFFFFFED.DE",
+            ".....DFFFGGGFFFFFDEF",
+            "....DFFFGGGGGGFFFFFE",
+            "...DEFFGGGGGGGGFFFFD",
+            "..CDEFFGGGGGGGGGFFFC",
+            ".CDEFFGGGGGGGGGFFFEBC",
+            "...DEFFGGGGGGFFFFED",
+            "....CDEFFFFFFFEEDC",
+            ".....CDEFFFFEEDCB",
+            "....C...CDDEDC...C",
+            "...DD.....CDC....DD",
+            "..DE......CBC.....ED",
+            "..DC.....BCCB.....CD",
+            "........CDDDEC",
+            ".....CCDDEFEEDCC",
+            "....BCDEFFFFFEDCB",
+            "......BCDDEEDCB"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "백열",
+      "pieces": [
+        {
+          "x": 12,
+          "y": 10,
+          "rows": [
+            "......................C",
+            ".....................CD",
+            "....................CDE",
+            "....................DEF",
+            "...................DEFD",
+            "...................EFFC",
+            "..................DEFC",
+            "..................EFC",
+            ".................DEFC",
+            "........C........EFFDC",
+            "........DC......DEFFED",
+            "........EDC.....EFFFD",
+            ".......CFFDC...DEFFFC",
+            ".......DFFED..CEFFFDC",
+            ".......EFFFD.CDEFFDC",
+            "......CEFFFD.DEFFFD",
+            "..C...DEFFFDEEFFFE..C",
+            "..DC..EFFFGFFFFFED..DC",
+            "..EDCDEFFGGGFFFFFDC.DED",
+            ".CFFDEFFGGGGGFFFFFEDDEFC",
+            ".DEFFFGGGGGGGGFFFFFEEFFD",
+            ".EFFGGGGGGGGGGGFFFFFFFFD",
+            "CEFFGGGGGGGGGGGGGFFFFFFED",
+            "DEFFGGGGGGGGGGGGGGFFFFFDC",
+            "EFFGGGGGGGGGGGGGGGGFFFEDC",
+            "DFFGGGGGGGGGGGGGGGGFFFDC",
+            "CEFFGGGGGGGGGGGGGGFFFFD",
+            ".DFFFFGGGGGGGGGGGFFFFED",
+            ".CDEFFFFGGGGGGGGFFFFEDC",
+            "..CDDEFFFFFGGFFFFFFEDC",
+            "...BCDDEFFFFFFFFFEEDC",
+            "....BCDDDEFFFFFFEEDCB",
+            ".....BCDDDEFFFFEDDCB",
+            "......BCDDDEFFEEDCB",
+            "....C...BCDEFEEDCB...C",
+            "....DC...CDDEDCB....DC",
+            "....EDC...CDDCC....CDE",
+            "....DEDC..CDEDC...CDDC",
+            ".....CDECCDEFEEDCCDC",
+            "......CDEEEFFFEEEDC",
+            ".....CDEFFFFFFFEEDC",
+            "....CDEFFFFFFFEEDCB",
+            ".....BCDDDEEEEDDCB",
+            ".......BBCCCCBB"
+          ]
+        },
+        {
+          "x": 26,
+          "y": 33,
+          "rows": [
+            "CDE",
+            "CDEF",
+            ".DEF",
+            "..EF",
+            "...F"
+          ]
+        },
+        {
+          "x": 30,
+          "y": 44,
+          "rows": [
+            "EEEE",
+            "DEEED",
+            "CDEEDC",
+            ".CDDC"
+          ]
+        },
+        {
+          "x": 31,
+          "y": 25,
+          "rows": [
+            "D",
+            "DE",
+            "DEEF",
+            ".EEFF",
+            "..EFF"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "화염 기둥",
+      "pieces": [
+        {
+          "x": 12,
+          "y": 8,
+          "rows": [
+            ".................C",
+            "................CD",
+            "................DE",
+            "...............CFE",
+            "...............DFC",
+            "...............EFC",
+            "..............CFFDC",
+            "..............DFFEC",
+            "..............EFFDC",
+            ".............CFFFC",
+            ".............DFFFC",
+            "...C.........EFFDC",
+            "...DC.......CFFEC.......C",
+            "...EDC......DFFFC......CD",
+            "..CFFD......EFFFC.....CDE",
+            "..DFFE.....CFFFFDC....DEF",
+            "..EFFEC....DFFFFED....EFC",
+            ".CFFFDC...CFFFFFFD...CFFC",
+            ".DFFFEC...DFFFFFFDC..DEFD",
+            ".EFFFFD..CEFFGFFFFEDCEFFD",
+            "CFFFFFDCDEFFGGGFFFFDEFFFC",
+            "DFFGFFFEEFFGGGGGFFFFFFFC",
+            "EFFGGFFFFFGGGGGGGFFFFFDC",
+            "DFFGGGFFFGGGGGGGGGFFFFEC",
+            "CEFFGGGGGGGGGGGGGGGFFFDC",
+            ".DEFFGGGGGGGGGGGGGGFFFFC",
+            ".CDEFFGGGGGGGGGGGGGFFFFD",
+            "..CDFFFGGGGGGGGGGGFFFE",
+            "...DEFFFGGGGGGGGGGFFFED",
+            "..CDEFFFFGGGGGGGGFFFFDC",
+            "..BCDEFFFFGGGGGGFFFFEDC",
+            "...BCDEFFFFFGGFFFFFFDC",
+            "....BCDEFFFFFFFFFFFEDC",
+            ".....BCDEFFFFFFFEEEDCB",
+            "......BCDEFFFFFEEEDCB",
+            "...C...BCDEFFFEEEDCB",
+            "...DC...BCDEFEEDDCB...C",
+            "...CDDC..BCDDEDCB...CD",
+            "....CDEDC.CDEEDC...CDE",
+            ".....CDEDCDEFFEDCCCDDC",
+            ".....CDEEEFFFFFEEEDC",
+            "....CDEFFFFFFFEEEDCB",
+            ".....BCDDDEEEEEDDCB",
+            ".......BBCCCCCCBB"
+          ]
+        },
+        {
+          "x": 25,
+          "y": 30,
+          "rows": [
+            "CD",
+            "CDE",
+            "CDEF",
+            ".DEFF",
+            "..EFF",
+            "...FF"
+          ]
+        },
+        {
+          "x": 29,
+          "y": 41,
+          "rows": [
+            "E",
+            "EEF",
+            "DEEFF",
+            "CDEFFF",
+            ".CDEEF",
+            "..CDD"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "갈라지는 불꽃",
+      "pieces": [
+        {
+          "x": 12,
+          "y": 8,
+          "rows": [
+            ".............C",
+            "............CD",
+            "............DE",
+            "...........CFE",
+            "...........DFC",
+            "...........EFC",
+            "..........CFFD",
+            "..........DFFEC",
+            "..........EFFDC",
+            ".........CFFFC",
+            ".........DFFFC",
+            ".........EFFDC........C",
+            "........CFFFDC.......CD",
+            "..C.....DFFFEC.......DE",
+            "..DC....EFFFFD......CFE",
+            "..EDC..CFFFFFDC.....DFC",
+            ".CFFDC.DFFFFFED....CEFC",
+            ".DFFEDCEFFFFFFD....DFFC",
+            ".EFFFDDEFFGFFFDC..CEFFD",
+            "CEFFFEFFFGFFFFED.DEFFEC",
+            "DEFFFFFFGGGFFFFFDEFFFDC",
+            "EFFFGFFGGGGGFFFFFFFFDC",
+            "DFFGGGGGGGGGGFFFFFFFEC",
+            "CEFFGGGGGGGGGGGFFFFFDC",
+            ".DEFFGGGGGGGGGGGFFFFFC",
+            "..DEFFGGGGGGGGGGGFFFFD",
+            "..CDEFFGGGGGGGGGGFFFED",
+            "...CDEFFGGGGGGGGGFFFDC",
+            "..BCDEFFFGGGGGGGFFFFEDC",
+            "...BCDEFFFFGGGGFFFFFDC",
+            "....BCDEFFFFFFFFFFFEEC",
+            ".....BCDEFFFFFEEEEEEDC",
+            "......BCDFFFFEDCCDDEDC",
+            ".......CDEFFEDC..CDEDC",
+            "...C...CDEFEEDC..CDED",
+            "...DC..CDEEDDC...CDC",
+            "....DDCCDDEDC....CC",
+            ".....DDEEEDC",
+            ".....CDEEEDC",
+            "....CDEFEEDCC",
+            "...CDDEFFFEDDC",
+            "...BCDDDEEDDCB",
+            ".....BBCCCCBB"
+          ]
+        },
+        {
+          "x": 25,
+          "y": 26,
+          "rows": [
+            "CD",
+            "CDE",
+            "CDEE",
+            ".DEEF",
+            "..EEF",
+            "...F"
+          ]
+        },
+        {
+          "x": 33,
+          "y": 32,
+          "rows": [
+            "EEE",
+            "DEEE",
+            "CDEE",
+            ".CDE",
+            "..CD"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "찢어지는 불꽃",
+      "pieces": [
+        {
+          "x": 14,
+          "y": 9,
+          "rows": [
+            ".........C",
+            "........CD",
+            "........DE",
+            ".......CFE",
+            ".......DFC",
+            ".......EFC",
+            "......CFFD",
+            "......DFFEC",
+            "......EFFDC........C",
+            ".....CFFFC.........DC",
+            ".....DFFFC.........ED",
+            ".....EFFDC.........DE",
+            "....CFFFDC........CFC",
+            "....DFFFEC........DFC",
+            "....EFFFFD........EFC",
+            "...CFFFFFDC......CFFC",
+            "...DFFGFFED......DFFC",
+            "..CEFGGGFFD.....CEFFC",
+            "..DFGGGGGFD.....DFFDC",
+            "..EFGGGGFFDC...CEFFDC",
+            "..DFGGGFFFED...DEFFEC",
+            "..CEFFFFFFFD..CEFFFDC",
+            "...DEFFFFFFED.DEFFFC",
+            "....DEFFFFFEDDEFFFD",
+            "....CDEFFFFFFEFFEDC",
+            ".....CDEFFFFFFFFDC",
+            "......CDEFFFFEEEDC",
+            ".......CDEFFEEDDC",
+            "........CDEFEEDC",
+            "....C...CDEEDDC",
+            "....DC..CDEDC",
+            "....CDCCDDDC",
+            ".....CDEEDC",
+            ".....DEEDC",
+            "....CDEEDCC",
+            "...CDDEEDDC",
+            "...BCDDDCB",
+            ".....BBBB"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "식는 잔불",
+      "pieces": [
+        {
+          "x": 17,
+          "y": 12,
+          "rows": [
+            "......B",
+            ".....BC",
+            ".....CD",
+            "....BDE",
+            "....CED",
+            "....DDC",
+            "...CDEC",
+            "...DEDC",
+            "...EDCB",
+            "..CDECB.......B",
+            "..DEC.........BC",
+            "..EDCB........CD",
+            "..CDDC.......BDE",
+            "...CDCB......CED",
+            "...BCC.......DDC",
+            ".............EDC",
+            ".............DCB",
+            "...........B.CB",
+            "...........CD",
+            ".......B...DE",
+            ".......BC.CED",
+            ".......CD.DECC",
+            "......CDECEEDC",
+            "......DEEEEDCB",
+            "......CDEEDCB",
+            ".......CDDCCB",
+            "........BCCB",
+            "........BCB",
+            ".....B..CCB",
+            ".....CBBCCB",
+            ".....CDDDCB",
+            "....CDDEDCB",
+            ".....BCCCB",
+            "......BBB"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "잔불",
+      "pieces": [
+        {
+          "x": 18,
+          "y": 12,
+          "rows": [
+            "....HIIH",
+            "...HI..IH",
+            "...IH...H",
+            "....HH",
+            "...............HIIH",
+            "..............HI..IH",
+            "..............IH...H",
+            "...............HH",
+            "....BC",
+            "....CD",
+            "....DC",
+            "....CB",
+            ".....B",
+            "..............BC",
+            "..............CD",
+            "..............DC",
+            "..............CB",
+            "...............B",
+            "",
+            ".........BC",
+            ".........CD",
+            ".........DC",
+            "..........B",
+            "",
+            ".....BC",
+            ".....CD",
+            "......B",
+            "",
+            "...........B",
+            "...........CB",
+            "..........BDB",
+            "...........B"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "재",
+      "pieces": [
+        {
+          "x": 19,
+          "y": 8,
+          "rows": [
+            "...HIIH",
+            "..HI..IH",
+            "..IH...H",
+            "...HH",
+            "",
+            "...............HIIH",
+            "..............HI..IH",
+            "..............IH...H",
+            "...............HH",
+            "",
+            "....B",
+            "....C",
+            "",
+            "..............B",
+            "..............C",
+            "",
+            "",
+            "..........B",
+            "..........C",
+            "",
+            "",
+            ".....B",
+            "",
+            "",
+            "",
+            "............B"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "소멸",
+      "pieces": [
+        {
+          "x": 22,
+          "y": 5,
+          "rows": [
+            "..HH",
+            ".H..H",
+            "",
+            "",
+            "...............HH",
+            "..............H..H",
+            "",
+            "",
+            "",
+            "..B",
+            "",
+            "",
+            "..............B",
+            "",
+            "",
+            "",
+            "........B"
+          ]
+        }
+      ]
+    }
+  ]
+}

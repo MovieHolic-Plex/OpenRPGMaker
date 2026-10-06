@@ -7,6 +7,7 @@ import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, 
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
+import { registerAssetStore } from "./assetStore";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
@@ -64,6 +65,8 @@ function createWindow(): BrowserWindow {
     width: 1280,
     height: 800,
     show: false,
+    fullscreen: true,
+    autoHideMenuBar: true,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
     ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
@@ -72,10 +75,18 @@ function createWindow(): BrowserWindow {
       sandbox: true,
       nodeIntegration: false,
       webSecurity: true,
+      // AI checkpoint application and replies must continue while minimized.
+      backgroundThrottling: false,
     },
   });
 
   window.once("ready-to-show", () => window.show());
+  // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
+  const broadcastFullscreen = (fullscreen: boolean): void => {
+    if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowFullscreen, fullscreen);
+  };
+  window.on("enter-full-screen", () => broadcastFullscreen(true));
+  window.on("leave-full-screen", () => broadcastFullscreen(false));
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -311,6 +322,19 @@ app.whenReady().then(async () => {
     if (window) destroyWindow(window);
     return true;
   });
+  ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
+    if (action === "close") { window.close(); return true; }
+    return false;
+  });
+  // 창의 진짜 전체화면 상태는 네이티브 쪽에만 있다 — 브라우저 Fullscreen API 는 이 창과 무관하다.
+  ipcMain.handle(OPRN_CHANNELS.windowFullscreen, (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    return window.isFullScreen();
+  });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
     recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
@@ -384,6 +408,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
   registerIpcHandlers(sessions);
   registerAssetBrowser();
+  registerAssetStore();
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

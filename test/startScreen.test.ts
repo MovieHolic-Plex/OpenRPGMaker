@@ -3,6 +3,7 @@ import { START_SCREEN_INTENT_KEY, takeStartScreenIntent, writeStartScreenIntent 
 import { entriesNeedingCover, formatRelativeTime, partitionRecentEntries } from "@/start/startScreen";
 import { startScreenPrompt } from "@/editor/startScreenHandoff";
 import { projectCoverSchema } from "../electron/shared/schemas";
+import { interviewBrief } from "./helpers/gameDesignBrief";
 
 function memoryStorage(): Pick<Storage, "getItem" | "setItem" | "removeItem"> & { readonly map: Map<string, string> } {
   const map = new Map<string, string>();
@@ -40,6 +41,18 @@ describe("시작 화면 → 편집기 인계", () => {
     expect(takeStartScreenIntent(storage, base.projectDir, 0)).toBeNull();
     storage.setItem(START_SCREEN_INTENT_KEY, JSON.stringify({ version: 2, ...base, createdAt: 0 }));
     expect(takeStartScreenIntent(storage, base.projectDir, 0)).toBeNull();
+  });
+
+  it("인터뷰 원문·선택·요약 전체를 일치하는 폴더에 한 번 전달한다", () => {
+    const storage = memoryStorage();
+    const brief = interviewBrief();
+    brief.interview = { version: 1, genre: "monster", concept: "강 너머의 약속을 지키는 모험", protagonist: "아직 외형을 정하지 않음", notes: "원문과 모든 선택을 유지", choiceIds: { experience: "first-meeting" } };
+    const complete = { ...base, choiceId: brief.presetId, startMode: "ai" as const, gameDesignBrief: brief };
+    writeStartScreenIntent(storage, complete, 1000);
+    expect(takeStartScreenIntent(storage, base.projectDir, 2000)?.gameDesignBrief).toEqual(brief);
+    expect(takeStartScreenIntent(storage, base.projectDir, 2000)).toBeNull();
+    writeStartScreenIntent(storage, complete, 1000);
+    expect(takeStartScreenIntent(storage, "/games/other", 2000)).toBeNull();
   });
 
   it("한 문장이 비었으면 조수에게 보낼 것이 없다", () => {

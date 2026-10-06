@@ -162,7 +162,7 @@ export function isRuntimeMenuOpen(scene: Pick<PlaySceneContext, "game">): boolea
   // 메뉴뿐 아니라 엔딩/게임 오버 패널이 떠 있는 동안에도 맵 입력을 차단한다
   // (엔딩 화면 뒤에서 이동/조사로 이벤트가 재실행되는 것을 막는다).
   const root = playStage ?? canvas.ownerDocument;
-  return root.querySelector("[data-testid='main-menu'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
+  return root.querySelector("[data-testid='main-menu'], [data-testid='world-atlas'], [data-testid='ending-screen'], [data-testid='game-over-screen']") !== null;
 }
 
 function canUpdateWaitingEvents(scene: PlaySceneContext): boolean {

@@ -23,6 +23,11 @@ ORDER = ['pass', 'ship', 'skiff', 'air']
 ACT_NAMES = [a['name'] for a in J.ACTS]
 
 
+# 바다 장벽 최소 폭(칸). 실제 지리(kit_realgeo)는 kit_gen.generate 가 2 로 낮춘다 — 영국 해협·쓰시마 해협처럼
+# 실제 해협은 칸 한두 개라 4 를 고집하면 브리튼·유럽·지중해가 다 실패했다. 물은 어차피 걸어서 못 건넌다(막 검사가 따로 본다).
+MIN_SEA_GAP = [4]
+
+
 def run(verbose=True, w=None, out_path=None):
     w = w if w is not None else J.World()   # [worldmap-kit] 이미 만든 세계(지도 JSON 에서 복원한 것 포함)를 받을 수 있다
     out = []
@@ -127,7 +132,7 @@ def run(verbose=True, w=None, out_path=None):
     say('  ④ 하늘: 천공섬은 가장 가까운 땅에서 바다 %d칸 떨어진 바다 위 발판(배·사막선으로 닿지 못함)' % bn['sky_gap'])
     if bn['mount_wall_min_thickness'] < 2:
         bad.append('산벽 최소 두께 2칸 미만')
-    if bn['sea_gap'] is None or bn['sea_gap'] < 4:
+    if bn['sea_gap'] is None or bn['sea_gap'] < MIN_SEA_GAP[0]:
         bad.append('바다 장벽이 너무 좁다')
     say('')
     # 7) 첫 화면

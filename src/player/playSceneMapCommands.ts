@@ -23,6 +23,7 @@ import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { clearPlayerRouteThrough } from "@/player/playerRouteState";
 import { maybeAutosave } from "@/player/autosave";
 import { fireLocationTransitionTriggersAfterTransfer } from "@/player/playSceneLocationTransitions";
+import { worldAtlasForMap, atlasNodeForMap, atlasCanTravel } from '@/project/worldAtlas';
 import { abortHop } from "@/player/characterHopRuntime";
 import { clearFurniturePush, furniturePushPosition } from "@/player/furniturePushAnimation";
 
@@ -69,6 +70,10 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   const diagnosticOwner = diagnosticToken();
   const project = store.getCurrent();
   const targetMap = project.maps[request.mapId];
+  const atlas=worldAtlasForMap(project,scene.getMapId());
+  const target=atlas&&atlasNodeForMap(atlas,request.mapId);
+  if(atlas&&target&&['stage-nodes','run-path'].includes(atlas.structure)&&request.mapId!==scene.getMapId()
+    &&!atlasCanTravel(atlas,scene.session,scene.getMapId(),target.id))return;
   if (!targetMap) {
     if (diagnosticObserved("transfer")) publishDiagnostic({ category: "transfer", phase: "missing" });
     console.warn(`[player] transfer target map missing: ${request.mapId}`);

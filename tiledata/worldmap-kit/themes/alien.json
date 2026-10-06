@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "alien",
+ "name": "외계 행성",
+ "iconset": "alien",
+ "palette": "alien",
+ "overlays": [],
+ "kind": "land"
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "production prompt builders with minimal fixture; not live provider proof",
+  "roles": [
+    {
+      "role": "builder",
+      "characters": 42723,
+      "fullManuals": true
+    },
+    {
+      "role": "reviewer",
+      "characters": 37993,
+      "fullManuals": true
+    }
+  ]
+}

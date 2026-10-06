@@ -1,0 +1,6 @@
+{
+  "isolatedBrowser": true,
+  "canonicalContentChanged": false,
+  "errors": [],
+  "failure": "page.waitForFunction: Timeout 180000ms exceeded.\n    at /home/main/.codex/worktrees/e8b9/rpg-zzu/scripts/capture/capture-authoring-play-presets.mjs:17:14"
+}

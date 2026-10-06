@@ -1,0 +1,307 @@
+{
+  "caseId": "npc-golem",
+  "sourceDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-golem",
+  "inputMode": "pi-command",
+  "status": "pass",
+  "projectId": "201e9c7b-6117-4fd0-8c5b-24dc447a4551",
+  "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-golem/project",
+  "codeCommitAtPreparation": "0d866608ad467521f0220eea66115a71a66d0c33",
+  "seedDigest": "c871c6c3861253be3e8735fa3e783483e9d9d55f256bb891011b557c56f9d32e",
+  "harnessDigest": "093440563d5b3c5973a4913a3c641e8bfc0237b25b5e221e309cb118b0889ea8",
+  "sourceFiles": [
+    {
+      "path": "src/assets/charsetSemantics.ts",
+      "sha256": "f8290c34aeb5b74a485d4a62db24deb0667fe44a6dfb7c99d8f439f0cf531203"
+    },
+    {
+      "path": "src/assets/charsetAppearances.ts",
+      "sha256": "08e429b03d0ccc1fc50539a26f82380d7ded09989a73543d2db51bafcb0a1b5c"
+    },
+    {
+      "path": "src/assets/charsetQuery.ts",
+      "sha256": "e66ebd313731a6894efd1a9ea18257bd127adcc6a9e00e4631332e7139c1b971"
+    },
+    {
+      "path": "src/assets/easyrpgRtp.ts",
+      "sha256": "4cf20e405b5d92fbac3dc7e02b6128df5853752a7d66fe8f27daa763f341e738"
+    },
+    {
+      "path": "src/project/sharedCharacters.ts",
+      "sha256": "a1845a193c436c942d286d165234310615994bc58ed53f33d471d7e7ce9904ea"
+    }
+  ],
+  "models": [
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "3d29a3b2-a7b7-4453-86b8-8b2ef39ee773",
+      "at": 1791177479551
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "3d29a3b2-a7b7-4453-86b8-8b2ef39ee773",
+      "at": 1791177491508
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "b1172c59-af3d-4699-b5a1-6a21b774ba22",
+      "at": 1791177553628
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791177612010
+    }
+  ],
+  "startedAt": "2026-10-05T05:13:47.395Z",
+  "finishedAt": "2026-10-05T05:24:45.715Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "입력창 POST와 실제 Pi done 영수증"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "exact-character-cell",
+          "ok": true,
+          "detail": "요청한 실제 칩 tex_easyrpg_charset_monster2 frame 73"
+        },
+        {
+          "id": "actual-candidate-image-received",
+          "ok": true,
+          "detail": "실제 제공자 입력의 검색 결과와 후보 PNG를 포함한 모델 응답 완료 영수증"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": true,
+          "detail": "허용 필드 이외의 프로젝트 전체 보존"
+        }
+      ]
+    },
+    "runtime": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "title",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "start",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "first-line",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "close",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "repeat-close",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": [],
+      "requiredVisualEvidence": [
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/05-repeat.png"
+      ],
+      "evidence": [
+        "runtime/01-title.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/04-close.png",
+        "runtime/05-repeat.png",
+        "runtime/06-repeat-close.png"
+      ]
+    },
+    "persistence": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "same-target-reload",
+          "ok": true,
+          "detail": "{\"projectId\":\"201e9c7b-6117-4fd0-8c5b-24dc447a4551\",\"projectDir\":\"/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-golem/project\",\"beforeRevision\":3,\"afterRevision\":4,\"afterSha256\":\"4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502\",\"reloadedSha256\":\"4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502\",\"sameTarget\":true,\"sameStoredDocument\":true,\"reloadEqual\":true,\"flush\":{\"kind\":\"saved\",\"dirty\":false},\"indexedDb\":{\"exists\":true,\"conversations\":0,\"userEntries\":0}}"
+        }
+      ]
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-root",
+      "notes": "후보 PNG에서 스톤 골렘의 갈색 돌 몸과 붉은 눈을 확인했다. 실제 플레이 시작·첫 대화·재대화 화면에도 동일 골렘이 표시되며 주변 두 NPC는 그대로다. 꼬마 미루의 원래 대사와 재대화가 유지되고 잘림 없이 읽힌다. 편집기 적용·새 context 재로드 화면도 확인했다.",
+      "evidence": [
+        "before.png",
+        "candidate-preview-1.png",
+        "candidate-preview-2.png",
+        "candidate-preview-3.png",
+        "candidate-preview-4.png",
+        "after.png",
+        "reloaded.png",
+        "runtime/02-start.png",
+        "runtime/03-first-line.png",
+        "runtime/05-repeat.png"
+      ]
+    }
+  },
+  "persistence": {
+    "projectId": "201e9c7b-6117-4fd0-8c5b-24dc447a4551",
+    "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-golem/project",
+    "beforeRevision": 3,
+    "afterRevision": 4,
+    "afterSha256": "4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502",
+    "reloadedSha256": "4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502",
+    "sameTarget": true,
+    "sameStoredDocument": true,
+    "reloadEqual": true,
+    "flush": {
+      "kind": "saved",
+      "dirty": false
+    },
+    "indexedDb": {
+      "exists": true,
+      "conversations": 0,
+      "userEntries": 0
+    }
+  },
+  "visualReview": {
+    "schemaVersion": 1,
+    "status": "pass",
+    "reviewer": "codex-root",
+    "notes": "후보 PNG에서 스톤 골렘의 갈색 돌 몸과 붉은 눈을 확인했다. 실제 플레이 시작·첫 대화·재대화 화면에도 동일 골렘이 표시되며 주변 두 NPC는 그대로다. 꼬마 미루의 원래 대사와 재대화가 유지되고 잘림 없이 읽힌다. 편집기 적용·새 context 재로드 화면도 확인했다.",
+    "images": [
+      {
+        "file": "before.png",
+        "sha256": "755e199d1877495569fde3d5999feb97f91f4624ce4964b994c3407ebf9ef46e"
+      },
+      {
+        "file": "candidate-preview-1.png",
+        "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+      },
+      {
+        "file": "candidate-preview-2.png",
+        "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+      },
+      {
+        "file": "candidate-preview-3.png",
+        "sha256": "c56525ca058c6619a08a5b4dae0994ee2a52661a117eaf749415da7c0d98a818"
+      },
+      {
+        "file": "candidate-preview-4.png",
+        "sha256": "b1ef2069e8ab59c9d5b838ab84b99cfce7a6e40c9ca2cabb4901f12a6513829f"
+      },
+      {
+        "file": "after.png",
+        "sha256": "86c2048baa3dc9ce8d6436db1e8a5403abcdc559c355b6ed7984d3a5f89fc52a"
+      },
+      {
+        "file": "reloaded.png",
+        "sha256": "fc416d8f9f4aad66841662c87838d8e3c8fca4f509daaee5bb4d18761a23e528"
+      },
+      {
+        "file": "runtime/02-start.png",
+        "sha256": "ae595f31775b01d1626b7a31232bf3502274115e70f95ff93620342634eb1412"
+      },
+      {
+        "file": "runtime/03-first-line.png",
+        "sha256": "1248d1edc82c2b446a72b1996329036c4bb5c3e6c7046d016f7ce4b9620e19eb"
+      },
+      {
+        "file": "runtime/05-repeat.png",
+        "sha256": "1248d1edc82c2b446a72b1996329036c4bb5c3e6c7046d016f7ce4b9620e19eb"
+      }
+    ],
+    "resultDigest": "1b329e1a6d39db0889c9d882b90e77b41670207295c8defb6b2e8c5e8b24910e",
+    "reviewedAt": "2026-10-05T05:31:03.491Z"
+  },
+  "originalResultSha256": "1b329e1a6d39db0889c9d882b90e77b41670207295c8defb6b2e8c5e8b24910e",
+  "originalTraceSha256": "9bca2186e63ee2b342adefe60332d6e7546cf80acc64f2df4792a4e61a657e47",
+  "toolCompletions": [
+    {
+      "name": "get_event",
+      "id": "call_728129",
+      "ok": true,
+      "at": 1791177543769
+    },
+    {
+      "name": "list_npc_graphics",
+      "id": "call_728130",
+      "ok": true,
+      "at": 1791177544027
+    },
+    {
+      "name": "list_resources",
+      "id": "call_728133",
+      "ok": true,
+      "at": 1791177544073
+    },
+    {
+      "name": "get_event",
+      "id": "call_3582749",
+      "ok": true,
+      "at": 1791177564860
+    },
+    {
+      "name": "list_npc_graphics",
+      "id": "call_3582752",
+      "ok": true,
+      "at": 1791177564951
+    },
+    {
+      "name": "upsert_event",
+      "id": "call_2742014",
+      "ok": true,
+      "at": 1791177593807
+    },
+    {
+      "name": "show_map_region",
+      "id": "call_1755609",
+      "ok": true,
+      "at": 1791177601733
+    }
+  ],
+  "doneEvents": 2,
+  "traceErrors": [],
+  "limits": [
+    "One actual user input per case; internal plan/execution requests are retained.",
+    "Pi command path, single provider/model; no general intent success rate claimed.",
+    "Raw result keeps visual pending; summary derives pass from the hash-bound review."
+  ]
+}

@@ -16,7 +16,7 @@ export const HOUSE_VARIETY_POLICY_LINE =
  * 실행기가 다른 계열을 거부하므로(`tileset-family-change`) 여기서는 짧게 방향만 준다.
  */
 export const TILESET_FAMILY_POLICY_LINE =
-  "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다).";
+  "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다). 세계 지도 요청의 edit_world_terrain·author_worldmap_structure는 해당 지도 방식의 전용 칩셋으로 별도 맵을 만들며 기존 맵의 칩셋은 보존한다.";
 
 export const AGENT_UX_POLICY_LINES = [
   MODERN_TILESET_POLICY_LINE,
@@ -39,6 +39,6 @@ export const AGENT_UX_POLICY_LINES = [
   HOUSE_VARIETY_POLICY_LINE,
   TILESET_FAMILY_POLICY_LINE,
   // 답변 속 이름은 패널이 클릭 가능한 이동 링킬로 바꾼다(src/editor/aiAnswerLinks.ts) — 모델이 이름을 바꿔 부르면 링킬가 사라진다.
-  "- 위치 안내: 사용자가 '어디야 / 어디에 있어 / 보여줘 / 거기로 가자'처럼 위치를 물으면 말로 설명하기 전에 focus_editor_view로 화면을 그곳으로 옮기세요. 또 답변에서 맵·NPC·건물·상점을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 저장된 이름은 사용자가 눌러 이동할 수 있는 링킬가 되지만, 이름을 바꿔 부르거나 짧게 줄이면 그 링킬가 사라집니다.",
+  "- 위치 안내: 사용자가 특정 맵·NPC·장소의 위치를 찾아 보여달라고 요청한 경우에만 focus_editor_view를 한 번 호출하세요. 시공·검수·진행 보고 때문에 사용자 화면을 이동하지 마세요. 답변에서 대상을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 사용자가 이름을 눌러 이동할 수 있습니다.",
   "- 벽 밀착(필수): 맵 이동·타일·가구를 벽에 붙일 때 1칸 띄우지 마세요. 맵 끝 이동은 가장자리 칸(x=0 / x=width-1 / y=0 / y=height-1)에, 문 앞 이동은 벽과 맞닿은 통행 가능 칸에 놓으세요. playerTouch 출입구를 벽 칸 위에 놓으면 발동하지 않습니다. fill_region/paint_tiles rect도 벽 바로 안쪽까지 채우세요(마지막 칸은 x+w-1).",
 ].join("\n");

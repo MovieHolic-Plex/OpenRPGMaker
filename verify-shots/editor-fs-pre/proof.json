@@ -1,0 +1,72 @@
+{
+  "actualElectron": true,
+  "steps": [
+    {
+      "label": "editor-startup",
+      "isFullScreen": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "false",
+        "fsEl": null,
+        "innerH": 1024
+      }
+    },
+    {
+      "label": "after-click-1",
+      "isFullScreen": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "true",
+        "fsEl": "HTML",
+        "innerH": 1024
+      }
+    },
+    {
+      "label": "after-click-2",
+      "isFullScreen": true,
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "display": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 1024
+      },
+      "dom": {
+        "btn": true,
+        "aria": "false",
+        "fsEl": null,
+        "innerH": 1024
+      }
+    }
+  ],
+  "error": "ReferenceError: display is not defined"
+}

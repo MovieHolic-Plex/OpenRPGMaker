@@ -1,0 +1,170 @@
+{
+  "scenarioId": "worldmap-structure-scaled-world",
+  "projectPath": "verify-shots/worldmap-structures-v3/scaled-world/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field",
+      "note": "정본에서 내보낸 실제 맵 시작",
+      "shot": "02-field.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_scaled_world_overworld",
+        "x": 18,
+        "y": 54,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "atlas",
+      "note": "M → 실제 세계 지도",
+      "shot": "03-atlas.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_scaled_world_overworld",
+        "x": 18,
+        "y": 54,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "m"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "present"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "world-atlas-picture",
+          "attr": "data-atlas-ready",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "paused-map",
+      "note": "지도가 열린 동안 방향키로 맵이 움직이지 않는다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_scaled_world_overworld",
+        "x": 18,
+        "y": 54,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "right",
+          "ms": 350
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "close",
+      "note": "Esc 닫기",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_scaled_world_overworld",
+        "x": 18,
+        "y": 54,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "world-atlas",
+          "state": "absent"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "physical-door",
+      "note": "실제 출입구를 밟아 연결 맵으로 이동",
+      "shot": "06-physical-door.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "examples_scaled_world_map0",
+        "x": 20,
+        "y": 15,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "switches": {
+          "examples_scaled_world_visit0": true
+        }
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "examples_scaled_world_overworld",
+          "x": 17,
+          "y": 54
+        },
+        {
+          "kind": "dir",
+          "dir": "right"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "examples_scaled_world_map0",
+          "x": 20,
+          "y": 15
+        },
+        {
+          "kind": "dir",
+          "dir": null
+        }
+      ]
+    }
+  ]
+}

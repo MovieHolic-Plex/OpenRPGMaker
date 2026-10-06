@@ -1,0 +1,34 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/charsetQuery.test.ts (11 tests) 42ms
+ ✓ test/sharedCharacters.test.ts (9 tests) 426ms
+ ✓ test/resourceSearch.test.ts (22 tests) 338ms
+ ✓ test/charsetReferenceRoutes.test.ts (4 tests) 3246ms
+   ✓ Character reference paths use the audited walking chip > describes paired walking chips with the current canonical name  1573ms
+   ✓ Character reference paths use the audited walking chip > preserves a project author name in the paired walking description  1577ms
+ ✓ test/skyStairNpcLooks.test.ts (4 tests) 4606ms
+   ✓ 천공의 계단 NPC 그래픽 > 보이는 그래픽은 모두 카탈로그에 라벨이 있는 칸이다  1476ms
+   ✓ 천공의 계단 NPC 그래픽 > 호수 신전 세 봉인의 수호자가 서로 다른 그림이다  1121ms
+   ✓ 천공의 계단 NPC 그래픽 > 사람 NPC 의 대화 얼굴은 공용 대응표의 짝이고, 대응표가 얼굴 없음이면 얼굴이 없다  988ms
+   ✓ 천공의 계단 NPC 그래픽 > 투명한 이벤트는 이동문·자동 트리거·등대뿐이다  1017ms
+ ✓ test/charsetLabelOverrides.test.ts (8 tests) 2349ms
+   ✓ charset label overrides > 시스템 프롬프트에 가르친 캐릭터 칩이 실린다  2320ms
+ ✓ test/charsetSelectionEvidence.test.ts (15 tests) 39410ms
+   ✓ charset selection evidence > credits Gemini multimodal function responses with a legend inside the JSON envelope  3648ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful responses turn  3256ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful gemini turn  3089ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful anthropic turn  3413ms
+   ✓ charset selection evidence > rejects wrong-image reading evidence  3333ms
+   ✓ charset selection evidence > rejects aborted reading evidence  3334ms
+   ✓ charset selection evidence > rejects text-only reading evidence  3063ms
+   ✓ charset selection evidence > rejects truncated reading evidence  2902ms
+   ✓ charset selection evidence > rejects king substitution and slot/frame confusion after viewing a golem  3212ms
+   ✓ charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics  2886ms
+   ✓ charset selection evidence > keeps existing graphics on text/position edits, including reordered events  4450ms
+   ✓ charset selection evidence > rolls a failed write back atomically and shares evidence with discovered tools  2735ms
+
+ Test Files  7 passed (7)
+      Tests  73 passed (73)
+   Start at  15:27:40
+   Duration  80.93s (transform 49.20s, setup 0ms, collect 144.23s, tests 50.42s, environment 2ms, prepare 1.83s)

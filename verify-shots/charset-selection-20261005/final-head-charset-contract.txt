@@ -1,0 +1,5 @@
+2026-10-05T03:50:54+00:00 묶음 오류: RuntimeError('review interrupted')
+{"run": "fixture", "count": 1, "frames": 12, "sheets": 1, "editorColorKeyTolerance": 8, "editorColorKeyReadback": true, "uniqueSprites": 1, "mechanicalPass": 1, "visualVerdicts": {"PASS": 1}, "genres": {"한국풍": 1}, "gateVersion": 3, "planned": 1}
+제외 0명 / 팩: /tmp/charset-verify-z8j0k5do/runs/fixture/mixed-rpg-validated.zip
+2026-10-05T03:50:59+00:00 batch 1: 완료 1/1
+{"gateVersion": 3, "passed": 270}

@@ -48,7 +48,7 @@
 .ai-activity-payload p { white-space: pre-wrap; margin: 0; }
 .ai-work-inline.has-activity > .ai-team-board { margin: 4px 0; padding: 0; border: 0; background: transparent; }
 .ai-work-inline.has-activity details.ai-activity-entry { margin-top: 0; }
-.ai-team-work-body > .ai-activity-view { min-height: 0; overflow-y: auto; padding: 12px; }
+.ai-team-work-progress > .ai-activity-view { min-height: 0; overflow-y: auto; padding: 12px; }
 /* Structured receipts: a timeline at a glance, aligned rows for inspection. */
 .ai-activity-view { container-type: inline-size; }
 .ai-activity-view[data-level="brief"] .ai-activity-entries { border-left: 1px solid var(--border-default); margin: 8px 0 8px 7px; padding-left: 17px; }

@@ -1,4 +1,4 @@
-import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { committedEvents } from "@/project/eventDrafts";
 import { createGameRelease, verifyGameRelease } from "./gameRelease";
 import { loadPublicationRuntime, publicationAssetEntries } from "./publicationExport";
 import { deserialize, serialize } from "@/project/io";
@@ -13,6 +13,7 @@ import {
   type WebPlayerBundleFile,
 } from "@/project/playerDeploymentManifest";
 import type { Project } from "@/project/types";
+import type { SpatialLibrary } from "@/project/spatial/types";
 import {
   collectUsedUploadedAssetIds,
   collectWebExportAssets,
@@ -44,30 +45,64 @@ export const WEB_PLAYER_BUNDLE_BASE = "/export-player/";
 
 const encoder = new TextEncoder();
 
-export function prepareWebExport(project: Project): PreparedWebExport {
-  const baseProject = projectWithoutEventDrafts(project);
-  const usedUploadedIds = collectUsedUploadedAssetIds(baseProject);
-  const exportProject: Project = {
-    ...structuredClone(baseProject),
-    assets: {
-      ...structuredClone(baseProject.assets),
-      uploaded: Object.fromEntries(
-        Object.entries(baseProject.assets.uploaded).filter(([id]) => usedUploadedIds.has(id)),
-      ),
-    },
+function withoutLibraryReferences(library: SpatialLibrary): SpatialLibrary {
+  return Object.fromEntries(Object.entries(library).map(([kind, collection]) => [kind,
+    Object.fromEntries(Object.entries(collection).map(([id, design]) => {
+      const copy = { ...design };
+      Reflect.deleteProperty(copy, "referenceDocuments");
+      return [id, copy];
+    })),
+  ])) as unknown as SpatialLibrary;
+}
+
+/** Trim before cloning: a new project carries hundreds of unused assets and
+ * editor reference documents. Copying those only to discard them can crash the
+ * renderer. The final clone also isolates retained uploaded assets from edits. */
+function exportProjection(project: Project): Project {
+  const usedTilesets = new Set(Object.values(project.maps).map(map => map.tilesetId));
+  // Grafted frames can depend on a tileset not used directly by any map.
+  // Retain that source closure, including custom uploaded source textures.
+  for (const id of usedTilesets) {
+    for (const graft of project.tilesets[id]?.tileGrafts ?? []) {
+      if (project.tilesets[graft.sourceChipset]) usedTilesets.add(graft.sourceChipset);
+      for (const [sourceId, source] of Object.entries(project.tilesets))
+        if (source.image.id === graft.sourceChipset) usedTilesets.add(sourceId);
+    }
+  }
+  const projection: Project = {
+    ...project,
+    maps: Object.fromEntries(Object.entries(project.maps).map(([id, map]) =>
+      [id, { ...map, events: committedEvents(map.events) }])),
+    tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => usedTilesets.has(id)).map(([id, tileset]) =>
+      [id, { ...tileset, ...(tileset.structureKits ? {
+        structureKits: tileset.structureKits.map(kit => ({ ...kit })),
+      } : {}) }])),
   };
-  delete exportProject.audioDescriptions;
-  delete exportProject.monsterMetadata;
-  for (const tileset of Object.values(exportProject.tilesets)) {
+  delete projection.audioDescriptions;
+  delete projection.monsterMetadata;
+  for (const tileset of Object.values(projection.tilesets)) {
     delete tileset.referenceDocuments;
     delete tileset.referenceSourceTilesetId;
     for (const kit of tileset.structureKits ?? []) delete kit.referenceDocuments;
   }
-  const spatialLibraries = exportProject.spatialAuthoring ? [exportProject.spatialAuthoring.library,
-    ...Object.values(exportProject.spatialAuthoring.occurrences).map(occurrence => occurrence.snapshot.library)] : [];
-  for (const library of spatialLibraries) for (const collection of Object.values(library)) {
-    for (const design of Object.values(collection)) Reflect.deleteProperty(design, 'referenceDocuments');
+  if (project.spatialAuthoring) {
+    projection.spatialAuthoring = { ...project.spatialAuthoring,
+      library: withoutLibraryReferences(project.spatialAuthoring.library),
+      occurrences: Object.fromEntries(Object.entries(project.spatialAuthoring.occurrences).map(([id, occurrence]) =>
+        [id, { ...occurrence, snapshot: { ...occurrence.snapshot,
+          library: withoutLibraryReferences(occurrence.snapshot.library),
+        } }])) as typeof project.spatialAuthoring.occurrences,
+    };
   }
+  const usedUploadedIds = collectUsedUploadedAssetIds(projection);
+  projection.assets = { ...project.assets, uploaded: Object.fromEntries(
+    Object.entries(project.assets.uploaded).filter(([id]) => usedUploadedIds.has(id)),
+  ) };
+  return structuredClone(projection);
+}
+
+export function prepareWebExport(project: Project): PreparedWebExport {
+  const exportProject = exportProjection(project);
   const projectJson = serialize(exportProject);
   deserialize(projectJson);
   const assets = collectWebExportAssets(exportProject);

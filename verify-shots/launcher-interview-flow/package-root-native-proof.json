@@ -1,0 +1,97 @@
+{
+  "actualElectron": true,
+  "mockedResponses": 0,
+  "chapters": [
+    {
+      "label": "전체 화면에서 첫 질문으로 시작",
+      "at": 0.008
+    },
+    {
+      "label": "시작 화면에서 바로 인터뷰 · 프로젝트 아직 없음",
+      "at": 4.573
+    },
+    {
+      "label": "선택 후에도 영상 없이 도트 장면 준비",
+      "at": 7.851
+    },
+    {
+      "label": "취소해도 빈 프로젝트를 만들지 않음",
+      "at": 54.559
+    },
+    {
+      "label": "인터뷰 1/5 · 같은 화면에서 선택",
+      "at": 55.481
+    },
+    {
+      "label": "인터뷰 2/5 · 같은 화면에서 선택",
+      "at": 56.248
+    },
+    {
+      "label": "인터뷰 3/5 · 같은 화면에서 선택",
+      "at": 56.905
+    },
+    {
+      "label": "인터뷰 4/5 · 같은 화면에서 선택",
+      "at": 57.53
+    },
+    {
+      "label": "인터뷰 5/5 · 같은 화면에서 선택",
+      "at": 58.286
+    },
+    {
+      "label": "기획 확인 · 여기까지 프로젝트를 열지 않음",
+      "at": 59.219
+    },
+    {
+      "label": "마지막 만들기 후 폴더 생성·편집기 준비",
+      "at": 61.961
+    }
+  ],
+  "errors": [
+    "Renderer crashed"
+  ],
+  "requests": [],
+  "http": [
+    {
+      "path": "/v1/images/generations",
+      "event": "request",
+      "at": 8.369
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "request",
+      "at": 58.472
+    }
+  ],
+  "fullscreen": true,
+  "interviewUrl": "app://oprn/start-screen.html",
+  "foldersDuringInterview": [],
+  "firstChoice": {
+    "hidden": true,
+    "paused": true
+  },
+  "artState": "generating",
+  "cancelCreatedNothing": true,
+  "beforeConfirm": {
+    "url": "app://oprn/start-screen.html",
+    "folders": []
+  },
+  "passedPlanning": true,
+  "composerPreview": {
+    "characters": 0,
+    "url": "app://oprn/index.html"
+  },
+  "failure": "Error: page.waitForTimeout: Page crashed",
+  "duration": 214.027,
+  "rawVideo": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/launcher-direct-interview/package-root/page@ed7a2e27d7d7a3ca8dd725387322d8f2.webm",
+  "canonicalReload": {
+    "projectDir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/launcher-direct-interview/package-root/projects/새 게임",
+    "projectId": "180e34af-7d9e-49b2-b895-490085568a66",
+    "revision": 2,
+    "answers": 5,
+    "generationPending": true,
+    "conversations": 0
+  },
+  "buildBase": "0.117.0",
+  "launchMethod": "electron package root"
+}

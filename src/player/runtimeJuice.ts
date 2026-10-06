@@ -6,6 +6,7 @@ import type { Project } from "@/project/types";
 import type { SystemSeCue } from "@/project/systemAudioOverrides";
 import { playAudioCommand } from "@/player/audio";
 import { animateStatusMenuFeedback } from "@/player/playerStatusMenuMotion";
+import { preparedRuntimeAudioUrl } from './runtimeAudioWarmup';
 
 export type RuntimeJuiceEvent =
   | "menu-back"
@@ -114,7 +115,7 @@ function playRuntimeJuiceSound(soundResourceId: string): void {
   if (typeof Audio === "undefined") return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
   if (!url) return;
-  const audio = new Audio(url);
+  const audio = new Audio(preparedRuntimeAudioUrl(url));
   audio.volume = DEFAULT_VOLUME * getPlayerPreferences().se;
   void audio.play().catch((error: unknown) => {
     if (error instanceof DOMException) return;

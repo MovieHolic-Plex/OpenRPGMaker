@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "status": "pass",
+  "reviewer": "root",
+  "notes": "출하 플레이어에서 금관·회색 수염·빨간 망토의 왕을 확인했다. 첫 대사와 재대화는 기존 미루 대사이고 이벤트 위치·다른 NPC가 유지된다. 편집기 변경/재로드 캡처는 E 위치 표시 상태이며 실제 칩 식별은 런타임 및 제공자 후보 이미지로 확인했다. SQLite 전체 문서 해시는 저장 후 새 context에서 일치한다.",
+  "images": [
+    {
+      "file": "after.png",
+      "sha256": "8835fe744d65f4e825cb6b2a1f36b6554f156936c0580a9c9a1e70d4df754fbd"
+    },
+    {
+      "file": "reloaded.png",
+      "sha256": "0cd3f34fa69c86619925a5d5af7e780692eaf91dd885da4ac26376f6abdf794f"
+    },
+    {
+      "file": "runtime/02-start.png",
+      "sha256": "18e72493200c77f5dba7137db0c0e2aa13393931d3c42a506075b45795c3d809"
+    },
+    {
+      "file": "runtime/03-first-line.png",
+      "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+    },
+    {
+      "file": "runtime/05-repeat.png",
+      "sha256": "e0742de68fe5d028973c671092b69864e93eb1cf39e764ea6cc7c3cbdd62c3e8"
+    }
+  ],
+  "resultDigest": "d7dabfd307d4ce4df13a120d5c05a06ce89d44a92181db7e9156fda0192d2393",
+  "reviewedAt": "2026-10-05T08:56:23.381Z"
+}

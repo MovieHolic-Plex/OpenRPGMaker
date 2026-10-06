@@ -1,0 +1,218 @@
+{
+  "realPackagedEditor": true,
+  "before": {
+    "project_id": "142f700d-d861-4955-a766-5b0f4edd7bec",
+    "revision": 9
+  },
+  "states": [
+    {
+      "name": "off",
+      "stats": {
+        "builds": 1,
+        "frames": 320,
+        "pending": 0,
+        "visible": 0,
+        "textures": 0,
+        "enabled": false,
+        "casters": []
+      }
+    },
+    {
+      "name": "northwest-low",
+      "stats": {
+        "builds": 3,
+        "frames": 694,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 24,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 8,
+            "base": 4,
+            "x": 6,
+            "y": 21,
+            "w": 14,
+            "d": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 4.2,
+            "base": 6,
+            "x": 34,
+            "y": 20.2,
+            "w": 5,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 4.2,
+            "base": 9,
+            "x": 54,
+            "y": 17.2,
+            "w": 8,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 5.6,
+            "base": 0,
+            "x": 17,
+            "y": 44.6,
+            "w": 15,
+            "d": 2.4
+          }
+        ]
+      }
+    },
+    {
+      "name": "southeast-low",
+      "stats": {
+        "builds": 4,
+        "frames": 1014,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 135,
+          "altitude": 24,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 8,
+            "base": 4,
+            "x": 6,
+            "y": 21,
+            "w": 14,
+            "d": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 4.2,
+            "base": 6,
+            "x": 34,
+            "y": 20.2,
+            "w": 5,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 4.2,
+            "base": 9,
+            "x": 54,
+            "y": 17.2,
+            "w": 8,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 5.6,
+            "base": 0,
+            "x": 17,
+            "y": 44.6,
+            "w": 15,
+            "d": 2.4
+          }
+        ]
+      }
+    },
+    {
+      "name": "northwest-high",
+      "stats": {
+        "builds": 6,
+        "frames": 1366,
+        "pending": 0,
+        "visible": 320,
+        "textures": 320,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 75,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 8,
+            "base": 4,
+            "x": 6,
+            "y": 21,
+            "w": 14,
+            "d": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 4.2,
+            "base": 6,
+            "x": 34,
+            "y": 20.2,
+            "w": 5,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 4.2,
+            "base": 9,
+            "x": 54,
+            "y": 17.2,
+            "w": 8,
+            "d": 1.7999999999999998
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 5.6,
+            "base": 0,
+            "x": 17,
+            "y": 44.6,
+            "w": 15,
+            "d": 2.4
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "idleCache": true,
+  "canonicalReload": true,
+  "contentUnchanged": true,
+  "projectId": "142f700d-d861-4955-a766-5b0f4edd7bec",
+  "revision": 15,
+  "savedSun": {
+    "enabled": true,
+    "azimuth": 315,
+    "altitude": 35,
+    "opacity": 0.36,
+    "softness": 2,
+    "heightScale": 1
+  }
+}

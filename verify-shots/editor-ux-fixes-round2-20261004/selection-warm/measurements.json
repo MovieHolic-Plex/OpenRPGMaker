@@ -1,0 +1,128 @@
+{
+  "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+  "conditions": "Native editor, 1440x900, reduced motion, synthetic fixtures, no host saves/model calls; wallMs includes automation and a fixed 250ms settling period; longTasks are browser tasks >=50ms. Shared host load is uncontrolled.",
+  "errors": [],
+  "rows": [
+    {
+      "name": "event:100:CtrlA:0",
+      "wallMs": 416,
+      "longTasks": [
+        61
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:100:CtrlA:1",
+      "wallMs": 413,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:100:CtrlA:2",
+      "wallMs": 403,
+      "longTasks": [
+        51
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:1000:CtrlA:0",
+      "wallMs": 1201,
+      "longTasks": [
+        788,
+        84,
+        146
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    },
+    {
+      "name": "event:1000:CtrlA:1",
+      "wallMs": 1235,
+      "longTasks": [
+        89,
+        786,
+        57,
+        130
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    },
+    {
+      "name": "event:1000:CtrlA:2",
+      "wallMs": 1053,
+      "longTasks": [
+        54,
+        605,
+        65,
+        115
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    }
+  ],
+  "productionSources": {
+    "src/editor/panels/databaseLifeCollectionsView.ts": "79c9a901037bf6dd3032decc6f9ea3445b0fc16f3f1b0d5df9f56ffabc0540d7",
+    "src/editor/panels/database.ts": "56e0e8d2ee6b1e4e101be9894ef214d6469bd72c0bbf0e774b86c27ca4e059f1",
+    "src/editor/panels/mapList.ts": "5fb81c27c7f5e8b571b6e55c2f223b840191933c4a585e73ba9262ab00765064",
+    "src/editor/panels/mapSidebarSection.ts": "07500c4fed1d5e7b92c825d8522a5edaaa04334d7c19f1e02129a0862e9257f1",
+    "src/editor/panels/resourceManagerViews.ts": "c8c8233e4ed1248dbe4f31b7247987993afa2ff98cbf9dd03f0f3c9dcbe302a8",
+    "src/editor/panels/leftProgressPane.ts": "e4c0d7ed1092e421b50ecf7e48cdd82d1759db27387dda80d766520a6b5b7762",
+    "src/editor/panels/aiSidebarWorkspace.ts": "f3542428ff0ad6ff871c28eb28a21e1120cb1a47b93f0e1dfe0d12a66e25fd7d",
+    "src/editor/panels/eventEditor/modal.ts": "0558c0bd9d55fb74e483f3578a85efe9030499ca5766f0d8ef3d9e9867f54809",
+    "src/editor/panels/eventEditor/commandInspector.ts": "c2649c702141ef07f52096b6e31d259d8312330f407367541009e8f29138f08f",
+    "src/editor/panels/eventEditor/commandList.ts": "06c5f63e5a2b490ced86b67c36c8e39a78e8ef4aa966ca59967f6a419841899d",
+    "src/editor/panels/eventEditor/content.ts": "ad53751c0934ab6286dd439c828049775292efe63b774900637ad42cd2c559fc"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": false,
+  "variant": "normal",
+  "clips": [],
+  "errors": [
+    "page.evaluate: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:40653/src/project/defaults/defaultDatabaseStarterRecords.ts\n    at /home/main/.codex/worktrees/ed1f/rpg-zzu/scripts/qa/runtime/retro2003-skills-gif.mjs:51:32"
+  ],
+  "evidence": [],
+  "passed": false
+}

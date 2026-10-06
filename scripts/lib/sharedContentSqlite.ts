@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT, type SharedContentLibrary, type SharedContentScope, type SharedContentSnapshot } from '../../src/project/sharedContentSchema';
+import { normalizeWorldAtlases } from '../../src/project/worldAtlas';
 import { validateTilesetReferences, type TilesetReferenceCategory } from '../../src/project/tilesetReferences';
 import { parseSharedReferenceImage, sharedReferenceImageAddress, SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 export const sharedContentFile = () => process.env.OPRN_SHARED_CONTENT_SQLITE || join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), 'oprn', 'shared-content.sqlite');
@@ -22,6 +23,14 @@ export function readSharedContent(file = sharedContentFile()): SharedContentSnap
   try {
     const rows = db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all() as { id: string; revision: string; payload: string }[];
     return { revision: snapshotRevision(rows), libraries: Object.fromEntries(rows.map(r => [r.id, JSON.parse(r.payload)])) };
+  } finally { db.close(); }
+}
+/** Publication and readback need only their own row, not every image in every library. */
+export function readSharedContentLibrary(id: string, file = sharedContentFile()): { revision: string; library: SharedContentLibrary } | null {
+  const db = open(file);
+  try {
+    const row = db.prepare('SELECT revision, payload FROM content_libraries WHERE id=?').get(id) as {revision:string; payload:string} | undefined;
+    return row ? {revision:row.revision, library:JSON.parse(row.payload)} : null;
   } finally { db.close(); }
 }
 /**
@@ -171,6 +180,11 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     for (const kit of t.structureKits ?? []) if (kit.referenceDocuments) validateTilesetReferences(kit.referenceDocuments);
     if(t.referenceSourceTilesetId && !value.tilesets[t.referenceSourceTilesetId]) throw new Error('Missing reference owner');
   }
+  for(const [id,reference] of Object.entries(value.worldmapStructures??{})){
+    if(id!==reference.id||reference.authorArgs.structure!==id||reference.example.structure!==id)throw new Error('Worldmap structure reference mismatch');
+    normalizeWorldAtlases([reference.example]);
+    validateTilesetReferences(reference.referenceDocuments);
+  }
   for(const root of value.roots) if(!value.places[root]) throw new Error('Missing place root');
   for (const place of Object.values(value.places)) if (place.referenceDocuments) validateTilesetReferences(place.referenceDocuments);
   for(const place of Object.values(value.places)) if(place.exterior && !value.tilesets[place.exterior.tilesetId]?.structureKits?.some(k=>k.id===place.exterior!.kitId)) throw new Error('Missing place raster');
@@ -191,7 +205,8 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     db.prepare('INSERT INTO content_libraries VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,payload=excluded.payload,updated_at=excluded.updated_at').run(id,revision,payload,new Date().toISOString());
     db.exec('COMMIT');
   } catch(error) { db.exec('ROLLBACK'); throw error; } finally { db.close(); }
-  const reloaded = readSharedContent(file).libraries[id];
+  // 게시한 한 행만 재로드한다. 편집기용 이미지 URL 변환도 적용하지 않는다.
+  const reloaded = readSharedContentLibrary(id, file)!.library;
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
 }

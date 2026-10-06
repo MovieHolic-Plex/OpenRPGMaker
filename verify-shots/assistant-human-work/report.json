@@ -1,0 +1,97 @@
+{
+  "transport": "scripted session events; native tools and checkpoint acceptance",
+  "errors": [],
+  "checks": [
+    {
+      "name": "reading position stays while a real conversation bubble arrives",
+      "passed": true,
+      "detail": {
+        "scrollTop": 2396
+      }
+    },
+    {
+      "name": "explicit latest resumes output following",
+      "passed": true
+    },
+    {
+      "name": "real pointer drag creates human selection during AI turn",
+      "passed": true,
+      "detail": {
+        "mapId": "map_page",
+        "x": 2,
+        "y": 2,
+        "width": 4,
+        "height": 3
+      }
+    },
+    {
+      "name": "legacy highlight settlement preserves later human selection",
+      "passed": true
+    },
+    {
+      "name": "approval is inline and does not open a modal",
+      "passed": true
+    },
+    {
+      "name": "pointer painting works while publication awaits a decision",
+      "passed": true
+    },
+    {
+      "name": "independent publication progresses while inline destruction approval remains paused",
+      "passed": true
+    },
+    {
+      "name": "approval resumes only its owner and merges concurrent manual work",
+      "passed": true
+    },
+    {
+      "name": "real brush edits the intended checkpoint cell",
+      "passed": true
+    },
+    {
+      "name": "manual tile persists beyond ACK while neighboring AI cells apply",
+      "passed": true,
+      "detail": {
+        "second": 23,
+        "third": 23,
+        "values": [
+          23,
+          31,
+          22,
+          22
+        ]
+      }
+    },
+    {
+      "name": "real Pi command retains human cell through second and third host ACK",
+      "passed": true,
+      "detail": {
+        "ok": true,
+        "acks": [
+          {
+            "ok": true,
+            "tile": 22
+          },
+          {
+            "ok": true,
+            "tile": 23
+          },
+          {
+            "ok": true,
+            "tile": 23
+          }
+        ],
+        "live": 23
+      }
+    },
+    {
+      "name": "abort removes inline decision and releases its owner",
+      "passed": true
+    },
+    {
+      "name": "no uncaught page errors",
+      "passed": true,
+      "detail": []
+    }
+  ]
+}

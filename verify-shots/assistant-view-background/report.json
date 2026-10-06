@@ -1,0 +1,88 @@
+{
+  "transport": "scripted; native tools and acceptance",
+  "errors": [],
+  "checks": [
+    {
+      "name": "request acknowledged in the same click before model output",
+      "passed": true,
+      "detail": {
+        "ms": 4.199999928474426,
+        "text": "AI 작업/team QA 백그라운드 작업요청을 읽고 있어요",
+        "visible": true
+      }
+    },
+    {
+      "name": "first checkpoint applied in background without switching maps",
+      "passed": true,
+      "detail": {
+        "ack": {
+          "ok": true,
+          "maps": [
+            "map_page",
+            "qa_visible_scene"
+          ]
+        },
+        "mapId": "map_page",
+        "done": false
+      }
+    },
+    {
+      "name": "second native change applied while stream remains open",
+      "passed": true,
+      "detail": {
+        "ack": {
+          "ok": true,
+          "maps": [
+            "map_page",
+            "qa_visible_scene"
+          ]
+        },
+        "tile": 1,
+        "done": false
+      }
+    },
+    {
+      "name": "returning to the editor preserves camera and map without delayed navigation",
+      "passed": true,
+      "detail": {
+        "initialMap": "map_page",
+        "map": "map_page",
+        "requests": [],
+        "initialCamera": {
+          "scrollX": -322,
+          "scrollY": -388.5,
+          "width": 676,
+          "height": 809,
+          "zoom": 2
+        },
+        "camera": {
+          "scrollX": -322,
+          "scrollY": -388.5,
+          "width": 676,
+          "height": 809,
+          "zoom": 2
+        }
+      }
+    },
+    {
+      "name": "progress removed at settlement",
+      "passed": true
+    },
+    {
+      "name": "no page errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "explicit location guidance moves once; unsolicited tool calls stay put",
+      "passed": true,
+      "detail": {
+        "blocked": true,
+        "moved": true,
+        "map": "qa_visible_scene",
+        "requests": 1,
+        "afterSecond": "qa_visible_scene"
+      }
+    }
+  ]
+}

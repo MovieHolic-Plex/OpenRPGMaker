@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "classical",
+ "name": "고대 그리스·로마",
+ "iconset": "classical",
+ "palette": "classical",
+ "overlays": [],
+ "kind": "land"
+}

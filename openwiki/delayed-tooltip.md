@@ -45,7 +45,9 @@
 ## 1차 롤아웃 대상
 
 높이 막대의 방식 아이콘 8개(`relief-mode-*`)도 명시 목록에 들어간다(2026-10-03).
-`mountReliefToolbar`가 공통 설치기를 호출하며, 크기·상한·지형지물처럼 글자가 보이는 컨트롤은 추가하지 않는다.
+2026-10-04에는 지형 막대의 도구 10개와 윗면 풀·군집 이동/삭제를 아이콘으로 바꾸고 명시 목록에 추가했다.
+`mountReliefToolbar`가 공통 설치기를 호출한다. 붓 크기·상한 숫자·재질/양식 선택처럼 글자가 보이는 컨트롤은 추가하지 않는다.
+실제 키보드 초점 툴팁 및 1024px 창의 도구 클릭 확인은 `scripts/capture/capture-terrain-toolbar.mjs`에 있다.
 
 톱바(`toolbar-save`, `workspace-command-palette-button`, `topbar-ai-studio`,
 `topbar-ai-settings`, `window-fullscreen`), 조수 패널(`ai-new-chat`,

@@ -1,6 +1,7 @@
 import { MONSTER_KIT_CHIPSET_ASSETS, monsterKitSheet } from "./monsterKitAssets";
 import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import sharedVillageObjects from "./sharedVillageObjects.json";
+import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from './cc0IconAssets';
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
 import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
@@ -14,6 +15,8 @@ import beodeulCitySheet from "./beodeulCitySheet.json";
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
+import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
+import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
 import atlasBiomeDungeon from "./atlasBiomeDungeonSheet.json";
@@ -203,6 +206,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_jp_city",path:"assets/jp-city/jp-city-chipset.png",name:"일본 도시 · 상가·주택·역·신사 (도트)"},
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
+  {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
+  {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
   // 그림·정의는 scripts/content/hand-interior/build_tileset.py, 정의 모듈은 project/defaults/atlasBiomeInterior.ts.
@@ -235,10 +240,12 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   ...SCARLOXY_CHIPSET_ASSETS,
   ...MONSTER_KIT_CHIPSET_ASSETS,
   ...EMERALD_MONSTER_KIT_CHIPSET_ASSETS,
+  { textureKey: "tex_atlas_cartography", path: "assets/atlas-cartography/chipset.png", name: "지도 지형 · 새 손 도트 32px" },
 ] as const satisfies readonly BundledImageAsset[];
 
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
+  if (key === "tex_atlas_cartography") return 136;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;
@@ -262,6 +269,8 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_jp_city") return jpCitySheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
+  if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;
+  if (key === "tex_worldmap_authoring") return worldmapAuthoringSheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInterior.count;
   if (key === "tex_atlas_biome_dungeon") return atlasBiomeDungeon.count;
@@ -333,8 +342,9 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   for (const id of usedTextures ?? []) {
     // Project-owned sprites/uploads keep their existing texture ownership.
     if (project?.assets.sprites[id] || project?.assets.uploaded[id]) continue;
-    const url = generatedMonsterSpriteUrl(id);
-    if (url) scene.load.image(id, url);
+    const iconUrl = resolveCc0IconAssetUrl(id);
+    const url = iconUrl ?? generatedMonsterSpriteUrl(id);
+    if (url) scene.load.image(id, iconUrl ? withInlineAsset(url) : url);
   }
   scene.load.image(TEX_DIALOGUE_FRAME, withInlineAsset(ASSET_DIALOGUE_FRAME));
   scene.load.image(EMOTE_TEXTURE_KEY, withInlineAsset(EMOTE_ASSET_PATH));
@@ -600,6 +610,7 @@ export function ensureBundledProjectTextures(
   const chipsets: BundledImageAsset[] = [];
   const charsetKeys = new Set<string>();
   const cropIds = new Set<string>();
+  const objectIds = new Set<string>();
   const queue = (loadKey: string, path: string): void => {
     inFlight.add(loadKey);
     scene.load.image(loadKey, withInlineAsset(path));
@@ -623,7 +634,13 @@ export function ensureBundledProjectTextures(
     queue(asset.id, asset.path);
     cropIds.add(asset.id);
   }
-  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0) return;
+  for (const asset of CC0_ICON_ASSETS) {
+    if (!used.has(asset.id) || project.assets.sprites[asset.id] || project.assets.uploaded[asset.id]
+      || scene.textures.exists(asset.id) || inFlight.has(asset.id)) continue;
+    queue(asset.id, asset.path);
+    objectIds.add(asset.id);
+  }
+  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0 && objectIds.size === 0) return;
   scene.load.once("complete", () => {
     for (const asset of chipsets) {
       inFlight.delete(chipsetLoadTextureKey(asset.textureKey));
@@ -634,6 +651,7 @@ export function ensureBundledProjectTextures(
     if (chipsets.length > 0) registerUploadedTilesets(scene, project);   // 늦게 실린 번들 시트의 저작 스트립
     for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
     for (const id of cropIds) inFlight.delete(id);
+    for (const id of objectIds) inFlight.delete(id);
     if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);
     if (cropIds.size > 0) registerFarmingCropFrames(scene, cropIds);
     onRegistered?.();
@@ -681,8 +699,18 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (strings.has(asset.id) || cropAssetIds.has(asset.id)) keys.add(asset.id);
   }
+  const objectIds = spatialGraphicResourceIds(project);
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      if (event.sprite?.id) objectIds.add(event.sprite.id);
+      for (const page of event.pages ?? []) if (page.graphic.sprite?.id) objectIds.add(page.graphic.sprite.id);
+    }
+  }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
-    if (spatialGraphicResourceIds(project).has(asset.id)) keys.add(asset.id);
+    if (objectIds.has(asset.id)) keys.add(asset.id);
+  }
+  for (const asset of CC0_ICON_ASSETS) {
+    if (objectIds.has(asset.id)) keys.add(asset.id);
   }
   // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
   // so they are not always present as project strings even when rocks/trees exist in session.

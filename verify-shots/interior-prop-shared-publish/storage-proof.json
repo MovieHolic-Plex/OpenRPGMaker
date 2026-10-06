@@ -1,0 +1,29 @@
+{
+  "library": "oprn-hand-interior-harness",
+  "revision": "67a397a9ac51ef1812f98fa137d3a44237b35a7aa9bb4ce14be0daa67960b659",
+  "selected": 610,
+  "kits": 748,
+  "dbReload": true,
+  "projects": [
+    {
+      "kind": "existing",
+      "projectId": "85bc037b-a62b-471e-ae8f-4836460ae3f1",
+      "projectDir": "/home/main/.local/share/oprn/prop-harness/proof-projects/67a397a9ac51-existing",
+      "revision": 3,
+      "saved": true,
+      "reopened": true,
+      "objects": 748,
+      "atlasSha256": "77c5ba794639253d5b8ac67f85e593b084db2783347cc23990d24951cfd43284"
+    },
+    {
+      "kind": "new",
+      "projectId": "6cea88c3-4a4c-4911-8b7b-9ce6eafede6a",
+      "projectDir": "/home/main/.local/share/oprn/prop-harness/proof-projects/67a397a9ac51-new",
+      "revision": 2,
+      "saved": true,
+      "reopened": true,
+      "objects": 748,
+      "atlasSha256": "77c5ba794639253d5b8ac67f85e593b084db2783347cc23990d24951cfd43284"
+    }
+  ]
+}

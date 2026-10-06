@@ -125,7 +125,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
       }));
       const region = changePreviewRegion(preview.before, preview.after, preview.mapId);
       if (region) actions.append(el("button", {
-        text: "맵에서 보기", attrs: { type: "button" },
+        text: "변경된 곳 보기", attrs: { type: "button" },
         on: { click: () => { focusEditorRegion({ mapId: preview.mapId, x: region.x, y: region.y, w: region.width, h: region.height }, { highlight: true }); } },
       }));
       if (preview.onUndo) {

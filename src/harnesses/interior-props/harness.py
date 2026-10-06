@@ -11,12 +11,17 @@
 고르는 화면: 고르기 서버(scripts/content/hand-interior-pick/pick_server.py) 의 /harness — http://mdc-server:18302/harness
 자세한 것: src/harnesses/interior-props/README.md
 """
-import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
+import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time, traceback
+
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
-import store  # noqa: E402
+from . import derive, store, review_dependencies  # noqa: E402
+from ..provider_errors import tail as provider_tail, classify as provider_classify, BOUNDED_CONTEXT
 
 # 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
 ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
@@ -28,29 +33,31 @@ TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
 N_DEFAULT = 2   # 후보 둘(설명 충실·같은 방 화풍, 또는 최소 수정 둘). 셋째 자리는 고르는 화면의 「다시 뽑기」(2026-10-03 사용자)
-CANDS = 'tiledata/hand-interior/pick/candidates'
+CANDS = os.path.join(os.path.abspath(os.environ['PROP_HARNESS_CONTENT_ROOT']), 'tiledata/hand-interior/pick/candidates') if os.environ.get('PROP_HARNESS_CONTENT_ROOT') else 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
-WORK = os.path.join(store.DATA, 'work')   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
+WORK = os.path.abspath(os.environ.get('PROP_HARNESS_WORK', os.path.join(store.DATA, 'work')))   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
 
 
 def claude_bin():
     return shutil.which('claude') or os.path.expanduser('~/.local/bin/claude')
 
 
-def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
-    import brief
+def draw(items, n=N_DEFAULT, note='', base='', start_pool=True, slot=''):
+    from . import brief
     from common import objects_by_id
     from common import spec_top_lint
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
-    errs = [e for item in items for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차)
+    errs = [e for item in items if not by[item].get('set') for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차). 파생 묶음은 칸마다 원본 명세를 따른다
     if errs: raise SystemExit('명세 검사 불합격 — 설명을 고친 뒤 다시:\n' + '\n'.join(errs))
     for item in items:
-        dirs = brief.directions(item, base)
+        dirs = brief.directions(item, base, slot)
         rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
-        brief.make(rid, item, note=note, base=base)
+        bd = brief.make(rid, item, note=note, base=base, slot=slot)
+        if slot:   # 묶음에서 칸 하나만 다시 — 다른 칸은 출발 후보 그대로여야 한다(derive.lock_check)
+            open(os.path.join(bd, 'lock.json'), 'w', encoding='utf-8').write(json.dumps({'base': base, 'slot': slot}, ensure_ascii=False))
         out.append(rid)
         print(f'h{rid}: {item} — 후보 {n}장 대기열에', flush=True)
     if start_pool: ensure_pool()
@@ -73,7 +80,22 @@ def pool_alive():
 def ensure_pool():
     if pool_alive(): return
     os.makedirs(LOGS, exist_ok=True)
-    subprocess.Popen([sys.executable, os.path.abspath(__file__), 'pool'], cwd=ROOT, start_new_session=True,
+    cmd = [sys.executable, os.path.abspath(__file__), 'pool']
+    # 고르는 서버(systemd 서비스) 안에서 띄우면 서버를 다시 켤 때 일꾼까지 같이 죽는다(2026-10-03) → 되면 따로 된 user 서비스로
+    if shutil.which('systemd-run') and os.environ.get('XDG_RUNTIME_DIR'):
+        # A transient service inherits the user manager environment, not this
+        # HTTP process. Forward only non-secret harness configuration explicitly.
+        keys = ('PROP_HARNESS_CONTENT_ROOT', 'PROP_HARNESS_DATA', 'HIP_DATA', 'HIP_DB', 'HIP_PICK',
+                'PROP_HARNESS_ENGINE', 'PROP_HARNESS_MODEL', 'PROP_HARNESS_CODEX_MODEL',
+                'PROP_HARNESS_EFFORT', 'PROP_HARNESS_PAR', 'PROP_HARNESS_TIMEOUT',
+                'PROP_HARNESS_REVIEW_EFFORT', 'PROP_HARNESS_REVIEW2_MODEL', 'PROP_HARNESS_ATTEMPTS',
+                'PROP_HARNESS_RECOVER_ROOT')
+        config = [f'--setenv={key}={os.environ[key]}' for key in keys if key in os.environ]
+        r = subprocess.run(['systemd-run', '--user', '--collect', '--quiet', f'--unit=prop-harness-pool-{int(time.time())}',
+                            f'--working-directory={ROOT}', '-p', f'StandardOutput=append:{os.path.join(LOGS, "pool.log")}',
+                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + config + cmd, capture_output=True)
+        if r.returncode == 0: return
+    subprocess.Popen(cmd, cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(LOGS, 'pool.log'), 'a'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
 
 
@@ -95,7 +117,7 @@ def _hist(r):
 
 def _redraw_section(r, folder):
     """다시 그리기(attempt>1)면 지난 시도의 탈락 이유를 작업자에게 그대로 준다."""
-    h = _hist(r)
+    h = [x for x in _hist(r) if x.get('stage') in ('hard', 'review')]
     if (r.get('attempt') or 1) <= 1 or not h: return ''
     last = h[-1]; prev = f"{folder}/{_out(r)}.a{last['attempt']}"
     lines = [f"", f"## 다시 그리기 — 시도 {r['attempt']}/{MAX_ATTEMPTS}", "",
@@ -152,7 +174,8 @@ def _is_deep(item):
 def _review_pack(r):
     """검수자가 볼 그림: 지금|후보 8배 나란히, 각각 8배, 같은 방 안(4배)."""
     from PIL import Image
-    import brief, context
+    from . import brief
+    import context
     from common import objects_by_id, slug
     o = objects_by_id()[r['item']]; s = slug(r['item']); cand = _out(r); att = r.get('attempt') or 1
     pack = _pack_dir(r); os.makedirs(pack, exist_ok=True)
@@ -189,7 +212,7 @@ def _review_pack(r):
 
 
 def _review_prompt(r):
-    import brief
+    from . import brief
     from common import top_rule_text
     pack, o = _review_pack(r)
     t = open(os.path.join(HERE, 'review.md'), encoding='utf-8').read()
@@ -206,9 +229,15 @@ def _review_prompt(r):
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
-           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else '', '{TOPRULE}': top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).'}
+           '{NEWMODE}': (derive.review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': ('파생 묶음 — 칸마다 **원본 칸과 같은 시점·같은 윗면 두께**가 기준이다(원본 칸보다 윗면이 눈에 띄게 얇거나 옆모습이면 `FRONT`). 원본 칸 자체의 행 수는 따지지 않는다.'
+                           if o.get('set') else top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).')}
     for k, v in rep.items(): t = t.replace(k, v)
-    return t, pack
+    waiting, hosts = _review_dependencies(r)
+    if waiting: raise ValueError('받침 제작 검수 대기: ' + ', '.join(waiting))
+    evidence = os.path.join(pack, 'native-hosts.json')
+    with open(evidence, 'w', encoding='utf-8') as f:
+        json.dump(hosts, f, ensure_ascii=False, indent=2)
+    return t + review_dependencies.prompt(hosts), pack
 
 
 NEW_REVIEW = '''
@@ -232,6 +261,7 @@ def _start(r):
         except OSError: pass
     else:
         prompt, _ = _prompt(r); effort = r['effort'] or EFFORT
+    prompt += BOUNDED_CONTEXT
     log = os.path.join(LOGS, f"{_out(r)}.a{att}{'.' + phase if phase != 'draw' else ''}.log"); os.makedirs(LOGS, exist_ok=True)
     if phase != 'review2': store.update_run(r['id'], **{('review_engine' if phase == 'review' else 'engine'): ENGINE})   # 화면에서 Codex·Sonnet 을 가려 본다
     if eng == 'codex': return _start_codex(r, prompt, effort if phase != 'draw' else EFFORT, log)
@@ -257,7 +287,7 @@ def _start_codex(r, prompt, effort, log):
     pf = log[:-4] + '.prompt.txt'; open(pf, 'w', encoding='utf-8').write(prompt)
     cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', CODEX_MODEL,
            '-c', f'model_reasoning_effort="{effort}"', '--skip-git-repo-check', '-s', 'workspace-write',
-           '--add-dir', r['root'], '--add-dir', store.DATA, '-C', WORK, '-']
+           '--add-dir', r['root'], '--add-dir', os.environ.get('PROP_HARNESS_CONTENT_ROOT', r['root']), '--add-dir', store.DATA, '-C', WORK, '-']
     p = subprocess.Popen(cmd, cwd=WORK, stdin=open(pf, 'rb'), stdout=open(log, 'w'), stderr=subprocess.STDOUT,
                          start_new_session=True)
     store.update_run(r['id'], status='running', pid=p.pid, started=store.now(), log=log)
@@ -316,10 +346,48 @@ def _top_gate(r, v):
     v['fix'] = (v.get('fix') or '') + f" 꼭대기 면({v.get('top', '')})을 위에서 내려다본 면으로 {need}행 이상 — 지붕·상판이 띠로만 보이는 옆모습이면 남쪽 면을 줄이고 윗면을 늘린다."
 
 
+def _recover_candidate(r):
+    """Opt-in recovery of files written by an old pool without its content root.
+
+    Existing destination files are never overwritten. Keep the misplaced source
+    for audit; resume the checker/reviewer instead of choosing an image.
+    """
+    source_root = os.environ.get('PROP_HARNESS_RECOVER_ROOT')
+    if not source_root: return
+    from common import slug
+    source = os.path.join(source_root, 'tiledata/hand-interior/pick/candidates', slug(r['item']))
+    target = _folder(r, absolute=True)
+    if os.path.realpath(source) == os.path.realpath(target): return
+    name = _out(r)
+    if os.path.isfile(os.path.join(target, name + '.pxg')): return
+    if not os.path.isfile(os.path.join(source, name + '.pxg')): return
+    os.makedirs(target, exist_ok=True)
+    # Put pxg last, so an interrupted copy remains retryable.
+    files = sorted(glob.glob(os.path.join(source, name + '.*')) + glob.glob(os.path.join(source, name + '-x*.png')),
+                   key=lambda f: os.path.basename(f) == name + '.pxg')
+    import hashlib
+    for path in files:
+        dst = os.path.join(target, os.path.basename(path))
+        if os.path.exists(dst):
+            if open(dst, 'rb').read() != open(path, 'rb').read():
+                raise ValueError('복구 대상 파일 충돌: ' + dst)
+            continue
+        tmp = dst + '.recover-tmp'
+        shutil.copyfile(path, tmp); os.replace(tmp, dst)
+    store.add_feedback(r['item'], 'technical-file-recovery', r['round'], name, [],
+                       json.dumps(dict(source=source, target=target,
+                                       sha256=hashlib.sha256(open(os.path.join(target, name + '.pxg'), 'rb').read()).hexdigest())))
+    print(store.now(), name + ' 후보 파일 복구', flush=True)
+
+
 def _finish(r, code):
     """그리기가 끝나면 깨짐 검사 → (통과) 검수 대기열 / (불합격) 다시 그리기.
     검수가 끝나면 PASS → 끝, FAIL → 이유를 들고 다시 그리기. 시도는 MAX_ATTEMPTS 번까지. 고르는 건 여전히 사용자."""
     base = os.path.join(r['root'], _folder(r), _out(r)); att = r.get('attempt') or 1
+    actual = next((row for row in store.runs() if row['id']==r['id']), r)
+    if code and provider_classify(provider_tail(actual.get('log') or '')):
+        return store.update_run(r['id'],status='failed',ended=store.now(),error=f'공급자 오류({code})')
+    _recover_candidate(r)
     phase = r.get('phase') or 'draw'
     if phase in ('review', 'review2'):
         pack = _pack_dir(r)
@@ -351,19 +419,65 @@ def _finish(r, code):
     if not os.path.exists(base + '.pxg'):
         if att == 1 or code == 'timeout':
             return store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=f'후보 파일 없음(종료 코드 {code})')
+    check_path = base + '.check.json'
+    if os.path.exists(check_path):
+        os.replace(check_path, check_path + f'.before-check-{time.time_ns()}')
     ck = subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/check_candidate.py', base + '.pxg'],
                         cwd=r['root'], capture_output=True, text=True)
     try:
-        j = json.load(open(base + '.check.json'))
+        j = json.load(open(check_path))
+        if (not isinstance(j, dict) or type(j.get('ok')) is not bool
+                or not isinstance(j.get('hard'), list)
+                or ck.returncode != (0 if j['ok'] else 1)):
+            raise ValueError('검사 종료 코드와 새 보고서가 일치하지 않습니다.')
         hard = j.get('hard', []); ok = 0 if hard or not j.get('ok') else 1
-    except (OSError, ValueError):
-        hard, ok = [(ck.stdout + ck.stderr)[-400:]], 0
+    except (OSError, ValueError) as error:
+        # A crashed checker must not accept a previous worker-written report or
+        # spend another drawing attempt on an infrastructure failure.
+        return store.update_run(r['id'], status='failed', ended=store.now(), ok=0, review='',
+                                error=('기계 검사 실행 오류: ' + str(error) + ' ' + (ck.stdout + ck.stderr)[-300:])[:500])
+    if ok and os.path.exists(base + '.png'):   # 파생 묶음: 원본 칸·고치지 않는 칸은 화소 그대로(derive.lock_check)
+        from . import derive
+        from common import objects_by_id
+        lk = derive.lock_check(objects_by_id().get(r['item']) or {}, base + '.png', r.get('brief'))
+        if lk: hard, ok = hard + lk, 0
     store.update_run(r['id'], ok=ok, error='; '.join(hard)[:500], review='')
     if not ok:
         if _again(r, dict(stage='hard', attempt=att, hard=hard)): return
         return store.update_run(r['id'], status='done', ended=store.now())
     subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/context.py', base + '.pxg'], cwd=r['root'], capture_output=True)
     store.update_run(r['id'], status='queued', phase='review', pid=None)
+
+
+def recheck_format_errors(rounds_, queue_only=False):
+    """After a parser fix, recheck unchanged source and resume real review only."""
+    import hashlib
+    if pool_alive(): raise ValueError('먼저 해당 풀의 실행이 끝나야 합니다.')
+    n = 0
+    for rid in rounds_:
+        for r in store.runs(rid):
+            if r['status'] != 'done' or r.get('ok') or r.get('phase') != 'draw' or 'pxgrid 오류:' not in (r.get('error') or ''):
+                continue
+            path = os.path.join(_folder(r, absolute=True), _out(r) + '.pxg')
+            before = hashlib.sha256(open(path, 'rb').read()).hexdigest()
+            history = _hist(r) + [dict(stage='format-recheck', attempt=r.get('attempt') or 1,
+                                     error=r.get('error'), sourceSha256=before)]
+            store.update_run(r['id'], history=json.dumps(history, ensure_ascii=False))
+            # Do not consume another drawing attempt if parsing still fails.
+            global MAX_ATTEMPTS
+            old_limit = MAX_ATTEMPTS
+            try:
+                MAX_ATTEMPTS = r.get('attempt') or 1
+                _finish(dict(r, history=json.dumps(history, ensure_ascii=False)), 0)
+            finally:
+                MAX_ATTEMPTS = old_limit
+            if hashlib.sha256(open(path, 'rb').read()).hexdigest() != before:
+                raise ValueError('재검사 중 원본이 변경되었습니다.')
+            now = next(row for row in store.runs(rid) if row['id'] == r['id'])
+            if now['status'] == 'queued' and now['phase'] == 'review': n += 1
+    print(f'원본 유지 · 독립 검수 대기열 {n}장', flush=True)
+    if n and not queue_only: ensure_pool()
+    return n
 
 
 def review(rounds_):
@@ -375,6 +489,46 @@ def review(rounds_):
                 store.update_run(r['id'], status='queued', phase='review', pid=None); n += 1
     print(f'검수 대기열에 {n}장', flush=True)
     if n: ensure_pool()
+
+
+def retry_review_errors(rounds_, queue_only=False):
+    """Retry technical review failures without drawing again or changing verdicts."""
+    n = 0
+    for rid in rounds_:
+        for r in store.runs(rid):
+            if r['status'] != 'failed' or r.get('phase') not in ('review', 'review2'):
+                continue
+            _recover_candidate(r)
+            png = os.path.join(r['root'], _folder(r), _out(r) + '.png')
+            if not os.path.isfile(png):
+                raise ValueError('기존 그림 없이 검수만 재개할 수 없습니다: ' + _out(r))
+            # Re-run the actual checker. A pool exception used to erase ok, so
+            # neither that flag nor a stale check.json proves the current pixels.
+            import hashlib
+            before = hashlib.sha256(open(png, 'rb').read()).hexdigest()
+            base = png[:-4]
+            check_path = base + '.check.json'
+            if os.path.exists(check_path): os.replace(check_path, check_path + '.before-review-retry')
+            ck = subprocess.run([sys.executable, 'scripts/content/hand-interior-pick/check_candidate.py', base + '.pxg'],
+                                cwd=r['root'], capture_output=True, text=True)
+            after = hashlib.sha256(open(png, 'rb').read()).hexdigest()
+            if before != after: raise ValueError('검수 재개 중 원본 그림이 변경됨: ' + _out(r))
+            checked = json.load(open(check_path))
+            from common import objects_by_id
+            locks = derive.lock_check(objects_by_id().get(r['item']) or {}, png, r.get('brief'))
+            if ck.returncode or not checked.get('ok') or checked.get('hard') or locks:
+                raise ValueError('기존 그림 기계 검사 실패: ' + _out(r))
+            history = _hist(r) + [dict(stage='technical-review-retry', attempt=r.get('attempt') or 1, at=store.now(), error=r.get('error'), imageSha256=after)]
+            store.update_run(r['id'], status='queued', pid=None, ok=1, error='', history=json.dumps(history, ensure_ascii=False))
+            n += 1
+    print(f'기존 그림 보존 · 기술 오류 검수 {n}개 재개 대기', flush=True)
+    if n and not queue_only: ensure_pool()
+    return n
+
+
+def _review_dependencies(r):
+    return review_dependencies.inspect(r, store.runs(), store.DATA,
+        lambda host: os.path.join(_folder(host, absolute=True), _out(host) + '.png'))
 
 
 def _alive(pid):
@@ -426,18 +580,36 @@ def pool():
             if code is not None:
                 del live[rid_]
                 try: _finish(r, code)
-                except (Exception, SystemExit) as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
+                except (Exception, SystemExit) as e:
+                    traceback.print_exc()
+                    store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
                 print(store.now(), f"h{r['round']}-{r['letter']} 끝({code})", flush=True)
         # 작업지시서가 아직 없는 판(draw 가 new_round 뒤 brief.make 를 쓰는 중)은 건너뛴다 — 집어 가면 brief=None 으로 실패했다(2026-10-03 8차 16장)
         queued = [r for r in store.runs(status=('queued',)) if r.get('brief')]
         while queued and len(live) < MAX_PAR:
             r = queued.pop(0)
             try:
+                if r.get('phase') in ('review', 'review2'):
+                    waiting, _ = _review_dependencies(r)
+                    if waiting:
+                        store.update_run(r['id'], error='받침 제작 검수 대기: ' + ', '.join(waiting))
+                        continue
+                    store.update_run(r['id'], error='')
                 live[r['id']] = (_start(r), r, time.time())
                 print(store.now(), f"h{r['round']}-{r['letter']} 시작 — {r['item']}", flush=True)
             except (Exception, SystemExit) as e:
+                traceback.print_exc()
                 store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
-        if not live and not store.runs(status=('queued',)): break
+        if not live:
+            pending = store.runs(status=('queued',))
+            if not pending: break
+            # No worker can resolve this dependency graph. Preserve the prop
+            # and drawing attempt; report a technical scheduling failure.
+            if all(r.get('brief') and r.get('phase') in ('review', 'review2') for r in pending):
+                for r in pending:
+                    store.update_run(r['id'], status='failed', ended=store.now(),
+                                     error='검수 의존성 해결 불가: 받침 대기 순환 또는 실패')
+                break
         time.sleep(3)
     print(store.now(), '일꾼 끝', flush=True)
 
@@ -476,13 +648,13 @@ REDO_NOTE = '다시 뽑기(2026-10-02 새 지시서): 「시점 (3/4)」 절과 
 
 def _ready_items():
     """화면의 「고를 차례」 순서(위에서부터)."""
-    import api
+    from . import api
     return [i['id'] for i in api.state()['items'] if i['status'] == 'ready']
 
 
 def _drop_round(rd, keep):
     """안 고른 판 하나를 지운다: 일꾼(pid 로) → 후보 파일(keep 제외) → 작업지시서 폴더 → DB 행."""
-    import brief
+    from . import brief
     from common import slug
     for r in store.runs(rd['id']):
         if r['status'] == 'running' and r['pid'] and _alive(r['pid']):
@@ -502,7 +674,7 @@ def redo(items, note=REDO_NOTE, dry=False):
     """안 고른 판의 후보를 지우고 새 작업지시서로 다시 뽑는다(사용자 2026-10-02 「고를 차례 위에서부터, 후보는 다 지우고」).
     지키는 것: 고른 판, 지금 고른 그림·다른 판의 출발 그림(base), 사용자가 버린 후보(새 판의 「이렇게 하지 말 것」).
     건너뛰는 것: 이미 새 지시서로 뽑은 판, REDO_SKIP."""
-    import brief
+    from . import brief
     items = items or _ready_items()
     allr = store.rounds()
     based = {b.split('@')[0] for b in (rd.get('base') or '' for rd in allr) if b}
@@ -547,10 +719,14 @@ def main():
     d = sp.add_parser('draw'); d.add_argument('items', nargs='+'); d.add_argument('--n', type=int, default=N_DEFAULT)
     d.add_argument('--note', default=''); d.add_argument('--base', default='')
     rv = sp.add_parser('review'); rv.add_argument('rounds', nargs='+', type=int)
+    rr = sp.add_parser('retry-review-errors'); rr.add_argument('rounds', nargs='+', type=int); rr.add_argument('--queue-only', action='store_true')
+    rc = sp.add_parser('recheck-format-errors'); rc.add_argument('rounds', nargs='+', type=int); rc.add_argument('--queue-only', action='store_true')
     sp.add_parser('pool'); sp.add_parser('status'); sp.add_parser('bake'); sp.add_parser('engines')
     rd = sp.add_parser('redo'); rd.add_argument('items', nargs='*'); rd.add_argument('--dry', action='store_true')
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
+    if a.cmd == 'recheck-format-errors': return recheck_format_errors(a.rounds, a.queue_only)
+    if a.cmd == 'retry-review-errors': return retry_review_errors(a.rounds, a.queue_only)
     if a.cmd == 'draw': draw(a.items, a.n, a.note, a.base)
     elif a.cmd == 'review': review(a.rounds)
     elif a.cmd == 'pool': pool()

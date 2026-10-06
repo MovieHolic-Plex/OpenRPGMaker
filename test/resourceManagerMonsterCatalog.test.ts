@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
-// 몬스터 탭의 정본은 프로필 표가 아니라 몬스터 소재 카탈로그다 — 번들 RTP 에는 몬스터
-// 그림이 1장(Hornet)뿐이라 프로필만 나열하면 생성 아트·Scarloxy 팩 160여 종이 숨는다.
+// All catalog registrations must remain reachable through bounded pages/search.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { renderResourceWorkbench } from "@/editor/panels/resourceManagerViews";
@@ -39,21 +38,25 @@ afterEach(() => {
 });
 
 describe("resource manager monster tab", () => {
-  it("lists the full monster resource catalog, not just the single RTP profile", () => {
-    // Given a blank project whose resourceProfiles carry only the EasyRPG Hornet profile.
+  it("makes the full monster resource catalog reachable through bounded pages", () => {
     const project = store.getCurrent();
-    expect(project.resourceProfiles.filter((p) => p.kind === "monster")).toHaveLength(1);
-    // When the monster category is rendered.
     const container = renderMonsterTab();
-    // Then every catalog entry (generated art, Scarloxy, EasyRPG, plan-promoted) is a card.
     const expected = listMonsterResources(project).length;
     expect(expected).toBeGreaterThan(100);
-    expect(container.querySelectorAll(".rm-asset-card")).toHaveLength(expected);
-    const list = container.querySelector('[data-testid="resource-entry-list"]');
-    expect(list?.textContent).toContain("초록 슬라임");
-    // 카탈로그 효과 이름으로 표시된다 — "붉은 벌"은 EasyRPG Hornet, "보라색 뿔뱀"은 Scarloxy Atrox.
-    expect(list?.textContent).toContain("붉은 벌");
-    expect(list?.textContent).toContain("보라색 뿔뱀");
+    let encountered = 0;
+    const next = container.querySelector<HTMLButtonElement>('[data-testid="resource-page-next"]')!;
+    do {
+      const count = container.querySelectorAll(".rm-asset-card").length;
+      expect(count).toBeLessThanOrEqual(80);
+      encountered += count;
+      if (next.disabled) break;
+      next.click();
+    } while (true);
+    expect(encountered).toBe(expected);
+    const search = container.querySelector<HTMLInputElement>('input[type="search"]')!;
+    search.value = "scarloxy"; search.dispatchEvent(new Event("input"));
+    expect(container.querySelectorAll(".rm-asset-card").length).toBeGreaterThan(0);
+
   });
 
   it("shows the catalog total in the category badge", () => {
@@ -85,9 +88,10 @@ describe("resource manager monster tab", () => {
     store.update((project) => { project.assets.uploaded[asset.id] = asset; }, { scope: "assets", label: "test" });
 
     const container = renderMonsterTab(deleteLog);
-    const expected = listMonsterResources(store.getCurrent()).length;
+    const search = container.querySelector<HTMLInputElement>('input[type="search"]')!;
+    search.value = asset.id; search.dispatchEvent(new Event("input"));
     const cards = [...container.querySelectorAll(".rm-asset-card")];
-    expect(cards).toHaveLength(expected);
+    expect(cards).toHaveLength(1);
     expect(cards.filter((card) => card.textContent?.includes("직접 올린 몬스터"))).toHaveLength(1);
 
     (cards.find((card) => card.textContent?.includes("직접 올린 몬스터")) as HTMLElement).click();

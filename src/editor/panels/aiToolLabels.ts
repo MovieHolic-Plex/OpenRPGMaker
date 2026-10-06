@@ -64,7 +64,10 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
   author_village: build("마을 짓기", "house"),
+  author_beodeul_town: build("마을 짓기", "house"),
   build_world: world("세계 짓기", "map"),
+  read_world_terrain: world("세계 지형 읽기", "eye"),
+  edit_world_terrain: world("세계 지형 바꾸기", "map"),
   set_build_spec: build("밑그림 확정", "list"),
   // ── 사람·이야기 ──
   place_npc: people("NPC 배치", "user"),
@@ -77,6 +80,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   define_quest: people("퀘스트 정의", "flag"),
   create_quest_flags: people("퀘스트 깃발", "flag"),
   author_story_arc: people("이야기 짜기", "book"),
+  author_romance_scene: people("첫 만남 만들기", "book"),
+  inspect_romance_scene: inspect("첫 만남 동작 확인", "eye"),
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
   script_cutscene_impact: people("충돌 연출", "book"),
@@ -360,6 +365,11 @@ export function toolLabelSummary(names: readonly string[]): string {
 const BRIEF_TOOL_PHRASES: Readonly<Record<string, readonly [doing: string, done: string]>> = {
   consult_writer: ["대사 쓰는 중", "대사 쓰기 완료"],
   find_tools: ["생각하는 중", "생각 정리 완료"],
+  author_village: ["마을 짓는 중", "마을 짓기 완료"],
+  author_beodeul_town: ["마을 짓는 중", "마을 짓기 완료"],
+  stamp_object: ["건물·소품 놓는 중", "건물·소품 놓기 완료"],
+  check_city_form: ["길과 마을 모양 확인하는 중", "마을 모양 확인 완료"],
+  check_reachability: ["길이 이어졌는지 확인하는 중", "길 확인 완료"],
 };
 const BRIEF_GROUP_PHRASES: Readonly<Record<ToolGroup, readonly [doing: string, done: string]>> = {
   inspect: ["프로젝트 살펴보는 중", "프로젝트 살펴보기 완료"],

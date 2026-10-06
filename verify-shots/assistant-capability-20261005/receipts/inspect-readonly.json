@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "caseId": "inspect-readonly",
+  "title": "조회만 하기",
+  "seedDigest": "0847d7120bcf22220dbe8e04266cf19af8ac85133b04387e9c3c395aee386487",
+  "startedAt": "2026-10-04T15:32:55.525Z",
+  "gates": {
+    "execution": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "native-pi-run",
+          "ok": true,
+          "detail": "원본 trace.json의 실제 입력과 done"
+        },
+        {
+          "id": "no-editor-errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "id": "no-model-errors",
+          "ok": true,
+          "detail": ""
+        }
+      ]
+    },
+    "requirements": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "answer-grounded",
+          "ok": true,
+          "detail": "NPC 이름·위치·첫 대사·15G를 원문 답에서 확인"
+        },
+        {
+          "id": "read-only",
+          "ok": true,
+          "detail": "조회 후 게임 콘텐츠 전체 불변"
+        }
+      ]
+    },
+    "adversarial": {
+      "status": "pass",
+      "checks": [
+        {
+          "id": "protected-document",
+          "ok": true,
+          "detail": "허용 필드 이외의 프로젝트 전체 보존"
+        }
+      ]
+    },
+    "persistence": {
+      "status": "blocked",
+      "detail": "재로드 중 공용 라이브러리 판본이 바뀌었다. 게임 내용은 같지만 동일 판본의 저장 게이트는 판정할 수 없다.",
+      "receipt": {
+        "projectId": "e13617fc-57e3-4e2f-b297-236d1d87d05c",
+        "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inspect-readonly/project",
+        "afterRevision": 3,
+        "afterSha256": "abd2ba3c996f480371f2663716063fd12518cf19942b0ccbc1ac86bca0734b05",
+        "reloadedSha256": "36e35c7d51c128496c265c737f899d2d224413a2f902ba219e213ea72d936d82",
+        "sameTarget": true,
+        "sameStoredDocument": false,
+        "reloadEqual": true,
+        "flush": {
+          "kind": "saved",
+          "dirty": false
+        },
+        "observationRecovery": true,
+        "libraryRevisionChange": {
+          "before": "779759833c823c40d20cbbf80b0c4e9e8955855ab393650b72e81596a674d1d9|gb93e850",
+          "after": "f44fd84d70a2742b143bfc0a480140fdb19ce2eada7f0a31235a8894a83d8001|gb93e850",
+          "gameContentEqual": true
+        }
+      }
+    },
+    "visual": {
+      "status": "pass",
+      "reviewer": "codex-evidence-review",
+      "notes": "초기 빈 캡처를 보존하고 렌더 완료 후 실제 저장 결과의 지도·네 E 마커·패널을 확인했다. 두 관측 그림이 정상이다. 원문 답변은 trace의 이름·좌표·대사·요금과 대조했다. 공용 라이브러리 기동 스탬프 변경은 저장 게이트의 환경 차단으로 따로 남는다.",
+      "evidence": [
+        "after.png",
+        "reloaded.png"
+      ]
+    },
+    "runtime": {
+      "status": "not-required",
+      "evidence": []
+    }
+  },
+  "finishedAt": "2026-10-04T15:37:00.800Z",
+  "status": "blocked",
+  "verification": {
+    "harnessDigest": "9be8ce3938d43980ca0bc62b813a985987589331e920a02f19f9855b569966cd",
+    "priorResultDigest": "29fc47a6189a44fd34074d2c4a5f78e055197da39575983e8f165af3eeae1065",
+    "archive": "verification-history/1791131766755",
+    "at": "2026-10-04T16:36:06.976Z",
+    "newModelTurn": false
+  },
+  "projectId": "e13617fc-57e3-4e2f-b297-236d1d87d05c",
+  "projectDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3/inspect-readonly/project",
+  "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+  "nativeInput": true,
+  "attempts": [
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r1",
+      "startedAt": "2026-10-04T15:19:30.751Z",
+      "status": "fail",
+      "nativeInput": false
+    },
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r2",
+      "startedAt": "2026-10-04T15:26:34.616Z",
+      "status": "blocked",
+      "nativeInput": false
+    },
+    {
+      "sourceDir": "/home/main/.codex/worktrees/50a6/rpg-zzu/qa-runs/harnesses/assistant-capability/20261005-core-r3",
+      "startedAt": "2026-10-04T15:32:55.525Z",
+      "status": "blocked",
+      "nativeInput": true
+    }
+  ]
+}

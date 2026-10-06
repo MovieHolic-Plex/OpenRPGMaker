@@ -12,6 +12,8 @@ import {
 } from "@/assets/bundled";
 import { hasInlineAssets } from "@/assets/inlineAssetStore";
 import { imageWarmSupported, warmImageUrls } from "@/assets/imageWarmQueue";
+import { resolveAssetResourceUrl } from './generatedAssetResourceResolver';
+import { EASYRPG_PICTURE_ASSETS } from './easyrpgRtp';
 import { EMOTE_ASSET_PATH } from "@/project/emotes";
 
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
@@ -24,7 +26,8 @@ let warmKey = "";
 
 /** 현재 프로젝트에 참조된 번들 이미지 경로(상대 path) 목록. */
 export function listBundledPlayAssetPaths(project?: Project): readonly string[] {
-  const used = project ? projectReferencedTextureKeys(project) : null;
+  const referenced = project ? collectPlayReferencedStrings(project) : null;
+  const used = referenced ? projectReferencedTextureKeys(referenced) : null;
   const paths = new Set<string>([ASSET_TILESET, DIALOGUE_FRAME_PATH, EMOTE_ASSET_PATH]);
 
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
@@ -42,6 +45,24 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (used && !used.has(asset.id)) continue;
     paths.add(asset.path);
+  }
+
+  // Authored uploads and investigated objects were absent from the old bundle-only warmup.
+  if (project && referenced) {
+    const cinematicIds = new Set([project.system.titleScreen?.backgroundResourceId, ...(project.system.opening?.scenes ?? []).flatMap(scene => scene.kind === "image" ? [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])] : [])]);
+    for (const asset of Object.values(project.assets.uploaded)) {
+      if (!['charset', 'monster', 'picture', 'backdrop', 'tileset'].includes(asset.kind)) continue;
+      if (!referenced.has(asset.id) || cinematicIds.has(asset.id)) continue;
+      const url = resolveAssetResourceUrl(asset.id, { project });
+      if (url) paths.add(url);
+    }
+    for (const asset of EASYRPG_PICTURE_ASSETS) if (referenced.has(asset.id)) paths.add(asset.path);
+    // Existing resource resolver also owns bundled investigation icons.
+    for (const id of referenced) {
+      if (!id.startsWith('cc0-')) continue;
+      const url = resolveAssetResourceUrl(id, { project });
+      if (url && /\.(png|webp|jpe?g)(?:[?#]|$)/iu.test(url)) paths.add(url);
+    }
   }
 
   return [...paths];
@@ -65,7 +86,7 @@ export function warmBundledPlayAssets(project?: Project): Promise<void> {
   if (warmPromise && warmKey === key) return warmPromise;
 
   warmKey = key;
-  warmPromise = warmImageUrls(paths).catch(() => undefined);
+  warmPromise = warmImageUrls(paths, { concurrency: 2, priority: 'low' }).catch(() => undefined);
 
   return warmPromise;
 }
@@ -76,8 +97,7 @@ export function resetBundledPlayAssetWarmup(): void {
   warmKey = "";
 }
 
-function projectReferencedTextureKeys(project: Project): Set<string> {
-  const strings = collectPlayReferencedStrings(project);
+function projectReferencedTextureKeys(strings: Set<string>): Set<string> {
   const keys = new Set<string>([ASSET_TILESET, TEX_DIALOGUE_FRAME]);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);

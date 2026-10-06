@@ -1,0 +1,60 @@
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ✓ test/charsetQuery.test.ts (11 tests) 42ms
+ ✓ test/sharedCharacters.test.ts (9 tests) 192ms
+ ✓ test/resourceSearch.test.ts (22 tests) 120ms
+ ✓ test/charsetReferenceRoutes.test.ts (4 tests) 3089ms
+   ✓ Character reference paths use the audited walking chip > describes paired walking chips with the current canonical name  1517ms
+   ✓ Character reference paths use the audited walking chip > preserves a project author name in the paired walking description  1533ms
+ ✓ test/skyStairNpcLooks.test.ts (4 tests) 4598ms
+   ✓ 천공의 계단 NPC 그래픽 > 보이는 그래픽은 모두 카탈로그에 라벨이 있는 칸이다  1372ms
+   ✓ 천공의 계단 NPC 그래픽 > 호수 신전 세 봉인의 수호자가 서로 다른 그림이다  1138ms
+   ✓ 천공의 계단 NPC 그래픽 > 사람 NPC 의 대화 얼굴은 공용 대응표의 짝이고, 대응표가 얼굴 없음이면 얼굴이 없다  1071ms
+   ✓ 천공의 계단 NPC 그래픽 > 투명한 이벤트는 이동문·자동 트리거·등대뿐이다  1012ms
+ ✓ test/charsetLabelOverrides.test.ts (8 tests) 1241ms
+   ✓ charset label overrides > 시스템 프롬프트에 가르친 캐릭터 칩이 실린다  1225ms
+ ❯ test/charsetSelectionEvidence.test.ts (15 tests | 1 failed) 28825ms
+   ✓ charset selection evidence > credits Gemini multimodal function responses with a legend inside the JSON envelope  2263ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful responses turn  2272ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful gemini turn  2263ms
+   ✓ charset selection evidence > accepts the exact pictured candidate after a successful anthropic turn  2414ms
+   ✓ charset selection evidence > rejects wrong-image reading evidence  2274ms
+   ✓ charset selection evidence > rejects aborted reading evidence  2419ms
+   ✓ charset selection evidence > rejects text-only reading evidence  2423ms
+   ✓ charset selection evidence > rejects truncated reading evidence  2357ms
+   ✓ charset selection evidence > rejects king substitution and slot/frame confusion after viewing a golem  2165ms
+   ✓ charset selection evidence > resolves a selected slot without manual frame arithmetic 3ms
+   × charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics 2396ms
+     → expected [ { …(4) }, { …(4) }, { …(4) }, …(7) ] to have a length of 8 but got 10
+   ✓ charset selection evidence > keeps existing graphics on text/position edits, including reordered events  3596ms
+   ✓ charset selection evidence > rolls a failed write back atomically and shares evidence with discovered tools  1947ms
+   ✓ charset selection evidence > renders the actual golem source cell at a visible scale, in result order 13ms
+   ✓ charset selection evidence > keeps a full browse page within the render protocol image size 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/charsetSelectionEvidence.test.ts > charset selection evidence > provides pictured candidates for uploaded sheets and gates their native graphics
+AssertionError: expected [ { …(4) }, { …(4) }, { …(4) }, …(7) ] to have a length of 8 but got 10
+
+- Expected
++ Received
+
+- 8
++ 10
+
+ ❯ test/charsetSelectionEvidence.test.ts:77:24
+     75|     const response = await list.execute('custom', { kind: 'charset', q…
+     76|     const candidates = charsetPreviewCandidates('list_resources', resp…
+     77|     expect(candidates).toHaveLength(8);
+       |                        ^
+     78|     const matches = (response.details.data as { matches: { nativeGraph…
+     79|     after.maps[after.startMapId]!.events.push({ id: 'custom', name: '골…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 72 passed (73)
+   Start at  15:22:22
+   Duration  63.75s (transform 41.28s, setup 0ms, collect 114.40s, tests 38.11s, environment 2ms, prepare 1.64s)

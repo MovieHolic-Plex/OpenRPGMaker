@@ -1,0 +1,74 @@
+{
+  "sourceSha256": "897ac32079f392fe8a272c56ca7d2907dd219b719d039b12b1d0212d3f6c9857",
+  "width": 128,
+  "height": 128,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "43df0ab947b6d2e2ef69432a6e4d1c261fe08498247e1ea151484f658d7a606f",
+      "changedFromPrevious": null,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "푸른 파동 A"
+    },
+    {
+      "id": "f01",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "49cce189208094d080e940530cbb83c4cc3ecf9c1de37bf926db5728468f15f9",
+      "changedFromPrevious": 8432,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "푸른 파동 B"
+    }
+  ],
+  "opaqueColors": 3,
+  "alpha": [
+    255
+  ],
+  "totalDurationMs": 320,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 3,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "3234e924f1b60dcaaf14d45e56a233e21da75413811eade66f25b9f50e64ed6b",
+    "contact-grid-00.png": "93e15acb6d33b4563948e7aa60fb410558170934c021c5969cd6cdc48ef100b3",
+    "contact-native-00.png": "52493b7c29457c01b10c314c446f37cd0735f5f037951fe3d6a8fd5a6d21a6ff",
+    "dark.gif": "43051a6e25d2c663480a84737cd2422fdba3d7f494e82bc3f3bb64bed250612c",
+    "light.gif": "f1c0a63500b71ed7d972ae008c3efb3c75e19b7345f11215b29a3d5e384ec678",
+    "sheet.png": "68cbd08e8c0e39287b523c8e97dba36b7eb312e71d81ec3f2233c64a7f4da7ee"
+  }
+}

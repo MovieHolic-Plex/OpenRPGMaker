@@ -1,0 +1,2802 @@
+{
+  "ok": true,
+  "summary": "월드맵 6종 · 실제 맵 57개 저작",
+  "diff": {
+    "tilesChanged": 0,
+    "mapPropertiesChanged": 1,
+    "audioDescriptionsChanged": 0,
+    "monsterMetadataChanged": 0,
+    "eventsAdded": 185,
+    "eventsModified": 0,
+    "eventsRemoved": 0,
+    "mapsAdded": 57,
+    "mapsRemoved": 0,
+    "dbRecordsChanged": 0,
+    "tilesetsChanged": 1,
+    "switchesAdded": 175,
+    "variablesAdded": 0,
+    "worldEntitiesAdded": 0,
+    "worldEntitiesModified": 0,
+    "palettePresetsAdded": 0,
+    "palettePresetsModified": 0,
+    "endingsChanged": 0,
+    "sessionChanged": false,
+    "systemChanged": false,
+    "warnings": []
+  },
+  "issues": [
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 19,
+      "y": 6,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 18,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 17,
+      "y": 16,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 16,
+      "y": 17,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 54,
+      "y": 5,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 53,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 18,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 20,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 19,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 9,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 8,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 54,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 53,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 17,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 16,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 16,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 18,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 17,
+      "y": 17,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 24,
+      "y": 22,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 23,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 14,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 13,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 57,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 56,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 17,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 18,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 23,
+      "y": 21,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map0",
+      "x": 22,
+      "y": 22,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 18,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 17,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 42,
+      "y": 9,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 41,
+      "y": 10,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 19,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 18,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 17,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 18,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 19,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 41,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 42,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 18,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 20,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 53,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 52,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 11,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 10,
+      "y": 20,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 17,
+      "y": 20,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 16,
+      "y": 21,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 57,
+      "y": 22,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 56,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 16,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 15,
+      "y": 29,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 16,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 17,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 20,
+      "y": 23,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map2",
+      "x": 21,
+      "y": 23,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 49,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 48,
+      "y": 9,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 18,
+      "y": 25,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 19,
+      "y": 27,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 18,
+      "y": 28,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 15,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 14,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 48,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 47,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 49,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 26,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 25,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 43,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 42,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 11,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 10,
+      "y": 20,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 20,
+      "y": 25,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 19,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 18,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 19,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 55,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 54,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 22,
+      "y": 32,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 21,
+      "y": 33,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 40,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map4",
+      "x": 41,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 16,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 15,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 48,
+      "y": 10,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 47,
+      "y": 11,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 48,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 47,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 17,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 16,
+      "y": 5,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 15,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 17,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 16,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 40,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 39,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 47,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 48,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 15,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 14,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 8,
+      "y": 18,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 7,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 21,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 20,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 61,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 60,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 25,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_region_routes_map6",
+      "x": 26,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 19,
+      "y": 6,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 18,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 17,
+      "y": 16,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 16,
+      "y": 17,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 54,
+      "y": 5,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 53,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 18,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 20,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 19,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 9,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 8,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 54,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 53,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 17,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 16,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 16,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 18,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 17,
+      "y": 17,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 24,
+      "y": 22,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 23,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 14,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 13,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 57,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 56,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 17,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 18,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 23,
+      "y": 21,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map0",
+      "x": 22,
+      "y": 22,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 21,
+      "y": 6,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 20,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 19,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 13,
+      "y": 26,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 12,
+      "y": 27,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 13,
+      "y": 29,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 22,
+      "y": 2,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 21,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 20,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 19,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 21,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 18,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 53,
+      "y": 6,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 52,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 17,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 16,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 54,
+      "y": 15,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 53,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 61,
+      "y": 18,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 60,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 12,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 13,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 13,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 12,
+      "y": 29,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 23,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map1",
+      "x": 24,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 14,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 13,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 18,
+      "y": 25,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 17,
+      "y": 26,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 13,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 15,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 14,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 12,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 11,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 12,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 47,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 46,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 19,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 18,
+      "y": 15,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 62,
+      "y": 21,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 61,
+      "y": 22,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 8,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 7,
+      "y": 24,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 17,
+      "y": 25,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 19,
+      "y": 25,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 18,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 45,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 44,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 20,
+      "y": 32,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 19,
+      "y": 33,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 15,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 14,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map3",
+      "x": 13,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 49,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 48,
+      "y": 9,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 18,
+      "y": 25,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 19,
+      "y": 27,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 18,
+      "y": 28,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 15,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 14,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 48,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 47,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 49,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 26,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 25,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 43,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 42,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 11,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 10,
+      "y": 20,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 20,
+      "y": 25,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 19,
+      "y": 26,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 18,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 19,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 55,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 54,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 22,
+      "y": 32,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 21,
+      "y": 33,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 40,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map4",
+      "x": 41,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 16,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 15,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 48,
+      "y": 10,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 47,
+      "y": 11,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 48,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 47,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 17,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 16,
+      "y": 5,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 15,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 17,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 16,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 40,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 39,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 47,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 48,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 15,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 14,
+      "y": 13,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 8,
+      "y": 18,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 7,
+      "y": 19,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 21,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 20,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 61,
+      "y": 27,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 60,
+      "y": 28,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 25,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map6",
+      "x": 26,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 18,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 17,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 54,
+      "y": 9,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 53,
+      "y": 10,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 52,
+      "y": 11,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 19,
+      "y": 3,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 18,
+      "y": 4,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 17,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 19,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 16,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 18,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 53,
+      "y": 9,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 52,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 54,
+      "y": 10,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 54,
+      "y": 11,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 53,
+      "y": 12,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 28,
+      "y": 14,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 27,
+      "y": 15,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 46,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 45,
+      "y": 17,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 63,
+      "y": 16,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 62,
+      "y": 17,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 14,
+      "y": 30,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 13,
+      "y": 31,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 19,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 20,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 27,
+      "y": 13,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 26,
+      "y": 14,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 45,
+      "y": 15,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "examples_scaled_world_map7",
+      "x": 44,
+      "y": 16,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+    },
+    {
+      "severity": "warning",
+      "code": "opt-in:schedule-without-time",
+      "message": "NPC 일정이 있으나 시간 시스템이 꺼져 일정이 돌지 않습니다."
+    }
+  ],
+  "data": {
+    "atlasIds": [
+      "examples_region_routes",
+      "examples_scaled_world",
+      "examples_field_overview",
+      "examples_stage_nodes",
+      "examples_room_network",
+      "examples_run_path"
+    ],
+    "startMapId": "map_blank_start",
+    "atlases": [
+      {
+        "id": "examples_region_routes",
+        "name": "지역 · 마을과 도로",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "region-routes",
+        "startNodeId": "examples_region_routes_n0",
+        "startMapId": "examples_region_routes_map0",
+        "maps": [
+          {
+            "mapId": "examples_region_routes_map0",
+            "name": "새싹 마을",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map1",
+            "name": "1번 도로",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map2",
+            "name": "솔바람 시티",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": [
+              "examples_region_routes_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_region_routes_map3",
+            "name": "2번 도로",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map4",
+            "name": "호수 마을",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map5",
+            "name": "물결 도로",
+            "entry": {
+              "x": 21,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map6",
+            "name": "별빛 리그",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_region_routes_map7",
+            "name": "숲샛길",
+            "entry": {
+              "x": 22,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_scaled_world",
+        "name": "축척 월드 · 대륙 걷기",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 7,
+        "reachableAfterUnlocks": 8,
+        "structure": "scaled-world",
+        "startNodeId": "examples_scaled_world_n0",
+        "startMapId": "examples_scaled_world_overworld",
+        "maps": [
+          {
+            "mapId": "examples_scaled_world_map0",
+            "name": "대성",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map1",
+            "name": "강가 마을",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": [
+              "examples_scaled_world_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_scaled_world_map2",
+            "name": "내해 항구",
+            "entry": {
+              "x": 2,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map3",
+            "name": "설원 마을",
+            "entry": {
+              "x": 34,
+              "y": 16
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map4",
+            "name": "눈 촌락",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map5",
+            "name": "고원 마을",
+            "entry": {
+              "x": 2,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map6",
+            "name": "산기슭 동굴",
+            "entry": {
+              "x": 34,
+              "y": 18
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_scaled_world_map7",
+            "name": "사막 촌락",
+            "entry": {
+              "x": 34,
+              "y": 17
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_field_overview",
+        "name": "필드 · 지형과 능력",
+        "ok": true,
+        "issues": [],
+        "nodes": 9,
+        "edges": 12,
+        "reachableAfterUnlocks": 9,
+        "structure": "field-overview",
+        "startNodeId": "examples_field_overview_n6",
+        "startMapId": "examples_field_overview_map6",
+        "maps": [
+          {
+            "mapId": "examples_field_overview_map0",
+            "name": "북서 숲",
+            "entry": {
+              "x": 22,
+              "y": 15
+            },
+            "grants": [
+              "examples_field_overview_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_field_overview_map1",
+            "name": "산길",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map2",
+            "name": "고대 성문",
+            "entry": {
+              "x": 16,
+              "y": 15
+            },
+            "grants": [
+              "examples_field_overview_ability1"
+            ]
+          },
+          {
+            "mapId": "examples_field_overview_map3",
+            "name": "서쪽 강변",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map4",
+            "name": "중앙 들판",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map5",
+            "name": "동쪽 호수",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map6",
+            "name": "시작 마을",
+            "entry": {
+              "x": 20,
+              "y": 14
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map7",
+            "name": "나루터",
+            "entry": {
+              "x": 16,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_field_overview_map8",
+            "name": "묻힌 신전",
+            "entry": {
+              "x": 2,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_stage_nodes",
+        "name": "스테이지 · 클리어와 비밀길",
+        "ok": true,
+        "issues": [],
+        "nodes": 8,
+        "edges": 8,
+        "reachableAfterUnlocks": 8,
+        "structure": "stage-nodes",
+        "startNodeId": "examples_stage_nodes_n0",
+        "startMapId": "examples_stage_nodes_map0",
+        "maps": [
+          {
+            "mapId": "examples_stage_nodes_map0",
+            "name": "새싹 언덕",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map1",
+            "name": "개울길",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map2",
+            "name": "햇살 숲",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": [
+              "examples_stage_nodes_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_stage_nodes_map3",
+            "name": "호수 요새",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map4",
+            "name": "돌 고개",
+            "entry": {
+              "x": 20,
+              "y": 14
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map5",
+            "name": "별빛 성",
+            "entry": {
+              "x": 17,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map6",
+            "name": "비밀 섬",
+            "entry": {
+              "x": 21,
+              "y": 15
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_stage_nodes_map7",
+            "name": "무지개 샛길",
+            "entry": {
+              "x": 20,
+              "y": 15
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_room_network",
+        "name": "방 · 발견과 재탐색",
+        "ok": true,
+        "issues": [],
+        "nodes": 10,
+        "edges": 11,
+        "reachableAfterUnlocks": 10,
+        "structure": "room-network",
+        "startNodeId": "examples_room_network_n0",
+        "startMapId": "examples_room_network_map0",
+        "maps": [
+          {
+            "mapId": "examples_room_network_map0",
+            "name": "지상의 우물",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map1",
+            "name": "잊힌 교차로",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map2",
+            "name": "순례자의 방",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": [
+              "examples_room_network_ability0"
+            ]
+          },
+          {
+            "mapId": "examples_room_network_map3",
+            "name": "푸른 회랑",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map4",
+            "name": "바람의 탑",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": [
+              "examples_room_network_ability1"
+            ]
+          },
+          {
+            "mapId": "examples_room_network_map5",
+            "name": "이끼 저장고",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map6",
+            "name": "깊은 수로",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map7",
+            "name": "침묵의 서고",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map8",
+            "name": "어둠의 관문",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_room_network_map9",
+            "name": "깊은 성소",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          }
+        ]
+      },
+      {
+        "id": "examples_run_path",
+        "name": "런 · 일방향 분기",
+        "ok": true,
+        "issues": [],
+        "nodes": 13,
+        "edges": 19,
+        "reachableAfterUnlocks": 13,
+        "structure": "run-path",
+        "startNodeId": "examples_run_path_n0",
+        "startMapId": "examples_run_path_map0",
+        "maps": [
+          {
+            "mapId": "examples_run_path_map0",
+            "name": "출발 캠프",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map1",
+            "name": "1층 전투",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map2",
+            "name": "1층 사건",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map3",
+            "name": "1층 전투",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map4",
+            "name": "2층 보물",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map5",
+            "name": "2층 정예",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map6",
+            "name": "2층 상점",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map7",
+            "name": "3층 휴식",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map8",
+            "name": "3층 전투",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map9",
+            "name": "3층 사건",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map10",
+            "name": "4층 정예",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map11",
+            "name": "4층 휴식",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          },
+          {
+            "mapId": "examples_run_path_map12",
+            "name": "5층 최종 관문",
+            "entry": {
+              "x": 2,
+              "y": 17
+            },
+            "grants": []
+          }
+        ]
+      }
+    ],
+    "help": "플레이 중 「세계 지도」 버튼 또는 W. 마을·필드·방은 실제 출입구로, 스테이지·런은 지도에서 열린 인접 장소를 고릅니다. 관문의 인물과 대화하면 클리어/해금됩니다."
+  }
+}

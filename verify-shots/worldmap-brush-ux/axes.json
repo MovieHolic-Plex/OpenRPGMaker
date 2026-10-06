@@ -1,0 +1,25 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "name": "조수를 펼친 채 배율 선택",
+      "ok": true
+    },
+    {
+      "name": "가로 강 횡단 세로 다리·설원 바탕 자동",
+      "ok": true
+    },
+    {
+      "name": "세로 다리 통행 축",
+      "ok": true
+    },
+    {
+      "name": "SQLite 저장 후 새 브라우저 재로드",
+      "ok": true
+    }
+  ],
+  "projectId": "e92cdb03-69df-4c0f-9ce1-47c51554bb23",
+  "revision": 11,
+  "sha256": "60aeacfce14d48f7655e83e61dfcdca31f4a0baa1260286806e6a888ce822727",
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-brush-ux-20261005/native-fixed/project"
+}

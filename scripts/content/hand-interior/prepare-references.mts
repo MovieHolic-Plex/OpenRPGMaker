@@ -153,6 +153,15 @@ for (const c of cats.filter((c) => c.ids.length < SMALL)) {
   if (pack.reduce((n, x) => n + x.ids.length, 0) >= PACK) { groups.push(pack); pack = []; }
 }
 if (pack.length) groups.push(pack);
+// 새 분류가 늘어도 예제·규칙을 빠뜨리지 않는다. 문서 예산을 넘으면 가장 작은 묶음 둘을 합친다.
+const objectDocBudget = 64 - docs.length - maps.plans.length - 1; // 뒤의 예제 + 오류 지침
+if (objectDocBudget < 1) throw new Error("No object dictionary document budget");
+const size = (g: (typeof cats)) => g.reduce((n, c) => n + c.ids.length, 0);
+while (groups.length > objectDocBudget) {
+  groups.sort((a, b) => size(a) - size(b) || a[0]!.cat.localeCompare(b[0]!.cat));
+  const first = groups.shift()!, second = groups.shift()!;
+  groups.push([...first, ...second]);
+}
 const section = ({ ids }: (typeof cats)[number]) => {
   const body = ids.map((id) => { const o = S.objects[id]!; return { id, ko: o.ko, kind: o.kind, w: o.w, h: o.h, overhangPx: o.up, ...(o.surface ? { surface: o.surface } : {}), ...(o.stairs ? { stairs: o.stairs } : {}), ...(o.animated ? { animated: true } : {}), cells: o.cells }; });
   const desc = ids.map((id) => { const m = meta.objects.find((x: { id: string }) => x.id === id); const o = S.objects[id]!; return `- \`${id}\` ${o.ko} — ${m ? (m.description ?? "") : `${o.desc ?? ""} ${o.place ?? ""} · 예제 방 없음(새 기물 — 위 칸 번호 사전과 설명으로 놓는다)`} ${(m?.placement ?? []).join(" / ")}${o.tags?.length ? ` · 쓰는 방: ${o.tags.join("·")}` : ""}${o.pair?.length ? ` · 짝: ${o.pair.join(", ")}` : ""}`; }).join("\n");

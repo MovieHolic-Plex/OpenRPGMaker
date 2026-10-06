@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "concept": "underground-parking-garage",
+  "group": "parking-kit",
+  "review": "tiledata/modern-city/parking-wide/visual-review.json",
+  "binding": "tiledata/modern-city/parking-wide/visual-review.input.json",
+  "scene": "tiledata/modern-city/parking-wide/scene.png",
+  "plan": "harness-data/modern-chipset/parking-wide/plan.md",
+  "acceptance": "harness-data/super-harness/acceptance/parking-facility-v1.json",
+  "scopeChange": "확장 실험에서 지적한 미완성 요소를 실제 시설 제작의 필수 수정으로 승격. 기존 두 면의 합격/공용/정본은 보존한다.",
+  "fixes": [
+    {
+      "limitation": 0,
+      "category": "asset",
+      "target": "외곽 벽·기둥·출입 경사로/차단기·보행문",
+      "change": "재고 조사 후 없는 구조 칩을 native 하네스로 제작한다. 벽/개구/차로에 붙여 전체 공간을 다시 조립한다.",
+      "keep": "승인 차량의 축척·3/4 시점, 낮은 턱, 기존 칩 번호와 기존 두 면 프로젝트를 보존한다.",
+      "criteria": [
+        "structure",
+        "entrance-circulation"
+      ]
+    },
+    {
+      "limitation": 1,
+      "category": "spec",
+      "target": "회색 바닥 전체 및 동일 차량 6대",
+      "change": "주차열/구조 리듬/차로를 다시 계획한다. 공용 차량 재고를 확인하고 형태 2종·색조 3종 이상으로 배치하되 원본은 보존한다.",
+      "keep": "승인 차량의 축척·3/4 시점, 낮은 턱, 기존 칩 번호와 기존 두 면 프로젝트를 보존한다.",
+      "criteria": [
+        "vehicle-variety",
+        "space-use"
+      ]
+    },
+    {
+      "limitation": 2,
+      "category": "asset",
+      "target": "중앙·남쪽 조명과 접지",
+      "change": "벽 부착/천장 설비와 접지 그림자를 같은 광원으로 제작·배치한다. 북벽 등 2개만 반복하거나 무작위 노이즈로 끝내지 않는다.",
+      "keep": "승인 차량의 축척·3/4 시점, 낮은 턱, 기존 칩 번호와 기존 두 면 프로젝트를 보존한다.",
+      "criteria": [
+        "lighting"
+      ]
+    },
+    {
+      "limitation": 3,
+      "category": "assembly",
+      "target": "양쪽 차로·남쪽 연결로·출입구",
+      "change": "연결된 진입부/보행문을 계획하고 기둥을 피하는 경로를 실제 장면으로 재검수한다. 차 운전 검증과 보행 검증을 구분한다.",
+      "keep": "승인 차량의 축척·3/4 시점, 낮은 턱, 기존 칩 번호와 기존 두 면 프로젝트를 보존한다.",
+      "criteria": [
+        "entrance-circulation",
+        "space-use"
+      ]
+    }
+  ]
+}

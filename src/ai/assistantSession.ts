@@ -310,6 +310,7 @@ import {
 } from "./session/toolPayload";
 import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from "./session/recordReference";
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
+import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
@@ -711,6 +712,7 @@ export class AssistantSession {
         return id && this.project.maps[id] ? id : undefined;
       },
       get approvedTilesetFamilies() { return options().getApprovedTilesetFamilies?.(); },
+      assistantRun: true,
     };
   }
   private readonly messages: ChatMessage[] = [];
@@ -821,6 +823,12 @@ export class AssistantSession {
 
   /** Capture before application/proof awaits; a later run never inherits this authority. */
   getRunOperation(): RunOperation { return this.runOperation; }
+
+  /** Current user request only; automatic continuation never carries navigation. */
+  allowsViewNavigation(): boolean {
+    return !this.turnIsDriverContinue && this.turnIntent?.source === "llm"
+      && this.turnIntent.viewNavigation === true;
+  }
 
   retireRun(): TurnResult | undefined {
     const owner = this.runResult;
@@ -5208,7 +5216,12 @@ export class AssistantSession {
             toolResult = this.applyBuildSpec(args);
           } else if (name === OPENING_IMAGE_TOOL) {
             const { generateOpeningStill } = await operation.wait(import("@/editor/openingImageGeneration"));
-            const still = await operation.wait(generateOpeningStill(args, { signal }));
+            const still = await operation.wait(generateOpeningStill(args, { signal,
+              resolveReference: async resourceId => {
+                const { renderPiToolImage } = await operation.wait(import('@/ai/toolImageRenderer'));
+                return operation.wait(renderPiToolImage(this.ctx.project, 'show_title_opening', { resourceId }));
+              },
+            }));
             if (!still.ok) {
               toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
             } else {
@@ -5330,7 +5343,7 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
-                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args));
+                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args, this.ctx.project));
                 const before = this.ctx.project;
                 toolResult = name === EVENT_COMMAND_ASSIST_TOOL
                   ? await operation.wait(runToolAsync(this.ctx, name, args, {
@@ -5490,6 +5503,9 @@ export class AssistantSession {
           }
           if (name === 'read_spatial_reference' && toolResult.ok) {
             roundImages.push(...await operation.wait(spatialReferenceImages(this.ctx.project, args, toolResult.data)));
+          }
+          if (name === 'read_worldmap_structure_reference' && toolResult.ok) {
+            roundImages.push(...await operation.wait(worldAtlasReferenceImages(toolResult.data)));
           }
           if (name === "get_concept_facility" && toolResult.ok) {
             roundImages.push(...await operation.wait(interiorPresetImages(toolResult.data)));

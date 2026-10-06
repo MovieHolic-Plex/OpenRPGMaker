@@ -3,14 +3,18 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
-import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS } from "@/assets/sharedPortraitAssets";
+import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
-import { reviewedCharsetFaceRow } from "@/assets/reviewedCharsetFaces";
-import reviewedCharacterGraphics from "@/assets/sharedCharacterGraphics.json";
+import { findCharsetSemantic } from "@/assets/charsetSemantics";
+import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
+import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { resolveFontSelection } from "@/project/fontRegistry";
+import { DEFAULT_DIALOGUE_STYLE_ID } from "@/project/dialogueStyles";
 import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -83,7 +87,7 @@ function conditionReferencesSwitch(condition: Condition | undefined, switchId: s
 
 const getProjectSummary: ToolDefinition = {
   name: "get_project_summary",
-  description: "제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다.",
+  description: "제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점/공통 글꼴·대화창·전투창 설정 요약을 반환한다.",
   mode: "read",
   parameters: { type: "object", properties: {} },
   run(project): ToolExecResult {
@@ -98,6 +102,12 @@ const getProjectSummary: ToolDefinition = {
     const namedVariables = project.variables.filter((entry) => entry.name !== "");
     const data = {
       title: project.meta.title,
+      appearance: {
+        fonts: resolveFontSelection(project.system.fonts),
+        dialogueStyle: project.system.dialogueStyle ?? DEFAULT_DIALOGUE_STYLE_ID,
+        dialogueFont: project.system.dialogueFont ?? null,
+        battleLook: project.system.battleLook ?? null,
+      },
       startMapId: project.startMapId,
       startPos: project.startPos,
       maps,
@@ -401,48 +411,65 @@ const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset")[] = 
 function searchFacesets(project: Project, query: string): Pick<ResourceSearchResult, "id" | "label" | "description">[] {
   const needle = query.trim().toLocaleLowerCase();
   const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
+  const reviewedCharacterGraphics = sharedCharacterGraphicsCatalog();
   const pairedSprites = new Map<string, string[]>();
+  const pairedNotes = new Map<string, string[]>();
   for (const row of reviewedCharacterGraphics.mappings) {
     if (row.status !== "mapped" || !row.faceResourceId) continue;
-    pairedSprites.set(row.faceResourceId, [...(pairedSprites.get(row.faceResourceId) ?? []), `${row.textureKey}#${row.characterIndex} ${row.label}`]);
+    const override = project.charsetLabels?.find(label => label.textureKey === row.textureKey && label.characterIndex === row.characterIndex && label.label.trim());
+    const label = override?.label.trim() ?? findCharsetSemantic(row.textureKey, row.characterIndex)?.label ?? row.label;
+    pairedSprites.set(row.faceResourceId, [...(pairedSprites.get(row.faceResourceId) ?? []), `${row.textureKey}#${row.characterIndex} ${label} (${row.quality})`]);
+    if (row.quality !== "exact") pairedNotes.set(row.faceResourceId, [...(pairedNotes.get(row.faceResourceId) ?? []), row.note]);
   }
-  const bundled = reviewedCharacterGraphics.faces.map((face) => {
+  const bundled = reviewedCharacterGraphics.faces.filter(face => !project.assets.uploaded?.[face.resourceId] && isAuthorableFaceReference(face.resourceId, project)).map((face) => {
     const paired = pairedSprites.get(face.resourceId) ?? [];
-    const traits = Object.values(face.attributes ?? {}).join(" ");
+    const metadata = faceReferenceMetadata(face.resourceId, face.label, project);
+    const traits = metadata.searchTerms.join(" ");
     return {
       id: face.resourceId,
-      label: face.label,
-      description: paired.length > 0
-        ? `짝 걷기 그림: ${paired.join(", ")}. 이 그림의 NPC 는 얼굴을 생략해도 자동으로 붙는다.`
-        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다.",
-      haystack: `${face.resourceId} ${face.label} ${traits} ${paired.join(" ")}`.toLocaleLowerCase(),
+      label: metadata.name,
+      description: `${paired.length > 0
+        ? `짝 걷기 그림: ${paired.join(", ")}. ${(pairedNotes.get(face.resourceId) ?? []).join(" ")}`
+        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다."} ${metadata.description}`,
+      haystack: `${face.resourceId} ${metadata.name} ${traits} ${metadata.description} ${paired.join(" ")}`.toLocaleLowerCase(),
     };
   });
   const bundledIds = new Set(bundled.map((face) => face.id));
   const others = listDatabaseResourceOptions("faceset", project)
-    .filter((option) => !bundledIds.has(option.id))
-    .map((option) => ({ id: option.id, label: option.name, description: "업로드·생성 얼굴", haystack: `${option.id} ${option.name} ${(option.searchTerms ?? []).join(" ")}`.toLocaleLowerCase() }));
-  // 공용 흉상·전신(세트당 기본 표정 한 장씩). 전체 둘러보기에는 넣지 않는다 — 이름·「흉상」「전신」으로 찾을 때만.
-  const portraits = SHARED_PORTRAIT_ASSETS.filter((asset) => asset.expression === "base").map((asset) => ({
+    .filter((option) => !bundledIds.has(option.id) && (!SHARED_PORTRAIT_ASSETS.some(asset => asset.id === option.id) || Boolean(project.assets.uploaded?.[option.id])))
+    .map((option) => ({ id: option.id, label: option.name, description: faceReferenceMetadata(option.id, option.name, project).description || "업로드·생성 얼굴", haystack: `${option.id} ${option.name} ${(option.searchTerms ?? []).join(" ")}`.toLocaleLowerCase() }));
+  // 공용 흉상·전신도 전체 둘러보기에 포함한다. 기본 20칸에 얼굴만 차면 조수는 큰 초상을 보지 못한다.
+  const portraits = SHARED_PORTRAIT_ASSETS.filter(asset => !project.assets.uploaded?.[asset.id]).map((asset) => ({
     id: asset.id,
-    label: asset.name,
-    description: `${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    label: faceReferenceMetadata(asset.id, asset.name, project).name,
+    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
     haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
+  const basePortraits = portraits.filter(asset => asset.id.endsWith("-base"));
   const terms = needle.split(/\s+/).filter(Boolean);
-  return [...bundled, ...others, ...(browse ? [] : portraits)]
+  const candidates = browse
+    ? Array.from({ length: Math.max(bundled.length, basePortraits.length) }, (_, i) => [bundled[i], basePortraits[i]])
+      .flat().filter((face): face is (typeof bundled)[number] => face !== undefined).concat(others, portraits.filter(asset => !asset.id.endsWith("-base")))
+    : [...bundled, ...others, ...portraits];
+  const seen = new Set<string>();
+  return candidates
     .filter((face) => browse || terms.every((term) => face.haystack.includes(term)))
+    .filter((face) => {
+      if (seen.has(face.id)) return false;
+      seen.add(face.id);
+      return true;
+    })
     .map(({ haystack: _haystack, ...face }) => face);
 }
 
 function faceForNpcGraphic(textureKey: string, characterIndex: number): { readonly resourceId: string; readonly quality: string } | null {
-  const row = reviewedCharsetFaceRow(textureKey, characterIndex);
-  return row?.status === "mapped" ? { resourceId: row.faceResourceId, quality: row.quality } : null;
+  const row = sharedCharsetRow(textureKey, characterIndex);
+  return row?.status === "mapped" && row.faceResourceId ? { resourceId: row.faceResourceId, quality: row.quality } : null;
 }
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 그래픽 후보를 조회한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다.",
+  description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -453,6 +480,7 @@ const listNpcGraphics: ToolDefinition = {
   run(project, args): ToolExecResult {
     const query = typeof args.query === "string" ? args.query : undefined;
     const matches = queryNpcGraphics(query, 20, project.charsetLabels).map((match) => ({
+      selectionId: `charset:${match.entry.textureKey}:${match.entry.characterIndex}`,
       textureKey: match.entry.textureKey,
       characterIndex: match.entry.characterIndex,
       label: match.entry.label,
@@ -462,8 +490,17 @@ const listNpcGraphics: ToolDefinition = {
       ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
       // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
       face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
+      portraitOptions: (() => {
+        const face = faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex);
+        if (!face) return [];
+        if (project.assets.uploaded?.[face.resourceId]) return [{ mode: "face", resourceId: face.resourceId, note: "사용자 업로드 그림" }];
+        const setId = sharedExpressionSetIdOf(face.resourceId);
+        return [{ mode: "face", resourceId: face.resourceId }, ...SHARED_PORTRAIT_ASSETS
+          .filter((asset) => asset.setId === setId && asset.expression === "base")
+          .map((asset) => ({ mode: asset.mode, resourceId: asset.id, note: sharedPortraitReferenceNote(asset.setId) }))];
+      })(),
       nativeGraphic: {
-        sprite: { type: "bundled", id: match.entry.textureKey },
+        sprite: { type: match.entry.spriteType ?? "bundled", id: match.entry.textureKey },
         direction: "down",
         pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
       },
@@ -475,13 +512,14 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성 그림 name/id 부분 일치) 또는 faceset(얼굴: 라벨·특징·짝 걷기 그림으로 검색, 예: '금발 여성', 'people2'). NPC 얼굴은 보통 생략한다 — 걷기 그림의 짝이 자동으로 붙고, 짝이 아닌 번들 얼굴은 짝으로 교정된다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       kind: { type: "string", enum: RESOURCE_KINDS },
       query: { type: "string" },
+      portraitMode: { type: "string", enum: ["face", "bust", "full"], description: "kind:faceset 전용. 얼굴 낱장/흉상/전신을 구분해 검색. 생략하면 모두 포함한다. query:'*'로 해당 모양 전체를 페이지별로 둘러본다." },
       mapId: { type: "string", description: "kind:tile 일 때 이 맵의 타일셋에서 찾는다" },
       tilesetId: { type: "string", description: "kind:tile 일 때 이 타일셋에서 찾는다(mapId 보다 우선)" },
       offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
@@ -495,6 +533,9 @@ const listResources: ToolDefinition = {
     if (typeof args.query !== "string") {
       throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
     }
+    if (args.portraitMode !== undefined && (kind !== "faceset" || !["face", "bust", "full"].includes(String(args.portraitMode)))) {
+      throw new ToolError("portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다.", { code: "invalid-args" });
+    }
     const offset = args.offset === undefined ? 0 : args.offset;
     const limit = args.limit === undefined ? 20 : args.limit;
     // The shared schema runner checks integer types, but not numeric bounds.
@@ -507,6 +548,7 @@ const listResources: ToolDefinition = {
     let all: Pick<ResourceSearchResult, "id" | "label" | "description">[];
     if (kind === "faceset") {
       all = searchFacesets(project, args.query);
+      if (args.portraitMode !== undefined) all = all.filter((face) => facePresentationForResource(face.id) === args.portraitMode);
     } else if (kind === "picture") {
       // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
@@ -535,6 +577,28 @@ const listResources: ToolDefinition = {
         audioProject: project,
         monsterProject: project,
       });
+      if (kind === 'charset') {
+        // Uploaded sheets have no authored semantic labels. Let the assistant
+        // browse their real eight slots by file name/id and use nativeGraphic.
+        const needle = args.query.trim().toLocaleLowerCase();
+        const browse = ['', '*', 'all', '전체'].includes(needle);
+        const knownSheets = new Set(searchResources('charset', '*').map(row => row.nativeGraphic?.sprite?.id));
+        const uploaded = Object.values(project.assets.uploaded);
+        const exactSheets = new Set(uploaded.filter(asset => asset.kind === 'charset' && !knownSheets.has(asset.id)
+          && (asset.id.toLocaleLowerCase() === needle || asset.name.toLocaleLowerCase() === needle)).map(asset => asset.id));
+        const raw = uploaded
+          .filter(asset => asset.kind === 'charset' && !knownSheets.has(asset.id)
+            && (browse || asset.name.toLocaleLowerCase().includes(needle) || asset.id.toLocaleLowerCase().includes(needle)))
+          .flatMap(asset => Array.from({ length: 8 }, (_, characterIndex) => ({
+            id: `charset:${asset.id}:${characterIndex}`, label: `${asset.name} / 칸 ${characterIndex}`,
+            nativeGraphic: { sprite: { type: 'uploaded' as const, id: asset.id }, direction: 'down' as const,
+              pattern: charsetFrameIndex({ characterIndex, direction: 'down', pattern: 1 }) },
+          })));
+        // An exact uploaded sheet id is a resource lookup. Its words must not
+        // also inject unrelated semantic candidates (e.g. custom_golem).
+        if (exactSheets.size) all = raw.filter(row => exactSheets.has(row.nativeGraphic.sprite.id));
+        else all.push(...raw);
+      }
     }
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined

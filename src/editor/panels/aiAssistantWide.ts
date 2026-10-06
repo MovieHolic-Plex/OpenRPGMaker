@@ -35,12 +35,13 @@ const GLYPH = {
 } as const;
 
 /** Move the live surfaces together; never create a second session or duplicate controls. */
-export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void): { open(): void; dispose(): void } {
+export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void, onModeChange?: (wide: boolean) => void): { open(): void; close(): void; dispose(): void } {
   let close: (() => void) | undefined;
-  let teamPercent = 30;
+  let teamPercent = 60;
   const open = () => {
     if (close || !panel.isConnected || !team.isConnected) return;
     const origin = document.activeElement as HTMLElement | null;
+    onModeChange?.(true);
     const scrollNodes = () => [...panel.querySelectorAll<HTMLElement>(".ai-chat-log, .ai-activity-entries"), ...team.querySelectorAll<HTMLElement>(".ai-team-member-content")].map(node => ({ node, top: node.scrollTop }));
     const scroll = scrollNodes();
     const panelSlot = document.createComment("assistant panel slot");
@@ -62,23 +63,23 @@ export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigg
       // macOS 는 닫기·최소화·확대 순서로 왼쪽, Windows 는 최소화·최대화·닫기 순서로 오른쪽.
       children: controlStyle === "mac" ? [dismiss, minimize, maximize] : [minimize, maximize, dismiss],
     });
-    const divider = el("div", { class: "ai-assistant-wide-divider", attrs: { role: "separator", tabindex: "0", "aria-label": "대화와 팀 너비 조절", "aria-orientation": "vertical", "aria-valuemin": "50", "aria-valuemax": "80" }, dataset: { testid: "ai-wide-divider" } });
+    const divider = el("div", { class: "ai-assistant-wide-divider", attrs: { role: "separator", tabindex: "0", "aria-label": "대화와 팀 너비 조절", "aria-orientation": "vertical", "aria-valuemin": "30", "aria-valuemax": "70" }, dataset: { testid: "ai-wide-divider" } });
     const content = el("div", { class: "ai-assistant-wide-content", children: [panel, divider, team] });
     const setSplit = (percent: number) => {
       const width = content.getBoundingClientRect().width;
       if (width < 760) return;
-      teamPercent = Math.max(300 / width * 100, Math.min(Math.min(50, (width - 420) / width * 100), percent));
+      teamPercent = Math.max(300 / width * 100, Math.min(Math.min(70, (width - 320) / width * 100), percent));
       content.style.setProperty("--ai-wide-team-width", `${teamPercent}%`);
       divider.setAttribute("aria-valuenow", String(Math.round(100 - teamPercent)));
     };
     divider.addEventListener("pointerdown", event => { if (event.button !== 0) return; event.preventDefault(); divider.setPointerCapture(event.pointerId); divider.focus(); });
     divider.addEventListener("pointermove", event => { if (!divider.hasPointerCapture(event.pointerId)) return; const bounds = content.getBoundingClientRect(); setSplit((bounds.right - event.clientX) / bounds.width * 100); });
     divider.addEventListener("pointerup", event => { if (divider.hasPointerCapture(event.pointerId)) divider.releasePointerCapture(event.pointerId); });
-    divider.addEventListener("dblclick", () => setSplit(30));
+    divider.addEventListener("dblclick", () => setSplit(60));
     divider.addEventListener("keydown", event => {
       if (!["ArrowLeft", "ArrowRight", "Home"].includes(event.key)) return;
       event.preventDefault(); event.stopPropagation();
-      setSplit(event.key === "Home" ? 30 : teamPercent + (event.key === "ArrowLeft" ? 2 : -2));
+      setSplit(event.key === "Home" ? 60 : teamPercent + (event.key === "ArrowLeft" ? 2 : -2));
     });
     // The existing level control moves with its handlers intact.
     const header = el("header", { class: "ai-assistant-wide-head", children: [el("div", { class: "ai-assistant-wide-title", children: [el("strong", { text: "조수" }), el("span", { text: "대화와 작업 기록" })] })] });
@@ -106,6 +107,7 @@ export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigg
       const currentScroll = scrollNodes();
       for (const { node, slot } of moved) slot.replaceWith(node);
       panelSlot.replaceWith(panel); teamSlot.replaceWith(team);
+      onModeChange?.(false);
       backdrop.remove(); close = undefined;
       for (const { node, top } of currentScroll) node.scrollTop = top;
       trigger.setAttribute("aria-expanded", "false");
@@ -126,5 +128,5 @@ export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigg
     minimize.focus({ preventScroll: true });
   };
   trigger.addEventListener("click", open);
-  return { open, dispose: () => { close?.(); trigger.removeEventListener("click", open); } };
+  return { open, close: () => close?.(), dispose: () => { close?.(); trigger.removeEventListener("click", open); } };
 }

@@ -1,0 +1,43 @@
+{
+  "scenes": [
+    {
+      "key": "summon",
+      "first": "1.40초",
+      "next": "1.48초"
+    },
+    {
+      "key": "holy",
+      "first": "1.24초",
+      "next": "1.32초"
+    },
+    {
+      "key": "fire",
+      "first": "0.20초",
+      "next": "0.28초"
+    },
+    {
+      "key": "ice",
+      "first": "0.24초",
+      "next": "0.32초"
+    },
+    {
+      "key": "thunder",
+      "first": "0.08초",
+      "next": "0.16초"
+    }
+  ],
+  "layouts": [
+    {
+      "width": 704,
+      "scroll": 704,
+      "canvases": 2
+    },
+    {
+      "width": 288,
+      "scroll": 288,
+      "canvases": 2
+    }
+  ],
+  "oneShot": true,
+  "errors": []
+}

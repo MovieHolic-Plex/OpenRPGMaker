@@ -1,0 +1,753 @@
+{
+  "version": 1,
+  "scope": "parking-facility-v1",
+  "group": "parking-kit",
+  "phase": "scene",
+  "route": "spec",
+  "canvas": [
+    448,
+    288
+  ],
+  "tileSize": 16,
+  "camera": {
+    "references": [
+      {
+        "path": "harness-data/parking-calibration-r5/sources/public-car2-a.png",
+        "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+        "label": "공용 기준 자동차 원본 1배"
+      },
+      {
+        "path": "harness-data/parking-calibration-r5/references/mc-assemble/images/mc-img-bld-kit-low3-c.png",
+        "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb",
+        "label": "공용 구조 기준: 윗면/전면 분리와 모서리 두께"
+      }
+    ],
+    "groundPlane": "공용차 지붕·보닛의 긴 평행변과 앞뒤 허브 연결은 화면 수평 +x, 지붕의 가로 폭은 화면 +y로 관측한다. 구조 기준 PNG의 수평 지붕변과 수직 깊이 띠도 이 축 선택의 근거다. 이 표본은 원근 없는 정사영 P(X,Y,Z)=(24+X,32+Y/2-Z)를 설계 가설로 사용한다. 지상 길이 U=(1,0), 지상 깊이 V=(0,0.5), 높이 H=(0,-1)이다. 깊이와 높이는 화면에서 평행하지만 지상 면과 수직면에서 역할을 분리한다. 원본 자동차의 실세계 깊이·높이 비율은 확인 불가하며 새 표본의 시점은 독립 검수가 판독한다. 부재 회전이나 좌우 부호 반전, 소실점은 사용하지 않는다.",
+    "heightAxis": "북벽과 서벽 끝 절단면은 각 접지점에서 (0,-24)로 상단을 얻는다. 서벽 깊이변(0,12)은 높이면과 투영상 겹쳐 옆면이 선으로 축퇴하므로 억지 대각 면을 만들지 않는다. 높이는 남쪽 절단면의 8×24 면과 북벽 전면으로 읽는다. 턱 높이는 (0,-2), 바닥 폭8px와 투영 깊이14px는 높이와 별개다. alpha bbox는 원본 보존 확인용으로만 쓴다.",
+    "lighting": "원본차의 밝은 좌상 지붕/보닛과 어두운 아래 옆면을 따라 좌상 광원을 유지한다. 벽 캡과 턱 윗면은 밝고 낮은 전면과 접지띠는 어둡게 하되 차량보다 대비를 낮춘다.",
+    "objects": [
+      {
+        "id": "vehicles",
+        "footprint": "두열 x120/320, y40+32i의96×32 도색면에 실제6대. 지상차폭16은 숨은28..32 깊이의 승인 투영 가설이며 alpha bbox가 아니다.",
+        "topFace": "공용 낮은 지붕차와 높은 지붕 승용차의 윗면 화소를 원본1배로 재사용한다.",
+        "verticalFace": "차체 옆면과 타이어가 높이를 표현하며 캔버스48 높이는 지상폭이 아니다.",
+        "contact": "첫 원본차(136,16)의 최하단 타이어는y63 바닥y64. 다른차도 같은 기준 바닥 y64/128/192로 맞춘다.",
+        "occlusion": "진행방향에 맞춰 턱 접점도 반대편으로 옮기며 환경 후 재고차를 접지 깊이순으로 합성한다."
+      },
+      {
+        "id": "wheel-stops",
+        "footprint": "각면 오른향 xbank+78, 왼향 xbank+26, ybay+14의8×14 국소 접지. 차축전체폭 실측은 아님.",
+        "topFace": "윗면 x동일,ybay+12의8×14 승인 국소면을 복사하고 방향별 평행이동한다.",
+        "verticalFace": "남단 ybay+26..28의2px 낮은 전면을 깊이14와 분리한다.",
+        "contact": "북쪽 첫턱 top(198,52)와 원본 앞타이어 접점을 승인 관계대로 평행이동하고 그림자는1px 이내다.",
+        "occlusion": "occupied 턱은 각 차량 타이어 뒤에서 정상 가려지고 빈면의 같은 낮은 단면은 노출된다."
+      },
+      {
+        "id": "enclosure-columns",
+        "footprint": "북벽 x16..448,y28..32, 서벽x16..24 동벽440..448, 기둥216..224의8×8 접지; 경사로개구만 서측y240..272. 서측 반환부 x16..24,y272..280을 접지8×8 벽으로 닫는다. 상단은 높이24에 따라 y248..256, 남쪽 절단전면은 y256..280이며 캡·명암·접지띠를 기존 서벽과 잇는다. 경사로 개구는 y240..272만 허용하고 y280 남벽과 연속 연결한다. 반환부는 차로 x24 이상을 침범하지 않는다.",
+        "topFace": "북캡y4..8과 경계벽 캡/기둥윗면을 동일 축으로 잇고 남벽은y280..288 낮은 컷어웨이 단면이다.",
+        "verticalFace": "북전면y8..32 및 기둥접지y88/152/216에서 위24px 높이축을 구분한다.",
+        "contact": "기둥발 x216..224,y80..88/144..152/208..216/272..280은 차로224..320 밖; 좌우벽은 바닥경계 접지에 연속된다. 서벽 반환부 [16,272,8,8]은 남벽 y280에 빈틈 없이 접지 연결한다.",
+        "occlusion": "측벽/기둥은 차량과 보행몸통 지상점유를 가리지 않는 경계띠에 둔다. 남벽만 전경 컷어웨이를 허용한다."
+      },
+      {
+        "id": "lighting-entrances",
+        "footprint": "북벽등은 지상점유없음. 중앙/남쪽 트랙은 차로 위 지상장애물이 아니며 경사로0..120,y240..272와 문24..48 북벽 경계가 각각 연결된다.",
+        "topFace": "좌상 광원과 등하우징 윗면을 유지하고 서벽/기둥상단 브래킷에 연결된 차로 위 트랙으로 구조근거를 보인다.",
+        "verticalFace": "조명 본체 낮은 전면·부착그림자와 경사로 낮은 측면을 높이축으로 표현하며 바닥 얼룩으로 대신하지 않는다.",
+        "contact": "트랙 높이24는 서벽 브래킷 또는 기둥상단에 연결된다. 남트랙y248은 추가 남기둥 접지y272의 상단이며 문하단y32는 북보행띠, 차단기 기초는 경사로경계에 붙인다.",
+        "occlusion": "트랙은 차량윗면/보행을 가리는 큰 천장이 아니며 하우징을 차로 위에 한정하고 경사로와 남연결로는 연속 접지로 보인다."
+      }
+    ]
+  },
+  "contextSources": [
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+      "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+      "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+      "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+      "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+      "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+      "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+      "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+      "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+      "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+    },
+    {
+      "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+      "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+    },
+    {
+      "path": "harness-data/parking-facility-spec-r7-boundary-v2/preserved-evidence/art-calibration.json",
+      "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+    }
+  ],
+  "inventory": {
+    "kits": {
+      "path": "src/assets/modernCityTileset.json",
+      "sha256": "b705ba3a9e797f86eb8cd600f2f5bf632b0787fcb6e8f965e3b5103bfc3681ca"
+    },
+    "sheet": {
+      "path": "public/assets/modern-city/modern-city-chipset.png",
+      "sha256": "d5a127263f1137417757f8bfbca3beb795fd6b6e492e270c94f2ea6991039184"
+    },
+    "gallery": {
+      "path": "public/assets/modern-city-references/veh-gallery-1.png",
+      "sha256": "a54fd092ac9d16413fe7d58d6f05f28e9b2ccf3c20453755ef0485068b36b6b7"
+    }
+  },
+  "car": {
+    "path": "harness-data/parking-facility-spec-r7-boundary-v2/sources/public-car2-a.png",
+    "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+    "size": [
+      80,
+      48
+    ],
+    "alphaBBox": [
+      5,
+      20,
+      75,
+      48
+    ],
+    "scale": 1,
+    "origin": [
+      136,
+      16
+    ],
+    "direction": "east",
+    "sourceKit": "mc-veh-car2-a",
+    "wheelCentersOriginal": [
+      [
+        17,
+        43
+      ],
+      [
+        58,
+        43
+      ]
+    ],
+    "note": "Observed approximate hub centers only; never ground contacts or footprint width. alphaBBox remains file integrity only.",
+    "contact": "첫 원본차(136,16)의 최하단 타이어는y63 바닥y64. 다른차도 같은 기준 바닥 y64/128/192로 맞춘다."
+  },
+  "bays": [
+    {
+      "id": "bay-1-1",
+      "box": [
+        120,
+        40,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "east"
+    },
+    {
+      "id": "bay-1-2",
+      "box": [
+        120,
+        72,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    },
+    {
+      "id": "bay-1-3",
+      "box": [
+        120,
+        104,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "east"
+    },
+    {
+      "id": "bay-1-4",
+      "box": [
+        120,
+        136,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    },
+    {
+      "id": "bay-1-5",
+      "box": [
+        120,
+        168,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "west"
+    },
+    {
+      "id": "bay-1-6",
+      "box": [
+        120,
+        200,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    },
+    {
+      "id": "bay-2-1",
+      "box": [
+        320,
+        40,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "west"
+    },
+    {
+      "id": "bay-2-2",
+      "box": [
+        320,
+        72,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    },
+    {
+      "id": "bay-2-3",
+      "box": [
+        320,
+        104,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "east"
+    },
+    {
+      "id": "bay-2-4",
+      "box": [
+        320,
+        136,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    },
+    {
+      "id": "bay-2-5",
+      "box": [
+        320,
+        168,
+        96,
+        32
+      ],
+      "occupied": true,
+      "direction": "west"
+    },
+    {
+      "id": "bay-2-6",
+      "box": [
+        320,
+        200,
+        96,
+        32
+      ],
+      "occupied": false,
+      "direction": "east"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "car-1",
+      "bay": "bay-1-1",
+      "body": "low-roof",
+      "tone": "gray-blue",
+      "direction": "east",
+      "scale": 1,
+      "origin": [
+        136,
+        16
+      ],
+      "footprint": [
+        141,
+        48,
+        70,
+        16
+      ],
+      "depth": 64,
+      "path": "harness-data/parking-facility-spec-r7-boundary-v2/sources/public-car2-a.png",
+      "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+    },
+    {
+      "id": "car-2",
+      "bay": "bay-1-3",
+      "body": "high-roof",
+      "tone": "red",
+      "direction": "east",
+      "scale": 1,
+      "origin": [
+        136,
+        80
+      ],
+      "footprint": [
+        141,
+        112,
+        70,
+        16
+      ],
+      "depth": 128,
+      "kit": "mc-veh-sedan-b-red"
+    },
+    {
+      "id": "car-3",
+      "bay": "bay-1-5",
+      "body": "low-roof",
+      "tone": "green",
+      "direction": "west",
+      "scale": 1,
+      "origin": [
+        136,
+        160
+      ],
+      "footprint": [
+        141,
+        176,
+        70,
+        16
+      ],
+      "depth": 192,
+      "kit": "mc-veh-car2-a-green-l"
+    },
+    {
+      "id": "car-4",
+      "bay": "bay-2-1",
+      "body": "high-roof",
+      "tone": "red",
+      "direction": "west",
+      "scale": 1,
+      "origin": [
+        336,
+        16
+      ],
+      "footprint": [
+        341,
+        48,
+        70,
+        16
+      ],
+      "depth": 64,
+      "kit": "mc-veh-sedan-b-red-l"
+    },
+    {
+      "id": "car-5",
+      "bay": "bay-2-3",
+      "body": "low-roof",
+      "tone": "gray-blue",
+      "direction": "east",
+      "scale": 1,
+      "origin": [
+        336,
+        96
+      ],
+      "footprint": [
+        341,
+        112,
+        70,
+        16
+      ],
+      "depth": 128,
+      "kit": "mc-veh-car2-a"
+    },
+    {
+      "id": "car-6",
+      "bay": "bay-2-5",
+      "body": "low-roof",
+      "tone": "green",
+      "direction": "west",
+      "scale": 1,
+      "origin": [
+        336,
+        160
+      ],
+      "footprint": [
+        341,
+        176,
+        70,
+        16
+      ],
+      "depth": 192,
+      "kit": "mc-veh-car2-a-green-l"
+    }
+  ],
+  "wheelStops": [
+    {
+      "bay": "bay-1-1",
+      "top": [
+        198,
+        52,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-1-2",
+      "top": [
+        198,
+        84,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-1-3",
+      "top": [
+        198,
+        116,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-1-4",
+      "top": [
+        198,
+        148,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-1-5",
+      "top": [
+        146,
+        180,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-1-6",
+      "top": [
+        198,
+        212,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-1",
+      "top": [
+        346,
+        52,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-2",
+      "top": [
+        398,
+        84,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-3",
+      "top": [
+        398,
+        116,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-4",
+      "top": [
+        398,
+        148,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-5",
+      "top": [
+        346,
+        180,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    },
+    {
+      "bay": "bay-2-6",
+      "top": [
+        398,
+        212,
+        8,
+        14
+      ],
+      "frontHeight": 2,
+      "foregroundOverwrite": false
+    }
+  ],
+  "sharedProps": [
+    {
+      "kit": "mc-prop-barrier-a",
+      "origin": [
+        56,
+        240
+      ],
+      "scale": 1,
+      "depth": 256
+    }
+  ],
+  "foregroundStop": null,
+  "flatFloorProbes": [],
+  "requiredReviewItems": [
+    "vehicle-scale",
+    "three-quarter",
+    "structure",
+    "lighting",
+    "entrance-circulation",
+    "vehicle-variety",
+    "space-use"
+  ],
+  "columns": [
+    [
+      216,
+      80,
+      8,
+      8
+    ],
+    [
+      216,
+      144,
+      8,
+      8
+    ],
+    [
+      216,
+      208,
+      8,
+      8
+    ],
+    [
+      216,
+      272,
+      8,
+      8
+    ]
+  ],
+  "aisles": [
+    [
+      24,
+      32,
+      96,
+      208
+    ],
+    [
+      224,
+      32,
+      96,
+      208
+    ]
+  ],
+  "walkways": [
+    [
+      24,
+      32,
+      416,
+      16
+    ],
+    [
+      416,
+      32,
+      24,
+      248
+    ]
+  ],
+  "southConnector": [
+    24,
+    240,
+    416,
+    40
+  ],
+  "entranceRamp": [
+    0,
+    240,
+    120,
+    32
+  ],
+  "pedestrianDoor": [
+    24,
+    8,
+    24,
+    24
+  ],
+  "walls": {
+    "northCap": [
+      16,
+      4,
+      432,
+      4
+    ],
+    "northFace": [
+      16,
+      8,
+      432,
+      24
+    ],
+    "west": [
+      16,
+      32,
+      8,
+      208
+    ],
+    "east": [
+      440,
+      32,
+      8,
+      248
+    ],
+    "southCutaway": [
+      16,
+      280,
+      432,
+      8
+    ],
+    "westReturn": [
+      16,
+      272,
+      8,
+      8
+    ]
+  },
+  "overheadTracks": [
+    {
+      "box": [
+        24,
+        56,
+        96,
+        4
+      ],
+      "attach": "west-wall anchored overhead rail, below visible ceiling bracket"
+    },
+    {
+      "box": [
+        24,
+        120,
+        96,
+        4
+      ],
+      "attach": "west-wall anchored overhead rail, below visible ceiling bracket"
+    },
+    {
+      "box": [
+        24,
+        184,
+        96,
+        4
+      ],
+      "attach": "west-wall anchored overhead rail, below visible ceiling bracket"
+    },
+    {
+      "box": [
+        224,
+        56,
+        96,
+        4
+      ],
+      "attach": "column-spine anchored overhead rail; y248 uses south column top"
+    },
+    {
+      "box": [
+        224,
+        120,
+        96,
+        4
+      ],
+      "attach": "column-spine anchored overhead rail; y248 uses south column top"
+    },
+    {
+      "box": [
+        224,
+        184,
+        96,
+        4
+      ],
+      "attach": "column-spine anchored overhead rail; y248 uses south column top"
+    },
+    {
+      "box": [
+        224,
+        248,
+        96,
+        4
+      ],
+      "attach": "column-spine anchored overhead rail; y248 uses south column top"
+    }
+  ],
+  "assemblyOrder": [
+    "reuse-approved-floor-wall-stop",
+    "native-missing-structure-finish-light-ramp-door",
+    "shared-vehicles-and-barrier-depth-order"
+  ],
+  "acceptance": {
+    "path": "harness-data/parking-facility-spec-r7-boundary-v2/acceptance-contract.json",
+    "sha256": "db0a24c5da4c5a33537c22a31c77064c802099fa7cd731057e965e25915059f7"
+  }
+}

@@ -206,3 +206,26 @@ describe("cinematic web export", () => {
     },
   );
 });
+
+
+describe('authored shot direction persistence', () => {
+  it('saves, reloads and exports camera, cut, light and its separately uploaded SE', () => {
+    const project = authoredProject();
+    project.assets.uploaded.cue = uploaded('cue', 'sound', 'audio/ogg');
+    const scene = project.system.opening!.scenes[1]!;
+    if (scene.kind !== 'image') throw new Error('Expected image');
+    scene.direction = { camera: { from: [0.5, 0.5, 1], to: [0.4, 0.6, 1.1] }, transition: { kind: 'dissolve', durationMs: 500 }, effects: [{ kind: 'glow', source: [0.5, 0.5], intensity: 0.3 }], soundResourceId: 'cue', narrationDelayMs: 300 };
+    const loaded = deserialize(serialize(project));
+    expect(loaded.system.opening!.scenes[1]).toEqual(scene);
+    expect(collectUsedUploadedAssetIds(loaded).has('cue')).toBe(true);
+    expect(prepareWebExport(loaded).project.system.opening!.scenes[1]).toEqual(scene);
+  });
+  it('rejects unknown directions and out-of-range camera instead of discarding them', () => {
+    const project = authoredProject();
+    const scene = project.system.opening!.scenes[1]! as unknown as Record<string, unknown>;
+    scene.direction = { camera: { from: [0.5, 0.5, 0.2], to: [0.5, 0.5, 1] } };
+    expect(() => validateSystem(project.system)).toThrow();
+    scene.direction = { notARealEffect: true };
+    expect(() => validateSystem(project.system)).toThrow();
+  });
+});

@@ -1,0 +1,95 @@
+[
+  {
+    "resourceId": "original_bgm_0f4344f8-4899-48cc-a7bf-87088b2c4a55",
+    "name": "서재의 태엽 소리",
+    "file": "study.wav",
+    "sha256": "e67220cadaf3bfe9c17d6ad5f00905604b3083a5a106d4592baa5bb440ebf06b",
+    "bytes": 2228256,
+    "durationSeconds": 25.263174603174605,
+    "rms": 0.1554528405812968,
+    "peak": 0.550140380859375,
+    "first100msRms": 0.19263144967395815,
+    "last100msRms": 0.016079561802399587,
+    "instruments": [
+      "piano",
+      "bell",
+      "bass"
+    ],
+    "loop": true
+  },
+  {
+    "resourceId": "original_bgm_c5548347-7466-4a5d-98c3-dc81fd0e55dc",
+    "name": "기억의 회랑",
+    "file": "path.wav",
+    "sha256": "fd41e5230bfcd590ba71f7234d8ba22388da568fd654bb1c5e31494ee755db70",
+    "bytes": 1924408,
+    "durationSeconds": 21.818185941043083,
+    "rms": 0.14387266502562973,
+    "peak": 0.588409423828125,
+    "first100msRms": 0.11312713596349488,
+    "last100msRms": 0.05597213004774184,
+    "instruments": [
+      "flute",
+      "strings",
+      "pluck",
+      "drum"
+    ],
+    "loop": true
+  },
+  {
+    "resourceId": "original_se_45d0eeee-aaf4-49e5-b5dd-7dec9475eb6e",
+    "name": "타이틀_커서_클릭",
+    "file": "cursor.wav",
+    "sha256": "11a1e61c9899a09b961823e32da5e3e2dd8a79694e26277ce5358225548c3421",
+    "bytes": 6220,
+    "durationSeconds": 0.07002267573696146,
+    "rms": 0.020904540049002246,
+    "peak": 0.052886962890625,
+    "first100msRms": 0.020904540049002246,
+    "last100msRms": 0.020904540049002246,
+    "instruments": null,
+    "loop": null
+  },
+  {
+    "resourceId": "original_se_615f5e9e-77fc-483f-aa82-a2bb09ec594b",
+    "name": "타이틀_결정_상승음",
+    "file": "confirm.wav",
+    "sha256": "587943131ae1e9a7adefb575868232dd5ef9a08e01745daf7a1d84606606cc55",
+    "bytes": 15920,
+    "durationSeconds": 0.18,
+    "rms": 0.012732041846704173,
+    "peak": 0.05419921875,
+    "first100msRms": 0.015041799943784915,
+    "last100msRms": 0.011044129789859114,
+    "instruments": null,
+    "loop": null
+  },
+  {
+    "resourceId": "original_se_0eeb1205-4a76-4a5e-99a6-0faf9df351a4",
+    "name": "타이틀_취소_하강음",
+    "file": "cancel.wav",
+    "sha256": "e85fbcc0e00ea940e769eec33df3d78ffaf812867fbfc02c80fc222482b7aba3",
+    "bytes": 12396,
+    "durationSeconds": 0.1400453514739229,
+    "rms": 0.018638246954662593,
+    "peak": 0.05047607421875,
+    "first100msRms": 0.0216275394980875,
+    "last100msRms": 0.018081911739896202,
+    "instruments": null,
+    "loop": null
+  },
+  {
+    "resourceId": "original_se_891e9a12-2109-40a7-b3a1-60f107db1402",
+    "name": "오프닝_시계_빛공명",
+    "file": "clock.wav",
+    "sha256": "15b87bf2802b8265ab5a19b6075ea2d624407a0b2aafea16410ed88b91526ced",
+    "bytes": 66196,
+    "durationSeconds": 0.7500226757369615,
+    "rms": 0.02013976440247605,
+    "peak": 0.090118408203125,
+    "first100msRms": 0.03212715305549727,
+    "last100msRms": 0.0,
+    "instruments": null,
+    "loop": null
+  }
+]

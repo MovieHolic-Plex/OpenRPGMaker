@@ -1,0 +1,20 @@
+{
+  "projectId": "201e9c7b-6117-4fd0-8c5b-24dc447a4551",
+  "projectDir": "/home/main/.codex/worktrees/99e0/rpg-zzu/qa-runs/harnesses/assistant-capability/charset-label-audit-20261005-r2/npc-golem/project",
+  "beforeRevision": 3,
+  "afterRevision": 4,
+  "afterSha256": "4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502",
+  "reloadedSha256": "4f8984414c6fc8459de5cc064f93db890f50b1b5c34a4113f380a53b87202502",
+  "sameTarget": true,
+  "sameStoredDocument": true,
+  "reloadEqual": true,
+  "flush": {
+    "kind": "saved",
+    "dirty": false
+  },
+  "indexedDb": {
+    "exists": true,
+    "conversations": 0,
+    "userEntries": 0
+  }
+}

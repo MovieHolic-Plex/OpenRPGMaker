@@ -1,16 +1,19 @@
 // EasyRPG RTP 차셋(캐릭터셋) 시맨틱 라벨.
 // 시트 배치: 4열×2행 (characterIndex 0~7), 각 캐릭터는 3프레임×4방향.
-// monster1~3은 핸드오프 0.4에서 헤드리스 플레이테스트로 검증된 인덱스.
+// 2026-10-05: 모든 번들·공용 원본 칸과 이름/태그를 대조했다.
+// 근거: verify-shots/charset-mapping-audit-20261005/SUMMARY.md.
 // people1~5/actor1~4/animal/object1~2/vehicles는 각 시트를 characterIndex 셀 단위로 잘라
 // (scripts로 4열×2행 그리드 PNG 생성 후 Read 도구로 육안 확인) 라벨링했다.
 // appearance 는 아래 방향 정지 프레임을 보고 적은 문장이다 (charsetAppearances.ts).
 
 import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 
 export type CharsetGender = "male" | "female" | "none";
 export type CharsetAge = "child" | "youth" | "middle" | "elder";
 
 export interface CharsetSemanticEntry {
+  readonly spriteType?: 'bundled' | 'uploaded';
   readonly textureKey: string;
   readonly characterIndex: number;
   readonly label: string;
@@ -54,9 +57,47 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
   // tex_easyrpg_charset_monster3
   // 2026-08-23 픽셀 실측 정정: 0 은 "박쥐형 날짐승"이 아니라 **붉은 머리 하피**다(Monster3.png
   // 프레임 25 = characterIndex 0/down). 이 라벨을 믿고 광산 박쥐 스폰에 쓴 결과 화면에
-  // 붉은 머리 사람형이 떴다. 동굴 날짐승이 필요하면 monster2#1 을 쓸 것.
+  // 붉은 머리 사람형이 떴다. monster2#1 역시 박쥐가 아니라 파란 용이다.
   { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 0, label: "붉은 머리 하피", gender: "none", tags: ["하피", "유익 마인", "몬스터", "비행", "날개"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 1, label: "해골 용", gender: "none", tags: ["해골", "용", "드래곤", "언데드", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 2, label: "검은 두건 괴물", gender: "none", tags: ["두건", "검정", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 3, label: "보라 갑옷 괴물", gender: "none", tags: ["보라", "갑옷", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 4, label: "갈색 원뿔 변신 괴물", gender: "none", tags: ["갈색", "원뿔", "변신", "몬스터"] },
   { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 5, label: "붉은 드래곤", gender: "none", tags: ["붉은 드래곤", "레드 드래곤", "용", "드래곤", "몬스터", "보스"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 6, label: "붉은 변신 마법사", gender: "none", tags: ["붉은", "변신", "마법진", "마법사", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 7, label: "보라 투구 마족", gender: "none", tags: ["보라", "투구", "마족", "갑옷", "몬스터"] },
+
+  // 자체 제작 Monster4~6: 생성기의 함수 순서와 실제 12프레임을 함께 대조.
+  ...sheet("tex_easyrpg_charset_monster4", [
+    [0, "트렌트", ["몬스터", "나무", "수목", "숲", "treant"], { gender: "none" }],
+    [1, "버섯 요정", ["몬스터", "버섯", "숲", "mushroom"], { gender: "none" }],
+    [2, "갓파", ["몬스터", "요괴", "등딱지", "kappa"], { gender: "none" }],
+    [3, "구미호", ["몬스터", "요괴", "여우", "꼬리", "kitsune"], { gender: "none" }],
+    [4, "너구리 둔갑사", ["몬스터", "요괴", "너구리", "삿갓", "tanuki"], { gender: "none" }],
+    [5, "이끼 골렘", ["몬스터", "골렘", "바위", "이끼", "golem"], { gender: "none" }],
+    [6, "얼음 요정", ["몬스터", "요정", "얼음", "날개", "ice sprite"], { gender: "none" }],
+    [7, "만드라고라", ["몬스터", "식물", "뿌리", "mandrake"], { gender: "none" }],
+  ]),
+  ...sheet("tex_easyrpg_charset_monster5", [
+    [0, "미믹", ["몬스터", "상자", "이빨", "mimic"], { gender: "none" }],
+    [1, "저주 갑옷", ["몬스터", "갑옷", "검", "armor"], { gender: "none" }],
+    [2, "초롱 귀신", ["몬스터", "요괴", "초롱", "등불", "lantern"], { gender: "none" }],
+    [3, "저주 인형", ["몬스터", "인형", "꼭두각시", "doll"], { gender: "none" }],
+    [4, "마도서 괴물", ["몬스터", "책", "이빨", "book"], { gender: "none" }],
+    [5, "허수아비 괴물", ["몬스터", "허수아비", "낫", "scarecrow"], { gender: "none" }],
+    [6, "태엽 병정", ["몬스터", "병정", "태엽", "clockwork"], { gender: "none" }],
+    [7, "촛불 임프", ["몬스터", "초", "촛불", "불꽃", "candle imp"], { gender: "none" }],
+  ]),
+  ...sheet("tex_easyrpg_charset_monster6", [
+    [0, "예티", ["몬스터", "설인", "설원", "yeti"], { gender: "none" }],
+    [1, "인어 전사", ["몬스터", "인어", "삼지창", "merfolk"], { gender: "none" }],
+    [2, "사이클롭스", ["몬스터", "외눈", "거인", "cyclops"], { gender: "none" }],
+    [3, "나방 인간", ["몬스터", "나방", "날개", "mothman"], { gender: "none" }],
+    [4, "바실리스크", ["몬스터", "도마뱀", "비늘", "basilisk"], { gender: "none" }],
+    [5, "지니", ["몬스터", "정령", "연기", "djinn"], { gender: "none" }],
+    [6, "키메라", ["몬스터", "사자", "뱀", "chimera"], { gender: "none" }],
+    [7, "타락 천사", ["몬스터", "날개", "검은 날개", "dark angel"], { gender: "none" }],
+  ]),
 
   // tex_easyrpg_charset_people1 — 일반 마을 주민.
   // 2026-07-27 사용자 확정 정정(0~5). 이전 라벨은 0 을 "청년 남성 주민", 4·5 를
@@ -93,7 +134,7 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [4, "집사", ["집사", "시종", "남성", "정장"], { gender: "male", age: "middle" }],
     [5, "여자 메이드", ["메이드", "시종", "여성", "하녀"], { gender: "female" }],
     [6, "귀족 남성", ["귀족", "남성", "중년"], { gender: "male", age: "middle" }],
-    [7, "파란 갑옷 기사", ["기사", "병사", "갑옷", "날개"]],
+    [7, "파란 갑옷 기사", ["기사", "병사", "갑옷", "투구", "뿔투구"]],
   ]),
   // tex_easyrpg_charset_people4 — 이국적인 주민.
   // 2026-07-27 사용자 확정 정정(0~7 전부). 이전 라벨은 0 을 "노년 전사", 5 를 "황금 왕"이라 했는데
@@ -130,18 +171,18 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [3, "붉은 갑옷 여전사", ["기사", "전사", "갑옷", "여성"], { gender: "female" }],
     [4, "젊은 남성 마법사", ["마법사", "남성", "청년", "망토"], { gender: "male", age: "youth" }],
     [5, "젊은 여성 마법사", ["마법사", "여성", "청년", "마녀", "모자"], { gender: "female", age: "youth" }],
-    [6, "청록 로브 마법사", ["마법사", "남성", "로브"], { gender: "male" }],
+    [6, "파란 로브 마법사", ["마법사", "남성", "로브", "파란옷"], { gender: "male" }],
     [7, "파란 옷 젊은 여성 마법사", ["마법사", "여성", "청년", "파란옷", "모자"], { gender: "female", age: "youth" }],
   ]),
-  // tex_easyrpg_charset_actor2 — 2026-09-04 셀 확대 판독으로 교정: #1 은 회색 옷 젊은 여성(기사 아님),
+  // tex_easyrpg_charset_actor2 — #1 은 하늘색 재킷의 젊은 여성,
   // #4 는 붉은 머리띠 중년 전사, #5 는 젊은 여성 도적, #6·#7 은 뾰족 귀 엘프(활 없음)다.
   ...sheet("tex_easyrpg_charset_actor2", [
-    [0, "회색 머리 도적", ["도적", "전사", "남성"], { gender: "male" }],
-    [1, "회색 옷 젊은 여성", ["여성", "청년", "회색옷"], { gender: "female", age: "youth" }],
+    [0, "검은 머리 도적", ["도적", "전사", "남성", "흑발"], { gender: "male" }],
+    [1, "하늘색 재킷 젊은 여성", ["여성", "청년", "하늘색", "재킷", "주황머리"], { gender: "female", age: "youth" }],
     [2, "녹색 망토 레인저", ["궁수", "레인저", "남성"], { gender: "male" }],
     [3, "녹색 후드 궁수", ["궁수", "레인저", "남성"], { gender: "male" }],
-    [4, "붉은 머리 중년 전사", ["전사", "갑옷", "남성", "중년", "붉은머리", "머리띠"], { gender: "male", age: "middle" }],
-    [5, "젊은 여성 도적", ["도적", "여성", "청년", "보라머리", "후드"], { gender: "female", age: "youth" }],
+    [4, "갈색 머리 중년 전사", ["전사", "갑옷", "남성", "중년", "갈색머리", "빨간머리띠", "머리띠"], { gender: "male", age: "middle" }],
+    [5, "젊은 여성 도적", ["도적", "여성", "청년", "보라머리", "민소매"], { gender: "female", age: "youth" }],
     [6, "젊은 여성 엘프", ["엘프", "여성", "청년", "궁수", "깃털"], { gender: "female", age: "youth" }],
     [7, "젊은 남성 엘프", ["엘프", "남성", "청년", "금발", "궁수", "모자"], { gender: "male", age: "youth" }],
   ]),
@@ -152,34 +193,40 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [1, "동양풍 떠돌이 검객", ["검객", "남성", "동양풍", "떠돌이"], { gender: "male" }],
     [2, "닌자", ["닌자", "남성", "복면", "후드", "가면"], { gender: "male" }],
     [3, "여자 닌자", ["닌자", "여성", "스카프"], { gender: "female" }],
-    [4, "녹색 후드 여인", ["여성", "허브", "드루이드"], { gender: "female" }],
+    [4, "빨간 모자 녹색 코트 여인", ["여성", "모자", "빨간모자", "녹색코트", "금발"], { gender: "female" }],
     [5, "무도가", ["무도가", "전사", "남성"], { gender: "male" }],
     [6, "남성 음유시인", ["음유시인", "남성", "금장식", "모자"], { gender: "male" }],
     [7, "여성 음유시인", ["음유시인", "여성", "왕관", "금장식"], { gender: "female" }],
   ]),
   // tex_easyrpg_charset_actor4 — 2026-09-04 셀 확대 판독으로 교정: 사제·가면전사·여전사 없음.
-  // #0~#2 는 금발·보라머리 청년 3인, #3·#4·#6·#7 은 여성 마법사 4인(고깔모자 1), #5 는 금발 남성 갑옷 전사다.
+  // #0~#2 는 파란 머리·금발 청년 3인, #3·#4·#6·#7 은 여성 마법사 4인(고깔모자 1), #5 는 금발 남성 갑옷 전사다.
   ...sheet("tex_easyrpg_charset_actor4", [
-    [0, "보라 머리 청년", ["청년", "남성", "보라머리"], { gender: "male", age: "youth" }],
+    [0, "파란 머리 청년", ["청년", "남성", "파란머리"], { gender: "male", age: "youth" }],
     [1, "금발 머리 청년", ["청년", "남성", "금발"], { gender: "male", age: "youth" }],
     [2, "금발 청년2", ["청년", "남성", "금발"], { gender: "male", age: "youth" }],
-    [3, "보라 머리 여성 마법사", ["마법사", "여성", "보라머리"], { gender: "female" }],
-    [4, "붉은 목도리 여성 마법사", ["마법사", "여성", "목도리", "빨강"], { gender: "female" }],
+    [3, "파란 머리 여성 마법사", ["마법사", "여성", "파란머리"], { gender: "female" }],
+    [4, "분홍 머리 여성 마법사", ["마법사", "여성", "분홍머리", "노란조끼"], { gender: "female" }],
     [5, "금발 남성 갑옷 전사", ["전사", "갑옷", "남성", "금발"], { gender: "male" }],
-    [6, "흑발 여성 마법사", ["마법사", "여성", "흑발"], { gender: "female" }],
+    [6, "보라 머리 여성 마법사", ["마법사", "여성", "보라머리"], { gender: "female" }],
     [7, "고깔모자 여성 마법사", ["마법사", "여성", "고깔모자", "마녀", "빨강"], { gender: "female" }],
   ]),
 
   // tex_easyrpg_charset_animal — 동물.
   ...sheet("tex_easyrpg_charset_animal", [
     [0, "주황 고양이", ["고양이", "동물"], { gender: "none" }],
-    [1, "검은 고양이", ["고양이", "동물"], { gender: "none" }],
+    [1, "갈색 고양이", ["고양이", "동물"], { gender: "none" }],
     [2, "닭", ["닭", "동물", "가금류"], { gender: "none" }],
     [3, "양", ["양", "동물"], { gender: "none" }],
     [4, "소", ["소", "동물", "가축"], { gender: "none" }],
     [5, "말", ["말", "동물", "가축"], { gender: "none" }],
     [6, "호랑이", ["호랑이", "동물", "야생"], { gender: "none" }],
     [7, "사자", ["사자", "동물", "야생"], { gender: "none" }],
+  ]),
+  ...sheet("tex_farming_charset_chicken", [
+    [0, "농장 닭", ["닭", "동물", "가금류", "농장", "chicken"], { gender: "none" }],
+  ]),
+  ...sheet("tex_farming_charset_cow", [
+    [0, "농장 젖소", ["소", "젖소", "동물", "가축", "농장", "cow"], { gender: "none" }],
   ]),
 
   // tex_easyrpg_charset_object1 — 문/상자류.
@@ -191,13 +238,13 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [4, "철문(단일)", ["문", "철문", "입구"], { gender: "none" }],
     [5, "감옥 문", ["문", "감옥", "철창"], { gender: "none" }],
     [6, "보물 상자", ["보물상자", "상자", "보물"], { gender: "none" }],
-    [7, "나무 통", ["나무통", "통", "상자"], { gender: "none" }],
+    [7, "나무 보물상자", ["나무상자", "보물상자", "상자", "나무"], { gender: "none" }],
   ]),
   // tex_easyrpg_charset_object2 — 기타 사물/기믹.
   ...sheet("tex_easyrpg_charset_object2", [
     [0, "레버", ["레버", "스위치", "기믹"], { gender: "none" }],
     [1, "밧줄 뭉치", ["밧줄", "기믹"], { gender: "none" }],
-    [2, "금고", ["금고", "상자", "보물"], { gender: "none" }],
+    [2, "원형 바닥 판", ["원판", "바닥", "판", "기믹"], { gender: "none" }],
     [3, "받침대", ["받침대", "스위치", "기믹"], { gender: "none" }],
     [4, "바닥 스위치", ["스위치", "기믹", "바닥"], { gender: "none" }],
     [5, "바위", ["바위", "돌", "장애물"], { gender: "none" }],
@@ -225,7 +272,7 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [2, "초록 벙거지 소년", ["소년", "모자", "벙거지", "주민", "scarloxy"], { gender: "male", age: "youth" }],
     [3, "보라 머리 소녀", ["소녀", "보라 머리", "주민", "scarloxy"], { gender: "female", age: "youth" }],
     [4, "갈래머리 소녀", ["소녀", "아이", "갈래머리", "주민", "scarloxy"], { gender: "female", age: "child" }],
-    [5, "남색 머리 소년", ["소년", "청년", "주민", "scarloxy"], { gender: "male", age: "youth" }],
+    [5, "보라 머리 소년", ["소년", "청년", "보라머리", "주민", "scarloxy"], { gender: "male", age: "youth" }],
     [6, "밀짚모자 농부", ["농부", "밀짚모자", "주민", "scarloxy"], { gender: "male" }],
     [7, "물 도장 보스", ["보스", "물", "트레이너", "청록 머리", "scarloxy"], { gender: "female" }],
   ]),
@@ -247,7 +294,7 @@ function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
 export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS_RAW.map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
-  return CHARSET_SEMANTICS.find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);
+  return [...CHARSET_SEMANTICS, ...sharedCharacterSemantics()].find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);
 }
 
 export function charsetSemanticsForTexture(textureKey: string): readonly CharsetSemanticEntry[] {

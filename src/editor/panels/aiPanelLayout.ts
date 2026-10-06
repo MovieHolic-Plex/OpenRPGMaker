@@ -228,19 +228,19 @@ export function stepAiFontSize(current: AiFontSize, delta: number): AiFontSize {
 
 /**
  * 접힘 상태.
- * 첫 방문(저장값 없음 / localStorage 없음 / 읽기 실패)은 **펼침**.
+ * 첫 방문은 호출자의 기본값을 사용한다 (지도 중심 작업 창은 접힘).
  * 사용자가 마지막으로 명시한 값만 복원한다 (`"1"` 접힘, 그 외 펼침).
  * 첫 부팅에서는 키를 쓰지 않는다. 자동 펼침/재접기는 저장값을 건드리지 않는다.
  */
 export const MAP_FIRST_MIGRATION_KEY = "oprn:ai-map-first-collapse-v1"; // 레거시 키(테스트/정리용)
 
-export function loadPanelCollapsed(): boolean {
-  if (typeof localStorage === "undefined") return false;
+export function loadPanelCollapsed(defaultValue = false): boolean {
+  if (typeof localStorage === "undefined") return defaultValue;
   try {
     const raw = localStorage.getItem(PANEL_COLLAPSED_KEY);
-    return raw === "1";
+    return raw === null ? defaultValue : raw === "1";
   } catch {
-    return false;
+    return defaultValue;
   }
 }
 

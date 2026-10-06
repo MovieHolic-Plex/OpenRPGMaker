@@ -1,4 +1,6 @@
 import { retimeOpeningAnimatic } from "@/project/openingAnimatic";
+import { parseCinematicPresentation, type CinematicPresentation } from '@/project/cinematicPresentation';
+import { parseCinematicDirection } from '@/project/cinematicDirection';
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   emptySequence,
@@ -203,7 +205,20 @@ export function createDatabaseCinematicActions(options: {
 
     setMotion(id: string, motion: CinematicMotion): boolean {
       return replaceScene(id, "이미지 움직임", scene =>
-        scene.kind === "image" ? { ...scene, motion } : scene);
+        scene.kind === "image" ? { ...scene, motion, ...(scene.direction ? { direction: { ...scene.direction, camera: undefined } } : {}) } : scene);
+    },
+
+    setPresentation(id: string, value: CinematicPresentation | undefined): boolean {
+      const presentation = value === undefined ? undefined : parseCinematicPresentation(value);
+      return replaceScene(id, '글자와 화면 연출', scene => {
+        const { presentation: previous, ...rest } = scene;
+        return presentation ? { ...rest, presentation } : rest;
+      });
+    },
+
+    setDirection(id: string, direction: import('@/project/cinematicDirection').CinematicDirection): boolean {
+      const value = parseCinematicDirection(direction);
+      return replaceScene(id, '장면 연출', scene => scene.kind === 'image' ? { ...scene, direction: value } : scene);
     },
 
     /** Image/video intents stay in the view until a resource is ready. */

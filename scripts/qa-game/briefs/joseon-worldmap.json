@@ -1,0 +1,42 @@
+{
+  "title": "조선 팔도 괴담",
+  "presetId": "adventure-jrpg",
+  "screenSize": "standard",
+  "brief": {
+    "version": 1,
+    "presetId": "adventure-jrpg",
+    "summary": "모험의 동기: 한양의 젊은 포졸이 북방에서 내려온 괴이한 소문을 쫓아 조선 팔도를 누빈다.\n중심 재미: 탐험과 발견\n진행 구조: 세계 지도를 걸어 고을과 고을을 잇는 여정\n남길 감정: 경이와 그리움\n첫 제작 범위: 세계 지도와 시작 고을까지\n추가 요청: 조선 시대 배경. 세계 지도는 진짜 한반도처럼 생겨야 한다(북쪽 만주, 동쪽 바다 건너 일본, 남쪽 제주). 세계 지도 위에서는 주인공 캐릭터가 작게 보였으면 좋겠다. 새 게임을 시작하면 세계 지도 위 한양 근처에서 시작.",
+    "answers": {
+      "experience": {
+        "question": "주인공은 왜 모험을 떠나나요?",
+        "label": "모험의 동기",
+        "text": "한양의 젊은 포졸이 북방에서 내려온 괴이한 소문을 쫓아 조선 팔도를 누빈다.",
+        "source": "user"
+      },
+      "activity": {
+        "question": "무엇에 가장 많은 시간을 쓰고 싶나요?",
+        "label": "중심 재미",
+        "text": "탐험과 발견",
+        "source": "user"
+      },
+      "progression": {
+        "question": "모험의 길은 어떻게 이어지나요?",
+        "label": "진행 구조",
+        "text": "세계 지도를 걸어 고을과 고을을 잇는 여정",
+        "source": "user"
+      },
+      "detail": {
+        "question": "모험 끝에 어떤 감정이 남으면 좋을까요?",
+        "label": "남길 감정",
+        "text": "경이와 그리움",
+        "source": "recommended"
+      },
+      "scope": {
+        "question": "첫 초안은 어느 구간을 완주하게 할까요?",
+        "label": "첫 제작 범위",
+        "text": "세계 지도와 시작 고을까지",
+        "source": "user"
+      }
+    }
+  }
+}

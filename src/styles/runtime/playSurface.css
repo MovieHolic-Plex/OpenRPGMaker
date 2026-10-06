@@ -229,6 +229,7 @@
 }
 
 /* Logical stage pixels: the same surface is used by the shell and authoring preview. */
+.title-preparing { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 10px; color: #f5e7d2; text-shadow: 0 1px 4px #000; }
 .cinematic-sequence,
 .cinematic-terminal {
   position: absolute;
@@ -262,6 +263,12 @@
   z-index: -1;
 }
 .cinematic-background { object-fit: cover; opacity: 0.65; }
+.cinematic-image { object-fit: cover; }
+.cinematic-frame { position: absolute; inset: 0; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+.cinematic-shot { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.cinematic-shot > .cinematic-image { z-index: 0; }
+.cinematic-shot > .cinematic-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.cinematic-narration[hidden] { display: none; }
 .cinematic-narration {
   max-height: 65%;
   overflow-y: auto;
@@ -279,7 +286,8 @@
 }
 .cinematic-narration:empty { display: none; }
 .cinematic-status {
-  z-index: 1;
+  position: absolute; bottom: 8px; max-width: 90%;
+  z-index: 3;
   font-size: 9px;
   line-height: 1.5;
   padding: 4px;
@@ -287,14 +295,14 @@
 }
 .cinematic-status:empty { display: none; }
 .cinematic-terminal > .game-over-panel { max-width: 90%; }
-.cinematic-image[data-motion="fade"] { animation: cinematic-fade var(--cinematic-fade-ms) ease-out both; }
-.cinematic-image[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
-.cinematic-image[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="fade"], .cinematic-effects[data-motion="fade"] { animation: cinematic-fade var(--cinematic-fade-ms, var(--cinematic-motion-ms)) ease-out both; }
+.cinematic-image[data-motion="pan"], .cinematic-effects[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="zoom"], .cinematic-effects[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
 @keyframes cinematic-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cinematic-pan { from { transform: scale(1.1) translateX(-3%); } to { transform: scale(1.1) translateX(3%); } }
 @keyframes cinematic-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-image[data-motion] { animation: none; }
+  .cinematic-image[data-motion], .cinematic-effects[data-motion] { animation: none; }
 }
 
 /* Enter-paced illustrated story: persistent artwork, immediate readable pages. */
@@ -369,3 +377,27 @@
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
   content: '▶'; left: 2px; color: #334940; font-size: 10px;
 }
+
+/* Authored opening typography uses logical stage pixels, shared with database preview. */
+.cinematic-frame[data-presented="true"] .cinematic-narration {
+  position: relative; z-index: 2; margin: 0; padding: 0; background: none;
+  max-width: 84%; width: max-content; line-height: 1.75; letter-spacing: .025em;
+  text-shadow: 0 2px 12px #000, 0 1px 3px #000;
+}
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 14px); max-height: 35%; text-align: center; padding: 7px 14px; background: linear-gradient(90deg, transparent, #0009 15%, #0009 85%, transparent); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
+.cinematic-narration[data-font="serif"] { font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', Georgia, serif; }
+.cinematic-narration[data-font="sans"] { font-family: system-ui, sans-serif; }
+.cinematic-narration[data-font="pixel"] { font-family: Galmuri9, var(--runtime-ui-font, monospace); }
+.cinematic-letterbox { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(to bottom, #000 0% var(--cinematic-letterbox), transparent var(--cinematic-letterbox) calc(100% - var(--cinematic-letterbox)), #000 calc(100% - var(--cinematic-letterbox)) 100%); }
+.cinematic-shot .cinematic-layer {
+  position: absolute;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  transform-origin: center;
+  max-width: none;
+}
+.cinematic-shot .cinematic-layer[data-depth='background'] { z-index: 1; }
+.cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }

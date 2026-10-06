@@ -61,7 +61,11 @@ describe("joseon-baram 시드", () => {
   it("커밋된 seed.json 이 유효하고 쓰지 말 것·지도·관문이 들어 있다", () => {
     const seed = validateSeed(seedJson());
     expect(seed.tileset.id).toBe("joseon_baram");
-    expect(seed.maps.map((m) => m.id)).toEqual(["joseon_v20", "gungnae", "gungnae_full"]);
+    expect(seed.maps.map((m) => m.id)).toEqual([
+      "joseon_v20", "gungnae", "gungnae_full", "joseon_field", "joseon_cave",
+      "joseon_in_house", "joseon_in_inn", "joseon_in_smith", "joseon_in_pharmacy", "joseon_in_school", "joseon_in_office",
+      "joseon_in_throne", "joseon_in_corridor", "joseon_in_bedchamber", "joseon_in_library",
+    ]);
     expect(seed.gates.map((g) => g.code)).toEqual(["P", "E", "T", "L", "S", "A", "K", "TR", "V"]);
     expect(seed.forbidden.map((f) => f.id)).toEqual(expect.arrayContaining([...REQUIRED_FORBIDDEN]));
     expect(seed.characters.sheet).toMatch(/Actor1/);
@@ -97,6 +101,9 @@ describe("joseon-baram 시드", () => {
     const badStatus = clone();
     badStatus.verdictStatuses = ["pass", "ok"];
     expect(() => validateSeed(badStatus)).toThrow("verdictStatuses");
+    const badArgs = clone();
+    badArgs.maps[5].builderArgs = [3];
+    expect(() => validateSeed(badArgs)).toThrow("builderArgs");
     const badSize = clone();
     badSize.maps[0].size = [0, 5];
     expect(() => validateSeed(badSize)).toThrow("size");
@@ -180,7 +187,7 @@ describe("joseon-baram CLI (기존 도구를 실제로 부른다, 정본 파일�
     const io = capture();
     expect(await main(["validate"], io)).toBe(0);
     expect(io.text()).toContain("시드 구조 OK");
-    expect(io.text()).toContain("지도 관문 프로필 4개 mapgate.py 와 일치");
+    expect(io.text()).toContain("지도 관문 프로필 7개 mapgate.py 와 일치");
     expect(io.text()).toContain("바람의나라 스크린샷 해시 일치 0");
     expect(io.text()).toContain("validate: FAIL 0");
   });
@@ -188,7 +195,7 @@ describe("joseon-baram CLI (기존 도구를 실제로 부른다, 정본 파일�
   it("list: 지도·조각 목록과 거름", async () => {
     const maps = capture();
     expect(await main(["list", "maps"], maps)).toBe(0);
-    for (const id of ["joseon_v20", "gungnae", "gungnae_full"]) expect(maps.text()).toContain(id);
+    for (const id of ["joseon_v20", "gungnae", "gungnae_full", "joseon_field", "joseon_cave", "joseon_in_house", "joseon_in_library"]) expect(maps.text()).toContain(id);
     expect(maps.text()).toContain("200x208칸");
     const trees = capture();
     expect(await main(["list", "pieces", "--class", "tree"], trees)).toBe(0);
@@ -240,6 +247,17 @@ describe("joseon-baram CLI (기존 도구를 실제로 부른다, 정본 파일�
     expect(plan.text()).toContain("demo_gungnae_full.py");
     expect(plan.text()).toContain("JS_PROFILE=gungnae_full");
     expect(plan.text()).toContain("건물 밀도 ≥0.0007");
+    // 방 지도는 빌더에 방 id 를 넘기고, 사냥터·동굴은 조각 게이트 대신 빌더 단언이 막는다고 말한다
+    const room = capture();
+    expect(await main(["map", "joseon_in_throne", "--dry"], room)).toBe(0);
+    expect(room.text()).toContain("pal_demo.py joseon_in_throne --candidate");
+    expect(room.text()).toContain("JS_PROFILE=palace_int");
+    expect(room.text()).toContain("M3 물체 피복");
+    const field = capture();
+    expect(await main(["map", "joseon_field", "--dry"], field)).toBe(0);
+    expect(field.text()).toContain("demo_field.py");
+    expect(field.text()).toContain("빌더 단언");
+    expect(field.text()).toContain("건물 밀도 ≥0.001");
     const v20 = capture();
     expect(await main(["map", "joseon_v20", "--dry", "--candidate"], v20)).toBe(0);
     expect(v20.text()).toContain("추적 파일이 아니다");

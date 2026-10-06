@@ -1,0 +1,180 @@
+{
+  "sourceSha256": "b3d674173cd6d0245995f3427736c92289e03fef95e14147906df74316632e60",
+  "width": 64,
+  "height": 64,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 80,
+      "opaquePixels": 93,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        9,
+        46,
+        37,
+        53
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "560ae394f7ff1c74b6797ed20a3945182ca10ad7afbf1006cfcf1b9fff99f6aa",
+      "changedFromPrevious": null,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "서리가 모임"
+    },
+    {
+      "id": "f01",
+      "durationMs": 80,
+      "opaquePixels": 326,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        9,
+        33,
+        48,
+        51
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "0f1c591dd6e47d341b9356066706a0e123409558f4b18c01a101daa5e0e72dca",
+      "changedFromPrevious": 398,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "결정이 돋음"
+    },
+    {
+      "id": "f02",
+      "durationMs": 100,
+      "opaquePixels": 737,
+      "opaqueColors": 8,
+      "boundsInclusive": [
+        5,
+        13,
+        55,
+        59
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "330f5125fe877f57aea91d8bd8315cb9129cda4c41327f0cf02e64c7a6d8a59c",
+      "changedFromPrevious": 954,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "결정이 뒤엉킴"
+    },
+    {
+      "id": "f03",
+      "durationMs": 60,
+      "opaquePixels": 737,
+      "opaqueColors": 8,
+      "boundsInclusive": [
+        1,
+        8,
+        60,
+        55
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "5508d3a5270a4cdcca375ff644a94ab48fa6502c859984f7add1d1a2a3c4cb55",
+      "changedFromPrevious": 1155,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "파쇄"
+    },
+    {
+      "id": "f04",
+      "durationMs": 60,
+      "opaquePixels": 541,
+      "opaqueColors": 8,
+      "boundsInclusive": [
+        2,
+        4,
+        60,
+        54
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "5f0f7ec72546f60cf7d5494a15676461b3929adb82c4ca1531a1b6accd351041",
+      "changedFromPrevious": 889,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "파편이 퍼짐"
+    },
+    {
+      "id": "f05",
+      "durationMs": 80,
+      "opaquePixels": 345,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        3,
+        26,
+        60,
+        59
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "7332f92715e1bf4fea730e3ab919a80ddee5b62e468466ea77be5aa4df0d369f",
+      "changedFromPrevious": 851,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "파편 낙하"
+    },
+    {
+      "id": "f06",
+      "durationMs": 80,
+      "opaquePixels": 149,
+      "opaqueColors": 7,
+      "boundsInclusive": [
+        9,
+        47,
+        53,
+        61
+      ],
+      "touchesEdges": [],
+      "rgbaSha256": "8e1c0550f1563e50ac320ef647334bbbff5c00f5ba7f014384f21b5afe3154fc",
+      "changedFromPrevious": 453,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "서리 잔광"
+    },
+    {
+      "id": "f07",
+      "durationMs": 60,
+      "opaquePixels": 0,
+      "opaqueColors": 0,
+      "boundsInclusive": null,
+      "touchesEdges": [],
+      "rgbaSha256": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+      "changedFromPrevious": 149,
+      "anchor": [
+        32,
+        56
+      ],
+      "phase": "소멸"
+    }
+  ],
+  "opaqueColors": 8,
+  "alpha": [
+    0,
+    255
+  ],
+  "totalDurationMs": 600,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "30034aed40d5614fdf58fb057eddb88d6d0a56fd9e188aeea595c6e39f9ec11d",
+    "contact-grid-00.png": "2256e604dfafee7fc472a3247e28b1c30e0b0088e8ae17b3f2e9f719882bc15a",
+    "contact-native-00.png": "05d64e9038e68be20cb91d8c31cac7967559cd79866fba58f4b6ae827e0ce91e",
+    "dark.gif": "a9125a5ed4ca1c4a511087426159a5de34d228df723ede4d027b8c05aa7c419c",
+    "light.gif": "cbe7098c77bcf00d61e2d7589a82462d4038fc9c0e8d91f191c10a6d46f5e381",
+    "sheet.png": "a061f45d0877c3f8bdee6471de72aad797f0aae6ca0efee6dcd141633162d288"
+  }
+}

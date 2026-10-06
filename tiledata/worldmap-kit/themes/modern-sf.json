@@ -1,0 +1,12 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "modern-sf",
+ "name": "현대·SF",
+ "iconset": "modern-sf",
+ "palette": "original",
+ "overlays": [
+  "paved_roads",
+  "sprawl:sf"
+ ],
+ "kind": "land"
+}

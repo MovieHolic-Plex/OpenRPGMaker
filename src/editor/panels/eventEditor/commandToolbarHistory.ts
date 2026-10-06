@@ -1,3 +1,4 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
 import { copyEventCommandsToClipboard } from "./commandClipboard";
@@ -5,6 +6,8 @@ import { authoredCommandPaths, clearCommandInspector, isCommandSelected, notifyC
 import type { CommandListActions } from "./types";
 
 type CommandToolbarHistoryOptions = {
+  /** Opt in only for hosts whose updates never mutate published commands. */
+  readonly immutableSnapshots?: boolean;
   readonly key: string;
   readonly readCommands: () => Command[];
   readonly replaceCommands: (commands: Command[]) => void;
@@ -14,6 +17,7 @@ type CommandHistory = {
   readonly past: Command[][];
   readonly future: Command[][];
   changing: boolean;
+  immutableSnapshots: boolean;
 };
 
 export type CommandToolbarHistory = {
@@ -44,7 +48,7 @@ export function clearCommandToolbarHistories(prefix: string): void {
 
 
 export function createCommandToolbarHistory(options: CommandToolbarHistoryOptions): CommandToolbarHistory {
-  historyFor(options.key);
+  historyFor(options.key).immutableSnapshots = options.immutableSnapshots === true;
   const history = () => historyFor(options.key);
   const change = (run: () => void, structural = true) =>
     recordCommandToolbarChange(options.key, options.readCommands, run, structural);
@@ -112,7 +116,7 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
       else change(() => paths.reverse().forEach(selected => actions.deleteCommand(selected)));
     },
     replaceAll: (commands) => {
-      change(() => options.replaceCommands(structuredClone([...commands])));
+      change(() => options.replaceCommands(options.immutableSnapshots ? [...commands] : structuredClone([...commands])));
     },
     undo: () => restorePrevious(options, history()),
     redo: () => restoreNext(options, history()),
@@ -127,7 +131,7 @@ export function recordCommandToolbarChange(
 ): void {
   const entry = histories.get(key);
   if (!entry || entry.changing) { run(); return; }
-  const before = cloneCommands(readCommands());
+  const before = entry.immutableSnapshots ? readCommands() : cloneCommands(readCommands());
   const past = [...entry.past];
   const future = [...entry.future];
   // Publish before the synchronous store render so its toolbar sees the new history.
@@ -138,12 +142,12 @@ export function recordCommandToolbarChange(
     run();
   } finally {
     entry.changing = false;
-    if (JSON.stringify(before) === JSON.stringify(readCommands())) {
+    if (jsonEqual(before, readCommands())) {
       entry.past.splice(0, entry.past.length, ...past);
       entry.future.push(...future);
     } else {
       if (entry.past.length > HISTORY_LIMIT) entry.past.shift();
-      if (structural || JSON.stringify(authoredCommandPaths(before)) !== JSON.stringify(authoredCommandPaths(readCommands()))) clearCommandInspector();
+      if (structural || !jsonEqual(authoredCommandPaths(before), authoredCommandPaths(readCommands()))) clearCommandInspector();
     }
     notifyCommandSelectionChanged();
   }
@@ -153,7 +157,7 @@ function restorePrevious(options: CommandToolbarHistoryOptions, history: Command
   const previous = history.past.pop();
   if (!previous) return;
   clearCommandInspector();
-  history.future.push(cloneCommands(options.readCommands()));
+  history.future.push(history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()));
   options.replaceCommands(previous);
 }
 
@@ -161,14 +165,14 @@ function restoreNext(options: CommandToolbarHistoryOptions, history: CommandHist
   const next = history.future.pop();
   if (!next) return;
   clearCommandInspector();
-  history.past.push(cloneCommands(options.readCommands()));
+  history.past.push(history.immutableSnapshots ? options.readCommands() : cloneCommands(options.readCommands()));
   options.replaceCommands(next);
 }
 
 function historyFor(key: string): CommandHistory {
   const existing = histories.get(key);
   if (existing) return existing;
-  const created: CommandHistory = { past: [], future: [], changing: false };
+  const created: CommandHistory = { past: [], future: [], changing: false, immutableSnapshots: false };
   histories.set(key, created);
   return created;
 }

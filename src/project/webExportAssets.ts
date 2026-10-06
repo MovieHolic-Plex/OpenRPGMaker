@@ -20,6 +20,8 @@ import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
+import { webUploadedAssetPath } from './webUploadedAssetPath';
+export { safeFileName } from './webUploadedAssetPath';
 import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
 const encoder = new TextEncoder();
@@ -96,7 +98,7 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   for (const id of usedUploadedIds) {
     const asset = project.assets.uploaded[id];
     if (!asset) continue;
-    const zipPath = `assets/uploaded/${safeFileName(asset.id)}.${asset.ref ? asset.ref.extension : uploadedAssetExtension(asset.dataUrl ?? "")}`;
+    const zipPath = webUploadedAssetPath(asset);
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
   }
   if (ids.has(CASTLE_TILESET_TEXTURE_KEY)) {
@@ -113,6 +115,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   }
   if (ids.has('tex_harbor_kit')) {
     const path = 'assets/harbor-kit/CREDITS.txt';
+    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
+  }
+  if (ids.has('tex_worldmap_selected')) {
+    const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
   if (ids.has('castle_courtyard_harbor_atlas')) {
@@ -154,11 +160,6 @@ export function dataUrlBytes(dataUrl: string): Uint8Array {
   const body = dataUrl.slice(comma + 1);
   if (meta.endsWith(";base64")) return base64ToBytes(body);
   return encoder.encode(decodeURIComponent(body));
-}
-
-export function safeFileName(value: string): string {
-  const safe = value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "-").replace(/\s+/g, "-");
-  return safe || "oprn";
 }
 
 // 바이너리 dataUrl 문자열 폭발·오탐 방지(기존).
@@ -259,19 +260,4 @@ function base64ToBytes(value: string): Uint8Array {
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
   return bytes;
-}
-
-function uploadedAssetExtension(dataUrl: string): string {
-  const comma = dataUrl.indexOf(",");
-  const media = dataUrl.slice(0, comma >= 0 ? comma : dataUrl.length).toLowerCase();
-  if (media.includes("image/jpeg")) return "jpg";
-  if (media.includes("image/webp")) return "webp";
-  if (media.includes("image/gif")) return "gif";
-  if (media.includes("video/mp4")) return "mp4";
-  if (media.includes("video/webm")) return "webm";
-  if (media.includes("video/ogg")) return "ogv";
-  if (media.includes("audio/mpeg")) return "mp3";
-  if (media.includes("audio/wav")) return "wav";
-  if (media.includes("audio/ogg")) return "ogg";
-  return "png";
 }

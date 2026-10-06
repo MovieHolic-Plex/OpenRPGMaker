@@ -1,0 +1,1981 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": true,
+  "variant": "normal",
+  "clips": [
+    {
+      "skill": "skill_hand_summon_review",
+      "start": 28.16,
+      "duration": 3.92,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/snes-study-redraw-20261005/runtime-summon-displayed/skill-skill_hand_summon_review.gif",
+      "bytes": 1493767
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_hand_summon_review",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 29568,
+          "fx": "monk_dragon_aura",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0
+          ],
+          "positions": [
+            "0px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "256px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 30123,
+          "fx": "monk_dragon_wave",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 30328,
+          "fx": "monk_dragon_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px"
+          ],
+          "fieldWidth": 640,
+          "backgroundSize": "768px 128px",
+          "filter": "none",
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 30446,
+          "fx": "monk_dragon_wave",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 30990,
+          "fx": "monk_dragon_wave",
+          "anchor": "screen",
+          "size": "128",
+          "box": "256",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "0px 0px"
+          ],
+          "plane": "backdrop",
+          "fieldWidth": 640,
+          "backgroundSize": "256px 256px",
+          "filter": "none",
+          "width": "640px",
+          "rendering": "pixelated"
+        }
+      ],
+      "summons": [],
+      "poses": [
+        {
+          "at": 28607,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 30054,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 30232,
+          "actor": "actor_hero",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 30342,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 30375,
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 30446,
+          "actor": "actor_hero",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "at": 30726,
+          "actor": "actor_hero",
+          "pose": "walk_a",
+          "flip": true
+        },
+        {
+          "at": 30793,
+          "actor": "actor_hero",
+          "pose": "walk_b",
+          "flip": true
+        },
+        {
+          "at": 30881,
+          "actor": "actor_hero",
+          "pose": "walk_c",
+          "flip": true
+        },
+        {
+          "at": 30985,
+          "actor": "actor_hero",
+          "pose": "walk_b",
+          "flip": true
+        },
+        {
+          "at": 31048,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 28505.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 16.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28535.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 37.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28608,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 129.70000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28674.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 182.29999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28711.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 226.20000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28754.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 241.79999995231628,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28782.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 284.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28831.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 310,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28861.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 357.89999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28900.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 388.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28939.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 427.89999997615814,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 28984.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 466.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29021.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 513.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29053.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 547.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29089.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 581.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29135.199999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 618.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29166.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 663.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29211.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 695.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29254.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 737.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29295,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 781.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29345.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 821.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29387.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 873.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29466.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 917.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29537.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1047.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29613.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1082.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29641.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1140.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29677.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1167.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29722.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1203.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29760.299999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1249.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29796.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1289.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29832.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1329.1000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29879.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1360.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29931.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1406.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 29967.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1457.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30022.199999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1495.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30066.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1577.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30093.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0"
+          ],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1595.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30124.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1635.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30177.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1650.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30232.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1755.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30292.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1806.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30329.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1",
+            "monk_dragon_hit:0"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1845.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30355,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1",
+            "monk_dragon_hit:0"
+          ],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1867.3999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30388.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1",
+            "monk_dragon_hit:0"
+          ],
+          "poses": [
+            "attack_strike"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1911.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30461.599999904633,
+          "held": true,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 1,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:1",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_follow"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1953.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-5px",
+              "scale": "1.12 0.88"
+            }
+          ]
+        },
+        {
+          "at": 30520.199999928474,
+          "held": true,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 1,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:1",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_follow"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1953.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-5px",
+              "scale": "1.12 0.88"
+            }
+          ]
+        },
+        {
+          "at": 30530.399999976158,
+          "held": true,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 1,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:1",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_follow"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1953.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-5px",
+              "scale": "1.12 0.88"
+            }
+          ]
+        },
+        {
+          "at": 30595.599999904633,
+          "held": true,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 1,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:1",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_follow"
+          ],
+          "css": [
+            "paused"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1953.8999999761581,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": [
+            {
+              "target": "enemy-1",
+              "translate": "-5px",
+              "scale": "1.12 0.88"
+            }
+          ]
+        },
+        {
+          "at": 30702.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 1,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:1",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "attack_follow"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1979.6999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30863.199999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:4",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2139.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-flip"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30905.099999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:4",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "walk_c"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2187.399999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-flip"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30956.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_hit:5",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "walk_c"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2236.899999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-flip"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 30990.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2279.899999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-flip"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31020.199999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2285.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting retro-skill-flip"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31056.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2336.399999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31092.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2376.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31125.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:0"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2385.2999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31154.399999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2438.9999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31183.699999928474,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_aura:0",
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2447.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31215.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2491.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31246.899999976158,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2510.9999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31285.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2539.0999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31294.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [
+            "monk_dragon_wave:1"
+          ],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2577.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31343.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2598.899999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31375.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2639.1999999284744,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31407.599999904633,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2672.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31437,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2708.899999976158,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31466.5,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2731.5999999046326,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31498.799999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2758.7999999523163,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 31530.299999952316,
+          "held": false,
+          "skill": "skill_monk_dragon_fist",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 2791.9999998807907,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 28142.099999904633,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 28221.899999976158,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 28383.399999976158,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 28658.799999952316,
+          "duration": 0.5878004535147392,
+          "rate": 1
+        },
+        {
+          "at": 29558.899999976158,
+          "duration": 1.5213605442176872,
+          "rate": 1
+        },
+        {
+          "at": 30386.299999952316,
+          "duration": 1.9815419501133786,
+          "rate": 1
+        },
+        {
+          "at": 30388.399999976158,
+          "duration": 1.9815419501133786,
+          "rate": 1
+        },
+        {
+          "at": 30421.799999952316,
+          "duration": 0.6209977324263039,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 30446,
+          "target": "enemy-1",
+          "text": "-389",
+          "heal": false
+        }
+      ],
+      "hitStops": [
+        {
+          "at": 30446,
+          "on": true
+        },
+        {
+          "at": 30667,
+          "on": false
+        }
+      ],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">주인공이 용권 멸살을 사용했다!",
+        ">주인공이 용권 멸살을 사용했다!급소에 맞았다! 슬라임 1에게 389 피해!",
+        ">주인공은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 4,
+      "remainingFx": 0,
+      "layerKeys": [
+        "monk_dragon_aura",
+        "monk_dragon_wave",
+        "monk_dragon_hit"
+      ],
+      "problems": []
+    }
+  ],
+  "custom": {
+    "file": "docs/experiments/snes-study-redraw-20261005/summon-runtime-fixture.json",
+    "contract": [
+      {
+        "id": "skill_hand_summon_review",
+        "actorId": "actor_hero",
+        "motion": "finisher",
+        "level": 1,
+        "layers": [
+          "monk_dragon_aura",
+          "monk_dragon_wave",
+          "monk_dragon_hit"
+        ]
+      }
+    ],
+    "log": [
+      "Runtime fixture: hero borrows the current common skill_monk_dragon_fist contract. This does not verify original monk party startup or save project content."
+    ]
+  },
+  "passed": true
+}

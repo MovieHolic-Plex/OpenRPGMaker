@@ -8,6 +8,7 @@ import {
 } from "@/editor/actions";
 import { comboBrushPlacement, evaluateComboBrushPlacement, isComboBrush } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
+import { worldmapBrushMaterial } from '@/project/worldmapAutoBrush';
 import {
   clusterRecoveryOffer,
   freehandPaintOptions,
@@ -32,7 +33,7 @@ import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { reliefPickCell } from "@/project/relief/screen";
 import { toast } from "@/util/toast";
-import { handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
+import { commitQuickHouseDrag, commitTerrainDesign, handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
 import { symmetricPoints, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
 import { planReliefDoodad } from "./reliefDoodads";
 
@@ -230,9 +231,9 @@ export class TilePaintEngine {
           paintTilesBulk(
             mid,
             points.map((point) => ({ ...point, layer: tileLayer, tile: selectedTile })),
-            freehandPaintOptions({
+            { ...freehandPaintOptions({
               autoConnect: autoConnectMode,
-              clusterAssist: clusterAssistMode,
+              clusterAssist: editorState.get().worldmapAutoBackground && worldmapBrushMaterial(store.getCurrent().tilesets[store.getCurrent().maps[mid]!.tilesetId], selectedTile) ? true : clusterAssistMode,
               onRejected: (rejection) => {
                 // 드래그 중 같은 말을 수십 번 띄우지 않되, 스트로크의 **첫 거부**에서는
                 // 반드시 규칙·좌표와 복구 버튼을 보여 준다(붓이 잠긴 것처럼 보이던 원인).
@@ -240,7 +241,7 @@ export class TilePaintEngine {
                 this.placementNoticeShown = true;
                 presentClusterRecovery(clusterRecoveryOffer(mid, rejection));
               },
-            }),
+            }), worldmapAutoBackground: editorState.get().worldmapAutoBackground },
           );
         });
         break;
@@ -248,7 +249,7 @@ export class TilePaintEngine {
         if (firstStrokeTile) {
           if (selectedTile < 0 && tileLayer === "lower") break;
           this.applyStrokeEdit(mid, () => {
-            fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode });
+            fillTile(mid, tileLayer, x, y, selectedTile, { autoConnect: autoConnectMode, worldmapAutoBackground: editorState.get().worldmapAutoBackground });
           });
         }
         break;
@@ -418,6 +419,16 @@ export class TilePaintEngine {
    * commit=false(되돌리기로 버린 스트로크)면 정리하지 않는다.
    */
   endStroke(commit = true): void {
+    const design = editorState.get();
+    if (design.terrainHouseDrag) {
+      if (commit) commitQuickHouseDrag();
+      else editorState.set({ terrainHouseDrag: null });
+    }
+    if (design.tool === "relief" && design.terrainBrush === "road" && design.terrainRoadDrag && !design.terrainFeatureId && !design.terrainVisionPreview) {
+      if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
+      else editorState.set({ terrainPoints: null });
+    }
+    if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;
     const rough = this.reliefRough;
     this.stopReliefGrowth();

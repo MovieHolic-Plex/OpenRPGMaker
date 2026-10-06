@@ -1,0 +1,243 @@
+{
+  "source": "https://www.youtube.com/watch?v=XSoHSGRyNPo",
+  "title": "Final Fantasy VI (SNES) Combat Exhibition (All Items, Magic, Espers, Skills, Desperation Attacks) - YouTube",
+  "sampling": {
+    "id": "XSoHSGRyNPo",
+    "start": 219,
+    "end": 227,
+    "step": 0.25
+  },
+  "observations": [
+    {
+      "at": 219,
+      "currentTime": 219.261476,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 219.25,
+      "currentTime": 219.254949,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 219.5,
+      "currentTime": 219.517898,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 219.75,
+      "currentTime": 219.769995,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 220,
+      "currentTime": 220.042997,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 220.25,
+      "currentTime": 220.270584,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 220.5,
+      "currentTime": 220.521579,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 220.75,
+      "currentTime": 220.775186,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 221,
+      "currentTime": 221.022601,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 221.25,
+      "currentTime": 221.253575,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 221.5,
+      "currentTime": 221.538122,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 221.75,
+      "currentTime": 221.769798,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 222,
+      "currentTime": 222.034402,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 222.25,
+      "currentTime": 222.27452,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 222.5,
+      "currentTime": 222.533622,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 222.75,
+      "currentTime": 222.771822,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 223,
+      "currentTime": 223.015382,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 223.25,
+      "currentTime": 223.26517,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 223.5,
+      "currentTime": 223.629413,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 223.75,
+      "currentTime": 223.758048,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 224,
+      "currentTime": 224.043649,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 224.25,
+      "currentTime": 224.256304,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 224.5,
+      "currentTime": 224.53336,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 224.75,
+      "currentTime": 224.759311,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 225,
+      "currentTime": 225.032718,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 225.25,
+      "currentTime": 225.27001,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 225.5,
+      "currentTime": 225.535614,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 225.75,
+      "currentTime": 225.764911,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 226,
+      "currentTime": 226.04181,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 226.25,
+      "currentTime": 226.255599,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 226.5,
+      "currentTime": 226.53779,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 226.75,
+      "currentTime": 226.75316,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 227,
+      "currentTime": 227.021478,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "realNewGameInterview": true,
+  "noHumanRepair": true,
+  "finished": true,
+  "projectId": "2a1a19f9-5626-49ba-9e8a-a5f78a58584f",
+  "host": "http://127.0.0.1:9898/index.html?hostProject=6876c95b-e879-4c12-8e15-fcfeb4f423a3",
+  "projectDir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/romance-scene/project/.oprn-projects/6876c95b-e879-4c12-8e15-fcfeb4f423a3",
+  "revision": 14,
+  "sameProjectAfterReload": true,
+  "sameBriefAfterReload": true,
+  "hostReloadShaEqual": true,
+  "contractPreserved": true,
+  "promptCharacters": 42014,
+  "uiTaskLeak": false,
+  "environmentErrors": [
+    "Framebuffer status: Incomplete Attachment"
+  ],
+  "gameplay": {
+    "ok": true,
+    "blockers": [],
+    "ms": 64,
+    "paths": [
+      {
+        "choice": "반갑게 인사한다",
+        "choiceValue": 1,
+        "reaction": "\"안녕하세요, 지우 씨! 그렇게 환하게 인사해 주시니 덩달아 기분이 밝아져요. 앞으로 좋은 이웃으로 잘 지내봐요.\"",
+        "revisit": "\"지우 씨의 다정한 인사가 계속 귓가에 맴돌아요. 오늘 남은 하루도 좋은 일만 가득하길 바랄게요!\"",
+        "choiceOk": true,
+        "repeatOk": true,
+        "endOk": true,
+        "ending": [
+          "ending_romance_first_meeting"
+        ],
+        "relationAfterRepeat": 1,
+        "saveResumeOk": true
+      },
+      {
+        "choice": "편지를 물어본다",
+        "choiceValue": 2,
+        "reaction": "\"아, 이 편지요? 실은... 오랫동안 망설이다 겨우 부친 소중한 답장이거든요. 조금 쑥스럽지만 물어봐 주셔서 고마워요.\"",
+        "revisit": "\"덕분에 편지를 보내고 가벼워진 마음으로 돌아가요. 지우 씨에게도 오늘 따뜻한 소식이 닿기를 바랄게요.\"",
+        "choiceOk": true,
+        "repeatOk": true,
+        "endOk": true,
+        "ending": [
+          "ending_romance_first_meeting"
+        ],
+        "relationAfterRepeat": 2,
+        "saveResumeOk": true
+      }
+    ],
+    "cancelOk": true
+  },
+  "modelImages": 3,
+  "reviews": [
+    {
+      "ok": true,
+      "findings": []
+    },
+    {
+      "ok": true,
+      "findings": []
+    }
+  ],
+  "finishes": [
+    {
+      "ok": false,
+      "summary": "실행 실패(인자 검증 또는 예외): 현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요."
+    },
+    {
+      "ok": true,
+      "summary": ""
+    }
+  ],
+  "coordinatorDone": true,
+  "appliedAndSavedUi": true,
+  "firstWrites": [
+    "author_romance_scene",
+    "stamp_object",
+    "stamp_object",
+    "stamp_object",
+    "stamp_object",
+    "stamp_object"
+  ],
+  "limitation": "Live browser script exited 1 on software-renderer framebuffer page error. Generation, coordinator completion, applied/save UI and canonical reload succeeded; full UI is not declared error-free. Raw capture intentionally excludes heavy done payloads.",
+  "firstAuthoredDialogueAfterRequestMs": 55352
+}

@@ -10,6 +10,8 @@ import { installRuntimeQaFrames } from "@/player/runtimeQaFrames";
 import { PLAY_PIXEL_DENSITY_KEY } from "@/player/runtimeViewScale";
 
 export type PlayGameBootOptions = {
+  /** Build textures/map behind the opening without advancing gameplay or audio. */
+  readonly initialPresentationPending?: boolean;
   /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
   readonly qaInstrumentation?: boolean;
   /** Keyboard-only play disables Phaser's independent mouse/touch input managers. */
@@ -23,13 +25,24 @@ export type PlayGameBootOptions = {
   readonly onPlaySceneReady?: () => void;
 };
 
+let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof import('@/player/PlayScene')['PlayScene'] }> | undefined;
+function preparePlayRuntime() {
+  // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
+  return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
+      const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
+      return { PhaserRuntime, PlayScene };
+    })
+    .catch(error => { runtimeWarmup = undefined; throw error; });
+}
+/** Fetch/parse engine chunks while the title is visible; never creates a game/session. */
+export async function warmPlayGameRuntime(): Promise<void> { await preparePlayRuntime(); }
+
 export async function createPlayGame(
   parent: HTMLElement,
   initialSession?: PlaySession,
   options: PlayGameBootOptions = {}
 ): Promise<Phaser.Game> {
-  const PhaserRuntime = await ensurePhaser();
-  const { PlayScene } = await importWithRetry(() => import("@/player/PlayScene"));
+  const { PhaserRuntime, PlayScene } = await preparePlayRuntime();
   const project = store.getCurrent();
   const resolution = resolvePlayResolution(project.system);
   // 타일 크기가 섞인 프로젝트는 큰 칸의 맵을 도트 손실 없이 그리도록 캔버스만 촘촘하게 만든다.
@@ -54,6 +67,7 @@ export async function createPlayGame(
     scene: [PlayScene],
     callbacks: {
       preBoot: (game) => {
+        game.registry.set('initialPresentationPending', options.initialPresentationPending === true);
         game.registry.set(PLAY_PIXEL_DENSITY_KEY, density);
         if (options.qaInstrumentation === true) {
           game.registry.set("qaInstrumentation", true);

@@ -4,8 +4,8 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole,
-  setMapCloudShadows, setMapClimate,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
+  setMapCloudShadows, setMapClimate, setMapSunlight,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -25,8 +25,10 @@ import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
 import { isMapLoop, mapLoopLabel, MAP_LOOP_VALUES } from "@/project/mapLoop";
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
+import { normalizeSunlight, SUNLIGHT_LIMITS, sunDirectionLabel } from "@/project/sunlight";
 import { mapLocations } from "@/project/mapNamedLocations";
 import { renderLocationDrawCta } from "@/editor/locationDrawCta";
 import {
@@ -45,13 +47,14 @@ function roleLabel(role: MapRole): string {
   return role === "unknown" ? "알 수 없음" : MAP_ROLE_LABELS[role];
 }
 
-type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
+type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "sunlight" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
   climate: "기후",
   general: "기본 설정",
   background: "맵 배경",
   clouds: "구름 그림자",
+  sunlight: "태양과 그림자",
   atmosphere: "환경 효과",
   bgm: "배경 음악",
   battle: "전투 배경",
@@ -64,7 +67,7 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 const SECTION_ORDER: readonly MapPropsTab[] = [
   // 게임플레이에 바로 걸리는 설정을 위에, 장식(기후·구름·환경)은 아래로.
   // 2026-09-22 실측: 기후·배경·구름이 먼저 와서 BGM·인카운터를 찾으려면 스크롤이 길었다.
-  "general", "bgm", "encounter", "spawns", "battle", "restrictions", "background", "minimap", "climate", "clouds", "atmosphere",
+  "general", "bgm", "encounter", "spawns", "battle", "restrictions", "background", "minimap", "sunlight", "climate", "clouds", "atmosphere",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
@@ -72,6 +75,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
   background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
   clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
+  sunlight: "태양의 방향과 고도를 정해 절벽·집·나무가 땅에 드리우는 그림자를 설정합니다.",
   atmosphere: "자연·판타지·도시·물속 효과를 겹쳐 적용합니다.",
   bgm: "이 맵에 들어왔을 때 재생할 음악을 고릅니다.",
   battle: "이 맵에서 전투가 시작되면 표시할 배경입니다.",
@@ -83,6 +87,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
 
 const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/project/types").GameMap) => void> = {
   climate: renderClimateTab, general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
+  sunlight: renderSunlightTab,
   battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
   spawns: renderSpawnsTab, minimap: renderMinimapTab,
   atmosphere: (host, map) => renderMapAtmosphere(host, map, () => rerender(host)),
@@ -107,6 +112,10 @@ export function resetMapPropsSectionForOpen(): void {
 let bgmPreview: AudioPreviewSession | null = null;
 
 function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap): string {
+  if (tab === "sunlight") {
+    const sun = normalizeSunlight(map.sunlight);
+    return sun.enabled ? `${sunDirectionLabel(sun.azimuth)}쪽 태양 · 고도 ${sun.altitude}°` : "꺼짐";
+  }
   const project = store.getCurrent();
   const resourceName = (id: string | undefined): string =>
     listDatabaseResourceOptions(id ? "backdrop" : "backdrop", project).find((item) => item.id === id)?.name ?? "";
@@ -362,6 +371,20 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   roleSelect.addEventListener("change", () => setMapRole(map.id, isMapRoleKind(roleSelect.value) ? roleSelect.value : undefined));
   section.append(fieldRow("맵 성격", roleSelect));
   section.append(el("p", { class: "map-props-hint", text: "바로 깔기가 이 값을 기준으로 깝니다. 마을·실내면 함정·몬스터를 요청 없이 두지 않고 상자 보상을 낮춥니다." }));
+
+  // 캐릭터 크기 — 월드맵처럼 칸이 작은 지도에서 걷는 캐릭터를 줄이는 선택 옵션
+  const sizeSelect = el("select", {
+    attrs: { "aria-label": `${map.name} 캐릭터 크기` },
+    dataset: { testid: "map-props-character-scale" },
+  }) as HTMLSelectElement;
+  const current = mapCharacterSizeFactor(map);
+  const sizeChoices: Array<[number, string]> = [[1, "100% (기본)"], [0.75, "75%"], [0.5, "50%"]];
+  if (!sizeChoices.some(([v]) => v === current)) sizeChoices.push([current, `${Math.round(current * 100)}%`]);
+  for (const [value, label] of sizeChoices) sizeSelect.append(el("option", { text: label, attrs: { value: String(value) } }));
+  sizeSelect.value = String(current);
+  sizeSelect.addEventListener("change", () => setMapCharacterScale(map.id, Number(sizeSelect.value)));
+  section.append(fieldRow("캐릭터 크기", sizeSelect));
+  section.append(el("p", { class: "map-props-hint", text: "이 맵에서 걷는 주인공·동료·탈것·캐릭터 이벤트를 줄입니다. 월드맵처럼 땅을 멀리서 보는 지도에 씁니다. 50% 는 도트가 거칠어질 수 있습니다." }));
 
   // 크기
   const wInput = el("input", {
@@ -1246,6 +1269,31 @@ function numberField(
 }
 
 // ── 구름 그림자 섹션 ──
+function renderSunlightTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const section = el("div", { class: "panel-section map-props-section" });
+  const sun = normalizeSunlight(map.sunlight);
+  const enable = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-sunlight-enable" } }) as HTMLInputElement;
+  enable.checked = sun.enabled;
+  enable.addEventListener("change", () => { setMapSunlight(map.id, { enabled: enable.checked }); rerender(host); });
+  const row = el("label", { class: "map-props-check-row" });
+  row.append(enable, el("span", { text: "이 맵에 태양 그림자" })); section.append(row);
+  section.append(el("p", { class: "map-props-hint", text: "설정을 바꾸면 편집기와 플레이 화면에 반영됩니다. 태양이 낮을수록 그림자가 길어집니다." }));
+  if (sun.enabled) {
+    appendSliderRow(section, { label: "태양 방향 (도)", testid: "map-sunlight-azimuth", min: 0, max: 359, step: 1,
+      value: sun.azimuth, normalize: v => wrapDegrees(v, sun.azimuth),
+      describe: v => `${sunDirectionLabel(v)}쪽 · ${v}° — 0° 북, 90° 동, 180° 남, 270° 서.`, apply: azimuth => setMapSunlight(map.id, { azimuth }) });
+    appendSliderRow(section, { label: "태양 고도 (도)", testid: "map-sunlight-altitude", ...SUNLIGHT_LIMITS.altitude, step: 1,
+      value: sun.altitude, normalize: v => clampSlider(v, 12, 85), describe: v => `${v}° — 낮을수록 긴 그림자.`, apply: altitude => setMapSunlight(map.id, { altitude }) });
+    appendSliderRow(section, { label: "그림자 진하기 (%)", testid: "map-sunlight-opacity", min: 0, max: 65, step: 1,
+      value: Math.round(sun.opacity * 100), normalize: v => clampSlider(v, 0, 65), describe: v => `${v}%`, apply: v => setMapSunlight(map.id, { opacity: v / 100 }) });
+    appendSliderRow(section, { label: "그림자 가장자리", testid: "map-sunlight-softness", min: 0, max: 4, step: 1,
+      value: sun.softness, normalize: v => clampSlider(v, 0, 4), describe: v => v === 0 ? "선명하게" : `${v} — 부드럽게`, apply: softness => setMapSunlight(map.id, { softness }) });
+    appendSliderRow(section, { label: "집·나무의 그림자 높이 (%)", testid: "map-sunlight-height", min: 25, max: 200, step: 5,
+      value: Math.round(sun.heightScale * 100), normalize: v => clampSlider(v, 25, 200), describe: v => `${v}% — 집·나무의 그림자 길이를 조절합니다.`, apply: v => setMapSunlight(map.id, { heightScale: v / 100 }) });
+  }
+  host.append(section);
+}
+
 //
 // 슬라이더의 범위·기본값은 런타임과 같은 순수 모델(`@/player/cloudShadows`)에서 읽는다.
 // 여기서 숫자를 따로 적으면 플레이 화면의 계산과 어긋날 수 있다.

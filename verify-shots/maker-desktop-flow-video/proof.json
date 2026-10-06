@@ -1,0 +1,103 @@
+{
+  "actualElectron": true,
+  "mockedResponses": 0,
+  "typedAnswers": 0,
+  "chapters": [
+    {
+      "label": "앱 실행 · 전체화면",
+      "at": 0.244
+    },
+    {
+      "label": "장르 선택 · 입력 없이 시작",
+      "at": 5.128
+    },
+    {
+      "label": "새 게임 인터뷰",
+      "at": 76.085
+    },
+    {
+      "label": "그림 생성 실패 · 질문은 진행 가능",
+      "at": 99.81
+    },
+    {
+      "label": "어떤 만남으로 시작할까요?",
+      "at": 102.204
+    },
+    {
+      "label": "무엇을 하며 가까워질까요?",
+      "at": 114.175
+    },
+    {
+      "label": "어떤 감정이 오래 남으면 좋을까요?",
+      "at": 122.174
+    },
+    {
+      "label": "관계는 어떤 흐름으로 이어질까요?",
+      "at": 130.966
+    },
+    {
+      "label": "첫 번째로 어디까지 만들어 볼까요?",
+      "at": 139.015
+    },
+    {
+      "label": "기획 확인 · 내부 실행 지침은 조수에게 전달",
+      "at": 147.074
+    }
+  ],
+  "waits": [
+    {
+      "label": "편집기와 인터뷰 준비",
+      "from": 7.231,
+      "to": 76.084
+    },
+    {
+      "label": "첫 그림 생성·검수 대기",
+      "from": 96.29,
+      "to": 96.308
+    },
+    {
+      "label": "답변 반영 그림 생성·검수 대기",
+      "from": 106.342,
+      "to": 106.352
+    }
+  ],
+  "requests": [],
+  "errors": [],
+  "startup": {
+    "fullscreen": true,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900
+    }
+  },
+  "emptyIdeaHandoff": true,
+  "artStates": [
+    {
+      "label": "첫 그림 생성·검수 대기",
+      "state": "error"
+    },
+    {
+      "label": "답변 반영 그림 생성·검수 대기",
+      "state": "error"
+    }
+  ],
+  "failure": "Error: page.waitForTimeout: Page crashed",
+  "recordingEnd": 232.642,
+  "rawVideo": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/maker-flow-video/page@0c9ef9de14c16ca4b39668e2727fefe7.webm",
+  "recordedSourceBase": "ac5df99924f6b89bea46ee68c0311d4864230094",
+  "recordedAppVersion": "0.111.1",
+  "launcherEmptyIdeaGuardRemoved": true,
+  "overallPassed": false,
+  "scope": "Actual desktop recording; not a successful AI handoff or latest-release certification.",
+  "video": {
+    "durationSeconds": 107,
+    "width": 1440,
+    "height": 966,
+    "codec": "H.264",
+    "waitSpeed": 10,
+    "sha256": "7fd2bfac02284b9e306eda0b94bf3b6f54aa25ba86d7497ca5db1e784857ac22",
+    "sourceSeconds": 232.32
+  }
+}

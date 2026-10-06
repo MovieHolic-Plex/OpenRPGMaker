@@ -20,6 +20,7 @@ import {
   cancelProviderLogin,
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+import { piTimer } from "./piRunTiming.mjs";
 
 applyLegacyEnvAliases();
 
@@ -36,6 +37,35 @@ let workerStale = false;
  * 것이 아니라 **워커가 낡아 있었다**. 지금 도는 실행은 죽이지 않는다: 갈아 끼우는 자리는 다음
  * 요청이다(진행 중인 Pi 실행을 파일 저장 한 번으로 끊지 않는다).
  */
+
+/** 실행 도중 키를 다시 푸는 간격. resolveRequestApiKey 는 남은 수명이 15분 아래일 때만 갱신하므로 대부분 호출은 저장본을 읽고 끝난다. */
+const WORKER_KEY_REFRESH_MS = 5 * 60_000;
+
+/**
+ * 워커 실행이 도는 동안 요청 키를 주기적으로 다시 풀어 워커에 밀어 넣는다(scripts/lib/piWorkerKeys.ts).
+ * 시작 때 한 번 푼 키는 15분 남짓만 보장된다 — 팀 실행이 그보다 길면 실행 중간에 「OAuth token expired before request」로
+ * 에이전트가 죽었다(2026-10-05 스트레스 실측, 18분 40초째). 본문이 끝나거나 취소되면 멈춘다.
+ */
+function keepWorkerKeysFresh(port, providerApiKeys, body, signal) {
+  if (!body) return body;
+  const providers = Object.keys(providerApiKeys).filter((provider) => providerApiKeys[provider]);
+  if (!providers.length) return body;
+  let timer = null;
+  const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+  timer = setInterval(async () => {
+    const fresh = {};
+    for (const provider of providers) {
+      try { fresh[provider] = await resolveRequestApiKey(provider); } catch { /* 갱신 실패 — 원래 키로 계속 간다 */ }
+    }
+    await fetch(`http://127.0.0.1:${port}/agent/keys`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ providerApiKeys: fresh }),
+    }).catch(() => undefined);
+  }, WORKER_KEY_REFRESH_MS);
+  timer.unref?.();
+  signal?.addEventListener("abort", stop, { once: true });
+  return body.pipeThrough(new TransformStream({ flush: stop, cancel: stop }));
+}
+
 export function markOhMyPiWorkerStale() {
   workerStale = true;
 }
@@ -100,10 +130,11 @@ function startWorker() {
           : error.message,
       ));
     });
-    child.on("exit", (code) => {
+    child.on("exit", (code, signal) => {
       // 죽은 포트를 물려주지 않는다 — 다음 요청이 새 워커를 띄운다(READY 뒤에 죽은 경우까지).
       // 단, 갈아 끼운 뒤 옛 워커가 늦게 죽는 경우에는 새 워커의 자리를 지우면 안 된다.
       if (workerChild === child) {
+        console.error(`[oh-my-pi-worker] exited: code=${code ?? "none"}, signal=${signal ?? "none"}`);
         workerChild = null;
         workerPortPromise = null;
       }
@@ -148,6 +179,17 @@ async function workerJson(pathname, body) {
     throw error;
   }
   return payload;
+}
+
+/**
+ * 워커 몸통 끝에 무거운 키 원문을 「heavyRaw」로 덧붙인다. 원문은 이미 JSON 이라 문자열로 감싸지 않고 그대로 이어 붙인다 —
+ * 워커가 request.json() 한 번으로 객체를 받는다. 왜(2026-10-04 실측, 새 프로젝트 168MB): 실행마다 호스트가 무거운 키를
+ * JSON.parse(1.4~1.9s) → 몸통째 JSON.stringify(1.5~1.7s) → 워커가 다시 파싱(1.6~1.8s) 했다. 워커가 해시로 쥐고 있으면 셋 다 없다.
+ */
+function withHeavyRaw(envelope, entries) {
+  if (!envelope.endsWith("}")) throw new Error("워커 몸통이 객체가 아닙니다.");
+  const raw = entries.map(([hash, json]) => `${JSON.stringify(hash)}:${json}`).join(",");
+  return `${envelope.slice(0, -1)}${envelope.length > 2 ? "," : ""}"heavyRaw":{${raw}}}`;
 }
 
 export function stopOhMyPiWorker() {
@@ -200,6 +242,8 @@ export async function createOhMyPiAdapters() {
     async resolveCheckpoint(body) {
       return workerJson("/agent/checkpoint", body);
     },
+    /** runAgent 가 options.heavy(해시·글)를 받아 워커까지 해시째 넘긴다 — 중계가 프로젝트를 되살리지 않는다. */
+    runAgentHeavyRefs: true,
     async runAgent(provider, body, options = {}) {
       const apiKey = await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
@@ -208,6 +252,13 @@ export async function createOhMyPiAdapters() {
         if (selected?.provider && !(selected.provider in providerApiKeys)) {
           providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
         }
+      }
+      // Resolve the image slot independently. Missing credentials must fail the image tool,
+      // not prevent unrelated read/authoring turns from starting.
+      const imageProvider = body.imageProvider || 'google-antigravity';
+      if (!(imageProvider in providerApiKeys)) {
+        try { providerApiKeys[imageProvider] = await resolveRequestApiKey(imageProvider); }
+        catch { providerApiKeys[imageProvider] = undefined; }
       }
       // 웹 검색은 조수 제공자와 무관하게 Codex 백엔드가 한다 — Antigravity 로 턴을 돌려도 검색은 ChatGPT 자격으로 나간다.
       // 자격이 없으면 undefined 로 두고 툴이 이유를 말하게 한다(여기서 던지면 미로그인 사용자의 모든 턴이 검색 때문에 죽는다).
@@ -219,21 +270,51 @@ export async function createOhMyPiAdapters() {
           codexApiKey = undefined;
         }
       }
+      const timer = piTimer("host runAgent");
       const port = await startWorker();
+      timer.mark("worker");
+      const heavy = options.heavy?.refs && Object.keys(options.heavy.refs).length ? options.heavy : null;
+      const envelope = JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider }, ...(heavy ? { heavy: heavy.refs } : {}) });
+      timer.mark("stringify", `${Math.round(envelope.length / 1048576)}MB`);
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
-      const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
+      const post = (raw) => fetch(`http://127.0.0.1:${port}/agent/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider } }),
+        body: raw.length ? withHeavyRaw(envelope, raw.map((hash) => [hash, heavy.blobs[hash]])) : envelope,
         ...(options.signal ? { signal: options.signal } : {}),
       });
+      // 무거운 키는 해시만 보내고 워커가 파싱해 둔 것을 쓴다. 워커가 모르면(막 떴거나 밀어냈으면) 409 로 그 해시만 받는다.
+      let response = await post([]);
+      if (heavy && response.status === 409) {
+        const payload = await response.json().catch(() => ({}));
+        if (payload?.error !== "heavy-missing" || !Array.isArray(payload.missing)) {
+          throw Object.assign(new Error(payload?.error || "oh-my-pi worker 409"), { status: 409 });
+        }
+        const missing = payload.missing.filter((hash) => typeof heavy.blobs[hash] === "string");
+        timer.mark("workerMissing", `${missing.length}`);
+        response = await post(missing);
+      }
+      if (heavy && response.ok && response.headers.get("X-Oprn-Heavy-Refs") !== "1") {
+        // 해시를 모르는 옛 워커(패키지 빌드가 어긋난 경우) — 빈 키로 돌고 있다. 끊고 되살린 프로젝트로 다시 보낸다.
+        void response.body?.cancel().catch(() => undefined);
+        const project = { ...body.project };
+        for (const [key, hash] of Object.entries(heavy.refs)) project[key] = JSON.parse(heavy.blobs[hash]);
+        response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, project, provider } }),
+          ...(options.signal ? { signal: options.signal } : {}),
+        });
+      }
+      timer.mark("workerHeaders");
+      timer.done();
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
         const error = new Error(payload?.error || `oh-my-pi worker ${response.status}`);
         error.status = response.status;
         throw error;
       }
-      return { stream: true, ndjson: response.body };
+      return { stream: true, ndjson: keepWorkerKeysFresh(port, providerApiKeys, response.body, options.signal) };
     },
     async generateImage(provider, body) {
       const apiKey = await resolveRequestApiKey(provider);

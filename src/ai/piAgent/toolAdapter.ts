@@ -1,10 +1,15 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import type { PiCharsetSelectionGate } from './charsetSelectionGate';
+import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { presentationArtImages } from '@/editor/tools/presentationTools';
+import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
+import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -21,6 +26,8 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import type { chatCompletion } from "@/ai/llmClient";
+import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
 import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
@@ -51,9 +58,12 @@ export interface PiToolCallRecord {
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
+  /** 쓰기 도구가 남긴 시공 단계(마을 짓기 등). 체크포인트에 실려 편집기 재생에만 쓰인다. */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 
 export interface CreatePiToolsetOptions {
+  readonly charsetGate?: PiCharsetSelectionGate;
   readonly modernTilesetPolicy?: ModernTilesetPolicy;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
@@ -77,9 +87,26 @@ export interface CreatePiToolsetOptions {
   readonly scopeMapIds?: readonly string[];
   /** 평문 병합 실행(`piMapScopeGuard`) — 거부 문구가 「DB·시스템은 되고 다른 맵만 안 된다」고 말한다. */
   readonly scopeAllowsSystem?: boolean;
+  /**
+   * 이 실행이 실제로 부를 수 있는 이름인가 — find_tools 결과를 실행 경계로 거른다.
+   * find_tools 는 레지스트리 전체를 찾는다. 경계(팀원 역할 등) 밖 이름을 그대로 보여 주면 모델이 부르고
+   * 「Tool … not found」로 턴을 태운다(2026-10-05 스트레스 g-ember-mine: 빌더가 set_map_properties 를 찾고 연속 실패).
+   */
+  readonly findToolsCallable?: (name: string) => boolean;
+  /**
+   * event_command_assist 의 LLM 호출. 워커(Bun)에는 편집기 동반 서비스 주소가 없어 기본 경로(상대 `/v1`)가
+   * 「fetch() URL is invalid」로 매번 실패했다(2026-10-05 스트레스 r4 p-inn·r7 g-ashen-chase). 워커가 자기 제공자로 채운다.
+   */
+  readonly eventAssistChat?: typeof chatCompletion;
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
+/**
+ * 참고문서 읽기는 배치 관문이 **반드시** 읽게 하는 글이라 더 크게 싣는다 — 잘린 결과는 읽은 것으로 치지 않아(tilesetReferenceGate)
+ * 12,000자에 맞추면 한꺼번에 읽기가 쪽 하나씩 나뉘고, 턴마다 전체 맥락이 다시 실린다. 실을 글의 총량은 같다.
+ * 도구의 한꺼번에 읽기 상한(tilesetReferenceTools BUNDLE_DATA_BUDGET)이 이 값보다 작아야 한다.
+ */
+const REFERENCE_MAX_DATA_CHARS = 32_000;
 const DEFAULT_MAX_ISSUES = 8;
 
 export function selectPiToolDefinitions(
@@ -150,7 +177,10 @@ export function harvestFindToolsNames(result: ToolResult): string[] {
 }
 
 export interface ResolvePiToolOptions {
+  readonly charsetGate?: PiCharsetSelectionGate;
   readonly referenceGate?: PiTilesetReferenceGate;
+  /** 현대 칩셋 정책 — 발견·폴백으로 만든 쓰기 셰이프도 처음 선언된 도구와 같은 검사를 받는다. */
+  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
   readonly readOnly?: boolean;
   /** 실행의 하드 경계(팀 역할 제한 등). 설정되면 이 목록 안 이름만 만든다. */
@@ -159,6 +189,34 @@ export interface ResolvePiToolOptions {
   readonly maxDataChars?: number;
   readonly scopeMapIds?: readonly string[];
   readonly scopeAllowsSystem?: boolean;
+  readonly findToolsCallable?: (name: string) => boolean;
+  readonly eventAssistChat?: typeof chatCompletion;
+}
+
+/**
+ * find_tools 결과에서 이 실행이 부를 수 없는 후보를 빼고, 뺀 이름은 요약에 「범위 밖」으로만 남긴다.
+ * 이름을 아예 숨기지 않는 까닭: 모델이 필요한 도구가 없다는 사실을 알아야 보고로 넘긴다 — 숨기면 다른 말로 다시 찾는다.
+ */
+export function scopeFindToolsResult(result: ToolResult, callable: (name: string) => boolean): ToolResult {
+  if (!result.ok) return result;
+  const data = result.data as { readonly matches?: unknown } | undefined;
+  if (!data || !Array.isArray(data.matches)) return result;
+  const nameOf = (match: unknown): string | undefined => {
+    const name = match && typeof match === "object" ? (match as { name?: unknown }).name : undefined;
+    return typeof name === "string" ? name : undefined;
+  };
+  const inside = data.matches.filter(match => { const name = nameOf(match); return name === undefined || callable(name); });
+  const outside = data.matches.map(nameOf).filter((name): name is string => name !== undefined && !callable(name));
+  if (outside.length === 0) return result;
+  const note = `범위 밖(이 실행에서는 호출할 수 없음 — 꼭 필요하면 결과 보고에 적어 넘기세요): ${outside.join(", ")}`;
+  const missing = /\. 없는 툴 이름: .*$/.exec(result.summary)?.[0] ?? "";
+  return {
+    ...result,
+    summary: inside.length > 0
+      ? `편집기 툴 ${inside.length}개 발견: ${inside.map(nameOf).filter(Boolean).join(", ")}${missing}. ${note}`
+      : `이 실행에서 호출할 수 있는 툴 중 맞는 것이 없습니다${missing}. ${note}`,
+    data: { ...data, matches: inside },
+  };
 }
 
 /**
@@ -170,11 +228,15 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
   if (options.toolNames && !options.toolNames.includes(name) && !(TILESET_REFERENCE_READ_TOOLS.some(n => n === name) && options.toolNames.some(n => TILESET_REFERENCE_WRITERS.has(n)))) return undefined;
   return createPiToolset(ctx, {
     toolNames: [name],
+    charsetGate: options.charsetGate,
     referenceGate: options.referenceGate,
+    modernTilesetPolicy: options.modernTilesetPolicy,
     readOnly: options.readOnly,
     onCall: options.onCall,
     scopeMapIds: options.scopeMapIds,
     scopeAllowsSystem: options.scopeAllowsSystem,
+    findToolsCallable: options.findToolsCallable,
+    eventAssistChat: options.eventAssistChat,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
   }).find(tool => tool.name === name);
 }
@@ -215,20 +277,31 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     name: tool.name,
     label: tool.name,
     description: tool.description,
-    parameters: tool.parameters,
+    parameters: NULLABLE_OPTIONAL_TOOLS.has(tool.name) ? nullableOptionalParameters(tool.parameters) : tool.parameters,
     concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
-      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const raw = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      const args = NULLABLE_OPTIONAL_TOOLS.has(tool.name)
+        ? omitUnusedOptionalArguments(tool.parameters, raw) as Record<string, unknown> : raw;
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;
-      if (!gate && tool.prepare) await prepareTool(tool.name, args);
+      if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
+      let constructionLogs: readonly ConstructionLog[] = [];
+      const writeStarted = Date.now();
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
-        ? await runToolAsync(ctx, tool.name, args, { signal })
-        : runTool(ctx, tool.name, args));
+        ? await runToolAsync(ctx, tool.name, args, { signal, ...(options.eventAssistChat ? { chat: options.eventAssistChat } : {}) })
+        : tool.mode === "write"
+          ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
+          : runTool(ctx, tool.name, args));
+      if (tool.name === "find_tools" && options.findToolsCallable) result = scopeFindToolsResult(result, options.findToolsCallable);
       if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
+      }
+      if (tool.mode === 'write' && result.ok && options.charsetGate) {
+        const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
+        if (violation) { ctx.project = beforeProject; result = violation; }
       }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
@@ -241,20 +314,38 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
       }
+      // 시공 기록이 없는 쓰기 도구도 실제 변경을 아래층 → 위층 순서로 맵 위에서 다시 튼다(예전 밑그림, 2026-10-04).
+      if (tool.mode === "write" && result.ok && ctx.project !== beforeProject) {
+        constructionLogs = [...constructionLogs, ...synthesizeToolConstructionLogs(tool.name, beforeProject, ctx.project, constructionLogs, Date.now() - writeStarted)];
+      }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
-      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
+        ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
+      const expandedRead = ['read_tileset_reference', 'read_worldmap_structure_reference', 'list_npc_graphics'].includes(tool.name) || tool.name === 'list_resources' && args.kind === 'charset';
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, expandedRead ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }
       }
+      if (tool.name === 'show_title_opening') {
+        for (const image of presentationArtImages(ctx.project)) {
+          content.push({ type: 'text', text: `${image.resourceId}: ${image.label}` });
+          content.push({ type: 'image', mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(';')), data: image.dataUrl.slice(image.dataUrl.indexOf(',') + 1) });
+        }
+      }
       if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
+      if (tool.name === 'read_worldmap_structure_reference') for (const image of await worldAtlasReferenceImages(result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
       if (tool.name === 'get_concept_facility') for (const image of await interiorPresetImages(result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'read_world_terrain' || tool.name === 'edit_world_terrain') for (const image of worldTerrainImages(tool.name)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'generate_cutscene_art') for (const image of cutsceneArtImages(ctx.project, result.data)) {

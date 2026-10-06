@@ -1,0 +1,54 @@
+{
+  "mode": "explicit feature fixtures through shipping player.html and export shim",
+  "cases": [
+    {
+      "name": "unicode-safe typewriter; first confirm reveals, second advances",
+      "passed": true,
+      "glyphs": {
+        "text": "한글 👨‍👩‍👧‍👦 é <b>기억</b>\n다시 시작하는 이야기",
+        "letters": [
+          "한",
+          "글",
+          " ",
+          "👨‍👩‍👧‍👦",
+          " ",
+          "é",
+          " ",
+          "<",
+          "b",
+          ">",
+          "기",
+          "억",
+          "<",
+          "/",
+          "b",
+          ">",
+          "\n",
+          "다",
+          "시",
+          " ",
+          "시",
+          "작",
+          "하",
+          "는",
+          " ",
+          "이",
+          "야",
+          "기"
+        ],
+        "state": "revealing"
+      }
+    },
+    {
+      "name": "all text layouts and six entrances; animated credits and independent scene exit",
+      "passed": true,
+      "exitOpacity": 0.4999
+    },
+    {
+      "name": "reduced motion keeps credits readable; skip cancels text/scene timers",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

@@ -13,6 +13,7 @@
 
 import type { PassFlag, Project, TileGroupMetadata, TilesetDef } from "./types";
 import { roleCapabilities } from "./tileRoles";
+import { worldmapMaterialGroup } from './worldmapAutoBrush';
 import { bagMaterialRejectMessage, isBagGroup, isBagMaterialQuery } from "./materialPolicy";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
@@ -300,6 +301,9 @@ function groupContainingTile(tileset: TilesetDef, tileId: number): TileGroupMeta
 }
 
 function isAutotileGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  // Explicit connection groups can live on the upper layer (worldmap forests/mountains).
+  if (tileset.autotileGroups?.some(auto => auto.id === group.id
+    && auto.memberTileIds.some(tile => group.tileIds.includes(tile)))) return true;
   const kind = group.patternGrammar?.kind;
   // 문법이 명시되면 역할보다 문법이 이긴다 — 역할 능력으로 접히지 않는 우선순위다.
   if (kind === "autotile_3x3" || kind === "animated_terrain") return true;
@@ -389,6 +393,10 @@ export function resolveMaterialByLabel(
       suggestions: suggestMaterialsByLabel(tileset, "소품", 5).filter((s) => !isBagMaterialQuery(s.label)),
     };
   }
+  const worldmapGroup = worldmapMaterialGroup(tileset, raw);
+  if (worldmapGroup) return materialAccessForGroup(tileset, worldmapGroup, {
+    tileId: worldmapGroup.tileIds[0]!, label: worldmapGroup.name, description: worldmapGroup.description ?? '',
+  });
   // 그룹 display name 완전 일치 우선(라벨 동의어 오염 방지 — "키큰 풀" ≠ "잔디").
   const exactGroup = findExactGroupByName(tileset, raw);
   if (exactGroup) {

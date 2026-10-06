@@ -2,6 +2,42 @@
 
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
+## 여러 단계 되돌리기와 초안 보관 비용 (2026-10-04)
+
+`revertToHistoryIndex` / `redoToHistoryIndex`는 적용 순서대로 스냅샷을 모은 뒤 한 번만 복원한다.
+프로젝트 스냅샷은 앞선 맵 복원을 초기화하고, 이후 같은 맵의 마지막 상태와 마지막 타일셋
+스냅샷만 적용한다. 중간 프로젝트 복제는 하지 않는다. 마지막 결과의 가변 가지는 깊게 복제하고,
+공용 타일셋·업로드 자산만 기존 쓰기 시 복제 계약을 따른다. 점프 한 번은 반대 스택에서도 한 항목이다.
+단일 칸 undo 경로와 초안 병합은 그대로 복원 경계에서 수행한다.
+
+`eventDraftVault`는 사적으로 소유한 불변 항목의 JSON을 WeakMap으로 기억하고, 보관함 리비전이
+변할 때만 배열 본문을 재조립한다. 명시적 저장은 매번 새 `savedAt`으로 localStorage에 쓰며,
+공개 읽기는 계속 깊은 사본을 반환한다. 같은 원본 이벤트를 재관측해도 복제·타이머를 재시작하지
+않는다. 추가·삭제·복구·비우기에서 리비전을 갱신해야 한다. 보관함은 정본 저장 영수증이 아니다.
+
+실제 브라우저의 혼합 맵/프로젝트/타일셋 복원과 반복 보관 계약, 측정 조건은
+`verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`에 있다.
+
+## 지형 조수의 실제 UI 검증 (2026-10-04)
+
+현재 채팅 실행은 `ai-input`과 `ai-send`를 통한 Pi 경로로 확인한다. `__oprnAiBridge.send()`는 아직 `sendText`/옛 AssistantSession 경로를 호출하므로 Pi 의도 선언·도구 노출·실시간 적용 검증을 대신하지 못한다. 브리지의 `status()`/`audit()`는 읽기 관측에 쓴다. 실제 `/v1/agent/run` SSE와 모델 요청, 정본 SQLite 저장·재로드를 함께 기록한다. 근거는 `verify-shots/terrain-ai-edit/SUMMARY.md`.
+
+## 작은 타일 편집의 undo/redo 경로 (2026-10-04)
+
+`mapEditHistory.restoredTileCells`는 맵 크기와 lowerTiles/upperTiles 이외의 모든 값이 같은 경우에만
+최대 4,096개의 정확한 변경 칸을 계산한다. 타일셋 복원, 이벤트 초안 보관함, 잠긴 지형이 있으면 적용하지 않는다.
+이 경로는 기존 `store.updateMapTiles`의 쓰기 시 복제와 칸 단위 통지를 사용한다. 다른 맵이나 저장 기준본을
+고치지 않으며 일반 맵/프로젝트 스냅샷은 기존 `store.replace` 복원·초안 병합·정규화 계약을 유지한다.
+
+`hasEventDraftVaultEntries`는 살아 있는 초안뿐 아니라 화면에서 잠시 사라진 보관 초안도 감지한다.
+보관 초안을 복구하는 적용을 타일 통지만으로 표시하면 이벤트 그림이 갱신되지 않으므로 반드시 전체 경로로 보낸다.
+잠긴 칸 복원도 칠하기의 잠금 검사에 막히지 않도록 전체 경로를 사용한다.
+
+화면 증거와 같은 조건의 비교는 `verify-shots/editor-ux-improvements-20261004/README.md`에 있다.
+`scripts/qa/editor-ux-audit.mjs`는 실제 Ctrl+Z/Ctrl+Y의 타일 결과, 두 레이어, 다른 맵 정체성,
+덧그림/그림자/스택, 크기, 이벤트, 새 초안과 보관함에만 있는 초안, 잠긴 지형, 프로젝트 복원을 확인한다.
+전체 테스트·게이트·typecheck는 이번 세션의 실행 제한에 따라 돌리지 않았다.
+
 ## 되돌리기 복원의 공용 자산 복제 (2026-10-03)
 
 높이 붓 확인 중 Ctrl+Z 뒤 Ctrl+Y에서 Chromium 탭이 죽었고, 바닥 붓 한 칸도 같은 순서로 죽었다.
@@ -206,6 +242,10 @@ AI 로 만든 편집 전량이 `{ scope: "project" }` + 라벨 없음 + `origin:
 
 `test/aiApplyActivityLabels.test.ts` 가 이 계약을 고정하고, 마지막 케이스가
 "AI 경로를 전부 돌려도 `unlabeledEditActivityCount() === 0` 이고 `origin: "human"` 엔트리가 없다" 를 잠근다.
+
+### 요청 중 사람 칸 의도 (2026-10-04)
+
+`assistantHumanEdits`는 실행 중 구독한 descriptor의 origin으로 사람 칸을 추적한다. AI 적용을 human으로 잘못 라벨링하면 그 칸을 사용자 의도로 잠그므로 위 origin 계약은 적용 로그뿐 아니라 다음 체크포인트 보호에도 필요하다. 칸 descriptor가 있는 붓질은 해당 좌표만 수집한다(전 맵 diff 없음). descriptor 없는 높이·undo 변경에서만 값 비교를 한다. AI/System 알림에서도 이전 프로젝트 포인터를 갱신해 다음 사람 편집의 비교 기준을 유지한다. ACK가 사람 값을 채택한 뒤에도 좌표 의도는 같은 실행 종료까지 남고, 프로젝트 전환으로 무효화된다. 실제 덮기를 막았을 때 작업 과정에 보존 칸 수를 남긴다.
 
 ## P3 owner-bound publication (2026-09-07)
 
@@ -655,3 +695,30 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 - 뿌리 키 삭제는 `applyCleanedProjection` 이 전파하지 않는다.
 - 남은 비용: 전체 흉내에서 diff 약 55ms 는 `sameValue`(맵 ~13ms·DB ~17ms·공간 저작 ~40ms 의 JSON.stringify 대조). 한가할 때 예열은 한 덩이 동기 작업(약 9s, 큰 프로젝트)이라 쪼갤 여지가 있다.
   `electronRepository` 의 `jsonContentDigest(previous.tileset)` 두 곳은 여전히 전체 순회다.
+
+실시간 표시 보강(2026-10-03): `aiCanvasProgress`의 클릭 직후 준비 표시와 `tool_start`/`tool_end` 표시는 UI 관측이며 적용·저장 영수증으로 세지 않는다. 기본 시공 표시를 켜되 저장된 off는 유지한다. 실제 수용·맵 focus는 기존 체크포인트 적용 경로가 담당한다.
+
+### 미디어 분리의 저장용 교체와 AI 턴 (2026-10-04)
+
+호스트는 새 생성 그림의 inline dataUrl을 자산 파일/ref로 분리하면서 리비전을 올린다.
+두 번째 그림 생성 전에 팀 폴링이 이 변경을 projectSwitch로 통지해 `assistantHumanEdits`를
+영구 무효화했던 실측 오류를 수정했다. `refreshFromHost`는 `isMediaSeparationOnly`로
+업로드 이외의 프로젝트 전체와 자산 메타데이터가 동일하고, 기존 바이트의 SHA-256/MIME/길이가
+새 ref와 정확히 같은 경우만 저장 방식 변경으로 인정한다. 이 경우 origin:system,
+projectSwitch:false로 알리며 undo와 진행 중 AI 의도를 폐기하지 않는다.
+해시 계산 뒤에는 generation/lineage/대상/dirty/in-flight를 재확인한다. 실제 자산·맵·기획
+변경이나 잘못된 해시는 기존 projectSwitch와 충돌 검사를 그대로 통과해야 한다.
+
+
+
+## 편집기 UX 지연 조사 (2026-10-04)
+
+`verify-shots/editor-ux-audit-20261004/README.md`는 main `d7a3f0136e` 기준 10명 조사와
+59개 네이티브 UI 측정 구간이다. 자료집 설명 입력의 전체 행 재구성, Ctrl+Z의 복사·project 범위
+재구성, 긴 이벤트의 활성/비활성 보기 생성이 우선 후보다. 시간은 자동화 입력→두 rAF이며
+실제 픽셀 표시 시점이나 Electron 출하 성능이 아니다. 나머지 코드 후보, 독립 검토의 과장 정정,
+원본 수치와 재현 스크립트는 보고서에 있다. 이 감사 자체가 대응 수정의 완료를 뜻하지 않는다.
+
+### 2026-10-04: 제출 중 추가 지형 편집과 초안 목록
+
+`updateMapTiles`는 메타데이터를 공유한다. 표면·강 붓과 지형 도장은 `terrainDesign.waterDepth`를 쓰기 전에 객체와 배열을 복제하여 비동기 diff/wire 준비 중인 제출본을 보존한다. 초안 금고는 불변 `events` 배열별 초안 목록을 캐시하며 같은 배열의 다른 map id 및 forget 뒤 복구는 그대로 처리한다. 배열을 제자리 수정하는 외부 작성자는 이 계약의 대상이 아니다.

@@ -631,6 +631,8 @@ export interface UploadedAsset {
     sheetCell?: number;
     sheetSourceId?: string;
   };
+  /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
+  origin?: import("../../assetStore/format").StoreAssetOrigin;
 }
 
 export interface AssetSet {

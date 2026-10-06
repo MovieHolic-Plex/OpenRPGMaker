@@ -1,0 +1,155 @@
+[
+  {
+    "id": "alien",
+    "name": "외계 행성",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "classical",
+    "name": "고대 그리스·로마",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 20,
+    "selectedIcons": 0
+  },
+  {
+    "id": "dark-gothic",
+    "name": "다크 판타지·고딕",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 20,
+    "selectedIcons": 0
+  },
+  {
+    "id": "desert-east",
+    "name": "사막·동양풍",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 22,
+    "selectedIcons": 21
+  },
+  {
+    "id": "fantasy-dungeons",
+    "name": "판타지 던전·신전",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 12,
+    "selectedIcons": 0
+  },
+  {
+    "id": "fantasy",
+    "name": "판타지 (기본)",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 38,
+    "selectedIcons": 36
+  },
+  {
+    "id": "joseon",
+    "name": "조선",
+    "kind": "land",
+    "terrain": "joseon-korea",
+    "journey": "joseon-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "modern-sf",
+    "name": "현대·SF",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 22,
+    "selectedIcons": 22
+  },
+  {
+    "id": "modern-town",
+    "name": "현대 소도시",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "monster",
+    "name": "몬스터 수집",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "prehistoric",
+    "name": "선사·원시",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "sea-isles",
+    "name": "바다·군도",
+    "kind": "land",
+    "terrain": "archipelago",
+    "journey": "fantasy-5act",
+    "candidateIcons": 20,
+    "selectedIcons": 0
+  },
+  {
+    "id": "sengoku",
+    "name": "일본 전국",
+    "kind": "land",
+    "terrain": "sengoku-japan",
+    "journey": "sengoku-5act",
+    "candidateIcons": 20,
+    "selectedIcons": 0
+  },
+  {
+    "id": "snow-north",
+    "name": "설원·북방",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "starmap",
+    "name": "성계 지도",
+    "kind": "space",
+    "terrain": "galaxy",
+    "journey": "space-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  },
+  {
+    "id": "steampunk",
+    "name": "스팀펑크·마도",
+    "kind": "land",
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "candidateIcons": 20,
+    "selectedIcons": 0
+  },
+  {
+    "id": "wuxia",
+    "name": "무협 중국",
+    "kind": "land",
+    "terrain": "wuxia-china",
+    "journey": "wuxia-5act",
+    "candidateIcons": 19,
+    "selectedIcons": 0
+  }
+]

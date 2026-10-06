@@ -214,7 +214,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
     expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledWith("달빛 항구", expect.objectContaining({
-      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true, playResolution: { width: 640, height: 360 } }),
+      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true, playResolution: { width: 480, height: 270 } }),
       gameDesignBrief: { ...brief, generationPending: true },
     }));
     // Reloaded new-project boot owns the handoff, never the project being left.

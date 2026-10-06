@@ -6,7 +6,6 @@ import {
 } from "@/editor/eventPageClipboard";
 import {
   isContainerInsideCommand,
-  moveCommandBetweenLists,
   resolveCommandAtPath,
   resolveCommandListAtPath,
 } from "@/editor/eventCommandPaths";
@@ -75,8 +74,7 @@ export function normalizeEventPage(page: Pick<EventPage, "id"> & Partial<EventPa
 }
 
 export function ensureEventPages(mapId: MapId, eventId: string): void {
-  store.update((project) => {
-    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  store.updateEvent(mapId, eventId, (event) => {
     if (!event || event.pages?.length) return;
     event.pages = [createDefaultEventPage(event, 1)];
   // 렌더 경로가 부르는 정규화다(사람이 누른 행위가 아님) → origin 을 system 으로 갈라 둔다.
@@ -110,8 +108,7 @@ export function addEventPage(mapId: MapId, eventId: string): string {
   // 페이지가 하나도 없으면 아래 mutator 가 기본 페이지를 먼저 만들므로 2번째가 된다.
   const position = Math.max(pageList(mapId, eventId).length, 1) + 1;
   let pageId = "";
-  store.update((project) => {
-    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  store.updateEvent(mapId, eventId, (event) => {
     if (!event) return;
     if (!event.pages?.length) {
       event.pages = [createDefaultEventPage(event, 1)];
@@ -151,8 +148,7 @@ export function addEventPage(mapId: MapId, eventId: string): string {
 export function copyEventPage(mapId: MapId, eventId: string, pageId: string): string {
   const sourceName = pageName(mapId, eventId, pageId);
   let copiedId = "";
-  store.update((project) => {
-    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  store.updateEvent(mapId, eventId, (event) => {
     const source = event?.pages?.find((page) => page.id === pageId);
     if (!event || !source) return;
     const copy = structuredClone(source);
@@ -194,8 +190,7 @@ export function pasteEventPage(mapId: MapId, eventId: string, anchorPageId?: str
   if (!source) return "";
   const anchorId = anchorPageId ?? editorState.get().selectedEventPageId;
   let pastedId = "";
-  store.update((project) => {
-    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  store.updateEvent(mapId, eventId, (event) => {
     if (!event) return;
     // Preserve legacy event behavior before introducing the first pasted page.
     // Once pages exist, runtime no longer uses the event's root commands.
@@ -218,8 +213,7 @@ export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): 
   const removedName = pageName(mapId, eventId, pageId);
   let deleted = false;
   let nextSelectedPageId: string | null = null;
-  store.update((project) => {
-    const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  store.updateEvent(mapId, eventId, (event) => {
     if (!event?.pages || event.pages.length <= 1) return;
     const index = event.pages.findIndex((page) => page.id === pageId);
     if (index < 0) return;
@@ -250,7 +244,7 @@ export function moveEventPage(mapId: MapId, eventId: string, pageId: string, del
 }
 
 /**
- * 페이지를 임의 인덱스로 옮긴다. 탭 드래그 재정렬의 한 번의 `store.update` 경계다.
+ * 페이지를 임의 인덱스로 옮긴다. 탭 드래그 재정렬의 한 번의 `store.updateEvent` 경계다.
  * `toIndex` 는 배열 범위로 클램프하고, 제자리면 false 다.
  */
 export function moveEventPageTo(
@@ -262,8 +256,8 @@ export function moveEventPageTo(
 ): boolean {
   const movedName = pageName(mapId, eventId, pageId);
   let moved = false;
-  store.update((project) => {
-    const pages = project.maps[mapId]?.events.find((item) => item.id === eventId)?.pages;
+  store.updateEvent(mapId, eventId, (event) => {
+    const pages = event.pages;
     if (!pages || pages.length === 0) return;
     const index = pages.findIndex((page) => page.id === pageId);
     if (index < 0) return;
@@ -290,10 +284,8 @@ export function updateEventPage(
   label?: string
 ): void {
   const resolved = label ?? `페이지 속성 변경: ${pageName(mapId, eventId, pageId)} — ${patchFieldCaption(patch)}`;
-  store.update((project) => {
-    const page = project.maps[mapId]?.events
-      .find((event) => event.id === eventId)
-      ?.pages?.find((item) => item.id === pageId);
+  store.updateEvent(mapId, eventId, (event) => {
+    const page = event.pages?.find((item) => item.id === pageId);
     if (!page) return;
     Object.assign(page, structuredClone(patch));
   }, pageChange(mapId, eventId, resolved));
@@ -307,10 +299,8 @@ export function setEventPageTextCommand(
   body: string
 ): void {
   const named = speaker?.trim();
-  store.update((project) => {
-    const page = project.maps[mapId]?.events
-      .find((event) => event.id === eventId)
-      ?.pages?.find((item) => item.id === pageId);
+  store.updateEvent(mapId, eventId, (event) => {
+    const page = event.pages?.find((item) => item.id === pageId);
     if (!page) return;
     const textIndex = page.commands.findIndex((command) => command.kind === "text");
     const next: Command = { kind: "text", speaker, body };
@@ -331,10 +321,8 @@ export function addEventPageCommand(
   // 새 커맨드가 앉을 자리 = 현재 루트 리스트 길이. 라벨은 mutator 전에 굳으므로 먼저 센다.
   const slot = findPage(mapId, eventId, pageId)?.commands.length ?? 0;
   recordCommandToolbarChange(`${mapId}:${eventId}:${pageId}`,
-    () => findPage(mapId, eventId, pageId)?.commands ?? [], () => store.update((project) => {
-    const page = project.maps[mapId]?.events
-      .find((event) => event.id === eventId)
-      ?.pages?.find((item) => item.id === pageId);
+    () => findPage(mapId, eventId, pageId)?.commands ?? [], () => store.updateEvent(mapId, eventId, (event) => {
+    const page = event.pages?.find((item) => item.id === pageId);
     if (!page) return;
     page.commands.push(structuredClone(command));
   }, pageChange(mapId, eventId, `커맨드 추가: ${commandKindLabel(command.kind)} (#${slot})`)));
@@ -347,8 +335,8 @@ export function addEventPageCommandAt(
   containerPath: readonly number[],
   command: Command
 ): void {
-  store.update((project) => {
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, containerPath, true);
+  store.updateEvent(mapId, eventId, (event) => {
+    const list = resolvePageCommandList([event], eventId, pageId, containerPath, true);
     list?.push(structuredClone(command));
   }, pageChange(
     mapId,
@@ -364,9 +352,9 @@ export function insertEventPageCommandAt(
   path: readonly number[],
   command: Command
 ): void {
-  store.update((project) => {
+  store.updateEvent(mapId, eventId, (event) => {
     const index = path[path.length - 1];
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
+    const list = resolvePageCommandList([event], eventId, pageId, path.slice(0, -1));
     if (!list || index === undefined) return;
     const clamped = Math.max(0, Math.min(list.length, index));
     list.splice(clamped, 0, structuredClone(command));
@@ -385,9 +373,9 @@ export function replaceEventPageCommandAt(
   command: Command
 ): void {
   const before = commandKindCaptionAt(mapId, eventId, pageId, path);
-  store.update((project) => {
+  store.updateEvent(mapId, eventId, (event) => {
     const lastIdx = path[path.length - 1];
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
+    const list = resolvePageCommandList([event], eventId, pageId, path.slice(0, -1));
     if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
     list[lastIdx] = structuredClone(command);
   }, pageChange(
@@ -405,9 +393,9 @@ export function deleteEventPageCommandAt(
 ): void {
   // 삭제 대상 종류는 지운 뒤엔 알 수 없다 — 라벨용으로 먼저 읽는다(read 모드라 분기를 만들지 않는다).
   const removed = commandKindCaptionAt(mapId, eventId, pageId, path);
-  store.update((project) => {
+  store.updateEvent(mapId, eventId, (event) => {
     const lastIdx = path[path.length - 1];
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
+    const list = resolvePageCommandList([event], eventId, pageId, path.slice(0, -1));
     if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
     list.splice(lastIdx, 1);
   }, pageChange(
@@ -425,17 +413,8 @@ export function moveEventPageCommandAt(
   dir: -1 | 1
 ): void {
   const moved = commandKindCaptionAt(mapId, eventId, pageId, path);
-  store.update((project) => {
-    const lastIdx = path[path.length - 1];
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, path.slice(0, -1));
-    if (!list || lastIdx === undefined || lastIdx < 0 || lastIdx >= list.length) return;
-    const newIdx = lastIdx + dir;
-    if (newIdx < 0 || newIdx >= list.length) return;
-    const moving = list[lastIdx];
-    if (!moving) return;
-    list.splice(lastIdx, 1);
-    list.splice(newIdx, 0, moving);
-  }, pageChange(
+  store.reorderEventCommands(mapId, eventId, pageId, path, path.slice(0, -1),
+    (path.at(-1) ?? 0) + dir, pageChange(
     mapId,
     eventId,
     `커맨드 순서 이동: ${moved ?? "알 수 없음"} (${commandMoveCaption(mapId, eventId, pageId, path, (path[path.length - 1] ?? 0) + dir)})`
@@ -450,19 +429,7 @@ export function moveEventPageCommandToIndex(
   toIndex: number
 ): void {
   const moved = commandKindCaptionAt(mapId, eventId, pageId, sourcePath);
-  store.update((project) => {
-    const container = sourcePath.slice(0, -1);
-    const list = resolvePageCommandList(project.maps[mapId]?.events, eventId, pageId, container);
-    if (!list) return;
-    const from = sourcePath[sourcePath.length - 1];
-    if (from === undefined || from < 0 || from >= list.length) return;
-    const clamped = Math.max(0, Math.min(list.length - 1, toIndex));
-    if (clamped === from) return;
-    const moving = list[from];
-    if (!moving) return;
-    list.splice(from, 1);
-    list.splice(clamped, 0, moving);
-  }, pageChange(
+  store.reorderEventCommands(mapId, eventId, pageId, sourcePath, sourcePath.slice(0, -1), toIndex, pageChange(
     mapId,
     eventId,
     `커맨드 순서 이동: ${moved ?? "알 수 없음"} (${commandMoveCaption(mapId, eventId, pageId, sourcePath, toIndex)})`
@@ -475,14 +442,8 @@ export function replaceEventPageCommands(
   pageId: string,
   commands: readonly Command[]
 ): void {
-  store.update((project) => {
-    const page = project.maps[mapId]?.events
-      .find((event) => event.id === eventId)
-      ?.pages?.find((item) => item.id === pageId);
-    if (!page) return;
-    page.commands = commands.map((command) => structuredClone(command));
-  // 커맨드 툴바의 되돌리기/다시하기와 여러 줄 붙여넣기가 같이 쓰는 경로다 — 개수로 규모를 남긴다.
-  }, pageChange(mapId, eventId, `커맨드 목록 교체: ${commands.length}개`));
+  store.replaceEventCommands(mapId, eventId, pageId, commands,
+    pageChange(mapId, eventId, `커맨드 목록 교체: ${commands.length}개`));
 }
 
 // [P2] 크로스 컨테이너 이동: sourcePath 명령을 targetContainerPath 리스트의 toIndex 로.
@@ -497,14 +458,7 @@ export function moveEventPageCommandAcross(
 ): void {
   if (isContainerInsideCommand(sourcePath, targetContainerPath)) return;
   const moved = commandKindCaptionAt(mapId, eventId, pageId, sourcePath);
-  store.update((project) => {
-    const events = project.maps[mapId]?.events;
-    const targetList = resolvePageCommandList(events, eventId, pageId, targetContainerPath);
-    const sourceList = resolvePageCommandList(events, eventId, pageId, sourcePath.slice(0, -1));
-    const fromIndex = sourcePath[sourcePath.length - 1];
-    if (!targetList || !sourceList || fromIndex === undefined) return;
-    moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex);
-  }, pageChange(
+  store.reorderEventCommands(mapId, eventId, pageId, sourcePath, targetContainerPath, toIndex, pageChange(
     mapId,
     eventId,
     `커맨드 분기 이동: ${moved ?? "알 수 없음"} (${commandSlotCaption(sourcePath)} → ${commandContainerCaption(targetContainerPath)} #${toIndex})`
@@ -545,7 +499,7 @@ function resolvePageCommandList(
 //
 // 라벨은 mutator 실행 **전에** 굳는다(descriptor 는 인자다). 그래서 "무엇이 사라졌나",
 // "몇 번째에 붙나" 같은 값은 `store.getCurrent()` 를 먼저 읽어 만든다. 이 읽기는 clone 이
-// 없어서 mutation 경로에 부담을 주지 않는다(`store.update` 는 어차피 전체 clone 을 한다).
+// 없어서 mutation 경로에 부담을 주지 않는다. 이벤트 전용 쓰기는 타일 격자를 복제하지 않는다.
 
 /** 페이지·커맨드 편집의 공통 descriptor. 스코프는 항상 맵 + 이벤트다. */
 function pageChange(mapId: MapId, eventId: string, label: string): ProjectChangeDescriptor {
@@ -590,8 +544,7 @@ export function commandContainerCaption(path: readonly number[]): string {
  * 이동 라벨의 `#출발 → #도착`. 두 이동 함수 모두 목표 자리를 `[0, length-1]` 로 클램프하고
  * 결과가 제자리면 아무것도 하지 않으므로, 그 규칙을 라벨에도 적용한다 — 그러지 않으면
  * 맨 위 커맨드에 "위로"를 눌렀을 때 로그가 존재하지 않는 `#-1` 로 갔다고 적는다.
- * (`store.update` 는 mutator 가 아무 일도 안 해도 엔트리를 남기므로 "이동 없음" 이 남는 게
- * 정확하고, 왜 화면이 안 바뀌었는지도 그 줄로 설명된다.)
+ * (`store.reorderEventCommands` 는 제자리 이동을 복제·통지 전에 거른다.)
  */
 function commandMoveCaption(
   mapId: MapId,

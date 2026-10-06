@@ -1,0 +1,17 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "revision": 26,
+  "generationMode": "automatic first build",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "started": "2026-10-04T06:04:04.138Z",
+  "errors": [],
+  "networkFailures": [
+    {
+      "path": "/export-player/sdk-manifest.json",
+      "status": 404
+    }
+  ],
+  "exportStarted": "2026-10-04T06:04:32.742Z",
+  "failure": "게임 내보내기 실패: The player deployment manifest is unavailable. Rebuild and redeploy the player.",
+  "visibleError": "✦\nOPRN Studio\n멈춘 시계의 기억\n변경 없음\n자료집\n소재\n높이\n바닥\n상위\n이벤트\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트\nAI 설정\nGoogle 연결됨\n그리기\n맵\n즐찾\n진행\n연결\n공방\n검사\n서린의 서재\n크기\n1 × 1\n2 × 2\n3 × 3\n4 × 4\n모양\n자유선\n사각형\n타원\n이웃 연결\n수동\n구조 보조\n보조\n전체 (6557)\n최근 (0)\n지형 (0)\n물 (0)\n집 (0)\n울타리 (0)\n장식 (2493)\n#\n360 바닥 · 동굴 바닥\n실내 · 손 도트 v5 (아틀라스)\n⚙\n붓 보조\n내 구조물\n−\n2x\n+\n⋯\n2\nAI\n서린의 서재\n작업 표시\n간단히\n실행 기록\n바로 깔기\n작업 설정 · 기본\n내 팀 · 호스트\n팀 관리 ↗\n게임 내보내기 실패: The player deployment manifest is unavailable. Rebuild and redeploy the player."
+}

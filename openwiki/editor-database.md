@@ -1,5 +1,34 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 주인공 마법 5종 · 노출 시간과 앞뒤 층 (2026-10-05)
+
+공용 화염/빙결/번개/심판의 빛은 직접 도트 시트, 용권 본체는 기존 히드라 원화 재사용을 사용한다.
+직전 `snes-study-redraw-20261005` 그림은 사용자 반려이며 현재 패킹 원본은 `hero_magic_rework.py`다.
+`retroSkillTimeline`이 셀별 노출 시간을 공유하고 `databaseSkillRetroStage`는 홀리 뒤 구슬을
+world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이다.
+배경 셀 사본 `*-f0/1.png`를 논리 128px로 반복하므로 전장에 늘리면서 도트가 커지지 않는다.
+동일한 합성 규칙은 `createMonsterFxPainter`에도 적용한다.
+이 메타데이터는 공용 시트 정의가 소유하며 복제 프리셋에도 전달한다. 새 프로젝트 스키마 필드는 없다.
+실제 자료집 미리보기 5종의 현재 화면/DOM 근거는 `verify-shots/hero-magic-rework-20261005/editor/`.
+그림 승인과 사용자 프로젝트 정본 저장을 의미하지 않는다. 상세는 [런타임 전투](runtime-battle.md)의 같은 날짜 절.
+
+## 아이템·장비 카탈로그의 입력과 가상 스크롤 (2026-10-04)
+
+`databaseInventoryCatalog.ts`는 이름·종류/장착 부위·종류 표시·유효 아이콘/이미지 ID·실제 이미지 URL의
+값 투영이 바뀔 때만 목록을 갱신한다. 설명 등 상세 전용 입력은 목록을 건드리지 않는다. 기존 레코드 객체는
+편집마다 복제되므로 객체 정체성만으로 변경 여부를 판정하지 않는다. 바뀐 표시값은 이미 붙은 행을 갱신한다.
+
+목록은 기존 `createVirtualList`로 화면 주변만 만든다. 검색·개수·필터·선택은 전체 레코드 목록을 기준으로
+계산하며 화면 밖으로 나간 선택은 유지한다. 약한 행 캐시는 붙어 있는 DOM의 투영만 보관한다.
+선택 항목 노출·생성·복제 후 이동은 `scrollToIndex`를 사용한다. 원래 검색/상세 입력과 스크롤러는 유지한다.
+행에서 Home/End·방향키·PageUp/Down·Tab은 필요한 창을 만들고 포커스를 옮기며 Enter/Space는 기존 버튼 선택이다.
+
+카탈로그 CSS는 바깥 스크롤러를 block, 안쪽 행 호스트를 grid로 둔다. 목록 높이 36px와 내부 gap 1px,
+갤러리 두 열·높이 140px와 gap 8px를 실측해 스페이서·창·노출의 공통 피치로 사용한다.
+긴 갤러리 이름은 두 줄까지 표시하고 전체 이름은 기존 title로 남긴다. 탭 이동/상세 입력은 포커스를 빼앗지 않는다.
+네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
+`verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
+
 ## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
 
 사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.
@@ -41,6 +70,12 @@ retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있
 - 이미 화면에 있던 것(타격별 배율·피해 공식·상태 변화·우선도·속성·재사용 대기·급소·HP 대가·흡수·입력 커맨드·명중 보정·행동 불가·행동 제한)은 새로 만들지 않았다.
 
 ## 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
+
+2026-10-05 손 도트 24종은 사용자 반려로 기본 연출/시트 색인·기본 스킬·기존 프로젝트 자동 수렴에서
+철회했다. `retroPixelAnimationRecords.ts`의 기본 `anim_px_*`는 기존 17종이다.
+반려 그림/배선/기술 확인 기록은 `docs/experiments/shared-hand-fx-20261005/rejected-release/`와
+`verify-shots/shared-hand-fx-20261005/SUMMARY.md`에 보존한다. 형식 확인을 그림 승인으로 보지 않는다.
+사용자 프로젝트 정본에는 이 묶음을 쓰지 않았다. 저자가 직접 만든 기존 행을 삭제하는 마이그레이션도 없다.
 
 - 탭 `retroChoreographies`(전투 규칙 그룹, 「도트 연출」, `database.ts`). 기본 연출 1130개는 「기본」 배지의 **읽기 전용**이고 「복제해서 고치기」로 `chor_<slug>` 사본을 만든다. 추가·복제·삭제(삭제는 「쓰는 곳」 스킬 수를 경고). 오른쪽 「쓰는 곳」은 그 연출을 부르는 스킬 목록.
 - 편집기 `databaseRetroChoreographyView.ts`: 이름·설명·모션·층 행(시트·앵커·시작 ms·배율·반복·「타마다」)·위/아래/삭제/추가, 시간축 막대(층 시작~끝), 무대 미리보기(`databaseSkillRetroStage.ts` 재사용, 고칠 때마다 다시 재생). 층 행의 숫자칸은 `.db-field` 를 고정폭으로 둬야 한다 — `numberField` 스테퍼가 `width:100%` + `container-type:inline-size` 라 shrink-wrap flex 부모에서 16px 로 접힌다.
@@ -471,6 +506,7 @@ until those removals have real ownership evidence.
 
 ## 캐릭터·얼굴 메타데이터 (2026-09-06)
 
+- 2026-10-04: GIF 공방에서 사람이 남긴 캐릭터와 `desc.json`도 같은 공용 화면에 표시한다. `sharedCharacters.ts`가 기존 호스트 공용 SQLite `charset-actor-kept`에서 그림·라벨·의상/역할 속성을 공급한다. 새/기존 프로젝트는 기존 공용 기본 자산 설치 경로를 사용하며 열린 에디터는 새로고침한다. `shared_charset_actor_` 그림은 실제 0번 칸만 표시하고 빈 7칸을 후보로 만들지 않는다. 폐기하면 공용 검색에서 빠지며 기존 프로젝트의 그림과 수동 얼굴 연결은 보존한다. 상세 저장/복구 계약은 `charset-actor-harness.md`의 「남김 → 공용 캐릭터와 설명」.
 - System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
 - `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
@@ -996,7 +1032,7 @@ Database tabs, record views, battle database records, utility records, reference
 - Monster collection authoring spans System, Items, Enemies, Troops, Classes, Skills, States, and Monster Species database views. `system.monsterCollection` gates capture command exposure; optional `system.typeChart` stores the Pokemon-style type matrix; item `captureProfile.multiplier` remains the compatibility strength while the Items view's `ballClass` selector authors `poke|great|ultra|master`; enemy `speciesId` links battlers to collectable species; the Troops view exposes `uncapturable` and `trainerBattle`; the States view exposes `gen1MajorStatus`; class command kind `"capture"` is only useful when the system gate is enabled. Keep these controls, record mutators, normalization, reference validation, and `dbTools` schemas aligned.
 - **Enemy vs Species responsibilities (G006):** Enemies (`database.enemies`, 몬�뒪??tab) own battle-facing battler data: combat stats, attack patterns/actions, rewards, rates, and optional `speciesId` capture link. Species (`database.monsterSpecies[]`, 醫낆” tab) own collectable identity: baseStats, types (max 2), captureRate, skillsByLevel, evolutions, and species graphic. `enemy.speciesId` links a battler to a collectable species for capture without making the enemy record a player-owned monster. **No dual-write stats:** editing enemy stats must not rewrite species `baseStats` (or the reverse). Optional graphic copy (`db-enemy-species-copy-graphic`) may copy species graphic fields onto the enemy only; never auto-sync stats. Enemy species panel chips: unset warn / missing error / graphic mismatch info (`databaseEnemyRecordView.ts`). Species intro copy states the same split.
 - The System database tab edits `project.system` through `src/editor/panels/databaseSystemView.ts`: start party (up to 4 `startActorIds` slots, synced to `session.partyActorIds`), title/system/battle-system resource ids, initial troop, `battleFlow`, `activeSlots`, `monsterCollection`, `giftSystem`, `rewardPolicy`, optional `timeSystem` (enable + day bounds + onDayEnd common event), `typeChart.types` plus the attacker/defender matrix, and title-screen layout/labels. Structural edits (party slots, type list, time enable) re-render the tab body; blank/removing the type list deletes `system.typeChart` **after `window.confirm`** (cancel restores the previous type list), preserving legacy neutral damage when the author confirms. Never collapse a multi-member start party to a single actor when one slot changes. `commonEventReferenceMessage` blocks deleting a common event that `timeSystem.onDayEnd` points at (copy: 시간 시스템(하루 끝)). Terrain backdrop/footstep use `resourcePickerControl` (testid `db-field-terrain-backdrop-*` / `db-field-terrain-footstep-*` stay on the text field).
-- **Project fonts (System → 폰트, 2026-08-27):** `system.fonts?: { ui?, pixel?, mono? }` authors the project font per role from the registry in `src/project/fontRegistry.ts`, which is the single list of selectable faces (`system-sans`, `system-serif`, `system-mono`, plus the three bundled pixel woff2 faces `neodgm` / `galmuri11` / `galmuri9`). Selection ids are validated against that registry and against the role — an unknown id, a face that does not serve the role, or a value equal to `DEFAULT_FONT_SELECTION[role]` is not stored, and an empty result drops the `fonts` key entirely (same "don't persist defaults" convention as `battleUiStyle` / `battleModel`). `normalizeSystemRecords` is a **whitelist**, so a font field missing from it vanishes after one save/load roundtrip; keep the registry, the type, and the normalizer in sync. Application is one hop: `applyProjectFontTheme` (`src/app/fontTheme.ts`) writes `--font-ui` / `--font-pixel` / `--font-mono` as inline custom properties on `document.documentElement`, overriding the `:root` defaults in `src/styles/tokens.css`; `src/app/mode.ts` calls it once after load and again on every `store.subscribe` change, exactly like `syncBattleModelAttribute`. Editor and runtime share one document, so that single wiring covers both surfaces and **no CSS consumer needs to change** — every `font-family` in `src/` reads a token (or an alias chain ending at one, e.g. `--runtime-pixel-font` → `var(--font-pixel)` → `--runtime-dialogue-font`). Phaser canvas text is the one exception, because canvas cannot resolve CSS variables: `editSceneEventMarkers.ts` (`eventLabelFontFamily()`) and `playSceneActionCombat.ts` call `projectFontStack(store.getCurrent().system.fonts, role)` at text-creation time, so they follow the author's live selection rather than the default. Reading `DEFAULT_FONT_SELECTION` directly there is a regression — the setting would change every surface except canvas text — and `test/fontFamilyTokenGuard.test.ts` fails if either file does it. Testids: `db-system-nav-font`, `db-field-system-font-ui` / `-pixel` / `-mono`, `db-system-font-preview`, `db-system-font-reset`. Tests: `test/systemFontTheme.test.ts` (registry ↔ tokens.css agreement, normalize roundtrip, applier) and `test/fontFamilyTokenGuard.test.ts` (no literal stack survives outside the two owning files, alias chains resolved transitively).
+- **Project fonts (System → 폰트, 2026-08-27):** `system.fonts?: { ui?, pixel?, mono? }` authors the project font per role from the registry in `src/project/fontRegistry.ts`, which is the single list of selectable faces (`system-sans`, `system-serif`, `system-mono`, plus the three bundled pixel woff2 faces `neodgm` / `galmuri11` / `galmuri9`). Selection ids are validated against that registry and against the role — an unknown id, a face that does not serve the role, or a value equal to `DEFAULT_FONT_SELECTION[role]` is not stored, and an empty result drops the `fonts` key entirely (same "don't persist defaults" convention as `battleUiStyle` / `battleModel`). `normalizeSystemRecords` is a **whitelist**, so a font field missing from it vanishes after one save/load roundtrip; keep the registry, the type, and the normalizer in sync. Application is one hop: `applyProjectFontTheme` (`src/app/fontTheme.ts`) writes `--font-ui` / `--font-pixel` / `--font-mono` as inline custom properties on `document.documentElement`, overriding the `:root` defaults in `src/styles/tokens.css`; `src/app/mode.ts` calls it once after load and again on every `store.subscribe` change, exactly like `syncBattleModelAttribute`. The exported web/single-HTML player also calls `syncProjectFontTheme` from `exportEntry.startPlayer` (2026-10-04), since it does not run editor boot. Within the editor, edit and play modes share one document, so the mode wiring covers both surfaces and **no CSS consumer needs to change** — every `font-family` in `src/` reads a token (or an alias chain ending at one, e.g. `--runtime-pixel-font` → `var(--font-pixel)` → `--runtime-dialogue-font`). Phaser canvas text is the one exception, because canvas cannot resolve CSS variables: `editSceneEventMarkers.ts` (`eventLabelFontFamily()`) and `playSceneActionCombat.ts` call `projectFontStack(store.getCurrent().system.fonts, role)` at text-creation time, so they follow the author's live selection rather than the default. Reading `DEFAULT_FONT_SELECTION` directly there is a regression — the setting would change every surface except canvas text — and `test/fontFamilyTokenGuard.test.ts` fails if either file does it. Testids: `db-system-nav-font`, `db-field-system-font-ui` / `-pixel` / `-mono`, `db-system-font-preview`, `db-system-font-reset`. Tests: `test/systemFontTheme.test.ts` (registry ↔ tokens.css agreement, normalize roundtrip, applier) and `test/fontFamilyTokenGuard.test.ts` (no literal stack survives outside the two owning files, alias chains resolved transitively).
 - **Project play resolution (System → 화면, 2026-08-24):** `system.playResolution?: { width, height }` authors the logical map/runtime viewport. Omission and an explicit 320×240 both normalize to the legacy default; custom values clamp to 320–1920 × 240–1080. `db-field-system-resolution-preset` offers 320×240, 426×240, 640×360, and 640×480, while the width/height fields allow bounded custom values. Custom values remain authorable: the diagnostics card reports the reduced aspect ratio, 16px reference-tile span, ceil-rounded minimum map size, partial-tile edges, undersized map count/list, and an estimated current-window fit scale as warnings rather than blockers. The title workbench preview uses the authored aspect ratio. The setting is applied on the next Test Play boot. `createPlaySurface`, Phaser boot, dialogue pagination, runtime DOM marker culling, and the lighting mask must resolve the same project value. Tests: `test/playResolution.test.ts`, `test/databaseSystemView.test.ts`, `test/playerBootFactory.test.ts`.
 - **Editor boot welcome (2026-08-20):** After store.load and enterMode(edit), finishEditorBoot may overlay a canvas-scoped director briefing (`src/editor/editorWelcome.ts`, CSS `src/styles/shell/editor-welcome.css`) instead of the old full-screen cinematic welcome. Copy: "어떤 게임을 만들까요?" + one input + 만들기 + three start posters (몬스터 수집 / 회상 스토리 / 모험 JRPG) + 빈 맵으로 시작. Horror, farm, partner-raise, and action posters are not mounted. Each visible pack owns one stable `data-pack-id`. Illustrated-card start auto-sends to the current map via `setPendingWelcomePipeline` (`replaceWithBlank: false`); the separate blank-system-preset button confirms before the verified new-project transaction. Skip dismisses and then starts coach marks. Dismiss key `oprn:editor-welcome-dismissed` is set only after a completed action. Brush/standard coach is suppressed while the briefing is open (`markWelcomeIntentAppliedThisBoot`). Skipped when modeMounted, automation boot context, dismissed, or deep-linked `?project=`. Tests: `test/editorWelcome.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `test/aiBootIntent.test.ts`. Playwright: `?forceWelcome=1`.
 - **첫 방문 브리핑은 빈 프로젝트에서만 (2026-09-28):** 「어떤 게임을 만들까요? / 빈 맵으로 시작」 브리핑은 닫음 표시(`oprn:editor-welcome-dismissed`)뿐 아니라 **프로젝트 내용**도 본다 — `isBlankStartProject`(`src/project/projectBlankness.ts`)가 false(맵 2개 이상, 유일한 맵에 이벤트·칠한 타일·2/4층·그림자·높이, 공통 이벤트)면 띄우지 않는다. 닫음 표시는 출처(origin)마다 따로라 워크트리 포트·팀 호스트 주소·새 프로필에서는 늘 비어 있어, 다 만든 프로젝트 위에 브리핑이 떴다. `?forceWelcome=1` 은 내용과 무관하게 띄운다(e2e 는 예제 프로젝트 위에서 검증). 단위: `test/projectBlankness.test.ts`.
@@ -2355,3 +2391,84 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 ## 저장 결과를 구분하는 적용 피드백 (2026-10-02)
 
 `databaseModalPersistence.applyDatabaseChanges`는 `saved-local`이라도 `written: false`이면 성공으로 처리하지 않는다. 임시 세션에서 기록하지 않았음을 알리고 `false`를 반환하므로 모달의 `markClean`/저장 후 닫기 경로가 실행되지 않는다. 실제 브라우저 저장은 기존 성공 경로를 유지한다. `saved`는 SQLite 폴더·호스트도 사용하는 결과이므로 「온라인」이라고 단정하지 않는 저장 완료 문구를 쓴다. 회귀 소스는 `test/databaseModalPersistence.test.ts`이며 이번 세션에서 실행하지 않았다.
+
+## 생활 컬렉션 검색과 선택된 상세 폼 (UX round 2, 2026-10-04)
+
+`databaseLifeCollectionsView.ts`의 검색·분류 칩·요약 카드 클릭은 검색 노드와 상세 폼을 유지하고
+기존 `.db-ws-list`의 결과와 건수만 갱신한다. 검색 디바운스는 90ms 그대로다. 입력 즉시
+쿼리를 기억하므로 그 전에 레코드/탭을 전환해도 최신 값이 남고, 분리된 검색의 지연 콜백은
+새 탭을 갱신하지 않는다. 결과를 그릴 때 현재 store 데이터를 읽는다. 포커스를 강제로
+복구하지 않아 상세 입력으로 이동한 뒤 검색 콜백이 와도 포커스를 빼앗지 않는다.
+
+분류·이름/ID로 데이터부터 거르고 원래 행 번호를 보존한 결과 행만 만든다. 아이템 이름은
+아이템 배열이 바뀔 때만 갱신하는 Map으로 읽는다. 상세 폼은 선택한 물고기/낚시터/채집 구역/
+박물관 보상 하나만 생성한다. 기존 레코드/선택/삭제/필드 testid는 유지하며 비활성 폼은
+DOM에 없다. 기존 검사에서 숨은 폼을 기대한다면 먼저 해당 행을 선택해야 한다. 검색 결과가
+없어도 현재 상세 선택은 유지한다. 접힌 기부/추적 아이템 칩은 처음 펼칠 때 생성한다.
+
+회귀 계약: `test/databaseUx2LifeCollections.test.ts` (실행하지 않음). 100어종/1,000아이템에서
+물고기 선택지 수는 선택된 폼의 I개이며 검색은 폼/선택지 DOM을 교체하지 않는다. F×I 생성은
+제거했지만 선택된 폼의 전체 선택지와 펼친 시스템 칩은 O(I)다. 실제 브라우저 시간·시각 검증은
+감독자가 아래 연결 칸 절의 네이티브 재검증 절차와 함께 수행한다.
+
+## 연결 칸의 참조 데이터 캐시 (UX round 2, 2026-10-04)
+
+`databaseConnectionsPanel.ts`는 패널 세션마다 `createRecordConnectionsReader()`를 소유한다.
+프로젝트 루트 정체성으로 무효화하지 않고 직접 사용처·삭제 차단 보조 검사·아이템 참조 수집기가
+읽는 데이터 소스로 판단한다. DB 소스 레코드의 설명과 선택한 레코드 이름을 표시용으로 제외한다.
+적 그룹 이름은 자신의 전투 이벤트 위치 라벨일 수 있어 제외하지 않는다. 그 외 필드는 보수적으로
+비교한다. 맵 비교에는 이름·이벤트·인카운터·필드 스폰만 넣고 타일 격자·relief·에셋/참고문서를
+순회하지 않는다. source 목록은 `REFERENCE_DATABASE_COLLECTIONS`; 참조 검사가 읽는 소스를
+늘리면 이 목록과 system/session/growth/characters/testPresets 입력, 회귀 계약도 함께 늘려야 한다.
+
+`createCommandReferenceLocationsReader()`는 명령/조건/giftPrefs/페이지와 정본이 보존하는
+편집 초안 원본에 대한 판단 결과를 재사용한다. 이름만 바뀌면 현재 맵·이벤트·페이지·적 그룹 이름으로
+위치 라벨을 다시 만든다. 명령·복합 조건·원본 소유권 변경 및 출처 추가/삭제는 무효화한다.
+`remote-delete` 원본과 새 초안의 baseline은 기존 `eventReferenceMatches`와 같이 제외한다.
+순수 `recordConnections`/`commandsReferenceLocations`는 캐시 없이 유지하므로 가변 툴 초안과
+삭제 가드의 계약은 그대로다. 판단 입력은 지연 생성하므로 순수 삭제 검사에 캐시용 배열 생성 비용을
+추가하지 않는다. 캐시 reader는 불변 store 스냅샷에만 사용한다.
+
+확인 문구는 매번 현재 레코드로 계산한다(설명 비움·그래픽 누락·직업 존재 등). 직접 사용처가 없을
+때의 「다른 곳」 보조 문구도 소스로 무효화한다. 명령 위치가 없으면 적 그룹 이름은 보조 문구에
+등장하지 않으므로 그 이름만 바뀐 경우 삭제 검사 전체 스캔을 반복하지 않는다. 시스템 시작 파티,
+기본 전투, 성장 트리, 시작 인벤토리, 제작법·생활·기부·도감 참조도 계속 읽는다. 40건 표시 상한과
+종류별 3건 미리보기는 그대로다.
+
+‘더 보기/접기’는 이미 계산한 사용처로 그 묶음 표시만 갱신하고 새 단추에 키보드 포커스를 유지한다.
+내용·확인 문구가 같으면 패널 DOM도 그대로 둔다. 기존 testid와 레코드 이동/reveal 동작은 유지한다.
+레코드 전환은 펼침을 비우며, 프로젝트 lineage 교체는 reader와 펼침 상태를 함께 새로 만든다.
+본문이 바뀌면 기존 패널을 다시 붙인다. 지원하지 않는 탭/빈 레코드는 hidden이며 계산하지 않는다.
+CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영하므로 창을 넓히거나 도크를 풀 때 최신
+데이터가 보인다. CSS visibility 스킵/resize observer는 넣지 않았다. 숨은 패널에서 이름·설명을
+입력해도 같은 참조를 다시 검사하지 않지만, 실제 참조 변경은 숨은 상태에서도 계산한다.
+
+회귀 계약: `test/databaseUx2ConnectionsCache.test.ts` (Vitest 실행하지 않음). 명령 배열 순회 횟수,
+8개 컬렉션의 이름/설명 편집, 최신 확인 문구, 출처·라벨·초안·전투 뒤 변경, 보조 참조, More 포커스,
+이동·재부착·숨김·프로젝트 전환을 검사한다. esbuild 구문 변환만 확인했으며 타입/단위/브라우저
+합격이나 CPU 절감률을 주장하지 않는다. 새 참조/선택에는 최초 스캔이 필요하고, 복제된 참조 트리는
+구조 비교한다. 변경한 컬렉션이 아주 크면 그 비교 비용은 남는다.
+
+### 감독자 네이티브 재검증 절차
+
+1. 감독자 통합 체크아웃에서 허용한 집중 검사: `node scripts/run-vitest.mjs run test/databaseUx2LifeCollections.test.ts test/databaseUx2ConnectionsCache.test.ts test/databaseRecordConnections.test.ts test/databaseDraftReferenceGuards.test.ts`.
+   에이전트는 실행하지 않았다. 감독자의 기존 게이트/기준선 절차로 통합 판정한다.
+2. 저장 브리지가 있는 별도 QA 프로젝트에서 정상화된 실제 레코드를 준비한다. 기존 아이템·참조는
+   유지하고 F=10/100, I=100/1,000의 실제 건수를 기록한다. 콘텐츠를 만든다면 정본 저장·재로드
+   규칙을 지킨다. `toolbar-database` → `db-group-strip-life` → `db-tab-life-collections`에서
+   `db-life-collections-search`에 180ms 간격의 네이티브 키 입력과 중간 삽입을 한다. 한 번 클릭한
+   뒤 두 번째 키도 같은 검색에 들어가는지 activeElement·selectionStart/End를 확인한다. 결과 없음,
+   지우기, 분류 칩·요약 카드, 다른 어종 선택을 확인한다. 검색 전후 같은 상세 노드이며
+   `[data-testid^="db-life-collections-fish-item-"] option`은 선택된 폼의 I개이고 숨은 폼은 0개다.
+   기부/추적 카드는 접힘→펼침→접힘→펼침 때만 처음 생성하고 선택/저장 동작이 계속 되는지 본다.
+3. 폭과 computed display로 연결 칸이 보이는 넓은 창을 확인한다. `db-tab-skills`에서 probe 스킬을
+   선택하고, 100/10,000개의 무관 text 명령 끝에 learnSkill 참조를 둔 공용 이벤트 네 개를 사용한다.
+   `db-field-name`에 네이티브 키를 보내며 입력→다음 프레임/긴 작업/명령 순회와 포커스·캐럿을
+   기록한다. 설명을 비우면 확인 문구가 바뀌되 같은 이벤트 목록을 다시 검사하지 않아야 한다.
+   `[data-testid="db-connections-uses"] .db-connections-more` 펼침/접힘에도 참조 순회가 없고
+   포커스가 단추에 남아야 한다. 참조 레코드 이름, 공용 이벤트·맵·페이지·적 그룹 이름을 바꾼 뒤
+   현재 이름을 확인한다. 실제 명령/조건/초안 원본/전투 뒤 참조 변경은 목록에 반영돼야 한다.
+4. 작은 창/도크로 접힌 동안 이름·설명과 실제 참조를 바꾸고 다시 넓혀 최신 목록·확인 문구를 본다.
+   레코드 이동, 탭 전환, 프로젝트 교체/재열기와 이전 펼침 상태 초기화도 검사한다. debounce 시간과
+   DOM/계산 시간, 자동화 wall과 CPU를 구분하고 소스 SHA·하드웨어·viewport·실제 F/I/C를 함께 남긴다.
+   원래 감사/비교 기준은 `verify-shots/editor-ux-audit-round2-20261004/agents/database.md`와 README다.

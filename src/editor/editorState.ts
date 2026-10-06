@@ -8,7 +8,7 @@ import type { ReliefRoughSize } from "@/project/relief/roughBrush";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TerrainPoint, TerrainSymmetry } from "./terrainDesignGeometry";
-export type TerrainDesignTool = "contour" | "road" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route";
+export type TerrainDesignTool = "contour" | "road" | "house" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route" | "finish";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
@@ -70,6 +70,7 @@ export interface EditorState {
   paintShape: PaintShape;
   selectedTile: number;
   autoConnectMode: AutoConnectMode;
+  worldmapAutoBackground: boolean;
   clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
@@ -98,6 +99,15 @@ export interface EditorState {
   terrainLakeDepth: number;
   terrainShallowWidth: number;
   terrainRoadFlatten: boolean;
+  terrainRoadDrag: boolean;
+  terrainHouseStyle: import("./quickHouse").QuickHouseStyle;
+  terrainHouseKitId: string | null;
+  terrainHouseWidth: number;
+  terrainHouseResize: "house" | "roof";
+  terrainHouseRoofWidth: number;
+  terrainHouseRoofForm: "auto" | import("./beodeulQuickHouse").BeodeulRoofForm;
+  terrainHouseStories: 1 | 2;
+  terrainHouseDrag: import("./quickHouse").QuickHouseDrag | null;
   terrainUnlock: boolean;
   terrainStampId: string | null;
   terrainStampRotation: 0 | 1 | 2 | 3;
@@ -105,6 +115,17 @@ export interface EditorState {
   terrainStampCapture: boolean;
   terrainRoute: { mapId: string; start: TerrainPoint; end: TerrainPoint } | null;
   terrainRouteWidth: number;
+  terrainFeatureId: string | null;
+  terrainDragPoint: number | null;
+  terrainFinishMethod: "smooth" | "erode" | "corners";
+  terrainFinishPasses: number;
+  terrainRouteBody: [number, number, number];
+  terrainRouteDoorId: string;
+  terrainRouteEvents: boolean;
+  terrainRouteDoors: "authored" | "open" | "closed";
+  terrainRouteSwitches: Record<string, boolean>;
+  terrainVisionPreview: boolean;
+  terrainVisionOrigin: TerrainPoint | null;
   terrainMaterial: "grass" | "dirt" | "stone";
   terrainWidth: number;
   reliefRampWidth: 2 | 4 | 6;
@@ -141,6 +162,7 @@ class EditorStateStore {
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.
     autoConnectMode: false,
+    worldmapAutoBackground: true,
     // 보조 배치가 기본 — 평범한 사용자에게는 짝이 자동으로 맞는 쪽이 안전하다.
     clusterAssistMode: true,
     activePaletteStamp: null,
@@ -164,6 +186,11 @@ class EditorStateStore {
     terrainLakeDepth: 3,
     terrainShallowWidth: 2,
     terrainRoadFlatten: false,
+    terrainRoadDrag: false,
+    terrainHouseStyle: "beodeul-manor-a", terrainHouseWidth: 7, terrainHouseStories: 1,
+    terrainHouseKitId: "bd-out-cabin",
+    terrainHouseResize: "house", terrainHouseRoofWidth: 7, terrainHouseRoofForm: "auto",
+    terrainHouseDrag: null,
     terrainUnlock: false,
     terrainStampId: null,
     terrainStampRotation: 0,
@@ -171,6 +198,10 @@ class EditorStateStore {
     terrainStampCapture: true,
     terrainRoute: null,
     terrainRouteWidth: 3,
+    terrainFeatureId: null, terrainDragPoint: null,
+    terrainFinishMethod: "smooth", terrainFinishPasses: 2,
+    terrainRouteDoorId: "", terrainRouteBody: [1,1,1], terrainRouteEvents: true, terrainRouteDoors: "authored", terrainRouteSwitches: {},
+    terrainVisionPreview: false, terrainVisionOrigin: null,
     terrainMaterial: "dirt",
     terrainWidth: 3,
     reliefRampWidth: 4,
@@ -198,6 +229,12 @@ class EditorStateStore {
   }
 
   set(patch: Partial<EditorState>): void {
+    if (this.state.terrainHouseDrag && (
+      patch.currentMapId !== undefined && patch.currentMapId !== this.state.currentMapId ||
+      patch.tool !== undefined && patch.tool !== "relief" ||
+      patch.terrainBrush !== undefined && patch.terrainBrush !== "house" ||
+      patch.terrainVisionPreview === true
+    )) patch = { ...patch, terrainHouseDrag: null };
     // 무변경 set은 통지하지 않는다 — 통지마다 팔레트/맵트리가 전체 재구축되므로,
     // pointerdown~pointerup 사이에 노드가 교체되면 사용자의 클릭이 증발한다(클릭 불가 보고 원인 중 하나).
     let changed = false;
@@ -226,7 +263,8 @@ export const editorState = new EditorStateStore();
  * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
  */
 const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
-  "terrainPoints", "terrainRoute",
+  "terrainHouseDrag",
+  "terrainPoints", "terrainRoute", "terrainVisionPreview", "terrainVisionOrigin", "terrainRouteDoorId", "terrainRouteBody", "terrainRouteEvents", "terrainRouteDoors", "terrainRouteSwitches",
   "selection",
   "pastePreview",
   "clipboard",
@@ -261,6 +299,7 @@ const PALETTE_REFRESH_KEYS = [
   "paintShape",
   "selectedTile",
   "autoConnectMode",
+  "worldmapAutoBackground",
   "clusterAssistMode",
   "activePaletteStamp",
   "brushSize",
@@ -332,6 +371,8 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "terrainBrush", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
+  "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",
+  "terrainRoadDrag", "terrainHouseStyle", "terrainHouseKitId", "terrainHouseWidth", "terrainHouseStories",
   "terrainStampId", "terrainStampRotation", "terrainStampMirror", "terrainStampCapture", "terrainRouteWidth",
   "reliefClusterDensity", "reliefClusterEnabled", "terrainSelectedGroup", "terrainMoveGroup", "terrainReachability",
 ]);

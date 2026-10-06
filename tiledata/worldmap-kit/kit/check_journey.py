@@ -33,6 +33,8 @@ def run_check(journey, world, out_path=None, verbose=True):
     import journey_plan_v9 as P
     import journey_check_v9 as C
     P.configure(journey)
+    lay = getattr(world, 'layout', None)
+    C.MIN_SEA_GAP[0] = int(lay.get('min_sea_gap', 4)) if isinstance(lay, dict) else 4
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         _, bad, info = C.run(verbose=True, w=world, out_path=out_path)
@@ -57,7 +59,9 @@ def main():
         assign = K.assign_icons(roles, journey, iconset) if iconset else None
         if a.map:
             import kit_world as W
-            world = W.MapWorld(K.load_json(a.map))
+            wd = K.load_json(a.map)
+            journey = K.journey_for_world(journey, wd)
+            world = W.MapWorld(wd)
         else:
             if not iconset:
                 raise K.KitError('--map 이 없으면 지형을 만들 아이콘 세트(--iconset)가 필요하다')

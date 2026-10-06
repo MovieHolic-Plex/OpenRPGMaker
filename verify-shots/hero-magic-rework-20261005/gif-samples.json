@@ -1,0 +1,37 @@
+[
+  {
+    "skill": "skill_mage_fireball",
+    "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime/skill-skill_mage_fireball.gif",
+    "frame": 35,
+    "gifTimeMs": 2330,
+    "selection": "most changed saturated effect palette pixels in battlefield crop; illustrative sample only"
+  },
+  {
+    "skill": "skill_mage_blizzard",
+    "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime/skill-skill_mage_blizzard.gif",
+    "frame": 19,
+    "gifTimeMs": 1270,
+    "selection": "most matching saturated effect palette pixels in left battlefield crop; illustrative sample only"
+  },
+  {
+    "skill": "skill_mage_chain_lightning",
+    "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime/skill-skill_mage_chain_lightning.gif",
+    "frame": 15,
+    "gifTimeMs": 1000,
+    "selection": "most changed saturated effect palette pixels in battlefield crop; illustrative sample only"
+  },
+  {
+    "skill": "skill_cleric_holy_smite",
+    "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime-holy-warm/skill-skill_cleric_holy_smite.gif",
+    "frame": 35,
+    "gifTimeMs": 2330,
+    "selection": "most matching saturated effect palette pixels in left battlefield crop; illustrative sample only"
+  },
+  {
+    "skill": "skill_hand_summon_review",
+    "file": "/home/main/.codex/worktrees/ed1f/rpg-zzu/verify-shots/hero-magic-rework-20261005/runtime-summon-default-graphics/skill-skill_hand_summon_review.gif",
+    "frame": 28,
+    "gifTimeMs": 1870,
+    "selection": "manual 1900ms for body"
+  }
+]

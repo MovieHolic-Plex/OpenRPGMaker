@@ -1,0 +1,14 @@
+{
+  "commit": "2cd0368b939bc5430ab8daa0e5ea52a38c5c5d00",
+  "sources": {
+    "src/editor/panels/databaseLifeCollectionsView.ts": "e6b501453e0fba1ea0b9f20d82f40bed910773e2eaba4544d4168d7f0ef380cf",
+    "src/editor/panels/database.ts": "42d0249af91b9f4a2b4d87dcb03849c9a35dda5d6fe8d8363650fcff362f68b2",
+    "src/editor/panels/mapList.ts": "3c8efae0f09499d5c6c8f51ecc0af27a2177a43587eaa0dd5caf656298cce4f0",
+    "src/editor/panels/mapSidebarSection.ts": "07500c4fed1d5e7b92c825d8522a5edaaa04334d7c19f1e02129a0862e9257f1",
+    "src/editor/panels/resourceManagerViews.ts": "e13de916c790f2b610c8fbdd7a127ee9064c5e09a8b1309da86559d4c62b00a8",
+    "src/editor/panels/leftProgressPane.ts": "ffb5c68346a1d803f8c5100cf38d666e974e3bcd38e28bd7173a641764e1d44f",
+    "src/editor/panels/aiSidebarWorkspace.ts": "f6186c420429b0edc0812feaaeb5a68fb7d7c19245183abb0360a928b9aeedad",
+    "src/editor/panels/eventEditor/modal.ts": "0b0a6199466001c6c5d04f0c5e97133b749bc318586a31ec075c02f43f336b8d",
+    "src/editor/panels/eventEditor/commandInspector.ts": "e3e33ae2edad6a5e810866281922f275a1fdeef16da1ceb92f662e4cd91a523b"
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "kind": "checker-calibration",
+  "pass": true,
+  "checks": [
+    {
+      "id": "inspect-readonly:known-good",
+      "ok": true
+    },
+    {
+      "id": "inspect-readonly:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "inspect-readonly:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:known-good",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "plan-readonly:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-line:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-line:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-move:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-move:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:known-good",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "npc-delete:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:known-good",
+      "ok": true
+    },
+    {
+      "id": "item-price:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "item-price:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:known-good",
+      "ok": true
+    },
+    {
+      "id": "map-rename:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "map-rename:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:known-good",
+      "ok": true
+    },
+    {
+      "id": "inn-price:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "inn-price:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:known-good",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "dialogue-choice:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "choice:separate-question-accepted",
+      "ok": true
+    },
+    {
+      "id": "choice:missing-branch-rejected",
+      "ok": true
+    },
+    {
+      "id": "choice:cancel-reward-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:known-good",
+      "ok": true
+    },
+    {
+      "id": "reward-once:unrelated-edit-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:no-op-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward-once:other-map-loss-rejected",
+      "ok": true
+    },
+    {
+      "id": "reward:unguarded-reward-rejected",
+      "ok": true
+    },
+    {
+      "id": "gate:empty-not-pass",
+      "ok": true
+    },
+    {
+      "id": "gate:pending-not-pass",
+      "ok": true
+    },
+    {
+      "id": "gate:failure-overrides-passes",
+      "ok": true
+    },
+    {
+      "id": "persistence:stable-reload",
+      "ok": true
+    },
+    {
+      "id": "persistence:changed-game-rejected",
+      "ok": true
+    },
+    {
+      "id": "persistence:library-change-blocked",
+      "ok": true
+    },
+    {
+      "id": "persistence:other-target-not-library-exception",
+      "ok": true
+    }
+  ]
+}

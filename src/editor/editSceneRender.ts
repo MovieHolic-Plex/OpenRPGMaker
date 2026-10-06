@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState, type Layer, type TileSelection } from "@/editor/editorState";
 import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
@@ -10,11 +10,14 @@ import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
 import { repaintEditGrid } from "@/editor/editSceneViewChrome";
-import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { invalidateCullingWindow, resetCullableTiles, trackCullableTile, untrackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
-import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefCellLiftPx } from "@/project/relief/screen";
+import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { reliefPaintsCell } from "@/project/relief/screen";
+import { prepareReliefRead, reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";
+import { tilesetTextureKey } from "./tilesetImage";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { terrainReachability } from "@/project/terrainReachability";
 import { renderTerrainDesignOverlay } from "./terrainDesignOverlay";
@@ -85,8 +88,9 @@ export type EditTileChunkHost = {
   readonly chunks: Map<string, Phaser.GameObjects.Container>;
 };
 
-function chunkKey(cx: number, cy: number): string {
-  return `${cx},${cy}`;
+function chunkKey(layer: "lower" | "upper", cx: number, cy: number): string {
+  // Both layers share the registry, but must keep their own parent containers.
+  return `${layer}:${cx},${cy}`;
 }
 
 /** 칸 좌표 → 청크 좌표. */
@@ -99,10 +103,11 @@ function getOrCreateChunk(
   scene: Phaser.Scene,
   parent: Phaser.GameObjects.Container,
   chunks: Map<string, Phaser.GameObjects.Container>,
+  layer: "lower" | "upper",
   cx: number,
   cy: number,
 ): Phaser.GameObjects.Container {
-  const key = chunkKey(cx, cy);
+  const key = chunkKey(layer, cx, cy);
   let chunk = chunks.get(key);
   if (!chunk) {
     chunk = scene.add.container(0, 0);
@@ -133,7 +138,7 @@ export function shouldLazilyRenderEditMap(map: GameMap): boolean {
   return map.width * map.height > LAZY_EDIT_MAP_CELL_THRESHOLD;
 }
 
-function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+export function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
   const view = scene.cameras?.main?.worldView;
   if (!view || view.width <= 0 || view.height <= 0) {
     return { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 };
@@ -145,8 +150,22 @@ function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindo
   const minX = Math.max(0, Math.floor(view.x / tileSize) - margin);
   const minY = Math.max(0, Math.floor(view.y / tileSize) - margin);
   const maxX = Math.min(map.width - 1, Math.floor((view.x + view.width) / tileSize) + margin);
-  const maxY = Math.min(map.height - 1, Math.floor((view.y + view.height) / tileSize) + margin);
+  // Elevated cells are drawn north of their stored row. Materialize those source rows too.
+  const maxY = Math.min(map.height - 1, Math.floor((view.y + view.height) / tileSize) + margin + (map.relief ? RELIEF_MAX_LEVEL : 0));
   return { minX, minY, maxX, maxY };
+}
+
+/** Candidate source cells before neighbour expansion/sort. Include old residents
+ * so a reduced overhang can destroy tiles outside the new source window. */
+export function residentReliefTileCells(scene: Phaser.Scene, map: GameMap, index: EditSceneTileIndex): { x: number; y: number }[] {
+  const indices = new Set<number>();
+  const window = cameraTileWindow(scene, map);
+  for (let y = window.minY; y <= window.maxY; y++) for (let x = window.minX; x <= window.maxX; x++) indices.add(y * map.width + x);
+  for (const key of index.keys()) {
+    const cell = parseTileIndexKey(key);
+    if (cell) indices.add(cell.y * map.width + cell.x);
+  }
+  return [...indices].map(i => ({ x: i % map.width, y: Math.floor(i / map.width) }));
 }
 
 export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): string {
@@ -177,6 +196,7 @@ export const RELIEF_STRIP_NAME = "relief-strip";
 export function renderEditScene(context: EditSceneRenderContext): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const state = editorState.get();
 
@@ -227,6 +247,7 @@ export function renderEditSceneTileCells(
 ): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
   // lower 재추가가 upper 위에 올라가지 않도록 항상 lower → upper 순으로 그린다.
@@ -293,6 +314,7 @@ export function renderVisibleEditSceneTiles(
 ): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const window = cameraTileWindow(context.scene, map);
   for (const [key, objects] of context.tileIndex) {
     const parsed = parseTileIndexKey(key);
@@ -335,8 +357,9 @@ function renderTileCellLayer(
     // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
     const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
+    const ownsGround = reliefGroundAvailable(map, reliefTilesetImage(context.scene.textures, tilesetTextureKey(tileset)));
     // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다(게임과 같게) — 타일은 그리지 않는다
-    if (lower >= 0 && !reliefPaintsCell(map.relief, x, y)) {
+    if (lower >= 0 && !ownsGround && !reliefPaintsCell(map.relief, x, y)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
@@ -344,25 +367,27 @@ function renderTileCellLayer(
     } else if (lower < 0) {
       addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, "lower", x, y);
     }
-    for (const stackedLower of tileStackAt(map, "lower", i)) {
-      const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
-      lowerTile.setAlpha(lowerAlpha);
-      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
-      addTileObject(context, objects, lowerTile, 1, "lower", x, y);
-    }
-    // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
-    const overlay = layerTileAt(map, 2, i);
-    if (overlay >= 0) {
-      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
-      overlayTile.setAlpha(lowerAlpha);
-      if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
-      addTileObject(context, objects, overlayTile, 1, "lower", x, y);
-    }
-    const bits = shadowAt(map, i);
-    if (bits !== 0) {
-      for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
-        shade.setAlpha(0.5 * lowerAlpha);
-        addTileObject(context, objects, shade, 2, "lower", x, y);
+    if (!ownsGround) {
+      for (const stackedLower of tileStackAt(map, "lower", i)) {
+        const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
+        lowerTile.setAlpha(lowerAlpha);
+        if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
+        addTileObject(context, objects, lowerTile, 1, "lower", x, y);
+      }
+      // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
+      const overlay = layerTileAt(map, 2, i);
+      if (overlay >= 0) {
+        const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+        overlayTile.setAlpha(lowerAlpha);
+        if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
+        addTileObject(context, objects, overlayTile, 1, "lower", x, y);
+      }
+      const bits = shadowAt(map, i);
+      if (bits !== 0) {
+        for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
+          shade.setAlpha(0.5 * lowerAlpha);
+          addTileObject(context, objects, shade, 2, "lower", x, y);
+        }
       }
     }
   } else {
@@ -398,17 +423,32 @@ function renderTileCellLayer(
 function destroyTrackedTile(
   context: EditSceneRenderContext,
   object: Phaser.GameObjects.GameObject,
-  x: number,
-  y: number,
+  _x: number,
+  _y: number,
 ): void {
-  if (context.reliefLayer && object.parentContainer === context.reliefLayer) {
-    context.reliefLayer.remove(object, true);
+  untrackCullableTile(context.scene, object as unknown as Parameters<typeof untrackCullableTile>[1]);
+  const parent = object.parentContainer;
+  if (parent) {
+    parent.remove(object, true);
+    // Chunk identity reflects visual Y and layer, which can differ from stored Y.
+    if (parent !== context.reliefLayer && parent.list?.length === 0) {
+      for (const [key, chunk] of context.tileChunks ?? []) if (chunk === parent) {
+        context.tileChunks!.delete(key);
+        parent.parentContainer?.remove(parent);
+        parent.destroy();
+        break;
+      }
+    }
     return;
   }
-  const chunk = context.tileChunks?.get(chunkKey(chunkCoord(x), chunkCoord(y)));
-  if (chunk) {
+  // Renderer fixtures do not always attach parentContainer.
+  for (const [key, chunk] of context.tileChunks ?? []) {
     chunk.remove(object, true);
-    return;
+    if (chunk.list?.length === 0) {
+      context.tileChunks!.delete(key);
+      chunk.parentContainer?.remove(chunk);
+      chunk.destroy();
+    }
   }
   context.tileLayer.remove(object, true);
   context.upperTileLayer.remove(object, true);
@@ -444,13 +484,14 @@ function addTileObject(
   // 드로 순서다. 셀 재렌더는 remove + add(끝 삽입)로 같은 컨테이너 안 상대 순서를 유지한다.
   // 청크 저장소가 있으면(large-map lazy) 레이어와 객체 사이에 16×16칸 청크를 둔다 —
   // 프레임 순회 대상을 화면 근처 청크로 몰아 화면 밖 청크는 visible 한 번으로 통째로 쉰다.
+  const visualY = y - Math.floor(liftPx / tileSize);
   const target = context.tileChunks
-    ? getOrCreateChunk(context.scene, parent, context.tileChunks, chunkCoord(x), chunkCoord(y))
+    ? getOrCreateChunk(context.scene, parent, context.tileChunks, layer, chunkCoord(x), chunkCoord(visualY))
     : parent;
   target.add(object);
   // 컬링 추적 — update() 의 syncTileCulling 이 화면 밖 타일의 visible 을 끈다.
   // setVisible 이 없는 객체(예: 테스트 mock)는 trackCullableTile 가 자동으로 건너뛴다.
-  trackCullableTile(context.scene, object, x, y);
+  trackCullableTile(context.scene, object, x, visualY);
   objects.push(object);
 }
 
@@ -615,9 +656,10 @@ export function syncSelectionOverlay(
   scene: Phaser.Scene,
   layer: Phaser.GameObjects.Container,
   mapId: MapId,
+  preview?: TileSelection,
 ): void {
   const state = editorState.get();
-  const selection = state.selection;
+  const selection = preview ?? state.selection;
   if (!selection || selection.mapId !== mapId || state.pastePreview) {
     layer.removeAll(true);
     return;
@@ -686,7 +728,7 @@ function readCameraLookAt(cam: Phaser.Cameras.Scene2D.Camera): { x: number; y: n
   });
 }
 
-function isMapOnlyCaptureMode(): boolean {
+export function isMapOnlyCaptureMode(): boolean {
   if (typeof window === "undefined" || !isLocalDevHost(window.location.hostname)) return false;
   return new URLSearchParams(window.location.search).get("mapOnlyCapture") === "1";
 }

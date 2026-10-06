@@ -1,4 +1,5 @@
 import { FACE_EXPRESSION_SETS } from "./faceExpressionSets";
+import expressionSources from "../../scripts/shared-face-expression-sources.json";
 
 /**
  * 공용 표정 세트 76종의 대화용 흉상·전신(2026-10-01, scripts/content/portraits/).
@@ -57,6 +58,25 @@ export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = FACE_EXPRE
 });
 
 const BY_ID = new Map(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, asset]));
+const ORIGINAL_FACE_SETS = new Map(expressionSources.map(source => [
+  `easyrpg-faceset-${source.baseSheet.toLowerCase()}-${String(source.baseCell).padStart(2, "0")}`,
+  `shared-${source.stem}`,
+]));
+
+const VARIANT_NOTES: Readonly<Record<string, string>> = {
+  "shared-green-scholar-expressions": "원본 얼굴의 안경은 파생 초상에 없다.",
+  "shared-blue-headband-expressions": "전신에는 검은 모자가 추가되어 있다.",
+  "shared-people1-blonde-wave-expressions": "전신에는 토끼 귀 장식이 추가되어 있다.",
+  "shared-people1-red-woman-expressions": "초상에는 날개와 광륜이 추가되어 있다.",
+  "shared-people1-mint-woman-expressions": "초상에는 요정 날개가 추가되어 있다.",
+  "shared-people2-blue-woman-expressions": "초상의 왕관은 원본 얼굴에는 없다.",
+  "shared-monster-white-dragon-expressions": "흰 머리·갈기와 청록색 몸을 가진 용이다.",
+};
+
+/** Provenance links a family, not identical clothing/body details. */
+export function sharedPortraitReferenceNote(setId: string): string {
+  return `${VARIANT_NOTES[setId] ?? ""} 원본 얼굴·표정 얼굴·흉상·전신은 별도 그림이다. 복장과 장식을 각각 확인한다.`.trim();
+}
 
 export function findSharedPortrait(resourceId: string | undefined): SharedPortraitAsset | undefined {
   return resourceId === undefined ? undefined : BY_ID.get(resourceId);
@@ -89,6 +109,8 @@ export function sharedExpressionSetIdOf(resourceId: string | undefined): string 
   if (!resourceId) return undefined;
   const portrait = findSharedPortrait(resourceId);
   if (portrait) return portrait.setId;
+  const sourceSet = ORIGINAL_FACE_SETS.get(resourceId);
+  if (sourceSet) return sourceSet;
   const match = /^(shared-.+-expressions)-\d{2}$/u.exec(resourceId);
   return match && FACE_EXPRESSION_SETS.some((set) => set.id === match[1]) ? match[1] : undefined;
 }

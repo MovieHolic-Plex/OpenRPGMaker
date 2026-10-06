@@ -8,9 +8,67 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### 세계 지도 만들기 (2026-10-05)
+
+새 맵 창의 「세계 지도 만들기」에서 지역 도로·축척 대륙·필드 전도·스테이지·방 탐험·런 분기를 고른다.
+실제 맵·문·관문이 같은 도구 트랜잭션으로 추가되고 기존 시작 맵은 유지한다.
+플레이 중 M 지도창·공용 자료·정본 계약은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
+### 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
+
+근거: `verify-shots/editor-ux-audit-round2-20261004/agents/palette-maps.md`와 같은 폴더
+`README.md`의 네이티브 맵 전환/접힌 진행 관측. 기준 커밋은
+`7ce9a7655510e82360efe154bc888a0754e06d04`. 아래는 구현 계약이며 수정 후 성능 실측이 아니다.
+
+- `mapList.ts`는 맵 수를 렌더당 한 번 구하고 `RenderNodeContext.canDeleteMap`으로 행에 전달한다.
+  행 클릭은 선택 전후 **그 목록 컨테이너의 렌더 판수**를 비교한다. 맵 전환의 동기 구독자가
+  이미 그렸으면 명시 갱신을 생략한다. 구독 없는 스위처, 같은 맵 다중 선택, 폴더, 거부된 이동은
+  계속 명시 갱신하며 새 행에 초점을 돌린다. 단순히 맵 id가 바뀌었다는 이유로 갱신을 생략하지 않는다.
+- 커스텀 아틀라스는 필터 중 타일 선택도 기존 시트·검색·컨트롤을 보존한다.
+  `setCustomPaletteFilter`를 활성 칸 이동 **전에** 적용하여 옛 선택의 필터 예외를 해제한다.
+  최근 MRU의 추가/밀려남·최근 안의 검색·일치 개수·인라인 이웃 연결 힌트도 맞춘다.
+  일치 개수는 선택 예외를 더하지 않는 기존 커스텀 규약을 유지한다. 레이어 전환도 같은 시트를 쓰며
+  붓 상태만 맞춘다. RM2K는 선택 예외가 그리는 칸 집합을 바꾸므로 필터 중 전체 갱신을 유지한다.
+- `makeTileBrushAssistControls`는 인라인 이웃 연결/구조 보조만 만든다.
+  유사도·맵 사용처·즐겨찾기/주변 내용은 열린 붓 보조의 `body`에서만 만든다.
+  구조물/조합 트리거는 메타데이터로 존재 여부를 판정하고 조립 캔버스는 열린 `body`에서만 만든다.
+  선택이 바뀔 때 열린 보조 창은 현재 선택/사용처를 다시 그리는 기존 경로를 쓴다.
+- 활동 막대의 접힘은 부모뿐 아니라 도구/각 표면의 `root.hidden`에 반영한다. 숨은 진행은 프레임을
+  예약하지 않고, 접히기 전에 예약된 프레임도 실제 렌더에서 거른다. 다시 펼치면 현재 프로젝트를 평가한다.
+  `countJourneyCommittedEvents`는 `committedEvents`와 같은 포함 규칙으로 **본문을 복제하지 않고** 센다:
+  새 초안 제외, 편집 초안은 원본이 있을 때 포함, remote-delete 제외, remote-change 원본 포함.
+  이벤트 배열 정체성으로 메모한다(store의 배열/이벤트 불변성 계약). 타일/높이 변경의 새 맵 객체는
+  배열을 유지하므로 이벤트를 다시 순회하지 않는다. 이벤트/초안/프로젝트 교체는 새 배열로 무효화한다.
+  진행은 scope와 다섯 단계 출력이 같으면 행을 갈아 끼우지 않는다. 테스트 부팅 지문 판정은 기존 규약이다.
+
+팔레트 회귀 소스: `test/ux2PaletteFilteredSelection.test.ts`(작성만, 실행 안 함).
+감독자 네이티브 QA: 버들항 맵에서 붓 보조/내 구조물/조합을 닫고 고정 분류 또는 검색을 건다.
+같은 레이어의 서로 다른 타일 10개를 고른다. 시트/검색 노드 정체성·스크롤·선택 예외와 인라인 토글/힌트를
+확인하고 `makeStructureKitShelf`/`renderTileCellsToCanvas`/`similarTilesForTile`/`usedLocationsForTile`
+호출이 0인지 센다. DOM 밖 캔버스도 계측한다. 최근 18개를 채우고 새 타일을 골라 밀려난 타일과
+검색/개수를 확인한다. 상위 타일, 스포이트 리빌, 가상화 화면 밖 선택도 확인한다. 팝업을 열면 내용이
+만들어지고 선택 변경에 맞춰 갱신되는지, RM2K의 필터 선택은 실제 보이는 칸/대표 칸/개수 규약을
+유지하는지도 확인한다. 새로운 증거 디렉터리에 스크린샷·프로파일·원자료를 남긴다.
+
+진행 회귀 소스: `test/ux2ProgressCommittedCounts.test.ts`(작성만, 실행 안 함).
+감독자 네이티브 QA: 같은 크기의 0/2,000이벤트 사본(짧은/긴 명령)을 준비한다.
+「진행」 펼침/같은 버튼으로 접힘/「그리기」 각각에서 연속 획과 타일 선택을 비교한다.
+접힌 부모와 진행 root가 모두 hidden인지, 숨은 진행 평가/행 교체가 0인지, 펼친 진행의 수 계산이
+이벤트 structuredClone을 부르지 않는지 함수별로 확인한다(앱의 다른 복제와 분리).
+첫 실제 완료 변화 후 같은 출력의 획은 진행 행을 보존해야 한다. 숨은 동안 이벤트 확정/삭제·
+초안 열기/취소·프로젝트 전환을 한 뒤 다시 펼쳐 최신 수/완료를 확인한다. 편집 초안 원본 포함,
+새 초안/remote-delete 제외, 테스트 부팅 성공 후 편집의 완료 해제까지 확인하고 새 증거를 남긴다.
+
+맵 회귀 소스: `test/ux2MapNavigationRefresh.test.ts`(작성만, 실행 안 함).
+감독자 네이티브 QA: 사본 프로젝트의 20/80/200개 펼친 맵에서 「맵」의 다른 행을 왕복한다.
+`map-sidebar-list`의 childList **비우기/붙이기 한 쌍**과 `renderMapList` 1회를 확인한다.
+폴더, 같은 맵 Ctrl/Meta 토글, Shift 범위, 1024 상한 초과 맵 거부, 도구의 맵 스위처도
+갱신·선택 표시·초점·활성 맵 리빌을 확인한다. 200개는 썸네일 120개 캐시의 교체 비용을 따로 기록한다.
+
 ### 첫 사용자 시작과 저장 안내 (2026-10-03)
 
 - 첫 방문은 `editorWelcome.ts`의 전체 창 장면에서 시작한다. `src/start/firstWorldArrival.ts`를 데스크톱 시작 화면과 공유한다. 장르 선택은 로컬 참고 장면을 전환하고 첫 문장 입력창만 연다. 선택만으로 연결·인터뷰·저장·AI 호출을 하지 않는다.
+- 전체 화면은 배경이 viewport에 고정되고 소유자(`editor-welcome-first-world` / launcher `is-first-world`)가 격리된 스택을 제공하는 구조다. 폭 제한은 내용에만 적용한다. 편집기의 1060px 창·흰 여백·별도 scrim은 제거했고, 브랜드/장르/어두운 입력창/보조 경로를 같은 장면에 배치한다. 낮은 데스크톱 창에서는 간격을 줄이고 좁은 화면은 세로 스크롤을 허용한다. `verify-shots/first-world-fullscreen/`은 화면 크기별 실제 viewport 캡처다.
 - ‘이 이야기로 시작’을 누르면 AI 연결 관문 → 기획 인터뷰로 이어지고, 원문은 인터뷰의 `initialAnswer`로 전달된다. 연결을 미루거나 인터뷰를 취소하면 선택과 문장을 유지한다. 연결 관문이 없는 호출에서 `canGenerate()`가 false면 연결 안내와 설정 버튼을 표시한다. 장르를 고르지 않은 자유 입력도 제출 시 연결을 확인하고 기존 조수 경로로 넘긴다.
 - 장면은 기존 `public/assets/project-interview/` 그림·영상이다. 움직임 끄기는 로비와 같은 설정을 쓰며 OS 모션 감소·문서 가림을 반영한다. 페이지 종료 때 영상과 리스너를 정리한다. 참고 그림의 등장인물은 저자의 주인공 설정이 아니다.
 - 각 장르 포스터 아래 `AI 없이 직접 만들기`는 작은 ⚙를 대체한다. 확인 창에서 빈 맵과 장르 기본 설정을 저장함을 설명하고, 실제 `store.flush()` 성공 후에만 환영 창을 닫는다. `mode.ts`의 성공 안내는 그리기 → 테스트 순서를 제시한다.
@@ -215,6 +273,16 @@ The Resource Manager's music/sound categories use the complete shared catalog fr
 effective description/source and editor-only preview. Raw ID follows description.
 Search matches names, IDs, tags and descriptions;
 the empty-description filter tests the effective value, including deliberate clears.
+Audio rows opt in to `databaseListVirtualizer.ts` keyed DOM retention. Scrolling
+keeps overlapping buttons and their focus; a focused row leaving the window hands
+focus to the nearest mounted row without reversing the scroll. Tab/Shift+Tab use
+`focusRow` to reveal adjacent resources across window boundaries, with native exit
+at the catalog ends. `setItems` rebuilds fresh content and recovers focus by key.
+Other virtualizer callers retain their existing replacement behavior. Manager
+teardown calls `dispose` to disconnect the virtualizer's ResizeObserver, remove its
+scroll listener and clear its rows, as well as disconnecting the editor's observer.
+Regressions: `test/databaseListVirtualizerLifecycle.test.ts` and
+`test/resourceManagerPerformance.test.ts` (audio focus and repeated teardown).
 `audio-description-search`, `audio-description-input` and `audio-description-save`
 are the feature's browser test controls.
 

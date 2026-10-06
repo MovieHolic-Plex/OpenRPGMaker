@@ -1,0 +1,142 @@
+
+> oprn@0.137.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/fullCharacterReferenceAudit.test.ts test/charsetReferenceRoutes.test.ts test/sharedPortraitAssets.test.ts test/sharedCharacterGraphicsStore.test.ts test/monsterResourceCatalog.test.ts test/placeNpcGraphicQuery.test.ts test/eventCommandAssist.test.ts test/databaseResourcePickerDialog.test.ts --maxWorkers=1 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/99e0/rpg-zzu
+
+ ❯ test/eventCommandAssist.test.ts (56 tests | 1 failed) 195787ms
+   ✓ buildEventAssistPrompt > kind 목록·factory 기본값 예시·리소스 id 목록·출력 규약을 포함한다  2255ms
+   ✓ buildEventAssistPrompt > AI 저작 표면에서 제외된 명령은 kind 목록과 예시에 노출하지 않는다  1800ms
+   ✓ buildEventAssistPrompt > resourceId 명령을 쓰게 하되 id 목록을 종류별로 실어 준다  1854ms
+   ✓ buildEventAssistPrompt > 칩셋 id 를 오디오·얼굴 칸에 쓸 수 있는 것으로 제시하지 않는다 — 한 덩어리 목록은 없다  1828ms
+   ✓ buildEventAssistPrompt > 고를 리소스가 없는 kind 는 프로젝트를 보고 목록에서 뺀다 — 동영상  3929ms
+   ✓ buildEventAssistPrompt > 맵 목록에 transfer 좌표를 찍을 정확한 크기 문구를 싣는다  1828ms
+   ✓ buildEventAssistPrompt > 기존 페이지 커맨드를 요약에 포함한다  1716ms
+   ✓ buildEventAssistPrompt > 기본 scope는 page — 고친 뒤 최종 목록 전체를 요구한다  1465ms
+   ✓ buildEventAssistPrompt > 페이지가 예산을 넘으면 append로 내려가 «기존을 손대지 말라»고 지시한다  1357ms
+   ✓ buildEventAssistPrompt > 선택 위치를 내부 경로 배열로 싣지 않고 사람 말로 싣는다  1197ms
+   ✓ parseAndValidate > ```json 펜스가 있는 유효 배열을 커맨드로 파싱한다  1119ms
+   ✓ parseAndValidate > AI 저작 표면에서 제외된 명령은 파싱에서도 거부한다  1193ms
+   ✓ parseAndValidate > 존재하지 않는 itemId는 참조 에러로 거부한다  1050ms
+   ✓ parseAndValidate > 맵 밖으로 나가는 transfer 좌표를 거부한다 — 자가수정 루프가 고칠 기회를 준다  1128ms
+   ✓ parseAndValidate > 밟을 수 없는 칸으로 보내는 transfer 를 거부하고 대안 좌표를 알려준다  1303ms
+   × parseAndValidate > isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다 1634ms
+     → expected false to be true // Object.is equality
+   ✓ parseAndValidate > 맵 안 transfer 좌표는 통과한다  1753ms
+   ✓ parseAndValidate > 종류가 맞는 얼굴·소리·그림 resourceId 는 통과한다  1355ms
+   ✓ parseAndValidate > 칩셋 id 를 playAudio 에 쓰면 반려하고 쓸 수 있는 id 를 알려준다  1200ms
+   ✓ parseAndValidate > 얼굴 칸에 음악 id 를 쓰는 어깃남도 잡고, 번 칸은 「얼굴 지우기」로 통과시킨다  1496ms
+   ✓ parseAndValidate > 동영상이 없는 프로젝트에서 playMovie 는 어느 id 로도 통과하지 못한다  1250ms
+   ✓ parseAndValidate > 흉상·전신 프리셋 id 는 얼굴 절에 보이고 검증을 통과한다 — 폼이 권하는 id 다  1848ms
+   ✓ parseAndValidate > 「그림 선택」 픽커가 제시하는 이미지는 하나도 반려하지 않는다  4535ms
+   ✓ parseAndValidate > 업로드 종류가 monster 여도 그림으로 쓸 수 있고, 오디오 업로드는 그림 칸에서 반려된다  1532ms
+   ✓ parseAndValidate > 알 수 없는 kind는 shape 에러로 거부한다  1391ms
+   ✓ parseAndValidate > JSON 배열이 없으면 에러를 돌려준다  1339ms
+   ✓ runEventCommandAssist 자가수정 루프 > 보조 모델(liteModel)로 chatCompletion 요청을 만든다  1407ms
+   ✓ runEventCommandAssist 자가수정 루프 > 정상 JSON이면 1회 시도로 커맨드를 돌려준다  1520ms
+   ✓ runEventCommandAssist 자가수정 루프 > 1회 불량 JSON이면 에러를 되돌려 재시도해 성공한다  1459ms
+   ✓ runEventCommandAssist 자가수정 루프 > 3회 모두 실패하면 마지막 에러로 던진다  1591ms
+   ✓ AI Assist 패널 UI (fakeDom) > 같은 ids를 가진 다른 프로젝트로 바꾸면 초안과 열린 상태를 공유하지 않는다  5985ms
+   ✓ AI Assist 패널 UI (fakeDom) > 프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다  2118ms
+   ✓ AI Assist 패널 UI (fakeDom) > 초안은 도크 카드가 아니라 목록 자리(stagedHost)에 유령 행으로 그려진다  9885ms
+   ✓ AI Assist 패널 UI (fakeDom) > 적용은 목록 전체 교체 한 번이다 — 되돌리기 스냅샷이 한 칸만 쌓인다  10509ms
+   ✓ AI Assist 패널 UI (fakeDom) > 기존 명령이 있는 페이지에서 «고쳐 달라»고 하면 덧붙이지 않고 바뀜으로 표시한다  8567ms
+   ✓ AI Assist 패널 UI (fakeDom) > 행마다 «이건 빼기»로 골라 적용할 수 있다  9904ms
+   ✓ AI Assist 패널 UI (fakeDom) > 생성 중 명령 목록이 바뀌면 초안을 만들거나 적용하지 않는다  9156ms
+   ✓ AI Assist 패널 UI (fakeDom) > 생성 중 재렌더된 뒤에도 살아 있는 도크의 생성 버튼이 다시 활성된다  15521ms
+   ✓ AI Assist 패널 UI (fakeDom) > surviving staged rows use the applied result sequence for numbers and the badge  8983ms
+   ✓ AI Assist 패널 UI (fakeDom) > excluding an add row rerenders the remaining staged numbers contiguously  10128ms
+   ✓ AI Assist 패널 UI (fakeDom) > 취소를 누르면 초안만 지우고 목록을 건드리지 않는다  11394ms
+   ✓ AI Assist 패널 UI (fakeDom) > 연결이 안 됐으면 연결 방식을 완료하라고 안내한다  2052ms
+   ✓ AI Assist 패널 UI (fakeDom) > ChatGPT 모드(apiKey 없음)에서는 생성을 막지 않고 초안을 보여준다  10175ms
+   ✓ AI Assist 패널 UI (fakeDom) > 존재하지 않는 itemId만 계속 돌아오면 에러를 표시한다  4332ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 캐논이 있으면 프롬프트에 캐논 블록과 금지 목록이 실린다  3428ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 캐논이 없으면 캐논 블록 없이 기존처럼 동작한다  3513ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > text 커맨드 body에 금지어가 있으면 거부한다 — 중첩 fork 안도 본다  2070ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 금지어가 없으면 통과한다  1857ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 선택지 질문·문구에 금지어가 있어도 거부한다  1393ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 숫자 입력 안내 문구의 금지어도 거부한다  1619ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 깊은 중첩(loop>선택지>text) 안의 금지어도 잡는다  1536ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 플레이어에게 안 보이는 필드(label 이름)는 검사하지 않는다  1735ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 화자 이름에 금지어가 있으면 본문이 깨끗해도 거부한다  1880ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 여관 인사말·질문에 금지어가 있으면 거부한다  2989ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 게임오버 메시지·엔딩 제목/본문의 금지어도 거부한다  3462ms
+   ✓ worldCanon 강제 — 캐논 주입과 금지어 검증 > 화자·여관·게임오버·엔딩이 깨끗한 문구면 통과한다  1257ms
+ ✓ test/fullCharacterReferenceAudit.test.ts (16 tests) 27455ms
+   ✓ Complete character reference census regressions > removes 19 blank cells from picker, prompt and search despite stored profiles  8248ms
+   ✓ Complete character reference census regressions > does not mistake an uploaded replacement for the public blank/face pixels  3004ms
+   ✓ Complete character reference census regressions > updates seeded old face names in existing projects and retains custom names  2821ms
+   ✓ Complete character reference census regressions > uses the accepted host mapping for search, NPC candidates, auto-face and reconciliation  2105ms
+   ✓ Complete character reference census regressions > offers source-linked original face portraits and searches non-base expressions  2454ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: king-slime-01  1698ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: golem-clay  1387ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: skeleton-bone  1701ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: puppet-string  1217ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: wyvern-cliff  1247ms
+   ✓ Complete character reference census regressions > corrects replaced monster pixels: armor-living  1362ms
+ ✓ test/databaseResourcePickerDialog.test.ts (9 tests) 23382ms
+   ✓ database resource picker catalog > lists icon and monster candidates from bundled assets  1886ms
+   ✓ database resource picker catalog > lists facesets and charsets for actor sheet picking  1586ms
+   ✓ database resource picker catalog > lists one option per standalone face file and drops the legacy sheets  2013ms
+   ✓ faceset picker dialog > renders per-face options and no face-index control  4891ms
+   ✓ faceset picker dialog > title/backdrop 피커 행에 AI 만들기 칸이 붙는다  2832ms
+   ✓ faceset picker dialog > monster 피커 행에는 AI 칸이 붙지 않는다 — 몬스터는 도트 시트 140종에서 고른다(2026-10-02)  2394ms
+   ✓ faceset picker dialog > charset 피커 행에는 AI 칸이 붙지 않는다  2521ms
+   ✓ faceset picker dialog > swaps charset thumbnails to a color-keyed image  2047ms
+   ✓ faceset picker dialog > confirms the picked face id alone  3207ms
+ ✓ test/placeNpcGraphicQuery.test.ts (6 tests) 12241ms
+   ✓ place_npc graphic.query > 감사 로그의 place_npc 호출이 이제 성공한다  2118ms
+   ✓ place_npc graphic.query > 자유 질의 old woman으로 노년 여성 그래픽을 배치한다  1787ms
+   ✓ place_npc graphic.query > 그래픽 해석 실패는 주민 그림으로 대체하지 않고 graphic-not-found 로 거절한다  1509ms
+   ✓ place_npc graphic.query > default villager graphics diversify across sequential placements  4062ms
+   ✓ place_npc graphic.query > places matching changeFace for diversified charset slots  2753ms
+ ✓ test/charsetReferenceRoutes.test.ts (4 tests) 3899ms
+   ✓ Character reference paths use the audited walking chip > describes paired walking chips with the current canonical name  1994ms
+   ✓ Character reference paths use the audited walking chip > preserves a project author name in the paired walking description  1883ms
+ ✓ test/sharedCharacterGraphicsStore.test.ts (4 tests) 333ms
+ ✓ test/sharedPortraitAssets.test.ts (5 tests) 272ms
+ ✓ test/monsterResourceCatalog.test.ts (6 tests) 57ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/eventCommandAssist.test.ts > parseAndValidate > isPassable 만 통과하는 한 방향 함정 칸 transfer 를 거부한다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/eventCommandAssist.test.ts:341:44
+    339|     map.lowerTiles[5 * map.width + 4] = 240;
+    340| 
+    341|     expect(isPassable(project, map, 3, 3)).toBe(true);
+       |                                            ^
+    342|     expect(isPassableLanding(project, map, 3, 3)).toBe(false);
+    343|     const result = parseAndValidate(project, JSON.stringify([
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 105 passed (106)
+     Errors  1 error
+   Start at  17:19:04
+   Duration  361.06s (transform 40.82s, setup 0ms, collect 89.41s, tests 263.43s, environment 3ms, prepare 2.01s)
+

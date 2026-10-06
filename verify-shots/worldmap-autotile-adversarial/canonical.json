@@ -1,0 +1,19 @@
+{
+  "projectId": "d37612d4-9453-4395-8a09-fe65a7192e01",
+  "projectDir": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/project-r7",
+  "backup": "/home/main/z-project/rpg-zzu-worldmap-iconsets/qa-runs/worldmap-authoring-20261005/project-r7/backups/2026-10-05T08-31-02-893Z-9172ee20-8434-4855-b260-65eb105bcb2b/project.sqlite",
+  "revision": 11,
+  "sha256": "4983c246460c7f7799213bfa177a9bf61f62599320701dfbd2fecb20f4fa46ec",
+  "edited": [
+    {
+      "mapId": "map_43fedda3-401a-4420-a7bf-cac983a82297",
+      "lowerChanged": 0,
+      "upperChanged": 0,
+      "eventsPreserved": true,
+      "reliefPreserved": true
+    }
+  ],
+  "iconGraftsPreserved": true,
+  "preservedOtherMaps": true,
+  "savedAndReopened": true
+}

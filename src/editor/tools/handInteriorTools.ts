@@ -10,6 +10,11 @@ import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 const S = HAND_INTERIOR_SPEC;
+// 바닥·벽면·천장 id 를 enum 으로 연다 — 자유 문자열이면 모델이 wood·stone·brick 처럼 그럴듯한 이름을 지어
+// 「바닥 "wood" 이 없다」로 거부된 뒤 다시 부른다(2026-10-05 헤드리스 스트레스 13판 중 4판).
+const FLOOR_IDS = Object.keys(S.floors);
+const WALL_IDS = Object.keys(S.walls);
+const CEILING_IDS = Object.keys(S.ceilings);
 const XY = { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], additionalProperties: false } as const;
 
 /** 검색 결과가 이 수 이하면 행마다 설명·태그·놓는 곳·짝 소품까지, 넘으면 id·이름·종류·크기·설명 한 줄만. */
@@ -114,10 +119,10 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내" },
-      floor: { type: "string", description: "기본 바닥 id" },
-      wall: { type: "string", description: "기본 벽면 id" },
-      ceiling: { type: "string", description: "천장 색(default·rock·dark·wood·leaf·gold·steel·velvet)" },
-      zones: { type: "array", items: { type: "object", properties: { x0: { type: "integer" }, y0: { type: "integer" }, x1: { type: "integer" }, y1: { type: "integer" }, floor: { type: "string" }, wall: { type: "string" } }, required: ["x0", "y0", "x1", "y1"], additionalProperties: false } },
+      floor: { type: "string", enum: FLOOR_IDS, description: "기본 바닥 id" },
+      wall: { type: "string", enum: WALL_IDS, description: "기본 벽면 id" },
+      ceiling: { type: "string", enum: CEILING_IDS, description: "천장 색" },
+      zones: { type: "array", items: { type: "object", properties: { x0: { type: "integer" }, y0: { type: "integer" }, x1: { type: "integer" }, y1: { type: "integer" }, floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["x0", "y0", "x1", "y1"], additionalProperties: false } },
       objects: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"], additionalProperties: false } },
       tables: { type: "array", items: { type: "object", properties: { style: { type: "string" }, x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer", minimum: 1 }, h: { type: "integer", minimum: 1 } }, required: ["style", "x", "y", "w", "h"], additionalProperties: false } },
       lines: { type: "array", items: { type: "object", properties: {

@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "createdAt": 1791095706356,
+  "projectDir": "/qa/new-game",
+  "title": "새 게임",
+  "choiceId": "story-cutscene",
+  "intent": "",
+  "startMode": "ai",
+  "screenSize": "classic",
+  "gameDesignBrief": {
+    "version": 1,
+    "presetId": "story-cutscene",
+    "answers": {
+      "experience": {
+        "question": "무엇이 이상하다는 걸 알게 되나요?",
+        "label": "사건의 시작",
+        "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+        "source": "user"
+      },
+      "activity": {
+        "question": "진실은 어떻게 알아가나요?",
+        "label": "중심 플레이",
+        "text": "사람의 말을 듣고 비교 — 엇갈리는 증언 속에서 모순을 찾아요.",
+        "source": "user"
+      },
+      "progression": {
+        "question": "사건은 어떻게 풀어가나요?",
+        "label": "진행 방식",
+        "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+        "source": "user"
+      },
+      "detail": {
+        "question": "어떤 긴장감을 원하나요?",
+        "label": "분위기",
+        "text": "위협이 있는 긴장으로 — 조사 중 위험이 찾아와 판단을 서둘러야 해요.",
+        "source": "user"
+      },
+      "scope": {
+        "question": "첫 번째 추리는 어디까지 해볼까요?",
+        "label": "첫 제작 범위",
+        "text": "단서 둘과 첫 추론 — 두 정보를 비교해 가설을 확인해요.",
+        "source": "user"
+      }
+    },
+    "summary": "추리·미스터리 중심의 게임을 만든다.\n\n처음 떠올린 아이디어: 항구에서 사라진 편지를 찾는 이야기\n\n이야기의 출발점은 사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.\n\n플레이어의 핵심 행동: 사람의 말을 듣고 비교 — 엇갈리는 증언 속에서 모순을 찾아요.\n\n분위기: 위협이 있는 긴장으로 — 조사 중 위험이 찾아와 판단을 서둘러야 해요.\n\n진행 흐름: 한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.\n\n먼저 완주 가능하게 만들 구간: 단서 둘과 첫 추론 — 두 정보를 비교해 가설을 확인해요.\n\n사용자가 정한 주인공: 편지를 배달하는 주인공\n\n추가 요청: 비가 오는 항구",
+    "interview": {
+      "version": 1,
+      "genre": "mystery",
+      "concept": "항구에서 사라진 편지를 찾는 이야기",
+      "protagonist": "편지를 배달하는 주인공",
+      "notes": "비가 오는 항구",
+      "choiceIds": {
+        "experience": "missing",
+        "activity": "testimony",
+        "progression": "case",
+        "detail": "danger",
+        "scope": "episode"
+      }
+    }
+  }
+}

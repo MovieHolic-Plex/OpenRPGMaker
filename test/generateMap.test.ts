@@ -7,7 +7,7 @@ import { checkReachability } from "@/project/lint/reachability";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
 import { BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
@@ -220,7 +220,8 @@ describe("generate_map", () => {
     // 있으면 동굴·던전 요청마다 스스로 wall 을 골랐고(3/3), 설명을 "명시 요청 때만" 으로 바꿔도
     // 그대로였다. 스키마에서 감추면 0/3. 런타임 경로는 위 케이스들이 계속 지킨다.
     it("모델 노출 스키마에는 border 가 없다", () => {
-      const tool = toOpenAiTools().find((entry) => entry.function.name === "generate_map");
+      // 2026-10-06 조수에게서 숨겼다(EasyRPG 칩셋 폐기) — 스키마 계약은 숨김을 풀었을 때를 지킨다.
+      const tool = toOpenAiTools([{ ...getTool("generate_map")!, deprecated: false }])[0];
       expect(tool).toBeDefined();
       expect(Object.keys(tool!.function.parameters.properties ?? {})).not.toContain("border");
       expect(tool!.function.description).not.toContain("border");

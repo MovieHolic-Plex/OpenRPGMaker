@@ -1,0 +1,408 @@
+{
+  "scenarioId": "parking-approved",
+  "projectPath": "../../.local/share/oprn/super-harness/monitoring/parking-completion/integration/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "start",
+      "shot": "02-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 1,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "between-bays",
+      "shot": "03-between-bays.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "vehicle-blocked",
+      "shot": "04-vehicle-blocked.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 4
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "empty-bay",
+      "shot": "05-empty-bay.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 5
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "south-walkway",
+      "shot": "06-south-walkway.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 6
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "behind-vehicle",
+      "shot": "07-behind-vehicle.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 2,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "north-wall-blocked",
+      "shot": "08-north-wall-blocked.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 9,
+        "y": 2,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 9,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "return-to-entry",
+      "shot": "09-return-to-entry.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_approved_parking",
+        "x": 1,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_approved_parking",
+          "x": 1,
+          "y": 4
+        }
+      ]
+    }
+  ]
+}

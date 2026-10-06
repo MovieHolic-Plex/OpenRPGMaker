@@ -7,6 +7,7 @@
 // 층 번호와 맵 칸 이름의 대응은 @/project/mapLayers 가 정본이다 — 여기서는 도우미만 쓴다.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { shapeWorldmapOutsideStamp } from "@/project/worldmapBrushStamp";
 import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { compactMapLayers, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
@@ -163,6 +164,7 @@ const stampLayerBlock: ToolDefinition = {
       const view = autotileLayerView(map, layer);
       for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(view, group, points);
     }
+    if (reshape) shapeWorldmapOutsideStamp(map, tileset, written.get(1) ?? [], written.get(3) ?? []);
     compactMapLayers(map);
 
     const touched = [...new Map([...written.values()].flat().map((p) => [`${p.x},${p.y}`, p] as const)).values()];

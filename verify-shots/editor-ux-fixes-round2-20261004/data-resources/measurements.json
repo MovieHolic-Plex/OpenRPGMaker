@@ -1,0 +1,97 @@
+{
+  "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+  "conditions": "Native Chromium and IndexedDB, disposable browser fixture; no canonical saves or model requests. Timings are local CPU/DOM work under shared host load.",
+  "errors": [],
+  "checks": [
+    "Native v3→v4 history migration, scope/map/search/page/delete/abort; warm reads never enumerate transcripts",
+    "Activity snapshots crop auxiliary layers before allocation and retain frozen atlas metadata",
+    "Twenty native activity renders share one chroma-keyed atlas with transparent pixel parity",
+    "Native archive pruning traverses metadata keys without reading Blob payloads",
+    "Cached database connections equal uncached authority after presentation and command edits",
+    "Parked, retained detached, reattached and evicted preview ownership",
+    "Native filtered atlas selection retains sheet, input and active chip",
+    "Native event reorder/undo/redo/search retain dense grids and unaffected row; both focus wraps; apply commits draft",
+    "Native gallery selection retains cards/scroll; native audio search retains shell, focus and dirty detail"
+  ],
+  "rows": [
+    {
+      "case": "conversation-index",
+      "records": 123,
+      "page": 20,
+      "transcriptScans": 0,
+      "cursorAdvances": 1,
+      "ms": 74.80000007152557
+    },
+    {
+      "case": "activity-crop",
+      "sourceCells": 16384,
+      "cropCells": 96,
+      "captures": 2,
+      "auxiliaryReads": 960
+    },
+    {
+      "case": "activity-atlas",
+      "requests": 20,
+      "fullPixelScans": 1
+    },
+    {
+      "case": "activity-prune",
+      "metadataCursors": 1
+    },
+    {
+      "case": "preview-lifecycle",
+      "resumes": 2,
+      "suspends": 3,
+      "disposes": 1
+    },
+    {
+      "case": "native-event-contracts",
+      "commands": 20,
+      "reorderUndoRedo": true,
+      "gridsShared": true,
+      "unchangedRowRetained": true,
+      "focusWrap": true,
+      "apply": true
+    },
+    {
+      "case": "resource-gallery",
+      "cards": 80,
+      "allLazy": true
+    },
+    {
+      "case": "audio-keyboard-window",
+      "tabs": 35,
+      "focusedId": "easyrpg-music-opening-2",
+      "rows": 39
+    },
+    {
+      "case": "resource-audio",
+      "initialRows": 39,
+      "dirtyDetailRetained": true,
+      "searchRetained": true
+    },
+    {
+      "case": "audio-dispose",
+      "created": 2,
+      "disconnected": 2
+    }
+  ],
+  "productionSources": {
+    "src/ai/aiRecordDb.ts": "200854678557997bf50916473f741674c803bc17943c5c3b570547f5b61b7b8a",
+    "src/ai/conversationStore.ts": "e1f1482deca660376a670eb2e1ebadededd15f1fd0819f9e3dfb05d9e5b3a562",
+    "src/ai/activityVisual.ts": "e48bfb33ad5f547672a028abce688262b2f0f9cd685c29d0f65ffdaf96a68dd2",
+    "src/ai/activityMediaArchive.ts": "fb7f8b8e3ae1f2adfaa84b99baa8524394927a36c734852b7f80a6cdae1bd056",
+    "src/ai/toolImageCanvas.ts": "6a57655b250c00f18f1f1aa748b398fce089682d72360b0191edf2911fa4bf98",
+    "src/editor/databaseRecordConnections.ts": "6ee29822cae43ffebdb4df9011140f591023dd416ce880bc304a1733ddece47e",
+    "src/editor/panels/resourceManagerViews.ts": "c8c8233e4ed1248dbe4f31b7247987993afa2ff98cbf9dd03f0f3c9dcbe302a8",
+    "src/editor/panels/audioDescriptionEditor.ts": "b9568043ab505bdfabd6d1af9788c73cdaed9450947fcd6a94f436e25e4d197d",
+    "src/editor/panels/databasePreviewLifecycle.ts": "72d3adaa8ab2884efa9c1818bc35f75024861e96d2af6d11156cbbd224d09fc8",
+    "src/editor/panels/eventEditor/content.ts": "ad53751c0934ab6286dd439c828049775292efe63b774900637ad42cd2c559fc",
+    "src/editor/panels/eventEditor/commandList.ts": "06c5f63e5a2b490ced86b67c36c8e39a78e8ef4aa966ca59967f6a419841899d",
+    "src/project/store.ts": "92070754d64511f8f69fc46c683077424d20cfd430cc3a6d0c5b53822d033701",
+    "src/styles/event/command-list-4.css": "1416921f83dcdac417e6340626e67c43d99fd4652d50227b20b547866eb52b10",
+    "src/editor/panels/databaseListVirtualizer.ts": "075e881d198ffcb95261277955c2133a7c6cc145d76fc2f8e73a39f9c9bb47c9",
+    "src/editor/panels/tilePalette.ts": "66f11fe714a10e07748762a4a956f037ba58bf8be046df5d55faf82391622fab",
+    "src/editor/panels/tilePalettePreviewPanel.ts": "fabf9de7e6acbf819b982d57673e3f6f899e36412c43b3e03a2902219bcae1e9"
+  }
+}

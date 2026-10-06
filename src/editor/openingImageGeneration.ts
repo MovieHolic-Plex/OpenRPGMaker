@@ -17,6 +17,8 @@ export type CinematicStillRequest = {
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
   readonly project?: Project;
   readonly readReference?: AppearanceReferenceReader;
+  readonly resolveReference?: (resourceId: string, signal?: AbortSignal) => Promise<string>;
+  readonly hasTransparentPixels?: (dataUrl: string) => Promise<boolean>;
 };
 
 export type CinematicStillResult =
@@ -46,9 +48,9 @@ export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "
   return [
     `Create exactly one full-screen, ${brief?.aspectRatio ?? "16:9"} cinematic background still for the ${screen} of a 2D JRPG.`,
     "Scene brief: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ".",
-    `Fill the entire canvas with the scene. Compose it as ${composition}. ${clearArea}`,
+    `Fill the entire canvas with the scene. Compose it as ${composition}. Honor the requested shot distance, viewpoint and composition: an establishing shot, medium shot and close-up must look visibly different. ${clearArea}`,
     `Render it as ${brief?.artStyle ?? "hand-painted 2D game art"} with coherent lighting and restrained detail. Avoid photographic rendering and 3D-rendered surfaces.`,
-    ...(brief?.referenceResourceIds.length ? ["Use the supplied reference images to preserve the established character shapes, colors and location design. Do not copy any labels or reference-sheet layout."] : []),
+    ...(brief?.referenceResourceIds.length ? ["Use the supplied reference images to preserve the same object design, character, location, palette and drawing style while composing the requested new shot. Show the specific story change, not a repeated view of the reference. Do not copy any labels or reference-sheet layout."] : []),
     "Do not add any text, letters, captions, logos, watermarks, signatures, interface elements, borders, letterboxing bars or icon-style framing. Do not return a sprite sheet, an item icon or a character portrait on a flat background.",
   ].join("\n\n");
 }
@@ -71,7 +73,8 @@ export async function generateCinematicStill(
   let brief: OpeningImageBrief | undefined;
   try {
     if (purpose === "gameOver") ({ prompt, name } = prepareGameOverImageRequest(args));
-    else { brief = args.role === undefined ? prepareOpeningImageRequest(args, options.project) : prepareOpeningLayerRequest(args, options.project); ({ prompt, name } = brief); }
+    // background/actor/prop 은 독립 레이어(단색 배경 제거), backdrop/foreground 는 generate_opening_image 의 전체 배경·실제 알파 전경.
+    else { brief = args.role === 'background' || args.role === 'actor' || args.role === 'prop' ? prepareOpeningLayerRequest(args, options.project) : prepareOpeningImageRequest(args, options.project); ({ prompt, name } = brief); }
   } catch (error) {
     if (error instanceof ToolError) return { ok: false, summary: error.message, code: error.code ?? "invalid-args" };
     throw error;
@@ -79,9 +82,13 @@ export async function generateCinematicStill(
   try {
     options.signal?.throwIfAborted();
     const references = await Promise.all((brief?.referenceResourceIds ?? []).map(async id => {
-      const url = options.project && resolveAssetResourceUrl(id, { project: options.project });
-      if (!url) throw new ImageGenerationError(`참고 그림을 읽을 프로젝트/리소스가 없습니다: ${id}`);
-      const dataUrl = await (options.readReference ?? readAppearanceReference)(url, undefined, options.signal ?? new AbortController().signal);
+      let dataUrl: string;
+      if (options.resolveReference) dataUrl = await options.resolveReference(id, options.signal);
+      else {
+        const url = options.project && resolveAssetResourceUrl(id, { project: options.project });
+        if (!url) throw new ImageGenerationError(`참고 그림을 읽을 프로젝트/리소스가 없습니다: ${id}`);
+        dataUrl = await (options.readReference ?? readAppearanceReference)(url, undefined, options.signal ?? new AbortController().signal);
+      }
       const match = /^data:(image\/(?:png|jpeg|webp));base64,(.+)$/.exec(dataUrl);
       if (!match) throw new ImageGenerationError(`참고 그림 데이터가 올바르지 않습니다: ${id}`);
       return { mimeType: match[1], data: match[2] };
@@ -89,13 +96,29 @@ export async function generateCinematicStill(
     const referenceImages = parseImageReferences(references);
     options.signal?.throwIfAborted();
     const image = await (options.generateImage ?? generateAiImage)({
-      prompt: buildCinematicStillPrompt(prompt, purpose, brief),
+      prompt: purpose === 'opening' && args.role === 'foreground' ? [
+        'Create one isolated illustrated foreground subject for a layered 2D JRPG opening. Actual transparent alpha background, not a checkerboard or painted background. The entire subject must fit without cropped edges. No text, UI, ground plane or cast shadow. Preserve the supplied reference design, palette and painted style. One subject, one viewpoint, no sprite sheet. Respect the requested composition.',
+        prompt,
+      ].join('\n\n') : buildCinematicStillPrompt(prompt, purpose, brief),
       signal: options.signal,
       ...(referenceImages.length ? { referenceImages } : {}),
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {
       return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다. 다시 시도하세요.", code: "image-invalid" };
+    }
+    if (purpose === 'opening' && args.role === 'foreground') {
+      const inspect = options.hasTransparentPixels ?? (async (dataUrl: string) => {
+        const element = new Image(); element.src = dataUrl; await element.decode();
+        const canvas = document.createElement('canvas'); canvas.width = 160; canvas.height = 160;
+        const context = canvas.getContext('2d'); if (!context) return false;
+        context.drawImage(element, 0, 0, 160, 160);
+        const pixels = context.getImageData(0, 0, 160, 160).data;
+        let clear = 0, solid = 0;
+        for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] < 16) clear++; if (pixels[i] > 240) solid++; }
+        return clear > 256 && solid > 256;
+      });
+      if (!await inspect(image.dataUrl)) return { ok: false, summary: '전경 그림에 실제 투명 배경 또는 대상이 없습니다. 체커보드/단색 배경은 투명하지 않습니다. 실제 alpha PNG로 다시 생성하세요.', code: 'foreground-not-transparent' };
     }
     const dataUrl = brief?.layerRole && brief.layerRole !== 'background' ? await removeOpeningChroma(image.dataUrl, options.signal) : image.dataUrl;
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };

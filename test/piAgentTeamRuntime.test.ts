@@ -1,7 +1,7 @@
 // 팀 런타임의 배정 계약. 하위 에이전트는 가짜 실행기로 갈음하고(LLM 은 결정적으로 만들 수 없다)
 // 팀장 툴을 직접 호출해 런타임의 락·예산·병합·안전망을 검증한다.
 import { describe, expect, it } from "vitest";
-import { PI_AGENT_DEFAULT_TIMEOUT_MS, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
+import { PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
@@ -87,6 +87,25 @@ function harness(
     releaseBuilders: () => release(),
   };
 }
+
+describe("프리셋 첫 생성의 실제 팀원 턴 상한", () => {
+  it.each([[300, 120], [5, 5]])("팀 공통 예산이 팀원 상한 %i를 덮어쓰지 않는다", async (memberLimit, expected) => {
+    const seen: number[] = [];
+    const req = { ...request(seeded()), task: "장르 프리셋: 작은 첫 구간", team: {
+      ...TEAM, workBudget: 600, reviewAfterWork: false,
+      members: [{ ...TEAM.members[0]!, maxTurns: memberLimit }],
+    } };
+    await runPiTeam(req, { runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "첫 상호작용" });
+        await callTool(options.extraTools, "wait_agents", {});
+        await callTool(options.extraTools, "finish", { report: "끝" });
+      } else seen.push(child.maxTurns!);
+      return doneWith(child.project);
+    } });
+    expect(seen).toEqual([expected]);
+  });
+});
 
 describe("팀 런타임 — 맵 in-flight 락", () => {
   // 깨질 것: 락이 없으면 같은 턴의 두 배정이 같은 사본에서 출발해 나중 결과가 앞 결과를 통째로
@@ -202,6 +221,21 @@ describe("팀 런타임 — 시작/확인 분리", () => {
 
     await runPiTeam(request(seeded()), test.options);
     expect(errors).toHaveLength(1);
+  });
+
+  it("finish 보고는 프로젝트 작업뿐 아니라 실패한 맵 배정도 포함한다", async () => {
+    const events: PiAgentEvent[] = [];
+    const req = { ...request(seeded()), task: "맵 조회", team: { ...TEAM, reviewAfterWork: false } };
+    await runPiTeam(req, { onEvent: event => events.push(event), runAgent: async (child, options) => {
+      const tools = options?.extraTools ?? [];
+      if (!tools.some(tool => tool.name === "assign_map_agent")) throw new Error("도구 정의 거부: 안내판 조회 미완료");
+      await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "조회", member: "builder" });
+      await callTool(tools, "wait_agents", {});
+      await callTool(tools, "finish", { report: "프로젝트는 그대로입니다." });
+      return doneWith(child.project);
+    } });
+    expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("실패한 배정 기록 1건") }));
+    expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("안내판 조회 미완료") }));
   });
 
   // 깨질 것: 팀장이 턴 상한에 걸려 wait 없이 끝나면 진행 중이던 시공 결과가 통째로 사라진다.
@@ -402,7 +436,7 @@ it("외부·실내 담당이 직접 출입구를 협의하고 팀장은 대기 �
   expect(events.find(e => e.type === "team_report")).toMatchObject({ text: "출입구 협의 완료" });
 });
 
-it("읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 텍스트를 적용한다", async () => {
+it("전체 범위를 읽는 설계 작업은 직렬 배정하고 보고서로 공통 텍스트를 적용한다", async () => {
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
   let started = 0;
@@ -412,10 +446,12 @@ it("읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 �
       const tools = opts.extraTools ?? [];
       if (tools.some(t => t.name === "assign_task_agent")) {
         await callTool(tools, "assign_task_agent", { task: "용어집", mode: "read" });
-        await callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" });
-        expect(started).toBe(2);
+        await expect(callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" })).rejects.toThrow(/같은 맵/);
+        expect(started).toBe(1);
         await expect(callTool(tools, "finish", { report: "끝" })).rejects.toThrow(/아직 실행/);
         release();
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" });
         const reports = await callTool(tools, "wait_agents", {});
         expect((reports.agents as { summary: string }[]).map(a => a.summary)).toEqual(["용어집: 여관=Inn", "UI 번역안: 여관=Inn"]);
         await callTool(tools, "assign_task_agent", { task: "제목 번역 적용: Inn", mode: "project" });
@@ -532,6 +568,39 @@ it("live team checkpoints merge owned maps before another agent's final result",
   expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
   expect(result.project.maps.map_a!.name).toBe("live:map_a");
   expect(result.project.maps.map_b!.name).toBe("live:map_b");
+});
+
+// 2026-10-05 스트레스: 맵 삭제 거절 하나가 팀 발행 줄을 막아 뒤의 팀원이 모두 같은 거절로 죽었고,
+// 거절을 모르는 팀장은 같은 요청을 두 번 더 배정했다.
+it("a declined map-loss checkpoint neither blocks later members nor stays hidden from the lead", async () => {
+  const project = seeded();
+  const req = { ...request(project), applyMode: "default" as const };
+  let waited: Record<string, unknown> = {};
+  let laterPublished = false;
+  await runPiTeam(req, {
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.label === "map_a") throw new Error(`${PI_MAP_LOSS_DECLINED_PREFIX} 맵 1개 삭제를 취소했습니다 — 프로젝트는 그대로입니다.`);
+      laterPublished = true;
+      return checkpoint.project;
+    },
+    runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "A", member: "builder" });
+        await callTool(options.extraTools, "wait_agents", {});
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_b", task: "B", member: "builder" });
+        waited = await callTool(options.extraTools, "wait_agents", {});
+        return doneWith(child.project);
+      }
+      const id = child.mapIds[0]!;
+      const next = built(child.project, id, `live:${id}`);
+      // 실제 워커는 거절을 도구 실패로 바꿔 모델에게 돌려주고 계속한다 — 여기선 그 변경 없이 끝낸다.
+      try { await options.onCheckpoint!({ project: next, label: id, toolName: "remove_map" }); }
+      catch { return doneWith(child.project); }
+      return doneWith(next, [`maps.${id}`]);
+    },
+  });
+  expect(laterPublished).toBe(true);
+  expect(JSON.stringify(waited.userDeclined)).toContain("맵 1개 삭제를 취소했습니다");
 });
 
 // 2026-09-27 프리셋 팀 첫 생성 실측: 프로젝트 공통 작업 팀원의 체크포인트는 안 바뀐 타일셋·DB 를 비워서 온다.
@@ -662,7 +731,7 @@ describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
 
   // 깨질 것(2026-09-28 재현): 시작 맵은 트리 루트라 그 묶음이 곧 모든 맵이다. 시작 맵 담당이 늦게 끝나면
   // 그 사이 병합된 들판 담당의 결과를 출발 사본으로 덮었고, 충돌 보고도 없었다.
-  it("시작 맵(트리 루트) 담당이 늦게 끝나도 먼저 병합된 다른 맵을 덮지 않는다", async () => {
+  it("트리 루트 담당이 끝나야 그 묶음의 자식 맵을 재배정한다", async () => {
     const project = seeded();
     const root = project.mapTree.mapId;
     let releaseRoot = (): void => {};
@@ -674,9 +743,10 @@ describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
         const tools = opts.extraTools ?? [];
         if (tools.some((tool) => tool.name === "assign_map_agent")) {
           await callTool(tools, "assign_map_agent", { mapId: root, task: "시작 마을" });
-          await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" });
-          await callTool(tools, "wait_agents", { agentIds: ["builder-2"] });
+          await expect(callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" })).rejects.toThrow(/같은 맵/);
           releaseRoot();
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" });
           await callTool(tools, "wait_agents", {});
           await callTool(tools, "finish", { report: "끝" });
           return doneWith(req.project);
