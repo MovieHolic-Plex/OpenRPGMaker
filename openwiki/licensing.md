@@ -26,3 +26,14 @@
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 이름 자리 `[LICENSOR]`는 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.
+
+## 공개 저장소 내보내기 (OpenRPGMaker)
+
+- 공개 저장소는 비공개 `MovieHolic-Plex/OpenRPGMaker`(2026-10-07 생성, 비어 있음). 이 저장소(rpg-zzu)를 뒤집지 않고 **한 커밋 스냅샷**을 올린다 —
+  14GiB 이력에 지운 제3자 그림이 남아 있고, 동시 세션 때문에 이력 재작성이 불가능하다.
+- `node scripts/oss/export-public.mjs --ref origin/main --git` → `~/oss-export/OpenRPGMaker`. 제외 목록 `scripts/oss/publicSet.mjs`,
+  self-hosted 워크플로 제거, 텍스트 안 내부 호스트·홈 경로·tailnet IP 치환, 기록 `PUBLIC_EXPORT.json`.
+- 확인: 스냅샷에서 `build:fast`·`build:player` 성공(2026-10-07, 원본 HEAD 4f8c158e79). 사전 스캔은
+  `node scripts/oss/prescan.mjs --ref HEAD`를 스냅샷 폴더에서 돌린다.
+- **정리가 끝나기 전 스냅샷을 원격에 푸시하지 말 것.** GitHub 은 강제 푸시로 덮은 커밋도 해시로 한동안 열람할 수 있어서,
+  나중에 공개로 돌리면 옛 스냅샷의 제3자 그림이 새어 나간다. 첫 푸시가 곧 최종본이어야 한다.

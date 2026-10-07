@@ -5,7 +5,7 @@ export const PUBLIC_EXCLUDE = [
   ".omo", ".superpowers", ".vite-cache", ".kiro", ".infisical.json",
   "verify-shots", "output", "reports", "evidence", "docs", "design", "deprecated", "asset-backups",
   "new-editor", "infra", "rpg_maker_skills",
-  "AI조수-작성방식-보고서.pdf", "problem.md", "review.md", "dbaudit.mjs", "benchmark.html",
+  "AI조수-작성방식-보고서.pdf", "problem.md", "review.md", "dbaudit.mjs",
   "Start RPG Maker.command",
   // 닌텐도 원작 걷기 그림(pret/pokeemerald)과 그것을 판형으로 쓴 후보. ATTRIBUTION 이 스스로 원작이라고 밝힌다.
   // 게임 번들에는 설치되지 않았고 하네스 안에서만 쓴다.
@@ -13,6 +13,10 @@ export const PUBLIC_EXCLUDE = [
   "harness/pokemon-like-characters/references",
   "harness-data/pokemon-character-casting",
   "harness/pokemon-like-field-kit", // 포챠나 원작 필드 그림을 판형으로 쓴 파생 그림(README 45행)
+  // 상용 팩·외부 내려받기 학습 자료. src 는 import 하지 않는다.
+  "tiledata/rasak-fantasy", "tiledata/rasak-modern", "tiledata/refmap", "tiledata/pixel-art-world",
+  // 운영 서버 주소·ssh 별칭·배포 절차.
+  "store-server/deploy",
 ];
 
 /** git pathspec 제외 목록. */
