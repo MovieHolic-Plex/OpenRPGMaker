@@ -8,9 +8,10 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
-import { disambiguatedBattlerName, hpBarState } from "@/player/battleFieldDom";
+import { disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
@@ -387,6 +388,8 @@ export function syncEnemyListPanel(
       bar.dataset.hpState = hpBarState(pct);
     }
     row.classList.toggle("defeated", shownDefeated);
+    // 에메랄드 상대 HP 상자에도 상태 배지를 단다(스프라이트 쪽 배지는 CSS 가 숨긴다).
+    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds });
   }
 }
 
@@ -429,8 +432,9 @@ function syncEnemyListName(
   if (!enemy.level) return;
   const level = document.createElement("span");
   level.className = "battle-enemy-list-level";
-  level.textContent = store.getCurrent().system.battleUiStyle === "pokemon"
-    ? `레벨${enemy.level}` : `Lv.${enemy.level}`;
+  // 에메랄드 HP 상자는 「Lv9」 — 아군 상자(「레벨 14」)와 띄어쓰기까지 달라 두 상자가 다른 게임처럼 보였다.
+  level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `Lv${enemy.level}`
+    : store.getCurrent().system.battleUiStyle === "pokemon" ? `레벨${enemy.level}` : `Lv.${enemy.level}`;
   name.append(level);
 }
 

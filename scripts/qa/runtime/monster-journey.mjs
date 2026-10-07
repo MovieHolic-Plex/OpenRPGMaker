@@ -47,6 +47,17 @@ await page.addInitScript(() => {
     const count = Math.max(rows, sprites);
     const pages = [...scene.querySelectorAll(".battle-result-panel .battle-result-reward-row")].filter(visible).map((n) => (n.textContent ?? "").trim());
     const text = [...[...scene.querySelectorAll(".battle-message-line")].filter(visible).map((n) => (n.textContent ?? "").trim()), ...pages.map((p) => `[결과] ${p}`)].filter(Boolean).join(" / ");
+    // 상태 배지(독 등)는 HP 상자 안에 있어야 한다 — 몬스터 머리 위 허공에 「PSN」이 떠 있었다(2026-10-07 관장전 캡처).
+    const boxes = [...scene.querySelectorAll(".battle-enemy-list-row, .battle-party .battle-actor-status")].filter(visible).map((n) => n.getBoundingClientRect());
+    for (const icon of [...scene.querySelectorAll(".battle-status-icon")].filter(visible)) {
+      if (icon.classList.contains("battle-status-icon-death")) continue;
+      const r = icon.getBoundingClientRect();
+      const inside = boxes.some((b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1);
+      if (!inside && (seen.strayIcons ??= []).length < 6) {
+        const path = []; for (let n = icon.parentElement; n && n !== scene && path.length < 4; n = n.parentElement) path.push(n.className.split(" ")[0]);
+        seen.strayIcons.push(`${icon.className.split(" ").pop()} @${Math.round(r.left)},${Math.round(r.top)} in ${path.join("<")}`);
+      }
+    }
     if (count > seen.maxEnemies) seen.maxEnemies = count;
     if (count > 1 && seen.overlap.length < 8) seen.overlap.push(`rows ${rows} sprites ${sprites} «${text}»`);
     if (text && seen.lines[seen.lines.length - 1] !== text && seen.lines.length < 400) seen.lines.push(text);
@@ -433,6 +444,7 @@ try {
   step("gym-leader", started && badge[badgeId] === true, `${leader.id}: ${log.length}턴 → battleResult ${finalState.battleResult} · ${badgeId}=${badge[badgeId]}`, await shot("14-after-leader"));
   const watch = await page.evaluate(() => window.__journeyBattleWatch);
   report.battleLines = watch.lines;
+  step("battle-status-in-box", !(watch.strayIcons ?? []).length, (watch.strayIcons ?? []).join(" | ") || "상태 배지는 모두 HP 상자 안");
   step("battle-one-foe", watch.maxEnemies <= 1, `동시에 보인 상대 최대 ${watch.maxEnemies}${watch.overlap.length ? ` — ${watch.overlap.join(" | ")}` : ""}`);
 } catch (error) {
   report.failure = String(error?.stack ?? error);

@@ -152,6 +152,11 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp::before { background: #48b888; border-radius: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp[data-hp-state="mid"]::before { background: #e8c040; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-stat-bar-hp[data-hp-state="low"]::before { background: #e85848; }
+/* 상태 배지: HP 상자 안 둘째 줄 왼쪽(3세대 자리). 스프라이트에 붙은 배지는 숨긴다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-actor-group .battle-actor, .battle-enemy) > .battle-status-icons { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-vitals { grid-area: 3 / 1; padding: 0; justify-content: flex-end; gap: 4px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-hp { font: 16px/18px var(--runtime-pixel-font); color: #384840; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-type-badges, .battle-actor-mp, .battle-atb-label, .battle-playback-status, .battle-flow-status, .battle-key-prompts, .battle-command-icon, .battle-command-tag, .battle-command-scroll-cue) { display: none; }

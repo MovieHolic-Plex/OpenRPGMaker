@@ -101,7 +101,9 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
     }
   }
   if (snapshot.rewards.gold > 0) {
-    rows.push({ kind: "msg", label: trainer ? `상금으로 ${withJosa(`${snapshot.rewards.gold}${currency}`, "을/를")} 받았다!` : `${withJosa(`${snapshot.rewards.gold}${currency}`, "을/를")} 주웠다!`, value: "" });
+    // 화폐 단위가 「G」면 조사가 「48G을」로 틀렸다 — 조사 없는 문형으로.
+    const amount = `${snapshot.rewards.gold}${currency}`;
+    rows.push({ kind: "msg", label: trainer ? `상금으로 ${amount} 받았다!` : `${amount} 주웠다!`, value: "" });
   }
   const items = new Map<string, number>();
   for (const itemId of snapshot.rewards.items) items.set(itemId, (items.get(itemId) ?? 0) + 1);
