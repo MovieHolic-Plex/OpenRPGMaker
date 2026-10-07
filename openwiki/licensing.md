@@ -33,7 +33,9 @@
   14GiB 이력에 지운 제3자 그림이 남아 있고, 동시 세션 때문에 이력 재작성이 불가능하다.
 - `node scripts/oss/export-public.mjs --ref origin/main --git` → `~/oss-export/OpenRPGMaker`. 제외 목록 `scripts/oss/publicSet.mjs`,
   self-hosted 워크플로 제거, 텍스트 안 내부 호스트·홈 경로·tailnet IP 치환, 기록 `PUBLIC_EXPORT.json`.
-- 확인: 스냅샷에서 `build:fast`·`build:player` 성공(2026-10-07, 원본 HEAD 4f8c158e79). 사전 스캔은
+- 확인: 저작권 정리(#2335) 뒤 스냅샷 55,916개 파일 · 1.41GB(정리 전 2.4GB), `build:fast`·`build:player` 성공(2026-10-08). 사전 스캔은
   `node scripts/oss/prescan.mjs --ref HEAD`를 스냅샷 폴더에서 돌린다.
 - **정리가 끝나기 전 스냅샷을 원격에 푸시하지 말 것.** GitHub 은 강제 푸시로 덮은 커밋도 해시로 한동안 열람할 수 있어서,
   나중에 공개로 돌리면 옛 스냅샷의 제3자 그림이 새어 나간다. 첫 푸시가 곧 최종본이어야 한다.
+- 장소 파일(`public/assets/region-references/*.oprn.json`) 46개에는 지운 LPC·Slates 타일셋의 **이름표와 asset id**가 남아 있다
+  (그림 데이터는 0). 프로젝트 타일셋 목록을 통째로 저장한 탓이다. 저작권 문제는 아니지만 정리하려면 장소 저장본을 다시 굽는다.
