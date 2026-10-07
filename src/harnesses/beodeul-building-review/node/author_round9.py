@@ -56,7 +56,7 @@ PLANS=[
  ('높은 돌집과 낮은 살림채',160,192,'r7-07',[W9([0,160],['evbbDbbbve'],'stone'),R('hip',[0,96],160,'slate'),W9([96,64],['evve','evve','evve','evve'],'stone'),R('gable',[96,0],kind='stone')]),
  ('두 박공 사이의 넓은 집',160,160,'r7-08',[W9([0,96],['evbvbbvbve','ebvbbDbvbe']),R('hip',[0,32],160),W9([0,64],['evve']),W9([96,64],['evve']),R('gable',[0,0]),R('gable',[96,0])]),
  ('긴 맨사드 지붕의 연립집',176,160,'r7-09',[W9([0,96],['evbvbbbvbve','evbbvbDbvbe']),R('mansard',[0,0],176)]),
- ('종 지붕 탑이 붙은 집',144,160,'r7-17',[W9([0,128],['evbDbe']),R('hip',[0,64],96,'gold'),['tower',[80,16],'bell']]),
+ ('종 지붕 탑이 붙은 집',144,160,'r7-17',[W9([0,128],['evbDbe']),R('hip',[0,64],96,'gold'),['tower',[80,23],'bell']]),
  ('꺾인 너와와 낮은 기와채',176,144,'r7-22',[W9([0,80],['evbbvb','ebbDbb']),W9([96,112],['bvbve']),R('hip',[96,48],80,'gold'),R('gambrel',[0,16])]),
  ('종 지붕 다락을 얹은 집',128,176,'r7-24',[W9([32,72],['evve']),R('bell',[32,16]),W9([0,144],['evbbDbve']),R('hip',[0,80],128,'olive')]),
  ('박공 앞면 이층집',64,144,'r8-01',[W9([0,80],['evve','ebDe']),R('gable',[0,16])]),
@@ -75,9 +75,9 @@ def render(name,w,h,steps):
         elif st[0]=='roof':r7.roof(im,*st[1:])
         elif st[0]=='tower':
             at,style=st[1:]
-            r7.part(im,'arch:review-r5-mill-round-roof',[0,0,64,144],tuple(at))
+            r7.part(im,'arch:review-r5-mill-round-roof',[0,0,64,137],tuple(at))
             r7.part(im,'arch:review-r6-building-10',[0,0,64,56],tuple(at),True)
-            r7.part(im,'arch:review-r6-building-10',[22,108,42,144],(at[0]+22,at[1]+108),True)
+            r7.part(im,'arch:review-r6-building-10',[22,108,42,137],(at[0]+22,at[1]+108),True)
             if style=='bell':r7.part(im,'arch:review-r6-building-05',[0,0,64,56],tuple(at),True)
     if len(rec.get('doors',[]))!=1:raise ValueError((name,rec.get('doors')))
     return rec,im

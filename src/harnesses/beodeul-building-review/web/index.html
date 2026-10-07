@@ -20,7 +20,7 @@ button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer;ba
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .card{position:relative;display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;border:1px solid var(--line2);border-radius:10px;background:var(--panel2)}
 .card figure{position:relative;margin:0;height:150px;display:flex;align-items:flex-end;justify-content:center;padding:8px 6px 10px;background:var(--grass) var(--grass-url,none) 0 0/32px 32px;image-rendering:pixelated}
-.card figure img{image-rendering:pixelated;display:block;max-width:100%;max-height:100%;object-fit:contain;opacity:0;transition:opacity .2s}.card figure img.on{opacity:1}
+.card figure img{filter:drop-shadow(2px 1.5px 0 rgba(0,0,0,.34));image-rendering:pixelated;display:block;max-width:100%;max-height:100%;object-fit:contain;opacity:0;transition:opacity .2s}.card figure img.on{opacity:1}
 .card figure.loading::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff22 50%,transparent 70%) -200% 0/200% 100%;animation:sh 1.2s linear infinite}@keyframes sh{to{background-position:200% 0}}
 .card .meta{padding:7px 9px 8px;min-width:0}.card .name{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card .sub{display:flex;gap:6px;align-items:center;font-size:11px;color:var(--dim);margin-top:1px}.card .sub .note-dot{color:var(--accent)}
 .card .round{position:absolute;top:6px;left:6px;padding:1px 6px;border-radius:5px;background:#000a;color:#fff;font:600 10px/1.6 ui-monospace,monospace}
@@ -173,6 +173,7 @@ function paintStage(z){const st=$('stage').style;if(view.bg==='grass'&&grass.nat
 function draw(){if(!ready||!im.naturalWidth)return;const c=$('canvas'),box=$('stage'),pad=view.mode==='scene'?0:8,W=im.naturalWidth+pad*2,H=im.naturalHeight+pad*2;
  const fit=Math.max(1,Math.min(10,Math.floor(Math.min((box.clientWidth-24)/W,(box.clientHeight-24)/H))));const z=view.zoom==='fit'?fit:Number(view.zoom);
  c.width=W*z;c.height=H*z;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);paintStage(z);
+ if(view.mode!=='scene'){/* contact shadow as the game's ground layer casts it (light from upper left); the sprite pixels are untouched */ctx.save();ctx.filter='brightness(0)';ctx.globalAlpha=.34;ctx.drawImage(im,(pad+3)*z,(pad+2)*z,im.naturalWidth*z,im.naturalHeight*z);ctx.restore()}
  ctx.drawImage(im,pad*z,pad*z,im.naturalWidth*z,im.naturalHeight*z);
  if($('grid').checked&&z>=3){const g=(step,color)=>{ctx.strokeStyle=color;ctx.beginPath();for(let x=pad*z%step;x<=c.width;x+=step){ctx.moveTo(x+.5,0);ctx.lineTo(x+.5,c.height)}for(let y=pad*z%step;y<=c.height;y+=step){ctx.moveTo(0,y+.5);ctx.lineTo(c.width,y+.5)}ctx.stroke()};ctx.lineWidth=1;g(z,'#0a1a0e30');g(16*z,'#0a1a0e80')}
  const i=current();text('dimensions',(i?i.width+' × '+i.height+' px · ':'')+(view.mode==='scene'?'후보 · 원본 집 · 나무 · ':'')+z+'배'+(view.zoom==='fit'?' (맞춤)':''))}
