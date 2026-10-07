@@ -38,7 +38,7 @@ function uniqueEventId(project: Project, base: string): string {
   return id;
 }
 
-/** 실내 맵의 출입구 틈: 맨 아래 줄(맵 끝)에서 걸을 수 있는 칸 중 이어진 첫 덩이(현관 문턱 한 군데). 맨 아래 줄에 틈이 없으면 빈 배열. */
+/** 실내 맵의 출입구 틈: 맨 아래 줄(맵 끝)의 걸음 칸 덩이 — 정확히 한 군데일 때만(현관 문턱). 없거나 여러 군데면 빈 배열. */
 export function interiorExitCells(project: Project, map: GameMap): Cell[] {
   const y = map.height - 1;
   const runs: Cell[][] = [];
@@ -48,11 +48,16 @@ export function interiorExitCells(project: Project, map: GameMap): Cell[] {
     if (last && last[last.length - 1]!.x === x - 1) last.push({ x, y });
     else runs.push([{ x, y }]);
   }
-  // 틈이 여러 군데면 가장 넓은 것(같으면 가운데에 가까운 것)이 정문이다.
-  const cx = (map.width - 1) / 2;
-  const mid = (r: Cell[]) => Math.abs((r[0]!.x + r[r.length - 1]!.x) / 2 - cx);
-  runs.sort((a, b) => b.length - a.length || mid(a) - mid(b));
-  return runs[0] ?? [];
+  // 틈이 여러 군데면 어느 쪽이 정문인지 모른다 — 고르지 않고 빈 배열(호출부가 interior-exit-ambiguous 로 거절).
+  return runs.length === 1 ? runs[0]! : [];
+}
+
+/** 맨 아래 줄 걸음 칸 덩이 수(0 = 틈 없음, 2 이상 = 정문이 모호). */
+export function interiorExitRunCount(project: Project, map: GameMap): number {
+  const y = map.height - 1;
+  let n = 0;
+  for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y) && (x === 0 || !isPassable(project, map, x - 1, y))) n++;
+  return n;
 }
 
 /** 도착 칸에서 걸어서 닿는 칸 수(엔진 통행 판정, 4방향). */
@@ -104,7 +109,7 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     + "실내는 place(등록 장소 id — 예 jp-city-apartment-1k-12x13·jp-city-house-interior-21x15·jp-city-konbini-…; read_region_reference 목록에서 jp-city-…-interior/가게 장소) 를 주면 새 맵으로 가져와 잇고(여러 층이면 층마다 맵, 1층에 잇는다), "
     + "이미 가져온·지은 실내 맵이면 interiorMapId(build_hand_interior_room 으로 지은 jp_city 방 포함). 실내 맵은 맵 목록에서 거리 맵 아래로 옮긴다. "
     + "create_transfer_pair 를 따로 부르지 않는다(그 도구는 막힌 문 칸을 옮겨 버린다). 문 앞에 다른 이벤트가 있으면 거부한다(replace:true 면 바꾼다). "
-    + "실내 출구 = 실내 맵 맨 아래 줄(맵 끝)의 이어진 통행 칸 한 덩이(1~4칸; 5칸 이상이면 interior-exit-too-wide) — 없으면 no-interior-exit, 이미 이벤트가 있으면 exit-event-exists. 도착 칸 = 틈 가운데 위 → 각 틈 칸 위 → 두 칸 위 순으로 이벤트·출구가 아니고 실내 절반 이상에 걸어서 닿는 첫 칸. replace:true 는 이 문 앞·이 출구의 이벤트만 바꾼다(전에 다른 맵과 이은 짝 발판은 남으니 그 맵에서 지운다). 오류면 장소 가져오기까지 통째로 취소된다(쓰기 도구는 초안에서 돌고 성공해야만 반영). 여러 층 장소는 1층에만 잇는다(층 사이 계단은 장소에 이미 이어져 있다; 2층 이상에 바깥 문을 따로 달지 않는다).",
+    + "실내 출구 = 실내 맵 맨 아래 줄(맵 끝)의 이어진 통행 칸 한 덩이(1~4칸; 5칸 이상이면 interior-exit-too-wide, 맨 아래 줄에 걸음 칸 덩이가 둘 이상이면 interior-exit-ambiguous — 나머지는 막는다) — 없으면 no-interior-exit, 이미 이벤트가 있으면 exit-event-exists. 도착 칸 = 틈 가운데 위 → 각 틈 칸 위 → 두 칸 위 순으로 이벤트·출구가 아니고 실내 절반 이상에 걸어서 닿는 첫 칸. replace:true 는 이 문 앞·이 출구의 이벤트만 바꾼다(전에 다른 맵과 이은 짝 발판은 남으니 그 맵에서 지운다). 오류면 장소 가져오기까지 통째로 취소된다(쓰기 도구는 초안에서 돌고 성공해야만 반영). 여러 층 장소는 1층에만 잇는다(층 사이 계단은 장소에 이미 이어져 있다; 2층 이상에 바깥 문을 따로 달지 않는다).",
   parameters: {
     type: "object",
     properties: {
@@ -161,6 +166,8 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     if (interior.id === street.id) throw new ToolError("실내 맵이 거리 맵과 같다", { code: "invalid-args" });
     const exits = interiorExitCells(draft, interior);
     if (exits.length > 4) throw new ToolError(`실내 맵 ${interiorId} 맨 아래 줄 출입구 틈이 ${exits.length}칸이다 — 거리 문은 최대 4칸이라 틈 전체에 발판을 깔 수 없다. 평면 맨 아래 줄 틈을 4칸 이하로 줄인다`, { code: "interior-exit-too-wide", mapId: interiorId });
+    const runCount = interiorExitRunCount(draft, interior);
+    if (runCount > 1) throw new ToolError(`실내 맵 ${interiorId} 맨 아래 줄에 걸음 칸 덩이가 ${runCount}군데라 정문을 고를 수 없다 — 출입구 틈 하나만 남기고 맨 아래 줄 나머지는 벽·난간·가구로 막는다`, { code: "interior-exit-ambiguous", mapId: interiorId });
     if (!exits.length) throw new ToolError(`실내 맵 ${interiorId} 맨 아래 줄에 걸을 수 있는 출입구 틈이 없다 — 평면 맨 아래 줄(맵 끝)에 틈(현관 문턱)을 둔다`, { code: "no-interior-exit", mapId: interiorId });
     const taken = exits.map((c) => eventAt(interior, c)).filter((e): e is GameEvent => !!e);
     if (taken.length && !replace) throw new ToolError(`실내 출입구 틈 ${taken.map((e) => `(${e.x},${e.y})`).join(" ")} 에 이미 이벤트가 있다 — 다른 문과 이미 이어졌다. replace:true 면 바꾼다`, { code: "exit-event-exists", mapId: interiorId });

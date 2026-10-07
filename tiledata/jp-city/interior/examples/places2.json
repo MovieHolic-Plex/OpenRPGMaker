@@ -31,7 +31,7 @@
   "building": "jp_supermarket",
   "rules": [
    "입구 옆 계산대 레인·카트·바구니 → 채소 경사 진열대 · 벽 냉장 진열(정육·생선) · 가운데 섬 진열대·냉동고.",
-   "평면·가구는 tiledata/jp-city/interior/examples/supermarket.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-supermarket-16x14\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/supermarket.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-supermarket-16x12\"})."
   ]
  },
  {
@@ -250,7 +250,7 @@
   ],
   "building": "jp_laundry",
   "rules": [
-   "벽 세탁기 셋·건조기 둘·동전 교환기·세제 자판기 한 줄 · 아래 왼쪽 접이 탁자(세제·안내지) · 입구 곁 벤치. 입구는 오른쪽 아래 1칸 문.",
+   "벽 세탁기 셋·건조기 둘·동전 교환기·세제 자판기 한 줄 · 그 앞 2칸 통로 · 아래 줄 왼쪽 접이 탁자(세제·안내지)·가운데 벤치. 입구는 오른쪽 아래 1칸 문.",
    "평면·가구는 tiledata/jp-city/interior/examples/laundry.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-laundry-9x8\"})."
   ]
  },
@@ -308,7 +308,7 @@
   "building": "jp_mansion",
   "rules": [
    "공용 복도(2칸 폭) → 철문 현관·신발장·우산꽂이 → 복도(화장실·욕실) → LDK(대면 키친·식탁·소파·TV) + 방 2(침실·아이방) → 유리 미닫이 → 남쪽 베란다(빨래 장대·실외기·화분·난간 한 줄, 폭 8×4칸).",
-   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-15x20\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-15x18\"})."
   ]
  },
  {

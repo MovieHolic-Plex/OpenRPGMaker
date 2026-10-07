@@ -102,7 +102,10 @@ for (const linksFile of batches) {
   await browser?.close();
   await server.close();
 }
-const report = ["# 거리 문 ↔ 실내 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "",
+const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, encoding: "utf8" }).stdout.trim();
+const dirty = spawnSync("git", ["status", "--porcelain", "--", "tiledata/jp-city/interior/examples", "src/editor/tools", "src/assets/jpInteriorSpec.json"], { cwd: ROOT, encoding: "utf8" }).stdout.trim() ? " (+ 커밋 안 된 예제·도구 변경)" : "";
+const report = ["# 거리 문 ↔ 실내 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}** · ${failures.length ? "" : `PASS ${lines.filter((l) => l.startsWith("- PASS")).length}줄 · `}커밋 ${head}${dirty}`, "",
+  "실행 방식: links 의 `example` 은 게시 전 예제 JSON(tiledata/jp-city/interior/examples)을 build_hand_interior_room 으로 지어 `interiorMapId` 로 잇고, `place` 는 게시된 장소(public/assets/region-references)를 도구가 가져와 잇는다. 게시 뒤에는 같은 장소 id 로 place 경로가 된다.", "", ...lines, "",
   "증거: NNa-street(문 앞) · NNb-inside(도착) · NNs-upstairs(위층, 여러 층만) · NNc-far(실내 끝) · NNd-back(거리로 나와 1.5초 뒤)"].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), report + "\n");
 console.log(report);
