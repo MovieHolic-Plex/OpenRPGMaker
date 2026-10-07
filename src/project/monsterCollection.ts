@@ -450,7 +450,7 @@ export function applyMonsterExperienceAndEvolution(
     const species = monsterSpeciesById(project, before.speciesId);
     if (!species) continue;
     const fromLevel = before.level;
-    const nextExp = Math.max(0, Math.trunc(before.exp ?? 0)) + exp;
+    const nextExp = monsterExpInLevelBand(species, fromLevel, before.exp) + exp;
     const toLevel = monsterLevelForExp(species, fromLevel, nextExp);
     const learned = newSkillsForLevelRange(
       species,
@@ -498,7 +498,7 @@ export function previewMonsterExperience(
     const species = monsterSpeciesById(project, instance.speciesId);
     if (!species) continue;
     const fromLevel = instance.level;
-    const toLevel = monsterLevelForExp(species, fromLevel, Math.max(0, Math.trunc(instance.exp ?? 0)) + exp);
+    const toLevel = monsterLevelForExp(species, fromLevel, monsterExpInLevelBand(species, fromLevel, instance.exp) + exp);
     if (toLevel <= fromLevel) continue;
     results.push({
       instanceId: instance.instanceId,
@@ -793,6 +793,17 @@ function fullMonsterSkillPp(project: Project, skillIds: readonly SkillId[]): Rec
     if (maxPp !== undefined) result[skillId] = Math.max(1, Math.trunc(maxPp));
   }
   return result;
+}
+
+/** 저장된 경험치를 현재 레벨 구간 [그 레벨 누적, 다음 레벨 누적-1] 안으로 맞춘다. 레벨만 바꾼 저장본(이벤트·디버그·옛 데이터)이
+ *  경험치 2800을 들고 Lv14 로 남아 있으면 한 번의 승리로 Lv20 까지 뛰었다(2026-10-07 플레이 영상). */
+export function monsterExpInLevelBand(species: MonsterSpeciesRecord, level: number, exp: number | undefined): number {
+  const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
+  const current = clampInteger(level, 1, ACTOR_LEVEL_MAX);
+  const floor = totalExpForLevel(curve, current);
+  if (current >= ACTOR_LEVEL_MAX) return Math.max(floor, Math.trunc(exp ?? 0));
+  const ceiling = totalExpForLevel(curve, current + 1) - 1;
+  return Math.min(ceiling, Math.max(floor, Math.trunc(exp ?? 0)));
 }
 
 function monsterLevelForExp(species: MonsterSpeciesRecord, currentLevel: number, exp: number): number {

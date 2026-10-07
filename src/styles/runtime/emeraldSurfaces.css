@@ -69,15 +69,25 @@
   image-rendering: pixelated;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy, .battle-actor-group .battle-actor)::before {
-  background: #b8d098;
-  border: 4px solid #90b078;
+  background: var(--emerald-base);
+  border: 4px solid var(--emerald-base-rim);
   border-radius: 50%;
-  box-shadow: inset 0 -4px #d0e0a8;
+  box-shadow: inset 0 4px var(--emerald-base-light);
   width: 192px;
   height: 40px;
   bottom: -12px;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor::before { width: 232px; height: 48px; bottom: -12px; }
+/* 지형 배경(emeraldBattleTerrain → data-emerald-terrain). 그림은 코드 도트 240×120(scripts/content/emerald/draw-battle-backgrounds.py),
+   발판은 같은 팔레트의 CSS 타원. 사막 마을에서도 늘 연두 바닥이던 결함(2026-10-07 사용자 지적). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-field { background: var(--emerald-battle-bg) 0 0 / 480px 240px no-repeat, #e8f0d8; image-rendering: pixelated; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/grass.png"); --emerald-base: #a8d880; --emerald-base-rim: #78b058; --emerald-base-light: #c8e8a0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="grass"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/grass.png"); --emerald-base: #a8d880; --emerald-base-rim: #78b058; --emerald-base-light: #c8e8a0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="sand"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/sand.png"); --emerald-base: #e8c890; --emerald-base-rim: #c09858; --emerald-base-light: #f8e0b0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="snow"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/snow.png"); --emerald-base: #e0ecf4; --emerald-base-rim: #a8bcd8; --emerald-base-light: #ffffff; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="water"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/water.png"); --emerald-base: #90c8f0; --emerald-base-rim: #5090c8; --emerald-base-light: #c8ecf8; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="cave"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/cave.png"); --emerald-base: #988068; --emerald-base-rim: #6c5440; --emerald-base-light: #b09880; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-emerald-terrain="indoor"] { --emerald-battle-bg: url("/assets/emerald-monster/battle/indoor.png"); --emerald-base: #d0c8b8; --emerald-base-rim: #a09080; --emerald-base-light: #e8e0d0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy-list-panel {
   left: 12px;
   top: 30px;
@@ -241,7 +251,28 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-exp-bar { grid-column: 1 / -1; height: 4px; min-height: 4px; margin: 2px 0 0; border: 0; border-radius: 0; background: #a8b8a0; box-shadow: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-exp-fill { height: 4px; border-radius: 0; background: #58a8b8; box-shadow: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-confirm { justify-self: end; min-height: 24px; margin: 0; padding: 0 8px; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-actor-image.battle-monster-authored-back { position: relative; top: -100px; }
+/* 결과는 패널이 아니라 문장 창 쪽들이다(emeraldBattleNarration). 공개된 줄 중 마지막 두 줄(data-emerald-page)만 보인다.
+   제목 「승리」·확인 단추·보상 카드 장식은 3세대 화면에 없다. 확인키는 그대로 받는다(전부 공개 → 닫기). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel {
+  inset: auto 0 0 0;
+  height: 80px;
+  max-height: none;
+  display: grid;
+  grid-template-rows: none;
+  align-content: center;
+  padding: 12px 20px;
+  background: #286878;
+  border: 4px solid #c85048;
+  box-shadow: inset 0 0 0 4px #f8f0c8;
+  box-sizing: border-box;
+  color: #f8f8e8;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel :is(.battle-result-title, .battle-result-confirm, .battle-result-reward-value, .battle-result-exp-bar, .battle-result-party) { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-cards { display: block; max-height: none; overflow: hidden; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row { display: none; padding: 0; min-height: 0; background: transparent; animation: none; opacity: 1; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-page="true"] { display: block; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-label { color: #f8f8e8; font: 18px/24px var(--runtime-pixel-font); text-shadow: 2px 2px #284050; white-space: nowrap; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-finale-stamp { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-status-icon-death { display: none; }
 
 /* Field menu and its separate full-screen functions. */

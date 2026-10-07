@@ -33,6 +33,25 @@ await page.addInitScript(() => {
   try { localStorage.clear(); } catch { /* ignore */ }
   window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "runtime-qa:monster-journey", qaInstrumentation: true };
 });
+// 1대1 몬스터 전투에서 상대 HP 상자·그림이 둘 이상 동시에 보이면 안 된다 — 2026-10-07 관장전 캡처에서 쓰러지기 전
+// 다음 몬스터가 먼저 서 HP 상자 둘이 겹쳤는데 단계 판정은 통과였다. 100ms 마다 재고, 전투 문장도 차례로 모은다.
+await page.addInitScript(() => {
+  const seen = { maxEnemies: 0, overlap: [], lines: [] };
+  window.__journeyBattleWatch = seen;
+  const visible = (node) => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden" && Number(getComputedStyle(node).opacity) > 0.05;
+  setInterval(() => {
+    const scene = document.querySelector('[data-testid="battle-scene"]');
+    if (!scene) return;
+    const rows = [...scene.querySelectorAll(".battle-enemy-list-row")].filter((n) => !n.classList.contains("defeated") && visible(n)).length;
+    const sprites = [...scene.querySelectorAll(".battle-enemy")].filter((n) => !n.classList.contains("defeated") && visible(n)).length;
+    const count = Math.max(rows, sprites);
+    const pages = [...scene.querySelectorAll(".battle-result-panel .battle-result-reward-row")].filter(visible).map((n) => (n.textContent ?? "").trim());
+    const text = [...[...scene.querySelectorAll(".battle-message-line")].filter(visible).map((n) => (n.textContent ?? "").trim()), ...pages.map((p) => `[결과] ${p}`)].filter(Boolean).join(" / ");
+    if (count > seen.maxEnemies) seen.maxEnemies = count;
+    if (count > 1 && seen.overlap.length < 8) seen.overlap.push(`rows ${rows} sprites ${sprites} «${text}»`);
+    if (text && seen.lines[seen.lines.length - 1] !== text && seen.lines.length < 400) seen.lines.push(text);
+  }, 100);
+});
 await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 
 const state = () => page.evaluate(() => window.__oprnDebug.readState());
@@ -412,6 +431,9 @@ try {
   const badge = finalState.switches;
   report.leaderBattleResult = finalState.battleResult;
   step("gym-leader", started && badge[badgeId] === true, `${leader.id}: ${log.length}턴 → battleResult ${finalState.battleResult} · ${badgeId}=${badge[badgeId]}`, await shot("14-after-leader"));
+  const watch = await page.evaluate(() => window.__journeyBattleWatch);
+  report.battleLines = watch.lines;
+  step("battle-one-foe", watch.maxEnemies <= 1, `동시에 보인 상대 최대 ${watch.maxEnemies}${watch.overlap.length ? ` — ${watch.overlap.join(" | ")}` : ""}`);
 } catch (error) {
   report.failure = String(error?.stack ?? error);
   await shot("failure").catch(() => {});

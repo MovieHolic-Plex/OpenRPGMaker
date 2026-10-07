@@ -4,7 +4,7 @@ import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
-import { DEFAULT_MONSTER_EXP_CURVE, monsterSpeciesById } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterExpInLevelBand, monsterSpeciesById } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
@@ -15,6 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -94,6 +95,18 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const action = entry.skillName && entry.skillName !== "공격"
     ? `${withJosa(userName, "이/가")} ${withJosa(entry.skillName, "을/를")} 사용했다!`
     : `${userName}의 공격!`;
+  if (emeraldNarrationActive()) {
+    const outcome = emeraldOutcomeLine({
+      hit: entry.hit, amount: entry.amount, critical: entry.critical, effectiveness: entry.effectiveness,
+      healing: effect?.healing, targetName: emeraldBattlerName(target, snapshot),
+    });
+    return {
+      step: "acting",
+      lines: [emeraldMoveLine(emeraldBattlerName(user, snapshot), entry.skillName), ...(outcome ? [outcome] : [])],
+      activeActorRecordId: undefined,
+      targetId: entry.targetId,
+    };
+  }
   const targetName = target
     ? disambiguatedBattlerName(target, snapshot.enemies.some((enemy) => enemy.id === target.id) ? snapshot.enemies : snapshot.actors)
     : "대상";
@@ -185,10 +198,19 @@ export function actorCommandDirectorState(
   const effect = commandEntry
     ? { healing: commandEntry.kind === "healing" || (commandEntry.amount ?? 0) < 0, resource: commandEntry.resource ?? "hp" as const }
     : undefined;
-  const lines = [
-    commandLine(command, actor, before),
-    impactLine(command, target, impact, result, after, effect),
-  ];
+  const emeraldMove = emeraldNarrationActive() && (command.kind === "attack" || command.kind === "skill") && actor;
+  const emeraldOutcome = emeraldMove
+    ? emeraldOutcomeLine({
+      hit: result?.hit !== false, amount: Math.max(0, result?.amount ?? impact), critical: result?.critical,
+      effectiveness: result?.effectiveness, healing: effect?.healing, targetName: emeraldBattlerName(target, after),
+    })
+    : "";
+  const lines = emeraldMove
+    ? [emeraldMoveLine(actor.name, command.kind === "skill" ? skillName(command.skillId) : undefined), ...(emeraldOutcome ? [emeraldOutcome] : [])]
+    : [
+      commandLine(command, actor, before),
+      impactLine(command, target, impact, result, after, effect),
+    ];
   return {
     step: impact > 0 ? "impact" : "acting",
     lines,
@@ -270,7 +292,8 @@ export function resultDirectorState(snapshot: BattleSnapshot, previous: BattleDi
   if (!snapshot.result) return previous;
   return {
     step: "result",
-    lines: [resultLine(snapshot.result), rewardsLine(snapshot)],
+    // 에메랄드는 결과 문장 창 쪽들(emeraldResultRows)이 말한다 — 「승리 / 경험치 18 / 골드 48」 요약 줄을 겹쳐 두지 않는다.
+    lines: emeraldNarrationActive() ? [] : [resultLine(snapshot.result), rewardsLine(snapshot)],
     activeActorRecordId: previous.activeActorRecordId,
     targetId: previous.targetId,
   };
@@ -467,6 +490,12 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     }
   }
 
+  // 에메랄드 결과는 문장 창이다 — 공개된 줄 중 마지막 두 줄만 한 쪽으로 보인다.
+  if (emeraldNarrationActive()) {
+    const all = [...cards.querySelectorAll<HTMLElement>(".battle-result-reward-row")];
+    const shown = Math.min(all.length, Math.max(1, revealStage));
+    for (const [index, item] of all.entries()) item.dataset.emeraldPage = index >= shown - 2 && index < shown ? "true" : "false";
+  }
   // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
   // 재동기화(revealStage 진행) 때마다 그 3개가 확인 버튼/계속 프롬프트 뒤로 밀려나, 화면
   // 순서가 "확인 → 승리" 로 뒤집힌다(실측: children = confirm, prompt, crest, title, cards).
@@ -838,7 +867,7 @@ function expGaugeProgress(snapshot: BattleSnapshot): { fromPct: number; toPct: n
     const base = totalExpForLevel(curve, instance.level);
     const next = totalExpForLevel(curve, instance.level + 1);
     if (!(next > base)) return undefined;
-    const current = Math.max(0, Math.trunc(instance.exp));
+    const current = monsterExpInLevelBand(species, instance.level, instance.exp);
     // Monster reward write-back uses collected EXP directly, for actual participants.
     const gained = snapshot.participatingActorIds.includes(instance.instanceId)
       ? Math.max(0, Math.trunc(snapshot.rewards.exp)) : 0;
@@ -918,6 +947,7 @@ export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
 function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
   // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
+  if (emeraldNarrationActive()) return emeraldResultRows(snapshot, skillName);
   if (snapshot.result !== "victory") return [];
   const rows: { kind: string; label: string; value: string }[] = [
     { kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` },
