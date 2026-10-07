@@ -46,6 +46,14 @@
   적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
 - **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
   `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
+- **여러 맵 · 여러 조수 (2026-10-07 후속)**: 다른 맵에서 같이 도는 실행(`background: true`, 맵별 대기열)은 팀 활동 버스에 게시하지 않아
+  처음 구현에서는 존재감에 안 잡혔다. 이제 `aiChatPanel` 이 `onActivity` 보드를 `reportBackgroundBoard(ticketId, board)` 로 올리고,
+  `aiPresence` 가 `mapRunQueue().tickets()` + 그 보드를 `source: "background"` Presence 로 합친다(앞 턴 표 `foreground` 는 중복이라 뺀다).
+  대기 중이면 「같은 맵 N번째로 기다리는 중 / 팀 작업이 끝나길 / 동시에 도는 작업이 많아」 를 보여 준다. 색은 표면 전체에서 겹치지 않게 순번(`tone`).
+  상태 줄은 칩 4개까지(필요한 것 먼저), 나머지는 「+N 더 보기」 → 맵별로 묶은 목록 팝오버(내 차례 맵 → 지금 보는 맵 → 나머지). 맵이 둘 이상이면 칩에 맵 이름이 붙고,
+  지금 보는 맵이 아닌 칩은 점선. 「멈춤」은 전체(`stopAllPresences`), 팝오버의 멈춤은 그 실행만(`stopPresence`). 받은함은 다른 맵 검토를
+  「검토하기」로 해당 실행 카드(`.ai-map-run-card[data-ticket-id]`)에 데려가고, 실패는 「확인했어요」로 치운다(`dismissPresence`).
+  증거: `scripts/qa/ai-presence-multimap.mjs`(6맵·7실행, 실제 대기열에 표를 올려 재생). 부하 높은 박스에서는 `unshare -rn` 로 dev 서버와 크로미움을 같이 띄운다.
 - 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
 - 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
 - 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며

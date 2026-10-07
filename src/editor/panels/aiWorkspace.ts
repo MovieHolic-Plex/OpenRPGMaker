@@ -97,7 +97,9 @@ export function createAiWorkspace(options: {
   const onTeam = () => { options.requestOpen(); select("team", false); };
   const onMap = () => options.requestFold();
   const onOpenTeam = () => { options.requestOpen(); select("team"); };
+  const onOpenChat = () => { options.requestOpen(); select("chat", false); };
   window.addEventListener("oprn:ai-open-team", onOpenTeam);
+  window.addEventListener("oprn:ai-open-chat", onOpenChat);
   team.root.addEventListener("oprn:ai-member-selection", onMember);
   team.root.addEventListener("oprn:ai-workspace-team", onTeam);
   team.root.addEventListener("oprn:ai-workspace-map", onMap);
@@ -108,6 +110,6 @@ export function createAiWorkspace(options: {
     showChat() { select("chat", false); },
     setStudio(on: boolean) { studio = on; sync(); },
     setWide(on: boolean) { wide = on; team.setEmbedded(!on); if (on) logs.close(); sync(); },
-    dispose() { window.removeEventListener("oprn:ai-open-team", onOpenTeam); inbox.dispose(); inbox.root.remove(); options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
+    dispose() { window.removeEventListener("oprn:ai-open-team", onOpenTeam); window.removeEventListener("oprn:ai-open-chat", onOpenChat); inbox.dispose(); inbox.root.remove(); options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
   };
 }

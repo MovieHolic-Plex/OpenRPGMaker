@@ -86,3 +86,17 @@
 .ai-inbox-btn { padding: 6px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-s, 6px); background: var(--bg-raised, #fff); color: var(--text-1); font: 13px var(--font-ui); cursor: pointer; }
 .ai-inbox-btn.is-primary { border-color: var(--success, #12a150); background: var(--success, #12a150); color: #fff; font-weight: 600; }
 .ai-inbox-btn:focus-visible { outline: var(--focus-outline); }
+
+/* ── 여러 맵·여러 조수 ── */
+.ai-status-chip .ai-status-map { padding: 0 6px; border-radius: 6px; background: color-mix(in srgb, var(--tone) 16%, transparent); color: var(--text-2); font-size: 11px; max-width: 96px; overflow: hidden; text-overflow: ellipsis; }
+.ai-status-chip[data-elsewhere="true"] { border-style: dashed; }
+.ai-status-chip.is-more { --tone: var(--text-3); }
+.ai-status-chip.is-more[data-attention="true"] { --tone: var(--warning, #d9840d); }
+.ai-status-pop:has(.ai-status-group) { width: 380px; max-height: min(70vh, 520px); overflow: auto; }
+.ai-status-group { margin-top: 10px; }
+.ai-status-group h5 { margin: 0 0 4px; font: 700 12px var(--font-ui); color: var(--accent); }
+.ai-status-group h5 em { font-style: normal; font-weight: 500; color: var(--text-3); }
+.ai-status-row { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text-1); font: 13px var(--font-ui); text-align: left; cursor: pointer; }
+.ai-status-row:hover { background: var(--bg-inset); }
+.ai-status-row .ai-status-action { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
+.ai-status-row .ai-status-tag { margin-left: 0; flex: 0 0 auto; }
