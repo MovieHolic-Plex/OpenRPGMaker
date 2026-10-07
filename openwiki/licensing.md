@@ -27,6 +27,16 @@
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 표기는 「OPRN」(2026-10-08 사용자 결정, 법인 설립 전 임시). 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.
 
+## 남의 앱 OAuth 클라이언트 값
+
+Antigravity 데스크톱 앱의 client id·secret 과 Codex CLI 의 client id 는 **저장소에 적지 않는다**(2026-10-08 결정 — 공개 저장소에 남의 앱 자격을 올리지 않는다).
+`src/ai/oauth/clientConfig.ts` 의 `oauthClient()` 가 환경변수(`OPRN_ANTIGRAVITY_CLIENT_ID`·`OPRN_ANTIGRAVITY_CLIENT_SECRET`·`OPRN_CODEX_CLIENT_ID`) →
+`configureOAuthClients()` 로 넣은 값 → 빌드 주입 `__OPRN_OAUTH_CLIENTS__` 순으로 읽는다.
+Node 진입점(`scripts/lib/aiAuthRuntime.ts`, `scripts/verify-ported-oauth-live.mts`)은 설치된 `@oh-my-pi/pi-ai` 소스에서 읽어 넣고
+(`scripts/lib/oauthClients.mjs` — pi-ai 의 exports 가 require 를 막아 탐색 경로로 폴더를 찾는다), 배포 Electron 메인은
+`scripts/build-electron.mjs` 가 같은 값을 빌드 때 주입한다. 새 진입점이 이 OAuth 모듈을 직접 부르면 같은 설정 한 줄을 넣어야 한다.
+테스트는 가짜 값으로 `configureOAuthClients` 를 부른다.
+
 ## 공개 저장소 내보내기 (OpenRPGMaker)
 
 - 공개 저장소는 비공개 `MovieHolic-Plex/OpenRPGMaker`(2026-10-07 생성, 비어 있음). 이 저장소(rpg-zzu)를 뒤집지 않고 **한 커밋 스냅샷**을 올린다 —

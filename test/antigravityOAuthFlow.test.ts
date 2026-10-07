@@ -17,10 +17,13 @@ import {
   exchangeAntigravityCode,
   refreshAntigravityToken,
 } from "@/ai/oauth/antigravityOAuth";
+import { configureOAuthClients } from "@/ai/oauth/clientConfig";
 import { packRequestApiKey } from "@/ai/oauth/credentials";
 
-const EXPECTED_CLIENT_ID = "1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com";
-const EXPECTED_CLIENT_SECRET = "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";
+// 실제 값은 저장소에 없다(clientConfig.ts) — 와이어에 그대로 실리는지만 가짜 값으로 본다.
+const EXPECTED_CLIENT_ID = "test-antigravity-client.apps.googleusercontent.com";
+const EXPECTED_CLIENT_SECRET = "test-antigravity-secret";
+configureOAuthClients({ antigravityClientId: EXPECTED_CLIENT_ID, antigravityClientSecret: EXPECTED_CLIENT_SECRET });
 const REDIRECT_URI = `http://localhost:${CALLBACK_PORT}${CALLBACK_PATH}`;
 
 interface RecordedCall {

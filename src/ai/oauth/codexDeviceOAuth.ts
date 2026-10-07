@@ -4,9 +4,11 @@
 // 양쪽에서 같은 코드로 돌아야 하고, 예전 경로처럼 Bun 워커에 로그인을 위임하면
 // Bun 없는 환경에서 인증 자체가 불가능해진다.
 
+import { oauthClient } from "./clientConfig.ts";
 import { decodeJwtPayload, type PortedOAuthCredentials } from "./credentials.ts";
 
-export const CODEX_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann";
+/** Codex CLI 의 client id — 저장소에 적지 않는다(clientConfig.ts). */
+export const codexClientId = (): string => oauthClient("codexClientId");
 export const CODEX_TOKEN_URL = "https://auth.openai.com/oauth/token";
 export const CODEX_DEVICE_USERCODE_URL = "https://auth.openai.com/api/accounts/deviceauth/usercode";
 export const CODEX_DEVICE_TOKEN_URL = "https://auth.openai.com/api/accounts/deviceauth/token";
@@ -131,7 +133,7 @@ export async function startCodexDeviceAuthorization(
   const response = await fetchImpl(CODEX_DEVICE_USERCODE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ client_id: CODEX_CLIENT_ID }),
+    body: JSON.stringify({ client_id: codexClientId() }),
     signal: AbortSignal.timeout(TOKEN_REQUEST_TIMEOUT_MS),
   });
 
@@ -224,7 +226,7 @@ export async function exchangeCodexAuthorizationCode(options: {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
       grant_type: "authorization_code",
-      client_id: CODEX_CLIENT_ID,
+      client_id: codexClientId(),
       code: options.code,
       code_verifier: options.codeVerifier,
       redirect_uri: options.redirectUri ?? CODEX_DEVICE_REDIRECT_URI,
@@ -267,7 +269,7 @@ export async function refreshCodexToken(options: {
     body: new URLSearchParams({
       grant_type: "refresh_token",
       refresh_token: options.refreshToken,
-      client_id: CODEX_CLIENT_ID,
+      client_id: codexClientId(),
     }),
     signal: AbortSignal.timeout(TOKEN_REQUEST_TIMEOUT_MS),
   });

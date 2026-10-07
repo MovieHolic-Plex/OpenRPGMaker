@@ -40,8 +40,12 @@ import { getOhMyPiProvider, OH_MY_PI_PROVIDERS } from "../../src/ai/ohMyPiProvid
 import { createOhMyPiAuthStore, defaultOhMyPiAuthPath } from "./ohMyPiAuthStore.mjs";
 import { startOAuthCallbackServer } from "./oauth/loopbackCallbackServer.mjs";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+import { configureOAuthClients } from "../../src/ai/oauth/clientConfig.ts";
+import { readOAuthClientsFromPiAi } from "./oauthClients.mjs";
 
 applyLegacyEnvAliases();
+// 남의 앱 OAuth 클라이언트 값은 저장소에 없다 — 설치된 참조 구현에서 읽는다(환경변수가 있으면 그것이 이긴다).
+configureOAuthClients(readOAuthClientsFromPiAi());
 
 const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
 
