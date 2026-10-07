@@ -16,11 +16,12 @@
 
 - **런타임 MIT 고지는 빌드가 붙인다.** `scripts/lib/runtimeLicenseBanner.mjs`가 `vite.player.config.ts`·`vite.standalone.config.ts`
   산출 JS 청크마다 `LICENSE-RUNTIME.md`의 MIT 전문을 `/*! … */`로 붙인다(압축 뒤 `generateBundle`). 문구를 플러그인에 다시 적지 말 것.
-  복사만 하는 제3자 파일(`phaser.min`)은 청크가 아니라 붙지 않는다 — 그 고지는 원 라이선스 몫이다.
+  런타임에 실리는 외부 패키지는 Phaser(MIT) 하나다. 같은 플러그인이 플레이어 빌드의 `phaser.min` 자산과, Phaser 를 묶는
+  단일 HTML 빌드 청크에 Phaser 고지(`node_modules/phaser/LICENSE.md`)를 붙인다. 외부 패키지가 늘면 여기에 고지를 더한다.
 - **내보낸 게임에 실리는 것은 전부 MIT로 공개되는 셈이다.** 플레이어 import 그래프(`src/player/exportEntry.ts`에서 시작)에
   에디터·하네스·프롬프트 코드를 끌어들이지 말 것. 실측(2026-10-07): `src/project/gameDesignBrief.ts`가
   `harnesses/_core/registry`를 import해서 `interior-props` 러너(약 243KB)가 내보낸 게임 청크로 나간다 — 미수정.
-  그래프 확인: esbuild `metafile`로 `exportEntry.ts`를 묶어 `src/editor|harnesses` 입력이 있는지 본다.
+  그래프 확인: `node scripts/oss/runtime-graph.mjs` — 런타임 소스 수, 외부 패키지, 끌려 들어온 editor·harnesses·testing 파일을 보여 준다.
 - **제3자 자료**는 `public/assets/ATTRIBUTION.md`에 적힌 것만 원 라이선스로 남는다. 새로 들이지 않는다(2026-10-07 정리 결정).
 - **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
   brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
