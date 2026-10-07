@@ -64,6 +64,8 @@ import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
+import { mountAiStatusBar } from "./aiStatusBar";
+import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
 import type { StoreCardRequest } from "@/editor/tools/storeTools";
@@ -3412,6 +3414,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   panel.append(teamSidebar.root);
   const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar, input,
     requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
+  // AI 존재감 세 표면 중 지도 쪽 둘 — 지도 위 이름표와 지도 아래 상태 줄. 같은 원천(aiPresence)만 본다.
+  const unmountStatusBar = mountAiStatusBar();
+  const unmountMapPresence = mountAiMapPresence();
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
@@ -4138,6 +4143,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.dispose();
     studioShell = null;
     wideAssistant.dispose();
+    unmountStatusBar();
+    unmountMapPresence();
     workspace.dispose();
     teamSidebar.dispose();
     suggestions.dispose();

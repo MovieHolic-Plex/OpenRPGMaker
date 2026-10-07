@@ -13,7 +13,7 @@ export interface TeamObservation {
   report?: string;
   startedAt?: number;
   lastAt?: number;
-  recent: readonly { label: string; at?: number; failed: boolean }[];
+  recent: readonly { label: string; at?: number; failed: boolean; running?: boolean }[];
 }
 
 function describe(entry: ActivityEntry, scope: string, compact = false): string {
@@ -30,8 +30,8 @@ function describe(entry: ActivityEntry, scope: string, compact = false): string 
       done: entry.status === "ok" || entry.status === "error", ok: entry.status === "ok", summary: entry.status === "running" || compact ? undefined : entry.summary }).action;
   }
   if (entry.kind === "assistant") return "조수의 중간 보고를 받았어요";
-  if (entry.kind === "turn") return "다음 모델 응답을 기다리는 중";
-  if (entry.name === "model.stream") return "모델 응답을 받는 중";
+  if (entry.kind === "turn") return "생각 중";
+  if (entry.name === "model.stream") return "생각 중";
   return entry.summary;
 }
 
@@ -54,14 +54,14 @@ export function teamObservation(agent: TeamBoardAgent | undefined, trace?: Activ
   let action = failed ? "작업을 끝내지 못했어요" : stopped ? "작업을 중단했어요" : ended ? "작업을 마쳤어요"
     : active.length ? describe(active.at(-1)!, scope) + (active.length > 1 ? ` · ${active.length}개 작업 진행 중` : "")
     : last?.kind === "status" ? last.summary
-    : last?.name === "model.stream" ? "모델 응답을 받는 중" : "다음 모델 응답을 기다리는 중";
+    : last?.name === "model.stream" ? "생각 중" : "생각 중";
   if (agent?.state === "대기" || lane?.status === "idle") action = "작업 시작을 기다리는 중";
   if (!trace && !ended) {
     const tool = [...(agent?.log ?? [])].reverse().find(e => e.kind === "tool" && e.ok === null);
     if (tool?.kind === "tool") action = narrateAiActivity({ toolName: tool.name }).action;
   }
   const recent = observable.filter(e => ["tool", "agent_spawn", "agent_done", "review", "status", "error"].includes(e.kind)).sort(receiptOrder).slice(-3)
-    .map(e => ({ label: describe(e, scope), at: e.endedAt ?? e.at, failed: e.status === "error" }));
+    .map(e => ({ label: describe(e, scope), at: e.endedAt ?? e.at, failed: e.status === "error", running: e.kind === "tool" && e.status === "running" }));
   return {
     scope, assignment: agent?.task || lane?.spec.instruction || "", action,
     result: latestResult ? describe(latestResult, scope, true) : report || "아직 처리 결과가 없어요", report,

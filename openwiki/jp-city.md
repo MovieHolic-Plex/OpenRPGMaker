@@ -280,7 +280,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
   통행: 바닥 `floor` · 벽면·천장·공허 `solidfloor` · 가구 발자국 `solid` · `walk` 칸·`flat` 종류 `flat`(2층) · 위로 솟은 칸·걸이 `star`. 키트 `jp-in-<가구 id>`(낱개 확인용).
   selftest 가 쓰임(use)·바라보는 쪽(facing)이 조수 도구 id(`parts.ts` USE_WORDS, N/S/E/W)인지 막는다 — 작업자가 「잠자기」「앉기」 같은 한국어 낱말을 넣었던 실측.
 - 미리보기(굽기 전): `python3 scripts/content/jp-city/interior/preview.py ROOM.json OUT.png --x 3` — 조립 순서는 TS 와 같지만 **층 수(조각 셋 겹침·4층 찬 칸)는 보지 않는다**. 정답은 TS 도구로 짓는 `maps/interior.mjs`.
-- 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 99 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9017.
+- 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 97 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9017.
 - 조립기 일반화: `builder.ts` 의 `handInteriorStructure`·`buildHandInteriorLayers` 가 사양 인자를 받고(기본 v5), `HAND_INTERIOR_SPECS = {atlas_biome_interior, jp_city}`. `isSeatId` 는 `use` 에 `sit` 이 있는 가구도 앉는 자리로 본다. `parts.ts` 의 예제 문서 id 머리는 `rooms.docPrefix`(jp = `jp-interior-ex-`).
 - 예제: `tiledata/jp-city/interior/examples/{house-1f,house-2f,apartment-1k}.json`(도구 인자 + `rooms` 사각형) → `node scripts/content/jp-city/maps/interior.mjs [--publish]` 가 **조수 도구 그대로** 짓고 엔진 canMove BFS 로 이동 칸 도달까지 잰다.
   1층(21×15): 복도는 동서, 화실·화장실·부엌이 복도 **북쪽**(방문이 복도 쪽 벽면에 보이게), 욕실·탈의실은 남서(세로 칸막이 3줄 틈), LDK 는 동쪽. 1층 계단 발칸 (11,9) → 2층 (18,10), 2층 계단통 아랫줄 (19,10)(20,10) → 1층 (11,10).
@@ -293,6 +293,11 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 참고문서 용도 `jp-interior`(짓는 법·사전·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 9종 — `door-not-in-gap` 포함). 엔진 실측은 `engine_dump.mts` 의 `interior`.
 - 관문 단계 `interior`(`tiledata/jp-city/gates/interior.json`). 작업자 지시서 `tiledata/jp-city/interior/briefs/`.
 - `interior.mjs` 는 2배 그림 `-x2.png` 도 매번 다시 만든다(관문이 보는 그림 — 예전엔 남은 옛 x2 를 관문이 보고 판정했다).
+- **가구 분류**(2026-10-07): 정본은 `scripts/content/jp-city/interior/categories.py` 한 표 — 14종(현관·계단·문·창·벽걸이·부엌·다이닝·거실·화실·침실·아이방·서재·욕실·탈의실·세탁·화장실). 데코레이터의 `cat=` 는 이 표가 덮어쓴다. 블록 굽기는 「표에 없는 가구」, 사양 굽기(`bake_interior_spec.py`)는 「표에만 남은 id」에서 멈춘다. 새 가구를 그리면 표에 한 줄 더한다. 조수 `list_hand_interior_parts({tileset:"jp_city", category})` 와 편집기 오브젝트 갤러리 카드 부제(「일본 실내 · 계단」)가 이 분류를 쓴다.
+- 편집기 오브젝트 갤러리: jp_city 의 `jp-` 부품은 번들 소유라 **공용 오브젝트**(`spatialCatalog.isBundledFurniturePackKit`). 카드 부제는 실내 가구는 방 분류, 나머지는 역할(건물·거리 소품·길·바닥·담·대문·학교)이다. 검색도 부제를 본다(「일본 실내」 97개).
+- 계단 `stairs-up-wood(-wide)`: 폭은 칸 그대로(1칸 = 16px). 오른쪽 5px 띠에 트인 쪽 난간(옆판·단마다 난간동자·손잡이·발밑 칸 위 기둥), 왼쪽에 벽 손잡이를 그린다. 같은 자리 키로 다시 구워 칸 번호는 그대로다.
+- **여러 층 장소 가져오기**: `importReferenceScene`(편집기 「맵에 놓기」·조수 `import_region_reference` 공통)은 내려받기 안에서 이동 이벤트로 (건너건너) 이어진 **같은 타일셋** 맵을 `scene.floors` 로 보고, 새 맵 모드에서 층마다 새 맵(`<mapId>:<원본 층 id>`, 맵 목록에서 첫 층 아래)을 만든다. 층 사이 이동 이벤트는 새 id 로 고쳐 includeEvents 없이도 싣는다(결과 `floorMapIds`). 타일셋이 다른 맵(숲마을 실내·동굴)은 층으로 보지 않는다. 지금 해당하는 장소는 `jp-city-house-interior-21x15` 하나다.
+- 편집기 실측 `unshare -rn sh -c 'ip link set lo up; npm run dev:worktree & …; node scripts/content/jp-city/qa/editor-place.probe.mjs http://127.0.0.1:<포트>'`. 자료집 → 맵 → 장소에서 「일본」을 검색하고 카드 → 맵에 놓기 → 1층·2층 맵과 서로 가리키는 이동 이벤트를 확인한다 → 맵 목록에서 열어 캔버스를 찍는다 → 오브젝트 「일본 실내」에서 공용과 분류 부제를 확인한다. 증거는 `verify-shots/jp-city/editor/`. dev 서버도 netns 안에서 띄운다(밖의 서버는 netns 크롬이 못 본다). blankProject 세션이라 정본 저장 증거는 아니다.
 - 남은 것: 동·서 벽면 걸이 · 베란다 · 가게·학교 실내 · 거리 맵 집 문과 실내 자동 연결 · 편집기 「새 맵 → 실내」 칩셋 선택(지금은 v5 고정).
 
 ## 실제 거리 조사 (2026-10-06)

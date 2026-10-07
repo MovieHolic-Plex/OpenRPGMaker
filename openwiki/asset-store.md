@@ -58,6 +58,12 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
   - 각 `UploadedAsset.origin` 에 출처(slug·판본·작가·라이선스·AI 생성·크레딧)를 남긴다.
   - 이 출처가 「이 프로젝트」 탭과 게임 크레딧의 원천이다.
 - Electron 저장소면 바이트를 먼저 `uploadedAssetForImport` 로 프로젝트 assets 에 넣는다. 문서에는 참조만 남는다.
+- 캐릭터 칸 설명 `content.characters` (2026-10-07): 캐릭터 시트(`kind: charset`) 칸마다 `{asset, characterIndex 0~7, label, tags?, gender?, age?, appearance?}`.
+  - 상한은 `STORE_LIMITS` (2048개·이름 40자·태그 12개×24자·외형 240자). 같은 (시트, 칸) 두 번이나 charset 이 아닌 에셋을 가리키면 거절한다.
+  - 올릴 때는 프로젝트 `charsetLabels` 중 팩에 든 시트 것(`packCharacters`)을 싣는다.
+  - 넣을 때는 `charsetLabels` 에 `spriteType: "uploaded"` 항목으로 들어간다(저자가 고친 칸 `origin: "user"` 는 덮지 않는다).
+    `applyCharsetLabelOverrides` 가 이 항목을 NPC 목록에 새 칸으로 붙이므로, 조수가 `search_resources('charset', '마법약 교수')` 처럼 생김새로 찾는다.
+    없으면 업로드 시트는 「이름 / 칸 N」 으로만 보여 조수가 고를 근거가 없다.
 - 라이선스는 CC0, CC-BY-4.0, CC-BY-SA-4.0, OPRN-GAME(게임 안 사용 자유, 원본 재배포 금지) 넷이다.
   AI 생성 여부는 필수로 받는다.
 
@@ -211,6 +217,8 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - 같은 번역을 `store-server/scripts/library_locales.py` `FIXED` 에도 넣는다 — 안 넣으면 `refresh_library.py` 가 「모름」으로 건너뛴다.
 - 올리기는 `store-server/scripts/publishBundle.ts --title <제목>`: `--dry`(매니페스트 검증만) → `--base http://mdc-server:18320 --dev admin@openrpgmaker.com`(스테이징) → `--base https://store.openrpgmaker.com --link-token <admin-link 토큰>`(운영). 이미 있으면 건너뛰고, 고친 팩은 `--new-version` 으로 판본을 더한다. 끝나면 운영자 웹 세션을 지운다.
 - 영어 소개(summary)도 160자 상한이다 — `--dry` 가 잡는다.
+- 원작 이름이 든 번들은 `scrub` 쌍 목록으로 공개본 글자를 바꾼다(타일셋 이름·설명·참고문서·캐릭터 설명 전부, 영문 id 는 그대로). 캐릭터 칸 설명은 `characters`(번들 의미 사전에서 만든다). 마법 학교 팩: `WIZARDING_SCRUB`·`wizardingCharacters`, 판본 5 부터 캐릭터 35칸.
+- 서버 코드를 바꿨으면(형식 검증은 `src/assetStore/format.ts` 를 서버도 같이 쓴다) 팩보다 **서버를 먼저** 배포한다 — 새 필드 검사는 새 서버에만 있다. 스테이징 `install-staging.sh`(워크트리면 먼저 `npm --prefix store-server ci`), 운영 `store-server/deploy/README.md`.
 
 ## 조수와 스토어 (2026-10-07)
 

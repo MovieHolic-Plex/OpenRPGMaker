@@ -8,7 +8,7 @@
   "count": 2560,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "k103"
+  "run": "v7"
  },
  {
   "theme": "monster-coast",
@@ -19,7 +19,7 @@
   "count": 2528,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "c107"
+  "run": "v7"
  },
  {
   "theme": "monster-dungeon",
@@ -52,7 +52,7 @@
   "count": 2192,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "d100"
+  "run": "v7"
  },
  {
   "theme": "monster-rooms",
@@ -74,6 +74,6 @@
   "count": 2048,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "w197"
+  "run": "v7"
  }
 ]

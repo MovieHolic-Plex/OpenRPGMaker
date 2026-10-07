@@ -172,11 +172,6 @@
    "y": 9
   },
   {
-   "id": "door-western",
-   "x": 13,
-   "y": 7
-  },
-  {
    "id": "rug",
    "x": 4,
    "y": 4
@@ -195,6 +190,16 @@
    "id": "cushion-floor",
    "x": 17,
    "y": 5
+  },
+  {
+   "id": "wall-clock",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "calendar",
+   "x": 14,
+   "y": 7
   }
  ],
  "tables": [],

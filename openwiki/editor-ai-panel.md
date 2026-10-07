@@ -28,6 +28,30 @@
 
 # Editor AI Panel & Tools
 
+## AI 존재감 — 지도 이름표 · 상태 줄 · 받은함 (2026-10-07)
+
+문제: 조수가 「실행 중」이어도 지도(개발자의 눈이 있는 곳)엔 흔적이 없고, 진행·결과·검토가 오른쪽 패널 한 곳에 층층이 쌓여
+「지금 뭐 하나 / 어디를 봐야 하나 / 내가 뭘 해야 하나」가 안 보였다. 원칙: **눈은 지도 하나에, 사람이 필요하면 지도 쪽에서 신호가 먼저 튄다.**
+
+- **단일 원천** `src/editor/panels/aiPresence.ts` — 팀 보드(`publishTeamActivity`)와 영역 작업(`REGION_TASK_STATUS_EVENT`)을
+  `Presence[]` 로 합친다. 새 관측을 만들지 않고 기존 `teamObservation` 을 사람 말로만 바꾼다. 상태 6종:
+  대기 · 일하는 중 · 내 차례(검토 대기) · 초안 완료 · 적용됨 · 실패. 「모델 응답 대기」는 「생각 중」으로(`aiTeamObservation.ts` 원문도 바꿨다).
+  `source: "chat" | "region"` — 드래그로 시킨 영역 일은 대화 일과 **다른 스레드**로 돌고 상태 줄에도 별도 칩이다.
+- **지도 위 이름표** `src/editor/aiMapPresence.ts` — `.phaser-container` 위 DOM 오버레이. 영역은 영역 작업이면 사용자가 드래그한 사각형,
+  대화 일이면 그 맵의 고스트 초안 바운딩 박스(맵당 조수 한 명 규칙 → 그 맵에 **쓰는** 조수 한 명에게만, 검수는 이름표만).
+  좌표는 `resolveRegionClientRect`. 팬·줌은 EditScene 의 `repositionAiMapPresence()`, 도크 열림 같은 레이아웃 변화는 이름표가 떠 있는 동안
+  rAF 대조(`writeIfChanged`)로 따라간다(실측: 훅만으로는 도크를 열 때 상자가 옛 자리에 남았다).
+- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 지도 아래 한 줄. 칩 = 이름 · 지금 하는 일 · 단계 수, 사람이 필요하면 줄 전체가 앰버(검토)/빨강(실패).
+  칩을 누르면 **지도 위 팝오버**(최근 3단계 · 조수 상세 · 지도로 이동 · 멈춤). 「작업 기록」은 기존 로그 입구(`ai-workspace-log-trigger`)로 연결, 「멈춤」은 `requestTeamStop`.
+  적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
+- **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
+  `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
+- 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
+- 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
+- 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며
+  모델 호출·SQLite 저장 검수가 아니다. 이 세션에서 gates·vitest·전체 typecheck 는 돌리지 않았다(`test/aiTeamObservation.test.ts` 문자열만 맞춤).
+- 아직 안 한 것: 질문(ask) 카드를 받은함으로 옮기기, 팀 레일·크게 보기·스튜디오 보드 정리, 「작업 표시」 4단계 설정 제거, 카메라 따라가기 토글.
+
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
 일반 편집기는 오른쪽 복원 레일 44px만 예약한다. AI 창은 지도 위에 380px(좁은 화면은

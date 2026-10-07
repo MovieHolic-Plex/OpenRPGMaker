@@ -2,6 +2,7 @@ import { el } from "@/util/dom";
 import { t } from "@/i18n";
 import type { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createWorkspaceLogs } from "./aiWorkspaceLogs";
+import { createAiInbox } from "./aiInbox";
 
 const TAB_KEY = "oprn:ai-workspace-tab";
 type Tab = "chat" | "team";
@@ -30,6 +31,9 @@ export function createAiWorkspace(options: {
   body.after(team.root);
   const logs = createWorkspaceLogs(() => team.getLogSelection(), () => options.requestOpen());
   tabs.after(logs.root);
+  // 사람이 움직여야 하는 일(검토·실패)만 맨 위에 — 진행 상황은 지도와 상태 줄이 맡는다.
+  const inbox = createAiInbox({ openLogs: () => { options.requestOpen(); logs.trigger.click(); } });
+  tabs.before(inbox.root);
   deck.querySelector(".ai-deck-rail-actions")?.prepend(logs.trigger);
   const starterButtons: HTMLButtonElement[] = [];
   const starter = el("section", { class: "ai-workspace-starter", attrs: { hidden: "", "aria-label": "첫 요청 시작하기" }, dataset: { testid: "ai-workspace-starter" }, children: [
@@ -65,7 +69,8 @@ export function createAiWorkspace(options: {
     commandBar.hidden = !showChat && !team.root.querySelector<HTMLElement>(".ai-team-member-detail")?.hidden;
     commandBar.inert = commandBar.hidden;
     outcome.hidden = !showChat;
-    tabs.hidden = wide || studio || (!count && active === "chat");
+    // 대화 화면에서는 탭이 없다 — 받은함 + 대화 한 화면. 조수 상세는 상태 줄 팝오버의 「조수 상세」로 들어오고, 거기서 탭으로 돌아간다.
+    tabs.hidden = wide || studio || active === "chat";
     panel.dataset.workspaceTab = active;
     chatTab.setAttribute("aria-selected", String(active === "chat"));
     teamTab.setAttribute("aria-selected", String(active === "team"));
@@ -91,6 +96,8 @@ export function createAiWorkspace(options: {
   const onMember = () => { sync(); logs.refreshSelection(); };
   const onTeam = () => { options.requestOpen(); select("team", false); };
   const onMap = () => options.requestFold();
+  const onOpenTeam = () => { options.requestOpen(); select("team"); };
+  window.addEventListener("oprn:ai-open-team", onOpenTeam);
   team.root.addEventListener("oprn:ai-member-selection", onMember);
   team.root.addEventListener("oprn:ai-workspace-team", onTeam);
   team.root.addEventListener("oprn:ai-workspace-map", onMap);
@@ -101,6 +108,6 @@ export function createAiWorkspace(options: {
     showChat() { select("chat", false); },
     setStudio(on: boolean) { studio = on; sync(); },
     setWide(on: boolean) { wide = on; team.setEmbedded(!on); if (on) logs.close(); sync(); },
-    dispose() { options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
+    dispose() { window.removeEventListener("oprn:ai-open-team", onOpenTeam); inbox.dispose(); inbox.root.remove(); options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
   };
 }

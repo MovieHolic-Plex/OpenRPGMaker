@@ -237,7 +237,7 @@ def d_chigaidana(c):
 
 # ───────────── 잠자리 ─────────────
 @R.obj('futon', '깔린 이부자리(布団)', w=1, h=2, up=0, kind='flat', walk=((0, 0), (0, 1)), use=('sleep',), tags=('화실', '침실', '밤'),
-       place='밤의 화실 다다미 위, 머리를 북쪽으로', pair=('futon', 'andon', 'futon-folded'),
+       place='밤의 화실 다다미 위, 머리를 북쪽으로', pair=('andon', 'futon-folded', 'zabuton'),
        desc='깔린 이부자리 1×2 — 위쪽 메밀 베개, 흰 깃과 푸른 이불, 얇은 앞면. 바닥 무늬라 걸을 수 있고 자는 자리다.')
 def d_futon(c):
     s = lambda v: K('shiro', v); b = lambda v: K('sora', v)

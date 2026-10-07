@@ -1,0 +1,566 @@
+{
+  "extends": "monster-overworld",
+  "id": "monster-wild",
+  "title": "몬스터 수집 야생 (숲 미로·산 절벽·늪지·꽃 정원·강과 다리)",
+  "tilesetId": "monster_wild",
+  "tilesetName": "몬스터 수집 야생 · OPRN 손 도트",
+  "textureKey": "tex_monster_wild",
+  "core": [
+    "ground",
+    "ledges",
+    "clearing",
+    "sandpath",
+    "fence",
+    "trees",
+    "forest",
+    "outdoor_props"
+  ],
+  "sections": [
+    "ground",
+    "ledges",
+    "clearing",
+    "sandpath",
+    "fence",
+    "trees",
+    "forest",
+    "outdoor_props"
+  ],
+  "gates": {
+    "water": null,
+    "cave_floor": null,
+    "house": null,
+    "center": null,
+    "gym": null,
+    "gable": null
+  },
+  "building_gates": null,
+  "palette": {
+    "wfloor": [
+      "#3e7f30",
+      "#4a8c34",
+      "#57993a",
+      "#64a440"
+    ],
+    "wtall": [
+      "#123f1e",
+      "#1f6a2c",
+      "#5ea83a",
+      "#90c040"
+    ],
+    "leaf_dark": [
+      "#123f1e",
+      "#1a5d26",
+      "#287a37",
+      "#50982d",
+      "#80af23"
+    ],
+    "mfloor": [
+      "#b08458",
+      "#c49668",
+      "#d2a678",
+      "#dcb488"
+    ],
+    "cave_dark": [
+      "#1e0c04",
+      "#3a1a08",
+      "#5a2a10"
+    ],
+    "swamp": [
+      "#5e6e2a",
+      "#6e7e30",
+      "#7c8c3a",
+      "#8a9846"
+    ],
+    "mud": [
+      "#4e3a22",
+      "#62482a",
+      "#765834",
+      "#8a6c44",
+      "#a89068"
+    ],
+    "swater": [
+      "#2e5e4e",
+      "#3a6e5a",
+      "#4a8068",
+      "#68a084"
+    ],
+    "reed": [
+      "#2a5a1e",
+      "#4a7a26",
+      "#7aa034",
+      "#c8c860"
+    ],
+    "mush_red": [
+      "#a02830",
+      "#e04040",
+      "#f88080"
+    ],
+    "foam": [
+      "#a8e0f8",
+      "#f4fefa"
+    ],
+    "rope": [
+      "#8a7a52",
+      "#dccb98"
+    ],
+    "wsun": [
+      "#5e9e38",
+      "#74b03e",
+      "#84bc46",
+      "#94c650"
+    ],
+    "cliff": [
+      "#4a140a",
+      "#62200e",
+      "#833120",
+      "#a65c46",
+      "#c88c74"
+    ],
+    "mstone": [
+      "#5a5a6c",
+      "#80808f",
+      "#a8a8b8",
+      "#cfcfdc",
+      "#f0f0f4"
+    ],
+    "mshadow": [
+      "#9a6e48"
+    ],
+    "snag": [
+      "#3a3430",
+      "#5a5048",
+      "#7a7064",
+      "#9a9084"
+    ],
+    "wdirt": [
+      "#5e4a30",
+      "#7a6444",
+      "#8e7852",
+      "#a68e66"
+    ],
+    "cave_hole": [
+      "#2a2234",
+      "#3e3548"
+    ]
+  },
+  "bake": {
+    "autotile": [
+      [
+        "path",
+        "sand_at",
+        "path"
+      ],
+      [
+        "clearing",
+        "clear_at",
+        "path"
+      ],
+      [
+        "wsun",
+        "wsun_at",
+        "path",
+        {
+          "label": "숲 속 빛 드는 공터"
+        }
+      ],
+      [
+        "wdirt",
+        "wdirt_at",
+        "path",
+        {
+          "label": "숲 흙길",
+          "connectTiles": "wdirt_end\\d+"
+        }
+      ],
+      [
+        "cliff_a",
+        "cliffa_at",
+        "edge",
+        {
+          "terrain": "stone",
+          "label": "절벽 윗단 A — 가장자리로는 못 내려간다",
+          "connectGroups": [
+            "cface",
+            "mgrass"
+          ],
+          "connectTiles": "cface_rnd\\d+"
+        }
+      ],
+      [
+        "cliff_b",
+        "cliffb_at",
+        "edge",
+        {
+          "terrain": "stone",
+          "label": "절벽 윗단 B — 가장자리로는 못 내려간다",
+          "connectGroups": [
+            "cface",
+            "mgrass"
+          ],
+          "connectTiles": "cface_rnd\\d+"
+        }
+      ],
+      [
+        "cliff_g",
+        "cliffg_at",
+        "edge",
+        {
+          "label": "풀 절벽 윗단 — 가장자리로는 못 내려간다",
+          "connectGroups": [
+            "gface",
+            "rwater"
+          ],
+          "connectTiles": "gface_rnd\\d+"
+        }
+      ],
+      [
+        "cface",
+        "cface_at",
+        "block",
+        {
+          "terrain": "stone",
+          "label": "절벽 앞면(바위 덩이, 통행 불가)",
+          "connectTiles": "cface_rnd\\d+"
+        }
+      ],
+      [
+        "gface",
+        "gface_at",
+        "block",
+        {
+          "terrain": "stone",
+          "label": "풀 절벽 앞면(통행 불가)",
+          "connectGroups": [
+            "rwater"
+          ],
+          "connectTiles": "gface_rnd\\d+"
+        }
+      ],
+      [
+        "mgrass",
+        "mgrass_at",
+        "path",
+        {
+          "label": "흙 위 풀 바닥"
+        }
+      ],
+      [
+        "mud",
+        "mud_at",
+        "path",
+        {
+          "label": "진흙 늪 — 느린 땅"
+        }
+      ],
+      [
+        "swater",
+        "swater_at",
+        "water",
+        {
+          "label": "늪 물(진흙 둑)"
+        }
+      ],
+      [
+        "rwater",
+        "rwater_at",
+        "water",
+        {
+          "label": "강물(바위 둑)",
+          "connectGroups": [
+            "gface"
+          ]
+        }
+      ],
+      [
+        "fbeda",
+        "fbeda_at",
+        "path",
+        {
+          "label": "꽃밭(분홍·흰 꽃, 흙 테두리)"
+        }
+      ],
+      [
+        "fbedb",
+        "fbedb_at",
+        "path",
+        {
+          "label": "꽃밭(노랑·빨강 꽃, 흙 테두리)"
+        }
+      ]
+    ],
+    "autotile_names": {
+      "path": "모래길",
+      "clearing": "밝은 공터 풀",
+      "wsun": "숲 빛 공터",
+      "cliff_a": "절벽 윗단 A",
+      "cliff_b": "절벽 윗단 B",
+      "cliff_g": "풀 절벽 윗단",
+      "cface": "절벽 앞면",
+      "mud": "진흙 늪",
+      "swater": "늪 물",
+      "rwater": "강물",
+      "gface": "풀 절벽 앞면",
+      "mgrass": "흙 위 풀 바닥",
+      "wdirt": "숲 흙길",
+      "fbeda": "꽃밭 A",
+      "fbedb": "꽃밭 B"
+    },
+    "entrances": {
+      "ccave": [
+        0,
+        1
+      ]
+    },
+    "object_kinds": {
+      "decor": [
+        "rug",
+        "h_rug",
+        "h_mat",
+        "c_emblem",
+        "g_leader_mat",
+        "g_dais",
+        "g_edais",
+        "cstairs",
+        "gstairs"
+      ],
+      "prop": [
+        "sign",
+        "counter",
+        "shelf",
+        "table",
+        "chair",
+        "bed",
+        "plant",
+        "tv",
+        "pc",
+        "machine",
+        "statue",
+        "stairs_up",
+        "window_pair",
+        "flog",
+        "bigrock",
+        "snag",
+        "berry_"
+      ],
+      "building": [
+        "house_",
+        "two_",
+        "shop_",
+        "cabin_",
+        "center",
+        "mart",
+        "gym_",
+        "gable_",
+        "cave_mouth",
+        "ccave"
+      ],
+      "tree": [
+        "tree_",
+        "pine_",
+        "forest_",
+        "wood_",
+        "swood_"
+      ]
+    },
+    "rules": [
+      {
+        "re": "wdirt_end\\d+",
+        "label": "숲 흙길 둥근 끝(맵 안에서 끝나는 길 끝 칸 — 걷는 땅)"
+      },
+      {
+        "re": "w?tall_fringe_[sew]_(a|b|ab)",
+        "pass": "open",
+        "layer": "upper",
+        "label": "키 큰 풀 잎끝(깎인 귀 쪽 끝을 자른 변형 — 위층 장식, 조우 없음)"
+      },
+      {
+        "re": "w?tall\\dr[gmw]\\d+",
+        "terrain": "tall_grass",
+        "label": "키 큰 풀 덩이 바깥 귀(둥글게 깎은 풀숲 칸 — 조우)"
+      },
+      {
+        "re": "s?wood_cap\\d",
+        "pass": "open",
+        "label": "수관 머리(위층, 걸을 수 있다 — 수관 뒤를 지나간다)",
+        "layer": "upper"
+      },
+      {
+        "re": "wfl\\d",
+        "label": "숲 바닥"
+      },
+      {
+        "re": "wtall\\d",
+        "terrain": "tall_grass",
+        "label": "숲 키 큰 풀(야생 조우)"
+      },
+      {
+        "re": "wledge_s_.*",
+        "ledge": "down",
+        "label": "숲 턱(남쪽으로만 뛰어내림)"
+      },
+      {
+        "re": "mush\\d",
+        "label": "버섯 무리(숲 바닥 장식)"
+      },
+      {
+        "re": "cuttree",
+        "pass": "shut",
+        "label": "작은 나무(자르기 이벤트 자리)"
+      },
+      {
+        "re": "wflower\\d",
+        "label": "숲 들꽃(본 시트 꽃 그림, 숲 바닥 장식)"
+      },
+      {
+        "re": "stump",
+        "pass": "shut",
+        "label": "그루터기"
+      },
+      {
+        "re": "mfl\\d",
+        "terrain": "stone",
+        "label": "산 돌흙 바닥"
+      },
+      {
+        "re": "mpeb\\d",
+        "terrain": "stone",
+        "label": "잔돌 무더기(본 시트 동굴 잔돌 그림 — 통행 불가 장식)",
+        "pass": "shut"
+      },
+      {
+        "re": "mledge_s_.*",
+        "ledge": "down",
+        "label": "산 턱(남쪽으로만 뛰어내림)"
+      },
+      {
+        "re": "smashrock",
+        "pass": "shut",
+        "label": "깨지는 바위(바위 깨기 이벤트 자리)"
+      },
+      {
+        "re": "swg\\d",
+        "label": "늪 젖은 풀땅"
+      },
+      {
+        "re": "reed(in|bt|one)?\\d(_[lr])?",
+        "terrain": "tall_grass",
+        "label": "갈대 덤불(야생 조우)"
+      },
+      {
+        "re": "cattail\\d",
+        "pass": "shut",
+        "label": "부들(물가 장식, 통행 불가)"
+      },
+      {
+        "re": "lily\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "label": "연잎(물 칸 위 3층 장식)"
+      },
+      {
+        "re": "fcarpet\\d",
+        "label": "꽃밭(빽빽한 꽃 카펫)"
+      },
+      {
+        "re": "soil_1",
+        "label": "부드러운 흙(열매 나무 이벤트 자리 — 빈 칸·심은 칸 같은 받침)"
+      },
+      {
+        "re": "gstone\\d",
+        "label": "디딤돌 길"
+      },
+      {
+        "re": "hedge_at\\d+",
+        "pass": "shut",
+        "label": "생울타리"
+      },
+      {
+        "re": "flower_(pink|white|yellow|red)",
+        "label": "풀밭 들꽃(본 시트 정본 꽃, 바닥 장식)"
+      },
+      {
+        "re": "logbr_.*",
+        "label": "통나무 다리(물 칸을 덮어 1층에 깐다)"
+      },
+      {
+        "re": "rrock\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "label": "강 바위(물 칸 위 3층)"
+      },
+      {
+        "re": "gpeb\\d",
+        "pass": "shut",
+        "label": "풀밭 잔돌 무더기(산 잔돌과 같은 바위 — 통행 불가 장식)"
+      },
+      {
+        "re": "cur_d\\d?_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "slide": "down",
+        "label": "강 물살(아래로 — 서핑 중 떠밀림)"
+      },
+      {
+        "re": "cur_u_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "slide": "up",
+        "label": "강 물살(위로 — 서핑 중 떠밀림)"
+      },
+      {
+        "re": "cur_l_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "slide": "left",
+        "label": "강 물살(왼쪽으로 — 서핑 중 떠밀림)"
+      },
+      {
+        "re": "cur_r_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "slide": "right",
+        "label": "강 물살(오른쪽으로 — 서핑 중 떠밀림)"
+      },
+      {
+        "re": "wfall_.*",
+        "pass": "shut",
+        "terrain": "water",
+        "label": "폭포(폭포 오르기 이벤트 자리)"
+      },
+      {
+        "re": "wfoot\\d_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "label": "폭포 발치 물보라(물 칸)"
+      },
+      {
+        "re": "tall_fringe_[sew]",
+        "pass": "open",
+        "layer": "upper",
+        "label": "빈 칸(GBA 결 — 풀 다발이 제 테를 가져 잎끝을 안 얹는다, 옛 맵 호환용으로 자리만 남김) · 키 큰 풀 가장자리 잎끝(본 시트 정본, 위층 장식 — 풀숲 남·동·서 이웃 칸에 얹는다, 조우 없음)"
+      },
+      {
+        "re": "wtall_fringe_[sew]",
+        "pass": "open",
+        "layer": "upper",
+        "label": "빈 칸(GBA 결 — 풀 다발이 제 테를 가져 잎끝을 안 얹는다, 옛 맵 호환용으로 자리만 남김) · 숲 키 큰 풀 가장자리 잎끝(본 시트 잎끝 그림, 숲 풀 램프 — 위층 장식, 조우 없음)"
+      },
+      {
+        "re": "[cg]face_rnd\\d+",
+        "pass": "shut",
+        "terrain": "stone",
+        "label": "절벽 앞면 사선 등고선의 둥근 어깨·발끝(앞면 그룹 이웃, 통행 불가)"
+      }
+    ]
+  },
+  "roles": [
+    "grass",
+    "tall_grass",
+    "sand",
+    "path_autotile",
+    "ledge_south",
+    "tree_big",
+    "fence",
+    "sign"
+  ]
+}
