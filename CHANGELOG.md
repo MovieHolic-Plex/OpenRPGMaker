@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.164.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — round 9 — 대기 19장을 원본 칸 파사드로 재저작(창 위치·종류 통일) (`a489c5f`)
+
+### 수정
+
+- **beodeul-building-review** — r9-09/10 의 떨어진 탑·곁채를 본채에 이어 붙임(UNENTERED_DETACHED_VOLUME) (`83f3eb1`)
+- **beodeul-building-review** — 사람이 허용한 r7/r8 8장은 대체하지 않고 복원 (`605ee69`)
+
+### 문서
+
+- **beodeul-building-review** — round 9 창문 파사드 재저작 기록 (`7b88155`)
+
 ## 0.163.0 — 2026-10-07
 
 ### 기능
