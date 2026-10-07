@@ -1,18 +1,18 @@
-# 일본 도시 — 일본 실내 예제: 일본 동네 꽃집 실내 (`jp-city-florist`, 9×10)
+# 일본 도시 — 일본 실내 예제: 일본 동네 꽃집 실내 (`jp-city-florist`, 9×11)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10185칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×10 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 26, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×11 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "###..####"], "floor": "sh-concrete", "wall": "sh-white", "zones": [], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-wall-shelf", "x": 4, "y": 3}, {"id": "sh-flower-cooler", "x": 5, "y": 3}, {"id": "sh-flower-cooler", "x": 6, "y": 3}, {"id": "sh-flower-cooler", "x": 7, "y": 3}, {"id": "sh-flower-buckets", "x": 1, "y": 5}, {"id": "sh-flower-buckets", "x": 1, "y": 7}, {"id": "sh-wrap-table", "x": 5, "y": 5}, {"id": "sh-plant-pot", "x": 7, "y": 5}, {"id": "sh-counter", "x": 5, "y": 7}, {"id": "sh-register", "x": 6, "y": 7}, {"id": "sh-counter", "x": 7, "y": 7}, {"id": "sh-plant-pot", "x": 7, "y": 8}, {"id": "sh-shutter-2", "x": 3, "y": 9}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 5, "y": 5}, {"id": "sh-price-dots", "x": 5, "y": 7}], "start": [{"x": 3, "y": 8}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "sh-concrete", "wall": "sh-white", "zones": [], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-wall-shelf", "x": 6, "y": 3}, {"id": "sh-wall-shelf", "x": 7, "y": 3}, {"id": "sh-flower-buckets", "x": 1, "y": 6}, {"id": "sh-wrap-table", "x": 4, "y": 6}, {"id": "sh-counter", "x": 6, "y": 6}, {"id": "sh-register", "x": 7, "y": 6}, {"id": "sh-flower-buckets", "x": 2, "y": 9}, {"id": "sh-plant-pot", "x": 1, "y": 9}, {"id": "sh-flower-buckets", "x": 6, "y": 9}, {"id": "sh-shutter-2", "x": 4, "y": 10}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 4, "y": 6}, {"id": "sh-price-dots", "x": 6, "y": 6}], "start": [{"x": 4, "y": 9}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
 | 방 | 사각형(x0,y0)-(x1,y1) |
 |---|---|
-| florist | (0,0)-(8,9) |
+| florist | (0,0)-(8,10) |
 
 ## 이동
 (이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
@@ -22,13 +22,14 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 XXXXXXXXX
 XXXXXXXXX
 XXXXXXXXX
-XXXXXXXXX
+XXXX..XXX
 X.......X
-XXX..XXXX
 X.......X
-XXX..XXXX
-X......XX
-XXX..XXXX
+XXX.XXXXX
+X.......X
+X.......X
+XXXX..XXX
+XXXX..XXX
 ```
 
 ## 4층 정답 배열 (칸 번호, `.` = 빈 칸)
@@ -43,7 +44,8 @@ y=05: 8732 9501 9503 9507 9495 9499 9503 9507 8728
 y=06: 8732 9517 9519 9523 9511 9515 9519 9523 8728
 y=07: 8732 9533 9535 9539 9527 9531 9535 9539 8728
 y=08: 8732 9485 9487 9491 9479 9483 9487 9491 8728
-y=09: 8724 8726 8734 9509 9495 8730 8726 8726 8724
+y=09: 8732 9501 9503 9507 9495 9499 9503 9507 8728
+y=10: 8724 8726 8726 8734 9513 9515 8730 8726 8724
 ```
 
 ### 2층
@@ -57,21 +59,23 @@ y=05: . . . . . . . . .
 y=06: . . . . . . . . .
 y=07: . . . . . . . . .
 y=08: . . . . . . . . .
-y=09: . . . 9625 9627 . . . .
+y=09: . . . . . . . . .
+y=10: . . . . 9625 9627 . . .
 ```
 
 ### 3층
 ```
 y=00: . . . . . . . . .
 y=01: . . . . . . . . .
-y=02: . 9658 9658 9658 9628 9658 9658 9658 .
-y=03: . 9659 9659 9659 9629 9659 9659 9659 .
-y=04: . 9654 9655 . . . . 9660 .
-y=05: . 9656 9657 . . 9662 9663 9661 .
-y=06: . 9654 9655 . . . 9624 . .
-y=07: . 9656 9657 . . 9623 9623 9623 .
-y=08: . . . . . . . 9661 .
-y=09: . . . . . . . . .
+y=02: . 9658 9658 9658 . . 9628 9628 .
+y=03: . 9659 9659 9659 . . 9629 9629 .
+y=04: . . . . . . . . .
+y=05: . 9654 9655 . . . . 9624 .
+y=06: . 9656 9657 . 9662 9663 9623 9623 .
+y=07: . . . . . . . . .
+y=08: . 9660 9654 9655 . . 9654 9655 .
+y=09: . 9661 9656 9657 . . 9656 9657 .
+y=10: . . . . . . . . .
 ```
 
 ### 4층
@@ -81,9 +85,10 @@ y=01: . . . . . . . . .
 y=02: . . . . . . . . .
 y=03: . . . . . . . . .
 y=04: . . . . . . . . .
-y=05: . . . . . 9690 . . .
-y=06: . . . . . . . . .
-y=07: . . . . . 9694 . 9660 .
+y=05: . . . . . . . . .
+y=06: . . . . 9690 . 9694 . .
+y=07: . . . . . . . . .
 y=08: . . . . . . . . .
 y=09: . . . . . . . . .
+y=10: . . . . . . . . .
 ```

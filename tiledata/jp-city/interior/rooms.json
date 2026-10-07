@@ -1250,12 +1250,12 @@
    "bakery",
    [
     [
-     "sh-noren",
-     1
-    ],
-    [
      "sh-oven",
      2
+    ],
+    [
+     "kitchen-sink",
+     1
     ],
     [
      "sh-dough-bench",
@@ -1263,11 +1263,7 @@
     ],
     [
      "sh-proof-rack",
-     1
-    ],
-    [
-     "kitchen-sink",
-     1
+     2
     ],
     [
      "sh-pass-window",
@@ -1275,22 +1271,14 @@
     ],
     [
      "sh-bread-shelf",
-     2
+     1
     ],
     [
      "sh-wall-shelf",
-     1
+     2
     ],
     [
      "sh-counter",
-     3
-    ],
-    [
-     "sh-bread-table",
-     1
-    ],
-    [
-     "sh-tray-stand",
      2
     ],
     [
@@ -1298,7 +1286,19 @@
      1
     ],
     [
+     "sh-bread-table",
+     2
+    ],
+    [
+     "sh-tray-stand",
+     2
+    ],
+    [
      "sh-plant-pot",
+     1
+    ],
+    [
+     "sh-noren",
      1
     ],
     [
@@ -1313,12 +1313,8 @@
    "bookstore",
    [
     [
-     "sh-noren",
-     1
-    ],
-    [
      "sh-returns-shelf",
-     3
+     4
     ],
     [
      "sh-book-crates",
@@ -1326,15 +1322,7 @@
     ],
     [
      "sh-bookshelf",
-     6
-    ],
-    [
-     "sh-book-island",
-     1
-    ],
-    [
-     "sh-book-table",
-     1
+     7
     ],
     [
      "sh-counter",
@@ -1345,7 +1333,19 @@
      1
     ],
     [
+     "sh-book-island",
+     4
+    ],
+    [
+     "sh-book-table",
+     1
+    ],
+    [
      "h2-cardboard",
+     1
+    ],
+    [
+     "sh-noren",
      1
     ],
     [
@@ -1360,12 +1360,12 @@
    "pharmacy",
    [
     [
-     "sh-noren",
-     1
+     "pb-med-cabinet",
+     3
     ],
     [
-     "pb-med-cabinet",
-     2
+     "washbasin",
+     1
     ],
     [
      "sh-stock-shelf",
@@ -1373,27 +1373,7 @@
     ],
     [
      "sh-dispense-counter",
-     1
-    ],
-    [
-     "washbasin",
-     1
-    ],
-    [
-     "sh-drug-shelf",
-     6
-    ],
-    [
-     "sh-drug-island",
-     1
-    ],
-    [
-     "sh-waiting-bench",
-     1
-    ],
-    [
-     "sh-consult",
-     1
+     2
     ],
     [
      "sh-counter",
@@ -1401,6 +1381,22 @@
     ],
     [
      "sh-register",
+     1
+    ],
+    [
+     "sh-drug-island",
+     2
+    ],
+    [
+     "sh-consult",
+     1
+    ],
+    [
+     "sh-waiting-bench",
+     1
+    ],
+    [
+     "sh-noren",
      1
     ],
     [
@@ -1416,30 +1412,30 @@
    [
     [
      "sh-flower-cooler",
-     6
+     3
     ],
     [
      "sh-wall-shelf",
-     1
+     2
     ],
     [
      "sh-flower-buckets",
-     2
+     3
     ],
     [
      "sh-wrap-table",
      1
     ],
     [
-     "sh-plant-pot",
-     2
-    ],
-    [
      "sh-counter",
-     2
+     1
     ],
     [
      "sh-register",
+     1
+    ],
+    [
+     "sh-plant-pot",
      1
     ],
     [
@@ -1454,26 +1450,6 @@
    "yaoya",
    [
     [
-     "sh-basket-shelf",
-     6
-    ],
-    [
-     "sh-veg-stand",
-     2
-    ],
-    [
-     "sh-fruit-box",
-     2
-    ],
-    [
-     "sh-scale-table",
-     1
-    ],
-    [
-     "sh-crate-stack",
-     1
-    ],
-    [
      "sh-counter",
      2
     ],
@@ -1482,7 +1458,23 @@
      1
     ],
     [
-     "sh-shutter-2",
+     "sh-basket-shelf",
+     5
+    ],
+    [
+     "sh-veg-stand",
+     3
+    ],
+    [
+     "sh-crate-stack",
+     5
+    ],
+    [
+     "sh-fruit-box",
+     2
+    ],
+    [
+     "sh-shutter",
      1
     ]
    ]
@@ -1493,6 +1485,14 @@
    "barber",
    [
     [
+     "sh-shampoo",
+     1
+    ],
+    [
+     "sh-wall-shelf",
+     2
+    ],
+    [
      "sh-barber-mirror",
      3
     ],
@@ -1501,39 +1501,27 @@
      2
     ],
     [
-     "sh-wall-shelf",
-     1
-    ],
-    [
-     "sh-shampoo",
-     1
-    ],
-    [
      "sh-barber-chair-n",
      3
-    ],
-    [
-     "sh-waiting-bench",
-     1
     ],
     [
      "sh-towel-rack",
      1
     ],
     [
-     "sh-washer",
+     "sh-barber-pole",
      1
     ],
     [
      "sh-counter",
-     2
+     1
     ],
     [
      "sh-register",
      1
     ],
     [
-     "sh-barber-pole",
+     "sh-waiting-bench",
      1
     ],
     [
@@ -1553,18 +1541,10 @@
     ],
     [
      "pb-wash-stool",
-     4
+     2
     ],
     [
      "pb-mural",
-     2
-    ],
-    [
-     "pb-noren-m",
-     2
-    ],
-    [
-     "pb-noren-f",
      2
     ],
     [
@@ -1604,8 +1584,16 @@
      2
     ],
     [
-     "bath-bucket",
+     "pb-noren-m",
      1
+    ],
+    [
+     "pb-noren-f",
+     1
+    ],
+    [
+     "bath-bucket",
+     2
     ],
     [
      "pb-bath",

@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 건물 77종 · 쓰는 법
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10185칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 스크립트 손 도트(modern3 팔레트, 빛 왼쪽 위, 정면 고정 3/4 시점, 한 층 32px·문 16×28·사람 16×24 눈금)로 그린 일본 동네 건물 한 채 = 키트 하나.
 그림 원본은 `scripts/content/jp-city/houses/`(기준 집 `ref_house.py` → 조립 키트 `house_kit.py` → 상점 부품 `shop_parts.py` → 목록 `catalog.py`), 굽기 블록은 `blocks/buildings.py`.

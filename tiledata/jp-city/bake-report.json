@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 10182,
+  "count": 10185,
   "tilesPerRow": 48,
   "rows": 213,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 6695,
+  "block_cells": 6698,
   "legacy": 350,
   "legacy_ids": [
    5137,
@@ -45,15 +45,15 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 6695
+   "block": 6698
   }
  },
  "pc_counts": {
-  "star": 5057,
+  "star": 5058,
   "solid": 2005,
   "floor": 1634,
   "solidfloor": 480,
-  "flat": 501,
+  "flat": 503,
   "blank": 155
  },
  "kits": {
@@ -297,7 +297,7 @@
    },
    {
     "name": "interior_public",
-    "cells": 134,
+    "cells": 137,
     "autotiles": 0,
     "groups": 4,
     "kits": 35,
@@ -381,7 +381,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10182,
+  "tiles_checked": 10185,
   "kits_checked": 686,
   "groups_checked": 248,
   "autotiles_checked": 17
@@ -398,7 +398,7 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "7fd37e330fec2130dae6a786e4f1b496163138de",
+ "sheet_hash": "c84ae9ac8082cccc617270493f4703c96628fac7",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 686,
@@ -468,7 +468,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10182,
+  "tiles_checked": 10185,
   "kits_checked": 686,
   "groups_checked": 248,
   "autotiles_checked": 17

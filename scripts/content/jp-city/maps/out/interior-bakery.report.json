@@ -2,26 +2,26 @@
  "map": {
   "id": "jp-city-bakery",
   "size": [
-   9,
+   10,
    14
   ]
  },
  "start": [
-  3,
+  6,
   12
  ],
- "summary": "손 도트 실내 '일본 동네 빵집 실내' 9×14 (jp-city-bakery, jp_city) — 출입구에서 닿는 칸 34, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 빵집 실내' 10×14 (jp-city-bakery, jp_city) — 출입구에서 닿는 칸 40, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-bakery",
   "tilesetId": "jp_city",
-  "width": 9,
+  "width": 10,
   "height": 14,
-  "reachable": 34,
-  "floorCells": 54,
+  "reachable": 40,
+  "floorCells": 61,
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 3,
+    "x": 6,
     "y": 12
    }
   ],
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 34,
+ "reach": 40,
  "ok": true
 }

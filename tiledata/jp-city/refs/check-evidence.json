@@ -68,14 +68,14 @@
    "name": "일본 도시 · 일본 집 실내 (가구 246종 · 바닥 18 · 벽면 11)",
    "documents": 9,
    "images": 18,
-   "chars": 162193
+   "chars": 162709
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 86961
+   "chars": 88527
   },
   {
    "id": "jp-errors",
@@ -89,11 +89,11 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 915661,
+  "chars": 917743,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
- "tilesEmitted": 9567,
+ "tilesEmitted": 9570,
  "kitsEmitted": 686,
  "kitArrayItemsRoundtrip": 686,
  "unknownTokens": [
@@ -119,11 +119,11 @@
   "jp-interior-ex-supermarket:jp-city-supermarket",
   "jp-interior-ex-sushi:jp-city-sushi",
   "jp-interior-ex-yaoya:jp-city-yaoya",
-  "jp-interior-shop-index:jp-city-bakery-9x14",
-  "jp-interior-shop-index:jp-city-barber-9x9",
-  "jp-interior-shop-index:jp-city-bookstore-9x14",
+  "jp-interior-shop-index:jp-city-bakery-10x14",
+  "jp-interior-shop-index:jp-city-barber-10x9",
+  "jp-interior-shop-index:jp-city-bookstore-11x14",
   "jp-interior-shop-index:jp-city-clinic-14x9",
-  "jp-interior-shop-index:jp-city-florist-9x10",
+  "jp-interior-shop-index:jp-city-florist-9x11",
   "jp-interior-shop-index:jp-city-hiraya-15x14",
   "jp-interior-shop-index:jp-city-house-interior-21x15",
   "jp-interior-shop-index:jp-city-izakaya-12x9",
@@ -133,12 +133,12 @@
   "jp-interior-shop-index:jp-city-laundry-9x8",
   "jp-interior-shop-index:jp-city-mansion-2ldk-15x18",
   "jp-interior-shop-index:jp-city-mokuchin-8x9",
-  "jp-interior-shop-index:jp-city-pharmacy-9x14",
+  "jp-interior-shop-index:jp-city-pharmacy-9x15",
   "jp-interior-shop-index:jp-city-ramen-9x9",
   "jp-interior-shop-index:jp-city-sento-15x13",
   "jp-interior-shop-index:jp-city-supermarket-16x12",
   "jp-interior-shop-index:jp-city-sushi-10x9",
-  "jp-interior-shop-index:jp-city-yaoya-9x10",
+  "jp-interior-shop-index:jp-city-yaoya-10x11",
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
   "jp-transit-rules:jp-car-black",
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "b14af00904cba657588e445fd673ac140d06ef0353d6bbb3b12ae9177308ec52",
-  "images": "d9037f0c0eedfa49781bb59adb3e78fcdaaa771814f7ae70ad0fdeb3b38ded93"
+  "json": "6b96b296fcd9f2c0b28c464d4f38e7f184a1f281173a8c7e22ffb54372a9cbe5",
+  "images": "0145bf82b869bfcbb883dd14aaef72208e54f00b669a502e9ff732320163743f"
  }
 }

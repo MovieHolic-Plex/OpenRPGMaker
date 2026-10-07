@@ -2,26 +2,26 @@
  "map": {
   "id": "jp-city-bookstore",
   "size": [
-   9,
+   11,
    14
   ]
  },
  "start": [
-  3,
+  7,
   12
  ],
- "summary": "손 도트 실내 '일본 동네 서점 실내' 9×14 (jp-city-bookstore, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 서점 실내' 11×14 (jp-city-bookstore, jp_city) — 출입구에서 닿는 칸 41, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-bookstore",
   "tilesetId": "jp_city",
-  "width": 9,
+  "width": 11,
   "height": 14,
-  "reachable": 35,
-  "floorCells": 54,
+  "reachable": 41,
+  "floorCells": 68,
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 3,
+    "x": 7,
     "y": 12
    }
   ],
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 35,
+ "reach": 41,
  "ok": true
 }
