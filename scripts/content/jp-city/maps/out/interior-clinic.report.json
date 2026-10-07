@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-clinic",
+  "size": [
+   14,
+   8
+  ]
+ },
+ "start": [
+  6,
+  6
+ ],
+ "summary": "손 도트 실내 '일본 동네 의원(내과) 실내' 14×8 (jp-city-clinic, jp_city) — 출입구에서 닿는 칸 27, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-clinic",
+  "tilesetId": "jp_city",
+  "width": 14,
+  "height": 8,
+  "reachable": 27,
+  "floorCells": 46,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 6,
+    "y": 6
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 27,
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-sushi",
+  "size": [
+   10,
+   12
+  ]
+ },
+ "start": [
+  5,
+  10
+ ],
+ "summary": "손 도트 실내 '일본 초밥집 실내' 10×12 (jp-city-sushi, jp_city) — 출입구에서 닿는 칸 39, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-sushi",
+  "tilesetId": "jp_city",
+  "width": 10,
+  "height": 12,
+  "reachable": 39,
+  "floorCells": 65,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 5,
+    "y": 10
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 39,
+ "ok": true
+}

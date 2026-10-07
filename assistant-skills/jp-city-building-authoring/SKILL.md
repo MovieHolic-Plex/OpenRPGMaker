@@ -92,9 +92,15 @@ build_jp_city_building({mapId, x, y, w, floors, floorKind, wall, ground, roof, d
 - 새 블록(주택가·역·공원·신사)은 `blocks/<이름>.py` → `bake_jp.py` `BLOCK_ORDER` 에 이름 추가 → `bake_spec.py`. 그림은 사람이 고른 것만(`npm run harness -- jp-city`).
 - 도구 문장을 고치면 `jpCityTools.ts` 의 `NEXT_ACTION`·`doorBlockedFix` 가 오류 → 다음 행동 문장의 정본이다.
 
+## 7b. 건물 문으로 들어가기 — `link_jp_city_interior`
+
+- 거리 건물에 실내를 붙일 때: `link_jp_city_interior({mapId, door:{x,y}, width, place})` 한 번. door = `build_jp_city_building` 결과 `data.doors` 의 첫 칸(같은 줄 문 칸 수 = width). stamp_object 로 찍은 jp-bldg 키트면 키트 왼쪽 위 + entrance 부품 dx,dy.
+- place = 실내 장소 id: 집 `jp-city-house-interior-21x15`·`jp-city-apartment-1k-12x13`, 가게·공공·집 보강 19곳은 참고문서 `jp-interior-shop-index`(편의점 `jp-city-konbini-…`, 라멘 `jp-city-ramen-…` 등 — 크기 꼬리 포함 id 를 문서에서 그대로). 이미 지은 실내 맵이면 interiorMapId.
+- 도구가 장소 가져오기·문 앞 발판·실내 출구 발판·맵 목록 정리를 한다. `create_transfer_pair` 로 따로 잇지 않는다(막힌 문 칸을 옮겨 버린다). 문 앞에 이미 이벤트가 있으면 거부 — 바꾸려면 replace:true.
+
 ## 8. 편집기 조수만
 
-- 이 칩셋의 일은 위 도구 목록으로 끝난다: `create_map`(tilesetId jp_city) · `fill_region`/`lay_path`/`paint_tiles`/`stamp_object` · `list_jp_city_building_parts`/`build_jp_city_building` ·
+- 이 칩셋의 일은 위 도구 목록으로 끝난다: `create_map`(tilesetId jp_city) · `fill_region`/`lay_path`/`paint_tiles`/`stamp_object` · `list_jp_city_building_parts`/`build_jp_city_building` · `link_jp_city_interior` ·
   `check_reachability`/`show_map_region`/`run_lint`. 도구가 안 보이면 `find_tools("jp_city")`.
 - 같은 오류로 세 번 실패하면 **예제를 받아 그대로** 짓는다(`example`). 부분 성공을 지어내지 않는다.
 - 사용자가 PAW 설치 칩셋을 쓰라고 한 요청은 이 칩셋이 아니다 — 요청에 칩셋이 정해지지 않았거나 일본 상가 거리를 말했을 때만 jp_city.

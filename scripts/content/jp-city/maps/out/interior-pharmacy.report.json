@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-pharmacy",
+  "size": [
+   9,
+   15
+  ]
+ },
+ "start": [
+  4,
+  13
+ ],
+ "summary": "손 도트 실내 '일본 동네 약국 실내' 9×15 (jp-city-pharmacy, jp_city) — 출입구에서 닿는 칸 37, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-pharmacy",
+  "tilesetId": "jp_city",
+  "width": 9,
+  "height": 15,
+  "reachable": 37,
+  "floorCells": 60,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 4,
+    "y": 13
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 37,
+ "ok": true
+}

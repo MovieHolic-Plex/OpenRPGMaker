@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-sento",
+  "size": [
+   14,
+   13
+  ]
+ },
+ "start": [
+  7,
+  11
+ ],
+ "summary": "손 도트 실내 '일본 공중목욕탕(센토) 실내' 14×13 (jp-city-sento, jp_city) — 출입구에서 닿는 칸 36, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-sento",
+  "tilesetId": "jp_city",
+  "width": 14,
+  "height": 13,
+  "reachable": 36,
+  "floorCells": 76,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 7,
+    "y": 11
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 36,
+ "ok": true
+}

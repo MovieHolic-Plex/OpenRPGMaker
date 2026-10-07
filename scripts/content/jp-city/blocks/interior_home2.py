@@ -449,8 +449,8 @@ def h2_hibachi(c):
     px(c, 8, 6, kc('daidai', 3)); px(c, 9, 6, kc('aka', 3)); px(c, 8, 7, kc('daidai', 2))
 
 
-@R.obj('h2-old-tansu', '계단 장롱', 2, 1, up=16, kind='wall', use=('open', 'search'), place='옛집 다다미방 벽',
-       tags=('옛집', '장롱', '수납', '계단'), desc='높이가 다른 두 단의 옛 나무 장롱. 왼쪽이 낮다.')
+@R.obj('h2-old-tansu', '층층 장롱(階段箪笥)', 2, 1, up=16, kind='wall', use=('open', 'search'), place='옛집 다다미방 벽',
+       tags=('옛집', '장롱', '수납', '階段箪笥'), desc='높이가 다른 두 단의 옛 나무 장롱. 왼쪽이 낮다.')
 def h2_old_tansu(c):
     # 왼쪽 낮은 단(y 11~31) · 오른쪽 높은 단(y 1~31)
     for (x0, y0, w, top) in ((0, 11, 16, 4), (16, 1, 16, 5)):

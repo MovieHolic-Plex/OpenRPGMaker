@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-izakaya",
+  "size": [
+   13,
+   12
+  ]
+ },
+ "start": [
+  6,
+  10
+ ],
+ "summary": "손 도트 실내 '일본 이자카야 실내' 13×12 (jp-city-izakaya, jp_city) — 출입구에서 닿는 칸 58, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-izakaya",
+  "tilesetId": "jp_city",
+  "width": 13,
+  "height": 12,
+  "reachable": 58,
+  "floorCells": 89,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 6,
+    "y": 10
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 58,
+ "ok": true
+}
