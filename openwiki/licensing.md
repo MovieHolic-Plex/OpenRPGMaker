@@ -22,4 +22,6 @@
   `harnesses/_core/registry`를 import해서 `interior-props` 러너(약 243KB)가 내보낸 게임 청크로 나간다 — 미수정.
   그래프 확인: esbuild `metafile`로 `exportEntry.ts`를 묶어 `src/editor|harnesses` 입력이 있는지 본다.
 - **제3자 자료**는 `public/assets/ATTRIBUTION.md`에 적힌 것만 원 라이선스로 남는다. 새로 들이지 않는다(2026-10-07 정리 결정).
+- **이름:** 공개 저장소 이름은 `OpenRPGMaker`(사용자 결정, 2026-10-07). 제품 표시명은 그대로 `src/brand.ts`의 OPRN 계열이고,
+  brand.ts 의 「RPG Maker 계열 표현 금지」는 제품 표시명 규칙이라 그대로 둔다. 무관 고지는 `TRADEMARKS.md` 「RPG Maker」 절.
 - 저작권자 이름 자리 `[LICENSOR]`는 법인명이 정해지면 `LICENSE.md`·`LICENSE-RUNTIME.md`·`TRADEMARKS.md`·`CLA.md`에서 함께 바꾼다.
