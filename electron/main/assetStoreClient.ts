@@ -87,6 +87,11 @@ export class AssetStoreClient {
     return body as T;
   }
 
+  /** 내 상품 숨기기·다시 보이기. 서버가 작가 본인인지 확인한다. */
+  setVisibility(slug: string, hidden: boolean): Promise<{ status: string }> {
+    return this.json<{ status: string }>(`/api/v1/items/${encodeURIComponent(slug)}/visibility`, { method: "POST", json: { hidden } });
+  }
+
   catalog(query: { q?: string; kind?: string; grade?: string; sort?: string; page?: number; lang?: string }): Promise<StoreCatalogPage> {
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(query)) if (value !== undefined && value !== "" && value !== null) params.set(key, String(value));
