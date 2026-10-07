@@ -1,0 +1,119 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-nat-forest-floor-a": {
+  "verdict": "PASS",
+  "reason": "읽힘: 낙엽·이끼 섞인 숲 바닥으로 읽힘. 시점 위에서 본 바닥, 축척 16px 칸 맞음. 화풍: 2~3단 명암, 잡음 과하지 않음. 통행 F."
+ },
+ "wz-nat-forest-floor-b": {
+  "verdict": "PASS",
+  "reason": "읽힘: 숲 바닥 변형으로 a 와 이어 깔아도 반복 무늬가 튀지 않음. 화풍·통행 F 정상."
+ },
+ "wz-nat-grass-a": {
+  "verdict": "PASS",
+  "reason": "읽힘: 풀 바닥. 3단 명암, 윤곽 없는 바닥 타일로 정상. 통행 F."
+ },
+ "wz-nat-grass-b": {
+  "verdict": "PASS",
+  "reason": "읽힘: 풀 바닥 변형. a 와 섞어도 이음새 없음. 통행 F."
+ },
+ "wz-nat-conifer-large": {
+  "verdict": "PASS",
+  "reason": "읽힘: 층층 톱니 가지 덩이(3단 명암, 빛 왼쪽 위)로 침엽수 수관이 잎 덩어리로 읽힘, 브로콜리·잡음 아님. 줄기 하단이 땅 칸에 닿고 그림자 있음. 통행: 수관 C, 줄기 밑동 S 맞음. 축척 3x4 적당."
+ },
+ "wz-nat-conifer-small": {
+  "verdict": "PASS",
+  "reason": "읽힘: 작은 침엽수, 층 톱니 수관이 덩어리로 읽힘. 밑동이 땅 칸에 앉고 S, 수관 C. 화풍 conifer-large 와 동일."
+ },
+ "wz-nat-conifer-large-snow": {
+  "verdict": "PASS",
+  "reason": "읽힘: 눈 얹은 침엽수. 눈 조각이 각지지만 가지 위 눈으로 읽힘. 줄기 땅 칸 접지, 통행 정상. 1배에서 윤곽 유지."
+ },
+ "wz-nat-conifer-small-snow": {
+  "verdict": "PASS",
+  "reason": "읽힘: 눈 덮인 작은 침엽수로 읽힘. 밑동 접지·통행 정상. 눈 조각이 다소 블록형이나 허용 범위."
+ },
+ "wz-nat-broadleaf-old": {
+  "verdict": "PASS",
+  "reason": "읽힘: 둥근 덩이 수관이 3~4단 명암으로 참나무 잎 덩어리로 읽힘(브로콜리·단일 얼룩 아님). 줄기에 뿌리 벌어짐이 있고 땅 칸에 앉음. walk CSSC: 수관 C, 줄기 S. 축척 4x4 적당."
+ },
+ "wz-nat-twisted-old": {
+  "verdict": "PASS",
+  "reason": "읽힘: 비틀린 줄기·드러난 뿌리·가지 끝 수관 덩이로 고목으로 읽힘. 줄기 땅 칸 접지, 수관 C 줄기 S. 화풍 일치."
+ },
+ "wz-nat-bush": {
+  "verdict": "PASS",
+  "reason": "읽힘: 둥근 덤불. 3단 명암, 윤곽 유색. 땅에 앉음. 통행 S."
+ },
+ "wz-nat-bush-wide": {
+  "verdict": "PASS",
+  "reason": "읽힘: 넓은 덤불, 덩이 두 개 이상으로 변화 있음. 화풍·통행 정상."
+ },
+ "wz-nat-bush-snow": {
+  "verdict": "PASS",
+  "reason": "재판정: 눈이 윗면을 덮는 흰 덩이(하이라이트·청회색 그늘 2~3단, 덩이진 아래 가장자리)로 바뀌어 덤불 위 눈으로 읽힘. 유리 돔·흰 테두리 문제 해소. 잎이 눈 아래로 삐져나옴, 1배에서도 흰 모자 쓴 덤불로 읽힘. 윤곽 유색, 통행 S."
+ },
+ "wz-nat-bush-wide-snow": {
+  "verdict": "PASS",
+  "reason": "재판정: 눈 덩이 3개가 면 명암과 함께 윗면에 얹혀 눈 쌓인 넓은 덤불로 읽힘. 납작한 흰 판 문제 해소. 가운데 덩이가 높아 윤곽 변화 있음. 통행 SS, 화풍 일치."
+ },
+ "wz-nat-root-mass": {
+  "verdict": "PASS",
+  "reason": "읽힘: 그루터기에 아치 뿌리가 얽힌 덩이. 밝은 아치가 게·다리처럼 보일 여지가 있으나 수정이 필요할 정도는 아님. 땅 접지, 통행 S. 화풍 일치."
+ },
+ "wz-nat-rock-moss": {
+  "verdict": "PASS",
+  "reason": "읽힘: 이끼 낀 바위, 윗면 이끼+정면 회색 3단 명암. 왼쪽 위 빛. 통행 S."
+ },
+ "wz-nat-rock-moss-big": {
+  "verdict": "PASS",
+  "reason": "읽힘: 큰 이끼 바위 덩어리. 면 분할과 명암 명확, 재질감 있음. 축척 적당. 통행 S."
+ },
+ "wz-nat-fern-a": {
+  "verdict": "PASS",
+  "reason": "읽힘: 여러 갈래 뾰족 잎의 고사리/풀 덤불로 읽힘. 유색 윤곽, 2~3단 명암."
+ },
+ "wz-nat-fern-b": {
+  "verdict": "PASS",
+  "reason": "재판정: 밑동에서 부채꼴로 뻗은 잎 여러 장에 양쪽 작은 잎(톱니)과 2단 초록이 있어 고사리로 읽힘. 갈고리 문제 해소. 1배에서도 풀과 구별되는 깃꼴 실루엣. f 겹침 정상."
+ },
+ "wz-nat-mushrooms": {
+  "verdict": "PASS",
+  "reason": "읽힘: 주황/붉은 갓에 점 있는 버섯 두 개, 줄기 흰색. 큰/작은 대비로 읽힘. 화풍 일치, 땅에 앉음."
+ },
+ "wz-nat-leaves-a": {
+  "verdict": "PASS",
+  "reason": "읽힘: 흩어진 낙엽 점들, 바닥 투명 겹침(f). 색 3종으로 읽힘. 통행 f."
+ },
+ "wz-nat-leaves-b": {
+  "verdict": "PASS",
+  "reason": "읽힘: 낙엽 흩뿌림 변형. 밀도 적당, 잡음으로 번지지 않음."
+ },
+ "wz-nat-leaves-c": {
+  "verdict": "PASS",
+  "reason": "읽힘: 낙엽 흩뿌림 변형 c. 다른 배치로 반복 눈에 덜 띔."
+ },
+ "wz-nat-grass-tuft": {
+  "verdict": "PASS",
+  "reason": "읽힘: 뾰족 풀 포기. 2~3단 명암, 윤곽 유색. 밑동 접지."
+ },
+ "wz-nat-reeds": {
+  "verdict": "PASS",
+  "reason": "읽힘: 갈대/부들 갈색 이삭과 마디 있는 줄기, 아래 물 띠. 수직 마디로 재질감. 통행 정상."
+ },
+ "wz-nat-reeds-big": {
+  "verdict": "PASS",
+  "reason": "읽힘: 큰 갈대 군락, 높낮이 변화 있음. 물 띠 포함, 화풍 일치."
+ },
+ "wz-nat-rock-wet": {
+  "verdict": "PASS",
+  "reason": "읽힘: 물가 바위, 아래 푸른 물 띠와 하이라이트. 화풍·시점 정상."
+ },
+ "wz-nat-water-lilies": {
+  "verdict": "PASS",
+  "reason": "재판정: 푸른 수면 패치 위에 납작한 연잎 여러 장(노치, 2단 초록)과 분홍 꽃이 놓여 연꽃으로 읽힘. 윗면 원반 시점 맞음, 이끼 덩이 문제 해소. 연잎 가장자리가 다소 각지나 허용 범위. f 겹침 정상."
+ },
+ "wz-nat-dirt": {
+  "verdict": "PASS",
+  "reason": "오토타일: 가장자리·모서리·좁은 길이 이끼 테두리와 이어지고 이음새 끊김 없음. 내부 돌기·자갈이 줄지어 반복되는 점이 약간 보이나 허용 범위. 화풍 일치."
+ }
+}
