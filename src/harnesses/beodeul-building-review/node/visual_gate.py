@@ -46,6 +46,22 @@ def verify_receipt(data,id,sha,location='items'):
         return all(digest((data/location/id/(sha+suffix)).read_bytes())==expected for suffix,expected in r['assets'].items())
     except (OSError,ValueError,KeyError,TypeError,StopIteration):return False
 
+def human_allowed(data,id,sha):
+    """The latest human decision for this exact picture hash is Allow (hash-bound, append-only log)."""
+    try:
+        with sqlite3.connect(data/'review.sqlite') as c:
+            last=c.execute('select decision from decisions where item=? and sha=? order by seq desc limit 1',(id,sha)).fetchone()
+        return bool(last) and last[0]=='allow'
+    except sqlite3.Error:return False
+def exempt(data,id,sha,location='items'):
+    """User decision 2026-10-07: a picture a human already allowed is not re-gated after tooling moves.
+    Bound to the same picture hash and to intact asset files; a changed picture needs the full gate again."""
+    try:
+        if not human_allowed(data,id,sha):return False
+        return digest((data/location/id/(sha+'.png')).read_bytes())==sha and all((data/location/id/(sha+s)).exists() for s in ('-scene.png','.pixels.json'))
+    except OSError:return False
+def admitted(data,id,sha,location='items'):return verify_receipt(data,id,sha,location) or exempt(data,id,sha,location)
+
 def plate(candidate,reference,context=None):
     w=max(1000,(candidate.width+reference.width+48)*3);h=max(candidate.height,reference.height)*3+72
     p=Image.new('RGB',(w,h),'#25362a');d=ImageDraw.Draw(p)
@@ -219,7 +235,7 @@ def run_gate(data):
     print(f'Visual QA texture critic running: {len(samples)} drafts + blind failed-style probe',flush=True)
     texture,tf=judge(data,'texture',samples+[style_probe],profile,folder)
     if not (failed_axis(texture['sample-11'],'roof_grain',rules['minimumTextureScore']) and failed_axis(texture['sample-11'],'wall_grain',rules['minimumTextureScore'])):raise RuntimeError('CALIBRATION_FAILURE texture: failed-style probe was not correctly rejected.')
-    texture_failed=[s['id'] for s in samples if texture[s['id']]['verdict']!='PASS']
+    texture_failed=[s['id'] for s in samples if texture[s['id']]['verdict']!='PASS' and not exempt(data,s['id'],s['sha'],'staging')]
     if texture_failed:
         write(ROOT/'verify-shots/beodeul-building-review/visualqa-rejected.json',{'profile':profile,'stage':'texture','failed':texture_failed,'reviews':texture,'published':False})
         raise RuntimeError('TEXTURE_QA_REJECTED '+str(texture_failed))
@@ -234,22 +250,24 @@ def run_gate(data):
         id,sha=sample['id'],sample['sha'];reviews={'texture':texture[id],'structure':structure[id]};passed=all(r['verdict']=='PASS' for r in reviews.values())
         record={'id':id,'sha':sha,'profile':profile,'recipe':sample['recipeSha'],'assets':sample['assets'],'reviewImages':sample['reviewImages'],'reviews':reviews,'reportFiles':{'texture':tf,'structure':sf},'calibrationPassed':True,'passed':passed}
         record['signature']=hmac.new(key(data),canonical(record),'sha256').hexdigest();write(receipt_path(data,id,sha),record)
-        results.append({'id':id,'passed':passed,'texture':texture[id],'structure':structure[id]})
+        results.append({'id':id,'sha':sha,'passed':passed,'exemptHumanAllowed':(not passed) and exempt(data,id,sha,'staging'),'texture':texture[id],'structure':structure[id]})
     proof={'profile':profile,'calibrationPassed':True,'calibration':{'rejectedStyle':texture['sample-11'],'floatingRoof':structure['sample-12'],'duplicateDoor':structure['sample-13']},'results':results};write(ROOT/'verify-shots/beodeul-building-review/visualqa-proof.json',proof)
-    print(json.dumps({'visualQAPassed':sum(r['passed'] for r in results),'failed':[r['id'] for r in results if not r['passed']],'published':False}),flush=True)
-    if any(not r['passed'] for r in results):raise RuntimeError('VISUAL_QA_REJECTED '+str([r['id'] for r in results if not r['passed']]))
+    blocking=[r['id'] for r in results if not r['passed'] and not r['exemptHumanAllowed']]
+    print(json.dumps({'visualQAPassed':sum(r['passed'] for r in results),'failed':[r['id'] for r in results if not r['passed']],'exemptHumanAllowed':[r['id'] for r in results if r['exemptHumanAllowed']],'published':False}),flush=True)
+    if blocking:raise RuntimeError('VISUAL_QA_REJECTED '+str(blocking))
     return proof
 
 def publish(data):
     with sqlite3.connect(data/'review.sqlite') as c:
         rows=list(c.execute('select id,position,sha,meta from drafts order by position'))
         ids={i['id'] for i in json.loads((SOURCE/'seed.json').read_text())['candidates']};rows=[r for r in rows if r[0] in ids]
-        failed=[id for id,_,sha,_ in rows if not verify_receipt(data,id,sha,location='staging')]
+        failed=[id for id,_,sha,_ in rows if not admitted(data,id,sha,location='staging')]
         if len(rows)!=len(ids) or failed:raise ValueError('PUBLICATION_BLOCKED missing/failed/stale gate: '+str(failed))
         for id,pos,sha,meta in rows:
             src=data/'staging'/id;target=data/'items'/id;target.mkdir(exist_ok=True,parents=True)
             for suffix in ['.png','-scene.png','.pixels.json']:shutil.copyfile(src/(sha+suffix),target/(sha+suffix))
             item=json.loads(meta);item['qaPassed']=True;item['qaProfile']=files_profile()
+            if not verify_receipt(data,id,sha,location='staging'):item['qaExemptHumanAllowed']=True
             c.execute('insert into candidates values(?,?,?,?) on conflict(id) do update set position=excluded.position,sha=excluded.sha,meta=excluded.meta',(id,pos,sha,json.dumps(item,ensure_ascii=False)))
         c.commit()
     shutil.copyfile(ROOT/'verify-shots/beodeul-building-review/staging-native.png',ROOT/'verify-shots/beodeul-building-review/candidates-native.png')
