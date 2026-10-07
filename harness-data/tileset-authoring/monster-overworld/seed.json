@@ -617,6 +617,33 @@
     ],
     "mshadow": [
       "#9a6e48"
+    ],
+    "i2_plank": [
+      "#8a5428",
+      "#b0743c",
+      "#c8925c",
+      "#d8b070"
+    ],
+    "i2_h_paper": [
+      "#dccca4",
+      "#ece2bf",
+      "#fff8d0"
+    ],
+    "i2_h_trim": [
+      "#5a3018",
+      "#8a5428",
+      "#b0743c",
+      "#d09858"
+    ],
+    "i2_fl_mart2": [
+      "#5888c0",
+      "#7ea2e2",
+      "#d4e2f4",
+      "#e8f8ff"
+    ],
+    "i2_c_dk": [
+      "#a8a090",
+      "#b8a684"
     ]
   },
   "match": {
@@ -2341,6 +2368,10 @@
       ]
     },
     "object_kinds": {
+      "stairs": [
+        "h_stairs",
+        "c_escalator"
+      ],
       "decor": [
         "rug",
         "h_rug",

@@ -16,7 +16,12 @@ MAP_NOTES = {
     "cave": "동굴(화강 동굴 문법): 바닥보다 어두운 암반(벽 오토타일 — 윗면 거친 돌 + 남쪽 한 칸 바위 절벽 앞면(그 맵에서 가장 어두운 면) + 동서 사선 옆면. 곧은 앞면 칸은 cave_wall_at155 · cave_wall_face1 · cave_wall_face2 를, 곧은 북쪽 변은 cave_wall_at110 · cave_wall_top110_1/2, 곧은 동서 변은 cave_wall_at55 · cave_wall_side55_1/2 · cave_wall_at205 · cave_wall_side205_1/2 를 칸 위치 해시로 섞는다)이 둘레와 섬을 이루고, 바닥에 모래 덩이·잔돌. 회색 둥근 밀 바위·갈색 X 금 깨는 바위는 이벤트 자리. 사다리는 벽 바로 아래 바닥 칸, 구멍은 바닥 가운데.",
     "room-center": "몬스터 센터 실내: 뒷벽 띠 + 접수대 + 회복 기계, 바닥 가운데 몬스터볼 문양, 아래 가운데 출입 매트.",
     "room-mart": "마트 실내: 2단 체크 바닥, 계산대가 입구 옆, 진열대 줄.",
-    "room-house": "민가 실내: 바구니 짜임 바닥, 식탁·의자·책장·화분, 2층 계단.",
+    "room-house": "민가 실내(부엌·식당): 나무 마루, 식탁·의자·부엌·화분, 오른쪽 위 2층 계단(h_stairs 2×3 — 벽 두 줄은 1층, 발치 한 줄은 3층이고 발치만 통행). 층 이동 이벤트는 발치 칸에, 위층 도착은 h_stairs_dn 발치 바로 아래 칸.",
+    "room-house-b": "민가 실내(거실): 창 밑 소파, 책장 둘, 스탠드, 깔개 위 낮은 탁자와 1인 소파. 2층 계단은 1층 부엌 집과 같은 자리.",
+    "room-house-c": "민가 실내(서재): 책장 셋, 창, 컴퓨터 책상, 깔개 위 식탁과 의자. 2층 계단 같은 자리.",
+    "room-house-2f": "민가 2층 침실: 침대·옷장·책상·TV·게임기·창·포스터. 출입 매트가 없다(아래 줄 전부 벽 끝). 내려가는 계단 h_stairs_dn 은 1층 올라가는 계단과 같은 자리라 걸어 올라간 자리에서 내려온다.",
+    "room-house-2f-b": "민가 2층 아이 방: 침대 둘, 책장, 포스터, 스탠드, 게임기. 내려가는 계단 같은 자리.",
+    "room-center-2f": "센터 2층 교류 라운지: 1층 에스컬레이터(c_escalator, 왼쪽 위)와 같은 자리에 내려가는 c_escalator_dn, 화면·컴퓨터, 소파 두 묶음.",
     "room-gymspin": "회전 체육관: 화살표 판(slideTiles 화살표)을 따라 미끄러져 관장에게 간다 — 정지 판에서 멈춘다.",
     "room-gymelec": "전기 체육관: 전기 문 기둥 쌍이 길을 막고 스위치(이벤트 자리)를 눌러 연다.",
     "room-gymrock": "바위 체육관: 돌 칸막이(pb_rock 올린 칸막이) 두 줄이 방을 가른다. 아래 줄은 한쪽 끝만 열리고, 위 줄의 유일한 틈은 밀 바위가 막아 북쪽으로 밀어야 관장 단상에 닿는다. 칸막이는 늘 두 칸 두께로 깐다(한 칸짜리 혹은 앞면이 좁게 그려져 계단으로 읽힌다). 트레이너는 아래 줄 열린 끝 앞에 선다.",
@@ -699,7 +704,64 @@ def build(seed: dict, parts=None, sh: Sheet | None = None) -> Sheet:
                 sh.add(f"g2_pb_{theme}_at{k}", g2.block_cell(P3, k, theme))
         sh.end_section()
 
+    if want("interior") and seed.get("id") == "monster-overworld":
+        # 본 시트 끝에 덧붙인다 — 앞 칸 번호(맵 72장이 쓰는)를 밀지 않는다. 실내 절을 빌려 쓰는 monster-rooms 는
+        # 이 뒤에 제 절을 잇기 때문에 여기서 끼우면 그 번호가 밀린다 — 본 시트에만 둔다.
+        sh.section("실내 3차(층계 내려가기·2층 침실·거실 가구)")
+        for name, (fn, _kind) in i2.FURNITURE3.items():
+            for nm, t in bd.cut(fn(P3), name).items():
+                sh.add(nm, t)
+        sh.end_section()
+        _fit_interior_colors(sh, seed.get("limits", {}).get("max_colors", 320) - 5)
+
     return sh
+
+
+def _fit_interior_colors(sh, budget: int) -> None:
+    """실내 절이 시트 색 한도를 넘기면 실내에만 있는 색을 가장 가까운 색에 하나씩 합친다(가까운 쌍부터, 시트 전체가 budget 이하가 될 때까지).
+    다른 절의 픽셀은 건드리지 않는다. 실내 GBA 다시 그리기(2026-10-07)가 357색으로 한도 320 을 넘었다 — 대부분 램프 사이 한 톤 차이였다."""
+    ranges = [(a, b) for t, a, b in sh.sections if t.startswith("실내")]
+    inside = lambda i: any(a <= i < b for a, b in ranges)
+    fixed, mine = set(), {}
+    for i, im in enumerate(sh.tiles):
+        if im is None:
+            continue
+        for c in im.getdata():
+            if c[3] != 255:
+                continue
+            if inside(i):
+                mine[c[:3]] = mine.get(c[:3], 0) + 1
+            else:
+                fixed.add(c[:3])
+    d2 = lambda a, b: 2 * (a[0] - b[0]) ** 2 + 4 * (a[1] - b[1]) ** 2 + 3 * (a[2] - b[2]) ** 2
+    remap: dict = {}
+    live = fixed | set(mine)
+    while len(live) > budget:
+        best = None
+        for c in live - fixed:
+            near = min((o for o in live if o != c), key=lambda o: d2(c, o))
+            key = (d2(c, near), mine.get(c, 0))
+            if best is None or key < best[0]:
+                best = (key, c, near)
+        if best is None:
+            break
+        _, c, near = best
+        remap[c] = near
+        live.discard(c)
+        for k, v in remap.items():
+            if v == c:
+                remap[k] = near
+    if not remap:
+        return
+    for i, im in enumerate(sh.tiles):
+        if im is None or not inside(i):
+            continue
+        px_ = im.load()
+        for y in range(im.height):
+            for x in range(im.width):
+                c = px_[x, y]
+                if c[3] == 255 and c[:3] in remap:
+                    px_[x, y] = (*remap[c[:3]], 255)
 
 
 LM_ROLES: dict[str, dict] = {}

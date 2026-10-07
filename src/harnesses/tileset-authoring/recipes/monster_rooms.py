@@ -131,6 +131,7 @@ def build(seed: dict):
     for name, (fn, _k) in rf.FURN.items():
         _add_obj(sh, name, fn(P))
     sh.end_section()
+    mo._fit_interior_colors(sh, seed.get("limits", {}).get("max_colors", 320) - 5)   # 본 시트 실내 절 다시 그리기(2026-10-07)가 색을 늘렸다
     return sh
 
 
