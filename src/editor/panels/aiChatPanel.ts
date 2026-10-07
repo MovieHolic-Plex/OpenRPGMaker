@@ -85,6 +85,7 @@ import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
+import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
 import { createPendingWorkTracker } from "@/util/pendingWork";
@@ -2326,7 +2327,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const ticketRef: { id: number | null } = { id: null };
     const card = createMapRunCard({ mapName: exclusive ? "프로젝트 전체" : mapName, label: run.shown.replace(/\s+/gu, " ").trim().slice(0, 80),
       onCancel: () => { if (ticketId !== null) mapRunQueue().cancel(ticketId); } });
-    log.append(card.root);
+    // 다른 맵의 실행은 메인 대화가 아니라 「다른 스레드」 트레이에 둔다. 트레이가 없을 때(헤드리스)만 로그로 되돌아간다.
+    const tray = sideThreads();
+    if (tray) {
+      tray.adopt(card.root);
+      appendBubble("system", `↗ 「${exclusive ? "프로젝트 전체" : mapName}」 스레드에서 따로 진행해요 — 위 「다른 스레드」에서 볼 수 있어요`);
+    } else log.append(card.root);
     followConversationLog(log);
     let ticket: MapRunTicket | null = null;
     const unsubscribe = mapRunQueue().subscribe(() => {

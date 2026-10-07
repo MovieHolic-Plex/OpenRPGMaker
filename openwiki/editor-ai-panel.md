@@ -54,6 +54,12 @@
   지금 보는 맵이 아닌 칩은 점선. 「멈춤」은 전체(`stopAllPresences`), 팝오버의 멈춤은 그 실행만(`stopPresence`). 받은함은 다른 맵 검토를
   「검토하기」로 해당 실행 카드(`.ai-map-run-card[data-ticket-id]`)에 데려가고, 실패는 「확인했어요」로 치운다(`dismissPresence`).
   증거: `scripts/qa/ai-presence-multimap.mjs`(6맵·7실행, 실제 대기열에 표를 올려 재생). 부하 높은 박스에서는 `unshare -rn` 로 dev 서버와 크로미움을 같이 띄운다.
+- **메인 스레드 분리 (2026-10-08)**: 오른쪽 도크의 로그는 사용자와 조수의 **하나뿐인 대화**다. 다른 맵에서 같이 도는 실행 카드(`aiMapRunCard`)는
+  더는 로그에 섞지 않고 `aiSideThreads` 의 「다른 스레드」 트레이(대화 바로 위, 기본 접힘, 머리말 「N개 진행 중 · 실패 N」)로 올린다.
+  로그에는 사용자 문장과 「↗ 「맵」 스레드에서 따로 진행해요」 한 줄만 남는다(`enqueueMapRun`). 트레이는 `createSideThreads()`(aiWorkspace 가 만들고 `sideThreads()` 로 조회)이며
+  대화 새로 시작·이전 대화 불러오기로 지워지지 않는다. 받은함 「검토하기」는 `sideThreads()?.reveal(ticketId)` 로 트레이를 펴서 그 카드로 간다.
+  카드가 사람의 선택을 받는 중이면 `data-review="1"`(트레이 테두리 앰버). 영역(드래그) 작업은 여전히 표시만 분리 — 실행 격리는 맵당 조수 하나 규칙과 부딪쳐 설계가 필요하다.
+  증거: `scripts/qa/ai-side-threads.mjs` → `verify-shots/ai-presence/09·10*.png`(로그 안 카드 0 · 트레이 3).
 - 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
 - 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
 - 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며

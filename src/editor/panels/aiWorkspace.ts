@@ -3,6 +3,7 @@ import { t } from "@/i18n";
 import type { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createWorkspaceLogs } from "./aiWorkspaceLogs";
 import { createAiInbox } from "./aiInbox";
+import { createSideThreads } from "./aiSideThreads";
 
 const TAB_KEY = "oprn:ai-workspace-tab";
 type Tab = "chat" | "team";
@@ -34,6 +35,9 @@ export function createAiWorkspace(options: {
   // 사람이 움직여야 하는 일(검토·실패)만 맨 위에 — 진행 상황은 지도와 상태 줄이 맡는다.
   const inbox = createAiInbox({ openLogs: () => { options.requestOpen(); logs.trigger.click(); } });
   tabs.before(inbox.root);
+  // 다른 맵·영역에서 도는 일은 메인 대화 밖의 자기 스레드 — 대화(로그) 바로 위 트레이에 모은다.
+  const sideThreads = createSideThreads();
+  body.before(sideThreads.root);
   deck.querySelector(".ai-deck-rail-actions")?.prepend(logs.trigger);
   const starterButtons: HTMLButtonElement[] = [];
   const starter = el("section", { class: "ai-workspace-starter", attrs: { hidden: "", "aria-label": "첫 요청 시작하기" }, dataset: { testid: "ai-workspace-starter" }, children: [
@@ -110,6 +114,6 @@ export function createAiWorkspace(options: {
     showChat() { select("chat", false); },
     setStudio(on: boolean) { studio = on; sync(); },
     setWide(on: boolean) { wide = on; team.setEmbedded(!on); if (on) logs.close(); sync(); },
-    dispose() { window.removeEventListener("oprn:ai-open-team", onOpenTeam); window.removeEventListener("oprn:ai-open-chat", onOpenChat); inbox.dispose(); inbox.root.remove(); options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
+    dispose() { window.removeEventListener("oprn:ai-open-team", onOpenTeam); window.removeEventListener("oprn:ai-open-chat", onOpenChat); inbox.dispose(); inbox.root.remove(); sideThreads.dispose(); options.input.removeEventListener("input", syncDraft); starter.remove(); logs.dispose(); team.root.removeEventListener("oprn:ai-member-selection", onMember); team.root.removeEventListener("oprn:ai-workspace-team", onTeam); team.root.removeEventListener("oprn:ai-workspace-map", onMap); },
   };
 }
