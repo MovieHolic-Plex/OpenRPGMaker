@@ -1970,46 +1970,6 @@
       }
     },
     {
-      "id": "r7-building-23",
-      "name": "통지붕과 둥근 창의 삼층집",
-      "role": "주택",
-      "width": 112,
-      "height": 176,
-      "authoring": "native-parts",
-      "reference": "arch:cream",
-      "components": [
-        {
-          "source": "arch:review-r7-building-23",
-          "rect": [
-            0,
-            0,
-            112,
-            176
-          ],
-          "at": [
-            0,
-            0
-          ],
-          "replace": false
-        }
-      ],
-      "entrance": {
-        "x": 48,
-        "y": 144,
-        "w": 16,
-        "h": 32
-      },
-      "description": "통지붕과 둥근 창의 삼층집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
-      "lighting": "원본 왼쪽 위 광원",
-      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
-      "source": "authored-native-grid/round-7",
-      "silhouette": "통지붕과 둥근 창의 삼층집",
-      "round": 7,
-      "nativeAssetHashes": {
-        "review-r7-building-23": "efd6ca556ae97c44251cb2a2533b4dae096db47791ac3d61684b32944af80ed6"
-      }
-    },
-    {
       "id": "r7-building-24",
       "name": "종 지붕 다락을 얹은 집",
       "role": "주택",
