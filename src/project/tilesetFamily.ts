@@ -19,8 +19,6 @@ const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
   "oprn-wizard": "마법 학교(해리포터풍)",
   "oprn-monster": "몬스터 수집(포켓몬풍)",
   "oprn-monster-emerald": "몬스터 수집(에메랄드풍)",
-  "rasak-fantasy": "Rasak Fantasy",
-  "rasak-modern": "Rasak Modern",
 };
 
 /** referenceSourceTilesetId 를 따라 뿌리 타일셋까지 간다. 끊기거나 돌면 마지막으로 찾은 것에서 멈춘다. */
@@ -51,7 +49,7 @@ function titleCase(value: string): string {
   return value.split(/[-_\s]+/).filter(Boolean).map((word) => word[0]!.toUpperCase() + word.slice(1)).join(" ");
 }
 
-/** 사람용 계열 이름: "EasyRPG", "Rasak Fantasy", 업로드 칩셋은 그 칩셋 이름. */
+/** 사람용 계열 이름: "조선 칩셋" 등, 업로드 칩셋은 그 칩셋 이름. */
 export function tilesetFamilyLabel(project: TilesetOwner, family: string): string {
   if (family.startsWith(UPLOADED_PREFIX)) {
     const id = family.slice(UPLOADED_PREFIX.length);

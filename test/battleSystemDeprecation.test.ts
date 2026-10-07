@@ -122,46 +122,11 @@ describe("shipped project battle skin authoring", () => {
   it("출하 프로젝트 팩터리는 지원 중인 배틀 스킨만 저작한다", async () => {
     // 데모·쇼케이스 팩터리는 배럴이 아니라 defaultProject 에 있다(배럴은 가벼운 것만 내보낸다).
     const defaults = await import("@/project/defaults/defaultProject");
-    const { createModernNocturneProject } = await import("@/project/defaults/modernNocturneGame");
-    const { createSkyStairProject } = await import("@/editor/content/skyStairGame");
-    const { createVillageShoppingStreetProject } = await import(
-      "@/editor/content/villageShoppingStreetProject"
-    );
-    // Covered: createBlankProject, createDbExtractedHouseTemplateProject, createFarmingDemoProject,
-    // createHouseTemplateGalleryProject, createLogCabinShowcaseProject, createMarketTownProject,
-    // createRetroHouseShowcaseProject, createSampleAdventureProject,
-    // createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSnowMountain60Project,
-    // createIcePlain64Project, createTrainingExamplesProject, createShopShowcaseProject,
-    // createSmallHouseVariantProject, createTownArchitectureCityProject, createTownArchitectureTestProject,
-    // createTownCityShowcaseProject, createTownHouseShowcaseProject, createModernNocturneProject,
-    // createSkyStairProject. Factories requiring arguments or network/LegacyDb access are intentionally skipped.
-    // createVillageShoppingStreetProject 는 이제 editor 층(@/editor/content/villageShoppingStreetProject)
-    // 에 있고 정적 import 로 불러올 수 있다 — 예전의 순환 차단용 CJS require("@/...") 는 vitest 에서
-    // vite alias 를 못 풀어 호출 자체가 깨졌고, 번들러는 그 호출을 정적으로 따라가 플레이어 번들에
-    // 편집기 도구 그래프를 흘렸다(playerBuild 게이트). 그래서 이 가드에도 이제 포함한다.
+    // Covered: createBlankProject, createScarloxyDemoProject.
+    // Factories requiring arguments or network/LegacyDb access are intentionally skipped.
     const factories = [
       ["createBlankProject", defaults.createBlankProject],
-      ["createVillageShoppingStreetProject", createVillageShoppingStreetProject],
-      ["createDbExtractedHouseTemplateProject", defaults.createDbExtractedHouseTemplateProject],
-      ["createFarmingDemoProject", defaults.createFarmingDemoProject],
-      ["createHouseTemplateGalleryProject", defaults.createHouseTemplateGalleryProject],
-      ["createLogCabinShowcaseProject", defaults.createLogCabinShowcaseProject],
-      ["createMarketTownProject", defaults.createMarketTownProject],
-      ["createRetroHouseShowcaseProject", defaults.createRetroHouseShowcaseProject],
-      ["createSampleAdventureProject", defaults.createSampleAdventureProject],
       ["createScarloxyDemoProject", defaults.createScarloxyDemoProject],
-      ["createScarloxyPokemonDemoProject", defaults.createScarloxyPokemonDemoProject],
-      ["createSnowMountain60Project", defaults.createSnowMountain60Project],
-      ["createIcePlain64Project", defaults.createIcePlain64Project],
-      ["createTrainingExamplesProject", defaults.createTrainingExamplesProject],
-      ["createShopShowcaseProject", defaults.createShopShowcaseProject],
-      ["createSmallHouseVariantProject", defaults.createSmallHouseVariantProject],
-      ["createTownArchitectureCityProject", defaults.createTownArchitectureCityProject],
-      ["createTownArchitectureTestProject", defaults.createTownArchitectureTestProject],
-      ["createTownCityShowcaseProject", defaults.createTownCityShowcaseProject],
-      ["createTownHouseShowcaseProject", defaults.createTownHouseShowcaseProject],
-      ["createModernNocturneProject", createModernNocturneProject],
-      ["createSkyStairProject", createSkyStairProject],
     ] as const;
 
     for (const [name, factory] of factories) {

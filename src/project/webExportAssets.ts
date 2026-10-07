@@ -22,7 +22,6 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 export { safeFileName } from './webUploadedAssetPath';
-import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
 const encoder = new TextEncoder();
 
@@ -101,28 +100,8 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const zipPath = webUploadedAssetPath(asset);
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
   }
-  if (ids.has(CASTLE_TILESET_TEXTURE_KEY)) {
-    const path = "assets/opengameart-castle-tiles-CREDITS.txt";
-    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
-  }
-  if (ids.has(CASTLE_REFERENCE_TILESET_TEXTURE_KEY)) {
-    const path = "assets/opengameart-castle-reference-composite-CREDITS.txt";
-    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
-  }
-  if (ids.has(LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY)) {
-    const path = "assets/opengameart-lpc-wooden-furniture-CREDITS.txt";
-    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
-  }
-  if (ids.has('tex_harbor_kit')) {
-    const path = 'assets/harbor-kit/CREDITS.txt';
-    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
-  }
   if (ids.has('tex_worldmap_selected')) {
     const path = 'assets/worldmap-icons/ATTRIBUTION.md';
-    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
-  }
-  if (ids.has('castle_courtyard_harbor_atlas')) {
-    const path = 'assets/castle-surroundings/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
   // 저작자 표기 정본. CC BY 계열 기본 에셋(EasyRPG RTP 등)은 번들 여부와 무관하게 표기 의무가

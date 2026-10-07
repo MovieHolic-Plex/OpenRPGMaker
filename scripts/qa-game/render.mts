@@ -96,7 +96,9 @@ function loadTilesetRaster(project: Project, tileset: TilesetDef): Raster | null
   const out: Raster = { width, height, data: new Uint8Array(width * height * 4) };
   for (let y = 0; y < base.height; y += 1) out.data.set(base.data.subarray(y * base.width * 4, (y + 1) * base.width * 4), y * width * 4);
   for (const graft of grafts) {
-    const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: "bundled", id: graft.sourceChipset } } as TilesetDef);
+    // 업로드 자산 이식(공방 기물·방 짓기 변형 칸)은 프로젝트 자산에서 읽는다.
+    const sourceType = project.assets.uploaded[graft.sourceChipset] ? "uploaded" : "bundled";
+    const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: sourceType, id: graft.sourceChipset } } as TilesetDef);
     if (!source) continue;
     const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
     const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;
@@ -258,7 +260,8 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
       const url = resolveAssetResourceUrl(id, { project });
       const bytes = url?.startsWith('data:image/png;base64,') ? Buffer.from(url.slice(url.indexOf(',') + 1), 'base64')
         : url && /^\/?assets\//u.test(url) ? fs.readFileSync(path.join('public', url.replace(/^\//u, ''))) : null;
-      if (!bytes) throw new Error(`캐릭터 칩 원본을 읽을 수 없습니다: ${id}`);
+      // 못 읽는 시트(헤드리스에 없는 공용 칩 등)는 빈 칸으로 그린다 — 한 장 때문에 미리보기 전체가 실패하면 모델이 그 검색 결과를 통째로 못 쓴다.
+      if (!bytes) { sheets.set(id, { width: 288, height: 256, data: new Uint8ClampedArray(288 * 256 * 4) }); continue; }
       const png = PNG.sync.read(bytes);
       sheets.set(id, { width: png.width, height: png.height, data: new Uint8ClampedArray(png.data) });
     }

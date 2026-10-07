@@ -2,7 +2,7 @@
 // 툴 레지스트리 스키마 유효성 + dry-run 불변성 + 커밋 게이트 검증.
 
 import { describe, expect, it } from "vitest";
-import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { activeTools, allTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -59,7 +59,7 @@ describe("toolRegistry", () => {
   });
 
   it("dry-run이 원본 project를 변형하지 않는다", () => {
-    const project = createEmberQuestProject();
+    const project = createScarloxyDemoProject();
     const serialized = JSON.stringify(project);
     const ctx: ToolContext = { project };
     const result = runTool(ctx, "create_map", { name: "실험 맵", width: 12, height: 10 }, { dryRun: true });
@@ -71,7 +71,7 @@ describe("toolRegistry", () => {
   });
 
   it("dry-run이 아닌 실행은 ctx.project를 새 프로젝트로 교체한다", () => {
-    const project = createEmberQuestProject();
+    const project = createScarloxyDemoProject();
     const ctx: ToolContext = { project };
     const before = JSON.stringify(project);
     const result = runTool(ctx, "create_map", { name: "실험 맵", width: 12, height: 10 }, { dryRun: false });
@@ -80,36 +80,6 @@ describe("toolRegistry", () => {
     // 원본 객체는 그대로(툴은 draft에만 적용).
     expect(JSON.stringify(project)).toBe(before);
     expect(Object.keys(ctx.project.maps).length).toBe(Object.keys(project.maps).length + 1);
-  });
-
-  it("물 위에 NPC를 놓으면 근처 통행 가능 칸으로 자동 조정된다 (에이전틱 착지)", () => {
-    const project = createEmberQuestProject();
-    const ctx: ToolContext = { project };
-    // 잿불 마을의 연못(25,18)~(29,22)은 물 타일 → 통행 불가. 이전에는 ok:false였지만
-    // 이제 반경 3칸 내 통행 가능 칸으로 자동 착지한다(요청 좌표는 warnings/summary에 남는다).
-    const result = runTool(
-      ctx,
-      "place_npc",
-      { mapId: "map_ember_village", x: 27, y: 20, name: "물위 NPC", pages: [{ lines: ["안녕"] }] },
-      { dryRun: false }
-    );
-    expect(result.ok, result.summary).toBe(true);
-    const data = result.data as { x: number; y: number; adjusted: boolean };
-    expect(data.adjusted).toBe(true);
-    expect(`${data.x},${data.y}`).not.toBe("27,20");
-    expect(result.summary).toContain("자동 조정");
-    // 착지 좌표는 실제로 통행 가능해야 한다.
-    const map = ctx.project.maps["map_ember_village"];
-    const npc = map.events.find((event) => event.x === data.x && event.y === data.y);
-    expect(npc).toBeDefined();
-  });
-
-  it("게이트: 통행 불가 시작 위치는 거부된다", () => {
-    const project = createEmberQuestProject();
-    const ctx: ToolContext = { project };
-    const result = runTool(ctx, "set_start_position", { mapId: "map_ember_village", x: 0, y: 0 }, { dryRun: false });
-    expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("start-impassable");
   });
 
   it("빈 프로젝트 시드는 맵/아이템/적/트룹이 비어 있다", () => {

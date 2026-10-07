@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 타일 지식 통합 조회 — 활성 LLM 툴 (core 노출).
 // 구 v2 지식 쓰기 래퍼(tile_metadata/group/…)는 제거. 쓰기는 propose_tile_vocabulary.
 import { approvedVocabulary, suggestMaterialsByLabel, unapprovedVocabulary } from "@/project/tileVocabulary";

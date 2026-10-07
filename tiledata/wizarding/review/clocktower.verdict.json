@@ -1,6 +1,6 @@
 {
  "module": "clocktower",
- "sealed": "2026-10-07T09:28:07.143153+09:00",
+ "sealed": "2026-10-07T10:21:06.374455+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-clock-gear-l": {
@@ -70,8 +70,8 @@
   },
   "wz-clock-grate": {
    "verdict": "PASS",
-   "hash": "cdb08f8560aeb2230c7965dcef275b70d051d1474e19da09c32462c03242390d",
-   "reason": "쇠 격자 사이로 어두운 틈이 보이는 철판 발판이다. 예제에서 이어 칠해도 이음새가 없고 격자 바닥으로 읽힌다. F 통행이다."
+   "hash": "524ca80cda06ae102bb63b47bb5d5c51383e894da391c77d680233a2392a4ab8",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-clock-walkway": {
    "verdict": "PASS",
@@ -142,6 +142,11 @@
    "verdict": "PASS",
    "hash": "e0b16bb23eb429473a16c8c230e5f30b3e3376f8f4953bf147be86290f2fcc8a",
    "reason": "recheck: glass reflection streaks added; reads as clock face behind glass."
+  },
+  "wz-clock-floor-plate": {
+   "verdict": "PASS",
+   "hash": "1952dbfdc253bb880df6a9d892d997338c5cd1f927ed1565ca9c01ce47116439",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   }
  },
  "autotiles": {},

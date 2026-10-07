@@ -140,8 +140,70 @@ round7의 최신 후보 링크에서 허용됨 탭으로 전환하면 최신 필
 
 ### round 7 철회와 round 8 (2026-10-07)
 
-사용자가 round 7을 「엉망」이라 판정했다. 기계 Visual QA는 25장 전부 통과시켰지만 육안으로는 큰 지붕 위에 박공이 겹쳐 떠 있고(10~15·21·25), 둥근 탑·구근 지붕이 버섯 덩어리로 보이며(16·18~20), 지붕 끝이 번진 조각(5)이 있었다. 이 13장은 사람 결정 없이(미선택 상태에서) 활성 시드와 공개 목록에서 철회했다. 해시와 사유는 `harness-data/beodeul-building-review/round7-withdrawn.json`. 나머지 12장(1·2·3·4·6·7·8·9·17·22·23·24)은 그대로 남긴다. **기계 통과 ≠ 육안 합격**이다 — 새 후보는 직접 4배 확대해서 연다.
+사용자가 round 7을 「엉망」이라 판정했다. 기계 Visual QA는 25장 전부 통과시켰지만 육안으로는 큰 지붕 위에 박공이 겹쳐 떠 있고(10~15·21·25), 둥근 탑·구근 지붕이 버섯 덩어리로 보이며(16·18~20), 지붕 끝이 번진 조각(5)이 있었다. 이 13장은 사람 결정 없이(미선택 상태에서) 활성 시드와 공개 목록에서 철회했다. 같은 날 재검수에서 구조 검사가 23(곡면 통지붕에 평평한 격자, `INCOHERENT_ROOF_PROJECTION`)도 반려해 총 14장을 철회했다. 나머지 11장(1·2·3·4·6·7·8·9·17·22·24)이 남는다. 해시와 사유는 `harness-data/beodeul-building-review/round7-withdrawn.json`.  **기계 통과 ≠ 육안 합격**이다 — 새 후보는 직접 4배 확대해서 연다.
 
 round 8(`node/author_round8.py`, 8장)은 round 6 허용작의 규칙을 그대로 따른다: **지붕 덩어리 하나, 곁채는 본채 지붕과 겹치지 않고 옆에 붙인다, 한 집에 지붕 색은 하나(곁채만 다른 색 허용)**. `python3 author_round8.py`로 초안을 만들고 `--merge`로 seed.json에 붙인다(게이트·publish 진행 중에는 붙이지 말 것: publish는 활성 시드 전체의 초안을 요구한다). `HIP[112]`(`arch:cream` 부품)는 오른쪽에 낮은 날개 꼬리가 달려 있어 단독 지붕으로 쓰지 말 것.
 
 **게이트 프로필이 체크아웃 경로와 무관해졌다.** `files_profile` 해시가 절대경로를 포함해 워크트리를 옮기면 영수증이 전부 무효가 되었다. 이제 `ROOT` 기준 상대경로를 해시한다(코드를 고쳤으므로 이 변경 시점에 한 번 전체 재검수했다). 이후 같은 내용의 파일이면 어느 체크아웃에서도 영수증이 유효하다. 새 후보만 더하면 이전 묶음은 서명된 체크포인트로 재사용된다.
+
+**사람이 허용한 그림은 재검수 면제 (2026-10-07 사용자 결정).** 게이트 프로필(코드·경로)이 바뀌면 영수증이 전부 무효가 되는데, 이때 구조 검사관이 같은 그림을 질감 사유(`ROOF_TILE_RELIEF_MISMATCH`)로 반려해 사람이 이미 허용한 6장(r2-building-05, r6-building-01~05)이 사라지고 공개 전체가 막혔다(점수 76~82 < 90, 이전 실행은 통과). 그림과 허용 기록은 그대로라 `visual_gate.exempt()`를 추가했다: **같은 PNG 해시에 대한 사람의 최신 결정이 Allow이고 staging/items 자산이 해시와 맞으면** 현재 영수증이 없어도 공개 목록에 남고(`admitted()`), 게이트 실패도 공개를 막지 않는다. 면제된 항목은 `qaExemptHumanAllowed: true`와 gate 출력의 `exemptHumanAllowed`에 표시된다. 그림이 한 픽셀이라도 바뀌면 해시가 달라져 면제가 사라지고 전체 게이트를 다시 통과해야 한다. **새 후보에는 적용되지 않는다** — 사람의 첫 허용 전에는 두 Visual QA가 그대로 필요하다. 점수 하한·대조군·검사 지시문은 바꾸지 않았다.
+
+round 8 의 돌 기단+회벽 혼합 두 장(06·07)은 질감 검사가 `WALL_MATERIAL_INCONSISTENT`(벽 재질은 한 건물에 하나)로 반려했다. 재시도하지 않고 설계를 단일 재질 돌벽 집으로 바꿨다. 최종 공개 49장: 허용 29·거절 1·검수 대기 19(r7 11 + r8 8). 면제로 공개된 사람 허용작은 r3-building-03, r6-building-09·10 이다(곡면 지붕 `UNRESOLVED_CURVED_ROOF` — 곡면 지붕은 이 검사관이 일관되게 낮게 본다는 신호이니 새 곡면 후보는 주의). 18317 서버는 반드시 현재 체크아웃의 코드로 띄운다(`python3 -u src/harnesses/beodeul-building-review/node/queue.py serve --host 0.0.0.0 --port 18317`). 「수정 요청」(`node/repair.py`, 18322)은 미완성이라 실행하지 않으면 화면 콘솔에 `ERR_CONNECTION_REFUSED` 가 남지만 무해하다.
+
+### round 9 — 창문 파사드 재저작 (2026-10-07)
+
+사용자 지적: 「창문들이 이상하게 박힌 것들이 너무 많다」. 원인(그림으로 확인): ① 창이 세 종류 혼재(모서리의 작은 덧문창·금테 아치창·덧문 유리창), ② 아치창이 기둥 없이 3개씩 붙음, ③ 모서리 기둥 칸에 창, ④ **모든 층에** 처마 그림자 띠 반복(원본은 맨 윗층만), ⑤ 곁채 지붕·탑·박공벽이 본채 창을 덮어 잘림. 원본 `arch:brick`·`arch:church` 는 창이 **한 종류, 목골 기둥 사이 칸 가운데 하나, 모서리·문 옆 없음**이다.
+
+`node/author_round9.py` 의 `wall9` 는 16×32 칸 전부를 원본에서 그대로 복사한다. 글자: `e` 끝, `w` 평벽, `b` 가새, `v` 창, `D` 문. 맨 윗층·위층 칸(눈썹 그림자+층 턱, brick y64~96)과 1층 칸(기초, brick y96~128), 돌집은 church 칸(좁고 긴 돌창)을 쓴다. 코드가 **모서리 창·문 옆 창을 ValueError 로 거부**한다. 지붕·탑은 round 7 과 같은 원본 부품이며, 곁채·탑은 본채 지붕/벽/창을 덮지 않게(아니면 구조 검사가 `UNENTERED_DETACHED_VOLUME` 로 반려하므로 틈 없이 붙게) 놓는다.
+
+사람이 03:03~03:04Z 에 r7·r8 대기 19장을 판정했다(허용 8: r7-01·02·08·09, r8-01·02·06·07 / 거절 11). **거절 11장만 r9 로 대체**하고 허용 8장은 그대로 남긴다(`round9-replaced.json`). r9 19장은 같은 형태 19종 전부의 재저작이라 허용된 8장의 새 판도 함께 보인다. 최종 공개 57장: 허용 37·거절 1·대기 19(r9). **교훈:** 공개 목록을 바꾸기 전에 `decisions` 테이블을 먼저 조회한다 — 화면은 계속 판정 중이다.
+
+### round 10 — 통나무집 · 탑 접지 · 바닥 그림자 (2026-10-07)
+
+사용자 지적 셋: ① 「종 지붕 탑이 붙은 집」 탑이 떠 보인다 ② 집들이 전부 바닥에서 떠 보인다 ③ 「통나무 집은 없나」.
+
+① 탑 그림(`review-r5-mill-round-roof`)은 캔버스 144px 중 **아래 7px 가 투명**이라 y=16 에 놓으면 발치가 집 바닥선보다 7px 높았다. `author_round9.py` 가 발치(137px)를 집 바닥선에 맞춘다(`[80,23]`, 잘라낸 높이 137). 부품을 놓을 때는 **불투명 하단**을 기준으로 정렬할 것.
+② 원본 집도 같은 모양이다 — 게임에서는 `beodeul_ground` 의 기초·그림자 타일이 깔리지만 검수 화면은 건물을 잔디 위에 맨몸으로 놓아 전부 떠 보였다. `web/index.html`(서명 대상 밖)이 스테이지 캔버스와 카드에 왼쪽 위 광원 방향(오른쪽 아래)의 접지 그림자를 그린다. **그림 픽셀·해시·영수증은 그대로**다.
+③ `node/author_round10.py`: 버들항 통나무 키트(`bd-out-cabin` 80×96, `bd-out-cabin-small` 64×64, `bd-out-log-l/r/wall/window/window-box/window-shut/door(+green/blue/red)` 16×32 칸)만으로 7장: 오두막·작은 오두막·초록 문·이층(일반/꽃창/덧문)·작은 이층. 지붕과 박공은 오두막에서 잘라 쓰고 벽 줄만 칸으로 쌓는다(이층은 지붕 아래 벽 줄을 하나 더). 규칙은 round 9 와 같다(문 한 곳, 창은 모서리·문 옆 금지).
+
+**게이트 확장(점수·대조군 불변):** 질감 검사관은 비교 기준이 회벽·기와뿐이라 통나무 7장을 roof_grain 44~52 / wall_grain 64~66 으로 반려했다(「긴 대각 띠」「거친 반복」 — 재질이 다를 뿐 결함이 아니다). `ANCHORS` 에 원본 통나무 오두막(`cabin-native.png`)을 더하고, `material:"log"` 후보는 비교 그림(오른쪽)을 회벽 집 대신 그 오두막으로 둔다(`reference_key`). 지시문도 이를 알린다. 숨긴 반려 표본·하한(질감 94, 구조 90)은 그대로이고 코드가 바뀌었으니 전체를 재검수했다. 새 재질 후보는 **그 재질의 원본 기준**을 먼저 추가해야 한다.
+
+접합부 틈: r9-15·16 이 구조 검사에서 `DETACHED_WING`/`INADEQUATE_WING_JOINT` 로 반려됐다. 파사드 끝 칸(`e`) 그림은 바깥쪽 2~3px 가 투명이라 두 몸채를 맞대면 틈이 생긴다. 맞닿는 쪽 칸은 `J`(전폭 기둥 칸)로 쓴다. 최종 공개 64장: 허용 37·거절 1·대기 26(r9 19 + r10 7).
+
+### 저장 · 설치 · 서비스 (2026-10-07)
+
+**사람 결정 로그.** 정본은 `review.sqlite` 의 `decisions(seq,item,sha,decision,note,at)`(그림 sha256 에 묶임, 덧붙이기 전용)이고, 저장소 사본은 `harness-data/beodeul-building-review/decisions.json` 이다. 서명 대상이 **아니다**(수정해도 영수증 무효화 없음).
+`npm run harness -- beodeul-building-review decisions export|restore|backup|status` — export 는 기존 로그가 접두사로 남아 있어야 쓰고(되돌림 거부), restore 는 빈 표에만 복원, backup 은 sqlite `.backup` 을 `~/backups/beodeul-review/` 에 떠 14개만 남긴다. 영수증·`gate-secret`·로그·staging 은 git 에 넣지 않는다. **커밋 전에 export.**
+
+**공용 번들 설치.** `npm run harness -- beodeul-building-review install` (`node/install.py`): 결정 로그에서 현재 그림 해시에 **허용**된 후보만(그림 원본 sha256 일치 확인) 골라 `public/assets/beodeul-reviewed/chipset.png` + `src/assets/beodeulReviewedCatalog.json` + `tiledata/beodeul-reviewed/` 출처 사본으로 굽는다. 건물 한 채 = 본체(3층 `bd-house-rv-<라운드>-<번호>`) + 바닥 그림자(2층 `bd-rv-shadow-*`) + 기초(4층 `bd-rv-foundation-*`), 같은 원점. 통행: 벽 칸 막힘(문 칸 포함), 처마·지붕 칸 걸을 수 있음 — 벽은 칸별 밝은 회벽·돌 색 비율로 가려 열 지면에서 이어 붙인 **휴리스틱**이고 통나무집은 지붕 아래 띠 전체를 막는다. 한 번 허용된 뒤 반려로 바뀌면 다음 설치에서 빠진다.
+배선은 `beodeul_forms` 와 같다: `bundled.ts`(tex_beodeul_reviewed), `bundledChipsetGeometry.ts`(16열), `defaultAssets.ts`, `beodeulCity.ts` → `src/project/defaults/beodeulReviewed.ts`(단독 타일셋 `beodeul_reviewed` + `beodeul_city` 이식 `ensureBeodeulReviewed`). 참고문서 `beodeul-reviewed`(문서 49·이미지 3)는 `scripts/content/prepare-beodeul-reviewed-references.mts` 가 만든다 — 64×22 거리 예제(8채, 층 배열 전체), 문 앞/처마 통행 검사, 정상/오류 그림(문 앞 anvil → `canMove` true→false). 전체 재생성: `scripts/content/rebuild-beodeul-reviewed.sh`. 검증: `scripts/qa/beodeul-reviewed-store.mts <프로젝트 폴더 사본>` (신규·빈 프로젝트·기존 프로젝트·멱등·SQLite 저장→재열기, 증거 `verify-shots/beodeul-reviewed/`).
+허용·거절이 없는 r9 와 반려된 r10-02/07 은 설치되지 않는다. 설치 건물이 늘면 install → rebuild 를 다시 돌린다.
+
+**슈퍼하네싱.** `unified.py` 가 같은 화면을 탭 「버들항 건물 검수」(`/harness/beodeul/`, `node/mount.py`)로 호스팅한다 — 자세한 건 `super-harness-integration.md`. 통합 반영 뒤에는 18317 서비스를 내려도 된다.
+
+**서비스.** 18317 검수 서버는 `systemd --user` 유닛 `beodeul-review.service`(안정된 별도 체크아웃 `~/.local/share/oprn/services/rpg-zzu-beodeul-review`, detached origin/main)로 돌고, 일 1회 `beodeul-review-backup.timer` 가 `decisions backup` 을 부른다. 병합 뒤 `git -C <체크아웃> checkout --detach origin/main && systemctl --user restart beodeul-review`.
+
+### 여러 타일셋 · 스토어 올리기 (2026-10-07)
+
+이 하네스의 **검수 화면 · 결정 로그 · 설치 · 스토어 올리기**는 타일셋과 무관한 공통 층이다. 타일셋마다 다른 건 후보를 어떻게 만들고(저작) 기계 검사를 하느냐뿐이다.
+
+- **프로필** `src/harnesses/beodeul-building-review/profiles.json`: 타일셋 하나당 항목 하나(데이터 폴더·시드 폴더·번들 설정(타일셋 id/텍스처/키트 접두사/호스트 타일셋)·거리 예제 설정·스토어 상품 글). `node/profiles.py` 가 읽는다. 지금은 `beodeul` 하나.
+  `"gate": false` 인 프로필은 기계 검사 없이 사람이 모든 그림을 결정한다(다른 타일셋의 후보).
+- **후보 넣기**(gate false): 그 타일셋의 저작 도구는 그대로 두고, 완성한 건물 그림을 `node/import_candidates.py --profile <id> manifest.json` 으로 검수 큐에 넣는다. 그림 해시가 바뀌면 이전 결정은 적용되지 않는다. gate 있는 프로필(버들항)은 기존처럼 시드 → build → gate → publish.
+- **화면**: 슈퍼하네싱 탭 「건물 검수」에서 위쪽 타일셋 고르개로 전환한다(`/harness/buildings/<프로필>/`, 버들항은 옛 주소 `/harness/beodeul/` 도 유지). 프로필마다 `queue.py` 인스턴스·검수 DB·토큰이 따로다.
+- **사람이 결정한 그림은 화면에 남는다**: 허용뿐 아니라 **거절**도 같은 그림 해시에 결정이 있으면 영수증 없이 보인다(`visual_gate.exempt`). 서명 파일이 바뀌어도 거절 탭이 비지 않는다.
+- **ZIP 은 화면에서 뺐다**(`/api/export`·`export` 단계는 CLI 용으로 남음). 대신 「스토어에 올리기」: ① 허용 결정 반영(결정 로그 export → install → 참고문서·예제 다시 굽기, `scripts/content/rebuild-building-bundle.sh <프로필>`) ② **스테이징**(mdc-server:18320, 개발 로그인) 올리기 ③ **운영**(store.openrpgmaker.com) 올리기.
+  - 팩 만들기·올리기는 `store-server/scripts/publishBuildings.ts --profile <id> --target plan|staging|production` 한 곳이다(CLI 로도 쓴다). 타일셋 생성기는 스크립트의 `CREATORS` 에 프로필 id 로 등록한다(스토어 팩은 호스트 타일셋 없이 쓰이므로 참고문서를 타일셋이 직접 든다: `createBeodeulReviewedStandalone`).
+  - **운영은 되돌리기 어렵다.** plan 이 알려 주는 `contentHash` 를 `--confirm` 으로 돌려주고, admin-link 일회용 토큰(15분·한 번)을 환경변수 `STORE_LINK_TOKEN` 으로만 넘겨야 올라간다. 화면은 확인 체크와 토큰 입력칸을 요구하고 토큰을 저장하지 않는다.
+  - 같은 내용이 이미 올라가 있으면 건너뛰고(`DATA/store-uploads.json`), 내용이 바뀌면 같은 상품에 **판본을 더한다**(프로젝트에 넣은 id 유지). 4개 언어 글은 프로필 `store.locales` 와 `store-server/scripts/library_locales.py` `FIXED` 둘에 있어야 한다.
+- 참고문서는 분류당 64문서 한도 때문에 건물 설명을 6채씩 한 문서로 묶는다(58채 → 문서 17개). 건물이 100채를 넘으면 한도가 아니라 문서 크기(12만 자)를 본다.
+- 공통 TS 틀은 `src/project/defaults/buildingBundle.ts`(`defineBuildingBundle`), 버들항은 `beodeulReviewed.ts` 가 설정만 넘긴다. 새 타일셋은 같은 틀 + `bundled.ts`/`bundledChipsetGeometry.ts`/`defaultAssets.ts` 배선(AGENTS 의 공용 번들 규칙)을 한다.
+
+**새 타일셋 추가 절차**: ① `profiles.json` 항목 ② 후보 저작(자기 하네스) → `import_candidates.py` ③ 슈퍼하네싱 탭에서 허용/거절 ④ `install.py --profile`(타일셋 고유의 그림자·기초 규칙이 있으면 `install.py` 의 그 부분만 프로필 설정으로 뺀다) ⑤ `rebuild-building-bundle.sh <프로필>` ⑥ `buildingBundle.ts` 로 TS 모듈 + 배선 ⑦ `publishBuildings.ts` `CREATORS` 등록. 기계 게이트(visual_gate)는 버들항 전용이다 — 다른 타일셋은 gate false 로 시작한다.
+
+### 소품·울타리 프로필 `beodeul-props` (2026-10-07)
+
+건물 말고 타일셋으로 놓는 것들(울타리·소품·나무·가로등…)도 같은 심사 화면에서 사람이 허용/거절한다. 기계 게이트 없음(gate false), 번들 설치·스토어는 허용이 쌓인 뒤(프로필에 `bundle` 이 없으면 화면이 스토어 버튼을 숨긴다).
+- 라운드 1(`node/author_props_round1.py` → `harness-data/beodeul-props-review/round1/`): **기존 비건물 키트 70개(광장·모래밭 같은 대형 3개는 제외 — 여러 타일 조합으로 만든다)를 그대로**(bd-prop·bd-tree·정원 부품·야외; 사람이 허용/거절한 적 없는 그림) + **새 울타리 3종** — 나무 기둥-가로대 16칸, 낮은 돌담 16칸(위·오른쪽·아래·왼쪽 이웃 여부 마스크로 16가지, 칸 순서 4×4·번호 = 1+2+4+8), 나무 문 2×1. 새 것의 비교 화면(원본과 비교)은 직접 조립한 울타리 마당 그림이다.
+- 가져오기: `import_candidates.py --profile beodeul-props .../round1/manifest.json`.
+- 아직 없는 것: 설치 규칙(소품은 접지 그림자 + 통행 — 기존 키트는 원래 타일 통행을 가져오고, 새 울타리는 칸이 막힘), 참고문서·예제, 스토어 팩. 허용 결과를 보고 만든다.

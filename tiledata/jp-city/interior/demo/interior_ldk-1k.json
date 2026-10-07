@@ -1,0 +1,118 @@
+{
+ "plan": [
+  "########",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "########"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 1,
+   "x1": 4,
+   "y0": 1,
+   "y1": 4,
+   "floor": "cushion",
+   "wall": "kitchen-panel"
+  }
+ ],
+ "objects": [
+  {
+   "id": "kitchen-sink",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "fridge",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "bookshelf",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "houseplant",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "trash-bins",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "floor-lamp",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "rug",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "low-table",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "cushion-floor",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "cushion-floor",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "sofa-w",
+   "x": 6,
+   "y": 8
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "kettle",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "rice-cooker",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "remote",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "mug",
+   "x": 4,
+   "y": 7
+  }
+ ]
+}

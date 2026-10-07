@@ -9,8 +9,6 @@ import { AUTHORING_PRESET_TOOLS } from './authoringPresetTools';
 import { AUTHORING_HARNESS_TOOLS } from '../../harnesses/_core/authoringRegistry';
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { KIT_AREA_TOOLS } from "./kitAreaTools";
-import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
-import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
 import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetReferenceTools";
 // editor/tools/toolRegistry.ts
 // 모든 툴(읽기+쓰기)의 단일 레지스트리. 툴 추가 = 각 *Tools.ts 배열에 한 줄 추가로 끝난다.
@@ -62,7 +60,6 @@ import { TERRAIN_TOOLS } from "./terrainTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { WILD_ROUTE_TOOLS } from "./wildRouteTool";
-import { TALL_GRASS_TOOLS } from "./tallGrassTool";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
 import { PLACEMENT_TOOLS } from "./placementTools";
@@ -79,17 +76,12 @@ import { injectToolReasonSchema } from "@/ai/toolReason";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
-import { CASTLE_TOOLS } from "./castleBuilder";
 import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
-import { PACK_TOWN_TOOLS } from "./packTownTools";
-import { VILLAGE_TOOLS } from "./villageBuilder";
-import { VILLAGE_SESSION_TOOLS } from "./villageSession";
-import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
+import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
 import { TRANSIT_TOOLS } from "./transitTools";
-import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
@@ -97,7 +89,6 @@ import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
-import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
@@ -105,8 +96,6 @@ import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
-import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
-import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
@@ -128,6 +117,7 @@ import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
+import { STORE_TOOLS } from "./storeTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -140,22 +130,9 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
   ["show_tiles", "tile_query"],
 ]);
 
-// construction route manifest: 레거시 쓰기 → canonical facade (LLM 비노출, 직접 실행 호환).
-// preview_house는 읽기 진단이므로 여기 넣지 않는다(공개 유지).
-// build_house_kit / build_house_lots / stamp_structure_kit 는 등록 자체가 제거됐다 —
-// 레지스트리에 정의가 없으므로 superseded 매핑도 두지 않는다. 옛 이름 호출은 unknown-tool 로 거부된다.
-export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["build_house", "author_house"],
-  ["plan_village", "author_village"],
-  ["materialize_village_spec", "author_village"],
-  ["revise_village_plan", "author_village"],
-  ["run_village_pipeline", "author_village"],
-  ["build_village", "author_village"],
-  ["start_village_session", "author_village"],
-  ["plant_tree_clusters", "author_village"],
-  ["advance_village_build", "author_village"],
-  ["run_village_session", "author_village"],
-]);
+// 옛 쓰기 툴 이름 → 대체 도구(LLM 비노출). 숲마을·합본 마을 시공기(author_village·build_village 계열·author_house)와
+// 그 레거시 이름 매핑은 2026-10-07 저작권 정리로 칩셋과 함께 지웠다 — 옛 이름 호출은 unknown-tool 로 거부된다.
+export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map();
 
 // 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
 function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
@@ -202,11 +179,6 @@ const NAME_DOMAIN_OVERRIDES: ReadonlyMap<string, readonly ToolDomain[]> = new Ma
   ["evaluate_game_quality", ["system"]],
 ]);
 
-/** 옛 실내 칩셋(EasyRPG 실내·Tibo 번호) 전용 도구 — 조수에게 보이지 않게 deprecated 로 돌리고 대체 도구를 적는다. */
-function retireOldInteriorTool(tool: ToolDefinition): ToolDefinition {
-  return { ...tool, deprecated: true, supersededBy: "build_hand_interior_room" };
-}
-
 /**
  * EasyRPG 칩셋 번호를 깔고 그 칩셋 맵을 만드는 생성기(던전 방 파이프라인·generate_map) — 대체 생성 칩셋이 생기기 전까지 조수에게 숨긴다
  * (2026-10-06 사용자 결정, retiredEasyRpgTilesets.ts). 던전·숲·들판은 등록 장소를 import_region_reference 로 가져온다. 편집기 실행 호환은 남긴다.
@@ -234,8 +206,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
-  AUTHOR_HOUSE_TOOL,
-  AUTHOR_VILLAGE_TOOL,
   AUTHOR_BEODEUL_TOWN_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
@@ -243,23 +213,18 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
-  ...withDomain(FENCE_REPAIR_TOOLS, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
-  ...withDomain(VILLAGE_TOOLS, "tile"),
-  ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
-  // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 칸 번호로 짓는 방 세션·개념 시설 시공은
-  // 조수 목록에서 뺀다(deprecated: 노출 제외, 실행 호환은 유지 — 옛 세션 재생·테스트).
+  // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 방 세션·던전 방 파이프라인·팩 마을·
+  // 숲 조립·키큰 풀 도구는 2026-10-07 저작권 정리로 칩셋과 함께 지웠다.
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
+  // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
+  ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
-  ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
-  ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile").map(retireEasyRpgGenerator),
-  ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
-  ...withDomain(PACK_TOWN_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
@@ -270,7 +235,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map").map(retireEasyRpgGenerator),
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
-  ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
   ...BEODEUL_DOOR_TOOLS,
   ...BEODEUL_GROUND_TOOLS,
@@ -312,11 +276,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...TILESET_REFERENCE_TOOLS,
   // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
   ...TILESET_CHANGE_TOOLS,
+  ...STORE_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
   ...KIT_AREA_TOOLS,
-  ...FOREST_RECIPE_TOOLS,
-  ...PUBLIC_TILE_RECIPE_TOOLS,
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.
   ...withDomain(AUTHORING_MISC_TOOLS, "map"),
   ...withDomain(RESOURCE_TOOLS, "system"),

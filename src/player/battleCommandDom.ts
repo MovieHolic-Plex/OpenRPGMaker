@@ -8,9 +8,10 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
-import { disambiguatedBattlerName, hpBarState } from "@/player/battleFieldDom";
+import { disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
@@ -176,7 +177,9 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...captureSubmenu(snapshot, options, terms));
     return menu;
   }
-  if (options.submenu?.kind === "switch") {
+  // 포켓몬 화면에서 앞 몬스터가 쓰러지면 바로 다음 몬스터 목록이다 — 「무엇을 할까? ▸교체」 한 칸을 먼저 눌러야 해서
+  // 플레이 영상에서 40초 가까이 멈춰 있었다(2026-10-07).
+  if (options.submenu?.kind === "switch" || (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon")) {
     menu.append(...switchSubmenu(snapshot, options, terms));
     return menu;
   }
@@ -387,6 +390,8 @@ export function syncEnemyListPanel(
       bar.dataset.hpState = hpBarState(pct);
     }
     row.classList.toggle("defeated", shownDefeated);
+    // 에메랄드 상대 HP 상자에도 상태 배지를 단다(스프라이트 쪽 배지는 CSS 가 숨긴다).
+    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds });
   }
 }
 
@@ -429,8 +434,9 @@ function syncEnemyListName(
   if (!enemy.level) return;
   const level = document.createElement("span");
   level.className = "battle-enemy-list-level";
-  level.textContent = store.getCurrent().system.battleUiStyle === "pokemon"
-    ? `레벨${enemy.level}` : `Lv.${enemy.level}`;
+  // 에메랄드 HP 상자는 「Lv9」 — 아군 상자(「레벨 14」)와 띄어쓰기까지 달라 두 상자가 다른 게임처럼 보였다.
+  level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `Lv${enemy.level}`
+    : store.getCurrent().system.battleUiStyle === "pokemon" ? `레벨${enemy.level}` : `Lv.${enemy.level}`;
   name.append(level);
 }
 
@@ -731,7 +737,8 @@ function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpt
 function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = snapshot.forcedSwitchActorId ? "교체 필요" : "교체";
+  header.textContent = snapshot.forcedSwitchActorId
+    ? (store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를 내보낼까?" : "교체 필요") : "교체";
   const nodes: HTMLElement[] = [header];
   for (const actor of switchCandidates(snapshot)) {
     nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `${store.getCurrent().system.battleUiStyle === "pokemon" ? "체력" : terms.hp} ${actor.hp}/${actor.maxHp}`, () => {

@@ -3,7 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import { initLocalProjectStore, type LocalProjectStore } from "../../electron/local-store/store";
@@ -27,7 +27,7 @@ afterEach(async () => {
 });
 
 function projectWithInlineAsset(): Project {
-  const base = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+  const base = projectWithoutEventDrafts(createScarloxyDemoProject());
   return {
     ...base,
     assets: {
@@ -83,7 +83,7 @@ describe("local store assets", () => {
 
   it("이미 ref 인 자산은 건드리지 않는다", async () => {
     const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "x.png", kind: "sprite" });
-    const base = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const base = projectWithoutEventDrafts(createScarloxyDemoProject());
     const project: Project = {
       ...base,
       assets: {

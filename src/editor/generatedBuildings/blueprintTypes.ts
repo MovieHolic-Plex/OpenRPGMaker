@@ -15,7 +15,7 @@ export interface BuildingBlueprint {
   readonly zoneTint?: boolean;
 }
 
-/** 화풍 묶음(tiledata/forest-harmony-buildings/style-kit.json, export_kit.py 가 만든다). */
+/** 화풍 묶음. 옛 숲마을 건물 키트(tiledata/forest-harmony-buildings)는 2026-10-07 저작권 정리로 지웠다. */
 export interface StyleKitJson {
   readonly tileset: string;
   readonly tile: number;

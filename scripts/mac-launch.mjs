@@ -14,7 +14,7 @@ export const BUILD_STAMP_FILE = 'dist/.oprn-launch-stamp.json';
 const BUILD_STAMP_VERSION = 1;
 // 빌드 결과에 영향을 주는 입력. vite 플러그인이 scripts/lib 에 있어 함께 본다.
 export const BUILD_INPUTS = ['src', 'electron', 'public', 'vendor', 'scripts/lib', 'scripts/build-electron.mjs',
-  'index.html', 'benchmark.html', 'start-screen.html', 'package.json', 'package-lock.json', 'vite.config.ts', 'tsconfig.json', 'tsconfig.app.json'];
+  'index.html', 'start-screen.html', 'package.json', 'package-lock.json', 'vite.config.ts', 'tsconfig.json', 'tsconfig.app.json'];
 const BUILD_OUTPUTS = ['dist/index.html', 'dist-electron/browser-bridge.js'];
 
 // 순수 판정: 강제·결과물 없음·도장 없음/다름이면 빌드한다.

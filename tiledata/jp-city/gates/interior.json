@@ -1,0 +1,51 @@
+{
+ "stage": "interior",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
+ "reviewer": "claude -p --model sonnet --effort high",
+ "rounds": 10,
+ "seconds": 334,
+ "focus": "일본 집 실내(현관 타타키·화실 다다미·LDK·욕실·탈의실·화장실·2층 침실·아이방·원룸 1K). 이 단계는 거리 지도가 아니라 실내다 — 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 집 같은가(현관 단차 아가리카마치·신발장, 다다미 배치·헤리, 도코노마·불단 위치, 대면 부엌, 유닛 배스, 욕실-탈의실-세면 동선, 화장실 따로) ② 3/4 정면 시점(가구 윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m: 침대 1×2, 더블 2×2, 욕조 2×1, 냉장고, 문 폭) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색이 뭉치지 않는가, modern3 팔레트·윤곽·명암) ⑤ 동선·구조(막힌 방, 쓸 수 없는 가구, 칸막이 틈) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 참고문서 규칙 문서가 조수가 따라 할 수 있게 정확한가(그림·보고와 맞지 않는 서술). 바깥 거리 건물 그림(tiledata/jp-city/blocks/buildings/*.png)과 같은 게임으로 보여야 한다. ⑧ 방문: 방마다 문이 있는가 — 가로 칸막이 틈은 정면 문(door 종류), 세로 칸막이 3줄 틈은 옆문(sidedoor 종류). 게임 화면(verify-shots/jp-city/interior-runtime/*.png, SUMMARY 줄 머리 번호 = 파일 번호)에서 문으로 읽히는가. ※ 관문 판정 파일 tiledata/jp-city/gates/interior.json 은 이 검수가 끝나면 이 판정으로 덮어써진다 — 그 파일의 옛 verdict·해시는 검수 대상이 아니다. 지난 회차 지적은 지금 그림으로 다시 확인하고, 그림이 바뀌었으면 해결로 적는다. ⑨ 이번 회차 변경: 계단(stairs-up-wood·wide)에 난간을 그렸다 — 폭은 1칸 그대로(커지면 안 된다), 트인 쪽 난간동자·손잡이·아래 기둥과 벽 손잡이가 읽히는가(interior_entry/_all-x3.png, 1층 x2, 런타임 06). ⑩ 가구 분류 14종(현관·계단·문·창·벽걸이·부엌·다이닝·거실·화실·침실·아이방·서재·욕실·탈의실·세탁·화장실)이 맞는가 — 사전 interior-dict-*.md 의 category, 짓는 법 문서. ⑪ 편집기에서 장소 「맵에 놓기」 한 번에 1층·2층 두 맵과 계단 이동이 들어오는가(editor/03·04 — 맵 목록에 1층 아래 2층, E 이벤트), 오브젝트 갤러리에서 공용 + 분류 부제로 보이는가(editor/06). ※ 평면 문자열의 막힌 칸(#) 바로 아래 두 줄은 벽면이라 걷지 못한다 — 복도·방 넓이는 벽면 두 줄을 빼고 센다(2층 복도는 걷는 줄이 y9·y10 두 줄). editor/03~05 는 게시 전 장소 원본을 가져온 화면이라 이번 회차 예제 수정(원룸 책상·거실 러그)은 x2 그림에서 본다.",
+ "files": {
+  "verify-shots/jp-city/interior-house-1f-x2.png": "e14331145bc1a408853800da395b55fb537b3bdf3b4f5801147b9581403a12d0",
+  "verify-shots/jp-city/interior-house-2f-x2.png": "39b8ced04f53e07a4a52786ed1d0744777c6fbf91b7e33b2eaa2e8efc8e8cc95",
+  "verify-shots/jp-city/interior-apartment-1k-x2.png": "0799d8f4cc6ad659b116193bfb4caa756426cbdd4a90cdc16b87d418d928c22d",
+  "verify-shots/jp-city/interior-runtime/03.png": "480ec03a85b24da77fac98a2afbd3f976bf6976f3043be89309cf83541d3a006",
+  "verify-shots/jp-city/interior-runtime/06.png": "af45aa244917f4dc5c7f689200bdd1d0ed1ca779bf6ca3656f8302a28ea02a4e",
+  "verify-shots/jp-city/interior-runtime/SUMMARY.md": "61630f4a9f0c574ea96fd8fd4ff96dc0e88e053a389e554889fbf23a1a00da4c",
+  "tiledata/jp-city/blocks/interior_doors/_all-x3.png": "57793211c15bcdc3fb0e551c5c569c417bc098fdde38369cfd33d9ecf3d945bc",
+  "public/assets/jp-city-references/interior-dict-1.png": "0a0f47f06a16f8d580f47003152d4d60b6a15b0524da15e4ffcd1cfa4d97d5cb",
+  "public/assets/jp-city-references/interior-dict-2.png": "a4f2ef0931c32582f3c2f707a2bccb94688d6eabc924e8bb53b3af53e186c429",
+  "public/assets/jp-city-references/interior-surfaces-1.png": "eb748d69406823a8a0c9549ac160a98e8c6717bd46c735408fb2ec3de0b4a70e",
+  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "aedbf1aa51a0a498070f944f25a77b32128146500148be3f61c8365f09781a9e",
+  "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "15e7ed35ea2e2a2e9e8f96153ab842fa554702aeca7825871f642078be772254",
+  "scripts/content/jp-city/maps/out/interior-apartment-1k.report.json": "26278539f65b468822349a5ed4f213205e1df73b5586eb324362a04101d0dba3",
+  "tiledata/jp-city/interior/examples/house-1f.json": "c8e4ce0a3ca5055450e0774b7794c93a4e6a35937692b3da2368eb0f734876be",
+  "tiledata/jp-city/interior/examples/house-2f.json": "db44136f1ef0ef0c6600a0866a4281812f7c9804e5fad52152affc3867305d43",
+  "tiledata/jp-city/interior/examples/apartment-1k.json": "5e632779ea5b86fac76875a1546a1d98ca0a635d890bdb5c6a9c796945a5f53d",
+  "tiledata/jp-city/refs/interior-rules.md": "43f1fcb7dc2e68b6e2efb9b580fb3e7f0c2118ada1a751f7414e9c8d1558b9fd",
+  "tiledata/jp-city/blocks/interior_entry/_all-x3.png": "4480bc9740f28e3def60cceffa9c4674957422ca6da4e8a64417a04450c5accf",
+  "tiledata/jp-city/refs/interior-dict-1.md": "2abd56973e98b77edfdd78cc0b8ace65515a2e3b58b40ec0405c83c9070296d3",
+  "verify-shots/jp-city/editor/03-editor-house-1f.png": "2986c42d4b1cce670ceed266ce30a17b5d5c3661cc0a5f1ccdc0bff5be8dbc00",
+  "verify-shots/jp-city/editor/04-editor-house-2f.png": "2060e7cf6fcc9e78f496293d8498fb4f879b0de6274c24d335d283c45c5b7311",
+  "verify-shots/jp-city/editor/06-objects-jp-interior.png": "3312548e3fd15613e4ff6ffdfb3f799eeb104a8b1e9eb39e6cb4f955fd710c7b",
+  "verify-shots/jp-city/editor/SUMMARY.md": "d4e7dd0f3e0ec07a6fb94a38ef8cca009e142e78021633cd4b5c151aec28642a"
+ },
+ "findings": [
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/apartment-1k.json",
+   "where": "유닛 배스 (1..3, 7..9) — shower-faucet(1,7), towel-rack(2,7), bathtub(1,9), toilet(3,9)",
+   "problem": "유닛 배스에 거울(bath-mirror)이 없다. 사전에 bath-mirror가 있는데도 일본 원룸의 3점 유닛 배스 느낌이 약하고, 벽면 윗줄(y=7)이 수전과 수건걸이뿐이라 휑하다.",
+   "fix": "벽면 윗줄 빈 칸 (3,7)에 bath-mirror를 걸고 맵을 다시 굽는다. 평면 변경은 없다."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/interior-runtime/SUMMARY.md",
+   "where": "07·11 줄(계단 단계)과 06 줄(화장실)",
+   "problem": "이번 라운드 확인 지시문은 계단 난간을 「런타임 06」으로 가리키지만 실제 계단 화면은 07과 11이다. 06은 화장실 단계이고, 계단은 06 화면 안에 작게 보일 뿐이다. 이 번호를 믿으면 확인 절차가 어긋난다.",
+   "fix": "검수 지시문과 확인 절차의 번호를 07(계단 발칸)과 11(계단통)로 고친다. SUMMARY에 단계별 한 줄 설명은 이미 있다."
+  }
+ ],
+ "report": "## 적대적 검수 — jp_city 일본 집 실내 (interior)\n\nblocker와 major는 찾지 못했다. 근거는 다음과 같다.\n\n**지난 라운드 major (`door-western`(13,7)): 해소**\n- `interior-rules.md` 38행은 이제 `door-western`을 예제에 쓰지 않는다고 적는다. 예제는 `oshiire`(5,1)와 `closet-doors`(18,1)이다.\n- `house-2f.json`에는 `door-western` 객체가 없다. 문서와 데이터가 일치한다.\n- `editor/04`에 보이는 복도의 갈색 닫힌 문은 게시 전 옛 장소 화면이다. 지시에 따라 판정에서 뺐다.\n\n**⑧ 방마다 문**\n- 1층: 가로 칸막이 틈 x=7(`fusuma-open`), x=10(`door-open-toilet`)과 옆문 (3,11), (6,11), (12,10), 현관문 (9,14)이 평면 틈과 일치한다.\n- 2층: 틈 x=7, 11, 16에 문이 있다.\n- 원룸: (6,6) 문과 (4,10) 옆문이 있다.\n- 1층 부엌↔LDK의 4칸 트인 곳(x15..18, y6)은 문이 없다. 문서 20행과 45행이 「부엌↔LDK 는 대면 카운터 앞 트인 곳」을 예외로 명시하고, 런타임 03에서 (15,4)로 통행이 확인된다. 결함이 아니다.\n\n**⑨ 계단 난간**\n- `interior_entry/_all-x3.png`에서 `stairs-up-wood`는 1칸 폭이고, 열린 쪽 난간 기둥과 손잡이, 아래 기둥과 벽 손잡이가 읽힌다.\n- `-wide`는 양쪽 기둥과 손잡이가 읽힌다.\n- `stairwell-down-wood`는 가로 난간과 기둥이 읽힌다.\n- 1층 x2 이미지와 `interior-runtime/06.png`의 복도 계단도 1칸 폭이다.\n- 다만 이 계단이 직접 보이는 런타임 화면은 06이 아니라 07(계단 발칸 → 2층)과 11(계단통 → 1층)이다. 06은 화장실 단계이고, 06 화면에는 1층 전체가 같이 보여 계단도 보인다.\n\n**⑩ 14분류**\n- 사전 `interior-dict-1.png`, `interior-dict-2.png`의 조각을 분류별로 세면 8·3·6·4·6·7·4·11·18·7·6·6·6·5 = 97이다. 문서의 분류 수와 편집기의 「97개」와 같다.\n\n**⑪ 편집기 흐름**\n- `editor/SUMMARY.md`와 03, 04 화면에서 1층 아래에 2층이 하위 맵으로 붙고, 두 맵의 `E`(이동) 이벤트 3개가 보인다. 1층 (11,9)은 2층으로, 2층 (19,10)과 (20,10)은 1층 (11,10)으로 간다.\n- `editor/06`에서 오브젝트 갤러리의 부제는 「일본 실내 · 현관」 형식이다.\n\n**통행·문서·데이터**\n- 세 보고서 모두 `ok: true`, 경고 0, 닿지 못한 바닥 0이다.\n- 런타임 SUMMARY의 00~14가 모두 통과한다.\n- 문서의 통행 지도, 현관 매트와 슬리퍼 좌표, 러그 좌표, TV 받침·좌탁·소파 정렬은 JSON과 일치한다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n  {\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/apartment-1k.json\", \"where\": \"유닛 배스 (1..3, 7..9) — shower-faucet(1,7), towel-rack(2,7), bathtub(1,9), toilet(3,9)\", \"problem\": \"유닛 배스에 거울(bath-mirror)이 없다. 사전에 bath-mirror가 있는데도 일본 원룸의 3점 유닛 배스 느낌이 약하고, 벽면 윗줄(y=7)이 수전과 수건걸이뿐이라 휑하다.\", \"fix\": \"벽면 윗줄 빈 칸 (3,7)에 bath-mirror를 걸고 맵을 다시 굽는다. 평면 변경은 없다.\"},\n  {\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior-runtime/SUMMARY.md\", \"where\": \"07·11 줄(계단 단계)과 06 줄(화장실)\", \"problem\": \"이번 라운드 확인 지시문은 계단 난간을 「런타임 06」으로 가리키지만 실제 계단 화면은 07과 11이다. 06은 화장실 단계이고, 계단은 06 화면 안에 작게 보일 뿐이다. 이 번호를 믿으면 확인 절차가 어긋난다.\", \"fix\": \"검수 지시문과 확인 절차의 번호를 07(계단 발칸)과 11(계단통)로 고친다. SUMMARY에 단계별 한 줄 설명은 이미 있다.\"}\n]}\n```"
+}

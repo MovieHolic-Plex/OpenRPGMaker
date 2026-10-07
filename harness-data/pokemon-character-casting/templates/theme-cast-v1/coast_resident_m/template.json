@@ -1,0 +1,913 @@
+{
+  "version": 1,
+  "templateId": "fisherman",
+  "templateSourceSha256": "60c91d3f454902a328f358cbb91d9bf0b412f85e3cb41542f90093cf27771ef8",
+  "paletteOverrides": {
+    "5": "#f4dc90",
+    "6": "#c8a050",
+    "7": "#6a4818",
+    "B": "#3870b8",
+    "8": "#78c8e0",
+    "9": "#3888b8",
+    "A": "#1c4060"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 17,
+      "rows": [
+        "..DCCCCCCCCCCD.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 18,
+      "rows": [
+        ".4FDCCCCCCCCDF4."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 19,
+      "rows": [
+        ".4FDDCCCCCCDDF4."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 20,
+      "rows": [
+        "42FFFDDDDDDFFF.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "rows": [
+        "..A88E999998447."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 26,
+      "rows": [
+        "..A889999E94334."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 11,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 14,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 15,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 16,
+      "rows": [
+        "..DCCCCCCCCCCD.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 17,
+      "rows": [
+        ".4FDCCCCCCCCDF4."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 18,
+      "rows": [
+        ".4FDDCCCCCCDDF4."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 19,
+      "rows": [
+        "..FFFDDDDDDFFF.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "rows": [
+        "7EA88E9999988AE7"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        "42A99888888E9A24"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 25,
+      "rows": [
+        ".4A889999E988A4."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 17,
+      "rows": [
+        "..DCCCCCCCCCCD.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 18,
+      "rows": [
+        ".4FDCCCCCCCCDF4."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 19,
+      "rows": [
+        ".4FDDCCCCCCDDF4."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 20,
+      "rows": [
+        "..FFFDDDDDDFFF24"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "rows": [
+        ".7448E9999988A.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        ".4244888888E9A.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 26,
+      "rows": [
+        ".43349999E988A.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 18,
+      "rows": [
+        "..FFF7777773777."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 23,
+      "rows": [
+        "....AA88844....."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "....A988444A...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 25,
+      "rows": [
+        "....A884224A...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 26,
+      "rows": [
+        "....A9E43346F..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 27,
+      "rows": [
+        "...FAA9E446ADF.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 11,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 14,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 15,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 16,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 17,
+      "rows": [
+        "..FFF7777773777."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 22,
+      "rows": [
+        "....AA88844....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "....A984484A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 18,
+      "rows": [
+        "..FFF7777773777."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 23,
+      "rows": [
+        "....AA88844....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "....A944894A...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 18,
+      "rows": [
+        ".41F37777773F14."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 23,
+      "rows": [
+        ".4E9AAAEEAAAEE7."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        "..A98E988998447."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 26,
+      "rows": [
+        "..A9899EEE94334."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 11,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 14,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 15,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 16,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 17,
+      "rows": [
+        ".41F37777773F14."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 22,
+      "rows": [
+        ".7E9AAAEEAAA9E7."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        "7EA98E9889989AE7"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        "42AA9888888EAA24"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 25,
+      "rows": [
+        ".4A9899EEE989A4."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 18,
+      "rows": [
+        ".41F37777773F14."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 23,
+      "rows": [
+        ".7EEAAAEEAAA9E4."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        ".7448E9889989A.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        ".4224888888EAA.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 26,
+      "rows": [
+        ".433499EEE989A.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 18,
+      "rows": [
+        ".7773777777FFF.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 23,
+      "rows": [
+        ".....44888AA...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....A444889A...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 25,
+      "rows": [
+        "....A422488A...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 26,
+      "rows": [
+        "...F64334E9A...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 27,
+      "rows": [
+        "..FDA644E9AAF..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 11,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 14,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 15,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 16,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 17,
+      "rows": [
+        ".7773777777FFF.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 22,
+      "rows": [
+        ".....44888AA...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....A484489A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 12,
+      "rows": [
+        ".....777777....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "...7755555577..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "..756555555657.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 15,
+      "rows": [
+        "..7BBBBBBBBBB7.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 16,
+      "rows": [
+        "7555555555555557"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 17,
+      "rows": [
+        ".77666666666677."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 18,
+      "rows": [
+        ".7773777777FFF.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 23,
+      "rows": [
+        ".....44888AA...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....A498449A...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "파란 띠를 두른 넓은 챙 밀짚모자, 흰 속셔츠가 보이는 하늘색 꽃무늬 반소매 셔츠",
+  "editSource": "author-theme-cast.py rules from templates/theme-cast-v1/cast.json (literal substrings and explicit index remaps at original pose rows); source right view mirrors left."
+}

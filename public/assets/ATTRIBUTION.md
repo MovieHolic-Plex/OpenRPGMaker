@@ -37,81 +37,6 @@ Repository code/asset policy applies. FF6/SNES battle effects are the requested
 visual inspiration; these cels contain no extracted FF6 sprites. The sparse
 source expands mechanically to a complete grid, with no shape generation or tweening.
 
-## Castle tiles for RPGs — OpenGameArt
-
-- File: `opengameart-castle-tiles.png` (512×512 RGBA, original pixels unchanged)
-- Authors: Zabin, Hyptosis, and Daniel Cook (Danc)
-- Source: https://opengameart.org/content/castle-tiles-for-rpgs
-- Download: https://opengameart.org/sites/default/files/Castle2_5.png
-- License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
-- SHA-256: `b3222b8bed826043ae11a15c8983af5adbdc4a8bddd04f1171a0b070903991ad`
-- Notes: The original 32px artwork is split into 16px engine cells (32 columns,
-  1024 cells) without resampling. Layer/collision defaults and labels are editor
-  metadata. `opengameart-castle-tiles-CREDITS.txt` accompanies the artwork in game exports.
-
-## Castle reference composite
-
-- File: `opengameart-castle-reference-composite.png` (2240×2240 RGB)
-- Source: user-provided reference image of the OpenGameArt example composition.
-- 2026-09-21: removed Irukard's GPL bridge (parapets, deck, arch and piers) by
-  replacing 16px cells `(102,107,30,28)` with existing river-water cells.
-  Pixels outside that rectangle are unchanged. This is no longer an exact
-  screenshot comparison board.
-- Remaining art: Zabin, Hyptosis, Daniel Cook (CC BY 3.0), Daniel Eddeland and
-  Jetrel (CC BY-SA 3.0), as linked by the original composition. The adapted
-  composite is distributed under CC BY-SA 3.0; full credits accompany exports
-  in `opengameart-castle-reference-composite-CREDITS.txt`.
-
-## [LPC] Wooden Furniture — OpenGameArt
-
-- File: `opengameart-lpc-wooden-furniture.png` (512×1024 RGBA, original pixels
-  unchanged)
-- Authors and required credit: bluecarrot16, Baŝto, Lanea Zimmerman (Sharm),
-  William Thompson, Tuomo Untinen (Reemax), Janna/Lilius/Jannax. The upstream
-  bundled `CREDITS-furniture.txt` is mirrored at
-  `opengameart-lpc-wooden-furniture-CREDITS.txt` and lists each component
-  license; "All information in this file must be included" applies.
-- Source: https://opengameart.org/content/lpc-wooden-furniture
-- Download: https://opengameart.org/sites/default/files/clean_furniture.png
-  (the transparent-background "clean furniture" variant; the opaque preview
-  variant is not bundled)
-- License: CC-BY-SA 3.0 / GPL 3.0 (per-component upstream licenses as listed in
-  the credits file)
-- SHA-256: `6e0a4e5129790d757415e83704f089af27accc9865ccc197cd43f8c3fe2a489d`
-- Notes: LPC standard 32×32px tiles, 16 columns × 32 rows (512 cells). The sheet
-  is registered at its native 32px cell size (custom atlas, no RM2K autotile or
-  water animation). Passability/layer defaults start fully passable and lower
-  layer for authoring. Games exporting this asset must ship
-  `opengameart-lpc-wooden-furniture-CREDITS.txt` alongside the PNG and retain
-  the author, source, and license notices.
-
-### 16px companion sheet (2026-09-22)
-
-- File: `opengameart-lpc-wooden-furniture-16px.png` (256×512 RGBA)
-- Derivation: the 32px sheet above, halved with unfake.js (unfake-core WASM) median
-  block downscale. Registered as `opengameart_lpc_wooden_furniture_16` /
-  `tex_opengameart_lpc_wooden_furniture_16` so the same furniture can be placed on
-  existing 16px maps (combined town / interior).
-- SHA-256: `6989a08a782a6002c2aed4337f393d674b405443b0cd4d2fc247e0d66856d7be`
-- Modification notice: this is a modified (downscaled) derivative. The original 32px
-  sheet is preserved unchanged and is not replaced by this file. Same authors, same
-  CC-BY-SA 3.0 / GPL 3.0 terms, and the same credits file apply.
-- Only the downscale step of unfake.js was used. Its morphological cleanup and
-  quantization steps removed 1px handles and shelf dividers on this sheet (it is
-  authored pixel art, not AI output, so there is no fake-pixel structure to undo).
-
-## Galmuri pixel fonts
-
-- Files:
-  - `fonts/Galmuri9.woff2`
-  - `fonts/Galmuri11.woff2`
-  - `fonts/Galmuri11-Bold.woff2`
-  - `fonts/LICENSE.txt`
-- Source: quiple/galmuri v2.40.3, https://github.com/quiple/galmuri
-- Copyright: Copyright (c) 2019-2025 Lee Minseo
-- License: SIL Open Font License 1.1. The license text is mirrored at `public/assets/fonts/LICENSE.txt`.
-- Notes: Bundled locally for offline runtime game UI rendering.
-
 ## Runtime window skin
 
 - File: `ui/windowskin-default.png`
@@ -120,92 +45,19 @@ source expands mechanically to a complete grid, with no shape generation or twee
   `windowskin-rm2003.png` — the file is our own generated 9-slice, not third-party art.
 - Notes: 96x96 RGBA 9-slice window skin with 24px corners for runtime game windows.
 
-## OGA greggman — Backgrounds for 2D Platformers
+## EasyRPG RTP bundled object charsets
 
 - Files:
-  - `oga/greggman-backgrounds/meadow.png` (upstream `background0.png`, resized to 1280x720)
-  - `oga/greggman-backgrounds/city-night.png` (upstream `background1-720.png`, copied as-is)
-  - `oga/greggman-backgrounds/haunted-forest.png` (upstream `background3-720.png`, copied as-is)
-  - `oga/greggman-backgrounds/dusk-mountains.png` (upstream `rock_4.png`, resized to 1280x720)
-  - `oga/greggman-backgrounds/snow-mountains.png` (upstream `snow_5.png`, resized to 1280x720)
-- Author: greggman (https://opengameart.org/users/greggman)
-  Collaborator credit: RenZeyu (https://opengameart.org/users/renzeyu)
-- Source: https://opengameart.org/content/backgrounds-for-2d-platformers
-- License: **Creative Commons Attribution 3.0 Unported (CC-BY 3.0)**,
-  https://creativecommons.org/licenses/by/3.0/ — attribution required, commercial use
-  allowed. Do not remove this section while any of these files or derived resource ids
-  (`oga-backdrop-*`) remain in the project.
-- Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
-  `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
-  upstream 720p attachments; no other pixels were edited.
-
-## OGA CraftPix — Horizontal 2D Backgrounds
-
-- Files:
-  - `oga/craftpix-horizontal/bg1/composite.png` — upstream `game_background_1/game_background_1.png`
-  - `oga/craftpix-horizontal/bg1/composite-parallax.png` — upstream `game_background_1/game_background_1_parallax.png`
-  - `oga/craftpix-horizontal/bg1/layers/*.png` (7) — upstream `game_background_1/layers/*.png`, copied as-is
-  - `oga/craftpix-horizontal/bg2/composite.png` + `layers/*.png` (8) — upstream `game_background_2/*`
-  - `oga/craftpix-horizontal/bg3/composite-1.png`, `composite-2.png` + `layers/*.png` (8) — upstream `game_background_3/*`
-  - `oga/craftpix-horizontal/bg4/composite.png` + `layers/*.png` (5) — upstream `game_background_4/*`
-- Author: CraftPix.net 2D Game Assets (https://opengameart.org/users/craftpixnet-2d-game-assets)
-- Source: https://opengameart.org/content/horizontal-2d-backgrounds
-- License: **OGA-BY 3.0** (https://opengameart.org/content/oga-by-30-faq), attribution
-  required, commercial use allowed. Do not remove this section while any of these files or
-  derived resource ids (`oga-craftpix-*`) remain in the project.
-- Notes: bundled 2026-09-21 as map panorama multi-layer / single-image candidates. All 35
-  PNGs were copied without pixel edits (only renamed: set folders bg1–bg4, layer composites
-  named `composite*.png`). Registered in `src/assets/ogaCraftpixBackgrounds.ts`.
-
-## EasyRPG RTP bundled map and object assets
-
-- Files:
-  - `easyrpg-chipset-exterior.png` from `ChipSet/Exterior.png` (renamed 2026-08-21 — the
-    former name `rm2k3-original-chipset.png` wrongly implied the proprietary RPG Maker RTP)
-  - `easyrpg-chipset-dungeon.png` from `ChipSet/Dungeon.png`
-  - `easyrpg-chipset-interior.png` from `ChipSet/Interior.png`
-  - `easyrpg-chipset-ship.png` from `ChipSet/Ship.png`
-  - `easyrpg-chipset-world.png` from `ChipSet/World.png`
-  - `easyrpg-chipset-retro-dungeon.png` from `ChipSet/retro_Dungeon.png`
-  - `easyrpg-chipset-retro-exterior.png` from `ChipSet/retro_Exterior.png`
-  - `easyrpg-chipset-retro-world.png` from `ChipSet/retro_World.png`
   - `easyrpg-charset-object1.png` from `CharSet/Object1.png`
   - `easyrpg-charset-object2.png` from `CharSet/Object2.png`
 - Repository: https://github.com/EasyRPG/RTP
 - License: Creative Commons Attribution 4.0 International for EasyRPG RTP materials
 - Upstream asset attribution:
-  - `ChipSet/Dungeon.png`, `Exterior.png`, `Interior.png`, `Ship.png`, `World.png` by JasonPerry, CC0, https://finalbossblues.itch.io/
-  - `ChipSet/retro_Dungeon.png` by Dmytro Kushnariov, CC0, https://easyrpg.org
-  - `ChipSet/retro_Exterior.png`, `retro_World.png`: see `vendor/easyrpg-rtp/AUTHORS.md` for mixed CC-BY/CC0/WTFPL source attribution.
   - `CharSet/Object1.png` by Tom Lemmens and Blarumyrran, CC0 original chest, https://github.com/lemtom
   - `CharSet/Object2.png` by Verdant_Jack, CC0, https://community.easyrpg.org/t/test-for-new-rtp/1067/8
 - Notes: This is an open replacement RTP material, not the proprietary RPG Maker 2000/2003 RTP.
-- Pixel provenance verified 2026-08-23: `easyrpg-chipset-exterior.png` is produced by
-  `scripts/generate-easyrpg-chipset-exterior.mjs` (renamed from `generate-rm2k3-original-chipset.mjs`)
-  from `vendor/easyrpg-rtp/ChipSet/Exterior.png`. Its `IHDR`, `PLTE`, and `IDAT` chunks are
-  byte-identical to the vendor file; the only difference is an inserted `tRNS` chunk making
-  palette index 0 transparent. The pixels are JasonPerry's CC0 replacement art, not Enterbrain's.
-- Derived sheet (2026-09-18): `easyrpg-chipset-combined-town-retro-world-transparent.png` (480×608) is
-  produced by `scripts/gen-combined-town-retro-world-chipset.mjs`. Rows 0–255 are
-  `easyrpg-chipset-combined-town-transparent.png` copied byte-for-byte; rows 256–511 are
-  `easyrpg-chipset-retro-world-transparent.png` with its palette-index-0 colour (224,103,191) keyed to
-  alpha 0 (that file ships with no alpha at all); rows 512–607 are `chipset-ext-forest-trees.png`
-  copied byte-for-byte (see the next section). No pixels are authored here. The retro_World half
-  carries the mixed CC-BY/CC0/WTFPL attribution listed above, which is why the in-app name says
-  "혼합 출처".
-
-## Forest trees extension strip (user-provided sheet)
-
-- File: `chipset-ext-forest-trees.png` (480×96 RGBA, six 16px rows, tile IDs 960–1139 inside the
-  mixed sheet above)
-- Source: a 32px-grid nature tileset the project owner pasted into the assistant on 2026-09-18
-  (480×256 native, shown zoomed 3.58× over a checkerboard). Only the trees and bushes were cut out —
-  big oak, broadleaf tree, dark tree, three bushes, and two dense-forest chunks — at native pixel
-  size (no downscaling); the grass autotiles and cave hollows on that sheet were left out.
-  Native pixels were recovered by block-averaging the zoomed screenshot; checkerboard fringe pixels
-  were dropped. Per-tile layer/passage table: `src/project/defaults/forestTreesExtension.ts`.
-- License: **not verified.** The owner supplied the image without naming its origin or licence.
-  Confirm the tileset's licence (and attribute its author here) before shipping this file publicly.
+- 2026-10-07: EasyRPG ChipSet sheets (Exterior/Dungeon/Interior/Ship/World/retro_*) and every sheet derived from them were
+  deleted from the repository (copyright cleanup). They are no longer shipped.
 
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 
@@ -217,7 +69,7 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - Notes: originals are vendored at `vendor/scarloxy-mpwsp01/` (2x/4x upscaled distribution).
   `scripts/import-scarloxy-pack.py` downscales them back to native pixel resolution and repacks
   tilesets/characters into RM2K3-compatible ChipSet (480x256, 16px) and CharSet (288x256, 24x32)
-  sheets. Fonts from the pack are not bundled (Latin-only; runtime uses Galmuri).
+  sheets. Fonts from the pack are not bundled (Latin-only).
 
 ## Generated monster sprites (not part of the Scarloxy pack)
 
@@ -237,7 +89,6 @@ source expands mechanically to a complete grid, with no shape generation or twee
 
 - Files:
   - `easyrpg/charset/*.png` from upstream `CharSet/*.png`
-  - `easyrpg/chipset/*.png` from upstream `ChipSet/*.png`
   - `easyrpg/faceset/*.png` from upstream `FaceSet/*.png`
   - `easyrpg/music/*.mid` from upstream `Music/*.mid`
   - `easyrpg/sound/*.wav` from upstream `Sound/*.wav`
@@ -246,19 +97,6 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - Pinned source commit: `993d88cbc78c658d348bbfa74a3b424d393d27e5`
 - License: Creative Commons Attribution 4.0 International for EasyRPG RTP materials
 - Upstream asset attribution: see `public/assets/easyrpg/AUTHORS.md`; license text is mirrored at `public/assets/easyrpg/COPYING`.
-
-## Mabaci — Crates Chests Coins and Barrels Collection (CC0) — **EXCLUDED / unused**
-
-- Source: https://opengameart.org/content/crates-chests-coins-and-barrels-collection
-- Upstream download: medieval_items.zip (GLB/FBX 3D models + License.txt)
-- Author page: OpenGameArt / Mabaci (credit appreciated, not required under CC0)
-- License: **CC0 1.0 Universal** (public domain dedication) — commercial use, modification, and redistribution allowed without attribution
-- Local files under public/assets/cc0/mabaci-medieval-items/:
-  - crate_closed.png, crate_open.png, chest_closed.png, chest_open.png, barrel.png, coin_stack.png, crate_long.png (2D orthographic previews rendered from GLB)
-  - charset-crates.png (RM2K3 CharSet 288x256; character 0=closed crate, 1=open crate; true alpha, not magenta color-key)
-  - LICENSE.txt (upstream CC0 notice)
-- Notes: **Style mismatch with EasyRPG interior chipset — excluded from charset catalog and interior events (2026-07-15).** Files may remain under public/assets/cc0/mabaci-medieval-items/ for reference only; not loaded by runtime.
-
 
 ## CC0 배경음악 (OpenGameArt) — 2026-07-26 추가
 
@@ -328,16 +166,12 @@ source expands mechanically to a complete grid, with no shape generation or twee
 
 | 디렉터리 | 개수 | 원본 | 출처 |
 | --- | --- | --- | --- |
-| `kenney-interface/` | 100 | Kenney — Interface Sounds | https://kenney.nl/assets/interface-sounds |
-| `kenney-ui/` | 13 | Kenney — UI Audio | https://kenney.nl/assets/ui-audio |
-| `kenney-jingles/` | 85 | Kenney — Music Jingles | https://kenney.nl/assets/music-jingles |
-| `kenney-rpg/` | 51 | Kenney — RPG Audio | https://kenney.nl/assets/rpg-audio |
-| `kenney-impact/` | 128 | Kenney — Impact Sounds | https://kenney.nl/assets/impact-sounds |
 | `oga-rpg-pack/` | 96 | **artisticdude** — RPG Sound Pack | https://opengameart.org/content/rpg-sound-pack |
 | `oga-rpg-sfx/` | 80 | **rubberduck** — 80 CC0 RPG SFX | https://opengameart.org/content/80-cc0-rpg-sfx |
 | `oga-sfx/` | 82 | **rubberduck** — 100 CC0 SFX | https://opengameart.org/content/100-cc0-sfx |
 
-- 포맷: Kenney/OGA 7팩은 Ogg Vorbis(44.1/48kHz), artisticdude 팩만 WAV PCM16/24(15.3MB 중 대부분).
+- 2026-10-07: Kenney 5팩(377개)은 저작권 정리로 지웠다. 남은 것은 OpenGameArt 3팩 258개다.
+- 포맷: OGA 팩은 Ogg Vorbis(44.1/48kHz), artisticdude 팩만 WAV PCM16/24(15.3MB 중 대부분).
   이 환경에 ffmpeg 가 없어 **트랜스코딩하지 않고 원본 바이트를 그대로 커밋했다** — BGM 의 wav
   루프 마스터와 같은 판단이다(sha256 재검증이 가능한 쪽을 택함).
 
@@ -394,113 +228,6 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - Files: `shared/portraits/<stem>/{bust,full}-<expression>.png`, 2432 files (magenta key removed, trimmed, 128-colour PNG).
 - The EasyRPG and supplied-expression attributions above still apply to the referenced faces and sprites. Generation does not establish a new license.
 
-### Forest harmony bundled snapshot (2026-09-18)
-`forest-harmony/chipset.png` packages the approved forest village atlas with
-existing town/retro-world components attributed above and user-reference-derived
-forest edits made using god-tibo-imagen (vegetation, canopy, trunks and end caps).
-Tile metadata and assemblies are in `src/assets/forestHarmonyTileset.json`.
-Tibo editing and bundling do not establish a new license or copyright clearance
-for reference-derived components. Existing component provenance still applies.
-
-
-## Slates v.2 — 32×32 orthogonal tileset
-
-- Author and required credit: **Ivan Voirol**.
-- Source: https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol
-- License: Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/
-- Bundled file: `slates/slates-v2-32px.png`.
-- Modification: removed the original top 32px title strip; artwork is otherwise unchanged.
-  Original 1792×736px; atlas 1792×704px, 56 columns × 22 rows of 32×32px tiles.
-- Games exporting this asset must retain the author, source, license and modification notice.
-- Reference-map additions: `slates/slates-v1-32px.png` uses the same author's original
-  1536×736 release, with its top 32px title strip removed (1536×704 output).
-- `slates/slates-reference-32px.png` combines v1/v2 source rectangles into editable
-  32px tiles for the harbor, town, and castle example layouts. The three example
-  layouts are based on Ivan Voirol's `NewVersion_0.png`, `ville_0.png`, and `chateau.png`
-  previews on the source page. Some small details differ from the previews.
-- Source rectangle recipes: `slates-reference-recipes.json`; generated tile provenance:
-  `slates-reference-tile-provenance.json`. Rebuild with
-  `scripts/content/build-slates-reference.mjs`. The reference screenshots are not
-  copied into the generated atlas. All derived artwork remains attributed to Ivan
-  Voirol under CC BY 4.0; preserve this notice when exporting the maps.
-- Study additions: `slates/slates-study-32px.png` retains the v2 atlas and appends three
-  32px composites (water tile 243 behind board tiles 23, 79 and 135). Generated by
-  `scripts/content/build-slates-study.mjs`. Same Ivan Voirol / CC BY 4.0 attribution.
-  `reports/slates-study/index.html` embeds the attributed source art, reconstructed
-  maps and the author's castle preview for visual comparison and explanation.
-- Village additions: `slates/slates-village-32px.png` retains the original v2 tiles
-  and appends 88 composites/placement variants. Sources and ordered rectangles are
-  recorded in `slates/slates-village-recipes.json`; no reference screenshot pixels
-  are used. The 50×50 village layout is authored for OPRN Studio. The atlas and
-  numbered images in `openwiki/images/slates/` remain credited to Ivan Voirol,
-  CC BY 4.0. Changes: original rectangles assembled, bridge board centers repeated,
-  original pixel colors retained. Keep the credit/license/modification notice.
-- Structure study: `slates/slates-mastery-32px.png` and the PNG plates in
-  `openwiki/images/slates/mastery/` use Ivan Voirol's v1/v2 source art under CC BY 4.0.
-  Changes: source rectangles composed into 32px cells; 16px structural and 8px detail
-  pieces, ordered alpha overlays, numbered source plates, and comparison/difference
-  boards. Reference previews are used only on the comparison side, not as atlas pixels.
-  Provenance: `slates-mastery-catalog.json` and `slates-mastery-fine-recipes.json`.
-  `reports/slates-mastery/index.html` embeds these attributed study images.
-# Castle courtyard harbor and nature extension (2026-09-20)
-
-`castle-surroundings/atlas.png` retains Castle2 in its first 512×512 pixels
-and appends selected source-art rectangles from Daniel Eddeland's LPC
-farming/fishing submission (CC-BY-SA 3.0) and Hyptosis batches 1 and 3
-(CC-BY 3.0). The combined/adapted atlas is CC-BY-SA 3.0. Original sources,
-their hashes, cropping/assembly recipe and full author/license links are in
-`castle-surroundings/sources/`, `manifest.json` and `CREDITS.txt`.
-No screenshot pixels are used. Tree crown/trunk/root modules were assembled;
-other props were cropped and repacked without scaling or recolouring.
-
-
-## Reviewed forest-village props (2026-09-21)
-
-`generated/forest-harmony/village-unfake-v1/*.png` contains eleven reviewed
-Tibo-generated village props, subsequently processed with the MIT-licensed
-[unfake.js](https://github.com/jenissimo/unfake.js) tool, version 1.3.0,
-commit `b2bee10c1c3b211a2532baca9088857b19480dca`. The tool source/WASM is not
-redistributed here. Processing methods and review scope are recorded alongside
-the PNGs. This is asset provenance, not a claim that processing changes the
-rights of any source image. The rejected clay oven is excluded.
-
-The gubisup, small-forest-village and forest-cliff-village region atlases preserve
-the existing mixed-source terrain/building attribution and the reviewed custom
-forest materials; they are portable authored map snapshots, not new original
-claims for those inherited tiles.
-
-## Stone well recolour (2026-09-28)
-
-The four "낮은 돌 우물" (low stone well) cells from
-`generated/forest-harmony/village-unfake-v1/stone-well-low.png` and every bundled
-sheet that copies them (`shared-village/objects.png`, the climate-village and
-atlas-biome chipsets, the region-reference atlases and the shared-object card
-preview) were recoloured by `scripts/content/recolor-forest-stone-well.py`.
-Silhouette and stone joints are unchanged; only colours were remapped to the
-forest chipset's neutral stone ramp, with a left-top light and an ordered-dither
-ground shadow. This is a derivative edit of the same Tibo-generated prop and
-carries its existing provenance; it does not change the rights of any source image.
-
-A subsequent outline cleanup used the built-in image generation tool as a contour
-reference, constrained to the original native footprint. Twenty border pixels were
-unified; original interior colours and alpha were retained. Reproducible sources
-and prompt are in `tiledata/forest-stone-well/`, packed and propagated by
-`scripts/content/prepare-forest-well-outline.mjs`.
-
-The full generated replacement was briefly tried at the user's request, then
-rejected in favour of the outline-cleaned version. Its saved source is historical;
-`tiledata/forest-stone-well/outline-native.png` is the accepted shipped sprite.
-
-## Authored forest place library (2026-09-21)
-
-The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`
-preserve the existing project maps and tileset pixels, including their original
-EasyRPG/combined-town/retro-world and reference-derived forest material provenance.
-The corresponding `public/assets/region-references/*-atlas.png` files are copies
-of those uploaded atlases. This registration does not create new original artwork
-or change the attribution or licence status documented above. Preview PNGs are
-captures of the saved maps in the actual editor.
-
 ## Opening mood stills (2026-09-22)
 
 generated/opening/*.png contains five cinematic opening stills (farm-golden,
@@ -514,10 +241,6 @@ bundled artwork (welcome poster slides and title art) whose provenance is
 documented in their sections above; this section registers no new claim for those
 files.
 
-## Shared river fortress place
-
-`region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.
-
 ## Opening still release pack v1 (2026-09-22)
 
 The `oprn-pack-still-*` catalog images are original text-to-image outputs from the
@@ -530,63 +253,6 @@ GitHub Release, installed at `assets/stills/pack/`, and included in game exports
 only when referenced. This provenance statement does not replace the licenses of
 other bundled assets documented above.
 
-## Forest grass joins — palette adaptation (2026-09-23)
-
-`forest-harmony/grass-joins.png` (160×16, ten 16px cells) derives from the
-existing `forest-harmony/chipset.png` and inherited EasyRPG retro-world material
-attributed above. It keeps the 504/505 alpha silhouettes and adapts their grass
-pixels and the 559 horizontal repeat, plus the grass portions of 498/499/528/529/619, to the unchanged floor240.
-Cell2 is an exact floor240 copy; cell8 matches the right rock face712 palette to711.
-No tree/building artwork is altered. This is a modified derivative, not a new
-original-art or licence claim. Existing mixed-source notices still apply.
-Exact source hash, coordinates and transformations: `tiledata/forest-villages/diverse/grass-joins-source.json`
-and `scripts/content/prepare-forest-grass-joins.mjs`.
-
-## Forest fantasy town — generated buildings and hand-pixelled props (2026-09-24)
-
-`forest-harmony/fantasy-town-buildings.png` (480×1168, 16px cells) backs the shared place
-「개울 건너 숲성 마을」. Buildings were generated with god-tibo-imagen (codex image
-backend) against fixed cell blueprints and the `forest-harmony/chipset.png` house style
-guide, then accepted only if they passed the blueprint checker, palette-locked to the
-reference house colours and sliced into cells. Props missing from the chipset (hay cart,
-straw bales, mushrooms, reeds, two wildflower re-arrangements of chipset cell 348) were
-hand-pixelled using only colours already present in `forest-harmony/chipset.png`.
-Blueprints, style kit and scripts: `tiledata/forest-harmony-buildings/` and
-`scripts/asset-gen/forest-harmony-buildings/`. This is provenance, not a new licence
-claim; existing forest-harmony component notices still apply.
-
-## Harbor kit (2026-09-24)
-
-- File: `harbor-kit/harbor-kit.png` (16px cells), built by `scripts/content/build-harbor-kit.py`; exact rectangles and
-  source hashes in `harbor-kit/parts.json`.
-- Rowboat: Daniel Eddeland (Daneeklu), LPC farming/fishing tiles, CC BY-SA 3.0 —
-  `castle-surroundings/sources/farming_fishing.png` rectangle (224,448,128,64), unchanged pixels.
-- Mooring post, coiled rope, anchor, barrels, crate: EasyRPG ship chipset (CC0) tiles 329/263/259/385/379/415; the
-  colour key #ff678b became transparency, no other change.
-- Grafted onto the forest-village tileset for harbors. The packed sheet is distributed under CC BY-SA 3.0; the credit
-  file `harbor-kit/CREDITS.txt` accompanies exports.
-
-## Atlas town parts (2026-09-25)
-
-- File: `forest-harmony/atlas-town-parts.png` (16px cells), built by `scripts/content/bake-atlas-town-parts.py`, grafted
-  onto forest_harmony at 3311~ (`src/assets/forestHarmonyAtlasTownParts.json`).
-- Sailing ship 「푸른물결호」: EasyRPG ship chipset (CC0) tiles and their mirrored stern copies, cut from the shared ship
-  reference render `region-references/bluewave-ship.png`; the surrounding sea was flood-filled to transparency.
-- Hide / black hide / red tents are recolours of forest_harmony chipset cells 417~479; the skull pike reuses cell 383.
-  Their original notices apply.
-- Fountain, striped market stalls, flames, smoke, ash, charred beams, scaffolding, bunting, lantern string and post,
-  hot-spring steam, totem and war banner are new pixels drawn in code by the script (no source image). Provenance, not a
-  new licence claim.
-
-## Forest harmony tree shadows (2026-09-27)
-
-- File: `forest-harmony/tree-shadows.png` (16px cells, 51 shadow-only cells), built by
-  `scripts/content/bake-forest-harmony-tree-shadows.py`; grafted onto forest_harmony after its last graft
-  (`src/assets/forestHarmonyTreeShadows.json`, `src/project/defaults/forestHarmonyTreeShadows.ts`).
-- Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
-  `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.
-- `generated/battle-scenery/{plains,forest,cave,snow,desert}/*.png`: OPRN Studio 자체 생성 이미지 (OpenAI image_gen, 2026-09-28); 원화 시트와 프롬프트 포함, `scripts/asset-gen/gen-battle-scenery.mjs`로 도트 양자화·레이어 분리·이음매 보정. 외부 게임 소재를 복사하지 않음.
-
 ## 손 도트 실내 v5 `atlas-interior/interior-chipset.png` (2026-09-29)
 
 `tex_atlas_biome_interior` / `atlas_biome_interior` (family `oprn-atlas`). Every cell is cut by
@@ -596,13 +262,8 @@ kit sample tile interiors of `atlas-biomes/jungle-chipset.png` (this repository'
 measured from the EasyRPG RTP (CC BY 4.0) as a visual reference only; no RTP pixels are pasted.
 Reference renders in `hand-interior-references/` are renders of the bundled example maps from this sheet (nearest-neighbour only).
 
-## 배·던전 `atlas-interior/dungeon-chipset.png` (2026-09-29)
+## Native enemy additions (2026-10-02)
 
-`tex_atlas_biome_dungeon` / `atlas_biome_dungeon` (family `oprn-atlas`), cut by `scripts/content/atlas-dungeon/split-dungeon.mjs`
-from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
-- Cells 0–479: EasyRPG `ChipSet/Ship.png` (JasonPerry, CC0). 480–509 blank (former Tibo graft slots).
-- Cells 510–989: EasyRPG `ChipSet/Dungeon.png` (JasonPerry, CC0); 990–992 blank, 993–998 cells grafted from EasyRPG combined town (CC0).
-- Cells 1020–1025: trapdoors, wall breach and rubble drawn in this repository. 1080+: composed water/abyss looks baked from app renders of those CC0 cells.
 - Native enemy additions (2026-10-02): the 100 original final-grid sheets in
   `generated/pixel-enemies/` are drawn by editable repository code in
   `scripts/asset-gen/pixel-enemy/retirement/{organic,arcane,humanoid}/`, extending

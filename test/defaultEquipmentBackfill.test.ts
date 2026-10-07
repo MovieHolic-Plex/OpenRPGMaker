@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 
 describe("default equipment backfill", () => {
   it("preserves the existing equipment catalog without adding missing defaults", () => {
-    const project = createSampleAdventureProject();
+    const project = createScarloxyDemoProject();
     const existingEquipment = project.database.equipment[0];
     if (existingEquipment === undefined) throw new Error("sample project has no equipment");
     existingEquipment.name = "사용자 편집 장비";

@@ -19,7 +19,6 @@ export const CHEST_OPEN_SE_POOL = [
   "cc0-se-ors-item-wood-01",
   "cc0-se-osx-wooden-01",
   "cc0-se-orp-inventory-wood-small",
-  "cc0-se-kra-creak1",
 ] as const;
 
 /** 금화 입수. 기본값 cc0-se-orp-inventory-coin. */
@@ -28,33 +27,27 @@ export const LOOT_GOLD_SE_POOL = [
   "cc0-se-ors-item-coins-01",
   "cc0-se-ors-item-coins-02",
   "cc0-se-orp-inventory-coin2",
-  "cc0-se-kra-handlecoins",
 ] as const;
 
-/** 아이템 징글 — NES 상승 라벨만. 기본값 nes09. */
+/** 아이템 입수 — 종소리. 기본값 bell-01. (Kenney 8-bit 징글은 2026-10-07 저작권 정리로 지웠다.) */
 export const LOOT_ITEM_SE_POOL = [
-  "cc0-se-kjg-8-bit-jingles-jingles-nes09",
-  "cc0-se-kjg-8-bit-jingles-jingles-nes14",
-  "cc0-se-kjg-8-bit-jingles-jingles-nes12",
+  "cc0-se-osx-bell-01",
+  "cc0-se-osx-bell-02",
+  "cc0-se-osx-bell-03",
 ] as const;
 
 /**
- * 문 열기. 기본값 cc0-se-kra-dooropen-1.
- * 닫기 풀과 같은 길이·같은 인덱스 = 같은 팩 짝
- * (Kenney open-1/close-1, Kenney open-2/close-2, OSX open/close-01).
- * 열기+닫기 한 클립(osx-door-01/02, orp-world-door)·삐걱(kra-creak1)은 제외 —
+ * 문 열기. 기본값 cc0-se-osx-door-open. (Kenney 문 소리는 2026-10-07 저작권 정리로 지웠다.)
+ * 닫기 풀과 같은 길이·같은 인덱스 = 같은 팩 짝(OSX open/close-01).
+ * 열기+닫기 한 클립(osx-door-01/02, orp-world-door)은 제외 —
  * 카탈로그에 「문 여닫기」로 등록된 2.6초대 클립이라 입장 시 어색하다.
  */
 export const DOOR_OPEN_SE_POOL = [
-  "cc0-se-kra-dooropen-1",
-  "cc0-se-kra-dooropen-2",
   "cc0-se-osx-door-open",
 ] as const;
 
 /** 문 닫기 — 열기 풀과 같은 길이라 같은 시드면 같은 인덱스로 짝이 맞는다. */
 export const DOOR_CLOSE_SE_POOL = [
-  "cc0-se-kra-doorclose-1",
-  "cc0-se-kra-doorclose-2",
   "cc0-se-osx-door-close-01",
 ] as const;
 

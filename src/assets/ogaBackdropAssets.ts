@@ -14,40 +14,8 @@ type OgaBackdropAsset = {
   readonly tags: readonly string[];
 };
 
-const ASSET_DIR = "assets/oga/greggman-backgrounds";
-
-export const OGA_BACKDROP_ASSETS: readonly OgaBackdropAsset[] = [
-  {
-    id: "oga-backdrop-meadow",
-    name: "초원 언덕 배경 (greggman)",
-    path: `${ASSET_DIR}/meadow.png`,
-    tags: ["배경", "초원", "들판", "언덕", "맑음"],
-  },
-  {
-    id: "oga-backdrop-city-night",
-    name: "야경 도시 배경 (greggman)",
-    path: `${ASSET_DIR}/city-night.png`,
-    tags: ["배경", "도시", "밤", "야경", "실루엣"],
-  },
-  {
-    id: "oga-backdrop-haunted-forest",
-    name: "윤곽 숲 배경 (greggman)",
-    path: `${ASSET_DIR}/haunted-forest.png`,
-    tags: ["배경", "숲", "밤", "공포", "실루엣"],
-  },
-  {
-    id: "oga-backdrop-dusk-mountains",
-    name: "황혼 산 배경 (greggman)",
-    path: `${ASSET_DIR}/dusk-mountains.png`,
-    tags: ["배경", "산", "황혼", "노을"],
-  },
-  {
-    id: "oga-backdrop-snow-mountains",
-    name: "설원 산 배경 (greggman)",
-    path: `${ASSET_DIR}/snow-mountains.png`,
-    tags: ["배경", "산", "설원", "눈"],
-  },
-] as const;
+// 2026-10-07 저작권 정리: greggman 배경 그림(public/assets/oga/greggman-backgrounds)을 지웠다. 목록은 비워 둔다.
+export const OGA_BACKDROP_ASSETS: readonly OgaBackdropAsset[] = [];
 
 export function resolveOgaBackdropAssetUrl(resourceId: string): string | null {
   const asset = OGA_BACKDROP_ASSETS.find((entry) => entry.id === resourceId);

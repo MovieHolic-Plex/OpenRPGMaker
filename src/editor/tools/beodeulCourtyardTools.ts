@@ -32,7 +32,7 @@ export function composeBeodeulCourtyard(project:Project,mapId:string){
  const m=project.maps[mapId],ts=m&&project.tilesets[m.tilesetId];
  if(!m||ts?.id!=='beodeul_city')throw new ToolError('버들항 작은 마을이 필요합니다.');
  const kits=new Map(ts.structureKits?.map(k=>[k.id,k]));
- const matches=(k:StructureKitDef,x:number,y:number)=>x>=0&&y>=0&&x+k.width<=m.width&&y+k.height<=m.height&&k.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n));
+ const matches=(k:StructureKitDef,x:number,y:number)=>x>=0&&y>=0&&x+k.width<=m.width&&y+k.height<=m.height&&k.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n));
  if(COURTYARD_HOUSES.every(h=>{const k=kits.get(h.kit);return k&&matches(k,h.x,h.y);}))return{summary:'우물 공동마당 배치가 이미 있습니다.',data:{mapId,alreadyApplied:true}};
  if(m.width!==54||m.height!==30||!COURTYARD_HOUSES.every(h=>{const k=kits.get(h.kit);return k&&matches(k,h.oldX,h.oldY);}))throw new ToolError('기존 54×30 예제의 집 5채와 교회 전체 배열이 일치해야 합니다. 임의 맵을 지우지 않습니다.');
  if(m.events.length||m.relief||m.terrainDesign||m.doodadGroups?.length)throw new ToolError('이 재배치는 이벤트·높이·별도 지형/기물 없는 예제만 지원합니다.');
@@ -46,8 +46,8 @@ export function composeBeodeulCourtyard(project:Project,mapId:string){
  const stamp=(id:string,x:number,y:number,kind='prop')=>{
   const k=kits.get(id);if(!k)throw new ToolError(`공용 조각 없음: ${id}`);
   if(x<0||y<0||x+k.width>m.width||y+k.height>m.height)throw new ToolError(`경계 밖 조각: ${id}`);
-  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=k.rows[dy]!.upperTiles[dx]!;if(n>=0&&layerTileAt(m,3,(y+dy)*m.width+x+dx)>=0)throw new ToolError(`조각 겹침: ${id} (${x+dx},${y+dy})`);}
-  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=k.rows[dy]!.upperTiles[dx]!;if(n>=0)setLayerTileAt(m,3,(y+dy)*m.width+x+dx,n);}
+  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=(k.rows[dy]!.upperTiles ?? [])[dx]!;if(n>=0&&layerTileAt(m,3,(y+dy)*m.width+x+dx)>=0)throw new ToolError(`조각 겹침: ${id} (${x+dx},${y+dy})`);}
+  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=(k.rows[dy]!.upperTiles ?? [])[dx]!;if(n>=0)setLayerTileAt(m,3,(y+dy)*m.width+x+dx,n);}
   placements.push({kit:id,x,y,kind});
  };
  for(const h of COURTYARD_HOUSES)stamp(h.kit,h.x,h.y,'house');

@@ -62,12 +62,12 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
     ||['bd-tree-03a8f7','bd-tree-3e8732','bd-tree-1a786c'].includes(k.id)));
   for(const kit of kits){
     if(kit.kind!=='section') continue;
-    const first=kit.rows.flatMap((r,y)=>r.upperTiles.map((n,x)=>({n,x,y}))).find(p=>p.n>=0);
+    const first=kit.rows.flatMap((r,y)=>(r.upperTiles ?? []).map((n,x)=>({n,x,y}))).find(p=>p.n>=0);
     if(!first) continue;
     for(const i of indices.get(first.n)??[]){
       const x=i%map.width-first.x,y=Math.floor(i/map.width)-first.y;
       if(x<0||y<0||x+kit.width>map.width||y+kit.height>map.height) continue;
-      const match=kit.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>{
+      const match=kit.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>{
         if(n<0) return true;
         const actual=layerTileAt(map,3,(y+dy)*map.width+x+dx);
         const g=grafts.get(actual);
@@ -148,7 +148,7 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
         if(x<0||ty<0||x>=map.width||ty>=map.height||map.relief?.levels[i]||criticalCells.has(i)
           ||layerTileAt(map,2,i)>=0||layerTileAt(map,4,i)>=0)continue;
         const houseRow=ty-a.y;
-        const ownWall=houseRow>=0&&houseRow<a.h&&(a.kit.rows[houseRow]?.upperTiles[dx]??-1)>=0;
+        const ownWall=houseRow>=0&&houseRow<a.h&&((a.kit.rows[houseRow]?.upperTiles ?? [])[dx]??-1)>=0;
         if(layerTileAt(map,3,i)>=0&&!ownWall)continue;
         // A foundation follows the wall and may touch its paved front yard; one busy grass tuft does not cancel the whole strip.
         if(!grass(i)&&!isPassable(project,map,x,ty))continue;

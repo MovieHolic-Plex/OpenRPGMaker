@@ -10,10 +10,13 @@ from PIL import Image, ImageDraw, ImageFont
 from native_author import render_native
 
 ROOT=Path(__file__).resolve().parents[4]
-SOURCE=ROOT/'harness-data/beodeul-building-review'
+SOURCE=ROOT/os.environ.get('BUILDING_REVIEW_SOURCE','harness-data/beodeul-building-review')
 DATA=Path(os.environ.get('BEODEUL_BUILDING_REVIEW_DATA',str(Path.home()/'.local/share/oprn/beodeul-building-review')))
 LOCK=threading.RLock()
 TOKEN=secrets.token_urlsafe(32)
+# Profiles whose candidates do not come from this repo's native-part authoring (other tilesets) are imported
+# straight into the review DB (import_candidates.py) and have no machine gate: a human decides every picture.
+GATE=os.environ.get('BUILDING_REVIEW_GATE','on')!='off'
 
 def now(): return datetime.now(timezone.utc).isoformat(timespec='seconds')
 def sha(data): return hashlib.sha256(data).hexdigest()
@@ -31,7 +34,9 @@ def db():
 
 def source():
     p=SOURCE/'pixels/panels.json'
-    return json.loads((SOURCE/'seed.json').read_text()),json.loads(p.read_text())['panels'] if p.exists() else {}
+    seed=SOURCE/'seed.json'
+    if not seed.exists():return {'candidates':[],'previousRejected':[]},{}
+    return json.loads(seed.read_text()),json.loads(p.read_text())['panels'] if p.exists() else {}
 
 def panel_image(name,palette,panels):
     p=panels[name];assert len(p['rows'])==p['height']
@@ -94,13 +99,14 @@ def scene(item,image):
     return bg
 
 def snapshot():
-    active_ids={item['id'] for item in source()[0]['candidates']}
+    active_ids={item['id'] for item in source()[0]['candidates']} if GATE else None
     with db() as c:
         items=[]
         for row in c.execute('select * from candidates order by position'):
-            if row['id'] not in active_ids:continue
-            from visual_gate import verify_receipt
-            if not verify_receipt(DATA,row['id'],row['sha']):continue
+            if GATE:
+                if row['id'] not in active_ids:continue
+                from visual_gate import admitted
+                if not admitted(DATA,row['id'],row['sha']):continue
             item=json.loads(row['meta']);last=c.execute('select * from decisions where item=? and sha=? order by seq desc limit 1',(row['id'],row['sha'])).fetchone()
             item.update(sha=row['sha'],decision=last['decision'] if last else 'pending',note=last['note'] if last else '',decidedAt=last['at'] if last else None)
             items.append(item)

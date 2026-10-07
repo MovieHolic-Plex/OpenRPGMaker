@@ -24,10 +24,6 @@ import { spawnSync } from "node:child_process";
 const BARREL = "src/project/defaults.ts";
 // 배럴이 더 이상 안 내보내는 심볼의 새 주소. 위반을 찍을 때 안내로 쓴다.
 const NEW_HOMES = [
-  ["src/editor/content/townShowcaseMaps.ts", "@/editor/content/townShowcaseMaps"],
-  ["src/editor/content/skyStairGame.ts", "@/editor/content/skyStairGame"],
-  ["src/project/defaults/modernNocturneGame.ts", "@/project/defaults/modernNocturneGame"],
-  ["src/project/defaults/marketTownMap.ts", "@/project/defaults/marketTownMap"],
   ["src/project/defaults/defaultProject.ts", "@/project/defaults/defaultProject"],
 ];
 
@@ -61,7 +57,7 @@ const homes = NEW_HOMES.map(([file, spec]) => [spec, exportedNames(file)]);
 const homeFor = (name) => homes.find(([, names]) => names.has(name))?.[0] ?? null;
 
 // 별칭(@/…)뿐 아니라 상대경로로 배럴을 가리키는 형태까지 본다 — 실제로 놓쳤던 형태다
-// (`scripts/verify-ice-grand-expanse.mts` 가 `../src/project/defaults` 를 썼다).
+// (옛 얼음 대평원 검증 스크립트가 `../src/project/defaults` 를 썼다).
 const SPEC = String.raw`(?:@/project/defaults|(?:\.\./)+src/project/defaults|\./defaults|\.\./defaults)`;
 const IMPORT_RE = new RegExp(String.raw`import\s+(?:type\s+)?\{([^}]*)\}\s*from\s*"${SPEC}";`, "gs");
 

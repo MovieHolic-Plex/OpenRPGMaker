@@ -38,12 +38,8 @@ import type { GameMap, Project } from "@/project/types/project";
 export const MAP_CREATING_TOOLS: ReadonlySet<string> = new Set([
   "create_map",
   "duplicate_map",
-  "place_concept",
   "build_hand_interior_room",
-  "run_interior_room_pipeline",
-  "start_interior_room_session",
-  "start_dungeon_room_session",
-  "run_dungeon_room_pipeline",
+  "build_wizarding_space",
 ]);
 
 /** 툴 결과에서 새로 만들어진 mapId 를 꺼낸다(툴마다 data/args 위치가 달라 순서대로 훑는다). */
@@ -232,7 +228,7 @@ export function verifyCreatedMapsAuthored(
     ok: false,
     reason:
       `산출물 미완성: ${blank.join(", ")} — 맵을 만들기만 하고 지형·구조·이벤트를 하나도 넣지 않았습니다. ` +
-      `fill_region/paint_road/author_house/place_props/place_npc 등으로 내용을 채운 뒤 완료하세요. ` +
+      `fill_region/paint_road/stamp_object/place_props/place_npc 등으로 내용을 채운 뒤 완료하세요. ` +
       `정말 빈 맵으로 남겨야 하면 skip_work_item으로 사유를 남기고 건너뛰세요.`,
   };
 }
@@ -265,7 +261,7 @@ export function verifyTargetMapChanged(
     reason:
       `지목된 맵 ${targetMapId} 에 변경이 없고 새 맵(${created.join(", ")})만 만들어졌습니다 — `
       + `수정 요청은 그 맵을 그 자리에서 고쳐야 합니다. ${targetMapId} 를 대상으로 `
-      + `paint_tiles/fill_region/tile_erase/move_event/furnish_interior_space 를 쓰거나, `
+      + `paint_tiles/fill_region/tile_erase/move_event 를 쓰거나, `
       + `정말 새 맵이 맞으면 skip_work_item 으로 사유를 남기세요.`,
   };
 }

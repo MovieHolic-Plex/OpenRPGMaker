@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import { initLocalProjectStore, type LocalProjectStore } from "../../electron/local-store/store";
@@ -25,7 +25,7 @@ afterEach(async () => {
 });
 
 function baseProject(): Project {
-  return projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+  return projectWithoutEventDrafts(createScarloxyDemoProject());
 }
 
 function rename(project: Project, mapId: string, name: string): Project {

@@ -1,0 +1,145 @@
+{
+ "label": "jp-house3",
+ "task": "일본식 2층 단독주택 실내를 만들어줘. 1층은 현관, 다다미 화실, 거실·부엌(LDK), 욕실과 화장실, 2층은 부부 침실과 아이방. 계단으로 오르내릴 수 있게.",
+ "model": "opencodex/gpt-6-astra",
+ "projectId": "6757e0ec-474b-47df-b9e9-d6a661763a65",
+ "projectDir": ".oprn-projects/hand-interior-trial-jp-house3",
+ "ms": 378256,
+ "reloadEqual": true,
+ "chosenTilesets": [
+  "jp_city"
+ ],
+ "maps": [
+  {
+   "id": "map_bf42a581-31b4-40a1-854e-b987cd557f73",
+   "name": "일본 단독주택 · 1층",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    24,
+    18
+   ],
+   "events": 1,
+   "entrances": 3,
+   "exits": [
+    {
+     "at": [
+      9,
+      10
+     ],
+     "to": "map_bf42a581-31b4-40a1-854e-b987cd557f73_2f",
+     "toAt": [
+      9,
+      12
+     ],
+     "reached": true
+    }
+   ],
+   "reachableFromEntrance": 193,
+   "walkableCells": 193,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 95
+  },
+  {
+   "id": "map_bf42a581-31b4-40a1-854e-b987cd557f73_2f",
+   "name": "일본 단독주택 · 2층",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    24,
+    14
+   ],
+   "events": 2,
+   "entrances": 1,
+   "exits": [
+    {
+     "at": [
+      9,
+      11
+     ],
+     "to": "map_bf42a581-31b4-40a1-854e-b987cd557f73",
+     "toAt": [
+      9,
+      11
+     ],
+     "reached": true
+    },
+    {
+     "at": [
+      10,
+      11
+     ],
+     "to": "map_bf42a581-31b4-40a1-854e-b987cd557f73",
+     "toAt": [
+      9,
+      11
+     ],
+     "reached": true
+    }
+   ],
+   "reachableFromEntrance": 91,
+   "walkableCells": 91,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 64
+  }
+ ],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 49,
+ "failed": 8,
+ "byTool": {
+  "read_project_wiki": 1,
+  "get_map_region": 1,
+  "list_tileset_references": 1,
+  "list_hand_interior_parts": 5,
+  "list_spatial_designs": 3,
+  "list_authoring_presets": 1,
+  "read_tileset_reference": 19,
+  "find_tools": 4,
+  "read_authoring_preset": 1,
+  "build_hand_interior_room": 4,
+  "manage_map_tree": 1,
+  "show_map_region": 4,
+  "run_scene_test": 2,
+  "run_lint": 2
+ },
+ "readReferences": [
+  "jp_city/",
+  "jp_city/jp-interior-rules",
+  "jp_city/",
+  "jp_city/jp-interior-rules",
+  "jp_city/jp-interior-ex-house-1f",
+  "jp_city/jp-interior-ex-house-2f",
+  "jp_city/jp-interior-ex-house-1f",
+  "jp_city/jp-interior-ex-house-2f",
+  "jp_city/",
+  "jp_city/",
+  "jp_city/",
+  "jp_city/jp-interior-ex-house-1f",
+  "jp_city/jp-interior-ex-house-2f",
+  "jp_city/",
+  "jp_city/",
+  "jp_city/",
+  "jp_city/jp-interior-surfaces",
+  "jp_city/jp-interior-surfaces",
+  "jp_city/"
+ ],
+ "stats": {
+  "ms": 363673,
+  "turns": 27,
+  "toolCalls": 52,
+  "toolErrors": 8,
+  "usage": {
+   "input": 1651139,
+   "output": 10265,
+   "cacheRead": 861952,
+   "cacheWrite": 0,
+   "totalTokens": 2523356,
+   "calls": 27
+  }
+ },
+ "finalText": "assistant: 2층 아이방의 폭을 줄여 좌우 구성을 다르게 하고, 침실의 러그와 계단 옆 독서 공간을 추가해 빈 공간을 정리했습니다. 1층은 그대로 유지했으며, 수정 후 두 방 출입과 계단 왕복 이동을 다시 확인했습니다."
+}

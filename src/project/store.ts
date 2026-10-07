@@ -16,7 +16,6 @@ import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTil
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
 import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
-import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
@@ -1733,8 +1732,6 @@ class ProjectStore {
     const normalizers: readonly (readonly [string, boolean])[] = skipNormalizers ? [] : [
       ["legacyDialogue", rewriteLegacyAdvancedDialogueInProject(this.current)],
       ["mapConnections", ensureProjectMapConnections(this.current)],
-      // 실내 보강은 mapTree 고아 복구보다 먼저 — 새로 넣은 실내 맵이 같은 패스에서 트리에 편입된다.
-      ["scarloxyInteriors", ensureScarloxyPokemonInteriors(this.current)],
       ["mapTreeCoverage", ensureMapTreeCoversAllMaps(this.current)],
       ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
       ["bundledTilesets", ensureBundledTilesets(this.current)],

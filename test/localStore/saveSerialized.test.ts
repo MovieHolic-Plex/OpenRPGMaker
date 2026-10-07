@@ -3,7 +3,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import { sha256HexTextSync } from "@/util/sha256";
@@ -24,7 +24,7 @@ afterEach(async () => {
 
 describe("local store saveSerialized", () => {
   it("보낸 텍스트를 그대로 저장하고 그 텍스트의 해시를 쓴다", async () => {
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     const serialized = serialize(project);
 
     const saved = await store.saveSerialized(serialized);
@@ -39,7 +39,7 @@ describe("local store saveSerialized", () => {
   });
 
   it("맵 미러 행을 텍스트에서 다시 만든다", async () => {
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     await store.saveSerialized(serialize(project));
 
     const mirrors = store.mapMirrors();

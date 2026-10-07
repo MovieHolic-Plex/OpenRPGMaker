@@ -10,6 +10,7 @@
 | `pokemon-character-casting` | 포켓몬 캐릭터 후보 승인 | 장르 `monster-collect` 전용 | `harness-data/pokemon-character-casting/seed.json` | `openwiki/harnesses/pokemon-character-casting.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `map-objects` | 공방 · 맵 기물 (16px, 지금 맵 칩셋) | 장르 무관 | `src/harnesses/map-objects/editor/prompts.ts` | `openwiki/harnesses/map-objects.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 | `super-harness` | 슈퍼하네싱 (기물·파생·공간) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
@@ -73,6 +74,7 @@ Emeraldnative16×32 걷기·실제 오프닝 클립·64×64 트레이너를15색
 
 **단계** (`npm run harness -- pokemon-character-casting <단계>`):
 - `prepare-cast` — 전체 16역할 준비: 역할별 판형에 명시한 머리·복장 수정을 적용하고 네이티브·GIF·출처 검사를 거쳐 16역할 검토 묶음으로 저장한다. 자동 승인하지 않는다.
+- `prepare-theme-cast` — 테마 주민·조련사 준비: 사막·설원·해안 9역할(주민 남·여, 조련사)을 원작 판형의 머리·복장 수정으로 만들고 검사 후 theme-cast-v1 묶음으로 저장한다. 다른 묶음과 판정은 건드리지 않으며 자동 승인하지 않는다.
 - `prepare` — 후보 준비: 명시한 시드의 서로 다른 native 전신 후보를 굽고 중복 몸체 검사와 기존 네이티브 모션 구조 검사와 미리보기를 연결한다.
 - `queue` — 후보 등록: 외부 native48×128과 GIF를 불변 후보 패키지로 가져온다. 검증된 판형 공유는 표시하고, 출처가 확인되지 않은 복제와 같은 그림의 중복 등록은 거부한다.
 - `serve` — 사용자 검토 화면: SQLite에 보존되는 Allow/Deny, 반려 이유, 방향·프레임 검토, 승인 결과 다운로드.
@@ -118,6 +120,21 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `draw` — 후보 그리기: 기물 하나에 후보 5장(방향 A~E). 깨지면 고치기 2번, 자기 점검 1번.
 - `review` — 독립 검수: 다른 대화의 vision 모델이 3/4·「지금보다 나빠졌나」를 본다. 가구는 꼭대기 윗면 3행 미만이면 FRONT.
 - `pick` — 고르기: 사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다.
+
+**들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
+
+## map-objects — 공방 · 맵 기물 (16px, 지금 맵 칩셋)
+
+지금 맵의 칩셋(16px)에 없는 물건(나무·바위·간판·조각상·바닥 무늬…)을 그 칩셋에서 뽑은 팔레트와 닮은 물체를 기준으로 새로 찍는다. 후보 3장 → 기계 검사 → 독립 검수(화풍·읽힘·3/4) → 최대 3번 다시 그린 뒤 사람이 고르고, 고른 것을 그 칩셋에 굽는다.
+
+**이럴 때 쓴다:**
+- 조수가 필요한 타일이 없다고 물었고 사용자가 스토어 대신 「직접 그려 줘」를 골랐을 때(손 도트 실내가 아닌 맵)
+- 에디터 사용자가 지금 맵 칩셋에 물건 하나를 자기 AI 계정으로 그려 넣고 싶을 때(왼쪽 막대 「공방」)
+
+**단계** (`npm run harness -- map-objects <단계>`):
+- `draw` — 후보 그리기: 기물 하나에 후보 3장(방향 A~C). 팔레트는 그 칩셋 색, 기준은 그 칩셋의 닮은 물체·시트 조각.
+- `review` — 독립 검수: 다른 대화의 vision 모델이 화풍(STYLE)·읽힘(READ)·3/4(FRONT·TOPDOWN)·배경(BG)을 본다.
+- `pick` — 고르고 굽기: 사람이 고르면 그 칩셋 끝에 칸을 붙이고 물체(workshop:…)를 만든다. 조수는 stamp_tileset_object 로 놓는다.
 
 **들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
 
@@ -304,6 +321,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `serve` — 허용/거절 화면: 큰 카드 갤러리·검색/필터·고정 메모/결정 패널·집중 보기·원본 비교로 검수하며 메모만 저장도 제공한다.
 - `repair` — 메모대로 고쳐 다시 올리기: 검수 화면의 「메모대로 고쳐 다시 올리기」 요청을 받는 별도 서비스(:18322). 거절 메모를 작업자(codex)에게 주어 원본 부품으로 다시 그리고, 같은 build→validate→gate→publish를 거친다. 실패하면 시드를 원래 바이트로 되돌린다.
 - `status` — 현재 선택: 현재 그림 해시와 일치하는 허용/거절/미선택을 보여 준다.
-- `export` — 허용한 것만 내보내기: 사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다. 공용 설치·정본 지도 적용은 별도 단계다.
+- `export` — 허용한 것만 내보내기: 사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts.
+- `install` — 허용한 건물 공용 번들 설치: 결정 로그에서 현재 그림 해시에 허용된 후보만 시트·카탈로그·참고문서로 굽는다(--profile <id>, 프로필은 profiles.json).
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

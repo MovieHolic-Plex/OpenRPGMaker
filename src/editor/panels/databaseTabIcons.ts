@@ -192,13 +192,6 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
   ],
 
   // ── 맵 ──
-  // 생성 규칙 — 물결 위 나무(지형을 깔아 주는 규칙)
-  worldGen: [
-    { tag: "path", attrs: { d: "M2.8 15.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
-    { tag: "path", attrs: { d: "M2.8 18.6c1.6-1.5 3.2-1.5 4.8 0s3.2 1.5 4.8 0 3.2-1.5 4.8 0" } },
-    { tag: "path", attrs: { d: "M7.6 11.8 4.4 11.8 7.6 3.4 10.8 11.8z" } },
-    { tag: "path", attrs: { d: "M14.6 11.8a2.8 2.8 0 1 1 0-5.6 2.8 2.8 0 0 1 0 5.6z" } },
-  ],
   // 타일셋(통행) — 3×3 격자
   tilesets: [
     { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },
@@ -233,14 +226,6 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M11 2.9l7 4v8.2l-7 4-7-4V6.9z" } },
     { tag: "path", attrs: { d: "M4 6.9 11 10.9 18 6.9" } },
     { tag: "path", attrs: { d: "M11 10.9v8.2" } },
-  ],
-  // 마을 — 집 두 채와 길
-  villages: [
-    { tag: "path", attrs: { d: "M3.2 9 6.9 5.4 10.6 9" } },
-    { tag: "rect", attrs: { x: "4.4", y: "9", width: "5", height: "5.2", rx: "0.6" } },
-    { tag: "path", attrs: { d: "M12.2 11.2 15.4 8.2 18.6 11.2" } },
-    { tag: "rect", attrs: { x: "13.3", y: "11.2", width: "4.2", height: "3.4", rx: "0.6" } },
-    { tag: "path", attrs: { d: "M2.8 18.6c3.2 0 3.6-2.2 6.8-2.2s4.2 2.2 8.2 2.2" } },
   ],
   spatialTiles: [
     { tag: "rect", attrs: { x: "3.4", y: "3.4", width: "15.2", height: "15.2", rx: "1.6" } },

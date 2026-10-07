@@ -1,7 +1,0 @@
-# hinanset01.png 4x5 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  
-   0 +o +o +l #G 
-   1 +o +r +l +G 
-   2 +o ~o ~o ~r 
-   3 ~g ~o ~o ~r 
-   4 ~o ~o ~o ~g 

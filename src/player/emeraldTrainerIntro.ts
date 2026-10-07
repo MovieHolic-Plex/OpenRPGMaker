@@ -30,9 +30,13 @@ export function resolveEmeraldTrainerIntro(project: Project, session: PlaySessio
   if (!graphic || sprite?.type !== 'uploaded') return undefined;
   const sheet = SHEETS.findIndex(id => id === sprite.id);
   const pattern = graphic.pattern;
-  if (sheet < 0 || pattern === undefined || !Number.isInteger(pattern) || pattern < 0 || pattern >= 96) return undefined;
+  // 시작 테마 시트(oprn_emerald_field_cast_<테마>, emeraldMonsterCast)는 칸 0·1 주민, 2 조련사다. 그 걷기 칩 전용 전투 그림은
+  // 아직 없어 가장 가까운 원작 자세(주민·탐험가)를 쓴다 — 그림이 없으면 소개 없이 몬스터가 「승부를 걸어왔다!」 때부터 서 있었다.
+  const themed = /^oprn_emerald_field_cast_(desert|snow|coast)$/u.test(sprite.id);
+  if ((sheet < 0 && !themed) || pattern === undefined || !Number.isInteger(pattern) || pattern < 0 || pattern >= 96) return undefined;
   const character = Math.floor(Math.floor(pattern / 12) / 4) * 4 + Math.floor((pattern % 12) / 3);
-  const role = ROLES[sheet * 8 + character];
+  const role: typeof ROLES[number] | undefined = themed ? (character === 2 ? 'explorer' : 'resident') : ROLES[sheet * 8 + character];
+  if (!role) return undefined;
   const picture = (id: string): TrainerPicture | null => {
     const asset = project.assets.uploaded[id];
     // Emerald native trainer poses are64×64. Keep explicitly authored older

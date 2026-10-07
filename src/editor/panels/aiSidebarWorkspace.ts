@@ -5,7 +5,7 @@ import { ruleAuditViolationCountCached, RULE_AUDIT_UPDATED_EVENT } from "@/edito
 import { openSidebarInspection } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
-import { createLeftFavoritesPane } from "./leftFavoritesPane";
+import { createLeftPropsPane } from "./leftPropsPane";
 import { createLeftLinksPane } from "./leftLinksPane";
 import { createLeftProgressPane } from "./leftProgressPane";
 import { createLeftStorePane } from "./leftStorePane";
@@ -14,7 +14,7 @@ import { createMapSidebarSection } from "./mapSidebarSection";
 
 const COLLAPSED_KEY = "oprn:ai-sidebar-collapsed";
 const PANE_KEY = "oprn:left-activity-pane";
-const PANES = ["tools", "maps", "favorites", "progress", "links", "workshop", "store"] as const;
+const PANES = ["tools", "maps", "props", "progress", "links", "workshop", "store"] as const;
 type Pane = (typeof PANES)[number];
 type PaneSurface = { readonly root: HTMLElement; show(): void; dispose(): void };
 
@@ -35,11 +35,12 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   try {
     collapsed = localStorage.getItem(COLLAPSED_KEY) === "1";
     const saved = localStorage.getItem(PANE_KEY);
-    if (isPane(saved)) pane = saved;
+    if (saved === "favorites") pane = "props";
+    else if (isPane(saved)) pane = saved;
   } catch { /* restricted storage */ }
   const surfaces: Record<Exclude<Pane, "tools">, PaneSurface> = {
     maps: createMapSidebarSection(),
-    favorites: createLeftFavoritesPane(),
+    props: createLeftPropsPane(),
     progress: createLeftProgressPane(journeyScope),
     links: createLeftLinksPane(),
     workshop: createLeftWorkshopPane(),
@@ -56,7 +57,7 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   const paneButtons: Record<Pane, HTMLButtonElement> = {
     tools: item("brush", "그리기", "sidebar-tools", () => activate("tools")),
     maps: item("map", "맵", "sidebar-maps", () => activate("maps")),
-    favorites: item("pin", "즐겨찾기", "sidebar-favorites", () => activate("favorites"), "즐찾"),
+    props: item("box", "기물", "sidebar-props", () => activate("props")),
     progress: item("flag", "진행", "sidebar-progress", () => activate("progress")),
     links: item("link", "연결", "sidebar-links", () => activate("links")),
     workshop: item("wrench", "공방", "sidebar-workshop", () => activate("workshop")),

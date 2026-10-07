@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { shopKeyOf } from "@/player/playSceneShopVisit";
 
@@ -16,7 +16,7 @@ import { shopKeyOf } from "@/player/playSceneShopVisit";
  */
 
 function projectWithShopCommand(economy?: unknown, restockPolicy?: unknown): string {
-  const project = createSampleAdventureProject();
+  const project = createScarloxyDemoProject();
   const map = project.maps[project.startMapId];
   const page = map.events[0].pages[0];
   page.commands = [

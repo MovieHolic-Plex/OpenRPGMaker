@@ -57,7 +57,7 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   // Apply after world creation so the intro names the actual starting place.
   configureEmeraldMonsterStyle(project);
   // Tiles stay on the bright monster_* kit (tone A, 2026-10-06); emerald_monster_* is kept only for projects already on it.
-  configureEmeraldMonsterCast(project);
+  configureEmeraldMonsterCast(project, { startTheme: options.startTheme });
   configureEmeraldMonsterOpening(project);
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);

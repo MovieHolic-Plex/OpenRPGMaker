@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
 import { passableLanding, upsertEventIntoMap } from "./eventTools";

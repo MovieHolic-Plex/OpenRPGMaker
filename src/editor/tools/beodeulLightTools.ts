@@ -30,12 +30,12 @@ export function harmonizeBeodeulDaylight(project:Project,mapId:string,options:{s
   const anchors:Anchor[]=[];
   for(const kit of target.structureKits??[]){
     if(!kitIds.has(kit.id))continue;
-    const first=kit.rows.flatMap((r,y)=>r.upperTiles.map((n,x)=>({n,x,y}))).find(p=>p.n>=0);if(!first)continue;
+    const first=kit.rows.flatMap((r,y)=>(r.upperTiles ?? []).map((n,x)=>({n,x,y}))).find(p=>p.n>=0);if(!first)continue;
     for(let i=0;i<map.width*map.height;i++){
       if(native(layerTileAt(map,3,i))!==first.n)continue;
       const x=i%map.width-first.x,y=Math.floor(i/map.width)-first.y;
       if(x<0||y<0||x+kit.width>map.width||y+kit.height>map.height)continue;
-      if(kit.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||native(layerTileAt(map,3,(y+dy)*map.width+x+dx))===n)))anchors.push({kit,x,y});
+      if(kit.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||native(layerTileAt(map,3,(y+dy)*map.width+x+dx))===n)))anchors.push({kit,x,y});
     }
   }
   const unique=anchors.filter((a,ai)=>!anchors.some((b,bi)=>bi!==ai&&b.x<=a.x&&b.y<=a.y&&b.x+b.kit.width>=a.x+a.kit.width&&b.y+b.kit.height>=a.y+a.kit.height&&(b.kit.width*b.kit.height>a.kit.width*a.kit.height||b.kit.width*b.kit.height===a.kit.width*a.kit.height&&bi<ai)));

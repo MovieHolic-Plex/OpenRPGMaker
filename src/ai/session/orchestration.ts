@@ -14,7 +14,7 @@ export const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 
 export const UNBUILT_SPEC_REKICK_HINT =
   "밑그림(set_build_spec)만 확정되었고 실제 배치 툴이 한 번도 호출되지 않았습니다. " +
   "밑그림은 사용자에게 보이지 않고 승인할 대상도 아닙니다 — 다시 밑그림을 제출하지 말고 " +
-  "명세의 에셋을 실제로 만드는 배치 툴(place_npc · make_villager · author_house · place_props 등)을 지금 호출하세요.";
+  "명세의 에셋을 실제로 만드는 배치 툴(place_npc · make_villager · stamp_object · place_props 등)을 지금 호출하세요.";
 
 export function orchestrationContent(content: string): string {
   return `${ORCHESTRATION_PREFIX}${content}`;

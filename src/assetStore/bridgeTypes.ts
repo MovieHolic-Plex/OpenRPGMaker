@@ -13,7 +13,7 @@ export interface StorePackagePayload {
   readonly version: number; readonly author: string; readonly storeUrl: string; readonly itemUrl: string;
 }
 export interface StoreProgressEvent { readonly slug: string; readonly phase: "install" | "upload"; readonly done: number; readonly total: number }
-export interface StoreChangedEvent { readonly kind: "installed" | "uninstalled" | "auth" | "uploaded"; readonly slug?: string; readonly result?: string }
+export interface StoreChangedEvent { readonly kind: "installed" | "uninstalled" | "auth" | "uploaded" | "visibility"; readonly slug?: string; readonly result?: string }
 export interface StoreLoginStart { readonly userCode: string; readonly verificationUri: string; readonly verificationUriComplete: string; readonly expiresIn: number }
 export type MyStoreItem = StoreItemSummary & { readonly status: StoreItemStatus; readonly hiddenBy: string | null };
 
@@ -31,6 +31,8 @@ export interface OprnStoreBridge {
   login(input?: { openBrowser?: boolean }): Promise<StoreLoginStart>;
   logout(): Promise<boolean>;
   upload(input: { manifest: StorePackManifest; blobs: Record<string, Uint8Array>; targetSlug?: string }): Promise<{ slug: string; status: StoreItemStatus; version: number }>;
+  /** 내 상품 숨기기(hidden: true)·다시 보이기. */
+  visibility(input: { slug: string; hidden: boolean }): Promise<{ status: StoreItemStatus }>;
   onProgress(callback: (event: StoreProgressEvent) => void): () => void;
   onChanged(callback: (event: StoreChangedEvent) => void): () => void;
 }

@@ -7,7 +7,7 @@ This catalogue belongs to the application defaults. Every new blank, example, or
 - Existing 228 item IDs and 86 equipment IDs remain stable.
 - `scripts/content/prepare-shared-item-catalog.mjs` authors 772 additional items with Korean names, descriptions, prices and supported engine effects. It emits `src/project/defaults/sharedItemCatalog.json` and `src/assets/sharedItemIconAssets.json`.
 - `sharedItemCatalog.ts` normalizes those records during the new-project seed only. Asset/profile convergence does not restore deleted item records in an existing project.
-- `npm run fixture:sync` refreshes the example fixture's derived database. `createSampleAdventureProject` also installs the current bundled resource profiles.
+- 예제 픽스처 동기화(`fixture:sync`)는 이슬 마을 예제와 함께 2026-10-07 저작권 정리로 지웠다.
 
 ## Artwork contract
 

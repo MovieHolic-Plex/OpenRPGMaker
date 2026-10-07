@@ -402,7 +402,8 @@ FLAG_V = {
 }
 
 
-def slab_tile(m, variant='a', worn=False, base=3):
+def _slab_tile_v1(m, variant='a', worn=False, base=3):
+    """옛 밝은 석재 포석(벽과 같은 색). 해시가 잠긴 남벽 출입구(wz-castle-door-s)만 쓴다 — 새 바닥은 slab_tile."""
     courses, cutsets, seed = FLAG_V[variant]
     cs = (courses, cutsets)
     c = Cv(16, 16)
@@ -452,24 +453,100 @@ def slab_tile(m, variant='a', worn=False, base=3):
     return c
 
 
-OAK_V = {'a': ((3,), (11,), (7,), (14,)), 'b': ((9,), (2,), (13,), (5,)), 'c': ((6,), (14,), (1,), (10,))}
+# ── 슬레이트 포석(2026-10-07 다시 그림) ──
+# 벽 정면(밝은 따뜻한 석재, 휘도 ~106)과 한눈에 갈리도록 바닥은 어둡고 찬 슬레이트(휘도 ~65)로 깐다.
+# 판석 배치는 16 토러스 위의 판석 이름표 지도: 줄눈은 판석의 오른쪽·아래 경계 1px, 윗변 왼쪽 4px 만 밝다(빛은 왼쪽 위).
+# 지도마다 가로·세로로 끝까지 이어지는 줄눈(단층선)이 없어서 8×8 로 깔아도 16 격자가 드러나지 않는다.
+def _slate_map_a():
+    m = []
+    for y in range(16):
+        row = ''
+        for x in range(16):
+            if y < 8:
+                ch = 'A' if x <= 9 else ('C' if y >= 4 else 'D')
+            else:
+                ch = 'C' if (8 <= x <= 13 and y <= 11) else ('D' if 8 <= x <= 13 else 'B')
+            row += ch
+        m.append(row)
+    return m
+
+
+def _slate_maps():
+    a = _slate_map_a()
+    b = [''.join(a[x][y] for x in range(16)) for y in range(16)]          # 전치: 세로로 긴 판석
+    c = [r[::-1] for r in a]
+    c = [r[5:] + r[:5] for r in c]
+    c = c[6:] + c[:6]                                                      # 좌우 뒤집고 밀기
+    return {'a': a, 'b': b, 'c': c}
+
+
+SLATE_MAPS = _slate_maps()
+SLATE = K('night', 2)          # 판석 면 #444858
+SLATE_JOINT = K('night', 1)    # 줄눈 #292C38
+SLATE_LIT = K('night', 3)      # 윗변 빛 #697184
+SLATE_PIT = K('stone', 1)      # 닳은 자국 #343338
+SLATE_WORN = {                 # (금 화소, 파인 자리, 밝게 닳은 자리)
+    'a': (((3, 2), (4, 3), (5, 3), (6, 4)), ((12, 10), (13, 10), (2, 12)), ((4, 10), (5, 10))),
+    'b': (((10, 2), (11, 3), (11, 4)), ((3, 12), (4, 12), (13, 6)), ((9, 13),)),
+    'c': (((2, 9), (3, 10), (4, 10), (5, 11)), ((11, 3), (12, 3), (7, 14)), ((13, 12), (14, 12))),
+}
+
+
+def _run_left(M, x, y):
+    s, d = M[y][x], 0
+    while d < 16 and M[y][(x - d - 1) % 16] == s:
+        d += 1
+    return d
+
+
+def slab_tile(m=None, variant='a', worn=False, base=None):
+    """슬레이트 포석 16×16(m·base 는 옛 호출 호환용, 쓰지 않는다)."""
+    M = SLATE_MAPS[variant]
+    c = Cv(16, 16)
+    for y in range(16):
+        for x in range(16):
+            s = M[y][x]
+            col = SLATE
+            if M[y][(x + 1) % 16] != s or M[(y + 1) % 16][x] != s:
+                col = SLATE_JOINT
+            elif M[(y - 1) % 16][x] != s and 1 <= _run_left(M, x, y) <= 4:
+                col = SLATE_LIT                                   # 윗변 왼쪽 4px 만 빛(긴 밝은 줄은 줄무늬가 된다)
+            c.P(x, y, col)
+    if worn:
+        crack, pits, scuff = SLATE_WORN[variant]
+        if worn == 'light':
+            crack, pits, scuff = crack[:2], pits[:2], ()
+        for (x, y) in crack:
+            c.P(x, y, SLATE_JOINT)
+        for (x, y) in pits:
+            c.P(x, y, SLATE_PIT)
+        for (x, y) in scuff:
+            c.P(x, y, SLATE_LIT)
+    return c
+
+
+# ── 오크 마루(2026-10-07 다시 그림): 따뜻한 중간 갈색 긴 널, 널 높이 5·5·6, 맞댐 이음은 두 줄만 ──
+OAK_ROWS = ((0, 5), (5, 5), (10, 6))
+OAK_V = {'a': (3, None, 11), 'b': (None, 9, 1), 'c': (13, 6, None)}   # 맞댐 이음(줄마다 하나 또는 없음 → 긴 널)
+OAK_GRAIN = {'a': ((1, 7, 6), (2, 1, 5)), 'b': ((0, 3, 7), (2, 6, 5)), 'c': ((1, 2, 5), (0, 9, 6))}
 
 
 def oak_tile(variant='a'):
+    """오크 긴 널: 널 면 한 톤 + 널 사이 어두운 틈 + 드문 맞댐 이음 + 널마다 긴 결 한 줄(어두운 단만)."""
     c = Cv(16, 16)
-    for j in range(4):
-        y0 = j * 4
-        tone = 3 + (1 if hsh(j, 0, ord(variant)) > 0.7 else (-1 if hsh(j, 1, ord(variant)) > 0.8 else 0))
-        c.R(0, y0, 16, 4, K('wood', tone))
-        c.HL(0, y0, 16, K('wood', tone + 1))
-        c.HL(0, y0 + 3, 16, K('wood', 1))
-        for cx in OAK_V[variant][j]:
-            c.VL(cx, y0, 3, K('wood', 2)); c.VL((cx + 1) % 16, y0, 3, K('wood', tone + 1))
-        for k in range(2):                                  # 긴 결
-            gx = int(hsh(j, k, ord(variant) + 4) * 14)
-            c.HL(gx, y0 + 1 + k, 4 + k * 2, K('wood', tone - 1) if (gx + j) % 2 else K('wood', tone + 1))
-        if hsh(j, 3, ord(variant)) > 0.7:
-            c.P(2 + j * 3, y0 + 2, K('wood', 1))
+    for j, (y0, h) in enumerate(OAK_ROWS):
+        c.R(0, y0, 16, h, K('wood', 3))
+        c.HL(0, y0 + h - 1, 16, K('wood', 2))                # 널 사이 틈
+        cut = OAK_V[variant][j]
+        if cut is not None:
+            c.VL(cut, y0, h - 1, K('wood', 2))
+    for (j, gx, gl) in OAK_GRAIN[variant]:
+        y0, h = OAK_ROWS[j]
+        gy = y0 + 1 + (gx % (h - 2))
+        for k in range(gl):
+            xx = (gx + k) % 16
+            if c.get(xx, gy) == K('wood', 3):
+                c.P(xx, gy, K('wood', 2))
     return c
 
 
@@ -497,43 +574,193 @@ def _corner_cut(p, x0, y0, x1, y1, col):
         p.P(cx, cy, col); p.P(cx + dx, cy, col); p.P(cx, cy + dy, col)
 
 
-@REG.autotile('wz-castle-flag', '성채 포석(오토타일)', 'surfaces', SP, desc='마른 석재 포석. 바깥은 어두운 틈과 그늘.',
-              rules='속은 포석 질감이 이어지고 가장자리는 어두운 틈 + 밝은 모서리 판석.', tags=['바닥', '포석'])
+@REG.autotile('wz-castle-flag', '성채 포석(오토타일)', 'surfaces', SP, desc='어둡고 찬 슬레이트 포석. 바깥은 더 어두운 틈과 그늘.',
+              rules='속은 슬레이트 판석이 이어지고 가장자리는 윗·왼변 빛 1px, 아래·오른변 줄눈 그늘.', tags=['바닥', '포석', '슬레이트'])
 def _at_flag():
     t = slab_tile(ST, 'a')
     p = Cv(48, 48)
     for y in range(48):
         for x in range(48):
-            h = hsh(x, y, 4)
-            p.P(x, y, K(ST, 0) if h > 0.12 else K(ST, 1))
+            p.P(x, y, OL if hsh(x % 16, y % 16, 4) > 0.1 else OL2)       # 바깥: 깊은 틈(16 주기)
     p.tile(t, 3, 3, 42, 42)
-    _corner_cut(p, 3, 3, 45, 45, K(ST, 0))
-    p.HL(3, 3, 42, K(ST, 5)); p.VL(3, 3, 42, K(ST, 5))
-    p.HL(3, 44, 42, K(ST, 1)); p.VL(44, 3, 42, K(ST, 1))
-    p.HL(1, 46, 46, K(ST, 1))
-    p.outline_rect(2, 2, 44, 44, K(ST, 0))
-    p.HL(3, 3, 3, K(ST, 0)); p.VL(3, 3, 3, K(ST, 0))
+    _corner_cut(p, 3, 3, 45, 45, OL)
+    p.HL(4, 3, 40, SLATE_LIT); p.VL(3, 4, 40, SLATE_LIT)                  # 윗·왼 가장자리 빛
+    p.HL(3, 44, 42, SLATE_JOINT); p.VL(44, 3, 42, SLATE_JOINT)            # 아래·오른 가장자리 그늘
+    p.outline_rect(2, 2, 44, 44, OL)
     ic = Cv(16, 16); ic.tile(t, 0, 0, 16, 16)
     for (x, y, dx, dy) in ((0, 0, 1, 1), (15, 0, -1, 1), (0, 15, 1, -1), (15, 15, -1, -1)):
-        ic.P(x, y, K(ST, 0)); ic.P(x + dx, y, K(ST, 1)); ic.P(x, y + dy, K(ST, 1))
+        ic.P(x, y, OL); ic.P(x + dx, y, SLATE_JOINT); ic.P(x, y + dy, SLATE_JOINT)
     return p, ic
 
 
-@REG.autotile('wz-castle-oak', '성채 오크 마루(오토타일)', 'surfaces', SP, desc='오크 널마루. 바깥은 석재 포석.',
-              rules='속은 오크 결, 가장자리는 석재와 맞닿는 어두운 이음 + 밝은 널.', tags=['바닥', '오크', '마루'])
+@REG.autotile('wz-castle-oak', '성채 오크 마루(오토타일)', 'surfaces', SP, desc='따뜻한 갈색 오크 널마루. 바깥은 슬레이트 포석.',
+              rules='속은 오크 긴 널, 가장자리는 포석과 맞닿는 어두운 이음 + 밝은 윗·왼 테.', tags=['바닥', '오크', '마루'])
 def _at_oak():
     st = slab_tile(ST, 'a'); ot = oak_tile('a')
     p = Cv(48, 48); p.tile(st, 0, 0, 48, 48)
     p.tile(ot, 3, 3, 42, 42)
-    _corner_cut(p, 3, 3, 45, 45, K(ST, 3))
-    p.outline_rect(2, 2, 44, 44, K('wood', 0))
-    p.HL(3, 3, 42, K('wood', 5)); p.VL(3, 3, 42, K('wood', 4))
-    p.HL(3, 44, 42, K('wood', 1)); p.VL(44, 3, 42, K('wood', 1))
-    p.HL(3, 46, 43, K(ST, 1)); p.VL(46, 3, 43, K(ST, 1))
+    _corner_cut(p, 3, 3, 45, 45, SLATE)
+    p.outline_rect(2, 2, 44, 44, K('wood', 1))
+    p.HL(3, 3, 42, K('wood', 4)); p.VL(3, 3, 42, K('wood', 4))
+    p.HL(3, 44, 42, K('wood', 2)); p.VL(44, 3, 42, K('wood', 2))
+    p.HL(3, 46, 43, SLATE_JOINT); p.VL(46, 3, 43, SLATE_JOINT)            # 마루 아래·오른쪽 포석 위 그늘
     ic = Cv(16, 16); ic.tile(ot, 0, 0, 16, 16)
     for (x, y, dx, dy) in ((0, 0, 1, 1), (15, 0, -1, 1), (0, 15, 1, -1), (15, 15, -1, -1)):
-        ic.P(x, y, K(ST, 1)); ic.P(x + dx, y, K('wood', 1)); ic.P(x, y + dy, K('wood', 1))
+        ic.P(x, y, SLATE); ic.P(x + dx, y, K('wood', 1)); ic.P(x, y + dy, K('wood', 1))
     return p, ic
+
+
+# ───────────────────────── 기숙사 융단·러너(투명 덧그림 f) ─────────────────────────
+# 슬레이트 바닥 위에 까는 납작한 천. 칸 바깥 여백은 투명이라 밑의 포석이 보인다. 빛은 왼쪽 위:
+# 왼(윗) 금테 바깥 줄이 밝고 오른(아랫) 금테는 한 단 어둡다. 무늬는 16 주기라 이어 깔면 끊기지 않는다.
+RUN_A, RUN_B = 3, 28                     # 러너 폭(가로지르는 축) 3..28 = 26px, 2칸 가운데
+RUN_FIELD = K('red', 2)                  # 짙은 붉은 바탕 #73344B
+RUN_SEAM = K('red', 1)                   # 금테 안쪽 솔기 #3C2439
+RUN_EDGE = K('brass', 0)                 # 천 윤곽 #30252A
+FRINGE_LIT, FRINGE_SH = K('linen', 2), K('linen', 1)
+
+
+def _runner_cross(u):
+    """가로지르는 축 좌표 u(0..31) → 색(None=투명). 왼/위 = 빛 받는 쪽."""
+    if u < RUN_A or u > RUN_B: return None
+    return {RUN_A: RUN_EDGE, RUN_A + 1: K('brass', 4), RUN_A + 2: K('brass', 3), RUN_A + 3: RUN_SEAM,
+            RUN_B - 3: RUN_SEAM, RUN_B - 2: K('brass', 3), RUN_B - 1: K('brass', 2), RUN_B: RUN_EDGE}.get(u, RUN_FIELD)
+
+
+def _runner_motif(u, v):
+    """바탕 무늬: 16 주기 마름모(밝은 붉은 테) + 가운데 금 점. u 가로지름(가운데 15.5), v 진행 방향(0..15)."""
+    du = abs(u - 15.5) - 0.5; dv = abs(v - 8)
+    r = du + dv
+    if r == 3: return K('red', 3)
+    if r == 0: return K('brass', 3)
+    return None
+
+
+def _runner_px(u, v):
+    col = _runner_cross(u)
+    if col == RUN_FIELD:
+        col = _runner_motif(u, v % 16) or col
+    return col
+
+
+def _runner(c, vertical, v0=0, v1=16, motif=True):
+    for v in range(v0, v1):
+        for u in range(32):
+            col = _runner_cross(u) if not motif else _runner_px(u, v)
+            if col is None: continue
+            if vertical: c.P(u, v, col)
+            else: c.P(v, u, col)
+
+
+@REG.piece('wz-castle-runner-ns', '기숙사 러너(남북)', 2, 1, ['ff'], 'surfaces', SP,
+           desc='홀·복도에 남북으로 까는 짙은 붉은 러너. 양옆 금테, 가운데 16 주기 마름모 무늬. 양옆 3px 은 투명이라 포석이 보인다.',
+           rules='세로로 이어 칠한다(repeat). 북쪽 끝은 runner-n-end, 남쪽 끝은 runner-s-end 로 마감. 통행, 사람 밑.',
+           tags=['러너', '융단', '천', '그리핀도르'], role='terrain', repeat=True)
+def _runner_ns(c):
+    _runner(c, True)
+
+
+@REG.piece('wz-castle-runner-ew', '기숙사 러너(동서)', 1, 2, ['f', 'f'], 'surfaces', SP,
+           desc='동서로 까는 짙은 붉은 러너. 위아래 금테(윗테가 밝다), 16 주기 마름모 무늬.',
+           rules='가로로 이어 칠한다(repeat). 통행, 사람 밑.', tags=['러너', '융단', '천'], role='terrain', repeat=True)
+def _runner_ew(c):
+    _runner(c, False)
+
+
+def _runner_end(c, north):
+    """끝 마감: 금테가 가로질러 돌고 바깥으로 술(fringe). 바탕 쪽은 runner-ns 와 같은 줄(무늬 없는 줄)로 이어진다."""
+    if north:
+        band, field, fr = range(4, 8), range(8, 16), (2, 3)
+    else:
+        band, field, fr = range(8, 12), range(0, 8), (12, 13)
+    for v in field:
+        for u in range(32):
+            col = _runner_cross(u)
+            if col is not None: c.P(u, v, col)
+    bt = [RUN_EDGE, K('brass', 4), K('brass', 3), RUN_SEAM] if north else [RUN_SEAM, K('brass', 3), K('brass', 2), RUN_EDGE]
+    for i, v in enumerate(band):
+        for u in range(RUN_A, RUN_B + 1):
+            side = _runner_cross(u)
+            if bt[i] == RUN_EDGE or side == RUN_EDGE:
+                col = RUN_EDGE                                # 바깥 윤곽은 모서리까지 돈다
+            elif bt[i] == RUN_SEAM and side not in (RUN_FIELD, RUN_SEAM):
+                col = side                                    # 솔기는 금테 안쪽만 가로지른다
+            else:
+                col = bt[i]
+            c.P(u, v, col)
+    for v in fr:                                          # 술: 2px 마다 한 가닥
+        for u in range(RUN_A + 1, RUN_B):
+            if u % 2 == 0:
+                c.P(u, v, FRINGE_LIT if (v == fr[0]) == north else FRINGE_SH)
+
+
+@REG.piece('wz-castle-runner-n-end', '기숙사 러너 북쪽 끝', 2, 1, ['ff'], 'surfaces', SP,
+           desc='남북 러너의 북쪽 끝: 금테가 가로질러 돌고 술이 달렸다. 문 앞 첫 칸.',
+           rules='runner-ns 의 북쪽 끝에 놓는다. 통행, 사람 밑.', tags=['러너', '융단', '천'], role='terrain')
+def _runner_n_end(c):
+    _runner_end(c, True)
+
+
+@REG.piece('wz-castle-runner-s-end', '기숙사 러너 남쪽 끝', 2, 1, ['ff'], 'surfaces', SP,
+           desc='남북 러너의 남쪽 끝: 금테가 가로질러 돌고 술이 달렸다.',
+           rules='runner-ns 의 남쪽 끝에 놓는다. 통행, 사람 밑.', tags=['러너', '융단', '천'], role='terrain')
+def _runner_s_end(c):
+    _runner_end(c, False)
+
+
+def _rug(c, m, trim_lit, trim, trim_sh, edge):
+    """3×2 깔개(48×32): 짧은 변(서·동)에 술, 테두리 금속 띠, 가운데 메달리온과 네 모서리 무늬."""
+    x0, x1, y0, y1 = 4, 43, 2, 29                     # 천 본체(포함)
+    field, field_d, field_l = K(m, 2), K(m, 1), K(m, 3)
+    c.R(x0, y0, x1 - x0 + 1, y1 - y0 + 1, field)
+    # 테두리: 윤곽 → 밝은 띠(위·왼) / 어두운 띠(아래·오른) → 안쪽 솔기
+    for (x, y) in [(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1)]:
+        dx0, dx1, dy0, dy1 = x - x0, x1 - x, y - y0, y1 - y
+        d = min(dx0, dx1, dy0, dy1)
+        lit = (dy0 == d or dx0 == d) and not (dy1 == d or dx1 == d)
+        if d == 0: col = edge
+        elif d == 1: col = trim_lit if lit else trim_sh
+        elif d == 2: col = trim
+        elif d == 3: col = field_d
+        else: continue
+        c.P(x, y, col)
+    # 안쪽 가는 테(바탕 한 단 밝게), 4px 안쪽
+    for x in range(x0 + 6, x1 - 5):
+        c.P(x, y0 + 6, field_l); c.P(x, y1 - 6, field_d)
+    for y in range(y0 + 6, y1 - 5):
+        c.P(x0 + 6, y, field_l); c.P(x1 - 6, y, field_d)
+    # 가운데 메달리온: 마름모(가로로 긴) + 금 속
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    for y in range(y0 + 7, y1 - 6):
+        for x in range(x0 + 7, x1 - 6):
+            r = abs(x - cx) / 2.0 + abs(y - cy)
+            if r <= 2.5: c.P(x, y, trim)
+            elif r <= 3.5: c.P(x, y, field_d)
+            elif r <= 6.0: c.P(x, y, field_l if (x < cx) == (y < cy) or abs(y - cy) < 1 else field)
+            elif r <= 7.0: c.P(x, y, field_d)
+    c.P(int(cx), int(cy), trim_lit); c.P(int(cx) + 1, int(cy), trim_lit)
+    # 네 모서리 작은 금 점
+    for (x, y) in ((x0 + 9, y0 + 9), (x1 - 9, y0 + 9), (x0 + 9, y1 - 9), (x1 - 9, y1 - 9)):
+        c.P(x, y, trim); c.P(x + 1, y, trim)
+    # 술(서·동 짧은 변), 2px 마다
+    for y in range(y0 + 1, y1):
+        if y % 2 == 1:
+            c.HL(x0 - 2, y, 2, FRINGE_LIT); c.HL(x1 + 1, y, 2, FRINGE_SH)
+
+
+@REG.piece('wz-castle-rug-red', '그리핀도르 붉은 깔개', 3, 2, ['fff', 'fff'], 'surfaces', SP,
+           desc='짙은 붉은 바탕에 금테·가운데 마름모 메달리온, 서·동 짧은 변에 술. 휴게실·홀 바닥 위에 까는 납작한 깔개.',
+           rules='슬레이트·오크 바닥 위에 덧그린다. 통행, 사람 밑. 가구(소파·탁자)를 그 위에 올린다.',
+           tags=['깔개', '융단', '천', '그리핀도르'], role='terrain')
+def _rug_red(c):
+    _rug(c, 'red', K('brass', 4), K('brass', 3), K('brass', 2), RUN_EDGE)
+
+
+@REG.piece('wz-castle-rug-blue', '래번클로 푸른 깔개', 3, 2, ['fff', 'fff'], 'surfaces', SP,
+           desc='짙은 푸른 바탕에 청동 테·가운데 마름모 메달리온, 서·동 짧은 변에 술. 탑 방·서재 바닥 위에 까는 납작한 깔개.',
+           rules='슬레이트·오크 바닥 위에 덧그린다. 통행, 사람 밑.', tags=['깔개', '융단', '천', '래번클로'], role='terrain')
+def _rug_blue(c):
+    _rug(c, 'water', K('brass', 3), K('brass', 2), K('brass', 1), OL)
 
 
 # ───────────────────────── 문틀·문 ─────────────────────────
@@ -736,8 +963,8 @@ def _passage2(c):
            desc='낮춘 남쪽 절단벽의 출입구. 양옆 문설주 윗면, 가운데 문턱 돌이 놓여 통행 가능.',
            rules='남쪽 마지막 2행 `-s` 사이에 끼운다.', tags=['문턱', '출입구'], role='wall')
 def _door_s(c):
-    # 바닥: 주변 포석(wz-castle-floor-flag)과 같은 16 주기로 칸 전체를 깐다 → 가운데 통로로 바닥이 이어져 보인다.
-    t = slab_tile(ST, 'a')
+    # 바닥: 옛 포석 16 주기(해시 잠금 — 문 조각은 바꾸지 않는다).
+    t = _slab_tile_v1(ST, 'a')
     c.tile(t, 0, 0, 16, 32)
     # 양옆 문설주 = 남벽(wall-s) 절단면 2px(윤곽 포함). wall-s 와 같은 그림에서 잘라 와 옆 칸과 이음새 없이 이어진다.
     w = Cv(16, 32)
@@ -824,7 +1051,7 @@ def _thr_so(c):
     c.tile(slab_tile(ST, 'a'), 0, 0, 7, 16)
     c.tile(oak_tile('a'), 9, 0, 7, 16)
     c.VL(7, 0, 16, K('brass', 4)); c.VL(8, 0, 16, K('brass', 2))
-    c.VL(6, 0, 16, K(ST, 1)); c.VL(9, 0, 16, K('wood', 1))
+    c.VL(6, 0, 16, SLATE_JOINT); c.VL(9, 0, 16, K('wood', 1))
     for y in (2, 13):
         c.P(7, y, K('brass', 5))
 
@@ -836,7 +1063,7 @@ def _thr_os(c):
     c.tile(oak_tile('a'), 0, 0, 7, 16)
     c.tile(slab_tile(ST, 'a'), 9, 0, 7, 16)
     c.VL(8, 0, 16, K('brass', 4)); c.VL(7, 0, 16, K('brass', 2))
-    c.VL(9, 0, 16, K(ST, 1)); c.VL(6, 0, 16, K('wood', 1))
+    c.VL(9, 0, 16, SLATE_JOINT); c.VL(6, 0, 16, K('wood', 1))
     for y in (2, 13):
         c.P(8, y, K('brass', 5))
 

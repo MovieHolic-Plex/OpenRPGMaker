@@ -4,7 +4,7 @@
 // 한 줄로 잇는다. 모듈 테스트가 각 함수를 따로 통과시켜도, 실제 플레이어에서 이 연결이
 // 끊기는지는 브라우저에서만 드러난다.
 //
-// 픽스처는 scripts/qa/runtime/life-full-fixture.mts 가 task17 의 저작 가능 픽스처에서 굽는다.
+// 픽스처를 굽던 생성기는 2026-10-07 저작권 정리로 지웠다 — 지금 픽스처는 고정본이다.
 // 감자는 stages [1일, 1일] 이므로 수확까지 이틀이 필요하다(실측: fixture 의 crop_potato).
 
 const MAP = "map_farming_demo";

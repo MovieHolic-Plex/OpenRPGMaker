@@ -7,20 +7,12 @@
 // generate_map(forest) 는 forest_harmony 팔레트를 거부한다. 이 도구는 참고문서를 읽어도 결과가 같은
 // 결정론 파이프라인이라 타일을 직접 고르지 않는다(마을 시공기의 길·나무·키큰 풀 부품을 그대로 쓴다).
 
-import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
-import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { canMove } from "@/project/collision";
-import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { EncounterTableEntry, GameEvent, GameMap, MapNamedLocation, Project, Rect } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 import { requireMap } from "./mapHelpers";
-import { canPaintForestWildRoute, paintForestWildRoute } from "./wildRouteForest";
 import { BEODEUL_PLAIN_GRASS, canPaintBeodeulWildRoute, paintBeodeulWildRoute } from "./wildRouteBeodeul";
-import { plantCompactVillageTrees } from "./village/compactVegetation";
-import { paintForestGroves } from "./village/forestGroves";
-import { prepareVillageTreeKit } from "./village/treeKit";
-import { paintRoadStrip } from "./village/roads";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Point = { x: number; y: number };
@@ -188,27 +180,11 @@ function isRelayEvent(event: GameEvent): boolean {
   return scan(event.commands) || (event.pages ?? []).some(page => scan(page.commands));
 }
 
-/** 숲을 심지 않을 칸 — 길 둘레 2칸, 풀숲 둘레 1칸, 출구 둘레 2칸, 이벤트 둘레 1칸. */
-function routeReserve(map: GameMap, road: ReadonlySet<number>, grass: ReadonlySet<number>, exits: readonly Point[]): Set<number> {
-  const reserved = new Set<number>();
-  const reserve = (x: number, y: number, radius: number) => {
-    for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) {
-      const nx = x + dx, ny = y + dy;
-      if (nx >= 0 && ny >= 0 && nx < map.width && ny < map.height) reserved.add(ny * map.width + nx);
-    }
-  };
-  for (const index of road) reserve(index % map.width, Math.floor(index / map.width), 2);
-  for (const index of grass) reserve(index % map.width, Math.floor(index / map.width), 1);
-  for (const exit of exits) reserve(exit.x, exit.y, 2);
-  for (const event of map.events) reserve(event.x, event.y, 1);
-  return reserved;
-}
-
 interface RouteCorridor { path: Point[]; road: Set<number>; patches: Rect[]; grass: Set<number> }
 
 /**
  * S자 길(폭 2)·기존 문까지 끄는 길·길을 가로지르는 풀숲 사각형을 정한다. 칠하지는 않는다 —
- * 합본 마을(흙길·키큰 풀 오토타일)과 버들항(포석·짙은 풀, wildRouteBeodeul.ts)이 같은 계획을 쓴다.
+ * 버들항(포석·짙은 풀, wildRouteBeodeul.ts)이 칠한다.
  */
 function planRouteCorridor(map: GameMap, exits: readonly Point[], patchCount: number, rng: Rng, noise: (x: number, y: number) => number,
   relayDoors: readonly GameEvent[], warnings: string[],
@@ -293,10 +269,9 @@ const authorWildRoute: ToolDefinition = {
   description:
     "몬스터 수집(포켓몬풍) 도로·필드 맵을 시공한다: 출구와 출구를 잇는 흙길, 양옆 숲, 길을 가로지르는 키큰 풀숲 패치, "
     + "그리고 풀숲 안에서만 나오는 야생 조우(encounters → 풀숲마다 로케이션 「풀숲 N」 + encounterTable locationId 조건). "
-    + "create_map 으로 만든 빈 잔디 맵에 쓴다(숲마을 forest_harmony·combined_town 계열·버들항 beodeul_city — 버들항은 곧게 뻗다 직각으로 꺾이는 모랫길·짙은 잎 풀숲·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
+    + "create_map 으로 만든 빈 잔디 맵에 쓴다(버들항 beodeul_city 계열 — 곧게 뻗다 직각으로 꺾이는 모랫길·짙은 잎 풀숲·길 양옆을 막는 나무 벽·길섶 숲길 소품). 타일을 직접 고르지 않는 결정론 시공이라 참고문서 선행 읽기가 필요 없다. "
     + "exits 는 가장자리 칸 — 다음에 create_transfer_pair 로 그 칸에 문을 단다. 결과 data.trainerSpots 는 길가 트레이너 자리 후보다(place_npc 로 배치). "
-    + "이미 타일이 칠해진 맵은 replace:true 일 때만 다시 깐다(이벤트는 보존). "
-    + "숲마을(forest_harmony) 맵은 숲마을 흙길(8방향 이음)·다듬은 키큰 풀 덩이·길에서 물러난 굽이숲을 깔고 빈 풀밭은 나무·덤불 덩이로 줄인다 — 남은 풀밭을 더 채우려면 arrange_tall_grass.",
+    + "이미 타일이 칠해진 맵은 replace:true 일 때만 다시 깐다(이벤트는 보존).",
   mode: "write",
   invalidArgsExample: { mapId: "map_route_1", exits: [{ x: 14, y: 21 }, { x: 14, y: 0 }], grassPatches: 3, encounters: [{ troopId: "troop_wild_1", weight: 60 }] },
   parameters: {
@@ -324,8 +299,8 @@ const authorWildRoute: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const tileset = draft.tilesets[map.tilesetId];
-    if (!tileset || !(isCombinedTownCompatibleTileset(tileset) || canPaintBeodeulWildRoute(tileset))) {
-      throw new ToolError(`author_wild_route 는 숲마을·combined_town·버들항 타일셋 맵에서만 시공합니다(현재 ${map.tilesetId}).`, { code: "wild-route-tileset", mapId: map.id });
+    if (!tileset || !canPaintBeodeulWildRoute(tileset)) {
+      throw new ToolError(`author_wild_route 는 버들항 타일셋 맵에서만 시공합니다(현재 ${map.tilesetId}). 숲마을·combined_town 도로는 2026-10-07 저작권 정리로 지웠습니다.`, { code: "wild-route-tileset", mapId: map.id });
     }
     if (map.width < 12 || map.height < 12) throw new ToolError("도로 맵은 12×12 이상이어야 합니다.", { code: "invalid-args", mapId: map.id });
     if (!Array.isArray(args.exits) || args.exits.length < 2) throw new ToolError("exits 는 가장자리 출구 2개 이상이어야 합니다.", { code: "invalid-args", mapId: map.id });
@@ -346,8 +321,7 @@ const authorWildRoute: ToolDefinition = {
       if (!Number.isInteger(weight) || weight <= 0) throw new ToolError(`encounters[${index}].weight 는 1 이상 정수입니다.`, { code: "invalid-args", mapId: map.id });
       return { troopId, weight };
     });
-    const beodeul = canPaintBeodeulWildRoute(tileset);
-    const ground = beodeul ? BEODEUL_PLAIN_GRASS : TILE.GRASS;
+    const ground = BEODEUL_PLAIN_GRASS;
     const painted = authoredCells(map, ground);
     if (painted > 0 && args.replace !== true) {
       throw new ToolError(`이 맵에는 이미 칠한 칸이 ${painted}개 있습니다. 다시 깔려면 replace:true 를 주세요(이벤트는 보존). 새 도로라면 create_map 으로 빈 맵을 먼저 만드세요.`, { code: "wild-route-map-not-blank", mapId: map.id });
@@ -364,50 +338,14 @@ const authorWildRoute: ToolDefinition = {
     const rng = mulberry32(seed ^ 0x5eed17);
     const noise = noiseField(map, rng);
     const relayDoors = map.events.filter(event => isRelayEvent(event));
-    let path: Point[], road: Set<number>, grass: Set<number>, patches: Rect[], roadCellCount: number, treeCells: number;
-    let fillNote = "";
-    if (canPaintForestWildRoute(tileset)) {
-      // 숲마을: 숲마을 흙길(road_47)·다듬은 키큰 풀 덩이·물러난 굽이숲·빈 풀밭 덩이 채움(wildRouteForest.ts).
-      const forest = paintForestWildRoute({ project: draft, map, tileset, exits, patchCount, seed, rng, relayDoors,
-        routeTo: (from, to) => routePath(map, from, to, noise), warnings });
-      ({ path, road, grass, patches, treeCells } = forest);
-      roadCellCount = forest.roadCells;
-      fillNote = `, 덩이 ${forest.fill.clumps}곳·관목/바위 ${forest.fill.dressing}칸`;
-    } else if (beodeul) {
-      // 버들항: 같은 길 계획을 포석·짙은 잎 풀·버들항 나무 키트로 칠한다(wildRouteBeodeul.ts).
-      ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings,
-        (from, to) => routePathStraight(map, from, to, noise), true));
-      const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, rng });
-      roadCellCount = laid.roadCells;
-      treeCells = laid.treeCells;
-      fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;
-    } else {
-      ({ path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings));
-
-      const roadCells = [...road].filter(index => !grass.has(index)).map(index => ({ x: index % map.width, y: Math.floor(index / map.width) }));
-      paintRoadStrip(map, "dirt", roadCells);
-      roadCellCount = roadCells.length;
-
-      const group = autotileGroupsForTileset(tileset).find(candidate => candidate.memberTileIds.includes(243) && candidate.memberTileIds.includes(304));
-      const body = group?.variantMap["255"];
-      if (!group || body === undefined) throw new ToolError("이 타일셋에 키큰 풀(243 계열) 오토타일이 없습니다.", { code: "wild-route-tileset", mapId: map.id });
-      for (const index of grass) map.lowerTiles[index] = body;
-      shapeAutotileGroupAround(map, group, [...grass].map(index => ({ x: index % map.width, y: Math.floor(index / map.width) })), (x, y) => grass.has(y * map.width + x));
-
-      // 숲은 길·풀숲·출구 둘레를 비워 두고 나머지를 채운다.
-      const reserved = routeReserve(map, road, grass, exits);
-      const kit = prepareVillageTreeKit(tileset);
-      treeCells = 0;
-      if (kit.grove) {
-        const forest = paintForestGroves(map, { x: 0, y: 0, w: map.width, h: map.height }, kit.grove,
-          (x, y) => !reserved.has(y * map.width + x) && map.lowerTiles[y * map.width + x] === TILE.GRASS && map.upperTiles[y * map.width + x] === TILE.EMPTY,
-          seed, 0.7, undefined, true);
-        treeCells = forest.cells.size;
-      } else {
-        const trees = plantCompactVillageTrees(draft, map, { x: 0, y: 0, w: map.width, h: map.height }, seed, reserved);
-        treeCells = trees.footprintCells;
-      }
-    }
+    // 버들항: 길 계획을 포석·짙은 잎 풀·버들항 나무 키트로 칠한다(wildRouteBeodeul.ts).
+    // 숲마을·combined_town 분기(흙길·키큰 풀 오토타일·굽이숲)는 2026-10-07 저작권 정리로 지웠다.
+    const { path, road, patches, grass } = planRouteCorridor(map, exits, patchCount, rng, noise, relayDoors, warnings,
+      (from, to) => routePathStraight(map, from, to, noise), true);
+    const laid = paintBeodeulWildRoute({ project: draft, map, tileset, road, grass, patches, exits, rng });
+    const roadCellCount = laid.roadCells;
+    const treeCells = laid.treeCells;
+    const fillNote = `, 길섶 소품 ${laid.decor}개, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)`;
 
     for (let i = 0; i + 1 < exits.length; i++) {
       if (!reachable(draft, map, exits[i]!, exits[i + 1]!)) warnings.push(`출구 (${exits[i]!.x},${exits[i]!.y}) → (${exits[i + 1]!.x},${exits[i + 1]!.y}) 가 걸어서 이어지지 않습니다 — show_map_region 으로 확인하세요.`);

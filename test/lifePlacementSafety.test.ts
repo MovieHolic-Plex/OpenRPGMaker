@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { advanceSeasonalForage } from "@/project/seasonalForage";
 import { p2LifeProject } from "./fixtures/p2LifeSystems";
@@ -9,7 +8,6 @@ import { footprintBounds, passageBounds } from "@/project/footprint";
 import { placeFarmBuilding, placeHomeDecoration, moveFarmBuilding, moveHomeDecoration, rotateHomeDecoration, upgradeFarmBuilding } from "@/project/spatialPlacementTransactions";
 import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveToSlot } from "@/player/saveSlots";
-import { advanceFarmPlotsForDay, interactWithFarmPlot } from "@/player/farming";
 
 function fixture() {
   const project = createBlankProject();
@@ -113,21 +111,6 @@ describe("task12 nonvisual placement safety", () => {
     expect(placeFarmBuilding(project, session, input(6, 5), () => ({ player, npcs: [] }))).toEqual({ ok: false, reason: "blocked" });
     expect(session).toEqual(before);
     expect(roundtrip(project, session).farmBuildingPlacements).toEqual(before.farmBuildingPlacements);
-  });
-
-  it("respects actual plots but farming can water and harvest its own plot", () => {
-    const project = createFarmingDemoProject();
-    const session = startSession(project, 1201);
-    const map = project.maps[project.startMapId]!;
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("tilled");
-    expect(occupancy.canOccupySpatialFootprint(project, session, { mapId: map.id, x: 4, y: 5, orientation: "down" }, { width: 1, height: 1 })).toBe(false);
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("planted");
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("watered");
-    advanceFarmPlotsForDay(project, session, 1, "spring");
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("watered");
-    advanceFarmPlotsForDay(project, session, 1, "spring");
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("harvested");
-    expect(session.inventory.item_potato).toBe(1);
   });
 
   it("restores a rug and building under transient actors and roundtrips without context", () => {

@@ -90,13 +90,15 @@ export function placeReferenceMapPreset(id: string, rerender: () => void): void 
   void preloadRegionReferenceScene(id).then((scene) => {
     let mapId = "";
     let tilesetNote = "";
+    let floors = 0;
     store.update((draft) => {
       const result = importReferenceScene(draft, scene, { newMapId: freshPresetMapId(draft, id) });
       mapId = result.mapId;
+      floors = result.floorMapIds.length;
       if (result.tileset.mode === "copied") tilesetNote = ` (타일셋 사본 ${result.tileset.tilesetId})`;
     }, { scope: "project", label: "완성 맵 프리셋" });
     if (mapId) editorState.set({ currentMapId: mapId as MapId });
-    note(`「${reference.name}」을 맵 목록에 넣었습니다${tilesetNote}`);
+    note(`「${reference.name}」을 맵 목록에 넣었습니다${floors ? ` — 층 ${floors + 1}장, 계단으로 이어짐` : ""}${tilesetNote}`);
     rerender();
   }).catch((error: unknown) => {
     note(placeChromeState.saveState, error instanceof Error ? error.message : String(error));

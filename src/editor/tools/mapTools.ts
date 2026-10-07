@@ -3,9 +3,8 @@ import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
-import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
-import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";
@@ -41,7 +40,6 @@ import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { EXTRA_LAYER_KEYS, compactMapLayers, cropExtraLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
 import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
-import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
@@ -94,7 +92,7 @@ import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime"
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
-import { assertHousePlacement, protectedHouseCells, registerCompletedHouse } from "./houseProtection";
+import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -250,8 +248,6 @@ const createMap: ToolDefinition = {
       other.name.trim() === String(name ?? "").trim() && other.events.length === 0 && !other.roomHarnessPlan);
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
-    // Tilesets the place documents name (oprn_dungeon_*) are made on first use.
-    ensureDocumentedTileset(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     // 폐기된 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)으로는 새 맵을 만들지 않는다 — 실내는 build_hand_interior_room(손 도트 v5).
@@ -732,56 +728,7 @@ function roadSeedSignature(map: GameMap, points: readonly Point[], naturalness: 
   return `paint_road|${map.id}|${map.width}x${map.height}|${naturalnessLabel(naturalness)}|${points.map(pointSignature).join(";")}`;
 }
 
-const STRUCTURE_STYLES: readonly TownCityPlotStyle[] = ["l", "courtyard", "multi", "road", "plaster", "stone"];
-
-const stampStructure: ToolDefinition = {
-  name: "stamp_structure",
-  description: `집/구조물 템플릿을 찍는다. template: l(ㄴ자 집)/courtyard(안뜰 딸린 집)/multi(연립 주택)/road(길)/plaster(회벽 소형 집)/stone(석조 소형 집). 프리셋이 있으면 개별 타일 id 대신 presetId+paletteRole을 우선 사용하라. 반환 diff에 문 좌표를 포함한다. ${NATURALNESS_GUIDANCE}`,
-  mode: "write",
-  parameters: {
-    type: "object",
-    properties: {
-      mapId: { type: "string" },
-      template: { type: "string", enum: STRUCTURE_STYLES as unknown as string[] },
-      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
-      presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
-      paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
-      naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
-      seed: { type: "integer", description: "선택 PRNG 시드(같은 입력/시드면 같은 지터)" },
-    },
-    required: ["mapId", "template", "origin"],
-  },
-  run(draft, args): ToolExecResult {
-    const map = requireMap(draft, args.mapId as string);
-    const template = args.template as TownCityPlotStyle;
-    const requestedOrigin = args.origin as Point;
-    const naturalness = naturalnessArg(args);
-    if (!STRUCTURE_STYLES.includes(template)) throw new ToolError(`알 수 없는 구조물 템플릿: ${template}`);
-    const tileset = draft.tilesets[map.tilesetId];
-    const picker = tileset ? paletteTilePickerForTool(tileset, args, structureSeedSignature(map, template, requestedOrigin, naturalness)) : null;
-    const origin = jitterPlacement(
-      requestedOrigin,
-      jitterMaxOffset(naturalness),
-      rngForTool(args, structureSeedSignature(map, template, requestedOrigin, naturalness)),
-      (candidate) => inMapBounds(map, candidate.x, candidate.y)
-    );
-    const before = snapshotTiles(map);
-    const structureMask = roadObstacleMaskFor(draft, map);
-    const fenceProtection = new Set(protectedHouseCells(map).map((cell) => coordKey(cell.x, cell.y)));
-    stampTownCityPlot(map, template, origin.x, origin.y,
-      (x, y) => structureMask(x, y) !== "open",
-      (x, y) => fenceProtection.has(coordKey(x, y)));
-    const paletteTiles = picker && tileset
-      ? applyPaletteToChangedCells(map, tileset, before, { x: origin.x, y: origin.y, width: 18, height: 16 }, picker)
-      : 0;
-    // 문 좌표는 대략적으로 구조물 하단 중앙으로 추정(정확 좌표는 템플릿별 상이).
-    const door = { x: origin.x + 3, y: origin.y + 4 };
-    return {
-      summary: `${map.name}에 '${template}' 구조물 스탬프(${origin.x},${origin.y}) — 자연도 ${naturalnessLabel(naturalness)}${picker ? ` — 프리셋 ${picker.presetId}/${picker.role} ${paletteTiles}칸` : ""}`,
-      data: { door, origin, paletteTiles },
-    };
-  },
-};
+// stamp_structure(합본 마을 집·길 템플릿 도장)는 2026-10-07 저작권 정리로 지웠다 — 대체는 stamp_object.
 
 const HOUSE_MATERIALS: readonly SmallHouseMaterial[] = ["plaster", "wood", "stone"];
 const HOUSE_DOOR_TOP = 116;
@@ -836,10 +783,6 @@ function houseSeedSignature(map: GameMap, house: HouseBuildArgs, naturalness: nu
     house.material,
     naturalnessLabel(naturalness),
   ].join("|");
-}
-
-function structureSeedSignature(map: GameMap, template: TownCityPlotStyle, origin: Point, naturalness: number): string {
-  return ["stamp_structure", map.id, `${map.width}x${map.height}`, template, pointSignature(origin), naturalnessLabel(naturalness)].join("|");
 }
 
 function pointSignature(point: Point): string {
@@ -2005,7 +1948,6 @@ const setMapProperties: ToolDefinition = {
       changed.push(`이름='${map.name}'`);
     }
     if (typeof args.tilesetId === "string") {
-      ensureDocumentedTileset(draft, args.tilesetId);
       const tileset = draft.tilesets[args.tilesetId];
       if (!tileset) throw new ToolError(`존재하지 않는 타일셋 id: ${args.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
       map.tilesetId = tileset.id;
@@ -2976,7 +2918,7 @@ const moveRegion: ToolDefinition = {
   },
 };
 
-export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, stampStructure, previewHouse, buildHouse, clearRegion, clearMap, mirrorRegion, copyMapRegion, moveRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
+export const MAP_TOOLS: readonly ToolDefinition[] = [createMap, duplicateMap, manageMapTree, paintTiles, paintRoad, previewHouse, buildHouse, clearRegion, clearMap, mirrorRegion, copyMapRegion, moveRegion, setStartPosition, setTilePassability, setMapProperties, setEncounterTable, makeHuntingGround, configureRoguelikeRoom, createFarmPlot, resizeMapTool, shiftMap, removeMapTool];
 
 // 스키마 참조를 정적으로 검증하기 위한 도우미(사용처 없어도 트리 셰이킹 안전).
 export type { JsonSchema };

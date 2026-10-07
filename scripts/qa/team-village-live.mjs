@@ -44,7 +44,7 @@ await withTsModule(resolve("electron/serve/runtime.ts"), "team-village-live.mjs"
         const size = (v) => JSON.stringify(v ?? null).length;
         const top = (o, n) => Object.fromEntries(Object.keys(o ?? {}).map((k) => [k, size(o[k])]).sort((a, b) => b[1] - a[1]).slice(0, n));
         summary.runs.push({
-          t: t(), mode: body.mode, readOnly: body.readOnly ?? false, villageContract: Boolean(body.villageContract), taskHead: String(body.task ?? "").slice(0, 60),
+          t: t(), mode: body.mode, readOnly: body.readOnly ?? false, taskHead: String(body.task ?? "").slice(0, 60),
           wireBytes: buf?.length ?? 0, jsonBytes: raw.length, gzip: buf?.[0] === 0x1f,
           heavyKeys: Object.keys(body.heavy ?? {}), heavyBlobBytes: size(body.heavyBlobs), requestFields: top(body, 8), projectFields: top(body.project, 8),
         });

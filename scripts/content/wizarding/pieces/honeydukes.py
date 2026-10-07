@@ -83,20 +83,33 @@ def ceiling_shade(c, rows=4):
             if cc[3]: c.P(x, j, darker(cc, 2 if j < rows // 2 else 1))
 
 
-def wall_base(c, with_beam=True):
+def wall_shelf(c, y=34):
+    """벽에 박은 오크 선반 널(16 주기): 윗면 2px 밝게, 앞면 2px, 아래 돌에 그림자, 칸마다 까치발 둘."""
+    c.HL(0, y, c.w, K('wood', 5)); c.HL(0, y + 1, c.w, K('wood', 4))
+    c.HL(0, y + 2, c.w, K('wood', 3)); c.HL(0, y + 3, c.w, K('wood', 1))
+    for x in range(c.w):
+        cc = c.get(x, y + 4)
+        if cc[3]: c.P(x, y + 4, darker(cc, 1))
+    for x in range(c.w):
+        if x % 16 in (3, 12):
+            c.VL(x, y + 4, 3, K('wood', 2)); c.VL(x + 1, y + 4, 2, K('wood', 1))
+
+
+def wall_base(c, with_beam=True, shelf=False):
     blocks16(c, 0, 58)
     ceiling_shade(c, 4)
     if with_beam: beam_h(c)
+    if shelf: wall_shelf(c)
     plinth(c)
 
 
 # ───────────────────────── 벽 ─────────────────────────
 @REG.piece('wz-hd-wall-n', '지하 창고 북벽(오크 보)', 1, 4, ['S', 'S', 'S', 'X'], 'architecture', SP,
-           desc='거친 큰 석재 블록 지하 벽 1×4. 위쪽에 오크 보가 가로로 걸려 있고 아래는 걸레받이.',
+           desc='거친 큰 석재 블록 지하 벽 1×4. 위쪽에 오크 보, 가운데에 벽에 박은 오크 선반 널(까치발), 아래는 걸레받이. 바닥 석판보다 훨씬 밝다.',
            rules='북쪽 가장자리에 가로로 이어 붙인다(16px 주기 이음새 없음). 열린 통로·비밀 패널은 같은 높이 조각으로 바꿔 끼운다.',
-           tags=['벽', '지하', '석벽', '보'], role='wall', repeat=True)
+           tags=['벽', '지하', '석벽', '보', '선반'], role='wall', repeat=True)
 def _wall_n(c):
-    wall_base(c)
+    wall_base(c, shelf=True)
 
 
 @REG.piece('wz-hd-beam-h', '천장 오크 보(가로)', 1, 1, ['C'], 'architecture', SP,
@@ -244,41 +257,35 @@ def _threshold(c):
 
 
 # ───────────────────────── 바닥 ─────────────────────────
-def sugar_planks(c, seed):
-    """설탕 가루 흩어진 판재(가로 널, 16px 주기)."""
-    rows = (0, 5, 10)      # 널 시작 y (5,5,6 높이)
-    hs = (5, 5, 6)
-    for i, (y, h) in enumerate(zip(rows, hs)):
-        base = 3 if (i + seed) % 2 == 0 else 2
-        for yy in range(y, y + h):
-            for x in range(16):
-                col = K('wood', base)
-                if yy == y: col = K('wood', base + 1)
-                elif yy == y + h - 1: col = K('wood', 1)
-                c.P(x, yy, col)
-        cut = (3 + i * 6 + seed * 5) % 16
-        c.VL(cut, y + 1, h - 2, K('wood', 1))
-        for x in range(16):
-            v = hsh(x, i, 11 + seed)
-            if v < 0.14 and 0 < (x - cut) % 16: c.P(x, y + 1 + int(v * 20) % (h - 2), K('wood', base - 1))
-            elif v > 0.9: c.P(x, y + 2, K('wood', base + 1))
-    # 설탕 가루(흰 점이 듬성듬성)
-    pts = ((2, 1), (13, 7), (5, 8), (11, 13)) if seed == 0 else ((12, 4), (7, 9), (2, 7), (9, 14))
-    for (x, y) in pts:
-        c.P(x, y, K('snow', 2))
-        if (x + y) % 3 == 0: c.P((x + 1) % 16, y, K('snow', 1))
+def stone_flags(c, seed):
+    """어둡고 닳은 지하 석판(16 주기). 바탕 stone1 한 톤, 줄눈 stone0, 왼위 모서리·닳은 자리만 드문 stone2. 3톤."""
+    c.R(0, 0, 16, 16, K(ST, 1))
+    if seed == 0:
+        rows = ((0, 7, (9,)), (7, 9, (4, 13)))           # (y, 높이, 세로 줄눈 x)
+        wear = ((11, 3, 3), (6, 11, 2))
+    else:
+        rows = ((0, 9, (2, 11)), (9, 7, (7,)))
+        wear = ((4, 4, 3), (12, 12, 2))
+    for y, h, cuts in rows:
+        c.HL(0, y + h - 1, 16, K(ST, 0))                # 가로 줄눈
+        for x in cuts:
+            c.VL(x, y, h - 1, K(ST, 0))                  # 세로 줄눈
+            c.P((x + 1) % 16, y, K(ST, 2))               # 석판 왼위 모서리의 작은 빛
+    for x, y, w in wear:                                  # 발길에 닳은 자리
+        c.HL(x, y, w, K(ST, 2))
 
 
 @REG.piece('wz-hd-floor-sugar-a', '설탕 판재 바닥 A', 1, 1, ['F'], 'surfaces', SP,
-           desc='설탕 가루가 듬성듬성 흩어진 오크 판재 바닥 1×1.', rules='이음새 없이 반복. B와 섞어 깐다.',
-           tags=['바닥', '판재', '설탕'], role='terrain', repeat=True)
-def _fa(c): sugar_planks(c, 0)
+           desc='지하 창고의 어둡고 닳은 큰 석판 바닥 1×1(이름의 설탕 가루는 포장 바닥 덧그림으로 얹는다). 낮은 대비 줄눈, 드문 닳은 자리.',
+           rules='이음새 없이 반복. B와 섞어 깐다. 밝은 석벽·오크 선반과 확실히 구분된다.',
+           tags=['바닥', '석판', '지하'], role='terrain', repeat=True)
+def _fa(c): stone_flags(c, 0)
 
 
 @REG.piece('wz-hd-floor-sugar-b', '설탕 판재 바닥 B', 1, 1, ['F'], 'surfaces', SP,
-           desc='널 이음 위치가 다른 설탕 판재 바닥 1×1.', rules='이음새 없이 반복. A와 섞어 깐다.',
-           tags=['바닥', '판재', '설탕'], role='terrain', repeat=True)
-def _fb(c): sugar_planks(c, 1)
+           desc='줄눈 위치가 다른 어두운 석판 바닥 1×1.', rules='이음새 없이 반복. A와 섞어 깐다.',
+           tags=['바닥', '석판', '지하'], role='terrain', repeat=True)
+def _fb(c): stone_flags(c, 1)
 
 
 @REG.piece('wz-hd-floor-packing', '포장 작업 바닥(끈·종이 조각)', 1, 1, ['f'], 'surfaces', SP,

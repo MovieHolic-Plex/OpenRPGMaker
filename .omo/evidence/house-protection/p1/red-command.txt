@@ -1,1 +1,0 @@
-npm test -- test/houseProtection.test.ts test/toolHouseProtection.test.ts test/houseKitDomainSeam.test.ts test/villageBuilderSeam.test.ts test/assistantMapPreservationGuard.test.ts test/constructionToolsV3.test.ts

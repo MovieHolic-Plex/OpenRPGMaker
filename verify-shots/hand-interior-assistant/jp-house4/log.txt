@@ -1,0 +1,27 @@
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   get_map_region — 보고 있는 맵(map_47fc4486-e280-41f0-9e52-d883fecf9821) 영역 (0,0)~(24,18) — 이벤트 0개, 물 0칸
+OK   list_tileset_references — 일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_authoring_presets — 플레이 프리셋 8종 조회 — 일치 8종. 상세는 read_authoring_preset(presetId).
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 0건
+OK   list_hand_interior_parts — 일본 집 실내(jp_city) 부품: 가구 97종(분류 3) · 바닥 7 · 벽면 5 · 천장 1 · 탁상 물건 20. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.
+OK   list_hand_interior_parts — 건물 일본 2층 단독주택: 예제 2맵 12방에서 쓰인 가구 66종(종류별). 예제 참고문서 documentId: jp-interior-ex-house-1f, jp-interior-ex-house-2f.
+OK   read_authoring_preset — 「귀환 지름길」 작성 지침 — 3단계·검사 3항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.
+OK   find_tools — 편집기 툴 2개 발견: run_scene_test, run_lint
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5) — MD 4쪽·이미지 16장 (남은 쪽 9: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5) — MD 4쪽·이미지 0장 (남은 쪽 5: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)
+assistant: 1층은 현관과 복도를 중심으로 화실·LDK·욕실·화장실을 나누고, 2층에는 문이 따로 있는 부부 침실과 아이방을 만들겠습니다. 각 방의 출입 동선과 계단 왕복도 확인하겠습니다.
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5) — MD 3쪽·이미지 0장 (남은 쪽 2: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)
+OK   find_tools — 편집기 툴 1개 발견: build_hand_interior_room. 없는 툴 이름: set_build_spec
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5) — MD 2쪽·이미지 0장 — 이 용도 전부
+OK   set_build_spec — 
+OK   build_hand_interior_room — 손 도트 실내 '일본식 단독주택 · 1층' 24×18 (map_47fc4486-e280-41f0-9e52-d883fecf9821, jp_city) — 출입구에서 닿는 칸 151, 닿지 못한 빈 바닥 0, 경고 0
+OK   build_hand_interior_room — 손 도트 실내 '일본식 단독주택 · 2층' 24×12 (map_47fc4486-e280-41f0-9e52-d883fecf9821_2f, jp_city) — 출입구에서 닿는 칸 73, 닿지 못한 빈 바닥 0, 경고 0
+OK   find_tools — 편집기 툴 1개 발견: manage_map_tree
+OK   show_map_region — 맵 미리보기: (0,0) 24×18 (일본식 단독주택 · 1층)
+OK   show_map_region — 맵 미리보기: (0,0) 24×12 (일본식 단독주택 · 2층)
+OK   manage_map_tree — 맵/분류 map_47fc4486-e280-41f0-9e52-d883fecf9821_2f 이동 → map_47fc4486-e280-41f0-9e52-d883fecf9821
+OK   build_hand_interior_room — 손 도트 실내 '일본식 단독주택 · 1층' 24×18 (map_47fc4486-e280-41f0-9e52-d883fecf9821, jp_city) — 출입구에서 닿는 칸 151, 닿지 못한 빈 바닥 0, 경고 0
+OK   run_scene_test — scene test 성공 (27/27 스텝)
+OK   run_lint — lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.
+OK   get_event — 이벤트 'map_47fc4486-e280-41f0-9e52-d883fecf9821-link-0' (22,9) — 페이지 1개
+assistant: 1층에 현관·다다미 화실·LDK·욕실·별도 화장실과 세면·세탁 공간을, 2층에 부부 침실과 아이방을 만들고 각 방에 출입문을 배치했습니다. 모든 방의 출입과 계단 왕복을 확인했으며, 시작 위치는 그대로 두고 현관의 외부 맵 연결은 추가하지 않았습니다.

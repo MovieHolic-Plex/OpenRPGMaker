@@ -143,6 +143,7 @@ import { resolveCanvasGestureOwner } from "@/editor/canvasPointerOwnership";
 import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { repositionEventAiQueuePins } from "@/editor/eventAiQueue/eventAiQueueView";
+import { repositionAiMapPresence } from "@/editor/aiMapPresence";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import {
@@ -660,7 +661,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
       editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
       // 높이 붓 굽기 방식별 횟수 — 붓질이 전체 굽기로 떨어지지 않는지 e2e 가 본다(reliefLiveStrips.ts).
-      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
+      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, fullReasons: this.reliefStrips?.fullReasons, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
       editWindow.__oprnEditSunlightStats = () => this.sunlightLayer?.diagnostics();
       // 띠를 버리고 전체를 다시 굽는다 — e2e 가 창 굽기 결과와 전체 굽기 결과의 화면이 같은지 비교한다.
       editWindow.__oprnEditReliefRebuild = () => {
@@ -3050,6 +3051,8 @@ export class EditScene extends PhaserRuntime.Scene {
     repositionRegionChunkOverlay();
     // AI 작업함의 칸 핀·입력창도 같은 계약이다.
     repositionEventAiQueuePins();
+    // 조수 이름표(지도 위 AI 존재감)도 같은 계약이다.
+    repositionAiMapPresence();
     // 로케이션 상자·설계 고스트도 카메라를 따라간다. 같은 계약: 노드는 그대로, 좌표만.
     // (인스펙터는 손대지 않는다 — 팬 중에 이름을 입력하고 있을 수 있다.)
     repositionMapLocationLayer();

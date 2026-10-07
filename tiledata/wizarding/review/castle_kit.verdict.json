@@ -1,6 +1,6 @@
 {
  "module": "castle_kit",
- "sealed": "2026-10-07T09:17:35.053490+09:00",
+ "sealed": "2026-10-07T10:21:05.297415+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-castle-wall-n": {
@@ -95,48 +95,48 @@
   },
   "wz-castle-floor-flag": {
    "verdict": "PASS",
-   "hash": "e19668bb07e7eff1d61db4039673ff6c0a6facea5c11fb485eeba7632c99df2e",
-   "reason": "포석 바닥, 3×3 반복 이음새 없음, 블록+드문 점."
+   "hash": "6f47a5fd2a4b315959729207ff39c6dfefd489a0e42438ab81644d2888b42350",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-flag-b": {
    "verdict": "PASS",
-   "hash": "46c373544b0c1f9970be01a181d1d278a3adb03d3371d21cab7bb47103a15dca",
-   "reason": "작은 블록 포석 변형, 이음새 없음."
+   "hash": "3059109171f368618df752384a6c42e05d75146b09ff13af4e81999b42b8fd21",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-flag-c": {
    "verdict": "PASS",
-   "hash": "f7c8b2f71d1af2894aa6e23c43b9cb7d8f36e7cbbe2b84ea918e994b0f89b6cc",
-   "reason": "큰 판석 변형, 이음새 없음."
+   "hash": "c184a282e2f30eae68b6c2a5ef3ed52897a0142c8f274acdec3524a20aec90b4",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-flag-worn": {
    "verdict": "PASS",
-   "hash": "850bf6e2ed2a1f3374e1cc16009db8a2631f166a28424294d85e34831bae1dae",
-   "reason": "닳은 포석, 블록마다 모서리 균열 하나 — 변형으로 섞기에 읽힘·이음새 없음."
+   "hash": "1680063cde20786ebcae61ddee362b92f1e3e87fd4eee8f16fdc6bbe94e9c30f",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-flag-worn-b": {
    "verdict": "PASS",
-   "hash": "92dc5ca5fc417f54df065d38fc1f085d483a05ab13d2efcdcff381b402a38cb0",
-   "reason": "수정 확인: 균열이 16칸당 2개로 줄고 밝은 균열 하이라이트 제거, 3×3 반복(8배)에서 잡음 없이 닳은 포석으로 읽힘, 이음새 없음."
+   "hash": "409569572503462fdc964da181da0bd32c8e7b364d879592bacec6d4d9ade03f",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-flag-worn-c": {
    "verdict": "PASS",
-   "hash": "bff0af37428944b40455bf322702562dd3393e82edda7690ed866b6f732a3e59",
-   "reason": "큰 판석+깨진 작은 돌 줄, 과하지 않음, 이음새 없음."
+   "hash": "82081a065fe5ef61dff908a485eb105f8a8c313840d2759af15524c2e592934a",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-oak": {
    "verdict": "PASS",
-   "hash": "5a90e6c8d3ff962e4ce3e99eba427483ddcef60bde598b33429f9d8c946ca238",
-   "reason": "오크 마루, 긴 판자 결·엇갈린 이음, 이음새 없음."
+   "hash": "00bc2a1f62fc3baa9f6aff4d90adde926edb8811f4ca54488c69f1251e2ced7a",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-oak-b": {
    "verdict": "PASS",
-   "hash": "58821c8c4629de08fa9b96ae48e332c02ced5e708b268f64aee9964170940264",
-   "reason": "오크 변형, 이음새 없음."
+   "hash": "bf5a22c244a7b1943860fd659686d45827590a3f237377f7c329a718cb95bd45",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-floor-oak-c": {
    "verdict": "PASS",
-   "hash": "f7583a20bbbf9d4871ef52166b568a566ad50825e8721c588f9e6f0201c14436",
-   "reason": "오크 변형, 이음새 없음."
+   "hash": "a4e2327bc75bfa1970491cc5e46ab95c675f05db2ae081dfbb3a68b6895c233e",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-door1-closed": {
    "verdict": "PASS",
@@ -200,13 +200,13 @@
   },
   "wz-castle-threshold-stone-oak": {
    "verdict": "PASS",
-   "hash": "8296958c9547357b4b4b40d8364d5c317e04dc5d5eb33826dc18a8b1163a9f33",
-   "reason": "석재→황동 띠→오크 전이 1칸, 읽힘."
+   "hash": "5b1b0bef39e2e4c5d639ef48aae115714d47ff16ca1184b1c11e4cd56451e9de",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-threshold-oak-stone": {
    "verdict": "PASS",
-   "hash": "b5cb8a0241527810c07d37a91d88a1f7afd658ce3cc1a5fd42d01c840a66b2ec",
-   "reason": "오크→황동 띠→석재 전이, 대칭."
+   "hash": "dade98ef29a335b72c8867039cc9d5f53b84b8101a561318c0fb505badc3adf9",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-rail-h": {
    "verdict": "PASS",
@@ -232,18 +232,48 @@
    "verdict": "PASS",
    "hash": "fbf1c5264c3a5f8f331f62805884324203d8d2e33519c5449bc3aa99688457d7",
    "reason": "남쪽 낮은 벽 윗면+작은 첨두 창, 예제에서 창으로 읽힘."
+  },
+  "wz-castle-runner-ns": {
+   "verdict": "PASS",
+   "hash": "7dceec0f1eddbc3da35d2875460a503d7efcbe8eb33d6b0677f618ef19d896d3",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-castle-runner-ew": {
+   "verdict": "PASS",
+   "hash": "5b01c91dc5df0a7075646bf2838b56b369af81c6e0965e85c347eb1facc50b2b",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-castle-runner-n-end": {
+   "verdict": "PASS",
+   "hash": "f7a9ee3639397deda84ea90e6b0c173feb757fa5ca8a955da3dd797f244abd48",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-castle-runner-s-end": {
+   "verdict": "PASS",
+   "hash": "0719b31edf23a47cb632b8da133f206b77d7de34b4f0398f6361dbcd811e98b2",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-castle-rug-red": {
+   "verdict": "PASS",
+   "hash": "891dc3456e0ba27cd0f7b2565ac0ac292e8b5011642444d37965e268884246ac",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-castle-rug-blue": {
+   "verdict": "PASS",
+   "hash": "b1920960b83025d383e961e94cf4a42d29be47db44b645e98c73eab9b8ba85ab",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   }
  },
  "autotiles": {
   "wz-castle-flag": {
    "verdict": "PASS",
-   "hash": "96ae4fa29022eb56603dfaadc5aec217c7453f4774026eae60347b9b3560cc0c",
-   "reason": "포석 오토타일: 속 16 주기 이음새 없음, 바깥=어두운 틈 링, 모서리·안쪽 모서리 일관, 전 칸 불투명. 무작위 맵에서 끊김 없음."
+   "hash": "a291d0dc6071fb53e3a0978eb83bacf6c44117aca13fc47a13581ee3410b7877",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-castle-oak": {
    "verdict": "PASS",
-   "hash": "780dffdb12161dc0ae67393661026502925fe01c1554b60ffb3a5ab12a4cd949",
-   "reason": "오크 오토타일: 바깥 링이 포석 바닥과 같은 격자로 구워져 포석 위 합성 시 이음새 없음(직접 합성 확인), 오른쪽·아래 그림자, 안쪽 모서리 처리 됨."
+   "hash": "fb22dc3062824debc11288c357a3acf0365135013fbe9cc8d173337fc71a46ec",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   }
  },
  "characters": {}

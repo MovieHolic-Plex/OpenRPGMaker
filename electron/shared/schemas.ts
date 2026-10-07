@@ -152,6 +152,7 @@ export const storeCatalogSchema = z.object({
   page: z.number().int().positive().max(500).optional(),
   lang: storeLang.optional(),
 });
+export const storeVisibilitySchema = z.object({ slug: storeSlug, hidden: z.boolean() });
 export const storeUploadSchema = z.object({
   manifest: z.record(z.string(), z.unknown()),
   blobs: z.record(z.string().regex(/^[0-9a-f]{64}$/), z.instanceof(Uint8Array)),

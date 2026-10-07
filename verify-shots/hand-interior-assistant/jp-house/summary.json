@@ -1,0 +1,45 @@
+{
+ "label": "jp-house",
+ "task": "일본식 2층 단독주택 실내를 만들어줘. 1층은 현관, 다다미 화실, 거실·부엌(LDK), 욕실과 화장실, 2층은 부부 침실과 아이방. 계단으로 오르내릴 수 있게.",
+ "model": "opencodex/gpt-6-astra",
+ "projectId": "3546c516-a0a9-4831-b1b2-d146386f0f98",
+ "projectDir": ".oprn-projects/hand-interior-trial-jp-house",
+ "ms": 74243,
+ "reloadEqual": true,
+ "chosenTilesets": [],
+ "maps": [],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 12,
+ "failed": 0,
+ "byTool": {
+  "get_project_summary": 1,
+  "read_project_wiki": 1,
+  "list_authoring_presets": 1,
+  "list_tileset_references": 2,
+  "list_spatial_designs": 1,
+  "get_database_records": 1,
+  "get_map_region": 1,
+  "find_tools": 1,
+  "inspect_terrain": 1,
+  "read_authoring_preset": 1,
+  "ask_tileset_change": 1
+ },
+ "readReferences": [],
+ "stats": {
+  "ms": 58168,
+  "turns": 8,
+  "toolCalls": 12,
+  "toolErrors": 0,
+  "usage": {
+   "input": 475191,
+   "output": 623,
+   "cacheRead": 0,
+   "cacheWrite": 0,
+   "totalTokens": 475814,
+   "calls": 8
+  }
+ },
+ "finalText": "assistant: 일본식 현관과 다다미·욕실을 표현할 수 있는 **일본 주택용 그림체**로 만들어도 될까요? 화면에 비교 견본을 띄웠으며, 아직 맵은 변경하지 않았습니다.  승인하시면 기존 맵은 그대로 두고, 요청하신 1층 생활 공간과 2층 부부 침실·아이방을 새로 만들어 계단으로 연결하겠습니다."
+}

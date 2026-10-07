@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { buildConceptEvents } from '@/editor/interiorConceptEvents';
 import type { ConceptPlacement } from '@/editor/interiorConceptCompose';
 import { createEmptyRoomMap } from '@/editor/interiorRoomPipeline';
-import { characterDepth, characterSpriteY, isAlwaysAboveCharacterUpperTile, mapUpperTileDepth } from '@/player/characterDepth';
-import { createTiboInteriorTileset } from '@/project/defaults/tiboInterior';
 
 describe('stair transfer coverage + single-tile stair depth', () => {
   it('creates a transfer event for every tile of a horizontal 3-wide stair', () => {
@@ -32,24 +30,5 @@ describe('stair transfer coverage + single-tile stair depth', () => {
     const placement = { objectId: 'stairs_down', thingId: 'down_stair', label: '아래층 계단', roomId: 'corridor', anchor: { x: 3, y: 3 }, cells: [{ x: 3, y: 3, layer: 'upper', tile: 474 }], chips: ['pass', 'event'], required: true } as ConceptPlacement;
     const result = buildConceptEvents(map, [placement], { door: { x: 1, y: 5 } });
     expect(result.events[0]?.pages?.[0]?.priority).toBe('below');
-  });
-  it('renders a walkable single-tile stair below the character, not as ★ canopy', () => {
-    const tileset = createTiboInteriorTileset();
-    for (const tile of [444, 445, 474, 475]) {
-      expect(isAlwaysAboveCharacterUpperTile(tileset, tile)).toBe(false);
-      for (const priority of ['below', 'same', 'above'] as const) {
-        expect(mapUpperTileDepth(tileset, tile, 3)).toBeLessThan(characterDepth(priority, characterSpriteY(3)));
-      }
-    }
-  });
-  it('treats upper-placed 3-wide stone stairs as walkable, not canopy', () => {
-    const tileset = createTiboInteriorTileset();
-    const upper = JSON.parse(JSON.stringify(tileset)) as typeof tileset;
-    for (const tile of [111, 141, 171]) {
-      upper.priority[tile] = 'upper';
-      upper.passability[tile] = { up: true, down: true, left: true, right: true };
-      expect(isAlwaysAboveCharacterUpperTile(upper, tile)).toBe(false);
-      expect(mapUpperTileDepth(upper, tile, 3)).toBeLessThan(characterDepth('same', characterSpriteY(3)));
-    }
   });
 });

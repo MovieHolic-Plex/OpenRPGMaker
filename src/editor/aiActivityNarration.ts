@@ -69,6 +69,10 @@ const ACTIONS = {
   export: forms("내보내기 준비를 점검하는 중", "내보낼 준비를 점검했어요", "내보내기 점검을 마치지 못했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
+  askMissingTiles: forms("없는 타일을 어떻게 할지 묻는 중", "없는 타일을 어떻게 할지 물었어요", "없는 타일을 묻지 못했어요"),
+  storeSearch: forms("스토어에서 찾는 중", "스토어에서 찾았어요", "스토어에서 찾지 못했어요"),
+  storeInstall: forms("스토어 상품을 넣는 중", "스토어 상품을 넣었어요", "스토어 상품을 넣지 못했어요"),
+  storePropose: forms("스토어 확인 카드를 준비하는 중", "스토어 확인 카드를 띄웠어요", "스토어 확인 카드를 띄우지 못했어요"),
   askTileset: forms("타일 느낌을 바꿔도 될지 묻는 중", "타일 느낌을 바꿔도 될지 물었어요", "타일 느낌 변경을 묻지 못했어요"),
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
   opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
@@ -92,11 +96,10 @@ const READ_ONLY_EVENT = new Set([
   "list_npc_graphics", "get_story_state",
 ]);
 const READ_ONLY_VILLAGE = new Set([
-  "critique_village", "evaluate_village_layer", "evaluate_village_look", "get_village_session",
-  "list_village_tree_assets", "look_at_houses",
+  "look_at_houses",
 ]);
 const READ_ONLY_QUALITY = new Set([
-  "evaluate_game_quality", "evaluate_dungeon_room", "evaluate_interior_room", "run_lint",
+  "evaluate_game_quality", "run_lint",
   "lint_world", "analyze_map_tile_usage",
 ]);
 const READ_ONLY_QUEST = new Set(["lint_quest", "verify_quest"]);
@@ -113,10 +116,9 @@ addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region 
 addFamily(ACTIONS.erase, "tile_erase clear_region");
 addFamily(ACTIONS.wipeMap, "clear_map");
 addFamily(ACTIONS.resetProject, "reset_project");
-addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
-addFamily(ACTIONS.structure, "stamp_structure stamp_object build_wall build_roof place_door place_window build_castle register_structure_kit");
-addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
-addFamily(ACTIONS.village, "author_village build_village plan_village materialize_village_spec revise_village_plan run_village_pipeline start_village_session advance_village_build run_village_session");
+addFamily(ACTIONS.scatter, "scatter_object place_props");
+addFamily(ACTIONS.structure, "stamp_object build_wall build_roof place_door place_window register_structure_kit");
+addFamily(ACTIONS.house, "build_house preview_house make_gallery_room apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
 addFamily(ACTIONS.person, "place_npc make_villager author_npc_cast upsert_actor upsert_character_profile add_companion set_npc_schedule configure_companion_rules");
 addFamily(ACTIONS.event, "upsert_event duplicate_event move_event create_transfer_pair create_time_gate place_vehicle place_battle_blocker place_trap place_chest place_storage_chest place_savepoint place_examine_hotspots compile_puzzle make_chase_scene configure_object_behavior script_cutscene script_cutscene_preset script_cutscene_impact script_cutscene_staged upsert_common_event upsert_troop_battle_page author_boss_phases");
 addFamily(ACTIONS.deleteEvent, "remove_event delete_troop_battle_page");
@@ -125,8 +127,8 @@ addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe de
 addFamily(ACTIONS.createMap, "create_map duplicate_map generate_map");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
-addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map move_region set_start_position set_tile_passability set_encounter_table author_wild_route arrange_tall_grass create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");
-addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality evaluate_dungeon_room evaluate_interior_room evaluate_village_layer evaluate_village_look critique_village");
+addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map move_region set_start_position set_tile_passability set_encounter_table author_wild_route create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");
+addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality");
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
 addFamily(ACTIONS.quest, "create_quest create_quest_flags define_quest declare_story_flag define_ending");
@@ -141,6 +143,10 @@ addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test"
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.askTileset, "ask_tileset_change");
+addFamily(ACTIONS.askMissingTiles, "ask_missing_tiles");
+addFamily(ACTIONS.storeSearch, "store_search store_my_items");
+addFamily(ACTIONS.storeInstall, "store_install");
+addFamily(ACTIONS.storePropose, "store_publish store_set_visibility");
 addFamily(ACTIONS.opening, "set_opening edit_opening");
 addFamily(ACTIONS.openingImage, "generate_opening_image");
 addFamily(ACTIONS.titleArt, "generate_title_art");

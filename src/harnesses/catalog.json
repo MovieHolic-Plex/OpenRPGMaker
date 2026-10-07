@@ -158,6 +158,11 @@
           "summary": "역할별 판형에 명시한 머리·복장 수정을 적용하고 네이티브·GIF·출처 검사를 거쳐 16역할 검토 묶음으로 저장한다. 자동 승인하지 않는다."
         },
         {
+          "id": "prepare-theme-cast",
+          "title": "테마 주민·조련사 준비",
+          "summary": "사막·설원·해안 9역할(주민 남·여, 조련사)을 원작 판형의 머리·복장 수정으로 만들고 검사 후 theme-cast-v1 묶음으로 저장한다. 다른 묶음과 판정은 건드리지 않으며 자동 승인하지 않는다."
+        },
+        {
           "id": "prepare",
           "title": "후보 준비",
           "summary": "명시한 시드의 서로 다른 native 전신 후보를 굽고 중복 몸체 검사와 기존 네이티브 모션 구조 검사와 미리보기를 연결한다."
@@ -293,6 +298,41 @@
           "id": "pick",
           "title": "고르기",
           "summary": "사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다."
+        }
+      ],
+      "entrypoints": {
+        "cli": false,
+        "editorUi": true,
+        "assistantTool": false
+      },
+      "workshopRunner": true
+    },
+    {
+      "id": "map-objects",
+      "title": "공방 · 맵 기물 (16px, 지금 맵 칩셋)",
+      "summary": "지금 맵의 칩셋(16px)에 없는 물건(나무·바위·간판·조각상·바닥 무늬…)을 그 칩셋에서 뽑은 팔레트와 닮은 물체를 기준으로 새로 찍는다. 후보 3장 → 기계 검사 → 독립 검수(화풍·읽힘·3/4) → 최대 3번 다시 그린 뒤 사람이 고르고, 고른 것을 그 칩셋에 굽는다.",
+      "scope": {},
+      "triggers": [
+        "조수가 필요한 타일이 없다고 물었고 사용자가 스토어 대신 「직접 그려 줘」를 골랐을 때(손 도트 실내가 아닌 맵)",
+        "에디터 사용자가 지금 맵 칩셋에 물건 하나를 자기 AI 계정으로 그려 넣고 싶을 때(왼쪽 막대 「공방」)"
+      ],
+      "seed": "src/harnesses/map-objects/editor/prompts.ts",
+      "doc": "openwiki/harnesses/map-objects.md",
+      "stages": [
+        {
+          "id": "draw",
+          "title": "후보 그리기",
+          "summary": "기물 하나에 후보 3장(방향 A~C). 팔레트는 그 칩셋 색, 기준은 그 칩셋의 닮은 물체·시트 조각."
+        },
+        {
+          "id": "review",
+          "title": "독립 검수",
+          "summary": "다른 대화의 vision 모델이 화풍(STYLE)·읽힘(READ)·3/4(FRONT·TOPDOWN)·배경(BG)을 본다."
+        },
+        {
+          "id": "pick",
+          "title": "고르고 굽기",
+          "summary": "사람이 고르면 그 칩셋 끝에 칸을 붙이고 물체(workshop:…)를 만든다. 조수는 stamp_tileset_object 로 놓는다."
         }
       ],
       "entrypoints": {
@@ -869,7 +909,12 @@
         {
           "id": "export",
           "title": "허용한 것만 내보내기",
-          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다. 공용 설치·정본 지도 적용은 별도 단계다."
+          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts."
+        },
+        {
+          "id": "install",
+          "title": "허용한 건물 공용 번들 설치",
+          "summary": "결정 로그에서 현재 그림 해시에 허용된 후보만 시트·카탈로그·참고문서로 굽는다(--profile <id>, 프로필은 profiles.json)."
         }
       ],
       "entrypoints": {

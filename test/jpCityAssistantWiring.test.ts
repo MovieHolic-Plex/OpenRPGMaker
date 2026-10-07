@@ -3,7 +3,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
-import { requestsModernMap } from "@/ai/modernTilesetPolicy";
 import { buildPiAgentSystemPrompt } from "@/ai/piAgent/systemPrompt";
 import { buildPiIntentNote } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
@@ -42,17 +41,6 @@ describe("jp_city 대상 판정", () => {
   it("대상 맵이 jp_city 이면 문구와 무관하게 그 맵이다", () => {
     const { project: p } = projectWithJpMap();
     expect(jpCityTargetFor(p, declaredIntent({ mode: "modify", space: "outdoor" }), "여기 편의점 하나 지어줘", "jpmap", false)).toEqual({ mapId: "jpmap", lived: false });
-  });
-});
-
-describe("PAW 전용 현대 맵 게이트", () => {
-  it("jp_city 를 직접 부르거나 PAW 가 없는데 일본 상가를 «현대»로 말하면 게이트가 물러선다", () => {
-    const project = createBlankProject();
-    expect(requestsModernMap(project, "현대 일본 상가 거리 맵 만들어줘 (jp_city 칩셋)", [START])).toBe(false);
-    expect(requestsModernMap(project, "현대 일본 상가 거리 맵 만들어줘", [START])).toBe(false);
-  });
-  it("PAW 와 무관한 현대 학교 요청은 여전히 게이트를 켠다", () => {
-    expect(requestsModernMap(createBlankProject(), "현대 학교 교실 맵 만들어줘", [])).toBe(true);
   });
 });
 
@@ -96,7 +84,6 @@ describe("도구 노출", () => {
       autonomy: resolveAutonomy("balanced"), declarer: () => fixedDeclarer({ mode: "create", space: "outdoor", tools: ["author_village"] }), piTeam: false,
     });
     for (const name of JP_CITY_EXPOSED_TOOLS) expect(turn.initialToolNames, name).toContain(name);
-    expect(turn.plan.villageContract).toBeUndefined();
     expect(turn.intentNote).toContain("[일본 거리 시공 — jp_city]");
     expect(turn.intentNote).not.toContain("[마을 시공 — 버들항]");
   });

@@ -4,7 +4,7 @@ export const SPATIAL_SHELL_TABS = ["tiles", "objects", "spaces", "places", "regi
 export type SpatialShellTab = (typeof SPATIAL_SHELL_TABS)[number];
 export type SpatialAuthoringMode = "design" | "instances";
 export type SpatialSourceFilter = "all" | "defaults" | "own";
-export type SpatialLegacyOrigin = "tilesetSpaces" | "villages" | "worldGen";
+export type SpatialLegacyOrigin = "tilesetSpaces";
 export type SpatialPlaceKindFilter = "facility" | "settlement" | "natural";
 export type SpatialRegionKindFilter = "terrain" | "settlement";
 export type SpatialCamera = { readonly x: number; readonly y: number; readonly zoom: number };
@@ -163,20 +163,8 @@ export function setSpatialTab(tab: SpatialShellTab): SpatialAuthoringSession {
 }
 
 export function rememberLegacySpatialRoute(origin: SpatialLegacyOrigin | null): SpatialAuthoringSession {
-  if (origin === "villages") {
-    return patchSpatialSession({
-      tab: "regions",
-      mode: "design",
-      legacyOrigin: origin,
-      placeKindFilter: null,
-      regionKindFilter: "settlement",
-    });
-  }
   if (origin === "tilesetSpaces") {
     return patchSpatialSession({ tab: "spaces", mode: "design", legacyOrigin: origin, placeKindFilter: null, regionKindFilter: null });
-  }
-  if (origin === "worldGen") {
-    return patchSpatialSession({ tab: "regions", mode: "design", legacyOrigin: origin, placeKindFilter: null, regionKindFilter: null });
   }
   return patchSpatialSession({ legacyOrigin: null, placeKindFilter: null, regionKindFilter: null });
 }

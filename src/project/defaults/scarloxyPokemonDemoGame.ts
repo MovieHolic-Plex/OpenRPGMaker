@@ -6,58 +6,18 @@
 //   - 파티 몬스터는 전투 경험치를 나눠 받아 레벨업·기술 습득·진화 (스파르츄→신드릴→차마딜로 등)
 //   - 상태 메뉴 '몬스터'에서 파티/보관함 관리
 // 전투·상태 메뉴·약 미리보기는 실제 몬스터 인스턴스 파티를 사용한다.
-// 지형/이벤트 헬퍼는 scarloxyDemoGame.ts 의 것을 재사용한다.
+// 2026-10-07: 데모 맵(마을·1번 길·EasyRPG 실내)은 지웠다. 남은 것은 DB 구성(몬스터 원정 캠페인이 쓴다).
 
 import { PRODUCT_BRAND } from "@/brand";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
-import type { GameEvent, GameMap, Project } from "../types";
+import type { Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
-import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
-import { createBlankMap, singleNodeTree } from "./defaultMaps";
-import {
-  G,
-  GRASSLAND_TILESET_ID,
-  PEOPLE1_CHARSET_ID,
-  PEOPLE2_CHARSET_ID,
-  charsetGraphic,
-  demoEnemy,
-  demoSkill,
-  demoTroop,
-  event,
-  page,
-  setUpper,
-  stampLower,
-  stampUpper,
-  talker,
-  transferEvent,
-} from "./scarloxyDemoGame";
-import {
-  CENTER_MAP_ID,
-  HOME_MAP_ID,
-  LAB_MAP_ID,
-  createCenterInteriorMap,
-  createHomeInteriorMap,
-  createLabInteriorMap,
-  createTownDoorEvents,
-  createTownDoorSigns,
-} from "./scarloxyPokemonInteriors";
+import { demoEnemy, demoSkill, demoTroop } from "./scarloxyDemoGame";
 
-const TOWN_MAP_ID = "map_pkmn_town";
-const ROUTE_MAP_ID = "map_pkmn_route";
 
-// 마을 건물 문 앞 칸 — 건물 스프라이트의 문 타일 바로 아래.
-//   연구소  = hospital 블록(10,1) 6×6, 문 = 블록 (2..3, 5) → 마을 (12..13, 6), 접근 (12,7)
-//   우리 집 = house-small 블록(2,3) 5×5, 문 = 블록 (1, 4) → 마을 (3, 7), 접근 (3,8)
-//   센터    = house-small-alt 블록(19,3) 5×5, 문 = 블록 (1, 4) → 마을 (20, 7), 접근 (20,8)
-const TOWN_DOORS = {
-  lab: { x: 12, y: 7 },
-  home: { x: 3, y: 8 },
-  center: { x: 20, y: 8 },
-} as const;
 const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
-const EMPTY = -1;
 
 const GEN1_TYPE_DEFINITIONS = [
   ["normal", "노말", "physical"],
@@ -122,16 +82,6 @@ function gen1TypeChart() {
   return { types: [...types], multipliers };
 }
 
-export function createScarloxyPokemonDemoMaps(): readonly GameMap[] {
-  return [
-    townMap(),
-    routeMap(),
-    createLabInteriorMap(TOWN_MAP_ID, TOWN_DOORS.lab.x, TOWN_DOORS.lab.y + 1),
-    createHomeInteriorMap(TOWN_MAP_ID, TOWN_DOORS.home.x, TOWN_DOORS.home.y + 1),
-    createCenterInteriorMap(TOWN_MAP_ID, TOWN_DOORS.center.x, TOWN_DOORS.center.y + 1),
-  ];
-}
-
 export function configureScarloxyPokemonDemoProject(project: Project): void {
   project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: PRODUCT_BRAND };
   const titleScreen = project.system.titleScreen;
@@ -163,16 +113,6 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
       : {}),
   };
   configureMonsterPresentation(project);
-  project.startPos = { x: 13, y: 12 };
-  project.mapTree = {
-    mapId: TOWN_MAP_ID,
-    children: [
-      singleNodeTree(ROUTE_MAP_ID),
-      singleNodeTree(LAB_MAP_ID),
-      singleNodeTree(HOME_MAP_ID),
-      singleNodeTree(CENTER_MAP_ID),
-    ],
-  };
   project.session = {
     ...project.session,
     partyActorIds: [DEFAULT_ACTOR_ID],
@@ -537,200 +477,4 @@ function wildEnemy(
     level,
     speciesId: scarloxySpeciesId(speciesKey),
   });
-}
-
-// --- 맵 -----------------------------------------------------------------------
-
-function townMap(): GameMap {
-  const map = createBlankMap("새싹 마을", 26, 18, GRASSLAND_TILESET_ID);
-  map.id = TOWN_MAP_ID;
-  map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
-  map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
-
-  stampUpper(map, 10, 1, G.HOSPITAL); // 몬스터 연구소
-  stampUpper(map, 2, 3, G.HOUSE_SMALL);
-  stampUpper(map, 19, 3, G.HOUSE_SMALL_ALT);
-  for (const [x, y] of [[0, 0], [7, 0], [17, 0], [24, 0], [0, 14], [24, 14]] as const) {
-    stampUpper(map, x, y, G.GREEN_TREE);
-  }
-  stampUpper(map, 5, 10, G.TEAL_TREE);
-  stampUpper(map, 20, 10, G.GREEN_TREE_SMALL);
-  setUpper(map, 8, 13, G.GRASS_TUFT);
-  setUpper(map, 17, 13, G.GRASS_TUFT);
-  setUpper(map, 22, 15, G.ROCK_1);
-
-  map.events.push(
-    professorEvent(),
-    talker("ev_pkmn_healer", 11, 8, "치유사", [
-      "연구소 앞이니 안심하세요. 상처를 치료해 드릴게요.",
-    ], [{ kind: "recoverAll" }], charsetGraphic(PEOPLE1_CHARSET_ID, 3)),
-    talker("ev_pkmn_guide", 16, 11, "금발 소년", [
-      "남쪽 풀숲에는 야생 몬스터가 나와. 전투에서 '포획' 명령으로 구슬을 던져봐!",
-      "몬스터의 HP를 깎을수록 잘 잡혀. 잡은 몬스터는 메뉴의 '몬스터'에서 볼 수 있어.",
-      "파티에 넣은 몬스터는 전투 경험치를 나눠 받아서 레벨이 오르고, 7레벨이 되면 진화한대!",
-    ], [], charsetGraphic(PEOPLE1_CHARSET_ID, 1)),
-    talker("ev_pkmn_merchant", 18, 6, "상인", [
-      "포획 구슬이 떨어졌나? 여기 있어. 여행 필수품도 같이 둘게.",
-    ], [
-      {
-        kind: "shop",
-        itemIds: ["item_capture_orb", "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"],
-        allowSell: false,
-        quantityMode: "select",
-        shopType: "normal",
-        messageType: "welcome",
-      },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 4)),
-    transferEvent("ev_pkmn_to_route", 13, 17, ROUTE_MAP_ID, 15, 2, "초원 1번 길로"),
-    ...createTownDoorEvents(TOWN_DOORS),
-    ...createTownDoorSigns(TOWN_DOORS),
-  );
-  return map;
-}
-
-function professorEvent(): GameEvent {
-  const starters = [
-    { key: "sparchu", name: "스파르츄", flavor: "불꽃을 문 장난꾸러기" },
-    { key: "finsta", name: "핀스타", flavor: "차분한 물고기" },
-    { key: "larvea", name: "라르베아", flavor: "씩씩한 풀 애벌레" },
-  ];
-  return event("ev_pkmn_professor", 13, 8, [
-    page("ev_pkmn_professor_choose", "박사", [
-      { kind: "text", speaker: "박사", body: "왔구나! 몬스터 테이머가 되려면 동료가 필요하지." },
-      { kind: "text", speaker: "박사", body: "셋 중 하나를 고르렴. 포획 구슬 5개도 챙겨주마." },
-      {
-        kind: "choices",
-        prompt: "처음 함께할 몬스터를 고르세요.",
-        options: starters.map((starter) => ({
-          text: `${starter.name} (${starter.flavor})`,
-          branch: [
-            { kind: "giveMonster", speciesId: scarloxySpeciesId(starter.key), level: 5, nickname: starter.name },
-            { kind: "changeItem", itemId: CAPTURE_ORB_ITEM_ID, op: "+=", amount: 5 },
-            { kind: "text", speaker: "박사", body: `${starter.name}와 함께 여행을 시작하렴. 남쪽 풀숲에서 포획을 연습해 보고!` },
-            { kind: "setSelfSwitch", key: "A", value: true },
-          ],
-        })),
-        cancelBehavior: "disallow",
-      },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }),
-    page("ev_pkmn_professor_after", "박사", [
-      { kind: "text", speaker: "박사", body: "몬스터들은 잘 크고 있니? 메뉴의 '몬스터'에서 파티를 확인해 보렴." },
-      { kind: "text", speaker: "박사", body: "구슬이 부족하면 좀 더 가져가고." },
-      { kind: "changeItem", itemId: CAPTURE_ORB_ITEM_ID, op: "+=", amount: 3 },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }, [
-      { kind: "selfSwitch", key: "A", value: true },
-    ]),
-  ]);
-}
-
-function routeMap(): GameMap {
-  const map = createBlankMap("초원 1번 길", 30, 24, GRASSLAND_TILESET_ID);
-  map.id = ROUTE_MAP_ID;
-  map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
-  map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
-  map.encounterRate = 5;
-  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_pond_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"];
-
-  stampLower(map, 22, 16, G.POND);
-  stampLower(map, 4, 18, G.SAND_PATCH);
-  for (const [x, y] of [[0, 0], [9, 0], [20, 0], [28, 0], [0, 8], [28, 8], [0, 16], [9, 20], [19, 20], [27, 20]] as const) {
-    stampUpper(map, x, y, G.GREEN_TREE);
-  }
-  for (const [x, y] of [[5, 5], [24, 5], [14, 9]] as const) {
-    stampUpper(map, x, y, G.TEAL_TREE);
-  }
-  for (const [x, y] of [[3, 12], [12, 6], [22, 12], [8, 15], [17, 17]] as const) {
-    setUpper(map, x, y, G.GRASS_TUFT);
-  }
-  setUpper(map, 26, 13, G.ROCK_1);
-  setUpper(map, 6, 9, G.ROCK_2);
-
-  map.events.push(
-    transferEvent("ev_pkmn_to_town", 15, 1, TOWN_MAP_ID, 13, 16, "새싹 마을로"),
-    rivalEvent(),
-    atroxEvent(),
-    talker("ev_pkmn_route_sign", 12, 3, "표지판", [
-      "초원 1번 길 — 풀숲에서는 야생 몬스터가 튀어나옵니다.",
-      "남쪽 끝에서 이상한 울음소리가 들린다는 소문이 있다.",
-      "아래로 난 단은 뛰어내릴 수 있지만, 다시 올라올 수는 없습니다.",
-    ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
-    ...LEDGE_TILES.map(([x, y], index) => ledgeEvent(`ev_pkmn_ledge_${index}`, x, y)),
-  );
-  return map;
-}
-
-/**
- * 내리막(ledge) 칸 — 루트 중단을 가로지르는 단. 위에서 밟으면 아래로 두 칸 뛰어내린다.
- * 아래에서 밟으면 다시 아래로 튕겨 나가므로 "올라올 수 없는 한 방향 지형"이 된다(포켓몬과 같은 동작).
- */
-const LEDGE_TILES = [[11, 15], [12, 15], [13, 15]] as const;
-
-/**
- * 밟으면 주인공을 아래로 두 칸 점프시키는 이벤트.
- *
- * 왜 moveEvent + PLAYER_MOVE_TARGET 인가: 점프는 MoveCommand(`kind:"jump"`)이고, 주인공 경로는
- * playSceneMovement.applyPlayerRouteCommand → startPlayerJump 가 처리한다. 점프는 통행 판정을
- * 건너뛰고 맵 경계만 보므로(RM2K3 규칙) 단 아래에 무엇이 있어도 착지한다.
- * 그래픽이 없는 투명 playerTouch 이벤트라 지형처럼 보인다.
- */
-function ledgeEvent(id: string, x: number, y: number): GameEvent {
-  return {
-    id,
-    x,
-    y,
-    trigger: { kind: "playerTouch" },
-    commands: [],
-    pages: [{
-      id: `${id}_page`,
-      name: "내리막",
-      conditions: [],
-      graphic: { transparent: true },
-      trigger: { kind: "playerTouch" },
-      priority: "below",
-      movement: { type: "fixed", speed: 3, frequency: 3 },
-      commands: [
-        {
-          kind: "moveEvent",
-          eventId: PLAYER_MOVE_TARGET,
-          route: {
-            moves: [{ kind: "jump", dx: 0, dy: 2, heightPx: 14, durationMs: 320 }],
-            repeat: false,
-            wait: true,
-          },
-        },
-      ],
-    }],
-  } as GameEvent;
-}
-
-function rivalEvent(): GameEvent {
-  return event("ev_pkmn_rival", 15, 12, [
-    page("ev_pkmn_rival_battle", "라이벌", [
-      { kind: "text", speaker: "라이벌", body: "오, 너도 박사님한테 몬스터 받았구나? 내 신드릴이랑 붙어보자!" },
-      { kind: "battleProcessing", troopId: "troop_pkmn_rival", canEscape: false, canLose: false },
-      { kind: "text", speaker: "라이벌", body: "졌다… 트레이너의 몬스터는 포획할 수 없다는 건 알아둬!" },
-      { kind: "setSelfSwitch", key: "A", value: true },
-    ], charsetGraphic(PEOPLE1_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }),
-    page("ev_pkmn_rival_after", "라이벌", [
-      { kind: "text", speaker: "라이벌", body: "남쪽 끝에 전설의 몬스터가 있다던데… 난 아직 무리야." },
-    ], charsetGraphic(PEOPLE1_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }, [
-      { kind: "selfSwitch", key: "A", value: true },
-    ]),
-  ]);
-}
-
-function atroxEvent(): GameEvent {
-  return event("ev_pkmn_atrox", 15, 22, [
-    page("ev_pkmn_atrox_battle", "전설의 아트록스", [
-      { kind: "text", body: "타오르는 기척… 전설의 아트록스가 모습을 드러냈다!" },
-      { kind: "text", body: "(포획하려면 HP를 충분히 깎고 구슬을 던지자. 포획률이 낮으니 여러 개 필요할지도.)" },
-      { kind: "battleProcessing", troopId: "troop_pkmn_atrox", canEscape: true, canLose: false },
-      { kind: "setSelfSwitch", key: "A", value: true },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 0), { type: "fixed", speed: 3, frequency: 3 }),
-    page("ev_pkmn_atrox_after", "잦아든 기척", [
-      { kind: "text", body: "아트록스가 있던 자리에는 그을린 흔적만 남아 있다." },
-    ], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }, [
-      { kind: "selfSwitch", key: "A", value: true },
-    ]),
-  ]);
 }

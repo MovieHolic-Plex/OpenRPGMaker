@@ -514,7 +514,7 @@ function renderLoadFailureScreen(_error: unknown): void {
   const title = document.createElement("h1");
   title.textContent = "저장된 작업을 바로 열 수 없습니다";
   const body = document.createElement("p");
-  body.textContent = "기존 저장본은 그대로 두고 예제 작업이나 새 작업으로 임시 시작할 수 있습니다.";
+  body.textContent = "기존 저장본은 그대로 두고 새 작업으로 임시 시작할 수 있습니다.";
   const detail = document.createElement("details");
   detail.className = "project-load-error-details";
   detail.dataset.testid = "project-load-error-details";
@@ -528,7 +528,7 @@ function renderLoadFailureScreen(_error: unknown): void {
 
   const chips = document.createElement("ul");
   chips.className = "db-required-chips";
-  for (const label of ["예제 프로젝트", "새 프로젝트", "온라인 저장"]) {
+  for (const label of ["새 프로젝트", "온라인 저장"]) {
     const li = document.createElement("li");
     li.textContent = label;
     chips.append(li);
@@ -537,23 +537,9 @@ function renderLoadFailureScreen(_error: unknown): void {
   const actions = document.createElement("div");
   actions.className = "project-load-error-actions";
 
-  const sample = document.createElement("button");
-  sample.type = "button";
-  sample.className = "btn primary";
-  sample.dataset.testid = "load-error-start-sample";
-  sample.textContent = "예제 작업으로 시작";
-  sample.title = "기존 저장본을 바꾸지 않고 예제를 엽니다.";
-  sample.addEventListener("click", () => {
-    void import("@/project/defaults/defaultProject").then(async ({ createSampleAdventureProject }) => {
-      await store.loadFallbackProject(createSampleAdventureProject());
-      await finishEditorBoot(performance.now());
-    });
-  });
-  actions.append(sample);
-
   const blank = document.createElement("button");
   blank.type = "button";
-  blank.className = "btn";
+  blank.className = "btn primary";
   blank.dataset.testid = "load-error-start-blank";
   blank.textContent = "새 작업으로 시작";
   blank.title = "기존 저장본을 바꾸지 않고 빈 작업을 엽니다.";

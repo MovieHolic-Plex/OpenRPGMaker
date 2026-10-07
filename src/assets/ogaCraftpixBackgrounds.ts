@@ -33,74 +33,8 @@ export type OgaCraftpixSetAsset = {
   readonly layers: readonly OgaCraftpixLayerAsset[];
 };
 
-const ASSET_DIR = "assets/oga/craftpix-horizontal";
-
-function layer(id: string, name: string, path: string): OgaCraftpixLayerAsset {
-  return { id, name, path: ASSET_DIR + "/" + path };
-}
-
-export const OGA_CRAFTPIX_BACKDROP_SETS: readonly OgaCraftpixSetAsset[] = [
-  {
-    id: "oga-craftpix-hills",
-    name: "구름 언덕 배경 (CraftPix)",
-    summary: "맑은 낮 — 뭉게구름, 보랏빛 바위산, 산기슭 소나무, 잔잔한 호수",
-    composite: layer("oga-craftpix-hills", "구름 언덕 배경 (CraftPix)", "bg1/composite.png"),
-    layers: [
-      layer("oga-craftpix-hills-layer-sky", "구름 언덕 · 하늘", "bg1/layers/sky.png"),
-      layer("oga-craftpix-hills-layer-clouds2", "구름 언덕 · 먼 구름", "bg1/layers/clouds_2.png"),
-      layer("oga-craftpix-hills-layer-clouds4", "구름 언덕 · 먼 구름 2", "bg1/layers/clouds_4.png"),
-      layer("oga-craftpix-hills-layer-rocks1", "구름 언덕 · 먼 바위산", "bg1/layers/rocks_1.png"),
-      layer("oga-craftpix-hills-layer-clouds3", "구름 언덕 · 가까운 구름", "bg1/layers/clouds_3.png"),
-      layer("oga-craftpix-hills-layer-rocks2", "구름 언덕 · 가까운 바위산", "bg1/layers/rocks_2.png"),
-      layer("oga-craftpix-hills-layer-clouds1", "구름 언덕 · 앞 구름", "bg1/layers/clouds_1.png"),
-    ],
-  },
-  {
-    id: "oga-craftpix-pines",
-    name: "낮 산등성이 배경 (CraftPix)",
-    summary: "흐린 낮 — 큰 뭉게구름과 새, 겹겹이 이어진 갈색 산등성이, 비탈의 소나무",
-    composite: layer("oga-craftpix-pines", "낮 산등성이 배경 (CraftPix)", "bg2/composite.png"),
-    layers: [
-      layer("oga-craftpix-pines-layer-sky", "낮 산등성이 · 하늘", "bg2/layers/sky.png"),
-      layer("oga-craftpix-pines-layer-clouds2", "낮 산등성이 · 먼 구름", "bg2/layers/clouds_2.png"),
-      layer("oga-craftpix-pines-layer-rocks3", "낮 산등성이 · 먼 바위", "bg2/layers/rocks_3.png"),
-      layer("oga-craftpix-pines-layer-clouds1", "낮 산등성이 · 먼 구름 2", "bg2/layers/clouds_1.png"),
-      layer("oga-craftpix-pines-layer-rocks2", "낮 산등성이 · 중간 바위", "bg2/layers/rocks_2.png"),
-      layer("oga-craftpix-pines-layer-rocks1", "낮 산등성이 · 가까운 바위산", "bg2/layers/rocks_1.png"),
-      layer("oga-craftpix-pines-layer-clouds3", "낮 산등성이 · 가까운 구름", "bg2/layers/clouds_3.png"),
-      layer("oga-craftpix-pines-layer-pines", "낮 산등성이 · 소나무", "bg2/layers/pines.png"),
-      layer("oga-craftpix-pines-layer-birds", "낮 산등성이 · 새", "bg2/layers/birds.png"),
-    ],
-  },
-  {
-    id: "oga-craftpix-cliffs",
-    name: "밤 소나무 숲 배경 (CraftPix)",
-    summary: "밤 — 별하늘과 구름, 짙푸른 전나무 숲 실루엣, 어두운 언덕",
-    composite: layer("oga-craftpix-cliffs", "밤 소나무 숲 배경 (CraftPix)", "bg3/composite-1.png"),
-    layers: [
-      layer("oga-craftpix-cliffs-layer-sky", "밤 소나무 숲 · 하늘", "bg3/layers/sky.png"),
-      layer("oga-craftpix-cliffs-layer-rocks", "밤 소나무 숲 · 먼 산", "bg3/layers/rocks.png"),
-      layer("oga-craftpix-cliffs-layer-clouds1", "밤 소나무 숲 · 구름", "bg3/layers/clouds_1.png"),
-      layer("oga-craftpix-cliffs-layer-ground1", "밤 소나무 숲 · 먼 숲", "bg3/layers/ground_1.png"),
-      layer("oga-craftpix-cliffs-layer-ground2", "밤 소나무 숲 · 중간 숲", "bg3/layers/ground_2.png"),
-      layer("oga-craftpix-cliffs-layer-ground3", "밤 소나무 숲 · 가까운 숲", "bg3/layers/ground_3.png"),
-      layer("oga-craftpix-cliffs-layer-plant", "밤 소나무 숲 · 식물", "bg3/layers/plant.png"),
-    ],
-  },
-  {
-    id: "oga-craftpix-ridge",
-    name: "폭포 계곡 배경 (CraftPix)",
-    summary: "보랏빛 황혼 — 계곡 폭포, 붉은 바위 절벽, 둥근 보라색 나무, 물가",
-    composite: layer("oga-craftpix-ridge", "폭포 계곡 배경 (CraftPix)", "bg4/composite.png"),
-    layers: [
-      layer("oga-craftpix-ridge-layer-sky", "폭포 계곡 · 하늘", "bg4/layers/sky.png"),
-      layer("oga-craftpix-ridge-layer-rocks", "폭포 계곡 · 바위산", "bg4/layers/rocks.png"),
-      layer("oga-craftpix-ridge-layer-clouds2", "폭포 계곡 · 먼 구름", "bg4/layers/clouds_2.png"),
-      layer("oga-craftpix-ridge-layer-ground", "폭포 계곡 · 지면", "bg4/layers/ground.png"),
-      layer("oga-craftpix-ridge-layer-clouds1", "폭포 계곡 · 앞 구름", "bg4/layers/clouds_1.png"),
-    ],
-  },
-] as const;
+// 2026-10-07 저작권 정리: CraftPix 배경 그림(public/assets/oga/craftpix-horizontal)을 지웠다. 목록은 비워 두고 형태만 남긴다.
+export const OGA_CRAFTPIX_BACKDROP_SETS: readonly OgaCraftpixSetAsset[] = [];
 
 /** 레이어 id → 파일 경로. 등록 검증·해석에서 함께 쓴다. */
 export const OGA_CRAFTPIX_BACKDROP_ASSETS: readonly OgaCraftpixLayerAsset[] = [

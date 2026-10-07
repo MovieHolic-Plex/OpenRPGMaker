@@ -1,0 +1,63 @@
+{
+  "replaced": "2026-10-07",
+  "reason": "사용자 지적: 창문이 이상하게 박힌 집이 너무 많다. 원인=창 3종 혼재(작은 덧문창·금테 아치창·덧문 유리창), 기둥 없이 붙은 아치창, 모서리 기둥 칸의 창, 모든 층의 처마 그림자 반복, 곁채 지붕/탑이 본채 창을 덮음. round 9 가 같은 형태를 원본 brick·church 칸만으로 다시 짠다.",
+  "byHumanDecision": "거절 11장은 사람이 거절, 대체(r9 재저작)는 감독자",
+  "note": "사람이 이미 허용한 r7-01·02·08·09, r8-01·02·06·07 은 대체하지 않고 유지(허용 기록 보존). 거절된 11장은 r9 로 재저작하며 목록에서 뺀다. 결정은 2026-10-07 03:03~03:04Z 에 사람이 내렸다.",
+  "items": [
+    {
+      "id": "r7-building-03",
+      "name": "높은 본채와 낮은 부엌집",
+      "pngSha256": "1e6c1d875d5fb760e32c91aa716658863f4f6b1725860433c41a7651c8780819"
+    },
+    {
+      "id": "r7-building-04",
+      "name": "가운데 박공이 솟은 상인집",
+      "pngSha256": "cb58b43d379de25b97de3480fc1fc97e21a6df83781de1e199034b80b349b5bb"
+    },
+    {
+      "id": "r7-building-06",
+      "name": "발코니가 있는 삼층 주택",
+      "pngSha256": "8ed66a0978f6f8e7193375ac8c7227b253c8f9dba0803e9fc7b7f14527587299"
+    },
+    {
+      "id": "r7-building-07",
+      "name": "높은 돌집과 낮은 살림채",
+      "pngSha256": "922470e97eaa432204d9b44996a8549884ea5dfbc7558ce17b9163075d02d7ff"
+    },
+    {
+      "id": "r7-building-17",
+      "name": "종 지붕 탑이 붙은 집",
+      "pngSha256": "15f86c2f8512a1db4e6ddb2e7f44a17e6650035fe34fc14f85f725a66d1bfddb"
+    },
+    {
+      "id": "r7-building-22",
+      "name": "꺾인 너와와 낮은 기와채",
+      "pngSha256": "14e858fa152bab7ca0315e140dbe5ebe5f6dadbaa6b43c0689cde1ab499223d1"
+    },
+    {
+      "id": "r7-building-24",
+      "name": "종 지붕 다락을 얹은 집",
+      "pngSha256": "41b0a5137b945997750c15f3afe828f2bbee5f1d1ba7e11db60359db96664091"
+    },
+    {
+      "id": "r8-building-03",
+      "name": "좁고 높은 청회색 삼층집",
+      "pngSha256": "ab259e0900fb30da9d22046ff017be82ba5c6686049013fb8bce0e9c0113d7e5"
+    },
+    {
+      "id": "r8-building-04",
+      "name": "높이가 다른 연립 두 채",
+      "pngSha256": "f0eb854cee2fd757f3f483356f8adcebee9da4d63bfacbf2db2b2685de27479c"
+    },
+    {
+      "id": "r8-building-05",
+      "name": "청회색 본채와 낮은 곁채",
+      "pngSha256": "94e01cbc061df7baaf925cde37f72a442cb0a73bf868fc8dac55e6563b0a3e3a"
+    },
+    {
+      "id": "r8-building-08",
+      "name": "왼쪽 곁채가 붙은 집",
+      "pngSha256": "e1f8046f10d5be8259522e844211a5dc79e1c36e961c5cd52b14adaa4b8442fd"
+    }
+  ]
+}

@@ -1,7 +1,6 @@
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
-import { treeKitForTileset, stampTree } from "@/editor/tools/village/treeKit";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { el } from '@/util/dom';
 import type { GameMap, Project, TilesetDef } from '@/project/types';
 import { stampRectHouseKit, type HouseKitId } from '@/editor/houseKit';
@@ -52,8 +51,6 @@ async function scene(tileset: TilesetDef, style: number, people: number): Promis
   const road = autotileGroupsForTileset(tileset).find(group => group.memberTileIds.includes(360));
   if (road) shapeAutotileGroupAround(map, road, map.lowerTiles.flatMap((tile, i) => tile === 360
     ? [{ x: i % map.width, y: Math.floor(i / map.width) }] : []));
-  const tree = treeKitForTileset(tileset).medium;
-  for (const x of [2, 16]) stampTree(map, tree, x, 6);
   const [atlas, sprites] = await Promise.all([loadTilesetImage(tileset), characterCanvas(people)]);
   const canvas = el('canvas'); canvas.width = 320; canvas.height = 240;
   const c = canvas.getContext('2d'); if (!c) throw new Error('이미지를 그릴 수 없습니다.');

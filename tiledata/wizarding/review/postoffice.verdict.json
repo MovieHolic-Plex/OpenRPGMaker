@@ -1,6 +1,6 @@
 {
  "module": "postoffice",
- "sealed": "2026-10-07T09:44:31.105967+09:00",
+ "sealed": "2026-10-07T10:21:05.890501+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-post-door-closed": {
@@ -80,8 +80,8 @@
   },
   "wz-post-floor": {
    "verdict": "PASS",
-   "hash": "584a8c314ffe43480cc4d54def8acc47f45d1debbae0b5e178ee040b69b3648c",
-   "reason": "짙은 판재 바닥, 판 이음 엇갈림·옹이·3단 명암, 4×4로 깔아도 이음새 없음. 실내 바닥 F."
+   "hash": "6a26f522848f1d91a1d2956bada7280f8818f0fb8b54b8c10ae41e60e4804027",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-post-print-a": {
    "verdict": "PASS",
@@ -230,18 +230,23 @@
   },
   "wz-post-iwall": {
    "verdict": "PASS",
-   "hash": "e6fe05bfbb483090c89c12ee4d340809b372c29f45932e3b99bb69e45cec0de4",
-   "reason": "세로 판벽+아래 징두리 패널, 실내 목재 벽 1×4로 읽힘, 나무 결 3단. X."
+   "hash": "9ede3844fcf50ec8e8abd42515d3c05fc5581528a8ae2f1fe6fe94ac1c1f15b9",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-post-ibeam": {
    "verdict": "PASS",
-   "hash": "28f38fb076720b77f1df7e3aaf395eae1ca1b4f27a54735255601d518add37f6",
-   "reason": "쇠띠 두른 참나무 기둥, 세로로 이으면 기둥 벽으로 읽힘. X."
+   "hash": "4c08041f36d73b43551510c2b8e2bba4c4bbe8be8c09086d5b17aa491086c831",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-post-iwall-win": {
    "verdict": "PASS",
-   "hash": "335a51a2597e8da30a6c79b38cbbda57eef1a6ccda9fa2f7b42e0abfa81fd4a2",
-   "reason": "판벽 속 불 켜진 격자창 1×2, 창살·창턱 명확. X."
+   "hash": "6696932c055d76f4f121e35cd0d8cd9f699fdabdbe0cc8cf96a50cc11e322b86",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-post-wainscot": {
+   "verdict": "PASS",
+   "hash": "a9e62d088893bec73eafb0b615e0d9efc3311ddda2071a527cac78de8c410533",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   }
  },
  "autotiles": {

@@ -18,7 +18,7 @@ import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import { TILE } from "@/project/defaults/constants";
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import { hasExtraLayers, layerTileAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 import {
   COMBINED_TOWN_HARNESS_PREFIX,

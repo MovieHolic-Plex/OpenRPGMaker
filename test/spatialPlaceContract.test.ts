@@ -1,7 +1,6 @@
 import { deserialize, serialize } from "@/project/io";
 import { compileSpatialOccurrence } from "@/editor/spatial/compileSpatialOccurrence";
 import { mixedFixture } from "./support/spatialMixedFixture";
-import { getCanonicalConcept } from "@/editor/tools/spatialConceptTools";
 import { expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { spaceCompilerFixture, spaceDesign } from "./support/spatialSpaceCompilerFixture";
@@ -53,11 +52,6 @@ it("round trips painted place bodies and member references through the public to
   expect(save.ok, save.summary).toBe(true);
   expect(ctx.project.spatialAuthoring!.library.places.inn.composition!.members[0].source.kind).toBe("space");
   expect(JSON.stringify(save.data)).not.toContain('"kind":"space"');
-});
-it("uses the same public place vocabulary in legacy concept discovery", () => {
-  const result = getCanonicalConcept(spaceCompilerFixture(), {});
-  expect(JSON.stringify(result.data)).not.toContain('"kind":"space"');
-  expect((result.data as any).sources.some((source: any) => source.kind === "place")).toBe(true);
 });
 it("accepts a directly editable place as a region child through the unified contract", () => {
   const ctx = { project: structuredClone(spaceCompilerFixture()) };

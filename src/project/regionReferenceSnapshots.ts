@@ -1,16 +1,8 @@
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
 import { referenceOwnerManifest } from './tilesetReferences';
-import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
-import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
-import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
-import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
-import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
-import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
-import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
 import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
-import { cropExtraLayers } from "./mapLayers";
-import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
+import { regionReference } from "./regionReferences";
 
 /** 건물 목록·킷 요약(생성 건물 장소). 조수가 「3층 대저택」처럼 이름으로 고르고 출처(생성형 이미지/손 도트)를 본다. */
 type PlaceBuilding = { id: string; role: string; name: string; kit: string; image: string; x: number; y: number; width: number; height: number; doors: { x: number; y: number }[] };
@@ -23,87 +15,38 @@ type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, Ti
 // 통째로 실려 새로고침마다 받고 파싱했다(2026-09-24 실측 main.js 74MB). 파일마다 따로 청크로 두고
 // 조수가 그 장소를 읽을 때만 받는다 — 읽기 전에 preloadRegionReference 를 기다린다.
 const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
-  "river-fortress-160x144": () => import("./regionReferences/river-fortress.json"),
   "modern-city-60x60": () => import("./regionReferences/modern-city.json"),
   "jp-city-shopstreet-48x40": () => import("./regionReferences/jp-city-shopstreet.json"),
-  "wz-car-example-stop-16x14": () => import("./regionReferences/wz-car-example-stop.json"),
-  "wz-castle-example-corridor-8x12": () => import("./regionReferences/wz-castle-example-corridor.json"),
-  "wz-castle-example-hall-14x10": () => import("./regionReferences/wz-castle-example-hall.json"),
-  "wz-clock-example-gears-14x12": () => import("./regionReferences/wz-clock-example-gears.json"),
-  "wz-furn-example-common-12x9": () => import("./regionReferences/wz-furn-example-common.json"),
-  "wz-gh-example-greenhouse-14x11": () => import("./regionReferences/wz-gh-example-greenhouse.json"),
-  "wz-hd-example-cellar-12x10": () => import("./regionReferences/wz-hd-example-cellar.json"),
-  "wz-inf-example-ward-14x12": () => import("./regionReferences/wz-inf-example-ward.json"),
-  "wz-lake-example-dock-16x14": () => import("./regionReferences/wz-lake-example-dock.json"),
-  "wz-lib-example-restricted-14x10": () => import("./regionReferences/wz-lib-example-restricted.json"),
+  "wz-space-boathouse-30x22": () => import("./regionReferences/wz-space-boathouse.json"),
+  "wz-space-carriage-30x22": () => import("./regionReferences/wz-space-carriage.json"),
+  "wz-space-clocktower-18x15": () => import("./regionReferences/wz-space-clocktower.json"),
+  "wz-space-greenhouse-24x15": () => import("./regionReferences/wz-space-greenhouse.json"),
+  "wz-space-honeydukes-18x14": () => import("./regionReferences/wz-space-honeydukes.json"),
+  "wz-space-infirmary-26x13": () => import("./regionReferences/wz-space-infirmary.json"),
+  "wz-space-library-24x19": () => import("./regionReferences/wz-space-library.json"),
+  "wz-space-owlery-22x12": () => import("./regionReferences/wz-space-owlery.json"),
+  "wz-space-postoffice-20x14": () => import("./regionReferences/wz-space-postoffice.json"),
+  "wz-space-potions-24x14": () => import("./regionReferences/wz-space-potions.json"),
+  "wz-space-quidditch-32x22": () => import("./regionReferences/wz-space-quidditch.json"),
+  "wz-space-shared-common-20x14": () => import("./regionReferences/wz-space-shared-common.json"),
+  "wz-space-shared-corridor-10x22": () => import("./regionReferences/wz-space-shared-corridor.json"),
+  "wz-space-shared-dorm-18x12": () => import("./regionReferences/wz-space-shared-dorm.json"),
+  "wz-space-shared-30x18": () => import("./regionReferences/wz-space-shared.json"),
+  "wz-space-wandshop-20x14": () => import("./regionReferences/wz-space-wandshop.json"),
   "wz-nat-example-forest-edge-16x12": () => import("./regionReferences/wz-nat-example-forest-edge.json"),
-  "wz-owl-example-tower-16x16": () => import("./regionReferences/wz-owl-example-tower.json"),
-  "wz-post-example-inside-12x9": () => import("./regionReferences/wz-post-example-inside.json"),
   "wz-post-example-street-18x14": () => import("./regionReferences/wz-post-example-street.json"),
-  "wz-pot-example-prep-12x9": () => import("./regionReferences/wz-pot-example-prep.json"),
-  "wz-qd-example-tunnel-16x14": () => import("./regionReferences/wz-qd-example-tunnel.json"),
-  "wz-wand-example-shop-10x9": () => import("./regionReferences/wz-wand-example-shop.json"),
+  "jp-city-apartment-1k-12x13": () => import("./regionReferences/jp-city-apartment-1k.json"),
+  "jp-city-house-interior-21x15": () => import("./regionReferences/jp-city-house.json"),
   "jp-city-tram-street-48x30": () => import("./regionReferences/jp-city-tramstreet.json"),
   "jp-city-school-68x48": () => import("./regionReferences/jp-city-school.json"),
   "jp-city-town-96x80": () => import("./regionReferences/jp-city-town.json"),
-  "castle-courtyard": () => import("./regionReferences/castle-courtyard.json"),
-  "castle-small-harbor": () => import("./regionReferences/castle-small-harbor.json"),
-  "castle-stone-lodge": () => import("./regionReferences/castle-stone-lodge.json"),
-  "forest-cabin-40x30": () => import("./regionReferences/forest-cabin.json"),
-  "forest-star-64x56": () => import("./regionReferences/forest-star.json"),
-  "gubisup-80x72": () => import("./regionReferences/gubisup.json"),
-  "small-forest-village-80x72": () => import("./regionReferences/small-forest-village.json"),
-  "forest-cliff-village-80x72": () => import("./regionReferences/forest-cliff-village.json"),
-  "high-cliff-village-80x88": () => import("./regionReferences/high-cliff-village.json"),
-  "cliff-forest-bridge-80x72": () => import("./regionReferences/cliff-forest-bridge.json"),
-  "peaceful-forest-100x100": () => import("./regionReferences/peaceful-forest.json"),
-  "great-falls-100x100": () => import("./regionReferences/great-falls.json"),
-  "rebuilt-forest-village-64x64": () => import("./regionReferences/rebuilt-forest-village.json"),
-  "harmony-hill-village-64x64": () => import("./regionReferences/harmony-hill-village.json"),
-  "hill-forest-cave-20x16": () => import("./regionReferences/hill-forest-cave.json"),
-  "rebuilt-forest-cave-20x16": () => import("./regionReferences/rebuilt-forest-cave.json"),
-  "organic-crescent-lake-80x72": () => import("./regionReferences/organic-crescent-lake.json"),
-  "organic-fork-stream-80x72": () => import("./regionReferences/organic-fork-stream.json"),
-  "organic-terrace-gardens-80x72": () => import("./regionReferences/organic-terrace-gardens.json"),
-  "organic-woodland-lane-80x72": () => import("./regionReferences/organic-woodland-lane.json"),
-  "organic-orchard-court-80x72": () => import("./regionReferences/organic-orchard-court.json"),
-  "organic-fishing-cove-80x72": () => import("./regionReferences/organic-fishing-cove.json"),
-  "organic-five-groves-80x72": () => import("./regionReferences/organic-five-groves.json"),
-  "pine-hamlets-61x53": () => import("./regionReferences/pine-hamlets.json"),
-  "terrace-cliff-village-62x60": () => import("./regionReferences/terrace-cliff-village.json"),
-  "reed-bay-village-71x52": () => import("./regionReferences/reed-bay-village.json"),
-  "twin-falls-river-village-62x65": () => import("./regionReferences/twin-falls-river-village.json"),
-  "chapel-hill-parish-57x54": () => import("./regionReferences/chapel-hill-parish.json"),
-  "ford-castle-town-80x87": () => import("./regionReferences/ford-castle-town.json"),
-  "mistpond-hollow-66x56": () => import("./regionReferences/mistpond-hollow.json"),
-  "nuleolmok-harbor-town-76x60": () => import("./regionReferences/nuleolmok-harbor-town.json"),
-  "river-forest-village-78x44": () => import("./regionReferences/river-forest-village.json"),
-  "emerald-basin-80x64": () => import("./regionReferences/emerald-basin.json"),
-  "hill-forest-village-64x64": () => import("./regionReferences/hill-forest-village.json"),
-  "forest-fantasy-town-104x96": () => import("./regionReferences/forest-fantasy-town.json"),
-  "castle-town-100x100": () => import("./regionReferences/castle-town.json"),
-  "walled-settlement-43x45": () => import("./regionReferences/walled-settlement.json"),
-  "lake-village-60x60": () => import("./regionReferences/lake-village.json"),
 };
-const FANTASY_FILE: SnapshotFile = () => import("./regionReferences/fantasy-places.json");
-const INTERIOR_FILE: SnapshotFile = () => import("./regionReferences/rpg-interiors.json");
-const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons.json");
-const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
-const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
-const ELF_FILE: SnapshotFile = () => import("./regionReferences/elf-treetop.json");
 const JOSEON_FILE: SnapshotFile = () => import("./regionReferences/joseon-village.json");
-const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
-const SHIP_MAP_IDS: Record<string, string> = {
-  "bluewave-ship": "map_bluewave_ship",
-  "giant-ship": "map_bluewave_giant",
-  "wide-ship": "map_bluewave_vertical",
-  "bluewave-harbor": "map_bluewave_harbor",
-};
 
 type SnapshotSource = { file: SnapshotFile; pick(data: unknown): PlaceSnapshot | undefined };
 
 const whole = (file: SnapshotFile): SnapshotSource => ({ file, pick: data => data as PlaceSnapshot });
-/** Fantasy/climate/field/ship snapshots share one file per family; the entry names its map. */
+/** Multi-map snapshots (조선) share one file; the entry names its map. */
 const fromMaps = (file: SnapshotFile, mapId: string): SnapshotSource => ({ file, pick: (data) => {
   const source = data as MultiMapFile;
   const map = source.maps[mapId];
@@ -112,25 +55,8 @@ const fromMaps = (file: SnapshotFile, mapId: string): SnapshotSource => ({ file,
 
 function snapshotSource(id: string): SnapshotSource | undefined {
   if (SNAPSHOT_FILES[id]) return whole(SNAPSHOT_FILES[id]);
-  // Place cards for the diverse villages reuse their region snapshot.
-  const place = DIVERSE_VILLAGE_PLACES.find(entry => entry.id === id);
-  if (place && SNAPSHOT_FILES[place.regionReferenceId]) return whole(SNAPSHOT_FILES[place.regionReferenceId]);
-  const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (fantasy) return fromMaps(FANTASY_FILE, fantasy.sourceMapId);
-  const interior = RPG_INTERIOR_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (interior) return fromMaps(INTERIOR_FILE, interior.sourceMapId);
-  const dungeon = RPG_DUNGEON_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (dungeon) return fromMaps(DUNGEON_FILE, dungeon.sourceMapId);
-  const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
-  const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
-  const elf = ELF_TREETOP_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (elf) return fromMaps(ELF_FILE, elf.sourceMapId);
   const joseon = JOSEON_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (joseon) return fromMaps(JOSEON_FILE, joseon.sourceMapId);
-  const shipMapId = SHIP_MAP_IDS[id];
-  return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
+  return joseon ? fromMaps(JOSEON_FILE, joseon.sourceMapId) : undefined;
 }
 
 const loaded = new Map<SnapshotFile, unknown>();
@@ -151,17 +77,16 @@ function load(file: SnapshotFile): Promise<void> {
   return promise;
 }
 
-const snapshotId = (id: string): string => LAKE_PLACE_REFERENCES.some(entry => entry.id === id) ? "lake-village-60x60" : id;
 
 /** Fetch the snapshot chunk behind one reference id. Unknown ids resolve quietly; readRegionReference reports them. */
 export async function preloadRegionReference(id: string): Promise<void> {
-  const source = sharedRegionSnapshot(id) ? undefined : snapshotSource(snapshotId(id));
+  const source = sharedRegionSnapshot(id) ? undefined : snapshotSource(id);
   if (source) await load(source.file);
 }
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE, ELF_FILE, JOSEON_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), JOSEON_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {
@@ -180,21 +105,13 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
 }
 
 /**
- * The shipped snapshot behind one reference, cropped to the place (lake places sit inside the lake village). Throws the
+ * The shipped snapshot behind one reference. Throws the
  * same 「불러오는 중」 error as readRegionReference until preloadRegionReference resolved; undefined for unknown ids.
  * Snapshot tilesets can be trimmed (no tileMeta) — importers prefer the reference's projectDownload when it has one.
  */
 export function regionReferenceSnapshotScene(id: string): PlaceSnapshot | undefined {
-  const reference = regionReference(id);
-  if (!reference) return undefined;
-  const source = snapshotFor(snapshotId(id));
-  if (!source) return undefined;
-  const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (!place) return source;
-  const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + place.y) * source.map.width + place.x, (y + place.y) * source.map.width + place.x + reference.width)).flat();
-  const croppedMap: GameMap = { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] };
-  cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
-  return { ...source, map: croppedMap };
+  if (!regionReference(id)) return undefined;
+  return snapshotFor(id);
 }
 
 /** Bounded rows let AI recover the complete raster without truncating a single large response. */
@@ -204,7 +121,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   if (!Number.isInteger(row) || !Number.isInteger(rows) || row < 0 || row >= reference.height || rows < 1 || rows > 16) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
-  const source = snapshotFor(snapshotId(id));
+  const source = snapshotFor(id);
   if (!source) throw new Error(`Unknown region reference: ${id}`);
   const selected = regionReferenceSnapshotScene(id)!;
   const endRow = Math.min(reference.height, row + rows);

@@ -175,7 +175,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
   const readOnly = plan.readOnly || plan.planOnly;
-  const team = command.mode === "team" && !readOnly && !plan.villageContract;
+  const team = command.mode === "team" && !readOnly;
   const routineEdit = plan.routineEdit === true && !readOnly && !team && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || plan.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: false, groupCount: groups.length });
@@ -190,7 +190,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   let planText = "";
   let executionTask = modelTask;
   try {
-    if (needsUltrabrainPlanTurn({ villageContract: plan.villageContract, readOnly, team, routineEdit, applyMode })) {
+    if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       const t1 = Date.now();
       const request = buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, scopedByUser: false,
@@ -209,7 +209,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       fs.writeFileSync(path.join(out, "plan.txt"), planText);
     }
     const request = buildPiRunRequest({
-      team, planOnly: plan.planOnly, readOnly, applyMode, villageContract: plan.villageContract,
+      team, planOnly: plan.planOnly, readOnly, applyMode,
       brain, deep, writer: modelForRole(config, "writer"), modelTask, executionTask, mapIds: groups[0]!, ...here, project: base,
       scopedByUser: false, mapBundleMerge: mergedFromBundles, maxTurns: plan.maxTurns,
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
@@ -248,7 +248,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       // 브라우저는 호스트가 오프닝 스틸을 그려 돌려준다(piRenderBroker). 헤드리스는 같은 함수에 이미지 제공자를 직접 건다.
       generateOpeningImage: (project, args, signal) => generateOpeningStill(args, { project, signal, generateImage: headlessGenerateImage,
         resolveReference: async (id) => `data:image/png;base64,${headlessToolImage(project, "show_opening_image", { resourceId: id })}` }),
-      ...(plan.villageContract || readOnlyRun || applyMode === "review" ? {} : { onCheckpoint: (checkpoint) => publication.publish(checkpoint) }),
+      ...(readOnlyRun || applyMode === "review" ? {} : { onCheckpoint: (checkpoint) => publication.publish(checkpoint) }),
     });
     mark("build", t2);
     stats.build = done.stats;

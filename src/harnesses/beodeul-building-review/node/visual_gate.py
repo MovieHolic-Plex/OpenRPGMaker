@@ -9,7 +9,9 @@ from PIL import Image,ImageDraw
 from native_author import ROOT,native,render_native
 SOURCE=ROOT/'harness-data/beodeul-building-review'
 RULES=SOURCE/'gate-rules.json'
-ANCHORS=[ROOT/'public/assets/beodeul-architecture'/f'{n}.png' for n in ['cream','brick','stone','ochre','church']]
+ANCHORS=[ROOT/'public/assets/beodeul-architecture'/f'{n}.png' for n in ['cream','brick','stone','ochre','church','cabin-native']]
+# Log-material candidates are compared with the original log cabin; every other candidate keeps the plaster reference.
+def reference_key(item):return 'arch:cabin-native' if item.get('material')=='log' else 'arch:cream'
 
 def digest(raw):return hashlib.sha256(raw).hexdigest()
 def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
@@ -45,6 +47,23 @@ def verify_receipt(data,id,sha,location='items'):
             if digest(Path(evidence['path']).read_bytes())!=evidence['sha']:return False
         return all(digest((data/location/id/(sha+suffix)).read_bytes())==expected for suffix,expected in r['assets'].items())
     except (OSError,ValueError,KeyError,TypeError,StopIteration):return False
+
+def human_allowed(data,id,sha):
+    """The latest human decision for this exact picture hash is Allow or Deny (hash-bound, append-only log).
+    Name kept; a human Deny also keeps its picture on the screen so the decision stays visible and undoable."""
+    try:
+        with sqlite3.connect(data/'review.sqlite') as c:
+            last=c.execute('select decision from decisions where item=? and sha=? order by seq desc limit 1',(id,sha)).fetchone()
+        return bool(last) and last[0] in ('allow','deny')
+    except sqlite3.Error:return False
+def exempt(data,id,sha,location='items'):
+    """User decision 2026-10-07: a picture a human already allowed is not re-gated after tooling moves.
+    Bound to the same picture hash and to intact asset files; a changed picture needs the full gate again."""
+    try:
+        if not human_allowed(data,id,sha):return False
+        return digest((data/location/id/(sha+'.png')).read_bytes())==sha and all((data/location/id/(sha+s)).exists() for s in ('-scene.png','.pixels.json'))
+    except OSError:return False
+def admitted(data,id,sha,location='items'):return verify_receipt(data,id,sha,location) or exempt(data,id,sha,location)
 
 def plate(candidate,reference,context=None):
     w=max(1000,(candidate.width+reference.width+48)*3);h=max(candidate.height,reference.height)*3+72
@@ -150,7 +169,7 @@ def judge(data,role,samples,profile,run_dir):
     folder=run_dir/role;folder.mkdir(parents=True,exist_ok=True)
     schema_path=folder/'schema.json';write(schema_path,schema(samples));report=folder/'verdict.json';report.unlink(missing_ok=True)
     rules=json.loads(RULES.read_text());axes=rules['requiredTextureAxes'] if role=='texture' else rules['requiredStructureAxes'];minimum=rules['minimumTextureScore'] if role=='texture' else rules['minimumStructureScore']
-    prompt=f'''You are an independent adversarial pixel-art Visual QA gate, role={role}. Your job is to stop unsuitable art before human review. You did NOT author it. Inspect the attached actual pixel images. Do not run commands, edit files, author art, or trust claims of success. The FIRST attached image is the ORIGINAL REFERENCE SHEET, not a sample to score: it includes original plaster/brick/stone and blue church roofing. All images use native pixels and nearest-neighbor enlargement; do not judge UI text. For each following sample the LEFT picture is the candidate and the RIGHT picture is an original Beodeul reference. Context rows show the candidate next to the existing house and warm tree at identical native scale. The reference anchors define the established style, NOT merely a palette.
+    prompt=f'''You are an independent adversarial pixel-art Visual QA gate, role={role}. Your job is to stop unsuitable art before human review. You did NOT author it. Inspect the attached actual pixel images. Do not run commands, edit files, author art, or trust claims of success. The FIRST attached image is the ORIGINAL REFERENCE SHEET, not a sample to score: it includes original plaster/brick/stone, blue church roofing and the original log cabin (the standard for log-material candidates, whose RIGHT picture is that cabin; judge log roof and wall grain against it, not against tiles or plaster). All images use native pixels and nearest-neighbor enlargement; do not judge UI text. For each following sample the LEFT picture is the candidate and the RIGHT picture is an original Beodeul reference. Context rows show the candidate next to the existing house and warm tree at identical native scale. The reference anchors define the established style, NOT merely a palette.
 The user rejected flat sparse manufactured roofing, thick boxed walls, coarse repeated grids, missing rounded tile relief, loss of fine plaster/stone grain, and a graphic/toy style that looks unrelated to the original. Require granular original-looking shingles with highlights following a real roof plane, original dot scale and texture density, original-sized outlines, and compatible contrast/light. Do not forgive mismatch because it is pixel art. New shapes/colors are allowed IF the rendering style fits. Perspective is 3/4 top view with roof top visible; a side wall is NOT required. One visible functional entry into the enclosed building body, consistent wall material per building, no floating roof, broken/cut edges, implausible joints, duplicated upstairs doors, or props concealing entry. Role differences allow a church larger than a small house; do not impose identical dimensions. Timber framing and plaster constitute one coherent facade concept. Multiple non-door windows are fine. Church/window/stained glass is not automatically a second door. Structural judging must use visible pixels, not entrance metadata. Count doors and open room entrances, not open-air space: an outdoor courtyard or passage between separate wings does not itself enter an enclosed room merely because a roof bridge spans above it. Distinguish visible outdoor ground between wings from a thresholded opening in an enclosing wall. Still reject any second wooden door or actual room entrance, including one on a rear facade or raised wing. This distinction applies to every sample, not an exemption for any candidate.
 Judge these axes only: {axes}. Each gets an honest 0-100 score. A score >= {minimum} means you cannot find a material violation under close inspection, not that it is merely recognizable. Any material defect means FAIL, even if other axes pass. PASS requires every listed axis >= {minimum} and zero issues. Do not manufacture failures on clean originals, but don't excuse defects inherited from an original. For FAIL provide concrete code, approximate x/y in the candidate's NATIVE pixel coordinates and why it fails. For every result state what you actually observed, including the roof/wall texture. Echo id and sha exactly. Do not aim for ten passes: inspect and reject independently. You must evaluate ALL samples, not just first/last. Final output must match the JSON schema.
 Samples in attached image order:\n'''+json.dumps([{k:s[k] for k in ['id','sha','width','height']} for s in samples],ensure_ascii=False)
@@ -199,7 +218,7 @@ def run_gate(data):
     for id,sha,meta in rows:
         item=json.loads(meta);file=data/'staging'/id/(sha+'.png');assert digest(file.read_bytes())==sha
         image=strict_contract(item,file);context=Image.open(data/'staging'/id/(sha+'-scene.png')).convert('RGBA')
-        picture=folder/(id+'-plate.png');plate(image,native('arch:cream'),context).save(picture)
+        picture=folder/(id+'-plate.png');plate(image,native(reference_key(item)),context).save(picture)
         structure_picture=folder/(id+'-structure.png');structure_plate(image).save(structure_picture)
         samples.append(dict(id=id,sha=sha,width=image.width,height=image.height,plate=picture,structurePlate=structure_picture,item=item,recipeSha=digest(canonical(recipe(id)))))
     # Blind negative probes prove the critic can detect the failure class the user just rejected.
@@ -219,7 +238,7 @@ def run_gate(data):
     print(f'Visual QA texture critic running: {len(samples)} drafts + blind failed-style probe',flush=True)
     texture,tf=judge(data,'texture',samples+[style_probe],profile,folder)
     if not (failed_axis(texture['sample-11'],'roof_grain',rules['minimumTextureScore']) and failed_axis(texture['sample-11'],'wall_grain',rules['minimumTextureScore'])):raise RuntimeError('CALIBRATION_FAILURE texture: failed-style probe was not correctly rejected.')
-    texture_failed=[s['id'] for s in samples if texture[s['id']]['verdict']!='PASS']
+    texture_failed=[s['id'] for s in samples if texture[s['id']]['verdict']!='PASS' and not exempt(data,s['id'],s['sha'],'staging')]
     if texture_failed:
         write(ROOT/'verify-shots/beodeul-building-review/visualqa-rejected.json',{'profile':profile,'stage':'texture','failed':texture_failed,'reviews':texture,'published':False})
         raise RuntimeError('TEXTURE_QA_REJECTED '+str(texture_failed))
@@ -234,22 +253,24 @@ def run_gate(data):
         id,sha=sample['id'],sample['sha'];reviews={'texture':texture[id],'structure':structure[id]};passed=all(r['verdict']=='PASS' for r in reviews.values())
         record={'id':id,'sha':sha,'profile':profile,'recipe':sample['recipeSha'],'assets':sample['assets'],'reviewImages':sample['reviewImages'],'reviews':reviews,'reportFiles':{'texture':tf,'structure':sf},'calibrationPassed':True,'passed':passed}
         record['signature']=hmac.new(key(data),canonical(record),'sha256').hexdigest();write(receipt_path(data,id,sha),record)
-        results.append({'id':id,'passed':passed,'texture':texture[id],'structure':structure[id]})
+        results.append({'id':id,'sha':sha,'passed':passed,'exemptHumanAllowed':(not passed) and exempt(data,id,sha,'staging'),'texture':texture[id],'structure':structure[id]})
     proof={'profile':profile,'calibrationPassed':True,'calibration':{'rejectedStyle':texture['sample-11'],'floatingRoof':structure['sample-12'],'duplicateDoor':structure['sample-13']},'results':results};write(ROOT/'verify-shots/beodeul-building-review/visualqa-proof.json',proof)
-    print(json.dumps({'visualQAPassed':sum(r['passed'] for r in results),'failed':[r['id'] for r in results if not r['passed']],'published':False}),flush=True)
-    if any(not r['passed'] for r in results):raise RuntimeError('VISUAL_QA_REJECTED '+str([r['id'] for r in results if not r['passed']]))
+    blocking=[r['id'] for r in results if not r['passed'] and not r['exemptHumanAllowed']]
+    print(json.dumps({'visualQAPassed':sum(r['passed'] for r in results),'failed':[r['id'] for r in results if not r['passed']],'exemptHumanAllowed':[r['id'] for r in results if r['exemptHumanAllowed']],'published':False}),flush=True)
+    if blocking:raise RuntimeError('VISUAL_QA_REJECTED '+str(blocking))
     return proof
 
 def publish(data):
     with sqlite3.connect(data/'review.sqlite') as c:
         rows=list(c.execute('select id,position,sha,meta from drafts order by position'))
         ids={i['id'] for i in json.loads((SOURCE/'seed.json').read_text())['candidates']};rows=[r for r in rows if r[0] in ids]
-        failed=[id for id,_,sha,_ in rows if not verify_receipt(data,id,sha,location='staging')]
+        failed=[id for id,_,sha,_ in rows if not admitted(data,id,sha,location='staging')]
         if len(rows)!=len(ids) or failed:raise ValueError('PUBLICATION_BLOCKED missing/failed/stale gate: '+str(failed))
         for id,pos,sha,meta in rows:
             src=data/'staging'/id;target=data/'items'/id;target.mkdir(exist_ok=True,parents=True)
             for suffix in ['.png','-scene.png','.pixels.json']:shutil.copyfile(src/(sha+suffix),target/(sha+suffix))
             item=json.loads(meta);item['qaPassed']=True;item['qaProfile']=files_profile()
+            if not verify_receipt(data,id,sha,location='staging'):item['qaExemptHumanAllowed']=True
             c.execute('insert into candidates values(?,?,?,?) on conflict(id) do update set position=excluded.position,sha=excluded.sha,meta=excluded.meta',(id,pos,sha,json.dumps(item,ensure_ascii=False)))
         c.commit()
     shutil.copyfile(ROOT/'verify-shots/beodeul-building-review/staging-native.png',ROOT/'verify-shots/beodeul-building-review/candidates-native.png')

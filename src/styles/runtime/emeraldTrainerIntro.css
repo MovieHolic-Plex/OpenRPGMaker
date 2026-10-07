@@ -14,10 +14,11 @@
   position: absolute;
   width: 192px;
   height: 40px;
-  background: #b8d098;
-  border: 4px solid #90b078;
+  /* 발판은 전투 지형 색(emeraldSurfaces.css 의 --emerald-base*)을 따른다 — 사막 전투에서도 소개 발판만 연두였다. */
+  background: var(--emerald-base, #b8d098);
+  border: 4px solid var(--emerald-base-rim, #90b078);
   border-radius: 50%;
-  box-shadow: inset 0 -4px #d0e0a8;
+  box-shadow: inset 0 4px var(--emerald-base-light, #d0e0a8);
 }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::before { left: 8px; top: 208px; }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro::after { right: 12px; top: 182px; }

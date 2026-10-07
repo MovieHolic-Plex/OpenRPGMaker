@@ -1,5 +1,4 @@
 import type { ActivityVisual } from "../activityVisual";
-import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -23,9 +22,6 @@ export type PiAgentThinkingLevel = "off" | "minimal" | "low" | "medium" | "high"
 export type PiAgentMode = "single" | "team";
 
 export interface PiAgentRequest {
-  /** Inherited by team members so task paraphrasing cannot drop the modern-map palette constraint. */
-  readonly modernTilesetOnly?: boolean;
-  readonly villageContract?: import("./villageContract").VillageContract;
   /**
    * 이 실행이 오프닝 제작 책임자인가. 비우면 task 낱말로 판정한다(requestsOpeningProduction).
    * 팀의 단계 실행은 task 끝에 사용자 원문 전체를 붙이므로 낱말 판정이 모든 단계를 오프닝 담당으로 만든다 — 팀이 명시한다.
@@ -213,16 +209,11 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly monsterGameProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly gameSystemProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly openingProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
+  | { readonly type: "done"; readonly monsterGameProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly gameSystemProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly openingProduction?: { readonly issues: readonly string[]; readonly playbackVerified: false }; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
       readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
       /** tilesets 가 바뀐 done 에서 그대로인 타일셋 id(PiProjectCheckpoint.unchangedTilesetIds 와 같은 뜻). */
       readonly unchangedTilesetIds?: readonly string[];
-      /**
-       * 실행 전에 얼린 마을 계약을 실행 도중 풀었다 — 계약 인자 그대로 부른 시공이 대상·범위·칩셋 규칙에 막혔다.
-       * 패널은 이 실행을 계약 실행이 아니라 일반 실행으로 마무리한다(완료 검사·검수·적용 정책).
-       */
-      readonly villageContractReleased?: { readonly code: string; readonly message: string };
       /**
        * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
        * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).

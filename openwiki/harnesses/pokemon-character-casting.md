@@ -181,3 +181,22 @@ Registered command: `npm run harness -- pokemon-character-casting prepare-cast`.
 Role IDs can contain underscores (`gym_leader`, `company_agent`, `moon_leader`). `safeId` and media/download routes consistently allow `[a-z0-9_-]`; path separators/encoded traversal are rejected. This fixes a previously unexercised mismatch where queue accepted these roles but package lookup failed.
 
 Evidence: `verify-shots/pokemon-character-casting-full-cast/SUMMARY.md`:16 native/media passes,120 pairwise comparisons,81 browser/persistence checks, decoded GIF sheets for every role/direction, live desktop/mobile screenshots and same-ID prepare rerun. No human votes were added; existing review history is preserved. Actual game application still requires the selected candidate's live Allow and the canonical save/reload procedure. Battle portraits are outside this walking collection.
+
+## Theme townsfolk and trainers (theme-cast-v1, 2026-10-07)
+
+Desert/snow/coast monster games showed generic green-town Emerald NPCs. `prepare-theme-cast` adds nine **new role ids**
+(`desert_resident_m|f`, `desert_trainer`, `snow_…`, `coast_…`; `THEME_ROLES` in `store.mjs`). They are separate roles, so allowing one never
+supersedes a full-cast-v1 role. They have no fixed editor cast slot (`editorPlacement:null` in approved downloads); game application decides placement.
+The motion import requires seed roles, so `queue` passes a temporary seed (motion seed + that role, identical charset contract) for theme roles only.
+
+Producer: `node/author-theme-cast.py` reads `harness-data/pokemon-character-casting/templates/theme-cast-v1/cast.json` — literal `sub` row
+replacements and explicit `map` index remaps, selected by direction and by rows relative to each pose's top ink row (handles the walking bob);
+side rules mirror onto the right view. It reuses `render-template.py` unchanged (its hash is inside full-cast-v1 recipes), then replaces
+`context.png` with a theme ground-tile mockup and corrects recipe/origin authorship. Nine new templates are pinned in `references/sources.json`;
+adding pins does not change full-cast-v1 replay output (verified byte-identical re-render). `man_2` was rejected by the diversity gate because its
+original body equals `devon_employee` (company agent); the gate was not loosened, the template was changed to `pokefan_m`.
+
+`prepare-theme-cast.mjs` queues all nine, checks collection/template metadata, then atomically writes `waves/theme-cast-v1.json`. It never calls
+`activateWave`, so no collection is withdrawn and no decision is touched. Same inputs reuse the same IDs (checked on a copied store and twice on the
+real store). Review: `http://mdc-server:18316/?wave=theme-cast-v1`. Sheet: `http://mdc-server:18301/theme-cast-v1.html`. Candidate table and
+known weaknesses: the wave README. All nine are pending user Allow/Deny.

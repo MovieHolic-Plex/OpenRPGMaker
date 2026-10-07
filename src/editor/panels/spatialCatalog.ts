@@ -1,8 +1,6 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { sharedContentTileset } from '@/project/sharedContent';
 import { sharedObjectKit } from '@/project/sharedSpatialReferences';
-import { CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
-import { SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "@/project/defaults/sharedVillageObjects";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { placeCards, placedCards, regionCards, worldCards } from "@/editor/panels/spatialCatalogHierarchy";
@@ -11,6 +9,8 @@ import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
 import type { SpatialDesignReference } from "@/project/spatial/types";
 import type { TilesetDef } from "@/project/types";
 import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
+import { isJpCityTileset, JP_CITY_ID, JP_CITY_PREFIX } from "@/project/defaults/jpCity";
+import jpInteriorSpec from "@/assets/jpInteriorSpec.json";
 
 const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
   tree: "잎 없는 고목", volcano: "화산 봉우리", gate: "성문·문루", terrain: "기후 지형", harbor: "항구 부품", house: "집 외형", prop: "마을 소품",
@@ -20,7 +20,7 @@ const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
 export { spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialPresentation";
 
 export type SpatialCardSource = "default" | "own" | "placed";
-export type SpatialCompatibilitySource = "room-rule" | "house-shape";
+export type SpatialCompatibilitySource = "room-rule";
 
 export type SpatialGalleryCard = {
   readonly id: string;
@@ -129,6 +129,7 @@ function objectCards(): SpatialGalleryCard[] {
         usage: 0,
         tilesetId: tileset.id,
         objectId: kit.id,
+        ...(isJpCityKit(tileset, kit.id) ? { subtitle: jpCityKitSubtitle(kit.id, kit.ai) } : {}),
       });
     }
   }
@@ -160,25 +161,27 @@ function objectCards(): SpatialGalleryCard[] {
  * Tibo 는 복원 시절의 `tibo-` 접두사를 유지해 기존 판정과 결과가 같다.
  */
 function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, kitId: string): boolean {
-  // LPC 나무 가구는 32px 판과 16px 판이 같은 킷 id 를 공유한다 — 둘 다 공용이다.
-  if (tileset.id === LPC_WOODEN_FURNITURE_TILESET_ID || tileset.id === LPC_WOODEN_FURNITURE_16_ID) {
-    return kitId.startsWith("lpc_");
-  }
-  if (tileset.id === "tibo_interior_expanded") return kitId.startsWith("tibo-");
-  // Castle2 실측 부품(잔디 중심·분수 전체 등 14종)은 castleStructureKits 가 번들 시트에 시드한다.
-  if (tileset.id === CASTLE_TILESET_ID
-    && tileset.image.type === "bundled"
-    && tileset.image.id === CASTLE_TILESET_TEXTURE_KEY) {
-    return kitId.startsWith("castle-measured-");
-  }
   // 손 도트 실내 v5(atlas_biome_interior): 가구 381종 킷은 번들 시드 — 공용 오브젝트.
+  // LPC·Tibo·성채·선별 소품 시트의 시드 킷 판정은 2026-10-07 저작권 정리로 그 시트와 함께 지웠다.
   if (tileset.id === "atlas_biome_interior") return kitId.startsWith("hand-interior:");
-  if (tileset.id === SHARED_VILLAGE_OBJECT_ID
-    && tileset.image.type === "bundled"
-    && tileset.image.id === SHARED_VILLAGE_OBJECT_TEXTURE) {
-    return kitId.startsWith("shared-village:");
-  }
-  return false;
+  // 일본 도시(jp_city): `jp-` 부품(실내 가구 jp-in-* 포함)은 번들이 소유한다 — 공용 오브젝트.
+  return isJpCityKit(tileset, kitId);
+}
+
+const JP_INTERIOR_CATEGORY: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries((jpInteriorSpec as { objects: Record<string, { category_ko: string }> }).objects).map(([id, o]) => [`${JP_CITY_PREFIX}in-${id}`, o.category_ko]));
+const JP_ROLE_LABEL: Readonly<Record<string, string>> = { building: "건물", prop: "거리 소품", terrain: "길·바닥", wall: "담·대문", fence: "울타리" };
+
+function isJpCityKit(tileset: Pick<TilesetDef, "id" | "image">, kitId: string): boolean {
+  return tileset.id === JP_CITY_ID && isJpCityTileset(tileset) && kitId.startsWith(JP_CITY_PREFIX);
+}
+
+/** 일본 도시 번들 부품의 카드 부제 — 실내 가구는 방 분류(categories.py), 나머지는 역할. 검색도 이 글자를 본다. */
+function jpCityKitSubtitle(kitId: string, ai: { role?: string; tags?: string[] } | undefined): string {
+  const room = JP_INTERIOR_CATEGORY[kitId];
+  if (room) return `일본 실내 · ${room}`;
+  if (ai?.tags?.includes("학교")) return "일본 도시 · 학교";
+  return `일본 도시 · ${JP_ROLE_LABEL[ai?.role ?? ""] ?? "부품"}`;
 }
 
 function spaceCards(): SpatialGalleryCard[] {

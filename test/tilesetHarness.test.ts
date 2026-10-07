@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankMap, createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
-import { lintCastleGrammar, stampCastle } from "@/editor/castleKit";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { deserialize, serialize } from "@/project/io";
@@ -279,24 +278,6 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(isHarnessStackableTile(tileset, 378)).toBe(true);
     expect(isHarnessStackableTile(tileset, TILE.TREE)).toBe(true);
     expect(harnessLayerForTile(tileset, TILE.TREE)).toBeNull();
-  });
-
-  it("uses the canonical castle kit instead of retired free-assembly castle groups", () => {
-    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
-    const ids = new Set((tileset.tileGroups ?? []).map((group) => group.id));
-    for (const suffix of ["castle-roof-deck", "castle-wall-face", "castle-round-tower"]) {
-      expect(ids.has(`harness-combined-town-${suffix}`)).toBe(false);
-    }
-    const map = createBlankMap("Castle contract", 48, 40);
-    const result = stampCastle(map, { area: { x: 0, y: 0, w: 48, h: 40 } });
-    expect(result.ok).toBe(true);
-    if (!result.ok) throw new Error(result.reason);
-    expect(result.stats.roofCells).toBeGreaterThan(50);
-    expect(result.stats.wallCells).toBeGreaterThan(20);
-    expect(result.towers).toHaveLength(2);
-    const checks = lintCastleGrammar(map, { area: result.area, towers: result.towers, gates: result.gateRecords });
-    expect(checks.length).toBeGreaterThan(0);
-    for (const check of checks) expect(check.pass, check.key).toBe(true);
   });
 });
 

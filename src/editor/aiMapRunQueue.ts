@@ -28,6 +28,8 @@ export interface MapRunTicket {
   /** 잡는 맵. exclusive 면 모든 맵. */
   readonly mapKey: string;
   readonly exclusive: boolean;
+  /** 패널 앞 턴(force)으로 올린 표 — 앞 턴 자신의 활동 버스가 따로 있어 존재감에서 중복으로 세지 않는다. */
+  readonly foreground: boolean;
   /** 사람이 읽는 짧은 이름(보낸 문장). */
   readonly label: string;
   status: MapRunStatus;
@@ -138,7 +140,7 @@ export function createMapRunQueue(options: { readonly concurrency?: number; read
   return {
     enqueue(input) {
       const ticket: MapRunTicket = {
-        id: nextId++, mapKey: input.mapKey, exclusive: input.exclusive === true, label: input.label,
+        id: nextId++, mapKey: input.mapKey, exclusive: input.exclusive === true, foreground: input.force === true, label: input.label,
         status: "waiting", wait: null, ahead: 0, enqueuedAt: clock(), startedAt: null, endedAt: null, error: null,
       };
       entries.push({ ticket, force: input.force === true, start: input.start, controller: new AbortController() });

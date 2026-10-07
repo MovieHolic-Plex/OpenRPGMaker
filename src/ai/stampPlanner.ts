@@ -16,7 +16,6 @@ export type StampTool =
   | "tile_erase"
   | "build_wall"
   | "place_door"
-  | "author_house"
   | "place_chest"
   | "place_npc"
   | "place_savepoint"
@@ -26,7 +25,6 @@ export type StampTool =
   | "place_trap"
   | "place_battle_blocker"
   | "set_scene_mood"
-  | "arrange_tall_grass"
   | "set_start_position"
   | "move_event"
   | "remove_event"
@@ -40,7 +38,6 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "tile_erase",
   "build_wall",
   "place_door",
-  "author_house",
   "place_chest",
   "place_npc",
   "place_savepoint",
@@ -49,7 +46,6 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_trap",
   "place_battle_blocker",
   "set_scene_mood",
-  "arrange_tall_grass",
   "set_start_position",
   "move_event",
   "remove_event",
@@ -108,7 +104,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
   "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기/표지판/비석 → place_examine_hotspots. Put them on walkable ground inside the target, not on trees, water or walls.",
-  "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 키큰 풀/수풀 → arrange_tall_grass; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
+  "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
   "- facts.placement.role says what this map is. TOWN (마을): prefer townsfolk with lines, merchants with stock, an inn keeper (place_inn, price from facts.placement.innPrice), signposts at road forks and entrances (place_signpost), a savepoint near the inn, examine hotspots on wells/boards; put people beside roads and doors, never inside houses or on the road itself; chests are rare and small. No traps or blocking monsters in a town unless the sentence asks. INTERIOR: a few NPCs/props, no monsters. DUNGEON/FIELD: chests, blockers from encounterTroops, traps on corridors.",
   "- Empty sentence in a TOWN means: fill it like a lived-in village (2~4 townsfolk, 1 merchant if no shop exists yet, 1 signpost), not treasure and monsters.",
   "- Do not put a new object on or right above/below a cell in facts.placement.existing.occupied, nor on another new object; code moves overlapping ones but choose free cells first.",
@@ -124,7 +120,6 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "tile_erase {rect:{x,y,w,h}, layer?:\"both\"|\"lower\"|\"upper\"}",
   "build_wall {rect:{x,y,w,h}, material}",
   "place_door {at:{x,y}, material}",
-  "author_house {wings:[{x,y,w,h}] (w>=3,h>=5), interior?:\"exterior-only\"|\"linked-interior\"}",
   "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
   "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean, stock?:[itemId]}",
   "place_savepoint {at:{x,y}}",
@@ -135,7 +130,6 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_trap {at:{x,y}, trigger?:\"touch\"|\"action\", message?:string}",
   "place_battle_blocker {at:{x,y}, troopId, intro?:[\"...\"]}",
   "set_scene_mood {weather:{kind:\"none\"|\"rain\"|\"storm\"|\"snow\"|\"fog\", intensity?:0..1}}",
-  "arrange_tall_grass {rect:{x,y,w,h}}",
   "set_start_position {at:{x,y}}",
   "move_event {eventId, at:{x,y}}",
   "remove_event {eventId}",
@@ -257,7 +251,6 @@ const TOOL_KO: Record<StampTool, string> = {
   tile_erase: "지우기",
   build_wall: "벽",
   place_door: "문",
-  author_house: "집",
   place_chest: "보물상자",
   place_npc: "NPC",
   place_savepoint: "세이브 포인트",
@@ -267,7 +260,6 @@ const TOOL_KO: Record<StampTool, string> = {
   place_trap: "함정",
   place_battle_blocker: "길막 몬스터",
   set_scene_mood: "분위기",
-  arrange_tall_grass: "키큰 풀",
   set_start_position: "시작 위치",
   move_event: "옮기기",
   remove_event: "지우기",
@@ -344,22 +336,6 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         : rect ? { x: rect.x + Math.floor((rect.w - 1) / 2), y: rect.y + rect.h - 1 } : null;
       if (!at) return dropped("문 위치가 없습니다");
       return { step: { tool: stampTool, label, args: { mapId, at, material: material ?? "문" } } };
-    }
-    case "author_house": {
-      const wingRaw = Array.isArray(args.wings) && args.wings.length > 0 ? args.wings[0] : rectRaw;
-      const wing = wingRaw === undefined ? target : clampRectToTarget(wingRaw, target);
-      if (!wing) return dropped("집 자리가 대상 밖입니다");
-      // 집은 3×5 미만이면 도구가 거부한다. 대상이 작으면 맵 안에서 넓힌다(정규식 경로와 같다).
-      const w = Math.min(Math.max(3, wing.w), Math.max(1, facts.mapWidth - wing.x));
-      const h = Math.min(Math.max(5, wing.h), Math.max(1, facts.mapHeight - wing.y));
-      const interior = enumArg(args.interior, ["exterior-only", "linked-interior"] as const) ?? "exterior-only";
-      return {
-        step: {
-          tool: stampTool,
-          label,
-          args: { kind: "single", mapId, wings: [{ x: wing.x, y: wing.y, w, h }], interior, door: interior === "linked-interior" },
-        },
-      };
     }
     case "place_chest": {
       const at = pointOrCenter(args.at, rect, target);
@@ -511,10 +487,6 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const intensityRaw = typeof weatherRaw.intensity === "number" ? weatherRaw.intensity : 0.6;
       const intensity = Math.max(0.1, Math.min(1, intensityRaw));
       return { step: { tool: stampTool, label: labelText ?? "분위기", args: { mapId, weather: { kind, intensity }, applyMode: "map" } } };
-    }
-    case "arrange_tall_grass": {
-      if (!rect) return dropped("영역이 대상 밖입니다");
-      return { step: { tool: stampTool, label: labelText ?? "키큰 풀", args: { mapId, rect } } };
     }
     case "set_start_position": {
       const at = pointOrCenter(args.at, rect, target);

@@ -1,0 +1,33 @@
+{
+ "plan": [
+  ".........",
+  ".........",
+  ".........",
+  ".........",
+  "........."
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "objects": [
+  {
+   "id": "stairwell-down-wood",
+   "x": 0,
+   "y": 2
+  },
+  {
+   "id": "door-western",
+   "x": 2,
+   "y": 0
+  },
+  {
+   "id": "light-switch",
+   "x": 6,
+   "y": 0
+  },
+  {
+   "id": "window-sash-small",
+   "x": 7,
+   "y": 0
+  }
+ ]
+}

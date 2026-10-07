@@ -61,12 +61,12 @@ for c in CHARS['characters']:
         for f in (0, 1, 2, 1):
             frames.append(sh.crop((ox + f * 24, oy + row * 32, ox + f * 24 + 24, oy + row * 32 + 32)))
     parts.append(f'<figure><img src="{uri(None, z=3, frames=frames, dur=180)}"><figcaption><b>{html.escape(c["name"])}</b><br>{html.escape(c["spaceName"])}</figcaption></figure>')
-parts.append('</div><h2 id="ex">완성 예제</h2>')
-exdir = os.path.join(wzlib.TD, 'examples')
-for f in sorted(os.listdir(exdir)) if os.path.isdir(exdir) else []:
+parts.append('</div><h2 id="ex">완성 맵 — 조수 빌더 build_wizarding_space 결과 <small>걸을 수 있는 칸 한 덩이·문 닿음 검사 통과</small></h2>')
+spdir = os.path.join(wzlib.TD, 'spaces')
+for f in sorted(os.listdir(spdir)) if os.path.isdir(spdir) else []:
     if f.endswith('.png'):
-        e = json.load(open(os.path.join(exdir, f[:-4] + '.json'), encoding='utf-8'))
-        parts.append(f'<figure class=ex><img src="{uri(Image.open(os.path.join(exdir, f)).convert("RGBA"))}"><figcaption><b>{html.escape(e["name"])}</b> {e["w"]}×{e["h"]}' + (f' · 빠진 조각 {len(e["skipped"])}' if e['skipped'] else '') + '</figcaption></figure>')
+        sp = json.load(open(os.path.join(spdir, f[:-4] + '.json'), encoding='utf-8'))
+        parts.append(f'<figure class=ex><img src="{uri(Image.open(os.path.join(spdir, f)).convert("RGBA"))}"><figcaption><b>{html.escape(sp["name"])}</b> {sp["w"]}×{sp["h"]} · <code>{sp["space"]}{"/" + sp["variant"] if sp.get("variant") else ""}</code> · 가구 {len(sp["placed"])}</figcaption></figure>')
 parts.append(f'<h2 id="rej">검수 거절·미검수 ({len(REP["rejected"])})</h2><table><tr><th>모듈</th><th>id</th><th>이유</th><th>검수자 메모</th></tr>' +
              ''.join(f'<tr><td>{r["module"]}</td><td><code>{r["id"]}</code></td><td>{html.escape(r["why"])}</td><td>{html.escape(r["reason"])}</td></tr>' for r in REP['rejected']) + '</table>')
 css = ('body{background:#24232a;color:#ddd;font:14px sans-serif;margin:20px}h2{border-bottom:1px solid #555;margin-top:36px}small{color:#999;font-weight:normal}'

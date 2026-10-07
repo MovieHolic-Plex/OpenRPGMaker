@@ -4,8 +4,6 @@ import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { selectPaletteTile } from "@/editor/panels/tilePalette";
-import { clearFavoriteTilesForTest } from "@/editor/panels/tileBrushTools";
 
 describe("left activity bar", () => {
   let tools: HTMLElement;
@@ -18,7 +16,6 @@ describe("left activity bar", () => {
   };
   beforeEach(() => {
     localStorage.clear();
-    clearFavoriteTilesForTest();
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId });
     tools = document.createElement("div");
@@ -77,7 +74,7 @@ describe("left activity bar", () => {
   it("lists every pane, renders a pane only when it is opened, and restores the saved one", () => {
     mount();
     const bar = [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-activity-bar"] button')].map((b) => b.dataset.testid);
-    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-favorites", "sidebar-progress", "sidebar-links", "sidebar-workshop", "sidebar-store", "sidebar-inspect"]);
+    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-props", "sidebar-progress", "sidebar-links", "sidebar-workshop", "sidebar-store", "sidebar-inspect"]);
     expect(find("left-progress-pane")?.childElementCount).toBe(0);
     find("sidebar-progress")?.click();
     expect(workspace.root.dataset.pane).toBe("progress");
@@ -94,19 +91,35 @@ describe("left activity bar", () => {
     expect(find("left-links-pane")?.hidden).toBe(false);
   });
 
-  it("collects picked tiles as recent and moves a right-clicked tile to favorites", () => {
-    selectPaletteTile(4);
-    selectPaletteTile(7);
+  it("selects a complete prop without painting and clears its stamp on a foreign chipset", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const tileset = project.tilesets[map.tilesetId]!;
+    map.name = "기물 시험";
+    tileset.structureKits = [{ id: "qa:bench", kind: "section", name: "기물 시험 벤치", width: 2, height: 1, rows: [{ tiles: [-1, -1], upperTiles: [4, 7] }] }];
+    const other = { ...tileset, id: "qa-other", structureKits: [] };
+    project.tilesets[other.id] = other;
+    project.maps["qa-other-map"] = { ...map, id: "qa-other-map", tilesetId: other.id };
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, activePaletteStamp: null });
+    const original = [...store.getCurrent().maps[map.id]!.upperTiles];
     mount();
-    find("sidebar-favorites")?.click();
-    const recent = () => [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-favorites-recent"] .left-favorites-cell')].map((c) => c.dataset.tile);
-    const starred = () => [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-favorites-starred"] .left-favorites-cell')].map((c) => c.dataset.tile);
-    expect(recent()).toEqual(["7", "4"]);
-    expect(starred()).toEqual([]);
-    find("left-favorites-recent-4")?.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
-    expect(starred()).toEqual(["4"]);
-    expect(recent()).toEqual(["7"]);
-    find("left-favorites-star-4")?.click();
-    expect(editorState.get().selectedTile).toBe(4);
+    find("sidebar-props")?.click();
+    const button = workspace.root.querySelector<HTMLButtonElement>('[data-prop-id="qa:bench"]');
+    expect(button).not.toBeNull();
+    editorState.set({ layer: "event" });
+    button!.click();
+    expect(editorState.get().layer).toBe("upper");
+    expect(editorState.get().activePaletteStamp).toMatchObject({ width: 2, height: 1, source: { tilesetId: tileset.id }, cells: [{ dx: 0, dy: 0, layer: "upper", tile: 4 }, { dx: 1, dy: 0, layer: "upper", tile: 7 }] });
+    expect(store.getCurrent().maps[map.id]!.upperTiles).toEqual(original);
+    editorState.set({ currentMapId: "qa-other-map" });
+    expect(editorState.get().activePaletteStamp).toBeNull();
+  });
+
+  it("restores the old favorites preference as the props pane", () => {
+    localStorage.setItem("oprn:left-activity-pane", "favorites");
+    mount();
+    expect(workspace.root.dataset.pane).toBe("props");
+    expect(find("sidebar-props")?.getAttribute("aria-pressed")).toBe("true");
   });
 });

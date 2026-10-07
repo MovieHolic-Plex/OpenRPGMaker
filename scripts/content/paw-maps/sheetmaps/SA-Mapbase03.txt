@@ -1,6 +1,0 @@
-# SA-Mapbase03.png 3x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  
-   0 #c #w #w 
-   1 #l #w #l 
-   2 #w #w #w 
-   3 #l #w #l 

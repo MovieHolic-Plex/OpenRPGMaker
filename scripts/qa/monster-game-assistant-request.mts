@@ -14,7 +14,7 @@ export async function buildMonsterGameAssistantRequest(project: Project, task: s
   const modelTask = composePiTask(task, route.intentNote);
   const role = { provider, model, thinkingLevel: 'high' as const };
   const request = buildPiRunRequest({ team: route.mode === 'team', readOnly: route.plan.readOnly,
-    planOnly: route.plan.planOnly, applyMode: 'yolo', villageContract: route.plan.villageContract,
+    planOnly: route.plan.planOnly, applyMode: 'yolo',
     brain: { providerId: provider, model, reasoningEffort: 'high' }, deep: role, writer: role,
     modelTask, executionTask: modelTask, mapIds: [], currentMapId: project.startMapId, project,
     scopedByUser: false, mapBundleMerge: false, maxTurns, initialToolNames: route.initialToolNames,

@@ -8,7 +8,7 @@ import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene } from "@/player/battleDom";
 import { BATTLE_INTRO_MS } from "@/player/battleSequencer";
 import { sendOutDirectorState } from "@/player/battleDirectorDom";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { store } from "@/project/store";

@@ -22,6 +22,8 @@ let filter: Filter = "choose";
 let query = "";
 let selectedKey: string | null = null;
 let showForm = false;
+/** 새 기물 폼에 미리 채울 값(조수의 「없는 타일」 카드가 연 경우) */
+let formDraft: { title: string; description: string } | null = null;
 let lastSignature = "";
 const view: RoundViewState = { selected: 0, zoom: "fit", rejectFor: null };
 
@@ -29,8 +31,14 @@ export function isWorkshopOpen(): boolean {
   return host !== null;
 }
 
-export async function openWorkshop(harnessId: string): Promise<void> {
+export type OpenWorkshopOptions = { readonly newItem?: { readonly title: string; readonly description: string } };
+
+export async function openWorkshop(harnessId: string, options: OpenWorkshopOptions = {}): Promise<void> {
   closeWorkshop();
+  if (options.newItem) {
+    showForm = true;
+    formDraft = { ...options.newItem };
+  }
   host = el("div", {
     class: "workshop-host", dataset: { testid: "workshop-host" },
     on: { click: (event) => { if (event.target === host) closeWorkshop(); } },
@@ -62,6 +70,7 @@ export function closeWorkshop(): void {
   host = null;
   session = null;
   lastSignature = "";
+  formDraft = null;
 }
 
 function visibleItems(s: WorkshopSession): WorkshopItem[] {
@@ -107,7 +116,7 @@ function render(force: boolean): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { text: "공방 · 손 도트 실내 기물" }),
+          el("h2", { text: `공방 · ${s.runner.label ?? "손 도트 실내 기물"}` }),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
             text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",
@@ -161,7 +170,7 @@ function render(force: boolean): void {
           el("main", {
             class: "workshop-main",
             children: [showForm
-              ? renderItemForm(s, (key) => { showForm = false; selectedKey = key; filter = "all"; render(true); }, () => { showForm = false; render(true); })
+              ? renderItemForm(s, (key) => { showForm = false; formDraft = null; selectedKey = key; filter = "all"; render(true); }, () => { showForm = false; formDraft = null; render(true); }, formDraft ?? undefined)
               : selected ? renderRoundView(s, selected, view, () => render(true))
               : el("p", { class: "workshop-empty", text: filter === "choose" ? "고를 차례인 기물이 없습니다. 다 그리면 여기 나타납니다." : "기물이 없습니다." })],
           }),

@@ -1,9 +1,0 @@
-# studio.png 6x7 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  
-   0 +l ~g ~o +o +o ~o 
-   1 #l #o #m ~g ~b ~m 
-   2 ~b ~b ~b +o ~g +c 
-   3 ~o +o +o +l +o ~o 
-   4 +g +g +o +g +o +o 
-   5 +o +o +o +o ~l ~l 
-   6 +o +o +o +o +l +l 

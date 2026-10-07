@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject, createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createBlankProject } from "@/project/defaults/defaultProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
@@ -48,7 +48,7 @@ describe("DB write tools", () => {
   });
 
   it("upsert_item 부분 수정은 기존 필드를 보존하고 최종 레코드 전체를 반환한다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const before = structuredClone(ctx.project.database.items.find((item) => item.id === "item_potion"));
     expect(before).toBeDefined();
 
@@ -265,7 +265,7 @@ describe("DB write tools", () => {
   // 게이트가 쓰기 전체를 `'upsert_enemy' 커밋 거부(무결성 오류)` 한 줄로 반려했다 — 스탯·보상까지
   // 함께 버려지고 사유는 issues 에만 있었다.
   it("upsert_enemy 는 이 호출이 새로 가리키는 스킬·드롭 아이템·스위치가 없으면 사유와 허용 예시를 함께 거부한다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const enemy = ctx.project.database.enemies[0]!;
     const before = structuredClone(enemy);
 
@@ -297,7 +297,7 @@ describe("DB write tools", () => {
   });
 
   it("upsert_enemy 는 기존 레코드의 선재 깨진 참조를 이 호출이 넘기지 않으면 스탯 수정을 막지 않는다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const enemy = ctx.project.database.enemies[0]!;
     enemy.actions = [{
       skillId: "skill_already_gone",
@@ -314,7 +314,7 @@ describe("DB write tools", () => {
   });
 
   it("upsert_enemy 는 실제로 있는 스킬·아이템 참조는 그대로 통과시킨다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const enemy = ctx.project.database.enemies[0]!;
     const skill = ctx.project.database.skills[0]!;
     const item = ctx.project.database.items[0]!;

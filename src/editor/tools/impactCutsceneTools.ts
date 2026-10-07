@@ -16,8 +16,8 @@ export const IMPACT_CUTSCENE_TOOL = "script_cutscene_impact";
 const WHITE_PIXEL_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFUlEQVR4nGP8////fwYGBgYmBigAAD34BADaOyqcAAAAAElFTkSuQmCC";
 export const CUTSCENE_WHITE_RESOURCE_ID = "cutscene_white_screen";
 
-/** 기본 효과음(Kenney CC0 강한 타격). */
-const DEFAULT_IMPACT_SE = "cc0-se-kis-impactpunch-heavy-002";
+/** 기본 효과음(OpenGameArt CC0 타격). */
+const DEFAULT_IMPACT_SE = "cc0-se-osx-hit-03";
 const DEFAULT_CHARSET = "tex_easyrpg_charset_actor1";
 
 type RecordValue = Record<string, unknown>;

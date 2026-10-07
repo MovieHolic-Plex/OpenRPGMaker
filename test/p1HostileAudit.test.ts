@@ -1,14 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import {
   advanceFarmAnimalProduction,
   feedFarmAnimal,
   petFarmAnimal,
 } from "@/project/farmAnimals";
-import { calendarDayKey } from "@/project/gameTime";
 import { startSession } from "@/project/session";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
-import { transitionToNextDay } from "@/player/dayTransition";
 import {
   animalProject,
   feedItemId,
@@ -70,38 +67,5 @@ describe("P1 independent hostile audit", () => {
 
     expect(restored.farmAnimals?.animal_1?.buildingId).toBe("coop");
     expect(restored.farmAnimals?.animal_2?.buildingId).toBeUndefined();
-  });
-
-  it("clears the Phaser weather target when the daily-weather package is disabled", () => {
-    // Break caught: session.dailyWeather clears but m2Runtime.screen.weather keeps rendering yesterday's rain.
-    const project = createFarmingDemoProject();
-    project.system.dailyWeather = {
-      enabled: true,
-      seasons: { spring: [{ kind: "rain", weight: 1, intensity: 0.8 }] },
-    };
-    const session = startSession(project, 904);
-    expect(session.m2Runtime?.screen.weather).toBe("rain,0.8");
-    project.system.dailyWeather.enabled = false;
-
-    expect(transitionToNextDay(project, session, calendarDayKey(session.gameTime!))).toMatchObject({ ok: true });
-
-    expect(session.dailyWeather).toBeUndefined();
-    expect(session.m2Runtime?.screen.weather).toBe("none");
-  });
-
-  it("does not restore a valid-looking current-weather row for the wrong calendar day", () => {
-    // Break caught: the HUD labels a stale but syntactically valid saved day as today's weather.
-    const project = createFarmingDemoProject();
-    project.system.dailyWeather = {
-      enabled: true,
-      seasons: { spring: [{ kind: "rain", weight: 1, intensity: 0.8 }] },
-    };
-    const session = startSession(project, 905);
-    const snapshot = createSaveSnapshot(project, session);
-    snapshot.session.dailyWeather = { dayKey: "1:spring:2", kind: "storm", intensity: 1 };
-
-    const restored = applySaveSnapshot(project, snapshot);
-
-    expect(restored.dailyWeather?.dayKey).toBe(calendarDayKey(restored.gameTime!));
   });
 });

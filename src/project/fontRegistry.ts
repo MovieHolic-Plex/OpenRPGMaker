@@ -26,6 +26,7 @@ export interface FontDefinition {
   readonly bundled: boolean;
 }
 
+// 2026-10-07 저작권 정리로 Neo둥근모·갈무리 woff2 를 지웠다. 이름은 사용자 컴퓨터에 깔린 글꼴이 있으면 쓰고, 없으면 아래로 내려간다.
 const PIXEL_FALLBACKS = `"GulimChe", "DotumChe", "MS Gothic", monospace`;
 
 export const FONT_REGISTRY: readonly FontDefinition[] = [
@@ -71,21 +72,21 @@ export const FONT_REGISTRY: readonly FontDefinition[] = [
     label: "Neo둥근모 · 픽셀",
     roles: ["ui", "pixel", "mono"],
     stack: `"NeoDunggeunmo", "Galmuri11", "Galmuri9", ${PIXEL_FALLBACKS}`,
-    bundled: true,
+    bundled: false,
   },
   {
     id: "galmuri11",
     label: "갈무리11 · 픽셀",
     roles: ["ui", "pixel", "mono"],
     stack: `"Galmuri11", "NeoDunggeunmo", "Galmuri9", ${PIXEL_FALLBACKS}`,
-    bundled: true,
+    bundled: false,
   },
   {
     id: "galmuri9",
     label: "갈무리9 · 픽셀",
     roles: ["ui", "pixel", "mono"],
     stack: `"Galmuri9", "Galmuri11", "NeoDunggeunmo", ${PIXEL_FALLBACKS}`,
-    bundled: true,
+    bundled: false,
   },
 ];
 

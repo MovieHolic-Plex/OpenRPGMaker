@@ -11,6 +11,7 @@ import data from "@/assets/atlasBiomeInteriorTileset.json";
 import references from "@/assets/sharedHandInteriorReferences.json";
 import type { AutotileGroup, PassFlag, Project, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
 export const ATLAS_BIOME_INTERIOR_ID = "atlas_biome_interior";
 export const ATLAS_BIOME_INTERIOR_TEXTURE = "tex_atlas_biome_interior";
@@ -40,6 +41,7 @@ export function createAtlasBiomeInteriorTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     referenceDocuments: REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category)),
+    roomKit: { builtin: ATLAS_BIOME_INTERIOR_ID },
   };
 }
 
@@ -87,14 +89,31 @@ export function ensureAtlasBiomeInteriorReferences(tileset: TilesetDef): boolean
   return changed;
 }
 
+type InteriorProject = Pick<Project, "tilesets"> & { assets?: { uploaded: Record<string, unknown> }; maps?: Readonly<Record<string, { tilesetId?: string; lowerTiles?: number[]; upperTiles?: number[]; lowerOverlayTiles?: number[]; upperOverlayTiles?: number[] }>> };
+
+/**
+ * 번들 정의를 최신으로 맞춘다. 공방에서 구운 칸(project/workshopTiles.ts)은 새로 고치기 전에 떼어 두었다가
+ * 새 번들 끝 뒤에 다시 붙인다 — 번들이 칸을 덧붙여 번호가 밀리면 그 칩셋을 쓰는 맵도 함께 고쳐 쓴다.
+ */
+export function ensureAtlasBiomeInteriorCurrent(project: InteriorProject, id: string): boolean {
+  const tileset = project.tilesets[id];
+  if (!tileset || !isAtlasBiomeInteriorTileset(tileset) || id !== ATLAS_BIOME_INTERIOR_ID) return false;
+  const parked = detachWorkshopTiles(tileset);
+  const changed = refreshAtlasBiomeInterior(project, id);
+  const moved = parked ? attachWorkshopTiles(project, id, parked) : false;
+  const current = project.tilesets[id]!;
+  const kit = !current.roomKit;
+  if (kit) current.roomKit = { builtin: ATLAS_BIOME_INTERIOR_ID };
+  return changed || moved || kit;
+}
+
 /**
  * 옛 저장본(Tibo 번호 기반 atlas_biome_interior)은 손 도트 v5 정의로 통째로 바꾼다 — 칸 번호가 전혀 다르므로
  * 이어 붙이기가 아니다. 그 칩셋을 쓰던 맵은 그대로 두고(칸 번호가 다른 그림을 가리키게 된다) 경고만 남긴다.
  * 저자가 직접 쓴 참고문서 분류(옛 번들 분류 atlas-interior-* 가 아닌 것)는 옮겨 둔다.
  */
-export function ensureAtlasBiomeInteriorCurrent(project: Pick<Project, "tilesets"> & { maps?: Readonly<Record<string, { tilesetId?: string }>> }, id: string): boolean {
-  const tileset = project.tilesets[id];
-  if (!tileset || !isAtlasBiomeInteriorTileset(tileset) || id !== ATLAS_BIOME_INTERIOR_ID) return false;
+function refreshAtlasBiomeInterior(project: InteriorProject, id: string): boolean {
+  const tileset = project.tilesets[id]!;
   if (isHandInteriorV5Definition(tileset)) {
     // same sheet, older build (new tiles appended, passage/layer/labels refreshed): refresh the bundle-owned fields.
     // Tile ids already placed on maps keep their meaning (append-only build), so maps are not touched.

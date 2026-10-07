@@ -17,7 +17,6 @@ import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialTool
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lint/repairTreePairs";
-import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
@@ -348,7 +347,6 @@ export function runToolDefinition(
         const trees = repairTreePairsOnMap(map, draft.tilesets[map.tilesetId], repairOptions);
         repaired.canopiesPlaced += trees.canopiesPlaced;
         repaired.orphanTrunksRemoved += trees.orphanTrunksRemoved;
-        applyForestTreeShadows(map, draft.tilesets[map.tilesetId]);
       }
       treeRepairNote = formatTreePairRepairSummary(repaired);
     }

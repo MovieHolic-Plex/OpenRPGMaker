@@ -44,6 +44,7 @@ export function createJpCityTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     referenceDocuments: structuredClone(REFERENCES),
+    roomKit: { builtin: JP_CITY_ID },
   };
 }
 
@@ -121,6 +122,7 @@ export function ensureJpCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== JP_CITY_ID || !isJpCityTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== JP_CITY_FAMILY) { tileset.family = JP_CITY_FAMILY; changed = true; }
+  if (!tileset.roomKit) { tileset.roomKit = { builtin: JP_CITY_ID }; changed = true; }
   if (tileset.tilesPerRow === data.tilesPerRow) {
     if (tileset.count > data.count) return changed;
     if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;

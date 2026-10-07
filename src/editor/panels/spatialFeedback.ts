@@ -60,7 +60,6 @@ export function humanizeSpatialError(text: string | null): string | null {
 export function spatialSourceLabel(card: SpatialGalleryCard): string {
   if (card.mapUsage) return "맵 사용";
   if (card.compatibility === "room-rule") return "호환 방 규칙";
-  if (card.compatibility === "house-shape") return "건물 외형 · 호환 도안";
   switch (card.source) {
     case "default": return card.kind === "objects" ? "공용 오브젝트" : "기본 설계";
     case "own": return card.kind === "objects" ? "내 오브젝트" : "내 설계";

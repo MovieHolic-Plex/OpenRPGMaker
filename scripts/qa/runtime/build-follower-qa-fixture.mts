@@ -10,7 +10,7 @@
 // qa 하네스 픽스처 로더는 v3 계약(version 3)을 전제하므로 version: 3 으로 직렬화한다.
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "../../../test/support/scarloxyPokemonProject";
 import { giveMonster } from "@/project/monsterCollection";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 
