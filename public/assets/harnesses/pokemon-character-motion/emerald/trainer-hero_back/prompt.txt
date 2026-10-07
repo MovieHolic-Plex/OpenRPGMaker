@@ -1,1 +1,0 @@
-Original64x64 Python waist-up player back. Every pixel cluster authored in portraits.py at its final native size; no enlargement of field sprite.

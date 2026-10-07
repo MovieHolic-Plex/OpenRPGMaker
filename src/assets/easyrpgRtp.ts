@@ -39,7 +39,6 @@ export type EasyRpgCharsetAsset = EasyRpgRtpAsset & {
   readonly group: string;
 };
 export const EASYRPG_RTP_ASSETS = [
-  { category: "battleWeapon", id: "easyrpg-battle-weapon-weapon", name: "Weapon · 전투 무기 · EasyRPG", sourcePath: "BattleWeapon/Weapon.png", path: "assets/easyrpg/battle-weapon/Weapon.png", fileName: "Weapon.png" },
   { category: "charset", id: "easyrpg-charset-actor1", name: "Actor1 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor1.png", path: "assets/easyrpg/charset/Actor1.png", fileName: "Actor1.png", textureKey: "tex_easyrpg_charset_actor1", group: "Actor" },
   { category: "charset", id: "easyrpg-charset-actor2", name: "Actor2 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor2.png", path: "assets/easyrpg/charset/Actor2.png", fileName: "Actor2.png", textureKey: "tex_easyrpg_charset_actor2", group: "Actor" },
   { category: "charset", id: "easyrpg-charset-actor3", name: "Actor3 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor3.png", path: "assets/easyrpg/charset/Actor3.png", fileName: "Actor3.png", textureKey: "tex_easyrpg_charset_actor3", group: "Actor" },
@@ -57,20 +56,11 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "charset", id: "easyrpg-charset-people5", name: "People5 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/People5.png", path: "assets/easyrpg/charset/People5.png", fileName: "People5.png", textureKey: "tex_easyrpg_charset_people5", group: "People" },
   { category: "charset", id: "easyrpg-charset-template", name: "Template · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Template.png", path: "assets/easyrpg/charset/Template.png", fileName: "Template.png", textureKey: "tex_easyrpg_charset_template", group: "Template" },
   { category: "charset", id: "easyrpg-charset-vehicles", name: "Vehicles · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Vehicles.png", path: "assets/easyrpg/charset/Vehicles.png", fileName: "Vehicles.png", textureKey: "tex_easyrpg_charset_vehicles", group: "Vehicles" },
-  { category: "chipset", id: "easyrpg-chipset-dungeon", name: "Dungeon · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/Dungeon.png", path: "assets/easyrpg/chipset/Dungeon.png", fileName: "Dungeon.png" },
-  { category: "chipset", id: "easyrpg-chipset-exterior", name: "Exterior · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/Exterior.png", path: "assets/easyrpg/chipset/Exterior.png", fileName: "Exterior.png" },
-  { category: "chipset", id: "easyrpg-chipset-interior", name: "Interior · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/Interior.png", path: "assets/easyrpg/chipset/Interior.png", fileName: "Interior.png" },
-  { category: "chipset", id: "easyrpg-chipset-retro-dungeon", name: "retro_Dungeon · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/retro_Dungeon.png", path: "assets/easyrpg/chipset/retro_Dungeon.png", fileName: "retro_Dungeon.png" },
-  { category: "chipset", id: "easyrpg-chipset-retro-exterior", name: "retro_Exterior · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/retro_Exterior.png", path: "assets/easyrpg/chipset/retro_Exterior.png", fileName: "retro_Exterior.png" },
-  { category: "chipset", id: "easyrpg-chipset-retro-world", name: "retro_World · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/retro_World.png", path: "assets/easyrpg/chipset/retro_World.png", fileName: "retro_World.png" },
-  { category: "chipset", id: "easyrpg-chipset-ship", name: "Ship · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/Ship.png", path: "assets/easyrpg/chipset/Ship.png", fileName: "Ship.png" },
-  { category: "chipset", id: "easyrpg-chipset-world", name: "World · 타일 그림판 · EasyRPG", sourcePath: "ChipSet/World.png", path: "assets/easyrpg/chipset/World.png", fileName: "World.png" },
   { category: "faceset", id: "easyrpg-faceset-actor1", name: "Actor1 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/Actor1.png", path: "assets/easyrpg/faceset/Actor1.png", fileName: "Actor1.png" },
   { category: "faceset", id: "easyrpg-faceset-actor2", name: "Actor2 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/Actor2.png", path: "assets/easyrpg/faceset/Actor2.png", fileName: "Actor2.png" },
   { category: "faceset", id: "easyrpg-faceset-monster", name: "Monster · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/Monster.png", path: "assets/easyrpg/faceset/Monster.png", fileName: "Monster.png" },
   { category: "faceset", id: "easyrpg-faceset-people1", name: "People1 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/People1.png", path: "assets/easyrpg/faceset/People1.png", fileName: "People1.png" },
   { category: "faceset", id: "easyrpg-faceset-people2", name: "People2 · 얼굴 그림 · EasyRPG", sourcePath: "FaceSet/People2.png", path: "assets/easyrpg/faceset/People2.png", fileName: "People2.png" },
-  { category: "gameOver", id: "easyrpg-game-over-game-over", name: "Game Over · 게임오버 화면 · EasyRPG", sourcePath: "GameOver/Game Over.png", path: "assets/easyrpg/game-over/Game Over.png", fileName: "Game Over.png" },
   { category: "music", id: "easyrpg-music-battle-1", name: "Battle 1 · 음악 · EasyRPG", sourcePath: "Music/Battle 1.mid", path: "assets/easyrpg/music/Battle 1.mid", fileName: "Battle 1.mid" },
   { category: "music", id: "easyrpg-music-boss-3", name: "Boss 3 · 음악 · EasyRPG", sourcePath: "Music/Boss 3.mid", path: "assets/easyrpg/music/Boss 3.mid", fileName: "Boss 3.mid" },
   { category: "music", id: "easyrpg-music-castle-1", name: "Castle 1 · 음악 · EasyRPG", sourcePath: "Music/Castle 1.mid", path: "assets/easyrpg/music/Castle 1.mid", fileName: "Castle 1.mid" },
@@ -101,20 +91,6 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "music", id: "easyrpg-music-sorrow", name: "Sorrow · 음악 · EasyRPG", sourcePath: "Music/Sorrow.mid", path: "assets/easyrpg/music/Sorrow.mid", fileName: "Sorrow.mid" },
   { category: "music", id: "easyrpg-music-town-1", name: "Town 1 · 음악 · EasyRPG", sourcePath: "Music/Town 1.mid", path: "assets/easyrpg/music/Town 1.mid", fileName: "Town 1.mid" },
   { category: "music", id: "easyrpg-music-vehicle-1", name: "Vehicle 1 · 음악 · EasyRPG", sourcePath: "Music/Vehicle 1.mid", path: "assets/easyrpg/music/Vehicle 1.mid", fileName: "Vehicle 1.mid" },
-  { category: "backdrop", id: "easyrpg-backdrop-cosmos1", name: "Cosmos1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Cosmos1.png", path: "assets/easyrpg/backdrop/Cosmos1.png", fileName: "Cosmos1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-dawn1", name: "Dawn1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Dawn1.png", path: "assets/easyrpg/backdrop/Dawn1.png", fileName: "Dawn1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-dawn2", name: "Dawn2 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Dawn2.png", path: "assets/easyrpg/backdrop/Dawn2.png", fileName: "Dawn2.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-dimension-rift", name: "Dimension Rift · 배경 그림 · EasyRPG", sourcePath: "Panorama/Dimension Rift.png", path: "assets/easyrpg/backdrop/Dimension Rift.png", fileName: "Dimension Rift.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-night-sky1", name: "Night Sky1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Night Sky1.png", path: "assets/easyrpg/backdrop/Night Sky1.png", fileName: "Night Sky1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-night-sky2", name: "Night Sky2 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Night Sky2.png", path: "assets/easyrpg/backdrop/Night Sky2.png", fileName: "Night Sky2.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-planet1", name: "Planet1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Planet1.png", path: "assets/easyrpg/backdrop/Planet1.png", fileName: "Planet1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-planet2", name: "Planet2 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Planet2.png", path: "assets/easyrpg/backdrop/Planet2.png", fileName: "Planet2.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-planet3", name: "Planet3 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Planet3.png", path: "assets/easyrpg/backdrop/Planet3.png", fileName: "Planet3.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-sky1", name: "Sky1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Sky1.png", path: "assets/easyrpg/backdrop/Sky1.png", fileName: "Sky1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-sky2", name: "Sky2 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Sky2.png", path: "assets/easyrpg/backdrop/Sky2.png", fileName: "Sky2.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-sunset1", name: "Sunset1 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Sunset1.png", path: "assets/easyrpg/backdrop/Sunset1.png", fileName: "Sunset1.png" },
-  { category: "backdrop", id: "easyrpg-backdrop-sunset2", name: "Sunset2 · 배경 그림 · EasyRPG", sourcePath: "Panorama/Sunset2.png", path: "assets/easyrpg/backdrop/Sunset2.png", fileName: "Sunset2.png" },
-  { category: "picture", id: "easyrpg-picture-cloud", name: "Cloud · 그림 · EasyRPG", sourcePath: "Picture/Cloud.png", path: "assets/easyrpg/picture/Cloud.png", fileName: "Cloud.png" },
   { category: "sound", id: "easyrpg-sound-absorb1", name: "Absorb1 · 효과음 · EasyRPG", sourcePath: "Sound/Absorb1.wav", path: "assets/easyrpg/sound/Absorb1.wav", fileName: "Absorb1.wav" },
   { category: "sound", id: "easyrpg-sound-absorb2", name: "Absorb2 · 효과음 · EasyRPG", sourcePath: "Sound/Absorb2.wav", path: "assets/easyrpg/sound/Absorb2.wav", fileName: "Absorb2.wav" },
   { category: "sound", id: "easyrpg-sound-attack1", name: "Attack1 · 효과음 · EasyRPG", sourcePath: "Sound/Attack1.wav", path: "assets/easyrpg/sound/Attack1.wav", fileName: "Attack1.wav" },
@@ -211,35 +187,24 @@ export const EASYRPG_RTP_ASSETS = [
   { category: "sound", id: "easyrpg-sound-wave1", name: "Wave1 · 효과음 · EasyRPG", sourcePath: "Sound/Wave1.wav", path: "assets/easyrpg/sound/Wave1.wav", fileName: "Wave1.wav" },
   { category: "sound", id: "easyrpg-sound-wave2", name: "Wave2 · 효과음 · EasyRPG", sourcePath: "Sound/Wave2.wav", path: "assets/easyrpg/sound/Wave2.wav", fileName: "Wave2.wav" },
   { category: "sound", id: "easyrpg-sound-wind8", name: "Wind8 · 효과음 · EasyRPG", sourcePath: "Sound/Wind8.wav", path: "assets/easyrpg/sound/Wind8.wav", fileName: "Wind8.wav" },
-  { category: "system", id: "easyrpg-system-royal", name: "Royal · 시스템 그림 · EasyRPG", sourcePath: "System/Royal.png", path: "assets/easyrpg/system/Royal.png", fileName: "Royal.png" },
-  { category: "system", id: "easyrpg-system-system", name: "System · 시스템 그림 · EasyRPG", sourcePath: "System/System.png", path: "assets/easyrpg/system/System.png", fileName: "System.png" },
-  { category: "system", id: "easyrpg-system-system-a", name: "SystemA · 시스템 그림 · EasyRPG", sourcePath: "System/SystemA.png", path: "assets/easyrpg/system/SystemA.png", fileName: "SystemA.png" },
-  { category: "system", id: "easyrpg-system-system-b", name: "SystemB · 시스템 그림 · EasyRPG", sourcePath: "System/SystemB.png", path: "assets/easyrpg/system/SystemB.png", fileName: "SystemB.png" },
-  { category: "system", id: "easyrpg-system-system-c", name: "SystemC · 시스템 그림 · EasyRPG", sourcePath: "System/SystemC.png", path: "assets/easyrpg/system/SystemC.png", fileName: "SystemC.png" },
-  { category: "system2", id: "easyrpg-system2-system2-a", name: "System2A · 시스템 그림 2 · EasyRPG", sourcePath: "System2/System2A.png", path: "assets/easyrpg/system2/System2A.png", fileName: "System2A.png" },
-  { category: "system2", id: "easyrpg-system2-system2-b", name: "System2B · 시스템 그림 2 · EasyRPG", sourcePath: "System2/System2B.png", path: "assets/easyrpg/system2/System2B.png", fileName: "System2B.png" },
-  { category: "system2", id: "easyrpg-system2-system2-c", name: "System2C · 시스템 그림 2 · EasyRPG", sourcePath: "System2/System2C.png", path: "assets/easyrpg/system2/System2C.png", fileName: "System2C.png" },
-  { category: "title", id: "easyrpg-title-title1", name: "Title1 · 타이틀 화면 · EasyRPG", sourcePath: "Title/Title1.png", path: "assets/easyrpg/title/Title1.png", fileName: "Title1.png" },
-  { category: "title", id: "easyrpg-title-title2", name: "Title2 · 타이틀 화면 · EasyRPG", sourcePath: "Title/Title2.png", path: "assets/easyrpg/title/Title2.png", fileName: "Title2.png" },
-  { category: "title", id: "easyrpg-title-title3", name: "Title3 · 타이틀 화면 · EasyRPG", sourcePath: "Title/Title3.png", path: "assets/easyrpg/title/Title3.png", fileName: "Title3.png" },
-  { category: "title", id: "easyrpg-title-title4", name: "Title4 · 타이틀 화면 · EasyRPG", sourcePath: "Title/Title4.png", path: "assets/easyrpg/title/Title4.png", fileName: "Title4.png" },
 ] as const satisfies readonly EasyRpgRtpAsset[];
 
-export const EASYRPG_BACKDROP_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "backdrop");
+// 전투 배경·무기·칩셋·게임오버·그림·시스템·타이틀은 2026-10-07 저작권 정리로 지웠다. 목록 자리만 남긴다.
+export const EASYRPG_BACKDROP_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_BATTLE_ASSETS: readonly EasyRpgRtpAsset[] = [];
-export const EASYRPG_BATTLE_WEAPON_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "battleWeapon");
-export const EASYRPG_CHIPSET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "chipset");
+export const EASYRPG_BATTLE_WEAPON_ASSETS: readonly EasyRpgRtpAsset[] = [];
+export const EASYRPG_CHIPSET_ASSETS: readonly EasyRpgRtpAsset[] = [];
 // 분할 전 얼굴 시트 5장. 새 작업은 FACESET_FACE_ASSETS(낱장)를 쓴다 — 이 목록은
 // 이미 이 id 를 저장한 프로젝트가 여전히 역직렬화되게 하기 위해 둔다.
 export const LEGACY_FACESET_SHEET_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "faceset");
-export const EASYRPG_GAME_OVER_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "gameOver");
+export const EASYRPG_GAME_OVER_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_MONSTER_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_MUSIC_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "music");
-export const EASYRPG_PICTURE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "picture");
+export const EASYRPG_PICTURE_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_SOUND_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "sound");
-export const EASYRPG_SYSTEM_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "system");
-export const EASYRPG_SYSTEM2_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "system2");
-export const EASYRPG_TITLE_ASSETS = EASYRPG_RTP_ASSETS.filter((asset) => asset.category === "title");
+export const EASYRPG_SYSTEM_ASSETS: readonly EasyRpgRtpAsset[] = [];
+export const EASYRPG_SYSTEM2_ASSETS: readonly EasyRpgRtpAsset[] = [];
+export const EASYRPG_TITLE_ASSETS: readonly EasyRpgRtpAsset[] = [];
 export const EASYRPG_CHARSET_ASSETS = [
   { category: "charset", id: "easyrpg-charset-actor1", name: "Actor1 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor1.png", path: "assets/easyrpg/charset/Actor1.png", fileName: "Actor1.png", textureKey: "tex_easyrpg_charset_actor1", group: "Actor" },
   { category: "charset", id: "easyrpg-charset-actor2", name: "Actor2 · 캐릭터 그림 · EasyRPG", sourcePath: "CharSet/Actor2.png", path: "assets/easyrpg/charset/Actor2.png", fileName: "Actor2.png", textureKey: "tex_easyrpg_charset_actor2", group: "Actor" },

@@ -1,7 +1,6 @@
 import type { Project, TitleEffect, UploadedAsset } from './types';
 import professorArtwork from '../../public/assets/emerald-monster/professor-asset.json';
 import titleArtwork from '../../public/assets/emerald-monster/title-asset.json';
-import professorMotionArtwork from '../../public/assets/harnesses/pokemon-character-motion/emerald/professor-motion-asset.json';
 import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
 
 export type EmeraldOpeningPage = { id: string; text: string; monsterSpeciesId?: string };
@@ -54,24 +53,14 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   configureEmeraldMonsterTitle(project);
 }
 
-/** Slow, drawn gestures on one persistent clock; preserves every authored story page. */
+/** 교수 초상 움직임 시트(pokemon-character-motion 산출)는 저작권 정리(2026-10-07)로 지웠다. 초상은 정지 그림으로 둔다. */
 export function configureEmeraldMonsterPortraitMotion(project: Project): void {
   const professor = professorArtwork as UploadedAsset;
   project.assets.uploaded[professor.id] = { ...professor, meta: { ...professor.meta } };
-  const asset = professorMotionArtwork as UploadedAsset;
-  project.assets.uploaded[asset.id] = { ...asset, meta: { ...asset.meta } };
   const book = project.meta.oprnOpeningBook;
   if (!book || !project.system.opening) throw Error('An authored introduction is required before portrait motion');
-  const hold = (frame: number, ticks: number) => Array.from({ length: ticks }, () => frame);
-  const neutral = [...hold(0, 8), 1, ...hold(0, 4), 2, 0, 2, ...hold(0, 5)];
-  const scenes = project.system.opening.scenes;
-  const sceneFrames = Object.fromEntries(scenes.map((scene, index) => {
-    const gesture = index === scenes.length - 1 ? 5 : /fire|beacon|choice|company/.test(scene.id) ? 4 : 3;
-    return [scene.id, [...neutral, ...hold(gesture, 6), ...hold(0, 4)]];
-  }));
-  project.meta.oprnOpeningBook = { ...book, portraitResourceId: 'oprn_emerald_professor',
-    portraitMotion: { resourceId: asset.id, frameWidth: 64, frameHeight: 64, frameCount: 6,
-      fps: 6, frames: [...neutral, ...hold(3, 6), ...hold(0, 4)], sceneFrames } };
+  const { portraitMotion: _removed, ...rest } = book;
+  project.meta.oprnOpeningBook = { ...rest, portraitResourceId: professor.id };
 }
 
 /** Shared original pixel key art; menu input and saved-game availability remain native. */
@@ -87,9 +76,9 @@ export function configureEmeraldMonsterTitle(project: Project): void {
     effects: createEmeraldMonsterTitleEffects(), backgroundLayers: [], particles: undefined,
     sequence: { fadeMs: 700, push: 0.015, sweep: false, logoAtMs: 250, logoReveal: 'fade', menuAtMs: 500 },
     sounds: {
-      cursorSeResourceId: 'cc0-se-kif-select-001',
-      confirmSeResourceId: 'cc0-se-kif-confirmation-001',
-      cancelSeResourceId: 'cc0-se-kif-back-001',
+      cursorSeResourceId: 'cc0-se-orp-interface-interface1',
+      confirmSeResourceId: 'cc0-se-orp-interface-interface2',
+      cancelSeResourceId: 'cc0-se-orp-interface-interface3',
       ...previous.sounds,
     },
     intro: undefined, logoShine: 'none', transition: { kind: 'fade', durationMs: 300 },
