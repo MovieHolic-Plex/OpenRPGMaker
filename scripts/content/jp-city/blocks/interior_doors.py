@@ -19,104 +19,118 @@ SH = lambda t: K('shiro', t)
 # 통로 안쪽 가로 범위 x 3..12, 세로 head 아래 ~ 문턱 위. 안쪽은 칠하지 않는다(투명).
 
 
-def _posts(c, outer, mid, hi, lo, head_h=3, sill=None):
-    """좌우 기둥 3px(왼쪽 밝고 오른쪽 어둡다) + 위 문틀 head_h px. 좌우 끝 1px 은 옆 벽지와 이어지는 문틀 색."""
-    c.R(0, 0, 3, 32, mid); c.R(13, 0, 3, 32, mid)
+def _posts(c, outer, mid, hi, lo, head_h=4):
+    """좌우 문틀 기둥 4px(왼쪽 밝고 오른쪽 어둡다) + 위 문틀 head_h px. 바깥 1px 은 옆 벽지와 이어지는 외곽색."""
+    c.R(0, 0, 4, 32, mid); c.R(12, 0, 4, 32, mid)
     c.VL(0, 0, 32, outer); c.VL(15, 0, 32, outer)
-    c.VL(1, 0, 32, hi); c.VL(14, 0, 32, mid)
-    c.VL(2, 0, 32, lo); c.VL(13, 0, 32, lo)
+    c.VL(1, 0, 32, hi); c.VL(2, 0, 32, mid); c.VL(3, 0, 32, lo)
+    c.VL(12, 0, 32, hi); c.VL(13, 0, 32, mid); c.VL(14, 0, 32, lo)
     c.R(0, 0, 16, head_h, mid); c.HL(0, 0, 16, hi); c.HL(1, head_h - 1, 14, lo)
     c.P(0, 0, outer); c.P(15, 0, outer)
+    c.VL(0, 0, head_h, outer); c.VL(15, 0, head_h, outer)
 
 
-def _hinge(c, y):
-    c.R(3, y, 1, 3, ST(2)); c.P(3, y, ST(3)); c.P(3, y + 2, ST(-1))
+def _threshold(c, hi, mid, lo):
+    """바닥 쪽 문턱 — 통로 폭 가로 3줄(윗면 밝게·앞 모서리 어둡게)."""
+    c.HL(4, 29, 8, hi); c.HL(4, 30, 8, mid); c.HL(4, 31, 8, lo)
 
 
 def _doorway_shade(c, y0, dark):
     """상인방 밑 통로 그늘 — 두 줄(위 가득·아래 걸러). 바닥이 비치되 판때기처럼 읽히지 않게 윗부분을 눌러 준다."""
-    c.HL(3, y0, 10, dark)
-    for x in range(3, 13, 2): c.P(x, y0 + 1, dark)
+    c.HL(4, y0, 8, dark)
+    for x in range(4, 12, 2): c.P(x, y0 + 1, dark)
 
 
-def _swung_leaf(c, face, edge, hi, shade, top=5):
-    """안쪽(북쪽)으로 젖힌 여닫이 — 왼쪽 경첩 기둥 옆에 보이는 문짝 가장자리(4px). 바닥에는 그림자 한 줄."""
-    c.R(3, top, 3, 24, face); c.R(4, top - 1, 2, 1, face)
-    c.VL(3, top, 24, hi); c.VL(5, top - 1, 25, edge); c.VL(6, top, 25, hi)   # 문짝 두께(밝은 모서리)
-    c.VL(7, top + 1, 23, shade)
-    c.HL(3, top + 24, 5, shade)
-    _hinge(c, top + 3); _hinge(c, 24)
+def _leaf(c, M, x0, ytop, w, h, shear, panels=((2, 9), (12, None)), flat=False):
+    """젖혀진 여닫이 한 짝 — 왼쪽 경첩 기둥에서 앞(남쪽)으로 비스듬히 선 평행사변형(자유 끝이 shear px 낮다).
+    열 u: 0=경첩쪽 어두운 테 · 1..w-2=면(판넬 안쪽은 위 어둡고 아래 밝은 오목) · w-1=문 두께 밝은 가장자리.
+    행 v: 0=위 밝은 줄 · h-1=아래 어두운 줄. 문짝 밑 그림자 1줄 + 경첩 점(위·아래 두 곳)."""
+    for u in range(w):
+        sh = (u * shear + (w - 2)) // (w - 1)
+        for v in range(h):
+            if u == 0: col = M(-3)
+            elif v == 0: col = M(3)
+            elif v == h - 1: col = M(-3)
+            elif u == w - 1: col = M(2)
+            else:
+                col = M(1)
+                if not flat:
+                    for p0, p1 in panels:
+                        p1 = h - 3 if p1 is None else p1
+                        if 2 <= u <= w - 3 and p0 <= v <= p1:               # 오목 판넬: 위·왼쪽 어둡고 아래·오른쪽 밝다
+                            if v == p0 or u == 2: col = M(-2)
+                            elif v == p1 or u == w - 3: col = M(3)
+                            else: col = M(0)
+            c.P(x0 + u, ytop + v + sh, col)
+        c.P(x0 + u, ytop + h + sh, M(-3))                                       # 문짝 밑 그림자 1줄
+    for hy in (3, h - 5):                                                         # 경첩 점: 경첩쪽 가장자리 위·아래
+        c.P(x0, ytop + hy, ST(3)); c.P(x0, ytop + hy + 1, ST(2))
 
 
 def _door_open_wood(c):
-    # 양실 문: 밝은 나무 문틀 + 안쪽으로 젖힌 갈색 문짝(닫힌 문 W_(1)/(−1) 와 같은 재질). 바깥 1px 는 닫힌 문처럼 어두운 외곽.
-    _posts(c, W_(-2), W_(2), W_(3), W_(0), 3)
-    _doorway_shade(c, 3, W_(-2))
-    _swung_leaf(c, W_(1), W_(-1), W_(3), W_(-3))
-    c.R(4, 12, 1, 4, W_(2)); c.R(4, 18, 1, 4, W_(2))                  # 문짝 판넬 두 개(닫힌 문과 같은 상하 분할)
-    c.P(5, 15, ST(3)); c.P(5, 16, ST(2)); c.P(5, 17, ST(-2))           # 걸쇠
-    c.HL(3, 29, 10, W_(3)); c.HL(3, 30, 10, W_(2)); c.HL(3, 31, 10, W_(-2))   # 문턱 1~2px
+    # 양실 문: 밝은 나무 문틀 + 복도 쪽으로 젖혀져 비스듬히 선 갈색 판문(닫힌 문 W_(1) 재질).
+    _posts(c, W_(-2), W_(2), W_(3), W_(0))
+    _doorway_shade(c, 4, W_(-2))
+    _threshold(c, W_(3), W_(2), W_(-2))
+    _leaf(c, W_, 4, 6, 7, 22, 1, panels=((3, 9), (12, None)))
+    c.P(9, 17, ST(3)); c.P(9, 18, ST(2)); c.P(10, 18, ST(-2))              # 손잡이(자유 끝 쪽)
 
 
 def _door_open_toilet(c):
-    # 화장실 문: 크림색 문틀 + 젖힌 크림색 문짝, 짧은 서리유리 창 조각
-    _posts(c, K('sumi', 0), KI(2), KI(3), KI(0), 3)
-    _doorway_shade(c, 3, K('sumi', 0))
-    c.R(3, 5, 3, 24, KI(2)); c.R(4, 4, 2, 1, KI(2))
-    c.VL(3, 5, 24, KI(3)); c.VL(5, 4, 25, KI(0)); c.VL(6, 5, 25, KI(3)); c.VL(7, 6, 25, K('sumi', 0))
-    c.HL(3, 29, 5, K('sumi', 0))
-    c.R(3, 8, 2, 5, GL(-2)); c.P(3, 8, GL(2)); c.P(3, 9, GL(1)); c.P(4, 12, GL(-3))    # 서리유리
-    c.HL(3, 20, 3, KI(0)); c.HL(3, 22, 3, KI(0)); c.HL(3, 24, 3, KI(0))               # 환기 살
-    c.P(5, 17, ST(2)); c.P(5, 18, ST(-1)); c.P(4, 17, ST(3))                           # 레버
-    c.HL(3, 29, 10, KI(1)); c.HL(3, 30, 10, KI(3)); c.HL(3, 31, 10, KI(0))              # 문턱
-    c.HL(3, 29, 4, K('sumi', 0))
-    _hinge(c, 7); _hinge(c, 24)
+    # 화장실 문: 크림색 문틀 + 젖혀진 크림색 문짝(위에 서리유리 창·아래 환기 살)
+    _posts(c, K('sumi', 0), KI(2), KI(3), KI(0))
+    _doorway_shade(c, 4, K('sumi', 0))
+    _threshold(c, KI(3), KI(2), KI(-1))
+    _leaf(c, KI, 4, 6, 7, 22, 1, flat=True)
+    for u in range(2, 5):                                                     # 서리유리 창(위쪽, 문짝 따라 기운다)
+        sh = (u * 1 + 5) // 6
+        for v in range(3, 10):
+            c.P(4 + u, 6 + v + sh, GL(2) if (u == 1 or v == 3) else GL(-2) if v < 9 else GL(-3))
+        c.P(4 + u, 6 + 2 + sh, KI(-2)); c.P(4 + u, 6 + 10 + sh, KI(-2))
+    for u in range(2, 5):
+        sh = (u * 1 + 5) // 6
+        for v in (14, 16, 18): c.P(4 + u, 6 + v + sh, KI(-1))                 # 환기 살
+    c.P(9, 17, ST(3)); c.P(9, 18, ST(2)); c.P(10, 18, ST(-2))              # 레버
 
 
 def _kamoi_shikii(c, post, hi, lo, dk):
-    """어두운 나무: 기둥 + 위 가모이(鴨居)·아래 시키이(敷居) 두 줄 레일."""
-    c.R(0, 0, 3, 32, post); c.R(13, 0, 3, 32, post)
-    c.VL(1, 0, 32, hi); c.VL(0, 0, 32, lo); c.VL(15, 0, 32, lo); c.VL(14, 0, 32, post); c.VL(2, 0, 32, dk); c.VL(13, 0, 32, dk)
+    """어두운 나무: 기둥 4px + 위 가모이(鴨居)·아래 시키이(敷居) 두 줄 레일."""
+    c.R(0, 0, 4, 32, post); c.R(12, 0, 4, 32, post)
+    c.VL(1, 0, 32, hi); c.VL(0, 0, 32, lo); c.VL(15, 0, 32, lo); c.VL(14, 0, 32, post); c.VL(3, 0, 32, dk); c.VL(12, 0, 32, hi); c.VL(13, 0, 32, post); c.VL(2, 0, 32, post)
     c.R(0, 0, 16, 5, post); c.HL(0, 0, 16, hi); c.HL(1, 1, 14, post)
     c.HL(2, 2, 12, lo); c.HL(3, 3, 10, dk); c.HL(3, 4, 10, lo)          # 가모이: 보 + 홈 + 입술
     c.P(0, 0, lo); c.P(15, 0, lo)
     # 시키이: 두 줄 레일 + 사이 홈
-    c.HL(3, 28, 10, hi); c.HL(3, 29, 10, post); c.HL(3, 30, 10, dk); c.HL(3, 31, 10, lo)
-    c.P(4, 29, hi); c.P(9, 29, hi)                                       # 레일 위쪽 반짝이는 선
+    c.HL(4, 28, 8, hi); c.HL(4, 29, 8, post); c.HL(4, 30, 8, dk); c.HL(4, 31, 8, lo)
+    c.P(5, 29, hi); c.P(10, 29, hi)                                      # 레일 위쪽 반짝이는 선
 
 
 def _door_open_fusuma(c):
     _kamoi_shikii(c, W_(-1), W_(1), W_(-3), W_(-2))
-    # 밀려 모인 후스마 한 짝의 끝 — 왼쪽 기둥 옆 3px
     _doorway_shade(c, 5, W_(-3))
-    c.R(3, 5, 3, 23, KI(1)); c.HL(3, 5, 3, KI(2))
-    c.VL(5, 5, 23, W_(-2)); c.VL(6, 5, 23, W_(-3))                   # 문짝 테두리 + 그림자
-    c.P(3, 20, K('conc', 1)); c.P(4, 23, KI(0)); c.P(3, 25, KI(0)); c.P(4, 26, K('conc', 1))   # 먹 번짐 흔적
-    c.R(4, 15, 1, 2, W_(-3))                                           # 손잡이 구멍
-
-
-def _door_open_shoji(c):
-    _kamoi_shikii(c, W_(0), W_(2), W_(-2), W_(-1))
-    # 밀려 모인 쇼지 한 짝의 끝 — 틀 + 종이 + 격자
-    _doorway_shade(c, 5, W_(-3))
-    c.R(3, 5, 3, 23, SH(1)); c.VL(3, 5, 23, W_(1)); c.VL(5, 5, 23, W_(0)); c.VL(6, 5, 23, W_(-2))
-    c.HL(3, 5, 3, W_(1)); c.HL(3, 27, 3, W_(1))
-    for y in (11, 17, 23): c.HL(3, y, 3, W_(1))                       # 격자 가로살(6px 간격)
-    c.R(4, 15, 1, 2, K('sumi', 0))                                    # 손잡이
+    # 반쯤 열린 후스마 한 짝 — 왼쪽 6px 를 종이 면이 덮고 오른쪽 2px 로 안쪽 바닥이 비친다
+    x0, y0, w, h = 4, 5, 7, 23
+    c.R(x0, y0, w, h, KI(1))
+    c.HL(x0, y0, w, W_(-2)); c.HL(x0, y0 + h - 1, w, W_(-3)); c.VL(x0, y0, h, W_(-2)); c.VL(x0 + w - 1, y0, h, W_(-2))   # 검은 칠 테두리
+    c.HL(x0 + 1, y0 + 1, w - 2, KI(3)); c.VL(x0 + 1, y0 + 1, h - 2, KI(2))                                           # 종이 윗면·왼쪽 밝게
+    c.HL(x0 + 1, y0 + 4, w - 2, W_(-1)); c.HL(x0 + 1, y0 + h - 5, w - 2, W_(-1))                                       # 위아래 띠(문양 경계)
+    for x, y in ((7, 10), (6, 20), (9, 22)): c.P(x, y, K('conc', 1))                              # 먹 번짐
+    c.R(9, 14, 1, 4, W_(-3)); c.P(9, 14, ST(2)); c.P(9, 17, ST(-1))                              # 손잡이 홈 + 금속 테
+    c.VL(x0 + w, y0 + 1, h - 1, W_(-3))                                                                               # 문짝 두께 그림자 1px
 
 
 @R.obj('door-open-western', '양실 문(열림)', kind='door', use=('travel',), tags=('문', '방', '양실', '복도'),
-       place='가로 칸막이 1칸 틈 칸', desc='밝은 나무 문틀 + 안쪽으로 젖혀져 가장자리만 보이는 갈색 판문(경첩 2개), 통로는 투명.')
+       place='가로 칸막이 1칸 틈 칸', desc='굵은 4px 나무 문틀 + 안쪽으로 젖혀진 7px 폭 갈색 판문 문짝(판넬 2칸·경첩 점·손잡이), 바닥 쪽 문턱선.')
 def _dw(c): _door_open_wood(c)
 
 
 @R.obj('door-open-toilet', '화장실 문(열림)', kind='door', use=('travel',), tags=('문', '화장실', '탈의실'),
-       place='가로 칸막이 1칸 틈 칸', desc='크림색 문틀 + 젖혀진 크림색 문짝 가장자리(서리유리 조각·환기 살·레버), 통로는 투명.')
+       place='가로 칸막이 1칸 틈 칸', desc='굵은 4px 크림색 문틀 + 젖혀진 7px 폭 크림색 문짝(서리유리 창·환기 살·레버·경첩 점), 바닥 쪽 문턱선.')
 def _dt(c): _door_open_toilet(c)
 
 
 @R.obj('fusuma-open', '후스마(열림)', kind='door', use=('travel',), tags=('문', '화실', '襖'),
-       place='가로 칸막이 1칸 틈 칸', desc='어두운 나무 기둥·가모이·시키이 두 줄 레일, 한쪽으로 밀려 끝만 보이는 후스마 한 짝, 통로는 투명.')
+       place='가로 칸막이 1칸 틈 칸', desc='어두운 나무 기둥·가모이·시키이 두 줄 레일, 한쪽으로 밀려 7px 폭 종이 면이 보이는 후스마 한 짝(검은 테·손잡이 홈).')
 def _df(c): _door_open_fusuma(c)
 
 
@@ -163,34 +177,30 @@ def _side_sill(c, rails):
 
 def _side(c, leaf):
     _side_frame(c)
-    _side_sill(c, [(8, 3)])
-    # 안쪽으로 젖혀진 여닫이 — 왼쪽 기둥 옆에 보이는 가장자리 4px(문짝 두께), 바닥에 그림자
-    face, edge, hi, shade = leaf, W_(-1), W_(3), W_(-3)
-    top, bot = 29, 43
-    c.R(3, top, 3, bot - top + 1, face); c.R(4, top - 1, 2, 1, face)
-    c.VL(3, top, bot - top + 1, hi); c.VL(5, top - 1, bot - top + 2, edge); c.VL(6, top, bot - top + 2, hi)
-    c.VL(7, top + 1, bot - top + 1, shade)
-    c.HL(3, bot + 1, 5, shade)
-    c.R(4, 32, 1, 4, W_(2))           # 문짝 판넬 두 개
-    c.P(5, 37, ST(3)); c.P(5, 38, ST(2)); c.P(5, 39, ST(-2))   # 걸쇠
-    _hinge(c, 31); _hinge(c, 38)
+    _side_sill(c, [(12, 3)])
+    # 안쪽으로 젖혀진 여닫이 — 왼쪽 기둥 경첩에서 통로 쪽(남쪽)으로 비스듬히 선 9px 폭 문짝(칸의 절반 넘게). 판넬 둘·경첩 점·손잡이.
+    _leaf(c, W_, 3, 28, 9, 16, 2, panels=((2, 6), (8, 12)))
+    c.P(9, 37, ST(3)); c.P(9, 38, ST(2)); c.P(10, 38, ST(-2))         # 손잡이(문 앞면 쪽)
 
 
 def _side_slide(c):
     _side_frame(c)
-    _side_sill(c, [(4, 2), (10, 2)])
-    # 벽 속으로 밀려 들어간 미닫이 — 끝 3px 와 손잡이 홈만 보인다
-    c.R(3, 29, 4, 9, KI(1)); c.VL(3, 29, 9, KI(2)); c.HL(3, 29, 4, KI(2))
-    c.VL(6, 29, 9, W_(-1)); c.VL(7, 29, 10, W_(-3)); c.HL(3, 38, 5, W_(-3))
-    c.R(5, 32, 1, 4, W_(-3))                                    # 손잡이 홈
-    c.P(4, 36, K('conc', 1))
+    _side_sill(c, [(2, 2), (13, 2)])
+    # 벽 속으로 반쯤 밀린 미닫이 — 폭 7px 크림색 판 + 검은 테 + 손잡이 홈. 오른쪽은 비어 통로가 보인다.
+    x0, y0, w, h = 3, 28, 9, 17
+    c.R(x0, y0, w, h, KI(1))
+    c.HL(x0, y0, w, W_(-2)); c.HL(x0, y0 + h - 1, w, W_(-3)); c.VL(x0, y0, h, W_(-2)); c.VL(x0 + w - 1, y0, h, W_(-2))
+    c.HL(x0 + 1, y0 + 1, w - 2, KI(3)); c.VL(x0 + 1, y0 + 1, h - 2, KI(2))
+    c.HL(x0 + 1, y0 + 4, w - 2, W_(-1)); c.HL(x0 + 1, y0 + h - 4, w - 2, W_(-1))
+    c.R(9, 34, 2, 5, W_(-3)); c.P(9, 34, ST(2)); c.P(10, 34, W_(-1)); c.P(9, 38, ST(-1))       # 손잡이 홈 + 금속 테
+    c.VL(x0 + w, y0 + 1, h - 1, W_(-3))
 
 
-@R.obj('door-side-western', '옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '방', '복도', '탈의실', '거실'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽 끝 양쪽 밝은 나무 문틀 기둥 + 상인방, 안쪽으로 젖혀져 가장자리만 보이는 갈색 판문(경첩), 통로 바닥에 남북 문턱 레일 1줄, 가운데는 투명.')
+@R.obj('door-side-western', '옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '방', '복도', '탈의실', '거실'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽 끝 양쪽 밝은 나무 문틀 기둥 + 상인방, 안쪽으로 젖혀진 9px 폭 갈색 판문 문짝(판넬 2칸·경첩 점·손잡이), 통로 바닥에 남북 문턱 레일 1줄, 가운데는 투명.')
 def _sw(c): _side(c, W_(1))
 
 
-@R.obj('door-side-sliding', '미닫이 옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '욕실', '탈의실', '화실', '미닫이'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽 끝 양쪽 나무 문틀 기둥 + 상인방, 벽 속으로 밀려 끝 4px 와 손잡이 홈만 보이는 크림색 미닫이, 통로 바닥에 남북 문턱 레일 2줄, 가운데는 투명.')
+@R.obj('door-side-sliding', '미닫이 옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '욕실', '탈의실', '화실', '미닫이'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽 끝 양쪽 나무 문틀 기둥 + 상인방, 벽 속으로 반쯤 밀려 9px 폭 면과 손잡이 홈이 보이는 크림색 미닫이, 통로 바닥에 남북 문턱 레일 2줄, 가운데는 투명.')
 def _ss(c): _side_slide(c)
 
 

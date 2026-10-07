@@ -291,16 +291,16 @@ def tv_board(c):
     c.R(13, yb - 1, 6, 1, K('tekko', -1)); c.HL(11, yb, 10, K('tekko', 0))                                                         # 받침
 
 
-@R.obj('rug', '러그', 3, 2, kind='flat', desc='거실 카펫. 붉은 테두리와 연한 안쪽 마름모 무늬. 걸어 지나간다.',
+@R.obj('rug', '러그', 3, 2, kind='flat', desc='거실 카펫. 차분한 회청색 테두리와 연한 크림 안쪽에 회청 마름모 줄무늬, 크림 술. 걸어 지나간다.',
        tags=('거실',), place='소파·좌탁 밑에 깔기', pair=('sofa-s', 'low-table'))
 def rug(c):
     W, H = 48, 32
-    c.R(1, 1, W - 2, H - 2, K('aka', 0)); box(c, 1, 1, W - 2, H - 2, K('aka', -2))
-    c.HL(2, 2, W - 4, K('aka', 2)); c.R(4, 4, W - 8, H - 8, K('kinari', 1)); box(c, 4, 4, W - 8, H - 8, K('aka', -1))
+    c.R(1, 1, W - 2, H - 2, K('hodo', 0)); box(c, 1, 1, W - 2, H - 2, K('hodo', -2))
+    c.HL(2, 2, W - 4, K('hodo', 2)); c.R(4, 4, W - 8, H - 8, K('kinari', 1)); box(c, 4, 4, W - 8, H - 8, K('hodo', -1))
     for i in range(7):                                                                                # 마름모 줄
         cx = 8 + i * 5
-        for dx, dy in ((0, -2), (-1, -1), (1, -1), (-2, 0), (2, 0), (-1, 1), (1, 1), (0, 2)): c.P(cx + dx, 16 + dy, K('aka', 0 if i % 2 else 1))
-    for x in range(3, W - 3, 3): c.P(x, 0, K('aka', 1)); c.P(x, H - 1, K('aka', 1))                    # 술
+        for dx, dy in ((0, -2), (-1, -1), (1, -1), (-2, 0), (2, 0), (-1, 1), (1, 1), (0, 2)): c.P(cx + dx, 16 + dy, K('hodo', 0 if i % 2 else 1))
+    for x in range(3, W - 3, 3): c.P(x, 0, K('kinari', -1)); c.P(x, H - 1, K('kinari', -1))            # 술
     c.P(1, 1, None); c.P(W - 2, 1, None); c.P(1, H - 2, None); c.P(W - 2, H - 2, None)
 
 
