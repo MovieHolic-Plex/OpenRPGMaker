@@ -116,13 +116,13 @@ def _zaisu_side(c, west):                                 # 옆모습: 등받이
     c.HL(sx, 14, 11, OL)
 
 
-R.obj('zaisu-s', '좌의자(남향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='s', tags=('화실', '거실'), place='탁자 북쪽, 앉은 사람이 남쪽을 본다',
+R.obj('zaisu-s', '좌의자(남향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='S', tags=('화실', '거실'), place='탁자 북쪽, 앉은 사람이 남쪽을 본다',
       pair=('chabudai', 'zataku'), desc='다리 없는 좌의자(座椅子) 남향 1칸 — 등받이가 북쪽, 안쪽 살대가 보이고 남색 방석이 앉는 판.')(_zaisu_s)
-R.obj('zaisu-n', '좌의자(북향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='n', tags=('화실', '거실'), place='탁자 남쪽, 앉은 사람이 북쪽을 본다',
+R.obj('zaisu-n', '좌의자(북향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='N', tags=('화실', '거실'), place='탁자 남쪽, 앉은 사람이 북쪽을 본다',
       pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 북향 1칸 — 등받이 뒷면이 남쪽 앞에 서고 앉는 판 윗면이 보인다.')(_zaisu_n)
-R.obj('zaisu-e', '좌의자(동향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='e', tags=('화실', '거실'), place='탁자 서쪽, 앉은 사람이 동쪽을 본다',
+R.obj('zaisu-e', '좌의자(동향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='E', tags=('화실', '거실'), place='탁자 서쪽, 앉은 사람이 동쪽을 본다',
       pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 동향 1칸 — 등받이 단면이 서쪽 세로 막대, 앉는 판이 동쪽.')(lambda c: _zaisu_side(c, True))
-R.obj('zaisu-w', '좌의자(서향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='w', tags=('화실', '거실'), place='탁자 동쪽, 앉은 사람이 서쪽을 본다',
+R.obj('zaisu-w', '좌의자(서향)', w=1, h=1, up=0, kind='floor', use=('sit',), facing='W', tags=('화실', '거실'), place='탁자 동쪽, 앉은 사람이 서쪽을 본다',
       pair=('chabudai', 'zataku'), desc='다리 없는 좌의자 서향 1칸 — 등받이 단면이 동쪽 세로 막대, 앉는 판이 서쪽.')(lambda c: _zaisu_side(c, False))
 
 

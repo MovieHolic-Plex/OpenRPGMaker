@@ -78,7 +78,7 @@ def _tub(c, lid=False):
         c.HL(mid - 1, top + 4, 1, K('sora', 0))
 
 
-@R.obj('bathtub', '욕조', w=2, h=1, up=8, kind='wall', cat='bath', cat_ko='욕실', tags=WET, place='욕실 안쪽 벽', use=('목욕',),
+@R.obj('bathtub', '욕조', w=2, h=1, up=8, kind='wall', cat='bath', cat_ko='욕실', tags=WET, place='욕실 안쪽 벽', use=('heal',),
        desc='유닛바스 욕조(2×1칸). 물이 담긴 수면과 안벽이 보이고 앞쪽 에이프런에 점검구가 있다. 욕실 북쪽 벽 바로 아래에 둔다.', pair=('bathtub-lid', 'shower-faucet'))
 def _bathtub(c): _tub(c)
 
@@ -152,7 +152,7 @@ def _bath_mat(c):
 
 # ── 탈의실 ──
 @R.obj('washbasin', '세면대(거울·수납)', w=1, h=1, up=16, kind='wall', cat='bath', cat_ko='욕실', tags=('탈의실', '세면실'), place='탈의실 북쪽 벽 아래',
-       surface=True, use=('세수', '양치'), desc='세면화장대 1×2칸 캔버스 — 아래 세면볼·수납장, 위로 벽면에 오르는 거울. 탈의실 북쪽 벽 바로 아래.',
+       surface=True, use=('search',), desc='세면화장대 1×2칸 캔버스 — 아래 세면볼·수납장, 위로 벽면에 오르는 거울. 탈의실 북쪽 벽 바로 아래.',
        pair=('washing-machine', 'towel-rack', 'toothbrush-cup', 'soap'))
 def _washbasin(c):
     # 거울(벽면 위로 솟음)
@@ -171,7 +171,7 @@ def _washbasin(c):
 
 
 @R.obj('washing-machine', '세탁기', w=1, h=1, kind='floor', cat='bath', cat_ko='욕실', tags=('탈의실', '세탁'), place='탈의실',
-       surface=True, use=('빨래',), desc='드럼 세탁기(0.6m). 윗면과 조작부, 앞면의 둥근 유리 문. 탈의실에 둔다.', pair=('laundry-basket', 'washbasin'))
+       surface=True, use=('search',), desc='드럼 세탁기(0.6m). 윗면과 조작부, 앞면의 둥근 유리 문. 탈의실에 둔다.', pair=('laundry-basket', 'washbasin'))
 def _washer(c):
     c.R(2, 1, 12, 4, K('shiro', 2)); c.HL(2, 1, 12, K('shiro', 2)); c.R(3, 3, 5, 1, K('conc', 1)); c.R(10, 3, 2, 1, K('aka', 2))
     c.HL(2, 5, 12, K('shiro', 2))
@@ -195,7 +195,7 @@ def _basket(c):
 
 # ── 화장실 ──
 @R.obj('toilet', '양변기', w=1, h=1, up=8, kind='wall', facing='S', cat='bath', cat_ko='욕실', tags=('화장실',), place='화장실 북쪽 벽 아래',
-       use=('화장실',), desc='양변기(남쪽을 향함) — 뒤 물탱크가 벽면 위로 솟고 앞에 뚜껑 닫힌 변좌가 위에서 보인다. 화장실 북쪽 벽 바로 아래.',
+       use=('search',), desc='양변기(남쪽을 향함) — 뒤 물탱크가 벽면 위로 솟고 앞에 뚜껑 닫힌 변좌가 위에서 보인다. 화장실 북쪽 벽 바로 아래.',
        pair=('toilet-handwash', 'toilet-paper', 'toilet-mat'))
 def _toilet(c):
     # 물탱크

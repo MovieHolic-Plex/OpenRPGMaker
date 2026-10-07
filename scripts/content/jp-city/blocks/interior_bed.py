@@ -63,17 +63,17 @@ def _bed(c, x0, w, yb, duvet, pillows=1, plain=False):
 
 
 @R.obj('bed-single', '1인용 침대', w=1, h=2, up=16, kind='wall', cat='bed', cat_ko='침실', tags=BED, place='침실 북쪽 벽 아래(머리판이 벽에)',
-       use=('잠자기',), desc='1인용 침대(1×2칸). 머리판이 북쪽 벽면에 기대고, 윗면에 베개와 이불이 3/4 시점으로 보인다.', pair=('bed-side-table', 'alarm-clock', 'stuffed-toy'))
+       use=('sleep',), desc='1인용 침대(1×2칸). 머리판이 북쪽 벽면에 기대고, 윗면에 베개와 이불이 3/4 시점으로 보인다.', pair=('bed-side-table', 'alarm-clock', 'stuffed-toy'))
 def _bed_single(c): _bed(c, 1, 14, c.h, 'sora', 1)
 
 
 @R.obj('bed-double', '2인용 침대', w=2, h=2, up=16, kind='wall', cat='bed', cat_ko='침실', tags=('침실', '부부 침실'), place='침실 북쪽 벽 아래',
-       use=('잠자기',), desc='2인용 침대(2×2칸). 베개 둘, 넓은 이불. 양옆에 침대 곁 탁자를 둔다.', pair=('bed-side-table', 'dresser-low', 'alarm-clock'))
+       use=('sleep',), desc='2인용 침대(2×2칸). 베개 둘, 넓은 이불. 양옆에 침대 곁 탁자를 둔다.', pair=('bed-side-table', 'dresser-low', 'alarm-clock'))
 def _bed_double(c): _bed(c, 1, 30, c.h, 'aka', 2, plain=False)
 
 
 @R.obj('bunk-bed', '이층침대', w=1, h=2, up=32, kind='wall', cat='bed', cat_ko='침실', tags=('아이방',), place='아이방 북쪽 벽 아래',
-       use=('잠자기',), desc='이층침대(1×2칸 발자국, 키 2칸 높이). 위층 매트리스 윗면과 앞 이불, 아래층 베개가 보이고 오른쪽에 사다리가 있다.', pair=('desk-study', 'stuffed-toy'))
+       use=('sleep',), desc='이층침대(1×2칸 발자국, 키 2칸 높이). 위층 매트리스 윗면과 앞 이불, 아래층 베개가 보이고 오른쪽에 사다리가 있다.', pair=('desk-study', 'stuffed-toy'))
 def _bunk(c):
     yb = c.h                                               # 64
     x0, x1 = 1, 14
@@ -101,7 +101,7 @@ def _bunk(c):
 
 # ── 책상·의자 ──
 @R.obj('desk-study', '공부 책상(책꽂이)', w=2, h=1, up=16, kind='wall', cat='bed', cat_ko='침실', tags=('아이방', '서재'), place='아이방 벽면',
-       surface=True, use=('공부', '숙제'), desc='책꽂이가 붙은 공부 책상(2×1칸 발자국). 벽면 위로 책꽂이, 아래로 서랍 책상 — 윗면에 스탠드·책을 놓는다.',
+       surface=True, use=('read',), desc='책꽂이가 붙은 공부 책상(2×1칸 발자국). 벽면 위로 책꽂이, 아래로 서랍 책상 — 윗면에 스탠드·책을 놓는다.',
        pair=('desk-chair-n', 'desk-lamp', 'books-stack', 'randoseru'))
 def _desk(c):
     # 책꽂이(벽면 위)
@@ -154,12 +154,12 @@ def _chair(c, d):
 
 for _d, _ko, _fc in (('s', '남쪽', 'S'), ('n', '북쪽', 'N'), ('e', '동쪽', 'E'), ('w', '서쪽', 'W')):
     R.obj('desk-chair-' + _d, '의자(%s 향함)' % _ko, w=1, h=1, kind='floor', facing=_fc, cat='bed', cat_ko='침실', tags=('아이방', '서재', '침실'),
-          place='책상 앞(책상이 북쪽 벽이면 북쪽 향함)', use=('앉기',), pair=('desk-study',),
+          place='책상 앞(책상이 북쪽 벽이면 북쪽 향함)', use=('sit',), pair=('desk-study',),
           desc='책상 의자 — %s을 향한 모습. 좌판 윗면과 다리, 등받이가 3/4 시점.' % _ko)(lambda c, d=_d: _chair(c, d))
 
 
 # ── 옷장·붙박이장 ──
-@R.obj('wardrobe', '옷장', w=2, h=1, up=16, kind='wall', cat='bed', cat_ko='침실', tags=BED, place='침실 벽면', use=('옷 보관',),
+@R.obj('wardrobe', '옷장', w=2, h=1, up=16, kind='wall', cat='bed', cat_ko='침실', tags=BED, place='침실 벽면', use=('open', 'search'),
        desc='두 문짜리 옷장(2×2칸 캔버스, 발자국 2×1). 윗면 4px가 보이고 앞면이 안으로 들어간 문 둘 + 손잡이.', pair=('closet-doors', 'mirror-stand'))
 def _wardrobe(c):
     x0, x1 = 3, 28
@@ -188,7 +188,7 @@ def _closet(c):
 
 # ── 낮은 수납·화장대 ──
 @R.obj('dresser-low', '낮은 서랍장', w=2, h=1, kind='wall', cat='bed', cat_ko='침실', tags=BED, place='침실 벽면', surface=True,
-       use=('옷 보관', '화장'), desc='낮은 서랍장(2×1칸) — 윗면에 스탠드·시계·인형을 놓는다. 서랍 셋.', pair=('mirror-stand', 'alarm-clock', 'stuffed-toy'))
+       use=('open', 'search'), desc='낮은 서랍장(2×1칸) — 윗면에 스탠드·시계·인형을 놓는다. 서랍 셋.', pair=('mirror-stand', 'alarm-clock', 'stuffed-toy'))
 def _dresser(c):
     c.R(1, 2, 30, 5, K('yuka', 2)); c.HL(2, 2, 28, K('shiro', 2)); c.HL(1, 7, 30, K('yuka', 1)); outline(c, 0, 1, 32, 7)
     c.R(1, 8, 30, 7, K('ita', 1)); c.VL(2, 8, 7, K('ita', 2)); c.VL(29, 8, 7, K('ita', -1)); c.HL(1, 14, 30, K('ita', -2))
@@ -216,7 +216,7 @@ def _side_table(c):
 
 
 @R.obj('laundry-rack', '빨래 건조대', w=2, h=1, up=8, kind='floor', cat='bed', cat_ko='침실', tags=('침실', '베란다', '탈의실'), place='창가·베란다 쪽 바닥',
-       use=('빨래 말리기',), desc='접이식 빨래 건조대(2×1칸) — 가로 봉에 셔츠·수건이 널려 있다.', pair=('washing-machine',))
+       use=('block',), desc='접이식 빨래 건조대(2×1칸) — 가로 봉에 셔츠·수건이 널려 있다.', pair=('washing-machine',))
 def _rack(c):
     for x0 in (4, 25):
         c.R(x0, 4, 2, 26, K('tekko', 2)); c.VL(x0, 4, 26, K('tekko', 3)); c.R(x0 - 1, 29, 4, 2, K('tekko', -1))

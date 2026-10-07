@@ -40,6 +40,8 @@ TOP_SHADE = (-2, -2, -1, -1)            # 벽면 윗줄 위 4행(천장 띠 밑 
 FOOT_SHADE = (-2, -1, -1)               # 벽면 밑 바닥 접촉 그림자 3행 — 0.6~0.84 배
 WEST_SHADE = (-2, -2, -1, -1, -1, 0)    # 서쪽 덩어리 그림자 6열 — 0.62~0.92 배
 VOID_RGB = None
+# 쓰임 id — src/editor/handInterior/parts.ts USE_WORDS 와 같다(조수 도구가 이 낱말로 찾고 설명한다).
+USE_IDS = ('sit', 'sleep', 'open', 'search', 'read', 'counter', 'travel', 'light', 'save', 'heal', 'switch', 'push', 'trap', 'key', 'gate', 'seal', 'walk', 'block')
 
 
 def _hx(c): return ((c >> 16) & 255, (c >> 8) & 255, c & 255)
@@ -275,6 +277,9 @@ class Registry:
         for id_, o in self.objs.items():
             arr, U = self.obj_image(id_)
             if o['kind'] != 'hang' and arr.shape[0] != (U + o['h']) * 16: bad.append('%s 높이' % id_)
+            wrong = [u for u in o.get('use') or () if u not in USE_IDS]
+            if wrong: bad.append('%s use %s — 쓰임 id 는 %s 중에서(handInterior parts.ts USE_WORDS)' % (id_, wrong, ' '.join(USE_IDS)))
+            if o.get('facing') not in (None, 'N', 'S', 'E', 'W'): bad.append('%s facing %r' % (id_, o['facing']))
         return bad
 
 
