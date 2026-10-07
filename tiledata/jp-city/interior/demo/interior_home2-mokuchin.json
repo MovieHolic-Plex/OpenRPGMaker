@@ -1,0 +1,112 @@
+{
+ "name": "목조 아파트 6조 한 칸",
+ "plan": [
+  "########",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#......#",
+  "#..#####",
+  "##.#####"
+ ],
+ "floor": "tatami",
+ "wall": "juraku",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 3,
+   "y1": 5,
+   "floor": "cushion",
+   "wall": "kitchen-panel"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 7,
+   "y1": 7,
+   "floor": "tataki"
+  }
+ ],
+ "objects": [
+  {
+   "id": "h2-old-fridge",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "h2-old-sink",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "h2-futon-dry",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "h2-old-tansu",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "h2-hanger-rail",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "kotatsu",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "zabuton",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "agarikamachi",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "shoes-pair",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "h2-sandals",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "h2-genkan-door-steel",
+   "x": 2,
+   "y": 7
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "h2-teapot-iron",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "h2-instant-noodle",
+   "x": 5,
+   "y": 4
+  }
+ ]
+}
