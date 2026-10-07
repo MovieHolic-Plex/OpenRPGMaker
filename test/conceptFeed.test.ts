@@ -90,7 +90,7 @@ describe("concept feed", () => {
 
   it("make passes the tweak, locks while running, and unlocks when cancelled", async () => {
     let finish: (started: boolean) => void = () => {};
-    const onMake = vi.fn(() => new Promise<boolean>((resolve) => { finish = resolve; }));
+    const onMake = vi.fn((_concept: GameConcept, _tweak: string) => new Promise<boolean>((resolve) => { finish = resolve; }));
     const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), onMake });
     await flush();
     q(root, CONCEPT_FEED_TESTIDS.card)!.click();

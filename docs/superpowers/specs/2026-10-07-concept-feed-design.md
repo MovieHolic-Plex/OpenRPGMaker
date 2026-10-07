@@ -140,7 +140,7 @@ type GameConcept = {
 ## 지우는 것
 
 - UI 에서 내린다: 인터뷰(`projectInterviewDialog` 의 새 게임 경로, `startInterview`), 첫 세계 화면(`firstWorldArrival`), 로비(`startLobby`), 새 프로젝트 모달(`newProjectDialog`), 환영 화면 포스터(`editorWelcome`).
-- 더 쓰는 곳이 없으면 파일·테스트·CSS·`world-motion.mp4`·`world-poster.webp` 까지 지운다.
+- 더 쓰는 곳이 없으면 파일·테스트·CSS 까지 지운다. (실행 결과: `world-motion.mp4`·`world-poster.webp` 는 메뉴 「게임 기획」 수정 창 `projectInterviewDialog` 이 아직 써서 남겼다.)
 - 남긴다: `NEW_PROJECT_CHOICES`(장르 틀 목록 — 조수 도구 계약이 참조), `gameDesignBrief`·`prepareProjectInterviewStartup`, 메뉴 「게임 기획」 편집(`showProjectInterview` 의 기획 수정 용도).
 
 ## 다국어
