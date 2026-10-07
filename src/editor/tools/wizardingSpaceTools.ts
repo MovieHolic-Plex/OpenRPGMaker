@@ -201,15 +201,20 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
 
     const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
     if (droppedEvents) warnings.push(`맵 밖으로 나간 이벤트 ${droppedEvents}개를 지웠다`);
+    // 문 앞 접근 칸 — 여기에 NPC·이벤트를 세우면 1칸 문으로 가는 길이 막힌다(실측: 교수 NPC 를 문 바로 앞에 세워 자동 플레이가 막힘).
+    const step = { n: [0, 1], s: [0, -1], w: [1, 0], e: [-1, 0] } as const;
+    const keepClear = built.doorCells.flatMap((d) => [1, 2].map((k) => ({ x: d.x + step[d.side][0] * k, y: d.y + step[d.side][1] * k })))
+      .filter((c) => c.x >= 0 && c.y >= 0 && c.x < W && c.y < H);
+    const keepText = keepClear.map((c) => `(${c.x},${c.y})`).join(" ");
     const npcLine = (resolveWizardingRecipe(space, input.variant)?.recipe.npcs ?? []).slice(0, 4).map((n) => n.name).join("·") || "없음";
     const furniture = built.placed.filter((p) => p.role === "furniture").map((p) => ({ kit: p.kit, x: p.x, y: p.y }));
     const doorText = built.doorCells.map((d) => `${d.side}(${d.x},${d.y})`).join(" ");
     return {
       summary: `${built.ko} ${W}×${H} 를 ${created ? "새 맵" : "맵"} '${next.name}'(${mapId}, ${WIZARDING_WORLD_ID}) 에 지었다 — 출입구 ${doorText}, 시작 칸 (${built.spawn.x},${built.spawn.y}), 걸어 닿는 칸 ${built.walkableCount}(한 덩이), 가구 ${furniture.length}개`
-        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: doorCells 에 이동 이벤트(transfer)를 달고, NPC 는 list_npc_graphics({query:'마법약 교수'·'호그와트 학생'·'사서' 같은 역할}) 로 Wizarding 걷기 칩 그림을 본 뒤 그 selectionId 로 place_npc(추천 칩: ${npcLine}).`,
+        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: doorCells 에 이동 이벤트(transfer)를 달고(문 앞 ${keepText} 는 비워 둔다 — NPC·물건 이벤트를 세우면 길이 막힌다), NPC 는 list_npc_graphics({query:'마법약 교수'·'호그와트 학생'·'사서' 같은 역할}) 로 Wizarding 걷기 칩 그림을 본 뒤 그 selectionId 로 place_npc(추천 칩: ${npcLine}).`,
       data: {
         mapId, created, tilesetId: WIZARDING_WORLD_ID, space, variant: built.variant, width: W, height: H,
-        doorCells: built.doorCells, spawn: built.spawn, placed: furniture,
+        doorCells: built.doorCells, keepClear, spawn: built.spawn, placed: furniture,
         walkability: { walkableCount: built.walkableCount, components: built.components, ignoredPockets: built.pockets },
         npcSuggestions: (resolveWizardingRecipe(space, input.variant)?.recipe.npcs ?? []).slice(0, 4),
         warnings, errorCodes: WIZARDING_ISSUE_CODES,
