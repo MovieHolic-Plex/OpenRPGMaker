@@ -773,8 +773,10 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   };
   const p = createEmptyToolProject("jp-interior-refs");
   const examples: Record<string, unknown> = {};
+  // 층 순서(도구가 없는 맵으로 가는 links 를 거부한다): ① 모든 층을 links 없이 ② 같은 mapId·replace:true 로 links 를 넣어 다시.
+  for (const f of Object.keys(LINKS)) call(p, "build_hand_interior_room", { ...argsOf(f), links: [] });
   for (const f of Object.keys(LINKS)) {
-    const args = argsOf(f);
+    const args = { ...argsOf(f), replace: true };
     const r = call(p, "build_hand_interior_room", args);
     const map = p.maps[args.mapId]!;
     const W = map.width;
@@ -790,14 +792,15 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   const add = (o: { id: string; x: number; y: number }) => (a: In) => { a.objects = [...a.objects, o]; };
   const addGoods = (g: { id: string; x: number; y: number }) => (a: In) => { a.goods = [...a.goods, g]; };
   const ITAMPERS: { key: string; title: string; fix: string; tweak: (a: In) => void }[] = [
-    { key: "wallOffFace", title: "벽 가구(싱크대)를 거실 한가운데 (18,12) 로", fix: "wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄에만 — 부엌 북쪽 벽 줄(y=3)로 되돌린다", tweak: mv("kitchen-sink", 18, 12) },
-    { key: "hangLowRow", title: "걸이(벽시계)를 벽면 아랫줄 (7,8) 에", fix: "hang 은 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄) y=7 에 건다", tweak: mv("wall-clock", 7, 8) },
-    { key: "goodsOnFloor", title: "탁상 물건(다기)을 다다미 바닥 (3,13) 에", fix: "탁상 물건은 윗면 있는 가구(좌탁·식탁·카운터) 칸 위에만 — 좌탁 (2,11) 로", tweak: (a) => { a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "tea-set" ? { ...g, x: 3, y: 13 } : g)); } },
-    { key: "stairsMidFloor", title: "올라가는 계단을 복도 가운데 (10,10) 로", fix: "계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다)", tweak: mv("stairs-up-wood", 10, 10) },
-    { key: "doorBlocked", title: "거실 출입 칸 (13,11) 에 좌탁을 놓아 복도→LDK 통로를 막음", fix: "칸막이 틈 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: (a) => { mv("low-table", 13, 11)(a); a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "remote" ? { ...g, x: 13, y: 11 } : g)); } },
+    { key: "wallOffFace", title: "벽 가구(싱크대)를 거실 한가운데 (17,12) 로", fix: "wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄에만 — 부엌 북쪽 벽 줄(y=3)로 되돌린다", tweak: mv("kitchen-sink", 17, 12) },
+    { key: "hangLowRow", title: "걸이(벽시계)를 복도 벽면 아랫줄 (8,8) 에", fix: "hang 은 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄) y=7 에 건다", tweak: mv("wall-clock", 8, 8) },
+    { key: "goodsOnFloor", title: "탁상 물건(다기)을 다다미 바닥 (6,5) 에", fix: "탁상 물건은 윗면 있는 가구(좌탁·식탁·카운터) 칸 위에만 — 좌탁 (3,4) 로", tweak: (a) => { a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "tea-set" ? { ...g, x: 6, y: 5 } : g)); } },
+    { key: "stairsMidFloor", title: "올라가는 계단을 복도 가운데 (9,10) 로", fix: "계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 복도 북쪽 벽 (11,9)", tweak: mv("stairs-up-wood", 9, 10) },
+    { key: "doorBlocked", title: "LDK 들어가는 칸 (13,10) 에 좌탁을 놓아 복도→LDK 통로를 막음", fix: "칸막이 틈 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: (a) => { mv("low-table", 13, 10)(a); a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "remote" ? { ...g, x: 13, y: 10 } : g)); } },
     { key: "overlap", title: "우산꽂이를 신발장 칸 (11,12) 에 겹침", fix: "발자국이 겹치지 않게 다른 칸으로", tweak: mv("umbrella-stand", 11, 12) },
-    { key: "goodsNoLayer", title: "소파를 좌탁 바로 남쪽 (14,12) 으로 붙여 좌탁 칸 4층에 소파 등받이가 걸린 뒤 리모컨(15,11)", fix: "좌탁과 소파 사이에 한 줄 띄운다(소파 등받이 overhang 이 좌탁 칸의 3·4층을 차지한다)", tweak: mv("sofa-n", 14, 12) },
-    { key: "unknownObject", title: "없는 가구 id \"sofa\"", fix: "list_hand_interior_parts({tileset:\"jp_city\"}) 의 id 를 그대로 쓴다(방향 있는 가구는 -s/-n/-e/-w)", tweak: add({ id: "sofa", x: 17, y: 11 }) },
+    { key: "goodsNoLayer", title: "소파를 좌탁 바로 남쪽 (13,12) 으로 붙여 좌탁 칸 4층에 소파 등받이가 걸린 뒤 리모컨(14,11)", fix: "좌탁과 소파 사이에 한 줄 띄운다(소파 등받이 overhang 이 좌탁 칸의 3·4층을 차지한다)", tweak: mv("sofa-n", 13, 12) },
+    { key: "doorNotInGap", title: "열린 후스마를 세로 칸막이 틈 (6,11) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 화실 문 틈 (7,6). 세로 칸막이 틈은 문 없이 통로로 둔다", tweak: add({ id: "fusuma-open", x: 6, y: 11 }) },
+    { key: "unknownObject", title: "없는 가구 id \"sofa\"", fix: "list_hand_interior_parts({tileset:\"jp_city\"}) 의 id 를 그대로 쓴다(방향 있는 가구는 -s/-n/-e/-w)", tweak: add({ id: "sofa", x: 17, y: 12 }) },
   ];
   const sha = (a: number[]) => a.join(",");
   const good = buildHandInteriorLayers(base as unknown as HandInteriorInput, TSI, JP_INTERIOR_SPEC);

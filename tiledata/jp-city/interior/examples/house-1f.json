@@ -1,20 +1,20 @@
 {
  "plan": [
-  "######################",
-  "#....#....#..#.......#",
-  "#....#....#..#.......#",
-  "#.........#..#.......#",
-  "#.........#..#.......#",
-  "#.........#..#.......#",
-  "########.##.####....##",
-  "#.....#.....#........#",
-  "#.....#.....#........#",
-  "#....................#",
-  "#....................#",
-  "#....................#",
-  "#.....#.....#........#",
-  "#.....#.....#........#",
-  "#########.############"
+  "#####################",
+  "#.......#..#........#",
+  "#.......#..#........#",
+  "#.......#..#........#",
+  "#.......#..#........#",
+  "#.......#..#........#",
+  "#######.##.####....##",
+  "#..#..#.....#.......#",
+  "#..#..#.............#",
+  "#...................#",
+  "#...................#",
+  "#...........#.......#",
+  "#######.....#.......#",
+  "#######.....#.......#",
+  "#########.###########"
  ],
  "floor": "flooring",
  "wall": "cloth",
@@ -23,29 +23,21 @@
   {
    "x0": 0,
    "y0": 0,
-   "x1": 5,
-   "y1": 6,
-   "floor": "bathtile",
-   "wall": "bathwall"
+   "x1": 7,
+   "y1": 5,
+   "floor": "tatami",
+   "wall": "juraku"
   },
   {
-   "x0": 6,
+   "x0": 8,
    "y0": 0,
-   "x1": 9,
+   "x1": 11,
    "y1": 5,
    "floor": "cushion",
    "wall": "cloth"
   },
   {
-   "x0": 10,
-   "y0": 0,
-   "x1": 12,
-   "y1": 5,
-   "floor": "cushion",
-   "wall": "cloth"
-  },
-  {
-   "x0": 14,
+   "x0": 12,
    "y0": 0,
    "x1": 20,
    "y1": 5,
@@ -55,10 +47,18 @@
   {
    "x0": 0,
    "y0": 7,
-   "x1": 5,
+   "x1": 2,
    "y1": 13,
-   "floor": "tatami",
-   "wall": "juraku"
+   "floor": "bathtile",
+   "wall": "bathwall"
+  },
+  {
+   "x0": 3,
+   "y0": 7,
+   "x1": 6,
+   "y1": 13,
+   "floor": "cushion",
+   "wall": "cloth"
   },
   {
    "x0": 7,
@@ -70,77 +70,107 @@
  ],
  "objects": [
   {
-   "id": "bathtub",
+   "id": "tokonoma",
    "x": 1,
    "y": 3
   },
   {
-   "id": "shower-faucet",
+   "id": "butsudan",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "oshiire",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "shoji-window",
    "x": 3,
    "y": 1
   },
   {
-   "id": "bath-mirror",
-   "x": 4,
-   "y": 1
-  },
-  {
-   "id": "bath-stool",
+   "id": "zataku",
    "x": 3,
    "y": 4
   },
   {
-   "id": "bath-bucket",
-   "x": 4,
+   "id": "zabuton",
+   "x": 2,
    "y": 4
   },
   {
-   "id": "washbasin",
-   "x": 6,
-   "y": 3
-  },
-  {
-   "id": "towel-rack",
-   "x": 7,
-   "y": 1
-  },
-  {
-   "id": "washing-machine",
-   "x": 9,
-   "y": 3
-  },
-  {
-   "id": "laundry-basket",
-   "x": 9,
+   "id": "zabuton",
+   "x": 5,
    "y": 4
   },
   {
-   "id": "bath-mat",
-   "x": 6,
+   "id": "zabuton",
+   "x": 3,
    "y": 5
   },
   {
+   "id": "zabuton",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "andon",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "ikebana",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fusuma-open",
+   "x": 7,
+   "y": 6
+  },
+  {
    "id": "toilet",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "toilet-mat",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "toilet-slippers",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "toilet-paper",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "toilet-handwash",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "fridge",
    "x": 12,
    "y": 3
   },
   {
-   "id": "toilet-handwash",
-   "x": 11,
-   "y": 1
+   "id": "kitchen-worktop",
+   "x": 13,
+   "y": 3
   },
   {
-   "id": "toilet-paper",
-   "x": 12,
-   "y": 1
-  },
-  {
-   "id": "toilet-mat",
-   "x": 12,
-   "y": 4
-  },
-  {
-   "id": "fridge",
+   "id": "kitchen-sink",
    "x": 14,
    "y": 3
   },
@@ -150,7 +180,7 @@
    "y": 3
   },
   {
-   "id": "kitchen-sink",
+   "id": "kitchen-stove",
    "x": 16,
    "y": 3
   },
@@ -160,38 +190,78 @@
    "y": 3
   },
   {
-   "id": "kitchen-stove",
-   "x": 18,
+   "id": "cupboard",
+   "x": 19,
    "y": 3
-  },
-  {
-   "id": "microwave-rack",
-   "x": 20,
-   "y": 3
-  },
-  {
-   "id": "bookshelf",
-   "x": 20,
-   "y": 9
-  },
-  {
-   "id": "houseplant",
-   "x": 20,
-   "y": 13
   },
   {
    "id": "trash-bins",
-   "x": 20,
+   "x": 19,
    "y": 5
   },
   {
+   "id": "window-sash",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "bathtub",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "shower-faucet",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "bath-mirror",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "bath-stool",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "bath-bucket",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "washbasin",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "washing-machine",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "towel-rack",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "bath-mat",
+   "x": 4,
+   "y": 11
+  },
+  {
    "id": "stairs-up-wood",
-   "x": 9,
+   "x": 11,
    "y": 9
   },
   {
    "id": "wall-clock",
-   "x": 7,
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "calendar",
+   "x": 9,
    "y": 7
   },
   {
@@ -245,101 +315,76 @@
    "y": 13
   },
   {
-   "id": "tokonoma",
-   "x": 1,
-   "y": 9
-  },
-  {
-   "id": "butsudan",
-   "x": 5,
-   "y": 9
-  },
-  {
-   "id": "chabudai",
-   "x": 2,
-   "y": 11
-  },
-  {
-   "id": "zabuton",
-   "x": 2,
-   "y": 12
-  },
-  {
-   "id": "zabuton",
-   "x": 3,
-   "y": 12
-  },
-  {
-   "id": "zabuton",
-   "x": 1,
-   "y": 11
-  },
-  {
-   "id": "zabuton",
-   "x": 4,
-   "y": 11
-  },
-  {
-   "id": "andon",
-   "x": 1,
-   "y": 13
-  },
-  {
-   "id": "oshiire",
-   "x": 4,
-   "y": 7
-  },
-  {
-   "id": "toilet-slippers",
-   "x": 11,
-   "y": 4
-  },
-  {
-   "id": "chair-dining-s",
-   "x": 16,
-   "y": 7
-  },
-  {
-   "id": "chair-dining-s",
-   "x": 18,
-   "y": 7
-  },
-  {
-   "id": "chair-dining-n",
-   "x": 16,
-   "y": 9
-  },
-  {
-   "id": "chair-dining-n",
-   "x": 18,
-   "y": 9
+   "id": "genkan-door",
+   "x": 9,
+   "y": 14
   },
   {
    "id": "tv-board",
-   "x": 14,
+   "x": 13,
    "y": 9
   },
   {
    "id": "low-table",
-   "x": 14,
+   "x": 13,
    "y": 11
   },
   {
    "id": "sofa-n",
-   "x": 14,
+   "x": 13,
    "y": 13
   },
   {
    "id": "floor-lamp",
-   "x": 16,
+   "x": 15,
    "y": 13
+  },
+  {
+   "id": "chair-dining-s",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "chair-dining-s",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "id": "chair-dining-n",
+   "x": 16,
+   "y": 11
+  },
+  {
+   "id": "chair-dining-n",
+   "x": 18,
+   "y": 11
+  },
+  {
+   "id": "bookshelf",
+   "x": 19,
+   "y": 9
+  },
+  {
+   "id": "houseplant",
+   "x": 19,
+   "y": 13
+  },
+  {
+   "id": "ac-unit",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 18,
+   "y": 3
   }
  ],
  "tables": [
   {
    "style": "dining",
    "x": 16,
-   "y": 8,
+   "y": 10,
    "w": 3,
    "h": 1
   },
@@ -347,105 +392,115 @@
    "style": "kcounter",
    "x": 16,
    "y": 5,
-   "w": 3,
+   "w": 2,
    "h": 1
   }
  ],
  "goods": [
   {
    "id": "tea-set",
-   "x": 2,
-   "y": 11
+   "x": 3,
+   "y": 4
   },
   {
-   "id": "mikan-basket",
-   "x": 3,
-   "y": 11
+   "id": "senbei-plate",
+   "x": 4,
+   "y": 4
   },
   {
    "id": "rice-cooker",
-   "x": 15,
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "kettle",
+   "x": 17,
    "y": 3
   },
   {
    "id": "plates",
    "x": 17,
-   "y": 8
-  },
-  {
-   "id": "remote",
-   "x": 15,
-   "y": 11
-  },
-  {
-   "id": "toothbrush-cup",
-   "x": 6,
-   "y": 3
+   "y": 10
   },
   {
    "id": "fruit-bowl",
-   "x": 17,
+   "x": 16,
    "y": 5
   },
   {
    "id": "mug",
-   "x": 16,
+   "x": 17,
    "y": 5
+  },
+  {
+   "id": "remote",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "toothbrush-cup",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "microwave",
+   "x": 18,
+   "y": 3
   }
  ],
  "rooms": [
   {
-   "room": "bath",
+   "room": "washitsu",
    "x0": 0,
    "y0": 0,
-   "x1": 5,
+   "x1": 7,
    "y1": 6
   },
   {
-   "room": "dressing",
-   "x0": 6,
-   "y0": 0,
-   "x1": 9,
-   "y1": 5
-  },
-  {
    "room": "toilet",
-   "x0": 10,
+   "x0": 8,
    "y0": 0,
-   "x1": 12,
-   "y1": 5
+   "x1": 11,
+   "y1": 6
   },
   {
    "room": "kitchen",
-   "x0": 14,
+   "x0": 12,
    "y0": 0,
    "x1": 20,
    "y1": 6
   },
   {
-   "room": "washitsu",
+   "room": "bath",
    "x0": 0,
    "y0": 7,
-   "x1": 5,
-   "y1": 13
+   "x1": 2,
+   "y1": 11
   },
   {
-   "room": "genkan",
-   "x0": 7,
-   "y0": 11,
-   "x1": 11,
-   "y1": 14
+   "room": "dressing",
+   "x0": 3,
+   "y0": 7,
+   "x1": 6,
+   "y1": 11
   },
   {
    "room": "hall",
    "x0": 7,
-   "y0": 6,
+   "y0": 7,
    "x1": 11,
-   "y1": 10
+   "y1": 11
+  },
+  {
+   "room": "genkan",
+   "x0": 7,
+   "y0": 12,
+   "x1": 11,
+   "y1": 14
   },
   {
    "room": "ldk",
-   "x0": 13,
+   "x0": 12,
    "y0": 7,
    "x1": 20,
    "y1": 13
@@ -457,7 +512,7 @@
  ],
  "links": [
   {
-   "x": 9,
+   "x": 11,
    "y": 9,
    "toMapId": "jp-city-house-2f",
    "toX": 18,

@@ -33,11 +33,14 @@ const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT,
 
 const project = createEmptyToolProject("jp-interior");
 const results = [];
+const argsOf = (m, links) => { const ex = read(m.file); return { tileset: "jp_city", mapId: m.id, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
+  start: [{ x: m.start[0], y: m.start[1] }], links }; };
+// 조수에게 가르치는 층 순서 그대로: ① 모든 층을 links 없이 짓고 ② 같은 mapId·replace:true 로 links 를 넣어 다시 짓는다(없는 맵으로 가는 links 는 도구가 거부한다).
+const run = (args) => BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, args);   // run(draft) 은 draft 를 고친다
+for (const m of MAPS) run(argsOf(m, []));
 for (const m of MAPS) {
   const ex = read(m.file);
-  const args = { tileset: "jp_city", mapId: m.id, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
-    start: [{ x: m.start[0], y: m.start[1] }], links: m.links };
-  const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, args);
+  const r = run({ ...argsOf(m, m.links), replace: true });
   const MAP = project.maps[m.id];
   // 이동 칸은 실제로 걸어서 닿아야 한다(엔진 canMove 로 다시 잰다 — 도구 BFS 와 따로).
   const W = MAP.width, H = MAP.height, idx = (x, y) => y * W + x;
@@ -58,6 +61,10 @@ for (const m of MAPS) {
   fs.writeFileSync(join(OUT, `interior-${m.file}.report.json`), JSON.stringify(report, null, 1));
   const rr = spawnSync("python3", ["scripts/content/jp-city/maps/render.py", join(OUT, `interior-${m.file}.map.json`), `interior-${m.file}`], { cwd: ROOT, encoding: "utf8" });
   if (rr.status !== 0) { console.error(rr.stderr); process.exit(2); }
+  // 관문·참고문서가 보는 2배 그림도 같이(1x 를 최근접으로 키운다 — 옛 x2 가 남아 관문이 낡은 그림을 보는 일이 없게).
+  const x2 = spawnSync("python3", ["-c", "import sys;from PIL import Image;a=Image.open(sys.argv[1]);a.resize((a.width*2,a.height*2),Image.NEAREST).save(sys.argv[2])",
+    join(ROOT, `verify-shots/jp-city/interior-${m.file}-1x.png`), join(ROOT, `verify-shots/jp-city/interior-${m.file}-x2.png`)], { encoding: "utf8" });
+  if (x2.status !== 0) { console.error(x2.stderr); process.exit(2); }
   console.log(JSON.stringify({ map: m.id, ok: report.ok, reach: report.reach, warnings: report.warnings.slice(0, 6), links: linkCells }));
   results.push({ m, MAP, report, ex });
 }

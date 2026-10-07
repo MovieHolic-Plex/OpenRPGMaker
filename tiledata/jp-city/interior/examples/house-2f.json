@@ -160,6 +160,31 @@
    "id": "cushion-floor",
    "x": 18,
    "y": 5
+  },
+  {
+   "id": "door-open-western",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "door-open-western",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "door-western",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "tansu",
+   "x": 9,
+   "y": 9
   }
  ],
  "tables": [],
@@ -189,7 +214,7 @@
    "x": 19,
    "y": 10,
    "toMapId": "jp-city-house-1f",
-   "toX": 9,
+   "toX": 11,
    "toY": 10,
    "direction": "down"
   },
@@ -197,7 +222,7 @@
    "x": 20,
    "y": 10,
    "toMapId": "jp-city-house-1f",
-   "toX": 9,
+   "toX": 11,
    "toY": 10,
    "direction": "down"
   }

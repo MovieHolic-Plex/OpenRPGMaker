@@ -272,23 +272,27 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 동네 한 장(`town.mjs`)도 같은 `planMapTransit` 으로 동서 길 4줄 차 흐름 + 버스 駅前·学校前(`at:"center"`). 횡단보도 키트(`jp-road-lane-crosswalk-h/v`)·「생활도로」 이름표 칸도 차도로 보므로 역 앞 횡단보도로 끊긴 간선이 한 띠다. 촬영 `scripts/content/jp-city/qa/town-transit.capture.mjs` → `verify-shots/jp-city/town-transit/`.
 - 엔진 변조(`engine_dump.mts` 9절 `transit_station`): `fare-gate-bypass`(개찰 통로를 막고도 승강장 계단에 도달 — 칸막이 뺌) · `anchor-blocked`(계단 앞 의자).
 
-## 일본 집 실내 (블록 `interior_*` 6개, `BLOCK_ORDER` 끝) — 2026-10-07
+## 일본 집 실내 (블록 `interior_*` 7개, `BLOCK_ORDER` 끝) — 2026-10-07
 
 판타지 손 도트 실내(`atlas_biome_interior`)와 **같은 조립기**를 jp_city 사양으로 돌린다. 조수는 `build_hand_interior_room({tileset:"jp_city", plan, floor, wall, zones, objects, tables, goods, links})` 한 번으로 짓고,
 부품은 `list_hand_interior_parts({tileset:"jp_city", room|query})`. 두 도구의 floor·wall·ceiling enum 은 두 사양 id 의 합집합이고, 고른 칩셋에 없는 id 는 조립기가 그 칩셋 목록과 함께 거부한다.
-- 그림: `scripts/content/jp-city/blocks/interior_{shell,entry,washitsu,ldk,wet,bed}.py` — 틀 `scripts/content/jp-city/interior/ikit.py`(`Registry`: `.floor`·`.wall`·`.ceiling`·`.obj`·`.table`·`.good`, 그림자는 modern3 램프 안에서 단 내리기라 팔레트 밖 색이 없다).
+- 그림: `scripts/content/jp-city/blocks/interior_{shell,entry,washitsu,ldk,wet,bed,doors}.py` — 틀 `scripts/content/jp-city/interior/ikit.py`(`Registry`: `.floor`·`.wall`·`.ceiling`·`.obj`·`.table`·`.good`, 그림자는 modern3 램프 안에서 단 내리기라 팔레트 밖 색이 없다).
   통행: 바닥 `floor` · 벽면·천장·공허 `solidfloor` · 가구 발자국 `solid` · `walk` 칸·`flat` 종류 `flat`(2층) · 위로 솟은 칸·걸이 `star`. 키트 `jp-in-<가구 id>`(낱개 확인용).
   selftest 가 쓰임(use)·바라보는 쪽(facing)이 조수 도구 id(`parts.ts` USE_WORDS, N/S/E/W)인지 막는다 — 작업자가 「잠자기」「앉기」 같은 한국어 낱말을 넣었던 실측.
 - 미리보기(굽기 전): `python3 scripts/content/jp-city/interior/preview.py ROOM.json OUT.png --x 3` — 조립 순서는 TS 와 같지만 **층 수(조각 셋 겹침·4층 찬 칸)는 보지 않는다**. 정답은 TS 도구로 짓는 `maps/interior.mjs`.
-- 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 94 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9007.
+- 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 99 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9017.
 - 조립기 일반화: `builder.ts` 의 `handInteriorStructure`·`buildHandInteriorLayers` 가 사양 인자를 받고(기본 v5), `HAND_INTERIOR_SPECS = {atlas_biome_interior, jp_city}`. `isSeatId` 는 `use` 에 `sit` 이 있는 가구도 앉는 자리로 본다. `parts.ts` 의 예제 문서 id 머리는 `rooms.docPrefix`(jp = `jp-interior-ex-`).
 - 예제: `tiledata/jp-city/interior/examples/{house-1f,house-2f,apartment-1k}.json`(도구 인자 + `rooms` 사각형) → `node scripts/content/jp-city/maps/interior.mjs [--publish]` 가 **조수 도구 그대로** 짓고 엔진 canMove BFS 로 이동 칸 도달까지 잰다.
-  1층 계단 발칸 (9,9) → 2층 (9,5), 2층 계단통 아랫줄 (9,4)(10,4) → 1층 (9,10). 장소 `jp-city-house-interior-22x15`(1·2층 한 다운로드) · `jp-city-apartment-1k-11x14`.
+  1층(21×15): 복도는 동서, 화실·화장실·부엌이 복도 **북쪽**(방문이 복도 쪽 벽면에 보이게), 욕실·탈의실은 남서(세로 칸막이 3줄 틈), LDK 는 동쪽. 1층 계단 발칸 (11,9) → 2층 (18,10), 2층 계단통 아랫줄 (19,10)(20,10) → 1층 (11,10).
+  짓는 순서는 조수와 같다 — 모든 층을 links 없이 → 같은 mapId·`replace:true` 로 links 넣어 다시(도구가 없는 맵으로 가는 links 를 `link-target-missing` 으로 거부). 장소 `jp-city-house-interior-22x15`(1·2층 한 다운로드) · `jp-city-apartment-1k-11x14`.
+  런타임 QA `unshare -rn sh -c 'ip link set lo up; node scripts/content/jp-city/qa/interior.probe.mjs'` — 걷는 길은 `interior-fixture.mts` 가 예제 `rooms` 사각형마다 엔진 canMove BFS 로 구한다(평면을 바꿔도 손으로 고칠 것 없음).
 - 평면 함정(실측): 세로 칸막이 틈은 3줄이어야 지나간다(위 두 줄이 벽면) · 칸막이 틈 앞 칸에 가구를 두면 방 하나가 통째로 막힌다 · 소파를 좌탁 바로 남쪽에 붙이면 등받이 overhang 이 좌탁 칸 3·4층을 차지해 탁상 물건이 `goods-no-layer` 로 거부된다 · 대면 카운터는 양 끝 중 하나를 통로로 남긴다.
+- **방문 `door` 종류**(2026-10-07, 관문 2회차 「문 그림이 한 번도 안 쓰인다」): 가로 칸막이 1칸 틈 칸 (x,y) 에 단다 — ikit 가 틈 칸에 인방(천장 띠 비트 1|2, ★)을 붙이고, 그림 16×32 는 틈 아래 벽면 높이 두 줄(윗줄 ★ · 아랫줄 2층)에 열린 문틀·문짝. 통로를 막지 않고 발자국도 차지하지 않는다. 조립기 검사 `door-not-in-gap`(틈 좌우 `#`, 틈 위 실내, 틈 아래 두 줄 바닥, 그 양옆은 벽면/막힘). 세로 칸막이 틈에는 못 단다 — 그래서 문이 필요한 방은 복도 북쪽에 둔다. id `door-open-western`·`door-open-toilet`·`fusuma-open`·`shoji-open`, 현관문 문턱 `genkan-door`(flat, 맨 아래 출입구 틈 칸).
 - 신발장은 `floor` 종류(옆벽 곁에 서게) — 현관에는 북쪽 벽이 없어서 `wall` 이면 놓을 수 없었다. 계단통은 `stairs:"down"` + 아랫줄 `walk`.
-- 참고문서 용도 `jp-interior`(짓는 법·사전·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 8종). 엔진 실측은 `engine_dump.mts` 의 `interior`.
+- 참고문서 용도 `jp-interior`(짓는 법·사전·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 9종 — `door-not-in-gap` 포함). 엔진 실측은 `engine_dump.mts` 의 `interior`.
 - 관문 단계 `interior`(`tiledata/jp-city/gates/interior.json`). 작업자 지시서 `tiledata/jp-city/interior/briefs/`.
-- 남은 것: 현관문(바깥 문) 그림 · 동·서 벽면 걸이 · 베란다 · 가게·학교 실내 · 거리 맵 집 문과 실내 자동 연결 · 편집기 「새 맵 → 실내」 칩셋 선택(지금은 v5 고정).
+- `interior.mjs` 는 2배 그림 `-x2.png` 도 매번 다시 만든다(관문이 보는 그림 — 예전엔 남은 옛 x2 를 관문이 보고 판정했다).
+- 남은 것: 세로 칸막이 문 · 동·서 벽면 걸이 · 베란다 · 가게·학교 실내 · 거리 맵 집 문과 실내 자동 연결 · 편집기 「새 맵 → 실내」 칩셋 선택(지금은 v5 고정).
 
 ## 실제 거리 조사 (2026-10-06)
 
