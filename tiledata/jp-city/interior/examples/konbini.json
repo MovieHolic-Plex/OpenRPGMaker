@@ -116,14 +116,24 @@
    "y": 3
   },
   {
-   "id": "door-open-western",
-   "x": 10,
-   "y": 5
-  },
-  {
    "id": "cv-autodoor",
    "x": 6,
    "y": 10
+  },
+  {
+   "id": "cv-back-shelf",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 9,
+   "y": 4
   }
  ],
  "tables": [],

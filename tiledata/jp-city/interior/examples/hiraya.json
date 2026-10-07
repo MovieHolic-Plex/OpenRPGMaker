@@ -61,16 +61,6 @@
    "y": 4
   },
   {
-   "id": "zabuton",
-   "x": 2,
-   "y": 5
-  },
-  {
-   "id": "zabuton",
-   "x": 3,
-   "y": 5
-  },
-  {
    "id": "h2-old-tansu",
    "x": 6,
    "y": 3
@@ -219,6 +209,26 @@
    "id": "h2-hibachi",
    "x": 10,
    "y": 10
+  },
+  {
+   "id": "chabudai",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "zabuton",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "zabuton",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "andon",
+   "x": 7,
+   "y": 4
   }
  ],
  "tables": [

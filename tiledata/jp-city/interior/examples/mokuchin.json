@@ -105,6 +105,11 @@
    "id": "getabako-narrow",
    "x": 4,
    "y": 7
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 1,
+   "y": 5
   }
  ],
  "tables": [],

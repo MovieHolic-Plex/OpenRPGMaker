@@ -12,8 +12,8 @@
   ],
   "building": "jp_konbini",
   "rules": [
-   "자동문 입구 → 창가 잡지대 · 가운데 섬 진열대 줄 · 북쪽 벽 음료 냉장고 · 개방형 도시락 냉장 · 입구 옆 계산대(계산기·핫스낵·커피) + 뒤 담배 선반 · 칸막이 너머 뒷방.",
-   "평면·가구는 tiledata/jp-city/interior/examples/konbini.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-konbini-14x13\"})."
+   "자동문 입구 → 창가 잡지대 · 가운데 섬 진열대 줄 · 북쪽 벽 음료 냉장고 · 개방형 도시락 냉장 · 입구 옆 계산대(계산기·핫스낵·커피) + 뒤 담배 선반 · 칸막이 너머 뒷방(문 없는 열린 통로 — 안에 뒷벽 선반 둘·골판지·상자 더미).",
+   "평면·가구는 tiledata/jp-city/interior/examples/konbini.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-konbini-14x11\"})."
   ]
  },
  {
@@ -219,7 +219,7 @@
  },
  {
   "file": "sento",
-  "placeId": "jp-city-sento-14x13",
+  "placeId": "jp-city-sento-15x13",
   "name": "일본 공중목욕탕(센토) 실내",
   "kind": "sento",
   "kindKo": "목욕탕(센토)",
@@ -232,8 +232,8 @@
   ],
   "building": "jp_sento",
   "rules": [
-   "현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고) → 두 칸 폭 통로(노렌 둘, 문 없음) → 욕장(씻는 자리 줄·의자, 북쪽 큰 욕조, 뒤 벽 후지산 그림).",
-   "평면·가구는 tiledata/jp-city/interior/examples/sento.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sento-14x13\"})."
+   "현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고; 출입구는 두 칸 폭이라 반다이가 안쪽에서 양쪽을 본다) → 남탕·여탕 각자의 두 칸 통로(노렌 한 쌍씩, 문 없음) → 가운데 칸막이로 나뉜 욕장(씻는 자리 줄·의자, 북쪽 욕조 둘, 뒤 벽 후지산 그림).",
+   "평면·가구는 tiledata/jp-city/interior/examples/sento.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sento-15x13\"})."
   ]
  },
  {
@@ -326,8 +326,8 @@
   ],
   "building": "jp_mokuchin",
   "rules": [
-   "작은 현관 → 옛 싱크·작은 냉장고 → 다다미 6조(고타쓰·행거·골판지) · 창가 이불 말림.",
-   "평면·가구는 tiledata/jp-city/interior/examples/mokuchin.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mokuchin-8x8\"})."
+   "작은 현관 → 옛 싱크·작은 냉장고 → 다다미 6조(고타쓰·행거·골판지 둘) · 창가 이불 말림.",
+   "평면·가구는 tiledata/jp-city/interior/examples/mokuchin.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mokuchin-8x9\"})."
   ]
  },
  {
@@ -345,7 +345,7 @@
   ],
   "building": "jp_hiraya",
   "rules": [
-   "현관 → 다다미방 2~3칸(장지문) + 이로리 방 + 부엌 → 남쪽 엔가와 툇마루·디딤돌.",
+   "현관 → 다다미방 2~3칸(장지문·차부다이·방석, 이불 곁 등롱) + 이로리 방 + 부엌 → 남쪽 엔가와 툇마루·디딤돌.",
    "평면·가구는 tiledata/jp-city/interior/examples/hiraya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-hiraya-15x14\"})."
   ]
  }
