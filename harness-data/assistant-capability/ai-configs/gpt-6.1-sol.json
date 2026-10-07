@@ -1,0 +1,16 @@
+{
+  "providerId": "openai-codex",
+  "model": "gpt-6.1-sol",
+  "liteModel": "gpt-6.1-sol",
+  "reasoningEffort": "high",
+  "ultrabrainProviderId": "openai-codex",
+  "ultrabrainModel": "gpt-6.1-sol",
+  "ultrabrainReasoningEffort": "high",
+  "roleModels": {
+    "deep": { "provider": "openai-codex", "model": "gpt-6.1-sol", "thinkingLevel": "medium" },
+    "vision": { "provider": "openai-codex", "model": "gpt-6.1-sol", "thinkingLevel": "medium" },
+    "writer": { "provider": "google-antigravity", "model": "gemini-3.8-flash", "thinkingLevel": "medium" }
+  },
+  "modelSelectionOverrides": { "ultrabrain": true, "deep": true, "vision": true, "writer": true },
+  "roleModelsPolicyVersion": 1
+}

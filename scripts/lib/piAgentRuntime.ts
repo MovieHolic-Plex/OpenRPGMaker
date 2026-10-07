@@ -36,7 +36,9 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일 하나를 다시 쓰면 된다.
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
+import { streamSimple } from "@oh-my-pi/pi-ai";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
+import { codexVersionFetch } from "./codexClientVersion.ts";
 import {
   createPiToolset,
   selectPiToolDefinitions,
@@ -612,7 +614,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     // 요청마다 다시 읽는다 — 긴 실행 도중 호스트가 갱신한 키가 providerApiKeys 에 들어온다(piWorkerKeys.ts).
     ...(apiKey ? { getApiKey: () => ((options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? apiKey) as never } : {}),
-    ...(options.streamFn ? { streamFn: options.streamFn } : {}),
+    ...(options.streamFn ? { streamFn: options.streamFn }
+      : request.provider === "openai-codex"
+        ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
+          streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
+        : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
