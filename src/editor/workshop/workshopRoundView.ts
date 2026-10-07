@@ -201,7 +201,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...errorLine(),
       head,
       ...bakeRow(),
-      el("p", { class: "workshop-item-meta", text: "1~5 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요." }),
+      el("p", { class: "workshop-item-meta", text: `1~${runs.length} 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요.` }),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       compare(selectedRun ?? null),
       pending

@@ -9,12 +9,13 @@ import type { Direction, DrawContext, ReviewContext } from "@/harnesses/_core/wo
 import { FLAT_KINDS, KIND_LABELS } from "./items";
 import { rampSummary } from "./palette";
 
+/** 앞에서부터 실행기의 candidates 장만 쓴다(지금 3장) — 서로 가장 다른 셋을 앞에 둔다. 뒤는 장 수를 늘릴 때 쓴다. */
 export const DIRECTIONS: Direction[] = [
   { letter: "A", text: "최소 수정: 지금 그림의 디자인·비율·색·결을 그대로 두고, 3/4 로 안 읽히는 곳(얇은 윗면 등)만 고친다. 화소 대부분이 그대로여야 한다." },
-  { letter: "B", text: "최소 수정 (A 와 다른 해석): 지금 그림을 출발점으로, 윤곽·명암·윗면을 다듬어 더 단단하게. 모양과 크기는 지금과 같게." },
-  { letter: "C", text: "기준 맞추기: 기준 그림들과 같은 결(윤곽 굵기·명암 단 수·나뭇결·윗면 두께)로 다시 찍는다. 물건과 크기는 지금 그대로." },
-  { letter: "D", text: "기준 맞추기 (C 와 다른 해석): 기준 그림의 결을 따르되 디자인을 한 단계 더 다듬는다(장식·비례). 물건은 같다." },
-  { letter: "E", text: "자유: 같은 화풍(기준 그림) 안에서 이 물건을 가장 잘 읽히게 새로 디자인한다. 캔버스는 지킨다." },
+  { letter: "B", text: "기준 맞추기: 기준 그림들과 같은 결(윤곽 굵기·명암 단 수·나뭇결·윗면 두께)로 다시 찍는다. 물건과 크기는 지금 그대로." },
+  { letter: "C", text: "자유: 같은 화풍(기준 그림) 안에서 이 물건을 가장 잘 읽히게 새로 디자인한다. 캔버스는 지킨다." },
+  { letter: "D", text: "최소 수정 (A 와 다른 해석): 지금 그림을 출발점으로, 윤곽·명암·윗면을 다듬어 더 단단하게. 모양과 크기는 지금과 같게." },
+  { letter: "E", text: "기준 맞추기 (B 와 다른 해석): 기준 그림의 결을 따르되 디자인을 한 단계 더 다듬는다(장식·비례). 물건은 같다." },
 ];
 export const NEW_DIRECTIONS: Direction[] = [
   { letter: "A", text: "설명 충실: 설명 문장의 요소를 빠짐없이, 가장 전형적인 SFC 시절 JRPG 모양으로 그린다." },
@@ -114,16 +115,6 @@ export function drawBrief(ctx: DrawContext): string {
   const start = ctx.previousGrid ?? ctx.current;
   if (start) lines.push(ctx.previousGrid ? "## 지난 시도 격자 (여기서 출발)" : "## 지금 그림 격자 (여기서 출발)", JSON.stringify(gridToAnswer(start)), "");
   return lines.join("\n");
-}
-
-export function selfCheckText(ctx: DrawContext): string {
-  return [
-    "첨부한 것은 네 격자를 8배로 그린 그림이다(옆은 지금 그림). 다시 본다:",
-    "- 지금 그림보다 나빠진 데가 없나? (사용자가 가장 싫어한 것: 「고쳤는데 더 이상해졌다」)",
-    "- 기준 그림과 화풍(윤곽·명암·결)이 같나?",
-    FLAT_KINDS.has(ctx.item.kind) ? "- 평평한 물건으로 읽히나?" : "- 꼭대기 면 윗면을 세어 본다 — 3행 이상인가? 위가 뚫린 틀이 아닌가? 얹힌 물건도 윗면이 보이나?",
-    "고칠 것이 있으면 고친 전체 격자를, 없으면 같은 격자를 그대로 같은 JSON 형식으로 다시 낸다.",
-  ].join("\n");
 }
 
 export function reviewSystemPrompt(): string {
