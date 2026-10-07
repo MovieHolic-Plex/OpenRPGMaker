@@ -1,0 +1,62 @@
+[
+  {
+    "key": "adventure--reunion--battle--warm--journey",
+    "sha256": "b78dbc19bf21424556328c795629792c3b388759e95a8f92bc50b1cc98484915",
+    "review": {
+      "sourceSha256": "b78dbc19bf21424556328c795629792c3b388759e95a8f92bc50b1cc98484915",
+      "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent WHOLE/FULLown (parentnoTextF meansdeploymentheld). WholeSTOPLOWLEFT realwarmwalllantern/plainunusedstorage/plainREDkeepsakebench/unfinishedSIDEtrail nearSTOP; LEFTcontinuousroad stairs→separateemptyarenaMIDLEFT TWOcentralactualstonecovers/2emptyapproachstairs/openflank→differentWHOLEEMPTYstone destinationseat UPLEFT. Allwhole selectedfloors/roofs/walls/stairs/nativebuffers before1008. Warmwelcome requireswalllantern, not obligatorysunset; daytime allowedexactOWN/no mixedforcedSUN/TWILIGHT. Coarse16bit/noidentity/no actualwriting/signs/clock/book. SmallREDcloth straightfolds/shades notconfirmedglyph. ActualparentnearhouseUPLEFT/rectangularcourtLOWLEFT eveningvalley vs smallerSTOPLOWLEFT/courtMID/emptyseatUPLEFT daylightforestwaterfallvalley andchangeddepth/camera/focalgeometry, distinctShotP. Visual7P not ancestor/deploymentpass.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEunchangednative and actualNEW227WARM FULLown/WHOLEnative seen. WholeSTOPLOW/warmWALLlamp/REDclue/unfinSIDEtrace, arenaMID TWOcovers/approaches/flank, separateEMPTYDESTstonebenchUP/fullstairs/LEFTroad/coarsepixel/noText/identity retained. Steep3cliffwoodvalley/waterfallcamera and arenaMID/STOPLOW differsfrom227parentflatforestarenaUP/STOPLOW, not same geometry plus bench. No newcounts/requirements/attemptpass."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--warm--chapters",
+    "sha256": "d4ed7a6a5409305da36fe9b1ca79c69a1a0f69fc658b5cc8f50087cebe3b7ca5",
+    "review": {
+      "sourceSha256": "d4ed7a6a5409305da36fe9b1ca79c69a1a0f69fc658b5cc8f50087cebe3b7ca5",
+      "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent FULLown/WHOLE (parentnoTextF deploymentheld). Whole substantial BLEACHEDtreelessUPLEFTupland→wholeOPENregionalarch/BOTHentryfloors/fullstairs→GREENwoodsLOWLEFT. Whole warmSTOPLOWLEFT realwallmountedlamp/plainunusedstore/REDkeepsake/unfinSIDEtrace, independentemptyarenaMIDLEFTTWOactualcentralcovers/2approachstairs/openflank/unusedcrates. Allwhole roofs/floors/walls/stairs/props before1008/nativebuffers. Coarse16bit SUNsetwarm noforcedTWILIGHT/pixel/nohumans/identity/noactualtext/signs/logos. Plainredcloth straightmaterialshading notknownwriting. ParentSTOPUPLEFT/courtLOW/nearhousecrest vs newSTOPLOW/arenaMID/thresholdUP/substantialpalegreenregionalborder andcamera/depthreordered, distinctShotP. No resolvedscope. Allvisual7P independentofparentgate.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEnative and actualNEW227WARM FULLown/WHOLEnative seen. WholeOPENarchUPLEFT/fullstairs substantialBLEACHEDUP↔GREENLOW, STOPLOW/warmWALLlamp/REDclue/unfinSIDEbranch, separatearenaMID TWOactualcovers/twoentries/flank/bareunusedstores. Nativewhole before1008/noText/noidentity/coarsepixels retained. ActualBLEACHEDsteep3plateaus/sunsetwatervalley and arenaMID differsfrom227parentflatforest/arenaUP; actualcamerafocalground changed, not recolor/addprops only."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--mystic--quests--scene",
+    "sha256": "72f7a38b29a80dfa17443fcb55677130ec8c00dbe65cfbdf38656dbe894e3527",
+    "review": {
+      "sourceSha256": "72f7a38b29a80dfa17443fcb55677130ec8c00dbe65cfbdf38656dbe894e3527",
+      "promptSha256": "91ad6a36d793942fd89b5b3c48238735f97842c517d77874dc8192ce401ffe23",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected, actual225MYSTICQUESTparent FULLown/WHOLE compared (parentdistinctShotF so deploymentheld). WholeSTOPUPLEFT/REDplainkeepsakebench/unfinSIDEtrace/nativebuffers; actualfirsttwo-wayfork nearSTOP goesBASE/relationtrail. WHOLEunroofedraisedBASEtable/platform MIDLEFT THREEdistinctsealedwoodparcels/fullfloorstairs. IndependentwholeEMPTYarenaLOWLEFT TWOactualcentralcoverblocks/2approachentries/openflank/plainunusedstores, wholeancientarchUPMIDLEFT/nativeTOPskybuffer/fullstairs. Allselectedarchitecture/floors/props before1008/nocrop. CoolTWILIGHT coarsehard16bit/plainmaterial/nohumans/identity/writing/signs/logos. ActualparentSTOPLOW/BASEMIDRIGHTLEFT/arenaUPMIDLEFT/archUPLEFT headland vs childSTOPUP/BASEMID/arenaLOW/archUPMIDsteepwall andforegroundroad differentcamera/depth/placegeometry, distinctShotP. Allvisual7P independentofparentgate.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEnative and actualNEW227MYSTICQUEST FULLown/WHOLEnative seen. WholeSTOPUP/redclue/firstfork/unfinSIDEtrace, separateunroofedraisedstoneBASEstagingplatform THREEsealedparcels/fullstairs, arenaLOW TWOcentralcovers/twoentries/flank, wholearchUPMID/nativeTOPbuffer before1008/coarsecoolTWILIGHT/identity/noText retained. Original225OWN does not force wooden fourlegged table, unlike226/227targetrepair; no retrorequirement. Steep3terraces/waterruinedcityscene/BASEMID differsfrom227parentflatgianttreeforest/tableLOW/arenaLOW with strong world-depth/camera change; distinctShotP."
+    }
+  }
+]

@@ -1,0 +1,319 @@
+{
+  "scope": "Only already-reviewed rejected public copies after realacceptedreplacementpublication; exactprivate PNG/fullOWN/permanentbackups preserved. No nativeediting.",
+  "published": 928,
+  "removedThisInterval": 10,
+  "resolvedCumulative": 251,
+  "priorActualProof": "verify-shots/interview-scene-bank-v2/obsolete-public-cleanup-226-proof.json",
+  "removed": [
+    {
+      "key": "adventure--reunion--battle--warm",
+      "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+      "generationPromptSha256": "3443322c9660b9561b1594c2d014d91afa64c2f4d1452fca8151f82e60a2a20a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm-2f26bcb5e7b0.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm-1-2f26bcb5e7b0.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/3443322c9660b9561b1594c2d014d91afa64c2f4d1452fca8151f82e60a2a20a.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+        "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+        "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+        ],
+        "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+      },
+      "replacementSha256": "a7dd0c350dadb06c14429dab4399a7278ec9a4c3c0a894e6a2ec958e7cd6465a",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright",
+      "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+      "generationPromptSha256": "dd3bf825ef2a9f247b839401a2919797ad34c4f4354b51a7cf1ec43ef95d1271",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--bright-121834833879.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright-1-121834833879.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/dd3bf825ef2a9f247b839401a2919797ad34c4f4354b51a7cf1ec43ef95d1271.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+        "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+        "reviewer": "Codex ROOT original companion OWN-native corrective stage225",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+        ],
+        "notes": "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+      },
+      "replacementSha256": "bb6e06e2c98d6b896bdec39237d7663f377d24a8cf223643af4bc72d4c0c4832",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--battle--bright--journey",
+      "sourceSha256": "c4cf27dfc218fc81265aca9439914bdd9ac5ea356c0f20c6652cf56e3e74c4dc",
+      "generationPromptSha256": "a49f69aea01de6a2a25d67c1b3dde4b2fd737d4a7719db67f81d2b7a543c62cb",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--bright--journey-c4cf27dfc218.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--journey-1-c4cf27dfc218.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/c4cf27dfc218fc81265aca9439914bdd9ac5ea356c0f20c6652cf56e3e74c4dc.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/a49f69aea01de6a2a25d67c1b3dde4b2fd737d4a7719db67f81d2b7a543c62cb.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "c4cf27dfc218fc81265aca9439914bdd9ac5ea356c0f20c6652cf56e3e74c4dc",
+        "promptSha256": "0e2de727bc49bc0251c1d03b34cfbcc6b2683396862cac3e4d90e1448b947b7e",
+        "reviewer": "Codex root original battlejourney own/native corrective after220 actual whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during220actualchildcomparison. Originalasksfocal selectedtacticalpropsLEFT60/quietRIGHT35 and connectedjourneynearroute-midpoint-differentdestination. ActualselectedRIGHT tacticalbarricade/cover/stake furniturex1100-1660 anddifferentdistantdestcastle/rightconnectingbridge behindactual1008controls: compositionONLYF. NearLEFTshieldrack/plainpersonalpendant/bedroll/battleapproachfloor androute/UPmidpointarchpresent. Other6originalchecksretained. Originalnear-cornerpartialarchitecture isallowed; no retrowholebuilding/nativebuffers/REDcloth/mudprints/EMPTYstonebench/LEFTbleachedupland/new220requirements. ExactOWN/nativehash/priorreview retained; historical893218QA/commitunchanged. Replacementrequired beforedescendantsdeploy."
+        ],
+        "notes": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during220actualchildcomparison. Originalasksfocal selectedtacticalpropsLEFT60/quietRIGHT35 and connectedjourneynearroute-midpoint-differentdestination. ActualselectedRIGHT tacticalbarricade/cover/stake furniturex1100-1660 anddifferentdistantdestcastle/rightconnectingbridge behindactual1008controls: compositionONLYF. NearLEFTshieldrack/plainpersonalpendant/bedroll/battleapproachfloor androute/UPmidpointarchpresent. Other6originalchecksretained. Originalnear-cornerpartialarchitecture isallowed; no retrowholebuilding/nativebuffers/REDcloth/mudprints/EMPTYstonebench/LEFTbleachedupland/new220requirements. ExactOWN/nativehash/priorreview retained; historical893218QA/commitunchanged. Replacementrequired beforedescendantsdeploy."
+      },
+      "replacementSha256": "7c34b761e66771bf3b2f7485e28bda9c36b92665be4447b0861d36109294da72",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--quests",
+      "sourceSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+      "generationPromptSha256": "ab8c2973868d3b26f69ff2afc5a6054c1007722202d63116ee7da4ce34e08e2d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests-5d9f595d9dad.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests-2-5d9f595d9dad.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/ab8c2973868d3b26f69ff2afc5a6054c1007722202d63116ee7da4ce34e08e2d.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+        "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+        "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+        ],
+        "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+      },
+      "replacementSha256": "ea2f089c66eebe0ada789b653e5a70cee41b9a8fa1deac4fc4f011e1871c8ef3",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--journey",
+      "sourceSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+      "generationPromptSha256": "c75937721862f6fc919d562ff81758fb1d6c81cdb63203024c238fc0879ebe1a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey-065beaa4a791.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey-1-065beaa4a791.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/c75937721862f6fc919d562ff81758fb1d6c81cdb63203024c238fc0879ebe1a.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+        "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
+        "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+        ],
+        "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+      },
+      "replacementSha256": "b78dbc19bf21424556328c795629792c3b388759e95a8f92bc50b1cc98484915",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--quests",
+      "sourceSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+      "generationPromptSha256": "4945804d383a0b3dafe1f00257d496737e56f2c16b2468c8499cf26c4f31e7a5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm--quests-0b2dfd1a4ea4.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--quests-2-0b2dfd1a4ea4.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/4945804d383a0b3dafe1f00257d496737e56f2c16b2468c8499cf26c4f31e7a5.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+        "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+        "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+        ],
+        "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+      },
+      "replacementSha256": "043388550490777d376facd6fae496ade691437a3dbf61a66d07a27cfdc52176",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--chapters",
+      "sourceSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+      "generationPromptSha256": "86ecb10e9b9d5b3ebdaeb585b62f27d22ee01cae1446af8809b1bd12b80ce9b0",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm--chapters-6b29cedeef56.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--chapters-1-6b29cedeef56.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/86ecb10e9b9d5b3ebdaeb585b62f27d22ee01cae1446af8809b1bd12b80ce9b0.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+        "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
+        "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+        ],
+        "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+      },
+      "replacementSha256": "d4ed7a6a5409305da36fe9b1ca79c69a1a0f69fc658b5cc8f50087cebe3b7ca5",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--journey",
+      "sourceSha256": "f6dd3d8daa686befafde37934819b322f26c49f9a79f722b4373498e29d509db",
+      "generationPromptSha256": "ad6c9d2ede038c60fe3ceaa2ab22b5dfe185c7df24042ba890b8ca88617203f3",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--bright--journey-f6dd3d8daa68.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--journey-2-f6dd3d8daa68.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/f6dd3d8daa686befafde37934819b322f26c49f9a79f722b4373498e29d509db.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/ad6c9d2ede038c60fe3ceaa2ab22b5dfe185c7df24042ba890b8ca88617203f3.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "f6dd3d8daa686befafde37934819b322f26c49f9a79f722b4373498e29d509db",
+        "promptSha256": "1b1fa099ca1f65781f698d1d8eed52feee42cb01f01cb3f8094ce5c81be8abbc",
+        "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT personally read FULLexactORIGINAL050OWN and viewedWHOLEunchangednative during227newparentcomparison. Requiredjourney MIDbridge and differentDISTANTEMPTYcastle destination x1080-1600 behindactualcontrolsx1008: compositionONLYF. LEFTTHREEdistinctcoloredunusedbedroll/packtravelplaces/THREEactualplaincups/CLOSEDplainpersonalTIN present. Functionalclasps/rivets notlogos. OriginalcloseINSIDEgate permits partialnativearchitecture/no retroWHOLEroof/nativebuffers/REDclue/EMPTYstonebench/newSTOP. Other6originalchecksretained incldistinctfromnew227brightCOMPwiderockclearingSTOPMID/3bedrollUP shot. ExactOWN/native/priorreview preserved; replacementneeded, source122 notgeneratedattempt."
+        ],
+        "notes": "ROOT personally read FULLexactORIGINAL050OWN and viewedWHOLEunchangednative during227newparentcomparison. Requiredjourney MIDbridge and differentDISTANTEMPTYcastle destination x1080-1600 behindactualcontrolsx1008: compositionONLYF. LEFTTHREEdistinctcoloredunusedbedroll/packtravelplaces/THREEactualplaincups/CLOSEDplainpersonalTIN present. Functionalclasps/rivets notlogos. OriginalcloseINSIDEgate permits partialnativearchitecture/no retroWHOLEroof/nativebuffers/REDclue/EMPTYstonebench/newSTOP. Other6originalchecksretained incldistinctfromnew227brightCOMPwiderockclearingSTOPMID/3bedrollUP shot. ExactOWN/native/priorreview preserved; replacementneeded, source122 notgeneratedattempt."
+      },
+      "replacementSha256": "3eeeeb581c0ef2eadcbba5dacb0f1f5567d7ae0385c7b0901615ba0c6ab85a82",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--quests",
+      "sourceSha256": "7758696825a1d3b3d0bd5680248a85328866e58e728180538755bc8776832bf8",
+      "generationPromptSha256": "1716951d7bca1dca015111e42789911fb57b9b3a12e43d03747015a03a20dbde",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--bright--quests-7758696825a1.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--quests-1-7758696825a1.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/7758696825a1d3b3d0bd5680248a85328866e58e728180538755bc8776832bf8.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/1716951d7bca1dca015111e42789911fb57b9b3a12e43d03747015a03a20dbde.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "7758696825a1d3b3d0bd5680248a85328866e58e728180538755bc8776832bf8",
+        "promptSha256": "d6f6b9a587d5b91e9d33a381511b67b2e05da4224a12bdc20eadfeea40848e9f",
+        "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT personally FULLexactORIGINAL050OWN/WHOLEunchangednative seen during227actualparentcomparison. Actualisolatedwooddirectionpost/twopointedboards x970-1085/y283-410 violatesoriginalnoSIGNS/boards; noTextF even withoutlettering. ActualselectedYfork/rightdestination afterx1100 behindactualcontrolsx1008: compositionF. LEFTactualTHREEsealedclothparcels/THREEcoloredbedroll-packplaces/THREEcups/CLOSEDplainTIN remain. Originaltable/roofpartialnativeedge permitted; no retroWHOLEarchitecture/REDkeepsake/fourleggedunroofedtable/newscope. Functionalwoodbindings/metalclasp notlogos. Other5originalchecks retained, actualclosetableforeground/thresholdshotdistinctfrom227parentwideSTOPMID/3bedrollUP. Source123 priorreview/OWN/native preserved; not newgeneratedattempt."
+        ],
+        "notes": "ROOT personally FULLexactORIGINAL050OWN/WHOLEunchangednative seen during227actualparentcomparison. Actualisolatedwooddirectionpost/twopointedboards x970-1085/y283-410 violatesoriginalnoSIGNS/boards; noTextF even withoutlettering. ActualselectedYfork/rightdestination afterx1100 behindactualcontrolsx1008: compositionF. LEFTactualTHREEsealedclothparcels/THREEcoloredbedroll-packplaces/THREEcups/CLOSEDplainTIN remain. Originaltable/roofpartialnativeedge permitted; no retroWHOLEarchitecture/REDkeepsake/fourleggedunroofedtable/newscope. Functionalwoodbindings/metalclasp notlogos. Other5originalchecks retained, actualclosetableforeground/thresholdshotdistinctfrom227parentwideSTOPMID/3bedrollUP. Source123 priorreview/OWN/native preserved; not newgeneratedattempt."
+      },
+      "replacementSha256": "260670d4569d14e7378a785543c46809152ba69b756d7d674d27837b1fe700f4",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters",
+      "sourceSha256": "de52b5713e073cf3e4309e04dc8291450d9425f75cca8a6fa4a32e114b0661ed",
+      "generationPromptSha256": "a068d9e2885d82417847aef71baaed82233ea75588334bda1c9ad01d00f2deb1",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--bright--chapters-de52b5713e07.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--chapters-2-de52b5713e07.png",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/de52b5713e073cf3e4309e04dc8291450d9425f75cca8a6fa4a32e114b0661ed.png",
+      "permanentOwnBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/a068d9e2885d82417847aef71baaed82233ea75588334bda1c9ad01d00f2deb1.txt",
+      "priorRejectedReview": {
+        "sourceSha256": "de52b5713e073cf3e4309e04dc8291450d9425f75cca8a6fa4a32e114b0661ed",
+        "promptSha256": "8b1cf68df3e23246fc054f1c700c9291bbf56fccf2a3b2332128cac0dfff90b8",
+        "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT personallyFULLexactORIGINAL051OWN/WHOLEunchangednative seen during227actualparentcomparison. OriginalGREENFORESTLEFT↔ARIDDESERTRIGHT chosencontrastingregions ARE actuallypresent butrequiredRIGHTaridregion/RIGHTthresholdframe afterx1008 hiddenbycontrols: compositionONLYF. Do not call originalchosenRIGHTdesert wrongnewLEFTBLEACHEDregion. LEFTTHREEbedroll/packplaces/THREEplaincups/CLOSEDplainpersonalTIN actualpresent; functionalmetalclasp notlogo. Originalpartialforegroundarchitectureallowed/no retroWHOLEtop/nativebuffer/REDclue/unroofedtables/newscope. Other6oldchecks retained; nearrockledgeprops/thresholddepthdifferentfrom227brightCOMPwiderockclearingSTOPMID/3bedrollUP. Source124, originalOWN/native/priorreview preserved, notgeneratedattempt."
+        ],
+        "notes": "ROOT personallyFULLexactORIGINAL051OWN/WHOLEunchangednative seen during227actualparentcomparison. OriginalGREENFORESTLEFT↔ARIDDESERTRIGHT chosencontrastingregions ARE actuallypresent butrequiredRIGHTaridregion/RIGHTthresholdframe afterx1008 hiddenbycontrols: compositionONLYF. Do not call originalchosenRIGHTdesert wrongnewLEFTBLEACHEDregion. LEFTTHREEbedroll/packplaces/THREEplaincups/CLOSEDplainpersonalTIN actualpresent; functionalmetalclasp notlogo. Originalpartialforegroundarchitectureallowed/no retroWHOLEtop/nativebuffer/REDclue/unroofedtables/newscope. Other6oldchecks retained; nearrockledgeprops/thresholddepthdifferentfrom227brightCOMPwiderockclearingSTOPMID/3bedrollUP. Source124, originalOWN/native/priorreview preserved, notgeneratedattempt."
+      },
+      "replacementSha256": "8de75d2eece6df0aed991e4350a064da2d9c975698f0b6a07dbac45d85f030e2",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true
+    }
+  ]
+}

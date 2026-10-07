@@ -1,0 +1,99 @@
+{
+  "publishedSnapshot": 928,
+  "remainingAtSnapshot": 529,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-07T10:54:48.220525+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "returncode": 0,
+      "snapshotUnchanged": true,
+      "snapshot": {
+        "manifest": "a76af85bf729a9d4bd2cea94f2fbffc4f5d21f76003861c78796dac161003123",
+        "ledger": "2c7b93a3be64129caeb766721bf9440ccf0bcb7953886ba3818aeeaf8cc45593"
+      },
+      "published": 928,
+      "finishedAt": "2026-10-07T10:54:19.815759+00:00",
+      "recoveryLifecycle": true
+    },
+    "selected": {
+      "command": [
+        "node",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+        "--all-published",
+        "--paths",
+        "adventure--reunion--battle--bright--quests--scene,adventure--reunion--battle--mystic--quests--short,adventure--reunion--battle--warm--journey--scene,adventure--reunion--companions--bright--journey,adventure--reunion--companions--bright--quests,adventure--reunion--companions--bright--chapters"
+      ],
+      "returncode": 0,
+      "snapshotUnchanged": true,
+      "snapshot": {
+        "manifest": "a76af85bf729a9d4bd2cea94f2fbffc4f5d21f76003861c78796dac161003123",
+        "ledger": "2c7b93a3be64129caeb766721bf9440ccf0bcb7953886ba3818aeeaf8cc45593"
+      },
+      "published": 928,
+      "finishedAt": "2026-10-07T10:54:48.190041+00:00",
+      "recoveryLifecycle": true
+    }
+  },
+  "screens": [
+    {
+      "key": "adventure--reunion--battle--bright--quests--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--battle--bright--quests--scene.png",
+      "sha256": "8ffe285a9d7ea25544cc4cf1ec571875a6a4027cda51c1664a76dc34feaf1dfe",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--quests--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--battle--mystic--quests--short.png",
+      "sha256": "21e3806cdf81b48af5f31362d07b7279ef5638666d7188c79ee4e96201601a43",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--journey--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--battle--warm--journey--scene.png",
+      "sha256": "7ae37ced801c7fb7f9471151ea95983949f8daf40a3f12ffcb3756abd6890f99",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--journey",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--companions--bright--journey.png",
+      "sha256": "d5df85e25dcdb8f06c44761027f8e3e94395f04a496f6e6a00a33844c0bd1446",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--quests",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--companions--bright--quests.png",
+      "sha256": "e14c0450c7ed8c919d9718fbfcd232cf27f02700467d5bff0365752ad2eec14b",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-928-stage228-selected-adventure--reunion--companions--bright--chapters.png",
+      "sha256": "8db231600fb8c4b8b6662f327d698267663c2c209d1a282d75d893a84d158108",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 33,
+  "scope": "928 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. Only actually published and ancestor-complete scenes included; no all928 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-928-stage228-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-928-stage228-click-proof.json"
+  }
+}

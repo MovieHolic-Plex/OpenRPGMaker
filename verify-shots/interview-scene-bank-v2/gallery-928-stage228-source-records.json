@@ -1,0 +1,103 @@
+{
+  "publishedSnapshot": 928,
+  "records": [
+    {
+      "key": "adventure--reunion--battle--bright--quests--scene",
+      "publishedNativeSha256": "6bb2a32c98232a01078f3653102b3fd4a938ce48d5d9eba475f5caed3064a61e",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "fc43f86fe4608819d9ace18f6d128933cd8e8dc96b21f6f0fc22c1021a5a0c23",
+      "label": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 출발과 첫 선택"
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--quests--short",
+      "publishedNativeSha256": "255c1f515ea1aba88483d4c5ac819dcdeb64859dde28123b48d05c62b34b4f4a",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "615ad4e802872c7bda4b6ad4d2a3daf9b6f80f6d735fd9ac54c26ecf738b6820",
+      "label": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환"
+    },
+    {
+      "key": "adventure--reunion--battle--warm--journey--scene",
+      "publishedNativeSha256": "ca1af1a375df590865742fef8c8448c39c19e67d88e82894b5e69b09420227da",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "31712c28c75d77f075c305dc5d3e0b106cd96b8af21d9b213234230fa54d83bd",
+      "label": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택"
+    },
+    {
+      "key": "adventure--reunion--companions--bright--journey",
+      "publishedNativeSha256": "3eeeeb581c0ef2eadcbba5dacb0f1f5567d7ae0385c7b0901615ba0c6ab85a82",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "2d8d81adf93d61065e1e4bf7d95aeb082fdac797a3cf7ffe16e29bc5a6dbfb38",
+      "label": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정"
+    },
+    {
+      "key": "adventure--reunion--companions--bright--quests",
+      "publishedNativeSha256": "260670d4569d14e7378a785543c46809152ba69b756d7d674d27837b1fe700f4",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "15632ad42b843cf2d1b4101fc5013637686f4f288bda7a0adaa6343ffa292e43",
+      "label": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택"
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters",
+      "publishedNativeSha256": "8de75d2eece6df0aed991e4350a064da2d9c975698f0b6a07dbac45d85f030e2",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "d139a4da12797a5d6097b0b12b1a9910c7424f5a8bd16b2426910ffa63a1f1ef",
+      "label": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 챕터마다 새로운 무대"
+    },
+    {
+      "key": "adventure--reunion--battle--warm--quests",
+      "publishedNativeSha256": "043388550490777d376facd6fae496ade691437a3dbf61a66d07a27cfdc52176",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "7e22f5e7d17c7178f16702fec4ed357ad971775e87bf9163535724faf7f7c3c6",
+      "label": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택"
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--quests--episode",
+      "publishedNativeSha256": "e48533647f4efb32f2a9651198c53893d2d8d436178062517a5f72d6187fe981",
+      "nativeUnchanged": true,
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "previewOnly": true,
+      "previewSha256": "89f8f5514945089c78dbc9edc6cdfd3ce567a84560e875c865fb116c95bd4b34",
+      "label": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적"
+    }
+  ],
+  "nativeUnchanged": true,
+  "scope": "8actualpublished samples; previewNEAREST800x450/WEBP52only; productionPNG unchanged"
+}

@@ -8302,6 +8302,36 @@
           "colors": 338611,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm-5-a7dd0c350dad.png",
+        "sha256": "a7dd0c350dadb06c14429dab4399a7278ec9a4c3c0a894e6a2ec958e7cd6465a",
+        "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+        "generationPromptSha256": "517c7ef73f19c0f8533454d6c1833f14458981048576d8f95411bdc93f0fc530",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "a7dd0c350dadb06c14429dab4399a7278ec9a4c3c0a894e6a2ec958e7cd6465a",
+          "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT read FULL exact227OWN/viewed WHOLEunchangednative and actual223BATTLEparent. Both226REDpolebanners/posts removed; ordinarygrass/stone replaces them, no replacement signs/flags. WholeSTOP lowerLEFT actualemptyfloor/plainREDdrapedkeepsake/warmWALLlantern/plaincups-unusedstores/unfinishedsidebranch; wholearena UPLEFT actualTWOcentralstonecovers/TWOapproachstairs/openflank/plainshieldrack/barricade allbefore1008/nativeedges. Barefunctionalshieldrivets/joints/attachedfences notlogos. CoarseSNESsquarecraft/SUNwarmwalllight/identityunset/noText. Actualflatforest2placegeometry distinctfrom223BATTLEcliffcourt; sameKEYedit preservescorrectcamera only, never anotherkey reused."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 349238,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--companions--bright": [
@@ -8334,6 +8364,36 @@
           "width": 1672,
           "height": 941,
           "colors": 555975,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright-2-bb6e06e2c98d.png",
+        "sha256": "bb6e06e2c98d6b896bdec39237d7663f377d24a8cf223643af4bc72d4c0c4832",
+        "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+        "generationPromptSha256": "2e4437dc4ef23c074bc67b6b6c3529c8214c57879ed5a51d8ce7345788f86d03",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "bb6e06e2c98d6b896bdec39237d7663f377d24a8cf223643af4bc72d4c0c4832",
+          "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual225COMPANIONSparent read/viewed. THREEdistinctemptytravelplaces UPLEFT: blue/green/cream unusedbedrolls, eachplainpack+actualopenmetalCUP, commonclearedwalkground, no bodies. SeparatewholeSTOPLOWMID/emptyINNERfloor/fullstairs/plainREDkeepsakebench/unfinSIDEbranch. Whole selectedgroups before1008/nativeedges. Actualredcloth readonlyNEARESTdiagnostic showsordinaryfabricfolds/brownfunctionalstrap/clasp, no watchdial/pendant/emblem; do notinventnoTextF. NativecoarseSUN/identityunset/noText. Strongcloser3bedrollUP/STOPLOW forestfloor view differsfrom225parentfarcreek terrace3woodtravelplaces; camera/focalgrounds changed, no BATTLE/otherprogression/scope."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 672439,
           "findings": []
         }
       }
@@ -29236,6 +29296,36 @@
           "colors": 459983,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests-5-ea2f089c66ee.png",
+        "sha256": "ea2f089c66eebe0ada789b653e5a70cee41b9a8fa1deac4fc4f011e1871c8ef3",
+        "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+        "generationPromptSha256": "5c8b4daf7300292dabe5064cebd3540ef13a0dbbf294f7556dc1cbbbbd6a8bd9",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "ea2f089c66eebe0ada789b653e5a70cee41b9a8fa1deac4fc4f011e1871c8ef3",
+          "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual224MYSTICparent read/viewed. Roundarena now ends wholly beforeactualcontrolx1008, including actualRIGHTapproachstairs/walls/innerfloor; thin ordinarygrassmargin visible, no selectedfloor cropped. TWOactualstonecovercolumns/TWOemptydifferentapproachstairs/openwalkflank; wholeSTOPUPLEFT/plainREDkeepsake/unusedstores/unfinSIDEbranch, actualUNROOFEDfourleggedBASEtableLOWLEFT THREEdistinctsealedparcels, wholeancientarchUPMID/allstairs/TOPskybuffer. Nativewhole/coarsecoolTWILIGHT/noText/identityunset. Actualflatforestgianttree/deepquietwoods and shiftedSTOPUP/arenaLOW/BASELOW shot distinctfrom224MYSTICcliff3place/islandcastleparent. x955repair placement aim not an additional invented gate beyond actualcontrolvisibility; all chosenparts before1008."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 450808,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--battle--mystic--chapters": [
@@ -29401,7 +29491,7 @@
         "review": {
           "sourceSha256": "b78dbc19bf21424556328c795629792c3b388759e95a8f92bc50b1cc98484915",
           "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
-          "reviewer": "Codex direct original visual inspection: v2-production-225",
+          "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -29412,7 +29502,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent WHOLE/FULLown (parentnoTextF meansdeploymentheld). WholeSTOPLOWLEFT realwarmwalllantern/plainunusedstorage/plainREDkeepsakebench/unfinishedSIDEtrail nearSTOP; LEFTcontinuousroad stairs→separateemptyarenaMIDLEFT TWOcentralactualstonecovers/2emptyapproachstairs/openflank→differentWHOLEEMPTYstone destinationseat UPLEFT. Allwhole selectedfloors/roofs/walls/stairs/nativebuffers before1008. Warmwelcome requireswalllantern, not obligatorysunset; daytime allowedexactOWN/no mixedforcedSUN/TWILIGHT. Coarse16bit/noidentity/no actualwriting/signs/clock/book. SmallREDcloth straightfolds/shades notconfirmedglyph. ActualparentnearhouseUPLEFT/rectangularcourtLOWLEFT eveningvalley vs smallerSTOPLOWLEFT/courtMID/emptyseatUPLEFT daylightforestwaterfallvalley andchangeddepth/camera/focalgeometry, distinctShotP. Visual7P not ancestor/deploymentpass."
+          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent WHOLE/FULLown (parentnoTextF meansdeploymentheld). WholeSTOPLOWLEFT realwarmwalllantern/plainunusedstorage/plainREDkeepsakebench/unfinishedSIDEtrail nearSTOP; LEFTcontinuousroad stairs→separateemptyarenaMIDLEFT TWOcentralactualstonecovers/2emptyapproachstairs/openflank→differentWHOLEEMPTYstone destinationseat UPLEFT. Allwhole selectedfloors/roofs/walls/stairs/nativebuffers before1008. Warmwelcome requireswalllantern, not obligatorysunset; daytime allowedexactOWN/no mixedforcedSUN/TWILIGHT. Coarse16bit/noidentity/no actualwriting/signs/clock/book. SmallREDcloth straightfolds/shades notconfirmedglyph. ActualparentnearhouseUPLEFT/rectangularcourtLOWLEFT eveningvalley vs smallerSTOPLOWLEFT/courtMID/emptyseatUPLEFT daylightforestwaterfallvalley andchangeddepth/camera/focalgeometry, distinctShotP. Visual7P not ancestor/deploymentpass.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEunchangednative and actualNEW227WARM FULLown/WHOLEnative seen. WholeSTOPLOW/warmWALLlamp/REDclue/unfinSIDEtrace, arenaMID TWOcovers/approaches/flank, separateEMPTYDESTstonebenchUP/fullstairs/LEFTroad/coarsepixel/noText/identity retained. Steep3cliffwoodvalley/waterfallcamera and arenaMID/STOPLOW differsfrom227parentflatforestarenaUP/STOPLOW, not same geometry plus bench. No newcounts/requirements/attemptpass."
         },
         "gate": {
           "ok": true,
@@ -29544,6 +29634,36 @@
           "colors": 424561,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--quests-5-043388550490.png",
+        "sha256": "043388550490777d376facd6fae496ade691437a3dbf61a66d07a27cfdc52176",
+        "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+        "generationPromptSha256": "8cc48af4daeb7a47ded17e61d77399198b2bc69c317c49e33e36a53a447db8ba",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "043388550490777d376facd6fae496ade691437a3dbf61a66d07a27cfdc52176",
+          "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actualnew227WARMparent read/viewed. IsolatedLEFTwooddirectionboard and BOTHBLUEarena banners/posts removed without replacements. ActualWHOLEUNROOFEDfourleggedBASEtableUPLEFT THREEplainsealedparcels; STOPUPMID wholeINNERfloor/fullstairs/plainREDdrapedbench/warmWALLlamp/unusedstores/unfinSIDEbranch; separatearenaLOWLEFT TWOcentralstonecovers/TWOapproachstairs/openflank. All selectedparts nativewhole/before1008; ordinaryattachedfenceedge not a selectedcroppedfloor. NativecoarseSNES/SUNwarmprotectedlight/identityunset/noText. Actualnewparent227WARM STOPLOW/arenaUP differsfromthisSTOPUP/arenaLOW/BASEUP and grass-depth/camera; freshquestplacegeometry, not props merely added to parent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 411781,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--battle--warm--chapters": [
@@ -29588,7 +29708,7 @@
         "review": {
           "sourceSha256": "d4ed7a6a5409305da36fe9b1ca79c69a1a0f69fc658b5cc8f50087cebe3b7ca5",
           "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
-          "reviewer": "Codex direct original visual inspection: v2-production-225",
+          "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -29599,7 +29719,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent FULLown/WHOLE (parentnoTextF deploymentheld). Whole substantial BLEACHEDtreelessUPLEFTupland→wholeOPENregionalarch/BOTHentryfloors/fullstairs→GREENwoodsLOWLEFT. Whole warmSTOPLOWLEFT realwallmountedlamp/plainunusedstore/REDkeepsake/unfinSIDEtrace, independentemptyarenaMIDLEFTTWOactualcentralcovers/2approachstairs/openflank/unusedcrates. Allwhole roofs/floors/walls/stairs/props before1008/nativebuffers. Coarse16bit SUNsetwarm noforcedTWILIGHT/pixel/nohumans/identity/noactualtext/signs/logos. Plainredcloth straightmaterialshading notknownwriting. ParentSTOPUPLEFT/courtLOW/nearhousecrest vs newSTOPLOW/arenaMID/thresholdUP/substantialpalegreenregionalborder andcamera/depthreordered, distinctShotP. No resolvedscope. Allvisual7P independentofparentgate."
+          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected against actual225WARM precedingparent FULLown/WHOLE (parentnoTextF deploymentheld). Whole substantial BLEACHEDtreelessUPLEFTupland→wholeOPENregionalarch/BOTHentryfloors/fullstairs→GREENwoodsLOWLEFT. Whole warmSTOPLOWLEFT realwallmountedlamp/plainunusedstore/REDkeepsake/unfinSIDEtrace, independentemptyarenaMIDLEFTTWOactualcentralcovers/2approachstairs/openflank/unusedcrates. Allwhole roofs/floors/walls/stairs/props before1008/nativebuffers. Coarse16bit SUNsetwarm noforcedTWILIGHT/pixel/nohumans/identity/noactualtext/signs/logos. Plainredcloth straightmaterialshading notknownwriting. ParentSTOPUPLEFT/courtLOW/nearhousecrest vs newSTOPLOW/arenaMID/thresholdUP/substantialpalegreenregionalborder andcamera/depthreordered, distinctShotP. No resolvedscope. Allvisual7P independentofparentgate.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEnative and actualNEW227WARM FULLown/WHOLEnative seen. WholeOPENarchUPLEFT/fullstairs substantialBLEACHEDUP↔GREENLOW, STOPLOW/warmWALLlamp/REDclue/unfinSIDEbranch, separatearenaMID TWOactualcovers/twoentries/flank/bareunusedstores. Nativewhole before1008/noText/noidentity/coarsepixels retained. ActualBLEACHEDsteep3plateaus/sunsetwatervalley and arenaMID differsfrom227parentflatforest/arenaUP; actualcamerafocalground changed, not recolor/addprops only."
         },
         "gate": {
           "ok": true,
@@ -29652,7 +29772,39 @@
         "review": {
           "sourceSha256": "f6dd3d8daa686befafde37934819b322f26c49f9a79f722b4373498e29d509db",
           "promptSha256": "1b1fa099ca1f65781f698d1d8eed52feee42cb01f01cb3f8094ce5c81be8abbc",
-          "reviewer": "Codex direct original visual inspection: v2-production-050",
+          "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally read FULLexactORIGINAL050OWN and viewedWHOLEunchangednative during227newparentcomparison. Requiredjourney MIDbridge and differentDISTANTEMPTYcastle destination x1080-1600 behindactualcontrolsx1008: compositionONLYF. LEFTTHREEdistinctcoloredunusedbedroll/packtravelplaces/THREEactualplaincups/CLOSEDplainpersonalTIN present. Functionalclasps/rivets notlogos. OriginalcloseINSIDEgate permits partialnativearchitecture/no retroWHOLEroof/nativebuffers/REDclue/EMPTYstonebench/newSTOP. Other6originalchecksretained incldistinctfromnew227brightCOMPwiderockclearingSTOPMID/3bedrollUP shot. ExactOWN/native/priorreview preserved; replacementneeded, source122 notgeneratedattempt."
+          ],
+          "notes": "ROOT personally read FULLexactORIGINAL050OWN and viewedWHOLEunchangednative during227newparentcomparison. Requiredjourney MIDbridge and differentDISTANTEMPTYcastle destination x1080-1600 behindactualcontrolsx1008: compositionONLYF. LEFTTHREEdistinctcoloredunusedbedroll/packtravelplaces/THREEactualplaincups/CLOSEDplainpersonalTIN present. Functionalclasps/rivets notlogos. OriginalcloseINSIDEgate permits partialnativearchitecture/no retroWHOLEroof/nativebuffers/REDclue/EMPTYstonebench/newSTOP. Other6originalchecksretained incldistinctfromnew227brightCOMPwiderockclearingSTOPMID/3bedrollUP shot. ExactOWN/native/priorreview preserved; replacementneeded, source122 notgeneratedattempt."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 611625,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--journey-3-3eeeeb581c0e.png",
+        "sha256": "3eeeeb581c0ef2eadcbba5dacb0f1f5567d7ae0385c7b0901615ba0c6ab85a82",
+        "promptSha256": "1b1fa099ca1f65781f698d1d8eed52feee42cb01f01cb3f8094ce5c81be8abbc",
+        "generationPromptSha256": "721b16cdb26a2bb75c64fb91dd298140578f234cf854ef6b986417ade2d229d7",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "3eeeeb581c0ef2eadcbba5dacb0f1f5567d7ae0385c7b0901615ba0c6ab85a82",
+          "promptSha256": "1b1fa099ca1f65781f698d1d8eed52feee42cb01f01cb3f8094ce5c81be8abbc",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -29663,13 +29815,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Bright redraw: LEFT plain CLOSED brass keepsake tin, THREE separate differently colored rolled bedrolls EACH with its own pack, THREE cups together. Actual continuous path from stopping-floor through midpoint bridge toward different EMPTY hill settlement. New stone threshold staging versus parent table-and-stools. Crisp square clusters and stepped edges throughout, no identity, writing, insignia or blur."
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual227COMPbrightparent personally seen; readonlyNEAREST travelplacecrop additionallyseen. THREEseparateEMPTYtravelplaces BLUE/GREEN/YELLOWrolledbedroll eachactualpersonalstrap-pack/plainopenCUP (packs verified read-only, no bodies). SeparatewholeSTOPUPLEFT REDcloth onEMPTYbench/unusedsupplies/unfinSIDEtrail; physicalLEFTroad throughtravelplaces to distinctEMPTYstoneDESTbenchLOWMID. Nativewhole/before1008 SUN/coarsepixel/noText/identity/no unchosenBATTLEscope. Flatopenmeadow STOPUP/threeplaces MID+LOW/DESTLOW depth vsparentnearrockclearing 3rollsUP/STOPMID+valley strong independentgeometry. all7P."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 611625,
+          "colors": 497855,
           "findings": []
         }
       }
@@ -29684,7 +29836,39 @@
         "review": {
           "sourceSha256": "7758696825a1d3b3d0bd5680248a85328866e58e728180538755bc8776832bf8",
           "promptSha256": "d6f6b9a587d5b91e9d33a381511b67b2e05da4224a12bdc20eadfeea40848e9f",
-          "reviewer": "Codex direct original visual inspection: v2-production-050",
+          "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULLexactORIGINAL050OWN/WHOLEunchangednative seen during227actualparentcomparison. Actualisolatedwooddirectionpost/twopointedboards x970-1085/y283-410 violatesoriginalnoSIGNS/boards; noTextF even withoutlettering. ActualselectedYfork/rightdestination afterx1100 behindactualcontrolsx1008: compositionF. LEFTactualTHREEsealedclothparcels/THREEcoloredbedroll-packplaces/THREEcups/CLOSEDplainTIN remain. Originaltable/roofpartialnativeedge permitted; no retroWHOLEarchitecture/REDkeepsake/fourleggedunroofedtable/newscope. Functionalwoodbindings/metalclasp notlogos. Other5originalchecks retained, actualclosetableforeground/thresholdshotdistinctfrom227parentwideSTOPMID/3bedrollUP. Source123 priorreview/OWN/native preserved; not newgeneratedattempt."
+          ],
+          "notes": "ROOT personally FULLexactORIGINAL050OWN/WHOLEunchangednative seen during227actualparentcomparison. Actualisolatedwooddirectionpost/twopointedboards x970-1085/y283-410 violatesoriginalnoSIGNS/boards; noTextF even withoutlettering. ActualselectedYfork/rightdestination afterx1100 behindactualcontrolsx1008: compositionF. LEFTactualTHREEsealedclothparcels/THREEcoloredbedroll-packplaces/THREEcups/CLOSEDplainTIN remain. Originaltable/roofpartialnativeedge permitted; no retroWHOLEarchitecture/REDkeepsake/fourleggedunroofedtable/newscope. Functionalwoodbindings/metalclasp notlogos. Other5originalchecks retained, actualclosetableforeground/thresholdshotdistinctfrom227parentwideSTOPMID/3bedrollUP. Source123 priorreview/OWN/native preserved; not newgeneratedattempt."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 447630,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--quests-2-260670d4569d.png",
+        "sha256": "260670d4569d14e7378a785543c46809152ba69b756d7d674d27837b1fe700f4",
+        "promptSha256": "d6f6b9a587d5b91e9d33a381511b67b2e05da4224a12bdc20eadfeea40848e9f",
+        "generationPromptSha256": "bb3ce5488795d52085faa33c0067e7391ebc21d2051880d2160db1c062a5a506",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "260670d4569d14e7378a785543c46809152ba69b756d7d674d27837b1fe700f4",
+          "promptSha256": "d6f6b9a587d5b91e9d33a381511b67b2e05da4224a12bdc20eadfeea40848e9f",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -29695,13 +29879,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Bright base shot: LEFT plain CLOSED keepsake tin and THREE distinct SEALED plain wrapped parcels, THREE separate differently colored empty bedrolls EACH with pack/cup, actual Y-fork to different EMPTY nearby destinations. Fresh sheltered floor/base perspective versus parent table/stools. Crisp hard pixels all planes, no people, writing, flags, logos or blur."
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual227COMPbrightparent personally seen. ThreeUPLEFTtravelplaces eachdifferentcoloredrolledbedroll/personalpack/plainCUP; wholeSTOPLOWLEFT/REDdrapedpersonalcloth/EMPTYfloor/supplies/unfinSIDEtrace. SeparateactualWHOLEUNROOFEDfourleggedBASEtable MIDLEFT THREEdistinctplainsealedparcels; physicalLEFTforkroads go to differentEMPTYtravelclearings UPLEFT, no signage/directionposts. Allchosen nativewhole before1008 SUN/coarse/noText/identity/noHOME/returntable/clearedruin/regionalarch/BATTLEscope. Flatdenseforest clearing STOPLOW/BASEMID/threeplacesUP shot differsactual227closecliff rockledge STOPMID/bedrollUP+watervalley. all7P."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 447630,
+          "colors": 518046,
           "findings": []
         }
       }
@@ -29741,7 +29925,39 @@
         "review": {
           "sourceSha256": "de52b5713e073cf3e4309e04dc8291450d9425f75cca8a6fa4a32e114b0661ed",
           "promptSha256": "8b1cf68df3e23246fc054f1c700c9291bbf56fccf2a3b2332128cac0dfff90b8",
-          "reviewer": "Codex direct original visual inspection: v2-production-051",
+          "reviewer": "Codex ROOT original bright companion progression OWN/native corrective stage227",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personallyFULLexactORIGINAL051OWN/WHOLEunchangednative seen during227actualparentcomparison. OriginalGREENFORESTLEFT↔ARIDDESERTRIGHT chosencontrastingregions ARE actuallypresent butrequiredRIGHTaridregion/RIGHTthresholdframe afterx1008 hiddenbycontrols: compositionONLYF. Do not call originalchosenRIGHTdesert wrongnewLEFTBLEACHEDregion. LEFTTHREEbedroll/packplaces/THREEplaincups/CLOSEDplainpersonalTIN actualpresent; functionalmetalclasp notlogo. Originalpartialforegroundarchitectureallowed/no retroWHOLEtop/nativebuffer/REDclue/unroofedtables/newscope. Other6oldchecks retained; nearrockledgeprops/thresholddepthdifferentfrom227brightCOMPwiderockclearingSTOPMID/3bedrollUP. Source124, originalOWN/native/priorreview preserved, notgeneratedattempt."
+          ],
+          "notes": "ROOT personallyFULLexactORIGINAL051OWN/WHOLEunchangednative seen during227actualparentcomparison. OriginalGREENFORESTLEFT↔ARIDDESERTRIGHT chosencontrastingregions ARE actuallypresent butrequiredRIGHTaridregion/RIGHTthresholdframe afterx1008 hiddenbycontrols: compositionONLYF. Do not call originalchosenRIGHTdesert wrongnewLEFTBLEACHEDregion. LEFTTHREEbedroll/packplaces/THREEplaincups/CLOSEDplainpersonalTIN actualpresent; functionalmetalclasp notlogo. Originalpartialforegroundarchitectureallowed/no retroWHOLEtop/nativebuffer/REDclue/unroofedtables/newscope. Other6oldchecks retained; nearrockledgeprops/thresholddepthdifferentfrom227brightCOMPwiderockclearingSTOPMID/3bedrollUP. Source124, originalOWN/native/priorreview preserved, notgeneratedattempt."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 633555,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright--chapters-3-8de75d2eece6.png",
+        "sha256": "8de75d2eece6df0aed991e4350a064da2d9c975698f0b6a07dbac45d85f030e2",
+        "promptSha256": "8b1cf68df3e23246fc054f1c700c9291bbf56fccf2a3b2332128cac0dfff90b8",
+        "generationPromptSha256": "8223369dbd379c046ef57e6a2941d5f6aa042a8abcb2bcf4697713855abff88e",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "8de75d2eece6df0aed991e4350a064da2d9c975698f0b6a07dbac45d85f030e2",
+          "promptSha256": "8b1cf68df3e23246fc054f1c700c9291bbf56fccf2a3b2332128cac0dfff90b8",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -29752,13 +29968,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native original and applicable parent: Bright chapter redraw: LEFT small CLOSED plain keepsake tin, THREE separate differently colored empty bedrolls each with own pack, THREE cups together. Actual monumental gate separates clearly green forest and arid ochre desert in one continuous landscape. Fresh open near cliff/threshold shot versus parent table/stools; earlier generic green valley fixed. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual227COMPbrightparent personally seen. ActualWHOLEOPENarchUPMID andfullwalkingstairs connect substantialARIDochreUPLEFT/treelessground toGREENLOWLEFTwoods, BOTHactualentryfloors before1008. SeparatewholeSTOPUPLEFT REDfabric DRAPEDonEMPTYbench/unusedsupplies/unfinishedSIDEtrace. THREEEMPTYtravelplacesLOWLEFT differentBLUE/GREEN/YELLOWrolledbedroll/personalpack/plainCUP each. Nativewhole SUN/coarse/noText/identity/no unchosenscope. Borderregion archUP/greenplacesLOW/drybackground geometry differsparentnearrockledge/3rollsUP/STOPMID/watervalley. Ordinarydistantregionlandscapeedge is notcroppedchosenarchitecture. all7P."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 633555,
+          "colors": 530881,
           "findings": []
         }
       }
@@ -69605,6 +69821,61 @@
           "colors": 625624,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--quests--scene-3-6465fa6c8835.png",
+        "sha256": "6465fa6c88352c95864f645ec99004e7c724ff445b5beedb545e6661f0781105",
+        "promptSha256": "c139c1a7ec0f0d5603cc468a81a8ed736dcf8e278040f22b0fff51a5078565ff",
+        "generationPromptSha256": "261659eff65c07f2637c82d5243d179f3ac09b6a16ffe3eba4dabe8b7834e82a",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "6465fa6c88352c95864f645ec99004e7c724ff445b5beedb545e6661f0781105",
+          "promptSha256": "c139c1a7ec0f0d5603cc468a81a8ed736dcf8e278040f22b0fff51a5078565ff",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexact227OWN/WHOLEnative and actual223BRIGHTQUESTparent read/viewed. ActualselectedarenaRIGHToutercolumn/wall/innerfloor aroundx1010-1040 lies behindactualcontrolsx1008: compositionONLYF. ActualsharedEMPTYrectangulararena/TWOcentralstonecovers/TWOentrySTEPS/openflank now present, fixing226disconnectedplatforms; actualUNROOFEDfourleggedBASEtableUPLEFT exactlyTHREEsealedparcels, STOPLOWLEFT/REDkeepsake/wholefloor/unusedstores/unfinSIDEbranch/actualfirstfork. Other6checksP nativewhole/SUNcoarsepixel/noidentity/noText. Flatmeadow+STOPLOW/arenaMID/tableUP/camera differsfrom223parent3cliffSTOPUP/BASEMID/arenaLOW; distinctShotP, no previouscomposition relaxation."
+          ],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual223BRIGHTQUESTparent read/viewed. ActualselectedarenaRIGHToutercolumn/wall/innerfloor aroundx1010-1040 lies behindactualcontrolsx1008: compositionONLYF. ActualsharedEMPTYrectangulararena/TWOcentralstonecovers/TWOentrySTEPS/openflank now present, fixing226disconnectedplatforms; actualUNROOFEDfourleggedBASEtableUPLEFT exactlyTHREEsealedparcels, STOPLOWLEFT/REDkeepsake/wholefloor/unusedstores/unfinSIDEbranch/actualfirstfork. Other6checksP nativewhole/SUNcoarsepixel/noidentity/noText. Flatmeadow+STOPLOW/arenaMID/tableUP/camera differsfrom223parent3cliffSTOPUP/BASEMID/arenaLOW; distinctShotP, no previouscomposition relaxation."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--quests--scene-4-6bb2a32c9823.png",
+        "sha256": "6bb2a32c98232a01078f3653102b3fd4a938ce48d5d9eba475f5caed3064a61e",
+        "promptSha256": "c139c1a7ec0f0d5603cc468a81a8ed736dcf8e278040f22b0fff51a5078565ff",
+        "generationPromptSha256": "0068170dff473c761f3a384f1b162144d5512eb3aef0ef8fbbf4cfebd3f30bdd",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "6bb2a32c98232a01078f3653102b3fd4a938ce48d5d9eba475f5caed3064a61e",
+          "promptSha256": "c139c1a7ec0f0d5603cc468a81a8ed736dcf8e278040f22b0fff51a5078565ff",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual223BRIGHTQUEST parent personally seen. Scoped edit moves whole rectangulararena/walls/INNERfloor/TWOcentralstonecovers/2fullapproachstairs left, rightmostchosenstore/wall now before1008. ActualUNROOFEDfourleggedBASEtable THREEsealedparcels UPLEFT, wholeSTOPLOWLEFT REDfabric drapedonEMPTYbench/plainstores/unfinSIDEtrail/firsttwo-wayfork. SUN/coarsehardpixel/noText/noidentity. Flatmeadow STOPLOW/arenaUP/tableUP and widevalley shot differsactual223 steep3terraces STOPUP/BASEMID/arenaLOW; all7P. x940 is placementaim only, notnewgate."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 731206,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--battle--bright--quests--episode": [
@@ -70065,6 +70336,36 @@
           "colors": 311370,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--journey--short-4-b749aa3ffdf5.png",
+        "sha256": "b749aa3ffdf5e8c3172c26a752d6873641ce7c75ab78052600a513317752d604",
+        "promptSha256": "826e1886f43619623da666ca973ea0c606bbb98be6f880b9c05af37fa5686d9a",
+        "generationPromptSha256": "e620ed735b9efce8308f1909795d8d7a4b29cfa0f9d47b0a79e3388d5991ab0d",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "b749aa3ffdf5e8c3172c26a752d6873641ce7c75ab78052600a513317752d604",
+          "promptSha256": "826e1886f43619623da666ca973ea0c606bbb98be6f880b9c05af37fa5686d9a",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual224MYSTICJOURNEYparent read/viewed. EntirefreestandingSTOPpost-lantern removed; realSTOPwalllight preserved. ActualHOMEopenlitwalk-entry/barethreshold with swungsidepanel, wholechimney/roof, actualUNROOFEDfourleggedBLUEreturntable besideHOME. SeparatewholeSTOPLOWLEFT plainREDclue/emptyfloor/stores/unfinSIDEbranch, separateSMALLunroofedclearedruinMIDEMPTYfloor, independentarenaLOWMID TWOcentralstonecovers/multipleapproachstairs/openflank, differentEMPTYstoneDESTbenchUPMID/fullstairs connectedLEFTroad. AncientarchUPLEFT wholeTOP/stairs, allselectedinsideedges/before1008. CoarsecoolTWILIGHT/noText/identityunset. Actualpines/landwardforestcamera/5placegeometry differsfrom224parentwaterheadlands. No inheritededitpass; all7checkedagain."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 341744,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--battle--mystic--quests--scene": [
@@ -70077,7 +70378,7 @@
         "review": {
           "sourceSha256": "72f7a38b29a80dfa17443fcb55677130ec8c00dbe65cfbdf38656dbe894e3527",
           "promptSha256": "91ad6a36d793942fd89b5b3c48238735f97842c517d77874dc8192ce401ffe23",
-          "reviewer": "Codex direct original visual inspection: v2-production-225",
+          "reviewer": "Codex ROOT actual replacement-parent comparison stage227",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -70088,7 +70389,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected, actual225MYSTICQUESTparent FULLown/WHOLE compared (parentdistinctShotF so deploymentheld). WholeSTOPUPLEFT/REDplainkeepsakebench/unfinSIDEtrace/nativebuffers; actualfirsttwo-wayfork nearSTOP goesBASE/relationtrail. WHOLEunroofedraisedBASEtable/platform MIDLEFT THREEdistinctsealedwoodparcels/fullfloorstairs. IndependentwholeEMPTYarenaLOWLEFT TWOactualcentralcoverblocks/2approachentries/openflank/plainunusedstores, wholeancientarchUPMIDLEFT/nativeTOPskybuffer/fullstairs. Allselectedarchitecture/floors/props before1008/nocrop. CoolTWILIGHT coarsehard16bit/plainmaterial/nohumans/identity/writing/signs/logos. ActualparentSTOPLOW/BASEMIDRIGHTLEFT/arenaUPMIDLEFT/archUPLEFT headland vs childSTOPUP/BASEMID/arenaLOW/archUPMIDsteepwall andforegroundroad differentcamera/depth/placegeometry, distinctShotP. Allvisual7P independentofparentgate."
+          "notes": "ROOT FULLexact225OWN/WHOLEnative personally inspected, actual225MYSTICQUESTparent FULLown/WHOLE compared (parentdistinctShotF so deploymentheld). WholeSTOPUPLEFT/REDplainkeepsakebench/unfinSIDEtrace/nativebuffers; actualfirsttwo-wayfork nearSTOP goesBASE/relationtrail. WHOLEunroofedraisedBASEtable/platform MIDLEFT THREEdistinctsealedwoodparcels/fullfloorstairs. IndependentwholeEMPTYarenaLOWLEFT TWOactualcentralcoverblocks/2approachentries/openflank/plainunusedstores, wholeancientarchUPMIDLEFT/nativeTOPskybuffer/fullstairs. Allselectedarchitecture/floors/props before1008/nocrop. CoolTWILIGHT coarsehard16bit/plainmaterial/nohumans/identity/writing/signs/logos. ActualparentSTOPLOW/BASEMIDRIGHTLEFT/arenaUPMIDLEFT/archUPLEFT headland vs childSTOPUP/BASEMID/arenaLOW/archUPMIDsteepwall andforegroundroad differentcamera/depth/placegeometry, distinctShotP. Allvisual7P independentofparentgate.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexact225childOWN/WHOLEnative and actualNEW227MYSTICQUEST FULLown/WHOLEnative seen. WholeSTOPUP/redclue/firstfork/unfinSIDEtrace, separateunroofedraisedstoneBASEstagingplatform THREEsealedparcels/fullstairs, arenaLOW TWOcentralcovers/twoentries/flank, wholearchUPMID/nativeTOPbuffer before1008/coarsecoolTWILIGHT/identity/noText retained. Original225OWN does not force wooden fourlegged table, unlike226/227targetrepair; no retrorequirement. Steep3terraces/waterruinedcityscene/BASEMID differsfrom227parentflatgianttreeforest/tableLOW/arenaLOW with strong world-depth/camera change; distinctShotP."
         },
         "gate": {
           "ok": true,
@@ -70131,6 +70432,36 @@
           "colors": 325029,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests--episode-2-e48533647f4e.png",
+        "sha256": "e48533647f4efb32f2a9651198c53893d2d8d436178062517a5f72d6187fe981",
+        "promptSha256": "b3232138a4517a2d0eca97d91c523239d4e1e523e279f8d22504d4e35d993860",
+        "generationPromptSha256": "24e382ae6f4cbb1ef9acfc6fb7e26b3ceaec75e067a40df10170d1cdbf8ab34d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e48533647f4efb32f2a9651198c53893d2d8d436178062517a5f72d6187fe981",
+          "promptSha256": "b3232138a4517a2d0eca97d91c523239d4e1e523e279f8d22504d4e35d993860",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actualnew227MYSTICQUESTparent read/viewed. ActualUPLEFTBASEwoodtable now physicallyraised/unroofed/fourlegged beneath existingTHREEseparateplainsealedparcels, wholefloor/stairs before1008. Functionalwoodcrossbindings notlogos. SeparateSMALLclearedUNROOFEDruinLOWLEFT emptyfloor/TWOdistinctEMPTYstone lowrestseats, independentarenaMID TWOcentralcovers/TWOapproachstairs/openflank; STOPUPLEFT REDkeepsake/stores/unfinSIDEbranch; wholeancientarchUPMID/fullstairs. Allselectednativewhole/coarsecoolTWILIGHT/noText/identityunset. Actualsteepforestcliffs/BASEUP/arenaMID/ruinLOW depth/camera differsfrom227parentflatgianttreeforest BASELOW/arenaLOW/archUP; latestfirstcompanionemptyrestpair emphasized, no inventedbodies."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 316807,
+          "findings": []
+        }
       }
     ],
     "adventure--reunion--battle--mystic--quests--short": [
@@ -70164,6 +70495,61 @@
           "width": 1672,
           "height": 941,
           "colors": 270327,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests--short-2-d7a6f9ca79b6.png",
+        "sha256": "d7a6f9ca79b65d68c59d8f12f127b1b809bb4ba116ed9796bbefefd897f98686",
+        "promptSha256": "7a8980918c872a29efd4b3fa4bd6ecb0aa8876c2949156d0655a5e86279b9760",
+        "generationPromptSha256": "0e40c8bca9bd21acd7deb0755187fc30b7f5c4f2f51fc83f5432217076b3b268",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "d7a6f9ca79b65d68c59d8f12f127b1b809bb4ba116ed9796bbefefd897f98686",
+          "promptSha256": "7a8980918c872a29efd4b3fa4bd6ecb0aa8876c2949156d0655a5e86279b9760",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexact227OWN/WHOLEnative and actualnew227MYSTICQUESTparent read/viewed. NativewholeOPENHOME/bareblackwalk-entry, UNROOFEDfourleggedBLUEreturntable besideHOME, separateSMALLclearedruinEMPTYfloor, actualUNROOFEDBASEtableTHREEsealedparcels, STOPRED/unfinSIDEbranch, arenaTWOcentralcovers/2approaches/flank/wholearch/LEFTroads allpresent/before1008/nativeedges. But BLUEreturnfabric carries isolated gold/white star-like ornamental motif with further gold interior marks aroundx400-457/y713-747 ratherthan plainfoldedfabric. ActualWHOLEnative+readonlyNEARESTdiagnostic directlyseen: prohibitedemblem-likepattern remains uncertainasplaincloth, noTextF; notclaimingknownlogo/writing or inventedbook. Other6P coarsecoolTWILIGHT/noidentity/returnscope. Actual6placepinerockscene geometry distinctfrom227parentflatgianttreeforest STOPUP/arenaLOW/BASELOW."
+          ],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actualnew227MYSTICQUESTparent read/viewed. NativewholeOPENHOME/bareblackwalk-entry, UNROOFEDfourleggedBLUEreturntable besideHOME, separateSMALLclearedruinEMPTYfloor, actualUNROOFEDBASEtableTHREEsealedparcels, STOPRED/unfinSIDEbranch, arenaTWOcentralcovers/2approaches/flank/wholearch/LEFTroads allpresent/before1008/nativeedges. But BLUEreturnfabric carries isolated gold/white star-like ornamental motif with further gold interior marks aroundx400-457/y713-747 ratherthan plainfoldedfabric. ActualWHOLEnative+readonlyNEARESTdiagnostic directlyseen: prohibitedemblem-likepattern remains uncertainasplaincloth, noTextF; notclaimingknownlogo/writing or inventedbook. Other6P coarsecoolTWILIGHT/noidentity/returnscope. Actual6placepinerockscene geometry distinctfrom227parentflatgianttreeforest STOPUP/arenaLOW/BASELOW."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests--short-3-255c1f515ea1.png",
+        "sha256": "255c1f515ea1aba88483d4c5ac819dcdeb64859dde28123b48d05c62b34b4f4a",
+        "promptSha256": "7a8980918c872a29efd4b3fa4bd6ecb0aa8876c2949156d0655a5e86279b9760",
+        "generationPromptSha256": "7ed7cc5712c441853336992b8ad1816bd4958dfc934d45149b7fd5fb92b82cda",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "255c1f515ea1aba88483d4c5ac819dcdeb64859dde28123b48d05c62b34b4f4a",
+          "promptSha256": "7a8980918c872a29efd4b3fa4bd6ecb0aa8876c2949156d0655a5e86279b9760",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual227MYSTICQUEST parent personally seen. BLUEreturntablefabric now plainfoldedBLUE drapedfront, no goldstar/ornament. ActualUNROOFEDfourleggedreturntable besidewholeOPENHOME/roof/chimney/blackentry; separateSMALLclearedUNROOFEDruin EMPTYfloor MIDLOW. WholeSTOPUPLEFT REDcloth/unusedsupplies/unfinSIDEtrace, actualBASEtable THREEsealedparcels, arenaTWOcentralcovers/2fullapproaches/flank, wholeancientarch/fullstairs/TOPbuffer. Allchosenbefore1008/nativewhole/coarsecoolTWILIGHT/noText/identity. Pine-rock six-place fore/mid depth versus actual227 gianttreeforest STOPUP/arenaLOW/BASELOW independent shot; all7P."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 366832,
           "findings": []
         }
       }
@@ -70228,6 +70614,222 @@
           "width": 1672,
           "height": 941,
           "colors": 374166,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--mystic--chapters--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--chapters--short-1-7b8ce33695e8.png",
+        "sha256": "7b8ce33695e8f9191fe3f46258a9b0d879a8be5f2ead29706c41b3a63fd00558",
+        "promptSha256": "6582299f440d80b375439470c94d94d3506e8c9d6ad91da5d1475c0089cd8e50",
+        "generationPromptSha256": "2d51d9ff8d524d01ad5d82eac0338b572a81584bf5acf4084f20925e18b1eb72",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7b8ce33695e8f9191fe3f46258a9b0d879a8be5f2ead29706c41b3a63fd00558",
+          "promptSha256": "6582299f440d80b375439470c94d94d3506e8c9d6ad91da5d1475c0089cd8e50",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexact227OWN/WHOLEnative and actual225MYSTICCHAPTERparent read/viewed. ActualBLUEreturnobject besideOPENHOME is a ROOFEDcanopy/gazebo with bluefabricROOF, not requestedactualUNROOFEDfourleggedBLUEreturntable: allChoices/latestChoiceF. STOPLOWLEFT has REDroofcanopy but EMPTYbrownbench lacksactualREDpersonalkeepsakefabric; selectedearlierclue not fulfilled by roofcolor: allChoicesF. Other5P actualWHOLEOPENHOME/roof/chimney/blackwalk-entry, separateSMALLclearedruinEMPTYfloor, arenaTWOactualstonecoverpositions/approachstairs/openflank, OPENarchFULLstairs/bothentryfloors substantialBLEACHEDUPLEFT↔GREENLOWLEFT. Allactualselectedwhole/before1008/coarsecoolTWILIGHT/noText/identityunset. ActualSTOPLOW/archUP/arenaMID/HOMELOW depth/position differsfrom225parentSTOPUP/archMID/arenaLOW; distinctShotP."
+          ],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual225MYSTICCHAPTERparent read/viewed. ActualBLUEreturnobject besideOPENHOME is a ROOFEDcanopy/gazebo with bluefabricROOF, not requestedactualUNROOFEDfourleggedBLUEreturntable: allChoices/latestChoiceF. STOPLOWLEFT has REDroofcanopy but EMPTYbrownbench lacksactualREDpersonalkeepsakefabric; selectedearlierclue not fulfilled by roofcolor: allChoicesF. Other5P actualWHOLEOPENHOME/roof/chimney/blackwalk-entry, separateSMALLclearedruinEMPTYfloor, arenaTWOactualstonecoverpositions/approachstairs/openflank, OPENarchFULLstairs/bothentryfloors substantialBLEACHEDUPLEFT↔GREENLOWLEFT. Allactualselectedwhole/before1008/coarsecoolTWILIGHT/noText/identityunset. ActualSTOPLOW/archUP/arenaMID/HOMELOW depth/position differsfrom225parentSTOPUP/archMID/arenaLOW; distinctShotP."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--chapters--short-2-f69695b34b5c.png",
+        "sha256": "f69695b34b5c2d479ef53a1ddc48fe2c578ad6c91112d00a7a1a86c5677b6b0f",
+        "promptSha256": "6582299f440d80b375439470c94d94d3506e8c9d6ad91da5d1475c0089cd8e50",
+        "generationPromptSha256": "038aa4cbf8dd959bfbf78157d952a94ca4dd690672aefb15781cea0ad97dce19",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f69695b34b5c2d479ef53a1ddc48fe2c578ad6c91112d00a7a1a86c5677b6b0f",
+          "promptSha256": "6582299f440d80b375439470c94d94d3506e8c9d6ad91da5d1475c0089cd8e50",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULLexactOWN/WHOLEunchanged228native and actual225MYSTICCHAPparent personally seen. BLUEgazebo replacedactualUNROOFEDfourleggedwoodtable with plainBLUEfoldedcloth ONtabletop; OPENHOME/roof/chimney, SMALLclearedruinEMPTYfloor, arena2stonecovers/fullapproachstairs/flank, wholearch/allstairs and substantialBLEACHEDUPLEFT/GREENLOWLEFT regions allbefore1008/nativewhole. BUT STOPLOWLEFT actualEMPTYwoodbench beneathREDroofcanopy remains plainbrown without requiredREDpersonalkeepsakefabric: roofcolor cannot substitute. allChoicesF only; latestshortHOME+returntable+clearedruinP. Coarsecool/noText/identity. actual225 steep3terraces STOPUP/archMID/arenaLOW vs228 archUP/arenaMID/STOPLOW/HOMELOW, distinctP."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual225MYSTICCHAPparent personally seen. BLUEgazebo replacedactualUNROOFEDfourleggedwoodtable with plainBLUEfoldedcloth ONtabletop; OPENHOME/roof/chimney, SMALLclearedruinEMPTYfloor, arena2stonecovers/fullapproachstairs/flank, wholearch/allstairs and substantialBLEACHEDUPLEFT/GREENLOWLEFT regions allbefore1008/nativewhole. BUT STOPLOWLEFT actualEMPTYwoodbench beneathREDroofcanopy remains plainbrown without requiredREDpersonalkeepsakefabric: roofcolor cannot substitute. allChoicesF only; latestshortHOME+returntable+clearedruinP. Coarsecool/noText/identity. actual225 steep3terraces STOPUP/archMID/arenaLOW vs228 archUP/arenaMID/STOPLOW/HOMELOW, distinctP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 449788,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--warm--journey--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey--scene-1-0c5d05e4f2a2.png",
+        "sha256": "0c5d05e4f2a209eebb0f7d6116502e896d8fdea6280e0a212854450084ad56b0",
+        "promptSha256": "b86d51b506ab5b0b71991c6dc09d6dc662efb20b66f8d0381c213b9671afc915",
+        "generationPromptSha256": "53d0f7d778edc74f236cbb2cb32e7a8322314f2e94ffe07b70325f0db6682dfe",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "0c5d05e4f2a209eebb0f7d6116502e896d8fdea6280e0a212854450084ad56b0",
+          "promptSha256": "b86d51b506ab5b0b71991c6dc09d6dc662efb20b66f8d0381c213b9671afc915",
+          "reviewer": "Codex direct original visual inspection: v2-production-227",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexact227OWN/WHOLEnative and actual225WARMJOURNEYparent read/viewed. FirstdepartureOWN expressly excludes resolvedSMALLruin/pairedseats, yet actualextraSMALLclearedUNROOFEDstonechamber/emptyfloor/restbench appears MIDLEFT x710-980/y355-504, separatefromSTOP/arena/requiredDESTbench: unchosenscope staging allChoicesF. ActualSTOPMIDLEFT wholeINNERfloor/fullroof/warmWALLlamp/plainREDclue/unusedstores/unfinSIDEbranch/firstfork, actualarenaLOWLEFT TWOcentralcovers/multipleapproachstairs/flank, differentWHOLEEMPTYDESTstonebenchUPLEFT/fullstairs connectedLEFTroad otherwisepresent. Other6P selectednativewhole/before1008/coarseSUNwelcomingwarm/noidentity/noText/firstforklatestChoice. Independentflatforestmeadow depth/STOPMID/arenaLOW differsfrom225parentcliffwaterfallSTOPLOW/arenaMID/destUP; distinctShotP. Do not declare an unchosen playable ruin complete; remove extra chamber ratherthan accept it."
+          ],
+          "notes": "ROOT FULLexact227OWN/WHOLEnative and actual225WARMJOURNEYparent read/viewed. FirstdepartureOWN expressly excludes resolvedSMALLruin/pairedseats, yet actualextraSMALLclearedUNROOFEDstonechamber/emptyfloor/restbench appears MIDLEFT x710-980/y355-504, separatefromSTOP/arena/requiredDESTbench: unchosenscope staging allChoicesF. ActualSTOPMIDLEFT wholeINNERfloor/fullroof/warmWALLlamp/plainREDclue/unusedstores/unfinSIDEbranch/firstfork, actualarenaLOWLEFT TWOcentralcovers/multipleapproachstairs/flank, differentWHOLEEMPTYDESTstonebenchUPLEFT/fullstairs connectedLEFTroad otherwisepresent. Other6P selectednativewhole/before1008/coarseSUNwelcomingwarm/noidentity/noText/firstforklatestChoice. Independentflatforestmeadow depth/STOPMID/arenaLOW differsfrom225parentcliffwaterfallSTOPLOW/arenaMID/destUP; distinctShotP. Do not declare an unchosen playable ruin complete; remove extra chamber ratherthan accept it."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey--scene-2-ca1af1a375df.png",
+        "sha256": "ca1af1a375df590865742fef8c8448c39c19e67d88e82894b5e69b09420227da",
+        "promptSha256": "b86d51b506ab5b0b71991c6dc09d6dc662efb20b66f8d0381c213b9671afc915",
+        "generationPromptSha256": "a63e05f92374a45e9325e0ecf8cbcee8d0c8e32eadeec253fc5b62bf155bc52e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ca1af1a375df590865742fef8c8448c39c19e67d88e82894b5e69b09420227da",
+          "promptSha256": "b86d51b506ab5b0b71991c6dc09d6dc662efb20b66f8d0381c213b9671afc915",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual225WARMJOURNEY parent personally seen. ExtraMIDLEFTclearedchamber/walls/woodbench removed, now ordinarygrass/physicalunpavedpath (remaining ordinaryfenceposts not room). WholeSTOPMID wallmountedwarmLAMP/REDpersonalcloth/unusedsupplies/unfinSIDEtrace/actualfirstfork; actualseparatearenaLOW TWOstonecovers/2fullapproachstairs/openflank, differentEMPTYstoneDESTbenchUPLEFT/wholeplatform/fullstairs. ActualLEFTroute STOP→arena→DEST. NoHOME/questtable/clearedruin/returntable. Allchosenbefore1008/nativewhole SUN/coarse/noText/identity. Flatforest stopMID/arenaLOW/benchUP vsactual225 steepwaterfall3cliffs STOPLOW/arenaMID/benchUP differentdepth/camera. all7P."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 605608,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--warm--journey--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey--episode-1-e008572b15d8.png",
+        "sha256": "e008572b15d8ee7e1c7cf1681757674cfa2aca0a227de8631f606d62ba6b5748",
+        "promptSha256": "da77adf10236e4bdd3741cb13d7e0f70e714c897588ecc77630c46d7ba153e93",
+        "generationPromptSha256": "38eadc84c904a5407d9ee887d3151304fd67dc43586776a0785c621dc520535b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e008572b15d8ee7e1c7cf1681757674cfa2aca0a227de8631f606d62ba6b5748",
+          "promptSha256": "da77adf10236e4bdd3741cb13d7e0f70e714c897588ecc77630c46d7ba153e93",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULLexactOWN/WHOLEunchanged228native and actual225WARMJOURNEYparent personally seen. WholeSTOPUPLEFT REDpersonalcloth/warmWALLlamp/unusedcups+stores/unfinSIDEtrace; arenaLEFT TWOactualstonecovers/2fullapproachstairs/openflank; separateSMALLclearedruinLOWMID EMPTYfloor/TWOactualEMPTYstone restseats. Wholeleftroad to distinctDESTMID platform/fullstairs. BUT requireddifferentEMPTYstoneDESTbench carries EXTRA REDcloth, violating EMPTYdestination and making unchosenreunionclue there; STOPREDkeepsake existscorrectly. allChoicesF only; latestepisode TWOrestseats/smallruinP. Allchosenbefore1008/nativewhole SUNcoarse/noText/identity; flat4places STOPUP/arenaMID/ruinLOW vsparentsteepwaterfall3cliffs STOPLOW/arenaMID/DESTUP, distinctP."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual225WARMJOURNEYparent personally seen. WholeSTOPUPLEFT REDpersonalcloth/warmWALLlamp/unusedcups+stores/unfinSIDEtrace; arenaLEFT TWOactualstonecovers/2fullapproachstairs/openflank; separateSMALLclearedruinLOWMID EMPTYfloor/TWOactualEMPTYstone restseats. Wholeleftroad to distinctDESTMID platform/fullstairs. BUT requireddifferentEMPTYstoneDESTbench carries EXTRA REDcloth, violating EMPTYdestination and making unchosenreunionclue there; STOPREDkeepsake existscorrectly. allChoicesF only; latestepisode TWOrestseats/smallruinP. Allchosenbefore1008/nativewhole SUNcoarse/noText/identity; flat4places STOPUP/arenaMID/ruinLOW vsparentsteepwaterfall3cliffs STOPLOW/arenaMID/DESTUP, distinctP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 497330,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--warm--journey--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey--short-1-1c6dca00f740.png",
+        "sha256": "1c6dca00f740afa7b6e292aecc56c02a3b52165538d39fde3501d40c0eedaa24",
+        "promptSha256": "219828d11b8496538b93475e1ad3fbf10ff6203cd1b48ca467889b46ea8f970e",
+        "generationPromptSha256": "65d11dc0f62f6654aab4c61c62f30f8bf72025b149553a7997216a00c5e490c1",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "1c6dca00f740afa7b6e292aecc56c02a3b52165538d39fde3501d40c0eedaa24",
+          "promptSha256": "219828d11b8496538b93475e1ad3fbf10ff6203cd1b48ca467889b46ea8f970e",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULLexactOWN/WHOLEunchanged228native and actual225WARMJOURNEYparent personally seen. WholeOPENHOME UPLEFT fullroof/chimney/actualblackwalkentry/BLUEplaincloth onactualUNROOFEDfourleggedreturntable. WholeSTOPLOWLEFT REDfabric/warmWALLlamp/cups/storage/unfinSIDEtrace; arenaMID TWOstonecovers/fullapproachstairs/openflank; separateSMALLclearedruinLOWMID EMPTYfloor/LEFTreturnroad. BUT differentrequiredEMPTYstoneDESTbench UP carries EXTRA REDcloth ratherthanbeingEMPTY; allChoicesF only, latestshortHOME+returntable+clearedruinP. Nativewhole chosenchimneyvisible (ordinarysmokeisnotstructure) allbefore1008, coarseSUN/noText/noidentity. Flatforest HOMEUP/STOPLOW/arenaMID/DESTUP/ruinLOW versusactualparentwaterfall3cliffs strong independentdepth/camera."
+          ],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual225WARMJOURNEYparent personally seen. WholeOPENHOME UPLEFT fullroof/chimney/actualblackwalkentry/BLUEplaincloth onactualUNROOFEDfourleggedreturntable. WholeSTOPLOWLEFT REDfabric/warmWALLlamp/cups/storage/unfinSIDEtrace; arenaMID TWOstonecovers/fullapproachstairs/openflank; separateSMALLclearedruinLOWMID EMPTYfloor/LEFTreturnroad. BUT differentrequiredEMPTYstoneDESTbench UP carries EXTRA REDcloth ratherthanbeingEMPTY; allChoicesF only, latestshortHOME+returntable+clearedruinP. Nativewhole chosenchimneyvisible (ordinarysmokeisnotstructure) allbefore1008, coarseSUN/noText/noidentity. Flatforest HOMEUP/STOPLOW/arenaMID/DESTUP/ruinLOW versusactualparentwaterfall3cliffs strong independentdepth/camera."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 416129,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--warm--quests--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--quests--scene-1-258ed25bc0b1.png",
+        "sha256": "258ed25bc0b1329f5abc32533f0f1c97294d19e6eef6f80f1858247ef6ec7dab",
+        "promptSha256": "14b488c79c3a5d879f14a29a774f9880640db7264567219a88fb2cb42bfb208c",
+        "generationPromptSha256": "309ea5f58ceedfe5ea87e831e8fd042f475b4d8b55a6f873825b5af391ee953e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "258ed25bc0b1329f5abc32533f0f1c97294d19e6eef6f80f1858247ef6ec7dab",
+          "promptSha256": "14b488c79c3a5d879f14a29a774f9880640db7264567219a88fb2cb42bfb208c",
+          "reviewer": "Codex direct original visual inspection: v2-production-228",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexactOWN/WHOLEunchanged228native and actual227WARMQUESTparent personally seen; readonlyNEAREST STOPsuppliesdiagnostic personallyseen. WholeSTOPLOWLEFT actualWALLmountedwarmlamp/REDdrapedcloth/EMPTYbench+floor/plainunusedstores/actualplainopenbrownCUP/sideunfinishedtrace. ActualarenaUPLEFT TWOcentralstonecovers/TWOdifferentfullapproachstairs/openflank; actualUNROOFEDfourleggedBASEtableMID THREEplainsealedparcels. Actualfirsttwo-wayfork besideSTOP, physicalLEFTroads to2arenaapproachentries. Allchosenbefore1008/nativewhole coarseSUN/noText/identity/noHOME/returntable/clearedruin/restpair. Actualamberforest STOPLOW/arenaUP/BASEMID groundcamera/world differsparentgreenmeadowSTOPUP/arenaLOW/BASEUP raisedplaces/building depth, all7P."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 595522,
           "findings": []
         }
       }
