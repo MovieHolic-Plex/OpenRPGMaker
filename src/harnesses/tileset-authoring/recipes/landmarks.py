@@ -159,6 +159,17 @@ def center(P, roof_key="roof_red", mart=False, seed="center", roles=None):
                 elif b == "2":
                     px.put(cv, 27 + i, 16 + j, rf[3] if i < 4 else rf[2])
         px.rect(cv, 29, 21, 34, 21, st[3])
+    # 몬스터 마을 건물 문법(2026-10-07): 실루엣·지붕 처마선·문·창 둘레를 집과 같은 남회색 윤곽으로.
+    import buildings as bd
+    ol = bd.OL(P)
+    for x in range(W):
+        px.put(cv, x, bot(x) - 1, ol)
+    px.rect(cv, dx0 - 1, 39, dx0 - 1, 61, ol); px.rect(cv, dx0 + 16, 39, dx0 + 16, 61, ol); px.rect(cv, dx0 - 1, 39, dx0 + 16, 39, ol)
+    px.rect(cv, dx0 + 2, 61, dx0 + 13, 61, ol)
+    boxes = [(37, 41, 54, 50)] if not mart else [(6, 42, 14, 51), (35, 40, 56, 50)]
+    for (a, b_, c, d) in boxes:
+        px.rect(cv, a, b_, c, b_, ol); px.rect(cv, a, d, c, d, ol); px.rect(cv, a, b_, a, d, ol); px.rect(cv, c, b_, c, d, ol)
+    bd.outline_silhouette(cv, ol)
     if roles is not None:
         roof_ymax = max(bot(x) for x in range(W)) - 1
         wall = [[6, 44, 14, 51], [33, 44, 36, 51], [55, 44, 57, 51]] if not mart else [[33, 41, 34, 51], [57, 41, 57, 51], [6, 52, 57, 59]]
@@ -308,6 +319,10 @@ def gym(P, accent="gym_green", seed="gym", roles=None):
             for x in range(int(lo) + 1, 47):
                 c = gl[0] if y < 106 else gl[3] if y < 108 else gl[4]
                 px.put(cv, f(x), y, c)
+    import buildings as bd                                                 # 몬스터 마을 건물 문법: 실루엣·문 둘레 남회색 윤곽(2026-10-07)
+    ol = bd.OL(P)
+    px.rect(cv, 44, 87, 44, 109, ol); px.rect(cv, 67, 87, 67, 109, ol)
+    bd.outline_silhouette(cv, ol)
     if roles is not None:
         roles.update({"wall": [[29, 82, 38, 94], [73, 82, 82, 94]], "openings": [[46, 84, 65, 110]], "windows": [], "doors": [[48, 88, 63, 110]], "frame_zone": [24, 78, 87, 111], "frame_ramp": "steel", "glass_ramp": "glass"})
     return cv
@@ -466,81 +481,103 @@ def _door_knob(cv, wd, gold, pl, x0, y0, w=DOOR_W):
 
 
 def gable(P, roof_key="roof_green", seed="gable", roles=None):
-    rf, gold, wd, pl, wt = P[roof_key], P["gold"], P["wood"], P["plaster"], P["water"]
-    r = random.Random(seed)
+    """박공 집 112×112(2026-10-07 다시 그림 — 몬스터 마을 건물 문법, buildings.py 머리말).
+    지붕은 앞으로 뻗은 용마루(가운데 세로 기둥) 양쪽 두 경사면: 기와 줄이 처마선과 나란히 비스듬히 내려가고,
+    왼쪽 면은 빛을 받아 밝고 오른쪽 면은 한 단 어둡다. 아래는 박공 삼각 벽(창 하나) + 나무 들보 + 1층 벽(창 둘·문).
+    창·문 사각형, 문 칸, 칸별 투명 등급은 옛 그림과 같다."""
+    import buildings as bd
+    rf, wd = P[roof_key], P["wood"]
+    ol = bd.OL(P)
+    wc, dw, st = bd.pal(P, "wall_cream"), bd.pal(P, "door_wood"), bd.pal(P, "stone")
     W = H = 112
     cv = px.new(W, H)
     cx = 56
-    wall, shade = pl[1], pl[0]
-    # 박공 삼각 벽 + 아래 벽: 크림 한 톤 (평면은 평면으로 둔다)
-    for y in range(52, H):
-        for x in range(0, W):
-            cv.putpixel((x, y), wall)
+    base, shade = wc[2], wc[1]
     def edge_top(x):    # 처마 위쪽 선: 양끝 28 → 가운데 0
         return int(28 * (abs(x + 0.5 - cx) - 5) / (cx - 5)) if abs(x + 0.5 - cx) > 5 else 0
     def edge_bot(x):    # 아래 선: 양끝 78 → 가운데 56
         d = abs(x + 0.5 - cx)
         return int(56 + 22 * max(0, d - 5) / (cx - 5)) if d > 5 else 56
-    # 비늘: 8폭 세로 단 + 단마다 어긋난 가로 줄눈(기울어진 비늘). 톤은 단·행 해시로 3가지만
+    X0, X1 = 4, W - 5                                                     # 1층 벽 실루엣(옛 그림과 같은 폭)
+    # 1) 박공 삼각 벽 + 1층 벽 바탕
+    for y in range(52, H - 1):
+        for x in range(W):
+            if y >= 78 and not (X0 <= x <= X1):
+                continue
+            cv.putpixel((x, y), base)
+    # 2) 지붕 두 면: 처마선과 나란한 기와 줄(높이 4). v = 처마선에서 위로 잰 거리.
     for x in range(W):
-        left = x < cx
         d = abs(x + 0.5 - cx)
-        if d < 5: continue
-        col = (x // 8) if left else ((W - 1 - x) // 8)
-        xin = (x if left else W - 1 - x) % 8
-        for y in range(edge_top(x), edge_bot(x)):
-            slant = xin // 2 if left else (7 - xin) // 2          # 줄눈이 비스듬히 내려가는 계단
-            u = y + slant + col * 5
-            row, yin = u // 12, u % 12
-            # 기준: 비늘은 세로 단(列) 단위로 밝기가 갈리고, 한 단 안에서는 같은 톤이 길게 이어지다 가끔 한 단 바뀐다
-            cg = (col * 5 + (2 if left else 7)) % 7
-            base = (4 if cg in (0, 3, 5) else 3) if left else (3 if cg in (0, 3, 5) else 2 if cg in (1, 4, 6) else 1)
-            step = 1 if ((row * 11 + col * 3) % 3 == 0) else 0
-            ti = max(2 if left else 1, min(4 if left else 3, base + (step if (row + col) % 2 else -step)))
-            c = rf[ti]
-            if xin == 7: c = rf[max(1, ti - 1)]                      # 세로 줄눈 = 한 단 어둡게(최암은 윤곽 전용)
-            elif yin == 11: c = rf[max(1, ti - 1)]
-            if y == edge_top(x): c = rf[0]
-            if y >= edge_bot(x) - 2: c = rf[1] if left else rf[0]
-            if y == edge_bot(x) - 1: c = rf[0]
+        if d < 5:
+            continue
+        left = x < cx
+        t0, b0 = edge_top(x), edge_bot(x)
+        tones = (rf[4], rf[3], rf[3], rf[1]) if left else (rf[3], rf[2], rf[2], rf[0])
+        for y in range(t0, b0):
+            v = b0 - 1 - y
+            if v <= 1:                                                    # 처마 판: 윤곽 + 밝은 선
+                c = ol if v == 0 else (rf[4] if left else rf[2])
+            else:
+                rv = v - 2
+                row, k = rv // 4, 3 - (rv % 4)                            # k=0 줄 윗선(밝음) … 3 밑선(어두움)
+                u = (x + 2 * (row % 2)) % 4
+                c = tones[k]
+                if k == 2 and u == 0:
+                    c = tones[3] if not left else rf[2]
+                if k == 3 and u in (1, 2):
+                    c = rf[2] if left else rf[1]
             cv.putpixel((x, y), c)
-    # 용마루 기둥
-    px.rect(cv, cx - 5, 0, cx + 4, 55, rf[3]); px.rect(cv, cx - 5, 0, cx - 5, 55, rf[0]); px.rect(cv, cx + 4, 0, cx + 4, 55, rf[0])
-    for (ya, yb) in ((0, 10), (44, 55)):                                    # 용마루 끝 기와 마개(L3 N49 — 노란 네모가 무엇인지 안 읽혔다): 지붕 최암 테 + 지붕 몸 톤 + 왼쪽 위 빛
-        px.rect(cv, cx - 5, ya, cx + 4, yb, rf[0]); px.rect(cv, cx - 4, ya + 1, cx + 3, yb - 3, rf[2])
-        px.rect(cv, cx - 4, ya + 1, cx - 3, yb - 3, rf[3]); px.rect(cv, cx - 4, ya + 1, cx + 3, ya + 1, rf[3])
-        px.rect(cv, cx - 4, yb - 2, cx + 3, yb - 1, rf[1]); px.rect(cv, cx - 4, ya, cx + 3, ya, rf[0])
-    # 들보(가로) + 모서리 기둥
-    px.rect(cv, 8, 79, W - 9, 83, wd[2]); px.rect(cv, 8, 79, W - 9, 79, wd[1]); px.rect(cv, 8, 80, W - 9, 80, wd[3]); px.rect(cv, 8, 83, W - 9, 83, wd[0])
-    for x0 in (4, W - 9):
-        _post(cv, wd, x0, 79, H - 1)
-    for yy in range(78, H):                                                  # 처마가 벽 기둥 바깥으로 내민다: 기둥 밖은 비워 둔다
-        for xx in list(range(0, 4)) + list(range(W - 4, W)):
+        cv.putpixel((x, t0), ol)
+    # 3) 용마루(앞으로 뻗은 기둥): 왼쪽 밝음·오른쪽 어둠, 6행마다 마디, 양끝 둥근 마개
+    for y in range(0, 56):
+        for i, c in enumerate((ol, rf[4], rf[4], rf[3], rf[3], rf[3], rf[2], rf[2], rf[1], ol)):
+            cv.putpixel((cx - 5 + i, y), c)
+        if y % 6 == 5:
+            for i in range(1, 9):
+                cv.putpixel((cx - 5 + i, y), rf[1] if i < 8 else rf[0])
+    for (ya, yb) in ((0, 7), (48, 55)):
+        px.rect(cv, cx - 4, ya, cx + 3, yb, rf[3]); px.rect(cv, cx - 4, ya, cx - 3, yb, rf[4])
+        px.rect(cv, cx + 2, ya, cx + 3, yb, rf[1]); px.rect(cv, cx - 4, ya + 1, cx + 3, ya + 1, rf[4])
+        px.rect(cv, cx - 5, ya, cx + 4, ya, ol); px.rect(cv, cx - 5, yb, cx + 4, yb, ol)
+    for y in range(0, 56):
+        cv.putpixel((cx - 5, y), ol); cv.putpixel((cx + 4, y), ol)
+    # 4) 박공 벽: 처마 그늘 2행
+    for x in range(W):
+        b0 = edge_bot(x) if abs(x + 0.5 - cx) >= 5 else 56
+        for k_, c_ in ((0, wc[0]), (1, wc[1])):
+            if 0 <= b0 + k_ < 79 and cv.getpixel((x, b0 + k_)) == base:
+                cv.putpixel((x, b0 + k_), c_)
+    # 5) 나무 들보(1층 지붕선): 처마 바깥으로 2px 내민다
+    for yy, c_ in zip(range(78, 84), (ol, dw[3], dw[2], dw[2], dw[1], ol)):
+        px.rect(cv, X0 - 2, yy, X1 + 2, yy, c_)
+    px.rect(cv, X0 - 2, 78, X0 - 2, 83, ol); px.rect(cv, X1 + 2, 78, X1 + 2, 83, ol)
+    for yy in range(84, H):                                               # 들보 밑 처마 바깥(기둥 밖)은 비운다
+        for xx in list(range(0, X0)) + list(range(X1 + 1, W)):
             cv.putpixel((xx, yy), (0, 0, 0, 0))
-    # 바닥 보(기준): b·o·m·m·d 5행, 그 아래 2행은 기둥·문 다리만
-    for yy_, c_ in zip(range(105, 110), (wd[1], wd[3], wd[2], wd[2], wd[0])):
-        px.rect(cv, 9, yy_, W - 10, yy_, c_)
-    gl_ = wt[3]
-    wins = [_window(cv, wd, gl_, P["glass"][4], 45, 61), _window(cv, wd, gl_, P["glass"][4], 17, 87), _window(cv, wd, gl_, P["glass"][4], 73, 87)]
+    # 6) 1층 벽: 처마 그늘 · 허리 띠 · 돌 기초 · 모서리 기둥
+    last = H - 2
+    px.rect(cv, X0, 84, X1, 84, wc[0]); px.rect(cv, X0, 85, X1, 85, wc[1])
+    lo = last - 5
+    px.rect(cv, X0, lo, X1, last, shade); px.rect(cv, X0, lo, X1, lo, wc[3]); px.rect(cv, X0, lo + 1, X1, lo + 1, wc[0])
+    px.rect(cv, X0, last - 2, X1, last - 2, st[3]); px.rect(cv, X0, last - 1, X1, last - 1, st[1])
+    for x in range(X0 + 5, X1, 7):
+        cv.putpixel((x, last - 2), st[1])
+    px.rect(cv, X0, last, X1, last, ol)
+    for xp, side in ((X0 + 1, 0), (X1 - 3, 1)):
+        px.rect(cv, xp, 84, xp, last - 3, dw[3]); px.rect(cv, xp + 1, 84, xp + 1, last - 3, dw[2]); px.rect(cv, xp + 2, 84, xp + 2, last - 3, dw[1])
+        xi = xp + 3 if side == 0 else xp - 1
+        px.rect(cv, xi, 84, xi, last - 3, ol)
+        px.rect(cv, xp, last - 3, xp + 2, last - 3, dw[0])
+    # 7) 창·문(옛 자리 그대로)
+    wins = [bd.window(P, cv, 45, 61), bd.window(P, cv, 17, 87), bd.window(P, cv, 73, 87)]
     dx0 = door_slot(45)
-    door = _arch_door(cv, wd, gold, pl, dx0, 86)
-    for yy_ in (110, 111):
-        for xx_ in range(W):
-            if 4 <= xx_ < 9 or W - 9 <= xx_ < W - 4:
-                continue
-            if dx0 <= xx_ <= dx0 + DOOR_W - 1:
-                continue
-            cv.putpixel((xx_, yy_), (0, 0, 0, 0))
-    # 벽 위 튀어나온 것 바로 아래 한 칸 = 그림자색(보·창틀·문틀·지붕 끝). 지붕·나무색은 건드리지 않는다.
-    _eave2(cv, rf, wall, shade)
-    _drop_shadow(cv, wall, shade, set())
-    _door_knob(cv, wd, gold, pl, dx0, 86)
-    for i in range(5):                                                    # 보 끝 모서리 가새: 속이 찬 계단 삼각형
-        for k in range(5 - i):
-            c_ = wd[1] if k < 5 - i - 1 else wd[0]
-            px.put(cv, 9 + k, 85 + i, c_); px.put(cv, W - 10 - k, 85 + i, c_)
+    door = bd.door(P, cv, dx0, 86)
+    bd.shade_under(cv, base, shade, 0, W - 1, 53, last)
+    for y in range(84, last + 1):
+        cv.putpixel((X0, y), ol); cv.putpixel((X1, y), ol)
+    bd.outline_silhouette(cv, ol)
     if roles is not None:
-        roles.update({"door_kind": "wood", "shadow_rgb": list(shade[:3]), "roof_ramp": roof_key, "roof_ymax": 78, "wall": [[34, 72, 78, 79], [14, 86, 98, 102]],
+        roles.update({"door_kind": "wood", "shadow_rgb": list(P["plaster"][0][:3]), "roof_ramp": roof_key, "roof_ymax": 78, "wall": [[34, 72, 78, 79], [14, 86, 98, 102]],
                       "openings": [list(w_) for w_ in wins] + [list(door)],
                       "windows": [list(w_) for w_ in wins], "doors": [list(door)]})
     return cv
