@@ -190,6 +190,16 @@
    "id": "cushion-floor",
    "x": 17,
    "y": 5
+  },
+  {
+   "id": "wall-clock",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "calendar",
+   "x": 14,
+   "y": 7
   }
  ],
  "tables": [],
