@@ -18,7 +18,9 @@
 
 ## 현재 굽기 (2026-10-07)
 
-조각 682(native 168 포함) · 오토타일 6 · 움직이는 칸 101 · 키트 621 · 타일 그룹 154 · 칸 2,451(52행) · 인물·생물 35명(`Wizarding1`~`5`) · 참고문서 17용도·문서 61·그림 93 · 장소 17곳 · 검수 거절 0.
+조각 690(native 168 포함) · 오토타일 6 · 움직이는 칸 101 · 키트 627 · 칸 2,472(52행) · 인물·생물 35명(`Wizarding1`~`5`) · 참고문서 17용도·문서 61·그림 93 · 장소 17곳(빌더가 지은 15판 + 빌더에 없는 장면 2: 눈 덮인 우체국 골목·숲 가장자리) · 검수 거절 0.
+
+2026-10-07 사용자 지적 「바닥 색이 엉망」「벽과 바닥 구분이 안 된다(우체국 안)」「통행이 확실하냐」「공간이 너무 좁다」「조수가 실제 게임을 구현할 수 있어야」 에 따라: 성채 바닥을 어두운 청회색 판석으로 다시 그리고(벽면 106 대 바닥 68) 붉은 통로 깔개·양탄자를 더했고, 우체국 안(회벽/널마루)·시계탑(파란 격자 제거)·허니듀크 지하(어두운 판석)를 고쳤다. 모듈 예제 17장 중 통행이 한 덩이인 것은 5장뿐이었다 — 장소는 이제 빌더 결과로 게시한다.
 
 ## 공간 (wzlib.SPACES)
 
@@ -51,7 +53,9 @@
 ```bash
 python3 scripts/content/wizarding/bake_wz.py            # 검수 PASS·해시 일치 조각만 → 시트·정의·키트·애니메이션·캐릭터 시트 (--dry 로 모듈별 채택 수만)
 python3 scripts/content/wizarding/bake_refs_wz.py       # 참고문서 (wz-start · wz-space-<공간> · wz-characters · wz-effects · wz-check)
-python3 scripts/content/wizarding/publish_places_wz.py  # 공간 예제 → 장소(빠진 조각이 있는 예제는 건너뜀)
+npx tsx --tsconfig tsconfig.app.json scripts/content/wizarding/export_spaces.ts   # 실제 build_wizarding_space 경로로 15판×시드 1~3 짓기·통행 한 덩이 확인 → tiledata/wizarding/spaces/*.json
+python3 scripts/content/wizarding/render_spaces.py --mark  # 그림 + 독립 통행 검사(4층 모두 통행이어야 걷는 칸), 갇힌 칸은 /tmp/wzspaces 에 빨강
+python3 scripts/content/wizarding/publish_places_wz.py  # 빌더 공간 + KEEP_EXAMPLES(거리·숲 가장자리) → 장소. 통행이 갈린 것(WZ-ISLAND)은 게시하지 않고 옛 wz- 게시물은 지운다
 python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding-world.html (사용자 확인 페이지)
 ```
 
@@ -100,6 +104,22 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
 - **확인(2026-10-07).** 13공간 + shared 변형 2(corridor·common) × 시드 1~3, 기본 크기·auto 가구: 전부 한 덩이·출입구 도달·오류 0(엔진 `passabilityOf` 로 따로 BFS).
   밝기 관문 최소 차 37.7(성채 슬레이트 바닥 68.5 대 성채 벽 106.3).
   레시피를 고치면 `space_recipes.py` 를 다시 돌리고 같은 검사를 한다.
+
+## 통행 관문 WZ-ISLAND
+
+`bake_refs_wz.py` 의 구조 검사와 `publish_places_wz.py` 는 걸을 수 있는 칸(모든 층이 통행)을 4방향 덩이로 세어, 가장 큰 덩이 밖의 칸을 `WZ-ISLAND`(갇힌 주머니)로 본다.
+장소 게시는 이것이 0 이어야 한다. 실측: 예전 모듈 예제 17장 중 12장이 걸렸다(병동 18칸이 7덩이, 도서관·온실·부엉이 탑 등).
+
+## 조수 실경로 시험 (qa:game, 기획 `scripts/qa-game/briefs/wizarding-school.json`)
+
+| 판 | 걸린 시간 | 도구 호출 | 맵 | 결과 |
+|---|---|---|---|---|
+| 빌더 전(`qa-runs/wz-base`) | 1303s | 253 | 16×16~20×16 5장 | 낱칸 칠하기, 시작 칸 막힘·참고문서 거부 반복, 부엉이 탑 벽이 무너짐. 엔딩 도달 |
+| 빌더 1판(`wz-builder`) | 521s | 95 | 24×17~30×22 5장 | 연회 탁자·약 솥·서가가 열로, 전부 도달. 엔딩 도달. 시작 맵 재건축이 시작 칸을 막아 커밋 거부 1회, NPC 는 EasyRPG 칩 |
+| 빌더 2판(`wz-builder2`) | 347s | 75 | 같음 | NPC 전원 Wizarding 칩. 교수를 1칸 문 바로 앞에 세워 자동 플레이 막힘(blocker 1) |
+
+고친 것: 시작 맵을 다시 지으면 시작 칸을 spawn 으로 옮긴다 · Wizarding 인물 검색어(마법약 교수·호그와트 학생·부엉이 관리인·간호사…, `wizardingCharsets.ts` `wizardingTags`) ·
+결과에 `keepClear`(문 앞 두 칸)와 「비워 둘 것」 문장 · 헤드리스 칩 미리보기가 못 읽는 시트 하나로 전체 실패하던 것(`scripts/qa-game/render.mts`).
 
 ## 한계
 
