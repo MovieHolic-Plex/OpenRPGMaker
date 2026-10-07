@@ -1,0 +1,85 @@
+{
+  "scope": "Read-onlyNEARESTdiagnostics root viewed whenresolvingoriginalwindow/terrain/cloth/stone ambiguities; originalnativePNGs unchanged. Notproductionassets or additionalimagegenerations. RetainedOWNreviews makeactualdecisions.",
+  "records": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-210-warm-partner-first-left-wet-diagnostic.png",
+      "sha256": "76a291feb37a77e17125ff7edd420f0256592a090bca7c21e68b09e49a30e4a3",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-210-monster--hatch--partner--warm--habitat--scene.png",
+      "sourceNativeSha256": "d4ff45a544b6806bffac9819bc623a8d7fbb217b62a34d5dafdc565eb6705498",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-210-warm-first-leftbank-full-diagnostic.png",
+      "sha256": "9b762eb05e447a5af036f0cd2968ceae328c084023d978881195f9eafd0a36f9",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-210-monster--hatch--partner--warm--habitat--scene.png",
+      "sourceNativeSha256": "d4ff45a544b6806bffac9819bc623a8d7fbb217b62a34d5dafdc565eb6705498",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-212-quest-growth-wall-diagnostic.png",
+      "sha256": "d15c973327f0fecda5a7021a519a66a012c968b3b14c4e1952095b1b9765f55b",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-212-adventure--reunion--explore--bright--quests--episode.png",
+      "sourceNativeSha256": "84851423927fd29100c3e92c962f4368b6a10b7a694530014546acac3b74df5a",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-213-quest-parent-stone-glyph-diagnostic.png",
+      "sha256": "b6be244be2ef287fab35c28289050f221e8dbf42723f8fcb97627741c1e23cc6",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-213-adventure--reunion--explore--bright--quests.png",
+      "sourceNativeSha256": "65dff6d29c998c2b13a173e50bab9e6321fac1be2e1e946818e0b8b486ddd418",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-213-chapter-episode-wall.png",
+      "sha256": "55b71e155303d075cfad43f19e87c7b62ba6740536cbe9c181e16298021cb80f",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-213-adventure--reunion--explore--bright--chapters--episode.png",
+      "sourceNativeSha256": "dcc2ef74d4944212f353965c3f4e75445ff93231eb4a2f1c5b5dd56ffb32182c",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-213-chapter-episode-left-architecture.png",
+      "sha256": "37a33f4f106e502bb5bc9dbd293cf3bbc14d370bb1c047d6dacf893ecd8514b9",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-213-adventure--reunion--explore--bright--chapters--episode.png",
+      "sourceNativeSha256": "dcc2ef74d4944212f353965c3f4e75445ff93231eb4a2f1c5b5dd56ffb32182c",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-213-chapter-return-window.png",
+      "sha256": "974ceb5aaaef1b482e9eb9368a52d1ea7addfd85661a91a403a0442b392ce6d6",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-213-adventure--reunion--explore--bright--chapters--short.png",
+      "sourceNativeSha256": "9dd7ae2f6207e5a3a40b461444cfc71393f49b9b7e0a9eac0f79f8eea556fe2f",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-214-mystic-return-table-cloth.png",
+      "sha256": "64300d05aef8dc213c6cf23635940f24aff7314100a16a2a769819b9ef44362f",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-214-adventure--reunion--explore--mystic--journey--short.png",
+      "sourceNativeSha256": "a429fb549900b39158286ffa717a300d64426a114fa3b5188e00164697b56096",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-214-chapter-parent-keepsake.png",
+      "sha256": "24ae4a7603cf077ec05df519221001df003acb8f45778a43a3089beb1fad5d3b",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-214-adventure--reunion--explore--bright--chapters.png",
+      "sourceNativeSha256": "e005a6928619d4bc4a51b1d61638ec3c1b38c71284ea513e04dbdab3842ef936",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage214-214-mystic-journey-portal-detail.png",
+      "sha256": "22cbf89494354939ec0425f5dcc858f6b9013357d1d626bcca52baab2c7d80e3",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-214-adventure--reunion--explore--mystic--journey.png",
+      "sourceNativeSha256": "fdd8d01b68650f80b8f14f600da071683714ae6bae7d64fd07e40fecffc773dc",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    }
+  ]
+}

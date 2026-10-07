@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--hatch--partner--warm--habitat--short,adventure--reunion--explore--bright--journey--short,adventure--reunion--explore--bright--chapters--short,adventure--reunion--explore--mystic--journey--episode,monster--hatch--partner--warm--case--short,monster--hatch--team--warm--habitat--short"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 887,
+  "manifestSha256": "81df223a35045ff03bf218954a0782f5432717fe884234ae82db3e8a74d2f332",
+  "finishedAt": "2026-10-07T03:25:16.240419+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-887-click-proof.json",
+  "completeWholePlan": false
+}

@@ -11,9 +11,9 @@
   ],
   "returncode": 0,
   "ledgerAllExact": true,
-  "rootComparedChildren": 1,
+  "rootComparedChildren": 2,
   "pass": 1,
-  "fail": 0,
+  "fail": 1,
   "new210ParentPassed": true,
   "history": [
     {
@@ -65,10 +65,5 @@
   ],
   "nativeBytesUnchanged": true,
   "finishedAt": "2026-10-07T01:39:13.384173+00:00",
-  "scope": "One existing209 WARM PARTNER ROUTE FIRST child complete ORIGINAL OWN/native rechecked against actual new210 WARM ROUTE parent; one positive parent recomparison, no rejection. Separate from210 ten new native-attempt counts. Parent official210 import/review/gate/build completed; publication still requires replacement WARM mood parent.",
-  "metadataCorrection": {
-    "priorProofPath": "verify-shots/interview-scene-bank-v2/checkpoint-210-restored-child-recomparison-prior-metadata.json",
-    "priorProofSha256": "f3925e3492101ff03e67e6150c804319233d9936d75ee921bc985f83a587ab00",
-    "reason": "Copied summary counters incorrectly stated2children/1fail, while actual command records and proof history contain exactly one positive child. Only counters corrected; exact original requests/natives/official review/history preserved. Not new QA or re-review."
-  }
+  "scope": "One existing209 WARM PARTNER ROUTE FIRST child complete ORIGINAL OWN/native rechecked against actual new210 WARM ROUTE parent; one positive parent recomparison, no rejection. Separate from210 ten new native-attempt counts. Parent official210 import/review/gate/build completed; publication still requires replacement WARM mood parent."
 }

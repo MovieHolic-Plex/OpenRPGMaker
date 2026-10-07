@@ -2979,6 +2979,11 @@
       "sha256": "33a03d02c033d2d55f84c6614a7c643505fbd3e0b1695bb9f2961efe8d740f5a",
       "promptSha256": "82e32261001cfbf2894e68f3882e6f57db6c3cd9f4fddce1513f485d184b9428"
     },
+    "monster--hatch--team--warm--habitat--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--short-3f70eab8af05.png",
+      "sha256": "3f70eab8af05491984790776a1489b8243de2c35ba628f189515423df0a52202",
+      "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031"
+    },
     "monster--hatch--team--warm--case": {
       "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--case-c0a35f2c7320.png",
       "sha256": "c0a35f2c73207e3f94e569d1fa914a590b2f2a4f0d5c68e2d51931e1d7bc75e9",
@@ -3134,6 +3139,71 @@
       "sha256": "803d3f0b1f26d211db944afd6e96ce134516ff1dcaf3fb2337a27cafb801d65d",
       "promptSha256": "f88ad3d2fca660802c0f99ada41c1f828c5db62576aeaf9316300d99d7c5f62b"
     },
+    "monster--hatch--partner--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm-131da85ebf1d.png",
+      "sha256": "131da85ebf1d33a4c0d79dae3c34c0dbaeb865fd21a61ec7e60e4f6aeafed2c8",
+      "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616"
+    },
+    "monster--hatch--partner--warm--route": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--route-17b71cc79d93.png",
+      "sha256": "17b71cc79d93e4b2ff2c65a27f2d57d4a5e2bf65cdd447e0e30bbfdaac709eb0",
+      "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345"
+    },
+    "monster--hatch--partner--warm--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--scene-9b3ac9afd150.png",
+      "sha256": "9b3ac9afd15071ac697c0ad1c24c96ae4f1d0dee241c84239ad7d3bc6ad2bcba",
+      "promptSha256": "076eb656db06b41c67398fdd175a2fc9c0240f6a0997bccfc5371d4dcde124e1"
+    },
+    "monster--hatch--partner--warm--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--episode-02eba35c0643.png",
+      "sha256": "02eba35c0643d87e870b46f3d4a36ef1cdbeac69030d07ed7c9b467e8aab26b0",
+      "promptSha256": "323f3da6e9db7a0eab8540b76db6849a9a7a165bd227ea5933353517bb3bc991"
+    },
+    "monster--hatch--partner--warm--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--short-f35b0ddf390d.png",
+      "sha256": "f35b0ddf390de8cd60e48bdaa7f170d2339ae18ac6b156fec74dbe81ac14c182",
+      "promptSha256": "0d443baf6754d82dc44f1156d1353e0ce4b5f101f6d065eb77f3354f60af224b"
+    },
+    "monster--hatch--partner--warm--habitat": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat-2112d8f31968.png",
+      "sha256": "2112d8f31968127ce45aa3f7133523022e148ab7c8a38f9af70d40164166e018",
+      "promptSha256": "c08dccc128c250b370a8474de7f3abf117b0ece81ddb04a89edcc561f3b03fda"
+    },
+    "monster--hatch--partner--warm--habitat--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--scene-d4ff45a544b6.png",
+      "sha256": "d4ff45a544b6806bffac9819bc623a8d7fbb217b62a34d5dafdc565eb6705498",
+      "promptSha256": "1b5238ec391adf1069377589491d47b0d120e82992035812304c0c3a21cfcc97"
+    },
+    "monster--hatch--partner--warm--habitat--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--episode-f83c1d832476.png",
+      "sha256": "f83c1d8324760c6e30f9409c2f3c3925f96a4d11dd30d82a1bdcc5a883ae45b0",
+      "promptSha256": "dc21837f1e69f827ce22b680a5b39bdf660e3b2399274d173e8fc508e7a6049c"
+    },
+    "monster--hatch--partner--warm--habitat--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--short-1c30058d49e9.png",
+      "sha256": "1c30058d49e900fd0d485e57c12ab434d5f3cb2319e27b04ae07236d8044683c",
+      "promptSha256": "7976ea7dbd84d7669d8c0eb25e38b4e49abf9bba759451bc96d8278f7114ae52"
+    },
+    "monster--hatch--partner--warm--case": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--case-a94d09761ae3.png",
+      "sha256": "a94d09761ae3df1e43fc17a80283a99d471ff33948b901713d6c9a376853c417",
+      "promptSha256": "2ef6622a3e8afb60ffa5ed6a1aa3ff1dc8f0b0a20f42fbc20ecb64719faa2341"
+    },
+    "monster--hatch--partner--warm--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--case--scene-9c465e3d5a13.png",
+      "sha256": "9c465e3d5a13684d13d6a8d0b6513dcaadde539959312f64eab45475d010b393",
+      "promptSha256": "75fc60eb5d01a3585df14c1d382e9e193d0f9fbfa1e3d34aad2188584438dcec"
+    },
+    "monster--hatch--partner--warm--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--case--episode-971e43399203.png",
+      "sha256": "971e43399203941e324adccd76c9d914015c639fdbfcc49f79edbd79f12c7c3e",
+      "promptSha256": "ffc73c91705c154fb19c5ed4b4f9c69d3fdc780c07556ce35e19a4e53cbcd3a8"
+    },
+    "monster--hatch--partner--warm--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--case--short-4ffeceb9255c.png",
+      "sha256": "4ffeceb9255c3a884358be7fc20d5d955c40cd7d6fd9f8e80bbd7ae79e5a8258",
+      "promptSha256": "cbc47c2e7a14adf2904c774272307220ec136c5bf8fbdf73e6ff5fe8ddbfd0db"
+    },
     "adventure": {
       "url": "/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png",
       "sha256": "baeee4feb2b81cf881235f9fe69c91fd41caedff7112375a9b411fe20e85009c",
@@ -3155,39 +3225,64 @@
       "promptSha256": "a1fda0a970e9a66d457481c53b863273485423c025a99971c23ff4165d235967"
     },
     "adventure--reunion--explore--bright--journey": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey-1e8efde5dacc.png",
-      "sha256": "1e8efde5daccf20f87b584635a0e752c6794b25e378bbb364a91a294dd522b5a",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey-b75cc969dd76.png",
+      "sha256": "b75cc969dd76464a38da1df215c49c05db620cd6ba7b1c796361ed631dd46aa2",
       "promptSha256": "1653b42b1faa6d9bfcfeae9a2f8042d20525b8947b018117ce08cd9ab86456eb"
     },
-    "adventure--reunion--explore--bright--quests": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests-c99a9c344105.png",
-      "sha256": "c99a9c344105165d4b6156897e817b6da05e8a979a560c41b47ea6f4799ebb75",
-      "promptSha256": "5ecae03f929b979932bc4321ae6e61237cf9921c9ce970f2f0e4ad5481b1404f"
+    "adventure--reunion--explore--bright--journey--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey--scene-aaf4f6290470.png",
+      "sha256": "aaf4f6290470dfe77a6a4737ff1d84cba2b76158f23d825d178e16fef6b0033b",
+      "promptSha256": "e51c8c6256373443690da1ab6919af2831ac5aad9be6f5a608dbb38c0f0b1bb8"
+    },
+    "adventure--reunion--explore--bright--journey--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey--episode-198de741f95e.png",
+      "sha256": "198de741f95e4252fbbf0f1c69402009586d066466e80c88e3357c7c971d4db1",
+      "promptSha256": "de5093474ac624c73110988e5afd6c2fe8f94c4f6a74cacb128b11c7555569ec"
+    },
+    "adventure--reunion--explore--bright--journey--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey--short-ce6b3eb8dc9d.png",
+      "sha256": "ce6b3eb8dc9db4f548240cf728a2c972544422d5bd38913d2f2633b30c42bf0c",
+      "promptSha256": "a6341c8c288ac57b0bc8b564fd8d77428d284af768baa27bf2064ad67abb7249"
     },
     "adventure--reunion--explore--bright--chapters": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters-b4fba7b843fa.png",
-      "sha256": "b4fba7b843fa2bc01be76722b49fadaeb09c1944a18e51f337388d7ea4349f72",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters-e005a6928619.png",
+      "sha256": "e005a6928619d4bc4a51b1d61638ec3c1b38c71284ea513e04dbdab3842ef936",
       "promptSha256": "93cce926941cd920a548a369928790bf38c40d1a47a8b75b4d30a3078b985132"
     },
+    "adventure--reunion--explore--bright--chapters--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters--scene-8901ff3f5449.png",
+      "sha256": "8901ff3f54496d01fca8bfae224cb2303eeb365869ea40ddd072852250f3cce5",
+      "promptSha256": "9fe12b2a84efecfa8ce2bdab8c8d353fd9e64a6923a0673693c0b68a657d77ff"
+    },
+    "adventure--reunion--explore--bright--chapters--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters--episode-b0576aeab36a.png",
+      "sha256": "b0576aeab36ad03aafb48c7b42ea2dc88d95e4402fd2fa67d28de5ffc372c8cb",
+      "promptSha256": "45fe9ce99beacdbef5f81202bc0d87f92679211e4187a60a4032f5a9d0f4729b"
+    },
+    "adventure--reunion--explore--bright--chapters--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters--short-9dd7ae2f6207.png",
+      "sha256": "9dd7ae2f6207e5a3a40b461444cfc71393f49b9b7e0a9eac0f79f8eea556fe2f",
+      "promptSha256": "5bc44b8a344a1ce59476ddfc947c463c0226814ef29eb5f65948c5379995e14e"
+    },
     "adventure--reunion--explore--mystic": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-f63db0190ca8.png",
-      "sha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-c41a03ba8cfc.png",
+      "sha256": "c41a03ba8cfcf370ef9e9bec9f1a44857dfd083dd7f49d00a5fd0102e42ef8d8",
       "promptSha256": "8a64e4ccc5e35f266efa678408110902ef8e0e2fad277dd498506c2d6aa8f715"
     },
     "adventure--reunion--explore--mystic--journey": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey-71f65c6791f1.png",
-      "sha256": "71f65c6791f191bfb12ea94a0a721514b07c69ba2e6cd69e5ce498dc889ad5e5",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey-fdd8d01b6865.png",
+      "sha256": "fdd8d01b68650f80b8f14f600da071683714ae6bae7d64fd07e40fecffc773dc",
       "promptSha256": "a96e6f95552a13aa99941087ffdd97849ae5bd5e25be3508bfd476de2c15babc"
     },
-    "adventure--reunion--explore--mystic--quests": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests-1cc1cf150fa1.png",
-      "sha256": "1cc1cf150fa109bd92a25c0071ae26d259095b3f6e5715f44767dbf786643d28",
-      "promptSha256": "05ab446f1b285d4124a43039633e6e4046c938476148cf7d0fc2915f638d1dbf"
+    "adventure--reunion--explore--mystic--journey--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey--episode-3820cf702a9f.png",
+      "sha256": "3820cf702a9f75e1d84d343847cf2b9b85f006d44588dc0d074cc3faef7d81ba",
+      "promptSha256": "79adb5095b8d4ffd32a2a3e361e915986cda9a307d032f3abe6610c8395c2416"
     },
-    "adventure--reunion--explore--mystic--chapters": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--chapters-3765b5bfbd10.png",
-      "sha256": "3765b5bfbd10b4412b75fdab0f42b167425a63f9cae5c924cd6ebde9caaec91d",
-      "promptSha256": "92f1e62f9783fb2bae55c6e86ec8b80c8c2e0a9410131be1df1c6506bc7f8f2f"
+    "adventure--reunion--explore--mystic--journey--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey--short-a429fb549900.png",
+      "sha256": "a429fb549900b39158286ffa717a300d64426a114fa3b5188e00164697b56096",
+      "promptSha256": "c9ad3f4d52aad59591bbd648ff12b6eab0a2d30c2be3cf10ed0f90f19ce18c90"
     },
     "adventure--reunion--explore--warm": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm-3b628c7f63f4.png",

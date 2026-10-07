@@ -1,0 +1,111 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 887,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--hatch--partner--warm",
+      "sourceSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm-eca582a9b1a9.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm-2-eca582a9b1a9.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks.",
+      "replacementSha256": "131da85ebf1d33a4c0d79dae3c34c0dbaeb865fd21a61ec7e60e4f6aeafed2c8",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "adventure--reunion--explore--mystic",
+      "sourceSha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-f63db0190ca8.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-1-f63db0190ca8.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during213actualchildcomparison. OriginalOWN MYSTIC monumentalancientruins/mysteriousspatialdepth selectedleft60/quietright35. Actualrequiredimmenseforgottenstonearchedmonument RIGHTx64-100 behind1008controls: compositionONLYF. No retro213coolTWILIGHT/wholebuilding/woodland/plaincloth/noWATCHFACE requirement; originalOWN didnotbanallclocks, other6originalchecksretained. Nativecroppedforegroundroof/nearprops allowed byoriginalnear-overheadframing. ExactoriginalOWN/nativehash/priorreviewretained, frozen868210historicalproof preserved. Replacementrequired beforedescendantsdeploy.",
+      "replacementSha256": "c41a03ba8cfcf370ef9e9bec9f1a44857dfd083dd7f49d00a5fd0102e42ef8d8",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "monster--hatch--partner--warm--route",
+      "sourceSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--route-81c783cd6ec5.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route-1-81c783cd6ec5.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication.",
+      "replacementSha256": "17b71cc79d93e4b2ff2c65a27f2d57d4a5e2bf65cdd447e0e30bbfdaac709eb0",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "monster--hatch--partner--warm--habitat",
+      "sourceSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat-5212abe95b00.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat-1-5212abe95b00.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks.",
+      "replacementSha256": "2112d8f31968127ce45aa3f7133523022e148ab7c8a38f9af70d40164166e018",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "monster--hatch--partner--warm--case",
+      "sourceSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm--case-7065f7e0c3d6.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--case-2-7065f7e0c3d6.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks.",
+      "replacementSha256": "a94d09761ae3df1e43fc17a80283a99d471ff33948b901713d6c9a376853c417",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "adventure--reunion--explore--bright--journey",
+      "sourceSha256": "1e8efde5daccf20f87b584635a0e752c6794b25e378bbb364a91a294dd522b5a",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey-1e8efde5dacc.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--bright--journey-1-1e8efde5dacc.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact original047 OWN/WHOLEunchangednative directlyread/viewed during211adventurechild-parentcomparison. OriginalOWN requires connected destination-led journey toward a clearly different distantdestination, left60 focal selectedprops and quiet fullydrawnright35. Actual selecteddistantcastle/destination is entirelyright x77-100 behindactual60.3controls: compositionONLYF. OriginalOWN nearcornerinterior/foregroundarchitecturalfloor permits nearcamera buildingcrop; no retro211wholebuilding/nativewoodland/roof/cloth/openhome criteria. Other6originalchecksretained frompreservedoriginalreview, no newbody/sign/print penalty. ExactOWN/nativehash/priorreviewretained; frozen868210historicalevidenceunchanged. New211children separatelyreviewed, failedonesheld.",
+      "replacementSha256": "b75cc969dd76464a38da1df215c49c05db620cd6ba7b1c796361ed631dd46aa2",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "adventure--reunion--explore--bright--chapters",
+      "sourceSha256": "b4fba7b843fa2bc01be76722b49fadaeb09c1944a18e51f337388d7ea4349f72",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters-b4fba7b843fa.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters-1-b4fba7b843fa.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during213actualchildcomparison. OriginalOWN requires chapterarchitecturalthreshold linkingtwo substantiallydifferentlandscaperegions withallselectedfactsleft60/quietright35. Actualvisiblydifferentdesertuplandregion farRIGHTx80-100 behind1008controls: compositionF. ActualpocketWATCHFACEonnearLEFTtable is explicitlyforbidden byoriginalOWN ANYclocks/watchfaces/numerals: noTextF. No retro213wholebuilding/nativewoodland/cloth/openhome/emptyfloor criteria; actualnearforegroundpartialarch allowed. Other5originalchecksretained. ExactoriginalOWN/nativehash/priorreviewretained, frozen868210historicalproof preserved. Replacementrequired beforedescendantsdeploy.",
+      "replacementSha256": "e005a6928619d4bc4a51b1d61638ec3c1b38c71284ea513e04dbdab3842ef936",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--journey",
+      "sourceSha256": "71f65c6791f191bfb12ea94a0a721514b07c69ba2e6cd69e5ce498dc889ad5e5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey-71f65c6791f1.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--journey-1-71f65c6791f1.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during213actualchildcomparison. OriginalOWN connectedactualdestinationledjourney nearprops throughmidpoint toclearlydifferentdistantdestination allselectedleft60/quietright35. Actualrequireddestinationimmensearchedruin RIGHTx75-100 behind1008controls, actualrequiredjourneybridge/stairsbehindpanel: compositionONLYF. Originalnearcornerpartialforegroundarch allowed; originalmooddoesnotrequirecoolTWILIGHT. No retro213wholebuilding/woodland/cloth/openhome/emptyfloor/nativearchitecturalmargin criteria. Other6originalchecksretained. ExactoriginalOWN/nativehash/priorreviewretained, frozen868210historicalproof preserved. Replacementrequired beforedescendantsdeploy.",
+      "replacementSha256": "fdd8d01b68650f80b8f14f600da071683714ae6bae7d64fd07e40fecffc773dc",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-214"
+    }
+  ],
+  "resolvedCumulative": 227
+}
