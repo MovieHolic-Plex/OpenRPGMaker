@@ -422,7 +422,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: "summit", mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? "summit" : "home"));
   }
 
-  const townMaps = new Map(towns.map(t => [t.key, make(t.key, t.name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
+  const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
   // 관장 타입을 기획서가 바꾸면(사막 기획서 1관 = 땅) 체육관 판도 그 타입의 판으로 — 「땅 관장」이 꽃밭 정원 체육관에 서 있었다(2026-10-07 사용자 지적).
   const gymType = (i: number, g: (typeof gyms)[number]): string => options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? g.type;
   const gymKeys = gyms.map((g, i) => GYM_KEY_BY_TYPE[gymType(i, g)] ?? g.key);
@@ -437,9 +437,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
 
   for (const [i, t] of towns.entries()) {
     const map = townMaps.get(t.key)!;
-    const center = make(`${t.key}_center`, `${t.name} · 회복 센터`, "overworld/room-center", "town", "interior");
-    const mart = make(`${t.key}_mart`, `${t.name} · 도구점`, "overworld/room-mart", "town", "interior");
-    const home = make(`${t.key}_house`, `${t.name} · 주민의 집`, "overworld/room-house", "town", "interior");
+    const center = make(`${t.key}_center`, `${lookTown(t).name} · 회복 센터`, "overworld/room-center", "town", "interior");
+    const mart = make(`${t.key}_mart`, `${lookTown(t).name} · 도구점`, "overworld/room-mart", "town", "interior");
+    const home = make(`${t.key}_house`, `${lookTown(t).name} · 주민의 집`, "overworld/room-house", "town", "interior");
     const doors = doorways(map);
     const centerDoor = doors.find(d => /center|centre/.test(d.name));
     const martDoor = doors.find(d => /mart|shop/.test(d.name));
@@ -451,12 +451,12 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     attachRoom(map, center, centerDoor); attachRoom(map, mart, martDoor);
     attachRoom(map, home, residential[0]!); attachRoom(map, i === 0 ? lab : gymMaps.get(t.key as Exclude<typeof t.key, "home">)!, residential[1]!);
     npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
-      [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${t.name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
+      [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${lookTown(t).name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
       [{ kind: "shop", itemIds: ["item_capture_orb", "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
-    npc(map, "guide", "여행 안내원", `${t.name}에 온 걸 환영해요. ${i === 0 ? "북동쪽 집이 천문박사의 연구소예요." : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
+    npc(map, "guide", "여행 안내원", `${lookTown(t).name}에 온 걸 환영해요. ${i === 0 ? "북동쪽 집이 천문박사의 연구소예요." : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
     npc(map, "local", "마을 주민", lookTown(t).flavor, { x: 3, y: 10 }, [], i % 8);
     // Return travel is earned by reaching a town, with no permanent progress rollback.
     event(map, "visit", entries.get(map.id)!, [sw(`mx_visit_${t.key}`)], { trigger: "auto", below: true,

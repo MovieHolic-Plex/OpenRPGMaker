@@ -415,7 +415,9 @@ export function createBattleSequencer(
     const departed = snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
     const target = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
       ?? departed
-      ?? snapshot.actors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId);
+      ?? snapshot.actors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId)
+      // 쓰러져 교체를 기다리는 아군은 전열에서 빠져 있다 — 그래도 「새싹토는 쓰러졌다!」는 읽혀야 한다.
+      ?? snapshot.reserveActors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId);
     if (!target?.defeated) return undefined;
     for (let i = index + 1; i < entries.length; i += 1) {
       const later = entries[i];

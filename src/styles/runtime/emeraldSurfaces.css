@@ -136,6 +136,8 @@
   grid-area: 1 / 1;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-level, .battle-actor-level) { font-size: 16px; line-height: 24px; color: #384840; float: right; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-level { display: inline-flex; gap: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-level > * { margin: 0; padding: 0; font: inherit; color: inherit; background: none; border: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-bar, .battle-party .battle-stat-bar-hp, .battle-party:has(> .battle-actor-status:only-child) .battle-stat-bar-hp) {
   width: 128px;
   height: 10px;

@@ -281,7 +281,8 @@ async function fight(label, { capture = false, run = false } = {}) {
     if (await target.count()) { await target.first().focus(); await page.keyboard.press("Enter"); }
     await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]')
       || document.querySelector('[data-testid="battle-result-panel"]')
-      || document.querySelector('[data-testid="actor-command-fight"]'), undefined, { timeout: 45000 }).catch(() => {});
+      || document.querySelector('[data-testid="actor-command-fight"]')
+      || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
     await page.waitForTimeout(500);
     if (turn === 1) await shot(`${label}-mid`);
   }

@@ -37,7 +37,8 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   return {
     step: "command",
     lines: [
-      openingLine ?? (actor ? `${withJosa(actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
+      openingLine ?? (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를\n내보낼까?"
+        : actor ? `${withJosa(actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };
@@ -205,7 +206,11 @@ export function actorCommandDirectorState(
       effectiveness: result?.effectiveness, healing: effect?.healing, targetName: emeraldBattlerName(target, after),
     })
     : "";
-  const lines = emeraldMove
+  // 에메랄드 교체: 「새싹토가 교체를 지시했다. 전열을 교체했다.」가 아니라 「가라! 바람삐!」.
+  const emeraldSwitchIn = emeraldNarrationActive() && command.kind === "switch"
+    ? after.actors.find((candidate) => candidate.recordId === command.targetActorId)?.name
+    : undefined;
+  const lines = emeraldSwitchIn ? [`가라! ${emeraldSwitchIn}!`] : emeraldMove
     ? [emeraldMoveLine(actor.name, command.kind === "skill" ? skillName(command.skillId) : undefined), ...(emeraldOutcome ? [emeraldOutcome] : [])]
     : [
       commandLine(command, actor, before),

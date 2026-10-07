@@ -177,7 +177,9 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...captureSubmenu(snapshot, options, terms));
     return menu;
   }
-  if (options.submenu?.kind === "switch") {
+  // 포켓몬 화면에서 앞 몬스터가 쓰러지면 바로 다음 몬스터 목록이다 — 「무엇을 할까? ▸교체」 한 칸을 먼저 눌러야 해서
+  // 플레이 영상에서 40초 가까이 멈춰 있었다(2026-10-07).
+  if (options.submenu?.kind === "switch" || (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon")) {
     menu.append(...switchSubmenu(snapshot, options, terms));
     return menu;
   }
@@ -735,7 +737,8 @@ function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpt
 function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = snapshot.forcedSwitchActorId ? "교체 필요" : "교체";
+  header.textContent = snapshot.forcedSwitchActorId
+    ? (store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를 내보낼까?" : "교체 필요") : "교체";
   const nodes: HTMLElement[] = [header];
   for (const actor of switchCandidates(snapshot)) {
     nodes.push(commandButton(actor.name, `actor-switch-${actor.recordId}`, "switch", `${store.getCurrent().system.battleUiStyle === "pokemon" ? "체력" : terms.hp} ${actor.hp}/${actor.maxHp}`, () => {
