@@ -101,6 +101,25 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
   additionalProperties: true,
 };
 
+/** 설명만 뺀 사본 — 필드 이름·형·enum·required 는 그대로 둔다(Gemini 는 선언 안 된 필드를 보내지 않는다). */
+function withoutDescriptions(schema: JsonSchema): JsonSchema {
+  const strip = (value: unknown): unknown => Array.isArray(value)
+    ? value.map(strip)
+    : value && typeof value === "object"
+      ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== "description").map(([key, inner]) => [key, strip(inner)]))
+      : value;
+  return strip(schema) as JsonSchema;
+}
+
+// 분기 안 Command 는 바깥 Command 와 같은 형식이다. 분기 필드 6개가 설명까지 통째로 복사하면 Command 스키마 하나가 3.2만 자였고
+// upsert_event·place_npc·make_villager 가 각각 7만 자를 넘었다(2026-10-07 조수 시험: NPC 과제 한 호출에 약 2만 토큰).
+// 설명은 바깥 Command 에 한 번만 두고, 분기 안에는 이름·형·enum 만 남긴다.
+const COMMAND_BRANCH_ITEM_SCHEMA: JsonSchema = (() => {
+  const base = withoutDescriptions(COMMAND_LEAF_SCHEMA);
+  // kind 목록(1,250자)도 분기마다 반복하지 않는다 — 값은 바깥 Command 의 kind 와 같고, 실행기가 모든 깊이를 검사한다.
+  return { ...base, description: "Command — 바깥 commands 의 Command 와 같은 형식(kind 값도 같다)", properties: { ...base.properties, kind: { type: "string" } } };
+})();
+
 // A finite schema avoids cyclic JSON/$ref on provider transports. Nested branch
 // commands retain the same kind/field contract; runtime validates every depth.
 export const COMMAND_SCHEMA: JsonSchema = {
@@ -119,16 +138,16 @@ export const COMMAND_SCHEMA: JsonSchema = {
         properties: {
           text: { type: "string", description: "choices 전용 선택지 문구" },
           itemId: { type: "string", description: "presentItem 전용: 정답으로 받을 아이템 ID" },
-          branch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+          branch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA },
         },
         required: ["branch"],
       },
     },
     cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"],
       description: 'choices의 Esc 동작. 취소하면 아무 일 없이 종료: cancelBehavior:"branch",cancelBranch:[]. choice1~choice5는 취소 시 해당 선택지를 실행하므로 종료가 아니다. disallow는 취소 불가. branch일 때만 cancelBranch를 실행한다.' },
-    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: 'choices: cancelBehavior:"branch"일 때만 실행하는 취소 명령. 빈 배열이면 종료. choice1~choice5/disallow에서는 무시된다. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때.' },
+    cancelBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: 'choices: cancelBehavior:"branch"일 때만 실행하는 취소 명령. 빈 배열이면 종료. choice1~choice5/disallow에서는 무시된다. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때.' },
     itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체, 소지한 것만 뜬다." },
-    otherwiseBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
+    otherwiseBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
     consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
     troopId: { type: "string", description: "battleProcessing·tacticsBattle: 싸울 부대(troop) ID" },
     width: { type: "number", description: "tacticsBattle: 격자 가로 칸 수(기본 8). tacticsBattle 은 이동+인접 공격 턴제 격자 전투, 결과는 victoryBranch/defeatBranch." },
@@ -142,11 +161,14 @@ export const COMMAND_SCHEMA: JsonSchema = {
         "battleProcessing: true 면 전투 결과로 분기한다. 보스 처치 후 스위치·셀프 스위치를 켜는 명령은 victoryBranch 에 넣는다. " +
         '예: {kind:"battleProcessing",troopId:"조회한 ID",canEscape:false,canLose:false,branchOnResult:true,victoryBranch:[{kind:"setSelfSwitch",key:"A",value:true}]}',
     },
-    victoryBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true): 이겼을 때 실행할 Command[]" },
-    defeatBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canLose:true): 졌을 때 실행할 Command[]" },
-    escapeBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canEscape:true): 도망쳤을 때 실행할 Command[]" },
+    victoryBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: "battleProcessing(branchOnResult:true): 이겼을 때 실행할 Command[]" },
+    defeatBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: "battleProcessing(branchOnResult:true, canLose:true): 졌을 때 실행할 Command[]" },
+    escapeBranch: { type: "array", items: COMMAND_BRANCH_ITEM_SCHEMA, description: "battleProcessing(branchOnResult:true, canEscape:true): 도망쳤을 때 실행할 Command[]" },
   },
 };
+/** 같은 도구 안에 Command 목록이 두 번째로 나올 때 쓰는 설명 없는 사본. 설명은 첫 commands 에 있다. */
+export const COMMAND_SCHEMA_COMPACT: JsonSchema = { ...withoutDescriptions(COMMAND_SCHEMA), description: "Command — 형식과 필드 설명은 commands 의 Command 와 같다" };
+
 
 /** `GraphicSpec` (eventCompile.ts): `{selectionId,query?}` | `{query}` | `{textureKey,characterIndex?}` | `{transparent:true}`. */
 export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
@@ -453,7 +475,7 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
         type: "object",
         properties: {
           text: { type: "string" },
-          commands: { type: "array", description: "이 선택지를 고르면 실행할 Command[] (branch로 보내도 commands로 읽는다)", items: COMMAND_SCHEMA },
+          commands: { type: "array", description: "이 선택지를 고르면 실행할 Command[] (branch로 보내도 commands로 읽는다)", items: COMMAND_SCHEMA_COMPACT },
         },
         required: ["text"],
       },

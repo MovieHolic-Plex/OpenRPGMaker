@@ -56,6 +56,7 @@ import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
+  COMMAND_SCHEMA_COMPACT,
   COORD_SCHEMA,
   CUTSCENE_BEAT_SCHEMA,
   FACE_SCHEMA,
@@ -1083,7 +1084,7 @@ const upsertEvent: ToolDefinition = {
           x: { type: "integer" },
           y: { type: "integer" },
           trigger: { type: "object", properties: { kind: { type: "string" } }, additionalProperties: true },
-          commands: { type: "array", items: COMMAND_SCHEMA },
+          commands: { type: "array", items: COMMAND_SCHEMA_COMPACT },
           pages: { type: "array", items: NATIVE_EVENT_PAGE_SCHEMA },
         },
         // 나머지 GameEvent 필드는 이벤트 shape 검증기가 본다.
