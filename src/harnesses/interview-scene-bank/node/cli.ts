@@ -11,7 +11,8 @@ const seed = JSON.parse(readFileSync(resolve(dataDir, 'seed.json'), 'utf8'));
 const ledgerPath = resolve(dataDir, 'ledger.json');
 const sha = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 type Review = { sourceSha256: string; promptSha256: string; checks: Record<string, boolean>; findings: string[]; reviewer: string };
-type Candidate = { file: string; sha256: string; promptSha256: string; generationPromptSha256: string; attempt: number; review?: Review; gate?: Gate };
+type EditContract = { version: 1; kind: 'native-edit'; specPromptSha256: string; sourceSha256: string };
+type Candidate = { file: string; sha256: string; promptSha256: string; generationPromptSha256: string; attempt: number; requestContract?: EditContract; review?: Review; gate?: Gate };
 type Gate = { ok: boolean; width: number; height: number; colors: number; findings: string[] };
 type Ledger = { version: number; entries: Record<string, Candidate[]> };
 const readLedger = (): Ledger => existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, 'utf8')) : { version: 1, entries: {} };
@@ -50,16 +51,44 @@ export async function run(argv: string[]): Promise<number> {
     const original = resolve(candidates, `${c.generationPromptSha256}.prompt.txt`);
     return existsSync(original) ? original : resolve(dataDir, 'requests', `${c.generationPromptSha256}.txt`);
   };
-  const register = (key: string, imagePath: string, prompt: string) => {
+  const matchesRequest = (key: string, prompt: string, contract?: EditContract) => {
+    const spec = lookup.get(key); if (!spec) return false;
+    if (!contract) return prompt.startsWith(spec.prompt) || prompt.startsWith(
+      spec.prompt.replace(/^Use case: stylized-concept\./, 'Use case: precise-object-edit.'));
+    // Native edits retain the exact selected-facts block without contradictory
+    // generation-only camera/reference instructions. Bind them to this same key.
+    if (contract.version !== 1 || contract.kind !== 'native-edit' || contract.specPromptSha256 !== sha(spec.prompt)) return false;
+    const source = ledger.entries[key]?.find(c => c.sha256 === contract.sourceSha256);
+    const facts = spec.prompt.slice(spec.prompt.indexOf('GENRE:'));
+    if (!source || source.promptSha256 !== sha(spec.prompt) || !facts.startsWith('GENRE:') ||
+      !prompt.startsWith('Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,') ||
+      !prompt.includes(facts) || !prompt.includes(`Target SHA256=${contract.sourceSha256}.`)) return false;
+    const archived = resolve(dataDir, 'edit-sources', `${source.sha256}.png`);
+    const original = existsSync(archived) ? archived : sourceFile(key, source);
+    const request = requestFile(source);
+    return existsSync(original) && sha(readFileSync(original)) === source.sha256 &&
+      existsSync(request) && sha(readFileSync(request)) === source.generationPromptSha256;
+  };
+  const register = (key: string, imagePath: string, prompt: string, requestContract?: EditContract) => {
     const spec = lookup.get(key); if (!spec) throw Error('모르는 장면');
-    if (!prompt.startsWith(spec.prompt)) throw Error('생성 요청이 현재 장면 프롬프트와 맞지 않는다.');
+    if (!matchesRequest(key, prompt, requestContract)) throw Error('생성 요청이 현재 장면 프롬프트와 맞지 않는다.');
     const bytes = readFileSync(resolve(imagePath)); PNG.sync.read(bytes);
     const hash = sha(bytes); const history = ledger.entries[key] ??= [];
     if (history.some(c => c.sha256 === hash)) throw Error('같은 후보를 재등록할 수 없다.');
     const file = resolve(candidates, `${key}-${history.length + 1}-${hash.slice(0, 12)}.png`);
     const requestHash = sha(prompt);
     writeFileSync(file, bytes); writeFileSync(resolve(candidates, `${requestHash}.prompt.txt`), prompt);
-    history.push({ file: relative(root, file), sha256: hash, promptSha256: sha(spec.prompt), generationPromptSha256: requestHash, attempt: history.length + 1 });
+    if (requestContract) {
+      const source = history.find(c => c.sha256 === requestContract.sourceSha256)!;
+      const archives = resolve(dataDir, 'edit-sources'); const requests = resolve(dataDir, 'requests');
+      mkdirSync(archives, { recursive: true }); mkdirSync(requests, { recursive: true });
+      const archived = resolve(archives, `${source.sha256}.png`);
+      if (!existsSync(archived)) copyFileSync(sourceFile(key, source), archived);
+      const durableRequest = resolve(requests, `${source.generationPromptSha256}.txt`);
+      const originalRequest = requestFile(source);
+      if (originalRequest !== durableRequest) copyFileSync(originalRequest, durableRequest);
+    }
+    history.push({ file: relative(root, file), sha256: hash, promptSha256: sha(spec.prompt), generationPromptSha256: requestHash, attempt: history.length + 1, ...(requestContract ? { requestContract } : {}) });
     return { key, attempt: history.length, sha256: hash };
   };
   const approved = (key: string) => {
@@ -67,7 +96,7 @@ export async function run(argv: string[]): Promise<number> {
     const source = sourceFile(key, c); const request = requestFile(c);
     if (c.promptSha256 !== sha(spec.prompt) || !existsSync(source) || sha(readFileSync(source)) !== c.sha256 || !existsSync(request)) return false;
     const actualRequest = readFileSync(request, 'utf8');
-    if (sha(actualRequest) !== c.generationPromptSha256 || !actualRequest.startsWith(spec.prompt)) return false;
+    if (sha(actualRequest) !== c.generationPromptSha256 || !matchesRequest(key, actualRequest, c.requestContract)) return false;
     const r = c.review;
     return c.gate?.ok === true && r?.sourceSha256 === c.sha256 && r.promptSha256 === c.promptSha256 && r.findings.length === 0 && seed.visualChecks.every((k: string) => r.checks[k] === true);
   };
@@ -94,8 +123,8 @@ export async function run(argv: string[]): Promise<number> {
       writeJson(ledgerPath, ledger); console.log(JSON.stringify(result)); return 0;
     }
     case 'import-batch': {
-      const records: { key: string; path: string; prompt: string }[] = JSON.parse(readFileSync(resolve(arg('--records')), 'utf8'));
-      const results = records.map(r => register(r.key, r.path, r.prompt));
+      const records: { key: string; path: string; prompt: string; requestContract?: EditContract }[] = JSON.parse(readFileSync(resolve(arg('--records')), 'utf8'));
+      const results = records.map(r => register(r.key, r.path, r.prompt, r.requestContract));
       writeJson(ledgerPath, ledger); console.log(JSON.stringify(results)); return 0;
     }
     case 'gate': {

@@ -1,0 +1,57 @@
+{
+  "published": 939,
+  "planned": 1457,
+  "missing": 518,
+  "snapshot": {
+    "manifest": "bf6c80732a05f68729a8e22da1b00dca7338654add88e425b0e760d8b74b1b50",
+    "ledger": "bee33003e05a806498a6d473724b7d877d8ab90cb023d683b2c4eb4ff6bf8c8d"
+  },
+  "actualIntegrityExit": 0,
+  "actualBrowserRetryExit": 0,
+  "priorBrowserAttemptExit": 1,
+  "priorSupervisorTermination": 143,
+  "paths": 6,
+  "clicks": 36,
+  "generatedRequests": 0,
+  "errors": [],
+  "rootViewedAllSixWholeSettledScreenshots": true,
+  "screens": [
+    {
+      "key": "adventure--reunion--battle--warm--quests--episode",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--battle--warm--quests--episode.png",
+      "sha256": "f12ab6b196a8fa0a9fff31f498502276a1b691b369bef9e662c8074e285bba97",
+      "rootViewedWHOLESettledScreenshot": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--chapters--scene",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--battle--warm--chapters--scene.png",
+      "sha256": "8e0bbb087ac5c3a3566055ce2e67733e2b056f644f5260f932996cdebba1783a",
+      "rootViewedWHOLESettledScreenshot": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--journey--short",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--companions--bright--journey--short.png",
+      "sha256": "1ee1a5c18a23177c02d67e73555c575776aac1c2486ce1a12159c28c71991261",
+      "rootViewedWHOLESettledScreenshot": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--quests--scene",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--companions--bright--quests--scene.png",
+      "sha256": "d97383efc9c70f1deb659671069d4da37f5e60979dc36953e492a8ea399daadc",
+      "rootViewedWHOLESettledScreenshot": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters--scene",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--companions--bright--chapters--scene.png",
+      "sha256": "d1cc3d889dc914eb6f49ae24f215357864f6db361a8538bcf855637831544fc5",
+      "rootViewedWHOLESettledScreenshot": true
+    },
+    {
+      "key": "adventure--reunion--companions--bright--chapters--episode",
+      "screenshot": "verify-shots/interview-scene-bank-v2/published-939-checkpoint232/selected-adventure--reunion--companions--bright--chapters--episode.png",
+      "sha256": "e60753102bfdb08e8c2d90c085fc3df446754d06f3802f5fdfbb94e3fa5857b4",
+      "rootViewedWHOLESettledScreenshot": true
+    }
+  ],
+  "scope": "Native/OWN/review/gate SHA integrity for all published files and six actual production-dialog paths ONLY. Not a fresh visual audit of all939, not full app boot or AI handoff. Source128 originalOWN visual correction is pending separately after this immutable snapshot. Caption overlaps selected art and isolated800px container has white lower margin; no clean-full-app claim."
+}

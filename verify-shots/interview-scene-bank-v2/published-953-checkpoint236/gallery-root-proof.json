@@ -1,0 +1,123 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 953,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--battle--warm--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests--episode",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--episode",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--quests",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm--quests--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--battle--warm--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests--episode",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--episode",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--warm--quests",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm--quests--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all953 fresh native visual audit.",
+  "rootPersonallyViewedWholeScreenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-953-stage236-736-last.png"
+  ],
+  "rootFinding": "Four WHOLE stable actual320/736 first/last screenshots viewed. Korean captions/buttons fit, selected state updates, no clipping/overlap/internal keys visible. This is a gallery of8 actual953P natives, not fresh953 visual audit or full app/AI handoff."
+}

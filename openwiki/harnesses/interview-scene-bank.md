@@ -18,7 +18,9 @@ npm run harness -- interview-scene-bank build
 npm run harness -- interview-scene-bank status
 ```
 
-`plan`/`batch`의 출력은 `qa-runs/harnesses/interview-scene-bank/`에 있다. `import-batch`의 입력은 `{key,path,prompt}` 배열이다. 원본 PNG와 정확한 생성 요청을 같은 산출물 폴더에 복사하고 SHA-256을 ledger에 기록한다. 요청은 해당 장면의 고정 프롬프트로 시작해야 한다. 장면 키에는 옵션 ID를 쓰며 표시 문구나 배열 인덱스로 파일을 찾지 않는다.
+`plan`/`batch`의 출력은 `qa-runs/harnesses/interview-scene-bank/`에 있다. `import-batch`의 입력은 `{key,path,prompt,requestContract?}` 배열이다. 원본 PNG와 정확한 생성 요청을 같은 산출물 폴더에 복사하고 SHA-256을 ledger에 기록한다. 일반 생성 요청은 해당 장면의 고정 프롬프트로 시작해야 한다(첫 문장의 use-case만 `precise-object-edit`로 바꾼 형태도 허용). 장면 키에는 옵션 ID를 쓰며 표시 문구나 배열 인덱스로 파일을 찾지 않는다.
+
+2026-10-07 같은 키 원본 편집 요청 계약: 기존 고정 프롬프트의 「참고 이미지는 스타일만 / 매번 새 구도」는 실제 편집 지시와 충돌하므로 새 편집 요청에는 넣지 않는다. 정확한 장르·선택·최신 선택·장면 ID 블록은 현재 계획 그대로 포함하고, `Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,`로 시작한다. `requestContract: {version:1,kind:"native-edit",specPromptSha256,sourceSha256}`와 본문의 `Target SHA256=<sourceSha256>.`를 함께 기록한다. 하네스가 현재 계획 해시, **같은 키 이력**의 실제 입력 PNG와 전체 원래 요청 해시를 확인하고, 입력 원본을 `harness-data/interview-scene-bank/edit-sources/<SHA>.png`에 변경 없이 보존한다. 원래 입력 요청도 공용 `requests`에 보존하여 세션 파일이 없는 체크아웃에서도 다시 검증한다. 수정 출력은 별도 원본·별도 정확한 요청·새 일곱 시각 판정과 규격 관문이 필요하다. 원래 요청을 생성 후 덧붙이거나 고쳐서 등록하지 않는다.
 
 2026-10-04 스타일 v2: 사용자가 새로 생성한 여섯 장의 도트 스타일을 확인하고 전체 제작을 승인했다. 16비트 표현은 특정 파일 크기나 물리적 색 개수와 같지 않으므로 **320×180 정수 확대·64색 파일 제한을 폐기**했다. 원본 관문은 16:9 비율(오차 0.02), 불투명 전체 배경, 원본 해시 불변, 다른 장면과 원본 해시 중복 없음이다. 파일 크기와 RGB 색 수는 진단으로만 남긴다. 실제 도트 관문은 여전히 강하다: 보통 크기에서 보이는 사각 픽셀 덩어리·계단 윤곽·절제된 명암, 모든 선택 반영·새 구도를 실제 이미지에서 검사한다. 네모 무늬만 얹은 회화는 탈락한다. 자동 도트 필터로 합격시키지 않는다. 제작 원본·기본 프롬프트가 바뀌면 이전 판정은 무효다.
 
@@ -152,3 +154,5 @@ npm run harness -- interview-scene-bank status
 당시928개 배포 PNG·정확한 생성 요청·검수 해시·모든 앞 단계 조건을 독립 확인했다. 실제 production 인터뷰6경로33번 클릭에서 누적키·원본URL·디코드가 일치하고 신규 생성 요청0·브라우저 오류0이며 감독자가 안정된6개 전체 화면을 직접 열었다. 검사2개와 감독 종료 실제0, 목록 해시는 `checkpoint-928-stage228-root-proof.json`에 보존했다. 왼쪽 캡션 가림은 남으며 전체928장 새 시각 감사, 전체 앱 시작·AI조수 전달 검증은 아니다.
 
 실제 합격 대표8개를320/736px에서16번 클릭하고 감독자가4개 전체 화면을 직접 확인했다. `gallery-928-stage228-browser-proof.json`과 원본 선택 해시를 보존했다. WEBP800×450/52는 대화용 미리보기만이며 배포 PNG는 변경하지 않았다. 현재 합격 교체본·개인 원본·전체 요청·영구 보관을 확인하고 옛 반려 공용 사본10개를 제거했으며 누적251개다(`obsolete-public-cleanup-228-proof.json`). 전체1457개 중529개가 남아 미완성이다. 새229/230 원본은 이928개 배포·클릭 증거에 포함하지 않는다. 전체 npm gates/Vitest/typecheck는 실행하지 않았다.
+
+2026-10-07 배치236 체크포인트는 953/1457개 배포(504개 남음)다. 229–236 실제80개 생성 시도는31합격/49반려이고 고유 추가 수가 아니다. 원본 편집 계약은 현재 전체 선택 블록/계획 해시/같은 키 입력 원본과 전체 요청/Target 해시를 검증하고 그대로 보존한다. 잘못된 계약4개 실제 종료1·ledger 불변, 유효236 import/review/gate/build 및 독립953 무결성 종료0을 기록했다. 실제 인터뷰6경로35번 클릭·생성0·오류0·ROOT 전체화면6개, 합격8개 갤러리320/736px16클릭·전체화면4개를 보존했다. 이전232 종료143/재실행0,235 실제 import1/수정 후0,939 죽은서버 첫 브라우저 실패/공식서버 재시작 후0도 보존하며 성공으로 바꾸지 않았다. 기존 원본6개 교정은 누적130개이며 원래 OWN만 적용했다. 옛 반려 공용5개만 제거해 누적256개, 교체가 미합격인130 공용 원본은 남겼다. 근거는 `verify-shots/interview-scene-bank/production-229-236-stage-proof.json`, `checkpoint-236-original-source-audit-proof.json`, `verify-shots/interview-scene-bank-v2/published-953-checkpoint236/`다. 왼쪽 캡션 가림/별도 테스트 컨테이너 아래 여백은 남으며 전체953장의 새 시각 감사·전체 앱 시작·AI조수 전달 증거는 아니다. 다음237/238 원본은 이953 스냅샷에 포함하지 않는다. 전체 gates/Vitest/typecheck는 실행하지 않았다.

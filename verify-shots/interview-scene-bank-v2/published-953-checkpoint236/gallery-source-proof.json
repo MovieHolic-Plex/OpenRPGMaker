@@ -1,0 +1,120 @@
+{
+  "snapshotPublished": 953,
+  "sourceManifestSha256": "be057b18c5be7211da1f6ab6f80ea99404f0e1cb1d9481abcecad00cb1ab44a3",
+  "sources": [
+    {
+      "key": "adventure--reunion--battle--warm--chapters--short",
+      "sha256": "1f521997361a16bfd93e7ba4355ca5896603156864d22634f04fe4626d3db7ed",
+      "generationPromptSha256": "28c91c31a93de97726b8ce163dd2d9ed65ac4cfd2bcab7c494ded654356534fe",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--quests--episode",
+      "sha256": "3635106a8334b647f1889728bbef3ef1828cdf642227a8bf326a58342e5510db",
+      "generationPromptSha256": "a4a5d77bde2d427b366fcba04f4978593f43c9b4bbe1ee64204b7199311eb223",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--chapters--short",
+      "sha256": "3ee3710b1e5befb0358888e89c093eb264f5bc35853b9150efd642cc9657f930",
+      "generationPromptSha256": "d0abea4a8af9645c073bbf8fe45ad293d25d3aafbf2ebcf7dc6edabdc49adf1a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--journey--scene",
+      "sha256": "45624d22235d521009e4cdbb7722f559a20a65a98c44c9be780a234205cc7d01",
+      "generationPromptSha256": "6de994f2c1d697c12a5ef1274964b6586b92a4d4eec98d3b50b8dc8e9b21bca5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--journey--episode",
+      "sha256": "30a9eac7f7852cf6b145e7fb16e4f87f29db60b466223cf10ab2bbcf6ecf598f",
+      "generationPromptSha256": "57c0e7bdae4b02c624424546305f65ef747089b531ae9d9939bbcc591ec574f1",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--quests",
+      "sha256": "ad4c92ea94d3092b3d2e98a6cb2f2854d7d55f4b2d4e46ae7bf84677ae2fc5a9",
+      "generationPromptSha256": "93e473da7233020dc07f9e60bc2626ba3bc4ae2e882cdba8342c30d088eb961b",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--chapters--scene",
+      "sha256": "a1845a0151812f348e6fc677cd0f24156cf0cadd3cba30fe5db3f3da55d06397",
+      "generationPromptSha256": "cb2f1a636386bc2258d9ab053aba8aabeb151d48a3e2ddec28f9684f552f9dd6",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--reunion--battle--warm--quests--short",
+      "sha256": "5220c1cad9f4e43d05e01c865381eff6b473c8d58b99330b3ba16b99565e298c",
+      "generationPromptSha256": "17e68a2b160533cb546091d91c389dfd429a3875902d009b042392ac209438a3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 842133
+}

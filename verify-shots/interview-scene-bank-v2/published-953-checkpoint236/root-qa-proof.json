@@ -1,0 +1,58 @@
+{
+  "published": 953,
+  "planned": 1457,
+  "remaining": 504,
+  "manifestSha256": "be057b18c5be7211da1f6ab6f80ea99404f0e1cb1d9481abcecad00cb1ab44a3",
+  "ledgerSha256": "c23f371120a206805067b68053b961636495c1eb264b304a2c5344c5fe621462",
+  "actualImportReviewGateBuildProof": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank/production-236-full-stage-proof.json",
+  "integrityActualExit": 0,
+  "selectedPathsActualExit": 0,
+  "actualPaths": 6,
+  "actualClicks": 35,
+  "generatedRequests": 0,
+  "errors": [],
+  "screenshots": [
+    {
+      "key": "adventure--reunion--battle--warm--chapters--short",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--battle--warm--chapters--short.png",
+      "sha256": "d5c708af513b2d31e0111e9f587d9a90d85aec218ad53b5a2d02f9f4c67eae44",
+      "rootWholeSettledScreenshotSeen": true
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--quests--episode",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--companions--mystic--quests--episode.png",
+      "sha256": "79c453d1e5f901b4956154ee0ecc6cb085e9ed74460ba48782db82a5e64ec826",
+      "rootWholeSettledScreenshotSeen": true
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--chapters--short",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--companions--mystic--chapters--short.png",
+      "sha256": "b6dd2210d7066ee537f0118638ba999c9b4b56721aa68d3c0c13969b4c0a7203",
+      "rootWholeSettledScreenshotSeen": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--journey--scene",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--companions--warm--journey--scene.png",
+      "sha256": "3a3b3aac850cb33c06911499a8d4e753156a877180593a36e6f50e1b4b0e6cb3",
+      "rootWholeSettledScreenshotSeen": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--journey--episode",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--companions--warm--journey--episode.png",
+      "sha256": "e4a34561324b18e9713e6dc5dedc2feddcda7dbd92f60d32a9b63e90e0fe3dd9",
+      "rootWholeSettledScreenshotSeen": true
+    },
+    {
+      "key": "adventure--reunion--companions--warm--quests",
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-953-checkpoint236/selected-adventure--reunion--companions--warm--quests.png",
+      "sha256": "69306b42e8c397d04effaf178318f733584a1d551204092a90f95c5059e51864",
+      "rootWholeSettledScreenshotSeen": true
+    }
+  ],
+  "scope": "All953 published bytes/exactOwn/review/gate/ancestor hash checks; six selected actualproduction paths and ROOT fullsettled screenshots. Not all953 newnative visual audit, fullappboot or AIhandoff.",
+  "limits": [
+    "Leftcaption overlays someforeground props remain.",
+    "Isolated productiondialog uses 800px testcontainer; 900px screenshots show white lower page margin."
+  ],
+  "recordedAt": "2026-10-07T14:10:54.677570+00:00"
+}

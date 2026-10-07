@@ -1,0 +1,60 @@
+{
+  "scope": "Only original rejected obsolete public PNGs after actual passing published replacement and native/full OWN archives verified; source130 pending replacement stays public",
+  "published": 953,
+  "removedThisInterval": 5,
+  "resolvedCumulative": 256,
+  "priorActualProof": "obsolete-public-cleanup-228-proof.json",
+  "removed": [
+    {
+      "key": "adventure--reunion--companions--mystic--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--journey-86c3f15793e5.png",
+      "nativeSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--journey-86c3f15793e5.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--journey-86c3f15793e5.own.txt",
+      "replacementSha256": "677d107405b1125cb8d465c172600a5e901ec2b95660f52564318b53c86bc502",
+      "replacementOwnSha256": "bb7ac1b50ed4df9c56d0e2f998fd3e552178472e134e417c8dfbc981bb5358cd"
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests-ae0fe103526b.png",
+      "nativeSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--quests-ae0fe103526b.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--quests-ae0fe103526b.own.txt",
+      "replacementSha256": "d2c23b8fbb11f795e96fe27396e18202516ab51428e9ee2260ab5841e7490f66",
+      "replacementOwnSha256": "ec10ff750cad5108309f9f65c63c1f18e82f56d05a5666d2a01bfc65e426fe5d"
+    },
+    {
+      "key": "adventure--reunion--companions--mystic--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--chapters-ee3360467a36.png",
+      "nativeSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--chapters-ee3360467a36.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--chapters-ee3360467a36.own.txt",
+      "replacementSha256": "c3a08048f8bd80f48e482ff5c0a0c1a9f4f60aff7aa8bc5762be762796b61fd7",
+      "replacementOwnSha256": "a3ce15f015dee6bbf1fa6f3a71a9b86d26efc5345138da77add483129eea99ff"
+    },
+    {
+      "key": "adventure--reunion--companions--warm--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey-342af6851d2d.png",
+      "nativeSha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.own.txt",
+      "replacementSha256": "8857eb3715fc503ae3f8524e1b320c9ffddf4789488f247c1aaf67054522ac2e",
+      "replacementOwnSha256": "ba42fc6046c3e390876ddad415893097fd6c1e5a197c0fd99851538713002727"
+    },
+    {
+      "key": "adventure--reunion--companions--warm--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--quests-466e7f303b25.png",
+      "nativeSha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.own.txt",
+      "replacementSha256": "ad4c92ea94d3092b3d2e98a6cb2f2854d7d55f4b2d4e46ae7bf84677ae2fc5a9",
+      "replacementOwnSha256": "93e473da7233020dc07f9e60bc2626ba3bc4ae2e882cdba8342c30d088eb961b"
+    }
+  ],
+  "preservedPending": [
+    {
+      "key": "adventure--reunion--companions--warm--chapters",
+      "why": "No current published passing replacement; original public preserved until replacement passes"
+    }
+  ]
+}

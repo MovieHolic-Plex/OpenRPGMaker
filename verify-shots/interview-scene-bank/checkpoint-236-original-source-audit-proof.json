@@ -1,0 +1,630 @@
+{
+  "originalSourceCorrections": 6,
+  "cumulativeOriginalSourceCorrections": 130,
+  "notNewGenerations": true,
+  "onlyOriginalOwnApplied": true,
+  "records": [
+    {
+      "number": 125,
+      "key": "adventure--reunion--companions--mystic--journey",
+      "before": {
+        "sourceSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+        "promptSha256": "49de56740ab3126dd189e0df013cceba8d39a6ab2b74dba43d2120ab11d285ca",
+        "reviewer": "Codex direct original visual inspection: v2-production-051",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Root directly opened native original and applicable parent: Mystic journey redraw: unique small CLOSED entirely bare tin near LEFT abandoned bedroll/pack/cup, at least THREE separate empty resting places each bedroll/pack, plain cups. Actual continuous near route/stepped bridge through midpoint toward different EMPTY monumental ancient destination. Changed diagonal open journey floor versus new parent protected camp-floor. Earlier decorative tin seal absent. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+      },
+      "after": {
+        "sourceSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+        "promptSha256": "49de56740ab3126dd189e0df013cceba8d39a6ab2b74dba43d2120ab11d285ca",
+        "reviewer": "Codex ROOT original mystic companion journey OWN/native corrective stage231",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT FULL exact ORIGINAL051OWN and WHOLE unchanged actualpublishednative personallyseen during231actualparentcomparison. OriginalchosenJOURNEY actualcontinuouspath/midpoint/EMPTYdistantmonumental destination present, but requiredMIDbridge anddistantdestinationarch atnativeRIGHT x1100-1650 behindactualx1008controlpanel; originalLEFT60% focalcontract compositionF ONLY. OriginalsmallCLOSEDplainTIN/functionalclasp, threeEMPTY differentlycoloredbedroll+personalpack places/plaincups actuallypresent. Do not retroapply newREDcluebench/wholearchitecture/nativebuffers/BAREDESTbench/LEFTregions/16bitcolorcount or twilight conditions. Other6 prior checks retained, not a fresh parent-distinct comparison. Originalpartialforearch/nativeedge allowed. Source125 exactoriginalOWN/unchangednative/priorreview preserved, separate from10new231attempts."
+        ],
+        "notes": "ROOT FULL exact ORIGINAL051OWN and WHOLE unchanged actualpublishednative personallyseen during231actualparentcomparison. OriginalchosenJOURNEY actualcontinuouspath/midpoint/EMPTYdistantmonumental destination present, but requiredMIDbridge anddistantdestinationarch atnativeRIGHT x1100-1650 behindactualx1008controlpanel; originalLEFT60% focalcontract compositionF ONLY. OriginalsmallCLOSEDplainTIN/functionalclasp, threeEMPTY differentlycoloredbedroll+personalpack places/plaincups actuallypresent. Do not retroapply newREDcluebench/wholearchitecture/nativebuffers/BAREDESTbench/LEFTregions/16bitcolorcount or twilight conditions. Other6 prior checks retained, not a fresh parent-distinct comparison. Originalpartialforearch/nativeedge allowed. Source125 exactoriginalOWN/unchangednative/priorreview preserved, separate from10new231attempts."
+      },
+      "nativeSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+      "ownSha256": "f334dfcbb2d338c5931fc33191702f57fdffcd15393d6e60bb8d8f9fca1b0c87",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--companions--mystic--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: searching for missing loved one, uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY resting places each with its OWN differently colored plain bedroll and pack, plus THREE plain cups together. MYSTICAL monumental ancient ruins and stepped pixel depth. JOURNEY: one actual continuous traversable route through a midpoint toward a clearly different EMPTY distant destination. HARD FAILURE: plain personal tin must have ENTIRELY BARE lid and sides; NO decorative central seal/emblem, circular crest, insignia, painted motif, runes or logo. Only tiny functional latch/hinge allowed. FRESH high-oblique sheltered threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%, every plane equally sharp coarse square pixel clusters and stepped shading. Avoid previous near ledge/river/castle composition. Bare architectural foreground, no framing plants, blur, gradients or collage. No people/humanoids/body/portrait/species, writing/pseudotext, any paper/documents/posters/boards/open books/clocks/numerals, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/logos. Plain cloth ONLY as undecorated bedrolls or sealed parcel wraps.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--journey-86c3f15793e5.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--journey-86c3f15793e5.own.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--mystic--journey",
+        "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--journey-2-86c3f15793e5.png",
+        "actualPublishedNativeSource": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--journey-86c3f15793e5.png",
+        "nativeSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+        "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--companions--mystic--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: searching for missing loved one, uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY resting places each with its OWN differently colored plain bedroll and pack, plus THREE plain cups together. MYSTICAL monumental ancient ruins and stepped pixel depth. JOURNEY: one actual continuous traversable route through a midpoint toward a clearly different EMPTY distant destination. HARD FAILURE: plain personal tin must have ENTIRELY BARE lid and sides; NO decorative central seal/emblem, circular crest, insignia, painted motif, runes or logo. Only tiny functional latch/hinge allowed. FRESH high-oblique sheltered threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%, every plane equally sharp coarse square pixel clusters and stepped shading. Avoid previous near ledge/river/castle composition. Bare architectural foreground, no framing plants, blur, gradients or collage. No people/humanoids/body/portrait/species, writing/pseudotext, any paper/documents/posters/boards/open books/clocks/numerals, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/logos. Plain cloth ONLY as undecorated bedrolls or sealed parcel wraps.",
+        "exactOriginalOwnSha256": "f334dfcbb2d338c5931fc33191702f57fdffcd15393d6e60bb8d8f9fca1b0c87",
+        "preservedOriginalReview": {
+          "sourceSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+          "promptSha256": "49de56740ab3126dd189e0df013cceba8d39a6ab2b74dba43d2120ab11d285ca",
+          "reviewer": "Codex direct original visual inspection: v2-production-051",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native original and applicable parent: Mystic journey redraw: unique small CLOSED entirely bare tin near LEFT abandoned bedroll/pack/cup, at least THREE separate empty resting places each bedroll/pack, plain cups. Actual continuous near route/stepped bridge through midpoint toward different EMPTY monumental ancient destination. Changed diagonal open journey floor versus new parent protected camp-floor. Earlier decorative tin seal absent. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+        },
+        "corrective": {
+          "sourceSha256": "86c3f15793e5f2520def77ee927ddb2d9855f0b3cf943d064203114269e9bb59",
+          "promptSha256": "49de56740ab3126dd189e0df013cceba8d39a6ab2b74dba43d2120ab11d285ca",
+          "reviewer": "Codex ROOT original mystic companion journey OWN/native corrective stage231",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULL exact ORIGINAL051OWN and WHOLE unchanged actualpublishednative personallyseen during231actualparentcomparison. OriginalchosenJOURNEY actualcontinuouspath/midpoint/EMPTYdistantmonumental destination present, but requiredMIDbridge anddistantdestinationarch atnativeRIGHT x1100-1650 behindactualx1008controlpanel; originalLEFT60% focalcontract compositionF ONLY. OriginalsmallCLOSEDplainTIN/functionalclasp, threeEMPTY differentlycoloredbedroll+personalpack places/plaincups actuallypresent. Do not retroapply newREDcluebench/wholearchitecture/nativebuffers/BAREDESTbench/LEFTregions/16bitcolorcount or twilight conditions. Other6 prior checks retained, not a fresh parent-distinct comparison. Originalpartialforearch/nativeedge allowed. Source125 exactoriginalOWN/unchangednative/priorreview preserved, separate from10new231attempts."
+          ],
+          "notes": "ROOT FULL exact ORIGINAL051OWN and WHOLE unchanged actualpublishednative personallyseen during231actualparentcomparison. OriginalchosenJOURNEY actualcontinuouspath/midpoint/EMPTYdistantmonumental destination present, but requiredMIDbridge anddistantdestinationarch atnativeRIGHT x1100-1650 behindactualx1008controlpanel; originalLEFT60% focalcontract compositionF ONLY. OriginalsmallCLOSEDplainTIN/functionalclasp, threeEMPTY differentlycoloredbedroll+personalpack places/plaincups actuallypresent. Do not retroapply newREDcluebench/wholearchitecture/nativebuffers/BAREDESTbench/LEFTregions/16bitcolorcount or twilight conditions. Other6 prior checks retained, not a fresh parent-distinct comparison. Originalpartialforearch/nativeedge allowed. Source125 exactoriginalOWN/unchangednative/priorreview preserved, separate from10new231attempts."
+        },
+        "rootViewedActualWholeNativeAndOwnFull": true,
+        "onlyOwnOriginalRequirementsApplied": true,
+        "sourceCorrectionNumber": 125,
+        "checkpoint928UnchangedHistoricalSnapshot": true,
+        "permanentOriginalBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--journey-86c3f15793e5.png"
+      }
+    },
+    {
+      "number": 126,
+      "key": "adventure--reunion--companions--mystic--quests",
+      "before": {
+        "sourceSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+        "promptSha256": "8533a7051e4ec8f1a985641196d0b0af0157d3a919073a7585e28787175c5f03",
+        "reviewer": "Codex direct original visual inspection: v2-production-050",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Mystic companion quest base: unique plain CLOSED round keepsake tin on LEFT table beside THREE separate SEALED wrapped parcels; THREE fully visible distinct empty bedrolls with individual packs/cups; actual forked roads to different EMPTY monumental ruins. Fresh sheltered base-floor/fork shot versus old cloth camp. Hard pixel clusters all planes; no old emblem, identity, writing, flags or blur."
+      },
+      "after": {
+        "sourceSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+        "promptSha256": "8533a7051e4ec8f1a985641196d0b0af0157d3a919073a7585e28787175c5f03",
+        "reviewer": "Codex ROOT original mystic companion progression OWN/native corrective stage231",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT FULLexactORIGINAL050OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedMIDYfork/rightdestinationbranch andTHIRDactualRIGHTtravelerbedroll/pack/cup atx1300-1650 fallbehindactualx1008controls: compositionF. VisibleMIDwooddirectionpost/THREEpointedblankboards isforbiddenoriginalsign/board evenwithoutreadableletters: noTextF. Other5priorchecks retained, notfreshparent-distinct comparison. NearLEFT3sealedclothparcels/worktable/CLOSEDplainpersonalTIN/functionalclasp present. Do not retroapply newREDbench/nativewholearchitecture/LEFTdryregions/4legtable/EXACTONLY3travelers/bluecloth/twilight. Originalpartialfronttable/architecture allowed. Source126 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+        ],
+        "notes": "ROOT FULLexactORIGINAL050OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedMIDYfork/rightdestinationbranch andTHIRDactualRIGHTtravelerbedroll/pack/cup atx1300-1650 fallbehindactualx1008controls: compositionF. VisibleMIDwooddirectionpost/THREEpointedblankboards isforbiddenoriginalsign/board evenwithoutreadableletters: noTextF. Other5priorchecks retained, notfreshparent-distinct comparison. NearLEFT3sealedclothparcels/worktable/CLOSEDplainpersonalTIN/functionalclasp present. Do not retroapply newREDbench/nativewholearchitecture/LEFTdryregions/4legtable/EXACTONLY3travelers/bluecloth/twilight. Originalpartialfronttable/architecture allowed. Source126 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+      },
+      "nativeSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+      "ownSha256": "edd5b8b7de8583f31a5ef4ef659b8ce667fd89dc171eacb741e2114454bbbea4",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--companions--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, ONE uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack, vacated bedroll and plain cup near LEFT; interrupted path. Generic cargo crates and bedroll alone cannot substitute for this personal search object. No assumed relationship, face, photograph, body or writing.\nSelected COMPANION STORIES: at least THREE clearly separated empty travel resting places, each with its own differently colored bedroll and personal pack, with three plain cups arranged together. A pile of bags beside one bedroll is NOT a party. No people.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an EMPTY sheltered village outpost with THREE clearly different PLAIN SEALED cloth-wrapped parcels on near LEFT worktable and an actual clearly visible near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--quests-ae0fe103526b.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--quests-ae0fe103526b.own.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--mystic--quests",
+        "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests-1-ae0fe103526b.png",
+        "actualPublishedNativeSource": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests-ae0fe103526b.png",
+        "nativeSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+        "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--companions--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, ONE uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack, vacated bedroll and plain cup near LEFT; interrupted path. Generic cargo crates and bedroll alone cannot substitute for this personal search object. No assumed relationship, face, photograph, body or writing.\nSelected COMPANION STORIES: at least THREE clearly separated empty travel resting places, each with its own differently colored bedroll and personal pack, with three plain cups arranged together. A pile of bags beside one bedroll is NOT a party. No people.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an EMPTY sheltered village outpost with THREE clearly different PLAIN SEALED cloth-wrapped parcels on near LEFT worktable and an actual clearly visible near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+        "exactOriginalOwnSha256": "edd5b8b7de8583f31a5ef4ef659b8ce667fd89dc171eacb741e2114454bbbea4",
+        "preservedOriginalReview": {
+          "sourceSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+          "promptSha256": "8533a7051e4ec8f1a985641196d0b0af0157d3a919073a7585e28787175c5f03",
+          "reviewer": "Codex direct original visual inspection: v2-production-050",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Mystic companion quest base: unique plain CLOSED round keepsake tin on LEFT table beside THREE separate SEALED wrapped parcels; THREE fully visible distinct empty bedrolls with individual packs/cups; actual forked roads to different EMPTY monumental ruins. Fresh sheltered base-floor/fork shot versus old cloth camp. Hard pixel clusters all planes; no old emblem, identity, writing, flags or blur."
+        },
+        "corrective": {
+          "sourceSha256": "ae0fe103526bbb4777b1add54206023ca4ff833519b825fba4930a9cdbad153d",
+          "promptSha256": "8533a7051e4ec8f1a985641196d0b0af0157d3a919073a7585e28787175c5f03",
+          "reviewer": "Codex ROOT original mystic companion progression OWN/native corrective stage231",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactORIGINAL050OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedMIDYfork/rightdestinationbranch andTHIRDactualRIGHTtravelerbedroll/pack/cup atx1300-1650 fallbehindactualx1008controls: compositionF. VisibleMIDwooddirectionpost/THREEpointedblankboards isforbiddenoriginalsign/board evenwithoutreadableletters: noTextF. Other5priorchecks retained, notfreshparent-distinct comparison. NearLEFT3sealedclothparcels/worktable/CLOSEDplainpersonalTIN/functionalclasp present. Do not retroapply newREDbench/nativewholearchitecture/LEFTdryregions/4legtable/EXACTONLY3travelers/bluecloth/twilight. Originalpartialfronttable/architecture allowed. Source126 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+          ],
+          "notes": "ROOT FULLexactORIGINAL050OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedMIDYfork/rightdestinationbranch andTHIRDactualRIGHTtravelerbedroll/pack/cup atx1300-1650 fallbehindactualx1008controls: compositionF. VisibleMIDwooddirectionpost/THREEpointedblankboards isforbiddenoriginalsign/board evenwithoutreadableletters: noTextF. Other5priorchecks retained, notfreshparent-distinct comparison. NearLEFT3sealedclothparcels/worktable/CLOSEDplainpersonalTIN/functionalclasp present. Do not retroapply newREDbench/nativewholearchitecture/LEFTdryregions/4legtable/EXACTONLY3travelers/bluecloth/twilight. Originalpartialfronttable/architecture allowed. Source126 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+        },
+        "rootViewedActualWholeNativeAndOwnFull": true,
+        "onlyOwnOriginalRequirementsApplied": true,
+        "sourceCorrectionNumber": 126,
+        "checkpoint928UnchangedHistoricalSnapshot": true,
+        "permanentOriginalBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--quests-ae0fe103526b.png"
+      }
+    },
+    {
+      "number": 127,
+      "key": "adventure--reunion--companions--mystic--chapters",
+      "before": {
+        "sourceSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+        "promptSha256": "429362aa9ced9b5840d1c07c77a473aaae0ba75417b73c1a6a85ecba45c733fb",
+        "reviewer": "Codex direct original visual inspection: v2-production-051",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Root directly opened native original and applicable parent: Mystic chapter redraw: unique small CLOSED plain tin with functional handle only, THREE separate differently colored empty bedrolls/individual packs, THREE grouped plain cups. Near monumental ruin threshold clearly divides GREEN FOREST from ARID DESERT. Fresh open cliff-and-gate camera versus old/new parent covered stopping camp. Previous same-green-gorge chapter ambiguity resolved. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+      },
+      "after": {
+        "sourceSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+        "promptSha256": "429362aa9ced9b5840d1c07c77a473aaae0ba75417b73c1a6a85ecba45c733fb",
+        "reviewer": "Codex ROOT original mystic companion progression OWN/native corrective stage231",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "ROOT FULLexactORIGINAL051OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedGREENFORESTLEFT to ARIDDESERTRIGHT regions actualpresent, butchosenRIGHTaridregion/bridgeentry atx1080-1672 hiddenbyactualx1008controls: compositionONLYF. RequiredTHREEdifferentEMPTYbedroll/personalpack places/THREEplaincups/CLOSEDplainTIN/functionalclasp actualLEFTpresent. Other6priorchecks retained, notfreshparent-distinct comparison. Do not retroapply newLEFTarid/REDbench/nativeWHOLEtop/chimneys/tables/BLUEcloth/twilight/16bitcolorcount. Originalpartialnativearchitecture allowed. Source127 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+        ],
+        "notes": "ROOT FULLexactORIGINAL051OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedGREENFORESTLEFT to ARIDDESERTRIGHT regions actualpresent, butchosenRIGHTaridregion/bridgeentry atx1080-1672 hiddenbyactualx1008controls: compositionONLYF. RequiredTHREEdifferentEMPTYbedroll/personalpack places/THREEplaincups/CLOSEDplainTIN/functionalclasp actualLEFTpresent. Other6priorchecks retained, notfreshparent-distinct comparison. Do not retroapply newLEFTarid/REDbench/nativeWHOLEtop/chimneys/tables/BLUEcloth/twilight/16bitcolorcount. Originalpartialnativearchitecture allowed. Source127 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+      },
+      "nativeSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+      "ownSha256": "87ec303fd563917c879affcf41d50956896377c6cdbac77b17f2b0dda129f4ab",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--companions--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: searching for missing loved one, uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY resting places each with its OWN differently colored plain bedroll and pack, plus THREE plain cups together. MYSTICAL monumental ancient ruins and stepped pixel depth. CHAPTERS: strong actual architectural threshold connecting TWO SUBSTANTIALLY DIFFERENT terrain regions: near LEFT GREEN FOREST with dark trees and lush ground, beyond threshold RIGHT ARID DESERT with ochre sand dunes, bare red rock and NO green grass. One continuous world, not split panels. Same green river gorge on both sides, ordinary distant snowy peak alone, or a window onto the same green valley FAILS this choice. HARD FAILURE: latest chapter transition lost contrasting regions. Make clearly GREEN FOREST and ARID DESERT physically distinct on opposite sides of the actual near-midground threshold. FRESH high-oblique sheltered threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%, every plane equally sharp coarse square pixel clusters and stepped shading. Avoid previous near ledge/river/castle composition. Bare architectural foreground, no framing plants, blur, gradients or collage. No people/humanoids/body/portrait/species, writing/pseudotext, any paper/documents/posters/boards/open books/clocks/numerals, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/logos. Plain cloth ONLY as undecorated bedrolls or sealed parcel wraps.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--chapters-ee3360467a36.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--chapters-ee3360467a36.own.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--mystic--chapters",
+        "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--chapters-2-ee3360467a36.png",
+        "actualPublishedNativeSource": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--chapters-ee3360467a36.png",
+        "nativeSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+        "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--companions--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: searching for missing loved one, uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY resting places each with its OWN differently colored plain bedroll and pack, plus THREE plain cups together. MYSTICAL monumental ancient ruins and stepped pixel depth. CHAPTERS: strong actual architectural threshold connecting TWO SUBSTANTIALLY DIFFERENT terrain regions: near LEFT GREEN FOREST with dark trees and lush ground, beyond threshold RIGHT ARID DESERT with ochre sand dunes, bare red rock and NO green grass. One continuous world, not split panels. Same green river gorge on both sides, ordinary distant snowy peak alone, or a window onto the same green valley FAILS this choice. HARD FAILURE: latest chapter transition lost contrasting regions. Make clearly GREEN FOREST and ARID DESERT physically distinct on opposite sides of the actual near-midground threshold. FRESH high-oblique sheltered threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%, every plane equally sharp coarse square pixel clusters and stepped shading. Avoid previous near ledge/river/castle composition. Bare architectural foreground, no framing plants, blur, gradients or collage. No people/humanoids/body/portrait/species, writing/pseudotext, any paper/documents/posters/boards/open books/clocks/numerals, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/logos. Plain cloth ONLY as undecorated bedrolls or sealed parcel wraps.",
+        "exactOriginalOwnSha256": "87ec303fd563917c879affcf41d50956896377c6cdbac77b17f2b0dda129f4ab",
+        "preservedOriginalReview": {
+          "sourceSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+          "promptSha256": "429362aa9ced9b5840d1c07c77a473aaae0ba75417b73c1a6a85ecba45c733fb",
+          "reviewer": "Codex direct original visual inspection: v2-production-051",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native original and applicable parent: Mystic chapter redraw: unique small CLOSED plain tin with functional handle only, THREE separate differently colored empty bedrolls/individual packs, THREE grouped plain cups. Near monumental ruin threshold clearly divides GREEN FOREST from ARID DESERT. Fresh open cliff-and-gate camera versus old/new parent covered stopping camp. Previous same-green-gorge chapter ambiguity resolved. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+        },
+        "corrective": {
+          "sourceSha256": "ee3360467a360597db1c59b692e37f3bcbd7e1ec481418b51427500513efc266",
+          "promptSha256": "429362aa9ced9b5840d1c07c77a473aaae0ba75417b73c1a6a85ecba45c733fb",
+          "reviewer": "Codex ROOT original mystic companion progression OWN/native corrective stage231",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexactORIGINAL051OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedGREENFORESTLEFT to ARIDDESERTRIGHT regions actualpresent, butchosenRIGHTaridregion/bridgeentry atx1080-1672 hiddenbyactualx1008controls: compositionONLYF. RequiredTHREEdifferentEMPTYbedroll/personalpack places/THREEplaincups/CLOSEDplainTIN/functionalclasp actualLEFTpresent. Other6priorchecks retained, notfreshparent-distinct comparison. Do not retroapply newLEFTarid/REDbench/nativeWHOLEtop/chimneys/tables/BLUEcloth/twilight/16bitcolorcount. Originalpartialnativearchitecture allowed. Source127 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+          ],
+          "notes": "ROOT FULLexactORIGINAL051OWN and WHOLEunchangedactualpublishednative personallyseen during231comparison. OriginalspecifiedGREENFORESTLEFT to ARIDDESERTRIGHT regions actualpresent, butchosenRIGHTaridregion/bridgeentry atx1080-1672 hiddenbyactualx1008controls: compositionONLYF. RequiredTHREEdifferentEMPTYbedroll/personalpack places/THREEplaincups/CLOSEDplainTIN/functionalclasp actualLEFTpresent. Other6priorchecks retained, notfreshparent-distinct comparison. Do not retroapply newLEFTarid/REDbench/nativeWHOLEtop/chimneys/tables/BLUEcloth/twilight/16bitcolorcount. Originalpartialnativearchitecture allowed. Source127 exactoriginalOWN/native/priorreview preserved, separatefrom10new231attempts."
+        },
+        "rootViewedActualWholeNativeAndOwnFull": true,
+        "onlyOwnOriginalRequirementsApplied": true,
+        "sourceCorrectionNumber": 127,
+        "checkpoint928UnchangedHistoricalSnapshot": true,
+        "permanentOriginalBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--mystic--chapters-ee3360467a36.png"
+      }
+    },
+    {
+      "number": 128,
+      "key": "adventure--reunion--companions--warm--journey",
+      "before": {
+        "sourceSha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+        "promptSha256": "e14a30778f3a8eb6f3b779213842be0ba26fbe6cae4722643ac8f93e87bcfdaf",
+        "reviewer": "Codex direct original visual inspection: v2-production-052",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Root directly opened native candidate and applicable native parent: Warm redraw: entirely BARE small CLOSED gray tin beside abandoned travel place; THREE distinct differently colored empty bedrolls and THREE actual backpacks, THREE plain cups grouped together. Continuous near path through bridge midpoint toward EMPTY distant settlement. Fresh open stone/tree sheltered resting floor versus parent table camp; prior tin STAR symbols removed. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+      },
+      "after": {
+        "sourceSha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+        "promptSha256": "e14a30778f3a8eb6f3b779213842be0ba26fbe6cae4722643ac8f93e87bcfdaf",
+        "reviewer": "Codex ROOT original full OWN and WHOLE native correction source128",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL original OWN/WHOLE actual052 WARMCOMPJOURNEY native seen. Original required continuous near path through midpoint to different EMPTY distant destination places actualMIDbridge/distantcastle at x1100-1672 behindcontrols1008, compositionF. NativeRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards/pseudotext ban evenwithoutreadablewords, noTextF. Other five priorchecks retained, NOTfreshprefix-distinctreview; functionalmetalTINlatch/packstraps/cups notsymbols. No retronewREDcloth/WALLlamp/WHOLEedges/LEFTregions/no4thbedroll gate or NEWstoryscope rules. Original selectedclosedPLAINgrayTIN/3actualPACKS+differentcoloredrestplaces/3cups/WARMprotectedlantern actualpresentLEFT.",
+          "noText: ROOT FULL original OWN/WHOLE actual052 WARMCOMPJOURNEY native seen. Original required continuous near path through midpoint to different EMPTY distant destination places actualMIDbridge/distantcastle at x1100-1672 behindcontrols1008, compositionF. NativeRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards/pseudotext ban evenwithoutreadablewords, noTextF. Other five priorchecks retained, NOTfreshprefix-distinctreview; functionalmetalTINlatch/packstraps/cups notsymbols. No retronewREDcloth/WALLlamp/WHOLEedges/LEFTregions/no4thbedroll gate or NEWstoryscope rules. Original selectedclosedPLAINgrayTIN/3actualPACKS+differentcoloredrestplaces/3cups/WARMprotectedlantern actualpresentLEFT."
+        ],
+        "notes": "ROOT FULL original OWN/WHOLE actual052 WARMCOMPJOURNEY native seen. Original required continuous near path through midpoint to different EMPTY distant destination places actualMIDbridge/distantcastle at x1100-1672 behindcontrols1008, compositionF. NativeRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards/pseudotext ban evenwithoutreadablewords, noTextF. Other five priorchecks retained, NOTfreshprefix-distinctreview; functionalmetalTINlatch/packstraps/cups notsymbols. No retronewREDcloth/WALLlamp/WHOLEedges/LEFTregions/no4thbedroll gate or NEWstoryscope rules. Original selectedclosedPLAINgrayTIN/3actualPACKS+differentcoloredrestplaces/3cups/WARMprotectedlantern actualpresentLEFT."
+      },
+      "nativeSha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+      "ownSha256": "788136d64f890cd80667360e1d46ad7d74531c253a850fe20b1aa3e3a8c6a5e1",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--companions--warm--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: search for missing loved one: unique CLOSED PLAIN personal keepsake tin beside abandoned pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY traveler resting places, EACH its own differently colored plain bedroll AND clearly identifiable upright personal backpack, THREE plain cups together. WARM protected shared nook, inviting lantern light and preparations. JOURNEY: actual continuous traversable near path through midpoint to different EMPTY distant destination. PRIOR FAILURE: tin has obvious gold STAR emblems; remove every decoration, draw entirely bare plain small gray metal tin. New independent oblique near-threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%. Every plane equally sharp coarse square clusters and stepped shades. No humans/humanoids/body/species/portrait/photos, writing/pseudotext, papers/boards/posters/documents/open books/clocks/numerals, ANY flags/banners/cloth symbols/heraldry/logos, blurred foreground/plants, gradients or collage. Small CLOSED keepsake tins have ENTIRELY BARE lids and sides except functional latch/hinge; never any stars/seals/painted emblem. Plain cloth only as undecorated bedroll or sealed parcel wraps; no draped hanging cloth or tapestries.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.own.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--warm--journey",
+        "sha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+        "generationPromptSha256": "788136d64f890cd80667360e1d46ad7d74531c253a850fe20b1aa3e3a8c6a5e1",
+        "before": {
+          "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey-2-342af6851d2d.png",
+          "sha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+          "promptSha256": "e14a30778f3a8eb6f3b779213842be0ba26fbe6cae4722643ac8f93e87bcfdaf",
+          "generationPromptSha256": "788136d64f890cd80667360e1d46ad7d74531c253a850fe20b1aa3e3a8c6a5e1",
+          "attempt": 2,
+          "review": {
+            "sourceSha256": "342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6",
+            "promptSha256": "e14a30778f3a8eb6f3b779213842be0ba26fbe6cae4722643ac8f93e87bcfdaf",
+            "reviewer": "Codex direct original visual inspection: v2-production-052",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native candidate and applicable native parent: Warm redraw: entirely BARE small CLOSED gray tin beside abandoned travel place; THREE distinct differently colored empty bedrolls and THREE actual backpacks, THREE plain cups grouped together. Continuous near path through bridge midpoint toward EMPTY distant settlement. Fresh open stone/tree sheltered resting floor versus parent table camp; prior tin STAR symbols removed. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+          },
+          "gate": {
+            "ok": true,
+            "width": 1672,
+            "height": 941,
+            "colors": 507568,
+            "findings": []
+          }
+        },
+        "rootOwnWholeNativeSeen": true,
+        "pendingOnly": true,
+        "officialLedgerUnmodified": true,
+        "failChecks": [
+          "composition",
+          "noText"
+        ],
+        "note": "ROOT FULL original OWN/WHOLE actual052 WARMCOMPJOURNEY native seen. Original required continuous near path through midpoint to different EMPTY distant destination places actualMIDbridge/distantcastle at x1100-1672 behindcontrols1008, compositionF. NativeRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards/pseudotext ban evenwithoutreadablewords, noTextF. Other five priorchecks retained, NOTfreshprefix-distinctreview; functionalmetalTINlatch/packstraps/cups notsymbols. No retronewREDcloth/WALLlamp/WHOLEedges/LEFTregions/no4thbedroll gate or NEWstoryscope rules. Original selectedclosedPLAINgrayTIN/3actualPACKS+differentcoloredrestplaces/3cups/WARMprotectedlantern actualpresentLEFT.",
+        "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.png",
+        "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--journey-342af6851d2dfb80392e5a2ba617fe93434898bba48ceb317ac169f8effeacd6.own.txt"
+      }
+    },
+    {
+      "number": 129,
+      "key": "adventure--reunion--companions--warm--quests",
+      "before": {
+        "sourceSha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+        "promptSha256": "2e378b416c0be205831540415d8a77ec58dcee3b4371ecabfd966697c6955743",
+        "reviewer": "Codex direct original visual inspection: v2-production-052",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Root directly opened native candidate and applicable native parent: Warm redraw: unique small CLOSED plain tin with functional handle only and THREE SEALED plain wrapped parcels on LEFT worktable. THREE actual upright personal packs, each with its OWN separate empty bedroll; THREE grouped plain cups. Actual Y-road fork to different EMPTY destinations. Third missing pack now clearly present; fresh sheltered floor/fork view versus parent table. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+      },
+      "after": {
+        "sourceSha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+        "promptSha256": "2e378b416c0be205831540415d8a77ec58dcee3b4371ecabfd966697c6955743",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source129",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": false,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL original OWN and WHOLE actual052 WARMCOMPQUESTnative seen. Original actualYfork/RIGHTEMPTYnearbydestinations andRIGHTredbedroll portion extendbeyond x1008 undercontrols, compositionF. MIDRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards ban evenwithblankboards, noTextF. Otherfivepriorchecks retained, NOTfreshprefixdistinctaudit. LEFTplainCLOSEDgrayTIN/functionalhandles/latch, actual3SEALEDparcels, actual3PACKS anddifferentcoloredrestplaces/3cups/WARMprotectedlantern present; cords/buckles notemblems. No retroREDcloth/WALLlight/WHOLEnativeedge/no4thbedroll/LEFTregions/newscope rules.",
+          "noText: ROOT FULL original OWN and WHOLE actual052 WARMCOMPQUESTnative seen. Original actualYfork/RIGHTEMPTYnearbydestinations andRIGHTredbedroll portion extendbeyond x1008 undercontrols, compositionF. MIDRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards ban evenwithblankboards, noTextF. Otherfivepriorchecks retained, NOTfreshprefixdistinctaudit. LEFTplainCLOSEDgrayTIN/functionalhandles/latch, actual3SEALEDparcels, actual3PACKS anddifferentcoloredrestplaces/3cups/WARMprotectedlantern present; cords/buckles notemblems. No retroREDcloth/WALLlight/WHOLEnativeedge/no4thbedroll/LEFTregions/newscope rules."
+        ],
+        "notes": "ROOT FULL original OWN and WHOLE actual052 WARMCOMPQUESTnative seen. Original actualYfork/RIGHTEMPTYnearbydestinations andRIGHTredbedroll portion extendbeyond x1008 undercontrols, compositionF. MIDRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards ban evenwithblankboards, noTextF. Otherfivepriorchecks retained, NOTfreshprefixdistinctaudit. LEFTplainCLOSEDgrayTIN/functionalhandles/latch, actual3SEALEDparcels, actual3PACKS anddifferentcoloredrestplaces/3cups/WARMprotectedlantern present; cords/buckles notemblems. No retroREDcloth/WALLlight/WHOLEnativeedge/no4thbedroll/LEFTregions/newscope rules."
+      },
+      "nativeSha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+      "ownSha256": "2e987d1037ba6fb703ee1b3893509423f707a4aa79cd8d4338b7996197839184",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--companions--warm--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: search for missing loved one: unique CLOSED PLAIN personal keepsake tin beside abandoned pack/bedroll/cup near LEFT. COMPANION STORIES: THREE distinct EMPTY traveler resting places, EACH its own differently colored plain bedroll AND clearly identifiable upright personal backpack, THREE plain cups together. WARM protected shared nook, inviting lantern light and preparations. QUESTS from base: THREE different plain SEALED cloth-wrapped parcels near LEFT worktable plus actual clearly visible Y-shaped road fork to EMPTY nearby destinations. PRIOR FAILURE: third resting place has no actual backpack. Each of THREE bedrolls MUST have its OWN clearly identifiable upright personal backpack with straps, flap and functional buckles; rolled blanket is not a pack. Group THREE plain cups together. New independent oblique near-threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%. Every plane equally sharp coarse square clusters and stepped shades. No humans/humanoids/body/species/portrait/photos, writing/pseudotext, papers/boards/posters/documents/open books/clocks/numerals, ANY flags/banners/cloth symbols/heraldry/logos, blurred foreground/plants, gradients or collage. Small CLOSED keepsake tins have ENTIRELY BARE lids and sides except functional latch/hinge; never any stars/seals/painted emblem. Plain cloth only as undecorated bedroll or sealed parcel wraps; no draped hanging cloth or tapestries.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.own.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--warm--quests",
+        "sha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+        "generationPromptSha256": "2e987d1037ba6fb703ee1b3893509423f707a4aa79cd8d4338b7996197839184",
+        "before": {
+          "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--warm--quests-2-466e7f303b25.png",
+          "sha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+          "promptSha256": "2e378b416c0be205831540415d8a77ec58dcee3b4371ecabfd966697c6955743",
+          "generationPromptSha256": "2e987d1037ba6fb703ee1b3893509423f707a4aa79cd8d4338b7996197839184",
+          "attempt": 2,
+          "review": {
+            "sourceSha256": "466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87",
+            "promptSha256": "2e378b416c0be205831540415d8a77ec58dcee3b4371ecabfd966697c6955743",
+            "reviewer": "Codex direct original visual inspection: v2-production-052",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native candidate and applicable native parent: Warm redraw: unique small CLOSED plain tin with functional handle only and THREE SEALED plain wrapped parcels on LEFT worktable. THREE actual upright personal packs, each with its OWN separate empty bedroll; THREE grouped plain cups. Actual Y-road fork to different EMPTY destinations. Third missing pack now clearly present; fresh sheltered floor/fork view versus parent table. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+          },
+          "gate": {
+            "ok": true,
+            "width": 1672,
+            "height": 941,
+            "colors": 492718,
+            "findings": []
+          }
+        },
+        "rootOwnWholeNativeSeen": true,
+        "pendingOnly": true,
+        "officialLedgerUnmodified": true,
+        "failChecks": [
+          "composition",
+          "noText"
+        ],
+        "note": "ROOT FULL original OWN and WHOLE actual052 WARMCOMPQUESTnative seen. Original actualYfork/RIGHTEMPTYnearbydestinations andRIGHTredbedroll portion extendbeyond x1008 undercontrols, compositionF. MIDRIGHT woodenpost/two pointedarrowboards violatesoriginalsigns/boards ban evenwithblankboards, noTextF. Otherfivepriorchecks retained, NOTfreshprefixdistinctaudit. LEFTplainCLOSEDgrayTIN/functionalhandles/latch, actual3SEALEDparcels, actual3PACKS anddifferentcoloredrestplaces/3cups/WARMprotectedlantern present; cords/buckles notemblems. No retroREDcloth/WALLlight/WHOLEnativeedge/no4thbedroll/LEFTregions/newscope rules.",
+        "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.png",
+        "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/adventure--reunion--companions--warm--quests-466e7f303b25156c5fb8dee923b30810c2a3dc374adefd9250cf15d076398c87.own.txt"
+      }
+    },
+    {
+      "number": 130,
+      "key": "adventure--reunion--companions--warm--chapters",
+      "before": {
+        "sourceSha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+        "promptSha256": "8cd8c149b939fa64202d5df408a1b4df8f80abf28e65b5c47a9ff5f8e8e1aca8",
+        "reviewer": "Codex direct original visual inspection: v2-production-053",
+        "checks": {
+          "pixelArt": true,
+          "composition": true,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [],
+        "notes": "Root directly opened native candidate and applicable native parent: Warm chapter redraw: plain CLOSED gray personal tin beside THREE distinct differently colored empty bedrolls and actual upright packs, THREE cups together. Protected shared lantern preparations; strong BARE stone gate links lush green forest LEFT and arid desert RIGHT. Prior hanging red banners/gold motifs and unselected maritime departure props removed. Fresh near open sheltered rest-floor/gate camera versus parent table. Native original unchanged, unfiltered and unscaled; unclear choices fail explicitly."
+      },
+      "after": {
+        "sourceSha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+        "promptSha256": "8cd8c149b939fa64202d5df408a1b4df8f80abf28e65b5c47a9ff5f8e8e1aca8",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source130",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL ORIGINAL exact OWN and WHOLE unchanged native personally read/seen. Actual original selected gate/architectural threshold and its GREEN-to-OCHRE walking entry lie at RIGHT x1200-1480, behind actual x1008 interview controls; old own already required focal chosen props LEFT60%. compositionF only; retain other six prior checks, NOT a fresh all-seven/actualprefix-distinct audit. Actual THREE separate empty places with 3 colored rolls/3 actual packs/3 cups, plain closed keepsake tin and warm protected lantern nook, undecorated threshold crossing greenLEFT to ochreRIGHT correctly present. No retro NEW RED STOP/wall-lamp/cup placement/wholeedges/UPLEFT-greenLOWLEFT/home/blue/ruin/restpair rules or invented microcounts. Functional pack clasps/tin joints not symbols. Actual native pixel grid coherent, no bodies/writing/arrowboard/banners; no public deletion."
+        ],
+        "notes": "ROOT FULL ORIGINAL exact OWN and WHOLE unchanged native personally read/seen. Actual original selected gate/architectural threshold and its GREEN-to-OCHRE walking entry lie at RIGHT x1200-1480, behind actual x1008 interview controls; old own already required focal chosen props LEFT60%. compositionF only; retain other six prior checks, NOT a fresh all-seven/actualprefix-distinct audit. Actual THREE separate empty places with 3 colored rolls/3 actual packs/3 cups, plain closed keepsake tin and warm protected lantern nook, undecorated threshold crossing greenLEFT to ochreRIGHT correctly present. No retro NEW RED STOP/wall-lamp/cup placement/wholeedges/UPLEFT-greenLOWLEFT/home/blue/ruin/restpair rules or invented microcounts. Functional pack clasps/tin joints not symbols. Actual native pixel grid coherent, no bodies/writing/arrowboard/banners; no public deletion."
+      },
+      "nativeSha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+      "ownSha256": "61b9d393bb353853423d439d97420fbe1aa9375397c953feef5e68b36a8098e5",
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--companions--warm--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: search for missing loved one: ONE unique small CLOSED completely plain keepsake tin with bare lid/sides beside abandoned travel belongings near LEFT. COMPANION STORIES: THREE distinct EMPTY resting places EACH with differently colored plain bedroll AND own actual upright personal backpack, THREE plain cups together. WARM protected shared lantern-lit rest nook and inviting preparations. CHAPTERS: near-midground actual bare stone architectural threshold links clearly lush GREEN FOREST LEFT and ARID OCHRE DESERT RIGHT in one continuous world. HARD FAILURE: actual red banners and gold motifs on gate towers. Gate and ALL towers must have BARE stone only, NO hanging cloth/pennants/painted stripe/emblems, do not copy prior decorated gate. Fresh HIGH OBLIQUE camera, chosen focal props LEFT60%, quiet fully drawn RIGHT35%. All planes equally sharp coarse square pixel clusters, stepped edges/shade ramps, bare near floor. No people/humanoids/body/species/photos/portraits, writing/pseudotext, papers/posters/boards/documents/open books/clocks/numerals, ANY flags/banners/tapestries/vertical hanging cloth/heraldry/emblems/logos, blur/gradients/collage. Bare undecorated stone/timber architecture ONLY, never decorated towers. Only plain rolled/folded bedroll cloth permitted; no unselected maritime departure boat.",
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-adventure--reunion--companions--warm--chapters-2dc677e44384.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-61b9d393bb353853423d439d97420fbe1aa9375397c953feef5e68b36a8098e5.txt",
+      "originalHistory": {
+        "key": "adventure--reunion--companions--warm--chapters",
+        "before": {
+          "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--warm--chapters-3-2dc677e44384.png",
+          "sha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+          "promptSha256": "8cd8c149b939fa64202d5df408a1b4df8f80abf28e65b5c47a9ff5f8e8e1aca8",
+          "generationPromptSha256": "61b9d393bb353853423d439d97420fbe1aa9375397c953feef5e68b36a8098e5",
+          "attempt": 3,
+          "review": {
+            "sourceSha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+            "promptSha256": "8cd8c149b939fa64202d5df408a1b4df8f80abf28e65b5c47a9ff5f8e8e1aca8",
+            "reviewer": "Codex direct original visual inspection: v2-production-053",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native candidate and applicable native parent: Warm chapter redraw: plain CLOSED gray personal tin beside THREE distinct differently colored empty bedrolls and actual upright packs, THREE cups together. Protected shared lantern preparations; strong BARE stone gate links lush green forest LEFT and arid desert RIGHT. Prior hanging red banners/gold motifs and unselected maritime departure props removed. Fresh near open sheltered rest-floor/gate camera versus parent table. Native original unchanged, unfiltered and unscaled; unclear choices fail explicitly."
+          },
+          "gate": {
+            "ok": true,
+            "width": 1672,
+            "height": 941,
+            "colors": 650552,
+            "findings": []
+          }
+        },
+        "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-adventure--reunion--companions--warm--chapters-2dc677e44384.png",
+        "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-61b9d393bb353853423d439d97420fbe1aa9375397c953feef5e68b36a8098e5.txt",
+        "failChecks": [
+          "composition"
+        ],
+        "note": "ROOT FULL ORIGINAL exact OWN and WHOLE unchanged native personally read/seen. Actual original selected gate/architectural threshold and its GREEN-to-OCHRE walking entry lie at RIGHT x1200-1480, behind actual x1008 interview controls; old own already required focal chosen props LEFT60%. compositionF only; retain other six prior checks, NOT a fresh all-seven/actualprefix-distinct audit. Actual THREE separate empty places with 3 colored rolls/3 actual packs/3 cups, plain closed keepsake tin and warm protected lantern nook, undecorated threshold crossing greenLEFT to ochreRIGHT correctly present. No retro NEW RED STOP/wall-lamp/cup placement/wholeedges/UPLEFT-greenLOWLEFT/home/blue/ruin/restpair rules or invented microcounts. Functional pack clasps/tin joints not symbols. Actual native pixel grid coherent, no bodies/writing/arrowboard/banners; no public deletion.",
+        "cumulativeOriginalSourceRejectionsIfOfficialCorrectionSucceeds": 130,
+        "notNewGeneration": true,
+        "publicCopiesDeleted": 0,
+        "createdAt": "2026-10-07T13:34:40.616010+00:00"
+      }
+    }
+  ],
+  "actualOfficialReceipts": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "qa-runs/harnesses/interview-scene-bank/source-rejections-231-original-mystic-companion-journey-actual.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T11:31:17.546721+00:00",
+      "priorReviewAndExactOwnPreserved": true
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "qa-runs/harnesses/interview-scene-bank/source-rejections-231-original-mystic-companion-other-progression-actual.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T11:43:38.412072+00:00",
+      "priorReviewAndExactOwnPreserved": true
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source128-and-existing232-recomparison-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T12:43:43.564187+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 128,
+      "existingAcceptedParentRecomparisons": 1,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source129-original-warm-companion-quests-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T13:07:34.454001+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 129,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source130-original-warm-companion-chapters-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T13:46:54.594657+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 130,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    }
+  ],
+  "notFreshAllSevenParentAudit": "Remaining old passing checks retained when correction only concerned explicit original requirements; no retroactive whole-building, RED/blue cloth, dawn/twilight, LEFT-region or micro-count gates."
+}

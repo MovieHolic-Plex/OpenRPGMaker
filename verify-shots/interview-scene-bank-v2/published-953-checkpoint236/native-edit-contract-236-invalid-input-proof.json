@@ -1,0 +1,66 @@
+[
+  {
+    "case": "wrong-plan-hash",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "interview-scene-bank",
+      "import-batch",
+      "--records",
+      "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/native-edit-contract-236-wrong-plan-hash.json"
+    ],
+    "actualExit": 1,
+    "ledgerUnchanged": true,
+    "ledgerSha256": "c0cd16bf882e3331b1927f6261bbdebcd1dc762bdba7469524e75d5cbccc34f5"
+  },
+  {
+    "case": "different-scene-source",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "interview-scene-bank",
+      "import-batch",
+      "--records",
+      "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/native-edit-contract-236-different-scene-source.json"
+    ],
+    "actualExit": 1,
+    "ledgerUnchanged": true,
+    "ledgerSha256": "c0cd16bf882e3331b1927f6261bbdebcd1dc762bdba7469524e75d5cbccc34f5"
+  },
+  {
+    "case": "changed-selected-fact",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "interview-scene-bank",
+      "import-batch",
+      "--records",
+      "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/native-edit-contract-236-changed-selected-fact.json"
+    ],
+    "actualExit": 1,
+    "ledgerUnchanged": true,
+    "ledgerSha256": "c0cd16bf882e3331b1927f6261bbdebcd1dc762bdba7469524e75d5cbccc34f5"
+  },
+  {
+    "case": "wrong-target-claim",
+    "command": [
+      "npm",
+      "run",
+      "harness",
+      "--",
+      "interview-scene-bank",
+      "import-batch",
+      "--records",
+      "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/native-edit-contract-236-wrong-target-claim.json"
+    ],
+    "actualExit": 1,
+    "ledgerUnchanged": true,
+    "ledgerSha256": "c0cd16bf882e3331b1927f6261bbdebcd1dc762bdba7469524e75d5cbccc34f5"
+  }
+]

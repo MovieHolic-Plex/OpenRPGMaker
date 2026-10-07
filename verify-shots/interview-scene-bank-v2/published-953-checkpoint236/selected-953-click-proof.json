@@ -1,0 +1,236 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 953,
+  "targets": [
+    "adventure--reunion--battle--warm--chapters--short",
+    "adventure--reunion--companions--mystic--quests--episode",
+    "adventure--reunion--companions--mystic--chapters--short",
+    "adventure--reunion--companions--warm--journey--scene",
+    "adventure--reunion--companions--warm--journey--episode",
+    "adventure--reunion--companions--warm--quests"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--reunion--battle--warm--chapters--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 22.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 16.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--battle",
+          "ms": 7.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--battle-6440481cb81d.png"
+        },
+        {
+          "key": "adventure--reunion--battle--warm",
+          "ms": 20.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm-a7dd0c350dad.png"
+        },
+        {
+          "key": "adventure--reunion--battle--warm--chapters",
+          "ms": 10.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm--chapters-d4ed7a6a5409.png"
+        },
+        {
+          "key": "adventure--reunion--battle--warm--chapters--short",
+          "ms": 36.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm--chapters--short-1f521997361a.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--mystic--quests--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 5.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic",
+          "ms": 7.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-e58e5198560a.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests",
+          "ms": 3.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests-d2c23b8fbb11.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests--episode",
+          "ms": 6.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests--episode-3635106a8334.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--mystic--chapters--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 4.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic",
+          "ms": 5.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-e58e5198560a.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters",
+          "ms": 5.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--chapters-c3a08048f8bd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--chapters--short",
+          "ms": 20,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--chapters--short-3ee3710b1e5b.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--warm--journey--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 9.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm",
+          "ms": 3.5999999046325684,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey",
+          "ms": 4.099999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey-8857eb3715fc.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--scene",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey--scene-45624d22235d.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--warm--journey--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 7.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 7.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 4.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm",
+          "ms": 6.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey",
+          "ms": 3.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey-8857eb3715fc.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--journey--episode",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--journey--episode-30a9eac7f785.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--warm--quests",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 6.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 5.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--quests",
+          "ms": 7.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--quests-ad4c92ea94d3.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}
