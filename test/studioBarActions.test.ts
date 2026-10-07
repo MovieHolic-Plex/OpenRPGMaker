@@ -8,9 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
-import type { NewProjectDialogResult } from "@/editor/ui/newProjectDialog";
 import type { Project } from "@/project/types";
-import { interviewBrief } from "./helpers/gameDesignBrief";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -22,13 +20,7 @@ const mocks = vi.hoisted(() => ({
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => true),
   createProjectFolderWithSeed: vi.fn(async (_title: string, _seed: Project) => true),
-  showNewProjectDialog: vi.fn(
-    async (): Promise<NewProjectDialogResult | null> => ({
-      title: "새 프로젝트",
-      choiceId: null,
-      screenSize: "classic",
-    }),
-  ),
+  openConceptFeedOverlay: vi.fn(async (_mode: "menu" | "welcome") => "closed" as const),
   sendAiBootIntent: vi.fn((_text: string): boolean => true),
   setPendingAiBootIntent: vi.fn((_text: string, _options?: { readonly autoSend?: boolean }): void => {}),
   applyPendingAiBootIntent: vi.fn((): boolean => true),
@@ -54,10 +46,7 @@ vi.mock("@/editor/aiBootIntent", async (importOriginal) => {
     applyPendingAiBootIntent: mocks.applyPendingAiBootIntent,
   };
 });
-vi.mock("@/editor/ui/newProjectDialog", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/editor/ui/newProjectDialog")>();
-  return { ...actual, showNewProjectDialog: mocks.showNewProjectDialog };
-});
+vi.mock("@/editor/conceptFeedOverlay", () => ({ openConceptFeedOverlay: mocks.openConceptFeedOverlay }));
 
 const { renderTopbar, autosaveStatusText, projectMenuLabel } = await import("@/editor/panels/menu");
 
@@ -206,40 +195,12 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(ids).not.toContain("menu-project-save");
   });
 
-  it("새 프로젝트는 확정 기획과 선택한 시스템을 새 폴더 씨앗에 저장한다", async () => {
-    const brief = interviewBrief();
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "wide", gameDesignBrief: brief });
+  it("새 프로젝트는 런처와 같은 컨셉 피드 창을 연다 — 닫으면 폴더도 AI 요청도 만들지 않는다", async () => {
     const topbar = render();
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
-    expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledWith("달빛 항구", expect.objectContaining({
-      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true, playResolution: { width: 480, height: 270 } }),
-      gameDesignBrief: { ...brief, generationPending: true },
-    }));
-    // Reloaded new-project boot owns the handoff, never the project being left.
-    expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
-    expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
-  });
-
-  it("기획을 취소하면 새 폴더나 AI 요청을 만들지 않는다", async () => {
-    mocks.showNewProjectDialog.mockResolvedValueOnce(null);
-    const topbar = render();
-    openMenu(topbar, "menu-project");
-    findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
+    await vi.waitFor(() => expect(mocks.openConceptFeedOverlay).toHaveBeenCalledWith("menu"));
     expect(mocks.createProjectFolderWithSeed).not.toHaveBeenCalled();
-    expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
-    expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
-  });
-
-  it("빈 프로젝트는 기획이나 AI 전달 표식을 만들지 않는다", async () => {
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null, screenSize: "classic" });
-    const topbar = render();
-    openMenu(topbar, "menu-project");
-    findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
-    expect(mocks.createProjectFolderWithSeed.mock.calls[0]?.[1].gameDesignBrief).toBeUndefined();
     expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
     expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
   });

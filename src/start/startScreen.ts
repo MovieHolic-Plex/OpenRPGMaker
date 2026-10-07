@@ -1,44 +1,30 @@
 // start/startScreen.ts
-// 데스크톱 앱 첫 화면(start-screen.html) — 시네마틱 로비 + 기존 새 게임·팀 참여 흐름.
+// 데스크톱 앱 첫 화면(start-screen.html) = 새 게임 컨셉 피드(2026-10-07, docs/superpowers/specs/2026-10-07-concept-feed-design.md).
 //
-// 왜 다시 만들었나 (2026-09-27): 옛 화면은 크림색 카드에 버튼 둘과 경로 목록뿐이었다. 목록 20줄 중
-// 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 경로였고, 「새 프로젝트」는 장르도 묻지 않고 빈 편집기로
-// 넘어간 뒤 캔버스 위 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다. 이 화면이 그 질문을 가져간다.
-//
-// 장르 씨앗·저장소·편집기 셸은 편집기 몫이다. 인터뷰 UI만 지연 로드해 폴더를 만들기 전에 기획을 받는다.
-// 확정한 기획 전체는 startIntent로 해당 폴더의 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
+// 왜 바꿨나: 이전 화면은 로비 히어로·예제 카드·AI 인터뷰(장르 4개 → 질문 5개)·빈 프로젝트 확인 화면이 섞여 있었고,
+// 편집기 메뉴 「새 프로젝트」와 환영 화면도 저마다 다른 모양이었다. 이제 세 입구가 같은 피드(src/start/conceptFeed)를 쓰고,
+// 컨셉을 고르면 이름·폴더·화면 크기를 묻지 않고 바로 만든다. 확정 기획은 startIntent 로 그 폴더의 편집기 부팅에 넘긴다.
+// 위 막대에 폴더 열기·팀 참여·언어가 있고, 최근 프로젝트는 피드 위 「이어하기」 줄이다.
 
 import "./startScreen.css";
 import { mountWindowControls } from "./windowControls";
-import { createStartLobby, createLobbyWays, createLobbyFeatures } from "./startLobby";
-import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
-import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
+import { APP_VERSION } from "@/brand";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
-import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
-import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
+import { launcherMakeHandler } from "./conceptFeed/launcherMake";
+import { createConceptSource } from "@/concepts/source";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
-  newGame: "start-new-game",
   openFolder: "start-open-folder",
   joinTeam: "start-join-team",
-  navRecent: "start-nav-recent",
-  navNew: "start-nav-new",
-  continueCard: "start-continue",
-  continueOpen: "start-continue-open",
-  newCard: "start-new-card",
+  continueRow: "start-continue",
   recentCard: "start-recent-card",
   hiddenToggle: "start-hidden-toggle",
-  intentInput: "start-intent-input",
-  genreOption: "start-genre-option",
-  titleInput: "start-title-input",
-  location: "start-location",
-  changeLocation: "start-change-location",
-  create: "start-create",
   back: "start-back",
   error: "start-error",
   joinInput: "start-join-input",
@@ -46,34 +32,21 @@ export const START_SCREEN_TESTIDS = {
   recentTeam: "start-recent-team",
 } as const;
 
-const DEFAULT_TITLE = "새 게임";
-/** 격자 첫 칸은 「새 게임」이라 최근 프로젝트는 11장까지 — 넓은 창에서 네 칸 세 줄이 찬다. */
-const MAX_GRID = 11;
+const BLANK_TITLE = "새 게임";
+/** 이어하기 줄에 보이는 최근 프로젝트 수. */
+const MAX_CONTINUE = 11;
 
-type View = "home" | "new" | "join";
+type View = "home" | "join";
 
 type State = {
   view: View;
   entries: readonly RecentProjectEntry[];
   loaded: boolean;
   showHidden: boolean;
-  choiceId: NewProjectChoiceId | null;
-  startMode: ProjectStartMode;
-  screenSize: ProjectStartScreenSize;
-  intent: string;
-  title: string;
-  /** 사용자가 고른 상위 위치. null 이면 호스트 기본(문서/OPRN Games). */
-  root: string | null;
-  projectDir: string | null;
   busy: boolean;
-  error: string;
   joinUrl: string;
   teams: readonly RecentTeamEntry[];
-  confirmedBrief?: GameDesignBrief;
 };
-
-/** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
-const GENRES: readonly NewProjectChoice[] = NEW_PROJECT_CHOICES.filter((choice) => choice.featured);
 
 export function formatRelativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return "";
@@ -196,33 +169,10 @@ export function entriesNeedingCover(entries: readonly RecentProjectEntry[]): rea
 }
 
 export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | undefined): void {
-  const state: State = {
-    view: "home",
-    entries: [],
-    loaded: false,
-    showHidden: false,
-    choiceId: null,
-    startMode: "example",
-    screenSize: DEFAULT_START_SCREEN_SIZE,
-    intent: "",
-    // 입력칸 값은 번역 계층이 건드리지 않으므로 기본 제목은 여기서 직접 번역한다.
-    title: t(DEFAULT_TITLE),
-    root: null,
-    projectDir: null,
-    busy: false,
-    error: "",
-    joinUrl: "",
-    teams: [],
-  };
-
+  const state: State = { view: "home", entries: [], loaded: false, showHidden: false, busy: false, joinUrl: "", teams: [] };
   host.dataset.testid = START_SCREEN_TESTIDS.root;
-  const errorBox = el("p", { class: "start-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
-  const main = el("section", { class: "start-main", attrs: { "aria-live": "polite" } });
-  let interviewAbort: AbortController | undefined;
-  let interviewDismissed = false;
-
+  const errorBox = el("p", { class: "start-error start-floating-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
   const setError = (message: string): void => {
-    state.error = message;
     errorBox.textContent = message;
     errorBox.hidden = message === "";
   };
@@ -236,9 +186,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (state.busy) return;
     state.busy = true;
     host.classList.add("is-busy");
-    const controls = Array.from(host.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>("button, input, textarea, select"));
-    const disabledBefore = controls.map(control => control.disabled);
-    controls.forEach(control => { control.disabled = true; });
     setError("");
     try {
       await work();
@@ -247,7 +194,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     } finally {
       state.busy = false;
       host.classList.remove("is-busy");
-      controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
     }
   };
 
@@ -262,102 +208,23 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const opened = await bridge.openRecent({ projectDir: entry.projectDir });
     if (!opened) {
       state.entries = state.entries.map((candidate) => candidate.projectDir === entry.projectDir ? { ...candidate, hiddenReason: "missing" } : candidate);
-      render();
+      renderContinue();
       throw new Error("「" + entry.title + "」 폴더를 찾을 수 없습니다: " + entry.projectDir);
     }
     goEditor();
   });
 
-  let suggestSeq = 0;
-  const refreshLocation = async (): Promise<void> => {
-    if (!bridge?.suggestProjectDir) return;
-    const seq = ++suggestSeq;
-    try {
-      const suggested = await bridge.suggestProjectDir({ title: state.title, ...(state.root ? { root: state.root } : {}) });
-      if (seq !== suggestSeq) return;
-      state.projectDir = suggested.projectDir;
-    } catch {
-      if (seq !== suggestSeq) return;
-      state.projectDir = null;
-    }
-    const code = main.querySelector<HTMLElement>("[data-testid='" + START_SCREEN_TESTIDS.location + "']");
-    if (code) code.textContent = state.projectDir ?? "저장 위치를 정하지 못했습니다";
-  };
-
-  const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example"): void => {
-    if (state.busy) return;
-    state.view = view;
-    state.confirmedBrief = undefined;
-    if (view === "new") state.choiceId = choiceId ?? null;
-    else if (choiceId !== undefined) state.choiceId = choiceId;
-    if (view === "new") {
-      state.startMode = startMode;
-      state.title = t(startMode === "example" && choiceId ? START_EXAMPLE_DETAILS[choiceId]?.title ?? DEFAULT_TITLE : DEFAULT_TITLE);
-    }
-    setError("");
-    render();
-    if (view === "new") {
-      void refreshLocation();
-      main.querySelector<HTMLElement>("[data-first-world-choice], textarea, #start-title")?.focus();
-    }
-    if (view === "join") {
-      main.querySelector<HTMLInputElement>("#start-join-url")?.focus();
-      if (bridge?.recentTeams) {
-        void bridge.recentTeams().then((teams) => {
-          state.teams = teams;
-          if (state.view === "join" && !state.busy) render();
-        }).catch(() => {});
-      }
-    }
-  };
-
-  const createConfirmedProject = async (confirmed?: GameDesignBrief): Promise<boolean> => {
+  /** 빈 프로젝트 — 장르 없이 기본 위치에 새 폴더. */
+  const createBlank = (): void => void run(async () => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
-    const title = state.title.trim() || t(DEFAULT_TITLE);
-    if (state.startMode === "ai") {
-      const { interviewBeforeProject } = await import("./startInterview");
-      const brief = confirmed ?? state.confirmedBrief ?? await interviewBeforeProject(state.choiceId, state.intent.trim());
-      // Cancelling or declining connection must not create a folder or open the editor.
-      if (!brief) return false;
-      state.confirmedBrief = brief;
-      state.choiceId = brief.presetId;
-      // Planning is immediately usable. Account readiness belongs to the final build,
-      // and declining it retains the confirmed draft for the next attempt.
-      const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-      if (!await ensureAiConnectedForPreset({ presetLabel: NEW_PROJECT_CHOICES.find(choice => choice.id === brief.presetId)?.label })) return false;
-      // Check storage before creating a folder; silently opening a blank project loses the plan.
-      const key = "oprn:start-handoff-storage-check";
-      window.sessionStorage.setItem(key, JSON.stringify({ gameDesignBrief: brief, intent: state.intent }) + " ".repeat(1024));
-      window.sessionStorage.removeItem(key);
-    }
-    if (!state.projectDir) await refreshLocation();
-    if (!state.projectDir) throw new Error("저장 위치를 정하지 못했습니다. 「위치 바꾸기」로 위치를 골라 주세요.");
-    const created = await bridge.createProject({ title, projectDir: state.projectDir });
+    const title = t(BLANK_TITLE);
+    const suggested = await bridge.suggestProjectDir?.({ title }).catch(() => null);
+    const created = await bridge.createProject({ title, ...(suggested?.projectDir ? { projectDir: suggested.projectDir } : {}) });
     if (!created) throw new Error("새 게임 폴더를 만들지 못했습니다.");
-    const handoff = {
-      projectDir: created.projectDir,
-      title,
-      choiceId: state.choiceId,
-      intent: state.intent.trim(),
-      startMode: state.startMode,
-      screenSize: state.screenSize,
-      ...(state.startMode === "ai" && state.confirmedBrief ? { gameDesignBrief: state.confirmedBrief } : {}),
-    };
-    if (state.startMode === "ai") writeStartScreenIntent(window.sessionStorage, handoff);
-    else {
-      try { writeStartScreenIntent(window.sessionStorage, handoff); } catch { /* Preserve the existing non-AI folder opening fallback. */ }
-    }
+    try {
+      writeStartScreenIntent(window.sessionStorage, { projectDir: created.projectDir, title, choiceId: null, intent: "", startMode: "blank", screenSize: "wide" });
+    } catch { /* 인계를 못 써도 빈 폴더는 그대로 열린다. */ }
     goEditor();
-    return true;
-  };
-  const create = (): void => void run(async () => { await createConfirmedProject(); });
-
-  const chooseRoot = (): void => void run(async () => {
-    if (!bridge?.chooseProjectRoot) return;
-    const root = await bridge.chooseProjectRoot();
-    if (!root) return;
-    state.root = root;
-    await refreshLocation();
   });
 
   // 참여하는 쪽도 앱이다. 주 프로세스가 호스트 페이지를 앱 창으로 열고, 첫 페이지가 뜨면 돌아온다.
@@ -367,265 +234,88 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!result.ok) throw new Error(result.error);
     state.joinUrl = "";
     if (bridge.recentTeams) state.teams = await bridge.recentTeams();
-    if (state.view === "join") render();
+    if (state.view === "join") renderJoinView();
   });
 
-  // ── 레일 ──────────────────────────────────────────────────────────────
-  const navRecent = el("button", {
-    class: "start-nav-item",
-    attrs: { type: "button" },
-    dataset: { testid: START_SCREEN_TESTIDS.navRecent },
-    children: [icon("clock"), "홈"],
-    on: { click: () => { interviewDismissed = true; showView("home"); } },
-  });
-  const navNew = el("button", {
-    class: "start-nav-item",
-    attrs: { type: "button" },
-    dataset: { testid: START_SCREEN_TESTIDS.navNew },
-    children: [icon("sparkle"), "새 게임"],
-    on: { click: () => showView("new", null, "ai") },
-  });
-  const rail = el("header", {
-    class: "start-rail",
-    children: [
-      el("div", {
-        class: "start-brand",
-        children: [
-          el("span", { class: "start-logo", text: "O", attrs: { "aria-hidden": "true" } }),
-          el("span", { class: "start-brand-text", children: [
-            el("span", { class: "start-brand-name", text: PRODUCT_BRAND }),
-            el("span", { class: "start-brand-tag", text: "RPG 제작 스튜디오" }),
-          ] }),
-        ],
-      }),
-      el("button", {
-        class: "start-btn start-btn-primary start-btn-block",
-        attrs: { type: "button" },
-        dataset: { testid: START_SCREEN_TESTIDS.newGame },
-        children: [icon("plus"), "새 게임 만들기"],
-        on: { click: () => showView("new", null, "ai") },
-      }),
-      el("button", {
-        class: "start-btn start-btn-block",
-        attrs: { type: "button" },
-        dataset: { testid: START_SCREEN_TESTIDS.openFolder },
-        children: [icon("folder"), "폴더 열기"],
-        on: { click: openFolder },
-      }),
-      el("button", {
-        class: "start-btn start-btn-block",
-        attrs: { type: "button" },
-        dataset: { testid: START_SCREEN_TESTIDS.joinTeam },
-        children: [icon("team"), "팀에 참여"],
-        on: { click: () => showView("join") },
-      }),
-      el("nav", { class: "start-nav", attrs: { "aria-label": "시작 화면" }, children: [navRecent, navNew] }),
-      el("div", { class: "start-rail-foot", children: [localePicker(), el("span", { text: APP_VERSION })] }),
-    ],
-  });
-
-  // ── 홈 ────────────────────────────────────────────────────────────────
-  const lobbyActions = (entry?: RecentProjectEntry) => ({
-    newGame: () => showView("new", null, "ai"),
-    openProject: () => { if (entry) openEntry(entry); },
-    examples: () => showView("new", null, "example"),
-    ai: () => showView("new", null, "ai"),
-    blank: () => showView("new", null, "blank"),
-  });
-
-  const renderStartChoices = (): HTMLElement[] => [
-    el("header", { class: "start-onboarding-heading", children: [
-      el("span", { class: "start-kicker", text: "YOUR FIRST WORLD" }),
-      el("h1", { class: "start-title", text: "첫 게임, 작은 장면부터." }),
-      el("p", { class: "start-sub", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요. 이미지는 장르 참고용입니다. 실제 예제는 작은 마을과 길에서 시작해요." }),
-    ] }),
-    el("div", { class: "start-examples", children: GENRES.map(choice => {
-      const detail = START_EXAMPLE_DETAILS[choice.id]!;
-      return el("button", { class: "start-example-card", attrs: { type: "button", "aria-label": choice.label + " 예제로 시작" },
-        dataset: { testid: START_SCREEN_TESTIDS.genreOption + "-" + choice.id },
-        on: { click: () => showView("new", choice.id, "example") }, children: [
-          el("img", { class: "start-example-image", attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지", decoding: "async", draggable: "false" } }),
-          el("span", { class: "start-example-body", children: [
-            el("strong", { text: choice.label }), el("span", { class: "start-sub", text: detail.description }),
-            el("span", { class: "start-example-action", children: [icon("arrow"), "예제로 시작하기"] }),
-          ] }),
-        ] });
-    }) }),
-    el("div", { class: "start-start-ways", children: [
-      el("div", { children: [el("strong", { text: "직접 만들고 싶다면" }), el("p", { class: "start-sub", text: "빈 맵에서 시작할 수 있어요." })] }),
-      el("button", { class: "start-link", text: "빈 프로젝트", attrs: { type: "button" }, dataset: { testid: "start-blank-project" }, on: { click: () => showView("new", null, "blank") } }),
-    ] }),
-    el("div", { class: "start-start-ways", children: [
-      el("div", { children: [el("strong", { text: "아이디어를 AI와 구체화하기" }), el("p", { class: "start-sub", text: "연결 후 기획부터 함께 만들어요." })] }),
-      el("button", { class: "start-link", text: "기획 시작하기", attrs: { type: "button" }, dataset: { testid: "start-ai-project" }, on: { click: () => showView("new", null, "ai") } }),
-    ] }),
-  ];
-
-  const renderAiArrival = (): HTMLElement[] => {
-    state.startMode = "ai";
-    const container = el("div", { class: "start-interview-host", children: [el("h1", { class: "start-interview-loading", text: "어떤 게임을 만들까요?" })] });
-    const controller = new AbortController();
-    interviewAbort = controller;
-    queueMicrotask(() => {
-      void import("./startInterview").then(({ interviewBeforeProject }) => interviewBeforeProject(state.choiceId, state.intent, {
-        container, signal: controller.signal,
-        onConfirm: async brief => {
-          state.busy = true; host.classList.add("is-busy"); setError("");
-          const controls = [...host.querySelectorAll<HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("button, input, select, textarea")];
-          const disabledBefore = controls.map(control => control.disabled);
-          controls.forEach(control => { control.disabled = true; });
-          try { return await createConfirmedProject(brief); }
-          finally {
-            state.busy = false; host.classList.remove("is-busy");
-            controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
-          }
-        },
-      })).then(brief => {
-        if (!brief && !controller.signal.aborted && container.isConnected) {
-          interviewDismissed = true; showView("home");
-        }
-      }).catch(error => {
-        if (controller.signal.aborted) return;
-        container.replaceChildren(el("p", { attrs: { role: "alert" }, text: "인터뷰를 열지 못했습니다. 새 게임 만들기를 다시 눌러 주세요." }));
-        setError(error instanceof Error ? error.message : String(error));
-      });
-    });
-    const titleInput = el("input", { class: "start-input", value: state.title,
-      attrs: { id: "start-title", type: "text", maxlength: "80", autocomplete: "off" }, dataset: { testid: START_SCREEN_TESTIDS.titleInput },
-      on: { input: event => { state.title = (event.currentTarget as HTMLInputElement).value; void refreshLocation(); } },
-    });
-    const settings = el("details", { class: "start-arrival-settings", children: [
-      el("summary", { text: "게임 이름과 저장 위치" }),
-      el("div", { class: "start-arrival-fields", children: [
-        el("label", { class: "start-field", attrs: { for: "start-title" }, children: [el("span", { class: "start-label", text: "게임 이름" }), titleInput, el("small", { class: "start-hint", text: "나중에 바꿀 수 있어요." })] }),
-        el("div", { class: "start-field", children: [
-          el("span", { class: "start-label", text: "저장 위치" }),
-          el("p", { class: "start-location", children: [icon("folder"), el("code", { text: state.projectDir ?? t("기본 위치에 새 게임 폴더를 만들어요."), attrs: { translate: "no" }, dataset: { testid: START_SCREEN_TESTIDS.location } }), el("button", { class: "start-link", text: "위치 바꾸기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.changeLocation }, on: { click: chooseRoot } })] }),
-          el("small", { class: "start-hint", text: "이 폴더에 프로젝트와 작업 내용이 저장돼요." }),
-        ] }),
-        el("label", { class: "start-field", children: [
-          el("span", { class: "start-label", text: "화면 크기" }),
-          el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [
-            el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }),
-            el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } }),
-          ], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } }),
-        ] }),
-      ] }),
-    ] });
-    const alternatives = el("div", { class: "start-arrival-alternatives", children: [
-      el("span", { text: "다른 방식으로 시작" }),
-      el("button", { class: "start-link", text: "예제 둘러보기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.back }, on: { click: () => showView("new", null, "example") } }),
-      el("button", { class: "start-link", text: "빈 프로젝트", attrs: { type: "button" }, dataset: { testid: "start-blank-project" }, on: { click: () => showView("new", null, "blank") } }),
-    ] });
-    return [container, settings, alternatives];
-  };
-
-  const renderHome = (): HTMLElement[] => {
-    if (!state.loaded) return [el("div", { class: "start-loading", text: "최근 작업을 읽는 중…" })];
+  // ── 이어하기 줄 ───────────────────────────────────────────────────────
+  const continueRow = el("section", { class: "cf-continue", attrs: { "aria-label": "이어하기" }, dataset: { testid: START_SCREEN_TESTIDS.continueRow } });
+  continueRow.hidden = true;
+  const renderContinue = (): void => {
     const { visible, temporary, missing } = partitionRecentEntries(state.entries);
-    const list = state.showHidden ? state.entries : visible;
-    // Hidden QA/missing entries may be inspected, but never become the primary continue action.
-    const first = visible[0];
-    const rest = list.filter((entry) => entry !== first);
-    const actions = lobbyActions(first);
-    const out: HTMLElement[] = first || interviewDismissed ? [
-      createStartLobby(first, first ? entryMeta(first) : "", actions),
-      createLobbyWays(actions),
-      createLobbyFeatures(),
-    ] : renderAiArrival();
-    if (first || rest.length > 0) {
-      out.push(el("h2", { class: "start-section", children: [
-        "최근 프로젝트",
-        ...(rest.length > 0 ? [el("span", { class: "start-section-count", text: String(rest.length) })] : []),
-      ] }));
-      out.push(el("div", {
-        class: "start-grid",
+    const list = (state.showHidden ? state.entries : visible).slice(0, state.showHidden ? state.entries.length : MAX_CONTINUE);
+    continueRow.hidden = !state.loaded || (list.length === 0 && temporary + missing === 0);
+    continueRow.replaceChildren(
+      el("h2", { text: "이어하기" }),
+      el("div", { class: "cf-continue-row", children: list.map((entry, index) => el("button", {
+        class: "cf-continue-card" + (entry.hiddenReason ? " is-hidden-entry" : ""),
+        attrs: { type: "button", "aria-label": entry.title + " 열기", title: entry.projectDir },
+        dataset: { testid: START_SCREEN_TESTIDS.recentCard + "-" + index },
+        on: { click: () => openEntry(entry) },
         children: [
-          el("button", {
-            class: "start-card is-new",
-            attrs: { type: "button", "aria-label": "새 게임 만들기" },
-            dataset: { testid: START_SCREEN_TESTIDS.newCard },
-            on: { click: () => showView("new", null, "ai") },
-            children: [el("span", { class: "start-new-card-body", children: [
-              icon("plus"),
-              el("span", { text: "새 게임" }),
-              el("small", { text: "장르·한 문장으로 시작" }),
-            ] })],
-          }),
-          ...rest.slice(0, state.showHidden ? rest.length : MAX_GRID).map((entry, index) => el("button", {
-            class: "start-card" + (entry.hiddenReason ? " is-hidden-entry" : ""),
-            attrs: { type: "button", "aria-label": entry.title + " 열기", title: entry.projectDir },
-            dataset: { testid: START_SCREEN_TESTIDS.recentCard + "-" + index },
-            on: { click: () => openEntry(entry) },
-            children: [
-              coverArt(entry, "start-card-art"),
-              el("span", { class: "start-card-body", children: [
-                el("span", { class: "start-card-title", text: entry.title }),
-                el("span", { class: "start-meta", text: entryMeta(entry) }),
-              ] }),
-            ],
-          })),
+          coverArt(entry, "cf-continue-art"),
+          el("span", { class: "cf-continue-title", text: entry.title, attrs: { translate: "no" } }),
+          el("span", { class: "cf-continue-meta", text: entryMeta(entry) }),
         ],
-      }));
-    }
-    if (temporary + missing > 0) {
-      out.push(el("p", { class: "start-hidden-note", children: [
-        el("span", { text: hiddenEntriesNote(temporary, missing, state.showHidden) }),
+      })) }),
+      ...(temporary + missing > 0 ? [el("p", { class: "cf-continue-note", children: [
+        el("span", { text: hiddenEntriesNote(temporary, missing, state.showHidden) }), " ",
         el("button", {
-          class: "start-link",
-          attrs: { type: "button", "aria-pressed": String(state.showHidden) },
+          class: "cf-link", attrs: { type: "button", "aria-pressed": String(state.showHidden) },
           dataset: { testid: START_SCREEN_TESTIDS.hiddenToggle },
           text: state.showHidden ? "다시 숨기기" : "보기",
-          on: { click: () => { state.showHidden = !state.showHidden; render(); } },
+          on: { click: () => { state.showHidden = !state.showHidden; renderContinue(); } },
         }),
-      ] }));
-    }
-    return out;
+      ] })] : []),
+    );
   };
 
-  // ── 새 게임 ───────────────────────────────────────────────────────────
-  const renderNew = (): HTMLElement[] => {
-    if (state.startMode === "ai") return renderAiArrival();
-    if (state.startMode === "example" && state.choiceId === null) return renderStartChoices();
-    const detail = state.choiceId ? START_EXAMPLE_DETAILS[state.choiceId] : undefined;
-    const choice = GENRES.find(entry => entry.id === state.choiceId);
-    const titleInput = el("input", { class: "start-input", value: state.title,
-      attrs: { id: "start-title", type: "text", maxlength: "80", autocomplete: "off" }, dataset: { testid: START_SCREEN_TESTIDS.titleInput },
-      on: { input: event => { state.title = (event.currentTarget as HTMLInputElement).value; void refreshLocation(); },
-        keydown: event => { if ((event as KeyboardEvent).key === "Enter") { event.preventDefault(); create(); } } },
-    });
-    const preview = el("section", { class: "start-seed-preview", attrs: { "aria-label": "시작할 프로젝트" }, children: [
-      ...(choice ? [el("img", { attrs: { src: choice.thumb, alt: "게임의 세계 참고 이미지", decoding: "async" } })] : []),
-      el("div", { class: "start-seed-preview-copy", children: [
-        el("h2", { text: choice?.label ?? "빈 프로젝트" }),
-        el("p", { class: "start-sub", text: detail?.description ?? "빈 맵에서 나만의 장면을 만들어요." }),
-        el("ul", { children: (detail?.includes ?? ["빈 맵 한 개", "기본 타일과 캐릭터", "첫 편집 안내"]).map(text => el("li", { text })) }),
-      ] }),
-    ] });
-    const fields = el("div", { class: "start-seed-fields", children: [
-      el("label", { class: "start-field", children: [el("span", { class: "start-label", attrs: { for: "start-title" }, text: "게임 이름" }), titleInput, el("small", { class: "start-hint", text: "나중에 바꿀 수 있어요." })] }),
-      el("div", { class: "start-field", children: [el("span", { class: "start-label", text: "저장 위치" }), el("p", { class: "start-location", children: [icon("folder"), el("code", { text: state.projectDir ?? "…", dataset: { testid: START_SCREEN_TESTIDS.location } }), el("button", { class: "start-link", text: "위치 바꾸기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.changeLocation }, on: { click: chooseRoot } })] }), el("small", { class: "start-hint", text: "이 폴더에 프로젝트와 작업 내용이 저장돼요." })] }),
-      el("details", { class: "start-size-details", children: [el("summary", { text: "화면 크기" }), el("select", { class: "start-input", attrs: { "aria-label": "게임 화면 크기" }, children: [el("option", { text: "와이드 · 480 × 270 (16:9)", attrs: { value: "wide", ...(state.screenSize === "wide" ? { selected: "" } : {}) } }), el("option", { text: "클래식 · 320 × 240 (4:3)", attrs: { value: "classic", ...(state.screenSize === "classic" ? { selected: "" } : {}) } })], on: { change: event => { state.screenSize = (event.currentTarget as HTMLSelectElement).value as ProjectStartScreenSize; } } })] }),
-    ] });
-    return [el("div", { class: "start-new-head", children: [el("button", { class: "start-btn start-btn-icon", attrs: { type: "button", "aria-label": "시작 방식 다시 고르기" }, dataset: { testid: START_SCREEN_TESTIDS.back }, children: [icon("back")], on: { click: () => showView("new", null, "example") } }), el("h1", { class: "start-title", text: "이 장면으로 시작해 볼까요?" })] }),
-      el("div", { class: "start-seed-layout", children: [preview, fields] }),
-      el("footer", { class: "start-footer", children: [el("p", { class: "start-sub", text: "만든 뒤, 첫 대사를 바꾸고 바로 플레이해 보세요." }), el("button", { class: "start-btn start-btn-primary start-btn-lg", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.create }, text: state.startMode === "blank" ? "프로젝트 만들기" : "이 예제로 시작", on: { click: create } })] }),
-    ];
-  };
+  // ── 피드 ──────────────────────────────────────────────────────────────
+  const topButton = (label: string, testid: string, icon: "folder" | "team", onClick: () => void): HTMLElement => el("button", {
+    class: "cf-top-btn", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick },
+    children: [el("span", { class: "start-icon start-icon-" + icon, attrs: { "aria-hidden": "true" } }), label],
+  });
+  const source = createConceptSource();
+  let feed: ConceptFeed | null = null;
+  const mountFeed = (): ConceptFeed => createConceptFeed({
+    mode: "launcher",
+    source,
+    continueRow,
+    topActions: [
+      topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
+      topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => showView("join")),
+      localePicker(),
+      el("span", { class: "cf-version", text: APP_VERSION }),
+    ],
+    onBlank: createBlank,
+    onMake: async (concept, tweak) => {
+      if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+      if (state.busy) return false;
+      state.busy = true;
+      try {
+        return await launcherMakeHandler(bridge, {
+          ensureAiConnected: async (label) => {
+            const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+            return ensureAiConnectedForPreset({ presetLabel: label });
+          },
+          made: (slug) => source.made(slug),
+          goEditor,
+          storage: window.sessionStorage,
+        })(concept, tweak);
+      } finally {
+        state.busy = false;
+      }
+    },
+  });
 
   // ── 팀에 참여 ─────────────────────────────────────────────────────────
-  const renderJoin = (): HTMLElement[] => {
+  const joinView = el("section", { class: "start-join-view" });
+  const renderJoinView = (): void => {
     const urlInput = el("input", {
       class: "start-input",
       value: state.joinUrl,
       attrs: {
-        id: "start-join-url",
-        type: "url",
-        inputmode: "url",
-        autocomplete: "off",
-        spellcheck: "false",
-        placeholder: "예: http://192.168.0.10:9840",
-        "aria-describedby": "start-join-hint",
+        id: "start-join-url", type: "url", inputmode: "url", autocomplete: "off", spellcheck: "false",
+        placeholder: "예: http://192.168.0.10:9840", "aria-describedby": "start-join-hint",
       },
       dataset: { testid: START_SCREEN_TESTIDS.joinInput },
       on: {
@@ -633,14 +323,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") { event.preventDefault(); joinTeam(state.joinUrl); } },
       },
     });
-    const out: HTMLElement[] = [
+    joinView.replaceChildren(
       el("div", { class: "start-new-head", children: [
         el("button", {
-          class: "start-btn start-btn-icon",
-          attrs: { type: "button", "aria-label": "최근 작업으로 돌아가기" },
-          dataset: { testid: START_SCREEN_TESTIDS.back },
-          children: [icon("back")],
-          on: { click: () => { interviewDismissed = true; showView("home"); } },
+          class: "start-btn start-btn-icon", attrs: { type: "button", "aria-label": "새 게임으로 돌아가기" },
+          dataset: { testid: START_SCREEN_TESTIDS.back }, children: [icon("back")], on: { click: () => showView("home") },
         }),
         el("h1", { class: "start-title", text: "팀에 참여" }),
       ] }),
@@ -648,74 +335,54 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         el("label", { class: "start-label", attrs: { for: "start-join-url" }, text: "호스트 주소 또는 초대 링크" }),
         el("div", { class: "start-row", children: [
           el("div", { class: "start-field-grow", children: [urlInput] }),
-          el("button", {
-            class: "start-btn start-btn-primary",
-            attrs: { type: "button" },
-            dataset: { testid: START_SCREEN_TESTIDS.joinSubmit },
-            text: "참여",
-            on: { click: () => joinTeam(state.joinUrl) },
-          }),
+          el("button", { class: "start-btn start-btn-primary", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.joinSubmit }, text: "참여", on: { click: () => joinTeam(state.joinUrl) } }),
         ] }),
-        el("p", {
-          class: "start-hint",
-          attrs: { id: "start-join-hint" },
-          text: "호스트 컴퓨터에서 파일 → 팀 협업 시작을 누르면 주소가 나옵니다. 같은 네트워크에 있어야 합니다. 프로젝트는 호스트 컴퓨터에 저장됩니다.",
-        }),
+        el("p", { class: "start-hint", attrs: { id: "start-join-hint" }, text: "호스트 컴퓨터에서 파일 → 팀 협업 시작을 누르면 주소가 나옵니다. 같은 네트워크에 있어야 합니다. 프로젝트는 호스트 컴퓨터에 저장됩니다." }),
       ] }),
-    ];
-    if (state.teams.length > 0) {
-      out.push(el("h2", { class: "start-section", text: "최근 참여한 팀" }));
-      out.push(el("div", {
-        class: "start-team-list",
-        children: state.teams.map((team, index) => el("button", {
+      ...(state.teams.length > 0 ? [
+        el("h2", { class: "start-section", text: "최근 참여한 팀" }),
+        el("div", { class: "start-team-list", children: state.teams.map((team, index) => el("button", {
           class: "start-team",
           attrs: { type: "button", "aria-label": t("{0} 에 다시 참여").replace("{0}", new URL(team.url).host) },
           dataset: { testid: START_SCREEN_TESTIDS.recentTeam + "-" + index },
           on: { click: () => joinTeam(team.url) },
-          children: [
-            icon("team"),
-            el("span", { class: "start-team-host", text: new URL(team.url).host }),
-            el("span", { class: "start-meta", text: formatRelativeTime(team.lastJoinedAt) }),
-          ],
-        })),
-      }));
-    }
-    return out;
+          children: [icon("team"), el("span", { class: "start-team-host", text: new URL(team.url).host }), el("span", { class: "start-meta", text: formatRelativeTime(team.lastJoinedAt) })],
+        })) }),
+      ] : []),
+    );
   };
 
-  const render = (): void => {
-    const home = state.view === "home";
-    const renderView = (): HTMLElement[] => state.view === "home" ? renderHome() : state.view === "new" ? renderNew() : renderJoin();
-    navRecent.classList.toggle("is-active", home);
-    navNew.classList.toggle("is-active", state.view === "new");
-    if (home) { navRecent.setAttribute("aria-current", "page"); navNew.removeAttribute("aria-current"); }
-    else if (state.view === "new") { navNew.setAttribute("aria-current", "page"); navRecent.removeAttribute("aria-current"); }
-    else { navNew.removeAttribute("aria-current"); navRecent.removeAttribute("aria-current"); }
-    main.classList.toggle("is-home", home);
-    host.dataset.view = state.view;
-    interviewAbort?.abort();
-    interviewAbort = undefined;
-    main.replaceChildren(...renderView(), errorBox);
-    host.classList.toggle("is-first-world", Boolean(interviewAbort));
-    host.classList.toggle("is-interview-start", Boolean(interviewAbort));
+  const showView = (view: View): void => {
+    if (state.busy) return;
+    state.view = view;
+    host.dataset.view = view;
+    setError("");
+    if (view === "join") {
+      feed?.dispose();
+      feed = null;
+      renderJoinView();
+      host.replaceChildren(joinView, errorBox);
+      joinView.querySelector<HTMLInputElement>("#start-join-url")?.focus();
+      if (bridge?.recentTeams) {
+        void bridge.recentTeams().then((teams) => {
+          state.teams = teams;
+          if (state.view === "join" && !state.busy) renderJoinView();
+        }).catch(() => {});
+      }
+      return;
+    }
+    feed = mountFeed();
+    host.replaceChildren(feed.element, errorBox);
+    renderContinue();
   };
 
   /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
   const applyCover = (projectDir: string, cover: string): void => {
     state.entries = state.entries.map((entry) => entry.projectDir === projectDir ? { ...entry, cover, coverStale: false } : entry);
-    for (const art of main.querySelectorAll<HTMLElement>("[data-cover-for]")) {
+    for (const art of host.querySelectorAll<HTMLElement>("[data-cover-for]")) {
       if (art.dataset.coverFor !== projectDir) continue;
       art.classList.remove("is-empty");
       art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
-    }
-    for (const hero of main.querySelectorAll<HTMLElement>("[data-hero-for]")) {
-      if (hero.dataset.heroFor !== projectDir) continue;
-      hero.classList.remove("is-empty-art", "is-fallback-art");
-      const credit = hero.querySelector(".start-cinema-credit > span");
-      if (credit) credit.textContent = "MADE WITH OPRN";
-      const current = hero.querySelector<HTMLImageElement>(".start-hero-bg");
-      if (current) current.src = cover;
-      else hero.prepend(el("img", { class: "start-hero-bg", attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
     }
   };
 
@@ -750,15 +417,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.view !== "home" && !state.busy) { interviewDismissed = true; showView("home"); }
+    if (event.key === "Escape" && state.view === "join" && !state.busy) showView("home");
   });
 
-  host.replaceChildren(rail, main);
-  render();
+  showView("home");
 
   if (!bridge) {
     state.loaded = true;
-    render();
+    renderContinue();
     setError("시작 화면은 데스크톱 앱에서만 동작합니다.");
     return;
   }
@@ -770,8 +436,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     })
     .finally(() => {
       state.loaded = true;
-      // 첫 방문은 세계 선택 → 첫 문장, 재방문은 최근 프로젝트의 표지 그림을 보여 준다.
-      if (!state.busy) render();
+      renderContinue();
       void refreshCovers();
     });
 }

@@ -6,7 +6,6 @@
 @import "./from-map-resource-system-part-1.css" layer(shell);
 @import "./shell-density.part-1.css" layer(shell);
 @import "./shell-density.part-2.css" layer(shell);
-@import "./editor-welcome.css" layer(shell);
 @import "./from-editor-responsive-a.css" layer(shell);
 @import "./figma-editor/01-shell-topbar-team.css" layer(shell);
 @import "./figma-editor/02-menus-toolbar-tools.css" layer(shell);

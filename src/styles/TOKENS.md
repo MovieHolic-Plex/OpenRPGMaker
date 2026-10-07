@@ -154,7 +154,6 @@ for(const m of s.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) console.log(`| \`${m[1]
 | `components/app-modal.css` | `components.components` |
 | `components/empty-state.css` | `components.components` |
 | `components/grid-4.css` | `components.components` |
-| `shell/editor-welcome.css` | `shell.shell` |
 | `map/world-panel.css` | `map.editor` |
 | `database/from-editor-world-panel.css` | `database.editor` |
 | `runtime/minimap.css` | `runtime.runtime` |

@@ -89,14 +89,6 @@ describe("mode transitions", () => {
     vi.doMock("@/editor/editorWelcome", () => ({
       hasDeepLinkedProject: vi.fn(() => false),
       isAutomationBootContext: vi.fn(() => true),
-      presentEditorWelcome: vi.fn(async () => ({
-        intent: null,
-        prompt: null,
-        autoSend: false,
-        replaceWithBlank: false,
-        dismiss: false,
-        action: "skip" as const,
-      })),
       setEditorWelcomeDismissed: vi.fn(),
       shouldPresentEditorWelcome: vi.fn(() => false),
     }));
