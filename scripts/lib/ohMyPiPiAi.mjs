@@ -250,6 +250,12 @@ export async function createOhMyPiAdapters() {
       for (const role of ["deep", "writer"]) {
         const selected = body.roleModels?.[role];
         if (selected?.provider && !(selected.provider in providerApiKeys)) {
+          // 작문은 다른 계정에 둘 수 있는 선택 역할이다 — 그 계정이 없으면 실행기가 실행 모델로 대신한다.
+          if (role === "writer") {
+            try { providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider); }
+            catch { providerApiKeys[selected.provider] = undefined; }
+            continue;
+          }
           providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
         }
       }

@@ -13,15 +13,16 @@ import {
   ohMyPiOAuthProviders,
   ohMyPiProvidersByAuthKind,
   parseOhMyPiProvider,
+  RECOMMENDED_OH_MY_PI_PROVIDER,
 } from "@/ai/ohMyPiProviders";
 
 describe("oh-my-pi provider catalog", () => {
-  it("제공자는 정확히 둘이고 기본 제공자가 맨 앞이다", () => {
+  it("제공자는 정확히 둘이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
-      ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
+      ANTIGRAVITY_PROVIDER_ID,
     ]);
-    expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(DEFAULT_OH_MY_PI_PROVIDER);
+    expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
   });
 
   it("id 문자열은 oauth/credentials.ts 의 상수와 같은 출처다", () => {
@@ -56,10 +57,10 @@ describe("oh-my-pi provider catalog", () => {
 
     const codex = getOhMyPiProvider(CODEX_PROVIDER_ID);
     expect(codex?.label).toBe("ChatGPT");
-    expect(codex?.defaultModel).toBe("gpt-5.6-sol");
+    expect(codex?.defaultModel).toBe("gpt-6.1-sol");
   });
 
-  it("기본 제공자는 Antigravity OAuth 다", () => {
+  it("옛 저장값을 읽을 때의 제공자는 Antigravity OAuth 다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
     expect(getOhMyPiProvider(DEFAULT_OH_MY_PI_PROVIDER)?.authKind).toBe("oauth");
   });

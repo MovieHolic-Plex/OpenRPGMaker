@@ -45,25 +45,33 @@ function storedProviderId(): string | undefined {
 }
 
 describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-  it("공장 기본 제공자가 Antigravity 다", () => {
+  it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT 를 권한다", () => {
     expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
-    expect(defaultAiConfig().providerId).toBe(ANTIGRAVITY_PROVIDER_ID);
+    expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
   });
 
   it("셋째 제공자는 존재하지 않는다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
-      ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
+      ANTIGRAVITY_PROVIDER_ID,
     ]);
+  });
+
+  it("Codex 의 옛 공장 기본 gpt-5.6-sol 은 gpt-6.1-sol 로 올리고, 모델 없는 Codex blob 에 Gemini 를 채우지 않는다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID, model: "gpt-5.6-sol" }));
+    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID }));
+    expect(loadAiConfig().model).toBe("gpt-6.1-sol");
+    expect(loadAiConfig().liteModel).toBe("gpt-6.1-sol");
   });
 
   it("저장된 openai-codex 는 load/save 왕복을 살아남는다", () => {
     // 이전 구현은 여기서 Antigravity 로 되돌렸다 — 사용자가 고른 Codex 를 조용히 뒤집는 동작이다.
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID, model: "gpt-5.6-sol" }));
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: CODEX_PROVIDER_ID, model: "gpt-6-sol" }));
 
     const loaded = loadAiConfig();
     expect(loaded.providerId).toBe(CODEX_PROVIDER_ID);
-    expect(loaded.model).toBe("gpt-5.6-sol");
+    expect(loaded.model).toBe("gpt-6-sol");
 
     saveAiConfig(loaded);
     expect(storedProviderId()).toBe(CODEX_PROVIDER_ID);

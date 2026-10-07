@@ -37,6 +37,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 
 import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
 import { streamSimple } from "@oh-my-pi/pi-ai";
+import type { RoleModel } from "../../src/ai/modelRoles.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { codexVersionFetch } from "./codexClientVersion.ts";
 import {
@@ -572,10 +573,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
   });
   for (const tool of tools) exposed.add(tool.name);
-  const writer = request.roleModels?.writer;
+  const selectedWriter = request.roleModels?.writer;
+  const writerKeyFor = (role: RoleModel) => options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
+  // 작문 계정(예: ChatGPT 주 계정 + Google 작문)이 연결돼 있지 않으면 작문을 실행 모델로 대신한다.
+  // 연결 없는 계정 때문에 대사 작업 전체가 죽지 않게 한다(providerSelection.workProviderIds 와 짝).
+  const writer = selectedWriter && !writerKeyFor(selectedWriter) && selectedWriter.provider !== request.provider
+    ? (request.roleModels?.deep ?? { provider: request.provider, model: String((model as { id?: string }).id ?? request.model ?? ""), thinkingLevel: "medium" as const })
+    : selectedWriter;
   if (writer && !options.toolNames) {
     const writerTool = createWriterTool(writer, completeProvider,
-      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined),
+      writerKeyFor(writer),
       gameDesignBriefContext(base.gameDesignBrief));
     tools.push(writerTool);
     exposed.add(writerTool.name);

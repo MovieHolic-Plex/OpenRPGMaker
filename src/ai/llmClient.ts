@@ -14,7 +14,7 @@ import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaul
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
-import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -151,8 +151,16 @@ const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
  */
 const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tiered"]);
 
-/** Antigravity 의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
+/**
+ * Codex 의 옛 공장 기본(gpt-5.6-sol). 2026-10-07 에 기본을 gpt-6.1-sol 로 올렸다 — 같은 날 조수 시험에서
+ * 6.1-sol 이 낫게 나왔고, 그 전까지 카탈로그의 gpt-6-* 는 클라이언트 버전 헤더 때문에 전부 400 이었다.
+ */
+const LEGACY_CODEX_FACTORY_MODELS = new Set(["gpt-5.6-sol"]);
+const RECOMMENDED_CODEX_MODEL = "gpt-6.1-sol";
+
+/** 각 제공자의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
 function promoteLegacyFactoryModel(model: string, providerId: string): string {
+  if (providerId === RECOMMENDED_OH_MY_PI_PROVIDER) return LEGACY_CODEX_FACTORY_MODELS.has(model) ? RECOMMENDED_CODEX_MODEL : model;
   if (providerId !== DEFAULT_OH_MY_PI_PROVIDER) return model;
   return LEGACY_FACTORY_MODELS.has(model) ? DEFAULT_MODEL : model;
 }
@@ -188,6 +196,31 @@ function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
  * 자기 baseUrl 을 자기가 들고 간다 — 에디터 설정에 얹혀 가지 않는다.
  */
 export function defaultAiConfig(): AiConfig {
+  const legacy = legacyStoredAiConfigBase();
+  // 새로 설정하는 사용자의 권장 조합(2026-10-07): 계획 gpt-6.1-sol high · 실행/시각 medium · 작문 Gemini.
+  // 작문 계정(Google)이 없으면 실행기가 작문을 실행 모델로 대신한다 — 연결을 강제하지 않는다.
+  return {
+    ...legacy,
+    providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
+    model: RECOMMENDED_CODEX_MODEL,
+    liteModel: RECOMMENDED_CODEX_MODEL,
+    ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
+    ultrabrainModel: RECOMMENDED_CODEX_MODEL,
+    ultrabrainReasoningEffort: "high",
+    roleModels: {
+      deep: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
+      vision: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
+      writer: { provider: DEFAULT_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" },
+    },
+    roleModelsPolicyVersion: 1,
+  };
+}
+
+/**
+ * 저장값을 읽을 때의 바탕. 저장된 blob 은 Antigravity 가 기본이던 시절의 값이므로, 빠진 칸을
+ * 새 권장 조합(ChatGPT)으로 채우면 Google 만 연결한 기존 사용자의 모델이 말없이 바뀐다.
+ */
+function legacyStoredAiConfigBase(): AiConfig {
   return {
     authMode: "chatgpt",
     providerId: DEFAULT_OH_MY_PI_PROVIDER,
@@ -283,11 +316,11 @@ function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string
 // 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
 // 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
-  const base = defaultAiConfig();
-  if (typeof localStorage === "undefined") return base;
+  if (typeof localStorage === "undefined") return defaultAiConfig();
+  const base = legacyStoredAiConfigBase();
   try {
     const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
-    if (!raw) return base;
+    if (!raw) return defaultAiConfig();
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
     const authMode = "chatgpt" as const;
     if (parsed.authMode === "apiKey") {
@@ -308,10 +341,12 @@ export function loadAiConfig(): AiConfig {
     // 모델 승격이 제공자를 알아야 하므로 providerId 를 먼저 푼다.
     const providerId = parseOhMyPiProvider(parsed.providerId);
     const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
-    const model: string = promoteLegacyFactoryModel(storedModel, providerId) || base.model;
+    // 저장된 모델이 없으면 그 제공자의 기본 모델 — Codex blob 에 Gemini 이름을 채우지 않는다.
+    const providerDefault = getOhMyPiProvider(providerId)?.defaultModel || base.model;
+    const model: string = promoteLegacyFactoryModel(storedModel, providerId) || providerDefault;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     const liteModel: string = promoteLegacyFactoryModel(storedLiteModel, providerId)
-      || promoteLegacyFactoryModel(storedModel, providerId) || (base.liteModel ?? base.model);
+      || promoteLegacyFactoryModel(storedModel, providerId) || providerDefault;
     // Preserve explicit selections; the companion rejects unsupported IDs without substitution.
     return {
       authMode,
@@ -379,7 +414,7 @@ export function loadAiConfig(): AiConfig {
       roleModelsPolicyVersion: 1,
     };
   } catch {
-    return base;
+    return defaultAiConfig();
   }
 }
 

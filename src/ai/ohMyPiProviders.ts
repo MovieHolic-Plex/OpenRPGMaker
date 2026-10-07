@@ -43,23 +43,33 @@ export type OhMyPiProvider = {
  */
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   {
+    id: CODEX_PROVIDER_ID,
+    label: "ChatGPT",
+    defaultModel: "gpt-6.1-sol",
+    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
+    authKind: "oauth",
+  },
+  {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
     defaultModel: "gemini-3.8-flash",
     envVars: [],
     authKind: "oauth",
   },
-  {
-    id: CODEX_PROVIDER_ID,
-    label: "ChatGPT",
-    defaultModel: "gpt-5.6-sol",
-    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
-    authKind: "oauth",
-  },
 ];
 
-/** 공장 기본 제공자. 에디터 툴콜이 Codex 보다 안정적이어서 Antigravity 를 앞에 둔다. */
+/**
+ * 옛 저장값을 읽을 때의 제공자. providerId 가 없는 옛 blob 은 Antigravity 시절에 저장된 것이므로
+ * 그대로 Antigravity 로 읽는다 — 이 값을 바꾸면 Google 만 연결한 기존 사용자가 말없이 ChatGPT 로 넘어간다.
+ */
 export const DEFAULT_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
+
+/**
+ * 새로 설정하는 사용자에게 권하는 제공자. 조수 기능 시험 12과제(2026-10-07, 같은 입력 1회씩)에서
+ * gpt-6.1-sol 11/12, gemini-3.8-flash 7/12 — Gemini 는 범위 밖 칸을 바꾸는 실패가 많았다.
+ * 제공자 목록 순서도 이 값을 첫 항목으로 둔다(첫 항목 = 권장값).
+ */
+export const RECOMMENDED_OH_MY_PI_PROVIDER = CODEX_PROVIDER_ID;
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 
