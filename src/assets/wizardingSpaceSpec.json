@@ -26,15 +26,10 @@
     "wz-castle-wall-n-pillar"
    ],
    "sRhythm": [
-    "s",
-    "s",
-    "s",
-    "wz-castle-wall-s-window",
-    "s",
     "s"
    ],
    "northRows": 4,
-   "southRows": 2
+   "southRows": 1
   },
   "infirmary": {
    "ko": "병동 석회벽",
@@ -57,7 +52,7 @@
     "s"
    ],
    "northRows": 4,
-   "southRows": 2
+   "southRows": 1
   },
   "greenhouse": {
    "ko": "온실 철틀 유리벽",
@@ -103,7 +98,7 @@
     "s"
    ],
    "northRows": 4,
-   "southRows": 2
+   "southRows": 1
   },
   "owlcastle": {
    "ko": "부엉이 탑(성채 석벽 + 비행 창)",
@@ -132,7 +127,7 @@
     "s"
    ],
    "northRows": 4,
-   "southRows": 2
+   "southRows": 1
   },
   "postoffice": {
    "ko": "우체국 목재 벽",
@@ -168,7 +163,7 @@
     "s"
    ],
    "northRows": 4,
-   "southRows": 2
+   "southRows": 1
   },
   "pitch": {
    "ko": "경기장 터널 벽·울타리",
@@ -258,11 +253,47 @@
      "kit": "wz-furn-bench-long",
      "placement": "grid",
      "count": [
-      10,
-      18
+      8,
+      12
      ],
      "clearance": 0,
      "gap": 1,
+     "vary": [
+      [
+       {
+        "kit": "wz-furn-prop-bottles",
+        "dx": 1,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-inf-candle",
+        "dx": 0,
+        "dy": 0
+       },
+       {
+        "kit": "wz-furn-prop-bottles",
+        "dx": 2,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-furn-prop-book-closed",
+        "dx": 2,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-inf-candle",
+        "dx": 1,
+        "dy": 0
+       }
+      ],
+      []
+     ],
      "with": [
       {
        "kit": "wz-furn-bench-seat",
@@ -273,11 +304,6 @@
        "kit": "wz-furn-bench-seat",
        "dx": 0,
        "dy": 2
-      },
-      {
-       "kit": "wz-furn-prop-bottles",
-       "dx": 1,
-       "dy": 0
       }
      ]
     },
@@ -559,8 +585,8 @@
        12
       ],
       "default": [
-       24,
-       17
+       20,
+       14
       ],
       "max": [
        40,
@@ -1049,11 +1075,12 @@
      "kit": "wz-pot-cauldron-bench-green",
      "placement": "grid",
      "count": [
-      10,
-      18
+      6,
+      8
      ],
      "clearance": 0,
-     "gap": 1,
+     "gapX": 2,
+     "gapY": 1,
      "alt": [
       "wz-pot-cauldron-bench-violet"
      ]
@@ -1188,8 +1215,8 @@
      12
     ],
     "default": [
-     24,
-     18
+     18,
+     15
     ],
     "max": [
      40,
@@ -1767,7 +1794,7 @@
     ],
     "default": [
      24,
-     17
+     20
     ],
     "max": [
      40,
@@ -1829,11 +1856,80 @@
      "kit": "wz-lib-shelf-plain-2x3",
      "placement": "grid",
      "count": [
-      12,
+      14,
       18
      ],
      "clearance": 0,
-     "gap": 1
+     "gapX": 0,
+     "gapY": 1
+    },
+    {
+     "kit": "wz-furn-table-small",
+     "placement": "grid",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 0,
+     "gapX": 3,
+     "gapY": 1,
+     "vary": [
+      [
+       {
+        "kit": "wz-furn-prop-book-open",
+        "dx": 0,
+        "dy": 0
+       },
+       {
+        "kit": "wz-furn-prop-inkwell",
+        "dx": 1,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-furn-prop-scroll",
+        "dx": 0,
+        "dy": 0
+       },
+       {
+        "kit": "wz-furn-prop-quill",
+        "dx": 1,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-furn-prop-book-closed",
+        "dx": 1,
+        "dy": 0
+       }
+      ],
+      [
+       {
+        "kit": "wz-inf-candle",
+        "dx": 0,
+        "dy": 0
+       },
+       {
+        "kit": "wz-furn-prop-book-open",
+        "dx": 1,
+        "dy": 0
+       }
+      ]
+     ],
+     "with": [
+      {
+       "kit": "wz-furn-chair-back-left",
+       "dx": -1,
+       "dy": 0
+      },
+      {
+       "kit": "wz-furn-chair-back-right",
+       "dx": 2,
+       "dy": 0
+      }
+     ]
     },
     {
      "kit": "wz-lib-record-table",
@@ -2249,8 +2345,8 @@
      "kit": "wz-inf-bed-empty",
      "placement": "grid",
      "count": [
-      6,
-      10
+      4,
+      6
      ],
      "clearance": 0,
      "gap": 1,
@@ -2384,8 +2480,8 @@
      12
     ],
     "default": [
-     22,
-     16
+     18,
+     14
     ],
     "max": [
      36,
@@ -3402,12 +3498,6 @@
    "h": 2,
    "src": "kit"
   },
-  "wz-castle-wall-s-window": {
-   "name": "성채 남벽 창",
-   "w": 1,
-   "h": 2,
-   "src": "kit"
-  },
   "wz-castle-wall-se": {
    "name": "성채 남동 모서리",
    "w": 1,
@@ -3636,6 +3726,12 @@
    "h": 1,
    "src": "kit"
   },
+  "wz-furn-prop-book-closed": {
+   "name": "덮은 책",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
   "wz-furn-prop-book-open": {
    "name": "펼친 책",
    "w": 1,
@@ -3650,6 +3746,18 @@
   },
   "wz-furn-prop-inkwell": {
    "name": "잉크병",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-prop-quill": {
+   "name": "깃펜",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-prop-scroll": {
+   "name": "양피지 두루마리",
    "w": 1,
    "h": 1,
    "src": "kit"
