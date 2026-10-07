@@ -519,6 +519,43 @@ def _bicycle(c):
     hl(c, 1, 29, 14, kc('conc', -2)); hl(c, 2, 30, 12, kc('conc', -2))
 
 
+@R.obj('pb-lost-found-shelf', '분실물 선반', w=2, h=1, up=16, kind='wall', cat='koban', cat_ko='파출소', use=('search',), tags=('파출소',),
+       place='파출소 앞방 벽', desc='회색 철제 3단 선반 2칸 — 우산·가방·상자·보온병·장갑이 칸마다 놓인 분실물 보관대. 글자 없음.')
+def _lost_found(c):
+    W = 32
+    rc(c, 1, 3, 30, 29, kc('conc', -1)); outline(c, 1, 3, 30, 29, kc('conc', -3))
+    vl(c, 2, 4, 27, kc('conc', 2)); vl(c, 29, 4, 27, kc('conc', -2)); vl(c, 15, 4, 24, kc('conc', 0)); vl(c, 16, 4, 24, kc('conc', 2))
+    for y in (11, 19, 27):                                                                                  # 선반 판
+        hl(c, 2, y, 28, kc('conc', 4)); hl(c, 2, y + 1, 28, kc('conc', 0))
+    # 윗단: 우산 둘, 보온병, 상자
+    for x, col in ((4, 'aka'), (7, 'kon')):
+        rc(c, x, 5, 2, 6, kc(col, 0)); vl(c, x, 5, 6, kc(col, 2)); px(c, x, 4, kc('tekko', 3)); px(c, x + 1, 4, kc('tekko', 3)); px(c, x + 2, 5, kc('tekko', 2))
+    rc(c, 11, 6, 3, 5, kc('midori', 1)); vl(c, 11, 6, 5, kc('midori', 3)); hl(c, 11, 6, 3, kc('conc', 4)); px(c, 12, 5, kc('conc', 2))
+    rc(c, 19, 6, 8, 5, kc('kinari', 1)); hl(c, 19, 6, 8, kc('kinari', 3)); vl(c, 19, 6, 5, kc('kinari', 3)); hl(c, 19, 8, 8, kc('ita', 2)); outline(c, 18, 5, 10, 6, kc('ita', -2))
+    # 가운데단: 갈색 가방, 노랑 장갑, 파란 가방
+    rc(c, 4, 14, 8, 5, kc('ita', 1)); hl(c, 4, 14, 8, kc('ita', 3)); vl(c, 4, 14, 5, kc('ita', 3)); hl(c, 6, 13, 4, kc('ita', -1)); px(c, 6, 12, OL); px(c, 9, 12, OL); hl(c, 6, 12, 1, OL); outline(c, 3, 13, 10, 6, kc('ita', -3))
+    rc(c, 19, 16, 3, 3, kc('kii', 1)); hl(c, 19, 16, 3, kc('kii', 3)); rc(c, 23, 16, 3, 3, kc('kii', 0)); hl(c, 23, 16, 3, kc('kii', 3))
+    rc(c, 18, 13, 9, 2, kc('sora', 1)); hl(c, 18, 13, 9, kc('sora', 3))                                    # 접힌 파란 천
+    # 아랫단: 큰 상자 둘, 우산
+    rc(c, 4, 21, 9, 6, kc('kinari', 0)); hl(c, 4, 21, 9, kc('kinari', 3)); vl(c, 4, 21, 6, kc('kinari', 2)); vl(c, 12, 21, 6, kc('kinari', -2)); hl(c, 4, 23, 9, kc('ita', 2)); outline(c, 3, 20, 11, 7, kc('ita', -2))
+    rc(c, 18, 22, 6, 5, kc('midori', 0)); hl(c, 18, 22, 6, kc('midori', 3)); hl(c, 18, 24, 6, kc('kii', 2)); outline(c, 17, 21, 8, 6, kc('midori', -3))
+    rc(c, 26, 20, 2, 7, kc('kii', 0)); vl(c, 26, 20, 7, kc('kii', 2)); px(c, 26, 19, kc('tekko', 3)); px(c, 27, 19, kc('tekko', 3))
+    rc(c, 2, 29, 28, 2, kc('conc', 1)); hl(c, 2, 29, 28, kc('conc', 3)); hl(c, 1, 31, 30, kc('conc', -3))
+
+
+@R.obj('pb-steel-locker', '철제 로커', w=1, h=1, up=16, kind='wall', cat='koban', cat_ko='파출소', use=('open',), tags=('파출소', '휴게실'),
+       place='휴게실·탈의 벽', desc='청회색 철제 로커 — 문 둘(위아래), 윗부분 통풍 슬릿, 문마다 은색 손잡이. 글자 없음.')
+def _steel_locker(c):
+    rc(c, 1, 3, 14, 29, kc('sora', 0)); rc(c, 1, 3, 14, 2, kc('sora', 3)); hl(c, 1, 5, 14, kc('sora', -2))
+    vl(c, 1, 5, 26, kc('sora', 2)); vl(c, 14, 5, 26, kc('sora', -2))
+    for y0, y1 in ((6, 17), (18, 30)):
+        rc(c, 3, y0, 10, y1 - y0, kc('sora', 1)); hl(c, 3, y0, 10, kc('sora', 3)); vl(c, 3, y0, y1 - y0, kc('sora', 3)); hl(c, 3, y1 - 1, 10, kc('sora', -1)); vl(c, 12, y0, y1 - y0, kc('sora', -1))
+    for i in range(3): hl(c, 5, 8 + i * 2, 6, kc('sora', -2))                                              # 슬릿
+    for i in range(3): hl(c, 5, 20 + i * 2, 6, kc('sora', -2))
+    rc(c, 10, 12, 1, 3, kc('conc', 4)); rc(c, 10, 24, 1, 3, kc('conc', 4))                                 # 손잡이
+    outline(c, 1, 3, 14, 29, kc('sora', -3)); hl(c, 3, 17, 10, kc('sora', -3))
+
+
 # ══ 의원 ═════════════════════════════════════════════════════════════════════
 @R.obj('pb-reception', '접수 카운터', w=1, h=1, up=0, kind='floor', cat='clinic', cat_ko='의원', surface=True, use=('counter',), tags=('의원',),
        place='대기실 앞, 가로로 이어 붙임', desc='흰 상판에 나무 앞면의 접수 카운터 한 칸. 가로로 이어 붙인다. 위에 물건을 놓는다.')
@@ -633,6 +670,34 @@ def _scale_height(c):
     rc(c, 1, 25, 14, 5, kc('shiro', 1)); hl(c, 1, 25, 14, kc('shiro', 4)); hl(c, 1, 29, 14, kc('conc', 0))
     for x in (4, 7, 10): vl(c, x, 26, 3, kc('conc', 2))
     rc(c, 1, 30, 14, 2, kc('conc', -1)); outline(c, 0, 24, 16, 8)
+
+
+@R.obj('pb-magazine-rack', '잡지 진열대', w=2, h=1, up=16, kind='wall', cat='clinic', cat_ko='의원', use=('read',), tags=('의원',),
+       place='대기실 벽', desc='나무 벽 선반 2칸에 색색 잡지가 3단으로 기대어 꽂힌 진열대. 표지는 색 덩이뿐, 글자 없음.')
+def _magazine_rack(c):
+    W = 32
+    rc(c, 1, 3, 30, 29, kc('ita', -1)); outline(c, 1, 3, 30, 29, kc('ita', -3)); vl(c, 2, 4, 27, kc('ita', 2)); vl(c, 29, 4, 27, kc('ita', -2))
+    cols = ('aka', 'sora', 'kii', 'midori', 'daidai', 'kon', 'shiro', 'aka')
+    for r, y in enumerate((5, 14, 23)):
+        rc(c, 2, y + 7, 28, 2, kc('ita', 2)); hl(c, 2, y + 7, 28, kc('ita', 4)); hl(c, 2, y + 8, 28, kc('ita', -1))
+        for i in range(7):
+            x = 3 + i * 4; col = cols[(i + r * 3) % len(cols)]
+            rc(c, x, y, 3, 7, kc(col, 1)); hl(c, x, y, 3, kc(col, 3)); vl(c, x, y, 7, kc(col, 3)); vl(c, x + 2, y, 7, kc(col, -1))
+            rc(c, x + 1, y + 2, 1, 2, kc('shiro', 3)); px(c, x + 1, y + 5, kc('shiro', 2))
+    hl(c, 1, 31, 30, kc('ita', -3))
+
+
+@R.obj('pb-water-dispenser', '냉온수기', w=1, h=1, up=16, kind='floor', cat='clinic', cat_ko='의원', use=('search',), tags=('의원', '대기실'),
+       place='대기실 구석', desc='흰 본체 위에 파란 큰 물통을 거꾸로 꽂은 냉온수기 — 빨강(온)·파랑(냉) 꼭지 둘과 컵 받침. 글자 없음.')
+def _water_dispenser(c):
+    disc(c, 8, 6, 5, 5, kc('garasu', 1)); rc(c, 3, 5, 10, 7, kc('garasu', 1)); rc(c, 4, 3, 8, 2, kc('garasu', 2))
+    vl(c, 4, 4, 8, kc('garasu', 4)); vl(c, 11, 4, 8, kc('garasu', -1)); hl(c, 5, 8, 6, kc('sora', 2))                    # 물통
+    outline(c, 3, 0, 10, 13, kc('sora', -3)); hl(c, 6, 0, 4, kc('shiro', 3))
+    rc(c, 3, 13, 10, 16, kc('shiro', 1)); hl(c, 3, 13, 10, kc('shiro', 4)); vl(c, 3, 13, 16, kc('shiro', 4)); vl(c, 12, 13, 16, kc('conc', 1))
+    rc(c, 5, 17, 2, 2, kc('aka', 1)); rc(c, 9, 17, 2, 2, kc('sora', 2)); px(c, 5, 17, kc('aka', 3)); px(c, 9, 17, kc('sora', 4))   # 꼭지
+    rc(c, 5, 22, 6, 3, kc('conc', 2)); hl(c, 5, 22, 6, kc('conc', -1)); hl(c, 5, 24, 6, kc('conc', 4))               # 컵 받침
+    outline(c, 2, 12, 12, 18, kc('conc', -2))
+    rc(c, 3, 30, 3, 2, kc('tekko', 1)); rc(c, 10, 30, 3, 2, kc('tekko', 1)); hl(c, 3, 31, 3, OL); hl(c, 10, 31, 3, OL)
 
 
 # ══ 탁상 소품(R.good, 16×16) ══════════════════════════════════════════════════

@@ -42,9 +42,10 @@ CATEGORIES = [
     ('sento', '목욕탕', ['pb-bandai', 'pb-locker', 'pb-basket-shelf', 'pb-scale', 'pb-massage-chair', 'pb-milk-fridge', 'pb-wash-station',
                         'pb-wash-stool', 'pb-mural', 'pb-noren-m', 'pb-noren-f']),
     ('laundry', '코인세탁', ['pb-washer', 'pb-dryer', 'pb-fold-table', 'pb-bench', 'pb-vending', 'pb-changer']),
-    ('koban', '파출소', ['pb-police-desk', 'pb-office-chair-s', 'pb-office-chair-n', 'pb-map-board', 'pb-file-cabinet', 'pb-bicycle']),
+    ('koban', '파출소', ['pb-police-desk', 'pb-office-chair-s', 'pb-office-chair-n', 'pb-map-board', 'pb-file-cabinet', 'pb-bicycle',
+                       'pb-lost-found-shelf', 'pb-steel-locker']),
     ('clinic', '의원', ['pb-reception', 'pb-waiting-sofa-s', 'pb-waiting-sofa-n', 'pb-exam-bed', 'pb-curtain', 'pb-doctor-desk',
-                       'pb-med-cabinet', 'pb-scale-height']),
+                       'pb-med-cabinet', 'pb-scale-height', 'pb-magazine-rack', 'pb-water-dispenser']),
 ]
 
 BY_ID = {}

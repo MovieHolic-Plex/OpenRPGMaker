@@ -232,7 +232,7 @@
   ],
   "building": "jp_sento",
   "rules": [
-   "현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고) → 칸막이 문 → 욕장(씻는 자리 줄·의자, 북쪽 큰 욕조, 뒤 벽 후지산 그림).",
+   "현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고) → 두 칸 폭 통로(노렌 둘, 문 없음) → 욕장(씻는 자리 줄·의자, 북쪽 큰 욕조, 뒤 벽 후지산 그림).",
    "평면·가구는 tiledata/jp-city/interior/examples/sento.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sento-14x13\"})."
   ]
  },
@@ -256,7 +256,7 @@
  },
  {
   "file": "koban",
-  "placeId": "jp-city-koban-11x8",
+  "placeId": "jp-city-koban-14x9",
   "name": "일본 파출소(交番) 실내",
   "kind": "koban",
   "kindKo": "파출소(交番)",
@@ -268,13 +268,13 @@
   ],
   "building": "jp_koban",
   "rules": [
-   "입구 책상·의자 · 동네 지도판 · 철제 캐비닛 · 경찰 자전거 · 옆문 안쪽 사무실.",
-   "평면·가구는 tiledata/jp-city/interior/examples/koban.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-koban-11x8\"})."
+   "앞방(접수 책상 둘·의자·동네 지도판·분실물 선반·경찰 자전거) → 옆문 → 뒷방 휴게실(다다미 바닥·낮은 탁자·방석·전기포트·철제 로커·냉장고·간이침대).",
+   "평면·가구는 tiledata/jp-city/interior/examples/koban.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-koban-14x9\"})."
   ]
  },
  {
   "file": "clinic",
-  "placeId": "jp-city-clinic-14x8",
+  "placeId": "jp-city-clinic-14x9",
   "name": "일본 동네 의원(내과) 실내",
   "kind": "clinic",
   "kindKo": "동네 의원",
@@ -288,8 +288,8 @@
   ],
   "building": "jp_clinic",
   "rules": [
-   "입구 → 접수 카운터 → 대기 소파 → 옆문 안쪽 진찰실(의사 책상·진찰대·커튼·약품장·신장계).",
-   "평면·가구는 tiledata/jp-city/interior/examples/clinic.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-clinic-14x8\"})."
+   "입구 → 접수 카운터 → 대기 소파 둘·잡지 진열대·냉온수기 → 두 칸 폭 통로(문 없음) → 진찰실(의사 책상·진찰대·커튼·약품장·신장계).",
+   "평면·가구는 tiledata/jp-city/interior/examples/clinic.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-clinic-14x9\"})."
   ]
  },
  {

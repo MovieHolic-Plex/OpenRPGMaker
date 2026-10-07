@@ -1,14 +1,15 @@
 {
  "name": "일본 파출소(交番) 실내",
  "plan": [
-  "###########",
-  "#.....#...#",
-  "#.....#...#",
-  "#.....#...#",
-  "#.........#",
-  "#.........#",
-  "#.........#",
-  "####.######"
+  "##############",
+  "#......#.....#",
+  "#......#.....#",
+  "#......#.....#",
+  "#......#.....#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "####.#########"
  ],
  "floor": "pb-linoleum",
  "wall": "pb-office-wall",
@@ -17,9 +18,9 @@
   {
    "x0": 7,
    "y0": 0,
-   "x1": 10,
-   "y1": 7,
-   "floor": "flooring-dark",
+   "x1": 13,
+   "y1": 8,
+   "floor": "tatami",
    "wall": "juraku"
   }
  ],
@@ -30,18 +31,33 @@
    "y": 1
   },
   {
-   "id": "pb-file-cabinet",
+   "id": "wall-clock",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "calendar",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "pb-bicycle",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-lost-found-shelf",
    "x": 4,
    "y": 3
   },
   {
-   "id": "pb-file-cabinet",
-   "x": 5,
-   "y": 3
+   "id": "pb-police-desk",
+   "x": 2,
+   "y": 5
   },
   {
    "id": "pb-police-desk",
-   "x": 2,
+   "x": 4,
    "y": 5
   },
   {
@@ -50,38 +66,68 @@
    "y": 4
   },
   {
-   "id": "pb-office-chair-n",
-   "x": 3,
-   "y": 6
+   "id": "pb-office-chair-s",
+   "x": 5,
+   "y": 4
   },
   {
-   "id": "pb-bicycle",
-   "x": 9,
-   "y": 6
+   "id": "genkan-mat",
+   "x": 3,
+   "y": 7
   },
   {
    "id": "door-side-sliding",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "pb-file-cabinet",
-   "x": 9,
-   "y": 3
-  },
-  {
-   "id": "pb-police-desk",
-   "x": 8,
-   "y": 5
-  },
-  {
-   "id": "pb-office-chair-s",
-   "x": 9,
-   "y": 4
+   "x": 7,
+   "y": 7
   },
   {
    "id": "genkan-door",
    "x": 4,
+   "y": 8
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "fridge",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "bed-single",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "calendar",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "low-table",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "zabuton",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "zabuton",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
    "y": 7
   }
  ],
@@ -94,13 +140,23 @@
   },
   {
    "id": "pb-documents",
-   "x": 8,
+   "x": 4,
    "y": 5
+  },
+  {
+   "id": "kettle",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "mug",
+   "x": 10,
+   "y": 6
   }
  ],
  "start": [
   4,
-  6
+  7
  ],
  "links": [],
  "rooms": [
@@ -108,8 +164,8 @@
    "room": "koban",
    "x0": 0,
    "y0": 0,
-   "x1": 10,
-   "y1": 7
+   "x1": 13,
+   "y1": 8
   }
  ]
 }

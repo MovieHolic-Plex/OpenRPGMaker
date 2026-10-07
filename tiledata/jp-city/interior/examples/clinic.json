@@ -8,6 +8,7 @@
   "#............#",
   "#............#",
   "#............#",
+  "#............#",
   "######.#######"
  ],
  "floor": "pb-linoleum",
@@ -18,7 +19,7 @@
    "x0": 8,
    "y0": 0,
    "x1": 13,
-   "y1": 7,
+   "y1": 8,
    "floor": "flooring",
    "wall": "cloth"
   }
@@ -45,24 +46,29 @@
    "y": 4
   },
   {
-   "id": "pb-waiting-sofa-s",
+   "id": "pb-magazine-rack",
    "x": 5,
    "y": 3
   },
   {
-   "id": "pb-waiting-sofa-n",
-   "x": 2,
-   "y": 6
-  },
-  {
-   "id": "pb-scale-height",
+   "id": "pb-water-dispenser",
    "x": 7,
-   "y": 5
+   "y": 3
   },
   {
-   "id": "door-side-western",
-   "x": 8,
+   "id": "pb-waiting-sofa-n",
+   "x": 1,
    "y": 6
+  },
+  {
+   "id": "pb-waiting-sofa-n",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
+   "y": 7
   },
   {
    "id": "pb-doctor-desk",
@@ -70,19 +76,14 @@
    "y": 3
   },
   {
-   "id": "pb-med-cabinet",
-   "x": 11,
-   "y": 3
-  },
-  {
-   "id": "pb-office-chair-s",
-   "x": 9,
-   "y": 4
-  },
-  {
    "id": "pb-office-chair-n",
    "x": 9,
    "y": 5
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 11,
+   "y": 3
   },
   {
    "id": "pb-exam-bed",
@@ -95,9 +96,14 @@
    "y": 5
   },
   {
+   "id": "pb-scale-height",
+   "x": 12,
+   "y": 7
+  },
+  {
    "id": "genkan-door",
    "x": 6,
-   "y": 7
+   "y": 8
   }
  ],
  "tables": [],
@@ -115,7 +121,7 @@
  ],
  "start": [
   6,
-  6
+  7
  ],
  "links": [],
  "rooms": [
@@ -124,7 +130,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 13,
-   "y1": 7
+   "y1": 8
   }
  ]
 }
