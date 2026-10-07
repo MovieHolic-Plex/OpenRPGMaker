@@ -10,6 +10,7 @@ import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindi
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
+import { executionRoleFor } from "@/ai/buildRole";
 // 채팅 패널의 `/pi` 명령. Pi 에이전트(Bun 쪽 oh-my-pi 루프)를 돌리고, 결과 프로젝트에서 맵 묶음만
 // 떼어 기존 커밋 게이트(applyProposedProject)로 적용한다. 진행은 로그 안 팀 보드 카드로 그린다.
 //
@@ -326,7 +327,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     afterApply: project => ghost.accept(project),
   });
   const brain = configForUltrabrain(config);
-  const deep = modelForRole(config, "deep");
+  // 실행 모델은 일의 종류로 고른다 — 공간 시공이면 시공 역할(build, 비우면 deep 과 같다), 아니면 실행 역할(deep). src/ai/buildRole.ts.
+  const executionRole = executionRoleFor(command.task, options.initialToolNames);
+  const deep = modelForRole(config, executionRole);
   // 실행 루프의 사고 강도는 자율성 다이얼이 정한다 — 단, 역할 모델(Deep)을 폴백과 **다르게** 저장한
   // 사용자는 그대로 이긴다. 「저장값이 있나」로 판정하면 안 되는 이유: 설정 모달의 collect() 는 어느 컨트롤을
   // 바꿔 저장해도 역할 3개를 전부 쓴다 — 즉 설정을 한 번이라도 만진 사용자는 누구나 roleModels.deep 을
@@ -335,7 +338,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 실측(2026-09-26, 읽기 전용 3턴 도구 사용 실행): thinking high 는 턴당 약 2.9s, low 는 약 2.1s 이고
   // 전제가 1k→30k 토큰으로 커져도 0.5s 밖에 안 밀린다. 즉 다이얼을 「빠르게」로 내린 턴이 강도를 못 받으면
   // 매 왕복마다 0.8s 를 그대로 더 낸다.
-  const preferCallerThinking = prefersCallerThinking(config.roleModels?.deep, modelForRole({ ...config, roleModels: undefined }, "deep"));
+  const preferCallerThinking = prefersCallerThinking(config.roleModels?.[executionRole] ?? config.roleModels?.deep, modelForRole({ ...config, roleModels: undefined }, "deep"));
   /** 수리 실행은 `buildPiRunRequest` 를 안 거쳐 요청을 직접 짜는다 — 실행 턴과 같은 강도를 들도록 같은 판정을 한 번 더 한다. */
   const execThinkingLevel: PiAgentThinkingLevel = preferCallerThinking && options.thinkingLevel ? options.thinkingLevel : deep.thinkingLevel;
   /**

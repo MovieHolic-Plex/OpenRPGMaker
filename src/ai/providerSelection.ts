@@ -14,6 +14,14 @@ import { configForUltrabrain } from "./ultrabrainConfig";
 const WRITER_FOR_PROVIDER: Readonly<Record<string, RoleModel>> = {
   [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-3.8-flash", thinkingLevel: "medium" },
 };
+/**
+ * 계정별 시공(build) 기본값 — ChatGPT 계정도 타일·맵·게임 전체 짓기는 Gemini 에 둔다(사용자 결정 2026-10-08,
+ * 장르 시험: 같은 기획 전체 짓기 gemini-3.8-flash 10분·끝까지 자동 플레이 통과, gpt-6.1-sol 50분·보스 스위치에서 막힘).
+ * Google 연결이 없으면 작문과 같이 실행 모델로 대신한다(isOptionalWriterProvider 와 같은 관례).
+ */
+const BUILD_FOR_PROVIDER: Readonly<Record<string, RoleModel>> = {
+  [CODEX_PROVIDER_ID]: { provider: ANTIGRAVITY_PROVIDER_ID, model: "gemini-3.8-flash", thinkingLevel: "medium" },
+};
 
 /** 계정을 바꿀 때 역할별 사고 강도는 「균형」 프리셋을 따른다. 같은 계정 안에서는 기존 값을 둔다. */
 const BALANCED = MODEL_PRESETS.find(preset => preset.id === "balanced")!;
@@ -32,10 +40,10 @@ export function configForProviderSelection(config: AiConfig, providerId: string,
     tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast")!;
   const thinking = (role: SpecialistRole, old: RoleModel): RoleModel["thinkingLevel"] =>
     old.provider === next.providerId ? old.thinkingLevel : BALANCED.roles[role].thinking;
-  for (const role of ["vision", "writer", "deep"] as const) {
+  for (const role of ["vision", "writer", "deep", "build"] as const) {
     const old = modelForRole(config, role);
     if (!force && pinned[role]) continue;
-    const preferred = role === "writer" ? WRITER_FOR_PROVIDER[next.providerId] : undefined;
+    const preferred = role === "writer" ? WRITER_FOR_PROVIDER[next.providerId] : role === "build" ? BUILD_FOR_PROVIDER[next.providerId] : undefined;
     next.roleModels[role] = preferred
       ? { ...preferred }
       : { provider: next.providerId, model: model(old.provider, old.model), thinkingLevel: thinking(role, old) };

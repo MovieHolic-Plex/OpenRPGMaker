@@ -56,7 +56,7 @@ export interface AiConfig {
   liteModel?: string;
   roleModels?: SpecialistModels;
   /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
-  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "image", true>>;
+  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image", true>>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
   ultrabrainReasoningEffort?: "low" | "medium" | "high";
@@ -368,7 +368,7 @@ export function loadAiConfig(): AiConfig {
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.
       modelSelectionOverrides: Object.fromEntries(
-        (["ultrabrain", "vision", "writer", "deep", "image"] as const).filter(slot => {
+        (["ultrabrain", "vision", "writer", "deep", "build", "image"] as const).filter(slot => {
           if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
             return parsed.modelSelectionOverrides[slot] === true;
           }

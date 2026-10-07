@@ -54,6 +54,7 @@ export const MODEL_PRESETS: readonly ModelPreset[] = [
       vision: { tier: "fast", thinking: "low" },
       writer: { tier: "fast", thinking: "low" },
       deep: { tier: "fast", thinking: "medium" },
+      build: { tier: "fast", thinking: "medium" },
     },
   },
   {
@@ -65,6 +66,7 @@ export const MODEL_PRESETS: readonly ModelPreset[] = [
       vision: { tier: "fast", thinking: "medium" },
       writer: { tier: "fast", thinking: "medium" },
       deep: { tier: "fast", thinking: "medium" },
+      build: { tier: "fast", thinking: "medium" },
     },
   },
   {
@@ -76,6 +78,7 @@ export const MODEL_PRESETS: readonly ModelPreset[] = [
       vision: { tier: "strong", thinking: "high" },
       writer: { tier: "strong", thinking: "high" },
       deep: { tier: "strong", thinking: "high" },
+      build: { tier: "strong", thinking: "high" },
     },
   },
 ];
