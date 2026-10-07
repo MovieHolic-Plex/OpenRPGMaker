@@ -5,7 +5,7 @@
 원본: tiledata/hand-interior/v5(손 도트 Python, 건물 25동 26맵). 칸은 scripts/content/hand-interior/build_tileset.py 가 잘랐다.
 
 ## 읽는 순서
-1. 이 문서 → 2. `hand-interior-v5-rules`(구조 규칙·사용자 판정) → 3. `hand-interior-v5-dictionary`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
+1. 이 문서 → 2. `hand-interior-v5-exit-width`(외부 문과 실제 출구 폭), `hand-interior-v5-rules`(구조 규칙·사용자 판정) → 3. `hand-interior-v5-dictionary`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
 4. 짓는 건물과 가장 가까운 예제(`hand-interior-v5-map-*`: 입력 인자 + 네 층 정답 배열 + 그림) → 5. `hand-interior-v5-errors`(오류 그림과 코드).
 가구는 `list_hand_interior_parts({room:"빵집"})`(방 종류·건물 → 예제에 쓰인 가구를 종류별로)와 `{query:"여관 벽"}`(설명·쓰는 방·놓는 곳·짝 소품까지)으로 찾는다.
 `hand-interior-v5-objects-*`(가구 사전, 칸 번호 포함)는 도구 결과로 모자랄 때만 한 분류씩 읽는다.
@@ -13,6 +13,7 @@
 ## 짓는 순서 (한 번의 도구 호출)
 1. 방 목록을 글로 먼저 정한다: 방마다 용도·앵커 가구·드나드는 문·손님/주인 동선. 공간이 남으면 맵을 줄인다.
 2. `plan` 을 쓴다: '#' 막힘, '.' 실내. 외벽 한 칸 두께, 방 사이는 '#' 칸막이. 맨 아래 줄의 '.' 틈 = 거리 출입구.
+   외부 문이 한 칸이면 마지막 줄 틈도 한 칸이다(`####.#####`). 기본 `exitWidth:1`; `####..####` 두 칸 틈은 거부한다. 넓은 대문을 명시한 경우에만 실제 문 폭으로 exitWidth를 준다. 예제의 두세 칸 출구를 한 칸 집 문에 복사하지 않는다. `start`는 BFS 출발점이며 출구 폭을 정하지 않는다.
 3. `floor`·`wall` 기본값, 방마다 다르면 `zones`(칸막이 뒤 방 단위로만 벽 재질을 바꾼다).
 4. 가구: `objects`(v5 가구 id, 좌표 = 발밑 왼쪽 위), 탁자·카운터 = `tables`(자동 타일, 아무 W×H), 깔개·울타리·창살 = `lines`, 단 = `daises`, 탁상 물건 = `goods`(윗면 가구 칸 위).
 5. `build_hand_interior_room` 을 부른다. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥 그림자는 도구가 plan 에서 만든다 — 손으로 칠하지 않는다.

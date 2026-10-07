@@ -9,6 +9,9 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
   seed: 'harness-data/assistant-capability/seed.json',
   doc: 'openwiki/harnesses/assistant-capability.md',
   stages: [
+    { id: 'portals', title: '출입구 실제 수행', summary: '격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다.' },
+    { id: 'portal-controls', title: '출입구 결함 반례', summary: '막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다.' },
+    { id: 'portal-recheck', title: '저장 출입구 플레이 재관측', summary: '모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다.' },
     { id: 'film-worldmaps', title: '월드맵 실제 녹화', summary: '기본 대륙과 포켓몬풍 지역을 실제 입력창에서 만들고 MP4·도구 기록·SQLite 새 context 재로드를 남긴다. core 점수와 별도 증거다.' },
     { id: 'list', title: '과제 목록', summary: '요구·보존·플레이·시각 기준이 미리 정해진 사례를 나열한다.' },
     { id: 'prepare', title: '격리 정본 준비', summary: '실행마다 별도 SQLite 프로젝트와 초기 상태를 만든다. 기존 폴더 덮어쓰기 금지.' },

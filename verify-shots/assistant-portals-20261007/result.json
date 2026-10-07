@@ -1,0 +1,163 @@
+{
+  "inputMode": "natural",
+  "gates": {
+    "visual": {
+      "status": "pending"
+    },
+    "data": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "native-pi-completed",
+          "ok": true,
+          "detail": "실제 입력창·모델 응답 완료, 오류 없음"
+        },
+        {
+          "id": "house-door-linked",
+          "ok": true,
+          "detail": "첫 집의 실제 원본 문앞: {\"x\":6,\"y\":9}"
+        },
+        {
+          "id": "east-edge-linked",
+          "ok": true,
+          "detail": "마을 동쪽 맵 끝에서 들판 연결"
+        },
+        {
+          "id": "interior-authored",
+          "ok": true,
+          "detail": "손 도트 실내 가구 배치 존재"
+        },
+        {
+          "id": "start-preserved",
+          "ok": true,
+          "detail": "시작 맵·위치 보존"
+        },
+        {
+          "id": "sentinel-preserved",
+          "ok": true,
+          "detail": "기존 표본 맵 전체 보존"
+        },
+        {
+          "id": "sqlite-reloaded",
+          "ok": false,
+          "detail": "동일 SQLite SHA·새 브라우저 context의 저장본 재로드"
+        },
+        {
+          "id": "house-raster-bd-house-village-cream",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        },
+        {
+          "id": "house-raster-bd-house-village-brick",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        },
+        {
+          "id": "house-raster-bd-house-village-stone",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        }
+      ]
+    },
+    "runtime": {
+      "pass": false,
+      "detail": "알 수 없는 op: transfer"
+    }
+  },
+  "modelRequests": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791376098189
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "e5af4b5c-0830-431f-a918-95d677583c5c",
+      "at": 1791376106266
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "e5af4b5c-0830-431f-a918-95d677583c5c",
+      "at": 1791376113271
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "ead86fd9-a0df-4c50-b2b3-750fd329d688",
+      "at": 1791376143688
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791376449375
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791376449377
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791376449384
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791376449456
+    }
+  ],
+  "persistence": {
+    "projectId": "c0a701b3-fb45-4bac-84c5-9e606113b128",
+    "projectDir": "/home/main/.codex/worktrees/0035/rpg-zzu/qa-runs/harnesses/assistant-capability/20261007-portals-real-r1/map-portals/project",
+    "beforeRevision": 2,
+    "afterRevision": 16,
+    "afterSha256": "611fb503bc8ceeaa4d13f496c8b3325adfa46b9fb0b01db66b80dd4be7d0f46e",
+    "reloadedSha256": "97c285c5f9f67ced3923b01a4d9163487f747ae6d6b58736b625dfe176d09142",
+    "sameTarget": true,
+    "sameStoredDocument": false,
+    "reloadEqual": true,
+    "flush": {
+      "kind": "saved",
+      "dirty": false
+    },
+    "indexedDb": {
+      "exists": true,
+      "conversations": 0,
+      "userEntries": 0
+    }
+  },
+  "portals": [
+    {
+      "mapId": "map_portal_village",
+      "x": 6,
+      "y": 9,
+      "target": {
+        "kind": "transfer",
+        "mapId": "map_house1_interior",
+        "x": 4,
+        "y": 5,
+        "fade": "black"
+      }
+    },
+    {
+      "mapId": "map_portal_village",
+      "x": 39,
+      "y": 15,
+      "target": {
+        "kind": "transfer",
+        "mapId": "map_65d2f461-3cd3-4d3f-a0e9-fc34f23d7e18",
+        "x": 0,
+        "y": 16,
+        "fade": "black"
+      }
+    }
+  ]
+}

@@ -1,0 +1,2166 @@
+{
+  "scenarioId": "assistant-map-portals",
+  "projectPath": "qa-runs/harnesses/assistant-capability/20261007-portals-width-real-r1/map-portals/player.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "village-start",
+      "shot": "02-village-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 1,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "enter-0-1",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 2,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 2,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "enter-0-2",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 3,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 3,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "enter-0-3",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 4,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 4,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "enter-0-4",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 5,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 5,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "enter-0-5",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "enter-0-6",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 13,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "enter-0-7",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "enter-0-8",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "enter-0-9",
+      "shot": "11-enter-0-9.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "id": "enter-0-10",
+      "shot": "12-enter-0-10.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_house1_interior",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_house1_interior",
+          "x": 4,
+          "y": 5,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "id": "arrival-stable-0",
+      "shot": "13-arrival-stable-0.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_house1_interior",
+        "x": 4,
+        "y": 5,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "id": "return-0-1",
+      "shot": "14-return-0-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 6,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "id": "returned-0",
+      "shot": "15-returned-0.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 6,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "id": "enter-1-1",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 7,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 7,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "id": "enter-1-2",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 8,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 8,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "id": "enter-1-3",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 9,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 9,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "id": "enter-1-4",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 10,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 10,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "id": "enter-1-5",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 11,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 11,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "id": "enter-1-6",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 12,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 12,
+          "y": 9,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "id": "enter-1-7",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 12,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 12,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "id": "enter-1-8",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 13,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 13,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "id": "enter-1-9",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 14,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 14,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "id": "enter-1-10",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 15,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 15,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "id": "enter-1-11",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 16,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 16,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "id": "enter-1-12",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 17,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 17,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "id": "enter-1-13",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 18,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 18,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "id": "enter-1-14",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 19,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 19,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "id": "enter-1-15",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 20,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 20,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "id": "enter-1-16",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 21,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 21,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "id": "enter-1-17",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 22,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 22,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "id": "enter-1-18",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 23,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 23,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "id": "enter-1-19",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 24,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 24,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "id": "enter-1-20",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 25,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 25,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "id": "enter-1-21",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 26,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 26,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "id": "enter-1-22",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 27,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 27,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "id": "enter-1-23",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 28,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 28,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "id": "enter-1-24",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 29,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 29,
+          "y": 10,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "id": "enter-1-25",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 29,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 29,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "id": "enter-1-26",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 30,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 30,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "id": "enter-1-27",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 31,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 31,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "id": "enter-1-28",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 32,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 32,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "id": "enter-1-29",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 33,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 33,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "id": "enter-1-30",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 34,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 34,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "id": "enter-1-31",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 35,
+        "y": 11,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 35,
+          "y": 11,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "id": "enter-1-32",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 35,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 35,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "id": "enter-1-33",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 36,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 36,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "id": "enter-1-34",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 37,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 37,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "id": "enter-1-35",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 38,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 38,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "id": "enter-1-36",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 39,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 39,
+          "y": 12,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "id": "enter-1-37",
+      "shot": "52-enter-1-37.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 39,
+        "y": 13,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 39,
+          "y": 13,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "id": "enter-1-38",
+      "shot": "53-enter-1-38.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_outer_field",
+        "x": 1,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowDown"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_outer_field",
+          "x": 1,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "id": "arrival-stable-1",
+      "shot": "54-arrival-stable-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_outer_field",
+        "x": 1,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "id": "return-1-1",
+      "shot": "55-return-1-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 38,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_portal_village",
+          "x": 38,
+          "y": 14,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "id": "returned-1",
+      "shot": "56-returned-1.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_portal_village",
+        "x": 38,
+        "y": 14,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"inputEnabled\":true",
+          "timeoutMs": 15000
+        },
+        {
+          "kind": "waitForText",
+          "testid": "runtime-state-json",
+          "text": "\"running\":false",
+          "timeoutMs": 15000
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "ceiling": "wood",
+    "tables": [
+      {
+        "h": 1,
+        "y": 5,
+        "w": 1,
+        "x": 5,
+        "style": "dining"
+      }
+    ],
+    "exitWidth": 1,
+    "mapId": "map_house1_interior",
+    "floor": "plank",
+    "objects": [
+      {
+        "y": 3,
+        "x": 2,
+        "id": "bed green"
+      },
+      {
+        "id": "chair W",
+        "y": 5,
+        "x": 6
+      }
+    ],
+    "name": "첫 번째 집 실내",
+    "plan": [
+      "#######",
+      "#.....#",
+      "#.....#",
+      "#.....#",
+      "#.....#",
+      "#.....#",
+      "###.###"
+    ],
+    "wall": "plaster"
+  },
+  {
+    "objects": [
+      {
+        "y": 3,
+        "x": 2,
+        "id": "bed green"
+      },
+      {
+        "y": 4,
+        "x": 5,
+        "id": "chair W"
+      }
+    ],
+    "floor": "plank",
+    "mapId": "map_house1_interior",
+    "exitWidth": 1,
+    "plan": [
+      "#########",
+      "#.......#",
+      "#.......#",
+      "#.......#",
+      "#.......#",
+      "#.......#",
+      "####.####"
+    ],
+    "wall": "plaster",
+    "name": "첫 번째 집 실내",
+    "tables": [
+      {
+        "style": "dining",
+        "y": 4,
+        "h": 1,
+        "w": 1,
+        "x": 4
+      }
+    ],
+    "ceiling": "wood"
+  }
+]

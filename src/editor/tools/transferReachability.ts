@@ -14,8 +14,23 @@
 import { canMove, isPassable } from "@/project/collision";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { inMapBounds, type Point } from "./mapHelpers";
+import { handInteriorMapExits } from '@/editor/handInterior/exits';
+import { ToolError } from './types';
 
 const NON_EDGE_RADIUS = 8;
+
+/** doorAt는 한 칸 문 그림의 하단이다. 넓게 열린 실내를 그 문에 연결해 성공시키지 않는다. */
+export function assertDoorExitWidths(project: Project, a: GameMap, gateA: Point, b: GameMap, gateB: Point, doorA?: Point, doorB?: Point): void {
+  if (!doorA && !doorB) return;
+  const width = (map: GameMap, gate: Point, door?: Point): number | undefined => {
+    if (door) return 1;
+    if (map.tilesetId !== 'atlas_biome_interior' && !(map.tilesetId === 'jp_city' && map.climate?.mode === 'indoor')) return undefined;
+    if (gate.y !== map.height - 1) return undefined;
+    return handInteriorMapExits(project, map).find(span => gate.x >= span.x && gate.x < span.x + span.width)?.width;
+  };
+  const wa = width(a, gateA, doorA), wb = width(b, gateB, doorB);
+  if (wa !== undefined && wb !== undefined && wa !== wb) throw new ToolError(`문과 실내 출구의 가로 폭이 다릅니다: ${a.name} ${wa}칸 ↔ ${b.name} ${wb}칸. 한 칸 문이면 실내 남쪽 출구도 한 칸만 열고 다시 연결하세요.`, { code: 'transfer-door-width' });
+}
 
 const TOUCH_TRIGGERS = new Set(["playerTouch", "touch", "eventTouch"]);
 
@@ -81,8 +96,12 @@ export function largestWalkGroup(project: Project, map: GameMap, blocked: Readon
   return new Set(best);
 }
 
-function gateTouchesGroup(map: GameMap, gate: Point, group: ReadonlySet<number>): boolean {
-  return CARDINAL_STEPS.some(([dx, dy]) => group.has((gate.y + dy) * map.width + (gate.x + dx)));
+function gateTouchesGroup(project: Project, map: GameMap, gate: Point, group: ReadonlySet<number>): boolean {
+  return CARDINAL_STEPS.some(([dx, dy]) => {
+    const x = gate.x + dx, y = gate.y + dy;
+    return inMapBounds(map, x, y) && group.has(y * map.width + x)
+      && canMove(project, map, x, y, gate.x, gate.y);
+  });
 }
 
 /**
@@ -101,9 +120,9 @@ export function transferGatesStayApproachable(
   for (const event of map.events ?? []) {
     if (!isTransferGateEvent(event)) continue;
     if (newGate && event.x === newGate.x && event.y === newGate.y) continue;
-    if (!gateTouchesGroup(map, event, group)) sealed.push(`${event.id}(${event.x},${event.y})`);
+    if (!gateTouchesGroup(project, map, event, group)) sealed.push(`${event.id}(${event.x},${event.y})`);
   }
-  if (newGate && !gateTouchesGroup(map, newGate, group)) sealed.push(`새 출입구(${newGate.x},${newGate.y})`);
+  if (newGate && !gateTouchesGroup(project, map, newGate, group)) sealed.push(`새 출입구(${newGate.x},${newGate.y})`);
   return { ok: sealed.length === 0, sealed, group };
 }
 

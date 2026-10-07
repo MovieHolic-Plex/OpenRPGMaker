@@ -1,0 +1,22 @@
+{
+  "after.png": "bcb0ab0fe769e5033261acb51e61ddb6ae87d06e4a39af7ea33b111d904aa130",
+  "authored-maps.json": "eb0e05eb3da914f48fb0b0c576472b60a7b5ecfb5fa07b0658ab939391493493",
+  "controls.json": "c4027d829929f533854819ac1b833d9d1a7f52a7456e9a2dd757f8dc58dfc00a",
+  "fixture.json": "6ca6949083dd45fdb304ada3e9b3894e39d1d3e339e53c797fb404c95e8ed630",
+  "persistence.json": "b8a5800864369df7d4a0e741dcfbdae93518436c48c7d4c9cdf5051a0fc2fab5",
+  "portalProof.observer.ts": "55e02667ae44018528d79a3196bfadda0a3ef00401ce1cabe182c00f9ac5c1bc",
+  "reloaded.png": "4a768d5e696335626cabcc45bd67569ae7c6fe849d72bc88804d2287caa4c891",
+  "result.json": "cd42f5c4fc34a91903c4bd439f36ab90c3d0cc057d28690f0ccc7b6e1a41e53e",
+  "room-tool-inputs.json": "698651c0c8f92c22ab4a5ae75de216457d0ebb5da1ae3c675c4014097aea6364",
+  "runtime-collision-door/11-enter-0-9.png": "a0cd09180195385491b1b31b530b2d4fb46ba64574ce4121359e41f26a9e2648",
+  "runtime-collision-door/13-arrival-stable-0.png": "51f52ceed8b721bf20a90f2037f39fd298a89beb9cc59a244f8e7b455cf66224",
+  "runtime-collision-door/15-returned-0.png": "1fef26c65e938ca369b969c9deacb4ae65dc77a842a268589b4e11ff259fdf06",
+  "runtime-collision-door/52-enter-1-37.png": "284c0c53d977fecdf54c06d62e79f1d8a77355e9afb22aa3f1535c0dd1086fc2",
+  "runtime-collision-door/54-arrival-stable-1.png": "29c5c55299e31c541b4c7956fd792c736a56064de0aaf7e1ce32e668d7e68d70",
+  "runtime-collision-door/56-returned-1.png": "a6bbb0f2dee15def75a8e9f5e455b3384b600d0ce3569cd655af4396ecf9d8e4",
+  "runtime-collision-door/SUMMARY.md": "4e3709f90b061bedf78976e1cb5ab84c499b3102dde4bf70f76961f81323f7e1",
+  "runtime-collision-door/manifest.json": "815c8d613fa8fb537beeebefacba0f270ae70f991e0d75fdf2cd460ec47c6205",
+  "runtime-recheck-collision-door.json": "9ee60a52f89e0668942a0c665efea2b48720c960bd890f44d15f7c098bfdcca1",
+  "trace.json": "10c299ace56d38fd6c2f780cb67a74bc985c81f172f3aba00bcc745900586894",
+  "visual-review.json": "099c223f51fb9fe96f9b511aa9e2dc6175e7e6e91fd82a69e52a15e6ccb166d2"
+}

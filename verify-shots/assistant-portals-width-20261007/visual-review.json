@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "reviewer": "codex-root",
+  "notes": "원본 한 칸 집 문과 새 실내 남쪽 한 칸 출구를 실제 화면에서 대조했다. 침대·탁자·의자와 착지 여유를 확인했고 문앞 귀환과 동쪽 경계 왕복 화면도 읽었다. 적용 및 SQLite 재로드 화면의 기존 건물 도트는 같다. 시각 판정은 통과이며 전체 저장 문서 SHA 불일치 관문은 실패로 유지한다. 런타임은 동일 저장 결과의 collision-door 별도 관측 56/56 통과다.",
+  "resultDigest": "cd42f5c4fc34a91903c4bd439f36ab90c3d0cc057d28690f0ccc7b6e1a41e53e",
+  "images": [
+    {
+      "file": "after.png",
+      "sha256": "bcb0ab0fe769e5033261acb51e61ddb6ae87d06e4a39af7ea33b111d904aa130"
+    },
+    {
+      "file": "reloaded.png",
+      "sha256": "4a768d5e696335626cabcc45bd67569ae7c6fe849d72bc88804d2287caa4c891"
+    },
+    {
+      "file": "runtime-collision-door/11-enter-0-9.png",
+      "sha256": "a0cd09180195385491b1b31b530b2d4fb46ba64574ce4121359e41f26a9e2648"
+    },
+    {
+      "file": "runtime-collision-door/13-arrival-stable-0.png",
+      "sha256": "51f52ceed8b721bf20a90f2037f39fd298a89beb9cc59a244f8e7b455cf66224"
+    },
+    {
+      "file": "runtime-collision-door/15-returned-0.png",
+      "sha256": "1fef26c65e938ca369b969c9deacb4ae65dc77a842a268589b4e11ff259fdf06"
+    },
+    {
+      "file": "runtime-collision-door/52-enter-1-37.png",
+      "sha256": "284c0c53d977fecdf54c06d62e79f1d8a77355e9afb22aa3f1535c0dd1086fc2"
+    },
+    {
+      "file": "runtime-collision-door/54-arrival-stable-1.png",
+      "sha256": "29c5c55299e31c541b4c7956fd792c736a56064de0aaf7e1ce32e668d7e68d70"
+    },
+    {
+      "file": "runtime-collision-door/56-returned-1.png",
+      "sha256": "a6bbb0f2dee15def75a8e9f5e455b3384b600d0ce3569cd655af4396ecf9d8e4"
+    }
+  ]
+}

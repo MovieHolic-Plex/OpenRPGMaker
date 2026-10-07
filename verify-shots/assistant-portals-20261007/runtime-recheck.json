@@ -1,0 +1,402 @@
+{
+  "kind": "saved-output-runtime-recheck",
+  "modelCalls": 0,
+  "originalResultDigest": "d966526eebfec3c3e85c0a5849e60cb31a21f11d764f5d8dfaa5075b44d484f9",
+  "sourceDigest": "97c285c5f9f67ced3923b01a4d9163487f747ae6d6b58736b625dfe176d09142",
+  "pass": false,
+  "beats": 56,
+  "errors": [],
+  "failures": [
+    {
+      "id": "enter-0-6",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 6, 실제 7",
+        "y: 기대 13, 실제 9"
+      ]
+    },
+    {
+      "id": "enter-0-7",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 6, 실제 7",
+        "y: 기대 12, 실제 9"
+      ]
+    },
+    {
+      "id": "enter-0-8",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 6, 실제 7",
+        "y: 기대 11, 실제 9"
+      ]
+    },
+    {
+      "id": "enter-0-9",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 6, 실제 7",
+        "y: 기대 10, 실제 9"
+      ]
+    },
+    {
+      "id": "enter-0-10",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "mapId: 기대 map_house1_interior, 실제 map_portal_village",
+        "x: 기대 4, 실제 7",
+        "y: 기대 5, 실제 9"
+      ]
+    },
+    {
+      "id": "arrival-stable-0",
+      "failures": [
+        "mapId: 기대 map_house1_interior, 실제 map_portal_village",
+        "x: 기대 4, 실제 7",
+        "y: 기대 5, 실제 9"
+      ]
+    },
+    {
+      "id": "return-0-1",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 6, 실제 7",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "returned-0",
+      "failures": [
+        "x: 기대 6, 실제 7",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "enter-1-1",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 7, 실제 15",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "enter-1-2",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 8, 실제 15",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "enter-1-3",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 9, 실제 15",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "enter-1-4",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 10, 실제 15",
+        "y: 기대 10, 실제 26"
+      ]
+    },
+    {
+      "id": "enter-1-5",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 10, 실제 15",
+        "y: 기대 11, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-6",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 10, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-7",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 11, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-8",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 12, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-9",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 13, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-10",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 14, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-11",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-12",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 16, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-13",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 17, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-14",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 18, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-15",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 19, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-16",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 20, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-17",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 21, 실제 15",
+        "y: 기대 12, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-18",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 21, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-19",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 22, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-20",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 23, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-21",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 24, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-22",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 25, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-23",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 26, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-24",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 27, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-25",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 28, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-26",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 29, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-27",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 30, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-28",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 31, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-29",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 32, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-30",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 33, 실제 15",
+        "y: 기대 13, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-31",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 33, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-32",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 34, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-33",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 35, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-34",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 36, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-35",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 37, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-36",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 38, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-37",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 39, 실제 15",
+        "y: 기대 14, 실제 27"
+      ]
+    },
+    {
+      "id": "enter-1-38",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "mapId: 기대 map_65d2f461-3cd3-4d3f-a0e9-fc34f23d7e18, 실제 map_portal_village",
+        "x: 기대 0, 실제 15",
+        "y: 기대 16, 실제 27"
+      ]
+    },
+    {
+      "id": "arrival-stable-1",
+      "failures": [
+        "mapId: 기대 map_65d2f461-3cd3-4d3f-a0e9-fc34f23d7e18, 실제 map_portal_village",
+        "x: 기대 0, 실제 15",
+        "y: 기대 16, 실제 27"
+      ]
+    },
+    {
+      "id": "return-1-1",
+      "failures": [
+        "op waitForPosition 실패: waitForFunction: Timeout 15000ms exceeded.",
+        "x: 기대 39, 실제 15",
+        "y: 기대 16, 실제 0"
+      ]
+    },
+    {
+      "id": "returned-1",
+      "failures": [
+        "x: 기대 39, 실제 15",
+        "y: 기대 16, 실제 0"
+      ]
+    }
+  ]
+}

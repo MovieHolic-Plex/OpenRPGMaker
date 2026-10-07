@@ -1,0 +1,20 @@
+{
+  "projectId": "58452846-cb30-4e86-bddb-331c16bcc799",
+  "projectDir": "/home/main/.codex/worktrees/0035/rpg-zzu/qa-runs/harnesses/assistant-capability/20261007-portals-width-real-r1/map-portals/project",
+  "beforeRevision": 2,
+  "afterRevision": 18,
+  "afterSha256": "e144b22e77604dae11e5e31ea678f647f4c6b7d5e707b44348bbb22591834af8",
+  "reloadedSha256": "941c45453a0e8d4182ccb3047020dad3558b2955667e620f22646941d6175d87",
+  "sameTarget": true,
+  "sameStoredDocument": false,
+  "reloadEqual": true,
+  "flush": {
+    "kind": "saved",
+    "dirty": false
+  },
+  "indexedDb": {
+    "exists": true,
+    "conversations": 0,
+    "userEntries": 0
+  }
+}
