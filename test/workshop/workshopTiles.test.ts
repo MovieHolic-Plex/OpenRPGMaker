@@ -1,6 +1,7 @@
 // 공방 2단계: 고른 기물을 손 도트 실내 칩셋에 굽기 · 번들이 자랄 때 번호 이주 · 조수 도구가 공방 물체를 쓴다.
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { ATLAS_BIOME_INTERIOR_COUNT, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { attachWorkshopTiles, bakeWorkshopObject, detachWorkshopTiles, workshopHandObjects, workshopObjectId, type WorkshopObjectInput } from "@/project/workshopTiles";
 import { runTool } from "@/editor/tools";
@@ -88,6 +89,38 @@ describe("조수 도구가 공방 물체를 쓴다", () => {
     const listed = runTool(ctx, "list_tileset_objects", { mapId: "herb", query: "약초" });
     expect((listed.data as { objects: { id: string }[] }).objects.map((o) => o.id)).toEqual(["workshop:약초-선반"]);
     const stamped = runTool(ctx, "stamp_tileset_object", { mapId: "herb", objectId: "workshop:약초-선반", base: { x: 5, y: 4 } });
+    expect(stamped.ok, stamped.summary).toBe(true);
+  });
+});
+
+describe("맵 기물: 실내가 아닌 칩셋에 굽기", () => {
+  /** 빈 프로젝트의 첫 맵과 그 칩셋(16px, 손 도트 실내 아님) */
+  function outdoor(): { p: Project; tilesetId: string; mapId: string } {
+    const p = createBlankProject();
+    const [mapId, map] = Object.entries(p.maps).find(([, m]) => m.tilesetId !== ID && p.tilesets[m.tilesetId]?.tileSize === 16)!;
+    return { p, tilesetId: map.tilesetId, mapId };
+  }
+
+  it("그 맵 칩셋 끝에 붙이고, 번들 정의를 다시 맞춰도(불러오기) 칸·맵이 그대로다", () => {
+    const { p, tilesetId, mapId } = outdoor();
+    const before = p.tilesets[tilesetId]!.count;
+    const kit = bakeWorkshopObject(p, tilesetId, shelf({ objectId: workshopObjectId("new:돌 이정표"), title: "돌 이정표" }));
+    const foot = kit.rows[1]!.upperTiles![0]!;
+    expect(foot).toBeGreaterThanOrEqual(before);
+    p.maps[mapId]!.upperTiles[0] = foot;
+    ensureBundledTilesets(p);
+    expect(p.tilesets[tilesetId]!.structureKits!.find((k) => k.id === kit.id)!.rows[1]!.upperTiles![0]).toBe(foot);
+    expect(p.maps[mapId]!.upperTiles[0]).toBe(foot);
+    expect(p.tilesets[tilesetId]!.tileGrafts!.filter((g) => g.sourceChipset === "workshop_test")).toHaveLength(4);
+  });
+
+  it("조수가 list_tileset_objects·stamp_tileset_object 로 놓는다", () => {
+    const { p, tilesetId, mapId } = outdoor();
+    bakeWorkshopObject(p, tilesetId, shelf({ objectId: workshopObjectId("new:돌 이정표"), title: "돌 이정표" }));
+    const ctx = { project: p };
+    const listed = runTool(ctx, "list_tileset_objects", { mapId, query: "이정표" });
+    expect((listed.data as { objects: { id: string }[] }).objects.map((o) => o.id)).toContain("workshop:돌-이정표");
+    const stamped = runTool(ctx, "stamp_tileset_object", { mapId, objectId: "workshop:돌-이정표", base: { x: 3, y: 3 } });
     expect(stamped.ok, stamped.summary).toBe(true);
   });
 });

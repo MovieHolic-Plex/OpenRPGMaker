@@ -41,6 +41,8 @@ export type WorkshopItem = {
   /** 가장 닮은 기존 기물 key */
   readonly refs: readonly string[];
   readonly use: readonly string[];
+  /** 구워 넣을 칩셋. 없으면 손 도트 실내(atlas_biome_interior). 맵 기물(map-objects)은 정의할 때 지금 맵의 칩셋을 적는다. */
+  readonly tilesetId?: string;
 };
 
 /** 사용자가 공방에서 정의한 새 기물 */
@@ -56,6 +58,10 @@ export type ItemDefinition = {
   readonly category: string;
   readonly use: readonly string[];
   readonly refs: readonly string[];
+  /** 구워 넣을 칩셋(맵 기물). 없으면 손 도트 실내. */
+  readonly tilesetId?: string;
+  /** 정의할 때 그 칩셋 그림에서 뽑아 둔 팔레트(#rrggbb). 칩셋이 나중에 바뀌어도 후보를 같은 색으로 그린다. */
+  readonly palette?: readonly string[];
 };
 
 export type Direction = { readonly letter: string; readonly text: string };
@@ -145,8 +151,22 @@ export type ReviewContext = {
   readonly previousVerdict: Verdict | null;
 };
 
+/** 맵 기물 실행기가 화풍을 맞출 칩셋 — 편집기가 지금 프로젝트에서 꺼내 준다(하네스는 프로젝트를 모른다). */
+export type WorkshopTilesetSource = {
+  readonly id: string;
+  readonly name: string;
+  readonly tileSize: number;
+  readonly tilesPerRow: number;
+  /** 이식 없는 바탕 시트(투명색 키를 뺀 것) */
+  readonly image: RgbaImage;
+  /** 칩셋에 학습된 물체(구조 킷): 칸 번호 격자, -1 = 빈 칸. 아래층·위층 순서로 겹친다. */
+  readonly objects: readonly { readonly name: string; readonly description: string; readonly layers: readonly (readonly (readonly number[])[])[] }[];
+};
+
 export interface WorkshopEnv {
   loadImage(url: string): Promise<RgbaImage>;
+  /** 지금 프로젝트의 칩셋 하나. 없거나 그림을 못 읽으면 null. 편집기 밖(시험)에서는 없을 수 있다. */
+  tilesetSource?(tilesetId: string): Promise<WorkshopTilesetSource | null>;
   /** data:image/png;base64,… */
   encodePng(image: RgbaImage): string;
   /** 공개 자산 경로(앞 / 없이) → 이 앱에서 쓸 URL */
@@ -159,6 +179,8 @@ export type ChatFn = (surface: WorkshopSurface, request: ChatRequest) => Promise
 
 export interface WorkshopRunner {
   readonly harnessId: string;
+  /** 공방 화면 머리에 붙는 이름(없으면 「손 도트 실내 기물」) */
+  readonly label?: string;
   /** 한 판의 후보 수 */
   readonly candidates: number;
   /** 시트·예시 그림 읽기. 여러 번 불러도 한 번만 한다. */
