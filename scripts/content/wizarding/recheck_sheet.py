@@ -8,10 +8,10 @@ import loader, wzlib  # noqa: E402
 for m in sys.argv[1:]:
     j = json.load(open(os.path.join(wzlib.TD, 'review', f'{m}.judgments.json'), encoding='utf-8'))
     bad = {k for k, v in j.items() if isinstance(v, dict) and v.get('verdict') == 'FAIL'}
-    reg = loader.load(m)
-    for d in (reg.pieces, reg.autotiles, reg.characters):
-        for k in list(d):
-            if k not in bad: del d[k]
-    wzlib.REG = reg
+    reg = loader.load(m)   # 모듈은 이 전체 등록부를 계속 본다(키트가 다른 조각을 그려 넣는다)
+    sub = wzlib.Registry()
+    for name in ('pieces', 'autotiles', 'characters'):
+        getattr(sub, name).update({k: v for k, v in getattr(reg, name).items() if k in bad})
+    wzlib.REG = sub
     out = wzlib.review_sheet(m, os.path.join(wzlib.TD, 'review', f'{m}-recheck.png'))
     print(m, '재검수 대상', len(bad), '→', out)
