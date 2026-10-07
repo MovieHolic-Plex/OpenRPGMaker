@@ -1,0 +1,163 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-gh-wall-n": {
+  "verdict": "PASS",
+  "reason": "철틀 유리벽 + 석재 지붕띠 + 벽돌 받침이 3/4 정면으로 읽힘. 유색 윤곽·왼쪽 위 반사 광택. 좌우 대칭, 1배에서도 온실 벽."
+ },
+ "wz-gh-roof": {
+  "verdict": "PASS",
+  "reason": "유리 패널 사이 철 살대 가로띠가 반복되어 유리 지붕 행으로 읽힘. 같은 철틀 팔레트·윤곽 일관."
+ },
+ "wz-gh-vent-closed": {
+  "verdict": "PASS",
+  "reason": "유리벽 안에 황동 경첩이 달린 닫힌 환기창 틀이 보임. 벽 키트와 같은 화풍, 통행 S."
+ },
+ "wz-gh-vent-open": {
+  "verdict": "PASS",
+  "reason": "닫힘 상태와 같은 크기·피벗, 위로 젖혀진 덮개가 실제로 다른 모양으로 그려져 열림으로 읽힘."
+ },
+ "wz-gh-door-closed": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 지붕띠(y1~8)와 철 상인방(y9~12) 아래에 투명창 띠(y13~21)를 두어 문짝 본체가 y22~59 약 38px 로 줄었고 기준 32~40px 안(사람 24x32 대비 적정). 철문틀 윤곽·하이라이트·손잡이 있어 1x 에서 온실 문으로 읽힘."
+ },
+ "wz-gh-door-open": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 닫힘과 같은 64px 틀·같은 상인방/창 띠, 열린 개구부가 y22~59 약 38px 로 기준 32~40px 충족. 통행 S/C/C/C 정상, 상태 간 크기·피벗 동일."
+ },
+ "wz-gh-door-locked": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 닫힘과 상인방·창 띠·문짝 높이(약 38px)가 동일하고 차이는 y36~47 자물쇠·사슬뿐이라 3상태가 같은 크기·피벗을 공유. 자물쇠 표현 유지."
+ },
+ "wz-gh-corner-nw": {
+  "verdict": "PASS",
+  "reason": "석재 지붕띠+철 기둥+유리가 이어져 북서 모서리로 읽힘, 벽 키트와 명암 일치."
+ },
+ "wz-gh-corner-ne": {
+  "verdict": "PASS",
+  "reason": "북서 모서리의 좌우 반전 대응으로 유리·철틀 정합, 대칭 규칙 충족."
+ },
+ "wz-gh-side-w": {
+  "verdict": "PASS",
+  "reason": "옆벽을 얇은 철 기둥+유리 반사로 표현, 1칸 투명 여백 포함. 3/4 옆면 처리로 허용 범위."
+ },
+ "wz-gh-side-e": {
+  "verdict": "PASS",
+  "reason": "서쪽 옆벽의 대응, 같은 명암·윤곽, 통행 S."
+ },
+ "wz-gh-wall-s": {
+  "verdict": "PASS",
+  "reason": "크림색 상판+벽돌 정면 3~4단 명암, 윗면과 남쪽 정면이 모두 보이는 낮은 벽. 읽힘 양호."
+ },
+ "wz-gh-corner-sw": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 서쪽 가장자리에 윤곽·하이라이트가 있는 세로 돌 기둥이 생겨 wall-s 와 확실히 구별되고 side-w 와 이어지는 모서리로 읽힘. 명암·윤곽 팔레트 일치."
+ },
+ "wz-gh-corner-se": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 동쪽 가장자리에 윤곽·그림자 면이 있는 세로 돌 기둥이 생겨 wall-s 와 구별되고 side-e 와 이어짐. corner-sw 와 좌우 대칭 일관."
+ },
+ "wz-gh-floor-brick-a": {
+  "verdict": "PASS",
+  "reason": "엇갈린 벽돌 줄, 3단 명암, 젖은 이끼·물 얼룩이 보이며 3x4 타일링에서 이음새 없음. F 코드 일치."
+ },
+ "wz-gh-floor-brick-b": {
+  "verdict": "PASS",
+  "reason": "A와 같은 벽돌 결에 얼룩 위치만 다른 변형, 섞어 깔아도 이음새 안 튐."
+ },
+ "wz-gh-floor-dirt": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 회색 돌 점과 갈색 대시가 크게 줄고 어두운 얼룩 덩이로 바뀌어 6x4 타일링에서 촘촘한 잡음이 없고 평평한 면에 소량의 질감만 남음. 단일 타일이라 약한 반복은 있으나 도장 찍은 느낌은 기준 이하."
+ },
+ "wz-gh-water-a": {
+  "verdict": "PASS",
+  "reason": "파란 물웅덩이가 하이라이트·윤곽과 함께 f 덧그림으로 읽힘, 투명 배경."
+ },
+ "wz-gh-water-b": {
+  "verdict": "PASS",
+  "reason": "A와 다른 모양의 물 번짐 변형, 같은 팔레트."
+ },
+ "wz-gh-soil-a": {
+  "verdict": "PASS",
+  "reason": "흩어진 흙 더미+점이 f 덧그림으로 읽힘, 갈색 3단 명암."
+ },
+ "wz-gh-soil-b": {
+  "verdict": "PASS",
+  "reason": "A와 다른 흙 덩이 배치, 통행 f 정상."
+ },
+ "wz-gh-workbench": {
+  "verdict": "PASS",
+  "reason": "3x2 나무 작업대, 윗면(밝은 상판)과 정면 판자·다리·아래 선반이 보임. 상판 두께 14~16px 범위, 위의 화분·흙 더미·삽으로 분갈이대로 읽힘. 좌우 대칭."
+ },
+ "wz-gh-soilbox": {
+  "verdict": "PASS",
+  "reason": "나무 상자+리벳+흙 윗면이 3/4로 읽힘, 2x1 몸체 S."
+ },
+ "wz-gh-pot-empty": {
+  "verdict": "PASS",
+  "reason": "주황 림과 3단 명암의 점토 화분, 1배에서도 빈 화분으로 읽힘."
+ },
+ "wz-gh-pot-full": {
+  "verdict": "PASS",
+  "reason": "화분에 새싹이 자란 모습, 빈 화분과 같은 크기·윤곽."
+ },
+ "wz-gh-shovel": {
+  "verdict": "PASS",
+  "reason": "나무 자루와 금속 날, 바닥에 누운 삽으로 읽힘, f 덧그림."
+ },
+ "wz-gh-watercan": {
+  "verdict": "PASS",
+  "reason": "회청색 금속 몸통에 주둥이·손잡이·하이라이트, 물뿌리개로 즉시 읽힘."
+ },
+ "wz-gh-earmuff-rack": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 각 단에 호 모양 머리띠와 양쪽 둥근 솜 컵이 분홍·파랑·초록으로 걸려 1x 에서 귀마개 선반으로 읽히고 오른쪽 가장자리 잘림 없음."
+ },
+ "wz-gh-earmuff-basket": {
+  "verdict": "PASS",
+  "reason": "엮은 바구니에 색 귀마개/천이 쌓인 모습, 윤곽·명암 일관."
+ },
+ "wz-gh-mandrake-pot": {
+  "verdict": "PASS",
+  "reason": "화분에서 잎만 올라온 맨드레이크 대기 상태, 상태 묶음과 크기 동일."
+ },
+ "wz-gh-mandrake-pulled-f": {
+  "verdict": "PASS",
+  "reason": "얼굴 달린 뿌리가 입을 벌리고 비명을 지르는 모습이 작업대 위 덧그림으로 읽힘, f 코드와 크기 일치."
+ },
+ "wz-gh-mandrake-pulled": {
+  "verdict": "PASS",
+  "reason": "같은 얼굴에 팔과 뿌리가 더 드러난 바닥 버전, 1x1 동일 피벗."
+ },
+ "wz-gh-mandrake-replant": {
+  "verdict": "PASS",
+  "reason": "흙무더기에 눈 감은 얼굴이 파묻힌 재식재 상태, 앞 상태들과 같은 크기."
+ },
+ "wz-gh-pot-row": {
+  "verdict": "PASS",
+  "reason": "긴 화분 상자에 잎 덩이 세 개, 모종 줄로 읽힘. 2x1 SS."
+ },
+ "wz-gh-vine-wall": {
+  "verdict": "PASS",
+  "reason": "가는 줄기에 잎과 붉은 열매가 달려 벽을 타는 덩굴로 읽힘. 1x3 C 통행(머리 위) 적절. 얇지만 의도된 형태."
+ },
+ "wz-gh-vine-bush": {
+  "verdict": "PASS",
+  "reason": "2x2 잎 덩이에 3~4단 명암과 흰 꽃 점, 덩굴 덤불로 읽히고 브로콜리처럼 보이지 않음."
+ },
+ "wz-gh-toothflower": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 줄기 위 둥근 보라·주황 꽃잎 머리 가운데에 눈 같은 입과 흰 이빨이 있어 이빨 달린 꽃으로 읽히고 화분 받침(갈색 판 띠)과 윤곽 정상."
+ },
+ "wz-gh-purplethorn": {
+  "verdict": "PASS",
+  "reason": "보라 가시 덩굴이 화분에서 솟은 모습, 하이라이트와 윤곽이 있어 가시 식물로 읽힘."
+ },
+ "wz-gh-tentaclevine": {
+  "verdict": "PASS",
+  "reason": "재심 합격. 링 화환이 사라지고 화분에서 위로 휘어 오르는 굵은 초록 덩굴과 밝은 빨판 점이 있어 촉수 덩굴로 읽힘. 윤곽·명암 정상."
+ },
+ "wz-gh-seedtray": {
+  "verdict": "PASS",
+  "reason": "긴 나무 트레이에 어린 싹이 줄지어 있어 묘목 트레이로 읽힘, 2x1."
+ }
+}

@@ -1,0 +1,209 @@
+{
+ "module": "greenhouse",
+ "sealed": "2026-10-07T08:57:06.049276+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-gh-wall-n": {
+   "verdict": "PASS",
+   "hash": "d8046afb9dc5944c2e64690d7cc646c9952d4c04a0c7476823d05fda841fb3be",
+   "reason": "철틀 유리벽 + 석재 지붕띠 + 벽돌 받침이 3/4 정면으로 읽힘. 유색 윤곽·왼쪽 위 반사 광택. 좌우 대칭, 1배에서도 온실 벽."
+  },
+  "wz-gh-roof": {
+   "verdict": "PASS",
+   "hash": "2d88e7d7f6e79729b988e2444ad8f227c6fbf119fe5132f3163bae9954be6aad",
+   "reason": "유리 패널 사이 철 살대 가로띠가 반복되어 유리 지붕 행으로 읽힘. 같은 철틀 팔레트·윤곽 일관."
+  },
+  "wz-gh-vent-closed": {
+   "verdict": "PASS",
+   "hash": "cf5dd07b6885bedca2de7c1e2a9f7923645b1f5a617ff9c3d197052c26f22eb1",
+   "reason": "유리벽 안에 황동 경첩이 달린 닫힌 환기창 틀이 보임. 벽 키트와 같은 화풍, 통행 S."
+  },
+  "wz-gh-vent-open": {
+   "verdict": "PASS",
+   "hash": "9d52a8ccd89c69d758e077a8042e4059d40cf8e953ed2d82e88d41bdebfeb5b3",
+   "reason": "닫힘 상태와 같은 크기·피벗, 위로 젖혀진 덮개가 실제로 다른 모양으로 그려져 열림으로 읽힘."
+  },
+  "wz-gh-door-closed": {
+   "verdict": "PASS",
+   "hash": "cee302076ee07f1e227623f1fced34fb4f639d83cb39a2d6fce484bd2c9d8494",
+   "reason": "재심 합격. 지붕띠(y1~8)와 철 상인방(y9~12) 아래에 투명창 띠(y13~21)를 두어 문짝 본체가 y22~59 약 38px 로 줄었고 기준 32~40px 안(사람 24x32 대비 적정). 철문틀 윤곽·하이라이트·손잡이 있어 1x 에서 온실 문으로 읽힘."
+  },
+  "wz-gh-door-open": {
+   "verdict": "PASS",
+   "hash": "d4863c885a7ac7cbdd7db04f64f8b4ab9259400d636c23da9b6effb4bbb6a169",
+   "reason": "재심 합격. 닫힘과 같은 64px 틀·같은 상인방/창 띠, 열린 개구부가 y22~59 약 38px 로 기준 32~40px 충족. 통행 S/C/C/C 정상, 상태 간 크기·피벗 동일."
+  },
+  "wz-gh-door-locked": {
+   "verdict": "PASS",
+   "hash": "d7cedfa6da4e02740938efb4882b051e354fc14317f04c1e37ce411f073e6bd2",
+   "reason": "재심 합격. 닫힘과 상인방·창 띠·문짝 높이(약 38px)가 동일하고 차이는 y36~47 자물쇠·사슬뿐이라 3상태가 같은 크기·피벗을 공유. 자물쇠 표현 유지."
+  },
+  "wz-gh-corner-nw": {
+   "verdict": "PASS",
+   "hash": "5ed2af20c552596fa7771369d73bb294b8f3fecac79557e77a981e4e6544a462",
+   "reason": "석재 지붕띠+철 기둥+유리가 이어져 북서 모서리로 읽힘, 벽 키트와 명암 일치."
+  },
+  "wz-gh-corner-ne": {
+   "verdict": "PASS",
+   "hash": "864fc93935c50a94e02b7629f5a8306bea0a4d11996bb380fa5954be35f8ba77",
+   "reason": "북서 모서리의 좌우 반전 대응으로 유리·철틀 정합, 대칭 규칙 충족."
+  },
+  "wz-gh-side-w": {
+   "verdict": "PASS",
+   "hash": "c2d6ef2f7831821071885ef98d4032391660fe176035d729657cd789af60f9bc",
+   "reason": "옆벽을 얇은 철 기둥+유리 반사로 표현, 1칸 투명 여백 포함. 3/4 옆면 처리로 허용 범위."
+  },
+  "wz-gh-side-e": {
+   "verdict": "PASS",
+   "hash": "b3f0afb7ee5131832a0799687bc9dee30edf5b78d44ad8cfe6ac0643ab241a18",
+   "reason": "서쪽 옆벽의 대응, 같은 명암·윤곽, 통행 S."
+  },
+  "wz-gh-wall-s": {
+   "verdict": "PASS",
+   "hash": "56ab53425ce5c1c3a0f41d4700378670d63d6fb1a42a1e78b8064eeb5d910590",
+   "reason": "크림색 상판+벽돌 정면 3~4단 명암, 윗면과 남쪽 정면이 모두 보이는 낮은 벽. 읽힘 양호."
+  },
+  "wz-gh-corner-sw": {
+   "verdict": "PASS",
+   "hash": "6812710d86c90b43a7bcca6292565d222dcde2619e5fbe433adab329b32b145f",
+   "reason": "재심 합격. 서쪽 가장자리에 윤곽·하이라이트가 있는 세로 돌 기둥이 생겨 wall-s 와 확실히 구별되고 side-w 와 이어지는 모서리로 읽힘. 명암·윤곽 팔레트 일치."
+  },
+  "wz-gh-corner-se": {
+   "verdict": "PASS",
+   "hash": "b4bd20bf8584256cf8e33092a276afc6c68c0da34ac43205927bbb3e63bb14d0",
+   "reason": "재심 합격. 동쪽 가장자리에 윤곽·그림자 면이 있는 세로 돌 기둥이 생겨 wall-s 와 구별되고 side-e 와 이어짐. corner-sw 와 좌우 대칭 일관."
+  },
+  "wz-gh-floor-brick-a": {
+   "verdict": "PASS",
+   "hash": "7c14f9d98800244bd0db224c46b71765c988712749bc4758f308b241a0422335",
+   "reason": "엇갈린 벽돌 줄, 3단 명암, 젖은 이끼·물 얼룩이 보이며 3x4 타일링에서 이음새 없음. F 코드 일치."
+  },
+  "wz-gh-floor-brick-b": {
+   "verdict": "PASS",
+   "hash": "f7132a0189a9540186aca9fe1a11c9f889d42b0233c60821ae4260090048bf72",
+   "reason": "A와 같은 벽돌 결에 얼룩 위치만 다른 변형, 섞어 깔아도 이음새 안 튐."
+  },
+  "wz-gh-floor-dirt": {
+   "verdict": "PASS",
+   "hash": "48727ec933faf40eb5a95380f859a22a09586b86c9c3ffbcdb73242cc7d3852b",
+   "reason": "재심 합격. 회색 돌 점과 갈색 대시가 크게 줄고 어두운 얼룩 덩이로 바뀌어 6x4 타일링에서 촘촘한 잡음이 없고 평평한 면에 소량의 질감만 남음. 단일 타일이라 약한 반복은 있으나 도장 찍은 느낌은 기준 이하."
+  },
+  "wz-gh-water-a": {
+   "verdict": "PASS",
+   "hash": "492eddf2d34f8e72df69b0c982d4724a0a9f6ab395907474b610a4482d7827a1",
+   "reason": "파란 물웅덩이가 하이라이트·윤곽과 함께 f 덧그림으로 읽힘, 투명 배경."
+  },
+  "wz-gh-water-b": {
+   "verdict": "PASS",
+   "hash": "88e668633ae24b209ac9d10be4d12938fcc0dfe2363b80a12d587a08eb2e2fbe",
+   "reason": "A와 다른 모양의 물 번짐 변형, 같은 팔레트."
+  },
+  "wz-gh-soil-a": {
+   "verdict": "PASS",
+   "hash": "18a7af1024e36f4f4ed3dab854db8525c716db0a70c4b51bfa965b8ead972667",
+   "reason": "흩어진 흙 더미+점이 f 덧그림으로 읽힘, 갈색 3단 명암."
+  },
+  "wz-gh-soil-b": {
+   "verdict": "PASS",
+   "hash": "09f001e51d01660c6efdfcd44be0880fbdd6b7dfb9b7f577bf429cfb4eb04b30",
+   "reason": "A와 다른 흙 덩이 배치, 통행 f 정상."
+  },
+  "wz-gh-workbench": {
+   "verdict": "PASS",
+   "hash": "88ba5b29d8a8d980ebf59e16862eb0887ab809ec49e4963128044a97cbe798ac",
+   "reason": "3x2 나무 작업대, 윗면(밝은 상판)과 정면 판자·다리·아래 선반이 보임. 상판 두께 14~16px 범위, 위의 화분·흙 더미·삽으로 분갈이대로 읽힘. 좌우 대칭."
+  },
+  "wz-gh-soilbox": {
+   "verdict": "PASS",
+   "hash": "e530546b8f346b193c25efae6f9ce4b9770e49e66d7e63b4a5071d9e211050f7",
+   "reason": "나무 상자+리벳+흙 윗면이 3/4로 읽힘, 2x1 몸체 S."
+  },
+  "wz-gh-pot-empty": {
+   "verdict": "PASS",
+   "hash": "b735129490485ccc393cdbaf723a1e217917b15e83133296757cde1891908b79",
+   "reason": "주황 림과 3단 명암의 점토 화분, 1배에서도 빈 화분으로 읽힘."
+  },
+  "wz-gh-pot-full": {
+   "verdict": "PASS",
+   "hash": "5f0db47fac3312845fc26e1a9ceb4516dc049cb3a51bb2b7cea6424d369bde08",
+   "reason": "화분에 새싹이 자란 모습, 빈 화분과 같은 크기·윤곽."
+  },
+  "wz-gh-shovel": {
+   "verdict": "PASS",
+   "hash": "db19b79f52c3c0f9fdad5a1c75e8322ad7fa30d7254fe961799f3e05c286805e",
+   "reason": "나무 자루와 금속 날, 바닥에 누운 삽으로 읽힘, f 덧그림."
+  },
+  "wz-gh-watercan": {
+   "verdict": "PASS",
+   "hash": "54e947b2c17fc02f48144d071b0f6037c7484e7a3f778ed8b7da13c13a722123",
+   "reason": "회청색 금속 몸통에 주둥이·손잡이·하이라이트, 물뿌리개로 즉시 읽힘."
+  },
+  "wz-gh-earmuff-rack": {
+   "verdict": "PASS",
+   "hash": "e261bb6164cd08c743f820451baf8d6b71b362c5dd18d805ad2bc7d41d38ebf1",
+   "reason": "재심 합격. 각 단에 호 모양 머리띠와 양쪽 둥근 솜 컵이 분홍·파랑·초록으로 걸려 1x 에서 귀마개 선반으로 읽히고 오른쪽 가장자리 잘림 없음."
+  },
+  "wz-gh-earmuff-basket": {
+   "verdict": "PASS",
+   "hash": "4db7370dda730a9061e707748a1fa466187773a1ca4345eb11bfe0dc97baea9f",
+   "reason": "엮은 바구니에 색 귀마개/천이 쌓인 모습, 윤곽·명암 일관."
+  },
+  "wz-gh-mandrake-pot": {
+   "verdict": "PASS",
+   "hash": "54a39b04310a3da4f7b75bd3fbdb6480359bf0b05d4e1569728f5486d6b72f50",
+   "reason": "화분에서 잎만 올라온 맨드레이크 대기 상태, 상태 묶음과 크기 동일."
+  },
+  "wz-gh-mandrake-pulled-f": {
+   "verdict": "PASS",
+   "hash": "3e4b56efe50ff54b4232f2d56dd783627a68114e75fbaa520c13cfaf299670c4",
+   "reason": "얼굴 달린 뿌리가 입을 벌리고 비명을 지르는 모습이 작업대 위 덧그림으로 읽힘, f 코드와 크기 일치."
+  },
+  "wz-gh-mandrake-pulled": {
+   "verdict": "PASS",
+   "hash": "4dee72eecf6270f5caa8bf1d5e3dbe72fe55bf498943cb1a93d27813c4ba3eb0",
+   "reason": "같은 얼굴에 팔과 뿌리가 더 드러난 바닥 버전, 1x1 동일 피벗."
+  },
+  "wz-gh-mandrake-replant": {
+   "verdict": "PASS",
+   "hash": "b10d84e53b6f8ca41c07fc5906d3d23664ef1aa9d8ab75b4412305e3e99db6d0",
+   "reason": "흙무더기에 눈 감은 얼굴이 파묻힌 재식재 상태, 앞 상태들과 같은 크기."
+  },
+  "wz-gh-pot-row": {
+   "verdict": "PASS",
+   "hash": "1107c72328629fd995c8c39b181e535c08900975cd33b87bac0b1f2515d4f162",
+   "reason": "긴 화분 상자에 잎 덩이 세 개, 모종 줄로 읽힘. 2x1 SS."
+  },
+  "wz-gh-vine-wall": {
+   "verdict": "PASS",
+   "hash": "d72814b5fedb280daf797046c35e14fb23fccc21e11923609f8dad1f1ba2f550",
+   "reason": "가는 줄기에 잎과 붉은 열매가 달려 벽을 타는 덩굴로 읽힘. 1x3 C 통행(머리 위) 적절. 얇지만 의도된 형태."
+  },
+  "wz-gh-vine-bush": {
+   "verdict": "PASS",
+   "hash": "c3893b49e68f6d86d16c4f8461b8632692d2d550072f62d3b2ef1bdb2a58a722",
+   "reason": "2x2 잎 덩이에 3~4단 명암과 흰 꽃 점, 덩굴 덤불로 읽히고 브로콜리처럼 보이지 않음."
+  },
+  "wz-gh-toothflower": {
+   "verdict": "PASS",
+   "hash": "1007596ac8b96c84ef187826e880abb226bfc3179d7ea92b0eaafd7058e781a5",
+   "reason": "재심 합격. 줄기 위 둥근 보라·주황 꽃잎 머리 가운데에 눈 같은 입과 흰 이빨이 있어 이빨 달린 꽃으로 읽히고 화분 받침(갈색 판 띠)과 윤곽 정상."
+  },
+  "wz-gh-purplethorn": {
+   "verdict": "PASS",
+   "hash": "6ff12ceb2885ba56bf3c49dee1db706de268dad83262a889a701baa74045785f",
+   "reason": "보라 가시 덩굴이 화분에서 솟은 모습, 하이라이트와 윤곽이 있어 가시 식물로 읽힘."
+  },
+  "wz-gh-tentaclevine": {
+   "verdict": "PASS",
+   "hash": "8a7c00edd1a71ed4c81d3ecfa0a1298a05424e89fe475ce927d857cda65d0d19",
+   "reason": "재심 합격. 링 화환이 사라지고 화분에서 위로 휘어 오르는 굵은 초록 덩굴과 밝은 빨판 점이 있어 촉수 덩굴로 읽힘. 윤곽·명암 정상."
+  },
+  "wz-gh-seedtray": {
+   "verdict": "PASS",
+   "hash": "e369a845477272f62a289eac98b2d3e9e09fd6a3f199550af3fd17c751bd3d41",
+   "reason": "긴 나무 트레이에 어린 싹이 줄지어 있어 묘목 트레이로 읽힘, 2x1."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}
