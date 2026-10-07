@@ -4,7 +4,8 @@
   "reason": {
     "overlap": "박공/지붕이 다른 지붕 위에 겹쳐 떠 있음(10~15,21,25)",
     "dome": "둥근 탑·구근 지붕이 버섯/덩어리로 보임(16,18~20)",
-    "edge": "지붕 끝이 번져 잘린 조각(5)"
+    "edge": "지붕 끝이 번져 잘린 조각(5)",
+    "curvedRoof": "곡면 지붕에 평평한 기와 격자(23)"
   },
   "note": "기계 Visual QA 는 25장 전부 통과시켰으나 육안으로 반려. 사람 결정 기록 없음(미선택 상태에서 철회).",
   "items": [
@@ -72,6 +73,12 @@
       "id": "r7-building-25",
       "name": "박공 날개와 다락의 큰 저택",
       "pngSha256": "5e4c5bb725b5bda2ae316304b69d8594edf7c0aaa421fdd374b0db169e1c71f0"
+    },
+    {
+      "id": "r7-building-23",
+      "name": "통지붕과 둥근 창의 삼층집",
+      "pngSha256": "efd6ca556ae97c44251cb2a2533b4dae096db47791ac3d61684b32944af80ed6",
+      "reason": "구조 Visual QA INCOHERENT_ROOF_PROJECTION: 곡면 통지붕에 평평한 격자(2026-10-07 재검수, projection 82<90)"
     }
   ]
 }

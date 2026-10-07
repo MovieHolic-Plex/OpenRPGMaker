@@ -80,7 +80,7 @@ export function buildSmallBeodeulVillage(project:Project,args:Record<string,unkn
     const tx=x+ox,ty=y+oy;
     if(tx<0||ty<0||tx+k.width>m.width||ty+k.height>m.height)return false;
     if(kind!=='house')for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){
-      if(k.rows[dy]!.upperTiles[dx]!<0)continue;
+      if((k.rows[dy]!.upperTiles ?? [])[dx]!<0)continue;
       const i=(ty+dy)*m.width+tx+dx;
       if(layerTileAt(m,3,i)>=0||layerTileAt(m,1,i)!==737)return false;
       if(houses.some(h=>Math.abs(h.door.x-tx-dx)+Math.abs(h.door.y-ty-dy)<=1))return false;

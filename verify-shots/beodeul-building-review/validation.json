@@ -251,6 +251,54 @@
       "sourceMatches": true,
       "entranceMetadataPresent": true,
       "sha": "41b0a5137b945997750c15f3afe828f2bbee5f1d1ba7e11db60359db96664091"
+    },
+    {
+      "id": "r8-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f"
+    },
+    {
+      "id": "r8-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f"
+    },
+    {
+      "id": "r8-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "ab259e0900fb30da9d22046ff017be82ba5c6686049013fb8bce0e9c0113d7e5"
+    },
+    {
+      "id": "r8-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "f0eb854cee2fd757f3f483356f8adcebee9da4d63bfacbf2db2b2685de27479c"
+    },
+    {
+      "id": "r8-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "94e01cbc061df7baaf925cde37f72a442cb0a73bf868fc8dac55e6563b0a3e3a"
+    },
+    {
+      "id": "r8-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "58c3bb59f08662523925a90f0f97276495f9c66e7454255c3e833000187e1b02"
+    },
+    {
+      "id": "r8-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c1187c1dedc6d5bbf06e30ca40d9b678a787f37761e13e948d9eec2f6268ce30"
+    },
+    {
+      "id": "r8-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "e1f8046f10d5be8259522e844211a5dc79e1c36e961c5cd52b14adaa4b8442fd"
     }
   ],
   "visualApproval": "requires-vision-gate-and-human-decision"

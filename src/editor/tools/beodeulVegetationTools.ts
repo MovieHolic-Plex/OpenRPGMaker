@@ -16,7 +16,7 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
  const m=project.maps[mapId],ts=m&&project.tilesets[m.tilesetId];
  if(!m||ts?.id!=='beodeul_city'||m.width!==54||m.height!==34||m.relief)throw new ToolError('인식된 평지 공동마당 마을 54×34가 필요합니다.');
  const kits=new Map(ts.structureKits?.map(k=>[k.id,k]));
- const match=(k:StructureKitDef,x:number,y:number)=>k.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n));
+ const match=(k:StructureKitDef,x:number,y:number)=>k.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n));
  if(!COURTYARD_HOUSES.every(h=>{const k=kits.get(h.kit);return k&&match(k,h.x,h.y);}))throw new ToolError('공동마당의 건물 전체 배열이 일치하지 않습니다.');
  const grafts=new Map(ts.tileGrafts?.map(g=>[g.targetTile,g]));
  const previousRecipes=new Map(catalog.recipes.flatMap(r=>r.rows.flat().map(n=>[n,r] as const)));
@@ -34,7 +34,7 @@ export function refineBeodeulVegetation(project:Project,mapId:string){
  for(const [source,target] of translated.map){ts.priority[target]=common.priority[source]!;ts.passability[target]=structuredClone(common.passability[source]!);}
  const keepTrees=new Set(['18,23','22,26','17,30','26,30']);
  let removedTrees=0;
- for(const [id,x,y] of COURTYARD_TREES){if(keepTrees.has(`${x},${y}`))continue;const k=kits.get(`bd-tree-${id}`)!;for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++)if(k.rows[dy]!.upperTiles[dx]!>=0)setLayerTileAt(m,3,(y+dy)*m.width+x+dx,-1);removedTrees++;}
+ for(const [id,x,y] of COURTYARD_TREES){if(keepTrees.has(`${x},${y}`))continue;const k=kits.get(`bd-tree-${id}`)!;for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++)if((k.rows[dy]!.upperTiles ?? [])[dx]!>=0)setLayerTileAt(m,3,(y+dy)*m.width+x+dx,-1);removedTrees++;}
  // Old roots/cast shadows and scattered tiny plants belong to the removed vegetation, not the buildings.
  for(let i=0;i<m.width*m.height;i++)for(const layer of [2,4] as const){
   const r=own(layerTileAt(m,layer,i));if(!r)continue;

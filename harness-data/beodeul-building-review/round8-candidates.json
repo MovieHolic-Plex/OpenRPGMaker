@@ -201,7 +201,7 @@
   },
   {
     "id": "r8-building-06",
-    "name": "돌 기단 위 박공집",
+    "name": "돌벽 박공 이층집",
     "role": "주택",
     "width": 64,
     "height": 144,
@@ -229,19 +229,19 @@
       "w": 16,
       "h": 32
     },
-    "description": "돌 기단 위 박공집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "description": "돌벽 박공 이층집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
     "lighting": "원본 왼쪽 위 광원",
     "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
     "source": "authored-native-grid/round-8",
-    "silhouette": "돌 기단 위 박공집",
+    "silhouette": "돌벽 박공 이층집",
     "round": 8,
     "nativeAssetHashes": {
-      "review-r8-building-06": "d0d77315a26af5dc78cb858cd06931a733a6b6747c71d52f414596db2b511beb"
+      "review-r8-building-06": "58c3bb59f08662523925a90f0f97276495f9c66e7454255c3e833000187e1b02"
     }
   },
   {
     "id": "r8-building-07",
-    "name": "돌 기단 올리브 지붕집",
+    "name": "돌벽 올리브 지붕집",
     "role": "주택",
     "width": 96,
     "height": 144,
@@ -269,14 +269,14 @@
       "w": 16,
       "h": 32
     },
-    "description": "돌 기단 올리브 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "description": "돌벽 올리브 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
     "lighting": "원본 왼쪽 위 광원",
     "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
     "source": "authored-native-grid/round-8",
-    "silhouette": "돌 기단 올리브 지붕집",
+    "silhouette": "돌벽 올리브 지붕집",
     "round": 8,
     "nativeAssetHashes": {
-      "review-r8-building-07": "5c02c0834fccd4108bd047b08a375434bde3c2627262b11da583a18ab67d83e7"
+      "review-r8-building-07": "c1187c1dedc6d5bbf06e30ca40d9b678a787f37761e13e948d9eec2f6268ce30"
     }
   },
   {
