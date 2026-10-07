@@ -45,6 +45,7 @@ export function openConceptFeedOverlay(mode: "menu" | "welcome"): Promise<Concep
         else if (started) settled = true;
         return started;
       },
+      beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
       onBlank: mode === "menu" ? () => void createBlankFromMenu().then((ok) => { if (ok) settled = true; }) : () => finish("blank"),
       onClose: () => finish("closed"),
     });

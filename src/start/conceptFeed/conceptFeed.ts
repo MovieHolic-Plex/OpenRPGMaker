@@ -40,6 +40,8 @@ export type ConceptFeedOptions = {
   readonly continueRow?: HTMLElement | null;
   /** 런처만 — 위 막대 오른쪽(폴더 열기·팀 참여·언어). */
   readonly topActions?: readonly HTMLElement[];
+  /** 「내가 쓴 걸로 만들기」 전에 — AI 연결 관문. false 면 초안을 쓰지 않고 피드에 남는다. */
+  readonly beforeDraft?: () => Promise<boolean>;
   /** 입력 문장 → 컨셉 초안. 기본은 src/concepts/draft.ts 를 지연 로드한다. */
   readonly draft?: (text: string) => Promise<DraftedConcept>;
   /** 테스트용 — 끝 감지. 기본은 IntersectionObserver. */
@@ -361,7 +363,21 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     }, () => undefined);
   }
 
+  let gating = false;
   async function openCustom(text: string): Promise<void> {
+    if (gating) return;
+    if (options.beforeDraft) {
+      gating = true;
+      try {
+        if (!(await options.beforeDraft())) return;
+      } catch (error) {
+        setError(error instanceof Error ? error.message : String(error));
+        return;
+      } finally {
+        gating = false;
+      }
+      if (disposed) return;
+    }
     const mine = ++detailSeq;
     enterDetail();
     setError("");

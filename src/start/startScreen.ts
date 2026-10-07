@@ -275,6 +275,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     children: [el("span", { class: "start-icon start-icon-" + icon, attrs: { "aria-hidden": "true" } }), label],
   });
   const source = createConceptSource();
+  const ensureAiConnected = async (label: string): Promise<boolean> => {
+    const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+    return ensureAiConnectedForPreset({ presetLabel: label });
+  };
   let feed: ConceptFeed | null = null;
   const mountFeed = (): ConceptFeed => createConceptFeed({
     mode: "launcher",
@@ -287,16 +291,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("span", { class: "cf-version", text: APP_VERSION }),
     ],
     onBlank: createBlank,
+    beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onMake: async (concept, tweak) => {
       if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
       if (state.busy) return false;
       state.busy = true;
       try {
         return await launcherMakeHandler(bridge, {
-          ensureAiConnected: async (label) => {
-            const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-            return ensureAiConnectedForPreset({ presetLabel: label });
-          },
+          ensureAiConnected,
           made: (slug) => source.made(slug),
           goEditor,
           storage: window.sessionStorage,

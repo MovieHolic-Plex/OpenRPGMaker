@@ -88,6 +88,18 @@ describe("concept feed", () => {
     expect(root.querySelector(".cf-detail-title")!.textContent).toBe("초안 컨셉");
   });
 
+  it("a declined AI gate keeps the feed and never drafts", async () => {
+    const draft = vi.fn();
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), draft, beforeDraft: async () => false });
+    await flush();
+    const search = q(root, CONCEPT_FEED_TESTIDS.search) as HTMLInputElement;
+    search.value = "고양이 탐정";
+    search.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    await flush();
+    expect(draft).not.toHaveBeenCalled();
+    expect(q(root, CONCEPT_FEED_TESTIDS.detail)!.hidden).toBe(true);
+  });
+
   it("make passes the tweak, locks while running, and unlocks when cancelled", async () => {
     let finish: (started: boolean) => void = () => {};
     const onMake = vi.fn((_concept: GameConcept, _tweak: string) => new Promise<boolean>((resolve) => { finish = resolve; }));

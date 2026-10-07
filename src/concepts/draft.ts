@@ -2,7 +2,7 @@
 // 쓰기 규칙은 공식 컨셉 하네스와 같은 시드를 읽는다(harness-data/game-concepts/seed.json).
 import seed from "../../harness-data/game-concepts/seed.json";
 import { generateAiImage } from "@/ai/imageGenerationClient";
-import { chatCompletion, loadAiConfig } from "@/ai/llmClient";
+import { chatCompletion, configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import { configForRole } from "@/ai/modelRoles";
 import { GAME_PRESET_IDS } from "@/project/gameDesignIds";
 import { conceptArtPrompt, conceptForbiddenNameHits } from "./art";
@@ -47,7 +47,10 @@ export function parseJsonObject(text: string): Record<string, unknown> {
 }
 
 async function defaultComplete(prompt: string, signal?: AbortSignal): Promise<string> {
-  const result = await chatCompletion({ ...configForRole(loadAiConfig(), "writer"), maxTokens: 4096 }, {
+  // 글쓰기 역할 모델을 따로 정하지 않았으면 조수와 같이 가벼운 모델로 간다(빈 역할로 보내면 동반 서비스가 「Invalid URL」 로 거절한다).
+  const config = loadAiConfig();
+  const chosen = config.roleModels?.writer ? configForRole(config, "writer") : configForLiteModel(config);
+  const result = await chatCompletion({ ...chosen, maxTokens: 4096 }, {
     stream: false,
     ...(signal ? { signal } : {}),
     response_format: { type: "json_object" },
@@ -63,8 +66,10 @@ export async function draftConceptFromText(text: string, deps: DraftDeps = {}): 
   let avoid: string[] = [];
   for (let attempt = 0; attempt < 2; attempt += 1) {
     deps.signal?.throwIfAborted();
+    // 통신 오류(연결·인증·한도)는 다시 물어도 같다 — 그 말 그대로 바로 올린다. 다시 묻는 것은 답의 모양이 틀렸을 때뿐이다.
+    const answer = await complete(draftPrompt(text, avoid), deps.signal);
     try {
-      const raw = parseJsonObject(await complete(draftPrompt(text, avoid), deps.signal));
+      const raw = parseJsonObject(answer);
       const title = typeof raw.title === "string" ? raw.title : "";
       const slug = conceptSlug(title || text, now().toString(36));
       const presetId = GAME_PRESET_IDS.includes(raw.presetId as GameConcept["presetId"]) ? raw.presetId as GameConcept["presetId"] : "story-cutscene";
@@ -76,8 +81,8 @@ export async function draftConceptFromText(text: string, deps: DraftDeps = {}): 
       const hits = conceptForbiddenNameHits([concept.title, concept.hook, concept.description, concept.protagonist, concept.stage, concept.firstScene].join(" "));
       if (hits.length > 0) { avoid = hits; continue; }
       return concept;
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") throw error;
+    } catch {
+      /* 모양이 틀린 답 — 한 번 더 묻는다 */
     }
   }
   throw new Error(FAILED);

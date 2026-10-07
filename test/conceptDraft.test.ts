@@ -42,6 +42,12 @@ describe("concept draft", () => {
     await expect(draftConceptFromText("x", { complete: async () => "모름" })).rejects.toThrow("컨셉을 만들지 못했습니다");
   });
 
+  it("connection errors surface at once instead of retrying", async () => {
+    const complete = vi.fn(async () => { throw new Error("AI 연결이 끊겼습니다"); });
+    await expect(draftConceptFromText("x", { complete })).rejects.toThrow("AI 연결이 끊겼습니다");
+    expect(complete).toHaveBeenCalledTimes(1);
+  });
+
   it("thumbnail drawing failure resolves null", async () => {
     const concept = await draftConceptFromText("고양이 탐정", { complete: async () => card("고양이 탐정 사무소") });
     expect(await drawConceptThumb(concept, { generate: async () => { throw new Error("no"); } })).toBeNull();
