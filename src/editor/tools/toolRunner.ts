@@ -23,7 +23,7 @@ import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilese
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
-import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
+import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
 export interface RunToolOptions {
@@ -234,6 +234,34 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
 // 인자 모양 오류는 스키마 검증(실행 전)과 툴 내부 검사(실행 중) 두 곳에서 나오는데, 교정 예시·힌트·repair 는
 // 실행 전 경로에만 붙어 있었다. 그래서 `upsert_event` · `set_scene_mood` 의 "커맨드 형식 오류" 는 고칠 본을
 // 받지 못해 같은 인자로 재시도되었다(F1). 거부는 그대로고, 동일한 교정 정보만 둘 다 실어 보낸다.
+
+/**
+ * 조수가 빈 값으로 채운 「선택」 칸을 뺀다. gpt-6.1-sol 은 스키마의 선택 칸을 거의 다 채우고, 정할 것이 없으면 "" 나 null 을 넣는다
+ * (2026-10-07 장르 시험: 레이어 id:"", 오프닝 text 장면의 composition:{} 같은 거부가 반복됐다). 필수 칸·빈 배열·0 은 건드리지 않는다 —
+ * 빈 배열은 「해제」 뜻으로 쓰는 도구가 있다.
+ */
+function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, path: string, dropped: string[]): unknown {
+  if (!schema || value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    const items = schema.items;
+    return items ? value.map((entry, index) => pruneEmptyOptionalArgs(items, entry, `${path}[${index}]`, dropped)) : value;
+  }
+  const properties = schema.properties ?? {};
+  const required = new Set(schema.required ?? []);
+  const out: Record<string, unknown> = {};
+  for (const [key, inner] of Object.entries(value as Record<string, unknown>)) {
+    const here = path ? `${path}.${key}` : key;
+    const emptyObject = !!inner && typeof inner === "object" && !Array.isArray(inner) && Object.keys(inner).length === 0;
+    if (!required.has(key) && (inner === "" || inner === null || emptyObject) && key in properties) { dropped.push(here); continue; }
+    // 선택 객체인데 그 객체의 필수 칸이 비었으면 객체째 뺀다 — itemCost:{itemId:"",amount:1} 같은 「쓸 생각 없는」 칸.
+    const innerSchema = properties[key];
+    if (!required.has(key) && innerSchema?.required?.length && inner && typeof inner === "object" && !Array.isArray(inner)
+      && innerSchema.required.some((name) => { const v = (inner as Record<string, unknown>)[name]; return v === "" || v === null; })) { dropped.push(here); continue; }
+    out[key] = pruneEmptyOptionalArgs(innerSchema, inner, here, dropped);
+  }
+  return out;
+}
+
 function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string, unknown>, cause: unknown): LintIssue {
   const issue = issueFromError(cause);
   // 이미 교정본을 실어 보내는 문구는 그대로 둔다. 모델도 테스트도 그 메시지의 JSON 을 끝까지 읽어 그대로
@@ -272,8 +300,13 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
+  const prunedPaths: string[] = [];
   const normalizedArgs = argsWithCurrentMapTileset(ctx, tool,
-    normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(args))) as Record<string, unknown>);
+    normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
+      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, args, "", prunedPaths) as Record<string, unknown> : args))) as Record<string, unknown>);
+  const prunedNote = prunedPaths.length
+    ? `빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`
+    : null;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
@@ -292,11 +325,12 @@ export function runToolDefinition(
   if (tool.mode === "read") {
     try {
       const exec = tool.run(ctx.project, normalizedArgs);
+      const warnings = [...(prunedNote ? [prunedNote] : []), ...(exec.warnings ?? [])];
       return {
         ok: true,
         summary: exec.summary,
         ...(exec.issues && exec.issues.length > 0 ? { issues: exec.issues } : {}),
-        ...(exec.warnings && exec.warnings.length > 0 ? { warnings: exec.warnings } : {}),
+        ...(warnings.length > 0 ? { warnings } : {}),
         data: exec.data,
       };
     } catch (cause) {
@@ -322,7 +356,8 @@ export function runToolDefinition(
     const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, guarded?.args ?? normalizedArgs);
-    if (guarded?.warnings.length) exec = { ...exec, warnings: [...guarded.warnings, ...(exec.warnings ?? [])] };
+    const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
+    if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
