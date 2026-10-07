@@ -130,6 +130,11 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
 고친 것: 시작 맵을 다시 지으면 시작 칸을 spawn 으로 옮긴다 · Wizarding 인물 검색어(마법약 교수·호그와트 학생·부엉이 관리인·간호사…, `wizardingCharsets.ts` `wizardingTags`) ·
 결과에 `keepClear`(문 앞 두 칸)와 「비워 둘 것」 문장 · 헤드리스 칩 미리보기가 못 읽는 시트 하나로 전체 실패하던 것(`scripts/qa-game/render.mts`).
 
+## 스토어 공개본
+
+- 공식 팩 「마법 학교 — 고딕 성채·교실·숲·호수」(운영 판본 5). 원작 이름은 `WIZARDING_SCRUB` 로 바꿔 싣는다(그리핀도르→붉은 사자 기숙사 등, 영문 id 는 그대로). 캐릭터 35칸 설명이 `content.characters` 로 같이 가서 스토어로 넣은 프로젝트에서도 조수가 생김새로 고른다.
+- 스토어 사본 타일셋은 id 가 `store_…` 로 바뀌므로 `build_wizarding_space` 는 못 쓴다 — 편집기에는 번들이 기본으로 있으므로 그쪽을 쓴다.
+
 ## 한계
 
 - 탈것(마차·보트·세스트랄)은 프로젝트 데이터로 갈아탈 수 없어 정적 키트다. 큰 생물은 캐릭터 시트(24×32 고정)로 못 넣는다.
