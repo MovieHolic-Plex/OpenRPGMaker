@@ -1,9 +1,10 @@
 {
  "plan": [
   "###########",
-  "#.........#",
-  "#.........#",
-  "#.........#",
+  "######....#",
+  "######....#",
+  "######....#",
+  "######....#",
   "#.........#",
   "#.........#",
   "#.........#",
@@ -16,10 +17,10 @@
  "wall": "fd-plaster",
  "zones": [
   {
-   "x0": 8,
+   "x0": 6,
    "x1": 9,
    "y0": 1,
-   "y1": 8,
+   "y1": 5,
    "floor": "fd-kitchen-tile",
    "wall": "fd-wood-wall"
   }
@@ -32,28 +33,18 @@
   },
   {
    "id": "fd-rice-tub",
-   "x": 9,
-   "y": 5
+   "x": 8,
+   "y": 3
   },
   {
    "id": "fd-grill-range",
-   "x": 9,
-   "y": 6
+   "x": 7,
+   "y": 3
   },
   {
    "id": "fd-cutting-block",
-   "x": 9,
-   "y": 7
-  },
-  {
-   "id": "fd-menu-board",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "fd-menu-board",
-   "x": 5,
-   "y": 1
+   "x": 7,
+   "y": 4
   },
   {
    "id": "fd-noren",
@@ -61,66 +52,61 @@
    "y": 1
   },
   {
-   "id": "fd-neta-case",
-   "x": 5,
-   "y": 5
+   "id": "fd-menu-board",
+   "x": 8,
+   "y": 1
   },
   {
-   "id": "fd-neta-case",
-   "x": 6,
-   "y": 5
-  },
-  {
-   "id": "fd-neta-case",
-   "x": 7,
-   "y": 5
-  },
-  {
-   "id": "fd-register",
-   "x": 4,
-   "y": 8
-  },
-  {
-   "id": "fd-stool",
+   "id": "fd-menu-board",
    "x": 1,
    "y": 5
   },
   {
-   "id": "fd-stool",
+   "id": "fd-menu-board",
    "x": 3,
-   "y": 6
+   "y": 5
   },
   {
-   "id": "fd-stool",
+   "id": "fd-lantern",
    "x": 5,
-   "y": 6
+   "y": 5
+  },
+  {
+   "id": "fd-register",
+   "x": 1,
+   "y": 7
   },
   {
    "id": "fd-stool",
    "x": 7,
-   "y": 6
+   "y": 7
   },
   {
    "id": "fd-stool",
-   "x": 5,
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "fd-stool",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "fd-zashiki",
+   "x": 1,
    "y": 8
   },
   {
-   "id": "fd-stool",
-   "x": 6,
-   "y": 8
-  },
-  {
-   "id": "fd-stool",
-   "x": 7,
+   "id": "zataku",
+   "x": 4,
    "y": 8
   }
  ],
  "tables": [
   {
    "style": "fd-counter",
-   "x": 2,
-   "y": 5,
+   "x": 7,
+   "y": 6,
    "w": 3,
    "h": 1
   }
@@ -128,19 +114,19 @@
  "goods": [
   {
    "id": "fd-sushi-geta",
-   "x": 2,
-   "y": 5
+   "x": 7,
+   "y": 6
   },
   {
    "id": "fd-tokkuri",
-   "x": 4,
-   "y": 5
+   "x": 9,
+   "y": 6
   }
  ],
  "name": "일본 초밥집 실내",
  "start": [
   3,
-  7
+  8
  ],
  "links": [],
  "rooms": [
@@ -149,7 +135,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 10,
-   "y1": 9
+   "y1": 10
   }
  ]
 }
