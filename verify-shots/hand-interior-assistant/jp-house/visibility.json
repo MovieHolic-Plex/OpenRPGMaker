@@ -1,0 +1,473 @@
+{
+ "exposedTools": [
+  "find_tools",
+  "read_project_wiki",
+  "tile_query",
+  "create_map",
+  "resize_map",
+  "ask_tileset_change",
+  "get_project_summary",
+  "list_resources",
+  "get_database_records",
+  "focus_editor_view",
+  "web_search",
+  "list_authoring_presets",
+  "read_authoring_preset",
+  "get_map_region",
+  "find_events",
+  "get_event",
+  "find_layout_regions",
+  "build_hand_interior_room",
+  "list_hand_interior_parts",
+  "list_tileset_references",
+  "read_tileset_reference",
+  "show_map_region",
+  "check_reachability",
+  "list_spatial_designs",
+  "stamp_object",
+  "import_region_reference",
+  "upsert_event",
+  "build_pack_town",
+  "author_beodeul_town",
+  "tile_erase",
+  "author_house",
+  "build_jp_city_building",
+  "sculpt_relief",
+  "list_jp_city_building_parts"
+ ],
+ "oldToolsExposed": [],
+ "oldToolsInFullCatalog": [],
+ "fullCatalogSize": 353,
+ "handInteriorToolsInCatalog": [
+  "build_hand_interior_room",
+  "list_hand_interior_parts"
+ ],
+ "referenceTilesets": [
+  {
+   "tilesetId": "beodeul_city",
+   "categories": [
+    "beodeul-city",
+    "beodeul-city-blocks",
+    "beodeul-city-kits",
+    "beodeul-city-water",
+    "beodeul-city-manor-outskirts",
+    "beodeul-city-pieces",
+    "beodeul-city-qa",
+    "beodeul-picks-village",
+    "beodeul-picks-climate-village",
+    "beodeul-picks-dungeon",
+    "beodeul-picks-special",
+    "beodeul-picks-field"
+   ]
+  },
+  {
+   "tilesetId": "shared_forest_village_objects",
+   "categories": [
+    "village-props",
+    "dewbank-village-v1"
+   ]
+  },
+  {
+   "tilesetId": "forest_harmony",
+   "categories": [
+    "forest-public-village",
+    "forest-executable-v1",
+    "public-assembly-v2",
+    "tile-assembly-executable",
+    "dewbank-village-v1",
+    "diverse-villages-fullness-v15",
+    "concept-villages-v6",
+    "fantasy-exteriors-v2",
+    "field-routes-forest-v7",
+    "elf-treetop-v1"
+   ]
+  },
+  {
+   "tilesetId": "forest_harmony_snow",
+   "categories": [
+    "climate-snow-villages-v9",
+    "field-routes-snow-v9"
+   ]
+  },
+  {
+   "tilesetId": "forest_harmony_volcano",
+   "categories": [
+    "climate-volcano-villages-v11",
+    "field-routes-volcano-v10"
+   ]
+  },
+  {
+   "tilesetId": "forest_harmony_desert",
+   "categories": [
+    "climate-desert-villages-v11",
+    "field-routes-desert-v10"
+   ]
+  },
+  {
+   "tilesetId": "forest_harmony_autumn",
+   "categories": [
+    "climate-autumn-villages-v6",
+    "field-routes-autumn-v7"
+   ]
+  },
+  {
+   "tilesetId": "atlas_biome_jungle",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_swamp",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_mushroom",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_crystal",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_badlands",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_savanna",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_taiga",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_tundra",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_blight",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_skyisle",
+   "categories": []
+  },
+  {
+   "tilesetId": "atlas_biome_tropical",
+   "categories": []
+  },
+  {
+   "tilesetId": "joseon_baram",
+   "categories": [
+    "joseon-baram-guide",
+    "joseon-baram-terrain",
+    "joseon-baram-buildings",
+    "joseon-baram-props",
+    "joseon-baram-examples",
+    "joseon-baram-qa"
+   ]
+  },
+  {
+   "tilesetId": "modern_city",
+   "categories": [
+    "mc-start",
+    "mc-assemble",
+    "mc-buildings",
+    "mc-props",
+    "mc-example",
+    "mc-errors",
+    "mc-parking",
+    "mc-parking-facility"
+   ]
+  },
+  {
+   "tilesetId": "jp_city",
+   "categories": [
+    "jp-start",
+    "jp-autotile",
+    "jp-building",
+    "jp-road",
+    "jp-shop",
+    "jp-buildings-hand",
+    "jp-street-hand",
+    "jp-school",
+    "jp-transit",
+    "jp-interior",
+    "jp-errors"
+   ]
+  },
+  {
+   "tilesetId": "atlas_biome_world",
+   "categories": []
+  },
+  {
+   "tilesetId": "worldmap_selected",
+   "categories": [
+    "wmi-desert-east",
+    "wmi-fantasy",
+    "wmi-modern-sf",
+    "wmi-materials",
+    "wmi-authoring-auto",
+    "wmi-authoring",
+    "wmi-authoring-more"
+   ]
+  },
+  {
+   "tilesetId": "worldmap_authoring",
+   "categories": [
+    "wmi-desert-east",
+    "wmi-fantasy",
+    "wmi-modern-sf",
+    "wmi-materials",
+    "wmi-authoring-auto",
+    "wmi-authoring",
+    "wmi-authoring-more"
+   ]
+  },
+  {
+   "tilesetId": "atlas_biome_interior",
+   "categories": [
+    "hand-interior-v5"
+   ]
+  },
+  {
+   "tilesetId": "atlas_biome_dungeon",
+   "categories": []
+  },
+  {
+   "tilesetId": "opengameart_castle",
+   "categories": [
+    "castle-art-direction",
+    "castle-assembly",
+    "castle-revisions",
+    "tile-assembly-executable"
+   ]
+  },
+  {
+   "tilesetId": "easyrpg_chipset_dungeon",
+   "categories": [
+    "fantasy-dungeon-rooms-v1",
+    "rpg-interiors-sewer-prison-v1",
+    "rpg-dungeons-natural-v2",
+    "rpg-dungeons-built-v2",
+    "rpg-dungeons-grand-v1",
+    "rpg-dungeons-frontier-v2",
+    "rpg-dungeons-sunken-temple-v2"
+   ]
+  },
+  {
+   "tilesetId": "easyrpg_chipset_ship",
+   "categories": [
+    "rpg-interiors-ship-v1"
+   ]
+  },
+  {
+   "tilesetId": "harbor_kit",
+   "categories": []
+  },
+  {
+   "tilesetId": "oprn_atlas_vehicles",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_world",
+   "categories": [
+    "rpg-outdoors-world-v2"
+   ]
+  },
+  {
+   "tilesetId": "easyrpg_chipset_retro_dungeon",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_retro_exterior",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_retro_house",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_combined_town",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_retro_world",
+   "categories": []
+  },
+  {
+   "tilesetId": "easyrpg_chipset_combined_town_retro_world",
+   "categories": []
+  },
+  {
+   "tilesetId": "modern_exteriors_nocturne",
+   "categories": []
+  },
+  {
+   "tilesetId": "slates_32",
+   "categories": []
+  },
+  {
+   "tilesetId": "scarloxy_chipset_grassland",
+   "categories": []
+  },
+  {
+   "tilesetId": "scarloxy_chipset_wilds",
+   "categories": []
+  },
+  {
+   "tilesetId": "scarloxy_chipset_indoor",
+   "categories": []
+  },
+  {
+   "tilesetId": "monster_climate",
+   "categories": [
+    "mk-monster-climate"
+   ]
+  },
+  {
+   "tilesetId": "monster_coast",
+   "categories": [
+    "mk-monster-coast"
+   ]
+  },
+  {
+   "tilesetId": "monster_dungeon",
+   "categories": [
+    "mk-monster-dungeon"
+   ]
+  },
+  {
+   "tilesetId": "monster_gyms",
+   "categories": [
+    "mk-monster-gyms"
+   ]
+  },
+  {
+   "tilesetId": "monster_overworld",
+   "categories": [
+    "mk-monster-overworld"
+   ]
+  },
+  {
+   "tilesetId": "monster_rooms",
+   "categories": [
+    "mk-monster-rooms"
+   ]
+  },
+  {
+   "tilesetId": "monster_wild",
+   "categories": [
+    "mk-monster-wild"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_overworld",
+   "categories": [
+    "emerald-assembly-overworld",
+    "emerald-mk-monster-overworld"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_wild",
+   "categories": [
+    "emerald-assembly-wild",
+    "emerald-mk-monster-wild"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_coast",
+   "categories": [
+    "emerald-assembly-coast",
+    "emerald-mk-monster-coast"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_climate",
+   "categories": [
+    "emerald-assembly-climate",
+    "emerald-mk-monster-climate"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_rooms",
+   "categories": [
+    "emerald-assembly-rooms",
+    "emerald-mk-monster-rooms"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_dungeon",
+   "categories": [
+    "emerald-assembly-dungeon",
+    "emerald-mk-monster-dungeon"
+   ]
+  },
+  {
+   "tilesetId": "emerald_monster_gyms",
+   "categories": [
+    "emerald-assembly-gyms",
+    "emerald-mk-monster-gyms"
+   ]
+  },
+  {
+   "tilesetId": "atlas_cartography",
+   "categories": [
+    "atlas-cartography-assembly-v2"
+   ]
+  }
+ ],
+ "retiredInReferenceList": [],
+ "interiorLikeReferenceCategories": [
+  "jp_city/jp-interior",
+  "atlas_biome_interior/hand-interior-v5",
+  "easyrpg_chipset_dungeon/rpg-interiors-sewer-prison-v1",
+  "easyrpg_chipset_ship/rpg-interiors-ship-v1"
+ ],
+ "sharedRowsTotal": 4840,
+ "sharedRowsWithRetiredTileset": [],
+ "sharedRowsMentioningTibo": [
+  "reviewed:place_tibo_complete_inn",
+  "reviewed:place_tibo_facility_bank",
+  "reviewed:place_tibo_facility_bakery",
+  "reviewed:place_tibo_facility_school",
+  "reviewed:place_tibo_facility_tailor",
+  "reviewed:place_tibo_facility_carpenter",
+  "reviewed:place_tibo_facility_infirmary",
+  "reviewed:place_tibo_facility_guild_hall",
+  "reviewed:place_tibo_facility_post_office",
+  "reviewed:place_tibo_facility_public_bath",
+  "reviewed:place_tibo_facility_public_library",
+  "obj:prop/forest/garden-arch-tibo-unfake",
+  "obj:prop/forest/hanging-lantern-tibo-unfake",
+  "obj:prop/forest/fishing-basket-tibo-unfake",
+  "obj:prop/forest/stone-step-tibo-unfake",
+  "obj:prop/forest/scarecrow-tibo-unfake",
+  "obj:prop/forest/seed-sack-tibo-unfake",
+  "obj:prop/forest/stone-lantern-tibo-unfake",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:garden-arch",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:hanging-lantern",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:fishing-basket",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:stone-step",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:scarecrow",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:seed-sack",
+  "kit:shared_forest_village_objects/shared-village:tibo-unfake:stone-lantern",
+  "group:forest_harmony/forest-trunks:tibo",
+  "group:forest_harmony_snow/forest-trunks:tibo",
+  "group:forest_harmony_volcano/forest-trunks:tibo",
+  "group:forest_harmony_desert/forest-trunks:tibo",
+  "group:forest_harmony_autumn/forest-trunks:tibo",
+  "group:atlas_biome_jungle/forest-trunks:tibo",
+  "group:atlas_biome_swamp/forest-trunks:tibo",
+  "group:atlas_biome_mushroom/forest-trunks:tibo",
+  "group:atlas_biome_crystal/forest-trunks:tibo",
+  "group:atlas_biome_badlands/forest-trunks:tibo",
+  "group:atlas_biome_savanna/forest-trunks:tibo",
+  "group:atlas_biome_taiga/forest-trunks:tibo",
+  "group:atlas_biome_tundra/forest-trunks:tibo",
+  "group:atlas_biome_blight/forest-trunks:tibo",
+  "group:atlas_biome_skyisle/forest-trunks:tibo",
+  "group:atlas_biome_tropical/forest-trunks:tibo"
+ ],
+ "refsSummary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+ "sharedSummary": "장소 저작 비활성(프로젝트 설계 0) · 공용 4840건",
+ "sharedTotal": 4840
+}

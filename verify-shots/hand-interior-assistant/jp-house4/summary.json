@@ -1,0 +1,131 @@
+{
+ "label": "jp-house4",
+ "task": "일본식 2층 단독주택 실내를 만들어줘. 1층은 현관, 다다미 화실, 거실·부엌(LDK), 욕실과 화장실, 2층은 부부 침실과 아이방. 방마다 문이 있고 계단으로 오르내릴 수 있게.",
+ "model": "opencodex/gpt-6-astra",
+ "projectId": "2e38ebbf-f2a8-4e6e-8a22-c15dde23d9f7",
+ "projectDir": ".oprn-projects/hand-interior-trial-jp-house4",
+ "ms": 286153,
+ "reloadEqual": true,
+ "chosenTilesets": [
+  "jp_city"
+ ],
+ "maps": [
+  {
+   "id": "map_47fc4486-e280-41f0-9e52-d883fecf9821",
+   "name": "일본식 단독주택 · 1층",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    24,
+    18
+   ],
+   "events": 1,
+   "entrances": 3,
+   "exits": [
+    {
+     "at": [
+      22,
+      9
+     ],
+     "to": "map_47fc4486-e280-41f0-9e52-d883fecf9821_2f",
+     "toAt": [
+      20,
+      10
+     ],
+     "reached": true
+    }
+   ],
+   "reachableFromEntrance": 151,
+   "walkableCells": 151,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 107
+  },
+  {
+   "id": "map_47fc4486-e280-41f0-9e52-d883fecf9821_2f",
+   "name": "일본식 단독주택 · 2층",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    24,
+    12
+   ],
+   "events": 2,
+   "entrances": 1,
+   "exits": [
+    {
+     "at": [
+      21,
+      10
+     ],
+     "to": "map_47fc4486-e280-41f0-9e52-d883fecf9821",
+     "toAt": [
+      22,
+      10
+     ],
+     "reached": true
+    },
+    {
+     "at": [
+      22,
+      10
+     ],
+     "to": "map_47fc4486-e280-41f0-9e52-d883fecf9821",
+     "toAt": [
+      22,
+      10
+     ],
+     "reached": true
+    }
+   ],
+   "reachableFromEntrance": 73,
+   "walkableCells": 73,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 65
+  }
+ ],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 24,
+ "failed": 0,
+ "byTool": {
+  "read_project_wiki": 1,
+  "get_map_region": 1,
+  "list_tileset_references": 1,
+  "list_authoring_presets": 1,
+  "list_spatial_designs": 1,
+  "list_hand_interior_parts": 2,
+  "read_tileset_reference": 4,
+  "read_authoring_preset": 1,
+  "find_tools": 3,
+  "build_hand_interior_room": 3,
+  "show_map_region": 2,
+  "manage_map_tree": 1,
+  "run_scene_test": 1,
+  "run_lint": 1,
+  "get_event": 1
+ },
+ "readReferences": [
+  "jp_city/",
+  "jp_city/",
+  "jp_city/",
+  "jp_city/"
+ ],
+ "stats": {
+  "ms": 269683,
+  "turns": 13,
+  "toolCalls": 25,
+  "toolErrors": 0,
+  "usage": {
+   "input": 1380673,
+   "output": 8330,
+   "cacheRead": 0,
+   "cacheWrite": 0,
+   "totalTokens": 1389003,
+   "calls": 13
+  }
+ },
+ "finalText": "assistant: 1층에 현관·다다미 화실·LDK·욕실·별도 화장실과 세면·세탁 공간을, 2층에 부부 침실과 아이방을 만들고 각 방에 출입문을 배치했습니다. 모든 방의 출입과 계단 왕복을 확인했으며, 시작 위치는 그대로 두고 현관의 외부 맵 연결은 추가하지 않았습니다."
+}

@@ -178,18 +178,23 @@
   },
   {
    "id": "rug",
-   "x": 15,
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "low-table",
+   "x": 16,
    "y": 4
   },
   {
    "id": "cushion-floor",
-   "x": 19,
+   "x": 16,
    "y": 5
   },
   {
-   "id": "rug",
-   "x": 4,
-   "y": 4
+   "id": "cushion-floor",
+   "x": 17,
+   "y": 5
   }
  ],
  "tables": [],
