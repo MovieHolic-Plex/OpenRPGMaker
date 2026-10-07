@@ -1,6 +1,6 @@
 {
   "schema": "beodeul-building-review/2",
-  "round": 9,
+  "round": 10,
   "brief": "원본 도트 질감과 왼쪽 위 광원을 유지하며 다양한 지붕·높이·재질·간판을 가진 후보를 독립 Visual QA 후 사람이 선택한다.",
   "candidates": [
     {
@@ -2255,7 +2255,7 @@
       "round": 9,
       "replaces": "r7-17",
       "nativeAssetHashes": {
-        "review-r9-building-09": "34004e7ad8e25bcf1d70fe3e309310b07e72c81970a6cd9449ea7f8ab90e391b"
+        "review-r9-building-09": "5853e8d12dce37172cadbaece7b35afc8237032113f9e486ceeeaf4317299b4e"
       }
     },
     {
@@ -2501,7 +2501,7 @@
       "round": 9,
       "replaces": "r8-04",
       "nativeAssetHashes": {
-        "review-r9-building-15": "e29c5a8ae097430577e0f93d31350b8378c89186b21b24e49ddf095c6be31be2"
+        "review-r9-building-15": "a8be7f7356b55fb6144c5a0e833e5852ba8980954f2fc3516ce21e5ae1725fa4"
       }
     },
     {
@@ -2542,7 +2542,7 @@
       "round": 9,
       "replaces": "r8-05",
       "nativeAssetHashes": {
-        "review-r9-building-16": "a176555189e94c9172dfddd4f71578dee8fc386bc02cbb12ee104cb3e8d9c027"
+        "review-r9-building-16": "ffa610ebf1a2283aaa177b1d5a059321888064830f769e26f78c1eb0aa1c764d"
       }
     },
     {
@@ -2667,6 +2667,293 @@
       "nativeAssetHashes": {
         "review-r9-building-19": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a"
       }
+    },
+    {
+      "id": "r10-building-01",
+      "name": "통나무 오두막",
+      "role": "주택",
+      "width": 80,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-01",
+          "rect": [
+            0,
+            0,
+            80,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "통나무 오두막 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "통나무 오두막",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-01": "bc55279e984f4383893fa5537f6a5dbf556dd1f93ef6c54a969bb3076ea31863"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-02",
+      "name": "작은 통나무집",
+      "role": "주택",
+      "width": 64,
+      "height": 64,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-02",
+          "rect": [
+            0,
+            0,
+            64,
+            64
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 16,
+        "y": 32,
+        "w": 16,
+        "h": 32
+      },
+      "description": "작은 통나무집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "작은 통나무집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-02": "e0d0e9fd0242d695f6a93e21a1910de36ac79db8154326c8df49bdb41530d882"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-03",
+      "name": "초록 문 통나무집",
+      "role": "주택",
+      "width": 80,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-03",
+          "rect": [
+            0,
+            0,
+            80,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "초록 문 통나무집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "초록 문 통나무집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-03": "c18dbd51781236383486d434df084697b1f55d18dd7b2d2093461261606e1a1a"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-04",
+      "name": "통나무 이층집",
+      "role": "주택",
+      "width": 80,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-04",
+          "rect": [
+            0,
+            0,
+            80,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "통나무 이층집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "통나무 이층집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-04": "ed3875f61af8e52c49efdb0d2d1c2ee39e24c8fb0245d5e4fc9e79b51f2dacfe"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-05",
+      "name": "꽃창이 있는 통나무 이층집",
+      "role": "주택",
+      "width": 80,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-05",
+          "rect": [
+            0,
+            0,
+            80,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "꽃창이 있는 통나무 이층집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "꽃창이 있는 통나무 이층집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-05": "2157f4de22275ee619adeeb9207a99e5e68690899883c03be85f4fb835017774"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-06",
+      "name": "덧문 통나무 이층집",
+      "role": "주택",
+      "width": 80,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-06",
+          "rect": [
+            0,
+            0,
+            80,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "덧문 통나무 이층집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "덧문 통나무 이층집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-06": "8b8562099c7b07c47b13873d44bd9ce637c09ae328f350c406acce771c7802c6"
+      },
+      "material": "log"
+    },
+    {
+      "id": "r10-building-07",
+      "name": "작은 통나무 이층집",
+      "role": "주택",
+      "width": 64,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r10-building-07",
+          "rect": [
+            0,
+            0,
+            64,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "작은 통나무 이층집 · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-10",
+      "silhouette": "작은 통나무 이층집",
+      "round": 10,
+      "nativeAssetHashes": {
+        "review-r10-building-07": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd"
+      },
+      "material": "log"
     }
   ],
   "previousRejected": [
