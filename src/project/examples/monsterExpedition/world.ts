@@ -446,9 +446,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const town = lookTown(towns.find(t => t.key === g.town)!).name;
     const moved = lookOf(g.town) !== g.town || gymKeys[i] !== g.key;
     const name = moved ? `${town.replace(/ (마을|시티|항구|온천)$/u, "")} ${gymKeys[i] === "dojo" ? "도장" : "체육관"}` : g.name;
-    const badge = type === g.type ? g.badge : TYPE_BADGE[type] ?? g.badge;
-    const after = type === g.type ? g.after : `${g.after.split(/(?<=[.!?])\s/u)[0]} 이 ${badge}를 맡길게.`;
-    return { ...g, name, badge, after };
+    // 타입을 맞바꾼 두 관은 관장도 맞바꾼다 — 서리꽃 1관 얼음 관장은 설아, 새순으로 간 풀 관장은 유림.
+    const source = i === 0 && displaced >= 0 ? gyms[displaced]! : i === displaced ? gyms[0]! : g;
+    const badge = type === source.type ? source.badge : TYPE_BADGE[type] ?? g.badge;
+    const after = type === g.type ? g.after : `${source.after.split(/(?<=[.!?])\s/u)[0]} 이 ${badge}를 맡길게.`;
+    return { ...g, name, badge, after, leader: source.leader, before: source.before };
   });
   const gymMaps = new Map(gymPersonas.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");

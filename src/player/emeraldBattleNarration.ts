@@ -30,6 +30,30 @@ export function emeraldBattlerName(battler: BattleBattlerSnapshot | undefined, s
   return `${emeraldTrainerTroop(snapshot) ? "상대" : "야생"} ${battler.name}`;
 }
 
+/** 3세대 주요 상태 문장. 걸림·풀림·못 움직임. 주요 상태가 아니면 undefined(일반 문장으로). */
+export function emeraldMajorStatusLine(phase: "added" | "removed" | "held", status: string | undefined, name: string): string | undefined {
+  const topic = withJosa(name, "은/는");
+  if (phase === "held") {
+    return status === "freeze" ? `${topic} 얼어붙어서 움직일 수 없다!`
+      : status === "sleep" ? `${topic} 쿨쿨 잠들어 있다!`
+      : status === "paralysis" ? `${topic} 몸이 저려서 움직일 수 없다!`
+      // 잠에서 막 깬 차례(1세대 규칙은 깬 턴을 쓴다).
+      : `${topic} 아직 몸을 움직이지 못했다!`;
+  }
+  if (phase === "removed") {
+    return status === "freeze" ? `${name}의 얼음이 녹았다!`
+      : status === "sleep" ? `${topic} 잠에서 깨어났다!`
+      : status === "paralysis" ? `${name}의 마비가 풀렸다!`
+      : status === "poison" ? `${name}의 독이 사라졌다!`
+      : status === "burn" ? `${name}의 화상이 나았다!` : undefined;
+  }
+  return status === "freeze" ? `${topic} 얼어 버렸다!`
+    : status === "sleep" ? `${topic} 잠들어 버렸다!`
+    : status === "paralysis" ? `${topic} 마비되어 기술이 나오기 어려워졌다!`
+    : status === "poison" ? `${topic} 독에 걸렸다!`
+    : status === "burn" ? `${topic} 화상을 입었다!` : undefined;
+}
+
 export function emeraldMoveLine(userName: string, skillName: string | undefined): string {
   return skillName && skillName !== "공격" ? `${userName}의 ${skillName}!` : `${userName}의 몸통박치기!`;
 }

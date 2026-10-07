@@ -94,7 +94,7 @@ export function renameCampaign(project: Project, names: CampaignNames): number {
     const given = names.gyms?.[i];
     // 시작 테마·관장 타입이 체육관 이름과 배지를 바꿨을 수 있다(서리꽃 마을 1관 = 「서리꽃 체육관」) — 지금 이름에서 바꾼다.
     add(project.maps[`mx_map_${gym.town}_gym`]?.name ?? gym.name, given?.name ?? (i === 0 ? names.firstGym : undefined));
-    add(gym.leader, given?.leader ?? (i === 0 ? names.firstLeader : undefined));
+    add(project.database.troops.find((troop) => troop.id === `mx_troop_mx_map_${gym.town}_gym_leader`)?.name ?? gym.leader, given?.leader ?? (i === 0 ? names.firstLeader : undefined));
     add(project.system.monsterCampaign?.badges?.[i]?.name ?? gym.badge, given?.badge ?? (i === 0 ? names.firstBadge : undefined));
   });
   let changed = 0;

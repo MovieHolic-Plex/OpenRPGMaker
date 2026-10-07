@@ -427,7 +427,8 @@ try {
   for (const [dx, dy, dir] of [[0, 1, "up"], [0, 2, "up"], [-1, 0, "right"], [1, 0, "left"]]) {
     const at = { x: leader.x + dx, y: leader.y + dy };
     if (!free(gym.id, at.x, at.y)) continue;
-    await teleport(gym.id, at.x, at.y);
+    // 얼음 관장 단상처럼 못 서는 칸이면 순간이동이 다른 칸에 내려놓는다 — 다음 자리를 시도한다.
+    try { await teleport(gym.id, at.x, at.y); } catch { continue; }
     await page.waitForTimeout(2000);
     if (await talk(dir)) { talked = true; report.leaderSpot = { ...at, dir }; break; }
   }

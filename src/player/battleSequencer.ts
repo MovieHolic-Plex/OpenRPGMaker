@@ -23,7 +23,7 @@ import {
   resultDirectorState,
 } from "@/player/battleDirectorDom";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
-import { emeraldBattlerName, emeraldFaintLine, emeraldIntroSendOut, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
+import { emeraldBattlerName, emeraldFaintLine, emeraldIntroSendOut, emeraldMajorStatusLine, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
 
 export const BATTLE_INTRO_MS = 1_200;
 // 아래 3개는 **normal 무게** 기준값이다. light/heavy 는 battleActionBeats 가 배율로 늘리거나 줄인다.
@@ -750,6 +750,15 @@ export function createBattleSequencer(
     if (entry.kind === "stateUpkeep" && !entry.message && target && emeraldNarrationActive() && (entry.amount ?? 0) > 0) {
       return { step: "acting", lines: [`${withJosa(emeraldBattlerName(target, snapshot), "은/는")} ${stateLabel(entry.stateId)}의 피해를 입었다!`], targetId: entry.targetId };
     }
+    // 3세대 주요 상태: 「새싹토는 얼어붙어서 움직일 수 없다!」·「새싹토의 얼음이 녹았다!」. 못 움직인 차례는 지금 걸린 주요 상태로 말한다.
+    if (target && emeraldNarrationActive() && (entry.kind === "stateAdded" || entry.kind === "stateRemoved" || entry.kind === "incapacitated")) {
+      const states = store.getCurrent().database.states;
+      const major = (stateId: string | undefined) => states.find((state) => state.id === stateId)?.gen1MajorStatus;
+      const status = entry.kind === "incapacitated" ? target.stateIds.map(major).find(Boolean) : major(entry.stateId);
+      const emerald = emeraldMajorStatusLine(entry.kind === "stateAdded" ? "added" : entry.kind === "stateRemoved" ? "removed" : "held",
+        status, emeraldBattlerName(target, snapshot));
+      if (emerald) return { step: "acting", lines: [emerald], targetId: entry.targetId };
+    }
     const line = entry.kind === "stateUpkeep" && entry.message ? entry.message
       : (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
       ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
@@ -841,6 +850,9 @@ export function createBattleSequencer(
       const commandEntryIndex = commandEntries.findIndex(
         (entry) => entry.side === "actor" && entry.userRecordId === commandActorId,
       );
+      // 얼음·잠·마비로 못 움직인 차례에 명령 대사(「새싹토의 새싹치기!」)를 붙이면, 결과를 못 찾아 상대의 마지막 타격
+      // (「효과가 굉장했다!」)을 빌려 읽었다(2026-10-07 눈 관장전 영상). 그 엔트리는 상태 문장으로 읽힌다.
+      const commandIncapacitated = commandEntryIndex >= 0 && commandEntries[commandEntryIndex]!.kind === "incapacitated";
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
@@ -857,7 +869,7 @@ export function createBattleSequencer(
           commandEntries,
           after,
           finish,
-          actingState,
+          commandIncapacitated ? undefined : actingState,
           0,
           commandEntryIndex >= 0 ? commandEntryIndex : 0,
         ),

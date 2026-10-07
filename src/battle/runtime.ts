@@ -661,6 +661,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return options.project.database.states.map((state) => ({
       id: state.id,
       gen1MajorStatus: state.gen1MajorStatus,
+      ...(state.gen1MajorStatus === "freeze" && state.recoverNaturallyChance ? { thawChance: state.recoverNaturallyChance } : {}),
     }));
   }
 
