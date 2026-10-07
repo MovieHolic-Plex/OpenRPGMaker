@@ -126,11 +126,6 @@
   },
   {
    "id": "fd-zashiki",
-   "x": 8,
-   "y": 7
-  },
-  {
-   "id": "fd-zashiki",
    "x": 9,
    "y": 6
   },
@@ -143,11 +138,6 @@
    "id": "fd-zashiki",
    "x": 11,
    "y": 6
-  },
-  {
-   "id": "fd-zashiki",
-   "x": 11,
-   "y": 7
   },
   {
    "id": "zataku",
@@ -175,34 +165,24 @@
    "y": 8
   },
   {
-   "id": "fd-chair-n",
-   "x": 2,
-   "y": 10
+   "id": "fd-chair-e",
+   "x": 1,
+   "y": 9
   },
   {
-   "id": "fd-chair-n",
-   "x": 3,
-   "y": 10
+   "id": "fd-chair-w",
+   "x": 4,
+   "y": 9
   },
   {
-   "id": "fd-chair-s",
-   "x": 9,
-   "y": 8
+   "id": "fd-chair-e",
+   "x": 8,
+   "y": 9
   },
   {
-   "id": "fd-chair-s",
-   "x": 10,
-   "y": 8
-  },
-  {
-   "id": "fd-chair-n",
-   "x": 9,
-   "y": 10
-  },
-  {
-   "id": "fd-chair-n",
-   "x": 10,
-   "y": 10
+   "id": "fd-chair-w",
+   "x": 11,
+   "y": 9
   }
  ],
  "tables": [

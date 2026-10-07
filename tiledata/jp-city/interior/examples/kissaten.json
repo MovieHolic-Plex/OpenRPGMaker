@@ -31,11 +31,6 @@
    "y": 1
   },
   {
-   "id": "fd-sake-shelf",
-   "x": 1,
-   "y": 3
-  },
-  {
    "id": "fd-water-jug",
    "x": 4,
    "y": 3
@@ -51,39 +46,44 @@
    "y": 8
   },
   {
-   "id": "fd-chair-w",
+   "id": "fd-chair-s",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-e",
    "x": 1,
    "y": 6
   },
   {
-   "id": "fd-chair-e",
-   "x": 4,
-   "y": 6
-  },
-  {
-   "id": "fd-chair-s",
-   "x": 6,
-   "y": 5
-  },
-  {
-   "id": "fd-chair-s",
-   "x": 7,
-   "y": 5
-  },
-  {
-   "id": "fd-chair-n",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "fd-chair-n",
-   "x": 7,
-   "y": 7
-  },
-  {
    "id": "fd-chair-w",
-   "x": 5,
+   "x": 8,
    "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 3,
+   "y": 5
   }
  ],
  "tables": [
