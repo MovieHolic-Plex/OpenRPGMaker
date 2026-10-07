@@ -116,7 +116,7 @@ function render(force: boolean): void {
       el("header", {
         class: "workshop-head",
         children: [
-          el("h2", { text: "공방 · 손 도트 실내 기물" }),
+          el("h2", { text: `공방 · ${s.runner.label ?? "손 도트 실내 기물"}` }),
           el("span", {
             class: "workshop-progress", dataset: { testid: "workshop-progress" },
             text: status.running + status.queued > 0 ? `그리는 중 ${status.running} · 대기 ${status.queued} · 약 ${eta}분 남음` : "쉬는 중",

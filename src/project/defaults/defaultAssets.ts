@@ -56,6 +56,7 @@ import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTileset
 import { bundledAssetRef, CASTLE_TILESET_ID, COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_NAME, COMBINED_TOWN_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
+import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -179,6 +180,9 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       continue;
     }
     if (project.tilesets[id]) {
+      // 공방에서 그려 넣은 칸(맵 기물)은 번들 끝 뒤에 붙어 있다. 아래 ensure 가 번들 칸을 늘리면 겹치므로
+      // 떼어 두었다가 새 끝 뒤에 다시 붙인다(번호가 바뀌면 맵 칸도 고친다). 손 도트 실내는 자기 ensure 가 한다.
+      const parkedWorkshop = asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE ? null : detachWorkshopTiles(project.tilesets[id]);
       if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) changed = ensureWorldmapSelectedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
@@ -251,6 +255,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) changed = ensureAtlasBiomeInteriorCurrent(project, id) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
+      if (parkedWorkshop) changed = attachWorkshopTiles(project, id, parkedWorkshop) || changed;
       continue;
     }
     project.tilesets[id] = bundledEasyRpgTileset(asset);

@@ -190,7 +190,7 @@ export function isStoreCardRequest(value: unknown): value is StoreCardRequest {
 const askMissingTiles: ToolDefinition = {
   name: "ask_missing_tiles",
   description: "요청을 만들 타일·그림이 프로젝트에 없을 때 사용자에게 묻는다. 화면에 질문 카드가 뜨고, 카드가 스토어를 검색해 결과를 보여 준다 — "
-    + "사용자는 스토어 것을 넣거나, 직접 그리기나 있는 타일로 대신하기를 고른다. 손 도트 실내 맵이면 직접 그리기가 공방(실내 기물)을 열고, 사용자가 칩셋에 넣으면 물체 id(workshop:…)가 후속 요청으로 온다. "
+    + "사용자는 스토어 것을 넣거나, 직접 그리기나 있는 타일로 대신하기를 고른다. 직접 그리기는 공방을 연다(손 도트 실내 맵은 실내 기물, 그 밖의 16px 맵은 그 맵 칩셋의 맵 기물) — 사용자가 칩셋에 넣으면 물체 id(workshop:…)가 후속 요청으로 온다. "
     + "부른 뒤에는 더 칠하지 말고 이 턴을 끝내라 — 사용자의 답이 다음 요청으로 온다. "
     + "프로젝트의 타일셋·참고문서·공용 장소로 만들 수 있으면 부르지 말고 그걸 써라.",
   mode: "read",
