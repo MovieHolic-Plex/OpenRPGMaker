@@ -47,26 +47,49 @@ def _ceil(c, bits): default_ceiling(c, bits)
 
 # ───────────── 바닥 ─────────────
 def _planks(ramp, hi, mid, lo, seed):
-    """널 마루: 널 폭 4px(가로 줄), 줄마다 이음새 위치가 어긋난다. 128×64 주기."""
+    """널 마루: 널 폭 4px(가로 줄), 줄마다 이음새 두 개. 128×64 주기.
+
+    이음새: 같은 칸 줄(16px = 널 4줄) 안의 이웃 줄과는 10px 이상, 칸 줄 경계(널 줄 3|4·7|8·11|12·15|0)에서는
+    x 를 16 으로 나눈 나머지가 3 이상 어긋나게 고른다 — 바닥은 칸 줄마다 16px 배수로 밀려 깔리므로(lay rowShift)
+    경계 너머 이음새와의 거리는 나머지만 남는다. 안 지키면 짙은 틱이 쌍으로 붙어 반복 표지가 됐다(관문 11회차).
+    광택: 널 셋 중 하나에, 널 한 장 안에서만 이음새에서 3px 이상 떨어진 짧은 줄(4~9px, 절반은 한 칸 건너 점선).
+    널 전체·긴 줄 광택은 칸을 넘는 밝은 띠가 되어 넓은 바닥에서 줄 서 보였다(2026-10-07 두 번)."""
     def d(c):
         W, H = c.w, c.h
         rows = H // 4
-        # 줄마다 이음새 두 개 — 이웃 줄과 최소 10px 어긋나게 고른다
+
+        def gap(p, q, m):
+            dd = abs(p - q) % m
+            return min(dd, m - dd)
+
+        def fits(cand, other, boundary):
+            return all((gap(p % 16, q % 16, 16) >= 3) if boundary else (gap(p, q, W) >= 10) for p in other for q in cand)
+
         seams = []
         for r in range(rows):
-            a = (r * 37 + 11 + hs(r, 0, seed) % 9) % W
-            b = (a + 52 + (hs(r, 1, seed) % 28)) % W
+            for k in range(200):
+                a = (r * 37 + 11 + hs(r, k, seed) % 97) % W
+                b = (a + 48 + hs(r, k + 500, seed) % 32) % W
+                ok = not seams or fits((a, b), seams[r - 1], r % 4 == 0)
+                if ok and r == rows - 1: ok = fits((a, b), seams[0], True)
+                if ok: break
             seams.append((a, b))
         for y in range(H):
             r = y // 4; yy = y % 4
             a, b = seams[r]
             for x in range(W):
-                # 이 점이 속한 널(이음새 사이 구간)을 id 로
+                # 이 점이 속한 널(이음새 사이 구간)을 id 로, 널 시작·길이
                 if a < b: bid = 0 if a <= x < b else 1
                 else: bid = 0 if (x >= a or x < b) else 1
-                tone = hs(r, bid, seed + 5) % 5            # 널마다 살짝 다른 톤 — 0 이면 한 단 밝은 널
-                # 밝은 널은 윗줄 1px 광택만 — 널 전체를 밝히면 넓은 빈 바닥에서 같은 자리에 띠로 줄 서 보였다(2026-10-07)
-                col = hi if tone == 0 and rnd(r, bid, seed + 6, 450) and yy == 0 else mid
+                s0, e0 = (a, b) if bid == 0 else (b, a)
+                length = (e0 - s0) % W
+                pos = (x - s0) % W
+                col = mid
+                if yy == 0 and hs(r, bid, seed + 5) % 3 == 0:
+                    ln = 4 + hs(r, bid, seed + 8) % 6
+                    st = 3 + hs(r, bid, seed + 7) % max(1, length - ln - 6)
+                    dotted = hs(r, bid, seed + 9) % 2 == 1
+                    if st <= pos < st + ln and (not dotted or (pos - st) % 2 == 0): col = hi
                 if yy == 3: col = lo                          # 널 사이 홈
                 if x == a or x == b:                          # 이음새(머리 맞댐)
                     col = lo

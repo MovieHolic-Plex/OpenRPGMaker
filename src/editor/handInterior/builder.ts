@@ -131,10 +131,14 @@ export function analyseHandInteriorPlan(plan: readonly string[]) {
 /**
  * 바닥 칸 (x,y) 가 쓸 무늬 열. lay "rowShift" 면 줄마다 무늬를 가로로 민다 — 한 판을 바둑판처럼 반복하면
  * 넓은 빈 바닥에서 같은 무늬가 같은 자리에 줄 서 보인다(2026-10-07 일본 마루). 가로로만 이어지는 무늬(널 마루)여야 한다.
- * jp-city interior/ikit.py lay_x 와 같은 식.
+ * 미는 칸 수 = murmur3 fmix32(y+1) % cols. 처음 쓴 (y+1)*40503 % 65521 은 거의 등차수열이라 반복이 사선 격자로 옮겨 갔을 뿐이었다(관문 11회차).
+ * jp-city interior/ikit.py lay_x 와 같은 식(test/roomKit.test.ts 가 값을 고정한다).
  */
 export function floorLayX(fd: { readonly cols: number; readonly lay?: string }, x: number, y: number): number {
-  return fd.lay === "rowShift" ? x + (((y + 1) * 40503) % 65521) % fd.cols : x;
+  if (fd.lay !== "rowShift") return x;
+  let h = (y + 1) >>> 0;
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35) >>> 0; h ^= h >>> 16;
+  return x + (h >>> 0) % fd.cols;
 }
 
 /** 1층(구조) — build_tileset.py structure() 와 같다. */

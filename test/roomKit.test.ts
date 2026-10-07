@@ -2,7 +2,7 @@
 // 그 칩셋으로 ㄱ자 방이 지어지는가. 위키: openwiki/atlas-biome-interior.md 「역할표」.
 import { describe, expect, it } from "vitest";
 import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "@/assets/bundledChipsetGeometry";
-import { buildHandInteriorLayers, HAND_INTERIOR_SPECS, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { buildHandInteriorLayers, floorLayX, HAND_INTERIOR_SPECS, roomSpecOf, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { compileRoomKit, installRoomKit, kitHandObjects, parseRoomKitDraft, roomKitAssetId, roomKitPicksProblem, rpgMakerAutotileSheet, rpgMakerBlockPicks, savedRoomKitPicks, type RoomKitPicks } from "@/project/roomKit";
 import { createWizardingWorldTileset } from "@/project/defaults/wizardingWorld";
 import type { TilesetDef } from "@/project/types";
@@ -111,5 +111,11 @@ describe("roomKit 역할표 만들기", () => {
     expect(layers.issues.filter((i) => i.severity === "error")).toEqual([]);
     expect(layers.lowerTiles.every((t) => t > 0 && t < ts.count)).toBe(true);
     expect(layers.unreachedFloor).toEqual([]);
+  });
+
+  it("줄 밀기 rowShift 는 jp ikit.lay_x 와 같은 값(murmur fmix32)", () => {
+    const fd = { cols: 8, lay: "rowShift" };
+    expect(Array.from({ length: 12 }, (_, y) => floorLayX(fd, 0, y))).toEqual([7, 6, 7, 5, 5, 0, 4, 3, 3, 0, 4, 3]);
+    expect(floorLayX({ cols: 8 }, 5, 3)).toBe(5);
   });
 });

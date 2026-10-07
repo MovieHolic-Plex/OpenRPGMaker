@@ -1,6 +1,6 @@
 # 일본 도시 — 小学校 예제 맵 jp-city-school 전체 1~4층 배열 (68×48칸)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9023칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9054칸**, 16px 칸, 시트 768×3024px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 생성기 `scripts/content/jp-city/maps/school.mjs` 의 결과를 엔진에 다시 올려 잰 것이다. `placements` = [키트, 왼쪽 위 x, 왼쪽 위 y, 층], `layer1`~`layer4` = 행 우선 전체 배열(-1 빈 칸).
 그림 `jp-img-school-scene-w`·`jp-img-school-scene-e`(원본 해상도, 서쪽·동쪽 반). 장소 카드 `jp-city-school-68x48` 로도 가져올 수 있다(`import_region_reference`).
