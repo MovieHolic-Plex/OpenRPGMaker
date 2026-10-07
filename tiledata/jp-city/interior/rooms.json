@@ -901,7 +901,7 @@
     ],
     [
      "cv-cooler",
-     2
+     1
     ],
     [
      "cv-atm",
@@ -968,11 +968,23 @@
    [
     [
      "cv-back-shelf",
-     5
+     2
+    ],
+    [
+     "sh-scale-table",
+     1
+    ],
+    [
+     "sh-crate-stack",
+     2
     ],
     [
      "kitchen-sink",
      1
+    ],
+    [
+     "cv-cart",
+     3
     ],
     [
      "cv-trash",
@@ -1023,11 +1035,11 @@
      1
     ],
     [
-     "cv-cart",
+     "cv-autodoor",
      1
     ],
     [
-     "cv-autodoor",
+     "h2-cardboard",
      1
     ]
    ]
@@ -1097,10 +1109,6 @@
      1
     ],
     [
-     "fd-lantern",
-     3
-    ],
-    [
      "sh-noren",
      1
     ],
@@ -1127,6 +1135,10 @@
     [
      "door-open-toilet",
      1
+    ],
+    [
+     "fd-lantern",
+     2
     ],
     [
      "fd-menu-board",
@@ -1294,6 +1306,10 @@
      2
     ],
     [
+     "sh-noren",
+     1
+    ],
+    [
      "sh-pass-window",
      1
     ],
@@ -1326,10 +1342,6 @@
      1
     ],
     [
-     "sh-noren",
-     1
-    ],
-    [
      "sh-shutter-2",
      1
     ]
@@ -1346,11 +1358,15 @@
     ],
     [
      "sh-book-crates",
-     2
+     1
+    ],
+    [
+     "sh-noren",
+     1
     ],
     [
      "sh-bookshelf",
-     7
+     6
     ],
     [
      "sh-counter",
@@ -1362,7 +1378,7 @@
     ],
     [
      "sh-book-island",
-     4
+     3
     ],
     [
      "sh-book-table",
@@ -1370,10 +1386,6 @@
     ],
     [
      "h2-cardboard",
-     1
-    ],
-    [
-     "sh-noren",
      1
     ],
     [
@@ -1388,6 +1400,10 @@
    "pharmacy",
    [
     [
+     "sh-drug-shelf",
+     4
+    ],
+    [
      "pb-med-cabinet",
      3
     ],
@@ -1396,15 +1412,11 @@
      1
     ],
     [
-     "sh-stock-shelf",
+     "door-side-sliding",
      1
     ],
     [
      "sh-dispense-counter",
-     2
-    ],
-    [
-     "sh-counter",
      1
     ],
     [
@@ -1413,7 +1425,7 @@
     ],
     [
      "sh-drug-island",
-     2
+     3
     ],
     [
      "sh-consult",
@@ -1424,8 +1436,8 @@
      1
     ],
     [
-     "sh-noren",
-     1
+     "sh-plant-pot",
+     2
     ],
     [
      "sh-shutter-2",
@@ -1440,27 +1452,27 @@
    [
     [
      "sh-flower-cooler",
-     6
+     5
     ],
     [
      "sh-stock-shelf",
-     2
-    ],
-    [
-     "sh-noren",
      1
     ],
     [
      "sh-wall-shelf",
-     2
+     1
     ],
     [
      "sh-flower-buckets",
-     3
+     2
     ],
     [
      "sh-wrap-table",
      1
+    ],
+    [
+     "sh-plant-pot",
+     3
     ],
     [
      "sh-counter",
@@ -1468,10 +1480,6 @@
     ],
     [
      "sh-register",
-     1
-    ],
-    [
-     "sh-plant-pot",
      1
     ],
     [
@@ -1487,7 +1495,7 @@
    [
     [
      "sh-basket-shelf",
-     7
+     6
     ],
     [
      "sh-stock-shelf",
@@ -1495,10 +1503,14 @@
     ],
     [
      "sh-crate-stack",
-     7
+     2
     ],
     [
-     "sh-noren",
+     "sh-veg-stand",
+     3
+    ],
+    [
+     "sh-fruit-box",
      1
     ],
     [
@@ -1508,14 +1520,6 @@
     [
      "sh-register",
      1
-    ],
-    [
-     "sh-veg-stand",
-     3
-    ],
-    [
-     "sh-fruit-box",
-     2
     ],
     [
      "sh-shutter",
@@ -1885,7 +1889,7 @@
     ],
     [
      "agarikamachi",
-     1
+     2
     ],
     [
      "shoes-pair",
@@ -1957,6 +1961,14 @@
     ],
     [
      "h2-planter",
+     1
+    ],
+    [
+     "genkan-mat",
+     1
+    ],
+    [
+     "slippers",
      1
     ],
     [

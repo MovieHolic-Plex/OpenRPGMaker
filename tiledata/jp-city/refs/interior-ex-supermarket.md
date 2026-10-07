@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-supermarket`. 도구 결과: 손 도트 실내 '일본 동네 슈퍼 실내' 16×17 (jp-city-supermarket, jp_city) — 출입구에서 닿는 칸 83, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-supermarket`. 도구 결과: 손 도트 실내 '일본 동네 슈퍼 실내' 16×17 (jp-city-supermarket, jp_city) — 출입구에서 닿는 칸 82, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-supermarket", "name": "일본 동네 슈퍼 실내", "plan": ["################", "#..............#", "#..............#", "#..............#", "#..............#", "#.##############", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#######..#######"], "floor": "cv-vinyl", "wall": "cv-panel", "zones": [{"x0": 0, "y0": 0, "x1": 15, "y1": 5, "floor": "sh-concrete", "wall": "sh-white"}, {"x0": 0, "y0": 6, "x1": 15, "y1": 16, "floor": "cv-vinyl", "wall": "cv-panel"}], "objects": [{"id": "cv-back-shelf", "x": 3, "y": 3}, {"id": "cv-back-shelf", "x": 5, "y": 3}, {"id": "cv-back-shelf", "x": 7, "y": 3}, {"id": "kitchen-sink", "x": 9, "y": 3}, {"id": "cv-back-shelf", "x": 10, "y": 3}, {"id": "cv-back-shelf", "x": 12, "y": 3}, {"id": "cv-trash", "x": 14, "y": 3}, {"id": "sh-noren", "x": 1, "y": 5}, {"id": "cv-cooler", "x": 2, "y": 8}, {"id": "cv-cooler", "x": 3, "y": 8}, {"id": "cv-cooler", "x": 4, "y": 8}, {"id": "cv-cooler", "x": 11, "y": 8}, {"id": "cv-cooler", "x": 12, "y": 8}, {"id": "cv-cooler", "x": 13, "y": 8}, {"id": "cv-cooler", "x": 14, "y": 8}, {"id": "cv-open-case", "x": 5, "y": 8}, {"id": "cv-meat-case", "x": 7, "y": 8}, {"id": "cv-open-case", "x": 9, "y": 8}, {"id": "cv-produce", "x": 2, "y": 11}, {"id": "cv-produce", "x": 4, "y": 11}, {"id": "cv-gondola", "x": 7, "y": 11}, {"id": "cv-produce", "x": 10, "y": 11}, {"id": "cv-produce", "x": 12, "y": 11}, {"id": "cv-gondola", "x": 2, "y": 13}, {"id": "cv-gondola", "x": 4, "y": 13}, {"id": "cv-gondola", "x": 7, "y": 13}, {"id": "cv-gondola", "x": 9, "y": 13}, {"id": "cv-freezer", "x": 12, "y": 13}, {"id": "cv-checkout", "x": 3, "y": 14}, {"id": "cv-checkout", "x": 12, "y": 14}, {"id": "cv-cart-rack", "x": 5, "y": 15}, {"id": "cv-basket-stack", "x": 9, "y": 15}, {"id": "cv-baskets", "x": 10, "y": 15}, {"id": "cv-cart", "x": 1, "y": 15}, {"id": "cv-trash", "x": 14, "y": 15}, {"id": "cv-autodoor", "x": 7, "y": 16}], "tables": [], "goods": [], "exitWidth": 2, "start": [{"x": 8, "y": 15}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-supermarket", "name": "일본 동네 슈퍼 실내", "plan": ["################", "#..............#", "#..............#", "#..............#", "#..............#", "#.##############", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#..............#", "#######..#######"], "floor": "cv-vinyl", "wall": "cv-panel", "zones": [{"x0": 0, "y0": 0, "x1": 15, "y1": 5, "floor": "sh-concrete", "wall": "sh-white"}, {"x0": 0, "y0": 6, "x1": 15, "y1": 16, "floor": "cv-vinyl", "wall": "cv-panel"}], "objects": [{"id": "cv-back-shelf", "x": 3, "y": 3}, {"id": "sh-scale-table", "x": 5, "y": 3}, {"id": "sh-crate-stack", "x": 7, "y": 3}, {"id": "kitchen-sink", "x": 9, "y": 3}, {"id": "cv-back-shelf", "x": 10, "y": 3}, {"id": "cv-cart", "x": 12, "y": 3}, {"id": "cv-trash", "x": 14, "y": 3}, {"id": "sh-noren", "x": 1, "y": 5}, {"id": "cv-cooler", "x": 2, "y": 8}, {"id": "cv-cooler", "x": 3, "y": 8}, {"id": "cv-cooler", "x": 4, "y": 8}, {"id": "cv-cooler", "x": 11, "y": 8}, {"id": "cv-cooler", "x": 12, "y": 8}, {"id": "cv-cooler", "x": 13, "y": 8}, {"id": "cv-cooler", "x": 14, "y": 8}, {"id": "cv-open-case", "x": 5, "y": 8}, {"id": "cv-meat-case", "x": 7, "y": 8}, {"id": "cv-open-case", "x": 9, "y": 8}, {"id": "cv-produce", "x": 2, "y": 11}, {"id": "cv-produce", "x": 4, "y": 11}, {"id": "cv-gondola", "x": 7, "y": 11}, {"id": "cv-produce", "x": 10, "y": 11}, {"id": "cv-produce", "x": 12, "y": 11}, {"id": "cv-gondola", "x": 2, "y": 13}, {"id": "cv-gondola", "x": 4, "y": 13}, {"id": "cv-gondola", "x": 7, "y": 13}, {"id": "cv-gondola", "x": 9, "y": 13}, {"id": "cv-freezer", "x": 12, "y": 13}, {"id": "cv-checkout", "x": 3, "y": 14}, {"id": "cv-checkout", "x": 12, "y": 14}, {"id": "cv-cart-rack", "x": 5, "y": 15}, {"id": "cv-basket-stack", "x": 9, "y": 15}, {"id": "cv-baskets", "x": 10, "y": 15}, {"id": "cv-cart", "x": 1, "y": 15}, {"id": "cv-trash", "x": 14, "y": 15}, {"id": "cv-autodoor", "x": 7, "y": 16}, {"id": "sh-crate-stack", "x": 8, "y": 3}, {"id": "cv-cart", "x": 13, "y": 3}, {"id": "h2-cardboard", "x": 1, "y": 3}], "tables": [], "goods": [], "exitWidth": 2, "start": [{"x": 8, "y": 15}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -22,7 +22,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 XXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXX
-X..XXXXXXXXXXXXX
+XX.XXXXXXXXXXXXX
 X..............X
 X.XXXXXXXXXXXXXX
 X.XXXXXXXXXXXXXX
@@ -85,8 +85,8 @@ y=16: . . . . . . . 9230 9231 . . . . . . .
 ```
 y=00: . . . . . . . . . . . . . . . .
 y=01: . . . . . . . . . . . . . . . .
-y=02: . . . 9220 9221 9220 9221 9220 9221 8855 9220 9221 9220 9221 9238 .
-y=03: . . . 9222 9223 9222 9223 9222 9223 8856 9222 9223 9222 9223 9239 .
+y=02: . . . 9220 9221 . . 9838 9838 8855 9220 9221 9247 9247 9238 .
+y=03: . 10198 . 9222 9223 9840 9841 9839 9839 8856 9222 9223 9248 9248 9239 .
 y=04: . . . . . . . . . . . . . . . .
 y=05: . 9817 . . . . . . . . . . . . . .
 y=06: . 9818 . . . . . . . . . . . . . .

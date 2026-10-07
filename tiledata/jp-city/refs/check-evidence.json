@@ -68,14 +68,14 @@
    "name": "일본 도시 · 일본 집 실내 (가구 249종 · 바닥 18 · 벽면 11)",
    "documents": 9,
    "images": 18,
-   "chars": 164312
+   "chars": 164308
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 96242
+   "chars": 94712
   },
   {
    "id": "jp-errors",
@@ -89,7 +89,7 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 927062,
+  "chars": 925528,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
@@ -123,7 +123,7 @@
   "jp-interior-shop-index:jp-city-barber-10x9",
   "jp-interior-shop-index:jp-city-bookstore-11x14",
   "jp-interior-shop-index:jp-city-clinic-14x9",
-  "jp-interior-shop-index:jp-city-florist-9x16",
+  "jp-interior-shop-index:jp-city-florist-9x12",
   "jp-interior-shop-index:jp-city-hiraya-15x14",
   "jp-interior-shop-index:jp-city-house-interior-21x15",
   "jp-interior-shop-index:jp-city-izakaya-14x14",
@@ -133,12 +133,12 @@
   "jp-interior-shop-index:jp-city-laundry-9x8",
   "jp-interior-shop-index:jp-city-mansion-2ldk-15x19",
   "jp-interior-shop-index:jp-city-mokuchin-8x9",
-  "jp-interior-shop-index:jp-city-pharmacy-9x15",
+  "jp-interior-shop-index:jp-city-pharmacy-11x13",
   "jp-interior-shop-index:jp-city-ramen-9x9",
   "jp-interior-shop-index:jp-city-sento-15x13",
   "jp-interior-shop-index:jp-city-supermarket-16x17",
   "jp-interior-shop-index:jp-city-sushi-11x11",
-  "jp-interior-shop-index:jp-city-yaoya-10x16",
+  "jp-interior-shop-index:jp-city-yaoya-10x12",
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
   "jp-transit-rules:jp-car-black",
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "0686ab67b7a99fdfdb814b8c975a7d9a8d39f1091e296ab84c86122943b6223f",
-  "images": "7402df40759284b8691ef16b34c689408970226e89b6ef209dc1e4996dd09a04"
+  "json": "d4203ce4ca522545f35371a30a94cafff4924354242334cc9a1828fd19ad518f",
+  "images": "ee858f2fd7c651195a99920be17479bf0e96ef0f6f23400bca6102b568aee212"
  }
 }

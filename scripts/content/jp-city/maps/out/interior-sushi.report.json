@@ -7,8 +7,8 @@
   ]
  },
  "start": [
-  3,
-  8
+  6,
+  9
  ],
  "summary": "손 도트 실내 '일본 초밥집 실내' 11×11 (jp-city-sushi, jp_city) — 출입구에서 닿는 칸 31, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
@@ -21,14 +21,14 @@
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 3,
-    "y": 8
+    "x": 6,
+    "y": 9
    }
   ],
   "exitWidth": 2,
   "exits": [
    {
-    "x": 2,
+    "x": 6,
     "y": 10,
     "width": 2
    }
