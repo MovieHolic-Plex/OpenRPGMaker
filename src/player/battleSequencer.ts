@@ -23,6 +23,7 @@ import {
   resultDirectorState,
 } from "@/player/battleDirectorDom";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
+import { emeraldBattlerName, emeraldFaintLine, emeraldIntroSendOut, emeraldMajorStatusLine, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
 
 export const BATTLE_INTRO_MS = 1_200;
 // 아래 3개는 **normal 무게** 기준값이다. light/heavy 는 battleActionBeats 가 배율로 늘리거나 줄인다.
@@ -49,6 +50,8 @@ export const BATTLE_RESOLVE_MS = 260;
 /** 시각 효과가 없는 로그 엔트리(상태 부여/해제 등)가 화면에 머무는 최소 시간. */
 export const BATTLE_LOG_MS = 520;
 export const BATTLE_RESULT_STAGE_MS = 450;
+/** 에메랄드 결과 문장 한 쪽이 머무는 시간 — 패널 행이 아니라 읽는 문장이다. */
+export const EMERALD_RESULT_PAGE_MS = 1_300;
 export const BATTLE_RESULT_HOLD_MS = 900;
 /** 쓰러짐 연출을 기다리는 최대 시간 — 연출이 멈춰도 결과가 영영 안 뜨지 않게. */
 export const BATTLE_COLLAPSE_HOLD_MAX_MS = 2200;
@@ -312,7 +315,7 @@ export function createBattleSequencer(
       hooks.onResultStage(stage);
       hooks.onSyncView();
       stage += 1;
-      if (stage <= rewardCount) delay(revealNext, BATTLE_RESULT_STAGE_MS);
+      if (stage <= rewardCount) delay(revealNext, emeraldNarrationActive() ? EMERALD_RESULT_PAGE_MS : BATTLE_RESULT_STAGE_MS);
     };
     revealNext();
   }
@@ -409,14 +412,19 @@ export function createBattleSequencer(
   ): string | undefined {
     const entry = entries[index];
     if (entry.kind !== "damage" || !entry.targetId || (entry.amount ?? 0) <= 0) return undefined;
+    const departed = snapshot.departedEnemies?.find((enemy) => enemy.id === entry.targetId);
     const target = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
-      ?? snapshot.actors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId);
+      ?? departed
+      ?? snapshot.actors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId)
+      // 쓰러져 교체를 기다리는 아군은 전열에서 빠져 있다 — 그래도 「새싹토는 쓰러졌다!」는 읽혀야 한다.
+      ?? snapshot.reserveActors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId);
     if (!target?.defeated) return undefined;
     for (let i = index + 1; i < entries.length; i += 1) {
       const later = entries[i];
       if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
     }
-    const isEnemy = snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
+    const isEnemy = Boolean(departed) || snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
+    if (emeraldNarrationActive()) return emeraldFaintLine(target, snapshot);
     const peers = isEnemy ? snapshot.enemies : snapshot.actors;
     const targetName = disambiguatedBattlerName(target, peers);
     return isEnemy
@@ -458,7 +466,8 @@ export function createBattleSequencer(
     const rawDirector = (firstDirector && entryOffset === firstDirectorIndex)
       ? firstDirector
       : actionEntryDirectorState(entry, snapshot)
-        ?? (STATE_ENTRY_KINDS.has(entry.kind) ? timelineDirectorState(entry, snapshot)
+        // 적 교체 엔트리도 userRecordId·targetId 가 있어 「○○의 공격!」으로 읽혔다 — 교체 문장으로.
+        ?? (STATE_ENTRY_KINDS.has(entry.kind) || entry.kind === "switch" ? timelineDirectorState(entry, snapshot)
           : resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
     // 보조 기술(피해 0 인 action): 결과는 뒤따르는 상태 엔트리가 말한다 — 「효과가 충분하지 않았다」를 떼고,
     // 아무 상태도 안 붙었으면 recover 뒤에 「…에게는 효과가 없었다.」를 한 비트 준다.
@@ -715,6 +724,17 @@ export function createBattleSequencer(
   function timelineDirectorState(entry: BattleTimelineEntrySnapshot, snapshot: BattleSnapshot): BattleDirectorState {
     // 문장 스타일은 #253 판(조사 붙은 이름 + 완결 문장). stateRecovery 는 main 에만 있던
     // 갈래라 같은 어투로 옮겨 남긴다 — 빼면 상태 회복이 «행동을 실행했다» 로 뭉개진다.
+    if (entry.kind === "switch") {
+      const enemySide = entry.side === "enemy";
+      const next = (enemySide ? snapshot.enemies : snapshot.actors).find((battler) => battler.id === entry.targetId);
+      const trainer = enemySide && emeraldNarrationActive() ? emeraldTrainerTroop(snapshot) : undefined;
+      if (trainer && next) return { step: "acting", lines: [emeraldTrainerSendOutLine(trainer.name, next.name)], targetId: entry.targetId };
+      if (next) {
+        const line = !enemySide && emeraldNarrationActive() ? `가라! ${next.name}!`
+          : `${withJosa(disambiguatedBattlerName(next, enemySide ? snapshot.enemies : snapshot.actors), "이/가")} ${enemySide ? "나타났다!" : "나섰다!"}`;
+        return { step: "acting", lines: [line], targetId: entry.targetId };
+      }
+    }
     const detail = entry.kind === "stateAdded" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 걸렸다!`
       : entry.kind === "stateRemoved" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 풀렸다.`
       : entry.kind === "stateUpkeep" ? `상태 이상으로 ${entry.amount ?? 0} 피해를 입었다.`
@@ -726,6 +746,19 @@ export function createBattleSequencer(
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
     const isState = STATE_ENTRY_KINDS.has(entry.kind);
+    // 3세대 문장: 「새싹토는 독의 피해를 입었다!」 — 「새싹토: 상태 이상으로 2 피해를 입었다.」는 숫자를 말하는 RPG 로그다.
+    if (entry.kind === "stateUpkeep" && !entry.message && target && emeraldNarrationActive() && (entry.amount ?? 0) > 0) {
+      return { step: "acting", lines: [`${withJosa(emeraldBattlerName(target, snapshot), "은/는")} ${stateLabel(entry.stateId)}의 피해를 입었다!`], targetId: entry.targetId };
+    }
+    // 3세대 주요 상태: 「새싹토는 얼어붙어서 움직일 수 없다!」·「새싹토의 얼음이 녹았다!」. 못 움직인 차례는 지금 걸린 주요 상태로 말한다.
+    if (target && emeraldNarrationActive() && (entry.kind === "stateAdded" || entry.kind === "stateRemoved" || entry.kind === "incapacitated")) {
+      const states = store.getCurrent().database.states;
+      const major = (stateId: string | undefined) => states.find((state) => state.id === stateId)?.gen1MajorStatus;
+      const status = entry.kind === "incapacitated" ? target.stateIds.map(major).find(Boolean) : major(entry.stateId);
+      const emerald = emeraldMajorStatusLine(entry.kind === "stateAdded" ? "added" : entry.kind === "stateRemoved" ? "removed" : "held",
+        status, emeraldBattlerName(target, snapshot));
+      if (emerald) return { step: "acting", lines: [emerald], targetId: entry.targetId };
+    }
     const line = entry.kind === "stateUpkeep" && entry.message ? entry.message
       : (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
       ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
@@ -776,13 +809,15 @@ export function createBattleSequencer(
       hooks.onSyncView();
       // 파티 몬스터 전투는 "야생의 X가 나타났다!" 다음에 "가라, Y!" 를 한 비트 더 준다.
       const sendOut = sendOutDirectorState(snapshot);
+      // 트레이너 전: 「○○는 △△를 내보냈다!」가 「가라, □□!」 앞에 한 쪽 더 온다.
+      const foeSendOut = emeraldNarrationActive() ? emeraldIntroSendOut(snapshot) : undefined;
       const toCommandPrompt = (): void => {
         const current = runtime.snapshot();
         const entries = current.timeline.slice(consumedTimeline);
         consumedTimeline = current.timeline.length;
         playTimelineEntries(entries, current, () => finishTurn(commandPromptState(current)));
       };
-      delay(() => {
+      const playSendOut = (): void => {
         if (!sendOut) {
           toCommandPrompt();
           return;
@@ -790,6 +825,15 @@ export function createBattleSequencer(
         hooks.onDirectorState(sendOut);
         hooks.onSyncView();
         delay(toCommandPrompt, BATTLE_INTRO_MS);
+      };
+      delay(() => {
+        if (!foeSendOut) {
+          playSendOut();
+          return;
+        }
+        hooks.onDirectorState({ step: "intro", lines: [foeSendOut], activeActorRecordId: snapshot.activeActorId });
+        hooks.onSyncView();
+        delay(playSendOut, BATTLE_INTRO_MS);
       }, BATTLE_INTRO_MS);
     },
     runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void {
@@ -806,6 +850,9 @@ export function createBattleSequencer(
       const commandEntryIndex = commandEntries.findIndex(
         (entry) => entry.side === "actor" && entry.userRecordId === commandActorId,
       );
+      // 얼음·잠·마비로 못 움직인 차례에 명령 대사(「새싹토의 새싹치기!」)를 붙이면, 결과를 못 찾아 상대의 마지막 타격
+      // (「효과가 굉장했다!」)을 빌려 읽었다(2026-10-07 눈 관장전 영상). 그 엔트리는 상태 문장으로 읽힌다.
+      const commandIncapacitated = commandEntryIndex >= 0 && commandEntries[commandEntryIndex]!.kind === "incapacitated";
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
@@ -822,7 +869,7 @@ export function createBattleSequencer(
           commandEntries,
           after,
           finish,
-          actingState,
+          commandIncapacitated ? undefined : actingState,
           0,
           commandEntryIndex >= 0 ? commandEntryIndex : 0,
         ),

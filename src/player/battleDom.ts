@@ -68,6 +68,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
+import { emeraldNarrationActive } from "@/player/emeraldBattleNarration";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -87,6 +88,8 @@ export interface BattleDomOptions {
   readonly fieldBackdropUrl?: string;
   /** system.battlePresentation === "onField": 배틀러를 필드 스프라이트 자리에 세우고 스냅샷을 캔버스와 1:1 로 깐다. */
   readonly onField?: OnFieldAnchors;
+  /** 에메랄드 전투 배경 갈래(emeraldBattleTerrain). CSS 가 [data-emerald-terrain] 로 배경 그림·발판 색을 고른다. */
+  readonly emeraldTerrain?: string;
 }
 
 export interface BattleDomController {
@@ -150,6 +153,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.className = "battle-scene";
   root.dataset.testid = "battle-scene";
   const emerald = stampEmeraldSurface(root, store.getCurrent(), "battle");
+  if (emerald) root.dataset.emeraldTerrain = options.emeraldTerrain ?? "grass";
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
   // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 등록 스킨을 갈아입힌다.
@@ -1197,11 +1201,27 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     };
   }
 
+  /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러진 적 다음 몬스터는 런타임에선 이미 서 있지만,
+   *  화면에는 그 교체 비트(「○○는 △△를 내보냈다!」)가 재생될 때 나와야 한다. 아직 재생하지 않은 적 교체가
+   *  가리키는 적을 숨긴다 — 앞 몬스터가 쓰러지기도 전에 HP 상자 둘·겹친 그림이 보였다(2026-10-07 관장전 실측). */
+  function withoutUnannouncedEnemies(snapshot: BattleSnapshot): BattleSnapshot {
+    if (!sequenceBusy) return snapshot;
+    const pending = new Set(snapshot.timeline
+      .filter((entry) => entry.kind === "switch" && entry.side === "enemy" && entry.sequence > playedTimelineSequence && entry.targetId)
+      .map((entry) => entry.targetId!));
+    if (pending.size === 0) return snapshot;
+    // 이번 비트 묶음에서 쓰러지는 앞 몬스터(원장이 아는 적)는 교체 비트 전까지 세워 둔다 — HP 바가 줄고 쓰러지는 모습이 거기서 나온다.
+    const departing = (snapshot.departedEnemies ?? []).filter((enemy) => presentation?.vitalsFor(enemy.id)
+      && !snapshot.enemies.some((current) => current.id === enemy.id));
+    return { ...snapshot, enemies: [...departing, ...snapshot.enemies.filter((enemy) => !pending.has(enemy.id))] };
+  }
+
   function syncView(): void {
     setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
-    const snapshot = options.runtime.snapshot();
-    options.onSnapshot?.(snapshot);
+    const runtimeSnapshot = options.runtime.snapshot();
+    options.onSnapshot?.(runtimeSnapshot);
+    const snapshot = withoutUnannouncedEnemies(runtimeSnapshot);
     const showingResult = Boolean(snapshot.result) && directorState.step === "result";
     if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);
@@ -1414,6 +1434,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function showFinaleStamp(result: NonNullable<BattleSnapshot["result"]>): void {
     if (result === "escape" || finaleCelebrated === result) return;
     root.querySelector(".battle-finale-stamp")?.remove();
+    // 에메랄드에는 「승리!」 도장이 없다 — 쓰러짐 문장 다음 바로 결과 문장으로 간다. 소리·플래시만 남긴다.
+    if (emeraldNarrationActive()) {
+      finaleCelebrated = result;
+      emitBattleJuice(result === "victory" ? "victory" : "defeat", root);
+      return;
+    }
     const stamp = document.createElement("div");
     stamp.className = "battle-finale-stamp";
     stamp.dataset.testid = "battle-finale-stamp";
@@ -1433,6 +1459,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function syncResultHost(snapshot: BattleSnapshot, showResult: boolean): void {
     if (!showResult) {
       resultHost.replaceChildren();
+      return;
+    }
+    // 에메랄드 도주는 「무사히 도망쳤다!」로 끝난다 — 「후퇴 [확인]」 상자를 띄우지 않고 필드로 돌아간다.
+    if (snapshot.result === "escape" && emeraldNarrationActive()) {
+      if (!resultSent) {
+        resultSent = true;
+        const result = snapshot.result;
+        queueMicrotask(() => options.onResult(result, applyRollingHpSurvival(result, snapshot, rollingHp)));
+      }
       return;
     }
     // 결과 화면 동안은 뒤늦게 뜬 데미지 팝업 잔상을 매 동기화마다 걷어낸다.

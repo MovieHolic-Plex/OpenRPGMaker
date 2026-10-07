@@ -345,7 +345,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let partyGauge = initialPartyGauge(options.project);
   const weakness = createWeaknessTracker(options.project);
   applyDifficultyToEnemyBattlers(options.project.system, sessionState, enemies);
-  const gen1EnemyOrderIds = options.project.system.battleModel === "gen1"
+  // 몬스터 트레이너 전(포켓몬 화면, 상대 몬스터 여럿, 1대1)은 gen1 처럼 한 마리씩 내보낸다.
+  // 한꺼번에 세우면 HP 상자 둘·겹친 그림·두 마리가 다 공격하는 RPG 전투가 된다(2026-10-07 사용자 지적).
+  const singleFileEnemies = gen1 || (options.project.system.battleUiStyle === "pokemon"
+    && (troopRecord.activeSlots ?? 1) <= 1
+    && enemies.filter((enemy) => !enemy.hidden).length > 1
+    && enemies.every((enemy) => Boolean(enemy.speciesId)));
+  const gen1EnemyOrderIds = singleFileEnemies
     ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
     : [];
   let activeGen1EnemyId = gen1EnemyOrderIds[0];
@@ -655,6 +661,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return options.project.database.states.map((state) => ({
       id: state.id,
       gen1MajorStatus: state.gen1MajorStatus,
+      ...(state.gen1MajorStatus === "freeze" && state.recoverNaturallyChance ? { thawChance: state.recoverNaturallyChance } : {}),
     }));
   }
 
@@ -1996,6 +2003,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
       enemies: enemiesInBattle.map((enemy) => withCharging(enemy, battlerSnapshot(enemy, undefined, poseContext))),
+      ...departedEnemiesSnapshot(poseContext),
       lastAnimation,
       lastActionResult,
       actionLog: [...actionLog],
@@ -3986,19 +3994,30 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function visibleEnemies(): readonly MutableBattler[] {
-    if (options.project.system.battleModel !== "gen1") return enemies.filter((enemy) => !enemy.hidden);
+    if (!singleFileEnemies) return enemies.filter((enemy) => !enemy.hidden);
     const active = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
     return active && !active.hidden ? [active] : [];
   }
 
+  /** 한 마리씩 싸우는 전투에서 이미 쓰러져 물러난 적. 화면은 그 쓰러짐 비트(「상대 ○○는 쓰러졌다!」·HP 바)를
+   *  재생할 때까지 이 적을 들고 있어야 한다 — 없으면 쓰러짐 문장·연출 없이 다음 몬스터 위에 남았다(2026-10-07 관장전). */
+  function departedEnemiesSnapshot(poseContext: Parameters<typeof battlerSnapshot>[2]): { departedEnemies?: BattleBattlerSnapshot[] } {
+    if (!singleFileEnemies) return {};
+    const departed = gen1EnemyOrderIds
+      .filter((enemyId) => enemyId !== activeGen1EnemyId)
+      .map((enemyId) => enemies.find((enemy) => enemy.id === enemyId))
+      .filter((enemy): enemy is MutableBattler => Boolean(enemy && enemy.hp <= 0 && !enemy.hidden));
+    return departed.length ? { departedEnemies: departed.map((enemy) => battlerSnapshot(enemy, undefined, poseContext)) } : {};
+  }
+
   function registerGen1Enemy(enemy: MutableBattler): void {
-    if (options.project.system.battleModel !== "gen1") return;
+    if (!singleFileEnemies) return;
     if (!gen1EnemyOrderIds.includes(enemy.id)) gen1EnemyOrderIds.push(enemy.id);
     if (!activeGen1EnemyId) activeGen1EnemyId = enemy.id;
   }
 
   function promoteNextGen1Enemy(): boolean {
-    if (options.project.system.battleModel !== "gen1") return false;
+    if (!singleFileEnemies) return false;
     const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
     if (current && current.hp > 0 && !current.hidden) return false;
     const next = gen1EnemyOrderIds
@@ -4104,7 +4123,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       clearEndOfBattleStates();
       return;
     }
-    if (options.project.system.battleModel === "gen1") {
+    if (singleFileEnemies) {
       const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
       if (!current || current.hp <= 0 || current.hidden) {
         if (promoteNextGen1Enemy()) return;

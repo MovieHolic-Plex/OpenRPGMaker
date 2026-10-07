@@ -14,8 +14,22 @@ const texts=[
  ['산을 오르기 전에 가방을 살펴봐요.\n마지막 약속도 한 걸음씩 가는 거예요.','여기까지 함께 온 친구를 잊지 말아요.\n처음의 약속이 끝까지 힘이 돼요.'],
 ];
 
-export function repairExpeditionResidents(project:Project):void {
- for(const [i,row] of patrolData.entries()){
+/** 저장된 캠페인에서 맞바꾼 마을을 다시 찾는다(보수 경로) — 새순 마을은 본래 풀밭 판(monster_overworld)이다. */
+function inferTownLook(project:Project):(key:string)=>string{
+ const grove=project.maps.mx_map_grove;
+ if(!grove||grove.tilesetId==='monster_overworld')return key=>key;
+ const swapped=['dune','frost'].find(key=>project.maps['mx_map_'+key]?.tilesetId==='monster_overworld');
+ return key=>!swapped?key:key==='grove'?swapped:key===swapped?'grove':key;
+}
+
+/** townLook: 시작 테마로 판을 맞바꾼 마을(world.ts lookOf). 산책 경로는 판에 묶여 있으니 판을 따라간다 — 서리꽃 주민이
+ *  새순 판의 체육관 문 바로 아래에 서서 문을 막았다(2026-10-07 눈 기획 자동 플레이). */
+export function repairExpeditionResidents(project:Project,townLook:(key:string)=>string=inferTownLook(project)):void {
+ const lookMap=new Map<string,string>();
+ for(const key of ['grove','dune','frost']){const look=townLook(key);if(look!==key)lookMap.set('mx_map_'+look,'mx_map_'+key);}
+ for(const [i,source] of patrolData.entries()){
+  const target=lookMap.get(source.map);
+  const row=target?{...source,map:target,event:target+source.event.slice(source.map.length)}:source;
   const map=project.maps[row.map];if(!map)continue;
   const existing=map.events.find(e=>e.id===row.event);
   if(existing&&row.sourcePosition&&(existing.x!==row.sourcePosition.x||existing.y!==row.sourcePosition.y))continue;

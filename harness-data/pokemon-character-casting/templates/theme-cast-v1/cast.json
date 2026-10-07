@@ -1,0 +1,2200 @@
+{
+  "wave": "theme-cast-v1",
+  "label": "테마 주민·조련사 · 사막/설원/해안",
+  "scope": "Walking only, 9 theme roles x 12 poses = 108 poses (desert / snow / coast townsfolk and route trainer). Original-template derivatives; no automatic approval.",
+  "items": [
+    {
+      "role": "desert_resident_m",
+      "theme": "desert",
+      "themeLabel": "사막",
+      "label": "사막 주민 남",
+      "name": "사이프",
+      "template": "pokefan_m",
+      "design": "흰 터번에 붉은 띠, 얼굴 옆으로 늘어진 머릿수건, 황토색 로브와 붉은 허리띠, 청록 바지",
+      "palette": {
+        "B": "#f8f4ea",
+        "C": "#d6c8a8",
+        "D": "#7a5c3c",
+        "E": "#c83c34",
+        "8": "#d89a62",
+        "9": "#a8643c",
+        "A": "#56301c",
+        "5": "#5aa0b0",
+        "6": "#2e7080",
+        "7": "#1c3c48"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down",
+            "up"
+          ],
+          "sub": [
+            "......DDDD......",
+            ".....DDDDDD....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "....DDCCCCDD....",
+            "...DDBBBBCBDD..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "...DCCBBBBCCD...",
+            "..DBBCCBBBBCCD.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DCC31CC13CCD..",
+            "..DCBBBCCBBBCD.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DCC311EE113CCD.",
+            ".DEEEEEEEEEEEED."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DDC21111112CDD.",
+            ".DCB21111112BCD."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".4DD21111112DD4.",
+            ".4DC21111112CD4."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".......DDDD.....",
+            "......DDDDDD...."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".....DDCCCCD....",
+            "....DDBBBBCBD..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "....DCCCCCCCD...",
+            "...DBBCCBBBBCD.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "...D111CCCBBCD..",
+            "..DCBBBCCBBBBD.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..4EE113DCCBBD..",
+            "..DEEEEEEEEEED.."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..411113DDCCCD..",
+            "..411113DCBBCD.."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..411123DDDDDD..",
+            "..411123DCBBCD.."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..42FF23DDDDDD..",
+            "..42FF23DCBBCD.."
+          ],
+          "rel": [
+            0,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..422223413DDD..",
+            "..422223413CDD.."
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "....DDCBBCDD....",
+            "...DDBBBBCBDD..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "...DBBCCCCBCD...",
+            "..DBBCCBBBBCCD.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..DCBCCCCCCBCD..",
+            "..DCBBBCCBBBCD.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DCCBCCCCCBBCCD.",
+            ".DEEEEEEEEEEEED."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DCCCBCBCBBCCCD.",
+            ".DCBBBBBBBBBBCD."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".4DCCCCCCCCCCD4.",
+            ".4DCBBBBBBBBCD4."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".4DDCCCCCCCCDD4.",
+            ".4DCBBBBBBBBCD4."
+          ],
+          "rel": [
+            0,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..DDDDCCCCDDDD..",
+            "..DDCCCCCCCCDD.."
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "rel": [
+            15,
+            15
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          }
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          },
+          "dirs": [
+            "side"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "desert_resident_f",
+      "theme": "desert",
+      "themeLabel": "사막",
+      "label": "사막 주민 여",
+      "name": "라일라",
+      "template": "woman_2",
+      "design": "남색 머릿수건이 얼굴을 감싸고 이마에 금빛 띠, 상아색 긴 드레스와 금빛 단",
+      "palette": {
+        "B": "#6c84c8",
+        "C": "#3c4c94",
+        "D": "#1c2050",
+        "6": "#e0b040",
+        "5": "#e0b040",
+        "8": "#f6ece0",
+        "9": "#d4a894",
+        "A": "#6a3c3c",
+        "E": "#f6ece0"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DDCCDDDDCCDD..",
+            "..DC66666666CD.."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DDDDDD111DDDDD.",
+            ".DCCDD1111DDCCD."
+          ],
+          "rel": [
+            0,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "D43DD111111DD3DD",
+            "DCDD11111111DDCD"
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "D43DD111111DD34D",
+            "DCDD11111111DDCD"
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "D43D21F11F12D34D",
+            "DCD121F11F121DCD"
+          ],
+          "rel": [
+            0,
+            9
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "DC4332F22F2334CD",
+            "DCD332F22F233DCD"
+          ],
+          "rel": [
+            0,
+            10
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "DCCD33222233DCCD",
+            "DCCDD322223DDCCD"
+          ],
+          "rel": [
+            0,
+            11
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..DDDCCCCCCCCA..",
+            "..666CCCCCCCCA.."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..411DDCCCCCA8A.",
+            "..D11DDCCCCCA8A."
+          ],
+          "rel": [
+            0,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..41111DCCCDADDD",
+            "..D1111DCCCDADDD"
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..411F13DDDDCCCD",
+            "..D11F13DDDDCCCD"
+          ],
+          "rel": [
+            0,
+            9
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..422F23D23DCCCD",
+            "..D22F23D23DCCCD"
+          ],
+          "rel": [
+            0,
+            10
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "...43333D234CCDD",
+            "..DD3333D234CCDD"
+          ],
+          "rel": [
+            0,
+            11
+          ]
+        },
+        {
+          "rel": [
+            2,
+            5
+          ],
+          "map": {
+            "B": "C"
+          },
+          "dirs": [
+            "up"
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".4DDCCAAAACCDD4.",
+            ".4DDCCCCCCCCDD4."
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".4DDDA9889ADDD4.",
+            ".4DDDCCCCCCDDD4."
+          ],
+          "rel": [
+            0,
+            9
+          ]
+        },
+        {
+          "rel": [
+            13,
+            15
+          ],
+          "map": {
+            "E": "5"
+          }
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "DDCCCCAAAACCCCDD",
+            "DDCCCCCCCCCCCCDD"
+          ],
+          "rel": [
+            0,
+            10
+          ]
+        },
+        {
+          "rel": [
+            13,
+            13
+          ],
+          "map": {
+            "9": "6"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "5AAAA5",
+            "566665"
+          ],
+          "rel": [
+            12,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "role": "desert_trainer",
+      "theme": "desert",
+      "themeLabel": "사막",
+      "label": "사막 유랑 조련사",
+      "name": "카심",
+      "template": "boy_1",
+      "design": "넓은 챙의 모래빛 사막 모자와 붉은 띠, 녹슨 주황 판초와 갈색 장화",
+      "palette": {
+        "E": "#f2dca0",
+        "8": "#b88a50",
+        "5": "#e08850",
+        "6": "#b05a30",
+        "7": "#5a2c18",
+        "9": "#8a6440",
+        "A": "#3c2818"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".....DDDDDD.....",
+            ".....777777....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "...DDCCCCCCDD...",
+            "...77EEEEEE77..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DCBCCCCCCBCD..",
+            "..7E8EEEEEE8E7.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DCCBBCCBBCCD..",
+            "..766666666667.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DDDCCCCCCCCDDD.",
+            "7EEEEEEEEEEEEEE7"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DDDD211112DDDD.",
+            ".78882111128887."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "......DDDDD.....",
+            "......77777....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "....DDCCCCCD....",
+            "....77EEEEE7...."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "...DCCCCCCCBD...",
+            "...7EEEEEEE87..."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..DDCCCCBCBCCD..",
+            "..766666666667.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..DDDCCCCCCCDD..",
+            "7EEEEEEEEEEEEE7."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..D111DDDDDDDD..",
+            ".78111888DDDDD.."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".....DDDDDD.....",
+            ".....777777....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "...DDBCCCCBDD...",
+            "...77EEEEEE77..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..DDBCCCCCCBDD..",
+            "..7E8EEEEEE8E7.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..DCBCCCCCCBCD..",
+            "..766666666667.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DDCCBCBBCBCCDD.",
+            "7EEEEEEEEEEEEEE7"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DDCCCCCCCCCCDD.",
+            ".78888888888887."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "rel": [
+            14,
+            16
+          ],
+          "map": {
+            "F": "7"
+          }
+        }
+      ]
+    },
+    {
+      "role": "snow_resident_m",
+      "theme": "snow",
+      "themeLabel": "설원",
+      "label": "설원 주민 남",
+      "name": "보리스",
+      "template": "fat_man",
+      "design": "흰 골지 단을 두른 둥근 남색 털모자, 흰 지퍼와 흰 밑단의 붉은 두툼한 파카, 회청색 바지",
+      "palette": {
+        "5": "#3c64b4",
+        "E": "#f4f4f6",
+        "8": "#f06c50",
+        "9": "#c03c34",
+        "A": "#5c1c1c",
+        "6": "#6c7898",
+        "7": "#384060"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "...DDCCCCCCDD...",
+            "...D55555555D..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DBCCCCCCCCBD..",
+            "..D5555555555D.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".DCCB33BB33BCCD.",
+            ".DEEEEEEEEEEEED."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".....DDBCCBBDD..",
+            ".....DD55555DD.."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "....DCBCCCCBBCD.",
+            "....D555555555D."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "...DC3C33DCCCBCD",
+            "...DEEEEEEEEEEED"
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "...DDBCCDCBDD...",
+            "...DD555555DD..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..DBBCCDCCCBBD..",
+            "..D5555555555D.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DCCBCCCCCCBCCD.",
+            ".D555555555555D."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".DBCCBCBBCBCCBD.",
+            ".DEEEEEEEEEEEED."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "rel": [
+            10,
+            13
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          },
+          "dirs": [
+            "down"
+          ],
+          "cols": [
+            7,
+            8
+          ]
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          }
+        },
+        {
+          "dirs": [
+            "down",
+            "up"
+          ],
+          "sub": [
+            ".....DDDDDD.....",
+            "....DDDDDDDD...."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".......DDDDD....",
+            "......DDDDDD...."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".....DD55555DD..",
+            ".....D5555555D.."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "role": "snow_resident_f",
+      "theme": "snow",
+      "themeLabel": "설원",
+      "label": "설원 주민 여",
+      "name": "니나",
+      "design": "흰 털 테두리가 얼굴을 감싸는 보랏빛 후드, 같은 색 긴 코트와 갈색 허리띠·털장화",
+      "palette": {
+        "B": "#a890d8",
+        "C": "#6c58a8",
+        "D": "#302458",
+        "8": "#9a82d2",
+        "9": "#5c4898",
+        "A": "#282050",
+        "E": "#f6eedc",
+        "5": "#c89060",
+        "6": "#8a5a38",
+        "7": "#45281a"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "CDCBBBBCDC",
+            "CEEEEEEEEC"
+          ],
+          "rel": [
+            0,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "D1DDDDDD1D",
+            "E11111111E"
+          ],
+          "rel": [
+            0,
+            8
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "D11F11F11D",
+            "E11F11F11E"
+          ],
+          "rel": [
+            0,
+            9
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "322F11F223",
+            "E22F11F22E"
+          ],
+          "rel": [
+            0,
+            10
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "4332222334",
+            "EE322223EE"
+          ],
+          "rel": [
+            0,
+            11
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "DDDDD3D",
+            "EEEEE3E"
+          ],
+          "rel": [
+            0,
+            9
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "13DDD",
+            "13EDD"
+          ],
+          "rel": [
+            0,
+            10
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "233DC",
+            "233EC"
+          ],
+          "rel": [
+            0,
+            11
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "33333DC",
+            "33333EC"
+          ],
+          "rel": [
+            0,
+            11
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "3333DD",
+            "3333ED"
+          ],
+          "rel": [
+            0,
+            12
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "BBBB",
+            "CDDC"
+          ],
+          "rel": [
+            3,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "DDDDDDDDDDDDDD",
+            "DEEEEEEEEEEEED"
+          ],
+          "rel": [
+            10,
+            12
+          ]
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "9": "7",
+            "A": "7",
+            "F": "7"
+          }
+        }
+      ],
+      "template": "woman_5"
+    },
+    {
+      "role": "snow_trainer",
+      "theme": "snow",
+      "themeLabel": "설원",
+      "label": "설원 조련사",
+      "name": "카이",
+      "template": "man_4",
+      "design": "청록 털모자 위 노란 방풍 고글, 노란 반사띠가 있는 주황 겨울 재킷과 흰 플리스",
+      "palette": {
+        "5": "#58b0cc",
+        "6": "#2c6482",
+        "8": "#f2cc40",
+        "E": "#ffffff",
+        "B": "#f8a850",
+        "C": "#d06828",
+        "D": "#6a3018",
+        "9": "#f0ece0",
+        "A": "#8a8070"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..776776666677..",
+            "..77E87777E877.."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..777666666557..",
+            "..7E8777777777.."
+          ],
+          "rel": [
+            0,
+            6
+          ]
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "B": "8"
+          },
+          "dirs": [
+            "down",
+            "up"
+          ]
+        },
+        {
+          "rel": [
+            12,
+            13
+          ],
+          "map": {
+            "B": "8",
+            "C": "8"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "rel": [
+            3,
+            3
+          ],
+          "map": {
+            "5": "7",
+            "6": "7"
+          },
+          "dirs": [
+            "up"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "coast_resident_m",
+      "theme": "coast",
+      "themeLabel": "해안",
+      "label": "해안 주민 남",
+      "name": "마루",
+      "template": "fisherman",
+      "design": "파란 띠를 두른 넓은 챙 밀짚모자, 흰 속셔츠가 보이는 하늘색 꽃무늬 반소매 셔츠",
+      "palette": {
+        "5": "#f4dc90",
+        "6": "#c8a050",
+        "7": "#6a4818",
+        "B": "#3870b8",
+        "8": "#78c8e0",
+        "9": "#3888b8",
+        "A": "#1c4060"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down",
+            "side",
+            "up"
+          ],
+          "sub": [
+            ".....AAAAAA.....",
+            ".....777777....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "down",
+            "side"
+          ],
+          "sub": [
+            "...AAEEEEEEAA...",
+            "...7755555577..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "...AA9EEEE9AA...",
+            "...7755555577..."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "down",
+            "up"
+          ],
+          "sub": [
+            "..A88EEEEEE88A..",
+            "..756555555657.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..A888EEEEEE8A..",
+            "..756555555657.."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..A9888888889A..",
+            "..7BBBBBBBBBB7.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..A8889998888A..",
+            "..7BBBBBBBBBB7.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..A98EEEEEE89A..",
+            "..7BBBBBBBBBB7.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..F9999999999F..",
+            "7555555555555557"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            ".AAA999999888A..",
+            "7555555555555557"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..A988EEEE889A..",
+            "7555555555555557"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..FAAEEEEEEAAF..",
+            ".77666666666677."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "AEEEA999999AAF..",
+            ".77666666666677."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "rel": [
+            6,
+            6
+          ],
+          "map": {
+            "A": "7"
+          },
+          "dirs": [
+            "down",
+            "side"
+          ]
+        },
+        {
+          "rel": [
+            5,
+            8
+          ],
+          "map": {
+            "8": "C",
+            "9": "C",
+            "A": "D",
+            "E": "C"
+          },
+          "dirs": [
+            "up"
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "AAADDAAA",
+            "AAAEEAAA"
+          ],
+          "rel": [
+            10,
+            14
+          ]
+        },
+        {
+          "rel": [
+            12,
+            12
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          },
+          "cols": [
+            5,
+            5
+          ]
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          },
+          "cols": [
+            9,
+            9
+          ]
+        },
+        {
+          "rel": [
+            13,
+            13
+          ],
+          "map": {
+            "8": "E",
+            "9": "E"
+          },
+          "cols": [
+            11,
+            11
+          ]
+        },
+        {
+          "rel": [
+            12,
+            12
+          ],
+          "map": {
+            "E": "8"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "rel": [
+            15,
+            15
+          ],
+          "map": {
+            "9": "E"
+          },
+          "dirs": [
+            "side"
+          ],
+          "cols": [
+            8,
+            8
+          ]
+        },
+        {
+          "rel": [
+            11,
+            13
+          ],
+          "map": {
+            "E": "8"
+          },
+          "dirs": [
+            "side"
+          ]
+        }
+      ]
+    },
+    {
+      "role": "coast_resident_f",
+      "theme": "coast",
+      "themeLabel": "해안",
+      "label": "해안 주민 여",
+      "name": "하나",
+      "template": "woman_1",
+      "design": "산호색 리본을 두른 넓은 챙 흰 햇빛모자, 노란 허리끈의 산호색 민소매 원피스",
+      "palette": {
+        "E": "#fcf8ee",
+        "8": "#e4d6b8",
+        "A": "#6a3a2c",
+        "9": "#ec7060",
+        "5": "#fff0c0",
+        "6": "#f0b050",
+        "7": "#a06830",
+        "B": "#e0b070",
+        "C": "#a87040",
+        "D": "#4a2a18"
+      },
+      "rules": [
+        {
+          "dirs": [
+            "down",
+            "up"
+          ],
+          "sub": [
+            "......DDDD......",
+            ".....AAAAAA....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "......DDDDD.....",
+            ".....AAAAAA....."
+          ],
+          "rel": [
+            0,
+            0
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "....DBCDCCBD....",
+            "....AEEEEEEA...."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "....DDCCCCCD....",
+            "....AEEEEEEA...."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "....DDCDCCDD....",
+            "....AEEEEEEA...."
+          ],
+          "rel": [
+            0,
+            1
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "...DCBBCDBBCD...",
+            "...AE8EEEE8EA..."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "...DCCCCCCBCAD..",
+            "...AE8EEEE8EA..."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "...DCBCCDCBCD...",
+            "...AE8EEEE8EA..."
+          ],
+          "rel": [
+            0,
+            2
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..ACCCCDCCCCCA..",
+            "..A9999999999A.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..DCCCCBCBCA8AD.",
+            "..A9999999999A.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..ACCBCDCCBCCA..",
+            "..A9999999999A.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            ".A8DCDDDDDDCD8A.",
+            "AEEEEEEEEEEEEEEA"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..DCDCDDCCA9AD.D",
+            "AEEEEEEEEEEEEEEA"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            ".A8DCCBCDBCCD8A.",
+            "AEEEEEEEEEEEEEEA"
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "DA9DD1D11D1DD9AD",
+            ".A888888888888A."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "rel": [
+            11,
+            14
+          ],
+          "map": {
+            "6": "9",
+            "7": "9"
+          }
+        },
+        {
+          "rel": [
+            15,
+            16
+          ],
+          "map": {
+            "5": "6"
+          }
+        }
+      ]
+    },
+    {
+      "role": "coast_trainer",
+      "theme": "coast",
+      "themeLabel": "해안",
+      "label": "해안 조련사",
+      "name": "파도",
+      "template": "youngster",
+      "design": "남색 띠와 리본 꼬리가 달린 흰 수병모, 남색·흰색 줄무늬 셔츠와 하늘색 반바지",
+      "palette": {
+        "5": "#c8d0e0",
+        "6": "#2c4890"
+      },
+      "rules": [
+        {
+          "rel": [
+            11,
+            13
+          ],
+          "map": {
+            "8": "E"
+          },
+          "dirs": [
+            "down",
+            "up"
+          ]
+        },
+        {
+          "rel": [
+            0,
+            2
+          ],
+          "map": {
+            "8": "E",
+            "9": "5"
+          }
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..A9988998899A..",
+            "..A6666666666A.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..A9999CC9999A..",
+            "..AEEEEEEEEEEA.."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "down"
+          ],
+          "sub": [
+            "..DA99CCCC99AD..",
+            "..DA55555555AD.."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..A9988888899A..",
+            "..A6666666666A.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..ACC99999999A..",
+            "..AEEEEEEEEEEA.."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "..AACC99999AAAA.",
+            "..AA5555555AAAA."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "98EEA",
+            "A66.."
+          ],
+          "rel": [
+            5,
+            7
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..A9888888889A..",
+            "..AEEEEEEEEEEA.."
+          ],
+          "rel": [
+            0,
+            3
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..A9988888899A..",
+            "..A6666666666A.."
+          ],
+          "rel": [
+            0,
+            4
+          ]
+        },
+        {
+          "dirs": [
+            "up"
+          ],
+          "sub": [
+            "..A9999999999A..",
+            "..AEEEEEEEEEEA.."
+          ],
+          "rel": [
+            0,
+            5
+          ]
+        },
+        {
+          "rel": [
+            6,
+            6
+          ],
+          "map": {
+            "9": "6"
+          },
+          "dirs": [
+            "up"
+          ]
+        },
+        {
+          "rel": [
+            11,
+            11
+          ],
+          "map": {
+            "E": "6"
+          }
+        },
+        {
+          "rel": [
+            13,
+            13
+          ],
+          "map": {
+            "E": "6"
+          }
+        },
+        {
+          "rel": [
+            15,
+            15
+          ],
+          "map": {
+            "E": "6"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "rel": [
+            12,
+            12
+          ],
+          "map": {
+            "E": "6"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "rel": [
+            14,
+            14
+          ],
+          "map": {
+            "E": "6"
+          },
+          "dirs": [
+            "side"
+          ]
+        },
+        {
+          "dirs": [
+            "side"
+          ],
+          "sub": [
+            "DDDDAAA.",
+            "DDDDA66."
+          ],
+          "rel": [
+            6,
+            8
+          ]
+        }
+      ]
+    }
+  ]
+}

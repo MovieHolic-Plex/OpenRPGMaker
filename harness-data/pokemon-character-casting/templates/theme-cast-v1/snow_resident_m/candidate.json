@@ -1,0 +1,22 @@
+{
+  "role": "snow_resident_m",
+  "label": "설원 주민 남",
+  "variant": "보리스 · 설원 판형 수정",
+  "description": "흰 골지 단을 두른 둥근 남색 털모자, 흰 지퍼와 흰 밑단의 붉은 두툼한 파카, 회청색 바지",
+  "identity": "흰 골지 단을 두른 둥근 남색 털모자, 흰 지퍼와 흰 밑단의 붉은 두툼한 파카, 회청색 바지 · 원작 체형과 발 교대 유지",
+  "collection": "theme-cast-v1",
+  "base": "fat_man-snow_resident_m-theme-cast-v1",
+  "templateId": "fat_man",
+  "theme": "snow",
+  "themeGround": [
+    {
+      "sheet": "public/assets/emerald-monster/tiles/climate.png",
+      "tile": [
+        0,
+        28
+      ],
+      "sheetSha256": "1bec5f8f137081211f7ba22b696c620df1461ec894cf3ddff6bfbd51ec0f0d57"
+    }
+  ],
+  "sourceNote": "에메랄드 fat_man 원작을 판형으로 삼아 Claude가 설원 테마에 맞게 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

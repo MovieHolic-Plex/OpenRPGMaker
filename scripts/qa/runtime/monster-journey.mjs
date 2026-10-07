@@ -33,6 +33,36 @@ await page.addInitScript(() => {
   try { localStorage.clear(); } catch { /* ignore */ }
   window.__OPENRPG_BOOT__ = { projectUrl: "/__runtime-qa/project.json", saveNamespace: "runtime-qa:monster-journey", qaInstrumentation: true };
 });
+// 1대1 몬스터 전투에서 상대 HP 상자·그림이 둘 이상 동시에 보이면 안 된다 — 2026-10-07 관장전 캡처에서 쓰러지기 전
+// 다음 몬스터가 먼저 서 HP 상자 둘이 겹쳤는데 단계 판정은 통과였다. 100ms 마다 재고, 전투 문장도 차례로 모은다.
+await page.addInitScript(() => {
+  const seen = { maxEnemies: 0, overlap: [], lines: [] };
+  window.__journeyBattleWatch = seen;
+  const visible = (node) => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden" && Number(getComputedStyle(node).opacity) > 0.05;
+  setInterval(() => {
+    const scene = document.querySelector('[data-testid="battle-scene"]');
+    if (!scene) return;
+    const rows = [...scene.querySelectorAll(".battle-enemy-list-row")].filter((n) => !n.classList.contains("defeated") && visible(n)).length;
+    const sprites = [...scene.querySelectorAll(".battle-enemy")].filter((n) => !n.classList.contains("defeated") && visible(n)).length;
+    const count = Math.max(rows, sprites);
+    const pages = [...scene.querySelectorAll(".battle-result-panel .battle-result-reward-row")].filter(visible).map((n) => (n.textContent ?? "").trim());
+    const text = [...[...scene.querySelectorAll(".battle-message-line")].filter(visible).map((n) => (n.textContent ?? "").trim()), ...pages.map((p) => `[결과] ${p}`)].filter(Boolean).join(" / ");
+    // 상태 배지(독 등)는 HP 상자 안에 있어야 한다 — 몬스터 머리 위 허공에 「PSN」이 떠 있었다(2026-10-07 관장전 캡처).
+    const boxes = [...scene.querySelectorAll(".battle-enemy-list-row, .battle-party .battle-actor-status")].filter(visible).map((n) => n.getBoundingClientRect());
+    for (const icon of [...scene.querySelectorAll(".battle-status-icon")].filter(visible)) {
+      if (icon.classList.contains("battle-status-icon-death")) continue;
+      const r = icon.getBoundingClientRect();
+      const inside = boxes.some((b) => r.left >= b.left - 1 && r.right <= b.right + 1 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1);
+      if (!inside && (seen.strayIcons ??= []).length < 6) {
+        const path = []; for (let n = icon.parentElement; n && n !== scene && path.length < 4; n = n.parentElement) path.push(n.className.split(" ")[0]);
+        seen.strayIcons.push(`${icon.className.split(" ").pop()} @${Math.round(r.left)},${Math.round(r.top)} in ${path.join("<")}`);
+      }
+    }
+    if (count > seen.maxEnemies) seen.maxEnemies = count;
+    if (count > 1 && seen.overlap.length < 8) seen.overlap.push(`rows ${rows} sprites ${sprites} «${text}»`);
+    if (text && seen.lines[seen.lines.length - 1] !== text && seen.lines.length < 400) seen.lines.push(text);
+  }, 100);
+});
 await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 
 const state = () => page.evaluate(() => window.__oprnDebug.readState());
@@ -251,7 +281,8 @@ async function fight(label, { capture = false, run = false } = {}) {
     if (await target.count()) { await target.first().focus(); await page.keyboard.press("Enter"); }
     await page.waitForFunction(() => !document.querySelector('[data-testid="battle-scene"]')
       || document.querySelector('[data-testid="battle-result-panel"]')
-      || document.querySelector('[data-testid="actor-command-fight"]'), undefined, { timeout: 45000 }).catch(() => {});
+      || document.querySelector('[data-testid="actor-command-fight"]')
+      || document.querySelector('[data-testid^="actor-switch-"]'), undefined, { timeout: 45000 }).catch(() => {});
     await page.waitForTimeout(500);
     if (turn === 1) await shot(`${label}-mid`);
   }
@@ -396,7 +427,8 @@ try {
   for (const [dx, dy, dir] of [[0, 1, "up"], [0, 2, "up"], [-1, 0, "right"], [1, 0, "left"]]) {
     const at = { x: leader.x + dx, y: leader.y + dy };
     if (!free(gym.id, at.x, at.y)) continue;
-    await teleport(gym.id, at.x, at.y);
+    // 얼음 관장 단상처럼 못 서는 칸이면 순간이동이 다른 칸에 내려놓는다 — 다음 자리를 시도한다.
+    try { await teleport(gym.id, at.x, at.y); } catch { continue; }
     await page.waitForTimeout(2000);
     if (await talk(dir)) { talked = true; report.leaderSpot = { ...at, dir }; break; }
   }
@@ -412,6 +444,10 @@ try {
   const badge = finalState.switches;
   report.leaderBattleResult = finalState.battleResult;
   step("gym-leader", started && badge[badgeId] === true, `${leader.id}: ${log.length}턴 → battleResult ${finalState.battleResult} · ${badgeId}=${badge[badgeId]}`, await shot("14-after-leader"));
+  const watch = await page.evaluate(() => window.__journeyBattleWatch);
+  report.battleLines = watch.lines;
+  step("battle-status-in-box", !(watch.strayIcons ?? []).length, (watch.strayIcons ?? []).join(" | ") || "상태 배지는 모두 HP 상자 안");
+  step("battle-one-foe", watch.maxEnemies <= 1, `동시에 보인 상대 최대 ${watch.maxEnemies}${watch.overlap.length ? ` — ${watch.overlap.join(" | ")}` : ""}`);
 } catch (error) {
   report.failure = String(error?.stack ?? error);
   await shot("failure").catch(() => {});

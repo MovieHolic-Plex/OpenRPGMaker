@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "templateId": "woman_5",
+  "templateSourceSha256": "7d9c42c8d818485bc86244e7eff67d0c9a0c6b889bc71440f9be0f0eadafd1ad",
+  "paletteOverrides": {
+    "B": "#a890d8",
+    "C": "#6c58a8",
+    "D": "#302458",
+    "8": "#9a82d2",
+    "9": "#5c4898",
+    "A": "#282050",
+    "E": "#f6eedc",
+    "5": "#c89060",
+    "6": "#8a5a38",
+    "7": "#45281a"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 17,
+      "rows": [
+        ".DDCCCCDDCCCCDCD"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 26,
+      "rows": [
+        "...777777774334."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 16,
+      "rows": [
+        "DDDCCCCDDCCCCDDD"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 22,
+      "rows": [
+        ".DEEEEEEEEEEEED."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 25,
+      "rows": [
+        "4377777777777734"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 17,
+      "rows": [
+        "DCDCCCCDDCCCCDD."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 26,
+      "rows": [
+        ".433477777777..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 18,
+      "rows": [
+        "DBCCCCCE3EEEEE.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 19,
+      "rows": [
+        "DCBCCDDE31F114.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 20,
+      "rows": [
+        "DCCBBCE332F224.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 21,
+      "rows": [
+        "DDCCCCE333334..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 22,
+      "rows": [
+        "DDDDDE333344...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 26,
+      "rows": [
+        "..7743347777...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 17,
+      "rows": [
+        "DCBCCCCE3EEEEE.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 18,
+      "rows": [
+        "DCBBCDDE31F114.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 20,
+      "rows": [
+        "DDCCCCE333334..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 25,
+      "rows": [
+        "..777732377....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 18,
+      "rows": [
+        "DBCCCCCE3EEEEE.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 19,
+      "rows": [
+        "DCBCCDDE31F114.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 20,
+      "rows": [
+        "DCCBBCE332F224.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 21,
+      "rows": [
+        "DDCCCCE333334..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 22,
+      "rows": [
+        "DDDDDE333344...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 26,
+      "rows": [
+        "..77777743347..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 17,
+      "rows": [
+        "DDDCEEEEEEEECDD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 18,
+      "rows": [
+        "DCDE11111111EDD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 19,
+      "rows": [
+        "DCCE11F11F11ECD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 20,
+      "rows": [
+        "DCCE22F11F22ECD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 21,
+      "rows": [
+        "DDCEE322223EEDD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 26,
+      "rows": [
+        "...777777774334."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 16,
+      "rows": [
+        "DDDCEEEEEEEECDDD"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 17,
+      "rows": [
+        "DCDE11111111EDCD"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 18,
+      "rows": [
+        "DCCE11F11F11ECCD"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 19,
+      "rows": [
+        "DCCE22F11F22ECCD"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 20,
+      "rows": [
+        "DDDEE322223EEDDD"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 25,
+      "rows": [
+        "4377777777777734"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 17,
+      "rows": [
+        ".DDCEEEEEEEECDDD"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 18,
+      "rows": [
+        ".DDE11111111EDCD"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 19,
+      "rows": [
+        ".DCE11F11F11ECCD"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 20,
+      "rows": [
+        ".DCE22F11F22ECCD"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 21,
+      "rows": [
+        ".DDEE322223EECDD"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 26,
+      "rows": [
+        ".433477777777..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 18,
+      "rows": [
+        "..EEEEE3ECCCCCBD"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 19,
+      "rows": [
+        "..411F13EDDCCBCD"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 20,
+      "rows": [
+        "..422F233ECBBCCD"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 21,
+      "rows": [
+        "...433333ECCCCDD"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 22,
+      "rows": [
+        "....443333EDDDDD"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 26,
+      "rows": [
+        "....7777433477.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 17,
+      "rows": [
+        "..EEEEE3ECCCCBCD"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 18,
+      "rows": [
+        "..411F13EDDCBBCD"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 20,
+      "rows": [
+        "...433333ECCCCDD"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 25,
+      "rows": [
+        ".....773237777.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 18,
+      "rows": [
+        "..EEEEE3ECCCCCBD"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 19,
+      "rows": [
+        "..411F13EDDCCBCD"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 20,
+      "rows": [
+        "..422F233ECBBCCD"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 21,
+      "rows": [
+        "...433333ECCCCDD"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 22,
+      "rows": [
+        "....443333EDDDDD"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 26,
+      "rows": [
+        "...74334777777.."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "흰 털 테두리가 얼굴을 감싸는 보랏빛 후드, 같은 색 긴 코트와 갈색 허리띠·털장화",
+  "editSource": "author-theme-cast.py rules from templates/theme-cast-v1/cast.json (literal substrings and explicit index remaps at original pose rows); source right view mirrors left."
+}

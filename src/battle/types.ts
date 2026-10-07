@@ -537,6 +537,8 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러져 물러난 적. 표시 계층이 쓰러짐 비트를 재생하는 동안만 쓴다. */
+  readonly departedEnemies?: readonly BattleBattlerSnapshot[];
   /** Gauge prediction from the same scheduler/rates as tick, using battler instance id. */
   readonly nextReadyBattlerId?: string;
   readonly eventPause?: BattleEventPauseSnapshot;

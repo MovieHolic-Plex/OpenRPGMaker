@@ -26,6 +26,8 @@ import { markBattleEntry } from "@/app/perfMetrics";
 import { nextSessionRandom } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -258,6 +260,9 @@ export async function playBattle(
           } : undefined,
           fieldBackdropUrl,
           onField: onFieldAnchors,
+          emeraldTerrain: isEmeraldMonsterStyle(project)
+            ? emeraldBattleTerrain(project, { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y }, step.troopId)
+            : undefined,
           audioContext: { project, session },
           showEventText: (request, inputSignal) => {
             if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }

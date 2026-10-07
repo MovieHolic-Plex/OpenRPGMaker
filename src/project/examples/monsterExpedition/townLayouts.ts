@@ -14,7 +14,8 @@ type Legend =
   | { group: string }               // 오토타일 그룹의 꽉 찬 칸 — 다 깐 뒤 엔진이 이웃으로 모양을 고른다
   | { tile: string[] }              // 낱칸 소품(시트 사전의 홈 층에 놓고 그 밑엔 바닥)
   | { prop: string; on?: string[] } // 여러 칸 물체(타일셋 구조 킷)의 왼쪽 위 칸. on = 그 밑 바닥(판 기본 바닥과 다를 때 — 모래 위 야자)
-  | { frame: true };                // 숲 벽 — 템플릿 둘레를 주기 2 로 이어 붙인다
+  | { frame: true }                 // 숲 벽 — 템플릿 둘레를 주기 2 로 이어 붙인다
+  | { stamp: { from: string; x: number; y: number; w: number; h: number } }; // 다른 템플릿의 네모를 그대로(눈 풀숲 덩이 — 가장자리 술이 위층 낱칸이라 오토타일이 없다)
 
 export interface TownSketch {
   rows: string[];
@@ -30,7 +31,7 @@ function cellHash(x: number, y: number): number {
 }
 
 /** 글자 그림을 맵 칸으로 깐다. 맵 크기는 그림 크기를 따른다. */
-export function composeTown(project: Project, map: GameMap, t: TownTemplate, sketch: TownSketch): void {
+export function composeTown(project: Project, map: GameMap, t: TownTemplate, sketch: TownSketch, templates: Readonly<Record<string, TownTemplate>> = {}): void {
   const H = sketch.rows.length, W = sketch.rows[0]!.length;
   if (sketch.rows.some(r => r.length !== W)) throw Error(`Town sketch ${map.id} rows differ in width`);
   const tileset = project.tilesets[t.tilesetId]!;
@@ -63,6 +64,15 @@ export function composeTown(project: Project, map: GameMap, t: TownTemplate, ske
       const kitUpperOnly = tileset.structureKits?.some(k => k.rows.some(r => r.upperTiles?.includes(tile)))
         && !tileset.structureKits.some(k => k.rows.some(r => r.tiles.includes(tile)));
       put(x, y, tile, tileset.tileMeta?.[tile]?.defaultLayer === "upper" || kitUpperOnly ? "upper" : "lower");
+    } else if ("stamp" in legend) {
+      const { from, x: sx, y: sy, w, h } = legend.stamp;
+      const source = templates[from];
+      if (!source || source.tilesetId !== t.tilesetId) throw Error(`Town sketch ${map.id}: no stamp template ${from} on ${t.tilesetId}`);
+      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
+        const cell = (sy + dy) * source.width + sx + dx;
+        put(x + dx, y + dy, source.lower[cell]!, "lower");
+        put(x + dx, y + dy, source.upper[cell]!, "upper");
+      }
     } else if ("prop" in legend) {
       const kit = tileset.structureKits?.find(k => k.name === legend.prop);
       if (!kit) throw Error(`Town sketch ${map.id}: no structure kit ${legend.prop}`);
@@ -410,6 +420,60 @@ export const START_ROUTES: Partial<Record<StartTheme, { template: string; sketch
       "##.gggggggc==.........##",
       "##..gggg...==.........##",
       "##..c......==.......c.##",
+      "###########==###########",
+    ],
+  } },
+  // 눈 기획서의 1번길: 눈 숲 사이 굽은 눈길, 눈 풀숲 덩이(얼음 고개 템플릿에서 그대로 떠 온다), 전나무·눈더미·서리 덤불, 뛰어내리는 눈 둔덕.
+  // 둘레는 눈 마을 템플릿(안쪽을 보는 숲 가장자리) — 아래 둘레는 두 줄만 쓴다(템플릿 아래 띠 첫 줄이 눈길이다).
+  snow: { template: "climate/snow_town", sketch: {
+    ground: ["snow0", "snow0", "snow1", "snow2", "snow3"],
+    legend: {
+      "#": { frame: true },
+      "=": { group: "snowpath" },
+      A: { stamp: { from: "climate/ice_route", x: 4, y: 1, w: 6, h: 4 } },
+      B: { stamp: { from: "climate/ice_route", x: 12, y: 1, w: 7, h: 4 } },
+      p: { tile: ["snow_pile0", "snow_pile1"] },
+      b: { tile: ["frost_bush"] },
+      r: { tile: ["ice_rock0", "ice_rock1"] },
+      l: { tile: ["sledge_s_l"] },
+      m: { tile: ["sledge_s_mid", "sledge_s_mid1"] },
+      n: { tile: ["sledge_s_r"] },
+      P: { prop: "spine_a" },
+      M: { prop: "snowman" },
+    },
+    kits: [],
+    rows: [
+      "###########==###########",
+      "###########==###########",
+      "###########==###########",
+      "##.P.......==.A.......##",
+      "##.......p.==.........##",
+      "##.........==.........##",
+      "##....=======.........##",
+      "##....=======.....r...##",
+      "##....==.............b##",
+      "##..b.==.....B........##",
+      "##....==..............##",
+      "##....==.r............##",
+      "##lmmn==lmn...........##",
+      "##....==..............##",
+      "##..r.===========.....##",
+      "##....===========...P.##",
+      "##.............==.....##",
+      "##A............==.....##",
+      "##........b....==.....##",
+      "##.............==..p..##",
+      "##.......M.....==.....##",
+      "##.............==.....##",
+      "##.........======.....##",
+      "##.........======.....##",
+      "##.A.......==.........##",
+      "##.........==.B.......##",
+      "##.........==.........##",
+      "##.........==.........##",
+      "##.........==.........##",
+      "##......p..==.........##",
+      "###########==###########",
       "###########==###########",
     ],
   } },

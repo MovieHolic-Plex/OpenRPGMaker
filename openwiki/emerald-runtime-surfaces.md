@@ -99,3 +99,18 @@ cream and dark-green palette. The right command window is192logical pixels wide
 `oprnMenuSounds` selects the three approved cues, so menu transitions keep the
 existing map BGM source alive. This is a scoped change to the Emerald opt-in CSS;
 see `pokemon-like-field-kit.md` for approval, canonical adoption and player proof.
+
+## 전투 개편 (2026-10-07, 사용자 「전투는 형편없다」)
+
+- **지형 배경:** `src/battle/emeraldBattleTerrain.ts` 가 싸움이 열린 칸·맵에서 갈래(grass·sand·snow·water·cave·indoor)를 고르고
+  `battleDom` 이 `data-emerald-terrain` 으로 단다. 그림은 코드 도트 240×120 `public/assets/emerald-monster/battle/<갈래>.png`
+  (`scripts/content/emerald/draw-battle-backgrounds.py`), 발판·트레이너 소개 발판 색은 `--emerald-base*` 변수. 맵에
+  `battleBackground: "emerald:<갈래>"` 를 적으면 그것이 이긴다.
+- **3세대 문장:** `src/player/emeraldBattleNarration.ts` — 「야생/상대 ○○의 기술!」, 상성·급소 줄(피해 숫자 없음),
+  「○○는 쓰러졌다!」, 「사하라는 △△를 내보냈다!」, 「가라! ○○!」, 「○○는 독의 피해를 입었다!」. 결과는 패널이 아니라 문장 창 쪽
+  (마지막 두 줄, `data-emerald-page`, 1.3초)이고 「승리!」 도장·「후퇴」 확인 상자는 없다(도주는 바로 필드로).
+- **한 마리씩:** 트레이너의 다음 몬스터는 그 교체 비트가 재생될 때 나온다(`battleDom` 의 미재생 적 교체 숨김). 쓰러진 앞 몬스터는
+  런타임 스냅샷 `departedEnemies` 로 비트가 끝날 때까지 남아 HP 바·쓰러짐 문장이 재생된다. `monster-journey` 의 `battle-one-foe` 가 지킨다.
+- **상태 배지:** HP 상자 둘째 줄 왼쪽(스프라이트 배지는 숨김) — `battle-status-in-box` 검사. 상자 표기는 양쪽 모두 `Lv9`.
+- **쓰러진 뒤 교체:** 포켓몬 화면은 「다음은 누구를 내보낼까?」 목록이 바로 뜬다(예전엔 「무엇을 할까? ▸교체」 한 칸).
+- **경험치:** `monsterExpInLevelBand` 가 저장 경험치를 현재 레벨 구간으로 맞춘다 — 레벨만 바꾼 저장본이 한 번에 Lv14→20 으로 뛰었다.
