@@ -67,14 +67,15 @@ export function scopeUsesJpCity(project: Pick<Project, "tilesets" | "maps">, map
 export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
   "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
   "create_map", "fill_region", "lay_path", "paint_tiles", "stamp_object", "check_reachability", "show_map_region", "ask_tileset_change",
-  "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room",
+  "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room", "link_jp_city_interior",
 ];
 
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */
 export const JP_CITY_POINTER_LINE =
   "일본 상가·상점가·골목 거리 풍경은 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다), "
   + "건물은 build_jp_city_building(id 는 list_jp_city_building_parts), 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_village·author_house 는 쓰지 않는다. "
-  + "일본 집 실내(현관·화실·LDK·욕실·원룸)는 build_hand_interior_room({tileset:\"jp_city\", plan, …}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}).";
+  + "일본 집·가게 실내(현관·화실·LDK·욕실·원룸·편의점·음식점·상점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", plan, …}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
+  + "거리 건물 문으로 들어가게 하려면 link_jp_city_interior({door:{x,y}=건물 문 칸, place:<실내 장소 id> 또는 interiorMapId}) 하나로 가져오기·왕복 발판·맵 목록 정리까지 한다.";
 
 /**
  * 칠하기 도구(fill_region·lay_path·paint_tiles)의 참고문서 게이트를 «한 번에» 통과하는 읽기 목록. 실측(2026-10-04 헤드리스 시험): 조수가 입구 용도(jp-start)를
