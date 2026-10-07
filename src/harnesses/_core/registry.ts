@@ -20,6 +20,7 @@ import { POKEMON_CHARACTER_MOTION_HARNESS } from "../pokemon-character-motion/ha
 import { POKEMON_CHARACTER_CASTING_HARNESS } from "../pokemon-character-casting/harness";
 import { BEODEUL_ARCHITECTURE_HARNESS } from "../beodeul-architecture/harness";
 import { BEODEUL_BUILDING_REVIEW_HARNESS } from "../beodeul-building-review/harness";
+import { GAME_CONCEPTS_HARNESS } from "../game-concepts/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -37,6 +38,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   ASSISTANT_CAPABILITY_HARNESS,
   BEODEUL_ARCHITECTURE_HARNESS,
   BEODEUL_BUILDING_REVIEW_HARNESS,
+  GAME_CONCEPTS_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

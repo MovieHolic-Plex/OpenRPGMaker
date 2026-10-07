@@ -9,8 +9,12 @@ export const CONCEPT_FORBIDDEN_NAMES = [
   "Harry Potter", "Hogwarts", "Malfoy", "Slytherin", "Gryffindor", "Final Fantasy", "Pokemon", "Pokémon", "Pikachu", "Zelda", "Mario",
 ] as const;
 
+/** 원작 이름을 품고 있지만 이미 바꾼 패러디 이름. 먼저 지우고 검사한다(사용자 예: 파이널 판타지아 999). */
+export const CONCEPT_PARODY_NAMES = ["파이널 판타지아", "파이널판타지아", "Final Fantasia"] as const;
+
 export function conceptForbiddenNameHits(text: string): string[] {
-  const lower = text.toLowerCase();
+  let lower = text.toLowerCase();
+  for (const parody of CONCEPT_PARODY_NAMES) lower = lower.split(parody.toLowerCase()).join(" ");
   return CONCEPT_FORBIDDEN_NAMES.filter((name) => lower.includes(name.toLowerCase()));
 }
 

@@ -86,5 +86,7 @@ describe("concept art", () => {
   it("flags original IP names and passes parody names", () => {
     expect(conceptForbiddenNameHits("TS 말포이와 호그와트")).toEqual(["호그와트", "말포이"]);
     expect(conceptForbiddenNameHits("TS 금발 라이벌 도련님")).toEqual([]);
+    expect(conceptForbiddenNameHits("파이널 판타지아 999")).toEqual([]);
+    expect(conceptForbiddenNameHits("파이널 판타지 999")).toEqual(["파이널 판타지"]);
   });
 });

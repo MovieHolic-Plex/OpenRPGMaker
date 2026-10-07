@@ -20,6 +20,7 @@
 | `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
 | `beodeul-architecture` | 버들항 건물 · 원본 보존 | 장르 무관 | `harness-data/beodeul-architecture/seed.json` | `openwiki/harnesses/beodeul-architecture.md` |
 | `beodeul-building-review` | 버들항 건물 · 사람의 허용/거절 | 장르 무관 | `harness-data/beodeul-building-review/seed.json` | `openwiki/harnesses/beodeul-building-review.md` |
+| `game-concepts` | 새 게임 컨셉 카드 | 장르 무관 | `harness-data/game-concepts/seed.json` | `openwiki/harnesses/game-concepts.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -326,5 +327,26 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `status` — 현재 선택: 현재 그림 해시와 일치하는 허용/거절/미선택을 보여 준다.
 - `export` — 허용한 것만 내보내기: 사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts.
 - `install` — 허용한 건물 공용 번들 설치: 결정 로그에서 현재 그림 해시에 허용된 후보만 시트·카탈로그·참고문서로 굽는다(--profile <id>, 프로필은 profiles.json).
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## game-concepts — 새 게임 컨셉 카드
+
+새 게임 피드의 공식 컨셉(제목·훅·기획 5칸·도트 썸네일)을 만들고, 사람이 받기/버리기로 고른 것만 스토어에 게시
+
+**이럴 때 쓴다:**
+- 새 게임 컨셉
+- 컨셉 피드
+- 새 게임 썸네일
+- 공식 컨셉 추가
+
+**단계** (`npm run harness -- game-concepts <단계>`):
+- `produce` — 컨셉 쓰기: 시드의 분류별 목표 수만큼 AI가 컨셉 JSON 을 쓴다. 형식·금지 이름·중복을 거른다.
+- `draw` — 썸네일: 컨셉마다 도트 썸네일(960×540, 480×270 webp)을 생성한다.
+- `check` — 검사: 형식과 원작 닮음(금지 이름, 그림 비전 판정)을 본다. --redraw 면 실패 그림을 한 번 다시 그린다.
+- `serve` — 고르기 화면: 사람이 받기/버리기를 고른다. 선택은 현재 그림 해시에 묶인다.
+- `status` — 현황: 분류별 받음·버림·대기·검사 실패 수.
+- `publish` — 게시: 받은 것만 스토어에 올린다. 운영은 --target prod 명시.
+- `bundle` — 비상용 번들: 받은 것 중 분류마다 고르게 20개를 앱 번들로 굽는다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
