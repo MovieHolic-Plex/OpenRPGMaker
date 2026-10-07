@@ -93,19 +93,17 @@ def tbl_top(c, x, y, w, h, m, st=2):
 
 # ─────────────────────────── 채움(진열품) ───────────────────────────
 def f_books(c, x0, y0, w, h, lvl, seed):
-    pal = (('aka', -1), ('sora', -1), ('soil', 1), ('midori', -2), ('murasaki', -1), ('kinari', 0), ('kon', 0), ('soil', 0), ('kinari', 1), ('tekko', 1), ('midori', -1), ('aka', -2), ('kii', -1))
-    x = x0
+    # 단마다 비슷한 색 두세 가지만 쓰고, 같은 색 책을 2~3권씩 묶어 한 덩이(2~3px)로 읽히게 한다
+    fam = ((('soil', 1), ('soil', 0), ('kinari', 0)), (('sora', -1), ('kon', 0), ('tekko', 1)),
+           (('midori', -2), ('midori', -1), ('soil', 0)), (('aka', -2), ('aka', -1), ('soil', 1)))[hs(lvl, seed, 3) % 4]
+    x = x0; n = 0
     while x < x0 + w:
-        sw = 2 + hs(x, lvl, seed) % 2
-        hh = h - (hs(x + 7, lvl, seed) % 3)
-        ramp, st = pal[hs(x, lvl * 3, seed + 1) % len(pal)]
-        sw = min(sw, x0 + w - x)
+        sw = min(2 + hs(x, lvl, seed) % 2, x0 + w - x)
+        ramp, st = fam[(n // 2 + hs(lvl, n // 2, seed)) % len(fam)]
+        hh = h - (1 if hs(x, lvl, seed + 7) % 4 == 0 else 0)
         top = y0 + h - hh
-        c.R(x, top, sw, hh, K(ramp, st)); c.VL(x, top, hh, K(ramp, st + 1)); c.VL(x + sw - 1, top, hh, K(ramp, st - 2))
-        c.P(x, top, K(ramp, st + 2))
-        if hs(x, lvl, seed + 4) % 3 == 0: c.HL(x, top + 2, sw, K('kinari', 2))                    # 띠(글자 아님)
-        elif hs(x, lvl, seed + 5) % 3 == 0: c.HL(x, top + hh - 3, sw, K('soil', 2))
-        x += sw
+        c.R(x, top, sw, hh, K(ramp, st)); c.VL(x, top, hh, K(ramp, st + 1)); c.VL(x + sw - 1, top, hh, K(ramp, st - 1))
+        n += 1; x += sw
 
 
 def f_bread(c, x0, y0, w, h, lvl, seed):
@@ -128,17 +126,15 @@ def f_bread(c, x0, y0, w, h, lvl, seed):
 
 
 def f_boxes(c, x0, y0, w, h, lvl, seed):
-    base = ('shiro', 'sora', 'midori', 'pinku', 'kii', 'shiro')
-    acc = ('sora', 'aka', 'midori', 'kon', 'daidai')
+    # 단마다 상자 색 하나·띠 색 하나로 통일, 폭 4 고정의 규칙적인 줄
+    r = ('shiro', 'sora', 'midori', 'pinku', 'shiro')[hs(lvl, seed, 1) % 5]
+    ac = ('sora', 'midori', 'kon')[hs(lvl, seed, 6) % 3]
+    bh = 5; top = y0 + h - bh
     x = x0
     while x < x0 + w:
-        bw = 3 + hs(x, lvl, seed) % 2; bw = min(bw, x0 + w - x)
-        for s in range(1 + hs(x, lvl, seed + 3) % 2):
-            bh = 4 + (hs(x, lvl + s, seed + 2) % 2); top = y0 + h - bh * (s + 1)
-            if top < y0 - 1: continue
-            r = base[hs(x, lvl + s, seed + 1) % len(base)]
-            c.R(x, top, bw, bh, K(r, 1)); c.HL(x, top, bw, K(r, 2)); c.VL(x + bw - 1, top, bh, K(r, -1)); c.HL(x, top + bh - 1, bw, K(r, -2))
-            c.HL(x, top + 2, bw, K(acc[hs(x, lvl, seed + 6) % len(acc)], 0))
+        bw = min(4, x0 + w - x)
+        c.R(x, top, bw, bh, K(r, 1)); c.HL(x, top, bw, K(r, 2)); c.VL(x + bw - 1, top, bh, K(r, -1)); c.HL(x, top + bh - 1, bw, K(r, -2))
+        c.HL(x, top + 2, bw, K(ac, 0))
         x += bw
 
 
