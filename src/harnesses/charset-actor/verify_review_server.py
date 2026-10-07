@@ -49,6 +49,8 @@ def verify(check, isolated_store):
         assets = CS.editor_catalog()
         check('catalog-reads-all-six-editor-monster-sheets', sum(a['group'] == 'Monster' for a in assets) == 6)
         check('catalog-includes-scarloxy-and-farm-provider-assets', sum(a['group'] == 'Scarloxy' for a in assets) == 2 and sum(a['group'] == 'Farm' for a in assets) == 2)
+        wizarding = [a for a in assets if a['group'] == 'Wizarding']
+        check('catalog-reads-wizarding-provider-sheets', len(wizarding) >= 1 and all(a['id'].startswith('oprn-charset-wizarding') and a['path'].endswith('.png') for a in wizarding))
         source = CS.create()
         frozen = CS.R.load(H.DATA / 'recipes' / source['id'], check_tools=True)
         check('catalog-frozen-sources-retain-all-20-walking-sheets', source['sheets'] == 20 and source['seeds'] >= 100)

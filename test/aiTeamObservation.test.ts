@@ -21,7 +21,7 @@ describe("agent observation receipts", () => {
     const a = teamObservation(state.agents[0], state.trace), b = teamObservation(state.agents[1], state.trace);
     expect(a.result).toBe("맵을 살펴봤어요");
     expect(a.recent.at(-1)?.label).toBe("입구 확인");
-    expect(a.action).toBe("다음 모델 응답을 기다리는 중");
+    expect(a.action).toBe("생각 중");
     expect(b.action).toBe("맵을 살펴보는 중");
     expect(b.result).toBe("아직 처리 결과가 없어요");
     expect(b.lastAt).toBe(2000);
@@ -34,7 +34,7 @@ describe("agent observation receipts", () => {
       event: { type: "delta", kind: "thinking", text: "PRIVATE_THINKING", at: 3000 } });
     const view = teamObservation(state.agents[0], state.trace);
     expect(JSON.stringify(view)).not.toContain("PRIVATE_THINKING");
-    expect(view.action).toBe("모델 응답을 받는 중");
+    expect(view.action).toBe("생각 중");
     expect(view.result).not.toMatch(/저장|적용|반영/);
   });
 
@@ -54,7 +54,7 @@ describe("agent observation receipts", () => {
       { type: "turn" as const, index: 2, at: 3000 },
       { type: "delta" as const, kind: "text" as const, text: "next", at: 4000 },
     ]) state = reduceTeamBoard(state, { type: "agent_event", agentId: "a", event });
-    expect(teamObservation(state.agents[0], state.trace).action).toBe("모델 응답을 받는 중");
+    expect(teamObservation(state.agents[0], state.trace).action).toBe("생각 중");
   });
 
   it("reports termination even when a tool never returns", () => {

@@ -225,7 +225,8 @@ def _material_report(folder, approved=True):
     planned = {v['id']: v for v in planning['variants']}
     if set(planned) != {v['id'] for v in plan.get('variants', [])}:
         issues.append('기획과 재료 조사서의 변형 목록이 다름')
-    worlds = {w['id']: w for w in read(ROOT / 'harness-data/super-harness/seed.json', {}).get('worldviews', [])}
+    seed = read(ROOT / 'harness-data/super-harness/seed.json', {})
+    worlds = {w['id']: w for w in seed.get('worldviews', [])}
     variants = plan.get('variants') or []
     if plan.get('version') != VERSION or plan.get('concept') != folder.name or not variants:
         issues.append('새 재료 조사서가 없다 — 맵 제작 전에 재료부터 조사해야 함')
@@ -244,7 +245,8 @@ def _material_report(folder, approved=True):
                 issues.append(f'{vid}/{req["id"]}: 기획의 필수 재료가 삭제/변경됨')
         import theme_production
         theme=theme_production.policy(Path(folder).name)
-        native=[theme['packId']] if theme else worlds.get(world,{}).get('native',[])
+        # 테마 전용 팩을 이미 구운 공용 번들이 채웠으면(seed.json themeBundles) 그 번들 칩셋도 받는다 — 해리포터 → wizarding_world.
+        native=[theme['packId'], *seed.get('themeBundles', {}).get(theme['packId'], [])] if theme else worlds.get(world,{}).get('native',[])
         if world not in worlds or v.get('tilesetId') not in native:
             issues.append(f'{vid}: 시대에 맞는 공용 칩셋이 없음 — 다른 시대의 바닥·벽도 대용 금지')
         if not isinstance(v.get('purpose'), str) or not v['purpose'].strip():

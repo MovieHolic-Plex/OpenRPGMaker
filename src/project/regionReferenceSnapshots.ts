@@ -39,6 +39,7 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "wz-space-quidditch-32x22": () => import("./regionReferences/wz-space-quidditch.json"),
   "wz-space-shared-common-20x14": () => import("./regionReferences/wz-space-shared-common.json"),
   "wz-space-shared-corridor-10x22": () => import("./regionReferences/wz-space-shared-corridor.json"),
+  "wz-space-shared-dorm-18x12": () => import("./regionReferences/wz-space-shared-dorm.json"),
   "wz-space-shared-30x18": () => import("./regionReferences/wz-space-shared.json"),
   "wz-space-wandshop-20x14": () => import("./regionReferences/wz-space-wandshop.json"),
   "wz-nat-example-forest-edge-16x12": () => import("./regionReferences/wz-nat-example-forest-edge.json"),

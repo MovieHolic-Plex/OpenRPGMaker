@@ -94,6 +94,16 @@
      }
     }
    }
+  },
+  {
+   "id": "beodeul-props",
+   "label": "버들항 소품·울타리",
+   "gate": false,
+   "kind": "props",
+   "dataEnv": "BEODEUL_PROPS_REVIEW_DATA",
+   "dataDir": "~/.local/share/oprn/beodeul-props-review",
+   "seedDir": "harness-data/beodeul-props-review",
+   "_doc": "건물 말고 타일셋으로 놓는 것들(울타리·소품·나무·가로등…). 기계 게이트 없이 사람이 모두 결정한다. 번들 설치·스토어는 허용이 쌓인 뒤(아직 bundle 없음)."
   }
  ]
 }

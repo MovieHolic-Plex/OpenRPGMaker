@@ -9,6 +9,7 @@
 import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
 import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 import { WIZARDING_CHARSET_SEMANTICS } from "@/assets/wizardingCharsets";
+import type { CharsetLabelOverride } from "@/project/types";
 
 export type CharsetGender = "male" | "female" | "none";
 export type CharsetAge = "child" | "youth" | "middle" | "elder";
@@ -305,37 +306,47 @@ export function charsetSemanticsForTexture(textureKey: string): readonly Charset
 
 export function applyCharsetLabelOverrides(
   base: readonly CharsetSemanticEntry[],
-  overrides: readonly { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" }[] | undefined,
+  overrides: readonly CharsetLabelOverride[] | undefined,
 ): CharsetSemanticEntry[] {
   if (!overrides || overrides.length === 0) return [...base];
-  const bySlot = new Map<string, { readonly label: string; readonly tags?: readonly string[] }>();
+  const bySlot = new Map<string, CharsetLabelOverride & { readonly label: string }>();
   for (const override of overrides) {
     const label = override.label.trim();
     if (!label) continue;
-    bySlot.set(`${override.textureKey}#${override.characterIndex}`, { label, tags: override.tags });
+    bySlot.set(`${override.textureKey}#${override.characterIndex}`, { ...override, label });
   }
   if (bySlot.size === 0) return [...base];
-  return base.map((entry) => {
-    const override = bySlot.get(`${entry.textureKey}#${entry.characterIndex}`);
+  const out = base.map((entry) => {
+    const key = `${entry.textureKey}#${entry.characterIndex}`;
+    const override = bySlot.get(key);
     if (!override) return entry;
+    bySlot.delete(key);
     const tags = override.tags && override.tags.length > 0 ? [...override.tags] : entry.tags;
     return { ...entry, label: override.label, tags: [override.label, ...tags.filter((tag) => tag !== override.label)] };
   });
+  // 업로드 시트 칸 설명(스토어 팩 캐릭터 등)은 기본 목록에 없으므로 새 항목으로 더한다.
+  for (const override of bySlot.values()) {
+    if (override.spriteType !== "uploaded") continue;
+    const tags = (override.tags ?? []).filter((tag) => tag !== override.label);
+    out.push({
+      spriteType: "uploaded", textureKey: override.textureKey, characterIndex: override.characterIndex, label: override.label,
+      tags: [override.label, ...tags],
+      ...(override.gender ? { gender: override.gender } : {}),
+      ...(override.age ? { age: override.age } : {}),
+      ...(override.appearance ? { appearance: override.appearance } : {}),
+    });
+  }
+  return out;
 }
 
 export function upsertCharsetLabelOverride(
-  existing: readonly { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" }[] | undefined,
-  next: { readonly textureKey: string; readonly characterIndex: number; readonly label: string; readonly tags?: readonly string[]; readonly origin?: "user" | "ai" },
-): { textureKey: string; characterIndex: number; label: string; tags?: string[]; origin?: "user" | "ai" }[] {
-  const list = (existing ?? [])
+  existing: readonly CharsetLabelOverride[] | undefined,
+  next: CharsetLabelOverride,
+): CharsetLabelOverride[] {
+  // 다른 칸의 항목은 그대로 둔다(업로드 시트 설명의 spriteType·외형까지 — 예전엔 이름·태그만 옮겨 스토어 캐릭터 설명이 사라졌다).
+  const list: CharsetLabelOverride[] = (existing ?? [])
     .filter((entry) => entry.textureKey !== next.textureKey || entry.characterIndex !== next.characterIndex)
-    .map((entry) => ({
-      textureKey: entry.textureKey,
-      characterIndex: entry.characterIndex,
-      label: entry.label,
-      ...(entry.tags ? { tags: [...entry.tags] } : {}),
-      ...(entry.origin ? { origin: entry.origin } : {}),
-    }));
+    .map((entry) => ({ ...entry, ...(entry.tags ? { tags: [...entry.tags] } : {}) }));
   const label = next.label.trim();
   if (!label) return list;
   const tags = (next.tags ?? []).map((tag) => tag.trim()).filter((tag) => tag.length > 0);
@@ -345,6 +356,10 @@ export function upsertCharsetLabelOverride(
     label,
     ...(tags.length > 0 ? { tags } : {}),
     origin: next.origin ?? "user",
+    ...(next.spriteType ? { spriteType: next.spriteType } : {}),
+    ...(next.gender ? { gender: next.gender } : {}),
+    ...(next.age ? { age: next.age } : {}),
+    ...(next.appearance ? { appearance: next.appearance } : {}),
   });
   return list;
 }

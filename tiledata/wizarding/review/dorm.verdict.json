@@ -1,0 +1,54 @@
+{
+ "module": "dorm",
+ "sealed": "2026-10-07T15:34:08.431490+09:00",
+ "reviewer": "sonnet thin independent",
+ "pieces": {
+  "wz-dorm-bed-green": {
+   "verdict": "PASS",
+   "hash": "dd2da847dc5f342b851dcc0e933f5c8d9043d792d99888abcc5ac86a8b3c913a",
+   "reason": "초록 커튼을 두른 4주 침대에 흰 베개와 이불이 윗면+정면으로 보여 1배로도 침대로 읽히고, 사람(24×32) 대비 약 3×4칸 크기가 적당하며 왼쪽 위 빛과 유색 윤곽이 병동 침대와 같은 화풍이다."
+  },
+  "wz-dorm-bed-green-closed": {
+   "verdict": "PASS",
+   "hash": "b3d7dfbd1b941f85245c3c1cb0d6b87a248b88077d0f225e704ec1546ad117ba",
+   "reason": "같은 틀에 초록 커튼이 완전히 내려와 닫힌 침대로 분명히 읽히고, 열림 판과 크기·기둥 위치·피벗이 같아 상태 전환이 자연스럽다."
+  },
+  "wz-dorm-bed-red": {
+   "verdict": "PASS",
+   "hash": "ef686d02a621e38920a00abb1f4672e6a4782f7ffc2e413d70e03d56dbce1ea9",
+   "reason": "붉은 커튼 4주 침대로 초록 판과 구조·크기가 동일하고 커튼 주름 명암이 3~4단으로 살아 있어 같은 세트로 일관된다."
+  },
+  "wz-dorm-trunk": {
+   "verdict": "PASS",
+   "hash": "cae09cb93119a02523ecc6932c778776703a70793b2a5272390d1d13f019cce2",
+   "reason": "금속 모서리와 걸쇠가 달린 나무 트렁크로 1배에서도 읽히고, 뚜껑 윗면과 정면이 보이는 3/4 시점이며 침대 발치에 놓기 알맞은 축척이다."
+  },
+  "wz-dorm-nightstand": {
+   "verdict": "PASS",
+   "hash": "923ee150148d75257e8a2a5fa083fbf85bbfcad3594e4c17cfe2f453f6035e5c",
+   "reason": "작은 서랍 협탁이 윗면과 서랍 정면으로 읽히고 손잡이 하이라이트와 나무 명암이 native 탁자 조각과 같은 화풍이며 사람 허리 아래 크기로 맞다."
+  },
+  "wz-dorm-wardrobe": {
+   "verdict": "PASS",
+   "hash": "38c52dc61aa7547f9ab026151f07c252b6020a26c29cb15b6dc16c211454a8c2",
+   "reason": "상단 장식 돌림띠와 금빛 손잡이가 달린 양문 옷장으로 즉시 읽히고, 사람 키보다 큰 높이가 알맞으며 나무 결과 명암이 native 가구와 어울린다."
+  },
+  "wz-dorm-mirror": {
+   "verdict": "PASS",
+   "hash": "7afc160cb9b7c59bc723e9e78cac160d98f52eaabc06d1c32ddbe62f6d3cf966",
+   "reason": "금빛 타원 테두리에 하늘색 유리와 대각선 반사 하이라이트, 받침대가 있어 1배에서도 분명히 서 있는 거울로 읽히고 사람 키에 맞는 크기이다."
+  },
+  "wz-dorm-rug-green": {
+   "verdict": "PASS",
+   "hash": "110950c7b0d1afd0694dc5aa6ec94125f41e29971e86f96976e85ab9d4772af2",
+   "reason": "술 장식 테두리와 마름모 문양이 있는 초록 깔개로 위에서 본 평면 양탄자로 자연스럽게 읽히며 예시 방 침대 앞에서 어색함 없이 어울린다."
+  },
+  "wz-dorm-lamp-green": {
+   "verdict": "PASS",
+   "hash": "d1a2018112ecefd4ffe23a43ed70c6295194c2097126e1b7197e4437e1358be4",
+   "reason": "초록 유리 속에 불빛이 보이는 걸이형 벽등으로 읽히고 예시 방 벽면에서 석벽과 잘 어울리며 크기와 유색 윤곽이 적당하다."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}

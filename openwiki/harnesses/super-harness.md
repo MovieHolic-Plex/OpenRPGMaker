@@ -1052,3 +1052,11 @@ space_progress는 DATA 내부 프로젝트 파일의 현재 해시와 HTTP(S) �
 보존하고 같은 후보의 재시도 입력에 전달한다. `review_recovery.recover_context`는 현재 후보와
 원본 파일 해시가 유효하고 수정된 처리기로 전체 검증을 통과하는 완료 응답만 한 번 재처리한다.
 FAIL은 그대로 독립 재판정/수정으로 보내며 그림·검수 시도 횟수나 승인 기록을 초기화하지 않는다.
+
+### 테마 전용 팩을 공용 번들이 채운 경우 — 해리포터 → wizarding_world (2026-10-07)
+
+「해리포터」 키워드 시드(3e7ac64c5cf1d943e08a)는 dedicated 제작 방식이라 재료 관문이 테마 팩 id(`theme-3e7ac…`)만 그 테마의 칩셋으로 받았다.
+그 전용 팩은 이미 공용 번들 `wizarding_world`(13공간 빌더 `build_wizarding_space`, `openwiki/wizarding-world.md`)로 구워졌다.
+`seed.json` 에 `themeBundles: {packId: [번들 id]}` 를 두고 `gates.py` 재료 관문이 packId 와 함께 그 번들 칩셋도 받는다.
+세계관 `wizarding`(native `wizarding_world`, artRoute `wizarding-pieces`)과 낱말 묶음 「마법 학교」도 더했다 — 세계관 note 가 카드 `build` 에
+`build_wizarding_space({space, variant})` 한 번을 적으라고 알린다. 데몬은 자기 체크아웃의 seed.json 을 읽으므로 그 트리를 main 으로 올린 뒤에 반영된다.

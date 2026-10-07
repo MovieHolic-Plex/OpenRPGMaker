@@ -49,14 +49,14 @@ export function defineBuildingBundle(cfg:BuildingBundleConfig){
  /** 호스트 타일셋(예: beodeul_city)에 허용한 건물을 이식한다(translateTiles). 한 번 이식한 칸은 다시 추가하지 않는다. */
  function ensureHost(ts:TilesetDef):boolean{
   if(ts.id!==cfg.hostTilesetId||ts.image.id!==cfg.hostTexture)return false;
-  const source=createTileset(),graft=translateTiles(source,ts,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles)));
+  const source=createTileset(),graft=translateTiles(source,ts,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>(r.upperTiles ?? []).filter((n): n is number => n != null))));
   let changed=graft.slotsAdded>0;
   for(const [n,target] of graft.map){
    if(ts.priority[target]!==source.priority[n]){ts.priority[target]=source.priority[n]!;changed=true;}
    if(JSON.stringify(ts.passability[target])!==JSON.stringify(source.passability[n])){ts.passability[target]=structuredClone(source.passability[n]!);changed=true;}
   }
   const kits=ts.structureKits??=[];
-  for(const sourceKit of source.structureKits!){const k=structuredClone(sourceKit);k.rows=k.rows.map(r=>({...r,upperTiles:r.upperTiles.map(n=>n<0?-1:graft.map.get(n)!)}));
+  for(const sourceKit of source.structureKits!){const k=structuredClone(sourceKit);k.rows=k.rows.map(r=>({...r,upperTiles:(r.upperTiles ?? []).map(n=>n<0?-1:graft.map.get(n)!)}));
    const at=kits.findIndex(old=>old.id===k.id);if(at<0){kits.push(k);changed=true;}else if(JSON.stringify(kits[at])!==JSON.stringify(k)){kits[at]=k;changed=true;}}
   const keep=new Set(source.structureKits!.map(k=>k.id)),next=kits.filter(k=>!isKit(k.id)||keep.has(k.id));
   if(next.length!==kits.length){ts.structureKits=next;changed=true;}
