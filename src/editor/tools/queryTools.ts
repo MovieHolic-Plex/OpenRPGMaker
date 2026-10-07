@@ -580,9 +580,12 @@ const listResources: ToolDefinition = {
       if (kind === 'charset') {
         // Uploaded sheets have no authored semantic labels. Let the assistant
         // browse their real eight slots by file name/id and use nativeGraphic.
+        // Slots described in charsetLabels (store pack characters) are already
+        // searchable by appearance, so only their undescribed slots are listed here.
         const needle = args.query.trim().toLocaleLowerCase();
         const browse = ['', '*', 'all', '전체'].includes(needle);
         const knownSheets = new Set(searchResources('charset', '*').map(row => row.nativeGraphic?.sprite?.id));
+        const describedSlots = new Set(searchResources('charset', '*', { charsetLabels: project.charsetLabels }).map(row => row.id));
         const uploaded = Object.values(project.assets.uploaded);
         const exactSheets = new Set(uploaded.filter(asset => asset.kind === 'charset' && !knownSheets.has(asset.id)
           && (asset.id.toLocaleLowerCase() === needle || asset.name.toLocaleLowerCase() === needle)).map(asset => asset.id));
@@ -593,7 +596,8 @@ const listResources: ToolDefinition = {
             id: `charset:${asset.id}:${characterIndex}`, label: `${asset.name} / 칸 ${characterIndex}`,
             nativeGraphic: { sprite: { type: 'uploaded' as const, id: asset.id }, direction: 'down' as const,
               pattern: charsetFrameIndex({ characterIndex, direction: 'down', pattern: 1 }) },
-          })));
+          })))
+          .filter(row => !describedSlots.has(row.id));
         // An exact uploaded sheet id is a resource lookup. Its words must not
         // also inject unrelated semantic candidates (e.g. custom_golem).
         if (exactSheets.size) all = raw.filter(row => exactSheets.has(row.nativeGraphic.sprite.id));

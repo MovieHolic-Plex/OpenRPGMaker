@@ -76,6 +76,10 @@ export const STORE_LIMITS = {
   credits: 400,
   tags: 12,
   tagLength: 24,
+  /** 캐릭터 칸 설명(StorePackCharacter): 에셋 상한 × 8칸. */
+  characters: 2048,
+  characterLabel: 40,
+  characterAppearance: 240,
 } as const;
 
 /** 에디터 UploadedAsset.kind 중 스토어로 오갈 수 있는 것. */
@@ -121,9 +125,26 @@ export interface StorePackAsset {
   meta: UploadedAsset["meta"];
 }
 
+/**
+ * 캐릭터 시트 한 칸의 설명. 팩을 넣으면 프로젝트 charsetLabels(spriteType "uploaded")로 들어가
+ * NPC 그림 검색(list_npc_graphics·그래픽 고르기)이 외형으로 찾는다. 없으면 「시트 이름 / 칸 N」으로만 보인다.
+ */
+export interface StorePackCharacter {
+  /** content.assets 의 charset 에셋 id. */
+  asset: string;
+  /** 0~7(4열×2행). */
+  characterIndex: number;
+  label: string;
+  tags?: string[];
+  gender?: "male" | "female" | "none";
+  age?: "child" | "youth" | "middle" | "elder";
+  appearance?: string;
+}
+
 export interface StorePackContent {
   assets: Record<string, StorePackAsset>;
   tilesets: Record<string, TilesetDef>;
+  characters?: StorePackCharacter[];
 }
 
 export interface StorePackManifest {
@@ -350,6 +371,30 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
       else if (tileset.passability.length > STORE_LIMITS.tilesetCells || tileset.priority.length > STORE_LIMITS.tilesetCells) errors.push(`타일셋 ${id} 의 통행·층 정보가 너무 깁니다.`);
       if (tileset.referenceSourceTilesetId !== undefined && !Object.hasOwn(tilesets, tileset.referenceSourceTilesetId)) {
         errors.push(`타일셋 ${id} 이 팩 밖의 참고문서(${tileset.referenceSourceTilesetId})를 가리킵니다.`);
+      }
+    }
+    if (content.characters !== undefined) {
+      if (!Array.isArray(content.characters) || content.characters.length > STORE_LIMITS.characters) {
+        errors.push(`캐릭터 설명은 ${STORE_LIMITS.characters}개 이하의 목록이어야 합니다.`);
+      } else {
+        const seen = new Set<string>();
+        for (const raw of content.characters as unknown[]) {
+          const c = isRecord(raw) ? raw : null;
+          const asset = c && typeof c.asset === "string" ? assets[c.asset] : undefined;
+          const where = c && typeof c.asset === "string" ? `${c.asset.slice(0, 40)} 칸 ${String(c.characterIndex).slice(0, 4)}` : "?";
+          if (!c || !isRecord(asset) || asset.kind !== "charset") { errors.push(`캐릭터 설명이 팩의 캐릭터 시트를 가리키지 않습니다: ${where}`); continue; }
+          if (!Number.isInteger(c.characterIndex) || (c.characterIndex as number) < 0 || (c.characterIndex as number) > 7) errors.push(`캐릭터 칸은 0~7 이어야 합니다: ${where}`);
+          if (!isString(c.label, STORE_LIMITS.characterLabel, 1)) errors.push(`캐릭터 이름은 1~${STORE_LIMITS.characterLabel}자여야 합니다: ${where}`);
+          if (c.tags !== undefined && (!Array.isArray(c.tags) || c.tags.length > STORE_LIMITS.tags || !c.tags.every((tag) => isString(tag, STORE_LIMITS.tagLength, 1)))) {
+            errors.push(`캐릭터 태그는 ${STORE_LIMITS.tags}개 이하, 각 ${STORE_LIMITS.tagLength}자 이하여야 합니다: ${where}`);
+          }
+          if (c.gender !== undefined && !["male", "female", "none"].includes(c.gender as string)) errors.push(`캐릭터 성별 값이 올바르지 않습니다: ${where}`);
+          if (c.age !== undefined && !["child", "youth", "middle", "elder"].includes(c.age as string)) errors.push(`캐릭터 나이 값이 올바르지 않습니다: ${where}`);
+          if (c.appearance !== undefined && !isString(c.appearance, STORE_LIMITS.characterAppearance)) errors.push(`캐릭터 외형 설명은 ${STORE_LIMITS.characterAppearance}자 이하여야 합니다: ${where}`);
+          const key = `${c.asset as string}#${String(c.characterIndex)}`;
+          if (seen.has(key)) errors.push(`같은 캐릭터 칸이 두 번 적혔습니다: ${where}`);
+          seen.add(key);
+        }
       }
     }
     for (const sha of collectPlaceholders(content)) if (!blobs.has(sha)) errors.push(`자리표시 blob 이 목록에 없습니다: ${sha.slice(0, 12)}`);
