@@ -80,16 +80,16 @@ def shelf_lip(c, x, y, w, m='conc'):
 
 # ───────────────────────── 바닥·벽면 ─────────────────────────
 @R.floor('cv-vinyl', '편의점 비닐 타일', cols=4, rows=4, tags=('편의점', '슈퍼', '매장', '바닥'),
-         desc='희고 연한 회색의 편의점 매장 비닐 타일(PVC). 32px(2m) 정사각 타일, 1px 줄눈, 아주 약한 얼룩. 진열대가 도드라지게 조용하다. 매장 전체에 깐다.')
+         desc='벽보다 한 단 어두운 연회색의 편의점 매장 비닐 타일(PVC). 32px(2m) 정사각 타일, 1px 줄눈, 아주 약한 얼룩. 진열대가 도드라지게 조용하다. 매장 전체에 깐다.')
 def _vinyl(c):
     for y in range(c.h):
         for x in range(c.w):
             t = ((x // 32) + (y // 32)) % 2
-            col = k('shiro', 0) if t == 0 else k('shiro', -1)
-            if rnd(x, y, 3, 22): col = k('conc', 2)
-            elif rnd(x, y, 4, 18): col = k('shiro', 1)
-            if x % 32 == 0 or y % 32 == 0: col = k('conc', 1)
-            elif x % 32 == 1 and y % 32 > 0 or y % 32 == 1: col = k('shiro', 1)
+            col = k('conc', 1) if t == 0 else k('shiro', -1)
+            if rnd(x, y, 3, 22): col = k('conc', 0)
+            elif rnd(x, y, 4, 18): col = k('shiro', 0)
+            if x % 32 == 0 or y % 32 == 0: col = k('conc', -1)
+            elif x % 32 == 1 and y % 32 > 0 or y % 32 == 1: col = k('shiro', 0)
             c.P(x, y, col)
 
 
@@ -373,12 +373,49 @@ def cv_baskets(c):
        desc='편의점 입구의 자동문 문턱 2×1(밟는 바닥 무늬). 위쪽에 유리문 레일 두 줄, 앞쪽에 어두운 입구 매트. 맨 아래 줄 출입구 칸에 놓는다.',
        tags=('편의점', '슈퍼', '입구', '문'), place='맨 아래 줄 출입구 틈 두 칸', pair=('cv-baskets', 'cv-magazine'))
 def cv_autodoor(c):
-    c.R(0, 2, 32, 2, k('conc', 3)); c.HL(0, 2, 32, k('shiro', 2)); c.HL(0, 3, 32, k('conc', 0))
-    for x0 in range(1, 31, 4): c.P(x0, 4, k('conc', -2))
-    c.HL(0, 5, 32, k('tekko', -1))
-    c.R(2, 7, 28, 8, k('tekko', -1)); c.HL(2, 7, 28, k('tekko', 1))
-    for x0 in range(4, 29, 3): c.VL(x0, 8, 6, k('tekko', -3))
-    c.HL(2, 14, 28, k('sumi', 0))
+    # 알루미늄 문턱 + 유리문 레일 두 줄, 그 안쪽에 가장자리 띠가 있는 청회색 현관 매트(홈이나 줄무늬 없음).
+    c.R(0, 1, 32, 2, k('conc', 3)); c.HL(0, 1, 32, k('shiro', 2)); c.HL(0, 2, 32, k('conc', 1))
+    c.HL(0, 3, 32, k('conc', -1)); c.HL(0, 4, 32, k('conc', 2)); c.HL(0, 5, 32, k('conc', 0))
+    for x0 in (0, 15, 16, 31): c.VL(x0, 1, 5, k('conc', -1))
+    c.R(3, 8, 26, 7, k('kon', 1)); c.HL(3, 8, 26, k('sora', 0)); c.VL(3, 8, 7, k('sora', 0)); c.HL(3, 14, 26, k('kon', -1)); c.VL(28, 8, 7, k('kon', -1))
+    c.R(5, 10, 22, 3, k('kon', 0))
+    for x0, y0 in ((8, 11), (14, 10), (19, 12), (23, 11), (11, 12)): c.P(x0, y0, k('kon', 2))
+    c.HL(2, 15, 28, k('conc', -1))
+
+
+@R.obj('cv-cart-rack', '카트 보관대', 2, 1, up=16, kind='floor', use=('push',),
+       desc='슈퍼 입구 안쪽에 두는 카트 보관대 2×1. 회색 철망 카트가 앞뒤로 포개져 비스듬히 나란히 서 있고, 빨간 손잡이 막대가 줄지어 보인다. 아래는 검은 바퀴 받침 틀.',
+       tags=('슈퍼', '카트', '입구', '보관대'), place='슈퍼 입구 안쪽 한쪽 옆(자동문 곁)', pair=('cv-basket-stack', 'cv-autodoor'))
+def cv_cart_rack(c):
+    o = k('conc', -3)
+    for i in range(4):   # 포개진 카트: 오른쪽이 앞(밝게·크게), 왼쪽이 뒤
+        x0 = 2 + i * 3
+        c.R(x0, 7 + (3 - i), 12, 9 - (3 - i) // 2 + 3, k('conc', 2 - (3 - i) // 2)); c.HL(x0, 7 + (3 - i), 12, k('shiro', 2))
+        c.HL(x0, 14 + (3 - i), 12, k('conc', -1))
+        for xx in range(x0 + 2, x0 + 11, 3): c.VL(xx, 8 + (3 - i), 5, k('conc', -1))
+    for i in range(4):   # 빨간 손잡이
+        x0 = 2 + i * 3; c.HL(x0, 6 + (3 - i), 12, k('aka', 0)); c.HL(x0, 5 + (3 - i), 12, k('aka', 2)); c.VL(x0, 5 + (3 - i), 3, k('aka', -1))
+    ol_in(c, o)
+    c.R(0, 26, 32, 4, k('tekko', -1)); c.HL(0, 26, 32, k('tekko', 1)); c.HL(0, 29, 32, o)
+    for x0 in (2, 12, 20, 29): c.R(x0, 28, 3, 3, k('sumi', 0))
+    c.R(0, 19, 32, 7, k('conc', 0)); c.HL(0, 19, 32, k('conc', 2)); c.HL(0, 25, 32, k('conc', -2))
+    for x0 in range(2, 31, 4): c.VL(x0, 20, 5, k('conc', -2))
+    c.VL(0, 19, 11, k('conc', 2)); c.VL(31, 19, 11, k('conc', -2))
+
+
+@R.obj('cv-basket-stack', '바구니 보관 스탠드', 1, 1, up=16, kind='floor', use=('search',),
+       desc='슈퍼 입구 안쪽의 바구니 스탠드 1×1. 검은 철제 다리 위에 초록·주황 바구니가 키 높이로 겹겹이 쌓여 있다. 카트 보관대 옆에 놓는다.',
+       tags=('슈퍼', '바구니', '입구'), place='카트 보관대 옆, 자동문 안쪽', pair=('cv-cart-rack', 'cv-autodoor'))
+def cv_basket_stack(c):
+    o = k('conc', -3)
+    for i, (ramp, st) in enumerate((('midori', 0), ('daidai', 0), ('midori', 0), ('daidai', 0), ('midori', 0))):
+        y0 = 4 + i * 4
+        c.R(2, y0, 12, 5, k(ramp, st)); c.HL(2, y0, 12, k(ramp, st + 2)); c.HL(2, y0 + 4, 12, k(ramp, st - 2))
+        c.HL(3, y0 + 1, 10, k(ramp, st - 1)) if i % 2 == 0 else None
+        for x0 in range(4, 13, 3): c.P(x0, y0 + 2, k(ramp, st - 1))
+    ol_in(c, o)
+    c.VL(1, 4, 25, k('tekko', 0)); c.VL(14, 4, 25, k('tekko', -2))
+    c.R(0, 26, 16, 4, k('tekko', -2)); c.HL(0, 26, 16, k('tekko', 0)); c.HL(0, 29, 16, o); c.R(1, 29, 14, 2, k('tekko', -2))
 
 
 @R.obj('cv-trash', '분리수거 쓰레기통', 1, 1, up=8, kind='floor', use=('search',),

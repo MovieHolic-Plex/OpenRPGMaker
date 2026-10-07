@@ -29,7 +29,7 @@ CATEGORIES = [
     ('oldhouse', '옛집(단층)', ['h2-garden-step', 'h2-shoji-door', 'h2-irori', 'h2-hibachi', 'h2-old-tansu']),
     ('store', '편의점·슈퍼', ['cv-gondola', 'cv-gondola-v', 'cv-gondola-end', 'cv-cooler', 'cv-open-case', 'cv-meat-case', 'cv-magazine',
                              'cv-freezer', 'cv-counter', 'cv-register', 'cv-hotcase', 'cv-coffee', 'cv-back-shelf', 'cv-atm', 'cv-copier',
-                             'cv-baskets', 'cv-autodoor', 'cv-trash', 'cv-checkout', 'cv-produce', 'cv-cart']),
+                             'cv-baskets', 'cv-autodoor', 'cv-trash', 'cv-checkout', 'cv-produce', 'cv-cart', 'cv-cart-rack', 'cv-basket-stack']),
     ('food', '음식점', ['fd-stool', 'fd-chair-s', 'fd-chair-n', 'fd-chair-e', 'fd-chair-w', 'fd-prep', 'fd-sink', 'fd-stockpot',
                        'fd-noodle-boiler', 'fd-fryer', 'fd-fridge', 'fd-sake-shelf', 'fd-ticket-machine', 'fd-water-jug', 'fd-register',
                        'fd-neta-case', 'fd-beer-crates', 'fd-zashiki', 'fd-noren', 'fd-lantern', 'fd-menu-board']),
