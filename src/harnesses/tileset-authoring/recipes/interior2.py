@@ -84,20 +84,46 @@ def floor(P, kind: str, v: int = 0):
                 c = d if xx == 7 or yy == 7 else l if 1 <= xx <= 5 and 1 <= yy <= 5 else b
                 im.putpixel((x, y), c)
     elif kind == "mart":
-        d, m, l = P["i2_fl_mart"]
+        bd_, b, w, wl = P["i2_fl_mart2"]                                     # 파랑·흰 8px 체크: 흰 칸은 왼쪽 위 빛 1px, 파란 칸은 오른쪽 아래 그늘 1px
         for y in range(T):
             for x in range(T):
-                c = d if x % 8 == 7 or y % 8 == 7 else l if (x // 8 + y // 8) % 2 == 0 else m
+                xx, yy = x % 8, y % 8
+                if (x // 8 + y // 8) % 2 == 0:
+                    c = wl if xx == 0 or yy == 0 else w
+                else:
+                    c = bd_ if xx == 7 or yy == 7 else b
                 im.putpixel((x, y), c)
     else:
-        d, b, l = P["i2_fl_house"]
-        for y in range(T):
-            for x in range(T):
-                bx, by = x // 8, y // 8
-                horiz = (bx + by + v) % 2 == 0
-                u, w = (y % 8, x % 8) if horiz else (x % 8, y % 8)
-                c = d if u in (3, 7) else l if u in (0, 4) and w < 7 else b
-                im.putpixel((x, y), c)
+        im = _planks(P, v)
+    return im
+
+
+_JOINTS = (2, 10, 6, 14)                                                 # 판자 줄마다 이음매 x(위아래 줄이 엇갈린다)
+_GRAIN = {0: ((7, 1, 3), (12, 9, 2)), 1: ((13, 2, 3), (4, 9, 3))}       # 결 자국(x, y, 길이) — 변형마다 다른 자리, 칸 안에서만
+
+
+def _planks(P, v: int):
+    """집 바닥: 가로 판자 4px 4줄(윗줄 밝은 결 1px · 몸 2px · 이음 진한 줄 1px), 줄마다 엇갈린 세로 이음매.
+    두 변형은 이음매 자리가 같고(어느 쪽과 이웃해도 이어진다) 결 자국만 다르다."""
+    sm, dk, b, l = P["i2_plank"]
+    im = px.new()
+    for y in range(T):
+        r, k = y // 4, y % 4
+        j = _JOINTS[r]
+        for x in range(T):
+            if k == 3 or x == j:
+                c = sm
+            elif k == 0:
+                c = l
+            else:
+                c = b
+            im.putpixel((x, y), c)
+        if k == 0:
+            im.putpixel(((j + 1) % T, y), l)
+    for gx, gy, n in _GRAIN[v % 2]:
+        for x in range(gx, gx + n):
+            if x != _JOINTS[gy // 4]:
+                im.putpixel((x, gy), dk)
     return im
 
 
@@ -180,16 +206,20 @@ def _wall_column(P, style: str):
             if y <= 30: return P["i2_gray"][1]
             return C(P, "i2_ol")
     else:
-        face, bb = P["i2_h_face"], P["i2_base_sky"]
-        def col(x, y):
-            if y <= 2: return ce[1]
-            if y == 3: return ce[0]
-            if y <= 22:
-                return face[1] if (y % 6 == 1 and x % 6 == 2) or (y % 6 == 4 and x % 6 == 5) else face[0]
-            if y == 23: return P["i2_gray"][1]
-            if y <= 27: return bb[2] if y == 24 else bb[1]
-            if y == 28: return bb[0]
-            if y <= 30: return P["i2_gray"][0]
+        pa, tr = P["i2_h_paper"], P["i2_h_trim"]
+        def col(x, y):                                                      # 크림 벽지 + 나무 징두리(허리 아래 판벽)
+            if y <= 1: return ce[1]
+            if y == 2: return ce[0]
+            if y == 3: return C(P, "i2_ol")                                 # 벽 윗선
+            if y == 4: return pa[0]                                         # 천장 아래 그늘 1px
+            if y <= 19: return pa[2] if x % 8 == 0 else pa[1]               # 벽지: 8px 마다 옅은 세로 결
+            if y == 20: return tr[3]                                        # 허리 띠(빛 받는 윗면)
+            if y == 21: return tr[1]
+            if y == 22: return tr[0]
+            if y <= 28:
+                return tr[1] if x % 8 == 7 else tr[2]                       # 판벽 이음(8px)
+            if y == 29: return tr[1]
+            if y == 30: return tr[0]
             return C(P, "i2_ol")
     return col
 
@@ -354,23 +384,88 @@ def plant(P):
     return f.done(P, floor_y=22)
 
 
-def stairs(P, side: str, metal: bool):
-    """계단(2×3, 뒷벽에 붙임, 격자에 맞춘 곧은 모양): 양옆 난간 4px · 디딤판 2px 줄무늬(윗줄 밝음·아랫줄 그늘) · 위 끝은 벽 속 어둠.
-    metal=True 는 센터 에스컬레이터(강철 디딤판 + 검은 손잡이 벨트 + 주황 옆판). side 는 그림자 방향만 정한다."""
-    tr = P["i2_steel"] if metal else P["i2_wood"]
-    f = F(2, 3)
-    f.r(4, 0, 27, 9, C(P, "i2_void"))                                     # 위층으로 들어가는 어둠
-    for y in range(10, 45, 3):
-        f.r(4, y, 27, y + 2, tr[1]); f.r(4, y, 27, y, tr[2]); f.r(4, y + 2, 27, y + 2, tr[0])
+def _stair_sides(f, P, metal: bool, y1: int, low: int = 0):
+    """계단 양옆(4px): 나무는 옆판(윗면 밝은 1px) + 아래 끝 기둥, 금속은 주황 옆판 + 검은 손잡이 벨트.
+    low>0 이면 옆판을 그 높이에서 시작한다(내려가는 계단: 바닥 높이 난간)."""
+    if metal:
+        o = P["i2_orange"]
+        for x0, x1 in ((0, 3), (28, 31)):
+            f.r(x0, low, x1, y1, o[1]); f.r(x0, low, x0, y1, o[2])
+            f.r(x1, low, x1, y1, o[0])
+        f.r(2, low, 3, y1 - 2, C(P, "i2_ol")); f.r(28, low, 29, y1 - 2, C(P, "i2_ol"))   # 손잡이 벨트(안쪽)
+        f.r(3, low, 3, y1 - 2, P["i2_gray"][0]); f.r(29, low, 29, y1 - 2, P["i2_gray"][0])
+        return
+    t = P["i2_h_trim"]
     for x0 in (0, 28):
+        f.r(x0, low, x0 + 3, y1, t[1]); f.r(x0, low, x0 + 3, low, t[3]); f.r(x0 + 1, low + 1, x0 + 2, y1, t[2]); f.r(x0 + 1, low + 1, x0 + 1, y1, t[3])
+        f.r(x0, y1 - 9, x0 + 3, y1, t[1]); f.r(x0, y1 - 9, x0 + 3, y1 - 8, t[3]); f.r(x0 + 3, y1 - 7, x0 + 3, y1, t[0])   # 아래 끝 기둥(머리 밝음)
+
+
+def stairs(P, side: str, metal: bool):
+    """올라가는 계단(2×3, 뒷벽에 붙임): 0·1줄은 벽·벽 밑 바닥 줄을 덮고(불투명) 2줄 아래는 발 디딤(바닥이 비친다).
+    아래 단일수록 높다(가까울수록 크다): 디딤판(밝은 앞 모서리) + 챌판(위 1px 그늘, 앞면 중간 톤)이 위로 갈수록 좁아지고
+    맨 위 두 단은 어두워지며 천장 구멍(어둠)으로 들어간다. metal=True 는 센터 에스컬레이터(강철 홈 디딤판·주황 옆판·검은 벨트).
+    빛은 왼쪽 위 — 그림자는 늘 오른쪽 아래(side 는 예전 호출과 맞추려 남긴다)."""
+    f = F(2, 3)
+    f.r(4, 0, 27, 7, C(P, "i2_void"))
+    if metal:
+        st = P["i2_steel"]
+        tread, nose, rise, rsh = st[1], st[2], st[0], C(P, "i2_ol")
+        f.r(4, 7, 27, 7, st[0])
+    else:
+        pl, t = P["i2_plank"], P["i2_h_trim"]
+        tread, nose, rise, rsh = pl[3], P["i2_h_paper"][2], t[1], t[0]
+    y = 8
+    hs = (3, 4, 4, 5, 5, 6, 6)
+    for i, h in enumerate(hs):
+        dim = (0.6, 0.8)[i] if i < 2 else 1.0
+        tr_ = (h + 1) // 2                                                      # 디딤판(위) · 챌판(아래)
+        f.r(4, y, 27, y + tr_ - 1, px.tint(tread, dim)); f.r(4, y, 27, y, px.tint(nose, dim))
         if metal:
-            f.r(x0, 0, x0 + 3, 46, P["i2_orange"][1]); f.r(x0 + 1, 0, x0 + 2, 46, C(P, "i2_ol"))
-        else:
-            f.r(x0, 0, x0 + 3, 46, P["i2_wood"][0]); f.r(x0 + 1, 0, x0 + 1, 46, P["i2_wood"][2])
-            for y in range(4, 46, 8):
-                f.r(x0, y, x0 + 3, y + 1, P["i2_wood"][2])
-    im = f.done(P, floor_y=40)
-    return im if side == "r" else px.mirror(im)
+            for x in range(6, 27, 3):
+                f.r(x, y + 1, x, y + tr_ - 1, px.tint(rise, dim))
+        f.r(4, y + tr_, 27, y + h - 1, px.tint(rise, dim)); f.r(4, y + tr_, 27, y + tr_, px.tint(rsh, dim))
+        if metal and h - tr_ > 1:
+            for x in range(5, 27, 3):
+                f.r(x, y + tr_ + 1, x, y + h - 1, px.tint(rsh, dim))
+        y += h
+    f.r(4, y, 27, y, px.tint(nose, 1.0) if not metal else P["i2_white"][2])  # 맨 아래 단 앞 모서리 = 바닥 높이
+    _stair_sides(f, P, metal, y + 1)
+    return f.done(P, floor_y=32)
+
+
+def stairs_down(P, metal: bool):
+    """내려가는 계단(2×3, 뒷벽에 붙임 — 올라가는 계단과 같은 자리): 벽과 벽 밑 줄에 뚫린 어두운 입구로 디딤판만 보이며 내려간다.
+    챌판은 안쪽을 향해 보이지 않고, 단 사이는 어두운 틈, 깊을수록(위로 갈수록) 단이 좁아지고 어두워져 어둠에 묻힌다.
+    양옆은 바닥 높이의 낮은 난간(위 두 줄을 덮는다), 2줄은 구멍 앞 바닥 턱과 난간 기둥 — 그 밖은 바닥이 비친다."""
+    f = F(2, 3)
+    vd = C(P, "i2_void")
+    f.r(4, 0, 27, 33, vd)
+    if metal:
+        st = P["i2_steel"]
+        tread, nose, gap = st[1], st[2], C(P, "i2_ol")
+    else:
+        pl = P["i2_plank"]
+        tread, nose, gap = pl[3], P["i2_h_paper"][2], P["i2_h_trim"][0]
+    y = 33
+    for i, h in enumerate((6, 5, 4, 4, 3, 3, 2, 2)):                    # 아래(가까움)부터 위(깊음)로
+        dim = (1.0, 0.86, 0.72, 0.6, 0.48, 0.38, 0.3, 0.24)[i]
+        top = y - h
+        f.r(4, top, 27, y - 1, px.tint(tread, dim)); f.r(4, top, 27, top, px.tint(nose, dim))
+        if metal:
+            for x in range(6, 27, 3):
+                f.r(x, top + 1, x, y - 1, px.tint(st[0], dim))
+        f.r(4, y - 1, 27, y - 1, px.tint(gap, max(dim, 0.5)) if i else gap)
+        y = top
+    f.r(4, 0, 27, 1, vd)
+    # 구멍 앞 턱(바닥 높이): 밝은 모서리 + 앞면
+    if metal:
+        f.r(2, 34, 29, 35, P["i2_white"][2]); f.r(2, 36, 29, 37, st[0])
+    else:
+        t = P["i2_h_trim"]
+        f.r(2, 34, 29, 34, t[3]); f.r(2, 35, 29, 37, t[1])
+    _stair_sides(f, P, metal, 40, low=0)
+    return f.done(P, floor_y=32)
 
 # ---- 마트 가구 --------------------------------------------------------------------------------
 _GOODS = ("i2_red", "i2_blue", "i2_yellow", "i2_green")
@@ -578,12 +673,17 @@ def h_mat(P):
     return f.done(P, outline=False, shadow=False)
 
 def h_bed(P):
-    """침대(2×2): 머리판 · 흰 베개 · 이불(접힌 끝단) · 그림자."""
-    wd, b, w = P["i2_wood"], P["i2_blue"], P["i2_white"]
+    """침대(2×2): 나무 머리판(윗면 밝음 · 양 기둥) · 흰 시트와 베개(아래 그늘) · 파란 이불(위로 접힌 흰 단, 왼쪽 빛 · 앞면 진한 띠) · 발치 나무 틀."""
+    t, b, w = P["i2_h_trim"], P["i2_blue"], P["i2_white"]
     f = F(2, 2)
-    f.r(2, 0, 25, 4, wd[1]); f.r(2, 0, 25, 0, wd[2])
-    f.r(2, 5, 25, 27, w[1]); f.r(5, 6, 22, 11, w[2])
-    f.r(2, 13, 25, 26, b[1]); f.r(2, 13, 25, 14, b[2]); f.r(2, 26, 25, 27, b[0])
+    f.r(2, 0, 29, 6, t[2]); f.r(2, 0, 29, 0, t[3]); f.r(2, 6, 29, 6, t[1])      # 머리판
+    f.r(2, 0, 4, 8, t[1]); f.r(2, 0, 4, 0, t[3]); f.r(27, 0, 29, 8, t[1]); f.r(27, 0, 29, 0, t[3])
+    f.r(4, 7, 27, 27, w[1]); f.r(4, 7, 4, 27, w[2])                              # 시트
+    f.r(8, 8, 23, 12, w[2]); f.r(8, 12, 23, 12, w[0]); f.r(8, 8, 8, 11, w[2])    # 베개
+    f.r(4, 14, 27, 15, w[2]); f.r(4, 16, 27, 16, w[0])                           # 접힌 단
+    f.r(4, 17, 27, 26, b[1]); f.r(4, 17, 5, 26, b[2]); f.r(26, 17, 27, 26, b[0]) # 이불
+    f.r(4, 27, 27, 28, b[0])
+    f.r(2, 27, 29, 30, t[1]); f.r(2, 27, 29, 27, t[2]); f.r(2, 30, 29, 30, t[0])  # 발치 틀
     return f.done(P, floor_y=0)
 
 
@@ -620,17 +720,95 @@ FURNITURE = {
 
 
 # ---- 실내 3차: 층계 내려가기 · 2층 침실 · 거실 가구 (시트 끝에 덧붙는 새 칸 — 크기는 계약, 그림은 다듬는다) ----
-def _todo(wt, ht):
-    def draw(P):
-        f = F(wt, ht)
-        f.r(2, 2, wt * T - 3, ht * T - 3, P["i2_gray"][1])
-        return f.done(P)
-    return draw
+def h_desk(P):
+    """책상(2×2, 뒷벽에 붙임 — 윗줄이 벽 아랫칸을 덮는다): 나무 상판(앞 모서리 밝음) 위 흰 모니터(파란 화면 반사)와 자판,
+    왼쪽은 무릎 들어가는 어두운 빈칸 + 다리, 오른쪽은 서랍 둘 받침."""
+    wd, w, gl = P["i2_wood"], P["i2_white"], P["i2_glass"]
+    f = F(2, 2)
+    f.r(1, 15, 30, 19, wd[2]); f.r(1, 19, 30, 20, wd[1])                       # 상판 + 앞 모서리
+    f.r(1, 21, 30, 29, wd[1]); f.r(5, 21, 18, 29, CLEAR)                       # 앞면, 무릎 자리는 비운다
+    f.r(5, 21, 18, 22, wd[0])                                                   # 상판 밑 그늘
+    f.r(2, 21, 4, 29, wd[1]); f.r(2, 21, 2, 29, wd[2])                          # 왼쪽 다리
+    f.r(19, 21, 30, 29, wd[1]); f.r(19, 21, 19, 29, wd[2])                      # 서랍 받침
+    for y0 in (22, 26):
+        f.r(21, y0, 29, y0 + 2, wd[2]); f.r(21, y0 + 2, 29, y0 + 2, wd[0]); f.r(24, y0 + 1, 26, y0 + 1, P["i2_gold"][1])
+    f.r(4, 2, 19, 13, w[1]); f.r(4, 2, 19, 2, w[2]); f.r(4, 3, 4, 12, w[2]); f.r(4, 13, 19, 13, w[0])   # 모니터
+    f.r(6, 4, 17, 11, gl[0]); f.r(7, 5, 16, 10, P["i2_blue"][1]); f.line(8, 9, 11, 5, gl[2]); f.p(13, 9, gl[1])
+    f.r(10, 14, 13, 15, P["i2_gray"][1])                                         # 받침
+    f.r(6, 16, 18, 17, P["i2_gray"][2]); f.r(6, 17, 18, 17, P["i2_gray"][1])    # 자판
+    f.r(22, 13, 27, 17, P["i2_yellow"][1]); f.r(22, 13, 27, 13, P["i2_yellow"][2]); f.r(23, 15, 26, 15, P["i2_yellow"][0])   # 책 묶음
+    return f.done(P, floor_y=20)
+
+
+def h_console(P):
+    """게임기(1×1, 바닥): 회색 본체(윗면 밝음 · 앞면 · 빨간 불) + 줄로 이은 조이패드."""
+    g, r = P["i2_gray"], P["i2_red"]
+    f = F(1, 1)
+    f.r(1, 5, 9, 8, g[2]); f.r(1, 9, 9, 11, g[1]); f.r(3, 6, 7, 6, g[1])        # 본체 윗면(카트리지 홈) + 앞면
+    f.p(2, 10, r[1]); f.r(5, 10, 7, 10, g[0])
+    f.line(9, 7, 11, 9, g[0])                                                    # 줄
+    f.r(10, 10, 14, 13, P["g2_lav"][1]); f.r(10, 10, 14, 10, P["g2_lav"][2])    # 패드
+    f.p(11, 11, P["g2_lav"][3]); f.p(13, 12, r[1])
+    return f.done(P, floor_y=0, sx=1, sy=1)
+
+
+def h_wardrobe(P):
+    """옷장(1×2, 뒷벽에 붙임): 나무 윗면 · 문 두 짝(왼쪽 빛 받는 테) · 금 손잡이 · 아래 받침."""
+    t = P["i2_h_trim"]
+    f = F(1, 2)
+    f.r(1, 1, 14, 3, t[3]); f.r(1, 4, 14, 29, t[2]); f.r(1, 4, 14, 4, t[1])
+    for x0 in (2, 8):
+        f.r(x0, 6, x0 + 5, 25, t[2]); f.r(x0, 6, x0, 25, t[3]); f.r(x0 + 5, 6, x0 + 5, 25, t[1]); f.r(x0, 25, x0 + 5, 25, t[1])
+    f.r(8, 5, 8, 26, t[0])                                                       # 문 사이
+    f.r(6, 14, 6, 16, P["i2_gold"][1]); f.r(10, 14, 10, 16, P["i2_gold"][1])
+    f.r(1, 27, 14, 29, t[1]); f.r(1, 29, 14, 29, t[0])
+    return f.done(P, floor_y=16)
+
+
+def h_poster(P):
+    """벽 포스터(1×1, 벽 윗칸): 흰 종이 · 하늘과 초록 언덕 · 해 — 위 모서리 압정."""
+    w, gl, g = P["i2_white"], P["i2_glass"], P["i2_green"]
+    f = F(1, 1)
+    f.r(3, 4, 12, 14, w[2]); f.r(4, 5, 11, 12, gl[1]); f.r(4, 5, 11, 5, gl[2])
+    for x in range(4, 12):                                                       # 언덕 두 개(그림 칸 안에서만)
+        h1 = round(3.2 * math.sqrt(max(0, 1 - ((x - 9.5) / 4.5) ** 2)))
+        h2 = round(2.2 * math.sqrt(max(0, 1 - ((x - 5) / 3.2) ** 2)))
+        if h1: f.r(x, 13 - h1, x, 12, g[1])
+        if h2: f.r(x, 13 - h2, x, 12, g[2])
+    f.r(5, 6, 6, 7, P["i2_yellow"][1])
+    f.r(3, 13, 12, 14, w[0]); f.r(3, 13, 12, 13, w[2])
+    return f.done(P, shadow=False)
+
+
+def h_lamp(P):
+    """스탠드(1×2): 크림 갓(위 좁고 아래 넓다, 왼쪽 밝음) · 가는 기둥 · 둥근 받침."""
+    y_, g = P["i2_yellow"], P["i2_gray"]
+    f = F(1, 2)
+    for k, y in enumerate(range(5, 13)):
+        hw = 3 + k // 2
+        f.r(8 - hw, y, 7 + hw, y, y_[2]); f.p(8 - hw, y, P["i2_white"][2]); f.p(7 + hw, y, y_[1])
+    f.r(3, 12, 12, 12, y_[1])
+    f.r(7, 13, 8, 27, g[1]); f.r(7, 13, 7, 27, g[2])
+    f.r(4, 27, 11, 29, g[1]); f.r(4, 27, 11, 27, g[2]); f.r(4, 29, 11, 29, g[0])
+    return f.done(P, floor_y=24)
+
+
+def h_sofa(P):
+    """소파(2×1, 앞을 보고 벽에 붙임, 3/4): 등받이 윗면 · 등받이 앞면 · 방석 둘(윗면 밝음) · 앞 치마 · 양 팔걸이."""
+    r = P["i2_red"]
+    f = F(2, 1)
+    f.r(2, 0, 29, 1, r[2]); f.r(2, 2, 29, 6, r[1])                              # 등받이
+    f.r(4, 7, 27, 10, r[2]); f.r(15, 7, 16, 10, r[1]); f.r(4, 7, 27, 7, P["i2_salmon"][2])   # 방석 윗면
+    f.r(4, 11, 27, 13, r[0]); f.r(4, 11, 27, 11, r[1])                           # 앞 치마
+    for x0 in (0, 27):
+        f.r(x0, 3, x0 + 4, 13, r[1]); f.r(x0, 3, x0 + 4, 4, r[2]); f.r(x0 + 4, 5, x0 + 4, 13, r[0]) if x0 == 0 else f.r(x0, 5, x0, 13, r[0])
+    f.r(2, 14, 4, 14, P["i2_wood"][0]); f.r(27, 14, 29, 14, P["i2_wood"][0])    # 다리
+    return f.done(P, floor_y=0, sx=1, sy=1)
 
 
 FURNITURE3 = {
     # 이름: (그리는 함수, 종류) — 크기(칸): h_stairs_dn 2×3 · c_escalator_dn 2×3 · h_desk 2×2 · h_console 1×1 · h_wardrobe 1×2 · h_poster 1×1 · h_lamp 1×2 · h_sofa 2×1
-    "h_stairs_dn": (_todo(2, 3), "stairs"), "c_escalator_dn": (_todo(2, 3), "stairs"),
-    "h_desk": (_todo(2, 2), "prop"), "h_console": (_todo(1, 1), "prop"), "h_wardrobe": (_todo(1, 2), "prop"),
-    "h_poster": (_todo(1, 1), "prop"), "h_lamp": (_todo(1, 2), "prop"), "h_sofa": (_todo(2, 1), "prop"),
+    "h_stairs_dn": (lambda P: stairs_down(P, False), "stairs"), "c_escalator_dn": (lambda P: stairs_down(P, True), "stairs"),
+    "h_desk": (h_desk, "prop"), "h_console": (h_console, "prop"), "h_wardrobe": (h_wardrobe, "prop"),
+    "h_poster": (h_poster, "prop"), "h_lamp": (h_lamp, "prop"), "h_sofa": (h_sofa, "prop"),
 }
