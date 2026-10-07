@@ -1,7 +1,7 @@
 {
  "version": 1,
  "tilesetId": "wizarding_world",
- "tileCount": 2472,
+ "tileCount": 2508,
  "note": "scripts/content/wizarding/space_recipes.py 가 굽는다(손 편집 금지). 조립 규칙 src/editor/wizarding/builder.ts.",
  "wallsets": {
   "castle": {
@@ -780,6 +780,113 @@
        "clearance": 0,
        "wallTop": 2,
        "wallMatch": "plain"
+      }
+     ]
+    },
+    "dorm": {
+     "ko": "기숙사 침실",
+     "size": {
+      "min": [
+       12,
+       10
+      ],
+      "default": [
+       18,
+       14
+      ],
+      "max": [
+       30,
+       24
+      ]
+     },
+     "defaultDoors": [
+      {
+       "side": "s"
+      }
+     ],
+     "floor": {
+      "tile": "wz-castle-floor-flag"
+     },
+     "runner": null,
+     "furniture": [
+      {
+       "kit": "wz-dorm-bed-green",
+       "placement": "grid",
+       "count": [
+        3,
+        5
+       ],
+       "clearance": 0,
+       "gapX": 0,
+       "gapY": 1,
+       "rowsFrom": "north",
+       "alt": [
+        "wz-dorm-bed-green-closed"
+       ],
+       "with": [
+        {
+         "kit": "wz-dorm-nightstand",
+         "dx": 2,
+         "dy": 0
+        },
+        {
+         "kit": "wz-dorm-trunk",
+         "dx": 0,
+         "dy": 3
+        }
+       ]
+      },
+      {
+       "kit": "wz-dorm-lamp-green",
+       "placement": "north-wall",
+       "count": [
+        2,
+        3
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-snake",
+       "placement": "north-wall",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-dorm-wardrobe",
+       "placement": "side-wall",
+       "count": [
+        1,
+        2
+       ],
+       "clearance": 0
+      },
+      {
+       "kit": "wz-dorm-mirror",
+       "placement": "beside",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 0,
+       "near": [
+        "wz-dorm-wardrobe"
+       ]
+      },
+      {
+       "kit": "wz-dorm-rug-green",
+       "placement": "center",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 0
       }
      ]
     }
@@ -3615,6 +3722,54 @@
   "wz-cre-thestral-harness": {
    "name": "세스트랄 마구 착용",
    "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-dorm-bed-green": {
+   "name": "기숙사 4주 침대(초록·열림)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-dorm-bed-green-closed": {
+   "name": "기숙사 4주 침대(초록·닫힘)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-dorm-lamp-green": {
+   "name": "기숙사 초록 벽등",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-dorm-mirror": {
+   "name": "기숙사 서는 거울",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-dorm-nightstand": {
+   "name": "기숙사 협탁",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-dorm-rug-green": {
+   "name": "기숙사 초록 깔개",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-dorm-trunk": {
+   "name": "기숙사 학용품 트렁크",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-dorm-wardrobe": {
+   "name": "기숙사 옷장",
+   "w": 2,
    "h": 3,
    "src": "kit"
   },
