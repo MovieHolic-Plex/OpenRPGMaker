@@ -9,7 +9,7 @@
 // 4. PUBLIC_EXPORT.json 에 원본 커밋·뺀 것·바꾼 것을 남긴다.
 // --git 이면 출력 폴더를 커밋 하나짜리 git 저장소로 만든다. 푸시는 하지 않는다.
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { PUBLIC_EXCLUDE, publicExcludePathspecs } from "./publicSet.mjs";
 
@@ -74,12 +74,15 @@ walk(out);
 // ── 4. 기록 ───────────────────────────────────────────
 let files = 0;
 let bytes = 0;
+const brokenLinks = [];
 let largest = [];
 const measure = (dir) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) { if (entry.name !== ".git") measure(full); continue; }
-    const size = statSync(full).size;
+    // 심링크는 따라가지 않는다 — 대상이 지워진 끊긴 링크가 있으면 statSync 가 죽는다(실측 2026-10-08).
+    if (entry.isSymbolicLink() && !existsSync(full)) brokenLinks.push(path.relative(out, full));
+    const size = lstatSync(full).size;
     files += 1; bytes += size;
     largest.push([path.relative(out, full), size]);
   }
@@ -90,7 +93,7 @@ const record = {
   sourceCommit: commit, ref, exportedAt: new Date().toISOString(),
   excluded: PUBLIC_EXCLUDE, droppedWorkflows,
   rewrittenFiles: Object.keys(rewritten).length, rewrites: rewritten,
-  files, bytes, largest,
+  files, bytes, largest, brokenLinks,
 };
 writeFileSync(path.join(out, "PUBLIC_EXPORT.json"), JSON.stringify(record, null, 2) + "\n");
 
@@ -104,4 +107,5 @@ if (args.includes("--git")) {
 
 console.log(`${out}`);
 console.log(`source ${commit.slice(0, 12)} · ${files} files · ${(bytes / 1048576).toFixed(1)}MB · workflows dropped ${droppedWorkflows.length} · rewritten ${Object.keys(rewritten).length} files`);
+if (brokenLinks.length) console.log(`broken symlinks: ${brokenLinks.join(", ")}`);
 console.log(`largest: ${largest.slice(0, 5).map(([f, s]) => `${f} ${(s / 1048576).toFixed(1)}MB`).join(", ")}`);
