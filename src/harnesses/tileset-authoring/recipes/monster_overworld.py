@@ -704,8 +704,9 @@ def build(seed: dict, parts=None, sh: Sheet | None = None) -> Sheet:
                 sh.add(f"g2_pb_{theme}_at{k}", g2.block_cell(P3, k, theme))
         sh.end_section()
 
-    if want("interior"):
-        # 시트 끝에 덧붙인다 — 앞 칸 번호(맵 72장이 쓰는)를 밀지 않는다.
+    if want("interior") and seed.get("id") == "monster-overworld":
+        # 본 시트 끝에 덧붙인다 — 앞 칸 번호(맵 72장이 쓰는)를 밀지 않는다. 실내 절을 빌려 쓰는 monster-rooms 는
+        # 이 뒤에 제 절을 잇기 때문에 여기서 끼우면 그 번호가 밀린다 — 본 시트에만 둔다.
         sh.section("실내 3차(층계 내려가기·2층 침실·거실 가구)")
         for name, (fn, _kind) in i2.FURNITURE3.items():
             for nm, t in bd.cut(fn(P3), name).items():

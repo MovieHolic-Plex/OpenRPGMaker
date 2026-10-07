@@ -49,10 +49,10 @@
   "textureKey": "tex_monster_overworld",
   "name": "몬스터 수집 야외 · OPRN 손 도트 (Scarloxy 화풍 연구)",
   "path": "assets/monster-kit/monster-overworld.png",
-  "count": 2192,
+  "count": 2224,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "v7"
+  "run": "j9"
  },
  {
   "theme": "monster-rooms",
@@ -63,7 +63,7 @@
   "count": 1136,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "r102"
+  "run": "m2"
  },
  {
   "theme": "monster-wild",
