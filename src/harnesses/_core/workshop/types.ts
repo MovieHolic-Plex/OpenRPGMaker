@@ -170,7 +170,8 @@ export interface WorkshopRunner {
   /** picked = 이 프로젝트에서 사용자가 고른 후보들 */
   anchors(item: WorkshopItem, picked: readonly AnchorSample[]): AnchorSample[];
   drawMessages(ctx: DrawContext, env: WorkshopEnv): Promise<ChatMessage[]>;
-  selfCheckMessage(ctx: DrawContext, grid: Grid, env: WorkshopEnv): ChatMessage;
+  /** 있으면 그린 뒤 같은 대화에서 한 번 더 보게 한다(호출 1번 추가). 없으면 바로 독립 검수로 간다. */
+  selfCheckMessage?(ctx: DrawContext, grid: Grid, env: WorkshopEnv): ChatMessage;
   reviewMessages(ctx: ReviewContext, env: WorkshopEnv): Promise<ChatMessage[]>;
   hardCheck(item: WorkshopItem, grid: Grid): string[];
   parseVerdict(text: string): Verdict;

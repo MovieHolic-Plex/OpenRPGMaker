@@ -1,7 +1,7 @@
 // src/harnesses/_core/workshop/engine.ts
 /**
  * 공방 실행기. 파이썬 하네스(src/harnesses/interior-props/harness.py)와 같은 흐름을 브라우저에서 돈다:
- * 그리기 → (깨지면 고치기 ≤2) → 자기 점검 1번 → 독립 검수 → 하네스 판정(gate) → 불통과면 다시(시도 ≤3).
+ * 그리기 → (깨지면 고치기 ≤2) → (실행기가 주면 자기 점검 1번) → 독립 검수 → 하네스 판정(gate) → 불통과면 다시(시도 ≤3).
  * 사람만 고른다 — 엔진은 고르지 않는다. 판은 바뀔 때마다 통째로 저장해, 탭을 닫아도 resume() 로 잇는다.
  */
 import type { ChatMessage } from "@/ai/llmClient";
@@ -15,8 +15,8 @@ import type {
 export const MAX_ATTEMPTS = 3;
 export const MAX_FIXES = 2;
 export const DEFAULT_CONCURRENCY = 3;
-/** 판을 열 때 보여 주는 「호출 약 N번」 계산용(그리기·자기 점검·검수 + 가끔 다시) */
-export const CALLS_PER_CANDIDATE_ESTIMATE = 4;
+/** 판을 열 때 보여 주는 「호출 약 N번」 계산용(그리기·검수 + 가끔 고치기·다시) */
+export const CALLS_PER_CANDIDATE_ESTIMATE = 3;
 const MAX_RATE_RETRIES = 5;
 const RATE_WAIT_MS = 20_000;
 const BLOCKED_AUTH = "AI 연결이 끊겼습니다. AI 설정에서 다시 연결하세요.";
@@ -133,7 +133,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
     }
   }
 
-  /** 그리기 대화 하나: 답 → 해석·깨짐 검사 → (고치기) → 자기 점검. 끝까지 깨지면 오류 글을 돌려준다. */
+  /** 그리기 대화 하나: 답 → 해석·깨짐 검사 → (고치기) → (자기 점검). 끝까지 깨지면 오류 글을 돌려준다. */
   async function drawOnce(ctx: DrawContext, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null } | { error: string }> {
     const messages = await runner.drawMessages(ctx, env);
     let lastError = "";
@@ -142,6 +142,7 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
       const parsed = parseDrawAnswer(text, ctx.palette);
       const problems = parsed.ok ? runner.hardCheck(ctx.item, parsed.grid) : [parsed.error];
       if (parsed.ok && problems.length === 0) {
+        if (!runner.selfCheckMessage) return { grid: parsed.grid, note: parsed.note, topRows: parsed.topRows };
         messages.push({ role: "assistant", content: text }, runner.selfCheckMessage(ctx, parsed.grid, env));
         const checkedText = await call("workshop-draw", messages, run, round, signal);
         const checked = parseDrawAnswer(checkedText, ctx.palette);

@@ -152,7 +152,7 @@ describe("interior-props 실행기", () => {
     const fresh = items.find((i) => i.key === "new:herb")!;
     expect(runner.directions(existing)).toEqual(DIRECTIONS);
     expect(runner.directions(fresh)).toEqual(NEW_DIRECTIONS);
-    expect(runner.candidates).toBe(5);
+    expect(runner.candidates).toBe(3);
     expect(runner.currentGrid(fresh)).toBeNull();
   });
 
