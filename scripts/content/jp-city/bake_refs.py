@@ -2677,7 +2677,7 @@ def doc_in_shop_index():
 **가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 새 맵. **거리 건물 문과 바로 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 —
 door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 첫 칸, 같은 줄 문 칸 수 = width). 장소를 새 맵으로 가져와 문 앞 접근칸(문 바로 아래)에 들어가는 발판, 실내 맨 아래 출입구 틈에 나오는 발판(나오면 문 앞 한 줄 아래)을 만든다.
 직접 짓거나 고쳐 지으려면 `build_hand_interior_room({{tileset:"jp_city", …}})` — 각 예제 문서의 「입력」이 그대로 인자다(가구 id 는 `list_hand_interior_parts({{tileset:"jp_city", category}})`: 분류 store·food·shop·sento·laundry·koban·clinic·veranda·apartment·oldhouse).
-출입구는 언제나 **맨 아래 줄(맵 끝)의 이어진 틈 한 덩이**(자동문 cv-autodoor·셔터 sh-shutter·현관 문턱 genkan-door·철문 h2-genkan-door-steel) — link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 `no-interior-exit`). 실내 도착 칸 = 틈 바로 위(다른 이벤트·출구 칸은 피한다). 손님이 드나드는 매장은 틈 2칸 이상, 파출소·의원·코인세탁·집 현관은 1칸 문도 된다. 손님 동선은 입구 → 진열 → 출구 가까운 계산대, 직원 동선은 카운터 줄 끝 틈 → 주방·뒷방. 짓는 규칙은 `jp-interior-rules` 「가게·공공 실내」 절.
+출입구는 언제나 **맨 아래 줄(맵 끝)의 이어진 틈 한 덩이**(자동문 cv-autodoor·셔터 sh-shutter·현관 문턱 genkan-door·철문 h2-genkan-door-steel) — link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 `no-interior-exit`, 5칸 이상이면 `interior-exit-too-wide`). 실내 도착 칸 = 틈 가운데 위 → 각 틈 칸 위 → 두 칸 위 순으로, 다른 이벤트·출구 칸이 아니고 실내 걸음 칸 절반 이상에 닿는 첫 칸. 거리 문 폭(width)과 실내 틈 폭은 따로 센다 — 실내 틈이 1칸인 장소(파출소·의원·코인세탁·목조 아파트·옛집)는 문 1~2칸 건물에 잇는 것이 자연스럽다. 손님이 드나드는 매장은 틈 2칸 이상, 파출소·의원·코인세탁·집 현관은 1칸 문도 된다. 손님 동선은 입구 → 진열 → 출구 가까운 계산대, 직원 동선은 카운터 줄 끝 틈 → 주방·뒷방. 짓는 규칙은 `jp-interior-rules` 「가게·공공 실내」 절.
 여러 층 장소(예: `jp-city-house-interior-21x15`)는 **1층에만** 거리 문을 잇는다 — 층 사이 계단 이동은 장소에 이미 들어 있다(런타임 QA 가 거리 → 1층 → 계단 → 위층 → 1층 → 거리 왕복을 본다).
 
 {md_table(['장소 id', '이름', '종류', '예제 문서', '짜임'], rows)}
