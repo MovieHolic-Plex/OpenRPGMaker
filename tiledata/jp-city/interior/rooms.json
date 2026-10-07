@@ -492,12 +492,12 @@
      1
     ],
     [
-     "rug",
+     "low-table",
      1
     ],
     [
      "cushion-floor",
-     1
+     2
     ]
    ]
   ],
@@ -587,6 +587,10 @@
     ],
     [
      "houseplant",
+     1
+    ],
+    [
+     "door-open-western",
      1
     ]
    ]
