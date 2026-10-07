@@ -12,6 +12,7 @@ import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/proj
 import { kitHandObjects } from "@/project/roomKit";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
+import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -248,11 +249,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   description: "실내(집·민가·가게·상점·여관·주막·빵집·대장간·저택·교회·성 방·지하 등)를 지어줘·만들어줘 — 한 층을 손 도트 실내 칩셋 atlas_biome_interior 로 짓는다 — 실내를 까는 유일한 도구다. "
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
     + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
-    + "칸막이 규칙: 세로 칸막이('#' 한 열) 틈 1칸 = 문, 가로 칸막이('#' 한 줄) 틈은 그 아래 벽면 두 줄까지 통로가 된다. 맨 아래 줄의 '.' 틈이 출입구(또는 start). "
+    + "칸막이 규칙: 세로 칸막이('#' 한 열) 틈 1칸 = 문, 가로 칸막이('#' 한 줄) 틈은 그 아래 벽면 두 줄까지 통로가 된다. 맨 아래 줄의 '.' 틈이 실제 출구이며 결과 exits[].x,y로 반환한다. start는 통행 검사 출발점이다. "
+    + "거리 문에 연결할 남쪽 출구 폭은 기본 1칸이다. 한 칸 문이면 마지막 줄을 '####.#####'처럼 한 칸만 연다. '..'로 두 칸을 열면 거부한다. start를 한 칸 지정해도 실제 열린 폭은 줄지 않는다. 넓은 외부 문·대문에 맞출 때만 exitWidth를 명시하며 실제 문 폭과 같아야 한다. "
     + "floor·wall = list_hand_interior_parts 의 바닥·벽면 id, zones 로 방마다 바꾼다(찬 창고·손질터=wetstone, 가게=plank/terra, 부엌=ktile, 작업장=earth, 침실=dplank+깔개). "
     + "objects[].id = v5 가구 id(좌표 = 발밑 왼쪽 위 칸; wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄, hang 은 벽면 윗줄 y). tables = 탁자 자동 타일(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), "
     + "lines = 깔개·울타리·창살·선로·제단 난간(칸 목록 또는 rect), daises = 밟는 단, goods = 탁상 물건(윗면 있는 가구 칸 위). "
-    + "결과는 통행 BFS(출입구에서 모든 바닥·가구 옆 칸)와 오류를 돌려준다 — error 가 있으면 맵을 만들지 않는다. 층 사이 계단은 links 로 이동 이벤트를 단다. "
+    + "결과는 통행 BFS(출입구에서 모든 바닥·가구 옆 칸)와 오류를 돌려준다 — error 가 있으면 맵을 만들지 않는다. 층 사이 계단은 links 로 이동 이벤트를 단다. 외부 집 문과 연결하는 작업은 exits의 실제 좌표에 playerTouch 이동을 연결한다. 출구 그림만으로는 이동 이벤트가 생기지 않는다. "
     + "먼저 list_tileset_references({tilesetId:\"atlas_biome_interior\"}) 의 손 도트 실내 조립법(정답 배열·예제 그림)을 읽는다. "
     + "일본 현대 집(현관 타타키·화실 다다미·LDK·욕실·화장실·아파트 원룸)은 tileset:\"jp_city\" 로 짓는다 — 가구·바닥·벽면 id 는 list_hand_interior_parts({tileset:\"jp_city\"}) 로 찾고, 조립법은 list_tileset_references({tilesetId:\"jp_city\"}) 의 일본 실내 용도를 읽는다. "
     + "jp_city 방문(door 종류: 열린 양식 문·화장실 문·후스마·쇼지)은 objects 에 넣되 좌표 = 가로 칸막이('#' 줄)의 1칸 틈 칸 — 틈 위 인방과 아래 벽면 높이 문틀을 그리고 통로는 막지 않는다. 세로 칸막이('#' 열) 3줄 틈에는 옆문(sidedoor 종류)을 그 통로 칸(셋째 줄)에 단다.",
@@ -264,6 +266,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내" },
+      exitWidth: { type: 'integer', minimum: 1, maximum: 120, description: '남쪽 출구의 실제 가로 폭. 기본 1칸. 외부 문 폭과 일치해야 하며 한 칸 문에 두 칸 출구를 연결하지 않는다.' },
       floor: { type: "string", enum: FLOOR_IDS, description: "기본 바닥 id (사용자가 만든 역할표 칩셋은 floor)" },
       wall: { type: "string", enum: WALL_IDS, description: "기본 벽면 id (사용자가 만든 역할표 칩셋은 wall)" },
       ceiling: { type: "string", enum: CEILING_IDS, description: "천장 색" },
@@ -288,6 +291,11 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
   run(draft, args): ToolExecResult {
     const tilesetId = pickTileset(draft, args);
+    const exitWidth = (args.exitWidth as number | undefined) ?? 1;
+    const exits = Array.isArray(args.plan) && args.plan.every(row => typeof row === 'string')
+      ? handInteriorPlanExits(args.plan as string[]) : [];
+    const mismatch = exits.find(exit => exit.width !== exitWidth);
+    if (mismatch) throw new ToolError(`남쪽 출구 (${mismatch.x},${mismatch.y})가 가로 ${mismatch.width}칸으로 열려 있지만 문 폭은 ${exitWidth}칸입니다. 마지막 줄의 '.' 틈을 ${exitWidth}칸으로 고치세요. start는 통행 검사 출발점이며 출구 폭을 정하지 않습니다. 한 칸 문을 두 칸 출구에 연결하지 않습니다.`, { code: 'interior-exit-width', x: mismatch.x, y: mismatch.y });
     const tileset = ensureInteriorTileset(draft, tilesetId);
     if (!tileset) throw new ToolError(`타일셋 ${tilesetId} 이 없다`, { code: "tileset-not-found" });
     const shape = handInteriorShapeFromPlan((args as unknown as HandInteriorInput).plan ?? []);
@@ -343,7 +351,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId}) — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
       data: { mapId, tilesetId, width: built.width, height: built.height, reachable: built.reachable, floorCells: built.floorCells,
-        unreachedFloor: built.unreachedFloor.slice(0, 20), entrance: built.start, links: links.length, warnings: warnings.slice(0, 20) },
+        unreachedFloor: built.unreachedFloor.slice(0, 20), entrance: built.start, exitWidth, exits, links: links.length, warnings: warnings.slice(0, 20) },
       ...(warnings.length ? { warnings } : {}),
     };
   },

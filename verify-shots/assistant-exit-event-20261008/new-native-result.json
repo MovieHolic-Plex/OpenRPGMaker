@@ -1,0 +1,10 @@
+{
+  "inputMode": "natural",
+  "gates": {
+    "visual": {
+      "status": "pending"
+    }
+  },
+  "failure": "Turn did not settle within 480000ms: waitForFunction: Timeout 480000ms exceeded.",
+  "failurePhase": "turn"
+}

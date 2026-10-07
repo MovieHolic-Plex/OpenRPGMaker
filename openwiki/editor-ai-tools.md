@@ -1,5 +1,15 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 출입구 도달·문앞 좌표 계약 (2026-10-07)
+
+한 칸 외부 문은 실내 출구도 한 칸이다. `build_hand_interior_room.exitWidth` 기본 1과 남쪽 평면 틈 폭을 대조해 두 칸 틈을 거부한다. `start`는 BFS 출발점이며 폭 선언이 아니다. 넓은 대문은 그 실제 폭을 명시한다. 결과 `exits`에 위치·폭을 돌려준다. `doorAt`으로 한 칸 문을 연결할 때 `create_transfer_pair`와 `link_maps`는 상대 실내의 설치된 1층 남쪽 틈 폭도 검사한다. 가구로 틈 한쪽을 막아 폭을 숨길 수 없다. 공용 손 도트 실내 참고문서의 예제 두세 칸 출구는 `exitWidth`를 명시하며 한 칸 집 문에 복사하지 않는다.
+
+`exits[].x,y`는 이동 이벤트를 놓을 실제 출구 칸이다. 왕복 연결을 주문받으면 조수는 이 좌표에 playerTouch 이동을 설치한다. 바닥 그림이나 start 선언만으로 이동 이벤트가 생기지는 않는다. [2026-10-08 저장본·이벤트 검증](../verify-shots/assistant-exit-event-20261008/REPORT.md)은 실제 조수가 출구 (4,6)/(5,6)와 동일한 칸에 이벤트를 쓴 기록, SQLite 저장 칸과 플레이 귀환을 대조한다.
+
+`create_transfer_pair`와 `link_maps`는 `eventTools.resolveTransferEndpoint`를 함께 쓴다. 시작 위치·기존 입구에서 닿지 않거나 기존 문을 봉쇄하는 후보는 대체 가능한 안전한 칸을 찾고, 없으면 오류로 초안을 버린다. 경고만 남기고 죽은 출입구를 설치하지 않는다. 인접 착지는 `canMove` 양방향과 이벤트 점유를 확인하며, 출구의 방 바닥 접근도 실제 `canMove`로 확인한다(맵 끝의 이웃 인덱스 래핑 금지).
+
+`place_door`의 `data.transferEndpoint = {mapId,x,y,doorAt}`는 그림 하단(`doorAt`) 바로 남쪽의 밟는 문앞(`x,y`)이다. 이 값을 연결 도구 a/b 또는 from/to로 넘기면 문앞을 다른 칸으로 자동 이동하지 않는다. 길·가구·착지를 먼저 고쳐야 한다. 이 계약은 남향 벽문용이며 계단·포탈·맵 끝은 doorAt 없이 연결한다. `link_maps` 재실행은 요청에 묶인 안정 ID를 유지하고 worldGraph에는 실제 설치된 출발 칸·착지를 기록한다. 시공 후 타일 변경까지 보장하는 영구 잠금은 아니다. 실제 입력·플레이·SQLite 증거는 [수행 하네스](harnesses/assistant-capability.md)의 `portals`/`portal-controls`로 확인한다.
+
 ## EasyRPG 계열 칩셋 차단 — 대체품이 생기기 전까지 (2026-10-06)
 
 사용자 결정: 「대체품이 생기기 전까지 막고」, 등록 장소는 「조수 추천 목록에 넣어놔라」.

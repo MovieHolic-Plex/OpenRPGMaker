@@ -1,0 +1,139 @@
+{
+  "kind": "read-only-sqlite-exit-event-audit",
+  "projectId": "58452846-cb30-4e86-bddb-331c16bcc799",
+  "projectDir": "/home/main/.codex/worktrees/0035/rpg-zzu/qa-runs/harnesses/assistant-capability/20261007-portals-width-real-r1/map-portals/project",
+  "revision": 19,
+  "storedSha256": "941c45453a0e8d4182ccb3047020dad3558b2955667e620f22646941d6175d87",
+  "modelCalls": 0,
+  "mutations": 0,
+  "pass": true,
+  "checks": {
+    "sqlite_map_mirror_matches_project": true,
+    "same_maps_after_save_reload": true,
+    "south_opening_exactly_one_cell": true,
+    "event_on_exact_exit_cell": true,
+    "walk_trigger_and_passable_priority": true,
+    "return_to_original_house_front": true,
+    "entry_lands_inside_above_exit": true,
+    "assistant_authored_event": true,
+    "runtime_receipt_matches_saved_project": true,
+    "runtime_roundtrips_passed": true
+  },
+  "southExitCells": [
+    4
+  ],
+  "exitEvent": {
+    "id": "ev_interior_exit",
+    "name": "실내 출구",
+    "y": 6,
+    "pages": [
+      {
+        "commands": [
+          {
+            "kind": "transfer",
+            "y": 9,
+            "x": 6,
+            "mapId": "map_portal_village"
+          }
+        ],
+        "trigger": {
+          "kind": "playerTouch"
+        },
+        "id": "pages[0]",
+        "name": "ev_interior_exit",
+        "conditions": [],
+        "priority": "below",
+        "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+        },
+        "graphic": {},
+        "overlapForbidden": false
+      }
+    ],
+    "x": 4,
+    "trigger": {
+      "kind": "action"
+    },
+    "commands": []
+  },
+  "houseEntryEvent": {
+    "id": "ev_door_house1",
+    "name": "집 문",
+    "y": 9,
+    "pages": [
+      {
+        "commands": [
+          {
+            "y": 5,
+            "mapId": "map_house1_interior",
+            "x": 4,
+            "kind": "transfer"
+          }
+        ],
+        "trigger": {
+          "kind": "playerTouch"
+        },
+        "id": "pages[0]",
+        "name": "ev_door_house1",
+        "conditions": [],
+        "priority": "same",
+        "movement": {
+          "type": "fixed",
+          "speed": 3,
+          "frequency": 3
+        },
+        "graphic": {}
+      }
+    ],
+    "x": 6,
+    "trigger": {
+      "kind": "action"
+    },
+    "commands": []
+  },
+  "authoredToolCall": {
+    "type": "tool_start",
+    "name": "upsert_event",
+    "id": "call_519532",
+    "args": {
+      "event": {
+        "id": "ev_interior_exit",
+        "name": "실내 출구",
+        "y": 6,
+        "pages": [
+          {
+            "commands": [
+              {
+                "kind": "transfer",
+                "y": 9,
+                "x": 6,
+                "mapId": "map_portal_village"
+              }
+            ],
+            "trigger": {
+              "kind": "playerTouch"
+            }
+          }
+        ],
+        "x": 4
+      },
+      "mapId": "map_house1_interior"
+    },
+    "at": 1791379293511
+  },
+  "runtimeReceipt": {
+    "kind": "saved-output-runtime-recheck",
+    "modelCalls": 0,
+    "observation": "runtime-collision-door",
+    "observerDigest": "55e02667ae44018528d79a3196bfadda0a3ef00401ce1cabe182c00f9ac5c1bc",
+    "originalResultDigest": "cd42f5c4fc34a91903c4bd439f36ab90c3d0cc057d28690f0ccc7b6e1a41e53e",
+    "sourceDigest": "941c45453a0e8d4182ccb3047020dad3558b2955667e620f22646941d6175d87",
+    "pass": true,
+    "beats": 56,
+    "errors": [],
+    "failures": []
+  },
+  "fullHarnessStatus": "fail: original stored-document SHA mismatch retained"
+}

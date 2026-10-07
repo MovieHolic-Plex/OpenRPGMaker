@@ -1,0 +1,77 @@
+{
+  "kind": "tool-controls",
+  "modelCalls": 0,
+  "pass": true,
+  "checks": [
+    {
+      "id": "new-project-exit-width-reference",
+      "ok": true,
+      "detail": "새 번들이 문 폭 계약을 함께 소유"
+    },
+    {
+      "id": "existing-project-reference-backfilled",
+      "ok": true,
+      "detail": "같은 시트 판본의 기존 참고문서에 새 계약을 추가하며 저자 문서를 보존"
+    },
+    {
+      "id": "create_transfer_pair:unreachable-rejected",
+      "ok": true,
+      "detail": "'create_transfer_pair' 실행 실패: 출입구 A (11,5) 는 A 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요."
+    },
+    {
+      "id": "create_transfer_pair:failed-pair-atomic",
+      "ok": true,
+      "detail": "거절된 쌍은 두 맵 모두 불변"
+    },
+    {
+      "id": "link_maps:unreachable-rejected",
+      "ok": true,
+      "detail": "'link_maps' 실행 실패: 출입구 A (11,5) 는 A 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요."
+    },
+    {
+      "id": "link_maps:failed-pair-atomic",
+      "ok": true,
+      "detail": "거절된 쌍은 두 맵 모두 불변"
+    },
+    {
+      "id": "door-front-fixed",
+      "ok": true,
+      "detail": "막힌 문앞을 옆 빈칸으로 바꾸지 않고 원자적으로 거절"
+    },
+    {
+      "id": "stable-link-repeat",
+      "ok": true,
+      "detail": "같은 연결 재실행 시 기존 ID·좌표·이벤트 수 보존"
+    },
+    {
+      "id": "two-cell-exit-rejected",
+      "ok": true,
+      "detail": "'build_hand_interior_room' 실행 실패: 남쪽 출구 (4,6)가 가로 2칸으로 열려 있지만 문 폭은 1칸입니다. 마지막 줄의 '.' 틈을 1칸으로 고치세요. start는 통행 검사 출발점이며 출구 폭을 정하지 않습니다. 한 칸 문을 두 칸 출구에 연결하지 않습니다."
+    },
+    {
+      "id": "exit-start-cannot-hide-width",
+      "ok": true,
+      "detail": "start 한 칸 선언에도 두 칸 틈은 거부하며 맵 불변"
+    },
+    {
+      "id": "explicit-wide-entrance-retained",
+      "ok": true,
+      "detail": "손 도트 실내 '실내' 10×7 (map_width_control, atlas_biome_interior) — 출입구에서 닿는 칸 26, 닿지 못한 빈 바닥 0, 경고 0"
+    },
+    {
+      "id": "create_transfer_pair:door-width-mismatch",
+      "ok": true,
+      "detail": "'create_transfer_pair' 실행 실패: 문과 실내 출구의 가로 폭이 다릅니다: A 1칸 ↔ 실내 2칸. 한 칸 문이면 실내 남쪽 출구도 한 칸만 열고 다시 연결하세요."
+    },
+    {
+      "id": "link_maps:door-width-mismatch",
+      "ok": true,
+      "detail": "'link_maps' 실행 실패: 문과 실내 출구의 가로 폭이 다릅니다: A 1칸 ↔ 실내 2칸. 한 칸 문이면 실내 남쪽 출구도 한 칸만 열고 다시 연결하세요."
+    },
+    {
+      "id": "single-door-single-exit-linked",
+      "ok": true,
+      "detail": "출입구 쌍 생성: A(3,3) ↔ 실내(4,6)"
+    }
+  ]
+}

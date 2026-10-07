@@ -89,6 +89,8 @@ export interface HandInteriorInput {
   readonly plan: readonly string[];
   readonly floor: string;
   readonly wall: string;
+  /** 도구의 남쪽 출구 폭 계약(기본 1). 원본 예제 렌더러의 평면은 자동 수정하지 않는다. */
+  readonly exitWidth?: number;
   readonly zones?: readonly HandInteriorZone[];
   readonly ceiling?: string;
   readonly objects?: readonly HandInteriorObject[];

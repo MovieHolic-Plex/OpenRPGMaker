@@ -1,0 +1,4 @@
+
+> oprn@0.176.0 gates
+> node scripts/verify-gates.mjs --only surface
+

@@ -621,7 +621,9 @@ function placeOnWall(kind: "door" | "window", draft: Project, args: Record<strin
   const label = kind === "door" ? "문" : "창문";
   return withSoftConfirm({
     summary: `${map.name} (${at.x},${at.y}) 벽에 '${group.name}' ${label} ${applied}칸 설치.`,
-    data: { at, cells: applied, groupId: group.id },
+    data: { at, cells: applied, groupId: group.id,
+      ...(kind === 'door' ? { front: { x: at.x, y: at.y + 1 }, transferEndpoint: { mapId: map.id, x: at.x, y: at.y + 1, doorAt: at } } : {}),
+    },
   }, softConfirm);
 }
 
@@ -643,7 +645,7 @@ function doorLikeEdits(tileset: TilesetDef, group: TileGroupMetadata, at: Point,
 const placeDoor: ToolDefinition = {
   name: "place_door",
   description:
-    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 문 시각 배치의 정본 툴. 실제 맵 이동은 create_transfer_pair.",
+    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 문 시각 배치의 정본 툴. 실제 맵 이동은 create_transfer_pair. 결과 data.transferEndpoint를 a/b에 그대로 넣어 문앞을 연결한다. 문 그림 칸과 밟는 문앞 칸을 혼동하지 않는다.",
   mode: "write",
   version: 3,
   parameters: {

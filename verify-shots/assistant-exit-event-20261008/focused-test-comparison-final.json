@@ -1,0 +1,40 @@
+{
+  "baselineCommit": "75d7df7e8c",
+  "baselineTotal": 39,
+  "baselinePassed": 33,
+  "baselineFailed": 6,
+  "changedTotal": 39,
+  "changedPassed": 33,
+  "changedFailed": 6,
+  "newFailures": [],
+  "fixedFailures": [],
+  "commonFailures": [
+    [
+      "handInteriorParts.test.ts",
+      "handInteriorSpec 소품 메모 527종(v5 381 + 고른 「함께 쓰기」 변형 5 + 고른 새 기물) 모두 desc·tags 가 있고, desc 는 60자 이하·서로 다르다"
+    ],
+    [
+      "handInteriorTileset.test.ts",
+      "assistant tools: v5 only a new interior map on a retired interior chipset is rejected; retired chipsets and old interior tools are not visible"
+    ],
+    [
+      "handInteriorTileset.test.ts",
+      "atlas_biome_interior = hand-pixel v5 a new project is born with the v5 sheet, its guidance and the split-off dungeon tileset"
+    ],
+    [
+      "transferPairReachability.test.ts",
+      "create_transfer_pair 도달성 기존 출입구를 봉쇄하는 자리는 다른 칸으로 옮긴다(추격 호러 r8 복도 봉쇄 재현)"
+    ],
+    [
+      "wallFlush.test.ts",
+      "fill_region 벽 밀착 북벽과 1칸 틈이 있으면 그 줄을 메운다"
+    ],
+    [
+      "worldGraphPhase12a.test.ts",
+      "Phase 12a worldGraph tools build_world는 역할별 기본 지형과 던전 기본 조명을 만든다"
+    ]
+  ],
+  "newRegression": false,
+  "changedRunnerExitCode": 143,
+  "testGatePassed": false
+}

@@ -1,7 +1,9 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
-import { passableLanding, upsertEventIntoMap } from "./eventTools";
+import { resolveTransferEndpoint, upsertEventIntoMap } from "./eventTools";
+import { assertDoorExitWidths, transferGatesStayApproachable } from './transferReachability';
+import { COORD_SCHEMA } from './schemaShapes';
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { snapFlushToWall } from "./wallFlush";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -49,6 +51,7 @@ interface LinkResult {
   readonly landingA?: Point;
   readonly landingB: Point;
   readonly changedEvents: number;
+  readonly warnings: readonly string[];
 }
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
@@ -137,7 +140,7 @@ const planWorld: ToolDefinition = {
 
 const linkMaps: ToolDefinition = {
   name: "link_maps",
-  description: "두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true.",
+  description: "두 맵 사이 transfer edge를 등록하고 실제 출입구 이벤트를 안정 ID로 생성/갱신한다. bidirectional 기본 true. create_transfer_pair와 같은 도달·봉쇄·착지 검사를 수행하며 안전한 자리가 없으면 실패한다. 문 그림 연결은 place_door의 transferEndpoint(doorAt 포함)를 from/to로 사용한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -150,6 +153,7 @@ const linkMaps: ToolDefinition = {
           x: { type: "integer" },
           y: { type: "integer" },
           exit: WORLD_GATE_SCHEMA,
+          doorAt: COORD_SCHEMA,
         },
         required: ["mapId"],
       },
@@ -161,6 +165,7 @@ const linkMaps: ToolDefinition = {
           x: { type: "integer" },
           y: { type: "integer" },
           entry: WORLD_GATE_SCHEMA,
+          doorAt: COORD_SCHEMA,
         },
         required: ["mapId"],
       },
@@ -180,6 +185,7 @@ const linkMaps: ToolDefinition = {
     return {
       summary: `맵 연결 생성/갱신: ${result.gateA.x},${result.gateA.y} -> ${result.landingB.x},${result.landingB.y}${result.eventIdB ? " (양방향)" : " (단방향)"}`,
       data: result,
+      ...(result.warnings.length ? { warnings: [...result.warnings] } : {}),
     };
   },
 };
@@ -287,16 +293,36 @@ function linkMapsInDraft(
   const toMap = requireMap(draft, stringField(options.to, "to.mapId"));
   const fromExit = boundaryFromEndpoint(options.from, "from");
   const toEntry = entryFromEndpoint(options.to, "to");
-  const gateA = gatePointForEndpoint(draft, fromMap, options.from, fromExit, "from");
-  const gateB = gatePointForEndpoint(draft, toMap, options.to, toEntry, "to", fromExit ? oppositeBoundary(fromExit, fromMap) : undefined);
+  const requestedA = gatePointForEndpoint(draft, fromMap, options.from, fromExit, "from");
+  const requestedB = gatePointForEndpoint(draft, toMap, options.to, toEntry, "to", fromExit ? oppositeBoundary(fromExit, fromMap) : undefined);
+  // Stable identity belongs to the requested connection; an automatic position
+  // repair must not create another pair when the same request is repeated.
+  const idBase = `${fromMap.id}:${requestedA.x},${requestedA.y}->${toMap.id}:${requestedB.x},${requestedB.y}`;
+  const eventIdA = stableId("ev_world_gate", idBase);
+  const returnId = stableId("ev_world_gate", `${toMap.id}:${requestedB.x},${requestedB.y}->${fromMap.id}:${requestedA.x},${requestedA.y}`);
+  const ownIds = new Set([eventIdA, returnId]);
+  const view = (map: GameMap): GameMap => ({ ...map, events: map.events.filter(event => !ownIds.has(event.id)) });
+  const viewA = view(fromMap), viewB = fromMap.id === toMap.id ? viewA : view(toMap);
+  const projectView: Project = { ...draft, maps: { ...draft.maps, [fromMap.id]: viewA, [toMap.id]: viewB } };
+  const warnings: string[] = [];
+  const doorAt = (endpoint: JsonRecord): Point | undefined => {
+    if (endpoint.doorAt === undefined) return undefined;
+    const value = requireRecordArg(endpoint.doorAt, 'doorAt');
+    if (!Number.isInteger(value.x) || !Number.isInteger(value.y)) throw new ToolError('doorAt은 정수 x,y가 필요합니다.', { code: 'invalid-args' });
+    return { x: value.x as number, y: value.y as number };
+  };
+  const doorA = doorAt(options.from), doorB = doorAt(options.to);
+  const endpointA = resolveTransferEndpoint(projectView, viewA, { ...requestedA, ...(doorA ? { doorAt: doorA } : {}) }, 'A', warnings);
+  const endpointB = resolveTransferEndpoint(projectView, viewB, { ...requestedB, ...(doorB ? { doorAt: doorB } : {}) }, 'B', warnings);
+  if (!endpointA || !endpointB) throw new ToolError('출입구 인접에 왕복 통행 가능한 빈 착지 칸이 없습니다. 길·문앞을 먼저 비우세요.', { code: 'transfer-no-landing' });
+  const gateA = endpointA.gate, gateB = endpointB.gate;
+  assertDoorExitWidths(projectView, viewA, gateA, viewB, gateB, doorA, doorB);
   const requestedLandingB = isPointRef(toEntry) ? toEntry : undefined;
   const landingB = requestedLandingB
-    ? assertProvidedLanding(draft, toMap, requestedLandingB, gateB, "to.entry")
-    : safeLanding(draft, toMap, gateB, "to");
-  const landingA = options.bidirectional ? safeLanding(draft, fromMap, gateA, "from") : undefined;
+    ? assertProvidedLanding(projectView, viewB, requestedLandingB, gateB, "to.entry")
+    : endpointB.landing;
+  const landingA = options.bidirectional ? endpointA.landing : undefined;
 
-  const idBase = `${fromMap.id}:${gateA.x},${gateA.y}->${toMap.id}:${gateB.x},${gateB.y}`;
-  const eventIdA = stableId("ev_world_gate", idBase);
   const outcomeA = upsertEventIntoMap(fromMap, transferGateEvent(eventIdA, gateA, {
     kind: "transfer",
     mapId: toMap.id,
@@ -307,7 +333,7 @@ function linkMapsInDraft(
   let changedEvents = outcomeA === "added" ? 1 : 0;
   let eventIdB: string | undefined;
   if (options.bidirectional && landingA) {
-    eventIdB = stableId("ev_world_gate", `${toMap.id}:${gateB.x},${gateB.y}->${fromMap.id}:${gateA.x},${gateA.y}`);
+    eventIdB = returnId;
     const outcomeB = upsertEventIntoMap(toMap, transferGateEvent(eventIdB, gateB, {
       kind: "transfer",
       mapId: fromMap.id,
@@ -317,16 +343,20 @@ function linkMapsInDraft(
     }));
     if (outcomeB === "added") changedEvents += 1;
   }
+  for (const map of fromMap.id === toMap.id ? [fromMap] : [fromMap, toMap]) {
+    const check = transferGatesStayApproachable(draft, map);
+    if (!check.ok) throw new ToolError(`출입구 설치로 문이 봉쇄됩니다: ${check.sealed.join(', ')}`, { code: 'transfer-sealed', mapId: map.id });
+  }
 
   if (options.registerEdge) {
     upsertWorldTransferEdge(draft, {
-      from: { mapId: fromMap.id, exit: fromExit ?? pointRect(gateA) },
+      from: { mapId: fromMap.id, exit: pointRect(gateA) },
       to: { mapId: toMap.id, entry: landingB },
       kind: "transfer",
     });
   }
 
-  return { eventIdA, ...(eventIdB ? { eventIdB } : {}), gateA, gateB, landingA, landingB, changedEvents };
+  return { eventIdA, ...(eventIdB ? { eventIdB } : {}), gateA, gateB, landingA, landingB, changedEvents, warnings };
 }
 
 function normalizeGraphOrToolError(value: unknown): WorldGraph {
@@ -486,6 +516,11 @@ function gatePointForEndpoint(
   label: string,
   fallbackSide?: WorldGraphSide
 ): Point {
+  if (endpoint.doorAt !== undefined && typeof endpoint.x === 'number' && typeof endpoint.y === 'number') {
+    const point = { x: endpoint.x, y: endpoint.y };
+    assertPointInMap(map, point, label);
+    return point;
+  }
   if (typeof endpoint.x === "number" && typeof endpoint.y === "number") {
     const point = snapFlushToWall(project, map, endpoint.x, endpoint.y);
     assertPointInMap(map, point, label);
@@ -513,29 +548,6 @@ function entryFromEndpoint(endpoint: JsonRecord, label: string): WorldGraphEntry
   return undefined;
 }
 
-function safeLanding(project: Project, map: GameMap, gate: Point, label: string): Point {
-  const first = passableLanding(project, map, gate.x, gate.y);
-  if (first && !samePoint(first, gate) && !eventAt(map, first)) return first;
-  const candidates: Point[] = [
-    { x: gate.x, y: gate.y + 1 },
-    { x: gate.x, y: gate.y - 1 },
-    { x: gate.x + 1, y: gate.y },
-    { x: gate.x - 1, y: gate.y },
-  ];
-  for (const candidate of candidates) {
-    if (!inMapBounds(map, candidate.x, candidate.y)) continue;
-    if (!isPassable(project, map, candidate.x, candidate.y)) continue;
-    if (eventAt(map, candidate)) continue;
-    return candidate;
-  }
-  throw new ToolError(`${label} 출입구 인접에 통행 가능하고 이벤트가 없는 착지 칸이 없습니다.`, {
-    code: "transfer-no-landing",
-    mapId: map.id,
-    x: gate.x,
-    y: gate.y,
-  });
-}
-
 function assertProvidedLanding(project: Project, map: GameMap, point: Point, gate: Point, label: string): Point {
   assertPointInMap(map, point, label);
   if (samePoint(point, gate)) {
@@ -547,6 +559,8 @@ function assertProvidedLanding(project: Project, map: GameMap, point: Point, gat
   if (eventAt(map, point)) {
     throw new ToolError(`${label} 착지에 이벤트가 겹칩니다: ${map.id} (${point.x}, ${point.y})`, { code: "transfer-event-overlap", mapId: map.id, x: point.x, y: point.y });
   }
+  const check = transferGatesStayApproachable(project, map, gate);
+  if (!check.group.has(point.y * map.width + point.x)) throw new ToolError(`${label} 착지에서 출입구가 있는 방으로 걸어갈 수 없습니다.`, { code: 'transfer-unreachable', mapId: map.id, x: point.x, y: point.y });
   return { x: point.x, y: point.y };
 }
 

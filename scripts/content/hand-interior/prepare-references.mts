@@ -7,6 +7,7 @@ import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 import { analyseHandInteriorPlan, buildHandInteriorLayers, HAND_INTERIOR_SPEC as S, type HandInteriorInput } from "../../../src/editor/handInterior/builder.ts";
 import { createAtlasBiomeInteriorTileset } from "../../../src/project/defaults/atlasBiomeInterior.ts";
+import { handInteriorPlanExits } from '../../../src/editor/handInterior/exits.ts';
 
 const OUT = "src/assets/sharedHandInteriorReferences.json", PUB = "public/assets/hand-interior-references", MD = "tiledata/hand-interior/v5-maps/refs";
 fs.mkdirSync(PUB, { recursive: true }); fs.mkdirSync(MD, { recursive: true });
@@ -40,7 +41,8 @@ function argsFor(p: { key: string; plan: string[]; floor: string; wall: string; 
       goods.push({ id: g.goods, x: it.x + Math.min(w - 1, Math.floor(g.fx * w)), y: it.y + Math.min(h - 1, Math.max(0, Math.ceil(g.fy * h) - 1)) });
     }
   }
-  const input: HandInteriorInput & Record<string, unknown> = { plan: p.plan, floor: p.floor, wall: p.wall, ...(zones.length ? { zones } : {}), ...(p.ceil !== "default" ? { ceiling: p.ceil } : {}),
+  const exitWidth = handInteriorPlanExits(p.plan)[0]?.width ?? 1;
+  const input: HandInteriorInput & Record<string, unknown> = { plan: p.plan, floor: p.floor, wall: p.wall, ...(exitWidth > 1 ? { exitWidth } : {}), ...(zones.length ? { zones } : {}), ...(p.ceil !== "default" ? { ceiling: p.ceil } : {}),
     objects, ...(lines.length ? { lines } : {}), goods, ...(mm.start ? { start: mm.start.map(([x, y]: number[]) => ({ x, y })) } : {}) };
   // drop goods the tool cannot seat (two goods on one cell, or the 4th layer already taken) — the baked answer keeps them
   let built = buildHandInteriorLayers(input, tileset);
@@ -61,7 +63,7 @@ doc("hand-interior-v5-order", "손 도트 실내 · 읽는 순서·짓는 순서
 원본: tiledata/hand-interior/v5(손 도트 Python, 건물 25동 26맵). 칸은 scripts/content/hand-interior/build_tileset.py 가 잘랐다.
 
 ## 읽는 순서
-1. 이 문서 → 2. \`hand-interior-v5-rules\`(구조 규칙·사용자 판정) → 3. \`hand-interior-v5-dictionary\`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
+1. 이 문서 → 2. \`hand-interior-v5-exit-width\`(외부 문과 실제 출구 폭), \`hand-interior-v5-rules\`(구조 규칙·사용자 판정) → 3. \`hand-interior-v5-dictionary\`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
 4. 짓는 건물과 가장 가까운 예제(\`hand-interior-v5-map-*\`: 입력 인자 + 네 층 정답 배열 + 그림) → 5. \`hand-interior-v5-errors\`(오류 그림과 코드).
 가구는 \`list_hand_interior_parts({room:"빵집"})\`(방 종류·건물 → 예제에 쓰인 가구를 종류별로)와 \`{query:"여관 벽"}\`(설명·쓰는 방·놓는 곳·짝 소품까지)으로 찾는다.
 \`hand-interior-v5-objects-*\`(가구 사전, 칸 번호 포함)는 도구 결과로 모자랄 때만 한 분류씩 읽는다.
@@ -69,6 +71,7 @@ doc("hand-interior-v5-order", "손 도트 실내 · 읽는 순서·짓는 순서
 ## 짓는 순서 (한 번의 도구 호출)
 1. 방 목록을 글로 먼저 정한다: 방마다 용도·앵커 가구·드나드는 문·손님/주인 동선. 공간이 남으면 맵을 줄인다.
 2. \`plan\` 을 쓴다: '#' 막힘, '.' 실내. 외벽 한 칸 두께, 방 사이는 '#' 칸막이. 맨 아래 줄의 '.' 틈 = 거리 출입구.
+   외부 문이 한 칸이면 마지막 줄 틈도 한 칸이다(\`####.#####\`). 기본 \`exitWidth:1\`; \`####..####\` 두 칸 틈은 거부한다. 넓은 대문을 명시한 경우에만 실제 문 폭으로 exitWidth를 준다. 예제의 두세 칸 출구를 한 칸 집 문에 복사하지 않는다. \`start\`는 BFS 출발점이며 출구 폭을 정하지 않는다.
 3. \`floor\`·\`wall\` 기본값, 방마다 다르면 \`zones\`(칸막이 뒤 방 단위로만 벽 재질을 바꾼다).
 4. 가구: \`objects\`(v5 가구 id, 좌표 = 발밑 왼쪽 위), 탁자·카운터 = \`tables\`(자동 타일, 아무 W×H), 깔개·울타리·창살 = \`lines\`, 단 = \`daises\`, 탁상 물건 = \`goods\`(윗면 가구 칸 위).
 5. \`build_hand_interior_room\` 을 부른다. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥 그림자는 도구가 plan 에서 만든다 — 손으로 칠하지 않는다.
@@ -98,6 +101,7 @@ doc("hand-interior-v5-rules", "손 도트 실내 · 구조 규칙·사용자 판
 - 서쪽이 막힌 실내 칸(바닥·벽면)은 왼쪽 6px 그림자, 벽면 바로 아래 바닥 줄은 위 3px 접촉 그림자.
 - 칸막이: ${meta.conventions.partition} 1~2줄 구멍은 벽면이 되어 길을 막는다(「부서진 방」 버그).
 - 방은 사각형 하나가 아니다: 뒷방·곁방·칸막이·어긋난 북벽. 문 앞 현관, ㄱ자 방.
+- 외부 문과 실내 출구의 가로 폭을 맞춘다. 한 칸 집 문은 남쪽 출구도 한 칸(\`####.#####\`). 도구의 exitWidth 기본 1과 실제 틈 폭이 다르면 거부한다. start 한 칸 선언으로 두 칸 틈을 숨길 수 없다. 넓은 대문을 명시한 예제만 exitWidth 2·3을 쓰며 한 칸 문에 그대로 복사하지 않는다.
 
 ## 재질
 - ${meta.conventions.wallMaterial}
@@ -123,6 +127,20 @@ doc("hand-interior-v5-rules", "손 도트 실내 · 구조 규칙·사용자 판
 - 반복: 바닥(표면마다 짜임 주기 cols×rows 칸 × 그림자 4 — 판자·줄눈 간격의 배수라 이음매가 줄눈에 떨어진다), 벽면(cols 열 × 2줄 × 서쪽 그림자 — 기둥·지지목 간격의 배수), 천장(이웃 32), 탁자 자동 타일, 줄 자동 타일, 단.
 - 고정: 가구(발밑 칸 + 솟은 칸, 칸 번호가 정해져 있다), 탁상 물건, 문틀(round arch), 계단.
 - 출입구 = 맨 아래 줄 '.' 틈(문 그림 없음, 거리에서 걸어 들어온다). 층 이동 = 계단 칸의 이동 이벤트(links). 문 앞 접근 칸 = 출입구 바로 위 바닥 두 줄(비워 둔다).
+`);
+
+doc('hand-interior-v5-exit-width', '손 도트 실내 · 외부 문과 출구 폭', `# 외부 문과 출구 폭 (사용자 판정 2026-10-07)
+
+외부 문이 가로 한 칸이면 실내의 남쪽 열린 틈도 한 칸이다. 통행 BFS 통과만으로 실제 문 폭을 합격시키지 않는다.
+
+## 정상 도면: 가로 10 × 세로 7, 문 폭 1
+${fence('text', ['##########', '#........#', '#........#', '#........#', '#........#', '#........#', '####.#####'].join('\n'))}
+출구 (4,6) 한 칸, 착지 (4,5). 문앞·착지에 가구를 놓지 않는다. build_hand_interior_room의 exitWidth 기본은 1이며 결과 exits=[{x:4,y:6,width:1}]을 읽는다.
+
+## 거부 도면
+맨 아래 줄을 \`####..####\`로 쓰면 (4,6)·(5,6) 두 칸이 열린다. start=[{x:4,y:5}] 한 칸을 선언해도 폭은 2다. 도구가 interior-exit-width로 맵 전체를 거부하며 한 칸만 열도록 고친다. 타일 한쪽에 가구를 놓아 넓은 틈을 숨기지 않는다. 한 칸 doorAt으로 연결할 때 두 연결 도구도 실제 1층 틈 폭을 검사해 transfer-door-width로 거부한다.
+
+넓은 대문을 명시한 경우에만 그 실제 폭과 같은 exitWidth를 준다. 원본 예제의 2·3칸 출구는 큰 출입구의 명세이며 한 칸 집 문에 복사하지 않는다. 구조·가구 사전과 정상/오류 그림은 hand-interior-v5-dictionary, hand-interior-v5-errors, 가까운 예제에서 함께 읽는다.
 `);
 
 const dict = {

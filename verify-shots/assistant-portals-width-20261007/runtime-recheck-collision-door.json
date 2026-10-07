@@ -1,0 +1,12 @@
+{
+  "kind": "saved-output-runtime-recheck",
+  "modelCalls": 0,
+  "observation": "runtime-collision-door",
+  "observerDigest": "55e02667ae44018528d79a3196bfadda0a3ef00401ce1cabe182c00f9ac5c1bc",
+  "originalResultDigest": "cd42f5c4fc34a91903c4bd439f36ab90c3d0cc057d28690f0ccc7b6e1a41e53e",
+  "sourceDigest": "941c45453a0e8d4182ccb3047020dad3558b2955667e620f22646941d6175d87",
+  "pass": true,
+  "beats": 56,
+  "errors": [],
+  "failures": []
+}

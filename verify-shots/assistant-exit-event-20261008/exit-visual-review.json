@@ -1,0 +1,34 @@
+{
+  "scope": "exit width, door approach, landing and return",
+  "status": "pass",
+  "reviewer": "codex-root",
+  "originalResultDigest": "9b3af2c54e88d0f3934d0448d6c45343984f7a58249e3fe9eb92f8cc36210357",
+  "fullTaskStatus": "fail: turn timeout retained",
+  "notes": "한 칸 집 문과 한 칸 실내 출구를 대조했다. 실제 착지는 출구 한 칸 북쪽이며 밟기 귀환 뒤 문앞 길의 안전한 칸에 남는다. 들판의 완성도는 이 출구 판정의 합격 범위가 아니다.",
+  "images": [
+    {
+      "file": "checkpoint-runtime/11-enter-0-9.png",
+      "sha256": "02d9a894da001738945a1d15e3e24e598f22ef128a2dd6c7ea412049930c2424"
+    },
+    {
+      "file": "checkpoint-runtime/13-arrival-stable-0.png",
+      "sha256": "9e5e4e6845611222b0761bc8c29faa10d7bca3609cb997334a2c28004b54e657"
+    },
+    {
+      "file": "checkpoint-runtime/15-returned-0.png",
+      "sha256": "0ceae9da9382638043a0e7fb2c93ef277ceb8f57dd9a7bb303e994b268f4770d"
+    },
+    {
+      "file": "checkpoint-runtime/51-enter-1-36.png",
+      "sha256": "8f244d663adbb75e969a1b4b9a6b54688052efff71384ab22dca4b298ba84333"
+    },
+    {
+      "file": "checkpoint-runtime/53-arrival-stable-1.png",
+      "sha256": "421dabe6757b797a47872f96bf5d6a520026347895722fa1eb02d1a73a1f2671"
+    },
+    {
+      "file": "checkpoint-runtime/55-returned-1.png",
+      "sha256": "dcfd5028bac78dca105ee7e4032a6586874233728b35fda67d750def001ea06d"
+    }
+  ]
+}

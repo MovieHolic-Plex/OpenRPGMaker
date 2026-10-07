@@ -138,13 +138,16 @@ async function saveThroughUi(page) {
   if(!['idle','saved'].includes(kind))throw Error(`Actual editor save failed: ${kind}`);
   return {kind,dirty:false};
 }
-export async function execute(entry, dir, timeoutMs, config) {
+export async function execute(entry, dir, timeoutMs, config, diagnostics={}) {
   const projectDir=resolve(dir,'project'), host=await startHost(projectDir,dir);
-  let browser,context,phase='editor-start';const errors=[],requests=[]; const evidence=[];
+  let browser,context,bootPage,phase='editor-start';const errors=[],requests=[]; const evidence=[];
+  const captureOptions={onPage(page) {
+    bootPage=page;
+    page.on('pageerror',error=>errors.push(error.message));
+  }};
   try {
     browser=await firefox.launch({firefoxUserPrefs:{'network.notify.changed':false,'network.notify.IPv6':false,'network.captive-portal-service.enabled':false,'network.connectivity-service.enabled':false}});
-    let editor=await newEditor(browser,host.url,projectDir,config);let page=editor.page;context=editor.context;
-    page.on('pageerror',error=>errors.push(error.message));
+    let editor=await newEditor(browser,host.url,projectDir,config,captureOptions);let page=editor.page;context=editor.context;
     page.on('request',request=>{
       if(entry.check==='graphic'&&request.method()==='POST'&&/\/v1\/agent\/render(?:\?|$)/.test(request.url())) {
         try {const body=JSON.parse(request.postData());if(typeof body.png==='string') {
@@ -189,6 +192,9 @@ export async function execute(entry, dir, timeoutMs, config) {
     const flush=await saveThroughUi(page);
     const applied=stored(projectDir);
     writeFileSync(resolve(dir,'after.json'),JSON.stringify(applied.project));
+    // Retain the exact applied blob bodies before a later boot can replace/GC
+    // them, so a strict SHA mismatch can be diagnosed without waiving the gate.
+    if (diagnostics.retainAppliedSnapshot) writeRuntimeProject(projectDir,resolve(dir,'applied-live.json'),applied.project);
     await page.screenshot({path:resolve(dir,'after.png')});evidence.push('after.png');
     if(entry.visual==='database') {
       await page.getByTestId('toolbar-database').click();
@@ -200,7 +206,7 @@ export async function execute(entry, dir, timeoutMs, config) {
     // Close the entire browser context: this drops its memory adapter and caches.
     phase='reload';
     await context.close();context=null;
-    editor=await newEditor(browser,host.url,projectDir,config);page=editor.page;context=editor.context;
+    editor=await newEditor(browser,host.url,projectDir,config,captureOptions);page=editor.page;context=editor.context;
     const reloaded=stored(projectDir);
     const loaded=editor.loads.find(load=>load.sha256===applied.sha256);
     const reloadEqual=Boolean(loaded)&&isDeepStrictEqual(applied.project.maps,loaded.maps)&&isDeepStrictEqual(applied.project.database,loaded.database);
@@ -233,8 +239,8 @@ export async function execute(entry, dir, timeoutMs, config) {
   } catch(error) {
     error.harnessPhase=phase;
     let events=[];
-    if(context) {
-      const page=context.pages()[0];
+    if(context || bootPage) {
+      const page=context?.pages()[0] ?? bootPage;
       if(page){await page.screenshot({path:resolve(dir,'failure.png')}).catch(()=>{});
         events=await page.evaluate(()=>window.__capEvents??[]).catch(()=>[]);}
     }
