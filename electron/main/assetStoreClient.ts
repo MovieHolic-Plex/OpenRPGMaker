@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, w
 import { dirname, join } from "node:path";
 import { isSha256, STORE_LIMITS, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
 import { sniffMime } from "../../src/assetStore/sniff";
+import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
 
@@ -101,6 +102,30 @@ export class AssetStoreClient {
   /** lang 을 주면 그 언어판 제목·소개를 받는다(없으면 원문). 설치 기록에는 lang 없이 받은 원문을 쓴다. */
   item(slug: string, lang?: string): Promise<StoreItemDetail> {
     return this.json<StoreItemDetail>(`/api/v1/items/${encodeURIComponent(slug)}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`);
+  }
+
+  /** 컨셉 피드 한 쪽. 서버가 준 카드는 하나라도 형식이 틀리면 쪽 전체를 받지 않는다(편집기와 같은 normalizeGameConcept). */
+  async concepts(query: { tag?: string; q?: string; preset?: string; cursor?: string; lang?: string }): Promise<{ items: GameConcept[]; nextCursor: string | null }> {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) if (typeof value === "string" && value !== "") params.set(key, value);
+    const body = await this.json<{ items?: unknown; nextCursor?: unknown }>(`/api/v1/concepts?${params}`);
+    if (!Array.isArray(body.items)) throw new StoreError("스토어가 보낸 컨셉 목록 형식이 올바르지 않습니다.");
+    return { items: body.items.map(conceptFromStore), nextCursor: typeof body.nextCursor === "string" && /^-?\d+:\d+$/.test(body.nextCursor) ? body.nextCursor : null };
+  }
+
+  async concept(input: { slug: string; lang?: string }): Promise<{ concept: GameConcept; similar: GameConcept[] }> {
+    const body = await this.json<{ concept?: unknown; similar?: unknown }>(`/api/v1/concepts/${encodeURIComponent(input.slug)}${input.lang ? `?lang=${encodeURIComponent(input.lang)}` : ""}`);
+    return { concept: conceptFromStore(body.concept), similar: Array.isArray(body.similar) ? body.similar.map(conceptFromStore) : [] };
+  }
+
+  /** 「이걸로 만들었다」 세기. 실패해도 만들기는 계속되므로 오류 대신 false. */
+  async conceptMade(input: { slug: string }): Promise<boolean> {
+    try {
+      await this.json(`/api/v1/concepts/${encodeURIComponent(input.slug)}/made`, { method: "POST", json: {} });
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   me(): Promise<{ user: StoreUser; items: (StoreItemDetail & { status: string })[] }> {
@@ -239,6 +264,18 @@ export class AssetStoreClient {
     const path = input.targetSlug ? `/api/v1/items/${encodeURIComponent(input.targetSlug)}/versions` : `/api/v1/items`;
     return this.json(path, { method: "POST", json: { manifest: input.manifest } });
   }
+}
+
+/** 서버 컨셉 카드 → 검사한 GameConcept. 스토어 카드의 썸네일은 blob sha256 이어야 한다(경로·주소는 받지 않는다). */
+function conceptFromStore(value: unknown): GameConcept {
+  let concept: GameConcept;
+  try {
+    concept = normalizeGameConcept(value);
+  } catch (error) {
+    throw new StoreError("스토어가 보낸 컨셉 형식이 올바르지 않습니다.", 0, [error instanceof Error ? error.message : String(error)]);
+  }
+  if (!isSha256(concept.thumb.full) || !isSha256(concept.thumb.card)) throw new StoreError("스토어가 보낸 컨셉 썸네일 주소가 올바르지 않습니다.");
+  return concept;
 }
 
 function normalizeUrl(url: string): string {

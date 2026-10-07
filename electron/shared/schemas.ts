@@ -153,6 +153,17 @@ export const storeCatalogSchema = z.object({
   lang: storeLang.optional(),
 });
 export const storeVisibilitySchema = z.object({ slug: storeSlug, hidden: z.boolean() });
+/** 컨셉 피드 입력. 카드 본문 검사는 assetStoreClient 가 normalizeGameConcept 로 한다. */
+const conceptSlug = z.string().min(3).max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+export const storeConceptsSchema = z.object({
+  tag: z.string().max(40).optional(),
+  q: z.string().max(80).optional(),
+  preset: z.string().max(40).optional(),
+  cursor: z.string().max(40).regex(/^-?\d+:\d+$/).optional(),
+  lang: storeLang.optional(),
+}).strict();
+export const storeConceptSlugSchema = z.object({ slug: conceptSlug, lang: storeLang.optional() }).strict();
+export const storeConceptMadeSchema = z.object({ slug: conceptSlug }).strict();
 export const storeUploadSchema = z.object({
   manifest: z.record(z.string(), z.unknown()),
   blobs: z.record(z.string().regex(/^[0-9a-f]{64}$/), z.instanceof(Uint8Array)),

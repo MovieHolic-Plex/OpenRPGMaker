@@ -5,7 +5,10 @@ import { existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node
 import { join } from "node:path";
 import { app, ipcMain, safeStorage, shell, webContents } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
-import { storeCatalogSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema, storeBlobSchema, storeVisibilitySchema } from "../shared/schemas";
+import {
+  storeCatalogSchema, storeConceptMadeSchema, storeConceptSlugSchema, storeConceptsSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema,
+  storeBlobSchema, storeVisibilitySchema,
+} from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 import type { StorePackManifest } from "../../src/assetStore/format";
 
@@ -71,7 +74,10 @@ export function registerAssetStore(): void {
   ipcMain.handle(OPRN_CHANNELS.storeSetUrl, (_event, payload: unknown) => wrap(() => { storeClient().setUrl(storeUrlSchema.parse(payload).url); return status(); }));
   ipcMain.handle(OPRN_CHANNELS.storeCatalog, (_event, payload: unknown) => wrap(() => storeClient().catalog(storeCatalogSchema.parse(payload ?? {}))));
   ipcMain.handle(OPRN_CHANNELS.storeItem, (_event, payload: unknown) => wrap(() => { const input = storeSlugSchema.parse(payload); return storeClient().item(input.slug, input.lang); }));
-  ipcMain.handle(OPRN_CHANNELS.storeBlob, (_event, payload: unknown) => wrap(() => storeClient().blob(storeBlobSchema.parse(payload).sha256)));
+  ipcMain.handle(OPRN_CHANNELS.storeConcepts, (_event, payload: unknown) => wrap(() => storeClient().concepts(storeConceptsSchema.parse(payload ?? {}))));
+  ipcMain.handle(OPRN_CHANNELS.storeConcept, (_event, payload: unknown) => wrap(() => storeClient().concept(storeConceptSlugSchema.parse(payload))));
+  ipcMain.handle(OPRN_CHANNELS.storeConceptMade, (_event, payload: unknown) => wrap(() => storeClient().conceptMade(storeConceptMadeSchema.parse(payload))));
+  ipcMain.handle(OPRN_CHANNELS.storeBlob,(_event, payload: unknown) => wrap(() => storeClient().blob(storeBlobSchema.parse(payload).sha256)));
   ipcMain.handle(OPRN_CHANNELS.storeInstalled, () => wrap(() => storeClient().installed()));
   ipcMain.handle(OPRN_CHANNELS.storeInstall, (_event, payload: unknown) => wrap(async () => {
     const input = storeSlugSchema.parse(payload);
