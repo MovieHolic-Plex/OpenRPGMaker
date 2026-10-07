@@ -14,9 +14,10 @@ import author_round6 as old
 import author_round7 as r7
 from native_author import ROOT
 SOURCE=ROOT/'harness-data/beodeul-building-review'
+# plaster cells from arch:brick. 'J' = full-width joint cell (no transparent margin) where two bodies abut: end cells carry a 2-3px empty margin that shows as a slit.
 # plaster cells from arch:brick. A = row under the roof / upper storeys (eave shadow + floor ledge), B = ground storey (foundation).
-PLASTER={'A':{'eL':[0,64,16,96],'eR':[96,64,112,96],'w':[0,64,16,96],'bL':[32,64,48,96],'bR':[64,64,80,96],'v':[16,64,32,96]},
-         'B':{'eL':[0,96,16,128],'eR':[96,96,112,128],'w':[0,96,16,128],'bL':[16,96,32,128],'bR':[48,96,64,128],'v':[64,96,80,128],'D':[32,96,48,128]}}
+PLASTER={'A':{'eL':[0,64,16,96],'eR':[96,64,112,96],'w':[0,64,16,96],'bL':[32,64,48,96],'bR':[64,64,80,96],'v':[16,64,32,96],'J':[32,64,48,96]},
+         'B':{'eL':[0,96,16,128],'eR':[96,96,112,128],'w':[0,96,16,128],'bL':[16,96,32,128],'bR':[48,96,64,128],'v':[64,96,80,128],'D':[32,96,48,128],'J':[16,96,32,128]}}
 # stone cells from arch:church (narrow tall windows only).
 STONE={'A':{'e':[80,144,96,176],'w':[80,144,96,176],'b':[80,144,96,176],'v':[64,144,80,176]},
        'B':{'e':[80,176,96,208],'w':[80,176,96,208],'b':[80,176,96,208],'v':[64,176,80,208],'D':[112,176,128,208]}}
@@ -62,8 +63,8 @@ PLANS=[
  ('박공 앞면 이층집',64,144,'r8-01',[W9([0,80],['evve','ebDe']),R('gable',[0,16])]),
  ('금빛 기와 사각 지붕집',128,144,'r8-02',[W9([0,80],['ebvbvbve','ebvbDbve']),R('hip',[0,16],128,'gold')]),
  ('좁고 높은 청회색 삼층집',80,176,'r8-03',[W9([0,80],['evbve','evbve','ebDbe']),R('hip',[0,16],80,'slate')]),
- ('높이가 다른 연립 두 채',144,160,'r8-04',[W9([0,64],['evve','evve','ebDe']),R('gable',[0,0]),W9([64,96],['evbve','evbve']),R('hip',[64,32],80)]),
- ('청회색 본채와 낮은 곁채',160,144,'r8-05',[W9([0,80],['evbbve','ebbDbe']),R('hip',[0,16],96,'slate'),W9([96,112],['evve']),R('gable',[96,48])]),
+ ('높이가 다른 연립 두 채',144,160,'r8-04',[W9([0,64],['evvJ','evvJ','ebDJ']),R('gable',[0,0]),W9([64,96],['Jvbve','Jvbve']),R('hip',[64,32],80)]),
+ ('청회색 본채와 낮은 곁채',160,144,'r8-05',[W9([0,80],['evbbvJ','ebbDbJ']),R('hip',[0,16],96,'slate'),W9([96,112],['Jvve']),R('gable',[96,48])]),
  ('돌벽 박공 이층집',64,144,'r8-06',[W9([0,80],['evve','ebDe'],'stone'),R('gable',[0,16],kind='stone')]),
  ('돌벽 올리브 지붕집',96,144,'r8-07',[W9([0,80],['evbbve','ebbDbe'],'stone'),R('hip',[0,16],96,'olive')]),
  ('왼쪽 곁채가 붙은 집',160,144,'r8-08',[W9([64,80],['evbbve','evbbve']),R('hip',[64,16],96,'olive'),W9([0,112],['ebDe']),R('gable',[0,48])]),
