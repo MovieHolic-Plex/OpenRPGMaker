@@ -250,7 +250,7 @@
   ],
   "building": "jp_laundry",
   "rules": [
-   "벽 세탁기·건조기 줄 · 가운데 개는 탁자 · 입구 옆 벤치·세제 자판기·동전 교환기.",
+   "벽 세탁기 셋·건조기 둘·동전 교환기·세제 자판기 한 줄 · 아래 왼쪽 접이 탁자(세제·안내지) · 입구 곁 벤치. 입구는 오른쪽 아래 1칸 문.",
    "평면·가구는 tiledata/jp-city/interior/examples/laundry.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-laundry-9x8\"})."
   ]
  },
