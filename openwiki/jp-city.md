@@ -280,6 +280,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
   통행: 바닥 `floor` · 벽면·천장·공허 `solidfloor` · 가구 발자국 `solid` · `walk` 칸·`flat` 종류 `flat`(2층) · 위로 솟은 칸·걸이 `star`. 키트 `jp-in-<가구 id>`(낱개 확인용).
   selftest 가 쓰임(use)·바라보는 쪽(facing)이 조수 도구 id(`parts.ts` USE_WORDS, N/S/E/W)인지 막는다 — 작업자가 「잠자기」「앉기」 같은 한국어 낱말을 넣었던 실측.
 - 미리보기(굽기 전): `python3 scripts/content/jp-city/interior/preview.py ROOM.json OUT.png --x 3` — 조립 순서는 TS 와 같지만 **층 수(조각 셋 겹침·4층 찬 칸)는 보지 않는다**. 정답은 TS 도구로 짓는 `maps/interior.mjs`.
+- 마루 깔기(2026-10-07): 널 마루 2종(`flooring`·`flooring-dark`)은 `R.floor(..., lay='rowShift')` → 사양 `floors[].lay` → 조립기가 줄마다 무늬를 밀어 깐다(`ikit.lay_x` = `builder.ts floorLayX`). 밝은 널은 윗줄 1px 광택만 — 통째로 밝히면 넓은 빈 바닥에서 띠로 줄 섰다. 바꾸면 `bake_jp.py` 뒤 `bake_refs.py --dump`(약 11분)로 예제 배열·그림을 다시 굽는다.
 - 굽기: `bake_jp.py` 끝에서 `bake_interior_spec.py`(먼저 `interior/rooms.py` 가 예제 방 사각형 → `tiledata/jp-city/interior/rooms.json`) → `src/assets/jpInteriorSpec.json`(가구 97 · 바닥 7 · 벽면 5 · 탁자 2 · 탁상 20). 핀 8126 → 9017.
 - 조립기 일반화: `builder.ts` 의 `handInteriorStructure`·`buildHandInteriorLayers` 가 사양 인자를 받고(기본 v5), `HAND_INTERIOR_SPECS = {atlas_biome_interior, jp_city}`. `isSeatId` 는 `use` 에 `sit` 이 있는 가구도 앉는 자리로 본다. `parts.ts` 의 예제 문서 id 머리는 `rooms.docPrefix`(jp = `jp-interior-ex-`).
 - 예제: `tiledata/jp-city/interior/examples/{house-1f,house-2f,apartment-1k}.json`(도구 인자 + `rooms` 사각형) → `node scripts/content/jp-city/maps/interior.mjs [--publish]` 가 **조수 도구 그대로** 짓고 엔진 canMove BFS 로 이동 칸 도달까지 잰다.
