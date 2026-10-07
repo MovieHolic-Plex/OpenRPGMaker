@@ -39,6 +39,7 @@ def build_spec(pins=None, regs=None):
 
 
 def main():
+    import rooms; rooms.main()                       # 예제 맵의 방 사각형 → rooms.json(사양의 방 표)
     spec = build_spec()
     open(OUT, 'w', encoding='utf-8').write(json.dumps(spec, ensure_ascii=False, separators=(',', ':')) + '\n')
     print('jpInteriorSpec: 바닥 %d · 벽면 %d · 천장 %d · 가구 %d · 탁자 %d · 탁상 %d → %s' % (
