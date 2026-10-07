@@ -312,18 +312,28 @@ def _balcony(c):
 
 
 @REG.piece('wz-clock-grate', '금속 발판 바닥(1×1)', 1, 1, ['F'], 'architecture', SP,
-           desc='격자 철판 바닥. 굵은 철 막대 격자와 그 사이 어두운 구멍, 교차점 리벳. 이음새 없이 반복.',
-           rules='기어실 중앙 통로·기계 주변 바닥에 깐다.', tags=['금속', '격자', '바닥', '시계탑'], role='terrain', repeat=True)
+           desc='어두운 무쇠빛 철판 바닥. 16×8 판을 반 장씩 엇갈려 깔고, 판 사이 낮은 대비 이음과 드문 닳은 자국만 있다. 이음새 없이 반복.',
+           rules='기어실 바닥 전체에 깐다. 밝은 석벽보다 훨씬 어두워 벽과 바닥이 갈린다. 리벳 철판 통로(floor-plate)로 동선을 낸다.',
+           tags=['금속', '철판', '바닥', '시계탑'], role='terrain', repeat=True)
 def _grate(c):
-    c.R(0, 0, 16, 16, K(IR, 1))
-    for o in (0, 8):                                    # 막대: 8px 주기, 2px 두께(빛·몸)
-        c.HL(0, o, 16, K(IR, 3)); c.HL(0, o + 1, 16, K(IR, 2))
-        c.VL(o, 0, 16, K(IR, 3)); c.VL(o + 1, 0, 16, K(IR, 2))
-    for ox in (0, 8):
-        for oy in (0, 8):
-            c.R(ox + 2, oy + 2, 6, 6, K(IR, 1))         # 구멍(약간 어두운 바닥)
-            c.HL(ox + 2, oy + 2, 6, K(IR, 0)); c.VL(ox + 2, oy + 2, 6, K(IR, 0))
-            c.P(ox, oy, K(IR, 4))                        # 교차점 리벳
+    c.R(0, 0, 16, 16, K(ST, 1))                          # 바탕: 따뜻한 짙은 회색(푸른 기 없음)
+    c.HL(0, 7, 16, K(ST, 0)); c.HL(0, 15, 16, K(ST, 0))  # 판 이음(가로)
+    c.VL(11, 0, 7, K(ST, 0)); c.VL(3, 8, 7, K(ST, 0))    # 판 이음(세로, 반 장 엇갈림)
+    for x, y, w in ((5, 3, 3), (13, 11, 2), (7, 12, 2)):  # 드문 닳은 자국
+        for i in range(w): c.P((x + i) % 16, y, K(ST, 2))
+
+
+@REG.piece('wz-clock-floor-plate', '리벳 철판 통로(1×1)', 1, 1, ['F'], 'architecture', SP,
+           desc='한 칸짜리 두꺼운 철판 디딤판. 네 귀에 리벳, 왼위 모서리에 빛, 오른아래 이음 그늘. 바닥 철판보다 한 단 밝다.',
+           rules='철판 바닥 위에 줄지어 깔아 정비 동선을 낸다(가로·세로 반복).', tags=['금속', '리벳', '통로', '바닥', '시계탑'], role='terrain', repeat=True)
+def _floor_plate(c):
+    c.R(0, 0, 16, 16, K(ST, 2))
+    c.HL(0, 0, 15, K(ST, 3)); c.VL(0, 0, 15, K(ST, 3))   # 빛 받는 모서리
+    c.HL(0, 15, 16, K(ST, 1)); c.VL(15, 0, 16, K(ST, 1)) # 이음 그늘
+    for x, y in ((2, 2), (12, 2), (2, 12), (12, 12)):
+        c.P(x, y, K(ST, 4)); c.P(x + 1, y + 1, K(ST, 1))
+    for x, y, w in ((5, 6, 3), (8, 9, 3)):                # 닳은 디딤 자국
+        c.HL(x, y, w, K(ST, 3))
 
 
 @REG.piece('wz-clock-walkway', '오크 정비 통로(1×1)', 1, 1, ['F'], 'architecture', SP,
@@ -722,6 +732,7 @@ def _place_gears():
     for x in range(14): pl.append(('wz-clock-wall', x, 0))
     pl += [('wz-clock-wall-gear', 1, 0), ('wz-clock-wall-gear', 10, 0), ('wz-clock-dial-back', 5, 0),
            ('wz-clock-door-closed', 13, 0) if False else ('wz-clock-door-locked', 13, 0), ('wz-clock-toolrack', 3, 1)]
+    pl += [('wz-clock-floor-plate', x, 11) for x in range(14)] + [('wz-clock-floor-plate', 13, y) for y in range(4, 6)]
     pl += [('wz-clock-walkway', x, 5) for x in range(7, 13)] + [('wz-clock-walkway', x, 4) for x in range(7, 13)]
     pl += [('wz-clock-oil-a', 5, 9), ('wz-clock-oil-b', 7, 10), ('wz-clock-oil-a', 11, 11)]
     pl += [('wz-clock-gear-l-spin', 0, 5), ('wz-clock-gear-m-spin', 3, 7), ('wz-clock-gear-s-spin', 5, 6)]
@@ -733,7 +744,7 @@ def _place_gears():
 
 
 REG.example('wz-clock-example-gears', '시계탑 기어실 예제', SP, 14, 12, 'wz-clock-grate', _place_gears(),
-            desc='기어실: 북벽에 큰 시계 문자판 뒷면·기어 개방벽·공구 걸이판·잠긴 문. 바닥은 격자 철판, 왼쪽에 맞물려 도는 황동 톱니 셋, 오른쪽에 오크 통로·난간·발코니·계단과 공구 소품.')
+            desc='기어실: 북벽에 큰 시계 문자판 뒷면·기어 개방벽·공구 걸이판·잠긴 문. 바닥은 어두운 철판·아래쪽 리벳 철판 통로, 왼쪽에 맞물려 도는 황동 톱니 셋, 오른쪽에 오크 통로·난간·발코니·계단과 공구 소품.')
 
 
 if __name__ == '__main__':
