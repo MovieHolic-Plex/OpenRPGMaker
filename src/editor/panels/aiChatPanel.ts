@@ -65,6 +65,8 @@ import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
+import { createStoreCard } from "./aiStoreCard";
+import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
@@ -2126,12 +2128,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
     // 조수가 ask_tileset_change 로 물었으면 턴이 끝난 뒤 질문 카드를 띄운다(마지막 질문 하나).
     let tilesetQuestion = null as TilesetChangeQuestion | null;
+    let storeCard = null as StoreCardRequest | null;
     const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
         onEvent: event => progress.event(event),
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
+        onStoreCard: (request) => { storeCard = request; },
         appendBubble: (role, line) => appendBubble(role, line),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
@@ -2175,6 +2179,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
+    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard);
+  };
+  /** 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다. */
+  const showStoreCard = (request: StoreCardRequest): void => {
+    const owner = conversationId;
+    const card = createStoreCard(request, (followUp) => {
+      if (disposed || owner !== conversationId) return;
+      restoreComposer(followUp);
+      void send();
+    });
+    log.append(card);
+    followConversationLog(log);
   };
   /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
   const showTilesetChangeCard = (question: TilesetChangeQuestion): void => {
@@ -2272,6 +2288,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
+    let storeCard = null as StoreCardRequest | null;
     let phase: string | undefined;
     await runPiCommand(command, {
       background: true,
@@ -2281,6 +2298,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onActivity: (state) => { phase = state.phase; },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
+      onStoreCard: (request) => { storeCard = request; },
       appendBubble: (role, line) => card.say(role, line),
       appendProcess: (text) => card.note(text),
       appendCard: (element) => card.attach(element),
@@ -2296,6 +2314,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.finish({ ok: !signal.aborted && phase !== "실패" && phase !== "중단",
       message: signal.aborted || phase === "중단" ? "중단" : phase === "실패" ? "실패" : phase === "검토 대기" ? "검토 필요" : "끝남" });
     if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
+    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard);
   };
   const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
     const project = store.getCurrent();
