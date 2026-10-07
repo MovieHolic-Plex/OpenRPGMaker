@@ -2831,8 +2831,11 @@ create는 기획서 고유명을 `names`(지방·시작 마을·박사·첫 도�
 1관 타입이 다른 관의 본래 타입이면(눈 기획서 1관=얼음) 그 관이 1관의 본래 타입(풀)을 받는다 — 얼음 관장이 둘 나왔다.
 `renameCampaign` 은 원본 표가 아니라 지금 체육관 맵 이름·배지에서 바꾼다. 주민 산책 경로(`residentPatrols.json`)는 판에 묶여 있어서
 `repairExpeditionResidents` 가 맞바꾼 마을로 옮긴다(보수 경로는 새순 마을 시트가 풀밭이 아닌 걸로 맞바꿈을 알아챈다) — 서리꽃 주민이 체육관 문을 막았다.
+1번길 이름도 테마를 따른다(모래바람 길·서리 들길·바닷바람 길, `START_ROUTE_NAMES`; `renameCampaign` 은 지금 맵 이름에서 바꾼다).
 1장 주민·도로 조련사는 사용자가 캐스팅 하네스 `theme-cast-v1` 에서 Allow 한 테마 칩이 있으면 그것으로 입는다
 (`scripts/content/pack-theme-cast.py` → `public/assets/emerald-monster/cast/theme-cast.json`, `configureEmeraldMonsterCast(project, {startTheme})`).
+2026-10-07 판은 사용자 위임(「원본이랑 너무 유사하지 않으면 통과」)으로 Allow 했다: 팔레트 교체로 설명되지 않는 다시 그린 픽셀 15% 이상만 —
+사막 남·조련사, 해안 셋. 사막 여자와 눈 셋은 원본 재채색에 가까워 보류(눈 시작은 아직 기본 주민). 슬롯이 비면 같은 테마의 다른 주민 칩을 쓴다.
 완료 검사 지문(`monsterGameFingerprint`)은 키 순서와 무관하게 잰다 — SQLite 에서 다시 읽은 문서에 repair 를 하면 맵 키 순서가 바뀌어
 실변경 없이 지문이 달라졌고 「마지막 변경 뒤 read」 검사가 끝나지 않았다(2026-10-07 사막 기획서 실편집기 녹화).
 전체 몬스터 게임 요청은 실행 끝의 배치 품질 권고(`inspectPiLayoutQuality`)를 건너뛴다: 검수된 캠페인 맵 50장에

@@ -1914,3 +1914,16 @@ an empty gauge rather than reading editor start-state or guessing XP from Lv.
 Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (128×128) using the existing bottom platform anchors. Explicit legacy64×96 custom portraits remain supported as128×192; that transport is not Emerald native. The native image dimensions are validated after decode as well as authored metadata. Original rawtrainer paintings are normalized by the reviewed portrait lifecycle; source art and pixels are not painted by the converter. Standalone game QA verifies actual trainer visibility, handoff, Continue and victory; colored-rectangle dimension fixtures are separate layout checks.
 
 Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.
+
+### 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
+
+- 명령 대사(`actorCommandDirectorState`)는 이 액터의 결과 엔트리를 붙인다. 명령한 상대가 이미 쓰러져 런타임이 다음 상대로 돌렸으면
+  이 액터의 첫 결과를 쓰고, 못 찾으면 `lastActionResult` 는 **이 액터 것일 때만** 빌린다. 예전에는 상대의 마지막 타격을 빌려
+  「새싹토의 새싹치기! / 효과가 굉장했다!」(풀→얼음)로 읽혔다.
+- 액터의 첫 엔트리가 `incapacitated` 이면 명령 대사를 붙이지 않는다(`battleSequencer` `commandIncapacitated`).
+  에메랄드 문장은 `emeraldMajorStatusLine`: 얼어 버렸다 / 얼어붙어서 움직일 수 없다 / 얼음이 녹았다, 잠·마비·독·화상.
+- 1세대 얼음은 기본적으로 치료 전까지 못 움직인다. 상태 레코드의 `recoverNaturallyChance` 가 있으면 행동 전 그 %로 녹는다
+  (`Gen1StateRecordRef.thawChance`, 녹으면 `stateRemoved` 뒤 그 차례에 행동). 에메랄드 프로필(`configureEmeraldMonsterStyle`)이 20 을 넣는다 —
+  55% 얼리기 기술 하나에 1관에서 전멸했다. 녹음 굴림이 전투 난수를 한 바이트 쓰므로 그 뒤 전투 결과가 달라진다.
+- 헤드리스 몬스터 전술(`sceneTestRunner` `actHeadless`)은 리더 체력이 60% 아래이고 다음 한 방(예상 ×1.5 + 화상·독 한 틱)에 쓰러질 수 있으면
+  자기 회복 기술을 먼저 쓴다 — 챔피언 앞에서 명중 90% 기술이 빗나가고 급소·화상에 반 체력으로 쓰러져 열 번 연속 졌다.
