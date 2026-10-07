@@ -30,6 +30,7 @@ export function conceptBrief(concept: GameConcept, tweak?: string): GameDesignBr
     `주인공: ${concept.protagonist}`,
     `무대: ${concept.stage}`,
     `첫 장면: ${concept.firstScene}`,
+    ...(concept.tilesetHint ? [`타일셋: ${concept.tilesetHint} (이 공용 번들 타일셋으로 맵을 깐다)`] : []),
     ...GAME_BRIEF_SLOTS.map((slot) => `${answers[slot].label}: ${answers[slot].text} (추천안)`),
   ].join("\n").slice(0, SUMMARY_LIMIT - tail.length);
   return {
