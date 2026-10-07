@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 단층 옛집(平屋) 실내 (`jp-city-hiraya`, 15×14)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-hiraya`. 도구 결과: 손 도트 실내 '일본 단층 옛집(平屋) 실내' 15×14 (jp-city-hiraya, jp_city) — 출입구에서 닿는 칸 62, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-hiraya`. 도구 결과: 손 도트 실내 '일본 단층 옛집(平屋) 실내' 15×14 (jp-city-hiraya, jp_city) — 출입구에서 닿는 칸 59, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-hiraya", "name": "일본 단층 옛집(平屋) 실내", "plan": ["###############", "#....#....#...#", "#....#....#...#", "#.............#", "#.............#", "#.............#", "#....#....#...#", "####.####.#####", "#....#.....####", "#....#.....####", "#..........####", "#..........####", "#..........####", "##.############"], "floor": "tatami", "wall": "juraku", "zones": [{"x0": 11, "y0": 1, "x1": 13, "y1": 6, "floor": "flooring-dark", "wall": "juraku"}, {"x0": 1, "y0": 8, "x1": 4, "y1": 13, "floor": "tataki", "wall": "kitchen-panel"}, {"x0": 6, "y0": 8, "x1": 10, "y1": 12, "floor": "h2-engawa", "wall": "juraku"}], "objects": [{"id": "tokonoma", "x": 1, "y": 3}, {"id": "shoji-window", "x": 3, "y": 1}, {"id": "andon", "x": 4, "y": 4}, {"id": "zabuton", "x": 2, "y": 5}, {"id": "zabuton", "x": 3, "y": 5}, {"id": "h2-old-tansu", "x": 6, "y": 3}, {"id": "tv-old", "x": 9, "y": 3}, {"id": "futon", "x": 8, "y": 4}, {"id": "oshiire", "x": 8, "y": 1}, {"id": "butsudan", "x": 13, "y": 3}, {"id": "h2-irori", "x": 12, "y": 5}, {"id": "zabuton", "x": 11, "y": 4}, {"id": "zabuton", "x": 13, "y": 4}, {"id": "zabuton", "x": 12, "y": 4}, {"id": "h2-hibachi", "x": 11, "y": 6}, {"id": "tansu", "x": 11, "y": 3}, {"id": "door-side-sliding", "x": 5, "y": 5}, {"id": "door-side-sliding", "x": 10, "y": 5}, {"id": "door-side-sliding", "x": 5, "y": 12}, {"id": "h2-old-sink", "x": 1, "y": 10}, {"id": "kitchen-stove", "x": 3, "y": 10}, {"id": "shoes-pair", "x": 1, "y": 12}, {"id": "h2-sandals", "x": 3, "y": 12}, {"id": "genkan-door", "x": 2, "y": 13}, {"id": "shoji-window", "x": 6, "y": 8}, {"id": "h2-garden-step", "x": 10, "y": 12}, {"id": "h2-shoji-door", "x": 4, "y": 7}, {"id": "h2-shoji-door", "x": 9, "y": 7}, {"id": "h2-planter", "x": 6, "y": 12}, {"id": "zabuton", "x": 6, "y": 11}, {"id": "zabuton", "x": 9, "y": 11}, {"id": "zabuton", "x": 7, "y": 10}, {"id": "zabuton", "x": 8, "y": 10}, {"id": "chabudai", "x": 7, "y": 11}, {"id": "h2-hibachi", "x": 10, "y": 10}], "tables": [{"style": "dining", "x": 2, "y": 11, "w": 2, "h": 1}], "goods": [{"id": "tea-set", "x": 2, "y": 11}], "start": [{"x": 2, "y": 12}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-hiraya", "name": "일본 단층 옛집(平屋) 실내", "plan": ["###############", "#....#....#...#", "#....#....#...#", "#.............#", "#.............#", "#.............#", "#....#....#...#", "####.####.#####", "#....#.....####", "#....#.....####", "#..........####", "#..........####", "#..........####", "##.############"], "floor": "tatami", "wall": "juraku", "zones": [{"x0": 11, "y0": 1, "x1": 13, "y1": 6, "floor": "flooring-dark", "wall": "juraku"}, {"x0": 1, "y0": 8, "x1": 4, "y1": 13, "floor": "tataki", "wall": "kitchen-panel"}, {"x0": 6, "y0": 8, "x1": 10, "y1": 12, "floor": "h2-engawa", "wall": "juraku"}], "objects": [{"id": "tokonoma", "x": 1, "y": 3}, {"id": "shoji-window", "x": 3, "y": 1}, {"id": "andon", "x": 4, "y": 4}, {"id": "h2-old-tansu", "x": 6, "y": 3}, {"id": "tv-old", "x": 9, "y": 3}, {"id": "futon", "x": 8, "y": 4}, {"id": "oshiire", "x": 8, "y": 1}, {"id": "butsudan", "x": 13, "y": 3}, {"id": "h2-irori", "x": 12, "y": 5}, {"id": "zabuton", "x": 11, "y": 4}, {"id": "zabuton", "x": 13, "y": 4}, {"id": "zabuton", "x": 12, "y": 4}, {"id": "h2-hibachi", "x": 11, "y": 6}, {"id": "tansu", "x": 11, "y": 3}, {"id": "door-side-sliding", "x": 5, "y": 5}, {"id": "door-side-sliding", "x": 10, "y": 5}, {"id": "door-side-sliding", "x": 5, "y": 12}, {"id": "h2-old-sink", "x": 1, "y": 10}, {"id": "kitchen-stove", "x": 3, "y": 10}, {"id": "shoes-pair", "x": 1, "y": 12}, {"id": "h2-sandals", "x": 3, "y": 12}, {"id": "genkan-door", "x": 2, "y": 13}, {"id": "shoji-window", "x": 6, "y": 8}, {"id": "h2-garden-step", "x": 10, "y": 12}, {"id": "h2-shoji-door", "x": 4, "y": 7}, {"id": "h2-shoji-door", "x": 9, "y": 7}, {"id": "h2-planter", "x": 6, "y": 12}, {"id": "zabuton", "x": 6, "y": 11}, {"id": "zabuton", "x": 9, "y": 11}, {"id": "zabuton", "x": 7, "y": 10}, {"id": "zabuton", "x": 8, "y": 10}, {"id": "chabudai", "x": 7, "y": 11}, {"id": "h2-hibachi", "x": 10, "y": 10}, {"id": "chabudai", "x": 2, "y": 5}, {"id": "zabuton", "x": 1, "y": 5}, {"id": "zabuton", "x": 2, "y": 6}, {"id": "andon", "x": 7, "y": 4}], "tables": [{"style": "dining", "x": 2, "y": 11, "w": 2, "h": 1}], "goods": [{"id": "tea-set", "x": 2, "y": 11}], "start": [{"x": 2, "y": 12}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -23,8 +23,8 @@ XXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXX
 XXX..XXX.XXX.XX
-X...XX....X...X
-X...........X.X
+X...XX.X..X...X
+X.XX........X.X
 X....X....XX..X
 XXXX.XXXX.XXXXX
 XXXX.XXXX.XXXXX
@@ -61,8 +61,8 @@ y=01: . . . . . . . . . . . . . . .
 y=02: . . . . . . . . . . . . . . .
 y=03: . . . . . . . . . . . . . . .
 y=04: . . . . . . . . 8845 . . 8825 8825 8825 .
-y=05: . . 8825 8825 . 9022 . . 8846 . 9022 . . . .
-y=06: . . . . . . . . . . . . . . .
+y=05: . 8825 . . . 9022 . . 8846 . 9022 . . . .
+y=06: . . 8825 . . . . . . . . . . . .
 y=07: . . . . 10030 . . . . 10030 . . . . .
 y=08: . . . . . . . . . . . . . . .
 y=09: . . . . . . . . . . . . . . .
@@ -78,8 +78,8 @@ y=00: . . . . . . . . . . . . . . .
 y=01: . 8836 8837 8803 8804 . . . 8792 8793 . . . . .
 y=02: . 8838 8839 8805 8806 . 10033 10034 8794 8795 . 8832 . 8834 .
 y=03: . 8840 8841 . . 9017 10035 10036 . 8850 9017 8833 . 8835 .
-y=04: . . . . 8848 9021 . . . . 9021 . . . .
-y=05: . . . . . . . . . . . . 10031 . .
+y=04: . . . . 8848 9021 . 8848 . . 9021 . . . .
+y=05: . . 8821 8822 . . . . . . . . 10031 . .
 y=06: . . . . . . . . . . . 10032 . . .
 y=07: . . . . . . . . . . . . . . .
 y=08: . . . 8859 . . 8803 8804 . . . . . . .

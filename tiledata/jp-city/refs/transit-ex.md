@@ -1,6 +1,6 @@
 # 일본 도시 — 지하철역 さくら町 예제 맵 전체 배열 (콘코스 26×17 · 승강장 44×13)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 생성기 `scripts/content/jp-city/maps/station.mjs`. 콘코스는 엔진에 다시 올려 잰 배열, 승강장은 생성기 출력(검사 통과: 입구 2칸 도달, 막힘 칸 엔진 일치).
 `placements` = [키트, 왼쪽 위 x, 왼쪽 위 y, 층], `events` = [id, x, y, 이동 명령], `transit` = 승강장 지하철 노선(그대로 `set_map_transit routes` 에 줄 수 있는 모양), `layer1`~`layer4` = 행 우선 전체 배열(-1 빈 칸).

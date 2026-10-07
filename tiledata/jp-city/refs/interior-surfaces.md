@@ -1,6 +1,6 @@
 # 일본 도시 — 일본 집 실내 구조·탁자·탁상 물건 사전 (칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 조립기가 칸 번호를 고르는 식(사람이 칠하지 않는다 — 검증·디버깅용):
 - 바닥: `tiles[((y % rows) * cols + x % cols) * 4 + 그림자]`, 그림자 = 1(바로 위 칸이 벽면) | 2(서쪽 칸이 막힘). 짜임 무늬는 맵 좌표에 고정(주기 4×4).
@@ -67,7 +67,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 ]
 ```
 
-## 탁상 물건 44
+## 탁상 물건 45
 ```json
 [
 {"id":"desk-lamp","tile":9002},
@@ -79,6 +79,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 {"id":"fd-sushi-geta","tile":9474},
 {"id":"fd-beer-mug","tile":9475},
 {"id":"fd-tokkuri","tile":9476},
+{"id":"fd-water-set","tile":10177},
 {"id":"fd-condiments","tile":9477},
 {"id":"fd-teishoku","tile":9478},
 {"id":"h2-teapot-iron","tile":10037},

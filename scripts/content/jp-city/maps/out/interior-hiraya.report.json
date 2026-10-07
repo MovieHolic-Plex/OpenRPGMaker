@@ -10,13 +10,13 @@
   2,
   12
  ],
- "summary": "손 도트 실내 '일본 단층 옛집(平屋) 실내' 15×14 (jp-city-hiraya, jp_city) — 출입구에서 닿는 칸 62, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 단층 옛집(平屋) 실내' 15×14 (jp-city-hiraya, jp_city) — 출입구에서 닿는 칸 59, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-hiraya",
   "tilesetId": "jp_city",
   "width": 15,
   "height": 14,
-  "reachable": 62,
+  "reachable": 59,
   "floorCells": 81,
   "unreachedFloor": [],
   "entrance": [
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 62,
+ "reach": 59,
  "ok": true
 }

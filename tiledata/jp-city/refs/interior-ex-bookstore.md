@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 동네 서점 실내 (`jp-city-bookstore`, 9×14)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-bookstore`. 도구 결과: 손 도트 실내 '일본 동네 서점 실내' 9×14 (jp-city-bookstore, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-bookstore", "name": "일본 동네 서점 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "####.####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "###..####"], "floor": "sh-wood", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 5, "floor": "sh-concrete", "wall": "sh-white"}, {"x0": 0, "y0": 6, "x1": 8, "y1": 13, "floor": "sh-wood", "wall": "sh-white"}], "objects": [{"id": "sh-noren", "x": 4, "y": 5}, {"id": "sh-returns-shelf", "x": 1, "y": 3}, {"id": "sh-returns-shelf", "x": 2, "y": 3}, {"id": "sh-returns-shelf", "x": 3, "y": 3}, {"id": "sh-book-crates", "x": 6, "y": 3}, {"id": "sh-book-crates", "x": 7, "y": 3}, {"id": "window-sash", "x": 6, "y": 6}, {"id": "wall-clock", "x": 2, "y": 6}, {"id": "sh-bookshelf", "x": 1, "y": 8}, {"id": "sh-bookshelf", "x": 2, "y": 8}, {"id": "sh-bookshelf", "x": 3, "y": 8}, {"id": "sh-bookshelf", "x": 5, "y": 8}, {"id": "sh-bookshelf", "x": 6, "y": 8}, {"id": "sh-bookshelf", "x": 7, "y": 8}, {"id": "sh-book-island", "x": 1, "y": 10}, {"id": "sh-book-table", "x": 1, "y": 12}, {"id": "sh-counter", "x": 5, "y": 11}, {"id": "sh-counter", "x": 6, "y": 11}, {"id": "sh-register", "x": 7, "y": 11}, {"id": "h2-cardboard", "x": 7, "y": 10}, {"id": "sh-shutter-2", "x": 3, "y": 13}], "tables": [], "goods": [{"id": "books-stack", "x": 1, "y": 12}, {"id": "sh-price-dots", "x": 6, "y": 11}], "start": [{"x": 3, "y": 12}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-bookstore", "name": "일본 동네 서점 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "####.####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "###..####"], "floor": "sh-wood", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 5, "floor": "fd-wood-dark", "wall": "fd-wood-wall"}, {"x0": 0, "y0": 6, "x1": 8, "y1": 13, "floor": "sh-wood", "wall": "sh-white"}], "objects": [{"id": "sh-noren", "x": 4, "y": 5}, {"id": "sh-returns-shelf", "x": 1, "y": 3}, {"id": "sh-returns-shelf", "x": 2, "y": 3}, {"id": "sh-returns-shelf", "x": 3, "y": 3}, {"id": "sh-book-crates", "x": 6, "y": 3}, {"id": "sh-book-crates", "x": 7, "y": 3}, {"id": "sh-bookshelf", "x": 1, "y": 8}, {"id": "sh-bookshelf", "x": 2, "y": 8}, {"id": "sh-bookshelf", "x": 3, "y": 8}, {"id": "sh-bookshelf", "x": 5, "y": 8}, {"id": "sh-bookshelf", "x": 6, "y": 8}, {"id": "sh-bookshelf", "x": 7, "y": 8}, {"id": "sh-book-island", "x": 1, "y": 10}, {"id": "sh-book-table", "x": 1, "y": 12}, {"id": "sh-counter", "x": 5, "y": 11}, {"id": "sh-counter", "x": 6, "y": 11}, {"id": "sh-register", "x": 7, "y": 11}, {"id": "h2-cardboard", "x": 7, "y": 10}, {"id": "sh-shutter-2", "x": 3, "y": 13}], "tables": [], "goods": [{"id": "books-stack", "x": 1, "y": 12}, {"id": "sh-price-dots", "x": 6, "y": 11}], "start": [{"x": 3, "y": 12}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -39,11 +39,11 @@ XXX..XXXX
 ### 1층
 ```
 y=00: 8740 8741 8741 8741 8741 8741 8741 8741 8740
-y=01: 8732 9610 9611 9613 9607 9609 9611 9613 8728
-y=02: 8732 9618 9619 9621 9615 9617 9619 9621 8728
-y=03: 8732 9534 9536 9540 9528 9532 9536 9540 8728
-y=04: 8732 9485 9487 9491 9479 9483 9487 9491 8728
-y=05: 8724 8727 8727 8735 9497 8731 8727 8727 8724
+y=01: 8732 9399 9400 9396 9396 9398 9400 9396 8728
+y=02: 8732 9405 9408 9404 9404 9404 9408 9404 8728
+y=03: 8732 9331 9333 9337 10084 10088 9325 9329 8728
+y=04: 8732 10097 9300 10099 10103 10107 10091 10095 8728
+y=05: 8724 8727 8727 8735 10125 8731 8727 8727 8724
 y=06: 8732 9610 9611 9613 9575 9609 9611 9613 8728
 y=07: 8732 9618 9619 9621 9591 9617 9619 9621 8728
 y=08: 8732 9550 9552 9556 9543 9548 9552 9556 8728
@@ -80,8 +80,8 @@ y=02: . 10157 10157 10157 . . 10155 10155 .
 y=03: . 10158 10158 10158 . . 10156 10156 .
 y=04: . . . . . . . . .
 y=05: . . . . 10148 . . . .
-y=06: . . 8813 . 10149 . 8798 8799 .
-y=07: . 9639 9639 9639 . 9639 8800 8801 .
+y=06: . . . . 10149 . . . .
+y=07: . 9639 9639 9639 . 9639 9639 9639 .
 y=08: . 9640 9640 9640 . 9640 9640 9640 .
 y=09: . 9643 9644 . . . . . .
 y=10: . 9645 9646 . . . . 10022 .
@@ -99,7 +99,7 @@ y=03: . . . . . . . . .
 y=04: . . . . . . . . .
 y=05: . . . . . . . . .
 y=06: . . . . . . . . .
-y=07: . . . . . . 9639 9639 .
+y=07: . . . . . . . . .
 y=08: . . . . . . . . .
 y=09: . . . . . . . . .
 y=10: . . . . . . . 9624 .

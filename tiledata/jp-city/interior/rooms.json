@@ -945,14 +945,18 @@
     ],
     [
      "cv-back-shelf",
-     1
-    ],
-    [
-     "door-open-western",
-     1
+     2
     ],
     [
      "cv-autodoor",
+     1
+    ],
+    [
+     "sh-crate-stack",
+     1
+    ],
+    [
+     "h2-cardboard",
      1
     ]
    ]
@@ -1030,7 +1034,15 @@
      1
     ],
     [
+     "fd-prep",
+     1
+    ],
+    [
      "fd-sink",
+     1
+    ],
+    [
+     "fd-fridge",
      1
     ],
     [
@@ -1047,7 +1059,7 @@
     ],
     [
      "fd-stool",
-     5
+     3
     ],
     [
      "fd-counter",
@@ -1243,7 +1255,7 @@
     ],
     [
      "sh-oven",
-     3
+     2
     ],
     [
      "sh-dough-bench",
@@ -1254,19 +1266,23 @@
      1
     ],
     [
-     "window-sash",
+     "kitchen-sink",
      1
     ],
     [
-     "wall-clock",
+     "sh-pass-window",
      1
     ],
     [
      "sh-bread-shelf",
-     1
+     2
     ],
     [
      "sh-wall-shelf",
+     1
+    ],
+    [
+     "sh-counter",
      3
     ],
     [
@@ -1275,10 +1291,6 @@
     ],
     [
      "sh-tray-stand",
-     2
-    ],
-    [
-     "sh-counter",
      2
     ],
     [
@@ -1311,14 +1323,6 @@
     [
      "sh-book-crates",
      2
-    ],
-    [
-     "window-sash",
-     1
-    ],
-    [
-     "wall-clock",
-     1
     ],
     [
      "sh-bookshelf",
@@ -1360,19 +1364,19 @@
      1
     ],
     [
+     "pb-med-cabinet",
+     2
+    ],
+    [
      "sh-stock-shelf",
-     3
+     1
     ],
     [
      "sh-dispense-counter",
      1
     ],
     [
-     "window-sash",
-     1
-    ],
-    [
-     "wall-clock",
+     "washbasin",
      1
     ],
     [
@@ -1411,32 +1415,12 @@
    "florist",
    [
     [
-     "sh-noren",
-     1
-    ],
-    [
-     "sh-bucket-row",
-     1
-    ],
-    [
-     "sh-paper-table",
-     1
-    ],
-    [
      "sh-flower-cooler",
-     4
-    ],
-    [
-     "window-sash",
-     1
-    ],
-    [
-     "wall-clock",
-     1
+     6
     ],
     [
      "sh-wall-shelf",
-     3
+     1
     ],
     [
      "sh-flower-buckets",
@@ -1447,15 +1431,15 @@
      1
     ],
     [
+     "sh-plant-pot",
+     2
+    ],
+    [
      "sh-counter",
      2
     ],
     [
      "sh-register",
-     1
-    ],
-    [
-     "sh-plant-pot",
      1
     ],
     [
@@ -1470,31 +1454,7 @@
    "yaoya",
    [
     [
-     "sh-noren",
-     1
-    ],
-    [
-     "sh-crate-stack",
-     2
-    ],
-    [
-     "sh-scale-table",
-     1
-    ],
-    [
-     "sh-fruit-box",
-     3
-    ],
-    [
-     "window-sash",
-     1
-    ],
-    [
-     "wall-clock",
-     1
-    ],
-    [
-     "sh-wall-shelf",
+     "sh-basket-shelf",
      6
     ],
     [
@@ -1502,7 +1462,15 @@
      2
     ],
     [
-     "sh-fish-ice",
+     "sh-fruit-box",
+     2
+    ],
+    [
+     "sh-scale-table",
+     1
+    ],
+    [
+     "sh-crate-stack",
      1
     ],
     [
@@ -1525,36 +1493,20 @@
    "barber",
    [
     [
-     "sh-noren",
-     1
-    ],
-    [
-     "sh-towel-rack",
-     2
-    ],
-    [
-     "sh-washer",
-     1
-    ],
-    [
-     "sh-shampoo",
-     2
-    ],
-    [
-     "window-sash",
-     1
-    ],
-    [
-     "wall-clock",
-     1
-    ],
-    [
      "sh-barber-mirror",
      3
     ],
     [
-     "sh-wall-shelf",
+     "washbasin",
      2
+    ],
+    [
+     "sh-wall-shelf",
+     1
+    ],
+    [
+     "sh-shampoo",
+     1
     ],
     [
      "sh-barber-chair-n",
@@ -1562,6 +1514,14 @@
     ],
     [
      "sh-waiting-bench",
+     1
+    ],
+    [
+     "sh-towel-rack",
+     1
+    ],
+    [
+     "sh-washer",
      1
     ],
     [
@@ -1597,22 +1557,26 @@
     ],
     [
      "pb-mural",
-     1
+     2
     ],
     [
      "pb-noren-m",
-     1
+     2
     ],
     [
      "pb-noren-f",
-     1
+     2
     ],
     [
      "pb-locker",
-     4
+     3
     ],
     [
      "pb-basket-shelf",
+     2
+    ],
+    [
+     "pb-bandai",
      1
     ],
     [
@@ -1620,32 +1584,28 @@
      1
     ],
     [
-     "pb-massage-chair",
+     "pb-bench",
      1
+    ],
+    [
+     "pb-massage-chair",
+     2
+    ],
+    [
+     "getabako",
+     2
     ],
     [
      "pb-scale",
      1
     ],
     [
-     "getabako",
-     1
-    ],
-    [
-     "pb-bandai",
-     1
-    ],
-    [
      "genkan-door",
-     1
-    ],
-    [
-     "pb-bench",
-     1
+     2
     ],
     [
      "pb-bath",
-     1
+     2
     ]
    ]
   ],
@@ -2016,7 +1976,7 @@
     ],
     [
      "h2-cardboard",
-     1
+     2
     ],
     [
      "shoes-pair",
@@ -2047,11 +2007,7 @@
     ],
     [
      "andon",
-     1
-    ],
-    [
-     "zabuton",
-     9
+     2
     ],
     [
      "h2-old-tansu",
@@ -2076,6 +2032,10 @@
     [
      "h2-irori",
      1
+    ],
+    [
+     "zabuton",
+     9
     ],
     [
      "h2-hibachi",
@@ -2123,7 +2083,7 @@
     ],
     [
      "chabudai",
-     1
+     2
     ],
     [
      "dining",

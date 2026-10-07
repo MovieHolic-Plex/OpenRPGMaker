@@ -3,26 +3,26 @@
   "id": "jp-city-barber",
   "size": [
    9,
-   14
+   9
   ]
  },
  "start": [
   3,
-  12
+  7
  ],
- "summary": "손 도트 실내 '일본 동네 이발소 실내' 9×14 (jp-city-barber, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 이발소 실내' 9×9 (jp-city-barber, jp_city) — 출입구에서 닿는 칸 19, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-barber",
   "tilesetId": "jp_city",
   "width": 9,
-  "height": 14,
-  "reachable": 35,
-  "floorCells": 54,
+  "height": 9,
+  "reachable": 19,
+  "floorCells": 37,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 3,
-    "y": 12
+    "y": 7
    }
   ],
   "links": 0,
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 35,
+ "reach": 19,
  "ok": true
 }

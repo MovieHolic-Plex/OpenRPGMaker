@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 편의점(コンビニ) 실내 (`jp-city-konbini`, 14×11)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-konbini`. 도구 결과: 손 도트 실내 '일본 편의점(コンビニ) 실내' 14×11 (jp-city-konbini, jp_city) — 출입구에서 닿는 칸 44, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-konbini`. 도구 결과: 손 도트 실내 '일본 편의점(コンビニ) 실내' 14×11 (jp-city-konbini, jp_city) — 출입구에서 닿는 칸 40, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-konbini", "name": "일본 편의점(コンビニ) 실내", "plan": ["##############", "#.......#....#", "#.......#....#", "#.......#....#", "#.......#....#", "#.......##.###", "#............#", "#............#", "#............#", "#............#", "######..######"], "floor": "cv-vinyl", "wall": "cv-panel", "zones": [{"x0": 9, "x1": 12, "y0": 1, "y1": 4, "floor": "cv-backroom", "wall": "cv-panel"}], "objects": [{"id": "cv-magazine", "x": 1, "y": 3}, {"id": "cv-open-case", "x": 3, "y": 3}, {"id": "cv-cooler", "x": 5, "y": 3}, {"id": "cv-cooler", "x": 6, "y": 3}, {"id": "cv-atm", "x": 7, "y": 3}, {"id": "cv-copier", "x": 1, "y": 4}, {"id": "cv-gondola", "x": 2, "y": 6}, {"id": "cv-gondola", "x": 4, "y": 6}, {"id": "cv-gondola", "x": 6, "y": 6}, {"id": "cv-freezer", "x": 1, "y": 8}, {"id": "cv-freezer", "x": 3, "y": 8}, {"id": "cv-trash", "x": 1, "y": 9}, {"id": "cv-baskets", "x": 5, "y": 8}, {"id": "cv-hotcase", "x": 8, "y": 8}, {"id": "cv-register", "x": 9, "y": 8}, {"id": "cv-counter", "x": 11, "y": 8}, {"id": "cv-coffee", "x": 12, "y": 8}, {"id": "cv-back-shelf", "x": 9, "y": 3}, {"id": "door-open-western", "x": 10, "y": 5}, {"id": "cv-autodoor", "x": 6, "y": 10}], "tables": [], "goods": [{"id": "cv-drink", "x": 9, "y": 8}, {"id": "cv-snack", "x": 11, "y": 8}], "start": [{"x": 6, "y": 9}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-konbini", "name": "일본 편의점(コンビニ) 실내", "plan": ["##############", "#.......#....#", "#.......#....#", "#.......#....#", "#.......#....#", "#.......##.###", "#............#", "#............#", "#............#", "#............#", "######..######"], "floor": "cv-vinyl", "wall": "cv-panel", "zones": [{"x0": 9, "x1": 12, "y0": 1, "y1": 4, "floor": "cv-backroom", "wall": "cv-panel"}], "objects": [{"id": "cv-magazine", "x": 1, "y": 3}, {"id": "cv-open-case", "x": 3, "y": 3}, {"id": "cv-cooler", "x": 5, "y": 3}, {"id": "cv-cooler", "x": 6, "y": 3}, {"id": "cv-atm", "x": 7, "y": 3}, {"id": "cv-copier", "x": 1, "y": 4}, {"id": "cv-gondola", "x": 2, "y": 6}, {"id": "cv-gondola", "x": 4, "y": 6}, {"id": "cv-gondola", "x": 6, "y": 6}, {"id": "cv-freezer", "x": 1, "y": 8}, {"id": "cv-freezer", "x": 3, "y": 8}, {"id": "cv-trash", "x": 1, "y": 9}, {"id": "cv-baskets", "x": 5, "y": 8}, {"id": "cv-hotcase", "x": 8, "y": 8}, {"id": "cv-register", "x": 9, "y": 8}, {"id": "cv-counter", "x": 11, "y": 8}, {"id": "cv-coffee", "x": 12, "y": 8}, {"id": "cv-back-shelf", "x": 9, "y": 3}, {"id": "cv-autodoor", "x": 6, "y": 10}, {"id": "cv-back-shelf", "x": 11, "y": 3}, {"id": "sh-crate-stack", "x": 12, "y": 4}, {"id": "h2-cardboard", "x": 9, "y": 4}], "tables": [], "goods": [{"id": "cv-drink", "x": 9, "y": 8}, {"id": "cv-snack", "x": 11, "y": 8}], "start": [{"x": 6, "y": 9}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -22,8 +22,8 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 XXXXXXXXXXXXXX
 XXXXXXXXXXXXXX
 XXXXXXXXXXXXXX
-XXXXXXXXXXX..X
-XX...XX.X....X
+XXXXXXXXXXXXXX
+XX...XX.XX..XX
 X.......XX.XXX
 X.XXXXXXXX.XXX
 X.......XX.XXX
@@ -57,7 +57,7 @@ y=03: . . . . . . . . . . . . . .
 y=04: . . . . . . . . . . . . . .
 y=05: . . . . . . . . . . . . . .
 y=06: . . . . . . . . . . . . . .
-y=07: . . . . . . . . . . 9009 . . .
+y=07: . . . . . . . . . . . . . .
 y=08: . . . . . . . . . . . . . .
 y=09: . . . . . . . . . . . . . .
 y=10: . . . . . . 9199 9200 . . . . . .
@@ -67,11 +67,11 @@ y=10: . . . . . . 9199 9200 . . . . . .
 ```
 y=00: . . . . . . . . . . . . . .
 y=01: . . . . . . . . . . . . . .
-y=02: . . . 9170 9171 . . 9193 . 9189 9190 . . .
-y=03: . 9178 9179 9172 9173 9168 9168 9194 . 9191 9192 . . .
-y=04: . 9196 . . . 9169 9169 . . . . . . .
-y=05: . . 9159 9160 9159 9160 9159 9160 . . 9007 . . .
-y=06: . . 9161 9162 9161 9162 9161 9162 . . 9008 . . .
+y=02: . . . 9170 9171 . . 9193 . 9189 9190 9189 9190 .
+y=03: . 9178 9179 9172 9173 9168 9168 9194 . 9191 9192 9191 9192 .
+y=04: . 9196 . . . 9169 9169 . . 10022 . . 10170 .
+y=05: . . 9159 9160 9159 9160 9159 9160 . . . . . .
+y=06: . . 9161 9162 9161 9162 9161 9162 . . . . . .
 y=07: . 9180 9181 9180 9181 9197 . . 9187 9185 . . 9188 .
 y=08: . 9182 9183 9182 9183 9198 . . 9186 9186 . 9184 9186 .
 y=09: . 9202 . . . . . . . . . . . .
@@ -83,7 +83,7 @@ y=10: . . . . . . . . . . . . . .
 y=00: . . . . . . . . . . . . . .
 y=01: . . . . . . . . . . . . . .
 y=02: . . . . . . . . . . . . . .
-y=03: . 9195 . . . . . . . . . . . .
+y=03: . 9195 . . . . . . . . . . 10169 .
 y=04: . . . . . . . . . . . . . .
 y=05: . . . . . . . . . . . . . .
 y=06: . . . . . . . . . . . . . .
