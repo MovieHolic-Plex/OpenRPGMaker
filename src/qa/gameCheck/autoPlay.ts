@@ -566,7 +566,13 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
     for (const pending of instance.pendingSkillIds ?? []) {
       const known = instance.skillIds ?? [];
       const keepsLastStab = (skillId: string) => stab(skillId) && !stab(pending) && known.filter(stab).length <= 1;
-      const weakest = [...known].filter((skillId) => power(skillId) >= 0 && !keepsLastStab(skillId)).sort((a, b) => power(a) - power(b))[0];
+      // 같은 속성 기술이 겹친 것부터 바꾼다 — 풀·에스퍼 스타터가 풀 기술 셋으로 채워져, 불꽃·비행·벌레를 낸 라이벌 챔피언에게
+      // 반감 기술만 들고 Lv93 로 열 번 졌다(2026-10-07 사막 기획서). 플레이어도 기술 범위를 남긴다.
+      const elementOf = (skillId: string) => skillOf(skillId)?.elementId ?? "";
+      const lastOfElement = (skillId: string) => elementOf(skillId) !== elementOf(pending) && known.filter((other) => elementOf(other) === elementOf(skillId)).length <= 1;
+      const candidates = [...known].filter((skillId) => power(skillId) >= 0 && !keepsLastStab(skillId));
+      const duplicated = candidates.filter((skillId) => !lastOfElement(skillId));
+      const weakest = (duplicated.length ? duplicated : candidates).sort((a, b) => power(a) - power(b))[0];
       const replaced = weakest && power(pending) > power(weakest) ? replacePendingMonsterSkill(project, instance, pending, weakest) : undefined;
       const settled = replaced?.ok ? replaced : rejectPendingMonsterSkill(instance, pending);
       if (settled.ok) instance = settled.instance;
