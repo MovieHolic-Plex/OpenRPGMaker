@@ -41,6 +41,7 @@ export function createAtlasBiomeInteriorTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     referenceDocuments: REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category)),
+    roomKit: { builtin: ATLAS_BIOME_INTERIOR_ID },
   };
 }
 
@@ -100,7 +101,10 @@ export function ensureAtlasBiomeInteriorCurrent(project: InteriorProject, id: st
   const parked = detachWorkshopTiles(tileset);
   const changed = refreshAtlasBiomeInterior(project, id);
   const moved = parked ? attachWorkshopTiles(project, id, parked) : false;
-  return changed || moved;
+  const current = project.tilesets[id]!;
+  const kit = !current.roomKit;
+  if (kit) current.roomKit = { builtin: ATLAS_BIOME_INTERIOR_ID };
+  return changed || moved || kit;
 }
 
 /**

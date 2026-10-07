@@ -61,6 +61,17 @@ export const JP_INTERIOR_SPEC = jpSpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
 export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = { [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC };
 
+/**
+ * 타일셋의 방 짓기 역할표(roomKit). 칩셋 id 가 아니라 타일셋 정의를 보므로 스토어 사본(id 가 store_… 로 바뀐 것)도 짓는다.
+ * roomKit 이 없는 옛 저장본의 번들 칩셋은 id 로 찾는다.
+ */
+export function roomSpecOf(tileset: Pick<TilesetDef, "id" | "roomKit"> | undefined): HandInteriorSpec | undefined {
+  if (!tileset) return undefined;
+  const kit = tileset.roomKit;
+  if (kit?.spec && typeof kit.spec === "object") return kit.spec as HandInteriorSpec;
+  return HAND_INTERIOR_SPECS[kit?.builtin ?? tileset.id];
+}
+
 export interface HandInteriorZone { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number; readonly floor?: string; readonly wall?: string }
 export interface HandInteriorObject { readonly id: string; readonly x: number; readonly y: number }
 export interface HandInteriorTable { readonly style: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }
