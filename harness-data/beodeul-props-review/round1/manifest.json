@@ -400,16 +400,6 @@
    "cell": 16
   },
   {
-   "id": "e-tree-d43edd",
-   "name": "버들항 나무 4×5",
-   "role": "나무",
-   "image": "existing-bd-tree-d43edd.png",
-   "description": "기존 키트 bd-tree-d43edd (4×5칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-tree-d43edd",
-   "cell": 16
-  },
-  {
    "id": "e-tree-c27062",
    "name": "버들항 나무 1×3",
    "role": "나무",
@@ -417,16 +407,6 @@
    "description": "기존 키트 bd-tree-c27062 (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
    "kind": "existing",
    "sourceKit": "bd-tree-c27062",
-   "cell": 16
-  },
-  {
-   "id": "e-tree-5844f6",
-   "name": "버들항 나무 4×5",
-   "role": "나무",
-   "image": "existing-bd-tree-5844f6.png",
-   "description": "기존 키트 bd-tree-5844f6 (4×5칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-tree-5844f6",
    "cell": 16
   },
   {
@@ -580,16 +560,6 @@
    "cell": 16
   },
   {
-   "id": "e-tree-b1d104",
-   "name": "버들항 나무 4×5",
-   "role": "나무",
-   "image": "existing-bd-tree-b1d104.png",
-   "description": "기존 키트 bd-tree-b1d104 (4×5칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-tree-b1d104",
-   "cell": 16
-  },
-  {
    "id": "e-mpart-bush-c",
    "name": "벽 밑 덤불(짙은 둥근)",
    "role": "정원·부품",
@@ -710,16 +680,6 @@
    "cell": 16
   },
   {
-   "id": "e-out-sand-patch",
-   "name": "외곽 모래길 조각 6x4",
-   "role": "야외",
-   "image": "existing-bd-out-sand-patch.png",
-   "description": "기존 키트 bd-out-sand-patch (6×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-out-sand-patch",
-   "cell": 16
-  },
-  {
    "id": "e-out-signpost",
    "name": "외곽 이정표",
    "role": "야외",
@@ -727,26 +687,6 @@
    "description": "기존 키트 bd-out-signpost (1×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
    "kind": "existing",
    "sourceKit": "bd-out-signpost",
-   "cell": 16
-  },
-  {
-   "id": "e-out-well-plaza",
-   "name": "외곽 우물 광장",
-   "role": "야외",
-   "image": "existing-bd-out-well-plaza.png",
-   "description": "기존 키트 bd-out-well-plaza (9×8칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-out-well-plaza",
-   "cell": 16
-  },
-  {
-   "id": "e-out-well-plaza-sand",
-   "name": "외곽 우물 광장 (모래길 위)",
-   "role": "야외",
-   "image": "existing-bd-out-well-plaza-sand.png",
-   "description": "기존 키트 bd-out-well-plaza-sand (9×8칸). 사람이 허용/거절한 적 없는 기존 그림.",
-   "kind": "existing",
-   "sourceKit": "bd-out-well-plaza-sand",
    "cell": 16
   },
   {
