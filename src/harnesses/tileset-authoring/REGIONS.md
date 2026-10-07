@@ -6,7 +6,7 @@
 ## 1. 절대 규칙
 
 - **모든 픽셀은 좌표로 손으로 찍는다.** 생성 이미지 금지. Scarloxy·pret(닌텐도) 픽셀 복사 금지 — 잰 구조·문법만 쓴다.
-- pret 원작 렌더(`lib/pret_ref.py`)는 **학습 전용**. 저장소에 넣지 않는다. 출력은 `/tmp/viz/<테마>/orig/` 에.
+- 원작 그림·조립본은 받지도 두지도 않는다(2026-10-07 저작권 정리로 `lib/pret_ref.py` 와 캐시 삭제). 잰 구조·문법 메모만 쓴다.
 - 금지 명령: `npm run gates`·`gates:*`·`npm test`·`npx vitest`·`node scripts/run-vitest.mjs`·전체 `typecheck`·`git stash`(모든 변형). 원격 DB(Supabase/LegacyDb) 쓰기 금지. push·PR 금지.
 - **다른 에이전트와 같은 파일을 고치지 않는다.** 새 파일만 만든다:
   `recipes/monster_<x>.py`(+ 필요하면 `recipes/<x>_*.py` 도우미), `harness-data/tileset-authoring/monster-<x>/seed.json`, `node/monster_<x>.mts`.
@@ -59,15 +59,10 @@
 건물 크기(통합 I4 W1, 원작 미로마을 비례): 센터·마트 4×4(지붕 2줄 + 벽 2줄, 문 1칸 = 둘째 칸 `entrance dx 1`, 문장은 지붕 앞면 가운데),
 민가 4×4(`house_i/j` 만 5×4), 2층 `two_*` 4~5×6, 상점 `shop_*` 6×4, 오두막 `cabin_*` 4×4. 지붕 높이는 `buildings.ROOF_H`(33px, 옛 49) — 지붕을 다시 칠하는 덮개(눈·재)는 49 를 적지 말고 이 상수를 읽는다.
 
-## 3. 맵 문법은 원작에서 배운다
+## 3. 맵 문법은 장소에서 배운다
 
-원작 GBA 지도를 직접 그려 보고 **장소의 문법**(무엇이 걷는 땅이고, 무엇이 벽이고, 소품이 어디 붙는지, 크기 비례)을 적은 뒤 타일을 정한다.
-
-```bash
-P=src/harnesses/tileset-authoring/lib/pret_ref.py
-python3 $P em ShoalCave_LowTideIceRoom_Layout /tmp/viz/<테마>/orig/shoal_ice.png   # em=에메랄드, fr=파이어레드
-python3 -c "import sys;sys.path.insert(0,'src/harnesses/tileset-authoring/lib');import pret_ref as p;print([n for n in p.layouts('em') if 'Shoal' in n])"   # 레이아웃 이름 찾기
-```
+장소의 문법(무엇이 걷는 땅이고, 무엇이 벽이고, 소품이 어디 붙는지, 크기 비례)을 글로 먼저 적은 뒤 타일을 정한다.
+원작 지도를 내려받아 조립·렌더하던 도구는 2026-10-07 저작권 정리로 지웠다. 원작 그림을 저장소·캐시·시각화 서버에 두지 않는다.
 
 ## 4. 기반(이미 있음 — 그대로 쓴다)
 
