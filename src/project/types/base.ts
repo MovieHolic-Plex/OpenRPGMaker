@@ -316,7 +316,8 @@ export interface StructureKitRow {
 // 스탬프 출처 유니언: 붓질 학습·DB 작성·실내 카탈로그.
 // 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
 // pack-preset: 사용자가 올린 서드파티 팩을 프리셋으로 구울 때 심은 물체(rpgmakerMv/tilesetPreset.ts).
-export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog" | "pack-preset";
+// workshop: 공방에서 그려 고른 기물을 칩셋에 구운 물체(project/workshopTiles.ts).
+export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog" | "pack-preset" | "workshop";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.

@@ -8,8 +8,10 @@ import { CALLS_PER_CANDIDATE_ESTIMATE } from "@/harnesses/_core/workshop/engine"
 import type { WorkshopItem, WorkshopRun } from "@/harnesses/_core/workshop/types";
 import { REJECT_REASONS } from "@/harnesses/interior-props/editor/prompts";
 import { el } from "@/util/dom";
+import { workshopObjectId } from "@/project/workshopTiles";
 import { WORKSHOP_MODEL_ADVICE } from "./chat";
 import { gridDataUrl } from "./pixels";
+import { bakeWorkshopPick, isWorkshopPickBaked } from "./workshopBake";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound, roundProgress } from "./workshopStatus";
 
@@ -91,6 +93,32 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ],
   });
 
+  // 공방 2단계: 고른 그림을 이 프로젝트의 손 도트 실내 칩셋에 넣는다 — 조수가 workshop:… id 로 맵에 놓는다
+  const pickedRun = pick ? session.rounds.find((r) => r.id === pick.roundId)?.runs.find((r) => r.letter === pick.letter) : undefined;
+  const bakeRow = (): HTMLElement[] => {
+    const grid = pickedRun?.grid;
+    if (!grid) return [];
+    const baked = isWorkshopPickBaked(item, grid);
+    const objectId = workshopObjectId(item.key);
+    return [el("div", {
+      class: "workshop-bake",
+      children: [
+        el("button", {
+          text: baked ? `칩셋에 넣음 ✓ (${pick!.letter})` : `고른 ${pick!.letter} 를 프로젝트 칩셋에 넣기`,
+          attrs: { type: "button", ...(baked ? { disabled: "" } : {}) },
+          dataset: { testid: "workshop-bake" },
+          on: { click: () => act(async () => { bakeWorkshopPick(item, grid, palette, session.env); rerender(); }) },
+        }),
+        el("span", {
+          class: "workshop-item-meta",
+          text: baked
+            ? `실내 칩셋에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
+            : "넣으면 이 프로젝트의 손 도트 실내 칩셋 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.",
+        }),
+      ],
+    })];
+  };
+
   const head = el("div", {
     class: "workshop-round-head",
     children: [
@@ -103,7 +131,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     ],
   });
 
-  if (!round) return el("div", { children: [...errorLine(), head, startBlock, ...(current ? [compare(null)] : [])] });
+  if (!round) return el("div", { children: [...errorLine(), head, ...bakeRow(), startBlock, ...(current ? [compare(null)] : [])] });
 
   const runs = round.runs;
   state.selected = Math.max(0, Math.min(runs.length - 1, state.selected));
@@ -172,6 +200,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     children: [
       ...errorLine(),
       head,
+      ...bakeRow(),
       el("p", { class: "workshop-item-meta", text: "1~5 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요." }),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       compare(selectedRun ?? null),
