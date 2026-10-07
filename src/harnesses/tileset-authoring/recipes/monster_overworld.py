@@ -711,8 +711,56 @@ def build(seed: dict, parts=None, sh: Sheet | None = None) -> Sheet:
             for nm, t in bd.cut(fn(P3), name).items():
                 sh.add(nm, t)
         sh.end_section()
+        _fit_interior_colors(sh, seed.get("limits", {}).get("max_colors", 320) - 5)
 
     return sh
+
+
+def _fit_interior_colors(sh, budget: int) -> None:
+    """실내 절이 시트 색 한도를 넘기면 실내에만 있는 색을 가장 가까운 색에 하나씩 합친다(가까운 쌍부터, 시트 전체가 budget 이하가 될 때까지).
+    다른 절의 픽셀은 건드리지 않는다. 실내 GBA 다시 그리기(2026-10-07)가 357색으로 한도 320 을 넘었다 — 대부분 램프 사이 한 톤 차이였다."""
+    ranges = [(a, b) for t, a, b in sh.sections if t.startswith("실내")]
+    inside = lambda i: any(a <= i < b for a, b in ranges)
+    fixed, mine = set(), {}
+    for i, im in enumerate(sh.tiles):
+        if im is None:
+            continue
+        for c in im.getdata():
+            if c[3] != 255:
+                continue
+            if inside(i):
+                mine[c[:3]] = mine.get(c[:3], 0) + 1
+            else:
+                fixed.add(c[:3])
+    d2 = lambda a, b: 2 * (a[0] - b[0]) ** 2 + 4 * (a[1] - b[1]) ** 2 + 3 * (a[2] - b[2]) ** 2
+    remap: dict = {}
+    live = fixed | set(mine)
+    while len(live) > budget:
+        best = None
+        for c in live - fixed:
+            near = min((o for o in live if o != c), key=lambda o: d2(c, o))
+            key = (d2(c, near), mine.get(c, 0))
+            if best is None or key < best[0]:
+                best = (key, c, near)
+        if best is None:
+            break
+        _, c, near = best
+        remap[c] = near
+        live.discard(c)
+        for k, v in remap.items():
+            if v == c:
+                remap[k] = near
+    if not remap:
+        return
+    for i, im in enumerate(sh.tiles):
+        if im is None or not inside(i):
+            continue
+        px_ = im.load()
+        for y in range(im.height):
+            for x in range(im.width):
+                c = px_[x, y]
+                if c[3] == 255 and c[:3] in remap:
+                    px_[x, y] = (*remap[c[:3]], 255)
 
 
 LM_ROLES: dict[str, dict] = {}
