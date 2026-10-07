@@ -3,7 +3,7 @@
 //   build_hand_interior_room : 평면 문자열 → 벽·천장 자동, 가구는 v5 물건 id → atlas_biome_interior 새 맵(또는 같은 칩셋 맵 다시 짓기)
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
-import { buildHandInteriorLayers, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { createJpCityTileset, ensureJpCityTileset } from "@/project/defaults/jpCity";
@@ -20,14 +20,21 @@ const FLOOR_IDS = uniq((s) => s.floors);
 const WALL_IDS = uniq((s) => s.walls);
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
-const TILESET_PARAM = { type: "string", enum: TILESET_IDS, description: `실내 칩셋 — ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋)` } as const;
-function pickTileset(args: Record<string, unknown>): string {
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+/** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
+function roomTilesetIds(project: Project): string[] {
+  return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];
+}
+function pickTileset(project: Project, args: Record<string, unknown>): string {
   const t = typeof args.tileset === "string" && args.tileset.trim() ? args.tileset.trim() : HAND_INTERIOR_TILESET_ID;
-  if (!HAND_INTERIOR_SPECS[t]) throw new ToolError(`실내 칩셋 "${t}" 은 없다 — ${TILESET_IDS.join(", ")}`, { code: "unknown-tileset" });
+  if (!HAND_INTERIOR_SPECS[t] && !roomSpecOf(project.tilesets[t])) {
+    throw new ToolError(`실내 칩셋 "${t}" 은 방 짓기 역할표가 없다 — ${roomTilesetIds(project).join(", ")}`, { code: "unknown-tileset" });
+  }
   return t;
 }
-/** 칩셋 정의를 프로젝트에 두고(없으면 번들 사본) 최신으로 맞춘다. */
+/** 칩셋 정의를 프로젝트에 두고(없으면 번들 사본) 최신으로 맞춘다. 번들 밖 칩셋(스토어 사본 등)은 그대로 쓴다. */
 function ensureInteriorTileset(draft: Project, id: string): TilesetDef | undefined {
+  if (!HAND_INTERIOR_SPECS[id]) return draft.tilesets[id];
   if (id === JP_INTERIOR_TILESET_ID) {
     if (!draft.tilesets[id]) draft.tilesets[id] = createJpCityTileset();
     else ensureJpCityTileset(draft.tilesets[id]!);
@@ -35,9 +42,9 @@ function ensureInteriorTileset(draft: Project, id: string): TilesetDef | undefin
   else ensureAtlasBiomeInteriorCurrent(draft, id);
   return draft.tilesets[id];
 }
-/** 칩셋 사양 + 사용자가 공방에서 그려 이 칩셋에 구운 기물(id workshop:…). */
+/** 칩셋 역할표 + 사용자가 공방에서 그려 이 칩셋에 구운 기물(id workshop:…). */
 function specFor(project: Project, tilesetId: string): HandInteriorSpec {
-  const base = HAND_INTERIOR_SPECS[tilesetId]!;
+  const base = roomSpecOf(project.tilesets[tilesetId]) ?? HAND_INTERIOR_SPECS[tilesetId]!;
   const workshop = workshopHandObjects(project.tilesets[tilesetId]);
   return Object.keys(workshop).length ? { ...base, objects: { ...base.objects, ...workshop } as HandInteriorSpec["objects"] } : base;
 }
@@ -69,7 +76,7 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     additionalProperties: false,
   },
   run(project, args): ToolExecResult {
-    const tilesetId = pickTileset(args);
+    const tilesetId = pickTileset(project, args);
     const S = specFor(project, tilesetId);
     const q = typeof args.query === "string" ? args.query.trim() : "";
     const cat = typeof args.category === "string" ? args.category.trim() : "";
@@ -90,7 +97,7 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     if (!q && !cat) {
       const idx = roomIndex(S);
       return { summary: `${tilesetId === JP_INTERIOR_TILESET_ID ? "일본 집 실내(jp_city)" : "손 도트 실내"} 부품: 가구 ${Object.keys(S.objects).length}종(분류 ${categories.size}) · 바닥 ${Object.keys(S.floors).length} · 벽면 ${Object.keys(S.walls).length} · 천장 ${Object.keys(S.ceilings).length} · 탁상 물건 ${Object.keys(S.goods).length}. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.`,
-        data: { tilesetId,
+        data: { tilesetId, roomTilesets: roomTilesetIds(project),
           floors: Object.entries(S.floors).map(([id, f]) => ({ id, ko: f.ko })),
           walls: Object.entries(S.walls).map(([id, w]) => ({ id, ko: w.ko })),
           ceilings: Object.keys(S.ceilings),
@@ -135,6 +142,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   domains: ["tile", "map"],
   description: "실내(집·민가·가게·상점·여관·주막·빵집·대장간·저택·교회·성 방·지하 등)를 지어줘·만들어줘 — 한 층을 손 도트 실내 칩셋 atlas_biome_interior 로 짓는다 — 실내를 까는 유일한 도구다. "
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
+    + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
     + "칸막이 규칙: 세로 칸막이('#' 한 열) 틈 1칸 = 문, 가로 칸막이('#' 한 줄) 틈은 그 아래 벽면 두 줄까지 통로가 된다. 맨 아래 줄의 '.' 틈이 출입구(또는 start). "
     + "floor·wall = list_hand_interior_parts 의 바닥·벽면 id, zones 로 방마다 바꾼다(찬 창고·손질터=wetstone, 가게=plank/terra, 부엌=ktile, 작업장=earth, 침실=dplank+깔개). "
     + "objects[].id = v5 가구 id(좌표 = 발밑 왼쪽 위 칸; wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄, hang 은 벽면 윗줄 y). tables = 탁자 자동 타일(dining·work·desk·display·counter·kcounter·sideboard·tea·felt), "
@@ -172,9 +180,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     required: ["plan", "floor", "wall"],
     additionalProperties: false,
   },
-  invalidArgsExample: { name: "빵집", plan: ["#######", "#.....#", "#.....#", "#.....#", "###.###"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
+  invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
   run(draft, args): ToolExecResult {
-    const tilesetId = pickTileset(args);
+    const tilesetId = pickTileset(draft, args);
     const tileset = ensureInteriorTileset(draft, tilesetId);
     if (!tileset) throw new ToolError(`타일셋 ${tilesetId} 이 없다`, { code: "tileset-not-found" });
     const input = args as unknown as HandInteriorInput;

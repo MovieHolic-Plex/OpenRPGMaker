@@ -43,7 +43,7 @@ interface SpecLine { readonly ko: string; readonly kind: "floor" | "flat"; reado
 export interface HandInteriorSpec {
   readonly blank: number; readonly void: number;
   /** 바닥: cols×rows 칸 주기(표면마다 짜임 주기의 배수) × 그림자 4. 번호 = ((y%rows)*cols + x%cols)*4 + 그림자. */
-  readonly floors: Readonly<Record<string, { readonly ko: string; readonly cols: number; readonly rows: number; readonly tiles: readonly number[] }>>;
+  readonly floors: Readonly<Record<string, { readonly ko: string; readonly cols: number; readonly rows: number; readonly tiles: readonly number[]; readonly lay?: "rowShift" }>>;
   /** 벽면: 2줄 × cols 열 × 서쪽 그림자. 번호 = ((줄-1)*cols + x%cols)*2 + 서쪽. */
   readonly walls: Readonly<Record<string, { readonly ko: string; readonly cols: number; readonly tiles: readonly number[] }>>;
   readonly ceilings: Readonly<Record<string, readonly number[]>>;
@@ -60,6 +60,17 @@ export const JP_INTERIOR_TILESET_ID = "jp_city";
 export const JP_INTERIOR_SPEC = jpSpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
 export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = { [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC };
+
+/**
+ * 타일셋의 방 짓기 역할표(roomKit). 칩셋 id 가 아니라 타일셋 정의를 보므로 스토어 사본(id 가 store_… 로 바뀐 것)도 짓는다.
+ * roomKit 이 없는 옛 저장본의 번들 칩셋은 id 로 찾는다.
+ */
+export function roomSpecOf(tileset: Pick<TilesetDef, "id" | "roomKit"> | undefined): HandInteriorSpec | undefined {
+  if (!tileset) return undefined;
+  const kit = tileset.roomKit;
+  if (kit?.spec && typeof kit.spec === "object") return kit.spec as HandInteriorSpec;
+  return HAND_INTERIOR_SPECS[kit?.builtin ?? tileset.id];
+}
 
 export interface HandInteriorZone { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number; readonly floor?: string; readonly wall?: string }
 export interface HandInteriorObject { readonly id: string; readonly x: number; readonly y: number }
@@ -111,6 +122,15 @@ export function analyseHandInteriorPlan(plan: readonly string[]) {
   return { W, H, g, face, top, inn, isFloor };
 }
 
+/**
+ * 바닥 칸 (x,y) 가 쓸 무늬 열. lay "rowShift" 면 줄마다 무늬를 가로로 민다 — 한 판을 바둑판처럼 반복하면
+ * 넓은 빈 바닥에서 같은 무늬가 같은 자리에 줄 서 보인다(2026-10-07 일본 마루). 가로로만 이어지는 무늬(널 마루)여야 한다.
+ * jp-city interior/ikit.py lay_x 와 같은 식.
+ */
+export function floorLayX(fd: { readonly cols: number; readonly lay?: string }, x: number, y: number): number {
+  return fd.lay === "rowShift" ? x + (((y + 1) * 40503) % 65521) % fd.cols : x;
+}
+
 /** 1층(구조) — build_tileset.py structure() 와 같다. */
 export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
   const { W, H, g, face, top, inn } = analyseHandInteriorPlan(input.plan);
@@ -136,7 +156,7 @@ export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "f
     else if (g[cy]![cx]) {
       const sh = (cy > 0 && face[cy - 1]![cx] ? 1 : 0) | (west ? 2 : 0);
       const fd = S.floors[f]!;
-      lower.push(fd.tiles[((cy % fd.rows) * fd.cols + (cx % fd.cols)) * 4 + sh]!);
+      lower.push(fd.tiles[((cy % fd.rows) * fd.cols + (floorLayX(fd, cx, cy) % fd.cols)) * 4 + sh]!);
     } else if (top[cy]![cx]) {
       const nv = cy === 0 ? 1 : (inn(cx, cy - 1) || top[cy - 1]![cx] ? 0 : 1);
       const b = (inn(cx, cy + 1) ? 1 : 0) | (inn(cx, cy - 1) ? 2 : 0) | (inn(cx - 1, cy) ? 4 : 0) | (inn(cx + 1, cy) ? 8 : 0) | (16 * nv);

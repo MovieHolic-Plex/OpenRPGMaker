@@ -501,6 +501,12 @@ export interface TilesetDef {
     plainWalls?: Record<string, number>;
   };
   /**
+   * 방 짓기 역할표(2026-10-07) — 이 칩셋에서 바닥·벽면·천장·가구가 어느 칸인지와 까는 규칙.
+   * build_hand_interior_room 은 칩셋 id 가 아니라 이것을 읽으므로, 스토어로 받아 id 가 바뀐 사본에서도 방을 지을 수 있다.
+   * builtin = 편집기가 들고 있는 번들 사양 이름(atlas_biome_interior · jp_city), spec = 사양 통째(HandInteriorSpec 모양 — 번들 밖 칩셋).
+   */
+  roomKit?: { builtin?: string; spec?: unknown };
+  /**
    * 칩셋 계열(그림체 묶음, 2026-09-25). 같은 계열끼리는 조수가 말없이 바꿔도 되고, 다른 계열로 가려면
    * 사용자 승인이 필요하다(`src/project/tilesetFamily.ts`). 없으면 원본·번들 이름에서 추정한다.
    */

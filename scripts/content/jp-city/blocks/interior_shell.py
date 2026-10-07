@@ -65,7 +65,8 @@ def _planks(ramp, hi, mid, lo, seed):
                 if a < b: bid = 0 if a <= x < b else 1
                 else: bid = 0 if (x >= a or x < b) else 1
                 tone = hs(r, bid, seed + 5) % 5            # 널마다 살짝 다른 톤 — 0 이면 한 단 밝은 널
-                col = hi if tone == 0 and rnd(r, bid, seed + 6, 450) else mid
+                # 밝은 널은 윗줄 1px 광택만 — 널 전체를 밝히면 넓은 빈 바닥에서 같은 자리에 띠로 줄 서 보였다(2026-10-07)
+                col = hi if tone == 0 and rnd(r, bid, seed + 6, 450) and yy == 0 else mid
                 if yy == 3: col = lo                          # 널 사이 홈
                 if x == a or x == b:                          # 이음새(머리 맞댐)
                     col = lo
@@ -75,11 +76,11 @@ def _planks(ramp, hi, mid, lo, seed):
     return d
 
 
-@R.floor('flooring', '플로어링(나무 마루)', cols=8, rows=4, tags=('거실', 'LDK', '복도', '양실'), desc='밝은 나무 널 마루(フローリング) — 양실·LDK·복도.')
+@R.floor('flooring', '플로어링(나무 마루)', cols=8, rows=4, tags=('거실', 'LDK', '복도', '양실'), desc='밝은 나무 널 마루(フローリング) — 양실·LDK·복도.', lay='rowShift')
 def _flooring(c): _planks('yuka', kc('yuka', 1), kc('yuka', 0), kc('yuka', -1), 1)(c)
 
 
-@R.floor('flooring-dark', '짙은 플로어링', cols=8, rows=4, tags=('거실', '복도', '침실'), desc='짙은 나무 마루 — 복도·양실.')
+@R.floor('flooring-dark', '짙은 플로어링', cols=8, rows=4, tags=('거실', '복도', '침실'), desc='짙은 나무 마루 — 복도·양실.', lay='rowShift')
 def _flooring_dark(c): _planks('ita', kc('ita', 1), kc('ita', 0), kc('ita', -1), 2)(c)
 
 
