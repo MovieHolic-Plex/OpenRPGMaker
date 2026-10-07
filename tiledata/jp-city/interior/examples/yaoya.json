@@ -1,13 +1,9 @@
 {
  "plan": [
   "##########",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "########.#",
-  "#........#",
-  "#........#",
+  "####.....#",
+  "####.....#",
+  "####.....#",
   "#........#",
   "#........#",
   "#........#",
@@ -26,15 +22,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 9,
-   "y1": 5,
-   "floor": "sh-wood",
-   "wall": "sh-white"
-  },
-  {
-   "x0": 0,
-   "y0": 6,
-   "x1": 9,
-   "y1": 15,
+   "y1": 11,
    "floor": "sh-concrete",
    "wall": "sh-white"
   }
@@ -42,128 +30,88 @@
  "objects": [
   {
    "id": "sh-basket-shelf",
-   "x": 1,
+   "x": 4,
    "y": 3
   },
   {
    "id": "sh-basket-shelf",
-   "x": 2,
+   "x": 5,
    "y": 3
   },
   {
    "id": "sh-basket-shelf",
-   "x": 3,
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 7,
    "y": 3
   },
   {
    "id": "sh-stock-shelf",
-   "x": 5,
-   "y": 3
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 6,
-   "y": 3
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 7,
-   "y": 3
-  },
-  {
-   "id": "sh-noren",
    "x": 8,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 4,
    "y": 5
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 8,
+   "y": 8
   },
   {
    "id": "sh-counter",
    "x": 1,
-   "y": 8
+   "y": 9
   },
   {
    "id": "sh-register",
    "x": 2,
-   "y": 8
+   "y": 9
   },
   {
    "id": "sh-counter",
    "x": 3,
-   "y": 8
+   "y": 9
   },
   {
-   "id": "sh-basket-shelf",
-   "x": 4,
-   "y": 8
-  },
-  {
-   "id": "sh-basket-shelf",
+   "id": "sh-veg-stand",
    "x": 5,
-   "y": 8
-  },
-  {
-   "id": "sh-basket-shelf",
-   "x": 6,
-   "y": 8
-  },
-  {
-   "id": "sh-basket-shelf",
-   "x": 7,
-   "y": 8
-  },
-  {
-   "id": "sh-veg-stand",
-   "x": 4,
-   "y": 10
-  },
-  {
-   "id": "sh-veg-stand",
-   "x": 4,
-   "y": 11
-  },
-  {
-   "id": "sh-veg-stand",
-   "x": 4,
-   "y": 12
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 1,
-   "y": 10
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 1,
-   "y": 12
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 1,
-   "y": 14
-  },
-  {
-   "id": "sh-fruit-box",
-   "x": 2,
-   "y": 14
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 8,
-   "y": 10
-  },
-  {
-   "id": "sh-fruit-box",
-   "x": 8,
-   "y": 12
-  },
-  {
-   "id": "sh-crate-stack",
-   "x": 8,
-   "y": 13
+   "y": 9
   },
   {
    "id": "sh-shutter",
    "x": 6,
-   "y": 15
+   "y": 11
   }
  ],
  "tables": [],
@@ -171,18 +119,18 @@
   {
    "id": "sh-scale",
    "x": 1,
-   "y": 8
+   "y": 9
   },
   {
    "id": "sh-price-dots",
    "x": 3,
-   "y": 8
+   "y": 9
   }
  ],
  "name": "일본 동네 채소가게 실내",
  "start": [
-  6,
-  14
+  7,
+  10
  ],
  "links": [],
  "rooms": [
@@ -191,7 +139,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 9,
-   "y1": 15
+   "y1": 11
   }
  ]
 }

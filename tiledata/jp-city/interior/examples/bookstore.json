@@ -1,11 +1,11 @@
 {
  "plan": [
   "###########",
-  "#.........#",
-  "#.........#",
-  "#.........#",
-  "#.........#",
-  "########.##",
+  "#.....#####",
+  "#.....#####",
+  "#.....#####",
+  "#.....#####",
+  "###.##....#",
   "#.........#",
   "#.........#",
   "#.........#",
@@ -24,13 +24,13 @@
    "x0": 0,
    "y0": 0,
    "x1": 10,
-   "y1": 5,
+   "y1": 4,
    "floor": "fd-wood-dark",
    "wall": "fd-wood-wall"
   },
   {
    "x0": 0,
-   "y0": 6,
+   "y0": 5,
    "x1": 10,
    "y1": 13,
    "floor": "sh-wood",
@@ -49,24 +49,24 @@
    "y": 3
   },
   {
-   "id": "sh-returns-shelf",
+   "id": "sh-book-crates",
    "x": 3,
    "y": 3
   },
   {
-   "id": "sh-book-crates",
-   "x": 5,
-   "y": 3
-  },
-  {
-   "id": "sh-book-crates",
-   "x": 6,
+   "id": "sh-returns-shelf",
+   "x": 4,
    "y": 3
   },
   {
    "id": "sh-returns-shelf",
-   "x": 9,
+   "x": 5,
    "y": 3
+  },
+  {
+   "id": "sh-noren",
+   "x": 3,
+   "y": 5
   },
   {
    "id": "sh-bookshelf",
@@ -76,11 +76,6 @@
   {
    "id": "sh-bookshelf",
    "x": 2,
-   "y": 8
-  },
-  {
-   "id": "sh-bookshelf",
-   "x": 3,
    "y": 8
   },
   {
@@ -96,47 +91,37 @@
   {
    "id": "sh-bookshelf",
    "x": 6,
-   "y": 8
+   "y": 7
   },
   {
    "id": "sh-bookshelf",
-   "x": 7,
-   "y": 8
+   "x": 9,
+   "y": 7
   },
   {
    "id": "sh-counter",
-   "x": 9,
+   "x": 8,
    "y": 8
   },
   {
    "id": "sh-register",
-   "x": 9,
+   "x": 8,
    "y": 9
   },
   {
    "id": "sh-counter",
-   "x": 9,
+   "x": 8,
    "y": 10
   },
   {
    "id": "sh-book-island",
-   "x": 2,
+   "x": 1,
    "y": 10
   },
   {
    "id": "sh-book-island",
-   "x": 2,
-   "y": 11
-  },
-  {
-   "id": "sh-book-island",
-   "x": 5,
+   "x": 4,
    "y": 10
-  },
-  {
-   "id": "sh-book-island",
-   "x": 5,
-   "y": 11
   },
   {
    "id": "sh-book-table",
@@ -144,14 +129,14 @@
    "y": 12
   },
   {
-   "id": "h2-cardboard",
-   "x": 9,
+   "id": "sh-book-island",
+   "x": 4,
    "y": 12
   },
   {
-   "id": "sh-noren",
-   "x": 8,
-   "y": 5
+   "id": "h2-cardboard",
+   "x": 9,
+   "y": 12
   },
   {
    "id": "sh-shutter-2",
@@ -168,7 +153,7 @@
   },
   {
    "id": "sh-price-dots",
-   "x": 9,
+   "x": 8,
    "y": 10
   }
  ],

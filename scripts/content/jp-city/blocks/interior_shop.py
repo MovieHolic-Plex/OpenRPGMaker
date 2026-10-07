@@ -269,11 +269,15 @@ def sh_bread_table(c):
 
 
 @R.obj('sh-tray-stand', '쟁반 스탠드', 1, 1, up=0, kind='floor', surface=True, use=('search',),
-       desc='쟁반과 집게를 쌓아 둔 작은 스탠드. 쌓인 흰 쟁반 두 장과 집게 한 쌍.', tags=('빵집', '쟁반', '집게'), place='빵 매대·계산대 옆', pair=('sh-bread-table',))
+       desc='쟁반과 집게를 쌓아 둔 작은 스탠드. 쌓인 갈색 쟁반 더미와 집게.', tags=('빵집', '쟁반', '집게'), place='빵 매대·계산대 옆', pair=('sh-bread-table',))
 def sh_tray_stand(c):
     cab(c, 1, 3, 14, 6, 7, 'conc', face=0)
-    c.R(3, 4, 10, 4, K('shiro', 2)); box(c, 3, 4, 10, 4, K('conc', -2)); c.R(5, 3, 8, 3, K('shiro', 1)); box(c, 5, 2, 8, 4, K('conc', -2)); c.HL(6, 2, 6, K('shiro', 3))
-    c.VL(2, 6, 3, K('tekko', 2)); c.VL(3, 6, 3, K('tekko', -1)); c.P(2, 5, K('conc', 3))                                    # 집게
+    for cy, st in ((7.4, -1), (6.4, 0), (5.4, 1), (4.4, 1)):                                                                  # 쌓인 갈색 쟁반 원판
+        ell(c, 6.5, cy, 4.4, 1.9, 'soil', st)
+    c.HL(4, 4, 5, K('soil', 3))
+    for i in range(5):                                                                                                         # 집게: 두 날이 X 로 겹친 쇠
+        c.P(10 + i, 7 - (i if i < 3 else 4 - i), K('tekko', 2)); c.P(10 + i, 5 + (i if i < 3 else 4 - i), K('tekko', -1))
+    c.P(12, 6, K('conc', 3)); c.P(10, 5, K('tekko', 3)); c.P(10, 7, K('tekko', 3))
 
 
 @R.obj('sh-oven', '오븐', 1, 1, up=16, kind='wall', surface=False, use=('search',),

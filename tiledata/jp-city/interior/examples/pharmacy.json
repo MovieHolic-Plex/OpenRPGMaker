@@ -1,20 +1,18 @@
 {
  "plan": [
-  "#########",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#######.#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "##..#####"
+  "###########",
+  "#....#....#",
+  "#....#....#",
+  "#....#....#",
+  "#....#....#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "###..######"
  ],
  "exitWidth": 2,
  "floor": "sh-wood",
@@ -24,119 +22,129 @@
   {
    "x0": 0,
    "y0": 0,
-   "x1": 8,
-   "y1": 5,
+   "x1": 10,
+   "y1": 6,
    "floor": "pb-linoleum",
    "wall": "sh-white"
   },
   {
    "x0": 0,
-   "y0": 6,
-   "x1": 8,
-   "y1": 14,
+   "y0": 7,
+   "x1": 10,
+   "y1": 12,
    "floor": "sh-wood",
    "wall": "cloth-beige"
   }
  ],
  "objects": [
   {
-   "id": "pb-med-cabinet",
+   "id": "sh-drug-shelf",
    "x": 1,
    "y": 3
   },
   {
-   "id": "pb-med-cabinet",
+   "id": "sh-drug-shelf",
    "x": 2,
    "y": 3
   },
   {
-   "id": "pb-med-cabinet",
+   "id": "sh-drug-shelf",
    "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 8,
    "y": 3
   },
   {
    "id": "washbasin",
-   "x": 5,
+   "x": 9,
    "y": 3
   },
   {
-   "id": "sh-stock-shelf",
-   "x": 6,
-   "y": 3
+   "id": "door-side-sliding",
+   "x": 5,
+   "y": 7
   },
   {
    "id": "sh-dispense-counter",
-   "x": 1,
-   "y": 8
-  },
-  {
-   "id": "sh-counter",
-   "x": 3,
-   "y": 8
+   "x": 7,
+   "y": 6
   },
   {
    "id": "sh-register",
-   "x": 4,
-   "y": 8
-  },
-  {
-   "id": "sh-dispense-counter",
-   "x": 5,
-   "y": 8
+   "x": 9,
+   "y": 6
   },
   {
    "id": "sh-drug-island",
-   "x": 4,
-   "y": 11
+   "x": 1,
+   "y": 9
   },
   {
    "id": "sh-drug-island",
    "x": 6,
-   "y": 11
+   "y": 9
   },
   {
    "id": "sh-consult",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "sh-waiting-bench",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "sh-plant-pot",
    "x": 1,
    "y": 11
   },
   {
-   "id": "sh-waiting-bench",
-   "x": 5,
-   "y": 13
+   "id": "sh-drug-island",
+   "x": 1,
+   "y": 6
   },
   {
-   "id": "sh-noren",
-   "x": 7,
-   "y": 5
+   "id": "sh-plant-pot",
+   "x": 4,
+   "y": 9
   },
   {
    "id": "sh-shutter-2",
-   "x": 2,
-   "y": 14
+   "x": 3,
+   "y": 12
   }
  ],
  "tables": [],
  "goods": [
   {
    "id": "sh-medicine",
-   "x": 1,
-   "y": 8
-  },
-  {
-   "id": "sh-medicine",
-   "x": 3,
-   "y": 8
-  },
-  {
-   "id": "sh-medicine",
-   "x": 6,
-   "y": 8
+   "x": 7,
+   "y": 6
   }
  ],
  "name": "일본 동네 약국 실내",
  "start": [
-  2,
-  13
+  3,
+  11
  ],
  "links": [],
  "rooms": [
@@ -144,8 +152,8 @@
    "room": "pharmacy",
    "x0": 0,
    "y0": 0,
-   "x1": 8,
-   "y1": 14
+   "x1": 10,
+   "y1": 12
   }
  ]
 }
