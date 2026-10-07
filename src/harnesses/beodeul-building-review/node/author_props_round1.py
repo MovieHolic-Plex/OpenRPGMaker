@@ -176,6 +176,7 @@ for k in d['structureKits']:
     g,nm=m.groups()
     if g=='bd-mpart' and skip_mpart.search(nm):continue
     if g=='bd-out' and skip_out.search(nm):continue
+    if k['width']*k['height']>=20 or nm.startswith('well-plaza') or nm=='sand-patch':continue  # 광장·모래밭 같은 대형은 여러 타일 조합으로 만든다 — 단품 심사에서 제외(사용자 2026-10-07)
     im=Image.new('RGBA',(k['width']*16,k['height']*16))
     for key in ('tiles','upperTiles'):
         for y,row in enumerate(k['rows']):
