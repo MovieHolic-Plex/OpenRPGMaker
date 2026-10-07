@@ -131,7 +131,7 @@
 
 앞선 6차까지는 원작 동굴을 기억에 의존해 「어두운 허공 + 밝은 돌띠」로 만들었고, 실제와 반대였다. pret 디컴파일 저장소
 (`pokefirered`·`pokeemerald` 의 `data/layouts/*/map.bin` + `tilesets/*/{tiles.png,metatiles.bin,palettes}`)를 직접 조립해(Mt. Moon 1F 768×640 = Bulbapedia 공식 크기와 일치)
-측정했다. 학습용이며 저장소에 넣지 않는다. 원작 문법:
+측정했다. 학습용이며 저장소에 넣지 않는다(그 조립 도구와 받은 원작 파일은 2026-10-07 저작권 정리로 모두 지웠다 — 아래는 그때 적은 문법 메모만 남는다). 원작 문법:
 - 걸을 수 없는 암반은 **바닥보다 밝은 고원 윗면**(한 톤 면 + 물결 두 줄)이고 어두운 건 테두리 띠뿐이다.
 - 테두리는 **물결치는 둥근 3톤 띠**(옆 약 12px, 윗변 약 5px, 남쪽 앞면 한 칸). 돌 한 개마다 윤곽선을 두르지 않는다.
 - 덩어리는 폭 2칸 이상의 알약형 섬·벽에서 뻗은 능선. 바닥은 조용한 가로 결. 채도는 낮다(우리는 Scarloxy 주황 계열로 옮김 — 마을과 한 게임으로 보이게).
@@ -144,7 +144,7 @@
 - 외곽은 어둠 1칸 + 벽 2칸. 야외 입구 `cave_mouth` 는 같은 문법(고원 윗면·3톤 띠·톱니 앞면·검은 문).
 
 ## 실내·체육관·퍼즐 (9차, 2026-10-02) — 10~12차에서 전부 교체됨
-(옛) `recipes/interior.py`(그림, 12차에서 삭제) + `node/showcase_interior.mts`(방 6개) + bake 규칙. 원작 센터·상점·집·체육관·퍼즐 방은 pret 디컴파일(`/tmp/viz/orig/g/rg.py` 로 조립, 저장소에 안 넣음)에서 눈으로 읽었다.
+(옛) `recipes/interior.py`(그림, 12차에서 삭제) + `node/showcase_interior.mts`(방 6개) + bake 규칙. 원작 센터·상점·집·체육관·퍼즐 방은 당시 원작 조립본에서 눈으로 읽은 문법 메모만 남았다(조립 도구·원작 파일은 2026-10-07 저작권 정리로 삭제).
 - 실내: 바닥 3종(마루·센터 크림 타일·상점 파랑)+벽 아래 그늘판, 뒷벽 두 칸(`int_wall_up/dn` + 좌우 모서리판), 옆벽 띠(투명), 검은 여백 `int_void`, 문 매트 `int_mat`, 계단 아래 `int_stairs_down`. 가구 14종은 물체(`counter` 3×2 `shelf` `shelf_wide` `table` `chair` `bed` `plant` `tv` `pc` `machine` `stairs_up` `rug` `window_pair` `statue`) — 가구·계단·창은 막힘(prop), 깔개 `rug` 는 걸을 수 있다(`decor`).
 - 체육관 바닥 4종(`gym_teal/diamond/dirt/brick`), 퍼즐 칸: `spin_{u,d,l,r}` `spin_stop` `warp_pad0/1` `gym_switch` `gym_pit`(밟을 수 있고 이벤트 자리), `elec_h/v`(막힘), 올린 칸막이 오토타일 `puzzle_block_at{47}`(kind `block`, 막힘).
 - 시트 색 한도는 seed.limits.max_colors(이 테마 200). 통행 시험 280건.
@@ -273,3 +273,17 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
   (draw → bake → 옛 run 의 견본 맵 `verify-*.json`·`showcase.json` 복사 → wire). 견본을 안 옮기면 참고문서 견본 맵이 0장이 된다.
 - 다시 굽지 않은 시트: gyms·rooms·dungeon(바뀐 공용 조각이 없다). 실내(센터·마트·집 = 본 시트 `interior2.py`)·계단·2층은 별도 작업.
 
+
+## 실내 GBA 다시 그리기 · 걸어 오르는 계단 · 2층 (2026-10-07)
+
+사용자: 「실내도 많이 다듬어야 할 거다. 계단도 통행도 안 되고 2층도 만들고」.
+
+- 그림(`recipes/interior2.py`): 집 바닥은 엇갈린 나무 마루(옛 바구니 짜임), 뒷벽은 크림 벽지 + 나무 징두리. 센터·마트 벽·바닥과 가구 외곽선·그늘을 같은 규칙으로. 칸 이름·크기·번호는 그대로.
+- 계단 통행: `bake.py` 의 물체 종류 `stairs`(seed `bake.object_kinds.stairs` = `h_stairs`·`c_escalator` 접두) — **발치 한 줄만 통행**(라벨 「계단 발치(밟으면 층 이동)」), 벽 속 위 두 줄은 막힘.
+  그 전에는 계단이 막힌 소품(prop)이라 1층 계단을 밟을 수 없었다.
+- 새 칸(시트 끝 덧붙임, 2192~2215 — 앞 번호를 밀지 않는다): `h_stairs_dn`·`c_escalator_dn`(2×3, 내려가는 계단) · `h_desk` 2×2 · `h_console` · `h_wardrobe` 1×2 · `h_poster` · `h_lamp` 1×2 · `h_sofa` 2×1 (`interior2.FURNITURE3`, `monster_overworld` 「실내 3차」 절).
+- 방 템플릿: `scripts/content/monster-interior-templates.py <tiles.json> [--bake <run>/bake]` 이 칸 **이름**으로 방을 짜 `mapTemplates.json` 에 넣는다 —
+  `room-house-b`(거실)·`room-house-c`(서재)·`room-house-2f`(침실)·`room-house-2f-b`(아이 방)·`room-center-2f`(교류 라운지). `--bake` 면 같은 방을 `verify-room-*.json` 견본으로도 써서 wire 가 참고문서에 싣는다(조수가 2층 짜는 법을 본다).
+  2층 내려가는 계단은 1층 올라가는 계단과 **같은 자리**에 둔다.
+- 캠페인(`world.ts`): 집은 마을마다 부엌·거실·서재 셋을 돌려 쓰고 모두 2층(시작 마을은 「내 방」), 센터도 2층 라운지. `attachStairs` 가 1층 계단 발치 ↔ 2층 `_dn` 발치를 `playerTouch` 이동으로 잇고 도착은 상대 발치 바로 아래 칸. 맵 72 → 90.
+- 확인: 모델 없이 `build_monster_game create` → 게임 검사 막힘 0·경고 0·자동 플레이 엔딩. 출하 플레이어 실걷기 `node scripts/qa/runtime/monster-stairs.mjs <project.json> <out>`(unshare -rn) — 집·센터 계단을 실제 방향 입력으로 오르내린다.
