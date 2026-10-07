@@ -225,7 +225,7 @@ def rock_face(P, m: int, var: int = 0):
     return wm.face_tile(P, m, _g0, _g0, _gsh(P), var) if var else wm.face_tile(P, m, _g0, _g0, _gsh(P))
 
 
-WILD_BRANCH = "agent/th-wild"
+WILD_BRANCH = None    # 2026-10-07: 하네스 소스가 main 에 합류해 recipes/wild_*.py 가 곧 정본이다(옛 agent/th-wild 사본 대조는 끝)
 WILD_COPIES = ("wild_common", "wild_mountain", "wild_forest", "wild_river", "wild_tall")    # 본 시트가 import 하는 야생 정본 사본
 
 
@@ -241,7 +241,7 @@ def parity_issues(sh, tile, load_seed) -> list[str]:
     out: list[str] = []
     here = Path(__file__).resolve()
     rel = here.parent.relative_to(here.parents[4]) if len(here.parents) > 4 else None
-    for mod in WILD_COPIES:
+    for mod in (WILD_COPIES if WILD_BRANCH else ()):
         f = here.parent / f"{mod}.py"
         try:
             head = subprocess.run(["git", "show", f"{WILD_BRANCH}:{(rel / f.name).as_posix()}"], cwd=here.parent,
@@ -282,7 +282,9 @@ def parity_issues(sh, tile, load_seed) -> list[str]:
                 ref.append((nm, lambda im=im: im, nm))
     for o in "hv":
         ref.append((f"bridge_{o}", lambda o=o: wr.log_bridge(Pw, o, "1"), f"bridge_{o}(log_bridge 1)"))
-    ref.append(("cuttree", lambda: wf.cut_tree(dict(Pw, _leaf_hex=ws["palette"]["leaf"])), "cuttree"))
+    # 자르기 나무: 같은 정본 그림, 발밑 그늘만 그 시트 바닥 색(본 시트 cut_shadow — GBA 민트 풀, 야생 wfloor — 숲 바닥)
+    cut_shadow = palette(load_seed("monster-overworld"))["cut_shadow"]
+    ref.append(("cuttree", lambda: wf.cut_tree(dict(Pw, _leaf_hex=ws["palette"]["leaf"], wfloor=cut_shadow)), "cuttree(그늘=cut_shadow)"))
     if "tree_a.0.0" in sh.ids:                                       # 외톨이 활엽수 = 야생 forest_o(I1 X1)
         lone = wc.forest_singles(dict(Pw, _leaf_hex=ws["palette"]["leaf"]), gw, "forest-crown")
         for y in range(4):

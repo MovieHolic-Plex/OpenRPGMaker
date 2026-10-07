@@ -166,7 +166,12 @@ def run_gates(args, sh, seed, recipe, quiet=False):
     cand_fails: dict[str, list[str]] = {}
     self_issues: list[str] = []
     specs: dict[str, dict] = {}
+    retired = seed.get("retired_gates", {})
+    if retired.get("names"):
+        print(f"  (은퇴한 화풍 관문 {', '.join(retired['names'])} — {retired.get('why', '')})")
     for gname, g in seed["gates"].items():
+        if gname in retired.get("names", []):
+            continue
         pos_imgs = [regs[r] for r in g["positives"]]
         if g["kind"] == "object":
             ramp = [tuple(c[:3]) for c in px.ramp(seed["palette"][g["ramp"]])]
@@ -224,7 +229,10 @@ def run_building_gates(sh, seed, recipe, P, regs):
     specs: dict[str, dict] = {}
     br = seed.get("building_roles", {})
     cand_roles = recipe.landmark_roles(P) if hasattr(recipe, "landmark_roles") else {}
+    retired = seed.get("retired_gates", {}).get("names", [])
     for bname, bg in seed.get("building_gates", {}).items():
+        if bname in retired or bg["gate"] in retired:
+            continue
         base = seed["gates"][bg["gate"]]
         refs = bg["ref"] if isinstance(bg["ref"], list) else [bg["ref"]]
         poss = [bd.measure(regs[r], _resolve_roles(br[r], P)) for r in refs]

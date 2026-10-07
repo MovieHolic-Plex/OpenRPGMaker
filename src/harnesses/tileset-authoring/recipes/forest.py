@@ -28,6 +28,13 @@ GBA_CLUMPS = (
 )
 
 
+def _hh(x: int, y: int, k: int) -> float:
+    """칸 좌표 해시 → [0,1). 선형 식(x*a+y*b)%m 은 사선 줄이 보여서 쓰지 않는다."""
+    h = (x * 374761393 + y * 668265263 + k * 2147483647) & 0xFFFFFFFF
+    h = ((h ^ (h >> 13)) * 1274126177) & 0xFFFFFFFF
+    return ((h ^ (h >> 16)) & 0xFFFF) / 65536
+
+
 def crown(P, seed: str = "forest-crown"):
     ramp = px.ramp(P["_leaf_hex"])
     r = random.Random(seed)
@@ -45,8 +52,7 @@ def crown(P, seed: str = "forest-crown"):
                 if d > rr:
                     continue
                 lt = -(dx * .62 + dy * .78) / rr + .05
-                n = ((x * 7 + y * 13 + (x * y) % 5) % 9 - 4) * .045          # 단 경계를 잎결로 흐트린다(줄무늬 방지)
-                lt += n
+                lt += (_hh(x // 2, y // 2, 11) - .5) * .42 + (_hh(x, y, 3) - .5) * .12   # 2px 잎 덩이로 단 경계를 흐트린다(선형 식은 사선 줄무늬가 됐다)
                 t = 4 if lt > .66 else 3 if lt > .2 else 2 if lt > -.38 else 1
                 t = max(1, min(4, t + bias))
                 if d > rr - 1.3 and (dx * .6 + dy * .8) > .1 * rr:
@@ -62,7 +68,7 @@ def crown(P, seed: str = "forest-crown"):
             if any(not (0 <= X < W and 0 <= Y < H) or not mask[Y][X] for X, Y in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))):
                 out.putpixel((x, y), ramp[0])
                 continue
-            h = (x * 37 + y * 61 + 7) % 23                       # 잎 점 — 넓은 면이 판판하지 않게
+            h = int(_hh(x, y, 29) * 23)                            # 잎 점 — 넓은 면이 판판하지 않게(해시: 격자 무늬가 안 생긴다)
             if t == 3 and h == 0:
                 t = 4
             elif t == 2 and h == 1:
