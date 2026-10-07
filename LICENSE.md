@@ -21,7 +21,8 @@ Portions of this software are licensed as follows:
   under the OPRN Game Use License in `ASSET-LICENSE.md`.
 - All third party components incorporated into the software, including the third party assets listed in
   `public/assets/ATTRIBUTION.md`, are licensed under the original license provided by the owner of the
-  applicable component.
+  applicable component. Code and font components are listed in `THIRD_PARTY_NOTICES.md` with full texts in
+  `licenses/`.
 - The licensor's names, logos and trademarks (including "OPRN" and "OPRN Studio") are not licensed under any of
   these terms. See `TRADEMARKS.md`.
 - Everything else in this repository, including the editor, is available under the "Sustainable Use License"

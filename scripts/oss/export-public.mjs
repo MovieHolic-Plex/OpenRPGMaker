@@ -51,6 +51,9 @@ const REWRITES = [
   [/\bmdc-server\b/g, "localhost"],
   [/\/home\/main\b\/?/g, "~/"],
   [/\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}\b/g, "127.0.0.1"],
+  [/[A-Z]:[\\/]Users[\\/][^\\/\s"'`]+/g, "~"], // 개인 Windows 계정 경로
+  [/\bseogo\b/g, "production-host"], // 운영 서버 ssh 별칭
+  [/github\.com\/MovieHolic-Plex\/rpg-zzu\b/g, "github.com/MovieHolic-Plex/OpenRPGMaker"], // 비공개 원본 저장소 링크
 ];
 // 확장자로 고르면 .env.example 같은 파일을 놓친다 — 앞 8KB 에 NUL 이 없으면 텍스트로 본다.
 const MAX_TEXT = 8 * 1024 * 1024;
