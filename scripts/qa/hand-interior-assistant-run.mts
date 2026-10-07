@@ -48,8 +48,10 @@ store.close();
 const startTileset = arg("start-tileset");
 let currentMapId: string | undefined;
 if (startTileset) {
-  const r = runTool({ project }, "create_map", { name: "보고 있는 맵", width: 24, height: 18, tilesetId: startTileset });
+  const ctx = { project };                         // 쓰기 도구는 ctx.project 를 새 사본으로 바꾼다
+  const r = runTool(ctx, "create_map", { name: "보고 있는 맵", width: 24, height: 18, tilesetId: startTileset });
   if (!r.ok) throw new Error(`시작 맵 실패: ${r.summary}`);
+  project = ctx.project;
   currentMapId = Object.keys(project.maps).find((id) => project.maps[id]!.tilesetId === startTileset);
 }
 const before = new Set(Object.keys(project.maps));

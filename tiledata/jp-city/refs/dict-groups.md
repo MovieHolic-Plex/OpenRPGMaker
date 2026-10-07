@@ -243,7 +243,7 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-floor-cushion","name":"실내 바닥 · 쿠션 플로어","role":"terrain","layer":"lower","n":64,"from":8412,"to":8475},
 {"id":"jp:interior-floor-bathtile","name":"실내 바닥 · 욕실 바닥 타일","role":"terrain","layer":"lower","n":64,"from":8476,"to":8539},
 {"id":"jp:interior-floor-tataki","name":"실내 바닥 · 현관 타타키","role":"terrain","layer":"lower","n":64,"from":8540,"to":8603},
-{"id":"jp:interior-floor-carpet","name":"실내 바닥 · 카펫","role":"terrain","layer":"lower","n":64,"from":8604,"to":8667},
+{"id":"jp:interior-floor-carpet","name":"실내 바닥 · 카펫","role":"terrain","layer":"lower","n":4,"from":8604,"to":8607},
 {"id":"jp:interior-wall-cloth","name":"실내 벽면 · 흰 벽지(クロス)","role":"wall","layer":"lower","n":16,"from":8668,"to":8683},
 {"id":"jp:interior-wall-cloth-beige","name":"실내 벽면 · 베이지 벽지","role":"wall","layer":"lower","n":16,"from":8684,"to":8699},
 {"id":"jp:interior-wall-juraku","name":"실내 벽면 · 화실 흙벽(聚楽)","role":"wall","layer":"lower","n":16,"from":8700,"to":8715},

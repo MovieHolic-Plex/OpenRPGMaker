@@ -3,104 +3,95 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model sonnet --effort high",
- "rounds": 1,
- "seconds": 455,
+ "rounds": 2,
+ "seconds": 253,
  "focus": "일본 집 실내(현관 타타키·화실 다다미·LDK·욕실·탈의실·화장실·2층 침실·아이방·원룸 1K). 이 단계는 거리 지도가 아니라 실내다 — 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 집 같은가(현관 단차 아가리카마치·신발장, 다다미 배치·헤리, 도코노마·불단 위치, 대면 부엌, 유닛 배스, 욕실-탈의실-세면 동선, 화장실 따로) ② 3/4 정면 시점(가구 윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m: 침대 1×2, 더블 2×2, 욕조 2×1, 냉장고, 문 폭) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색이 뭉치지 않는가, modern3 팔레트·윤곽·명암) ⑤ 동선·구조(막힌 방, 쓸 수 없는 가구, 칸막이 틈) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 참고문서 규칙 문서가 조수가 따라 할 수 있게 정확한가(그림·보고와 맞지 않는 서술). 바깥 거리 건물 그림(tiledata/jp-city/blocks/buildings/*.png)과 같은 게임으로 보여야 한다.",
  "files": {
-  "verify-shots/jp-city/interior-house-1f-x2.png": "18e4deda73c79c426333957f5651282aa151e011cf7aa88eb6a30255df0a7e53",
-  "verify-shots/jp-city/interior-house-2f-x2.png": "c066f4de161459ca37e4879ee690eeb031fa5f2af25426424a52a4d6fd66a22d",
-  "verify-shots/jp-city/interior-apartment-1k-x2.png": "8a7a11cedf8726f23d30ba549004cd7d4d882eeb4cba9260e9601a12e7ef9af8",
-  "public/assets/jp-city-references/interior-dict-1.png": "d35f064d38fd6a4078a8a5eecd5422de20c5971ca6bbfb6f24b795873912fcb2",
+  "verify-shots/jp-city/interior-house-1f-x2.png": "02bdf2e4ea22ada51549a1e91a40af9c3742cd41075b505e8862eeb72650a088",
+  "verify-shots/jp-city/interior-house-2f-x2.png": "4ace01b19db765daf8d4a5377c42a145920ed8980b8581966c90f91fb5e5baa0",
+  "verify-shots/jp-city/interior-apartment-1k-x2.png": "157ba2c4938b55dc2c048381bf3745ac30cf7948bf033150e0e96dc7072d6506",
+  "public/assets/jp-city-references/interior-dict-1.png": "064c1aff3f5801da805addb5d21a0befb32e3f66d8f8d8154195a053f6209621",
   "public/assets/jp-city-references/interior-dict-2.png": "7c7e6e8c8446d1a1f25ceb8ded3ef9a4610b6426b8da1d3ca0252cda8a2d5e72",
-  "public/assets/jp-city-references/interior-surfaces-1.png": "ed23703583594aeee05f5c5b35510317f4f2d792767b53a5acc2ff19db32d5e2",
-  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "b21aeeb7178c561fac937d294f664928157e05333502e8aed63799ccd9fdf292",
-  "tiledata/jp-city/refs/interior-rules.md": "85d7f95bc301d7d261640470fa55a155330a5695063722183847794d3e1fd816"
+  "public/assets/jp-city-references/interior-surfaces-1.png": "b476930cac5072ecc9f05e92eb2812f3fd2a4892bb1315f41cc8d406385ea73f",
+  "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "058c505ed18d98b935d1d6f1be15f6c5ed4a5932464705d8265649e6a866bda4",
+  "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "899b98c8ca81247d1ab43ff3ad343b0bebfcf012aba61c0821dd8c4973adf411",
+  "scripts/content/jp-city/maps/out/interior-apartment-1k.report.json": "c2ee8937986a97f06c26f0e5c322d0f0e093951de8833069108594dabc0a66d6",
+  "tiledata/jp-city/interior/examples/house-1f.json": "25c45b531dba612a03a1e05a946c4d2bdea068bc9b4453b63e4f8bbcd49a2a1b",
+  "tiledata/jp-city/interior/examples/house-2f.json": "61c4559d80bfddd57883552beb2f095b87153df948bcd8666edfe7548971bbf2",
+  "tiledata/jp-city/interior/examples/apartment-1k.json": "edcf61efc5439534b45cae968213dba8a444f4dc12ac34320c53429fdfa31ed6",
+  "tiledata/jp-city/refs/interior-rules.md": "c19c19cf147084f6174ed8a33411a3233bc60d0dc40c099b09e11ae59c23046e"
  },
  "findings": [
   {
    "severity": "major",
-   "file": "tiledata/jp-city/refs/interior-rules.md",
-   "where": "81행 「미감은 적대적 검증 관문 tiledata/jp-city/gates/interior.json」",
-   "problem": "인용한 관문 파일이 없다. gates/ 에는 school·tramstreet·transit·vehicles 만 있다. 미감 검증 수행 증거가 없다.",
-   "fix": "gates/interior.json 을 만들어 판정·해시를 남기거나, 존재하지 않는 관문 인용을 지우고 실제 검수 절차·증거 경로로 바꾼다."
+   "file": "tiledata/jp-city/gates/interior.json · tiledata/jp-city/refs/interior-rules.md",
+   "where": "gates/interior.json 전체, interior-rules.md 81행",
+   "problem": "관문 판정 파일이 옛 fail(1회차)이고 판정 뒤 파일 7건이 바뀌어 해시가 어긋난다(`check --stage interior` 실패). 작업 트리에 그림·참고문서·보고서 수정이 미커밋으로 남아 있다. 81행은 이 관문이 미감을 보증한다고 쓰지만 통과 기록이 없다.",
+   "fix": "수정 후 관문을 다시 돌려 새 판정을 받고 커밋한다. 통과 전에는 81행을 '관문 판정 미통과'로 사실대로 고친다."
   },
   {
    "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/house-1f.json, house-2f.json, apartment-1k.json",
-   "where": "start / links 필드 (모두 null)",
-   "problem": "보고서(interior-house-1f.report.json)에는 start (9,13) 와 link (9,9)→jp-city-house-2f 가 있으나 예제에는 없다. 2F 의 stairwell-down-wood (9,3) 에도 1층으로 내려가는 link 가 없다. 문서 4단계(층·출구 links)를 예제가 보여 주지 않는다.",
-   "fix": "예제 JSON 에 start 와 양방향 links(1F 계단→2F, 2F 계단통→1F, 1K·1F 현관 틈→거리)를 넣거나, interior.mjs 가 주입한다면 문서와 예제에 그렇게 명시한다."
+   "file": "tiledata/jp-city/interior/examples/house-1f.json · house-2f.json · apartment-1k.json",
+   "where": "1층 화장실 틈(11,6)·탈의실 틈(8,6)·화실 입구(6,11), 2층 침실·화장실·아이방 틈",
+   "problem": "방을 닫는 문이 예제 전체에서 0개다. door-western·fusuma·shoji-door·toilet-door·laundry-rack은 어느 예제에도 쓰이지 않는 죽은 부품이다. 화장실 틈은 현관 마루 앞에서 변기가 보이는 위치다. 문서도 틈 칸에 문을 걸 수 없다고 인정한다(34행).",
+   "fix": "틈 칸에 문을 놓는 방법(flat 문짝 또는 틈 옆 벽면 걸이)을 도구에 추가하고 화장실·화실 문을 예제에 보인다. 못 하면 문서에 장식용이라고 쓰고 쓰지 않는 부품은 사전에서 뺀다."
   },
   {
-   "severity": "major",
+   "severity": "minor",
    "file": "tiledata/jp-city/interior/examples/house-1f.json",
-   "where": "화장실(11,5)·탈의실(8,5) 틈, 화실 틈(x6 y9–11), objects 전체",
-   "problem": "문서가 가르치는 door-western·fusuma·shoji-door·oshiire·toilet-door 가 세 예제 어디에도 쓰이지 않는다. 화장실·탈의실이 뚫린 1칸 틈이고 화실도 후스마·쇼지 없이 열려 있어 일본 집 구성(①)이 약하다. 문 그림이 들어간 정상 예제도 없다.",
-   "fix": "화장실 toilet-door, 화실 fusuma/shoji-door, 2F 방 door-western 을 틈이 없는 벽면에 붙여 예제에 넣고, 문 그림이 보이는 정상 예제 그림 한 장을 참고문서에 싣는다."
+   "where": "LDK x16–20,y10–13 (약 18칸)",
+   "problem": "LDK 동쪽 바닥이 가구 없이 비어 있다. 규칙 45행(빈 바닥이 넓으면 방을 줄인다)을 예제가 어긴다.",
+   "fix": "방을 x19까지로 줄이거나 동쪽에 수납장·식기장을 놓는다."
   },
   {
-   "severity": "major",
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/house-1f.json",
+   "where": "tables kcounter (16,5) 3×1, 트인 곳 x16–19,y6",
+   "problem": "대면 카운터가 4칸 트인 곳 바로 앞에 서서 부엌↔LDK 통로가 (19,5)→(19,6) 한 칸뿐이다. 대면 카운터인데 스툴이 없다.",
+   "fix": "카운터를 x16–17로 줄여 통로를 2칸으로 넓히고 LDK 쪽에 스툴 2개를 놓는다."
+  },
+  {
+   "severity": "minor",
    "file": "tiledata/jp-city/interior/examples/house-2f.json",
-   "where": "침실 y5–7 x1–7 / 아이방 y5–7 x14–20 (cushion-floor 하나씩만)",
-   "problem": "빈 바닥이 넓다(문서 45행 위반). 두 방이 공용 20칸 띠로 트여 있어 별개의 방으로 읽히지 않는다. 같은 파란 방석을 같은 상대 위치에 놓아 기계적 반복으로 보인다.",
-   "fix": "방 깊이를 줄이거나 아래쪽에 칸막이를 더해 방을 닫고, 방석 외에 화장대·책장 등 실제 가구를 쓰거나 바닥 영역을 줄인다. 두 방의 소품 위치를 서로 다르게 한다."
+   "where": "아이방 카펫 x14–20,y3–5, cushion-floor (18,5)",
+   "problem": "진홍색 카펫이 modern3의 절제된 팔레트에서 튀고 침실 붉은 이불과 겹친다. 가운데 4×2칸이 비었다. cushion-floor가 파란 서랍 상자처럼 읽혀 방석으로 안 보인다.",
+   "fix": "카펫을 어두운 팥색·감색으로 낮추고, 방석을 둥근 윤곽으로 다시 찍는다."
   },
   {
-   "severity": "major",
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/house-2f.json",
+   "where": "복도 x4–20,y9–10",
+   "problem": "복도(16칸)가 방(8칸)보다 길고 창·스위치·화분 외에는 비었다. 일본 주택의 비례가 아니다.",
+   "fix": "복도를 계단통 쪽 8칸 정도로 줄이고 방을 넓히거나 복도 수납장을 둔다."
+  },
+  {
+   "severity": "minor",
+   "file": "public/assets/jp-city-references/interior-house-1f(2x 스크린샷)",
+   "where": "욕실 bathtub (1,3)",
+   "problem": "욕조가 흰 테두리 위 파란 면 하나라 2층 더블침대와 실루엣이 같다. 욕실 문맥으로만 구분된다.",
+   "fix": "욕조에 덮개·물결·수전 같은 고유 표지를 더한다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/house-1f.json",
+   "where": "화실 tatami 마루 x1–5 (확대 a2)",
+   "problem": "1×1·1×2·2×1 조각이 섞여 4.5조 배치로 읽히지 않고, 일부 모서리에서 4장이 한 점에서 만나는 十자로 보인다(확대 기준, 원본 재확인 필요).",
+   "fix": "1×2 한 장 단위로 마루를 정리하고 十자 모서리를 없앤다."
+  },
+  {
+   "severity": "minor",
    "file": "tiledata/jp-city/interior/examples/apartment-1k.json",
-   "where": "kitchen-sink (7,10) / kitchen-stove (8,10), 유닛 배스 (1–3, 11–12), 방 (1–9, 4–6), 방↔부엌 틈 (6,7)",
-   "problem": "싱크와 가스대가 작업대 없이 붙어 조리 공간이 없다. 유닛 배스 아래 3×2칸이 비어 욕조가 위에 뜬 것처럼 보인다. 9×4 방은 가구가 가장자리에만 있어 가운데가 빈다. 방으로 들어가는 통로가 1칸이다.",
-   "fix": "싱크와 가스대 사이에 worktop 을 넣는다. 유닛 배스를 2칸 줄이거나 욕조를 아래로 내린다. 방은 침대를 방 쪽으로 옮기거나 폭을 줄인다. 통로 틈은 문 그림과 함께 보여 준다."
-  },
-  {
-   "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/house-1f.json",
-   "where": "tv-board (13,9) · rug (14,10) · low-table (14,11) · sofa-n (14,13) · 부엌 x14–20 y0–5 중앙 · kcounter (16,5)",
-   "problem": "문서 43행은 「TV 를 보는 sofa-n」이라 하나 TV 받침이 서북쪽으로 치우쳐 소파와 마주 보지 않는다. low-table 은 rug 서쪽 가장자리에 걸친다. 부엌 가운데 cushion 바닥이 크게 비고 kcounter 에는 의자·물건이 없다.",
-   "fix": "tv-board·rug·low-table·sofa 를 같은 x 중심선에 맞춘다. kcounter 에 stool 이나 goods(plates 등)를 두고 부엌 바닥은 줄이거나 가구로 의미 있게 채운다."
+   "where": "방↔부엌 틈 (6,6), links []",
+   "problem": "방↔부엌이 1칸 통로이고 거리로 나가는 links가 없다. 규칙 13행이 요구하는 출입구 연결을 예제가 보이지 않는다.",
+   "fix": "현관 아래 틈에 거리 links 예시를 넣고 방↔부엌 통로를 2칸으로 넓힌다."
   },
   {
    "severity": "minor",
-   "file": "public/assets/jp-city-references/interior-surfaces-1.png",
-   "where": "carpet 바닥 칸 (2F 아이방 바닥)",
-   "problem": "흙·자갈로 읽힌다. flooring·tataki 와 명도·색상 대역이 가깝고 얼룩 점이 카펫 결로 보이지 않는다.",
-   "fix": "카펫을 채도 있는 한 색으로 짜임(격자·짧은 줄) 패턴을 규칙적으로 넣어 다시 찍고 flooring 과 색상 단계를 분리한다."
-  },
-  {
-   "severity": "minor",
-   "file": "public/assets/jp-city-references/interior-dict-1.png",
-   "where": "bath-bucket / shoes-pair / toilet / tea-set·mikan-basket",
-   "problem": "bath-bucket 은 동전·시계, shoes-pair 는 빨간 점 달린 검은 상자(스피커), toilet 은 얼굴 같은 흰 상자로 읽힌다. tea-set 과 mikan-basket 은 chabudai 위에서 색 덩어리가 된다.",
-   "fix": "각 소품을 실루엣부터 다시 찍는다. 양동이는 손잡이 포함 옆면, 신발은 앞코·밑창이 보이는 한 켤레, 변기는 뚜껑·탱크를 명도 단계로 분리한다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/house-1f.json",
-   "where": "toilet-slippers (11,5) · 화장실 문 틈 (11,6)",
-   "problem": "슬리퍼가 1칸 문 틈 바로 앞에 있어 동선을 막는 것처럼 보인다.",
-   "fix": "슬리퍼를 변기 옆으로 옮긴다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/house-2f.json",
-   "where": "zones — 침실·아이방(cloth-beige) vs 계단방(기본 cloth)",
-   "problem": "인접한 방의 벽 색이 달라 일관성이 깨지고, 회색 cloth 는 벽지가 아니라 돌로 읽힌다.",
-   "fix": "계단방도 cloth-beige 계열로 맞추거나 cloth 의 색·무늬를 벽지답게 고친다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/house-2f.json",
-   "where": "child room — bunk-bed (14,3) + bed-single (20,3)",
-   "problem": "한 아이방에 이층침대와 싱글 침대를 함께 놓아 한 방 한 용도 원칙과 어긋나고 크기에 비해 과밀하다.",
-   "fix": "침대 하나로 줄인다."
-  },
-  {
-   "severity": "minor",
-   "file": "public/assets/jp-city-references/interior-surfaces-1.png",
-   "where": "tatami heri, window-sash 레이스 커튼, flooring-dark",
-   "problem": "다다미 heri 가 가는 청록선이라 구분이 약하고 매트 방향이 섞여 있다. 레이스 커튼의 체커 패턴은 노이즈로 읽힌다. flooring-dark 는 정의만 있고 쓰이지 않는다.",
-   "fix": "heri 를 2px 폭의 짙은 색 띠로 키우고 매트 방향을 통일한다. 레이스는 세로 줄무늬로 단순화한다. flooring-dark 는 쓰거나 사양에서 뺀다."
+   "file": "tiledata/jp-city/refs/interior-rules.md",
+   "where": "84행 '없는 것', 1층 현관 맨 아래 틈 (9,14)",
+   "problem": "현관 바깥문 그림이 없어 출입구가 검은 허공으로 열린 1칸 틈이다.",
+   "fix": "현관 바깥문 flat 조각을 만들거나 틈 아래에 문턱 그림을 놓는다."
   }
  ],
- "report": "# 적대적 검수 — jp_city 실내(interior) 단계\n\n판정은 **fail**입니다. 통과를 막는 항목은 major 6건입니다.\n\n검수 범위에서 빠진 것도 있습니다. 외관 건물 PNG(`tiledata/jp-city/blocks/buildings/*.png`)와의 같은 게임 대조(⑧)는 직접 하지 않았습니다. 2F·1K 보고서는 존재 여부만 확인했고 내용은 보지 못했습니다. 1F 보고서만 읽었고, 1F 도달 수치(119, 바닥 166)는 plan에서 직접 다시 세어 일치했습니다. 따라서 ⑧은 통과로 기록하지 않습니다.\n\n## major\n\n1. **문서가 없는 관문을 근거로 든다.**\n   - `tiledata/jp-city/refs/interior-rules.md:81`은 미감 검사를 `tiledata/jp-city/gates/interior.json`에 맡긴다고 쓴다.\n   - `gates/`에는 school, tramstreet, transit, vehicles만 있고 `interior.json`은 없다.\n   - 미감 검증이 실제로 수행됐다는 증거가 없습니다.\n\n2. **예제 JSON이 `start`와 `links`를 갖고 있지 않다.**\n   - `house-1f.json`, `house-2f.json`, `apartment-1k.json`을 읽은 결과 `start: null, links: null`이다.\n   - 그런데 문서 4단계는 계단·출구 `links`를 가르치고, 보고서에는 start (9,13)과 link (9,9)→2f가 있다. 이 값들이 `interior.mjs`에서 주입되는지는 확인하지 못했다.\n   - 2F 쪽에는 `stairwell-down-wood`(9,3)이 있는데도 1층으로 내려가는 link가 예제에 없다.\n   - 어시스턴트가 예제를 그대로 따라 하면 층 이동이 없는 맵이 나옵니다.\n\n3. **문 그림이 예제 어디에도 쓰이지 않는다.**\n   - 문서 34행은 `door-western`, `fusuma`, `shoji-door`, `toilet-door`, `oshiire`를 가르친다. 세 예제에는 하나도 없고, 출력 그림에도 보이지 않는다.\n   - 화장실(11,5)과 탈의실(8,5)은 1칸 틈만 뚫려 있고 문 표현이 없다.\n   - 화실(다다미방)도 21행의 3줄 틈으로 뚫려 있어 후스마·쇼지 구분이 안 보인다.\n   - 일본 집다움(①)의 핵심 요소가 빠져 있습니다.\n\n4. **2F에 빈 바닥이 넓다.**\n   - 문서 45행은 「빈 바닥이 넓게 남으면 방을 줄인다」고 한다.\n   - 침실 북쪽에서 아래로 이어지는 바닥(x1–7, y5–7)에는 `cushion-floor`(3,6) 하나만 있다.\n   - 아이방 아래쪽(x14–20, y5–7)도 같은 방석 하나뿐이다.\n   - 두 방이 공용 20칸 폭 띠로 그냥 열려 있어서 침실과 아이방이 분리된 방으로 읽히지 않는다.\n   - 같은 위치에 같은 파란 방석을 놓은 것이라 기계적 반복으로도 보인다.\n\n5. **1K 원룸 구성에 결함이 있다.**\n   - 부엌에서 `kitchen-sink`(7,10)와 `kitchen-stove`(8,10)가 작업대 없이 붙어 있다. 조리 공간이 없다.\n   - 방은 9×4 바닥에 가구가 가장자리로만 몰려 있어 가운데가 빈다.\n   - 유닛 배스는 욕조(1,10), 변기(3,10) 아래의 3×2칸(x1–3, y11–12)이 비어 있다.\n   - 화면에서도 욕조가 위에 뜬 것처럼 보이고 아래 타일 바닥이 크게 남는다.\n   - 방↔부엌 통로(6,7)도 1칸이다.\n\n6. **LDK 거실 배치가 문서와 어긋난다.**\n   - 문서 43행은 「TV를 보는 `sofa-n`」이라고 한다.\n   - 실제로는 `tv-board`(13,9)가 서북쪽으로 치우쳐 있고 `sofa-n`(14,13)은 정렬이 어긋난다.\n   - `low-table`(14,11)은 `rug`(14,10)의 서쪽 가장자리에 걸쳐 있다.\n   - 부엌(x14–20, y0–5)은 가운데 `cushion` 바닥이 크게 비어 있고, `kcounter`(16,5)에는 의자나 물건이 없다.\n\n## minor\n\n- **`carpet` 바닥이 흙·자갈로 읽힌다.** 2F 아이방은 `flooring`/`tataki`와 색상 대역이 가까운 갈색에 얼룩 점이 있어 카펫으로 안 읽힌다.\n- **`bath-bucket`이 동전·시계로 읽힌다.** 금테 두른 파란 원판이라 양동이로 인식되지 않는다.\n- **`shoes-pair`가 검은 상자에 빨간 점으로 보인다.** 1K 현관 (8,12)에서 스피커처럼 보인다.\n- **`tea-set`과 `mikan-basket`이 `chabudai`에 뭉쳐 보인다.** 색 덩어리가 되어 정체를 알아보기 어렵다.\n- **`toilet`이 얼굴 같은 흰 상자로 읽힌다.** 1K 변기에서 뚜껑과 탱크가 유령 얼굴처럼 보인다.\n- **레이스 커튼이 노이즈로 읽힌다.** `window-sash`의 체커 패턴이 어수선하다.\n- **`toilet-slippers`(11,5)가 1칸 문 틈 바로 앞(11,6)에 있다.** 동선을 막아 보인다.\n- **`flooring-dark`는 정의만 있고 쓰이지 않는다.**\n- **2F에서 인접한 방의 벽지가 다르다.** 침실·아이방은 `cloth-beige`이고 계단방은 회색 `cloth`다. 회색 `cloth`는 벽지보다 돌로 읽힌다.\n- **아이방에 `bunk-bed`와 `bed-single`이 함께 있다.**\n- **다다미 가장자리 `heri`가 가는 청록 선이다.** 매트 방향이 섞여 있고 잘린 매트도 보인다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/refs/interior-rules.md\", \"where\": \"81행 「미감은 적대적 검증 관문 tiledata/jp-city/gates/interior.json」\", \"problem\": \"인용한 관문 파일이 없다. gates/ 에는 school·tramstreet·transit·vehicles 만 있다. 미감 검증 수행 증거가 없다.\", \"fix\": \"gates/interior.json 을 만들어 판정·해시를 남기거나, 존재하지 않는 관문 인용을 지우고 실제 검수 절차·증거 경로로 바꾼다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/house-1f.json, house-2f.json, apartment-1k.json\", \"where\": \"start / links 필드 (모두 null)\", \"problem\": \"보고서(interior-house-1f.report.json)에는 start (9,13) 와 link (9,9)→jp-city-house-2f 가 있으나 예제에는 없다. 2F 의 stairwell-down-wood (9,3) 에도 1층으로 내려가는 link 가 없다. 문서 4단계(층·출구 links)를 예제가 보여 주지 않는다.\", \"fix\": \"예제 JSON 에 start 와 양방향 links(1F 계단→2F, 2F 계단통→1F, 1K·1F 현관 틈→거리)를 넣거나, interior.mjs 가 주입한다면 문서와 예제에 그렇게 명시한다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/house-1f.json\", \"where\": \"화장실(11,5)·탈의실(8,5) 틈, 화실 틈(x6 y9–11), objects 전체\", \"problem\": \"문서가 가르치는 door-western·fusuma·shoji-door·oshiire·toilet-door 가 세 예제 어디에도 쓰이지 않는다. 화장실·탈의실이 뚫린 1칸 틈이고 화실도 후스마·쇼지 없이 열려 있어 일본 집 구성(①)이 약하다. 문 그림이 들어간 정상 예제도 없다.\", \"fix\": \"화장실 toilet-door, 화실 fusuma/shoji-door, 2F 방 door-western 을 틈이 없는 벽면에 붙여 예제에 넣고, 문 그림이 보이는 정상 예제 그림 한 장을 참고문서에 싣는다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/house-2f.json\", \"where\": \"침실 y5–7 x1–7 / 아이방 y5–7 x14–20 (cushion-floor 하나씩만)\", \"problem\": \"빈 바닥이 넓다(문서 45행 위반). 두 방이 공용 20칸 띠로 트여 있어 별개의 방으로 읽히지 않는다. 같은 파란 방석을 같은 상대 위치에 놓아 기계적 반복으로 보인다.\", \"fix\": \"방 깊이를 줄이거나 아래쪽에 칸막이를 더해 방을 닫고, 방석 외에 화장대·책장 등 실제 가구를 쓰거나 바닥 영역을 줄인다. 두 방의 소품 위치를 서로 다르게 한다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/apartment-1k.json\", \"where\": \"kitchen-sink (7,10) / kitchen-stove (8,10), 유닛 배스 (1–3, 11–12), 방 (1–9, 4–6), 방↔부엌 틈 (6,7)\", \"problem\": \"싱크와 가스대가 작업대 없이 붙어 조리 공간이 없다. 유닛 배스 아래 3×2칸이 비어 욕조가 위에 뜬 것처럼 보인다. 9×4 방은 가구가 가장자리에만 있어 가운데가 빈다. 방으로 들어가는 통로가 1칸이다.\", \"fix\": \"싱크와 가스대 사이에 worktop 을 넣는다. 유닛 배스를 2칸 줄이거나 욕조를 아래로 내린다. 방은 침대를 방 쪽으로 옮기거나 폭을 줄인다. 통로 틈은 문 그림과 함께 보여 준다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/house-1f.json\", \"where\": \"tv-board (13,9) · rug (14,10) · low-table (14,11) · sofa-n (14,13) · 부엌 x14–20 y0–5 중앙 · kcounter (16,5)\", \"problem\": \"문서 43행은 「TV 를 보는 sofa-n」이라 하나 TV 받침이 서북쪽으로 치우쳐 소파와 마주 보지 않는다. low-table 은 rug 서쪽 가장자리에 걸친다. 부엌 가운데 cushion 바닥이 크게 비고 kcounter 에는 의자·물건이 없다.\", \"fix\": \"tv-board·rug·low-table·sofa 를 같은 x 중심선에 맞춘다. kcounter 에 stool 이나 goods(plates 등)를 두고 부엌 바닥은 줄이거나 가구로 의미 있게 채운다.\"},\n{\"severity\": \"minor\", \"file\": \"public/assets/jp-city-references/interior-surfaces-1.png\", \"where\": \"carpet 바닥 칸 (2F 아이방 바닥)\", \"problem\": \"흙·자갈로 읽힌다. flooring·tataki 와 명도·색상 대역이 가깝고 얼룩 점이 카펫 결로 보이지 않는다.\", \"fix\": \"카펫을 채도 있는 한 색으로 짜임(격자·짧은 줄) 패턴을 규칙적으로 넣어 다시 찍고 flooring 과 색상 단계를 분리한다.\"},\n{\"severity\": \"minor\", \"file\": \"public/assets/jp-city-references/interior-dict-1.png\", \"where\": \"bath-bucket / shoes-pair / toilet / tea-set·mikan-basket\", \"problem\": \"bath-bucket 은 동전·시계, shoes-pair 는 빨간 점 달린 검은 상자(스피커), toilet 은 얼굴 같은 흰 상자로 읽힌다. tea-set 과 mikan-basket 은 chabudai 위에서 색 덩어리가 된다.\", \"fix\": \"각 소품을 실루엣부터 다시 찍는다. 양동이는 손잡이 포함 옆면, 신발은 앞코·밑창이 보이는 한 켤레, 변기는 뚜껑·탱크를 명도 단계로 분리한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/house-1f.json\", \"where\": \"toilet-slippers (11,5) · 화장실 문 틈 (11,6)\", \"problem\": \"슬리퍼가 1칸 문 틈 바로 앞에 있어 동선을 막는 것처럼 보인다.\", \"fix\": \"슬리퍼를 변기 옆으로 옮긴다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/house-2f.json\", \"where\": \"zones — 침실·아이방(cloth-beige) vs 계단방(기본 cloth)\", \"problem\": \"인접한 방의 벽 색이 달라 일관성이 깨지고, 회색 cloth 는 벽지가 아니라 돌로 읽힌다.\", \"fix\": \"계단방도 cloth-beige 계열로 맞추거나 cloth 의 색·무늬를 벽지답게 고친다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/house-2f.json\", \"where\": \"child room — bunk-bed (14,3) + bed-single (20,3)\", \"problem\": \"한 아이방에 이층침대와 싱글 침대를 함께 놓아 한 방 한 용도 원칙과 어긋나고 크기에 비해 과밀하다.\", \"fix\": \"침대 하나로 줄인다.\"},\n{\"severity\": \"minor\", \"file\": \"public/assets/jp-city-references/interior-surfaces-1.png\", \"where\": \"tatami heri, window-sash 레이스 커튼, flooring-dark\", \"problem\": \"다다미 heri 가 가는 청록선이라 구분이 약하고 매트 방향이 섞여 있다. 레이스 커튼의 체커 패턴은 노이즈로 읽힌다. flooring-dark 는 정의만 있고 쓰이지 않는다.\", \"fix\": \"heri 를 2px 폭의 짙은 색 띠로 키우고 매트 방향을 통일한다. 레이스는 세로 줄무늬로 단순화한다. flooring-dark 는 쓰거나 사양에서 뺀다.\"}\n]}\n```"
+ "report": "## 적대적 검수 — jp_city / interior\n\n검수 범위는 실내 3종 스크린샷의 2~3배 확대, 사전·표면 시트, 보고서 3개, 예제 3개, 규칙 문서, 관문 `check`입니다. 가구 그림과 `blocks/buildings/*.png` 거리 건물의 칸 단위 대조는 하지 않았습니다. 팔레트·외곽선 일치 여부는 확대 스크린샷의 눈대중이며, 그 범위에서 눈에 띄는 어긋남은 아래 minor 항목뿐입니다.\n\n### 지난 판정 6건 재확인\n\n| # | 상태 | 근거 |\n|---|---|---|\n| 1 | **미해결** | `gates/interior.json`은 생겼지만 내용이 옛 `fail`(1회차)입니다. `check --stage interior`는 \"판정 뒤 바뀐 파일 7 — 다시 run\"을 냅니다. 규칙 81행은 여전히 이 관문이 미감을 보증한다고 씁니다. |\n| 2 | 해결 | 예제 3개 모두 `start`가 있습니다. 1층과 2층은 `links`로 서로 이어집니다. |\n| 3 | **미해결** | `door-western`, `fusuma`, `shoji-door`, `toilet-door`는 어느 예제에도 쓰이지 않습니다. 화장실·탈의실·화실 입구는 문 그림 없는 1칸 틈입니다. 문서도 틈 칸에는 문을 걸 수 없다고 인정합니다(34행). |\n| 4 | 대체로 해결, 잔여 있음 | 2층은 복도와 문 달린 방으로 다시 짰습니다. 다만 아이방 카펫 가운데가 비��, 빨강 카펫이 튑니다. |\n| 5 | 대체로 해결, 잔여 있음 | 조리대가 생겼고 유닛 배스와 가구도 있습니다. 방↔부엌 통로는 아직 1칸(6행 x6)입니다. |\n| 6 | 대체로 해결, 잔여 있음 | TV 받침·좌탁·소파가 x=14로 정렬됐고 한 줄 띄웠습니다. 카운터에 의자가 없고, 거실 동쪽 바닥이 비었습니다. |\n\n### 결함\n\n1. **major — 관문 증거 무효.**\n   - `tiledata/jp-city/gates/interior.json`은 옛 `fail`이고 해시가 7건 어긋났습니다. 판정 뒤 스크린샷 3장, `interior-dict-1.png`, `interior-surfaces-1.png`, house-1f 보고서가 바뀌었습니다.\n   - `git status`에는 그림·참고문서·보고서가 커밋 `1dfa735541` 뒤에도 미커밋으로 남아 있습니다. 검수 대상과 커밋본이 다릅니다.\n   - 규칙 81행은 \"미감은 적대적 관문이 본다\"고 쓰지만, 현재 그 관문에는 통과 기록이 없습니다.\n   - 고침: 수정 뒤 `run`으로 새 판정을 받고 커밋합니다. 통과 전에는 81행을 \"관문 판정 미통과\"로 사실대로 고칩니다.\n\n2. **major — 문 그림이 한 번도 쓰이지 않습니다.**\n   - 예제 3개에서 방을 닫는 문이 0개입니다. 1층 화장실(11,6), 탈의실(8,6), 화실 입구(6,11)는 모두 열린 틈입니다.\n   - 화장실 틈은 현관 마루 바로 앞에서 변기가 보이는 위치입니다. `door-western`·`fusuma`·`shoji-door`·`toilet-door`·`laundry-rack`은 사전에만 있는 죽은 부품입니다.\n   - 고침: 틈 칸에 문을 놓을 방법(flat 문짝 또는 틈 옆 벽면 걸이)을 도구에 추가하고 예제에 최소 화장실·화실 문을 보입니다. 방법이 없다면 문서에 \"문 그림은 장식용\"이라고 쓰고 쓰이지 않는 부품은 사전에서 뺍니다.\n\n3. **minor — 1층 LDK 동쪽 바닥이 비었습니다.**\n   - x16–20, y10–12와 y13 대부분, 약 18칸이 맨바닥입니다(a3 확대의 오른쪽 아래). 규칙 45행(\"빈 바닥이 넓으면 방을 줄인다\")을 예제가 어깁니다.\n   - 고침: 방을 x19로 줄이거나, 동쪽에 수납장·식기장을 놓습니다.\n\n4. **minor — 대면 카운터가 통로를 거의 막고 의자도 없습니다.**\n   - `kcounter`(16–18,5)가 4칸 트인 곳(x16–19, y6) 바로 앞에 서 있습니다. 실제 부엌↔LDK 통로는 (19,5)→(19,6) 한 칸입니다.\n   - 대면 카운터인데 스툴이 없습니다.\n   - 고침: 카운터를 x16–17로 줄여 통로를 2칸 확보하고, LDK 쪽에 스툴 2개를 놓습니다.\n\n5. **minor — 2층 아이방 그림 문제.**\n   - 카펫(14–20, 3–5)이 채도 높은 진홍색입니다. 침실 이불의 붉은색과 겹쳐 modern3의 절제된 팔레트에서 튑니다.\n   - 가운데 4×2칸이 비었습니다.\n   - (18,5)의 `cushion-floor`가 작은 파란 서랍 상자처럼 읽혀 방석으로 보이지 않습니다.\n   - 고침: 카펫을 어두운 팥색이나 감색으로 낮춥니다. 방석 그림을 둥근 윤곽으로 다시 찍습니다.\n\n6. **minor — 2층 복도가 방보다 길고 비었습니다.**\n   - 복도 x4–20, 바닥 2줄에 창·스위치·화분·계단통뿐입니다. 방(8칸)보다 긴 복도(16칸)는 일본 주택 비례가 아닙니다.\n   - 고침: 복도를 계단통 쪽 8칸 정도로 줄이고 방을 넓힙니다. 수납장 한두 개를 둡니다.\n\n7. **minor — 욕조가 침대처럼 보입니다.**\n   - a1 확대의 욕조는 흰 테두리 위에 파란 면 한 장이라 2층 더블침대(흰 베개·붉은 이불)와 실루엣이 같습니다. 벽면·바닥 문맥으로만 구분됩니다.\n   - 고침: 욕조에 덮개나 물결 무늬, 수전 소품 같은 욕조 고유 표지를 더합니다.\n\n8. **minor — 화실 다다미 마루 배치.**\n   - a2에서 1×1 조각, 1×2 조각, 2×1 조각이 섞여 있고, 가장자리 모서리 몇 곳에서 4장이 한 점에서 만나는 十자로 보입니다. 확대 기준 판단이라 원본으로 재확인이 필요합니다. 4.5조 배치로 읽히지 않습니다.\n   - 고침: 1×2 한 장 단위로 마루를 정리하고, 十자 모서리를 없앱니다.\n\n9. **minor — 원룸 1K.**\n   - 방↔부엌이 1칸 통로입니다.\n   - 예제 `links`가 `[]`라 거리로 나가는 출입구 연결을 보여 주지 않습니다. 규칙 13행은 그 연결을 요구합니다.\n   - 고침: 현관 아래 틈에 거리 `links`를 예시로 넣습니다. 방↔부엌 통로는 2칸으로 넓힙니다.\n\n10. **minor — 현관 문 그림이 없습니다.** 바깥 출입구가 검은 허공으로 열린 1칸 틈입니다(a2 아래). 문서는 이를 \"없는 것\"으로 적습니다. 일본 집 실내 용도에서 현관문이 없으면 입구가 비어 보입니다. 고침: 현관 바깥문 flat 조각을 만들거나, 틈 아래에 문턱 그림을 놓습니다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/gates/interior.json · tiledata/jp-city/refs/interior-rules.md\",\"where\":\"gates/interior.json 전체, interior-rules.md 81행\",\"problem\":\"관문 판정 파일이 옛 fail(1회차)이고 판정 뒤 파일 7건이 바뀌어 해시가 어긋난다(`check --stage interior` 실패). 작업 트리에 그림·참고문서·보고서 수정이 미커밋으로 남아 있다. 81행은 이 관문이 미감을 보증한다고 쓰지만 통과 기록이 없다.\",\"fix\":\"수정 후 관문을 다시 돌려 새 판정을 받고 커밋한다. 통과 전에는 81행을 '관문 판정 미통과'로 사실대로 고친다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/house-1f.json · house-2f.json · apartment-1k.json\",\"where\":\"1층 화장실 틈(11,6)·탈의실 틈(8,6)·화실 입구(6,11), 2층 침실·화장실·아이방 틈\",\"problem\":\"방을 닫는 문이 예제 전체에서 0개다. door-western·fusuma·shoji-door·toilet-door·laundry-rack은 어느 예제에도 쓰이지 않는 죽은 부품이다. 화장실 틈은 현관 마루 앞에서 변기가 보이는 위치다. 문서도 틈 칸에 문을 걸 수 없다고 인정한다(34행).\",\"fix\":\"틈 칸에 문을 놓는 방법(flat 문짝 또는 틈 옆 벽면 걸이)을 도구에 추가하고 화장실·화실 문을 예제에 보인다. 못 하면 문서에 장식용이라고 쓰고 쓰지 않는 부품은 사전에서 뺀다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/house-1f.json\",\"where\":\"LDK x16–20,y10–13 (약 18칸)\",\"problem\":\"LDK 동쪽 바닥이 가구 없이 비어 있다. 규칙 45행(빈 바닥이 넓으면 방을 줄인다)을 예제가 어긴다.\",\"fix\":\"방을 x19까지로 줄이거나 동쪽에 수납장·식기장을 놓는다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/house-1f.json\",\"where\":\"tables kcounter (16,5) 3×1, 트인 곳 x16–19,y6\",\"problem\":\"대면 카운터가 4칸 트인 곳 바로 앞에 서서 부엌↔LDK 통로가 (19,5)→(19,6) 한 칸뿐이다. 대면 카운터인데 스툴이 없다.\",\"fix\":\"카운터를 x16–17로 줄여 통로를 2칸으로 넓히고 LDK 쪽에 스툴 2개를 놓는다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/house-2f.json\",\"where\":\"아이방 카펫 x14–20,y3–5, cushion-floor (18,5)\",\"problem\":\"진홍색 카펫이 modern3의 절제된 팔레트에서 튀고 침실 붉은 이불과 겹친다. 가운데 4×2칸이 비었다. cushion-floor가 파란 서랍 상자처럼 읽혀 방석으로 안 보인다.\",\"fix\":\"카펫을 어두운 팥색·감색으로 낮추고, 방석을 둥근 윤곽으로 다시 찍는다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/house-2f.json\",\"where\":\"복도 x4–20,y9–10\",\"problem\":\"복도(16칸)가 방(8칸)보다 길고 창·스위치·화분 외에는 비었다. 일본 주택의 비례가 아니다.\",\"fix\":\"복도를 계단통 쪽 8칸 정도로 줄이고 방을 넓히거나 복도 수납장을 둔다.\"},\n{\"severity\":\"minor\",\"file\":\"public/assets/jp-city-references/interior-house-1f(2x 스크린샷)\",\"where\":\"욕실 bathtub (1,3)\",\"problem\":\"욕조가 흰 테두리 위 파란 면 하나라 2층 더블침대와 실루엣이 같다. 욕실 문맥으로만 구분된다.\",\"fix\":\"욕조에 덮개·물결·수전 같은 고유 표지를 더한다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/house-1f.json\",\"where\":\"화실 tatami 마루 x1–5 (확대 a2)\",\"problem\":\"1×1·1×2·2×1 조각이 섞여 4.5조 배치로 읽히지 않고, 일부 모서리에서 4장이 한 점에서 만나는 十자로 보인다(확대 기준, 원본 재확인 필요).\",\"fix\":\"1×2 한 장 단위로 마루를 정리하고 十자 모서리를 없앤다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/apartment-1k.json\",\"where\":\"방↔부엌 틈 (6,6), links []\",\"problem\":\"방↔부엌이 1칸 통로이고 거리로 나가는 links가 없다. 규칙 13행이 요구하는 출입구 연결을 예제가 보이지 않는다.\",\"fix\":\"현관 아래 틈에 거리 links 예시를 넣고 방↔부엌 통로를 2칸으로 넓힌다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/refs/interior-rules.md\",\"where\":\"84행 '없는 것', 1층 현관 맨 아래 틈 (9,14)\",\"problem\":\"현관 바깥문 그림이 없어 출입구가 검은 허공으로 열린 1칸 틈이다.\",\"fix\":\"현관 바깥문 flat 조각을 만들거나 틈 아래에 문턱 그림을 놓는다.\"}\n]}\n```"
 }

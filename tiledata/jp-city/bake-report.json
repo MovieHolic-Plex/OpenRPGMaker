@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 5599,
-  "legacy": 271,
+  "block_cells": 5539,
+  "legacy": 331,
   "legacy_ids": [
    5137,
    5275,
@@ -45,13 +45,13 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 5599
+   "block": 5539
   }
  },
  "pc_counts": {
   "star": 4891,
   "solid": 1801,
-  "floor": 998,
+  "floor": 938,
   "solidfloor": 418,
   "flat": 473,
   "blank": 155
@@ -205,7 +205,7 @@
    },
    {
     "name": "interior_shell",
-    "cells": 628,
+    "cells": 568,
     "autotiles": 0,
     "groups": 13,
     "kits": 0,
@@ -338,7 +338,7 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "f4fc5f4b950b047a28dbf8208f76a428fd5384b2",
+ "sheet_hash": "1a3f0c3aca65febd4672bac5a1d7c41994580f91",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 534,

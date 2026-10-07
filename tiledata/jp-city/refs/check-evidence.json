@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 37749
+   "chars": 37748
   },
   {
    "id": "jp-autotile",
@@ -68,7 +68,7 @@
    "name": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5)",
    "documents": 7,
    "images": 14,
-   "chars": 72225
+   "chars": 74644
   },
   {
    "id": "jp-errors",
@@ -82,11 +82,11 @@
   "categories": 11,
   "documents": 68,
   "images": 182,
-  "chars": 736475,
+  "chars": 738893,
   "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 8471,
+ "tilesEmitted": 8411,
  "kitsEmitted": 534,
  "kitArrayItemsRoundtrip": 534,
  "unknownTokens": [
@@ -110,7 +110,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "0422cf8eef5896ff4c2496767bf5c2ba1d065ac7f57b0ddac0dc9385521e6a9a",
-  "images": "53f696158cac6c3eadb60959e3e5faaa26b6036394514a79c2703f70a3e611c5"
+  "json": "4b920be4dbfe9938d673571094bb9f5b1f7aa284c3ab913071bdcad0519338dc",
+  "images": "cc766307ac47303bd38f313e9fcff5beab0264cce11cf8920e9f36227efa0262"
  }
 }

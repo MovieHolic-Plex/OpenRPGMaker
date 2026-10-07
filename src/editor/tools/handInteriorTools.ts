@@ -189,6 +189,11 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : existing?.name ?? "실내";
     const links = Array.isArray(args.links) ? (args.links as { x: number; y: number; toMapId: string; toX: number; toY: number; direction?: string }[]) : [];
+    // 아직 없는 맵을 가리키는 이동은 커밋 무결성 검사가 일반 오류로 거부한다 — 층 여럿을 짓는 순서를 알려 주며 먼저 거부한다(2026-10-07 조수 시험: 1층을 2층 links 와 함께 먼저 지으려다 거부).
+    const missing = links.filter((l) => l.toMapId !== mapId && !draft.maps[l.toMapId]);
+    if (missing.length) {
+      throw new ToolError(`links 의 toMapId ${[...new Set(missing.map((l) => l.toMapId))].join(", ")} 맵이 아직 없다 — 층이 여럿이면 ① 한 층을 links 없이 짓고 ② 다른 층을 그 층으로 가는 links 와 함께 짓고 ③ 처음 층을 같은 mapId·replace:true 로 links 를 넣어 다시 짓는다(또는 두 층을 다 지은 뒤 create_transfer_pair). 도착 칸(toX,toY)은 그 맵에서 걸을 수 있는 바닥이어야 한다.`, { code: "link-target-missing" });
+    }
     const events: GameEvent[] = [
       ...(existing?.events ?? []).filter((e) => !e.id.startsWith(`${mapId}-link-`)),
       ...links.map((l, i) => transfer(mapId, l.x, l.y, { mapId: l.toMapId, x: l.toX, y: l.toY, direction: l.direction }, i)),
