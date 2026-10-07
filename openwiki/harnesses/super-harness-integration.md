@@ -205,3 +205,5 @@ index.html 은 `BASE=location.pathname` 기준 상대 경로라 독립 실행(`/
 접두사 밖 요청, 토큰 없는 POST(403), 그림 해시 불일치(404) 계약은 그대로다. 통합 서비스는 자기 체크아웃의
 `beodeul-building-review/node/` 코드를 쓰므로 서명 대상 파일이 그 체크아웃 안에서도 일치해야 영수증이 유효하다.
 자동 반복 작업(gate/produce)과 18322 수리 서비스는 통합하지 않았다.
+
+운영 메모: 통합 서비스의 코드 체크아웃이 main 보다 뒤처져 있으면 systemd drop-in 에 `Environment=BUILDING_REVIEW_ROOT=<main 을 따라가는 별도 체크아웃>` 을 두어 검수 탭만 최신 코드를 쓰게 한다(2026-10-07: `~/.local/share/oprn/services/rpg-zzu-beodeul-review`). 병합 뒤 그 체크아웃을 `checkout --detach origin/main` 하고 서비스를 재시작한다.

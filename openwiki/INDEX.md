@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **166쪽 / 5571KB / 약 1,622,429 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **166쪽 / 5572KB / 약 1,622,844 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -86,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
-| `openwiki/harnesses/beodeul-building-review.md` | 9 | `.pixels.json`, `DATA/store-uploads.json`, `buildingBundle.ts`, `import_candidates.py`, `node/profiles.py`, `output/beodeul-building-review/round7-v3-gate-status.json`, `profiles.json`, `publishBuildings.ts`, `scripts/content/prepare-beodeul-reviewed-references.mts` |
+| `openwiki/harnesses/beodeul-building-review.md` | 4 | `.pixels.json`, `DATA/store-uploads.json`, `output/beodeul-building-review/round7-v3-gate-status.json`, `scripts/content/prepare-beodeul-reviewed-references.mts` |
 | `openwiki/harnesses/charset-actor.md` | 6 | `actions.px.json`, `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 2 | `.check.json`, `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
@@ -2993,7 +2993,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L180` 장소 라이브러리의 기준 도안
 - `L188` 공용 세 마을 · 굽은 지형과 출입구 (2026-09-23)
 
-### `openwiki/wizarding-world.md` — 14KB · 130줄 · ~4,263 토큰
+### `openwiki/wizarding-world.md` — 16KB · 136줄 · ~4,678 토큰
 
 - `L7` 식별자
 - `L19` 현재 굽기 (2026-10-07)
@@ -3002,9 +3002,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L51` 굽기 순서 (한 번에)
 - `L62` 검수 흐름
 - `L71` 조수 공간 빌더
-- `L108` 통행 관문 WZ-ISLAND
-- `L113` 조수 실경로 시험 (qa:game, 기획 `scripts/qa-game/briefs/wizarding-school.json`)
-- `L125` 한계
+- `L114` 통행 관문 WZ-ISLAND
+- `L119` 조수 실경로 시험 (qa:game, 기획 `scripts/qa-game/briefs/wizarding-school.json`)
+- `L131` 한계
 
 ### `openwiki/world-generation-rules.md` — 9KB · 116줄 · ~2,645 토큰
 
