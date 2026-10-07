@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "scripts/qa/interview-scene-bank-integrity.py"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "manifest": "a04de2ac6f8428aa98c9bfaa08709943485bc4fc848136e2466aa72b61af289a",
+    "ledger": "2d8919121e92fda054eb40a3ce05fb9f22145128b909cb49a0fcbeb0976f2c86"
+  },
+  "published": 912,
+  "finishedAt": "2026-10-07T09:52:51.876940+00:00",
+  "recoveryLifecycle": true
+}

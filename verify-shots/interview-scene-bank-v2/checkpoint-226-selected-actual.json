@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+    "--all-published",
+    "--paths",
+    "adventure--reunion--battle--bright--chapters--short,adventure--reunion--battle--bright--journey--scene,adventure--reunion--battle--mystic--chapters--scene,adventure--reunion--battle--mystic--chapters--episode,adventure--reunion--battle--bright--quests--episode,adventure--reunion--companions--mystic"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "manifest": "a04de2ac6f8428aa98c9bfaa08709943485bc4fc848136e2466aa72b61af289a",
+    "ledger": "2d8919121e92fda054eb40a3ce05fb9f22145128b909cb49a0fcbeb0976f2c86"
+  },
+  "published": 912,
+  "finishedAt": "2026-10-07T09:53:14.282329+00:00",
+  "recoveryLifecycle": true
+}

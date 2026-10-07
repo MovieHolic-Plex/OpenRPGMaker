@@ -1,0 +1,139 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 912,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--battle--bright--journey--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--quests--episode",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters--episode",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion",
+          "caption": "소중한 사람을 찾으러",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--battle--bright--journey--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--quests--episode",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters--short",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters--episode",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--companions--mystic",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion",
+          "caption": "소중한 사람을 찾으러",
+          "selected": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-912-stage226-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-912-stage226-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-912-stage226-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-912-stage226-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all912 fresh native visual audit.",
+  "rootViewedWholeScreens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-912-stage226-320-first.png",
+      "sha256": "7a76f2435ca466416779e601a3c6a99e6c738826fda2dc16bf670c47a767a97b",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-912-stage226-320-last.png",
+      "sha256": "5402042cbd61ff3a4a24ca85a3fbc23d899b5e8a393df131cd3efd132b5136a8",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-912-stage226-736-first.png",
+      "sha256": "eed679b6d424e4bd2183b33becdb013b740369ef67675d1fdb2738ff7248efd1",
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-912-stage226-736-last.png",
+      "sha256": "6f134a8d3a849efe21f2ea1c60b9d62b818be6e2f952f9d7cad3bdf34b833375",
+      "rootViewed": true
+    }
+  ],
+  "rootViewedAt": "2026-10-07T10:16:05.147839+00:00"
+}

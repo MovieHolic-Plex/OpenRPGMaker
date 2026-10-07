@@ -1,0 +1,1098 @@
+{
+  "audits": [
+    {
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-222-original-battle-bright-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through222": 107,
+        "finishedAt": "2026-10-07T09:32:35.481499+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--battle--bright",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright-2-84df5ec69201.png",
+          "nativeSha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\nLATEST CHOICE: 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\nSCENE ID: adventure--reunion--battle--bright. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected SEARCH FOR MISSING LOVED ONE: abandoned travelers stopping place, ONE clearly visible small CLOSED PLAIN personal keepsake tin, vacated bedroll/plain cup/travel pack. Selected STRATEGIC BATTLE: EMPTY PLAIN shield racks, timber barricades, stone cover and several clearly distinct real approach lanes. Selected mood: clear welcoming energetic daylight. No progression or scope is chosen yet; do not force long journey, quest parcels or chapter biome transition. New high oblique fortified stopping-floor camera from INSIDE a bare stone gate, focal selected keepsake/belongings/plain shields/barricades inside LEFT60%; quiet fully drawn right35%. HARD FAILURE BEFORE: old images had tower/camp cloth banners with gold emblems. NO hanging cloth of any kind anywhere: no flag, banner, tapestry, awning, roof rag, table drape, insignia, heraldry, fleur-de-lis or emblem. Roofs/walls/towers MUST be bare solid stone/timber/tile; shields completely plain metal/wood with ordinary rivets only, no symbols. Plain cloth ONLY as rolled undecorated bedroll. No chosen hero identity, relationship type, faction, victim body, attacker or enemy. All planes are equally sharp magnified square pixel clusters/stepped shading, foreground bare floor and selected furniture only. No people/humanoids/body/photos/portrait/silhouette, text/pseudotext/paper/documents/posters/boards/open books/clocks/watch faces/numerals/logos, gradient/blur/collage. Independent shot distinct from old frontal table/camp/distant tower camera.",
+          "exactOriginalOwnSha256": "2a1b1cfc5cbabaa42dc372103fad490877c4504e1c9ab5c452616f8d8903559d",
+          "preservedOriginalReview": {
+            "sourceSha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+            "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd",
+            "reviewer": "Codex direct original visual inspection: v2-production-049",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright parent replacement: unique CLOSED PLAIN keepsake tin/abandoned bedroll/pack/cup near LEFT, actual plain shields on racks, timber barricades/stone cover/several approach lanes in EMPTY stopping fort. All old emblem banners absent. Fresh wide inside-gate stopping-floor shot versus old frontal cloth camp; no progression forced. Pixel focus remains hard at all depths; native PNG was not rescaled or filtered to obtain approval. Missing or unclear selected facts are explicitly rejected."
+          },
+          "corrective": {
+            "sourceSha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+            "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd",
+            "reviewer": "Codex ROOT original049battlebright OWN/native corrective after221 direct whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINAL049OWN SHA2a1b1c.../WHOLEunchangednative84df... directlyread/viewed during221 actualnewjourneycomparison. Originalexplicitlyplaces selectedpersonalkeepsake/belongings/plainshields/barricades insideLEFT60, quietRIGHT35. Actual selected RIGHTtimberbarricades/stakes/tacticalcover atx1050-1550 lie behindactualcontrols x1008: compositionONLYF. LEFTclosedplainkeepsaketin/bedroll/plaincup/shieldracks/barricades/openbattleapproachfloor present; rivets/clasps notlogos. Other6originalchecksretained. Originalclose INSIDEgate allows partialforegroundarchitecture: no retrowholebuilding/nativebuffers/REDcloth/mudprints/destinationbench/LEFTbleachedupland/new222props. ExactOWN/nativehash/priorreview retained; historical901220QA/commit untouched. Newprefixreplacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINAL049OWN SHA2a1b1c.../WHOLEunchangednative84df... directlyread/viewed during221 actualnewjourneycomparison. Originalexplicitlyplaces selectedpersonalkeepsake/belongings/plainshields/barricades insideLEFT60, quietRIGHT35. Actual selected RIGHTtimberbarricades/stakes/tacticalcover atx1050-1550 lie behindactualcontrols x1008: compositionONLYF. LEFTclosedplainkeepsaketin/bedroll/plaincup/shieldracks/barricades/openbattleapproachfloor present; rivets/clasps notlogos. Other6originalchecksretained. Originalclose INSIDEgate allows partialforegroundarchitecture: no retrowholebuilding/nativebuffers/REDcloth/mudprints/destinationbench/LEFTbleachedupland/new222props. ExactOWN/nativehash/priorreview retained; historical901220QA/commit untouched. Newprefixreplacementrequired beforedescendantsdeploy."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "reviews": [
+        {
+          "key": "adventure--reunion--battle--bright",
+          "sha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+          "review": {
+            "sourceSha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+            "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd",
+            "reviewer": "Codex ROOT original049battlebright OWN/native corrective after221 direct whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINAL049OWN SHA2a1b1c.../WHOLEunchangednative84df... directlyread/viewed during221 actualnewjourneycomparison. Originalexplicitlyplaces selectedpersonalkeepsake/belongings/plainshields/barricades insideLEFT60, quietRIGHT35. Actual selected RIGHTtimberbarricades/stakes/tacticalcover atx1050-1550 lie behindactualcontrols x1008: compositionONLYF. LEFTclosedplainkeepsaketin/bedroll/plaincup/shieldracks/barricades/openbattleapproachfloor present; rivets/clasps notlogos. Other6originalchecksretained. Originalclose INSIDEgate allows partialforegroundarchitecture: no retrowholebuilding/nativebuffers/REDcloth/mudprints/destinationbench/LEFTbleachedupland/new222props. ExactOWN/nativehash/priorreview retained; historical901220QA/commit untouched. Newprefixreplacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINAL049OWN SHA2a1b1c.../WHOLEunchangednative84df... directlyread/viewed during221 actualnewjourneycomparison. Originalexplicitlyplaces selectedpersonalkeepsake/belongings/plainshields/barricades insideLEFT60, quietRIGHT35. Actual selected RIGHTtimberbarricades/stakes/tacticalcover atx1050-1550 lie behindactualcontrols x1008: compositionONLYF. LEFTclosedplainkeepsaketin/bedroll/plaincup/shieldracks/barricades/openbattleapproachfloor present; rivets/clasps notlogos. Other6originalchecksretained. Originalclose INSIDEgate allows partialforegroundarchitecture: no retrowholebuilding/nativebuffers/REDcloth/mudprints/destinationbench/LEFTbleachedupland/new222props. ExactOWN/nativehash/priorreview retained; historical901220QA/commit untouched. Newprefixreplacementrequired beforedescendantsdeploy."
+          }
+        }
+      ]
+    },
+    {
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-223-original-battle-prefixes-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 3,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through223": 110,
+        "finishedAt": "2026-10-07T09:32:56.039244+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--battle",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle-3-de9f04fcc16b.png",
+          "nativeSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\nLATEST CHOICE: 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\nSCENE ID: adventure--reunion--battle. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Empty abandoned travelers stopping place, a plain personal keepsake and interrupted trail hint at seeking a missing loved one. No photograph, face, writing, prechosen relationship or corpse.\nSHOT: wide lateral composition with overlapping spatial layers; no obligatory left tree or setting sun. Make a fresh shot, never copy the reference composition.\nPLAY MOTIF: Defensible terrain and tactical cover emphasize strategic confrontation; no visible enemy, hero or unchosen species.\nMANDATORY REDRAW CORRECTION: 전술 엄폐 지형은 보이지만 소중한 사람을 찾는 시작 설정의 개인 유품·끊긴 흔적이 빠졌다. 전경에 무지 개인 유품과 이어지다 끊긴 여행 흔적을 분명히 추가하여 전투 선택과 함께 남긴다.\nNo flags or emblem logos. Every foreground edge crisp pixels. All latest and earlier choices prominent as actual objects.\nFINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.\nFINAL CORRECTION — FULL REDRAW: 소중한 사람의 유품과 발자국은 복구했지만 전투 선택이 보이지 않는다. 전경과 중경에 방패 거치대·바리케이드·엄폐물·서로 다른 접근로가 있는 빈 전술 훈련 공간을 크게 그린다. 유품과 중단된 여행 흔적은 함께 보존한다.\nMAIN FOCAL SUBJECT: empty tactical training/defense space with several physical shields in an unmarked rack, substantial freestanding barricades, offset cover and several approach lanes. This MUST occupy the left and middle, not be replaced by generic travel backpacks. Preserve the selected premise through one prominent prop. No humans, creatures, flag emblems, text or diagrams.\nCRAFT CONSTRAINT: No emblem flags, open pages, writing, humanoid statues, or foreground blur. For investigation, use specific physical clues and spatial relationships rather than written evidence boards. Strong hard pixel clusters throughout.",
+          "exactOriginalOwnSha256": "bf87b9d0a76bba7c4e0f8e400d4f7bc082c4b4d7ed7233ee9f3fdc4cee55c0f8",
+          "preservedOriginalReview": {
+            "sourceSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+            "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+            "reviewer": "Codex direct original visual inspection: v2-production-005",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Large shield rack, barricades and multiple defense lanes now communicate tactical battle; personal keepsake and interrupted tracks retained."
+          },
+          "corrective": {
+            "sourceSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+            "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN prohibits banners andrequires majorselectedtacticalspace left/middle. Actual RED hangingpolebanner x530-600/y160-340 violates noText evenwithoutemblem. ActualselectedRIGHTbarricades/tacticalcover x1300-1530 behindactualcontrolx1008 violate originalfocalLEFT60/quietRIGHT35: compositionF. LEFTpersonalkeepsakependant/interruptedmudprints/shieldracks/plainunusedsupplies/realapproachlanes retained. Originalpartialforegroundawning permitted, no retrowholebuild/nativebuffers/REDcloth/twoEMPTYrestplaces/new223scope requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN prohibits banners andrequires majorselectedtacticalspace left/middle. Actual RED hangingpolebanner x530-600/y160-340 violates noText evenwithoutemblem. ActualselectedRIGHTbarricades/tacticalcover x1300-1530 behindactualcontrolx1008 violate originalfocalLEFT60/quietRIGHT35: compositionF. LEFTpersonalkeepsakependant/interruptedmudprints/shieldracks/plainunusedsupplies/realapproachlanes retained. Originalpartialforegroundawning permitted, no retrowholebuild/nativebuffers/REDcloth/twoEMPTYrestplaces/new223scope requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--quests",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--quests-1-c244b4ec7ddb.png",
+          "nativeSha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--battle--bright--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected STRATEGIC BATTLE: empty shield racks, barricades, tactical cover and several approach lanes make confrontation visibly different from travel; no enemy or hero.\nMOOD: Open energetic clear daylight and adventurous inviting colors.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an empty sheltered village outpost with several different plain unmarked parcels and physical roads branching toward different nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+          "exactOriginalOwnSha256": "008efa0721de56ea223162187f31199ccc7e8b338863738d7857dacdb28865b8",
+          "preservedOriginalReview": {
+            "sourceSha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+            "promptSha256": "76a0c228629d89dcb979d0abbc9e63c1aec684cde18f85c7708147536dc2c4a1",
+            "reviewer": "Codex direct original visual inspection: v2-production-048",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright EMPTY quest outpost: near plain CLOSED small keepsake/abandoned travel pack-bedroll/cup, multiple unmarked sealed packages, EMPTY plain shield racks and timber barricades/stone cover with separate actual approach lanes. Real forked roads to different destinations. Fresh larger outpost courtyard camera versus old frontal tactical camp. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          },
+          "corrective": {
+            "sourceSha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+            "promptSha256": "76a0c228629d89dcb979d0abbc9e63c1aec684cde18f85c7708147536dc2c4a1",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN selectedstrategicbarricades androadsbranchingdifferentnearbydestinations withfocalselectedpropsLEFT/quietRIGHT. ActualRIGHTbarricade x1330-1450 andactualquest-roadfork/cave+castle destinations afterx1200 liebehindactualcontrolx1008: compositionONLYF. LEFTplainstorage/cups/bedrolls/shieldracks/barricades/openapproachfloor retained; originalparcelsareplainunmarked andnotnewexact3onUNROOFEDtable. Originalclose shelteredpartialarchitecture permitted. No retroWHOLEroof/nativebuffer/REDcloth/specialmudtrace/LEFTnewdestination constraints. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN selectedstrategicbarricades androadsbranchingdifferentnearbydestinations withfocalselectedpropsLEFT/quietRIGHT. ActualRIGHTbarricade x1330-1450 andactualquest-roadfork/cave+castle destinations afterx1200 liebehindactualcontrolx1008: compositionONLYF. LEFTplainstorage/cups/bedrolls/shieldracks/barricades/openapproachfloor retained; originalparcelsareplainunmarked andnotnewexact3onUNROOFEDtable. Originalclose shelteredpartialarchitecture permitted. No retroWHOLEroof/nativebuffer/REDcloth/specialmudtrace/LEFTnewdestination constraints. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--chapters-1-2773dc10f752.png",
+          "nativeSha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--battle--bright--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected STRATEGIC BATTLE: empty shield racks, barricades, tactical cover and several approach lanes make confrontation visibly different from travel; no enemy or hero.\nMOOD: Open energetic clear daylight and adventurous inviting colors.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: New stage for each major chapter: compose at a strong architectural threshold between two substantially different landscape regions, preserving near selected mission/boat/keepsake and chosen play. No separate panels or recap text.",
+          "exactOriginalOwnSha256": "5f2117b2055e32ec53e0ade5a12c3d878add8321fb001a184461593d8ac9472c",
+          "preservedOriginalReview": {
+            "sourceSha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+            "promptSha256": "f93054b5471a8d6ffcdf6b5e19bcd03299c5bf2e8a7a3b7270c80cdbca0b0a94",
+            "reviewer": "Codex direct original visual inspection: v2-production-048",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright EMPTY tactical terrace at strong architectural threshold: near unique CLOSED plain keepsake/abandoned bedroll/cup, EMPTY plain shields/barricades/stone cover/approach lanes; one continuous region transitions from green forest-water to contrasting desert. Fresh raised threshold camera versus old frontal tactical stopping camp. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          },
+          "corrective": {
+            "sourceSha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+            "promptSha256": "f93054b5471a8d6ffcdf6b5e19bcd03299c5bf2e8a7a3b7270c80cdbca0b0a94",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN asks selectedtacticalcover andstrongarchitecturalthreshold betweenTWOsubstantiallydifferentregions withfocalLEFT/quietRIGHT. ActualRIGHTselectedbarricade x1410-1610 andrequiredchapterregionalstaging bleacheddesertUPRIGHT behindactualcontrolx1008: compositionONLYF. LEFTplainpersonalbag/bedroll/cup/shieldracks/realapproachfloor/stonegate present. Originalforegroundpartialworkbench/largegate permitted. No retroWHOLEtop/nativebuffer/REDcloth/LEFTbleacheduplandnew223requirements; actualrightocclusiononly. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN asks selectedtacticalcover andstrongarchitecturalthreshold betweenTWOsubstantiallydifferentregions withfocalLEFT/quietRIGHT. ActualRIGHTselectedbarricade x1410-1610 andrequiredchapterregionalstaging bleacheddesertUPRIGHT behindactualcontrolx1008: compositionONLYF. LEFTplainpersonalbag/bedroll/cup/shieldracks/realapproachfloor/stonegate present. Originalforegroundpartialworkbench/largegate permitted. No retroWHOLEtop/nativebuffer/REDcloth/LEFTbleacheduplandnew223requirements; actualrightocclusiononly. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "reviews": [
+        {
+          "key": "adventure--reunion--battle",
+          "sha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+          "review": {
+            "sourceSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+            "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN prohibits banners andrequires majorselectedtacticalspace left/middle. Actual RED hangingpolebanner x530-600/y160-340 violates noText evenwithoutemblem. ActualselectedRIGHTbarricades/tacticalcover x1300-1530 behindactualcontrolx1008 violate originalfocalLEFT60/quietRIGHT35: compositionF. LEFTpersonalkeepsakependant/interruptedmudprints/shieldracks/plainunusedsupplies/realapproachlanes retained. Originalpartialforegroundawning permitted, no retrowholebuild/nativebuffers/REDcloth/twoEMPTYrestplaces/new223scope requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN prohibits banners andrequires majorselectedtacticalspace left/middle. Actual RED hangingpolebanner x530-600/y160-340 violates noText evenwithoutemblem. ActualselectedRIGHTbarricades/tacticalcover x1300-1530 behindactualcontrolx1008 violate originalfocalLEFT60/quietRIGHT35: compositionF. LEFTpersonalkeepsakependant/interruptedmudprints/shieldracks/plainunusedsupplies/realapproachlanes retained. Originalpartialforegroundawning permitted, no retrowholebuild/nativebuffers/REDcloth/twoEMPTYrestplaces/new223scope requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--bright--quests",
+          "sha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+          "review": {
+            "sourceSha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+            "promptSha256": "76a0c228629d89dcb979d0abbc9e63c1aec684cde18f85c7708147536dc2c4a1",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN selectedstrategicbarricades androadsbranchingdifferentnearbydestinations withfocalselectedpropsLEFT/quietRIGHT. ActualRIGHTbarricade x1330-1450 andactualquest-roadfork/cave+castle destinations afterx1200 liebehindactualcontrolx1008: compositionONLYF. LEFTplainstorage/cups/bedrolls/shieldracks/barricades/openapproachfloor retained; originalparcelsareplainunmarked andnotnewexact3onUNROOFEDtable. Originalclose shelteredpartialarchitecture permitted. No retroWHOLEroof/nativebuffer/REDcloth/specialmudtrace/LEFTnewdestination constraints. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN selectedstrategicbarricades androadsbranchingdifferentnearbydestinations withfocalselectedpropsLEFT/quietRIGHT. ActualRIGHTbarricade x1330-1450 andactualquest-roadfork/cave+castle destinations afterx1200 liebehindactualcontrolx1008: compositionONLYF. LEFTplainstorage/cups/bedrolls/shieldracks/barricades/openapproachfloor retained; originalparcelsareplainunmarked andnotnewexact3onUNROOFEDtable. Originalclose shelteredpartialarchitecture permitted. No retroWHOLEroof/nativebuffer/REDcloth/specialmudtrace/LEFTnewdestination constraints. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--bright--chapters",
+          "sha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+          "review": {
+            "sourceSha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+            "promptSha256": "f93054b5471a8d6ffcdf6b5e19bcd03299c5bf2e8a7a3b7270c80cdbca0b0a94",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN asks selectedtacticalcover andstrongarchitecturalthreshold betweenTWOsubstantiallydifferentregions withfocalLEFT/quietRIGHT. ActualRIGHTselectedbarricade x1410-1610 andrequiredchapterregionalstaging bleacheddesertUPRIGHT behindactualcontrolx1008: compositionONLYF. LEFTplainpersonalbag/bedroll/cup/shieldracks/realapproachfloor/stonegate present. Originalforegroundpartialworkbench/largegate permitted. No retroWHOLEtop/nativebuffer/REDcloth/LEFTbleacheduplandnew223requirements; actualrightocclusiononly. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN asks selectedtacticalcover andstrongarchitecturalthreshold betweenTWOsubstantiallydifferentregions withfocalLEFT/quietRIGHT. ActualRIGHTselectedbarricade x1410-1610 andrequiredchapterregionalstaging bleacheddesertUPRIGHT behindactualcontrolx1008: compositionONLYF. LEFTplainpersonalbag/bedroll/cup/shieldracks/realapproachfloor/stonegate present. Originalforegroundpartialworkbench/largegate permitted. No retroWHOLEtop/nativebuffer/REDcloth/LEFTbleacheduplandnew223requirements; actualrightocclusiononly. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        }
+      ]
+    },
+    {
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-223-additional-original-parents-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 4,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through223": 114,
+        "finishedAt": "2026-10-07T09:33:17.447467+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion-1-5619402deef1.png",
+          "nativeSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\nLATEST CHOICE: 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\nSCENE ID: adventure--reunion. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Empty abandoned travelers stopping place, a plain personal keepsake and interrupted trail hint at seeking a missing loved one. No photograph, face, writing, prechosen relationship or corpse.\nSHOT: wide lateral composition with overlapping spatial layers; no obligatory left tree or setting sun. Make a fresh shot, never copy the reference composition.",
+          "exactOriginalOwnSha256": "04d0c0685f4b3b4cc5064634ec1f6c30729d8832ca08326e44f2322230d1ea1b",
+          "preservedOriginalReview": {
+            "sourceSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+            "promptSha256": "3cdfdd4f60088edd70a4f88af563eb636e978eee8041b093898d91b77d2be842",
+            "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Abandoned traveler shelter, keepsake and interrupted trail evoke searching for a missing loved one. Sign is blank; no human identity."
+          },
+          "corrective": {
+            "sourceSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+            "promptSha256": "3cdfdd4f60088edd70a4f88af563eb636e978eee8041b093898d91b77d2be842",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN explicitly forbids signs. Actualisolatedwooddirectionpost/pointedarrowboard x980-1090/y440-675 is a prohibitedsign evenplain. noTextONLYF. LEFTplainpersonalkeepsake/abandonedemptytravelersSTOP/interruptedgroundtrail remain. Oldclosepartialawning/table/nativeedges permitted; no retroWHOLEarchitecture/newREDfabric/TIN/microfootprint requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN explicitly forbids signs. Actualisolatedwooddirectionpost/pointedarrowboard x980-1090/y440-675 is a prohibitedsign evenplain. noTextONLYF. LEFTplainpersonalkeepsake/abandonedemptytravelersSTOP/interruptedgroundtrail remain. Oldclosepartialawning/table/nativeedges permitted; no retroWHOLEarchitecture/newREDfabric/TIN/microfootprint requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic-2-bd8381426783.png",
+          "nativeSha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nLATEST CHOICE: 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nSCENE ID: adventure--reunion--battle--mystic. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected SEARCH FOR MISSING LOVED ONE: abandoned travelers stopping place, ONE clearly visible small CLOSED PLAIN personal keepsake tin, vacated bedroll/plain cup/travel pack. Selected STRATEGIC BATTLE: EMPTY PLAIN shield racks, timber barricades, stone cover and several clearly distinct real approach lanes. Selected mood: mysterious monumental ancient ruins with deep discrete pixel shade bands and spatial depth. No progression or scope is chosen yet; do not force long journey, quest parcels or chapter biome transition. New high oblique fortified stopping-floor camera from INSIDE a bare stone gate, focal selected keepsake/belongings/plain shields/barricades inside LEFT60%; quiet fully drawn right35%. HARD FAILURE BEFORE: old images had tower/camp cloth banners with gold emblems. NO hanging cloth of any kind anywhere: no flag, banner, tapestry, awning, roof rag, table drape, insignia, heraldry, fleur-de-lis or emblem. Roofs/walls/towers MUST be bare solid stone/timber/tile; shields completely plain metal/wood with ordinary rivets only, no symbols. Plain cloth ONLY as rolled undecorated bedroll. No chosen hero identity, relationship type, faction, victim body, attacker or enemy. All planes are equally sharp magnified square pixel clusters/stepped shading, foreground bare floor and selected furniture only. No people/humanoids/body/photos/portrait/silhouette, text/pseudotext/paper/documents/posters/boards/open books/clocks/watch faces/numerals/logos, gradient/blur/collage. Independent shot distinct from old frontal table/camp/distant tower camera.",
+          "exactOriginalOwnSha256": "0b8eeae90d70e1b9aaeb09ff49e11fd507c7d7c76b1fdd77da32159a8fbed180",
+          "preservedOriginalReview": {
+            "sourceSha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+            "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9",
+            "reviewer": "Codex direct original visual inspection: v2-production-049",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Mystical parent replacement: unique CLOSED PLAIN keepsake tin/abandoned bedroll/pack/cup near LEFT; actual plain shields on racks, timber barricades/stone cover/approach lanes and monumental ancient ruins. No old banners/emblems remain. Fresh portcullis gate-floor shot versus old frontal covered tactical camp; no progression forced. Pixel focus remains hard at all depths; native PNG was not rescaled or filtered to obtain approval. Missing or unclear selected facts are explicitly rejected."
+          },
+          "corrective": {
+            "sourceSha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+            "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMONUMENTALancientruins andstrategicbarricades/approachlanes withselectedfocalsLEFT60/quietRIGHT35. Actualmainmonumentarch afterx1040 andselectedRIGHTtimberbarricades/stonecover afterx1470 behindactualcontrolx1008: compositionONLYF. LEFTplainCLOSEDpersonalTIN/bedroll/pack/cup/plainshieldracks retained; metalclasps/rivets notlogos, sunsetruins not retrocoolTWILIGHTfailure. Oldpartialforegroundgate/awningbuffer permitted; no retroWHOLEarchitecture/REDcloth/newjourneybench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMONUMENTALancientruins andstrategicbarricades/approachlanes withselectedfocalsLEFT60/quietRIGHT35. Actualmainmonumentarch afterx1040 andselectedRIGHTtimberbarricades/stonecover afterx1470 behindactualcontrolx1008: compositionONLYF. LEFTplainCLOSEDpersonalTIN/bedroll/pack/cup/plainshieldracks retained; metalclasps/rivets notlogos, sunsetruins not retrocoolTWILIGHTfailure. Oldpartialforegroundgate/awningbuffer permitted; no retroWHOLEarchitecture/REDcloth/newjourneybench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--journey",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--journey-3-0a9a2551da2b.png",
+          "nativeSha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--battle--mystic--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS FROM A NEW CAMERA: search for missing loved one, STRATEGIC BATTLE: at least TWO actual undecorated shields on near LEFT rack, EMPTY timber barricades/stone cover and multiple actual approach lanes, MYSTICAL monumental ancient ruins and discrete spatial depth, JOURNEY: one continuous traversable near path through actual midpoint toward another clearly different distant EMPTY destination. Near LEFT unique small CLOSED PLAIN personal keepsake tin beside abandoned bedroll/travel pack/plain cup MUST remain visibly distinct from generic cargo. HARD FAILURE: Shield rack is a generic EMPTY wooden frame with no actual shield; make at least TWO plainly visible undecorated shields resting on the near LEFT rack. An empty bare frame is not clearly identifiable as selected battle equipment. All selected focal props fit LEFT60%; quiet fully drawn right35%. Fresh high-oblique sheltered gate/side-threshold camera, avoid repeating old near-table/distant-tower or failed generic rack/crate/bedroll shot. Every plane equally sharp square pixel clusters/stepped shade ramps; bare foreground floor and chosen furniture only. No foreground plant/candle/door-jamb framing, actual people/humanoids/bodies/portrait/photos or forced faction/enemy, writing/pseudotext, papers/documents/posters/boards/open books/clocks/watch faces/numerals/logos, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/emblems, gradients/blur/collage. Plain cloth only as rolled bedrolls and sealed parcel wraps.",
+          "exactOriginalOwnSha256": "cdeaebe2f7830f8d28e174b924d58c91bf17259c0547749e77b25ebff85676cb",
+          "preservedOriginalReview": {
+            "sourceSha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+            "promptSha256": "096f678593f789a21faa87d548faa1735815a4e11fb6322a98d47a49d93df06c",
+            "reviewer": "Codex direct original visual inspection: v2-production-050",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native redraw and old/new parent inspected: near LEFT unique small CLOSED plain keepsake tin/abandoned bedroll/pack/cup, TWO actual plain shields on rack, timber barricades/stone cover/real approach lanes; continuous traversable path through midpoint toward different EMPTY monumental ancient ruin. Fresh lower gate-floor journey shot versus old frontal camp and failed empty-rack shot. All planes hard square clusters/stepped shade ramps, no people/body/text/paper/flags/emblems/blur."
+          },
+          "corrective": {
+            "sourceSha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+            "promptSha256": "096f678593f789a21faa87d548faa1735815a4e11fb6322a98d47a49d93df06c",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMYSTICALmonument andonecontinuousnearpath viaactualmidpoint towarddifferentEMPTYdestination, focalLEFT60/quietRIGHT35. ActualrequiredjourneyMIDroad/bridge/monumentdestination afterx1050 behindactualcontrolx1008: compositionONLYF. LEFTtwoactualplainshields/rack/CLOSEDpersonalTIN/bedroll/cup/pack/barefloor retained. Originaldaylightruins not forcednewcoolTWILIGHT; no retroWHOLEarchitecture/REDcloth/exactEMPTYdestinationbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMYSTICALmonument andonecontinuousnearpath viaactualmidpoint towarddifferentEMPTYdestination, focalLEFT60/quietRIGHT35. ActualrequiredjourneyMIDroad/bridge/monumentdestination afterx1050 behindactualcontrolx1008: compositionONLYF. LEFTtwoactualplainshields/rack/CLOSEDpersonalTIN/bedroll/cup/pack/barefloor retained. Originaldaylightruins not forcednewcoolTWILIGHT; no retroWHOLEarchitecture/REDcloth/exactEMPTYdestinationbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm-1-2f26bcb5e7b0.png",
+          "nativeSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\nLATEST CHOICE: 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\nSCENE ID: adventure--reunion--battle--warm. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected STRATEGIC BATTLE: empty shield racks, barricades, tactical cover and several approach lanes make confrontation visibly different from travel; no enemy or hero.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, logos, flag emblems, blur or collage.\n",
+          "exactOriginalOwnSha256": "3443322c9660b9561b1594c2d014d91afa64c2f4d1452fca8151f82e60a2a20a",
+          "preservedOriginalReview": {
+            "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+            "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+            "reviewer": "Codex direct original visual inspection: v2-production-013",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Abandoned personal pouch and travel pack beside protected shared campfire/cups, shield racks and defensive barriers convey search, battle and warm companion shelter."
+          },
+          "corrective": {
+            "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+            "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "reviews": [
+        {
+          "key": "adventure--reunion",
+          "sha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+          "review": {
+            "sourceSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+            "promptSha256": "3cdfdd4f60088edd70a4f88af563eb636e978eee8041b093898d91b77d2be842",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN explicitly forbids signs. Actualisolatedwooddirectionpost/pointedarrowboard x980-1090/y440-675 is a prohibitedsign evenplain. noTextONLYF. LEFTplainpersonalkeepsake/abandonedemptytravelersSTOP/interruptedgroundtrail remain. Oldclosepartialawning/table/nativeedges permitted; no retroWHOLEarchitecture/newREDfabric/TIN/microfootprint requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN explicitly forbids signs. Actualisolatedwooddirectionpost/pointedarrowboard x980-1090/y440-675 is a prohibitedsign evenplain. noTextONLYF. LEFTplainpersonalkeepsake/abandonedemptytravelersSTOP/interruptedgroundtrail remain. Oldclosepartialawning/table/nativeedges permitted; no retroWHOLEarchitecture/newREDfabric/TIN/microfootprint requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--mystic",
+          "sha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+          "review": {
+            "sourceSha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+            "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMONUMENTALancientruins andstrategicbarricades/approachlanes withselectedfocalsLEFT60/quietRIGHT35. Actualmainmonumentarch afterx1040 andselectedRIGHTtimberbarricades/stonecover afterx1470 behindactualcontrolx1008: compositionONLYF. LEFTplainCLOSEDpersonalTIN/bedroll/pack/cup/plainshieldracks retained; metalclasps/rivets notlogos, sunsetruins not retrocoolTWILIGHTfailure. Oldpartialforegroundgate/awningbuffer permitted; no retroWHOLEarchitecture/REDcloth/newjourneybench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMONUMENTALancientruins andstrategicbarricades/approachlanes withselectedfocalsLEFT60/quietRIGHT35. Actualmainmonumentarch afterx1040 andselectedRIGHTtimberbarricades/stonecover afterx1470 behindactualcontrolx1008: compositionONLYF. LEFTplainCLOSEDpersonalTIN/bedroll/pack/cup/plainshieldracks retained; metalclasps/rivets notlogos, sunsetruins not retrocoolTWILIGHTfailure. Oldpartialforegroundgate/awningbuffer permitted; no retroWHOLEarchitecture/REDcloth/newjourneybench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--journey",
+          "sha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+          "review": {
+            "sourceSha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+            "promptSha256": "096f678593f789a21faa87d548faa1735815a4e11fb6322a98d47a49d93df06c",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMYSTICALmonument andonecontinuousnearpath viaactualmidpoint towarddifferentEMPTYdestination, focalLEFT60/quietRIGHT35. ActualrequiredjourneyMIDroad/bridge/monumentdestination afterx1050 behindactualcontrolx1008: compositionONLYF. LEFTtwoactualplainshields/rack/CLOSEDpersonalTIN/bedroll/cup/pack/barefloor retained. Originaldaylightruins not forcednewcoolTWILIGHT; no retroWHOLEarchitecture/REDcloth/exactEMPTYdestinationbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMYSTICALmonument andonecontinuousnearpath viaactualmidpoint towarddifferentEMPTYdestination, focalLEFT60/quietRIGHT35. ActualrequiredjourneyMIDroad/bridge/monumentdestination afterx1050 behindactualcontrolx1008: compositionONLYF. LEFTtwoactualplainshields/rack/CLOSEDpersonalTIN/bedroll/cup/pack/barefloor retained. Originaldaylightruins not forcednewcoolTWILIGHT; no retroWHOLEarchitecture/REDcloth/exactEMPTYdestinationbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--warm",
+          "sha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+          "review": {
+            "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+            "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+            "reviewer": "Codex ROOT original battleprefix OWN/native corrective after222 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+            ],
+            "notes": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedBATTLEshieldracks/barricades/tacticalcover/severalapproachlanes withfocalselectedpropsLEFT/quietRIGHT. Actualselectedshieldracks/barricades andapproachfloor onRIGHTx1200-1672 behindactualcontrolx1008: compositionONLYF. LEFTemptysharedrestingnook/warmwalllantern/unusedbedrolls/plaincup/supplybag/personalclothkeepsake remain. Ordinarywovenclothbinding notprovenlogo; oldpartialforegroundroof/table allowed. No retroWHOLEarchitecture/TIN/exactcompanionsupplycount/newREDclothorbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately."
+          }
+        }
+      ]
+    },
+    {
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-225-original-progression-parents-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 6,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through225": 120,
+        "finishedAt": "2026-10-07T09:33:38.346913+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--battle--mystic--quests",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--quests-2-5d9f595d9dad.png",
+          "nativeSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--battle--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS FROM A NEW CAMERA: search for missing loved one, STRATEGIC BATTLE: at least TWO actual undecorated shields on near LEFT rack, EMPTY timber barricades/stone cover and multiple actual approach lanes, MYSTICAL monumental ancient ruins and discrete spatial depth, QUESTS from base: THREE different PLAIN sealed cloth-wrapped parcels on near LEFT worktable plus real near-midground Y-shaped forked roads toward different EMPTY destinations, no task board or labels. Near LEFT unique small CLOSED PLAIN personal keepsake tin beside abandoned bedroll/travel pack/plain cup MUST remain visibly distinct from generic cargo. HARD FAILURE: Latest QUESTS is missing: add THREE clearly separate unmarked SEALED cloth-wrapped parcels on near LEFT base table and an actual near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. Generic crates and one winding combat route alone FAIL. All selected focal props fit LEFT60%; quiet fully drawn right35%. Fresh high-oblique sheltered gate/side-threshold camera, avoid repeating old near-table/distant-tower or failed generic rack/crate/bedroll shot. Every plane equally sharp square pixel clusters/stepped shade ramps; bare foreground floor and chosen furniture only. No foreground plant/candle/door-jamb framing, actual people/humanoids/bodies/portrait/photos or forced faction/enemy, writing/pseudotext, papers/documents/posters/boards/open books/clocks/watch faces/numerals/logos, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/emblems, gradients/blur/collage. Plain cloth only as rolled bedrolls and sealed parcel wraps.",
+          "exactOriginalOwnSha256": "ab8c2973868d3b26f69ff2afc5a6054c1007722202d63116ee7da4ce34e08e2d",
+          "preservedOriginalReview": {
+            "sourceSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+            "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+            "reviewer": "Codex direct original visual inspection: v2-production-050",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Direct native redraw and old/new parent inspected: near LEFT unique small CLOSED plain keepsake tin/abandoned bedroll/cup; TWO actual plain shields on rack, timber barricades/stone cover/approach lanes; THREE different SEALED plain cloth-wrapped parcels and actual near-midground Y-shaped fork to different EMPTY destinations. Fresh base-fork camera versus old frontal camp and generic combat-route candidate. Hard square clusters/stepped shading all planes; no people/body/text/paper/flags/emblems/blur."
+          },
+          "corrective": {
+            "sourceSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+            "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions-2-e9cc0474a625.png",
+          "nativeSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\nLATEST CHOICE: 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\nSCENE ID: adventure--reunion--companions. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Empty abandoned travelers stopping place, a plain personal keepsake and interrupted trail hint at seeking a missing loved one. No photograph, face, writing, prechosen relationship or corpse.\nSHOT: low oblique close foreground with deep architectural layers. Make a fresh shot, never copy the reference composition.\nPLAY MOTIF: Several empty travel places and personal objects arranged together emphasize companions stories, not unchosen faces.\nMANDATORY REDRAW CORRECTION: 한 사람의 배낭·컵·벤치만 있어 동료 이야기가 드러나지 않는다. 여러 빈 여행 자리와 각기 다른 여행 물건을 함께 배치하고 실종된 소중한 사람의 유품을 구분해 남긴다. 사람은 그리지 않는다.\nNo flags or emblem logos. Every foreground edge crisp pixels. All latest and earlier choices prominent as actual objects.\nFINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.",
+          "exactOriginalOwnSha256": "5078ded8dd64775bfa70fc1fda5bd6e54bb50846b67bc59e124aad609eae5e4d",
+          "preservedOriginalReview": {
+            "sourceSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+            "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+            "reviewer": "Codex direct original visual inspection: v2-production-004",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Three distinct empty traveler places, separate backpacks and mugs, closed keepsake journal and plain locket; no people."
+          },
+          "corrective": {
+            "sourceSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+            "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidswriting/lettering andrequires atleastTHREEactualdifferentEMPTYtravelplaces withsupplies/focalLEFT60. Actualgoldpendantfacehasnumeral-like4 mark x510-530/y799-826: noTextF. Requiredthirdtravelplace/purplebenchcloth/rightbags aroundx1008-1100 behindactualcontrols: compositionF. OriginalCLOSEDbook permitted because onlyOPENwrittenpapers/book prohibited; no inventedCLOSEDbookfailure/wholearchitecture/micropropcount/newcloth colors. ActualLEFTtwoemptytravelplaces/unusedsupplies/plainpersonalobject/interruptedpath remain. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidswriting/lettering andrequires atleastTHREEactualdifferentEMPTYtravelplaces withsupplies/focalLEFT60. Actualgoldpendantfacehasnumeral-like4 mark x510-530/y799-826: noTextF. Requiredthirdtravelplace/purplebenchcloth/rightbags aroundx1008-1100 behindactualcontrols: compositionF. OriginalCLOSEDbook permitted because onlyOPENwrittenpapers/book prohibited; no inventedCLOSEDbookfailure/wholearchitecture/micropropcount/newcloth colors. ActualLEFTtwoemptytravelplaces/unusedsupplies/plainpersonalobject/interruptedpath remain. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--chapters-3-9437f4cbddd0.png",
+          "nativeSha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--battle--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: searching for missing loved one, uniquely identifiable small CLOSED PLAIN personal keepsake tin beside abandoned travel pack/bedroll/cup near LEFT. STRATEGIC BATTLE: TWO actual completely undecorated wood/metal shields on LEFT racks plus at least TWO actual timber tactical barricades, stone cover and multiple approach lanes. MYSTICAL monumental ancient ruins and stepped pixel depth. CHAPTERS: strong actual architectural threshold connecting TWO SUBSTANTIALLY DIFFERENT terrain regions: near LEFT GREEN FOREST with dark trees and lush ground, beyond threshold RIGHT ARID DESERT with ochre sand dunes, bare red rock and NO green grass. One continuous world, not split panels. Same green river gorge on both sides, ordinary distant snowy peak alone, or a window onto the same green valley FAILS this choice. HARD FAILURE: latest chapter transition lost contrasting regions. Make clearly GREEN FOREST and ARID DESERT physically distinct on opposite sides of the actual near-midground threshold. Prior quartered blue-white shield is prohibited heraldry. BOTH shields must be bare wood/metal with ordinary rivets/boss/straps ONLY. Actual tactical timber barricades cannot be omitted. FRESH high-oblique sheltered threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%, every plane equally sharp coarse square pixel clusters and stepped shading. Avoid previous near ledge/river/castle composition. Bare architectural foreground, no framing plants, blur, gradients or collage. No people/humanoids/body/portrait/species, writing/pseudotext, any paper/documents/posters/boards/open books/clocks/numerals, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/logos. Plain cloth ONLY as undecorated bedrolls or sealed parcel wraps.",
+          "exactOriginalOwnSha256": "4011dcf4262b6149daa83282ee710a645d7587d81ed92ad5f2b14ca71a21b54e",
+          "preservedOriginalReview": {
+            "sourceSha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+            "promptSha256": "e3605e2366cc0d159688b409d94ef577d5301390813e94861a0ec784c92366ee",
+            "reviewer": "Codex direct original visual inspection: v2-production-051",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and applicable parent: Chapter redraw: unique small CLOSED plain keepsake tin/abandoned pack/bedroll/cup LEFT, TWO actual bare shields with functional bosses/rivets only, TWO actual timber tactical barricades and stone cover/approach lanes. Strong ancient architectural threshold separates GREEN FOREST and ARID DESERT in one continuous world. New near tactical gate-camera versus frontal camp; prior quartered shield and missing barricades fixed. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail."
+          },
+          "corrective": {
+            "sourceSha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+            "promptSha256": "e3605e2366cc0d159688b409d94ef577d5301390813e94861a0ec784c92366ee",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN explicitlyGREENFORESTLEFT↔ARIDDESERTRIGHTstrongthreshold,focalLEFT60/quietRIGHT35. ActualrequiredRIGHTdesertregion andarchrightside x1008-1672 arebehindactualcontrols: compositionONLYF. LEFTtwoactualbareplainshields/twoactualtimberbarricades/CLOSEDpersonalTIN/bedroll/pack/cup retained. OldRIGHTdesert selectedrequirednotwrongnewBLEACHEDLEFT; no retrocoolTWILIGHT/WHOLEarchitecture/nativebuffer/REDcloth. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN explicitlyGREENFORESTLEFT↔ARIDDESERTRIGHTstrongthreshold,focalLEFT60/quietRIGHT35. ActualrequiredRIGHTdesertregion andarchrightside x1008-1672 arebehindactualcontrols: compositionONLYF. LEFTtwoactualbareplainshields/twoactualtimberbarricades/CLOSEDpersonalTIN/bedroll/pack/cup retained. OldRIGHTdesert selectedrequirednotwrongnewBLEACHEDLEFT; no retrocoolTWILIGHT/WHOLEarchitecture/nativebuffer/REDcloth. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm--journey",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--journey-1-065beaa4a791.png",
+          "nativeSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--battle--warm--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected STRATEGIC BATTLE: empty shield racks, barricades, tactical cover and several approach lanes make confrontation visibly different from travel; no enemy or hero.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: low diagonal foreground detail. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: A connected destination-led journey: tangible near route leads from selected departure/mission props through a midpoint toward another clearly different distant destination. One continuous world, no itinerary diagram.",
+          "exactOriginalOwnSha256": "c75937721862f6fc919d562ff81758fb1d6c81cdb63203024c238fc0879ebe1a",
+          "preservedOriginalReview": {
+            "sourceSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+            "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
+            "reviewer": "Codex direct original visual inspection: v2-production-049",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm EMPTY tactical journey departure: unique plain round CLOSED personal keepsake near abandoned bedroll/pack, plain shield rack/barricades/stone cover/approach lanes; actual continuous path through midpoint toward different EMPTY settlement. Fresh open fortified terrace shot versus parent campfire care nook. Pixel focus remains hard at all depths; native PNG was not rescaled or filtered to obtain approval. Missing or unclear selected facts are explicitly rejected."
+          },
+          "corrective": {
+            "sourceSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+            "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm--quests",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--quests-2-0b2dfd1a4ea4.png",
+          "nativeSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--battle--warm--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS FROM A NEW CAMERA: search for missing loved one, STRATEGIC BATTLE: at least TWO actual undecorated shields on near LEFT rack, EMPTY timber barricades/stone cover and multiple actual approach lanes, WARM protected welcoming shared preparations and helpful lantern light, QUESTS from base: THREE different PLAIN sealed cloth-wrapped parcels on near LEFT worktable plus real near-midground Y-shaped forked roads toward different EMPTY destinations, no task board or labels. Near LEFT unique small CLOSED PLAIN personal keepsake tin beside abandoned bedroll/travel pack/plain cup MUST remain visibly distinct from generic cargo. HARD FAILURE: Selected missing-person search lost its personal clue: ONE unique small CLOSED PLAIN personal keepsake tin MUST be clearly visible near LEFT beside abandoned bedroll/pack/cup. Also make quest parcels obvious as THREE different sealed undecorated cloth-wrapped parcels next to actual forked roads, not generic cargo only. All selected focal props fit LEFT60%; quiet fully drawn right35%. Fresh high-oblique sheltered gate/side-threshold camera, avoid repeating old near-table/distant-tower or failed generic rack/crate/bedroll shot. Every plane equally sharp square pixel clusters/stepped shade ramps; bare foreground floor and chosen furniture only. No foreground plant/candle/door-jamb framing, actual people/humanoids/bodies/portrait/photos or forced faction/enemy, writing/pseudotext, papers/documents/posters/boards/open books/clocks/watch faces/numerals/logos, ANY flags/banners/tapestries/hanging cloth/awning/table drapes/heraldry/emblems, gradients/blur/collage. Plain cloth only as rolled bedrolls and sealed parcel wraps.",
+          "exactOriginalOwnSha256": "4945804d383a0b3dafe1f00257d496737e56f2c16b2468c8499cf26c4f31e7a5",
+          "preservedOriginalReview": {
+            "sourceSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+            "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+            "reviewer": "Codex direct original visual inspection: v2-production-050",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Warm redraw: LEFT unique small CLOSED plain personal keepsake tin beside abandoned bedroll/pack/cup. TWO actual plain shields with ordinary metal bosses, timber barricades/stone cover and real approach lanes, THREE separate SEALED plain wrapped parcels and actual Y-fork to different EMPTY destinations. Warm lamp and sunset in sheltered base. New gate-floor/fork view versus old care camp, all planes crisp square clusters. No people, text, paper, flags, logos or blur."
+          },
+          "corrective": {
+            "sourceSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+            "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        },
+        {
+          "key": "adventure--reunion--battle--warm--chapters",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm--chapters-1-6b29cedeef56.png",
+          "nativeSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--reunion--battle--warm--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected STRATEGIC BATTLE: empty shield racks, barricades, tactical cover and several approach lanes make confrontation visibly different from travel; no enemy or hero.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: New stage for each major chapter: compose at a strong architectural threshold between two substantially different landscape regions, preserving near selected mission/boat/keepsake and chosen play. No separate panels or recap text.",
+          "exactOriginalOwnSha256": "86ecb10e9b9d5b3ebdaeb585b62f27d22ee01cae1446af8809b1bd12b80ce9b0",
+          "preservedOriginalReview": {
+            "sourceSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+            "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
+            "reviewer": "Codex direct original visual inspection: v2-production-049",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm EMPTY tactical chapter threshold: unique small CLOSED plain personal keepsake near abandoned bedroll/pack/cup, actual plain shield rack/barricades/cover/approach lanes. Continuous contrasting green forest and snow terrain regions; fresh stone gate-threshold shot versus parent campfire care nook. Pixel focus remains hard at all depths; native PNG was not rescaled or filtered to obtain approval. Missing or unclear selected facts are explicitly rejected."
+          },
+          "corrective": {
+            "sourceSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+            "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "reviews": [
+        {
+          "key": "adventure--reunion--battle--mystic--quests",
+          "sha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+          "review": {
+            "sourceSha256": "5d9f595d9dad63b2c33087ff5a52e51382163d2becdf1d661b1cf6815d99a491",
+            "promptSha256": "00ca107d9410026a1ab569b6f03df759fbc3012f524c82f4b60f413f24f9e7a7",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN focalLEFT60/quietRIGHT35 butactualRIGHTtacticalbarricades afterx1190/selectedY-fork-differentdestinations afterx1008 liebehindactualrightcontrols. compositionONLYF. Original3LEFTsealedwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/cup/twoactualplainshields remain. OriginaldaytimeMYSTICruins notnewcoolTWILIGHTfailure; no retroWHOLEnativebuffers/REDbenchcloth/UNROOFEDBASEtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "sha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+          "review": {
+            "sourceSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+            "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidswriting/lettering andrequires atleastTHREEactualdifferentEMPTYtravelplaces withsupplies/focalLEFT60. Actualgoldpendantfacehasnumeral-like4 mark x510-530/y799-826: noTextF. Requiredthirdtravelplace/purplebenchcloth/rightbags aroundx1008-1100 behindactualcontrols: compositionF. OriginalCLOSEDbook permitted because onlyOPENwrittenpapers/book prohibited; no inventedCLOSEDbookfailure/wholearchitecture/micropropcount/newcloth colors. ActualLEFTtwoemptytravelplaces/unusedsupplies/plainpersonalobject/interruptedpath remain. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidswriting/lettering andrequires atleastTHREEactualdifferentEMPTYtravelplaces withsupplies/focalLEFT60. Actualgoldpendantfacehasnumeral-like4 mark x510-530/y799-826: noTextF. Requiredthirdtravelplace/purplebenchcloth/rightbags aroundx1008-1100 behindactualcontrols: compositionF. OriginalCLOSEDbook permitted because onlyOPENwrittenpapers/book prohibited; no inventedCLOSEDbookfailure/wholearchitecture/micropropcount/newcloth colors. ActualLEFTtwoemptytravelplaces/unusedsupplies/plainpersonalobject/interruptedpath remain. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--mystic--chapters",
+          "sha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+          "review": {
+            "sourceSha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+            "promptSha256": "e3605e2366cc0d159688b409d94ef577d5301390813e94861a0ec784c92366ee",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN explicitlyGREENFORESTLEFT↔ARIDDESERTRIGHTstrongthreshold,focalLEFT60/quietRIGHT35. ActualrequiredRIGHTdesertregion andarchrightside x1008-1672 arebehindactualcontrols: compositionONLYF. LEFTtwoactualbareplainshields/twoactualtimberbarricades/CLOSEDpersonalTIN/bedroll/pack/cup retained. OldRIGHTdesert selectedrequirednotwrongnewBLEACHEDLEFT; no retrocoolTWILIGHT/WHOLEarchitecture/nativebuffer/REDcloth. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN explicitlyGREENFORESTLEFT↔ARIDDESERTRIGHTstrongthreshold,focalLEFT60/quietRIGHT35. ActualrequiredRIGHTdesertregion andarchrightside x1008-1672 arebehindactualcontrols: compositionONLYF. LEFTtwoactualbareplainshields/twoactualtimberbarricades/CLOSEDpersonalTIN/bedroll/pack/cup retained. OldRIGHTdesert selectedrequirednotwrongnewBLEACHEDLEFT; no retrocoolTWILIGHT/WHOLEarchitecture/nativebuffer/REDcloth. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--warm--journey",
+          "sha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+          "review": {
+            "sourceSha256": "065beaa4a7916a839873c78ae6e611a55fd1d95df80f4b1e9d7dd484a2da0f3e",
+            "promptSha256": "d67e707f49da506b6c8fad5f94738a88bff03cfec29dc16554a66456bbee8dc8",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidsANYclocks/watchfaces/numerals. Actualgoldpocketwatchface onREDcarecloth nearLEFTx353-432/y667-708 violatesnoText. RequiredjourneyMIDbridge/anotherdifferentdistantcastle destination RIGHTafterx1100 behindactualcontrols: compositionF. WarmLEFTwalllantern/unusedbedroll/pack/flask/actualplainshields/barricades/personalclue retained. OldREDcarecloth allowed/no retroWHOLEarchitecture/EMPTYdestinationstonebench/supplymicrocounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--warm--quests",
+          "sha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+          "review": {
+            "sourceSha256": "0b2dfd1a4ea4e1a4787e742399f22a92b94ab2c8f3f108e32adc9b909e8f3f34",
+            "promptSha256": "f4f919ce54177c9f977c72a1599fbc2957821c929b621635eab898a65618fae0",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN prohibitsin-image signs/boards evenplain. ActualTHREEisolatedwooddirectionposts/crossboards x1030-1490/y350-470 violate noText. SelectedRIGHTbarricades/stonecover x1350-1672 andrequiredY-fork/differentdestinationstaging afterx1008 liebehindactualcontrols: compositionF. LEFT3actualunmarkedsealedclothwrappedparcels/CLOSEDpersonalTIN/bedroll/pack/plaincup/twoactualundecoratedshields/walllantern retained. Originalparcelswrapfolds notlogos; no retroWHOLEarchitecture/REDcloth/UNROOFEDtable. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        },
+        {
+          "key": "adventure--reunion--battle--warm--chapters",
+          "sha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+          "review": {
+            "sourceSha256": "6b29cedeef560ce7c779196e16bf525537beb19aeffd1f1fea30f07aec732a40",
+            "promptSha256": "163048bd02f25ad721fd9beebbcb22aaabc7a0aa9cf793dcb341772859f45890",
+            "reviewer": "Codex ROOT original progression/companion OWN-native corrective after224 whole inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+            ],
+            "notes": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN selectedBATTLEbarricades/cover andstrongarchitecturalthresholdbetweenTWOsubstantiallydifferentregions, focalLEFT/quietRIGHT. ActualRIGHTselectedbarricades x1360-1672 andrequiredsnow-regionstaging RIGHTafterx1150 behindactualcontrols: compositionONLYF. LEFTplainunusedtravelpack/bedroll/cup/shieldrack/keepsakestorage/warmwalllantern/thresholdfloor retained. Originalpartialforegroundroof/wall/nativeedges permitted; no retroWHOLEarchitecture/LEFTBLEACHEDregion/REDbenchcloth/TIN/exactsuppliescounts. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required."
+          }
+        }
+      ]
+    },
+    {
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-225-additional-companion-parent-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through225": 121,
+        "finishedAt": "2026-10-07T09:33:59.138439+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--companions--bright",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright-1-121834833879.png",
+          "nativeSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\nLATEST CHOICE: 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\nSCENE ID: adventure--reunion--companions--bright. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected COMPANION STORIES: several distinct empty travel resting places and different plain personal keepsakes arranged together, NOT a single backpack.\nMOOD: Open energetic clear daylight and adventurous inviting colors.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, logos, flag emblems, blur or collage.\n",
+          "exactOriginalOwnSha256": "dd3bf825ef2a9f247b839401a2919797ad34c4f4354b51a7cf1ec43ef95d1271",
+          "preservedOriginalReview": {
+            "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+            "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+            "reviewer": "Codex direct original visual inspection: v2-production-014",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Shared ruined traveler shelter with several empty stools, distinct bedrolls/scarves and blue keepsake retains companion search in bright lake landscape. Sharp stepped clusters, no identity or writing."
+          },
+          "corrective": {
+            "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+            "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+            "reviewer": "Codex ROOT original companion OWN-native corrective stage225",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+            ],
+            "notes": "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "reviews": [
+        {
+          "key": "adventure--reunion--companions--bright",
+          "sha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+          "review": {
+            "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+            "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+            "reviewer": "Codex ROOT original companion OWN-native corrective stage225",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+            ],
+            "notes": "ROOT exactoriginalOWN FULL/WHOLE121834833879 personally inspected and actual225COMPANIONS parent FULLown/WHOLE compared. Actualisolatedwood directionpost withcross/pointedboards RIGHTx1440-1540/y505-665 violates originalFORBIDDENsigns evenunwritten; noTextF only. Originalpartialforeground/shelteredthreshold/large supplies permitted, no retro225WHOLE/THREEfixedplaces/REDcloth/day-count constraints. ActualLEFTseveralemptytravelplaces anddifferentplainkeepsakes/unusedrolls/cup/bags retained, invitationSUN/identity/pixel/currentcomposition otherpriorchecks preserved. Actualcloseforegroundthresholddifferentfromnewparentfarcreekterrace, distinctP. Priorreview/native/OWN retained originalsource121 notnewgeneratedattempt."
+          }
+        }
+      ]
+    }
+  ],
+  "correctivesInThisInterval": 15,
+  "cumulativeActualCorrectiveSources164To226": 121,
+  "recoveryReplay": true,
+  "scope": "Original exactOWN/unchangednative/priorreview retained. Originalactualrightcontrolocclusion or originalforbiddenbanners/signs/watch/numeral-like marks; no retro wholebuilding/REDcloth/newLEFTregion/TWILIGHT/micro-counts. Newattempt60 and existingchild13 comparisons separate."
+}

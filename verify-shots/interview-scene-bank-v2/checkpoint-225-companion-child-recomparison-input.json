@@ -1,0 +1,42 @@
+[
+  {
+    "key": "adventure--reunion--companions--mystic",
+    "sha256": "e58e5198560a51ca9fb3dfea9eb91c9a66ca8381c25fafe0940cba4b598f9346",
+    "review": {
+      "sourceSha256": "e58e5198560a51ca9fb3dfea9eb91c9a66ca8381c25fafe0940cba4b598f9346",
+      "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage225",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Root directly opened native original and applicable parent: Parent replacement: near LEFT small CLOSED entirely plain tin beside THREE distinct EMPTY resting places, each differently colored bedroll and personal pack, THREE cups together. Monumental ancient ruined depth. Bare stone/timber protected floor and roof, old blue cloth white insignia absent. Fresh oblique camp-floor camera versus old draped-wall table. No progression/scope imposed. Native PNG remains unfiltered and unscaled; uncertain selected facts explicitly fail.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLoriginalexactOWN and WHOLE unchangede58e5198560a personally inspected, actual225COMPANIONS parent FULLown/WHOLE compared. Distinctclosehighobliquebarestone/timberprotectedcampfloor with THREEseparateEMPTYrestplaces/differentgreen/red/bluebedrolls/eachplainpack/THREEplaincups andactualCLOSEDunmarkedTIN allLEFTbefore1008. Monumentalancientforegroundruinstructure/depth plusdistantarches; no retrocoolTWILIGHT/WHOLEnativefloor/REDcloth onthisoriginalOWN. Originalallowspartialforeground underroof; do not invent crop due unselectedfartherarchitecture/decorativebuckles. No writing/emblems/flags/tablecloth/body/identity actualcoarse16bit. Newparentfarcreekconversationterrace vs closeprotectedruin-floorframing focalpacks/bedrolls independentlydifferentshot. Existingall7P retained, newparentcomparisonP only not generated/sourceaudit."
+    }
+  },
+  {
+    "key": "adventure--reunion--companions--warm",
+    "sha256": "b5fd18c4863265c2143a0bc5c1104cfcc7a23be785f7ee7797b17c46ce405495",
+    "review": {
+      "sourceSha256": "b5fd18c4863265c2143a0bc5c1104cfcc7a23be785f7ee7797b17c46ce405495",
+      "promptSha256": "4ab84cfee0a1e63d32234a080b88fbee81bba1fa7481c84d2c63a26a1a687c75",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage225",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Shared timber table, separate scarves, multiple bedrolls and seating, personal watch and compass retain search with warm shared camp. Terrain-only map contains no writing.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULL originalexactOWN/WHOLEb5fd18c48632 and read-only nativeNEAREST personalprops diagnostic personally inspected, actual225COMPANIONS parent FULLown/WHOLE compared. Originalnearoverheadworkbench/sharedprotectednook: leftseveralactualemptytravelrestplaces/plainbedrolls/packs/differentkeepsakes/cup/warmhanginglantern supplies. No retro new3count/REDcloth/WHOLEfloor/actualwalllamp/no map-watch mandates. Nativeprintedterrainmap showsterrainpatches not actualglyphs/writing; functionalcompassneedle/goldsmallpersonalwatch ownnotforbiddenwatches/numerals, cannot inventwritingviolation. Clothgeometricmaterialband notconfirmedflaglogo. Originalpartialforegroundallowed; quietrightunselectedcampfire/stool notsoleleftselectedplace. Noidentity/pixel otherprior7P retained. Newparentfarcreekconversationterrace vs oldnearoverheadwoodworkbench protectedwall/focalunusedprops/fire separateclosecamera/depth actualdifferent, distinctShotP. Notgenerated/sourcecorrective."
+    }
+  }
+]

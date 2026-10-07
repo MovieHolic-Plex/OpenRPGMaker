@@ -1,0 +1,108 @@
+{
+  "scope": "Only obsolete rejected public copies with an actualcurrently published reviewed replacement. Privateunchanged native/OWN and permanent archive retained. Historical220pending ledger lost; cumulative starts from committedactual220cleanup proof, not reconstructed individual receipts.",
+  "published": 912,
+  "removedThisInterval": 9,
+  "resolvedCumulative": 241,
+  "priorActualProof": "verify-shots/interview-scene-bank-v2/obsolete-public-cleanup-220-proof.json",
+  "removed": [
+    {
+      "key": "adventure--reunion--battle--bright",
+      "sourceSha256": "84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--bright-84df5ec69201.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright-2-84df5ec69201.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINAL049OWN SHA2a1b1c.../WHOLEunchangednative84df... directlyread/viewed during221 actualnewjourneycomparison. Originalexplicitlyplaces selectedpersonalkeepsake/belongings/plainshields/barricades insideLEFT60, quietRIGHT35. Actual selected RIGHTtimberbarricades/stakes/tacticalcover atx1050-1550 lie behindactualcontrols x1008: compositionONLYF. LEFTclosedplainkeepsaketin/bedroll/plaincup/shieldracks/barricades/openbattleapproachfloor present; rivets/clasps notlogos. Other6originalchecksretained. Originalclose INSIDEgate allows partialforegroundarchitecture: no retrowholebuilding/nativebuffers/REDcloth/mudprints/destinationbench/LEFTbleachedupland/new222props. ExactOWN/nativehash/priorreview retained; historical901220QA/commit untouched. Newprefixreplacementrequired beforedescendantsdeploy.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/84df5ec692016992ca03732d1b683f17978a3e22eb362ccd1c73c5ff89fed2db.png"
+    },
+    {
+      "key": "adventure--reunion--battle",
+      "sourceSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle-de9f04fcc16b.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle-3-de9f04fcc16b.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN prohibits banners andrequires majorselectedtacticalspace left/middle. Actual RED hangingpolebanner x530-600/y160-340 violates noText evenwithoutemblem. ActualselectedRIGHTbarricades/tacticalcover x1300-1530 behindactualcontrolx1008 violate originalfocalLEFT60/quietRIGHT35: compositionF. LEFTpersonalkeepsakependant/interruptedmudprints/shieldracks/plainunusedsupplies/realapproachlanes retained. Originalpartialforegroundawning permitted, no retrowholebuild/nativebuffers/REDcloth/twoEMPTYrestplaces/new223scope requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b.png"
+    },
+    {
+      "key": "adventure--reunion--battle--bright--quests",
+      "sourceSha256": "c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--bright--quests-c244b4ec7ddb.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--quests-1-c244b4ec7ddb.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN selectedstrategicbarricades androadsbranchingdifferentnearbydestinations withfocalselectedpropsLEFT/quietRIGHT. ActualRIGHTbarricade x1330-1450 andactualquest-roadfork/cave+castle destinations afterx1200 liebehindactualcontrolx1008: compositionONLYF. LEFTplainstorage/cups/bedrolls/shieldracks/barricades/openapproachfloor retained; originalparcelsareplainunmarked andnotnewexact3onUNROOFEDtable. Originalclose shelteredpartialarchitecture permitted. No retroWHOLEroof/nativebuffer/REDcloth/specialmudtrace/LEFTnewdestination constraints. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/c244b4ec7ddb947237598fb66c3defbe82c3554d587977395066351f7ef332f5.png"
+    },
+    {
+      "key": "adventure--reunion--battle--bright--chapters",
+      "sourceSha256": "2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--bright--chapters-2773dc10f752.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright--chapters-1-2773dc10f752.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during222actualchildcomparison. Original exactOWN asks selectedtacticalcover andstrongarchitecturalthreshold betweenTWOsubstantiallydifferentregions withfocalLEFT/quietRIGHT. ActualRIGHTselectedbarricade x1410-1610 andrequiredchapterregionalstaging bleacheddesertUPRIGHT behindactualcontrolx1008: compositionONLYF. LEFTplainpersonalbag/bedroll/cup/shieldracks/realapproachfloor/stonegate present. Originalforegroundpartialworkbench/largegate permitted. No retroWHOLEtop/nativebuffer/REDcloth/LEFTbleacheduplandnew223requirements; actualrightocclusiononly. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/2773dc10f7529a8fbb4327ef1265e94aa5ac60b95f9e4d526be6342e7d422928.png"
+    },
+    {
+      "key": "adventure--reunion",
+      "sourceSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion-5619402deef1.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion-1-5619402deef1.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN explicitly forbids signs. Actualisolatedwooddirectionpost/pointedarrowboard x980-1090/y440-675 is a prohibitedsign evenplain. noTextONLYF. LEFTplainpersonalkeepsake/abandonedemptytravelersSTOP/interruptedgroundtrail remain. Oldclosepartialawning/table/nativeedges permitted; no retroWHOLEarchitecture/newREDfabric/TIN/microfootprint requirements. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3.png"
+    },
+    {
+      "key": "adventure--reunion--battle--mystic",
+      "sourceSha256": "bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--mystic-bd8381426783.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic-2-bd8381426783.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMONUMENTALancientruins andstrategicbarricades/approachlanes withselectedfocalsLEFT60/quietRIGHT35. Actualmainmonumentarch afterx1040 andselectedRIGHTtimberbarricades/stonecover afterx1470 behindactualcontrolx1008: compositionONLYF. LEFTplainCLOSEDpersonalTIN/bedroll/pack/cup/plainshieldracks retained; metalclasps/rivets notlogos, sunsetruins not retrocoolTWILIGHTfailure. Oldpartialforegroundgate/awningbuffer permitted; no retroWHOLEarchitecture/REDcloth/newjourneybench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/bd8381426783e11db49dfca09d6d6cbe4ae3d42340d987a490191f50497a7806.png"
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--journey",
+      "sourceSha256": "0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--journey-0a9a2551da2b.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--journey-3-0a9a2551da2b.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexactORIGINALOWN/WHOLEunchangednative directlyread/viewed during223actualparentcomparison. OriginalexactOWN selectedMYSTICALmonument andonecontinuousnearpath viaactualmidpoint towarddifferentEMPTYdestination, focalLEFT60/quietRIGHT35. ActualrequiredjourneyMIDroad/bridge/monumentdestination afterx1050 behindactualcontrolx1008: compositionONLYF. LEFTtwoactualplainshields/rack/CLOSEDpersonalTIN/bedroll/cup/pack/barefloor retained. Originaldaylightruins not forcednewcoolTWILIGHT; no retroWHOLEarchitecture/REDcloth/exactEMPTYdestinationbench. ExactOWN/nativehash/priorreview preserved. Historical901220snapshot/QA/commit unchanged. Newprefixreplacementrequired; descendantsrecompareactualpassingnewparent separately.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/0a9a2551da2b4bf9e9c60add28fd14f8e65b2354ef3f57aacf3ed9606c779163.png"
+    },
+    {
+      "key": "adventure--reunion--companions",
+      "sourceSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions-e9cc0474a625.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions-2-e9cc0474a625.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN forbidswriting/lettering andrequires atleastTHREEactualdifferentEMPTYtravelplaces withsupplies/focalLEFT60. Actualgoldpendantfacehasnumeral-like4 mark x510-530/y799-826: noTextF. Requiredthirdtravelplace/purplebenchcloth/rightbags aroundx1008-1100 behindactualcontrols: compositionF. OriginalCLOSEDbook permitted because onlyOPENwrittenpapers/book prohibited; no inventedCLOSEDbookfailure/wholearchitecture/micropropcount/newcloth colors. ActualLEFTtwoemptytravelplaces/unusedsupplies/plainpersonalobject/interruptedpath remain. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c.png"
+    },
+    {
+      "key": "adventure--reunion--battle--mystic--chapters",
+      "sourceSha256": "9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--chapters-9437f4cbddd0.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic--chapters-3-9437f4cbddd0.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOTpersonallyread FULLexactORIGINALOWN andopenedWHOLEunchangednative during224direct-childcomparison. OriginalOWN explicitlyGREENFORESTLEFT↔ARIDDESERTRIGHTstrongthreshold,focalLEFT60/quietRIGHT35. ActualrequiredRIGHTdesertregion andarchrightside x1008-1672 arebehindactualcontrols: compositionONLYF. LEFTtwoactualbareplainshields/twoactualtimberbarricades/CLOSEDpersonalTIN/bedroll/pack/cup retained. OldRIGHTdesert selectedrequirednotwrongnewBLEACHEDLEFT; no retrocoolTWILIGHT/WHOLEarchitecture/nativebuffer/REDcloth. Otherpriorchecks retained, notnewgeneratedattempt/pass. OriginalOWN/native/priorreview/historical901220snapshot preserved; replacement+actualnewparentcompare required.",
+      "permanentNativeBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/9437f4cbddd07a0f46240c21d7360b11648eee983ab35fc0bb318cd03a41f833.png"
+    }
+  ]
+}

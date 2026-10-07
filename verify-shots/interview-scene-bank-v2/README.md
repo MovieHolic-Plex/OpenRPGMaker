@@ -1,5 +1,11 @@
 # 실제 원본 배경 v2 체크포인트
 
+현재 체크포인트는912개 배포/1457개 목표이며545개가 미완성이다(배치226). `checkpoint-912-stage226-root-proof.json`은912개 원본·정확한 전체 요청·검수·모든 앞 단계 무결성 및 실제 인터뷰6경로34번 클릭, 감독자가 직접 연6개 안정 화면의 증거다. 추가 생성 요청0·브라우저 오류0이며 전체912장 새 시각 감사, 전체 앱 부팅·AI조수 전달 증거는 아니다. 왼쪽 캡션 가림은 남는다.
+
+`production-221-226-stage-proof.json`은60개 원본 시도34합격/26반려의 정확한 전체 요청·해시·검수와 공식 단계 실행 결과를 보존한다. 외부 워크트리 삭제 후 변경하지 않은 기본 제공 원본·정확한 세션 요청·판정을 복구하고 공식 하네스를 다시 실행했다. `checkpoint-226-worktree-recovery-proof.json`은 이를 잃어버린 과거 실행 영수증 재구성과 구별한다. 기존 원본 교정15개(누적121개)와 부모 교체에 따른 기존 자식 비교13개(11합격/2반려)는 새 시도 수와 별도다. 원래 요청에만 근거한 교정 이력은 `checkpoint-226-original-source-audit-proof.json`에 있다.
+
+`gallery-912-stage226-browser-proof.json`은 실제 합격 대표8개를320/736px에서16번 선택하고 감독자가4개 전체 화면을 직접 확인한 기록이다. `gallery-912-stage226-native-selection-proof.json`은 변환하지 않은 배포 PNG와 미리보기만800×450 WEBP로 만든 해시를 구별한다. `obsolete-public-cleanup-226-proof.json`은 새 교체본 배포·개인 원본·전체 요청·별도 원본 보관을 확인한 후 옛 반려 공용 PNG9개만 제거한 기록이다. 기존 실제220 기록232개와 합쳐241개다. 새227/228 원본은 이912개 증거에 포함하지 않으며 전체 gates/Vitest/typecheck는 실행하지 않았다.
+
 이 증거의 카탈로그와 이미지는 `src/editor/interviewSceneBank.json` 및 `public/assets/harnesses/interview-scene-bank/`의 실제 배포 원본이다. 이미지/카탈로그를 합성하거나 대체하지 않았다. 1,457개 전체 제작 완료 증거는 아니다.
 
 - `native-bank-proof.json`: 실제 76개 배경 목록에서 네 장르, 13개 선택을 production interview dialog로 클릭했다. 인증 연결 상태만 false로 설정했으며 신규 이미지 생성 요청은 0개, 브라우저 오류는 0개였다. 디코드된 캐시를 준비한 후 클릭 이벤트 안의 장면 키와 원본 URL을 확인했다. DOM 전환 시간 4.2–12.4ms는 다운로드/화면 합성 지연까지 재는 값이 아니다.

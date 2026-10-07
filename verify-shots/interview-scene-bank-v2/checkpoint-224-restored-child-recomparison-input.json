@@ -1,0 +1,122 @@
+[
+  {
+    "key": "adventure--reunion--explore",
+    "sha256": "1e82ed67c8a4b6e47d75628194be72427dbc2527b0cee293e7c4ace0e3263a9b",
+    "review": {
+      "sourceSha256": "1e82ed67c8a4b6e47d75628194be72427dbc2527b0cee293e7c4ace0e3263a9b",
+      "promptSha256": "55f30f9fa681bcf82321a1872eb26ed4032cc5c4953f873ee3eea07f0965c221",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "Abandoned traveler shelter with keepsake/pack and discoverable stone opening; investigation path sharply drawn.\nACTUAL NEW PARENT RECOMPARISON: ROOT personally FULLexactOWN/WHOLEunchangedoriginalchild1e82ed67c8a4 andactualNEW224REUNION FULLown/whole opened. Oldchild closeforegroundOPENarchitecturalframe/nearplainpersonalkeepsake/abandonedSTOP supplies andLEFTdiscoverablecaveopening/weatheredstairs withinterruptedtrail distinctfrom newhighsingleLEFTcliffSTOP/REDbench/sideunfinishedtrace andbroadforestbasin. noText ambiguitynearx1100 resolvedbyROOTread-onlyNEAREST: twoattachedwoodposts+slopingboard are brokenfunctionalFENCE, notisolateddirectionpost; no inventedfailure. Originalpartialforegroundframe/nativeedges allowed/no retroWHOLE/newREDcloth/TIN. Actualnewparentcomparison distinctShotP, originalotherchecksretained; notnewgeneratedattempt/sourcecorrective."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle",
+    "sha256": "6440481cb81da9e9fc04ffaa28f909558414d7ad93ee9e47e1f65a2ce8dc85d2",
+    "review": {
+      "sourceSha256": "6440481cb81da9e9fc04ffaa28f909558414d7ad93ee9e47e1f65a2ce8dc85d2",
+      "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexactOWN/WHOLEunchangednative: whole abandonedSTOP UPLEFT REDpersonalcloth/EMPTYinnerfloor, clearly unfinishedSIDEtrail intoLEFTwoods separatefrommainroad; wholeEMPTYtacticalfloor LOWLEFT/plainshieldrack/unusedtimberbarricades/distinctstonecovers/TWOapproachstairs/openflank, all selectedparts/nativebuffers beforeactualx1008. Neutralnaturaldaylight/no unchosenfinalscope. Plainmetalshieldbosses/rivets not emblems; no bodies/identity/signs/banners/text. Coarsehardpixelclusters/steppedshades. ActualoriginalREUNION561940 fullOWN/WHOLEnative compared closepartialawning/personalmart/isolatedsign→newhighclearing SMALLSTOPUP/largeEMPTYarenaLOW/widefoothillwaterfall world distinct. ParentoriginalnoTextF remains blockeduntilreplacement.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexactOWN/WHOLEactual223BATTLE andNEW224REUNION personallyseen. 223wholeSTOPUPLEFT/REDclue + largeEMPTYarenaLOWLEFT/shieldrack/barricades/2approaches/openflank onhighdefenseclearing vs NEW224REUNION singlewholeSTOPLEFT/noBATTLE/nearunfinishedSIDEtrace/smallerwoodedcliffandwideforestbasin: realcamera/focalgeometry/terrain differ, distinctShotP. Full223native/OWN checksactuallyROOTpassed unchanged, priorparent wasoriginal5619402deef1noTextF; nowactualpassing224REUNION. Notnewgeneratedattempt/sourcecorrective."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--bright--journey",
+    "sha256": "7c34b761e66771bf3b2f7485e28bda9c36b92665be4447b0861d36109294da72",
+    "review": {
+      "sourceSha256": "7c34b761e66771bf3b2f7485e28bda9c36b92665be4447b0861d36109294da72",
+      "promptSha256": "0e2de727bc49bc0251c1d03b34cfbcc6b2683396862cac3e4d90e1448b947b7e",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexact new222OWN/WHOLEnewnative personally inspected. NowactualunfinishedSIDEtrail branchesfromSTOPapron lowerLEFT aroundtrees andendsatrubble/woods, distinctlyseparatefromcontinuousmainjourneyroad rightofSTOP. WholeREDkeepsakeSTOP/plainunusedsupplies, EMPTYtacticalarena/twocovers/twoapproaches/openflankingfloor anddifferentWHOLEEMPTYdestinationbenchUPMIDLEFT beyondarena/ALLstairs. Everyselectedroof/wall/innerfloor/stair/prop fullyinside native andbeforex1008; no bodies/signs/print/identity/monsterprops. Coarse hard squarepixel ramps. Actualnew222BRIGHTprefixcomparison pending; no inherited221passes. Actualnew222BRIGHTprefix FULLexactOWN/WHOLEnewnative ROOTpersonallyseen: prefix crowdedLEFTfortifiedSTOP/keepsaketin/shieldracks andthreeforegroundtimberbarricades/widebarecourtyard vs childwholeREDclothSTOPmidLEFT/roundEMPTYstonearenaMID/differentstoneBENCHUPMIDLEFT/recedingtrail terraces andnewlakebasin framing. Actualgeometry/camera materiallychanged, not merelyrecolor/addprop. PrefixF blocksdeployment separately. Builtin222closedexplicit10fulfilled0failed. NeweditsROOTindependentlychecked/fullnewOWN/wholeactualnative/actualprefixparentcompared. Positiveobservations notesONLY, findingsEMPTYwhenallP. No extra numeric targets/retroOLDrequirements. Whole1457incomplete/fullappboot/AIhandoff notclaimed.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexactOWN/WHOLEactual222JOURNEY andNEW224BRIGHT personallyseen. ChildwholeSTOPMIDLEFT/REDclue/unfinSIDEtrail/roundEMPTYarenaMIDLEFT/TWOactualcovers/2approaches/LEFTroadtoEMPTYbenchUPMID vs NEW224BRIGHT compactEMPTYcourtUPMID/racks/barricades/STOPMIDLEFT/TIN/foregroundwindingwoodcliffroad: changeddepth/layout/geometry/terraincamera, distinctShotP. Otheractual222rootchecks retained; newparentis224passingprefix not222failedbanner/nativecrop or223failedcrop. Notnewgeneratedattempt/sourcecorrective."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--bright--quests",
+    "sha256": "be5e04f8f5a9098480b7e2dde31fa9f64d14e7274407e469598be0ac8fa3d8ad",
+    "review": {
+      "sourceSha256": "be5e04f8f5a9098480b7e2dde31fa9f64d14e7274407e469598be0ac8fa3d8ad",
+      "promptSha256": "76a0c228629d89dcb979d0abbc9e63c1aec684cde18f85c7708147536dc2c4a1",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexactOWN/WHOLEnative: wholeREDkeepsakeSTOP UPLEFT/EMPTYinnerfloor, distinctunfinishedSIDEtrail behindSTOP intoUPLEFTwoods; separatewholeUNROOFEDBASEMIDLEFT/THREEsealedparcels/plainbinding, actualforkedLEFTroads toWHOLEEMPTYarenaLOWLEFT/two+approachstairs/distinctstonecovercolumns/openflank. AllselectedINNERfloors/walls/roofs/stairs inside nativeedges andbeforex1008; SUN/coarsepixel/noidentity/text/banners/signs. Boundarycovercolumns count perexactOWN, no imposedextra centralblockcount. Actualnew223BRIGHT FULLown/whole ROOTseen closerfortifiedcourtMID/largeSTOPUP/TIN/racks vs newhigh-threeplaces STOPUP/BASEMID/arenaLOW/widewoodland+lakecamera distinctP. BRIGHTprefixF holdsdeployment.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexactOWN/WHOLEactual223QUEST andNEW224BRIGHT personallyseen. 223wholeSTOPUPLEFT/REDtrace/THREEparcelBASEMIDLEFT/EMPTYarenaLOWLEFT/forkedLEFTapproaches vs224BRIGHTcompactcourtUPMID/TIN+STOPMIDLEFT/racks/longforegroundwindingroad: independentcamera/focalplacements/terrain, distinctShotP. Allactual223own/native/checks preserved; replaced223failedBRIGHT comparison withactualpassing224BRIGHT, notsame-keyparentreference/recolor. Notnewgeneratedattempt/sourcecorrective."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--bright--chapters",
+    "sha256": "4c4401a4d68f5d52f66ac0a9478ba8f59c028f323a6aec3d2b61c229e475a9d9",
+    "review": {
+      "sourceSha256": "4c4401a4d68f5d52f66ac0a9478ba8f59c028f323a6aec3d2b61c229e475a9d9",
+      "promptSha256": "f93054b5471a8d6ffcdf6b5e19bcd03299c5bf2e8a7a3b7270c80cdbca0b0a94",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexactOWN/WHOLEnative: wholeREDclothSTOP LOWLEFT/EMPTYinnerfloor/storage, separateunfinishedSIDEbranch intoLEFTwoods; wholeEMPTYtacticalfloor MIDLEFT/twoactualstonecovers/separateapproachstairs/openflank. SubstantialBLEACHEDUPLEFT/GREENLOWLEFT joinedwholeOPENstonearch/ BOTHwalkingentryfloors/fullstairs UPLEFT. Every selected roof/wall/floor/step inside nativeedges/before1008. SUN/pixel/noidentity/noText; stonecracks notglyphs, plainbindings notlogos. Actualnew223BRIGHT ROOTfullOWN/whole closerfortifiedcourtyard/tin/racks vs newhighSTOPLOW/arenaMID/archUP regionalmesas+widequietmeadowlake independentlychangedcamera distinctP; Fparentblocksdeployment.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexactOWN/WHOLEactual223CHAPTER andNEW224BRIGHT personallyseen. 223wholeREDSTOPLOWLEFT/EMPTYarenaMIDLEFT/wholeOPENarchUPLEFT linkingactualBLEACHED-GREENLEFTregions vs224BRIGHTcourtUPMID/STOPMIDLEFT/TIN/racks/windingwoodedforegroundcliffroad/nochapterthreshold: differentcamera/focalplacements/terraingeometry, distinctShotP. Otheractual223rootchecks retained; actualpassing224BRIGHT replacesfailed223BRIGHT parentcomparison, notnewgeneratedattempt/sourcecorrective."
+    }
+  },
+  {
+    "key": "adventure--reunion--battle--mystic--journey--scene",
+    "sha256": "38d51c75b42f5e6042ceab161cf6cd19a0422708b89528b9cc99eba261be67f2",
+    "review": {
+      "sourceSha256": "38d51c75b42f5e6042ceab161cf6cd19a0422708b89528b9cc99eba261be67f2",
+      "promptSha256": "2a865c581d4bab5badcb454e2684f0ee1e49f6254fcba9c64c2948b55a242f41",
+      "reviewer": "Codex ROOT actual replacement-parent comparison stage224",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "notes": "ROOT FULLexactOWN/WHOLEnative: coolTWILIGHT, wholeancientarchUPLEFT nativeTOPbuffer/fullstairs anddifferentWHOLEEMPTYstone destinationbench besidem onument, wholeEMPTYarenaMIDLEFT/distinctstonecovercolumns/twodifferentapproachpositions/openflank; continuousLEFTjourneyroad STOP→arena→arch/destbench. WholeREDkeepsakeSTOPLOWLEFT/EMPTYinnerfloor, separateunfinishedSIDEbranch andactualfirstfork bySTOP. Allchosenpartswhole/nativebefore1008, hardcoarsepixel/noidentity/signs/text/runes P; stonecracksnotglyphs. ActualoriginalMYSTICJOURNEY0a9a255 FULLexactOWN/WHOLEnative ROOTseen closeforegroundTIN/shields/gate andRIGHTmonumentroad vs newhighLEFTthreeplaces STOPLOW/arenaMID/archUP/coolfoothillwater world independentlychangedcamera P. OriginalparentcompositionF blocksuntilreplacement andactualnewparentrecompare.\nACTUAL NEW PARENT RECOMPARISON: ROOT FULLexactOWN/WHOLEactual223MYSTICJOURNEYSCENE andNEW224MYSTICJOURNEY personallyseen. ChildwholeREDSTOPLOWLEFT/EMPTYarenaMIDLEFT/wholeancientarch+destbenchUPLEFT/actualfirstfork andcoolrockyfoothillworld vs224parentSTOPMIDLEFT/arenaLOWMIDLEFT/arch+destUPMIDLEFT/leftwaterfall/highersteeperterracing: independentlydifferentcamera/focalplacements/terraingeometry, distinctShotP. Otheractual223ROOTchecks retained; actualpassing224parent replacesold0a9a255compositionF comparison. Notnewgeneratedattempt/sourcecorrective."
+    }
+  }
+]

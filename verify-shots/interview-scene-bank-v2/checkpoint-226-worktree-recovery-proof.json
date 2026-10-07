@@ -1,0 +1,405 @@
+{
+  "externalOldWorktreeRemovedTwice": true,
+  "newLockedWorktree": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery",
+  "originalCommittedSnapshot": {
+    "commit": "e447ac016e",
+    "published": 901,
+    "manifestSha256": "8912a97f8d5b6b3764abdf24589b0a4d97b8e9e09e0b4ea452c0d48c32a3282f"
+  },
+  "nativeOwnRecovery": {
+    "actualExit": 0,
+    "restored": 60,
+    "batches": [
+      221,
+      222,
+      223,
+      224,
+      225,
+      226
+    ],
+    "rows": [
+      {
+        "key": "adventure--reunion--explore--warm--quests--episode",
+        "batch": "v2-production-221",
+        "nativeSha256": "64bb212ea51b7b52c61cd485feb9758a002fb1fd340b0e7238ffb185ab3c3a38",
+        "ownSha256": "204e6248de08ad56fd6353b14eabfe37dc4898256a997b64c6199e0028ccc80f"
+      },
+      {
+        "key": "adventure--reunion--explore--warm--quests--short",
+        "batch": "v2-production-221",
+        "nativeSha256": "a7e6d0e589e2d6cfff54a6bcb649e331260bfc8bcce6629b48f756f1d1a2ef7d",
+        "ownSha256": "f55ccba09909bbad10a0ed958f7e131410781d49e87502bd163ac194476268c8"
+      },
+      {
+        "key": "adventure--reunion--explore--mystic--chapters--episode",
+        "batch": "v2-production-221",
+        "nativeSha256": "1be6cbb72a2b7fcc1d5571d7f19e955e9bbfba376cfe71564313f40cf83be3f6",
+        "ownSha256": "135d75733c75d7280e673a2fd130a9a63c465b2f1ae8598521fef401ca4e59f5"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey",
+        "batch": "v2-production-221",
+        "nativeSha256": "1566aef2d7ee257385b9c8c3e5fc856c5e7ba0d69f132d3e5599ddbb2aad11d0",
+        "ownSha256": "3ae74bf3290b75f962d393ad062fb64ce41adc39aaf8cc5c67c560c99359dc7a"
+      },
+      {
+        "key": "adventure--reunion--explore--warm--chapters--short",
+        "batch": "v2-production-221",
+        "nativeSha256": "5dd07b4c6179f40114c5637cec326589bfcf77d2b9c738fede444b5d23fd1d72",
+        "ownSha256": "d6230c88f08ee20f686335db0280249f0fbbf161eb552939f0524ff8550894f9"
+      },
+      {
+        "key": "adventure--reunion--explore--bright--quests--short",
+        "batch": "v2-production-221",
+        "nativeSha256": "1deaccb4a93fca2851089babc9044e4c4ce4f07623b39aac45abb34d8c5b3218",
+        "ownSha256": "5ba2ab951580cf92ce90b12d71699f06697e87b3195aa146d49aeb370b3f271a"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--scene",
+        "batch": "v2-production-221",
+        "nativeSha256": "9db948046c58ffa1677b830af51493778c77f443a47116469f54baa19cf16004",
+        "ownSha256": "5e786cedf772f9d46d13fac951ddee9c911b82b5cf925be789bcb9ef5d22f4e6"
+      },
+      {
+        "key": "adventure--reunion--explore--mystic--chapters--short",
+        "batch": "v2-production-221",
+        "nativeSha256": "739503b34f0c81ad4f1cc6874fce9544cad30c9cdd9caef639382df4d98857d7",
+        "ownSha256": "742be3080d9644743063e85e251c557ea42fd6e0e9651aed69ca7102337c314f"
+      },
+      {
+        "key": "adventure--reunion--explore--warm--journey--scene",
+        "batch": "v2-production-221",
+        "nativeSha256": "6df3d1c884ae6c993c2a570b9427c121cbebda1d5ef3b98f4528d217b0fbd610",
+        "ownSha256": "83cfe47e3b45269d2db95f6f81d10391535479493a9c1367ace19ff8f3e114e2"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--episode",
+        "batch": "v2-production-221",
+        "nativeSha256": "a80c8df4d94220d24dafcd9f7a51f657410b0f5bd62bd1737cb1dd1e9fc76662",
+        "ownSha256": "50baa37923f00189ac14710d5be6baabd59edb2693b76784965a7df720ce5c21"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--episode",
+        "batch": "v2-production-222",
+        "nativeSha256": "8b60549d4daff720672fb48d2531faed6dcbd2ab0e6ac500dd6386dd3aadf295",
+        "ownSha256": "f7d163542ee30c778909a429a85d86672d5dc74707168c2dbb8f337123dc626f"
+      },
+      {
+        "key": "adventure--reunion--explore--warm--quests--short",
+        "batch": "v2-production-222",
+        "nativeSha256": "97868fec752bf7334932b56b9c8a65458a619a3736ac5b1903a756158255d3b8",
+        "ownSha256": "7a72b9a5afd28bb25009437713a8f70cfc451bb71790b6688d0662c3ff7c43b7"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey",
+        "batch": "v2-production-222",
+        "nativeSha256": "7c34b761e66771bf3b2f7485e28bda9c36b92665be4447b0861d36109294da72",
+        "ownSha256": "c302523d62d1379d82ed2ada7e7ec32accc1a534f7971d09057c9218b8cabaaf"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--short",
+        "batch": "v2-production-222",
+        "nativeSha256": "3416815626fec9fd07e352e2ec7d455694560e7825774206014799d64c935f21",
+        "ownSha256": "9a9537bbf422a5c44e35497c58aafdd870fe6eaf8f9d24954a1db95f57638aa7"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--scene",
+        "batch": "v2-production-222",
+        "nativeSha256": "ea94dc0e00ffa2333232316b3475be4a641c434a6f9d2b44eee97e78860bab40",
+        "ownSha256": "42f4900e2d93f7958f23e4e2afb7b90967c95325ed09d15621666d411799fa8d"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--episode",
+        "batch": "v2-production-222",
+        "nativeSha256": "2d381f5289bddc53497c51b97b6eb262cc87c5db1c6306b13d485eb0189061a5",
+        "ownSha256": "54364172c2a168aaa4e736cca39fc1a1ac61554f938103ec0a84a4c6832b4153"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--short",
+        "batch": "v2-production-222",
+        "nativeSha256": "b5064fa5aecf65f6792926d3567a99a4619fefbe17acfe04e75ff1a71ab9ad53",
+        "ownSha256": "b7a34da1e63c5b5c0ded969a6dc89595a9bd26b5aab5feea97b9e23384f0c48a"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--scene",
+        "batch": "v2-production-222",
+        "nativeSha256": "0c4082537c5ac40211991872b2b3353f07ca7e8c90a76e2ea3c151c49bc42eb1",
+        "ownSha256": "741280d171be7f1df817a427d3df3d9f621a5d526b3fe2f0eaab5c0744036d49"
+      },
+      {
+        "key": "adventure--reunion--battle--bright",
+        "batch": "v2-production-222",
+        "nativeSha256": "617fc01cf4c9f6db5d5b1b1590293d5854fe38e19db81aab3233e504d2ab4df3",
+        "ownSha256": "fa52dc7578ff569f2a8867e29ac73f35bbcd313dbec9a57074a935e8d6c743f7"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--episode",
+        "batch": "v2-production-222",
+        "nativeSha256": "cc9305d46fd0cf8faef89a8a09387794ea20752f67b31f6496dca9baf4f4946f",
+        "ownSha256": "1e6846d32cb33faf39bc75a3c31d4712d0a3cef803b92dc62605d062e0fc04ab"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests",
+        "batch": "v2-production-223",
+        "nativeSha256": "be5e04f8f5a9098480b7e2dde31fa9f64d14e7274407e469598be0ac8fa3d8ad",
+        "ownSha256": "42de2cad2ed9ef1639d37940b6492699249a5625e804718b158d011a7369ff3e"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters",
+        "batch": "v2-production-223",
+        "nativeSha256": "4c4401a4d68f5d52f66ac0a9478ba8f59c028f323a6aec3d2b61c229e475a9d9",
+        "ownSha256": "9086281561cf10696f18fa1da9df10007aed9597066994474f94cc6052e06932"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--short",
+        "batch": "v2-production-223",
+        "nativeSha256": "9191f2ba899d5123ca043ef3deb14267d7afea37160c02262e9b37355363b33c",
+        "ownSha256": "39310829048085c313e261579726a45744aebf3dbd787b0449d968427fd8d5d9"
+      },
+      {
+        "key": "adventure--reunion--battle--bright",
+        "batch": "v2-production-223",
+        "nativeSha256": "c3ed4299f1d1c19471cd6d605a3e0c1e59ebad9451e45df1a099c59e1e979b01",
+        "ownSha256": "b09d3d8e21bafa3ef7174a36b38e6317b819652d433b90cc4c41515c86559ee9"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--short",
+        "batch": "v2-production-223",
+        "nativeSha256": "9870c306e8127a026020055dc5c01c4a2f16ff6c84a0e19635a6fcb965a8bfaf",
+        "ownSha256": "a2d570b4e5d58a023e36f78ac19f139d38f6f6b908f5ce05bae7c681468499dc"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--scene",
+        "batch": "v2-production-223",
+        "nativeSha256": "4c5838f404826badd08150d64c866ecbdf78e638ddb409aaac58f775a48e42e6",
+        "ownSha256": "07b72d4c06903fcbbebe147f9562b421ff0e0e19ff4290e9d8d26b089cb6d073"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--short",
+        "batch": "v2-production-223",
+        "nativeSha256": "ffd3bde643c81f87f2d7f54d79598e20a930d405825adb1c40bddac11a58c7e1",
+        "ownSha256": "6dc8886e523a49dd9e314bf53601e59405e97f468051f84a61a6a97cb12ff46b"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--episode",
+        "batch": "v2-production-223",
+        "nativeSha256": "e83817fc65202f5d0ca0210be3089c0c33595f9c384ad2b7265001e8e0d477e2",
+        "ownSha256": "b1d92fb3b5bc5103720e476391e5177ad36a27eec6ce75ba5089eb2e8592567a"
+      },
+      {
+        "key": "adventure--reunion--battle",
+        "batch": "v2-production-223",
+        "nativeSha256": "6440481cb81da9e9fc04ffaa28f909558414d7ad93ee9e47e1f65a2ce8dc85d2",
+        "ownSha256": "c704d17583fb7a4b4875d3b961e194ee4118bc1b648aa80ddc1795aa1da6862c"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--scene",
+        "batch": "v2-production-223",
+        "nativeSha256": "38d51c75b42f5e6042ceab161cf6cd19a0422708b89528b9cc99eba261be67f2",
+        "ownSha256": "b728951d364230088d9880c331c022fb486c9e2ef3cbeb6d65b93b082f00fa4b"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic",
+        "batch": "v2-production-224",
+        "nativeSha256": "25f190545815ea7b64c8c33f8803315cf133f14e0cf13961b063d92a3dac5512",
+        "ownSha256": "8b0678ce1c4db94f604ac3145db22c579c885988147b17ee6fce5260debaf0be"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--episode",
+        "batch": "v2-production-224",
+        "nativeSha256": "08d05f43af36509ce128267c10424f758f0a72149188825ce3e1a2c193f93701",
+        "ownSha256": "c48f93fc366905df3743c7a864e900eb89bfd8bf3b71249b3a784313dc525442"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--short",
+        "batch": "v2-production-224",
+        "nativeSha256": "1aad26eb11941a45d3f477617b632e90c14bb3e8ab856be224cc85b8ad0c60af",
+        "ownSha256": "7283a595d0c7c4af1eef855bd5544f7f046e7931b875cdf53c3972b71569ba03"
+      },
+      {
+        "key": "adventure--reunion--battle--bright",
+        "batch": "v2-production-224",
+        "nativeSha256": "e7d270c0cdac042f47cfe0807a371e2810594d83141876dffcf14170584bbe18",
+        "ownSha256": "22847f486ddfc93d19d1ab2431f2bf658492f3fa8574ac24afe8d6be475dc105"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--short",
+        "batch": "v2-production-224",
+        "nativeSha256": "3fdf921191a79f2861012a78867c010538a8a94de5f51c35f5517fb7617312b0",
+        "ownSha256": "2e90d7ef357d3e5b6f332164e255844901746a183ff7bf7ddbc1eed9438f227e"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey",
+        "batch": "v2-production-224",
+        "nativeSha256": "4eefe87b58605ec3ff799c5488e6b39a157b2c980b76abac27c03232d4819098",
+        "ownSha256": "beed09061cf345003230074aeb29955439924dce704b8c95921808a473858b3b"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--short",
+        "batch": "v2-production-224",
+        "nativeSha256": "10f9cfac02acbd0370c898e7ada33f3ff8b019940c600eb0fb6af50efdefe3f2",
+        "ownSha256": "1300a38da80cc59eacc516b759174ed9f1510ce2918e24431aa333f157298975"
+      },
+      {
+        "key": "adventure--reunion--battle--warm",
+        "batch": "v2-production-224",
+        "nativeSha256": "3960236f5739dbc98cc14c348f24a3be6efad5bb2c4645fa70e3ae51688db87d",
+        "ownSha256": "3fe27e9a3cdc929b554fee4c6f3347030baecd5e7d9ecc1885dd6ce6d9960bf9"
+      },
+      {
+        "key": "adventure--reunion",
+        "batch": "v2-production-224",
+        "nativeSha256": "1c1ef633c8a288629c1d9d5065c0f1649b8d396f18b4d8c3858d33f2021ad7bf",
+        "ownSha256": "d8065f8c7ced7826a444407aac0c6dfe7b0769256322f3b1d7ee3c10fdb912f9"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--short",
+        "batch": "v2-production-224",
+        "nativeSha256": "8d0e2603edf7bfdb9e0df2afd165abf3fcc7066b4390e66de5de6b5a5e476207",
+        "ownSha256": "b77cf83ab007bcc0ab6225dd28e0877565d8bc30b0832f256e97428953aa3b41"
+      },
+      {
+        "key": "adventure--reunion--battle--warm--chapters",
+        "batch": "v2-production-225",
+        "nativeSha256": "d4ed7a6a5409305da36fe9b1ca79c69a1a0f69fc658b5cc8f50087cebe3b7ca5",
+        "ownSha256": "e0b247b39527ac8c8aed747cc9d0be25d47b8a9c492157064668b6359be5f0e3"
+      },
+      {
+        "key": "adventure--reunion--battle--warm--quests",
+        "batch": "v2-production-225",
+        "nativeSha256": "8f8321bab4c5ed7d3d37b875190dc6ad80ea6f3a21cc0c353fe8117516e6d727",
+        "ownSha256": "680fe9329a858bdfc2ffca5e022e745309885788f2c693d8c2d4c09db8134c56"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--chapters",
+        "batch": "v2-production-225",
+        "nativeSha256": "6765f3c5a92c1950b6c490d3e0c7941fe0f139c5cc7f830e5cdf232c304ee4f8",
+        "ownSha256": "da3637168a1a1b41407725de307ed9d4bf320953d7ce796d9be20286eacc4977"
+      },
+      {
+        "key": "adventure--reunion--battle--warm",
+        "batch": "v2-production-225",
+        "nativeSha256": "fb0345298df3b6d36074ebd36d6d06ed7c274b6e0033760b19b41b5e84212100",
+        "ownSha256": "a1dd1bbf9861a3fabc8ce0b872b3ba6f0d4fe89e0464064dd0badc37b31cbd2f"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--quests",
+        "batch": "v2-production-225",
+        "nativeSha256": "c274ed8dd19f01193f9a65320c2875e77ea8e9c69db978ecc5fc9033cbd3d7c2",
+        "ownSha256": "e087ed8809481d73b102c212f28b1dd25fedd4cfde8e152cc76d3450d68ca133"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--chapters--short",
+        "batch": "v2-production-225",
+        "nativeSha256": "5deb508d00bf0d9a182a5b4192fb8a45a3b3ef9820c415cc1b91304592db93f3",
+        "ownSha256": "220841acbd2b288aff0fc76ab58e52609e43f8855232b4603acbb5634da9f0b0"
+      },
+      {
+        "key": "adventure--reunion--companions",
+        "batch": "v2-production-225",
+        "nativeSha256": "4b86432c1edd98b2fef383100ca057ab9d61fe634c8b854b9d0270fb266462d5",
+        "ownSha256": "acd1503b9a8bba64b173a189e2b99dbcf8f25730ddcc594b1a21aff9215af7ff"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--quests--scene",
+        "batch": "v2-production-225",
+        "nativeSha256": "72f7a38b29a80dfa17443fcb55677130ec8c00dbe65cfbdf38656dbe894e3527",
+        "ownSha256": "aeb30a957dbeafb4a9a649325159cb16a4dc1f68891091fe6dd7b4f6349a5791"
+      },
+      {
+        "key": "adventure--reunion--battle--warm--journey",
+        "batch": "v2-production-225",
+        "nativeSha256": "b78dbc19bf21424556328c795629792c3b388759e95a8f92bc50b1cc98484915",
+        "ownSha256": "cad2586b5ade08bac06b725e76107c2cc6716251a172f93b3bcd489b0282b4fb"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--short",
+        "batch": "v2-production-225",
+        "nativeSha256": "a27a0f0f0c60a3871453378d13e96cea4e1c61edee210264ae60d8f76822f02b",
+        "ownSha256": "d745054ec88b9fbfeed04ed431ec84b577348bbe21ad6ac30a624322392dc1dd"
+      },
+      {
+        "key": "adventure--reunion--battle--warm--quests",
+        "batch": "v2-production-226",
+        "nativeSha256": "a70379e28cac0782d90d766eb7fb44b5d714f33f791258919f985a03ceaa4e4c",
+        "ownSha256": "7587d3fc2f4df82ba1076075597370b5a28d4d3e1cb3e09ff6562930147d4de4"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--quests--scene",
+        "batch": "v2-production-226",
+        "nativeSha256": "136dabf7cfccc7eb9909de4168c663c3e0119a7e371a2e766d536d84a65ba950",
+        "ownSha256": "137c9df63ba2e5ba8b038ac399170b32c9f178ade5eb2f2cad4dd9989b85b0d7"
+      },
+      {
+        "key": "adventure--reunion--battle--bright--journey--scene",
+        "batch": "v2-production-226",
+        "nativeSha256": "6e8573f6f57d957b6e9eb3bba296b6d2ef3c863b74b7323fff9dfaa1fbdeeb12",
+        "ownSha256": "4269464af36a317d9e3104285005d60089cb9078b69f5142de544170a1116435"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--journey--short",
+        "batch": "v2-production-226",
+        "nativeSha256": "3b4c999d6003cfe7b1f1df164e66a0fc06b859b5af94148520fe2f386ffac6bc",
+        "ownSha256": "aa454e0539a39f6320be0b26bbea280af3a5194a111011089f47443cb0ab8c8d"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--quests--episode",
+        "batch": "v2-production-226",
+        "nativeSha256": "24ec03745384f6e79c98c14b798aad57ce096b1c32358a1889d23978def8f93a",
+        "ownSha256": "662b0ce7fd9f31f94c2102940b1292989563d84bf459adc55f4ad4be57193599"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--quests--short",
+        "batch": "v2-production-226",
+        "nativeSha256": "3fdea72cbb0a81e4353f8951512aa5470baab06ba40b50d0b501e17ad4008941",
+        "ownSha256": "4f1e20c7d57a3cb4902cf80f540a17d3a9ba1e242376aa81cae8aead3fbb3ae3"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--chapters--episode",
+        "batch": "v2-production-226",
+        "nativeSha256": "f2843ffeeca220962a39716f7caed60e429f30bb7d491e3ebfe3aa28f87467f4",
+        "ownSha256": "6c653e484acf5fcc90aa3ed5933827b664e79e18e6b4be2e414d7910bfacb05f"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--quests",
+        "batch": "v2-production-226",
+        "nativeSha256": "a2439e511c491c7aa91eb260700594f004b38be85f06d48d9373416f3c6f3e33",
+        "ownSha256": "2ce262d933b8a633f36fd63de7bb1f0559cd4c7c1769540da243d6677a826bc8"
+      },
+      {
+        "key": "adventure--reunion--battle--warm",
+        "batch": "v2-production-226",
+        "nativeSha256": "2774fbd28ad9b76e342576edf6b3567781bcbc7fb2d7a9063ea80cd2214baa34",
+        "ownSha256": "5a16b091c8cab6907189ee1036e1da966d40bff68087c0c8e77283c97ec542e1"
+      },
+      {
+        "key": "adventure--reunion--battle--mystic--chapters--scene",
+        "batch": "v2-production-226",
+        "nativeSha256": "3956284cc12562a3b03d6ab53673f16d6d0e0bbb59e25805071f6ed9135d8d65",
+        "ownSha256": "33acdf4ee1c056720ab983feed18120074c419a610eb9a7b50397c5ffe35e9bc"
+      }
+    ],
+    "scope": "Actualfile-change records recovered from session journal; exactOWN unchanged, actualbuiltin originals copied unchanged from generated_images. Official import/review/gate/build must rerun with fresh actual receipts; historical lifecycle receipts notfabricated."
+  },
+  "historicalReceiptsNotReconstructed": true,
+  "freshLifecycleAndQAReceiptFiles": [
+    "verify-shots/interview-scene-bank-v2/checkpoint-226-integrity-actual.json",
+    "verify-shots/interview-scene-bank-v2/checkpoint-226-selected-actual.json"
+  ],
+  "permanentBackup": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007",
+  "currentVerifiedPublished": 912,
+  "remaining": 545,
+  "qaPortOverride": {
+    "canonicalScript": "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "canonicalSha256": "78b6bfc98b210d0d587086e1aa04488acf7dd3a02cd173044cfd01461aad0de9",
+    "actualScript": "qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+    "actualSha256": "fcb02dfc6ff4d33cde19e8a6521a38935bcdc429be959d6bf4ecbfb84762513e",
+    "onlyDifference": "Official adopted worktree dev URL port9812 replaced by9803; all production dialog/cache/choice/screenshot logic identical."
+  },
+  "formattingCheck": {
+    "ordinaryCachedDiffReturncode": 2,
+    "exactPromptByteReceiptsHavePreservedTrailingWhitespace": true,
+    "formattingExcludingExactPromptByteReceiptsReturncode": 0,
+    "exactPromptShaAll912Verified": true
+  }
+}
