@@ -12,6 +12,7 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
+import { rejectWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
@@ -317,6 +318,8 @@ export function runToolDefinition(
   let protectedHouses: HouseSnapshot[];
   try {
     protectedHouses = captureHouseProtection(before);
+    // 조수만: 기존 레코드를 통째로 다시 보내는 쓰기는 바꿀 칸만 보내라고 돌려보낸다(assistantRewriteGuard.ts).
+    if (ctx.assistantRun) rejectWholeRecordRewrite(before, name, normalizedArgs);
     beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, normalizedArgs);
     compactTouchedMapLayers(before, draft);

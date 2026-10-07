@@ -128,6 +128,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "set_map_properties",
   "place_npc",
   "upsert_event",
+  "patch_event_page",
   "move_event",
   "remove_event",
 ]);

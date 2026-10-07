@@ -1068,12 +1068,13 @@ function routeRootCommandsIntoPage(
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 기존 이벤트의 페이지 하나에서 그림·대사·조건 같은 칸만 바꿀 때는 patch_event_page 를 쓴다 — pages 는 배열 전체 교체라, 기존 이벤트에 pages 를 보내려면 replacePages:true(페이지 추가·삭제·순서 변경)를 함께 보내야 한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
+      replacePages: { type: "boolean", description: "기존 이벤트의 pages 배열 전체를 교체한다는 표시. 페이지를 추가·삭제·순서 변경할 때만 true. 한 페이지의 칸만 바꿀 때는 patch_event_page." },
       event: {
         type: "object",
         description: "GameEvent 추가 또는 부분 수정. id는 항상 필요하고 x/y는 새 이벤트일 때만 필요. 기존 이벤트에서 생략한 최상위 필드는 보존된다. 새 이벤트 좌표가 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지하고, 기존 이벤트 부분 수정은 좌표를 건드리지 않는다.",
@@ -4049,8 +4050,54 @@ const scriptCutscene: ToolDefinition = {
 export { charsetGraphic };
 // 스위치 등록 헬퍼는 중립 모듈(flagHelpers)로 이전. 호환을 위해 재수출.
 export { ensureNamedSwitch };
+/**
+ * 기존 이벤트의 페이지 하나에서 지정한 칸만 바꾼다. upsert_event 의 pages 는 배열 전체 교체라, 그림 하나를 바꾸려 해도
+ * 모델이 모든 페이지를 다시 써야 했고 그 사이 다른 페이지의 조건·애니메이션이 바뀌었다(2026-10-07 조수 기능 시험).
+ * 검증·정규화는 upsert_event 를 그대로 거친다 — 바꾼 페이지만 다르고 나머지 페이지는 읽은 값 그대로 넘긴다.
+ */
+const patchEventPage: ToolDefinition = {
+  name: "patch_event_page",
+  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string" },
+      eventId: { type: "string" },
+      pageIndex: { type: "integer", minimum: 0, description: "0부터. pageId 가 있으면 무시한다. 둘 다 없으면 0." },
+      pageId: { type: "string" },
+      set: { type: "object", description: "바꿀 페이지 필드만. 예: {graphic:{sprite:{type:'bundled',id:'…'},pattern:73,direction:'down'}}", additionalProperties: true },
+    },
+    required: ["mapId", "eventId", "set"],
+  },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const eventId = String(args.eventId ?? "");
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (!event) throw new ToolError(`${map.name}에 이벤트 '${eventId}' 가 없습니다. find_events 로 id 를 확인하세요.`, { code: "event-not-found" });
+    const pages = event.pages ?? [];
+    if (pages.length === 0) throw new ToolError(`이벤트 '${eventId}' 에 페이지가 없습니다. upsert_event 로 pages 를 만드세요.`, { code: "invalid-args" });
+    const index = typeof args.pageId === "string" && args.pageId
+      ? pages.findIndex((page) => page.id === args.pageId)
+      : typeof args.pageIndex === "number" ? args.pageIndex : 0;
+    if (index < 0 || index >= pages.length) {
+      throw new ToolError(`페이지 ${typeof args.pageId === "string" && args.pageId ? `'${args.pageId}'` : index} 가 없습니다(페이지 ${pages.length}개: ${pages.map((page, i) => `${i}:${page.id ?? "-"}`).join(", ")}).`, { code: "invalid-args" });
+    }
+    const set = args.set;
+    if (!set || typeof set !== "object" || Array.isArray(set) || Object.keys(set).length === 0) {
+      throw new ToolError("set 에 바꿀 페이지 필드를 하나 이상 넣으세요.", { code: "invalid-args" });
+    }
+    const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
+    const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
+    const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
+    return { ...result, summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
+      data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
+  },
+};
+
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
   upsertEvent,
+  patchEventPage,
   placeNpc,
   setNpcSchedule,
   makeVillager,
