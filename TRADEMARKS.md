@@ -1,6 +1,6 @@
 # Trademarks
 
-"OPRN", "OPRN Studio", and the related names and logos are trademarks of [LICENSOR]. None of the licenses in this
+"OPRN", "OPRN Studio", and the related names and logos are trademarks of OPRN. None of the licenses in this
 repository (`LICENSE.md`, `LICENSE-RUNTIME.md`, `ASSET-LICENSE.md`) grant any right to use them.
 
 You may say truthfully that a game was "made with OPRN Studio", and you may show any "Made with OPRN" badge

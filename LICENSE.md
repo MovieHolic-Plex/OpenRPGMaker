@@ -1,6 +1,6 @@
 # License
 
-Copyright (c) 2026 [LICENSOR]. All rights reserved except as granted below.
+Copyright (c) 2026 OPRN. All rights reserved except as granted below.
 
 > **한국어 요약 (참고용 — 효력은 아래 영문이 가진다)**
 >

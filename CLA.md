@@ -3,11 +3,11 @@
 Version 1.0
 
 > 한국어 요약 (참고용 — 효력은 영문): 이 저장소에 코드·문서·그림·소리를 기여하려면 이 약정에 동의해야 한다.
-> 기여한 사람의 저작권은 그대로 남지만, [LICENSOR]와 그 승계인(인수·합병한 회사 포함)은 기여물을 **어떤 라이선스로든**
+> 기여한 사람의 저작권은 그대로 남지만, OPRN와 그 승계인(인수·합병한 회사 포함)은 기여물을 **어떤 라이선스로든**
 > (독점 라이선스 포함) 쓰고 다시 라이선스할 수 있다. 기여자는 자기가 권리를 가진 것만 내고, 회사 업무로 만든 것이면
 > 회사 허락을 받았음을 보증한다.
 
-This agreement is between you ("you") and [LICENSOR] ("the licensor"). It applies to every contribution you
+This agreement is between you ("you") and OPRN ("the licensor"). It applies to every contribution you
 submit to the OPRN Studio repository or to any project the licensor maintains that refers to this agreement.
 
 ## 1. Definitions
