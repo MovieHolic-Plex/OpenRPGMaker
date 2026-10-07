@@ -5,6 +5,38 @@
 
 <!-- releases -->
 
+## 0.163.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — r7-23 철회, 공개 49장, 문서 갱신 (`fa2978f`)
+- **wizarding** — 조수 공간 빌더 build_wizarding_space·list_wizarding_spaces — 13공간을 게임 크기로 한 번에(벽·문·바닥·가구, 놓을 때마다 통행 검사), 장소 17곳을 빌더 결과로 다시 게시 (`180d5a6`)
+- **beodeul-building-review** — 사람이 허용한 그림은 게이트 재검수 면제, round 8 시드 편입 (`bf8e307`)
+
+### 수정
+
+- **wizarding** — build_wizarding_space 가 문 앞 접근 칸(keepClear)을 돌려주고 「비워 둘 것」을 요약에 적는다 — 1칸 문 앞에 NPC 를 세워 길이 막히던 실측 (`82522af`)
+- **wizarding** — 조수 실행 결과 반영 — 시작 맵 재건축 때 시작 칸을 spawn 으로, Wizarding 인물 검색어(마법약 교수·호그와트 학생·부엉이 관리인…), 헤드리스 칩 미리보기가 못 읽는 시트 하나로 전체 실패하지 않게 (`c4b202e`)
+- **beodeul-building-review** — round 8 의 돌 기단 혼합 벽 2장을 단일 재질 돌집으로 교체 (`3c6350a`)
+- **wizarding** — 성채 바닥을 어두운 청회색 판석으로(벽과 명도 차), 붉은 통로 깔개·양탄자 추가 (`f3fef99`)
+- **wizarding** — 우체국 안·시계탑·허니듀크 지하 벽과 바닥 구분 — 회벽/널마루, 파란 격자 바닥 제거, 어두운 판석 (`b4a5f69`)
+- **wizarding** — 통행 덩이 검사 WZ-ISLAND — 갇힌 주머니가 있는 예제는 장소로 게시하지 않는다 (`2a66811`)
+
+### 문서
+
+- **wizarding** — 조수 실경로 3판 결과(blocker 0·엔딩 도달) (`cca1fd3`)
+- **wizarding** — 벽·바닥 수정·통행 관문·조수 실경로 시험 기록 (`4892cce`)
+- **wizarding** — 참고문서 입구에 「맵 짓기 — 먼저 build_wizarding_space」 (`fa1a622`)
+
+### 테스트
+
+- **qa-game** — 마법 학교 기획 견본 — wizarding_world 로 실제 게임을 만드는지 재는 판 (`3f53940`)
+
+### 잡무
+
+- **wizarding** — 벽·바닥 수정분 다시 굽기(칸 2472·키트 627), 프로젝트 맵 그림 도구 (`a94ec68`)
+- **wizarding** — 벽·바닥 수정 조각 29개 재검수 봉인 (`112f3c4`)
+
 ## 0.162.0 — 2026-10-07
 
 ### 기능
