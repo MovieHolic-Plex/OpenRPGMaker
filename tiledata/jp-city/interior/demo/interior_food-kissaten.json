@@ -1,0 +1,127 @@
+{
+ "plan": [
+  "##########",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "####.#####"
+ ],
+ "floor": "fd-wood-dark",
+ "wall": "fd-wood-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "fd-menu-board",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "fd-lantern",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "window-sash",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "fd-sake-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fd-water-jug",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "fd-register",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "houseplant",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 5,
+   "y": 6
+  }
+ ],
+ "tables": [
+  {
+   "style": "fd-table",
+   "x": 2,
+   "y": 6,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "fd-table",
+   "x": 6,
+   "y": 6,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fd-teishoku",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fd-beer-mug",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "fd-condiments",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "fd-beer-mug",
+   "x": 7,
+   "y": 6
+  }
+ ]
+}

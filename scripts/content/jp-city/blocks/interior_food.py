@@ -1,0 +1,485 @@
+#!/usr/bin/env python3
+"""jp_city 실내 — 음식점 묶음(라멘집·이자카야·초밥집·킷사텐). id 접두 `fd-`.
+바닥(빨간 타일·짙은 마루·주방 타일), 벽(회벽+널 허리벽·짙은 널벽), 카운터·탁자, 의자·스툴, 주방 기구, 식권기, 노렌·등롱·메뉴판, 자시키, 탁상 물건.
+빛은 왼쪽 위. 색은 modern3 램프 K(램프, 단) 만. 글자·상표·사람 없음(메뉴·값은 색띠와 점).
+"""
+import os, sys
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', 'interior'))
+from ikit import Registry, K, OL, run_block, ROOT   # noqa
+import categories as CATS                           # noqa
+
+BLOCK = 'interior_food'
+R = Registry(BLOCK, '음식점')
+
+
+def hs(x, y, s=0):
+    n = (x * 374761393 + y * 668265263 + s * 2246822519 + 12345) & 0xffffffff
+    n = ((n ^ (n >> 13)) * 1274126177) & 0xffffffff
+    return (n ^ (n >> 16)) & 0xffff
+
+
+def rnd(x, y, s, per): return hs(x, y, s) % 1000 < per
+
+
+def box(c, x, y, w, h, col):
+    c.HL(x, y, w, col); c.HL(x, y + h - 1, w, col); c.VL(x, y, h, col); c.VL(x + w - 1, y, h, col)
+
+
+def ell(c, cx, cy, rx, ry, m, ol=True, hi=True):
+    def inside(x, y): return ((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1
+    for y in range(int(cy - ry) - 1, int(cy + ry) + 2):
+        for x in range(int(cx - rx) - 1, int(cx + rx) + 2):
+            if not inside(x, y): continue
+            if ol and not all(inside(x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                c.P(x, y, K(m, -2)); continue
+            t = (x + .5 - cx) / rx * 0.6 + (y + .5 - cy) / ry * 0.8
+            c.P(x, y, K(m, (2 if t < -0.5 else 1 if t < -0.1 else -1 if t > 0.5 else 0) if hi else 0))
+
+
+def O(id_, ko, **kw):
+    kw.setdefault('cat', 'food'); kw.setdefault('cat_ko', '음식점')
+    return R.obj(id_, ko, **kw)
+
+
+# 스테인리스 — conc 램프
+def st(t): return K('conc', t)
+
+
+# ───────────────────────── 바닥 ─────────────────────────
+@R.floor('fd-tile-red', '라멘집 붉은 타일 바닥', cols=4, rows=4, tags=('라멘', '음식점', '식당'), desc='붉은 갈색 8px 타일 + 1px 줄눈. 타일마다 톤이 조금씩 다르고 왼쪽 위 모서리가 밝다. 기름때 점 몇 개.')
+def _(c):
+    for ty in range(0, c.h, 8):
+        for tx in range(0, c.w, 8):
+            t = hs(tx // 8, ty // 8, 1) % 6
+            b = K('renga', (0, 0, 0, 1, -1, 0)[t])
+            c.R(tx, ty, 8, 8, b)
+            c.HL(tx, ty, 7, K('renga', 1 if t != 3 else 2)); c.VL(tx, ty, 7, K('renga', 1 if t != 3 else 2))
+            c.HL(tx, ty + 7, 8, K('renga', -2)); c.VL(tx + 7, ty, 8, K('renga', -2))
+            if rnd(tx, ty, 2, 180): c.P(tx + 2 + hs(tx, ty, 3) % 4, ty + 2 + hs(tx, ty, 4) % 4, K('renga', -1))
+
+
+@R.floor('fd-wood-dark', '이자카야 짙은 마루', cols=4, rows=4, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 갈색 나무 널 바닥. 4px 널, 엇갈린 이음매, 낮은 대비 결.')
+def _(c):
+    for row in range(c.h // 4):
+        y = row * 4
+        off = (hs(row, 0, 5) % 7) * 9
+        for x in range(c.w):
+            v = (x + off) % 64
+            tone = (hs((x + off) // 20, row, 6) % 3)
+            c.P(x, y, K('ita', 0 if tone != 2 else 1)); c.P(x, y + 1, K('ita', 0 if tone != 1 else -1))
+            c.P(x, y + 2, K('ita', -1)); c.P(x, y + 3, K('ita', -2))
+        for k in range(2): c.VL((off + k * 32) % c.w, y, 3, K('ita', -2))
+        for k in range(3):
+            gx = (hs(row, k, 7) % (c.w - 6))
+            c.HL(gx, y + 1, 3 + hs(row, k, 8) % 3, K('ita', -1))
+
+
+@R.floor('fd-kitchen-tile', '주방 회색 타일', cols=4, rows=4, tags=('주방', '음식점'), desc='8px 회색 타일 + 짙은 줄눈. 왼쪽 위 모서리 하이라이트, 아주 드문 얼룩.')
+def _(c):
+    for ty in range(0, c.h, 8):
+        for tx in range(0, c.w, 8):
+            t = hs(tx // 8, ty // 8, 11) % 7
+            b = K('conc', 1 if t != 0 else 0)
+            c.R(tx, ty, 8, 8, b)
+            c.HL(tx, ty, 7, K('conc', 2)); c.VL(tx, ty, 7, K('conc', 2))
+            c.HL(tx, ty + 7, 8, K('conc', -1)); c.VL(tx + 7, ty, 8, K('conc', -1))
+            if t == 5: c.P(tx + 3, ty + 4, K('conc', 0)); c.P(tx + 4, ty + 4, K('conc', 0))
+
+
+# ───────────────────────── 벽 ─────────────────────────
+@R.wall('fd-plaster', '회벽 + 나무 허리벽', cols=4, tags=('음식점', '라멘', '킷사텐'), desc='흰 회벽(미세한 얼룩) 위에 나무 허리벽과 턱 레일, 아래 굽도리.')
+def _(c):
+    W = c.w
+    c.R(0, 0, W, 21, K('shiro', 0))
+    for y in range(0, 21):
+        for x in range(W):
+            if rnd(x, y, 21, 55): c.P(x, y, K('shiro', -1))
+            elif rnd(x, y, 22, 20): c.P(x, y, K('shiro', 1))
+    c.HL(0, 20, W, K('shiro', -2))
+    c.HL(0, 21, W, K('ita', 2)); c.HL(0, 22, W, K('ita', 1)); c.HL(0, 23, W, K('ita', -1))     # 레일
+    c.R(0, 24, W, 5, K('ita', 0))
+    for x in range(0, W, 8): c.VL(x, 24, 5, K('ita', -1)); c.VL(x + 1, 24, 5, K('ita', 1))
+    c.R(0, 29, W, 3, K('ita', -2)); c.HL(0, 29, W, K('ita', -1))                                 # 굽도리
+
+
+@R.wall('fd-wood-wall', '짙은 널벽', cols=4, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 나무 세로 널벽. 8px 널 이음매, 가운데 가로 레일, 굽도리.')
+def _(c):
+    W = c.w
+    for x in range(0, W, 8):
+        t = hs(x // 8, 0, 31) % 3
+        c.R(x, 0, 8, 29, K('ita', (-1, -1, 0)[t]))
+        c.VL(x, 0, 29, K('ita', -2)); c.VL(x + 1, 0, 29, K('ita', 0 if t != 2 else 1))
+        for k in range(3):
+            gy = hs(x, k, 32) % 24
+            c.VL(x + 3 + hs(x, k, 33) % 3, gy, 3 + hs(x, k, 34) % 3, K('ita', -2))
+    c.HL(0, 17, W, K('ita', 1)); c.HL(0, 18, W, K('ita', 0)); c.HL(0, 19, W, K('ita', -2))
+    c.R(0, 29, W, 3, K('ita', -3)); c.HL(0, 29, W, K('ita', -2))
+
+
+# ───────────────────────── 탁자 ─────────────────────────
+@R.table('fd-counter', '식당 카운터', one_row=True, desc='손님 쪽 앞 모서리가 보이는 나무 카운터. 뒤쪽(주방 쪽)에 낮은 턱, 앞 판은 세로 널. L자는 가로줄+세로줄(1×1)로.', tags=('카운터', '라멘', '초밥'))
+def _(c, w, h):
+    W = w * 16
+    c.R(0, 0, W, 3, K('yuka', -2)); c.HL(0, 0, W, K('yuka', 0)); c.HL(0, 2, W, K('yuka', -2))        # 주방 쪽 턱
+    c.R(0, 3, W, 6, K('yuka', 1)); c.HL(0, 3, W, K('yuka', 2))
+    for x in range(W):
+        if rnd(x, 5, 41, 140): c.HL(x, 5 + hs(x, 0, 42) % 3, 2, K('yuka', 0))
+    c.R(0, 9, W, 3, K('yuka', -1)); c.HL(0, 9, W, K('yuka', 0)); c.HL(0, 11, W, K('yuka', -2))        # 앞 모서리
+    c.R(0, 12, W, 4, K('ita', -1))
+    for x in range(0, W, 4): c.VL(x, 12, 4, K('ita', -2))
+    c.HL(0, 15, W, K('ita', -3))
+    c.VL(0, 3, 13, K('yuka', 2)); c.P(0, 3, None); c.VL(W - 1, 3, 13, K('yuka', -2)); c.P(W - 1, 3, None)
+
+
+@R.table('fd-table', '식당 탁자', desc='짙은 나무 탁자(2·4인). 윗면 림, 앞 테두리, 양 끝 다리.', tags=('탁자', '킷사텐', '이자카야'))
+def _(c, w, h):
+    W, H = w * 16, h * 16; m = 'ita'; ty1 = H - 10
+    c.R(0, 1, W, ty1, K('yuka', 1)); c.HL(0, 1, W, K('yuka', 3))
+    for y in range(4, ty1, 4):
+        for x in range(0, W, 16): c.HL(x + (3 if (y // 4) % 2 else 9), y, 5, K('yuka', 0))
+    c.R(0, ty1 + 1, W, 3, K('yuka', -1)); c.HL(0, ty1 + 1, W, K('yuka', 0)); c.HL(0, ty1 + 3, W, K('ita', -3))
+    c.VL(0, 2, ty1 + 2, K('yuka', 3)); c.VL(W - 1, 2, ty1 + 2, K('yuka', -2)); c.P(0, 1, None); c.P(W - 1, 1, None)
+    for x0 in (1, W - 3): c.R(x0, H - 6, 2, 6, K(m, -1)); c.VL(x0, H - 6, 6, K(m, 0)); c.VL(x0 + 1, H - 6, 6, K(m, -3))
+
+
+# ───────────────────────── 의자·스툴 ─────────────────────────
+@O('fd-stool', '스툴', w=1, h=1, up=0, kind='floor', use=('sit',), desc='카운터 앞 둥근 스툴. 붉은 방석 + 가는 다리.', tags=('스툴', '카운터'))
+def _(c):
+    c.R(7, 9, 2, 6, K('tekko', 0)); c.VL(7, 9, 6, K('tekko', 1)); c.VL(8, 9, 6, K('tekko', -2))
+    c.HL(4, 14, 8, K('tekko', -1)); c.HL(4, 15, 8, K('tekko', -3))
+    ell(c, 8, 6, 5.5, 3.2, 'aka')
+    c.HL(5, 4, 3, K('aka', 3))
+
+
+def _chair(d):
+    m = 'ita'; yb = 16
+    def f(c):
+        def seat(x0, w): c.R(x0, yb + 3, w, 4, K(m, 1)); c.HL(x0, yb + 3, w, K(m, 2)); c.HL(x0, yb + 6, w, K(m, -2))
+        if d == 's':
+            c.R(4, 6, 8, 9, K(m, 0)); box(c, 4, 6, 8, 9, K(m, -3)); c.HL(5, 7, 6, K(m, 1))
+            seat(3, 10); c.R(3, yb + 7, 10, 2, K(m, -1)); c.HL(3, yb + 8, 10, K(m, -3))
+            for x in (4, 10): c.R(x, yb + 9, 2, 6, K(m, -1)); c.VL(x, yb + 9, 6, K(m, 0))
+        elif d == 'n':
+            c.R(3, 8, 10, 13, K(m, -1)); box(c, 3, 8, 10, 13, K(m, -3)); c.HL(4, 9, 8, K(m, 0))
+            for y in (12, 16): c.HL(5, y, 6, K(m, -2))
+            c.R(3, yb + 6, 10, 2, K(m, -1)); c.HL(3, yb + 7, 10, K(m, -3))
+            for x in (4, 10): c.R(x, yb + 8, 2, 7, K(m, -2)); c.VL(x, yb + 8, 7, K(m, -1))
+        else:
+            bx = 3 if d == 'e' else 11
+            c.R(bx, 6, 2, 12, K(m, 0)); c.VL(bx, 6, 12, K(m, 2)); c.VL(bx + 1, 6, 12, K(m, -3))
+            seat(3, 10); c.R(3, yb + 7, 10, 2, K(m, -1)); c.HL(3, yb + 8, 10, K(m, -3))
+            for x in (3, 11): c.R(x, yb + 9, 2, 6, K(m, -1)); c.VL(x, yb + 9, 6, K(m, 0))
+    return f
+
+
+for _d in 'snew':
+    O('fd-chair-' + _d, {'s': '의자(남향)', 'n': '의자(북향)', 'e': '의자(동향)', 'w': '의자(서향)'}[_d], w=1, h=1, up=16, kind='floor',
+      use=('sit',), facing=_d.upper(), desc='식당 나무 의자 4방향 중 하나.', tags=('의자', '탁자'))(_chair(_d))
+
+
+# ───────────────────────── 주방 기구(벽 1×1, up=16) ─────────────────────────
+def steam(c, x, y, s=0):
+    for i, (dx, dy) in enumerate(((0, 0), (1, -2), (0, -4), (-1, -6))):
+        if rnd(x, i, s, 800): c.P(x + dx, y + dy, K('shiro', 1)); c.P(x + dx + 1, y + dy, K('shiro', 0))
+
+
+def steel_front(c, yb, doors=2, handle=True):
+    c.R(0, yb + 8, 16, 7, K('conc', 2)); c.HL(0, yb + 8, 16, K('conc', 3)); c.HL(0, yb + 9, 16, K('conc', 1))
+    c.VL(0, yb + 8, 7, K('conc', 3)); c.VL(15, yb + 8, 7, K('conc', 0)); c.HL(0, yb + 14, 16, K('conc', 0))
+    c.R(0, yb + 15, 16, 1, K('tekko', -2))
+    if doors == 2:
+        c.VL(8, yb + 10, 4, K('conc', -1))
+        if handle: c.VL(6, yb + 11, 2, K('tekko', -2)); c.VL(10, yb + 11, 2, K('tekko', -2))
+    elif handle: c.VL(11, yb + 11, 2, K('tekko', -2))
+
+
+@O('fd-prep', '조리 작업대', w=1, h=1, up=16, kind='wall', surface=True, use=('search',), desc='스테인리스 작업대. 뒤 타일 + 도구 걸이.', tags=('주방', '작업대'))
+def _(c):
+    yb = 16
+    c.R(1, 6, 14, 10, K('conc', 2)); c.HL(1, 6, 14, K('conc', 3))
+    for x in (5, 9, 13): c.VL(x, 7, 9, K('conc', 1))
+    c.HL(1, 11, 14, K('conc', 1)); c.HL(1, 15, 14, K('conc', 0))
+    c.HL(2, 7, 12, K('tekko', -1))
+    for x, col in ((4, K('tekko', 0)), (8, K('aka', 0)), (12, K('tekko', 1))):
+        c.VL(x, 8, 4, col); c.P(x, 12, col); c.P(x + 1, 12, col)
+    c.R(0, yb, 16, 8, K('shiro', 1)); c.HL(0, yb, 16, K('shiro', 3)); c.HL(0, yb + 7, 16, K('conc', 1))
+    c.VL(0, yb, 8, K('shiro', 2)); c.VL(15, yb, 8, K('conc', 1))
+    c.R(0, yb + 8, 16, 2, K('conc', 0)); c.HL(0, yb + 9, 16, K('conc', -2))
+    c.R(0, yb + 10, 16, 5, K('conc', 2)); c.VL(0, yb + 10, 5, K('conc', 3)); c.VL(15, yb + 10, 5, K('conc', 0))
+    c.VL(8, yb + 10, 4, K('conc', -1)); c.VL(6, yb + 11, 2, K('tekko', -2)); c.VL(10, yb + 11, 2, K('tekko', -2))
+    c.HL(0, yb + 14, 16, K('conc', 0)); c.R(0, yb + 15, 16, 1, K('tekko', -2))
+
+
+@O('fd-sink', '조리 싱크', w=1, h=1, up=16, kind='wall', surface=False, use=('search',), desc='스테인리스 깊은 싱크 + 수전.', tags=('주방', '싱크'))
+def _(c):
+    yb = 16
+    c.R(6, 3, 2, 5, K('tekko', 1)); c.HL(6, 3, 6, K('tekko', 2)); c.VL(11, 3, 4, K('tekko', 0)); c.P(11, 7, K('tekko', -1))   # 수전
+    c.P(5, 8, K('aka', 0)); c.P(9, 8, K('sora', 0))
+    c.R(0, yb, 16, 8, K('shiro', 1)); c.HL(0, yb, 16, K('shiro', 3)); c.VL(0, yb, 8, K('shiro', 2)); c.VL(15, yb, 8, K('conc', 1))
+    c.R(2, yb + 2, 12, 5, K('conc', 0)); box(c, 2, yb + 2, 12, 5, K('conc', -2)); c.HL(3, yb + 3, 10, K('conc', 1))
+    c.R(3, yb + 4, 10, 2, K('sora', -1)); c.HL(3, yb + 4, 10, K('sora', 0))
+    c.R(0, yb + 8, 16, 7, K('conc', 2)); c.HL(0, yb + 8, 16, K('conc', 1)); c.VL(0, yb + 8, 7, K('conc', 3)); c.VL(15, yb + 8, 7, K('conc', 0))
+    c.VL(8, yb + 9, 5, K('conc', -1)); c.VL(6, yb + 10, 2, K('tekko', -2)); c.VL(10, yb + 10, 2, K('tekko', -2))
+    c.HL(0, yb + 14, 16, K('conc', 0)); c.R(0, yb + 15, 16, 1, K('tekko', -2))
+
+
+@O('fd-stockpot', '육수 솥(곤로)', w=1, h=1, up=16, kind='wall', use=(), desc='곤로 위의 큰 솥 두 개 + 김. 라멘 육수.', tags=('주방', '라멘'))
+def _(c):
+    yb = 16
+    steam(c, 5, 5, 3); steam(c, 11, 3, 4)
+    for x0, w in ((1, 7), (8, 7)):
+        c.R(x0, 8, w, 12, K('conc', 1)); c.VL(x0, 8, 12, K('conc', 3)); c.VL(x0 + w - 1, 8, 12, K('conc', -1))
+        c.HL(x0, 8, w, K('shiro', 2)); c.HL(x0, 9, w, K('conc', 2)); c.HL(x0, 19, w, K('conc', -2))
+        c.VL(x0 - 1 if x0 > 1 else 0, 11, 2, K('tekko', 0)) if x0 > 1 else None
+        c.R(x0 + 1, 6, w - 2, 2, K('conc', 0)); c.HL(x0 + 1, 6, w - 2, K('conc', 2))                               # 뚜껑
+        c.P(x0 + w // 2, 5, K('tekko', -1))
+        c.HL(x0, 12, w, K('conc', 0))
+    c.R(0, yb + 4, 16, 11, K('tekko', 0)); c.HL(0, yb + 4, 16, K('tekko', 2)); c.HL(0, yb + 5, 16, K('tekko', 1))
+    c.VL(0, yb + 4, 11, K('tekko', 2)); c.VL(15, yb + 4, 11, K('tekko', -2))
+    for x in (4, 11): ell(c, x, yb + 9, 2.2, 2.2, 'tekko', ol=True, hi=False); c.P(x, yb + 9, K('daidai', 1))     # 화구 불빛
+    c.R(0, yb + 14, 16, 2, K('tekko', -2))
+    c.P(3, yb + 13, K('daidai', 0)); c.P(12, yb + 13, K('kii', 0))
+
+
+@O('fd-noodle-boiler', '면 삶는 기계', w=1, h=1, up=16, kind='wall', use=(), desc='스테인리스 면 삶는 통. 끓는 물 + 면 소쿠리 손잡이 + 김.', tags=('주방', '라멘'))
+def _(c):
+    yb = 16
+    steam(c, 4, 6, 5); steam(c, 10, 5, 6)
+    for x in (3, 9):
+        c.VL(x, 7, 8, K('tekko', 0)); c.HL(x, 7, 4, K('tekko', 1)); c.VL(x + 3, 7, 8, K('tekko', -1))
+    c.R(1, yb - 1, 14, 3, K('conc', 3)); c.HL(1, yb - 1, 14, K('shiro', 3))
+    c.R(0, yb + 2, 16, 6, K('shiro', 1)); c.HL(0, yb + 2, 16, K('shiro', 3)); c.VL(0, yb + 2, 6, K('shiro', 2)); c.VL(15, yb + 2, 6, K('conc', 1))
+    c.R(2, yb + 3, 12, 4, K('sora', 0)); box(c, 2, yb + 3, 12, 4, K('conc', -2))
+    for x, y in ((4, yb + 4), (8, yb + 5), (11, yb + 4)): c.P(x, y, K('shiro', 2)); c.P(x + 1, y, K('shiro', 1))
+    steel_front(c, yb - 0)
+    c.R(6, yb + 10, 4, 2, K('tekko', -1)); c.P(7, yb + 10, K('midori', 0)); c.P(9, yb + 10, K('aka', 0))     # 다이얼
+
+
+@O('fd-fryer', '튀김기', w=1, h=1, up=16, kind='wall', use=(), desc='스테인리스 튀김기. 노란 기름 + 바구니 손잡이.', tags=('주방', '튀김'))
+def _(c):
+    yb = 16
+    c.VL(3, 7, 7, K('tekko', 0)); c.HL(1, 7, 5, K('tekko', 2)); c.P(1, 8, K('tekko', 0))
+    c.VL(12, 7, 7, K('tekko', 0)); c.HL(10, 7, 5, K('tekko', 2)); c.P(14, 8, K('tekko', 0))
+    c.R(2, 13, 12, 3, K('conc', 0)); c.HL(2, 13, 12, K('conc', 3))
+    c.R(0, yb + 1, 16, 7, K('shiro', 1)); c.HL(0, yb + 1, 16, K('shiro', 3)); c.VL(0, yb + 1, 7, K('shiro', 2)); c.VL(15, yb + 1, 7, K('conc', 1))
+    for x0 in (1, 9):
+        c.R(x0, yb + 2, 6, 5, K('kii', 0)); box(c, x0, yb + 2, 6, 5, K('conc', -2)); c.HL(x0 + 1, yb + 3, 3, K('kii', 2)); c.P(x0 + 4, yb + 5, K('daidai', 0))
+    steel_front(c, yb)
+
+
+@O('fd-fridge', '업소용 냉장고', w=1, h=2, up=0, kind='wall', use=('open',), desc='스테인리스 업소용 냉장고(2칸 높이). 문 두 짝 + 긴 손잡이 + 온도 표시등.', tags=('주방', '냉장'))
+def _(c):
+    c.R(1, 1, 14, 31, K('conc', 2)); box(c, 1, 1, 14, 31, K('conc', -3))
+    c.HL(2, 2, 12, K('shiro', 3)); c.VL(2, 2, 29, K('conc', 3)); c.VL(13, 3, 28, K('conc', 1))
+    c.R(3, 3, 10, 3, K('conc', 0)); c.HL(3, 3, 10, K('conc', 1)); c.P(4, 4, K('midori', 1)); c.P(5, 4, K('midori', 1)); c.P(11, 4, K('aka', 0))
+    c.HL(2, 7, 12, K('conc', -2))
+    c.VL(8, 8, 22, K('conc', -2)); c.VL(7, 8, 22, K('conc', 3))
+    for x in (6, 9):
+        c.VL(x, 14, 8, K('tekko', 1) if x == 6 else K('tekko', -2))
+    c.HL(1, 30, 14, K('tekko', 0)); c.R(1, 31, 14, 1, K('tekko', -3))
+    c.R(3, 30, 2, 2, K('tekko', -2)); c.R(11, 30, 2, 2, K('tekko', -2))
+
+
+@O('fd-sake-shelf', '술병 선반', w=2, h=1, up=16, kind='wall', use=('search',), desc='나무 선반장 가득한 술병(초록·남·흰·붉은 라벨 띠). 아래는 수납 문.', tags=('이자카야', '술'))
+def _(c):
+    W = 32; yb = 16
+    c.R(0, 2, W, 30, K('ita', -1)); c.VL(0, 2, 30, K('ita', 1)); c.VL(W - 1, 2, 30, K('ita', -3)); c.HL(0, 2, W, K('ita', 1))
+    c.R(2, 4, W - 4, 22, K('ita', -3))
+    cols = ['midori', 'kon', 'shiro', 'aka', 'midori', 'kon', 'kii', 'shiro']
+    for sy in (4, 15):
+        for i in range(7):
+            bx = 3 + i * 4 + (1 if i > 3 else 0)
+            col = cols[(i + sy) % len(cols)]
+            c.R(bx + 1, sy + 1, 2, 3, K(col, 0)); c.P(bx + 1, sy + 1, K(col, 2))                      # 목
+            c.R(bx, sy + 4, 3, 6, K(col, 0)); c.VL(bx, sy + 4, 6, K(col, 1)); c.VL(bx + 2, sy + 4, 6, K(col, -2))
+            c.HL(bx, sy + 6, 3, K('shiro', 1) if col != 'shiro' else K('aka', 0))                         # 라벨 띠
+        c.R(2, sy + 10, W - 4, 2, K('ita', 0)); c.HL(2, sy + 10, W - 4, K('ita', 2)); c.HL(2, sy + 11, W - 4, K('ita', -2))
+    c.R(0, yb + 10, W, 6, K('ita', 0)); c.HL(0, yb + 10, W, K('ita', 2)); c.HL(0, yb + 11, W, K('ita', -2))
+    c.VL(0, yb + 10, 6, K('ita', 2)); c.VL(W - 1, yb + 10, 6, K('ita', -3)); c.VL(16, yb + 11, 5, K('ita', -3)); c.VL(15, yb + 12, 3, K('ita', 2))
+    c.P(13, yb + 12, K('tekko', -1)); c.P(18, yb + 12, K('tekko', -1)); c.HL(0, yb + 15, W, K('ita', -3))
+
+
+# ───────────────────────── 손님 쪽 소품 ─────────────────────────
+@O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='wall', use=('counter',), desc='라멘집 식권기. 붉은 몸통, 초록 지폐 투입구, 3×4 색 버튼(글자 없음), 거스름 트레이.', tags=('라멘', '식권'))
+def _(c):
+    c.R(2, 3, 12, 28, K('aka', 0)); box(c, 2, 3, 12, 28, K('aka', -3)); c.HL(3, 4, 10, K('aka', 2)); c.VL(3, 4, 26, K('aka', 1))
+    c.R(4, 6, 8, 3, K('sumi', 0)); c.HL(4, 6, 8, K('sumi', 1)); c.P(5, 7, K('midori', 2)); c.P(6, 7, K('midori', 2))
+    c.R(4, 10, 8, 14, K('shiro', 0)); box(c, 4, 10, 8, 14, K('conc', -1))
+    for r in range(4):
+        for q in range(3):
+            col = ('aka', 'kii', 'midori', 'sora', 'daidai', 'pinku')[(r * 3 + q) % 6]
+            x, y = 5 + q * 2, 11 + r * 3
+            c.R(x, y, 2, 2, K(col, 0)); c.P(x, y, K(col, 2))
+    c.R(5, 24, 6, 1, K('conc', 0))
+    c.R(6, 25, 4, 2, K('sumi', 1)); c.HL(6, 25, 4, K('sumi', -1))                                      # 지폐구
+    c.R(4, 28, 8, 3, K('tekko', -1)); c.HL(4, 28, 8, K('tekko', 1)); c.HL(5, 29, 6, K('sumi', -2))      # 트레이
+    c.R(3, 31, 10, 1, K('tekko', -3))
+
+
+@O('fd-water-jug', '물병 스탠드', w=1, h=1, up=16, kind='floor', surface=True, use=(), desc='입구 옆 셀프 물 — 스탠드 위 물 주전자와 컵.', tags=('라멘', '물'))
+def _(c):
+    yb = 16
+    c.R(4, 5, 8, 9, K('garasu', 1)); box(c, 4, 5, 8, 9, K('garasu', -2)); c.R(5, 8, 6, 5, K('sora', 0)); c.HL(5, 8, 6, K('sora', 2)); c.HL(4, 4, 8, K('tekko', 0))
+    c.R(11, 8, 2, 4, K('tekko', 0)); c.VL(13, 9, 2, K('tekko', -1))
+    c.R(0, yb, 16, 5, K('yuka', 1)); c.HL(0, yb, 16, K('yuka', 2)); c.HL(0, yb + 4, 16, K('yuka', -2))
+    for x in (2, 6): c.R(x, yb + 1, 3, 3, K('garasu', 2)); box(c, x, yb + 1, 3, 3, K('garasu', 0))
+    c.R(0, yb + 5, 16, 10, K('ita', -1)); c.VL(0, yb + 5, 10, K('ita', 1)); c.VL(15, yb + 5, 10, K('ita', -3)); c.HL(0, yb + 5, 16, K('ita', 0))
+    c.R(1, yb + 7, 14, 6, K('ita', 0)); box(c, 1, yb + 7, 14, 6, K('ita', -3)); c.P(12, yb + 9, K('tekko', 1)); c.HL(0, yb + 15, 16, K('ita', -3))
+
+
+@O('fd-register', '계산대', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='작은 계산 카운터. 위에 금전 등록기(화면은 초록 점).', tags=('계산', '킷사텐'))
+def _(c):
+    yb = 16
+    c.R(3, 4, 10, 8, K('conc', 1)); box(c, 3, 4, 10, 8, K('conc', -3)); c.R(4, 5, 8, 3, K('sumi', 0)); c.HL(5, 6, 4, K('midori', 1)); c.P(10, 6, K('kii', 1))
+    for r in range(2):
+        for q in range(4): c.P(4 + q * 2, 9 + r * 1 * 1, K('conc', 3 if (q + r) % 2 else 2))
+    c.R(2, 11, 12, 3, K('tekko', 0)); c.HL(2, 11, 12, K('tekko', 2)); c.HL(2, 13, 12, K('tekko', -2))
+    c.R(0, yb + 1, 16, 4, K('yuka', 1)); c.HL(0, yb + 1, 16, K('yuka', 2)); c.HL(0, yb + 4, 16, K('yuka', -2)); c.P(11, yb + 2, K('kii', 1))
+    c.R(0, yb + 5, 16, 10, K('ita', -1)); c.HL(0, yb + 5, 16, K('ita', 0)); c.VL(0, yb + 5, 10, K('ita', 1)); c.VL(15, yb + 5, 10, K('ita', -3))
+    c.R(2, yb + 7, 5, 6, K('ita', 0)); box(c, 2, yb + 7, 5, 6, K('ita', -3)); c.R(9, yb + 7, 5, 6, K('ita', 0)); box(c, 9, yb + 7, 5, 6, K('ita', -3))
+    c.HL(0, yb + 15, 16, K('ita', -3))
+
+
+@O('fd-neta-case', '네타 케이스', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='초밥 카운터 위의 유리 생선 진열장. 안에 붉은살·흰살·새우 토막(색 띠)이 줄지어 있고 아래는 나무 카운터. 가로로 이어 놓는다.', tags=('초밥', '가게', '진열'))
+def _(c):
+    yb = 16
+    # 유리 상자: 위 테두리(철) + 뒤판 + 앞유리, 안에 네타 3줄
+    c.R(1, 3, 14, 11, K('garasu', 1)); box(c, 1, 3, 14, 11, K('tekko', -2))
+    c.R(2, 4, 12, 2, K('garasu', 3)); c.HL(2, 4, 12, K('shiro', 1))
+    c.R(2, 6, 12, 6, K('garasu', 2))
+    for i, col in enumerate(('aka', 'pinku', 'kinari', 'aka')):
+        x = 3 + i * 3
+        c.R(x, 8, 3, 2, K('shiro', 0)); c.R(x, 7, 3, 2, K(col, 0)); c.HL(x, 7, 3, K(col, 2)); c.HL(x, 9, 3, K(col, -2))
+    c.HL(2, 10, 12, K('tekko', 1))
+    c.R(2, 11, 12, 2, K('garasu', 0)); c.HL(2, 11, 12, K('shiro', 2)); c.VL(2, 4, 8, K('shiro', 2))
+    c.R(1, 13, 14, 2, K('tekko', 0)); c.HL(1, 13, 14, K('tekko', 2)); c.HL(1, 14, 14, K('tekko', -2))
+    # 나무 카운터
+    c.R(0, yb, 16, 5, K('yuka', 1)); c.HL(0, yb, 16, K('yuka', 2)); c.HL(0, yb + 4, 16, K('yuka', -2))
+    c.R(0, yb + 5, 16, 10, K('ita', -1)); c.HL(0, yb + 5, 16, K('ita', 0)); c.VL(0, yb + 5, 10, K('ita', 1)); c.VL(15, yb + 5, 10, K('ita', -3))
+    for x in (5, 10): c.VL(x, yb + 6, 9, K('ita', -3))
+    c.HL(0, yb + 15, 16, K('ita', -3))
+
+
+@O('fd-beer-crates', '맥주 상자', w=1, h=1, up=0, kind='floor', use=(), desc='붉은·노란 플라스틱 병 상자 2단.', tags=('이자카야', '술'))
+def _(c):
+    for y0, col in ((9, 'aka'), (2, 'kii')):
+        c.R(1, y0, 14, 6, K(col, 0)); box(c, 1, y0, 14, 6, K(col, -3)); c.HL(2, y0 + 1, 12, K(col, 2)); c.VL(2, y0 + 1, 4, K(col, 1))
+        for x in range(3, 14, 3): c.R(x, y0 + 2, 2, 3, K('sumi', 1)); c.P(x, y0 + 2, K('midori', 0) if (x + y0) % 2 else K('kii', 1))   # 병 목
+        c.R(5, y0 + 5, 6, 1, K(col, -2))
+    c.HL(1, 14, 14, K('aka', -3)); c.P(14, 2, None)
+
+
+@O('fd-zashiki', '자시키 단', w=1, h=1, up=0, kind='flat', walk=((0, 0),), use=(), desc='바닥보다 한 단 높은 다다미 단. 위는 다다미 + 헤리, 앞은 나무 받침. 가로로 이어 붙인다.', tags=('이자카야', '다다미', '좌식'))
+def _(c):
+    c.R(0, 0, 16, 11, K('kinari', 1)); c.HL(0, 0, 16, K('kinari', 2))
+    for x in range(16):
+        for y in range(1, 11):
+            if rnd(x, y, 91, 70): c.P(x, y, K('kinari', 0))
+    for y in (2, 4, 6, 8): c.HL(0, y, 16, K('kinari', 1))
+    c.R(0, 0, 16, 1, K('midori', -2)); c.HL(0, 10, 16, K('midori', -2)); c.HL(0, 11, 16, K('kinari', -1))
+    c.R(0, 12, 16, 4, K('ita', 0)); c.HL(0, 12, 16, K('ita', 2)); c.HL(0, 13, 16, K('ita', 1))
+    c.HL(0, 15, 16, K('ita', -3)); c.HL(0, 14, 16, K('ita', -1))
+
+
+@O('fd-noren', '노렌', w=1, h=1, up=0, kind='hang', hrows=2, use=(), desc='문 위에 걸린 천 가림막. 남색 천 셋 갈래 + 흰 가장자리 띠(글자 없음).', tags=('노렌', '입구'))
+def _(c):
+    c.R(1, 1, 14, 1, K('tekko', -1)); c.HL(1, 1, 14, K('tekko', 1)); c.P(0, 1, K('tekko', 0)); c.P(15, 1, K('tekko', 0))
+    for x0 in (1, 6, 11):
+        w = 4 if x0 != 6 else 5
+        c.R(x0, 2, w, 14, K('kon', 0)); c.VL(x0, 2, 14, K('kon', 1)); c.VL(x0 + w - 1, 2, 14, K('kon', -2))
+        c.R(x0 + 1, 6, w - 2, 3, K('shiro', 0)); c.HL(x0 + 1, 6, w - 2, K('shiro', 2))                    # 흰 문양 띠
+        c.HL(x0, 15, w, K('shiro', 1))
+        for y in (3, 10, 12):
+            if hs(x0, y, 71) % 2: c.P(x0 + 1, y, K('kon', 1))
+        c.P(x0 + w // 2, 2, K('tekko', 1))
+
+
+@O('fd-lantern', '붉은 등롱', w=1, h=1, up=0, kind='hang', hrows=1, use=(), desc='음식점 입구 붉은 종이 등롱. 줄 + 검은 뚜껑·받침 + 흰 띠.', tags=('등롱', '입구'))
+def _(c):
+    c.VL(8, 0, 2, K('sumi', 1))
+    c.R(5, 2, 6, 2, K('sumi', 0)); c.HL(5, 2, 6, K('sumi', 2))
+    ell(c, 8, 8, 4.5, 4.5, 'aka')
+    for y in (6, 8, 10): c.HL(4 + (1 if y != 8 else 0), y, 7 if y == 8 else 5, K('aka', -1))
+    c.R(6, 7, 4, 3, K('shiro', 1)); c.HL(6, 7, 4, K('shiro', 3)); c.P(7, 8, K('aka', 0)); c.P(8, 9, K('aka', 0))
+    c.R(5, 12, 6, 2, K('sumi', 0)); c.HL(5, 12, 6, K('sumi', 2)); c.VL(8, 14, 2, K('sumi', 1)); c.P(8, 15, K('daidai', 0))
+
+
+@O('fd-menu-board', '메뉴판', w=2, h=1, up=0, kind='hang', hrows=2, use=('read',), desc='벽 메뉴판 — 나무 틀 + 색띠(품목)·값 점·작은 음식 그림 칸. 글자 없음.', tags=('메뉴', '벽'))
+def _(c):
+    W = 32
+    c.R(1, 3, W - 2, 27, K('sumi', 0)); box(c, 1, 3, W - 2, 27, K('ita', 0)); box(c, 2, 4, W - 4, 25, K('ita', -2)); c.HL(2, 3, W - 2, K('ita', 2))
+    cols = ('aka', 'kii', 'midori', 'sora', 'daidai', 'shiro')
+    for i, y in enumerate(range(6, 27, 5)):
+        c.R(4, y, 12, 3, K(cols[(i * 2) % 6], 0)); c.HL(4, y, 12, K(cols[(i * 2) % 6], 2))
+        for k in range(4): c.P(17 + k * 2, y + 1, K('shiro', 1))                                        # 값 점
+        c.R(24, y - 1, 5, 4, K(cols[(i * 2 + 1) % 6], 1)); box(c, 24, y - 1, 5, 4, K('shiro', 0))     # 음식 그림 칸
+        c.P(26, y, K('kii', 2)); c.P(27, y + 1, K('aka', 0))
+    c.P(1, 3, None); c.P(W - 2, 3, None)
+
+
+# ───────────────────────── 탁상 물건(16×16, y 0~9) ─────────────────────────
+@R.good('fd-ramen-bowl', '라멘 그릇', desc='붉은 그릇에 국물·차슈·파·면 + 젓가락.')
+def _(c):
+    ell(c, 8, 5, 6, 3.4, 'aka')
+    c.R(4, 3, 8, 3, K('daidai', 1)); c.HL(4, 3, 8, K('kii', 2))
+    c.R(5, 4, 3, 2, K('renga', 0)); c.P(6, 4, K('shiro', 1)); c.P(9, 3, K('midori', 1)); c.P(10, 5, K('midori', 1)); c.P(8, 3, K('midori', 1))
+    c.HL(3, 8, 10, K('aka', -2)); c.HL(6, 9, 4, K('aka', -3))
+    c.HL(11, 0, 4, K('ki', 1)); c.HL(12, 1, 3, K('ki', 0))
+
+
+@R.good('fd-sushi-geta', '초밥 게타', desc='나무 받침판 위 초밥 네 점(흰 밥 + 붉은·주황 생선) + 와사비.')
+def _(c):
+    c.R(1, 5, 14, 3, K('yuka', 0)); c.HL(1, 5, 14, K('yuka', 2)); c.HL(1, 7, 14, K('yuka', -1))
+    c.R(3, 8, 2, 1, K('yuka', -1)); c.R(11, 8, 2, 1, K('yuka', -1))
+    for i, col in enumerate(('aka', 'daidai', 'pinku', 'aka')):
+        x = 2 + i * 3
+        c.R(x, 3, 3, 2, K('shiro', 1)); c.P(x, 4, K('shiro', 0)); c.R(x, 2, 3, 2, K(col, 0)); c.HL(x, 2, 3, K(col, 2))
+    c.P(14, 3, K('midori', 0)); c.P(14, 4, K('midori', -1))
+
+
+@R.good('fd-beer-mug', '맥주잔', desc='손잡이 달린 큰 잔, 노란 맥주 + 흰 거품.')
+def _(c):
+    c.R(4, 2, 7, 7, K('kii', 0)); box(c, 4, 2, 7, 7, K('garasu', -1)); c.VL(5, 3, 5, K('kii', 2))
+    c.R(4, 1, 7, 2, K('shiro', 1)); c.HL(4, 1, 7, K('shiro', 3)); c.P(4, 1, None); c.P(10, 1, None)
+    c.VL(11, 3, 4, K('garasu', 0)); c.VL(12, 3, 4, K('garasu', 0)); c.P(12, 3, K('garasu', 2)); c.P(12, 6, K('garasu', -1))
+    c.HL(4, 9, 7, K('garasu', -2))
+
+
+@R.good('fd-tokkuri', '도쿠리와 잔', desc='하늘색 도쿠리(술병) + 작은 흰 잔.')
+def _(c):
+    c.R(5, 0, 2, 2, K('sora', 0)); c.P(5, 0, K('sora', 2))
+    c.R(4, 2, 4, 7, K('sora', 0)); c.VL(4, 2, 7, K('sora', 2)); c.VL(7, 2, 7, K('sora', -2)); c.HL(4, 8, 4, K('sora', -3)); c.HL(4, 5, 4, K('shiro', 1))
+    c.P(4, 2, None); c.P(7, 2, None)
+    c.R(10, 6, 4, 3, K('shiro', 1)); c.HL(10, 6, 4, K('shiro', 3)); c.VL(13, 6, 3, K('shiro', -1)); c.HL(11, 8, 2, K('conc', 0)); c.HL(10, 9, 4, K('conc', -2))
+
+
+@R.good('fd-condiments', '조미료 세 가지', desc='간장병(검정 뚜껑)·후추 통·소금 통(투명 + 흰 뚜껑).')
+def _(c):
+    c.R(1, 3, 4, 6, K('renga', -1)); c.HL(1, 3, 4, K('renga', 1)); c.R(2, 1, 2, 2, K('aka', 0)); c.HL(1, 9, 4, K('renga', -3)); c.P(2, 5, K('shiro', 1))
+    c.R(6, 3, 4, 6, K('garasu', 1)); box(c, 6, 3, 4, 6, K('garasu', -1)); c.R(7, 6, 2, 3, K('sumi', 1)); c.R(6, 1, 4, 2, K('tekko', 0)); c.HL(6, 1, 4, K('tekko', 2)); c.HL(6, 9, 4, K('garasu', -2))
+    c.R(11, 3, 4, 6, K('garasu', 2)); box(c, 11, 3, 4, 6, K('garasu', -1)); c.R(12, 5, 2, 4, K('shiro', 2)); c.R(11, 1, 4, 2, K('shiro', 0)); c.HL(11, 1, 4, K('shiro', 3)); c.HL(11, 9, 4, K('garasu', -2))
+
+
+@R.good('fd-teishoku', '정식 쟁반', desc='쟁반에 밥·국·주반찬·절임(흰 밥, 갈색 국, 구운 생선, 작은 접시).')
+def _(c):
+    c.R(0, 1, 16, 8, K('ita', -1)); box(c, 0, 1, 16, 8, K('ita', -3)); c.HL(1, 2, 14, K('ita', 1)); c.P(0, 1, None); c.P(15, 1, None)
+    ell(c, 4, 5, 3, 2.4, 'shiro'); c.R(2, 4, 4, 2, K('shiro', 2)); c.P(3, 3, K('shiro', 3))
+    ell(c, 11, 4.5, 3, 2.3, 'aka'); c.R(9, 4, 4, 2, K('renga', 0)); c.P(10, 4, K('midori', 1))
+    c.R(7, 6, 5, 2, K('conc', 2)); c.HL(7, 6, 5, K('conc', 3)); c.R(7, 5, 4, 1, K('daidai', 0)); c.P(11, 5, K('daidai', -1))
+    c.R(13, 6, 2, 2, K('shiro', 1)); c.P(13, 6, K('aka', 0)); c.P(14, 7, K('kii', 0))
+
+
+# ───────────────────────── 분류표 — 임시 ─────────────────────────
+# 임시 — 감독자가 categories.py 에 넣을 것: 틀(ikit.build) 이 분류표(BY_ID)에 없는 가구 id 를 거부한다. 음식점 분류가 아직 없어
+# 이 블록 안에서 fd-* 가구를 ('food','음식점') 으로 등록한다. 감독자가 categories.py 에 분류를 넣으면 이 줄은 지운다.
+for _id in list(R.objs):
+    CATS.BY_ID.setdefault(_id, ('food', '음식점'))
+
+
+def build(): return R.build()
+def selftest(): return R.selftest()
+
+
+if __name__ == '__main__':
+    sys.exit(1 if run_block(R, os.path.join(ROOT, 'tiledata', 'jp-city', 'blocks', BLOCK)) else 0)
