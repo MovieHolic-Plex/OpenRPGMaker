@@ -31,11 +31,12 @@ def main():
       create table if not exists drafts(id text primary key, position integer, sha text, meta text);''')
     start=c.execute('select coalesce(max(position),-1)+1 from candidates').fetchone()[0];done=[]
     for k,item in enumerate(manifest['candidates']):
-        for key in ('id','name','role','image','entrance'):
+        for key in ('id','name','role','image'):
             if key not in item:raise SystemExit(f"{item.get('id','?')}: missing {key}")
         raw=(base/item['image']).read_bytes();im=Image.open(base/item['image']).convert('RGBA')
         if im.width%16 or im.height%16:raise SystemExit(f"{item['id']}: size {im.size} is not a multiple of 16")
-        e=item['entrance'];assert 0<=e['x']and e['x']+e['w']<=im.width and 0<=e['y']and e['y']+e['h']<=im.height,f"{item['id']}: entrance outside the picture"
+        e=item.get('entrance')   # buildings only; props have none
+        if e:assert 0<=e['x']and e['x']+e['w']<=im.width and 0<=e['y']and e['y']+e['h']<=im.height,f"{item['id']}: entrance outside the picture"
         digest=sha(raw);folder=data/'items'/item['id'];folder.mkdir(parents=True,exist_ok=True)
         (folder/(digest+'.png')).write_bytes(raw)
         if item.get('scene'):(folder/(digest+'-scene.png')).write_bytes((base/item['scene']).read_bytes())
