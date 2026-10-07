@@ -280,6 +280,10 @@
     [
      "bath-mat",
      1
+    ],
+    [
+     "door-side-sliding",
+     2
     ]
    ]
   ],
@@ -379,6 +383,14 @@
      1
     ],
     [
+     "door-side-western",
+     1
+    ],
+    [
+     "rug",
+     1
+    ],
+    [
      "dining",
      1
     ]
@@ -415,6 +427,10 @@
     ],
     [
      "ac-unit",
+     1
+    ],
+    [
+     "rug",
      1
     ]
    ]
@@ -476,6 +492,10 @@
      1
     ],
     [
+     "rug",
+     1
+    ],
+    [
      "cushion-floor",
      1
     ]
@@ -487,10 +507,6 @@
    "hall",
    [
     [
-     "window-sash-small",
-     1
-    ],
-    [
      "light-switch",
      1
     ],
@@ -499,11 +515,11 @@
      1
     ],
     [
-     "window-sash",
+     "houseplant",
      1
     ],
     [
-     "houseplant",
+     "door-open-toilet",
      1
     ],
     [
@@ -511,15 +527,15 @@
      2
     ],
     [
-     "door-open-toilet",
+     "window-sash",
+     1
+    ],
+    [
+     "laundry-rack",
      1
     ],
     [
      "door-western",
-     1
-    ],
-    [
-     "tansu",
      1
     ]
    ]
@@ -594,6 +610,10 @@
     ],
     [
      "towel-rack",
+     1
+    ],
+    [
+     "door-side-sliding",
      1
     ]
    ]

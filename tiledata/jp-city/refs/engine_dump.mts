@@ -799,7 +799,8 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
     { key: "doorBlocked", title: "LDK 들어가는 칸 (13,10) 에 좌탁을 놓아 복도→LDK 통로를 막음", fix: "칸막이 틈 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: (a) => { mv("low-table", 13, 10)(a); a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "remote" ? { ...g, x: 13, y: 10 } : g)); } },
     { key: "overlap", title: "우산꽂이를 신발장 칸 (11,12) 에 겹침", fix: "발자국이 겹치지 않게 다른 칸으로", tweak: mv("umbrella-stand", 11, 12) },
     { key: "goodsNoLayer", title: "소파를 좌탁 바로 남쪽 (13,12) 으로 붙여 좌탁 칸 4층에 소파 등받이가 걸린 뒤 리모컨(14,11)", fix: "좌탁과 소파 사이에 한 줄 띄운다(소파 등받이 overhang 이 좌탁 칸의 3·4층을 차지한다)", tweak: mv("sofa-n", 13, 12) },
-    { key: "doorNotInGap", title: "열린 후스마를 세로 칸막이 틈 (6,11) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 화실 문 틈 (7,6). 세로 칸막이 틈은 문 없이 통로로 둔다", tweak: add({ id: "fusuma-open", x: 6, y: 11 }) },
+    { key: "doorNotInGap", title: "열린 후스마를 세로 칸막이 틈 (6,11) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 화실 문 틈 (7,6). 세로 칸막이 3줄 틈 통로 칸에는 옆문(sidedoor 종류 door-side-*)을 단다", tweak: add({ id: "fusuma-open", x: 6, y: 11 }) },
+    { key: "sidedoorNotInGap", title: "옆문을 복도 한가운데 (9,10) 에", fix: "옆문(sidedoor)은 세로 칸막이('#' 열) 3줄 틈의 통로 칸(셋째 줄)에만 — 탈의실 입구 (6,11)·LDK 입구 (12,10)", tweak: add({ id: "door-side-western", x: 9, y: 10 }) },
     { key: "unknownObject", title: "없는 가구 id \"sofa\"", fix: "list_hand_interior_parts({tileset:\"jp_city\"}) 의 id 를 그대로 쓴다(방향 있는 가구는 -s/-n/-e/-w)", tweak: add({ id: "sofa", x: 17, y: 12 }) },
   ];
   const sha = (a: number[]) => a.join(",");

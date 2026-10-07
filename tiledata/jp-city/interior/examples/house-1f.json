@@ -378,6 +378,26 @@
    "id": "kitchen-worktop",
    "x": 18,
    "y": 3
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "door-side-western",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "rug",
+   "x": 16,
+   "y": 12
   }
  ],
  "tables": [

@@ -287,12 +287,13 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
   짓는 순서는 조수와 같다 — 모든 층을 links 없이 → 같은 mapId·`replace:true` 로 links 넣어 다시(도구가 없는 맵으로 가는 links 를 `link-target-missing` 으로 거부). 장소 `jp-city-house-interior-22x15`(1·2층 한 다운로드) · `jp-city-apartment-1k-11x14`.
   런타임 QA `unshare -rn sh -c 'ip link set lo up; node scripts/content/jp-city/qa/interior.probe.mjs'` — 걷는 길은 `interior-fixture.mts` 가 예제 `rooms` 사각형마다 엔진 canMove BFS 로 구한다(평면을 바꿔도 손으로 고칠 것 없음).
 - 평면 함정(실측): 세로 칸막이 틈은 3줄이어야 지나간다(위 두 줄이 벽면) · 칸막이 틈 앞 칸에 가구를 두면 방 하나가 통째로 막힌다 · 소파를 좌탁 바로 남쪽에 붙이면 등받이 overhang 이 좌탁 칸 3·4층을 차지해 탁상 물건이 `goods-no-layer` 로 거부된다 · 대면 카운터는 양 끝 중 하나를 통로로 남긴다.
-- **방문 `door` 종류**(2026-10-07, 관문 2회차 「문 그림이 한 번도 안 쓰인다」): 가로 칸막이 1칸 틈 칸 (x,y) 에 단다 — ikit 가 틈 칸에 인방(천장 띠 비트 1|2, ★)을 붙이고, 그림 16×32 는 틈 아래 벽면 높이 두 줄(윗줄 ★ · 아랫줄 2층)에 열린 문틀·문짝. 통로를 막지 않고 발자국도 차지하지 않는다. 조립기 검사 `door-not-in-gap`(틈 좌우 `#`, 틈 위 실내, 틈 아래 두 줄 바닥, 그 양옆은 벽면/막힘). 세로 칸막이 틈에는 못 단다 — 그래서 문이 필요한 방은 복도 북쪽에 둔다. id `door-open-western`·`door-open-toilet`·`fusuma-open`·`shoji-open`, 현관문 문턱 `genkan-door`(flat, 맨 아래 출입구 틈 칸).
+- **방문 `door` 종류**(2026-10-07, 관문 2회차 「문 그림이 한 번도 안 쓰인다」): 가로 칸막이 1칸 틈 칸 (x,y) 에 단다 — ikit 가 틈 칸에 인방(천장 띠 비트 1|2, ★)을 붙이고, 그림 16×32 는 틈 아래 벽면 높이 두 줄(윗줄 ★ · 아랫줄 2층)에 열린 문틀·문짝. 통로를 막지 않고 발자국도 차지하지 않는다. 조립기 검사 `door-not-in-gap`(틈 좌우 `#`, 틈 위 실내, 틈 아래 두 줄 바닥, 그 양옆은 벽면/막힘). 세로 칸막이 틈에는 못 단다 — 그래서 문이 필요한 방은 복도 북쪽에 둔다. id `door-open-western`·`door-open-toilet`·`fusuma-open`, 현관문 문턱 `genkan-door`(flat, 맨 아래 출입구 틈 칸).
+  **옆문 `sidedoor` 종류**(관문 3회차 「욕실·탈의실은 구조상 문을 가질 수 없다」): 세로 칸막이 3줄 틈의 통로 칸 (x,y) — 그림 16×48, 위 두 줄은 칸막이 끝 벽면 위 ★, 통로 칸 2층. 검사 `sidedoor-not-in-gap`. id `door-side-western`·`door-side-sliding`. 안 쓰는 닫힌 문 부품(`fusuma`·`shoji-door`·`toilet-door` 걸이, 열린 `shoji-open`)은 뺐다 — 핀은 남는다(빈 번호).
 - 신발장은 `floor` 종류(옆벽 곁에 서게) — 현관에는 북쪽 벽이 없어서 `wall` 이면 놓을 수 없었다. 계단통은 `stairs:"down"` + 아랫줄 `walk`.
 - 참고문서 용도 `jp-interior`(짓는 법·사전·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 9종 — `door-not-in-gap` 포함). 엔진 실측은 `engine_dump.mts` 의 `interior`.
 - 관문 단계 `interior`(`tiledata/jp-city/gates/interior.json`). 작업자 지시서 `tiledata/jp-city/interior/briefs/`.
 - `interior.mjs` 는 2배 그림 `-x2.png` 도 매번 다시 만든다(관문이 보는 그림 — 예전엔 남은 옛 x2 를 관문이 보고 판정했다).
-- 남은 것: 세로 칸막이 문 · 동·서 벽면 걸이 · 베란다 · 가게·학교 실내 · 거리 맵 집 문과 실내 자동 연결 · 편집기 「새 맵 → 실내」 칩셋 선택(지금은 v5 고정).
+- 남은 것: 동·서 벽면 걸이 · 베란다 · 가게·학교 실내 · 거리 맵 집 문과 실내 자동 연결 · 편집기 「새 맵 → 실내」 칩셋 선택(지금은 v5 고정).
 
 ## 실제 거리 조사 (2026-10-06)
 

@@ -43,7 +43,7 @@ try {
   await page.waitForTimeout(800);
   const state = () => page.evaluate(() => window.__oprnDebug.readState());
   const s0 = await state();
-  record(s0.currentMapId === P.start.map && s0.x === P.start.at[0] && s0.y === P.start.at[1], `시작 = 1층 현관 타타키 (${P.start.at})`, `${s0.currentMapId} (${s0.x},${s0.y})`);
+  record(s0.currentMapId === P.start.map && s0.x === P.start.at[0] && s0.y === P.start.at[1], `00. 시작 = 1층 현관 타타키 (${P.start.at})`, `${s0.currentMapId} (${s0.x},${s0.y})`);
   await page.screenshot({ path: join(OUT, "00-genkan.png") });
   /** 한 칸씩 — dir(d)→dir(null) 이 한 걸음(첫 탭은 방향만 바뀔 수 있어 2번까지). */
   const stepTo = async (d, want, map) => {
@@ -77,7 +77,7 @@ try {
       trail.push(`${st.x},${st.y}`);
       if (st.currentMapId !== leg.map || st.x !== x || st.y !== y) { ok = false; break; }
     }
-    record(ok, leg.label, trail.join(" → "));
+    record(ok, `${String(n).padStart(2, "0")}. ${leg.label}`, trail.join(" → "));
     await page.waitForTimeout(300);
     await page.screenshot({ path: join(OUT, `${String(n).padStart(2, "0")}.png`) });
   }
@@ -89,7 +89,7 @@ try {
   await server.close();
 }
 const report = ["# 일본 집 실내 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}**`, "", ...lines, "",
-  "증거: `00-genkan.png`(시작) · `NN.png` = 위 N번째 줄이 끝난 화면"].join("\n");
+  "증거: 줄 머리 번호 NN = 그 줄이 끝난 화면 `NN.png`(00 = `00-genkan.png`)"].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), report + "\n");
 console.log(report);
 process.exit(failures.length ? 1 : 0);
