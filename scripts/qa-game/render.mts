@@ -96,7 +96,9 @@ function loadTilesetRaster(project: Project, tileset: TilesetDef): Raster | null
   const out: Raster = { width, height, data: new Uint8Array(width * height * 4) };
   for (let y = 0; y < base.height; y += 1) out.data.set(base.data.subarray(y * base.width * 4, (y + 1) * base.width * 4), y * width * 4);
   for (const graft of grafts) {
-    const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: "bundled", id: graft.sourceChipset } } as TilesetDef);
+    // 업로드 자산 이식(공방 기물·방 짓기 변형 칸)은 프로젝트 자산에서 읽는다.
+    const sourceType = project.assets.uploaded[graft.sourceChipset] ? "uploaded" : "bundled";
+    const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: sourceType, id: graft.sourceChipset } } as TilesetDef);
     if (!source) continue;
     const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
     const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;

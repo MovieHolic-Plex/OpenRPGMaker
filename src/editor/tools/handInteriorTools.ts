@@ -16,8 +16,9 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 // 「바닥 "wood" 이 없다」로 거부된 뒤 다시 부른다(2026-10-05 헤드리스 스트레스 13판 중 4판).
 // 두 칩셋 id 를 합친 enum 이다 — 고른 칩셋에 없는 id 는 조립기가 그 칩셋의 목록과 함께 거부한다.
 const uniq = (pick: (s: HandInteriorSpec) => object) => [...new Set([HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC].flatMap((s) => Object.keys(pick(s))))];
-const FLOOR_IDS = uniq((s) => s.floors);
-const WALL_IDS = uniq((s) => s.walls);
+// 타일셋 「방 짓기」 탭에서 사용자가 만든 역할표(src/project/roomKit.ts)는 바닥 floor · 벽면 wall · 천장 default 하나씩이다.
+const FLOOR_IDS = [...uniq((s) => s.floors), "floor"];
+const WALL_IDS = [...uniq((s) => s.walls), "wall"];
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
 const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
@@ -28,7 +29,8 @@ function roomTilesetIds(project: Project): string[] {
 function pickTileset(project: Project, args: Record<string, unknown>): string {
   const t = typeof args.tileset === "string" && args.tileset.trim() ? args.tileset.trim() : HAND_INTERIOR_TILESET_ID;
   if (!HAND_INTERIOR_SPECS[t] && !roomSpecOf(project.tilesets[t])) {
-    throw new ToolError(`실내 칩셋 "${t}" 은 방 짓기 역할표가 없다 — ${roomTilesetIds(project).join(", ")}`, { code: "unknown-tileset" });
+    const known = project.tilesets[t] ? ` 사용자에게 「자료집 → 타일 → ${project.tilesets[t]!.name} → 방 짓기」 탭에서 바닥·벽면·천장 칸을 골라 역할표를 만들어 달라고 안내한다(1분이면 된다).` : "";
+    throw new ToolError(`실내 칩셋 "${t}" 은 방 짓기 역할표가 없다 — 지금 쓸 수 있는 칩셋: ${roomTilesetIds(project).join(", ")}.${known}`, { code: "unknown-tileset" });
   }
   return t;
 }
@@ -159,8 +161,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내" },
-      floor: { type: "string", enum: FLOOR_IDS, description: "기본 바닥 id" },
-      wall: { type: "string", enum: WALL_IDS, description: "기본 벽면 id" },
+      floor: { type: "string", enum: FLOOR_IDS, description: "기본 바닥 id (사용자가 만든 역할표 칩셋은 floor)" },
+      wall: { type: "string", enum: WALL_IDS, description: "기본 벽면 id (사용자가 만든 역할표 칩셋은 wall)" },
       ceiling: { type: "string", enum: CEILING_IDS, description: "천장 색" },
       zones: { type: "array", items: { type: "object", properties: { x0: { type: "integer" }, y0: { type: "integer" }, x1: { type: "integer" }, y1: { type: "integer" }, floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["x0", "y0", "x1", "y1"], additionalProperties: false } },
       objects: { type: "array", items: { type: "object", properties: { id: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } }, required: ["id", "x", "y"], additionalProperties: false } },
