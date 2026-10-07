@@ -271,14 +271,13 @@ export async function recheckPortalRuntime(root: string, args: string[] = []): P
   const observation = attempt ? `runtime-${attempt}` : 'runtime';
   const dir = resolve(root, 'map-portals'), receiptFile = resolve(dir, `runtime-recheck${attempt ? `-${attempt}` : ''}.json`);
   if (existsSync(receiptFile) || existsSync(resolve(dir, observation))) throw Error('기존 플레이 관측 덮어쓰기 거부');
-  const checkpointFile = resolve(dir, 'checkpoint-snapshot.json');
-  let checkpoint: Record<string, unknown> | undefined = existsSync(checkpointFile) ? JSON.parse(readFileSync(checkpointFile, 'utf8')) : undefined;
+  let checkpoint: Record<string, unknown> | undefined;
   if (!existsSync(resolve(dir, 'live.json'))) {
     if (!args.includes('--checkpoint')) throw Error('완료된 저장 결과가 없다. 중단된 SQLite 체크포인트 관측은 --checkpoint를 명시한다.');
     const snapshot = stored(resolve(dir, 'project'));
     writeRuntimeProject(resolve(dir, 'project'), resolve(dir, 'live.json'), snapshot.project);
     checkpoint = { projectId: snapshot.projectId, revision: snapshot.revision, storedSha256: snapshot.sha256, completedTurn: false };
-    save(checkpointFile, checkpoint);
+    save(resolve(dir, 'checkpoint-snapshot.json'), checkpoint);
   }
   const source = readFileSync(resolve(dir, 'live.json'));
   const project = JSON.parse(source.toString()) as Project;

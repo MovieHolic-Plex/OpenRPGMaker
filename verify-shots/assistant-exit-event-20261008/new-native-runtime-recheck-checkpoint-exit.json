@@ -1,0 +1,19 @@
+{
+  "kind": "sqlite-checkpoint-runtime-observation",
+  "modelCalls": 0,
+  "mutations": 0,
+  "checkpoint": {
+    "projectId": "7b28669f-ede4-47fe-bbe3-cc7e845226c4",
+    "revision": 22,
+    "storedSha256": "1a42d16a107854b918bd77347076aee14557adb1220a1625713dc303c9074b14",
+    "completedTurn": false
+  },
+  "observation": "runtime-checkpoint-exit",
+  "observerDigest": "0d7f8b49724bf36e80625d484ed42b8e730eae69d979fd76fbd892b55b665418",
+  "originalResultDigest": "9b3af2c54e88d0f3934d0448d6c45343984f7a58249e3fe9eb92f8cc36210357",
+  "sourceDigest": "edfab32b6a5472789353536649d06ea0db5ca120d5de91dca84a9ae571721a82",
+  "pass": true,
+  "beats": 55,
+  "errors": [],
+  "failures": []
+}
