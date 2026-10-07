@@ -1,6 +1,6 @@
 # 거리 문 ↔ 실내 런타임 QA
 
-판정: **통과** · PASS 86줄 · 커밋 e0f271e8f1
+판정: **통과** · PASS 86줄 · 커밋 4320481883
 
 실행 방식: links 의 `example` 은 게시 전 예제 JSON(tiledata/jp-city/interior/examples)을 build_hand_interior_room 으로 지어 `interiorMapId` 로 잇고, `place` 는 게시된 장소(public/assets/region-references)를 도구가 가져와 잇는다. 게시 뒤에는 같은 장소 id 로 place 경로가 된다.
 
@@ -83,7 +83,7 @@
 - PASS — 14c. 출입구 밟고 거리로: jp-city-shopstreet (21,24) / 기대 (21,24)
 - PASS — 14d. 거리에 머문다(되튕김 없음, 1.5초): jp-city-shopstreet (21,24)
 - PASS — 15a. E1 → 일본 맨션 2LDK 실내(베란다) — 문 앞 발판 (27,11) 으로 up 한 걸음: jp-city-mansion-2ldk (2,17) / 기대 (2,17)
-- PASS — 15b. 실내 양 끝(가장 먼 칸 → 거기서 가장 먼 칸)까지 49걸음: 2,5 → 2,4 → 3,4 → 4,4
+- PASS — 15b. 실내 양 끝(가장 먼 칸 → 거기서 가장 먼 칸)까지 57걸음: 4,5 → 5,5 → 6,5 → 7,5
 - PASS — 15c. 출입구 밟고 거리로: jp-city-shopstreet (27,12) / 기대 (27,12)
 - PASS — 15d. 거리에 머문다(되튕김 없음, 1.5초): jp-city-shopstreet (27,12)
 - PASS — 16a. A1a → 일본 동네 이발소 실내 — 문 앞 발판 (1,11) 으로 up 한 걸음: jp-city-barber (2,7) / 기대 (2,7)
