@@ -532,6 +532,231 @@ def sh_barber_pole(c):
     c.VL(4, 6, 20, K('yoru', 0)); c.VL(11, 6, 20, K('yoru', 0))
 
 
+# ─────────────────────────── 2회차: 가게별 뒷방 가구 + 공용 노렌 ───────────────────────────
+# 크기표(추가): 노렌 W16 H32(문틀 안쪽 10px) · 반죽대 W32 T9 F6 · 발효 선반 W14 H28 · 책 상자 더미 W14 H27 · 반품 서가(벽) W14 H29
+#  조제대 W32 T9 F6 · 재고 약장(벽) W14 H29 · 꽃 양동이 줄 W32 H24 · 포장지 작업대 W32 T9 F6 · 채소 상자 더미 W14 H26
+#  저울 작업대 W32 T9 F6 · 수건 건조대 W14 H27 · 소형 세탁기 W12 H24
+
+
+@R.obj('sh-noren', '노렌 통로', kind='door', use=('travel',), tags=('노렌', '가게', '뒷방', '통로'),
+       place='가로 칸막이 1칸 틈 칸(가게와 뒷방 사이)',
+       desc='가게 안쪽 통로. 두 쪽으로 갈라진 남색 천 노렌이 가로대에 걸려 있고(글자 없음) 아래로 뒷방 바닥이 보인다. 나무 문틀, 문턱 널.')
+def sh_noren(c):
+    # 문틀(좌우 기둥 + 위 들보)
+    for x0, f in ((0, 1), (13, -1)):
+        c.R(x0, 0, 3, 32, K('ki', 0)); c.VL(x0, 0, 32, K('ki', 1 if f > 0 else -1) if False else K('ki', 1)); c.VL(x0 + 2, 0, 32, K('ki', -1))
+        c.VL(x0 + (0 if f > 0 else 2), 0, 32, K('ki', -3)); 
+    c.VL(2, 5, 27, K('ki', -2)); c.VL(13, 5, 27, K('ki', -3))
+    c.R(0, 0, 16, 5, K('ki', 1)); c.HL(0, 0, 16, K('ki', -3)); c.HL(0, 1, 16, K('ki', 3)); c.HL(0, 4, 16, K('ki', -3)); c.VL(0, 0, 5, K('ki', -3)); c.VL(15, 0, 5, K('ki', -3))
+    # 가로대(조금 밝은 쇠봉) + 봉 걸이
+    c.HL(3, 5, 10, K('tekko', 1)); c.HL(3, 6, 10, K('yoru', 0))
+    # 천 두 쪽: 가운데 갈라짐 2px, 아래는 물결 단
+    for xa, xb in ((3, 6), (9, 12)):
+        w = xb - xa + 1
+        c.R(xa, 7, w, 13, K('kon', 0)); c.VL(xa, 7, 13, K('kon', 1)); c.VL(xb, 7, 13, K('kon', -1))
+        c.HL(xa, 7, w, K('kon', 2))
+        c.HL(xa, 11, w, K('shiro', 1)); c.HL(xa, 12, w, K('shiro', -1)) if False else c.HL(xa, 12, w, K('shiro', 0))   # 흰 가로 띠(글자 아님)
+        c.HL(xa, 20, w, K('kon', -3)); c.HL(xa, 19, w, K('kon', -2))
+        c.VL(xa - 0, 7, 13, K('kon', 1)); c.VL(xb, 7, 13, K('kon', -2))
+    c.P(3, 20, None); c.P(6, 20, None); c.P(9, 20, None); c.P(12, 20, None)          # 물결 단 모서리
+    c.P(3, 19, K('kon', -3)); c.P(12, 19, K('kon', -3))
+    c.VL(6, 8, 12, K('kon', -3)); c.VL(9, 8, 12, K('kon', -3))                          # 갈라진 가장자리 윤곽
+    # 문턱 널
+    c.R(3, 29, 10, 3, K('ki', 0)); c.HL(3, 29, 10, K('ki', 3)); c.HL(3, 31, 10, K('ki', -3))
+
+
+@R.obj('sh-dough-bench', '반죽 작업대', 2, 1, up=0, kind='floor', surface=True, use=('search',),
+       desc='빵집 뒷방 반죽대 2칸. 나무 상판 위에 밀가루 포대 둘과 반죽 덩이, 밀대. 앞판에 서랍 두 개.', tags=('빵집', '반죽', '밀가루', '뒷방'),
+       place='뒷방 벽 쪽 한 줄(가게 쪽 칸막이 앞이 아니라 안쪽)', pair=('sh-proof-rack', 'sh-oven'))
+def sh_dough_bench(c):
+    cab(c, 0, 1, 32, 9, 6, 'ki', face=0)
+    c.R(2, 3, 28, 6, K('ki', 2))
+    for sx in (7, 25):                                                        # 밀가루 포대
+        ell(c, sx, 6, 4.6, 3.3, 'kinari', 2); c.HL(sx - 2, 3, 4, K('kinari', -1)); c.P(sx, 2, K('kinari', 3)); c.P(sx - 1, 6, K('kinari', 3)); c.P(sx + 1, 7, K('kinari', 0))
+    ell(c, 16, 6, 3.4, 2.3, 'kinari', 3); c.P(15, 5, K('shiro', 3))             # 반죽 덩이
+    c.HL(11, 8, 10, K('ki', -1)) if False else None
+    c.R(12, 8, 9, 1, K('ki', 1)); c.HL(12, 9, 9, K('ki', -2))                   # 밀대
+    c.HL(2, 12, 12, K('ki', -2)); c.HL(18, 12, 12, K('ki', -2)); c.VL(15, 11, 5, K('ki', -2)); c.VL(16, 11, 5, K('ki', 2))
+    c.R(6, 13, 4, 1, K('conc', 2)); c.R(22, 13, 4, 1, K('conc', 2))
+
+
+@R.obj('sh-proof-rack', '발효 선반', 1, 1, up=16, kind='floor', use=('search',),
+       desc='빵집 뒷방 발효 선반. 쇠 기둥 네 단 선반마다 부풀기 시작한 반죽 덩이가 놓인 쟁반이 줄지어 있다.', tags=('빵집', '발효', '선반', '쟁반', '뒷방'),
+       place='뒷방 벽 쪽, 반죽대 옆', pair=('sh-dough-bench',))
+def sh_proof_rack(c):
+    c.R(0, 7, 16, 25, K('tekko', -2)); box(c, 0, 7, 16, 25, K('yoru', 0))
+    slab(c, 0, 3, 16, 4, 'conc')
+    for yy in (14, 21, 28):                                                   # 쟁반 단
+        c.R(1, yy, 14, 2, K('conc', 2)); c.HL(1, yy, 14, K('conc', 3)); c.HL(1, yy + 2, 14, K('yoru', 0))
+        for k, bx in enumerate((4, 8, 12)):
+            ell(c, bx, yy - 2.2, 2.2, 2.0, 'daidai', 1 if k % 2 == 0 else 0)
+        c.HL(1, yy - 5, 14, K('tekko', -1)) if False else None
+    c.VL(1, 7, 24, K('conc', 1)); c.VL(14, 7, 24, K('conc', -2)); c.VL(0, 7, 25, K('yoru', 0)); c.VL(15, 7, 25, K('yoru', 0))
+    c.HL(0, 31, 16, K('yoru', 0))
+
+
+@R.obj('sh-book-crates', '책 상자 더미', 1, 1, up=16, kind='floor', use=('search',),
+       desc='서점 뒷방 책 상자 더미. 나무 상자 둘이 포개지고 위에 책 묶음이 얹혔다. 상자 앞판에 널 틈 줄.', tags=('서점', '상자', '책', '뒷방'),
+       place='뒷방 한쪽 구석, 반품 서가 앞이 아니라 옆', pair=('sh-returns-shelf',))
+def sh_book_crates(c):
+    cab(c, 0, 19, 16, 4, 8, 'ki', face=0)
+    c.HL(2, 27, 12, K('ki', -2)); c.HL(2, 24, 12, K('ki', -2)); c.VL(7, 24, 7, K('ki', -2))
+    cab(c, 2, 11, 12, 4, 6, 'ki', face=1)
+    c.HL(3, 17, 10, K('ki', -1)); c.VL(7, 16, 5, K('ki', -1))
+    for bx, w, ramp, st in ((3, 6, 'sora', 0), (4, 7, 'aka', -1)):             # 책 묶음 둘(옆 단면 크림)
+        pass
+    c.R(3, 6, 10, 5, K('kon', 0)); box(c, 3, 6, 10, 5, K('kon', -3)); c.HL(4, 7, 8, K('kon', 2)); c.HL(4, 9, 8, K('kinari', 2))
+    c.R(4, 3, 8, 3, K('aka', -1)); box(c, 4, 3, 8, 3, K('aka', -3)); c.HL(5, 4, 6, K('aka', 1)); c.VL(8, 6, 5, K('soil', 1))
+    c.P(3, 6, None) if False else None
+
+
+def f_bundles(c, x0, y0, w, h, lvl, seed):
+    """묶음 책: 노끈으로 묶은 가로 책 더미(단마다 색)."""
+    fam = (('kinari', 0), ('soil', 1), ('sora', -1))[hs(lvl, seed, 3) % 3]
+    x = x0
+    while x + 4 <= x0 + w:
+        bw = min(5, x0 + w - x)
+        for k in range(2 if h >= 7 else 1):
+            ty = y0 + h - 3 * (k + 1)
+            c.R(x, ty, bw, 3, K(*fam)); c.HL(x, ty, bw, K(fam[0], fam[1] + 2)); c.HL(x, ty + 2, bw, K(fam[0], fam[1] - 2))
+            c.VL(x, ty, 3, K(fam[0], fam[1] + 1)); c.VL(x + bw - 1, ty, 3, K(fam[0], fam[1] - 1))
+        c.VL(x + bw // 2, y0 + h - (6 if h >= 7 else 3), 6 if h >= 7 else 3, K('soil', -2))
+        x += bw + 1
+
+
+@R.obj('sh-returns-shelf', '반품 서가', 1, 1, up=16, kind='wall', use=('search',),
+       desc='서점 뒷방 반품 서가. 노끈으로 묶은 책 더미가 3단으로 쌓여 있고 위쪽 귀퉁이에 붉은 꼬리표가 붙었다.', tags=('서점', '반품', '서가', '뒷방'),
+       place='뒷방 북쪽 벽 아래', pair=('sh-book-crates',))
+def sh_returns_shelf(c):
+    shelf(c, 0, 3, 16, 29, 'ki', 3, f_bundles, seed=5, back=-2)
+    c.R(12, 5, 3, 2, K('aka', 0)); c.HL(12, 5, 3, K('aka', 2)); c.HL(12, 7, 3, K('aka', -3))
+
+
+@R.obj('sh-dispense-counter', '조제대', 2, 1, up=0, kind='floor', surface=True, use=('counter',),
+       desc='약국 뒷방 조제대 2칸. 흰 상판에 갈색 약병과 유리병, 막자사발이 놓이고 앞은 작은 서랍이 줄지었다.', tags=('약국', '조제', '막자사발', '약병', '뒷방'),
+       place='뒷방 안쪽 벽 쪽', pair=('sh-stock-shelf',))
+def sh_dispense_counter(c):
+    cab(c, 0, 1, 32, 9, 6, 'conc', face=0)
+    c.R(2, 3, 28, 6, K('shiro', 2)); c.HL(1, 2, 30, K('shiro', 3))
+    for bx, ramp, st in ((3, 'daidai', -1), (8, 'daidai', -2), (13, 'sora', -1)):   # 약병
+        c.R(bx, 4, 3, 5, K(ramp, st)); c.VL(bx, 4, 5, K(ramp, st + 1)); c.VL(bx + 2, 4, 5, K(ramp, st - 1)); c.HL(bx, 8, 3, K(ramp, -3)); c.HL(bx, 3, 3, K('shiro', 3)); c.HL(bx, 4, 3, K('shiro', 0)) if False else None
+        c.HL(bx, 3, 3, K('shiro', 3)); c.P(bx + 1, 6, K('shiro', 2))
+    ell(c, 24, 6, 4.6, 2.9, 'conc', 1); ell(c, 24, 5.6, 3, 1.6, 'tekko', -1)           # 막자사발
+    c.R(26, 2, 1, 5, K('kinari', 0)); c.P(26, 2, K('kinari', 3))                         # 막자
+    for dx in (2, 17):
+        for k in range(2):
+            c.R(dx + k * 7, 11, 6, 4, K('conc', 0)); box(c, dx + k * 7, 11, 6, 4, K('conc', -2)); c.P(dx + k * 7 + 2, 13, K('tekko', 2)); c.P(dx + k * 7 + 3, 13, K('tekko', 2)); c.HL(dx + k * 7 + 1, 11, 4, K('conc', 2))
+
+
+def f_stock(c, x0, y0, w, h, lvl, seed):
+    if lvl >= 3:                                                                         # 맨 아랫단은 큰 박스
+        x = x0
+        while x + 4 <= x0 + w:
+            bw = min(6, x0 + w - x)
+            c.R(x, y0 + h - 5, bw, 5, K('kinari', 0)); box(c, x, y0 + h - 5, bw, 5, K('soil', -2)); c.HL(x + 1, y0 + h - 4, bw - 2, K('kinari', 2)); c.HL(x + 1, y0 + h - 3, bw - 2, K('soil', 0))
+            x += bw + 1
+        return
+    x = x0 + 1
+    while x + 2 < x0 + w:
+        k = hs(x, lvl, seed) % 3
+        ramp, st = (('daidai', -1), ('sora', -1), ('daidai', -2))[k]
+        bh = 5 if k != 1 else 6
+        c.R(x, y0 + h - bh, 3, bh, K(ramp, st)); c.VL(x, y0 + h - bh, bh, K(ramp, st + 1)); c.VL(x + 2, y0 + h - bh, bh, K(ramp, st - 1))
+        c.HL(x, y0 + h - bh, 3, K('shiro', 3)); c.P(x + 1, y0 + h - 3, K('shiro', 2))
+        x += 4
+
+
+@R.obj('sh-stock-shelf', '재고 약장', 1, 1, up=16, kind='wall', use=('search',),
+       desc='약국 뒷방 재고 약장. 쇠 회색 4단 선반 위 3단에는 갈색·남색 약병이, 맨 아래에는 포장 상자가 쌓였다.', tags=('약국', '재고', '약병', '뒷방'),
+       place='뒷방 북쪽 벽 아래', pair=('sh-dispense-counter',))
+def sh_stock_shelf(c): shelf(c, 0, 3, 16, 29, 'conc', 4, f_stock, seed=17, back=-2)
+
+
+@R.obj('sh-bucket-row', '꽃 양동이 줄', 2, 1, up=16, kind='floor', use=('search',),
+       desc='꽃집 뒷방 바닥에 한 줄로 놓인 양동이 네 개. 줄기가 길게 솟고 꽃이 크게 핀 것과 봉오리가 섞였다.', tags=('꽃집', '양동이', '꽃', '뒷방'),
+       place='뒷방 바닥 한 줄, 벽 쪽', pair=('sh-paper-table',))
+def sh_bucket_row(c):
+    for k in range(4):
+        x = k * 8
+        for t in range(3):
+            sx = x + 2 + t * 2
+            top = 6 + (hs(k, t, 4) % 8)
+            c.VL(sx, top + 3, 21 - top, K('midori', -1))
+            r, s = FL[hs(k, t, 9) % len(FL)]
+            ell(c, sx + .5, top + 1.5, 2.4, 2.2, r, s)
+        c.R(x + 1, 22, 7, 9, K('conc', 0)); c.VL(x + 1, 22, 9, K('conc', 2)); c.VL(x + 6, 22, 9, K('conc', -2)); c.HL(x + 1, 22, 6, K('conc', 3)); c.HL(x + 1, 23, 6, K('tekko', 0))
+        c.HL(x + 1, 30, 6, K('tekko', -1)); c.HL(x + 1, 31, 6, K('yoru', 0)); c.VL(x, 22, 10, K('yoru', 0)); c.VL(x + 7, 22, 10, K('yoru', 0)); c.HL(x, 21, 8, K('yoru', 0))
+        c.VL(x + 3, 25, 4, K('conc', 1))
+
+
+@R.obj('sh-paper-table', '포장지 작업대', 2, 1, up=0, kind='floor', surface=True, use=('search',),
+       desc='꽃집 뒷방 작업대 2칸. 분홍·하늘 포장지 두루마리 둘과 붉은 리본 실패가 놓인 나무 상판.', tags=('꽃집', '포장지', '리본', '뒷방'),
+       place='뒷방 안쪽 벽 쪽', pair=('sh-bucket-row',))
+def sh_paper_table(c):
+    cab(c, 0, 1, 32, 9, 6, 'ki', face=0)
+    c.R(2, 3, 28, 6, K('ki', 2))
+    for rx, ramp in ((2, 'pinku'), (15, 'sora')):                                # 포장지 두루마리(옆으로 누움)
+        c.R(rx, 3, 11, 5, K(ramp, 1)); box(c, rx, 3, 11, 5, K(ramp, -3)); c.HL(rx + 1, 4, 9, K(ramp, 3)); c.HL(rx + 1, 6, 9, K(ramp, -1))
+        c.R(rx + 9, 4, 2, 3, K('shiro', 2)); c.VL(rx + 10, 4, 3, K('conc', -1))
+    ell(c, 28, 6, 2.5, 2.6, 'aka', 0); c.P(28, 6, K('shiro', 2))
+    c.HL(2, 12, 12, K('ki', -2)); c.HL(18, 12, 12, K('ki', -2)); c.VL(15, 11, 5, K('ki', -2)); c.VL(16, 11, 5, K('ki', 2))
+
+
+@R.obj('sh-crate-stack', '채소 상자 더미', 1, 1, up=16, kind='floor', use=('search',),
+       desc='채소가게 뒷방 상자 더미. 널 틈이 벌어진 나무 상자 셋이 쌓이고 맨 위에 잎채소와 무가 수북하다.', tags=('채소가게', '상자', '채소', '뒷방'),
+       place='뒷방 한쪽, 저울 작업대 옆', pair=('sh-scale-table',))
+def sh_crate_stack(c):
+    cab(c, 0, 18, 16, 4, 9, 'ki', face=0)
+    for xx in (3, 7, 11): c.VL(xx, 23, 7, K('ki', -2))
+    c.HL(1, 26, 14, K('ki', -2))
+    cab(c, 1, 9, 14, 4, 5, 'ki', face=1)
+    for xx in (4, 8, 12): c.VL(xx, 14, 4, K('ki', -2))
+    for k, (r, s) in enumerate((('midori', 0), ('midori', 1), ('aka', 0), ('shiro', 2))):
+        ell(c, 3.5 + k * 3.2, 7 - (k % 2), 2.4, 2.2, r, s)
+    ell(c, 8, 5, 2.4, 2, 'midori', 1)
+
+
+@R.obj('sh-scale-table', '저울 작업대', 2, 1, up=0, kind='floor', surface=True, use=('search',),
+       desc='채소가게 뒷방 작업대 2칸. 접시저울과 눈금판이 놓인 나무 상판, 한쪽에 당근·무 다발.', tags=('채소가게', '저울', '다듬기', '뒷방'),
+       place='뒷방 안쪽 벽 쪽', pair=('sh-crate-stack',))
+def sh_scale_table(c):
+    cab(c, 0, 1, 32, 9, 6, 'ki', face=0)
+    c.R(2, 3, 28, 6, K('ki', 2))
+    c.R(3, 7, 12, 2, K('conc', 1)); c.HL(3, 7, 12, K('conc', 3)); c.HL(3, 8, 12, K('tekko', -1)); c.VL(3, 7, 2, K('yoru', 0)); c.VL(14, 7, 2, K('yoru', 0)); c.HL(3, 9, 12, K('yoru', 0))
+    c.R(7, 2, 4, 5, K('shiro', 2)); box(c, 7, 2, 4, 5, K('yoru', 0)); c.HL(8, 3, 2, K('shiro', 3)); c.P(8, 4, K('aka', 0)); c.P(9, 4, K('yoru', 0)); c.P(9, 5, K('yoru', 0))
+    ell(c, 21, 6.5, 4.5, 1.8, 'conc', 2); c.HL(17, 5, 9, K('yoru', 0)) if False else None
+    for k in range(3):
+        ell(c, 26.2 + k * 1.8, 6, 1.4, 2.6, ('daidai', 'shiro', 'daidai')[k], (1, 2, 0)[k])
+        c.P(26 + k * 2, 2, K('midori', 0))
+    c.HL(2, 12, 12, K('ki', -2)); c.HL(18, 12, 12, K('ki', -2)); c.VL(15, 11, 5, K('ki', -2)); c.VL(16, 11, 5, K('ki', 2))
+
+
+@R.obj('sh-towel-rack', '수건 건조대', 1, 1, up=16, kind='floor', use=('search',),
+       desc='이발소 뒷방 수건 건조대. 나무 기둥 사이 가로봉 두 개에 흰·하늘색 수건이 걸려 늘어졌다.', tags=('이발소', '수건', '건조대', '뒷방'),
+       place='뒷방 한쪽, 세탁기 옆', pair=('sh-washer',))
+def sh_towel_rack(c):
+    slab(c, 0, 3, 16, 3, 'ki')
+    for x0 in (0, 13):
+        c.R(x0, 6, 3, 25, K('ki', 0)); c.VL(x0, 6, 25, K('ki', 1)); c.VL(x0 + 2, 6, 25, K('ki', -2)); c.VL(x0 + (0 if x0 == 0 else 2), 6, 25, K('ki', -3))
+    c.HL(0, 31, 3, K('ki', -3)); c.HL(13, 31, 3, K('ki', -3))
+    for yy, rows in ((9, 8), (19, 8)):
+        c.HL(3, yy, 10, K('ki', 3)); c.HL(3, yy + 1, 10, K('ki', -3))
+        for k, (r, s) in enumerate((('shiro', 1), ('sora', 1))):
+            tx = 4 + k * 5
+            c.R(tx, yy + 2, 4, rows, K(r, s)); c.VL(tx, yy + 2, rows, K(r, s + 1)); c.VL(tx + 3, yy + 2, rows, K(r, s - 1)); c.HL(tx, yy + rows + 1, 4, K('conc' if r == 'shiro' else r, -2))
+        c.HL(4, yy + 4, 9, K('aka', 0)) if False else None
+
+
+@R.obj('sh-washer', '소형 세탁기', 1, 1, up=16, kind='floor', use=('search',),
+       desc='이발소 뒷방 소형 세탁기. 흰 몸통 앞에 둥근 유리 문과 손잡이 둘, 위쪽에 하늘색 조작 띠.', tags=('이발소', '세탁기', '뒷방'),
+       place='뒷방 한쪽, 수건 건조대 옆', pair=('sh-towel-rack',))
+def sh_washer(c):
+    cab(c, 2, 8, 12, 4, 20, 'shiro', face=0)
+    c.R(3, 14, 10, 2, K('sora', 0)); c.HL(3, 14, 10, K('sora', 2)); c.P(4, 15, K('aka', 0)); c.P(7, 15, K('shiro', 3))
+    ell(c, 8, 23, 4.2, 4.2, 'conc', 2); ell(c, 8, 23, 2.8, 2.8, 'sora', -1); c.P(7, 22, K('sora', 3)); c.P(6, 23, K('sora', 2))
+    c.HL(3, 29, 3, K('yoru', 0)); c.HL(10, 29, 3, K('yoru', 0)); c.R(3, 30, 2, 1, K('tekko', 0)); c.R(11, 30, 2, 1, K('tekko', 0))
+
+
 # ─────────────────────────── 탁상 물건(16×16) ───────────────────────────
 @R.good('sh-bread', '빵 쟁반', desc='쟁반에 놓인 갈색 빵 덩이 세 개(바게트·둥근 빵·식빵).')
 def g_bread(c):

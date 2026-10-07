@@ -5,7 +5,6 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "#.......#",
   "####.####",
   "#.......#",
   "#.......#",
@@ -14,7 +13,7 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "####.####"
+  "###..####"
  ],
  "floor": "sh-wood",
  "wall": "sh-white",
@@ -24,139 +23,124 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 6,
+   "y1": 5,
    "floor": "sh-concrete",
    "wall": "sh-white"
   },
   {
    "x0": 0,
-   "y0": 7,
+   "y0": 6,
    "x1": 8,
-   "y1": 14,
+   "y1": 13,
    "floor": "sh-wood",
    "wall": "sh-white"
   }
  ],
  "objects": [
   {
-   "id": "door-open-western",
+   "id": "sh-noren",
    "x": 4,
-   "y": 6
+   "y": 5
   },
   {
-   "id": "window-sash",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "wall-clock",
-   "x": 6,
-   "y": 1
-  },
-  {
-   "id": "window-sash",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "genkan-door",
-   "x": 4,
-   "y": 14
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 7
-  },
-  {
-   "id": "kitchen-sink",
+   "id": "sh-returns-shelf",
    "x": 1,
    "y": 3
   },
   {
-   "id": "cupboard",
+   "id": "sh-returns-shelf",
    "x": 2,
    "y": 3
   },
   {
-   "id": "h2-cardboard",
+   "id": "sh-returns-shelf",
    "x": 3,
    "y": 3
   },
   {
-   "id": "h2-cardboard",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "bookshelf",
+   "id": "sh-book-crates",
    "x": 6,
    "y": 3
   },
   {
-   "id": "bookshelf",
+   "id": "sh-book-crates",
    "x": 7,
    "y": 3
   },
   {
+   "id": "window-sash",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 6
+  },
+  {
    "id": "sh-bookshelf",
    "x": 1,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-bookshelf",
    "x": 2,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-bookshelf",
    "x": 3,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-bookshelf",
    "x": 5,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-bookshelf",
    "x": 6,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-bookshelf",
    "x": 7,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-book-island",
    "x": 1,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sh-book-table",
    "x": 1,
-   "y": 13
+   "y": 12
   },
   {
    "id": "sh-counter",
    "x": 5,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-counter",
    "x": 6,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-register",
    "x": 7,
-   "y": 12
+   "y": 11
   },
   {
    "id": "h2-cardboard",
    "x": 7,
-   "y": 11
+   "y": 10
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 3,
+   "y": 13
   }
  ],
  "tables": [],
@@ -164,18 +148,18 @@
   {
    "id": "books-stack",
    "x": 1,
-   "y": 13
+   "y": 12
   },
   {
    "id": "sh-price-dots",
    "x": 6,
-   "y": 12
+   "y": 11
   }
  ],
  "name": "일본 동네 서점 실내",
  "start": [
-  4,
-  13
+  3,
+  12
  ],
  "links": [],
  "rooms": [
@@ -184,7 +168,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 14
+   "y1": 13
   }
  ]
 }

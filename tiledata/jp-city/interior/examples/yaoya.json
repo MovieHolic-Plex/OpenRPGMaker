@@ -5,7 +5,6 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "#.......#",
   "####.####",
   "#.......#",
   "#.......#",
@@ -14,7 +13,7 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "##...####"
+  "###..####"
  ],
  "floor": "sh-concrete",
  "wall": "sh-white",
@@ -24,148 +23,128 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 6,
+   "y1": 5,
    "floor": "sh-concrete",
    "wall": "sh-white"
   },
   {
    "x0": 0,
-   "y0": 7,
+   "y0": 6,
    "x1": 8,
-   "y1": 14,
+   "y1": 13,
    "floor": "sh-concrete",
    "wall": "sh-white"
   }
  ],
  "objects": [
   {
-   "id": "door-open-western",
+   "id": "sh-noren",
    "x": 4,
-   "y": 6
+   "y": 5
   },
   {
-   "id": "window-sash",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "wall-clock",
-   "x": 6,
-   "y": 1
-  },
-  {
-   "id": "window-sash",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "sh-shutter",
-   "x": 2,
-   "y": 14
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 7
-  },
-  {
-   "id": "fridge",
+   "id": "sh-crate-stack",
    "x": 1,
    "y": 3
   },
   {
-   "id": "kitchen-sink",
+   "id": "sh-crate-stack",
    "x": 2,
    "y": 3
   },
   {
-   "id": "kitchen-worktop",
-   "x": 3,
+   "id": "sh-scale-table",
+   "x": 5,
    "y": 3
   },
   {
-   "id": "sh-fish-ice",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "cupboard",
-   "x": 6,
-   "y": 3
-  },
-  {
-   "id": "h2-cardboard",
+   "id": "sh-fruit-box",
    "x": 7,
    "y": 3
   },
   {
+   "id": "window-sash",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 6
+  },
+  {
    "id": "sh-wall-shelf",
    "x": 1,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-wall-shelf",
    "x": 2,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-wall-shelf",
    "x": 3,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-wall-shelf",
    "x": 5,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-wall-shelf",
    "x": 6,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-wall-shelf",
    "x": 7,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-veg-stand",
    "x": 1,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sh-fruit-box",
    "x": 3,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sh-fish-ice",
    "x": 5,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sh-counter",
    "x": 5,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-register",
    "x": 6,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-counter",
    "x": 7,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-veg-stand",
    "x": 1,
-   "y": 13
+   "y": 12
   },
   {
    "id": "sh-fruit-box",
    "x": 7,
+   "y": 12
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 3,
    "y": 13
   }
  ],
@@ -174,18 +153,18 @@
   {
    "id": "sh-scale",
    "x": 5,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-price-dots",
    "x": 7,
-   "y": 12
+   "y": 11
   }
  ],
  "name": "일본 채소가게(八百屋) 실내",
  "start": [
   3,
-  13
+  12
  ],
  "links": [],
  "rooms": [
@@ -194,7 +173,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 14
+   "y1": 13
   }
  ]
 }

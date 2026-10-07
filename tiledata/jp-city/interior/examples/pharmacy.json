@@ -5,7 +5,6 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "#.......#",
   "####.####",
   "#.......#",
   "#.......#",
@@ -14,7 +13,7 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "####.####"
+  "###..####"
  ],
  "floor": "sh-wood",
  "wall": "cloth-beige",
@@ -24,144 +23,114 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 6,
+   "y1": 5,
    "floor": "sh-concrete",
    "wall": "sh-white"
   },
   {
    "x0": 0,
-   "y0": 7,
+   "y0": 6,
    "x1": 8,
-   "y1": 14,
+   "y1": 13,
    "floor": "sh-wood",
    "wall": "cloth-beige"
   }
  ],
  "objects": [
   {
-   "id": "door-open-western",
+   "id": "sh-noren",
    "x": 4,
-   "y": 6
-  },
-  {
-   "id": "window-sash",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "wall-clock",
-   "x": 6,
-   "y": 1
-  },
-  {
-   "id": "window-sash",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "genkan-door",
-   "x": 4,
-   "y": 14
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 7
-  },
-  {
-   "id": "sh-wall-shelf",
-   "x": 1,
-   "y": 3
-  },
-  {
-   "id": "sh-wall-shelf",
-   "x": 2,
-   "y": 3
-  },
-  {
-   "id": "sh-drug-shelf",
-   "x": 3,
-   "y": 3
-  },
-  {
-   "id": "kitchen-worktop",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "kitchen-sink",
-   "x": 5,
-   "y": 3
-  },
-  {
-   "id": "cupboard",
-   "x": 6,
-   "y": 3
-  },
-  {
-   "id": "fridge",
-   "x": 7,
-   "y": 3
-  },
-  {
-   "id": "h2-cardboard",
-   "x": 1,
    "y": 5
   },
   {
+   "id": "sh-stock-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-dispense-counter",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "window-sash",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 6
+  },
+  {
    "id": "sh-drug-shelf",
    "x": 1,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-shelf",
    "x": 2,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-shelf",
    "x": 3,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-shelf",
    "x": 5,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-shelf",
    "x": 6,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-shelf",
    "x": 7,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-drug-island",
    "x": 1,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sh-waiting-bench",
    "x": 1,
-   "y": 13
+   "y": 12
   },
   {
    "id": "sh-consult",
    "x": 5,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-counter",
    "x": 6,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-register",
    "x": 7,
-   "y": 12
+   "y": 11
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 3,
+   "y": 13
   }
  ],
  "tables": [],
@@ -169,18 +138,18 @@
   {
    "id": "sh-medicine",
    "x": 5,
-   "y": 12
+   "y": 11
   },
   {
    "id": "sh-medicine",
    "x": 6,
-   "y": 12
+   "y": 11
   }
  ],
  "name": "일본 동네 약국 실내",
  "start": [
-  4,
-  13
+  3,
+  12
  ],
  "links": [],
  "rooms": [
@@ -189,7 +158,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 14
+   "y1": 13
   }
  ]
 }
