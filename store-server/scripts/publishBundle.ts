@@ -5,6 +5,7 @@
  *   npx tsx store-server/scripts/publishBundle.ts --title "마법 학교 — 고딕 성채·교실·숲·호수" --dry
  *   npx tsx store-server/scripts/publishBundle.ts --base http://mdc-server:18320 --dev admin@openrpgmaker.com --title …
  *   npx tsx store-server/scripts/publishBundle.ts --base https://store.openrpgmaker.com --link-token <admin-link 토큰> --title …
+ *   (이미 있는 상품에 고친 팩을 판본으로 더할 때는 --new-version)
  */
 import { join } from "node:path";
 import { validateManifest } from "../../src/assetStore/format";
@@ -42,7 +43,16 @@ if (!session) throw new Error("--dev 또는 --link-token 이 필요합니다.");
 try {
   const listing = await (await fetch(`${base}/api/v1/items?pageSize=48&lang=ko`)).json() as { items: { title: string; slug: string }[] };
   const found = listing.items.find((item) => item.title === seed.title);
-  if (found) console.log(`[skip] 이미 있음 → ${found.slug}`);
+  if (found && process.argv.includes("--new-version")) {
+    // 같은 상품에 판본을 더한다(blob 은 없는 것만 올린다). 프로젝트에 넣은 id 는 그대로 이어진다.
+    const check = await fetch(`${base}/api/v1/blobs/check`, { method: "POST", headers: { ...session.headers, "content-type": "application/json" }, body: JSON.stringify({ sha256s: [...pack.blobs.keys()] }) });
+    for (const key of (await check.json() as { missing: string[] }).missing) {
+      const sent = await fetch(`${base}/api/v1/blobs`, { method: "POST", headers: { ...session.headers, "x-sha256": key, "content-type": "application/octet-stream" }, body: Buffer.from(pack.blobs.get(key)!) });
+      if (!sent.ok) throw new Error(`blob 올리기 실패 ${sent.status}`);
+    }
+    const added = await fetch(`${base}/api/v1/items/${found.slug}/versions`, { method: "POST", headers: { ...session.headers, "content-type": "application/json" }, body: JSON.stringify({ manifest: pack.manifest }) });
+    console.log(`[version] ${found.slug} → ${added.status} ${(await added.text()).slice(0, 200)}`);
+  } else if (found) console.log(`[skip] 이미 있음 → ${found.slug} (판본을 더하려면 --new-version)`);
   else {
     const created = await publishPack(session, pack);
     console.log(`[ok] ${seed.title} → ${created.slug} (${created.status})`);

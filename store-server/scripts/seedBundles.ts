@@ -27,6 +27,8 @@ interface BundleSeed {
   previews: string[];
   /** 타일셋과 같이 넣을 그림(캐릭터 시트 등). id 는 그대로 프로젝트 에셋 id 가 된다(스토어가 store_ 접두를 붙인다). */
   extraAssets?: { id: string; name: string; kind: StoreAssetKind; path: string }[];
+  /** 팩 안 타일셋·시트 그림 이름(없으면 번들 이름). 번들 이름에 원작 이름이 든 경우 바꾼다. */
+  displayName?: string;
   /** 다른 언어 상품 글(ko 는 title·summary·description). library_locales.py 의 같은 제목 항목과 맞춘다. */
   locales?: StoreLocalizedTexts;
 }
@@ -67,6 +69,7 @@ export const SEED_BUNDLES: readonly BundleSeed[] = [
     description: "고딕 성채 벽·바닥·문과 연회장·마법약 교실·도서관·온실·부엉이 탑·병동·시계탑·지팡이 가게·과자점 지하·눈 마을 우체국·숲 마차 승차장·호수 보트 창고·빗자루 경기장 가구를 16px 손 도트로 그렸습니다.\n"
       + "참고문서(공간별 배치 순서·정상/오류 그림)가 들어 있어 에디터 조수가 이 칩셋으로 방을 바로 짓습니다. 학생·교수·관리인·부엉이 등 걷기 칩 35명(시트 5장)이 함께 들어 있습니다.",
     tags: ["마법", "학교", "성", "16px", "판타지"],
+    displayName: "마법 학교 성채",
     previews: ["assets/store-covers/wizarding-hall.png", "assets/store-covers/wizarding-cast.png", "assets/store-covers/wizarding-library.png", "assets/store-covers/wizarding-potions.png"],
     extraAssets: [1, 2, 3, 4, 5].map((n) => ({ id: `wizarding${n}_charset`, name: `마법 학교 인물 ${n}`, kind: "charset" as const, path: `assets/generated/charsets/Wizarding${n}.png` })),
     locales: {
@@ -119,6 +122,7 @@ export function bundlePack(seed: BundleSeed, publicDir: string): { manifest: Sto
   }) as TilesetDef;
   const previews = seed.previews.filter((path) => existsSync(join(publicDir, path))).map((path) => add(new Uint8Array(readFileSync(join(publicDir, path)))));
   tileset.image = { type: "uploaded", id: assetId };
+  if (seed.displayName) tileset.name = seed.displayName;
   const extra: StorePackManifest["content"]["assets"] = {};
   for (const item of seed.extraAssets ?? []) {
     const bytes = new Uint8Array(readFileSync(join(publicDir, item.path)));
@@ -139,7 +143,7 @@ export function bundlePack(seed: BundleSeed, publicDir: string): { manifest: Sto
     aiGenerated: true,
     credits: `${seed.title} — OPRN 공식 팩 (openrpgmaker.com)`,
     content: {
-      assets: { [assetId]: { id: assetId, name: source.name, kind: "chipset", blob: sheetSha, mime: "image/png", meta: { width: size.width, height: size.height, tileSize: source.tileSize } }, ...extra },
+      assets: { [assetId]: { id: assetId, name: tileset.name, kind: "chipset", blob: sheetSha, mime: "image/png", meta: { width: size.width, height: size.height, tileSize: source.tileSize } }, ...extra },
       tilesets: { [tileset.id]: tileset },
     },
     previews: [...previews, sheetSha].slice(0, 6),
