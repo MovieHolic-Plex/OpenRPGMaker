@@ -321,7 +321,7 @@ def bake(sheet_png: Path, tiles: dict, seed: dict, roles: dict, out: Path) -> di
         m = {"label": label.get(i, "미사용"), "description": "", "source": "bundled-default",
              "terrainTag": terrain[i],
              "passage": "solid" if not any(passability[i].values()) else "passable"}
-        if cls == "partial" and i not in partial_in_objects and label.get(i):
+        if cls in ("partial", "empty") and i < len(tiles_all) and i not in partial_in_objects and label.get(i):   # 이름 있는 빈 칸도 위층(아래층에 두면 땅에 구멍이 난다)
             m["defaultLayer"] = "upper"
             m["layerBacking"] = grass0
         tile_meta.append(m)

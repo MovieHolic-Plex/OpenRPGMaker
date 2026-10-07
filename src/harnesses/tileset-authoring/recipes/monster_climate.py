@@ -223,9 +223,10 @@ def build(seed: dict):
     _obj(sh, "ruin_gate", ds.ruin_gate(P))
     _obj(sh, "sandpit", ds.sandpit(P))
     sh.end_section()
+    Poa = dict(P, grass=P["oasis_grass"]) if "oasis_grass" in P else P     # 모래 위 오아시스 풀은 따뜻한 녹색(GBA 민트 풀은 모래 위에서 청록으로 뜬다)
     sh.section("오아시스 풀 띠 오토타일(47)")
     for k in px.ALL47:
-        sh.add(f"dgrass_at{k}", ds.oasis_grass(P, k))
+        sh.add(f"dgrass_at{k}", ds.oasis_grass(Poa, k))
     sh.end_section()
     sh.section("깊은 모래 오토타일(47)")
     for k in px.ALL47:
@@ -238,11 +239,11 @@ def build(seed: dict):
             sh.add(f"dspatch_{nm}_{i}_{jj}", t)
     sh.end_section()
     sh.section("오아시스 풀 띠 한 장(8×7, 칸 안 곡선 경계) — dgpatch_<i>_<j>, 물 칸 자리(2~5, 2~4)는 oasis 가 덮는다. 사막 맵 (4,18) 기준 — 벼랑 칸(0,0)(1,0)(0,4~6)을 피한다")
-    for (i, jj), t in ds.grass_patch(P, 8, 7, 64.0, 56.0, 59.0, 41.0, "oasis", avoid=[(0, 0), (1, 0), (0, 4), (0, 5), (0, 6)]).items():
+    for (i, jj), t in ds.grass_patch(Poa, 8, 7, 64.0, 56.0, 59.0, 41.0, "oasis", avoid=[(0, 0), (1, 0), (0, 4), (0, 5), (0, 6)]).items():
         sh.add(f"dgpatch_{i}_{jj}", t)
     sh.end_section()
     sh.section("오아시스 물 오토타일(47 × 4프레임)")
-    _water_rows(sh, "oasis_at", lambda k, f: ds.oasis(P, k, f))
+    _water_rows(sh, "oasis_at", lambda k, f: ds.oasis(Poa, k, f))
     sh.end_section()
     sh.section("사암 벼랑(정본 두 그룹: 윗면 47 + 속 6 · 앞면 47 두 줄 + 덩이 변형 · 돌계단)")
     for name, t in cl.plateau_set(P["cliff_desert"], ds.sand0, "dcliff", "dface", "dcliff", stairs="dstairs").items():

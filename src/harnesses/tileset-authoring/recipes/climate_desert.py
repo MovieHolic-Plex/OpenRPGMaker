@@ -57,7 +57,7 @@ def sand_tex(P, v: int):
 
 def init(P):
     _SAND0.clear(); _SAND0.update(cc.tex_table(sand_tex(P, 0)))
-    _GRASS.clear(); _GRASS.update(cc.tex_table(grass_tex(P, 0)))
+    _GRASS.clear(); _GRASS.update(cc.tex_table(grass_tex(dict(P, grass=P.get("oasis_grass", P["grass"])), 0)))   # 오아시스 풀 면(따뜻한 녹색)
 
 
 def sand0(x, y):
