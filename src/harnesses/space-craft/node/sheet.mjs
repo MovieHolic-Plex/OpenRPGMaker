@@ -156,7 +156,7 @@ figure{margin:6px 0}img{image-rendering:pixelated;max-width:100%;border:1px soli
 .human button.on[data-v=good]{background:#0ca30c;color:#fff}.human button.on[data-v=ok]{background:#c98a00;color:#fff}.human button.on[data-v=bad]{background:#c02f2f;color:#fff}
 .agree{position:sticky;top:0;background:var(--s1);border:1px solid var(--rule);border-radius:8px;padding:8px 14px;margin:10px 0;z-index:2;font-size:13.5px}.agree button{font:inherit;margin-left:8px}
 </style></head><body>
-<h1>조수 공간 제작 비교 — 방 · 판타지 실내 · 현대 실내 · 무림</h1>
+<h1>조수 공간 제작 비교 — ${esc(Object.values(seed.categories).map(c => c.label).join(' · '))}</h1>
 <p class="lead">같은 새 프로젝트에서 같은 자연어 요청을 실제 입력창으로 보냈습니다(모델마다 과제당 1회). 그림을 누르면 원본 크기로 열립니다.</p>
 <div class="tiles">${tiles}</div>${done ? '' : '<p class="muted">아직 돌고 있습니다 — 2분마다 새로 고칩니다.</p>'}
 <p class="lead"><b>판정자</b>: 두 비전 모델이 같은 그림을 보고 「벽에 붙을 것이 벽에 있나·방 밖으로 튀어나온 것·잘린 것·문 앞 막힘·방이 맵을 채우나·필수 물건·빈 바닥」을 예/아니오로 답하고, 종합 점수는 코드가 규칙으로 냅니다(구조 위반이면 2점 이하 등). 판정자를 믿을 수 있는지 보려고 같은 맵의 가구를 빼거나 밀어 망가뜨린 사본도 보여 주었고, 두 판정자 모두 사본을 원본보다 낮게 매겼습니다(22/22). 그래도 <b>미감은 사람 판정이 기준</b>입니다 — 아래 단추를 누르면 판정자와 얼마나 맞는지 위 띠에 바로 나옵니다.</p>
