@@ -45,14 +45,15 @@
 .cf-search-input::placeholder { color: #7c7c88; }
 .cf-search-go { border: 0; background: #2b2b35; color: var(--cf-fg); padding: 0 18px; font: inherit; font-weight: 700; cursor: pointer; }
 .cf-search-go:hover { background: #363642; }
-.cf-top-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.cf-top-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .cf-top-actions .cf-top-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer;
+  background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; white-space: nowrap;
 }
 .cf-top-actions .cf-top-btn:hover { background: #2f2f39; }
-.cf-top-actions select { background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 6px 8px; font: inherit; }
-.cf-version { color: #6f6f7a; font-size: 12px; }
+.cf-top-actions select { width: auto; min-height: 34px; background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 8px; padding: 6px 8px; font: inherit; }
+.cf-version { color: #6f6f7a; font-size: 12px; white-space: nowrap; }
+@media (max-width: 900px) { .cf-version { display: none; } }
 .cf-close { background: var(--cf-chip); color: var(--cf-fg); border: 0; border-radius: 50%; width: 34px; height: 34px; font-size: 15px; cursor: pointer; }
 .cf-close:hover { background: #33333d; }
 

@@ -65,6 +65,16 @@ async function launch() {
   });
   const page = await app.firstWindow();
   await page.setViewportSize({ width: 1280, height: 800 });
+  // OPRN_START_QA_STUB_AI=1: 연결 관문만 「연결됨」으로 답하고 바깥 POST(모델 호출)는 끊는다 — 만들기 → 기획 저장 → 재로드를 모델 없이 본다.
+  if (process.env.OPRN_START_QA_STUB_AI === "1") {
+    await page.route("**/*", (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (url.pathname.endsWith("/auth/status")) return route.fulfill({ json: { connected: true, authKind: "oauth" } });
+      if (/^https?:$/.test(url.protocol) && request.method() === "POST") return route.abort();
+      return route.continue();
+    });
+  }
   const errors = [];
   page.on("pageerror", (error) => errors.push("pageerror: " + error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push("console: " + message.text()); });
