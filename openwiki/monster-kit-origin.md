@@ -269,7 +269,7 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
 - 기후: 사막 오아시스 풀은 `oasis_grass`(따뜻한 녹색 — 민트는 모래 위에서 청록으로 뜬다, `climate_desert.init`).
 - 관문: Scarloxy 화풍 관문(tree·grass·house·center·gym·gable)은 고른 방향과 반대라 `seed.retired_gates` 에 이유와 함께 은퇴. 구조 검사(통행·배치·입구·야생 정본 바이트 대조)는 그대로 돈다.
   야생 사본 sha1 대조(`agent/th-wild`)는 소스가 main 에 합류해 끔. 자르기 나무 대조는 같은 정본 그림 + 그 시트 바닥 그늘(`cut_shadow`).
-- 굽기: `bake.py` 는 이름 있는 빈 칸도 위층으로 둔다(아래층이면 땅에 구멍). 배포 절차는 `qa-runs/pk-tiles/deploy.sh <run> <테마…>`
+- 굽기: `bake.py` 는 이름 있는 빈 칸도 위층으로 둔다(아래층이면 땅에 구멍). 배포 절차는 `src/harnesses/tileset-authoring/redeploy.sh <run> <테마…>`
   (draw → bake → 옛 run 의 견본 맵 `verify-*.json`·`showcase.json` 복사 → wire). 견본을 안 옮기면 참고문서 견본 맵이 0장이 된다.
 - 다시 굽지 않은 시트: gyms·rooms·dungeon(바뀐 공용 조각이 없다). 실내(센터·마트·집 = 본 시트 `interior2.py`)·계단·2층은 별도 작업.
 
