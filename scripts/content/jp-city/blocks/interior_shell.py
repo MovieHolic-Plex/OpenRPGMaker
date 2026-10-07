@@ -96,11 +96,14 @@ def _tatami_map():
     return g
 
 
+HERI_W = 1
+
+
 @R.floor('tatami', '다다미', cols=4, rows=4, tags=('화실', '和室'), desc='다다미(畳) — 화실. 한 장 = 1×2칸, 가장자리 헤리(縁).')
 def _tatami(c):
     g = _tatami_map()
-    heri = kc('lino', 0)
-    seam = kc('kinari', -1)
+    heri = kc('midori', -2)                                       # 검은빛 초록 헤리 — 매트 경계가 한눈에 읽힌다
+    seam = kc('kinari', -2)
     for y in range(c.h):
         for x in range(c.w):
             mid = g[(y // 16) % 4][(x // 16) % 4]
@@ -110,13 +113,13 @@ def _tatami(c):
             if o == 'H': e0 = ly; e1 = 15 - ly; s0 = lx; s1 = 31 - lx
             else: e0 = lx; e1 = 15 - lx; s0 = ly; s1 = 31 - ly
             ed = min(e0, e1)
-            if ed == 0: col = heri                                 # 긴 변 헤리(縁) 1px
+            if ed <= HERI_W - 1: col = heri                        # 긴 변 헤리(縁) — 어두운 초록 띠
             elif min(s0, s1) == 0: col = seam                      # 짧은 변 이음선
             else:
                 # 결: 긴 방향으로 1px 간격 가는 줄, 아주 낮은 대비
                 stripe = (e0 + (mid % 2)) % 2
                 col = kc('kinari', 1) if stripe else kc('kinari', 0)
-                if ed == 1: col = kc('kinari', 0)               # 헤리 안쪽 한 줄은 톤을 눌러 헤리와 이어 준다
+                if ed == HERI_W: col = kc('kinari', 0)          # 헤리 안쪽 한 줄은 톤을 눌러 헤리와 이어 준다
                 elif rnd(s0 // 3, e0, 30 + mid, 40): col = kc('kinari', 0) if stripe else kc('kinari', 1)
             c.P(x, y, col)
 
@@ -167,13 +170,15 @@ def _tataki(c):
 
 @R.floor('carpet', '카펫', cols=4, rows=4, tags=('침실', '아이방', '원룸'), desc='털 짧은 카펫 — 양실 침실.')
 def _carpet(c):
-    base = kc('kinari', -1); lo = kc('kinari', -2)                # 베이지 카펫(남색은 방을 덮어 가구가 묻혔다)
+    base = kc('aka', -1); lo = kc('aka', -2)                     # 팥색 한 색만 — 파랑은 물로 읽히고 베이지는 흙으로 읽혔다
     for y in range(c.h):
         for x in range(c.w):
             col = base
-            n = hs(x, y, 31) % 100
-            if n < 3: col = lo                                    # 짧은 털 결(드물게)
-            elif hs(x // 4, y // 4, 32) % 100 < 5 and (x + y) % 2 == 0: col = lo   # 옅은 얼룩
+            # 짧은 털 = 규칙적인 바구니 짜임: 4×4 칸마다 2px 짧은 결, 칸이 바뀔 때 가로·세로가 번갈아(체크로 어긋난다). 얼룩·무작위 점 없음
+            cx, cy = x // 4, y // 4; lx, ly = x % 4, y % 4
+            if (cx + cy) % 2 == 0:
+                if ly == 1 and lx in (1, 2): col = lo
+            elif lx == 1 and ly in (1, 2): col = lo
             c.P(x, y, col)
 
 

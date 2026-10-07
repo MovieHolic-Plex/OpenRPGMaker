@@ -136,9 +136,22 @@ def _bath_stool(c):
 @R.obj('bath-bucket', '세숫대야', w=1, h=1, kind='flat', cat='bath', cat_ko='욕실', tags=('욕실',), place='욕실 바닥',
        desc='욕실 바닥에 놓인 세숫대야. 걸을 수 있는 바닥 무늬(위에서 본 둥근 테두리와 물).')
 def _bucket(c):
-    disc(c, 8.5, 9, 6, K('hodo', -1)); disc(c, 8, 8, 5.5, K('kii', 1)); disc(c, 8, 8, 4, K('sora', 1))
-    ring(c, 8, 8, 5.5, K('kii', 2), 1); ring(c, 8, 8, 5.9, OL, 0.8)
-    c.HL(6, 6, 3, K('sora', 2)); c.P(10, 9, K('sora', 2)); c.R(13, 7, 1, 2, K('kii', -1))
+    # 일본 목욕 桶: 옆면이 보이는 노란 플라스틱 통(아래로 살짝 좁아짐) + 윗면 타원(테두리 노랑, 안은 하늘색 물)
+    cx = 8
+    oval(c, cx, 12.5, 5.2, 2.4, OL)                                       # 바닥 타원(외곽)
+    for y in range(6, 13):                                                # 몸통 띠 — 위 6.3 → 아래 5.2 반폭
+        hw = 6.3 - (y - 6) * 0.18
+        x0, x1 = int(round(cx - hw)), int(round(cx + hw)) - 1
+        for x in range(x0, x1 + 1):
+            t = 1 if x <= x0 + 1 else (-1 if x >= x1 - 1 else 0)          # 왼쪽 밝게 · 오른쪽 그늘(왼쪽 위 빛)
+            c.P(x, y, K('kii', t + 1))
+        c.P(x0 - 1, y, OL); c.P(x1 + 1, y, OL)
+    c.HL(4, 12, 8, K('kii', -1))                                          # 바닥 그늘선
+    for x in (6, 9, 11): c.VL(x, 9, 3, K('kii', 1 if x < 9 else 0))      # 세로 홈 3줄(낮은 대비)
+    oval(c, cx, 6, 6.6, 3.2, OL)                                          # 윗면 외곽
+    oval(c, cx, 6, 6, 2.7, K('kii', 3))                                   # 테두리(밝은 노랑)
+    oval(c, cx, 6.3, 4.6, 1.7, K('sora', 1))                              # 안쪽 물/바닥
+    c.HL(5, 5, 4, K('sora', 2))                                           # 물 윤
 
 
 @R.obj('bath-mat', '욕실 발매트', w=1, h=1, kind='flat', cat='bath', cat_ko='욕실', tags=('탈의실', '욕실'), place='욕조 앞·탈의실 문 앞',
@@ -198,17 +211,20 @@ def _basket(c):
        use=('search',), desc='양변기(남쪽을 향함) — 뒤 물탱크가 벽면 위로 솟고 앞에 뚜껑 닫힌 변좌가 위에서 보인다. 화장실 북쪽 벽 바로 아래.',
        pair=('toilet-handwash', 'toilet-paper', 'toilet-mat'))
 def _toilet(c):
-    # 물탱크
-    c.R(3, 9, 10, 4, K('shiro', 2)); c.HL(3, 9, 10, K('shiro', 2)); c.HL(3, 13, 10, K('shiro', 1)); c.R(3, 14, 10, 7, K('shiro', 0))
-    c.VL(4, 14, 7, K('shiro', 1)); c.VL(11, 14, 7, K('shiro', -1)); c.R(10, 10, 2, 2, K('tekko', 3)); outline(c, 2, 8, 12, 14)
-    c.HL(3, 21, 10, K('shiro', -1))
-    # 변좌(윗면, 타원) + 앞 도기
-    oval(c, 8, 24, 5.5, 4, K('ita', 1)); oval(c, 8, 23.6, 4.5, 3, K('shiro', 2)); oval(c, 8, 24, 3, 1.5, K('shiro', 1))
-    c.R(6, 23, 3, 1, K('shiro', 2))
-    c.R(4, 27, 8, 4, K('shiro', 0)); c.VL(5, 27, 4, K('shiro', 1)); c.VL(10, 27, 4, K('shiro', -1)); c.HL(4, 30, 8, K('shiro', -2))
-    c.HL(5, 27, 6, K('shiro', 2))
-    outline(c, 3, 19, 10, 13)
-    c.R(4, 21, 8, 1, K('shiro', -1))
+    # 밝기 세 단: 윗면(탱크 뚜껑·변좌 뚜껑) shiro+2 · 세워진 면(탱크 앞·변기 앞) shiro 0/-1 · 접힌 틈 shiro-2. 눈·입처럼 보이는 점은 두지 않는다.
+    # 물탱크(벽면 위로 솟음): 윗면 뚜껑 얇은 띠 + 앞면
+    c.R(3, 6, 10, 3, K('shiro', 2)); c.HL(3, 8, 10, K('shiro', 1))                  # 뚜껑 윗면(밝음)
+    c.R(3, 9, 10, 9, K('shiro', 0)); c.VL(3, 9, 9, K('shiro', 1)); c.VL(12, 9, 9, K('shiro', -1))
+    c.HL(3, 17, 10, K('shiro', -1)); outline(c, 2, 5, 12, 14)
+    c.R(10, 6, 2, 1, K('tekko', 2))                                                 # 물내림 손잡이(뚜껑 윗면, 한 줄)
+    c.HL(4, 18, 8, K('shiro', -2))                                                  # 탱크 아래 그림자(변좌 위로 드리움)
+    # 변좌: 닫힌 뚜껑 윗면 타원 — 한 덩이로 가장 밝게, 테두리만 한 단 어둡게
+    oval(c, 8, 23, 6.3, 4.4, OL)
+    oval(c, 8, 23, 5.7, 3.8, K('shiro', 1)); oval(c, 8, 22.7, 4.7, 2.9, K('shiro', 2))
+    c.HL(5, 21, 3, K('shiro', 2))
+    # 변기 앞면: 변좌 아래로 내려오는 도기(윗면보다 한 단 어둡게)
+    c.R(4, 26, 8, 5, K('shiro', 0)); c.VL(4, 26, 5, K('shiro', 1)); c.VL(11, 26, 5, K('shiro', -1)); c.HL(4, 30, 8, K('shiro', -2))
+    c.P(4, 26, OL); c.P(11, 26, OL); c.VL(3, 27, 4, OL); c.VL(12, 27, 4, OL); c.HL(4, 31, 8, OL)
 
 
 @R.obj('toilet-handwash', '화장실 손씻기', w=1, kind='hang', hrows=1, cat='bath', cat_ko='욕실', tags=('화장실',), place='화장실 벽',

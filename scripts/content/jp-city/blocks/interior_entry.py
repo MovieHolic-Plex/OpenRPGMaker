@@ -80,11 +80,21 @@ def _slip(c):
 
 @R.obj('shoes-pair', '신발 한 켤레', kind='flat', tags=('현관', '신발', '타타키'), place='타타키 위, 신발장 앞', desc='타타키에 벗어 둔 구두 한 켤레. 1×1 평면.')
 def _shoes(c):
-    for x0 in (2, 9):
-        c.R(x0, 3, 5, 10, K('yoru', -3)); c.R(x0 + 1, 4, 3, 7, K('yoru', 0))
-        c.HL(x0 + 1, 4, 3, K('yoru', 2)); c.P(x0 + 1, 5, K('yoru', 1))
-        c.HL(x0, 12, 5, K('ita', -2)); c.HL(x0 + 1, 13, 4, K('conc', -2))
-    c.P(11, 7, K('aka', 1)); c.P(4, 7, K('aka', 1))
+    # 비스듬히 내려다본 구두 두 짝(뒤꿈치 왼쪽·코 오른쪽, 옆면이 보인다). 13×7 글자 지도:
+    # o 외곽 · b 몸통 · h 입구 테 · d 입구 구멍 · t 혀(끈 자리) · s 코 캡 이음 · c 코 윤 · l 밑창 · m 밑창 그늘
+    G = ('.oooooo......',
+         'ohhhhhho.....',
+         'ohddddhtto...',
+         'obbbbbbtbbbo.',
+         'obbbbbbbsbccbo'[:13],
+         'ollllllllllllo'[:13],
+         '.mmmmmmmmmmm.')
+    COL = {'o': K('yoru', -3), 'b': K('yoru', 1), 'h': K('yoru', 3), 'd': K('yoru', -3), 't': K('yoru', 2),
+           's': K('yoru', -1), 'c': K('yoru', 3), 'l': K('ita', 2), 'm': K('ita', -2)}
+    for (x0, y0) in ((1, 2), (2, 9)):
+        for r, row in enumerate(G):
+            for i, ch in enumerate(row):
+                if ch in COL: c.P(x0 + i, y0 + r, COL[ch])
 
 
 @R.obj('umbrella-stand', '우산꽂이', up=8, kind='floor', tags=('현관', '우산', '소품'), place='현관 신발장 옆', pair=('getabako',),
@@ -240,12 +250,13 @@ def _sash(c):
         c.R(x0 + 1, 7, 10, 3, GL(1)); c.R(x0 + 2, 8, 1, 6, GL(2))
     c.R(15, 6, 2, 18, ST(-1))
     c.HL(2, 4, 28, ST(2)); c.HL(1, 3, 30, W_(-2)); c.HL(1, 2, 30, W_(0))             # 커튼 봉
-    for (x0, x1) in ((3, 11), (21, 29)):                                         # 레이스 커튼
+    for (x0, x1) in ((3, 11), (21, 29)):                                         # 레이스 커튼 — 세로 주름 줄무늬(4px 주기: 접힌 골·면·밝은 마루·면)
         for y in range(3, 25):
             for x in range(x0, x1):
-                if (x + y) % 2 == 0 or y < 5: c.P(x, y, SH(2))
-                elif (x // 2 + y // 2) % 3 == 0: c.P(x, y, SH(0))
-        c.VL(x0, 3, 22, SH(0)); c.VL(x1 - 1, 3, 22, SH(0))
+                if y < 5: col = SH(1)                                          # 윗단(봉에 모인 부분)
+                else: col = (SH(0), SH(2), SH(3), SH(2))[(x - x0) % 4]
+                c.P(x, y, col)
+        c.VL(x0, 3, 22, SH(-1)); c.VL(x1 - 1, 3, 22, SH(-1)); c.HL(x0, 24, x1 - x0, SH(0))
     _sill(c, 3, 25, 26)
 
 
