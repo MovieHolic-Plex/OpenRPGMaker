@@ -3,15 +3,15 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model sonnet --effort high",
- "rounds": 7,
- "seconds": 373,
+ "rounds": 8,
+ "seconds": 213,
  "focus": "일본 집 실내(현관 타타키·화실 다다미·LDK·욕실·탈의실·화장실·2층 침실·아이방·원룸 1K). 이 단계는 거리 지도가 아니라 실내다 — 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 집 같은가(현관 단차 아가리카마치·신발장, 다다미 배치·헤리, 도코노마·불단 위치, 대면 부엌, 유닛 배스, 욕실-탈의실-세면 동선, 화장실 따로) ② 3/4 정면 시점(가구 윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m: 침대 1×2, 더블 2×2, 욕조 2×1, 냉장고, 문 폭) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색이 뭉치지 않는가, modern3 팔레트·윤곽·명암) ⑤ 동선·구조(막힌 방, 쓸 수 없는 가구, 칸막이 틈) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 참고문서 규칙 문서가 조수가 따라 할 수 있게 정확한가(그림·보고와 맞지 않는 서술). 바깥 거리 건물 그림(tiledata/jp-city/blocks/buildings/*.png)과 같은 게임으로 보여야 한다. ⑧ 방문: 방마다 문이 있는가 — 가로 칸막이 틈은 정면 문(door 종류), 세로 칸막이 3줄 틈은 옆문(sidedoor 종류). 게임 화면(verify-shots/jp-city/interior-runtime/*.png, SUMMARY 줄 머리 번호 = 파일 번호)에서 문으로 읽히는가. ※ 관문 판정 파일 tiledata/jp-city/gates/interior.json 은 이 검수가 끝나면 이 판정으로 덮어써진다 — 그 파일의 옛 verdict·해시는 검수 대상이 아니다. 지난 회차 지적은 지금 그림으로 다시 확인하고, 그림이 바뀌었으면 해결로 적는다. ⑨ 이번 회차 변경: 계단(stairs-up-wood·wide)에 난간을 그렸다 — 폭은 1칸 그대로(커지면 안 된다), 트인 쪽 난간동자·손잡이·아래 기둥과 벽 손잡이가 읽히는가(interior_entry/_all-x3.png, 1층 x2, 런타임 06). ⑩ 가구 분류 14종(현관·계단·문·창·벽걸이·부엌·다이닝·거실·화실·침실·아이방·서재·욕실·탈의실·세탁·화장실)이 맞는가 — 사전 interior-dict-*.md 의 category, 짓는 법 문서. ⑪ 편집기에서 장소 「맵에 놓기」 한 번에 1층·2층 두 맵과 계단 이동이 들어오는가(editor/03·04 — 맵 목록에 1층 아래 2층, E 이벤트), 오브젝트 갤러리에서 공용 + 분류 부제로 보이는가(editor/06). ※ 평면 문자열의 막힌 칸(#) 바로 아래 두 줄은 벽면이라 걷지 못한다 — 복도·방 넓이는 벽면 두 줄을 빼고 센다(2층 복도는 걷는 줄이 y9·y10 두 줄). editor/03~05 는 게시 전 장소 원본을 가져온 화면이라 이번 회차 예제 수정(원룸 책상·거실 러그)은 x2 그림에서 본다.",
  "files": {
-  "verify-shots/jp-city/interior-house-1f-x2.png": "75964a2779828e50615d860ddc5ba55470fa24c976190acbd7f7f208960d3ae9",
-  "verify-shots/jp-city/interior-house-2f-x2.png": "e298a12e48b5e65ffe5da16769c802a36d7263f298a2e65510e20eb2443d8695",
+  "verify-shots/jp-city/interior-house-1f-x2.png": "040866f5a370515c6b28a9e89c101760e8acb64a3dbfd3ba73eca4c0903f1227",
+  "verify-shots/jp-city/interior-house-2f-x2.png": "1c11f1b9d07992ca244c87cf8f442b528b4bb19a709bd9f0e635cb776e9a114b",
   "verify-shots/jp-city/interior-apartment-1k-x2.png": "0799d8f4cc6ad659b116193bfb4caa756426cbdd4a90cdc16b87d418d928c22d",
-  "verify-shots/jp-city/interior-runtime/03.png": "ba0f01fb55d27b157eb359cae26b91ff2dbbed5abc76264566c4826ccc163f90",
-  "verify-shots/jp-city/interior-runtime/06.png": "5054088909f9acb2b77188cff8eff55bed5277e5888d31a053bdeeddb85f690c",
+  "verify-shots/jp-city/interior-runtime/03.png": "c359f820d8ec5fabed6bf0609d1b033be8dc249040e30cdd207e455c630efc9e",
+  "verify-shots/jp-city/interior-runtime/06.png": "a92d3519e3eda9819c43395f0ce166f4784d8c7541046b029689f393243fa66c",
   "verify-shots/jp-city/interior-runtime/SUMMARY.md": "61630f4a9f0c574ea96fd8fd4ff96dc0e88e053a389e554889fbf23a1a00da4c",
   "tiledata/jp-city/blocks/interior_doors/_all-x3.png": "57793211c15bcdc3fb0e551c5c569c417bc098fdde38369cfd33d9ecf3d945bc",
   "public/assets/jp-city-references/interior-dict-1.png": "1a2d4659b41c9056e6fdb320740e5adb7bae63794f49566a8ac873cdcce695a4",
@@ -20,12 +20,12 @@
   "scripts/content/jp-city/maps/out/interior-house-1f.report.json": "aedbf1aa51a0a498070f944f25a77b32128146500148be3f61c8365f09781a9e",
   "scripts/content/jp-city/maps/out/interior-house-2f.report.json": "15e7ed35ea2e2a2e9e8f96153ab842fa554702aeca7825871f642078be772254",
   "scripts/content/jp-city/maps/out/interior-apartment-1k.report.json": "26278539f65b468822349a5ed4f213205e1df73b5586eb324362a04101d0dba3",
-  "tiledata/jp-city/interior/examples/house-1f.json": "cae7db205bf646baa21a27c3e9be189cf0ec4d763ffc873936f2511f926e0ced",
-  "tiledata/jp-city/interior/examples/house-2f.json": "e0eca9c8e17d58a52d713cedf4ebd2906dd3419de10fe8d35f32161cba1427a1",
+  "tiledata/jp-city/interior/examples/house-1f.json": "c8e4ce0a3ca5055450e0774b7794c93a4e6a35937692b3da2368eb0f734876be",
+  "tiledata/jp-city/interior/examples/house-2f.json": "19c342588345698135a30ee665c5bb490b4407e4d29a6576c453ef4a27c6a293",
   "tiledata/jp-city/interior/examples/apartment-1k.json": "5e632779ea5b86fac76875a1546a1d98ca0a635d890bdb5c6a9c796945a5f53d",
-  "tiledata/jp-city/refs/interior-rules.md": "1a6339ea235545d963c4e656816d449089def6ea43215ca4656d66cc922e5666",
+  "tiledata/jp-city/refs/interior-rules.md": "c3b72a63166e8736583b923eff26a193d2951492eeccec99c474cba233d5d13e",
   "tiledata/jp-city/blocks/interior_entry/_all-x3.png": "b9bea144e5089de69d4f07422464a7e81436333949000bb23e8edd976bef330d",
-  "tiledata/jp-city/refs/interior-dict-1.md": "6d8355afc1198daaebddde1389ddd92710a83a5cdb826a3351531c4e512998ab",
+  "tiledata/jp-city/refs/interior-dict-1.md": "78bbdfddfc01c67f52f97f001a01a238ea222872e157320b5e00d12ee2c6c7fa",
   "verify-shots/jp-city/editor/03-editor-house-1f.png": "2986c42d4b1cce670ceed266ce30a17b5d5c3661cc0a5f1ccdc0bff5be8dbc00",
   "verify-shots/jp-city/editor/04-editor-house-2f.png": "2060e7cf6fcc9e78f496293d8498fb4f879b0de6274c24d335d283c45c5b7311",
   "verify-shots/jp-city/editor/06-objects-jp-interior.png": "3312548e3fd15613e4ff6ffdfb3f799eeb104a8b1e9eb39e6cb4f955fd710c7b",
@@ -34,60 +34,46 @@
  "findings": [
   {
    "severity": "major",
-   "file": "tiledata/jp-city/refs/interior-rules.md; tiledata/jp-city/refs/interior-dict-1.md; tiledata/jp-city/interior/examples/house-1f.json; tiledata/jp-city/interior/examples/house-2f.json",
-   "where": "규칙 문서의 rug 문장 / 사전 rug 용도 / house-1f rug(13,11)=low-table 같은 칸 / house-2f rug(4,4)",
-   "problem": "규칙은 3칸 깔개를 2칸 가구와 따로(아이방·원룸) 깔라고 하나 사전은 '소파·좌탁 밑에 깔기', 예제는 좌탁·침실 가구 밑에 깐다. 세 곳이 서로 모순.",
-   "fix": "규칙 한 문장으로 정한 뒤 사전 용도·예제를 맞추고 참고문서·런타임 화면을 다시 굽는다."
-  },
-  {
-   "severity": "major",
-   "file": "tiledata/jp-city/refs/interior-dict-1.md; public/assets/jp-city-references/interior-dict-1.png; verify-shots/jp-city/editor/06-objects-jp-interior.png; verify-shots/jp-city/interior-runtime/01.png",
-   "where": "genkan-mat 항목",
-   "problem": "글은 베이지 바탕·주황 테두리·술, dict-1.png는 붉은 테두리 어두운 매트, 시트·런타임은 남색 판, 갤러리 카드는 붉은 테두리. 한 기물이 서로 다르게 보이고 글이 그림과 어긋난다.",
-   "fix": "시트의 genkan-mat 실제 그림을 열어 사전 설명과 dict-1.png·갤러리 카드·런타임 화면을 그 그림 하나에 맞춰 다시 굽는다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/house-1f.json",
-   "where": "거실 남동 x16..19 y12..13, 소파(13,13)~식탁(16..18,10) 사이",
-   "problem": "빈 마루가 남아 있다. 이전 (c)는 부분 해소.",
-   "fix": "화분·수납장 등을 남동 구석에 놓는다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/apartment-1k.json",
-   "where": "주방 방 x1..10 y1..5",
-   "problem": "폭 10으로 실제 6~8조보다 크고 폭 4 유닛 배스와 비례가 안 맞는다.",
-   "fix": "방 폭을 8 이하로 줄이거나 칸막이로 나눈다."
-  },
-  {
-   "severity": "minor",
-   "file": "verify-shots/jp-city/interior-runtime/01.png",
-   "where": "1층 화실 입구 (7,6) fusuma-open, 화장실 입구 (10,6) door-open-toilet",
-   "problem": "문 조각은 있으나 열린 상태라 어두운 틈처럼 읽혀 문으로 식별하기 약하다.",
-   "fix": "문틀 선이나 문짝 끝이 보이게 다시 찍는다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/house-2f.json",
-   "where": "door-western (13,7)",
-   "problem": "닫힌 문 그림인데 어디로도 통하지 않아 '방마다 문 하나' 점검에서 오해를 부른다.",
-   "fix": "벽 장식으로 옮기거나 장식임을 표시한다."
+   "file": "tiledata/jp-city/blocks/interior_entry/_all-x3.png",
+   "where": "시트 왼쪽 위 현관 매트(4번째 칸)와 슬리퍼(5번째 칸). 파일 14:46, interior_entry.py는 16:01",
+   "problem": "지난 라운드 지적이 이 파일에서는 그대로다. 매트가 남색 판(보라 줄무늬)이고 슬리퍼가 초록색이다. 사전 그림·편집기 갤러리·런타임·문서(베이지 바탕, 붉은 갈색 테두리, 남색 발등 띠)와 다르다. 이 시트는 검수가 계단 폭과 난간을 보라고 지정한 증거 그림이라 낡은 그림이 합격 증거로 읽힌다.",
+   "fix": "현재 interior_entry.py로 interior_entry 블록의 _all.png·_all-x3.png를 다시 굽는다. 같은 커밋에서 demo-genkan.png·demo-upstairs.png(13:11 이후 재생성 안 됨)도 갱신한다. 이후 매트·슬리퍼가 interior-dict-1.png와 같은 색인지 8배 확대로 맞대어 확인한다."
   },
   {
    "severity": "minor",
    "file": "tiledata/jp-city/refs/interior-dict-1.md",
-   "where": "bed-single(1×2 vs h3), bathtub(2×1 vs h2), stairwell-down-wood(2×2 vs h3)",
-   "problem": "사전 w×h는 오르는 칸을 포함하고 설명 글은 바닥 점유 크기라 숫자가 어긋난다.",
-   "fix": "사전에 'w×h는 오르는 칸 포함, 바닥 점유는 설명 글'이라고 한 줄 적는다."
+   "where": "genkan-mat 설명 '양 끝 술'",
+   "problem": "interior-dict-1.png와 편집기 갤러리 확대에서 매트 좌우 끝의 술이 식별되지 않는다. 붉은 갈색 테두리와 마름모 무늬만 보인다.",
+   "fix": "매트에 술 픽셀을 실제로 찍어 그림에 맞추거나, 설명에서 '양 끝 술'을 지운다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/editor/06-objects-jp-interior.png",
-   "where": "stairwell 카드",
-   "problem": "시트에 없는 벽 배경이 카드에 들어 있다.",
-   "fix": "카드 렌더에서 배경을 뺀다."
+   "file": "tiledata/jp-city/refs/interior-rules.md",
+   "where": "L47 rug 문장, interior-dict-1.md rug 용도 칸",
+   "problem": "규칙 문서는 '아이방·원룸 바닥'이라 하고, 사전은 '거실·아이방'이라 한다. 실제 예제는 1층 LDK(16,12)와 2층 부부 침실(4,4)에 깔았다. 아이방(2층 오른쪽 방)과 원룸 예제에는 러그가 없다.",
+   "fix": "세 곳의 용도 문구를 '거실·침실·아이방의 빈 바닥에 따로(2칸 가구 밑에 깔지 않음)'로 통일한다."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/interior-house-1f-x2.png",
+   "where": "행 6의 fusuma-open (7,6)와 door-open-toilet (10,6)",
+   "problem": "열린 문 상태는 문턱 위에 어두운 세로 틈만 보이고 문짝이 거의 보이지 않는다. 시작 해상도에서 벽 틈으로 읽힐 위험이 있다. 2층의 닫힌 서양식 문은 읽힌다.",
+   "fix": "열린 상태 조각에 문짝 한 장이 옆으로 접힌 옆면(밝은 문짝 띠 1~2픽셀)을 더해 대비를 키운다. 또는 1층 화실·화장실 문을 닫힌 상태 조각으로 바꾼다. 어느 쪽이든 interior_doors/_all-x3.png로 다시 확인한다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/refs/interior-dict-1.md",
+   "where": "intercom(category entry, 벽걸이 태그), tv-old(washitsu), towel-rack·bath-mat(dressing), futon의 pair 목록에 자기 자신",
+   "problem": "카테고리 분류가 용도와 어긋난다. 인터폰은 벽걸이 계열인데 현관 분류이고, 이불의 짝 목록이 자기 자신을 가리킨다.",
+   "fix": "의도된 분류면 규칙 문서 분류 설명에 이유를 한 줄씩 남긴다. 아니면 category를 바로잡는다. 14분류 합계 97을 유지한다. futon pair에서 자기 자신을 뺀다."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/editor/SUMMARY.md",
+   "where": "5행 상세 타일 탭 이름 '일본 도시 · 상가·주택·역·신사 (도트)'",
+   "problem": "편집기 상세 패널의 타일셋 이름에 '실내'가 없다. 사용자가 실내 칩을 찾을 때 이름만으로 찾기 어렵다. (SUMMARY 6행의 '[default]'는 DOM 텍스트에만 있고 06 스크린샷에는 보이지 않는다.)",
+   "fix": "타일셋 표시 이름을 '일본 도시 · 상가·주택·역·신사·실내 (도트)'로 바꾼다. 스크래퍼가 '[default]'를 텍스트에 붙여 넣는다면 그것도 정리한다."
   }
  ],
- "report": "**판정: fail.** major 2건이 남았습니다.\n\n이전 라운드 지적 (a) 2층 복도는 해소했습니다. 이번 라운드에 추가한 계단 난간(⑨)과 에디터 가져오기(⑪)에서는 결함을 못 찾았습니다. 실내 규칙 문서의 통행 지도와 오류 코드표는 칸 단위로 대조하지 못했습니다. 그 부분은 판정 근거에 넣지 않았습니다.\n\n**major**\n\n- **M1. 깔개(rug) 규칙이 세 곳에서 서로 다릅니다 (⑦).**\n  - `tiledata/jp-city/refs/interior-rules.md`는 \"3칸 깔개는 2칸 가구와 가운데가 안 맞으니 아이방·원룸 바닥에 따로 깐다\"고 씁니다.\n  - `interior-dict-1.md`의 `rug`는 category가 living이고 용도가 \"소파·좌탁 밑에 깔기\"입니다.\n  - `examples/house-1f.json`은 `rug`를 (13,11)에 둡니다. 같은 칸에 `low-table`이 있습니다.\n  - `house-2f.json`의 `rug`(4,4)도 침실 가구 밑입니다.\n  - 규칙 문서를 따르는 조수는 거실에 깔개를 깔지 않습니다. 사전과 예제를 따르는 조수는 가구 밑에 깝니다.\n  - 고치는 법: 규칙 문서를 \"2칸 가구와 가운데가 안 맞는 3칸 깔개는 가구 밑에 깔지 않는다\"처럼 한 문장으로 정합니다. 그에 맞춰 사전의 용도와 1F·2F 예제를 바꿉니다. 그 뒤 참고문서와 런타임 화면을 다시 굽습니다.\n\n- **M2. `genkan-mat`의 글 설명과 그림 세 가지가 서로 다릅니다 (⑦).**\n  - `interior-dict-1.md`의 설명은 \"베이지 바탕·주황 테두리·양 끝 술\"입니다.\n  - `public/assets/jp-city-references/interior-dict-1.png`의 그림은 붉은 테두리의 어두운 매트입니다.\n  - `interior-dict-2.png`가 아니라 시트와 런타임 화면(00·01)에서는 남색 판처럼 보입니다.\n  - `verify-shots/jp-city/editor/06-objects-jp-interior.png`의 갤러리 카드는 붉은 테두리입니다.\n  - 한 기물이 서로 다른 모양으로 나옵니다. 글을 근거로 고른 조수가 그림과 다른 것을 얻습니다.\n  - 고치는 법: 시트에서 `genkan-mat`을 다시 연 뒤 사전 설명 글과 `interior-dict-1.png`를 그 그림에 맞춥니다. 갤러리 카드와 런타임 화면도 같은 판으로 다시 굽습니다.\n\n**minor**\n\n- **1층 거실 남동쪽:** `house-1f.json` 기준 x16..19, y12..13이 빈 마루입니다. 소파(13,13)와 식탁(16..18,10) 사이도 비어 있습니다. editor/03에서 보입니다. 이전 라운드 (c)는 부분 해소입니다. 화분이나 수납장을 놓으면 됩니다.\n- **1K 원룸:** `apartment-1k.json` x1..10, y1..5 방이 폭 10으로 실제 6~8조보다 크고, 폭 4인 유닛 배스와 비례가 안 맞습니다. 책상·의자·서랍장·스탠드를 넣어 이전 (b)는 해소했지만 크기 비례는 그대로입니다. 방 폭을 8 이하로 줄이면 됩니다.\n- **열린 문 표현:** 1층 화실 입구 (7,6)는 `fusuma-open`, 화장실 입구 (10,6)는 `door-open-toilet`로 문 조각이 있습니다. 다만 `interior-runtime/01.png`·`03.png`에서는 열린 상태라 어두운 틈처럼 읽힙니다. 같은 자리의 2층은 `door-open-western`으로 읽힙니다. 이전에 \"문 조각이 없다\"로 의심했지만 예제를 직접 확인해 철회하고, minor로만 남깁니다. 화실 입구에 문틀 선이나 문짝 끝을 보이면 됩니다.\n- **2층 복도 `door-western`(13,7):** 닫힌 문 그림인데 어디로도 통하지 않습니다. \"방마다 문 하나\" 점검에서 오해를 부릅니다. 벽 장식으로 옮기거나 이름에 장식임을 표시하면 됩니다.\n- **w×h 표기:** 사전의 w×h는 오르는 칸을 포함하고, 설명 글은 바닥 점유 크기로 씁니다. bed-single은 설명 \"1×2\"에 h=3, bathtub는 \"2×1\"에 h=2, stairwell-down-wood는 \"2×2\"에 h=3입니다. 사전에 \"w×h = 오르는 칸 포함, 바닥 점유는 설명 글\"이라고 한 줄 적어야 합니다.\n- **editor/06 계단통 카드:** 시트에 없는 벽 배경이 들어 있습니다. 카드 렌더에서 배경을 빼면 됩니다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/refs/interior-rules.md; tiledata/jp-city/refs/interior-dict-1.md; tiledata/jp-city/interior/examples/house-1f.json; tiledata/jp-city/interior/examples/house-2f.json\", \"where\": \"규칙 문서의 rug 문장 / 사전 rug 용도 / house-1f rug(13,11)=low-table 같은 칸 / house-2f rug(4,4)\", \"problem\": \"규칙은 3칸 깔개를 2칸 가구와 따로(아이방·원룸) 깔라고 하나 사전은 '소파·좌탁 밑에 깔기', 예제는 좌탁·침실 가구 밑에 깐다. 세 곳이 서로 모순.\", \"fix\": \"규칙 한 문장으로 정한 뒤 사전 용도·예제를 맞추고 참고문서·런타임 화면을 다시 굽는다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/refs/interior-dict-1.md; public/assets/jp-city-references/interior-dict-1.png; verify-shots/jp-city/editor/06-objects-jp-interior.png; verify-shots/jp-city/interior-runtime/01.png\", \"where\": \"genkan-mat 항목\", \"problem\": \"글은 베이지 바탕·주황 테두리·술, dict-1.png는 붉은 테두리 어두운 매트, 시트·런타임은 남색 판, 갤러리 카드는 붉은 테두리. 한 기물이 서로 다르게 보이고 글이 그림과 어긋난다.\", \"fix\": \"시트의 genkan-mat 실제 그림을 열어 사전 설명과 dict-1.png·갤러리 카드·런타임 화면을 그 그림 하나에 맞춰 다시 굽는다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/house-1f.json\", \"where\": \"거실 남동 x16..19 y12..13, 소파(13,13)~식탁(16..18,10) 사이\", \"problem\": \"빈 마루가 남아 있다. 이전 (c)는 부분 해소.\", \"fix\": \"화분·수납장 등을 남동 구석에 놓는다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/apartment-1k.json\", \"where\": \"주방 방 x1..10 y1..5\", \"problem\": \"폭 10으로 실제 6~8조보다 크고 폭 4 유닛 배스와 비례가 안 맞는다.\", \"fix\": \"방 폭을 8 이하로 줄이거나 칸막이로 나눈다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior-runtime/01.png\", \"where\": \"1층 화실 입구 (7,6) fusuma-open, 화장실 입구 (10,6) door-open-toilet\", \"problem\": \"문 조각은 있으나 열린 상태라 어두운 틈처럼 읽혀 문으로 식별하기 약하다.\", \"fix\": \"문틀 선이나 문짝 끝이 보이게 다시 찍는다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/house-2f.json\", \"where\": \"door-western (13,7)\", \"problem\": \"닫힌 문 그림인데 어디로도 통하지 않아 '방마다 문 하나' 점검에서 오해를 부른다.\", \"fix\": \"벽 장식으로 옮기거나 장식임을 표시한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-dict-1.md\", \"where\": \"bed-single(1×2 vs h3), bathtub(2×1 vs h2), stairwell-down-wood(2×2 vs h3)\", \"problem\": \"사전 w×h는 오르는 칸을 포함하고 설명 글은 바닥 점유 크기라 숫자가 어긋난다.\", \"fix\": \"사전에 'w×h는 오르는 칸 포함, 바닥 점유는 설명 글'이라고 한 줄 적는다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/editor/06-objects-jp-interior.png\", \"where\": \"stairwell 카드\", \"problem\": \"시트에 없는 벽 배경이 카드에 들어 있다.\", \"fix\": \"카드 렌더에서 배경을 뺀다.\"}\n]}\n```"
+ "report": "## 적대적 검수 — interior 단계\n\n지난 라운드 두 건을 현재 그림과 다시 대조했다. 러그는 해소됐고, 현관 매트는 문서·사전 그림·편집기·런타임까지 맞췄지만 자체검사 시트가 낡은 채 남아 있다.\n\n- **러그 (해소):**\n  - house-1f 예제의 `rug`는 (16,12)다. `low-table`(13,11)과 겹치지 않고 SE 빈 바닥에 따로 깔렸다.\n  - house-2f 예제의 `rug`는 (4,4)다. 2칸 가구 밑이 아니라 침대와 협탁 앞의 빈 바닥이다.\n  - 서술과 예제는 일치한다. 다만 아래 minor 한 건이 남는다.\n- **현관 매트 (부분 해소):**\n  - `interior-dict-1.png`, 편집기 03·06, 런타임 화면에서는 베이지 바탕에 붉은 갈색 테두리의 매트와 남색 발등 띠 슬리퍼로 서로 맞는다.\n  - `interior_entry/_all-x3.png`는 14:46에 구운 그대로다. 남색 판 매트와 초록 슬리퍼가 찍혀 있고, `interior_entry.py`(16:01)의 현재 그림과 다르다.\n\n**blocker·major 판단 근거**\n- 3칸 폭 러그가 2칸 가구 밑에 깔린 곳은 없다.\n- 아래쪽 계단·문·2층 구조·편집기 가져오기 검사에는 막히는 결함이 없다. 다만 1층 열린 문은 minor 한 건이 남는다.\n- 계단은 폭 1칸·2칸을 유지한다. 오른쪽 난간동자·손잡이와 왼쪽 벽 손잡이가 x3·런타임 06에서 읽힌다.\n- 보고서 3건은 닿지 못한 빈 바닥이 0, 경고가 0이다. 편집기 가져오기는 맵 2장에 계단 이동 3개가 걸려 있다.\n- 규칙 문서(L73–85)의 \"닿지 못한 바닥 41칸\" 오류 예시는 보고서의 0과 충돌하지 않는다. 오류 표 예시일 뿐이기 때문이다.\n\n**가리키는 곳이 위치 묘사인 항목**\n- 1층 x2·편집기 03에서 `fusuma-open`(7,6)과 `door-open-toilet`(10,6)은 열린 상태 조각이다. 작은 그림에서는 어두운 세로 틈으로 읽혀 \"문이 없는 벽 틈\"과 구별이 약하다.\n- 반면 2층(편집기 04)의 문 5개와 옆문은 문틀과 문짝이 읽힌다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n  {\"severity\": \"major\", \"file\": \"tiledata/jp-city/blocks/interior_entry/_all-x3.png\", \"where\": \"시트 왼쪽 위 현관 매트(4번째 칸)와 슬리퍼(5번째 칸). 파일 14:46, interior_entry.py는 16:01\", \"problem\": \"지난 라운드 지적이 이 파일에서는 그대로다. 매트가 남색 판(보라 줄무늬)이고 슬리퍼가 초록색이다. 사전 그림·편집기 갤러리·런타임·문서(베이지 바탕, 붉은 갈색 테두리, 남색 발등 띠)와 다르다. 이 시트는 검수가 계단 폭과 난간을 보라고 지정한 증거 그림이라 낡은 그림이 합격 증거로 읽힌다.\", \"fix\": \"현재 interior_entry.py로 interior_entry 블록의 _all.png·_all-x3.png를 다시 굽는다. 같은 커밋에서 demo-genkan.png·demo-upstairs.png(13:11 이후 재생성 안 됨)도 갱신한다. 이후 매트·슬리퍼가 interior-dict-1.png와 같은 색인지 8배 확대로 맞대어 확인한다.\"},\n  {\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-dict-1.md\", \"where\": \"genkan-mat 설명 '양 끝 술'\", \"problem\": \"interior-dict-1.png와 편집기 갤러리 확대에서 매트 좌우 끝의 술이 식별되지 않는다. 붉은 갈색 테두리와 마름모 무늬만 보인다.\", \"fix\": \"매트에 술 픽셀을 실제로 찍어 그림에 맞추거나, 설명에서 '양 끝 술'을 지운다.\"},\n  {\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md\", \"where\": \"L47 rug 문장, interior-dict-1.md rug 용도 칸\", \"problem\": \"규칙 문서는 '아이방·원룸 바닥'이라 하고, 사전은 '거실·아이방'이라 한다. 실제 예제는 1층 LDK(16,12)와 2층 부부 침실(4,4)에 깔았다. 아이방(2층 오른쪽 방)과 원룸 예제에는 러그가 없다.\", \"fix\": \"세 곳의 용도 문구를 '거실·침실·아이방의 빈 바닥에 따로(2칸 가구 밑에 깔지 않음)'로 통일한다.\"},\n  {\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior-house-1f-x2.png\", \"where\": \"행 6의 fusuma-open (7,6)와 door-open-toilet (10,6)\", \"problem\": \"열린 문 상태는 문턱 위에 어두운 세로 틈만 보이고 문짝이 거의 보이지 않는다. 시작 해상도에서 벽 틈으로 읽힐 위험이 있다. 2층의 닫힌 서양식 문은 읽힌다.\", \"fix\": \"열린 상태 조각에 문짝 한 장이 옆으로 접힌 옆면(밝은 문짝 띠 1~2픽셀)을 더해 대비를 키운다. 또는 1층 화실·화장실 문을 닫힌 상태 조각으로 바꾼다. 어느 쪽이든 interior_doors/_all-x3.png로 다시 확인한다.\"},\n  {\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-dict-1.md\", \"where\": \"intercom(category entry, 벽걸이 태그), tv-old(washitsu), towel-rack·bath-mat(dressing), futon의 pair 목록에 자기 자신\", \"problem\": \"카테고리 분류가 용도와 어긋난다. 인터폰은 벽걸이 계열인데 현관 분류이고, 이불의 짝 목록이 자기 자신을 가리킨다.\", \"fix\": \"의도된 분류면 규칙 문서 분류 설명에 이유를 한 줄씩 남긴다. 아니면 category를 바로잡는다. 14분류 합계 97을 유지한다. futon pair에서 자기 자신을 뺀다.\"},\n  {\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/editor/SUMMARY.md\", \"where\": \"5행 상세 타일 탭 이름 '일본 도시 · 상가·주택·역·신사 (도트)'\", \"problem\": \"편집기 상세 패널의 타일셋 이름에 '실내'가 없다. 사용자가 실내 칩을 찾을 때 이름만으로 찾기 어렵다. (SUMMARY 6행의 '[default]'는 DOM 텍스트에만 있고 06 스크린샷에는 보이지 않는다.)\", \"fix\": \"타일셋 표시 이름을 '일본 도시 · 상가·주택·역·신사·실내 (도트)'로 바꾼다. 스크래퍼가 '[default]'를 텍스트에 붙여 넣는다면 그것도 정리한다.\"}\n]}\n```"
 }

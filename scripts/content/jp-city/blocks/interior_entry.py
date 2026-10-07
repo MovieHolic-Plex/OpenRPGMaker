@@ -72,8 +72,9 @@ def _mat(c):
     for x in range(8, 25, 4):                                     # 짠 무늬(마름모 점)
         c.P(x, 7, MD); c.P(x + 1, 8, MD); c.P(x, 9, MD); c.P(x - 1, 8, MD)
     c.HL(4, 11, 24, K('daidai', -2))                              # 아래 테두리 그늘
-    for y in range(4, 12, 2):                                     # 양 끝 술
-        c.P(2, y, ML); c.P(29, y, ML)
+    for y in range(4, 12):                                        # 양 끝 술(두 칸 폭, 한 줄씩 밝음·어두움)
+        col = ML if y % 2 == 0 else MD
+        c.R(1, y, 2, 1, col); c.R(29, y, 2, 1, col)
     c.HL(4, 13, 24, K('ita', -3))                                 # 바닥 그늘
 
 
