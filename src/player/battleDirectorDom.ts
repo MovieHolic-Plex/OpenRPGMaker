@@ -171,15 +171,20 @@ export function actorCommandDirectorState(
   options: { readonly describeEffectiveness?: boolean } = {},
 ): BattleDirectorState {
   const actor = activeActor(before);
-  const target = commandTarget(command, before, after);
-  const impact = battlerHpDelta(target?.id, before, after);
+  const commanded = commandTarget(command, before, after);
   // 이 명령의 결과는 타임라인 델타에서 찾는다. after.lastActionResult 는 strict 플로우에서
   // 라운드의 "마지막" 액션(대개 적의 반격)이라, 그걸 쓰면 아군 공격 메시지의 숫자가
   // 팝업(타임라인 amount)과 어긋난다(실측: 팝업 -28 / 메시지 20 피해).
-  const commandEntry = after.timeline.slice(before.timeline.length).find((entry) =>
-    entry.userRecordId === actor?.recordId
-    && entry.targetId === target?.id
-    && (entry.kind === "damage" || entry.kind === "miss" || entry.kind === "healing" || entry.kind === "action"));
+  // 명령이 가리킨 상대가 이미 쓰러져 런타임이 다음 상대로 돌렸으면(트레이너의 둘째 몬스터) 이 액터의 첫 결과를 쓴다 —
+  // 대상 id 로만 찾으면 못 찾고 상대의 마지막 타격(「급소에 맞았다! 효과가 굉장했다!」)을 빌려 읽었다(2026-10-07 눈 관장전).
+  const ownEntry = (entry: BattleSnapshot["timeline"][number]) => entry.userRecordId === actor?.recordId
+    && (entry.kind === "damage" || entry.kind === "miss" || entry.kind === "healing" || entry.kind === "action");
+  const delta = after.timeline.slice(before.timeline.length);
+  const commandEntry = delta.find((entry) => ownEntry(entry) && entry.targetId === commanded?.id) ?? delta.find(ownEntry);
+  const target = commandEntry && commandEntry.targetId !== commanded?.id
+    ? [...after.enemies, ...after.actors, ...(after.departedEnemies ?? [])].find((battler) => battler.id === commandEntry.targetId) ?? commanded
+    : commanded;
+  const impact = battlerHpDelta(target?.id, before, after);
   const result = commandEntry
     ? {
       userRecordId: commandEntry.userRecordId ?? actor?.recordId ?? "",
@@ -190,6 +195,8 @@ export function actorCommandDirectorState(
       skillName: commandEntry.skillName,
       ...(options.describeEffectiveness && commandEntry.effectiveness !== undefined ? { effectiveness: commandEntry.effectiveness } : {}),
     }
+    // 결과 엔트리가 없는 명령(못 움직인 차례 등)에 남의 결과를 붙이지 않는다.
+    : after.lastActionResult?.userRecordId !== actor?.recordId ? undefined
     : after.lastActionResult && !options.describeEffectiveness
       ? { ...after.lastActionResult, effectiveness: undefined }
       : after.lastActionResult;
