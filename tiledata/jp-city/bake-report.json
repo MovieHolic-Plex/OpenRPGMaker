@@ -11,8 +11,8 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 5543,
-  "legacy": 343,
+  "block_cells": 5542,
+  "legacy": 344,
   "legacy_ids": [
    5137,
    5275,
@@ -45,11 +45,11 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 5543
+   "block": 5542
   }
  },
  "pc_counts": {
-  "star": 4889,
+  "star": 4888,
   "solid": 1801,
   "floor": 938,
   "solidfloor": 418,
@@ -255,7 +255,7 @@
    },
    {
     "name": "interior_doors",
-    "cells": 14,
+    "cells": 13,
     "autotiles": 0,
     "groups": 0,
     "kits": 6,
@@ -348,7 +348,7 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "63be532b85c7165e3c3fca7565905a2982bde926",
+ "sheet_hash": "3e6e2aa24599dc93fe0b70fd025c9d2bbe2cc74c",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 537,

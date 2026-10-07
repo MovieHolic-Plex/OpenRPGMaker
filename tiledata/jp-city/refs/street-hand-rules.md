@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 거리 시설 62종 · 쓰는 법 (층·전봇대·전선·노면·담)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9017칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9023칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 「일본 동네」로 읽히는 신호(조사 `tiledata/jp-city/research/README.md` 2절: 전봇대+처진 전선, 보도 없는 생활도로의 흰 路側帯 선과 側溝, 주황 「30」·커브미러, 블록 담, 프로판 봄베·화분·실외기)를
 손 도트 키트로 그린 것이다. 그림 원본 `scripts/content/jp-city/blocks/street_hand.py`. 분류: 전봇대·전선(4층) 22, 노면 표시(2층) 16, 블록 담·문기둥·대문·카포트 11, 생활·길가 소품 10, 거점 소품(도리이·주유소 캐노피·학교 정문) 3.
