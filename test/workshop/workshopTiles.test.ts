@@ -33,6 +33,7 @@ describe("공방 기물을 칩셋에 굽기", () => {
     expect(t.passability[base + 2]!.up).toBe(false);
     expect(t.priority[base + 2]).toBe("upper");
     expect(p.assets.uploaded.workshop_test?.kind).toBe("tileset");
+    expect(p.assets.uploaded.workshop_test?.generatedBy).toBe("workshop"); // 스토어에 올릴 때 「AI 생성」을 끌 수 없다
     expect(t.tileGrafts!.filter((g) => g.sourceChipset === "workshop_test").map((g) => g.targetTile)).toEqual([base, base + 1, base + 2, base + 3]);
     bakeWorkshopObject(p, ID, shelf());
     expect(t.count).toBe(base + 4);

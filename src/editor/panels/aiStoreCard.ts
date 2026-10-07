@@ -11,7 +11,8 @@ import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { STORE_KIND_LABELS, STORE_LICENSE_LABELS, type StoreItemKind, type StoreItemSummary } from "@/assetStore/format";
 import { addStoreItemToProject } from "@/editor/assetStore/storeApply";
 import { fillStoreImage, storeBridge, storeFailure } from "@/editor/assetStore/storeBridge";
-import { buildUploadPack, uploadCandidates } from "@/editor/assetStore/storeUpload";
+import { aiMadeNote, buildUploadPack, uploadCandidates } from "@/editor/assetStore/storeUpload";
+import { aiMadeAssets } from "@/assetStore/pack";
 import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
 import { currentDrawTarget } from "@/editor/workshop/mapObjectTarget";
 import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StorePublishProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
@@ -200,6 +201,9 @@ function publishCard(proposal: StorePublishProposal): HTMLElement {
   const tilesetIds = proposal.tilesetIds.filter((id) => ok.includes(id));
   const assetIds = proposal.assetIds.filter((id) => ok.includes(id));
   const agree = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "ai-store-agree" } });
+  // 「AI 생성」은 켠 채로 시작한다 — 조수가 끄지 못하고, AI 가 만든 그림이 들어 있으면 사용자도 끄지 못한다
+  const aiMade = ok.length ? aiMadeAssets(project, { tilesetIds, assetIds }) : [];
+  const ai = el("input", { attrs: { type: "checkbox", checked: "", ...(aiMade.length ? { disabled: "" } : {}) }, dataset: { testid: "ai-store-ai" } });
   const upload = button(proposal.targetSlug ? "새 판본으로 올리기" : "스토어에 올리기", "ai-store-upload", () => void run(), true);
   const cancel = button("올리지 않기", "ai-store-cancel", () => { done("올리지 않았어요."); });
   upload.disabled = true;
@@ -208,17 +212,20 @@ function publishCard(proposal: StorePublishProposal): HTMLElement {
   const view = shell("확인 필요", proposal.targetSlug ? "새 판본을 올릴까요?" : "스토어에 올릴까요?", "ai-store-publish-card", [
     el("dl", { class: "ai-store-facts", children: [
       ["제목", proposal.title], ["소개", proposal.summary], ["종류", STORE_KIND_LABELS[proposal.itemKind as StoreItemKind] ?? proposal.itemKind],
-      ["라이선스", STORE_LICENSE_LABELS[proposal.license]], ["AI 생성", proposal.aiGenerated ? "AI 도구로 만든 부분이 있음" : "전부 직접 만듦"],
+      ["라이선스", STORE_LICENSE_LABELS[proposal.license]],
       ["올릴 것", ok.map(nameOf).join(", ") || "없음"], ...(proposal.tags.length ? [["태그", proposal.tags.join(", ")]] : []),
     ].flatMap(([term, value]) => [el("dt", { text: term! }), el("dd", { text: value! })]) }),
     blocked.length ? el("p", { class: "ai-tileset-change-detail", text: `빼는 것: ${blocked.map((row) => `${nameOf(row.id)} — ${row.reason}`).join(" / ")}` }) : null,
     el("p", { class: "ai-tileset-change-detail", text: "올리면 누구나 스토어에서 보고 받을 수 있어요. 나중에 숨길 수 있지만, 이미 받은 사람의 프로젝트에서는 지워지지 않아요." }),
+    el("label", { class: "ai-store-agree", children: [ai, el("span", { text: "AI 도구로 만든 부분이 있음 (스토어에 「AI 생성」으로 표시)" })] }),
+    aiMade.length ? el("p", { class: "ai-tileset-change-detail", dataset: { testid: "ai-store-ai-forced" }, text: aiMadeNote(aiMade) }) : null,
     el("label", { class: "ai-store-agree", children: [agree, el("span", { text: "이 그림·소리의 권리가 나에게 있고, 스토어 이용약관에 동의합니다." })] }),
   ], [cancel, upload]);
   const done = (text: string): void => {
     upload.disabled = true;
     cancel.disabled = true;
     agree.disabled = true;
+    ai.disabled = true;
     view.status.textContent = text;
   };
   const run = async (): Promise<void> => {
@@ -231,7 +238,7 @@ function publishCard(proposal: StorePublishProposal): HTMLElement {
         view.status.textContent = "팩을 만드는 중…";
         const built = await buildUploadPack(store.getCurrent(), { tilesetIds, assetIds }, {
           title: proposal.title, summary: proposal.summary, description: proposal.description, tags: [...proposal.tags],
-          kind: proposal.itemKind as StoreItemKind, license: proposal.license, aiGenerated: proposal.aiGenerated, credits: proposal.credits,
+          kind: proposal.itemKind as StoreItemKind, license: proposal.license, aiGenerated: aiMade.length > 0 || ai.checked, credits: proposal.credits,
         });
         const off = bridge.onProgress((event) => { if (event.phase === "upload") view.status.textContent = `올리는 중 ${event.done}/${event.total}`; });
         try {

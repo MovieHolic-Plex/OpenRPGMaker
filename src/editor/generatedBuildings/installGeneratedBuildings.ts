@@ -41,6 +41,7 @@ export function installGeneratedBuildingSheet(
     id: assetId,
     name: "생성 건물 시트",
     kind: "tileset",
+    generatedBy: "generated-buildings",
     dataUrl: png.dataUrl,
     meta: { tileSize: ts.tileSize, width: png.width, height: png.height },
   };
