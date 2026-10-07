@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 35995
+   "chars": 37749
   },
   {
    "id": "jp-autotile",
@@ -64,25 +64,35 @@
    "chars": 77053
   },
   {
+   "id": "jp-interior",
+   "name": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5)",
+   "documents": 7,
+   "images": 14,
+   "chars": 72225
+  },
+  {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15481
+   "chars": 15482
   }
  ],
  "totals": {
-  "categories": 10,
-  "documents": 61,
-  "images": 168,
-  "chars": 662495,
+  "categories": 11,
+  "documents": 68,
+  "images": 182,
+  "chars": 736475,
   "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 7590,
- "kitsEmitted": 440,
- "kitArrayItemsRoundtrip": 440,
+ "tilesEmitted": 8471,
+ "kitsEmitted": 534,
+ "kitArrayItemsRoundtrip": 534,
  "unknownTokens": [
+  "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
+  "jp-interior-ex-house-1f:jp-city-house-1f",
+  "jp-interior-ex-house-2f:jp-city-house-2f",
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
   "jp-transit-rules:jp-car-black",
@@ -100,7 +110,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "3fb4512675a4da92d9877499231e55b7058941c7077e6784d1c5f4ba3f63fbd3",
-  "images": "6b17978cf7bebf76632157e33330d3410bd314cced3b1e738786643a5e6a6aa1"
+  "json": "0422cf8eef5896ff4c2496767bf5c2ba1d065ac7f57b0ddac0dc9385521e6a9a",
+  "images": "53f696158cac6c3eadb60959e3e5faaa26b6036394514a79c2703f70a3e611c5"
  }
 }

@@ -290,7 +290,8 @@ for _t in range(COUNT):
     else: REGION[_t] = '?'
 for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
-for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation')):
+for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation'),
+               ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior')):
     for _t in PIN_BLOCK[_b]: REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -305,7 +306,8 @@ PROPS = [k for k in KITS if k.startswith('jp-prop-')]
 KIT_INDEX = json.load(open(os.path.join(ROOT, 'tiledata', 'jp-city', 'kit-index.json'), encoding='utf-8'))['kits']
 EXAMPLE_KITS = {b: [k for k in KITS if (KIT_INDEX.get(k, {}).get('source') or {}).get('block') == b] for b in ('school', 'transit_street', 'transit_station')}
 _EXAMPLE_KIT_SET = {k for v in EXAMPLE_KITS.values() for k in v}
-STREETH = [k for k in KITS if not re.match(r'jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)', k) and k not in _EXAMPLE_KIT_SET]
+INTERIOR_KITS = [k for k in KITS if k.startswith('jp-in-')]
+STREETH = [k for k in KITS if not re.match(r'jp-((recipe|road|door|prop|bldg|in)-|fumikiri|underpass|footbridge)', k) and k not in _EXAMPLE_KIT_SET]
 assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (39, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
 assert len(AT) == 17 and len(SPEC['examples']) == 25 and len(SPEC['decos']) == 73 and len(SPEC['bands']) == 60
 
@@ -401,6 +403,7 @@ def doc_sheet_map():
         ('streethand', '손 도트 거리 시설 블록', f'전봇대·전선·노면 표시·블록 담·문기둥·카포트·생활 소품·도리이 등 {len(STREETH)}종 키트의 재료 칸. **키트로 찍는다**(전봇대·전선 4층, 노면 표시 2층) — 용도 「손 도트 거리 시설」'),
         ('schoolblock', '손 도트 小学校 블록', f'교정 흙·트랙 선·놀이기구·수영장·정문 등 小学校 키트 {len(EXAMPLE_KITS["school"])}종의 재료 칸. **키트로 찍는다**(트랙 선 2층) — 용도 「손 도트 小学校」'),
         ('transitstreet', '손 도트 노면전차 거리 블록', f'노면전차 레일·차막이·정류장 섬·導流帯·가선·전주·지하철 출입구 키트 {len(EXAMPLE_KITS["transit_street"])}종의 재료 칸. **키트로 찍는다**(레일 2층, 가선 4층) — 용도 「탈것·노면전차·지하철」'),
+        ('interior', '손 도트 일본 집 실내 블록', f'바닥 7·벽면 5·천장 띠·가구 {len(INTERIOR_KITS)}종·탁자·탁상 물건의 재료 칸. **build_hand_interior_room({{tileset:"jp_city"}}) 로 짓는다**(낱칸으로 칠하지 않는다) — 용도 「일본 집 실내」'),
         ('transitstation', '손 도트 지하철역 블록', f'콘코스·승강장 바닥·벽·선로·개찰구·칸막이·매표기·계단·역무실·기둥·천장·간판 키트 {len(EXAMPLE_KITS["transit_station"])}종의 재료 칸 — 용도 「탈것·노면전차·지하철」'),
     ]
     rows = []
@@ -2403,6 +2406,282 @@ img_trn()
 
 
 # ====================================================================== 분류 6 — 정상/오류·자동 검사(총괄)
+# ====================================================================== 분류 — 일본 집 실내 (build_hand_interior_room tileset jp_city)
+JPI = json.load(open(os.path.join(ROOT, 'src', 'assets', 'jpInteriorSpec.json'), encoding='utf-8'))
+EIN = EN['interior']
+_IN_BLOCK = {k: (KIT_INDEX.get(k, {}).get('source') or {}).get('block', '') for k in INTERIOR_KITS}
+assert sorted(INTERIOR_KITS) == sorted(f'jp-in-{o}' for o in JPI['objects']), (len(INTERIOR_KITS), len(JPI['objects']))
+_IN_EX = ('house-1f', 'house-2f', 'apartment-1k')
+_IN_EX_KO = {'house-1f': '2층 단독주택 1층', 'house-2f': '2층 단독주택 2층', 'apartment-1k': '원룸 아파트(1K)'}
+C_INT = new_cat('interior', f'일본 도시 · 일본 집 실내 (가구 {len(JPI["objects"])}종 · 바닥 {len(JPI["floors"])} · 벽면 {len(JPI["walls"])})',
+                f'일본 현대 집 실내(현관 타타키·화실 다다미·LDK·욕실·탈의실·화장실·침실·아이방·원룸 1K)를 `build_hand_interior_room({{tileset:"jp_city"}})` 한 번으로 짓는 법: '
+                f'평면 문자열 규칙·가구 종류(바닥·벽 앞·걸이·밟는 무늬)·탁자·탁상 물건·계단 이동, 가구 {len(JPI["objects"])}종 사전(칸 번호·통행 전체), 예제 3맵(2층 단독주택 1층·2층, 원룸) 도구 인자 + 4층 정답 배열 + 원본 그림, 정상/오류 변조 좌표.')
+
+
+def _in_obj_img(oid, k=2):
+    o = JPI['objects'][oid]
+    dys = [c[1] for c in o['cells']] or [0]; dxs = [c[0] for c in o['cells']] or [0]
+    y0 = min(dys); w = max(max(dxs) + 1, o['w'], 1); h = max(max(dys) - y0 + 1, 1)
+    im = checker(w * T, h * T)
+    for dx, dy, t, _l in sorted(o['cells'], key=lambda c: c[3]):
+        im.alpha_composite(cell(tnum(t)), (dx * T, (dy - y0) * T))
+    return up(im, k)
+
+
+def _in_pack(items, side=800, gap=6, bg=(46, 46, 54, 255)):
+    """[(라벨, 그림)] → 줄바꿈 배치 그림 목록(각각 긴 변 ≤ 820)."""
+    probe = ImageDraw.Draw(Image.new('RGBA', (4, 4)))
+    pages, rows, cur, cw, ch = [], [], [], gap, 0
+    for lab, im in items:
+        bw = max(im.width, int(probe.textlength(lab, font=FONT_KS)) + 2)
+        if cur and cw + bw + gap > side: rows.append((cur, ch)); cur, cw, ch = [], gap, 0
+        cur.append((lab, im, bw)); cw += bw + gap; ch = max(ch, im.height + 12)
+    if cur: rows.append((cur, ch))
+    page, ph = [], gap
+    for r in rows:
+        if page and ph + r[1] + gap > side: pages.append(page); page, ph = [], gap
+        page.append(r); ph += r[1] + gap
+    if page: pages.append(page)
+    out = []
+    for pg in pages:
+        H = gap + sum(h + gap for _, h in pg)
+        canvas = Image.new('RGBA', (side, H), bg); d = ImageDraw.Draw(canvas); y = gap
+        for row, h in pg:
+            x = gap
+            for lab, im, bw in row:
+                d.text((x, y), lab, fill=(255, 255, 255, 255), font=FONT_KS); canvas.alpha_composite(im, (x, y + 11)); x += bw + gap
+            y += h + gap
+        out.append(canvas)
+    return out
+
+
+def _in_item(oid):
+    o = JPI['objects'][oid]; kid = f'jp-in-{oid}'
+    it = {'id': oid, 'ko': o['ko'], 'block': _IN_BLOCK[kid], 'kind': o['kind'], 'w': o['w'], 'h': o['h'], 'up': o.get('up', 0)}
+    for key in ('use', 'facing', 'surface', 'stairs', 'tags', 'place', 'pair', 'desc'):
+        if o.get(key) not in (None, [], '', False): it[key] = o[key]
+    it['cells'] = [[dx, dy, tnum(t), l] for dx, dy, t, l in o['cells']]
+    it.update(shop_item(kid))
+    return it
+
+
+def doc_in_rules():
+    er = EIN['errors']
+    ex1 = EIN['examples']['house-1f']
+    err_rows = []
+    for key, e in er.items():
+        hard = [i for i in e['issues'] if i['severity'] == 'error']
+        soft = [i for i in e['issues'] if i['severity'] == 'warning']
+        pick = hard or soft
+        where = ', '.join(sorted({f"({i['x']},{i['y']})" for i in pick if i['x'] is not None}))
+        if key == 'doorBlocked' and e['unreachedFloor']: where = f"막은 칸 (13,11) → 닿지 못한 바닥 {len(e['unreachedFloor'])}칸: " + ' '.join(f"({c['x']},{c['y']})" for c in e['unreachedFloor'][:8])
+        codes = ', '.join(sorted({f"`{i['code']}`" for i in pick})) or (f"`{e['toolCode']}`" if e['toolCode'] else '-')
+        res = ('도구 거부 · 맵 불변' if e['mapUnchanged'] and e['toolCode'] else ('짓되 경고' if soft and not hard else ('도구 거부' if e['toolCode'] else '?')))
+        err_rows.append([e['title'], codes, where or '-', res, e['fix'], f'`jp-img-in-err-{key.lower()}`'])
+    kinds = md_table(['kind', '놓는 곳(조립기 검사)', '통행', '그리는 순서'], [
+        ['`floor`', '발자국 칸 전부가 바닥(벽면 아님)', '발자국 막힘(walk 칸만 밟음) · 위로 솟은 칸 ★', '(y+h)·16 — 남쪽 것이 앞'],
+        ['`wall`', '발자국 바로 북쪽 칸이 벽면 아랫줄(= 북쪽 벽 바로 아래 첫 바닥 줄)', '발자국 막힘 · 벽면을 덮는 윗부분 ★', '(y+h)·16'],
+        ['`hang`', '벽면 **윗줄**(막힌 칸 바로 아래 줄) y 에 건다 — 그림이 벽면 두 줄을 덮는다', '★(벽면이라 원래 못 걷는다)', 'y·16 — 벽 가구보다 먼저(뒤)'],
+        ['`flat`', '바닥 위 무늬(방석·깔개·매트·현관 단·슬리퍼)', '걸음(2층)', '맨 먼저(가구 밑)'],
+    ])
+    return f'''# 일본 도시 — 일본 집 실내 짓는 법 (build_hand_interior_room · tileset "jp_city")
+
+{HEAD}
+
+**무엇인가.** 일본 거리(`jp_city`)와 같은 칩셋·같은 손 도트 화풍의 **일본 현대 집 실내** 재료다. 구조(바닥 {len(JPI["floors"])}·벽면 {len(JPI["walls"])}·천장 띠)와 가구 {len(JPI["objects"])}종·탁자 {len(JPI["tables"])}종·탁상 물건 {len(JPI["goods"])}종.
+판타지 손 도트 실내(`atlas_biome_interior`)와 **같은 조립기**(`src/editor/handInterior/builder.ts`)가 사양만 바꿔(`src/assets/jpInteriorSpec.json`) 짓는다 — 규칙은 같고, id·칸 번호는 다르다(섞지 않는다).
+정본: 그림 `scripts/content/jp-city/blocks/interior_*.py`(+ 틀 `interior/ikit.py`) → `bake_jp.py` → 사양 `bake_interior_spec.py`. 예제 `tiledata/jp-city/interior/examples/*.json`, 짓는 스크립트 `scripts/content/jp-city/maps/interior.mjs`.
+
+## 읽는 순서 · 실행 순서
+1. 이 문서(규칙) → 가까운 예제 하나(`jp-interior-ex-house-1f` 단독주택 1층 · `jp-interior-ex-house-2f` 2층 · `jp-interior-ex-apartment-1k` 원룸)와 그 그림 `jp-img-interior-*`.
+2. `list_hand_interior_parts({{tileset:"jp_city", room:"화실"}})` — 방 종류(현관·복도·화실·LDK·부엌·욕실·탈의실·화장실·침실·아이방·원룸·유닛 배스) 또는 건물(`jp_house`·`jp_apartment`)의 예제 가구. 낱말은 `query`. 행마다 desc·놓는 곳·짝 소품·use·facing 이 있다. 칸 번호까지 보려면 사전 `jp-interior-dict-*`.
+3. 평면(plan)을 정한다 → `build_hand_interior_room({{tileset:"jp_city", mapId, name, plan, floor, wall, zones, objects, tables, goods, start, links}})` **한 번**. 오류가 있으면 맵을 만들지 않고 코드·좌표로 거부한다 — 고쳐서 다시 부른다. 경고(닿지 못한 바닥·쓸 수 없는 가구)도 0 이 될 때까지 고친다.
+4. 층이 여럿이면 층마다 한 맵(같은 가로 폭으로 계단 x 를 맞춘다), 계단 칸에 `links`. 거리 맵의 집 문에 들어가는 실내면 현관 아래 틈 칸에 거리로 나가는 `links` 를 단다.
+5. `show_map_region`·`check_reachability` 로 확인. 낱칸 번호로 칠하지 않는다(`paint_tiles` 로 가구 칸을 찍으면 통행·그림 순서가 어긋난다).
+
+## 평면(plan) — 구조는 전부 자동
+- 한 줄 = 문자열, 모든 줄 같은 길이. `#` = 막힌 칸(외벽·칸막이·건물 밖), 그 밖(`.`) = 실내.
+- **막힌 칸 바로 아래 두 줄 = 벽면**(못 걷는다, 위 줄 = 윗줄 · 아래 줄 = 아랫줄), 나머지 실내 = 바닥. 막힌 칸 중 실내에 8방으로 닿는 칸 = 천장 띠(어두운 띠 + 실내 쪽 밝은 테두리), 닿지 않는 칸 = 공허(검정).
+- 서쪽이 막힌 바닥·벽면에는 그림자 변형, 벽면 바로 아래 바닥 줄에는 접촉 그림자가 자동으로 깔린다.
+- **가로 칸막이**(`#` 한 줄)의 틈 1칸 = 문 통로(틈 아래 칸은 벽면이 아니라 바닥이 된다). 예: 1층 `########.##.###.....##` 의 x 8·11 = 탈의실·화장실 문, x 15~19 = 부엌↔LDK 트인 곳.
+- **세로 칸막이**(`#` 한 열)의 틈은 **3줄**이어야 지나간다 — 틈의 위 두 줄은 북쪽이 막혀 벽면이 되고 셋째 줄이 통로다. 1~2줄 틈은 벽면으로 막힌다. 예: 1층 x 6·12 열의 y 9~11 틈 → 통로 y 11.
+- 출입구 = 맨 아래 줄의 `.` 틈(또는 `start`). 현관은 맨 아래, 그 위 마루 끝 줄에 `agarikamachi`(현관 단) 를 한 줄로 깐다.
+- 바닥·벽면은 `floor`·`wall` 기본값 + `zones`(x0,y0,x1,y1 사각형마다 floor·wall). 일본 집 짝: 현관 `tataki` · 복도·LDK·양실 `flooring`(+`cloth`) · 화실 `tatami` + `juraku` · 부엌 `cushion` + `kitchen-panel` · 욕실 `bathtile` + `bathwall` · 탈의실·화장실 `cushion` + `cloth` · 침실 `flooring`/`carpet` + `cloth-beige`. 벽면 zone 은 벽면 칸(막힌 칸 아래 두 줄)을 덮어야 바뀐다.
+
+## 가구 종류(kind)
+{kinds}
+- 좌표 x,y = **발자국 왼쪽 위 칸**(그림이 위로 솟은 부분 `up` px 는 그 위 칸에 그려진다). 한 칸에 위층 조각은 둘까지(3·4층) — 셋이면 앞(남쪽) 둘만 남는다.
+- 계단: 올라가는 계단 `stairs-up-wood`(1칸)·`stairs-up-wood-wide`(2칸)는 **wall 종류** — 북쪽 벽 앞 첫 바닥 줄에 세우면 벽면 두 줄을 덮고 벽 속으로 오른다. 발칸은 걸을 수 있다 → 그 칸에 위층으로 가는 `links`. 내려가는 계단통 `stairwell-down-wood`(2×2): 윗줄 난간은 막히고 아랫줄 두 칸은 밟는다 → 그 두 칸에 아래층 `links`.
+- 문·창(`door-western`·`fusuma`·`shoji-door`·`oshiire`·`toilet-door`·창 4종)은 **벽면에 붙은 닫힌 그림**(걸이)이다. 실제 통로는 평면의 틈 — 문 그림은 틈이 없는 벽에 붙여 「저 너머 방·벽장」을 보여 주는 장식이고, 이벤트를 붙일 자리다.
+- 탁자 자동 타일 `tables:[{{style, x, y, w, h}}]` — `dining`(식탁, 아무 크기) · `kcounter`(대면 부엌 카운터, 한 줄). 윗면이 있어 탁상 물건을 올린다.
+- 탁상 물건 `goods:[{{id, x, y}}]` — 윗면 있는 가구(`surface`)나 탁자 칸 위에만, 그 칸 4층이 비어 있어야 한다(위로 솟은 이웃 가구가 4층을 쓰면 거부). 물건: {', '.join(f'`{g}`' for g in JPI['goods'])}.
+- 의자·소파·좌의자는 바라보는 쪽별 id(`-s` 남향 · `-n` 북향 · `-e` · `-w`) — 탁자·TV 를 보게 놓는다(탁자 북쪽 의자 = `-s`).
+
+## 일본 집 방 구성 (예제가 따르는 규칙)
+- 현관: 맨 아래 출입구 틈 → 타타키(2~3줄, `tataki`) → 마루 끝 줄 `agarikamachi` → 복도. 신발장 `getabako`(옆벽 곁, floor 종류라 북쪽 벽이 없어도 선다)·우산꽂이·신발·현관 매트·슬리퍼.
+- 복도 북쪽 벽에 계단(위층과 x 를 맞춘다). 화장실은 복도에서 바로(가로 칸막이 틈 1칸), 욕실은 탈의실을 지나서(욕실↔탈의실 세로 칸막이 3줄 틈).
+- 화실: 북쪽 벽에 도코노마(`tokonoma` 2칸)·지가이다나·장롱·불단, 가운데 좌탁(`chabudai`) + 방석 4장(`zabuton`, 밟는 무늬), 다기·귤 바구니는 좌탁 위.
+- LDK: 부엌은 북쪽 벽에 냉장고·조리대·싱크·가스대(후드)·레인지 선반을 한 줄로, 그 앞 한 줄 띄워 대면 카운터(`kcounter`) — 카운터 양 끝 중 한 곳은 통로로 남긴다. 식탁은 부엌 앞, 의자는 탁자를 본다. 거실은 TV 받침(벽 가구) — 깔개 — 좌탁 — 소파(TV 를 보는 `sofa-n`) 순으로 남쪽으로, **좌탁과 소파 사이 한 줄 띄움**(붙이면 소파 등받이가 좌탁 칸 4층을 차지해 탁상 물건이 안 올라간다).
+- 2층: 계단통 + 복도, 부부 침실(더블 침대 양옆 협탁·옷장)·아이방(이층침대·공부 책상 + `desk-chair-n`). 원룸(1K): 현관 → 부엌 복도(싱크·가스대·냉장고·세탁기) → 방, 유닛 배스(욕조+변기 한 방).
+- 방은 쓸 만큼만 — 빈 바닥이 넓게 남으면 방을 줄인다(가구로 메우지 않는다).
+
+## 통행·층 (엔진 판정 — 예제 1층의 막힘 지도)
+가구 발자국 = 막힘(3층, `solid`), 위로 솟은 칸·걸이 = ★(3층, 지나감 — 캐릭터 위에 그려짐), 밟는 무늬 = 2층(걸음), 바닥 = 1층 걸음, 벽면·천장·공허 = 1층 막힘(`solidfloor`). 탁상 물건 = 4층.
+`X` 막힘 · `.` 걸음 (house-1f, {ex1['W']}×{ex1['H']}):
+```
+{chr(10).join(ex1['codes'])}
+```
+
+## 정상/오류 — 자동 좌표 검증 (정상 = 예제 1층 그대로, 오류 = 한 가지만 바꿈. 엔진 조립기 실측)
+{md_table(['변조', '코드', '검출 칸(맵 좌표 x,y)', '도구 결과', '고치는 법', '그림'], err_rows)}
+- 오류(`error`)면 도구는 **맵을 만들거나 바꾸지 않는다**(부분 배치 없음). 경고(`warning`: 닿지 못한 바닥·쓸 수 없는 가구·조각 셋 겹침)는 짓되 요약에 남는다 — 0 이 될 때까지 고친다.
+- **레이어 정정 조건**: 가구 조각은 3층(앞뒤 둘이면 4층까지), 밟는 무늬는 2층, 탁상 물건은 4층. 4층이 이미 찼다는 `goods-no-layer` 는 물건이 아니라 이웃 가구 자리를 옮겨 고친다(위 표). `paint_tiles` 로 가구 칸을 1층에 칠하면 바닥이 사라지고 통행이 바뀐다 — 지우고 도구로 다시 짓는다.
+- **검사 범위**: 칸 번호·층·발자국 겹침·놓는 곳(벽·벽면·윗면)·출입구에서의 도달(BFS, 엔진 `passabilityOf`)만. 이벤트 실행(문·계단 이동이 실제로 일어나는지)과 「집처럼 보이는가」(미감)는 보지 않는다 — 미감은 적대적 검증 관문 `tiledata/jp-city/gates/interior.json`, 이동은 런타임 QA 가 본다.
+
+## 없는 것
+현관문(바깥 문) 그림 없음 — 출입구는 맨 아래 틈. 세로 벽(동·서 벽면)에 거는 문·창 없음(걸이는 북쪽 벽면만). 베란다·발코니 없음. 사람(가족 NPC)은 Actor1 캐릭터를 이벤트로 놓는다. 가게·학교·사무실 실내는 아직 없다(이 용도는 집).
+'''
+
+
+add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 법·평면 규칙·가구 종류·정상/오류', doc_in_rules())
+
+# 사전 — 블록 순서, 문서 하나 ≤ 36000자
+_IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
+_chunks = []; _cur = []; _size = 0
+for _oid in _IN_ORDER:
+    _it = _in_item(_oid); _n = len(jline(_it))
+    if _cur and _size + _n > 36000: _chunks.append(_cur); _cur = []; _size = 0
+    _cur.append(_it); _size += _n
+if _cur: _chunks.append(_cur)
+for _i, _chunk in enumerate(_chunks):
+    add_doc(C_INT, f'interior-dict-{_i + 1}', f'일본 도시 · 일본 집 실내 가구 사전 {_i + 1}/{len(_chunks)}', f"""# 일본 도시 — 일본 집 실내 가구 사전 {_i + 1}/{len(_chunks)} ({len(_chunk)}종, 칸 번호 전체)
+
+{HEAD}
+
+항목: `id`(도구 objects[].id 에 그대로) · `ko` · `block`(그림 원본 blocks/<block>.py) · `kind`(floor 바닥 가구 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬) · `w`×`h`(발자국 칸) · `up`(위로 솟은 px) ·
+`use`·`facing`·`surface`(윗면 → 탁상 물건)·`stairs`·`tags`(방)·`place`(놓는 곳)·`pair`(짝 가구)·`desc` · `cells`([dx, dy, 칸 번호, 층] — dy<0 은 발자국 위로 솟은 칸, 층 2 = 밟는 무늬·3 = 가구) ·
+같은 그림의 키트 `kit`(`stamp_object` 용 — 실내는 도구로 짓고 키트는 낱개 확인용) · `upperTiles`(키트 칸 전체) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸). 짓는 법은 `jp-interior-rules`, 그림 `jp-img-interior-dict-*`.
+
+{jfences(_chunk, 13000)}
+""")
+
+
+def doc_in_surfaces():
+    fl = [{'id': k, 'ko': v['ko'], 'cols': v['cols'], 'rows': v['rows'], 'tiles': [tnum(t) for t in v['tiles']]} for k, v in JPI['floors'].items()]
+    wl = [{'id': k, 'ko': v['ko'], 'cols': v['cols'], 'tiles': [tnum(t) for t in v['tiles']]} for k, v in JPI['walls'].items()]
+    ce = [{'id': k, 'tiles': [tnum(t) for t in v]} for k, v in JPI['ceilings'].items()]
+    tb = [{'style': k, 'ko': v['ko'], 'oneRow': v['oneRow'], 'up': v['up'], 'pieces': {pk: [[dx, dy, tnum(t), l] for dx, dy, t, l in cells] for pk, cells in v['pieces'].items()}} for k, v in JPI['tables'].items()]
+    gd = [{'id': k, 'tile': tnum(v)} for k, v in JPI['goods'].items()]
+    return f'''# 일본 도시 — 일본 집 실내 구조·탁자·탁상 물건 사전 (칸 번호 전체)
+
+{HEAD}
+
+조립기가 칸 번호를 고르는 식(사람이 칠하지 않는다 — 검증·디버깅용):
+- 바닥: `tiles[((y % rows) * cols + x % cols) * 4 + 그림자]`, 그림자 = 1(바로 위 칸이 벽면) | 2(서쪽 칸이 막힘). 짜임 무늬는 맵 좌표에 고정(주기 {list(JPI['floors'].values())[0]['cols']}×{list(JPI['floors'].values())[0]['rows']}).
+- 벽면: `tiles[((줄 − 1) * cols + x % cols) * 2 + 서쪽]`, 줄 1 = 윗줄 · 2 = 아랫줄, 서쪽 = 1(서쪽 칸이 막힘).
+- 천장 띠: `tiles[b]`, b = 남(1)·북(2)·서(4)·동(8)이 실내인지 + 16(북쪽이 공허). 공허 = `{tnum(JPI['void'])}`.
+- 탁자: 조각 키 = 열(L 왼 · M 가운데 · R 오른 · S 한 칸) + 행(T 위 · M · B 아래 · S 한 줄), 조각마다 [dx, dy, 칸 번호, 층].
+
+## 바닥 {len(fl)}
+{jfences(fl, 13000)}
+
+## 벽면 {len(wl)}
+{jfences(wl, 13000)}
+
+## 천장 띠
+{jfences(ce, 13000)}
+
+## 탁자 {len(tb)}
+{jfences(tb, 13000)}
+
+## 탁상 물건 {len(gd)}
+{jfences(gd, 13000)}
+'''
+
+
+add_doc(C_INT, 'interior-surfaces', '일본 도시 · 일본 집 실내 바닥·벽면·천장·탁자·탁상 물건 칸 번호', doc_in_surfaces())
+
+
+def doc_in_ex(f):
+    e = EIN['examples'][f]; W = e['W']
+    a = e['args']
+    rooms = md_table(['방', '사각형(x0,y0)-(x1,y1)'], [[r['room'], f"({r['x0']},{r['y0']})-({r['x1']},{r['y1']})"] for r in e['rooms']])
+    ev = md_table(['이벤트', '칸', '이동'], [[x['id'], f"({x['x']},{x['y']})", f"{(x['to'] or {}).get('mapId')} ({(x['to'] or {}).get('x')},{(x['to'] or {}).get('y')})"] for x in e['events']]) if e['events'] else '(이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)'
+    lay = '\n\n'.join(f"### {k}층\n```\n{flat_rows(to_rows([tnum(t) for t in e['layers'][k]], W))}\n```" for k in ('1', '2', '3', '4'))
+    return f'''# 일본 도시 — 일본 집 실내 예제: {_IN_EX_KO[f]} (`{a["mapId"]}`, {W}×{e["H"]})
+
+{HEAD}
+
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-{f}`. 도구 결과: {e["summary"]}
+
+## 입력
+{tool_json(a)}
+
+## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
+{rooms}
+
+## 이동
+{ev}
+
+## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
+```
+{chr(10).join(e['codes'])}
+```
+
+## 4층 정답 배열 (칸 번호, `.` = 빈 칸)
+{lay}
+'''
+
+
+for _f in _IN_EX:
+    add_doc(C_INT, f'interior-ex-{_f}', f'일본 도시 · 일본 집 실내 예제 · {_IN_EX_KO[_f]}', doc_in_ex(_f))
+
+
+def img_in():
+    for f in _IN_EX:
+        e = EIN['examples'][f]; W, H = e['W'], e['H']
+        k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT)
+    items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
+    for i, pg in enumerate(_in_pack(items)):
+        save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)
+    sf = []
+    for fid, v in JPI['floors'].items():
+        im = Image.new('RGBA', (v['cols'] * T, v['rows'] * T))
+        for y in range(v['rows']):
+            for x in range(v['cols']): im.alpha_composite(cell(tnum(v['tiles'][(y * v['cols'] + x) * 4])), (x * T, y * T))
+        sf.append((f'바닥 {fid}', up(im, 2)))
+    for wid, v in JPI['walls'].items():
+        im = Image.new('RGBA', (v['cols'] * T, 2 * T))
+        for r in (1, 2):
+            for x in range(v['cols']): im.alpha_composite(cell(tnum(v['tiles'][((r - 1) * v['cols'] + x) * 2])), (x * T, (r - 1) * T))
+        sf.append((f'벽면 {wid}', up(im, 2)))
+    for i, pg in enumerate(_in_pack(sf)):
+        save_img(f'interior-surfaces-{i + 1}', pg, f'일본 집 실내 바닥(짜임 주기 한 벌)·벽면(윗줄+아랫줄) ×2. 칸 번호 `jp-interior-surfaces`.', C_INT)
+    # 정상/오류 — 오류 칸 둘레를 잘라 나란히
+    good = EIN['examples']['house-1f']; W, H = good['W'], good['H']
+    for key, e in EIN['errors'].items():
+        pick = [i for i in e['issues'] if i['severity'] == 'error'] or [i for i in e['issues'] if i['severity'] == 'warning']
+        pts = [(i['x'], i['y']) for i in pick if i['x'] is not None]
+        if key == 'doorBlocked': pts = [(13, 11)] + [(c['x'], c['y']) for c in e['unreachedFloor']]
+        if not pts or not e['layers']: continue
+        cx = sum(p[0] for p in pts) // len(pts); cy = sum(p[1] for p in pts) // len(pts)
+        cw, chh = 11, 9
+        x0 = max(0, min(W - cw, cx - cw // 2)); y0 = max(0, min(H - chh, cy - chh // 2))
+        k = 2
+        def crop(layers):
+            im = render(layers, W, H).crop((x0 * T, y0 * T, (x0 + cw) * T, (y0 + chh) * T)); return up(im, k)
+        gi = crop(good['layers']); bi = crop(e['layers'])
+        mark_cells(bi, [(x - x0, y - y0) for x, y in pts if x0 <= x < x0 + cw and y0 <= y < y0 + chh], k)
+        codes = ', '.join(sorted({i['code'] for i in pick}))
+        save_img(f'in-err-{key.lower()}', panels([('정상(예제 1층)', gi), (f'오류 — {e["title"]} → {codes}', bi)]),
+                 f'일본 집 실내 변조 `{codes}`: 왼쪽 정상/오른쪽 오류, 빨강 = 조립기가 짚은 칸. 잘라낸 창 = 맵 칸 ({x0},{y0})~({x0 + cw - 1},{y0 + chh - 1}), 원본 ×{k}. 좌표·고치는 법은 `jp-interior-rules` 정상/오류 표.', C_INT)
+
+
+img_in()
+
+
 C_ERR = new_cat('errors', '일본 도시 · 정상/오류·자동 좌표 검증·층 정정',
                 '모든 용도의 정상/오류 실험을 한곳에 모은 총괄: 검사 코드 → 용도·문서·그림 지도, 변조별 맵 좌표 표(오토타일 17세트·건물 11+3·도로 3·상가 3), 검사 범위(과대 주장 금지), 엔진 판정과 안 맞는 층 설명의 정정(전/후)과 투명 덧그림 층 돌려놓기 실험.')
 
@@ -2434,7 +2713,7 @@ _LM_UP = [t for v in _LM_UP_BY.values() for t in v]
 _LM_LO = [t for v in _LM_LO_BY.values() for t in v]
 assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
 _STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
-assert len(_STAIR_STAR) == 62, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘)
+assert len(_STAIR_STAR) == 62 + 8 and sum(1 for t in AUD['walkableStairs'] if REGION[t] == 'interior') == 8, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘) + 일본 집 실내 계단 8(올라가는 계단 발칸·솟은 칸, 계단통 솟은 칸)
 
 
 def n_issue(lst): return len(lst)

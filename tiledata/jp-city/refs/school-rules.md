@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 小学校 33종 · 쓰는 법 (교정 배치·층·입구)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8126칸**, 16px 칸, 시트 768×2720px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9007칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 일본 小学校 교정의 신호(조사 `tiledata/jp-city/research/03-building-types-dimensions.md` 「소학교」·「校庭」: 가운데 맨흙 운동장, **둘레에** 놀이기구·나무·조례대, 부속 屋外プール·学級農園·観賞池·飼育小屋)를 손 도트 키트로 그린 것이다.
 그림 원본 `scripts/content/jp-city/blocks/school.py`, 예제 맵 생성기 `scripts/content/jp-city/maps/school.mjs`(검사 + 적대적 검증 관문 `scripts/content/jp-city/gate/adversarial_gate.py`). 분류: 바닥(1층)·트랙 선(2층) 7, 수영장·정문·창고·사육장·자전거 보관대 5, 놀이·체육 기구 10, 화단·밭·연못·그늘·덤불·관찰 8, 교사 앞 기물 3.
