@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 901,
+  "remainingAtSnapshot": 556,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-07T05:54:22.981443+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 901,
+      "manifestSha256": "8912a97f8d5b6b3764abdf24589b0a4d97b8e9e09e0b4ea452c0d48c32a3282f",
+      "finishedAt": "2026-10-07T05:53:52.724833+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-901-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "adventure--reunion--explore--warm--journey--short,adventure--reunion--explore--warm--journey--episode,adventure--reunion--explore--mystic--quests--short,adventure--reunion--explore--mystic--journey--scene,adventure--reunion--explore--warm--chapters--scene,adventure--reunion--explore--warm--quests--scene"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 901,
+      "manifestSha256": "8912a97f8d5b6b3764abdf24589b0a4d97b8e9e09e0b4ea452c0d48c32a3282f",
+      "finishedAt": "2026-10-07T05:54:20.933725+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-901-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "adventure--reunion--explore--mystic--journey--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--mystic--journey--scene.png",
+      "sha256": "3bd72e418176b2aa69f74e87ffd363563d515e1412246b362d9b3d3f333d56a6",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--quests--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--mystic--quests--short.png",
+      "sha256": "576455722c28d8d2f3e48fff3baf0427411c12556cf91898775f5617a725c15d",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--warm--journey--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--warm--journey--episode.png",
+      "sha256": "cb75db8146ab9a38e34b5d3a529a6d0baf7e2404540f0d8c691a0782663bab6e",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--warm--journey--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--warm--journey--short.png",
+      "sha256": "d17850413e24164f389a9b48abbc516d055eadf8e49e54769a8fa5307aec1b8c",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--warm--quests--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--warm--quests--scene.png",
+      "sha256": "a3f4bb710b2074fa8e0b65974a058784c8fc6f6ec6d928776a03c13d0e4df56e",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--warm--chapters--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-901-stage220-selected-adventure--reunion--explore--warm--chapters--scene.png",
+      "sha256": "82fe0965506d95fd9859023fb90b1b6d4de7de0c9e7e656a8c143f2ebee47773",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "901 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. Only actually published and ancestor-complete scenes included; no all901 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-901-stage220-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-901-stage220-click-proof.json"
+  }
+}

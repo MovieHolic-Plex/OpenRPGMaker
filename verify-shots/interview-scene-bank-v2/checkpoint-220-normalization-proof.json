@@ -1,0 +1,15 @@
+{
+  "metadataNormalization": {
+    "returncode": 0,
+    "ledgerAllExact": true,
+    "nativeUnchanged": true,
+    "metadataNormalizedRecords": 4,
+    "history": "verify-shots/interview-scene-bank-v2/checkpoint-218-positive-findings-normalization-history.json",
+    "finishedAt": "2026-10-07T05:16:58.073045+00:00",
+    "notNewVisualPasses": true,
+    "frozen893SnapshotUnchanged": true,
+    "futureBuildRequired": true
+  },
+  "history": "verify-shots/interview-scene-bank-v2/checkpoint-218-positive-findings-normalization-history.json",
+  "scope": "218positiveobservations wronglywrittenasfindings nowinnotes; allvisualchecks unchanged. Old893snapshot/QA/priorreviewinputs retained. Neithernewvisualpasses nororiginalsourcecorrectives. Originalsourceaudit adds OWN-only original battlejourney corrective1/cumulative106, keptseparatefrommetadata and20newattempts. Laterbuild must independentlymatchactualpublishedcurrentP+gate."
+}

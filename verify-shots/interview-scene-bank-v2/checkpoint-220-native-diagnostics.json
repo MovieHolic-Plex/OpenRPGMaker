@@ -1,0 +1,21 @@
+{
+  "scope": "Two read-onlyNEARESTdiagnostics ROOTpersonallyviewed afterWHOLEnative/OWN: naturaljaggedSIDEstones/emptywalkway notconclusivemetalportcullis/glyph andflatcross-strappedthirdparcel notbook/print. Sourcebytesunchanged, neitherproductionimagesnoradditionalgeneration.",
+  "records": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage220-219-episode-side-door.png",
+      "sha256": "f1ab958b8e9afac04284e61d8f454eaba1a5e41d7e5c87a31fefe7705324b27c",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-219-adventure--reunion--explore--warm--journey--episode.png",
+      "sourceNativeSha256": "751dd35b997615b24b4fc5623be4a160d70a73f3df1cb15ec666d7ac68c443e8",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage220-220-quest-table-flat-object.png",
+      "sha256": "9bf65b9868af5aa6a56b7b7ff5f116c0cb1b49aecbded88bf8fdaa6167f16dbd",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-220-adventure--reunion--explore--warm--quests--scene.png",
+      "sourceNativeSha256": "4f4952b70efe284bec532fbdf88444a31e5a7cf465356cd16d92cf3a09d33737",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    }
+  ]
+}

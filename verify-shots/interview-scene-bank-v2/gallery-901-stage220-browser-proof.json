@@ -1,0 +1,138 @@
+{
+  "publishedSnapshot": 901,
+  "remaining": 556,
+  "actualGalleryToolReturncode": 0,
+  "browser": {
+    "results": [
+      {
+        "width": 320,
+        "images": [
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게 · 목적지를 잇는 여정 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게 · 거점 의뢰 · 위기 해결과 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 목적지를 잇는 여정 · 첫 동료와 유적",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 목적지를 잇는 여정 · 위기 해결과 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 거점 의뢰 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 새로운 무대 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 힘차고 유쾌하게 · 새로운 무대",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 288
+          }
+        ],
+        "state": {
+          "count": "901 / 1457",
+          "pressed": 1,
+          "width": 288,
+          "scrollWidth": 288
+        }
+      },
+      {
+        "width": 736,
+        "images": [
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게 · 목적지를 잇는 여정 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게 · 거점 의뢰 · 위기 해결과 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 목적지를 잇는 여정 · 첫 동료와 유적",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 목적지를 잇는 여정 · 위기 해결과 귀환",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 거점 의뢰 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 따뜻한 동행 · 새로운 무대 · 첫 출발",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 경이롭고 신비롭게",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          },
+          {
+            "label": "탐험·모험 · 소중한 사람의 흔적 · 탐험과 발견 · 힘차고 유쾌하게 · 새로운 무대",
+            "nativePreviewWidth": 800,
+            "visibleWidth": 704
+          }
+        ],
+        "state": {
+          "count": "901 / 1457",
+          "pressed": 1,
+          "width": 704,
+          "scrollWidth": 704
+        }
+      }
+    ],
+    "errors": [],
+    "passed": true
+  },
+  "actualClicks": 16,
+  "rootViewedFourWholeScreens": true,
+  "screens": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-901-stage220-gallery-320.png",
+      "sha256": "cf4cd1712b91dc5e53e5ed2ddc2b922d9099074429369d2d6b4ce270dc36adbc",
+      "rootViewedWholeScreen": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-901-stage220-gallery-736.png",
+      "sha256": "875cf5472e2a93fadf42fd6c5c90b2b93236dcbccabf6523942012f504eb049d",
+      "rootViewedWholeScreen": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-901-stage220-gallery-latest-320.png",
+      "sha256": "b54cc53672d10dc5f30f5bd64a6cd5dfb1ef962d966a12740ea47d21c03fc994",
+      "rootViewedWholeScreen": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/gallery-901-stage220-gallery-latest-736.png",
+      "sha256": "4a4dedbc9796fa1b7d74eab4e23a0fd8da840f6d01b98a531b42249ed52e3c3e",
+      "rootViewedWholeScreen": true
+    }
+  ],
+  "scope": "Eight actually published representatives, eight clicks each at320/736; four WHOLE settled gallery screens personally viewed by ROOT. Preview-only800x450WEBP, original native PNG unmodified. Not all901 newvisualaudit/fullappboot/AIhandoff; whole1457 incomplete. Four218positive metadata normalization keeps original native/allchecks/priorrecords, not newvisualpasses."
+}
