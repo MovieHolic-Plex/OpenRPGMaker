@@ -20,7 +20,7 @@ function attemptsOf(run, caseId) {
   if (!existsSync(run.dir)) return [];
   return readdirSync(run.dir).filter(d => d.startsWith(`${caseId}-r`)).sort().map(attempt => {
     const dir = resolve(run.dir, attempt);
-    return { attempt, dir, result: read(resolve(dir, 'result.json')), measure: read(resolve(dir, 'measure.json')) };
+    return { attempt, dir, result: read(resolve(dir, 'result.json')), measure: read(resolve(dir, 'measure.json')), judge: read(resolve(dir, 'judge.json')) };
   });
 }
 function copy(run, attempt, file) {
@@ -29,11 +29,75 @@ function copy(run, attempt, file) {
   return `${name}/${target}`;
 }
 
+
+/** 시트 안 사람 판정 — 이 브라우저(localStorage)에 저장하고, 판정자와 1점 안으로 맞은 비율을 위 띠에 바로 보인다. */
+function humanLabels(KEY) {
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+  const HUMAN = { good: 4.5, ok: 3, bad: 1.5 };
+  function paint() {
+    const labels = load();
+    let n = 0; const hit = { gpt: [0, 0], gemini: [0, 0] };
+    document.querySelectorAll('.human').forEach(el => {
+      const v = labels[el.dataset.key];
+      el.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+      if (!v) return; n++;
+      for (const j of ['gpt', 'gemini']) { const s = parseFloat(el.dataset[j]); if (Number.isNaN(s)) continue; hit[j][1]++; if (Math.abs(s - HUMAN[v]) <= 1) hit[j][0]++; }
+    });
+    const bar = document.getElementById('agree');
+    bar.innerHTML = n
+      ? '사람 판정 ' + n + '개 · 판정자가 사람과 1점 안으로 맞은 수: GPT ' + hit.gpt[0] + '/' + hit.gpt[1] + ' · Gemini ' + hit.gemini[0] + '/' + hit.gemini[1] + ' <button id="copy">판정 복사</button>'
+      : '사람 판정 0개 — 그림마다 좋다/보통/별로를 눌러 주세요(이 브라우저에 저장됩니다)';
+    const copy = document.getElementById('copy');
+    if (copy) copy.onclick = () => navigator.clipboard.writeText(JSON.stringify(load())).then(() => { copy.textContent = '복사됨'; });
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.human button'); if (!b) return;
+    const labels = load(); const key = b.parentElement.dataset.key;
+    if (labels[key] === b.dataset.v) delete labels[key]; else labels[key] = b.dataset.v;
+    localStorage.setItem(KEY, JSON.stringify(labels)); paint();
+  });
+  paint();
+}
+
+const JUDGE_LABEL = { gpt: 'GPT 판정자', gemini: 'Gemini 판정자' };
+/** 원본 그림에 대한 판정자별 규칙 점수·감점 사유·결함. 보정 사본(가구 빼기·밀기) 점수도 작게 보인다. */
+function judgeOf(a, mapId) {
+  const entry = a.judge?.maps?.find(m => m.mapId === mapId);
+  if (!entry) return { html: '', scores: {} };
+  const scores = {};
+  const parts = Object.keys(JUDGE_LABEL).map(id => {
+    const original = entry.verdicts.find(v => v.judge === id && v.variant === 'original');
+    if (!original) return '';
+    const score = original.score?.overall;
+    scores[id] = score;
+    const calib = ['stripped', 'shifted'].map(kind => entry.verdicts.find(v => v.judge === id && v.variant === kind)?.score?.overall).filter(n => n !== undefined);
+    const parsed = original.parsed ?? {};
+    const tone = score === undefined ? 'muted' : score >= 4 ? 'good' : score >= 3 ? '' : 'bad';
+    return `<div class="jv"><b>${JUDGE_LABEL[id]}</b> <span class="${tone} score">${score ?? '판정 실패'}</span>
+${original.score?.caps?.length ? `<span class="caps">${esc(original.score.caps.join(' · '))}</span>` : ''}
+<span class="calib" title="같은 맵을 망가뜨린 사본 점수(가구 빼기·가구 밀기). 원본보다 낮아야 판정자를 믿는다">사본 ${calib.join(' / ')}</span>
+<p class="jsum">${esc(parsed.summary ?? '')}</p>${(parsed.defects ?? []).filter(Boolean).length ? `<ul class="defects">${parsed.defects.filter(Boolean).map(d => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}</div>`;
+  }).join('');
+  const values = Object.values(scores).filter(n => typeof n === 'number');
+  const split = values.length === 2 && Math.abs(values[0] - values[1]) >= 1.5;
+  return { html: `<div class="judges${split ? ' split' : ''}">${split ? '<p class="bad">판정자 의견 갈림 — 사람 판정이 필요합니다</p>' : ''}${parts}</div>`, scores };
+}
+
 const summary = runs.map(run => {
   const all = seed.cases.flatMap(entry => attemptsOf(run, entry.id));
   const measured = all.filter(a => a.measure && ['machine-pass', 'machine-fail', 'no-map'].includes(a.measure.status));
   return { run, total: all.length, ran: all.filter(a => a.result).length, measured: measured.length,
-    pass: measured.filter(a => a.measure.status === 'machine-pass').length, noMap: measured.filter(a => a.measure.status === 'no-map').length };
+    pass: measured.filter(a => a.measure.status === 'machine-pass').length, noMap: measured.filter(a => a.measure.status === 'no-map').length,
+    // 판정 평균: 두 판정자 평균을 과제마다 내고, 맵이 없는 과제는 0점으로 센다(못 만든 것도 결과다).
+    judged: all.filter(a => a.judge || a.measure?.status === 'no-map' || a.measure?.status === 'not-measured').length,
+    judgeMean: (() => {
+      const per = all.map(a => {
+        if (a.measure?.status === 'no-map' || a.measure?.status === 'not-measured' || a.result?.status === 'harness-error') return 0;
+        const v = (a.judge?.maps ?? []).flatMap(m => m.verdicts.filter(x => x.variant === 'original').map(x => x.score?.overall)).filter(n => typeof n === 'number');
+        return v.length ? v.reduce((x, y) => x + y, 0) / v.length : null;
+      }).filter(n => n !== null);
+      return per.length ? Math.round(per.reduce((x, y) => x + y, 0) / per.length * 10) / 10 : null;
+    })() };
 });
 
 const sections = Object.entries(seed.categories).map(([categoryId, category]) => {
@@ -49,8 +113,11 @@ const sections = Object.entries(seed.categories).map(([categoryId, category]) =>
         const mapHtml = maps.map(m => {
           const src = copy(run, a.attempt, m.render.file);
           const checks = m.checks.map(c => `<li class="${c.ok ? 'good' : c.advisory ? 'note' : 'bad'}">${c.ok ? '✓' : c.advisory ? '·' : '✕'} ${esc(c.detail)}</li>`).join('');
+          const judged = judgeOf(a, m.mapId);
+          const key = `${run.label}|${a.attempt}|${m.mapId}`;
+          const human = `<div class="human" data-key="${esc(key)}" data-gpt="${judged.scores.gpt ?? ''}" data-gemini="${judged.scores.gemini ?? ''}">사람 판정 <button data-v="good">좋다</button><button data-v="ok">보통</button><button data-v="bad">별로</button></div>`;
           return `<figure><a href="${src}" target="_blank"><img loading="lazy" src="${src}" style="width:${Math.min(m.render.width * 2, 640)}px"></a>
-<figcaption>${esc(m.name)} · ${m.size.join('×')} · ${esc(m.tilesetId)} · NPC ${m.npcs}</figcaption><ul class="checks">${checks}</ul></figure>`;
+<figcaption>${esc(m.name)} · ${m.size.join('×')} · ${esc(m.tilesetId)} · NPC ${m.npcs}</figcaption>${human}${judged.html}<details><summary>기계 검사</summary><ul class="checks">${checks}</ul></details></figure>`;
         }).join('');
         return `<div class="cell">${head}${meta}${mapHtml}<details><summary>조수 답</summary><blockquote>${esc(a.result.answer || '(답 없음)')}</blockquote>
 <p class="tools">${esc((a.result.tools ?? []).map(t => t.name + (t.ok ? '' : '✕')).join(' → '))}</p></details></div>`;
@@ -63,7 +130,7 @@ const sections = Object.entries(seed.categories).map(([categoryId, category]) =>
 }).join('');
 
 const tiles = summary.map((s, i) => `<div class="tile" style="--c:${COLORS[i % COLORS.length]}"><div class="tname"><i></i>${esc(s.run.label)}</div>
-<div class="hero">${s.measured ? `${s.pass}/${s.measured}` : '—'}</div><div class="sub">기계 검사 통과 (측정한 시도 기준) · 실행 ${s.ran}/${s.total} · 만든 맵 없음 ${s.noMap}</div></div>`).join('');
+<div class="hero">${s.judgeMean ?? '—'}<small> / 5</small></div><div class="sub">그림 판정 평균(두 판정자 평균, 맵 못 만든 과제 0점) · 기계 검사 통과 ${s.pass}/${s.measured} · 만든 맵 없음 ${s.noMap}</div></div>`).join('');
 const done = summary.every(s => s.measured === s.total && s.total > 0);
 const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>조수 공간 제작 비교</title>${done ? '' : '<meta http-equiv="refresh" content="120">'}<style>
@@ -82,10 +149,18 @@ figure{margin:6px 0}img{image-rendering:pixelated;max-width:100%;border:1px soli
 .checks{list-style:none;padding:0;margin:4px 0;font-size:12.5px}.good{color:var(--good)}.bad{color:var(--bad);font-weight:600}.muted{color:var(--mu)}.note{color:var(--mu)}
 .why{font-size:12px;color:var(--t2);word-break:break-all}blockquote{margin:4px 0;padding:6px 10px;background:var(--s2);border-radius:6px;white-space:pre-wrap;font-size:13px}
 .tools{font:11.5px ui-monospace,monospace;color:var(--mu);word-break:break-all}
+.hero small{font-size:15px;color:var(--mu);font-weight:400}.judges{margin:6px 0;display:grid;gap:6px}.judges.split{outline:2px solid var(--bad);outline-offset:4px;border-radius:4px}
+.jv{background:var(--s2);border-radius:6px;padding:6px 10px;font-size:12.5px}.score{font-size:17px;font-weight:700;margin:0 6px}.caps{color:var(--bad)}.calib{color:var(--mu);margin-left:8px;font-size:11.5px}
+.jsum{margin:2px 0}.defects{margin:2px 0;padding-left:18px;color:var(--t2)}
+.human{margin:6px 0;font-size:12.5px;display:flex;gap:6px;align-items:center}.human button{font:inherit;padding:3px 10px;border:1px solid var(--rule);border-radius:5px;background:var(--s1);color:var(--t1);cursor:pointer}
+.human button.on[data-v=good]{background:#0ca30c;color:#fff}.human button.on[data-v=ok]{background:#c98a00;color:#fff}.human button.on[data-v=bad]{background:#c02f2f;color:#fff}
+.agree{position:sticky;top:0;background:var(--s1);border:1px solid var(--rule);border-radius:8px;padding:8px 14px;margin:10px 0;z-index:2;font-size:13.5px}.agree button{font:inherit;margin-left:8px}
 </style></head><body>
 <h1>조수 공간 제작 비교 — 방 · 판타지 실내 · 현대 실내 · 무림</h1>
-<p class="lead">같은 새 프로젝트에서 같은 자연어 요청을 실제 입력창으로 보냈습니다. 아래 ✓/✕는 <b>기계 검사</b>(칩셋 계열, 입구에서 모든 바닥 도달, 빈 바닥 비율·빈 정사각형, 좌우 복붙 대칭)일 뿐 「보기 좋다」는 뜻이 아닙니다. 그림을 직접 보고 판단해 주세요. 그림을 누르면 원본 크기로 열립니다.</p>
+<p class="lead">같은 새 프로젝트에서 같은 자연어 요청을 실제 입력창으로 보냈습니다(모델마다 과제당 1회). 그림을 누르면 원본 크기로 열립니다.</p>
 <div class="tiles">${tiles}</div>${done ? '' : '<p class="muted">아직 돌고 있습니다 — 2분마다 새로 고칩니다.</p>'}
-${sections}</body></html>`;
+<p class="lead"><b>판정자</b>: 두 비전 모델이 같은 그림을 보고 「벽에 붙을 것이 벽에 있나·방 밖으로 튀어나온 것·잘린 것·문 앞 막힘·방이 맵을 채우나·필수 물건·빈 바닥」을 예/아니오로 답하고, 종합 점수는 코드가 규칙으로 냅니다(구조 위반이면 2점 이하 등). 판정자를 믿을 수 있는지 보려고 같은 맵의 가구를 빼거나 밀어 망가뜨린 사본도 보여 주었고, 두 판정자 모두 사본을 원본보다 낮게 매겼습니다(22/22). 그래도 <b>미감은 사람 판정이 기준</b>입니다 — 아래 단추를 누르면 판정자와 얼마나 맞는지 위 띠에 바로 나옵니다.</p>
+<div class="agree" id="agree">사람 판정 0개</div>
+${sections}<script>(${humanLabels.toString()})(${JSON.stringify(`space-craft-labels:${name}`)});</script></body></html>`;
 writeFileSync(resolve(vizRoot, `${name}.html`), html);
 console.log(`sheet → http://mdc-server:18301/${name}.html`);

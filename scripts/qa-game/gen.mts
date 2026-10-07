@@ -4,6 +4,7 @@
 //   bun scripts/qa-game/gen.mts --brief scripts/qa-game/briefs/lighthouse-jrpg.json --out qa-runs/lighthouse-1
 //
 // 옵션: --provider/--model/--lite-model/--brain-model  AiConfig 덮어쓰기(기본은 브라우저 기본 설정 defaultAiConfig)
+//       --ai-config <file>  역할 모델 설정 파일 통째로 덮기(조수 하네스 ai-configs 와 같은 형식)
 //       --autonomy balanced|autonomous|max   --apply default|auto|yolo   --timeout-ms N   --no-check
 //       --concept-card <card.json>  굽기 전 개념 카드를 이 실행에만 얹는다(슈퍼하네스 조수 시험)
 //       --text "<채팅 한 줄>"  기획 지시문 대신 조수 채팅에 친 문장 하나를 그대로 보낸다(씨앗은 --brief 의 새 프로젝트, 기획서는 뺀다)
@@ -127,6 +128,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
 
   const config: AiConfig = {
     ...defaultAiConfig(), ...(input.ai ?? {}),
+    // --ai-config <file>: 조수 하네스와 같은 역할 모델 설정 파일(harness-data/assistant-capability/ai-configs/*.json)을 덮는다.
+    ...(arg("ai-config") ? JSON.parse(fs.readFileSync(arg("ai-config")!, "utf8")) as Partial<AiConfig> : {}),
     ...(arg("provider") ? { providerId: arg("provider")! } : {}),
     ...(arg("model") ? { model: arg("model")! } : {}),
     ...(arg("lite-model") ? { liteModel: arg("lite-model")! } : {}),
