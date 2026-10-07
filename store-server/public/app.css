@@ -297,6 +297,8 @@ label.radio input, label.check input { margin-top: 4px; accent-color: var(--gold
 .queue-item .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .queue .empty { padding: 20px; }
 .reports { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: var(--text-2); }
+.queue-hint { margin: -4px 0 10px; font-size: 13px; color: var(--muted); }
+.queue-item p.held { color: var(--gold); font-weight: 600; }
 
 /* ── 바닥 ── */
 footer { border-top: 1px solid var(--line); background: var(--bg); }
