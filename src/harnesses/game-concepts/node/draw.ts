@@ -11,7 +11,28 @@ const DEFAULT_ENDPOINT = process.env.GC_IMAGE_ENDPOINT ?? "http://mdc-server:988
 const DEFAULT_PROVIDER = process.env.GC_IMAGE_PROVIDER ?? "openai-codex";
 const DEFAULT_MODEL = process.env.GC_IMAGE_MODEL ?? "codex-image-default";
 
+/** 연결 자체가 끊긴 것(서버 재시작 등) — 잠깐 기다렸다 다시 하면 된다. HTTP 오류·나쁜 답은 다시 하지 않는다. */
+function isConnectionError(error: unknown): boolean {
+  return error instanceof TypeError && /fetch failed/i.test(error.message);
+}
+
+/**
+ * 그림 서버(9888)는 다른 세션이 수시로 다시 띄운다 — 2026-10-08 실측: 재시작 한 번에 남은 87장이 한꺼번에 「fetch failed」.
+ * 연결 오류만 15s·30s·60s 쉬고 다시 한다.
+ */
 export async function generateImage(prompt: string, endpoint = DEFAULT_ENDPOINT): Promise<Uint8Array> {
+  for (const wait of [15_000, 30_000, 60_000]) {
+    try {
+      return await generateImageOnce(prompt, endpoint);
+    } catch (error) {
+      if (!isConnectionError(error)) throw error;
+      await new Promise((resolve) => setTimeout(resolve, wait));
+    }
+  }
+  return generateImageOnce(prompt, endpoint);
+}
+
+async function generateImageOnce(prompt: string, endpoint: string): Promise<Uint8Array> {
   const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Oprn-Provider": DEFAULT_PROVIDER },
