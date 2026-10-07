@@ -139,6 +139,16 @@ SPACES = {
                                    F('wz-furn-barrel', 'beside', 1, 2, 0, near=['wz-furn-crate-stack']),
                                    F('wz-furn-candlestick', 'beside', 2, 2, 0, near=['wz-furn-fireplace']),
                                    F('wz-furn-lantern-hanging', 'north-wall', 0, 2, 0, wallTop=2, wallMatch='plain')]),
+            # 기숙사 침실: 사주식 침대가 북벽에 머리를 대고 한 줄(침대 사이 협탁, 발치에 트렁크), 옆벽에 옷장·거울, 가운데 깔개.
+            dorm=dict(ko='기숙사 침실', size=dict(min=[12, 10], default=[18, 14], max=[30, 24]),
+                      floor=SLATE, runner=None, defaultDoors=[dict(side='s')],
+                      furniture=[F('wz-dorm-bed-green', 'grid', 3, 5, 0, gapX=0, gapY=1, rowsFrom='north', alt=['wz-dorm-bed-green-closed'],
+                                   with_=[['wz-dorm-nightstand', 2, 0], ['wz-dorm-trunk', 0, 3]]),
+                                 F('wz-dorm-lamp-green', 'north-wall', 2, 3, 0, wallTop=2, wallMatch='plain'),
+                                 F('wz-furn-banner-snake', 'north-wall', 1, 1, 0, wallTop=1, wallMatch='plain'),
+                                 F('wz-dorm-wardrobe', 'side-wall', 1, 2, 0),
+                                 F('wz-dorm-mirror', 'beside', 1, 1, 0, near=['wz-dorm-wardrobe']),
+                                 F('wz-dorm-rug-green', 'center', 1, 1, 0)]),
         )),
     'owlery': dict(
         ko='부엉이 탑', indoor=True, layout='room', wall='owlcastle',

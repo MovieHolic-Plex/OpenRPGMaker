@@ -313,6 +313,30 @@ export const WIZARDING_PLACE_REFERENCES = [
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
+    "id": "wz-space-shared-dorm-18x12",
+    "name": "마법 학교 · 기숙사 침실",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 18,
+    "height": 12,
+    "tilesetId": "wizarding_world",
+    "preview": "/assets/region-references/wz-space-shared-dorm.png",
+    "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
+    "projectDownload": "/assets/region-references/wz-space-shared-dorm.oprn.json",
+    "sourceProjectId": "oprn-bundled-wz-space-shared-dorm",
+    "sourceMapId": "wz-place-space-shared-dorm",
+    "snapshotProjectId": "oprn-place-wz-space-shared-dorm-v2",
+    "rules": [
+      "18×12칸 공용(성채·공통 가구) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'shared', variant:'dorm', seed:1}) 결과. 문 칸 s(9,11)",
+      "쓴 키트: `wz-dorm-bed-green`, `wz-dorm-bed-green-closed`, `wz-dorm-lamp-green`, `wz-dorm-mirror`, `wz-dorm-nightstand`, `wz-dorm-trunk`, `wz-dorm-wardrobe`, `wz-furn-banner-snake`",
+      "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-shared`."
+    ],
+    "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
+  },
+  {
     "id": "wz-space-shared-30x18",
     "name": "마법 학교 · 성채 대연회장(공용 홀)",
     "kind": "completed-place",

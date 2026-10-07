@@ -3,13 +3,13 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 2472,
-  "kits_checked": 627,
+  "tiles_checked": 2508,
+  "kits_checked": 636,
   "groups_checked": 158,
   "autotiles_checked": 6
  },
  "reassembly": {
-  "kits": 627,
+  "kits": 636,
   "mismatched": 0,
   "ids": []
  },
@@ -17,19 +17,19 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 2472,
-  "rows": 52,
+  "count": 2508,
+  "rows": 53,
   "sheetPx": [
    768,
-   832
+   848
   ],
   "strips": 101,
-  "kits": 627,
+  "kits": 636,
   "groups": 158,
   "autotiles": 6
  },
  "adopted": {
-  "pieces": 690,
+  "pieces": 699,
   "autotiles": 6,
   "characters": 35
  },
@@ -61,6 +61,10 @@
   "creatures": {
    "adopted": 19,
    "total": 24
+  },
+  "dorm": {
+   "adopted": 9,
+   "total": 9
   },
   "effects": {
    "adopted": 30,
@@ -145,6 +149,12 @@
   {
    "id": "wz-clock-example-gears",
    "w": 14,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-dorm-example",
+   "w": 16,
    "h": 12,
    "skipped": []
   },
