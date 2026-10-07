@@ -31,6 +31,8 @@ import type { TurnTimingRecorder } from "@/ai/turnTiming";
 import type { AuditEntry } from "@/ai/session/types";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { tilesetQuestionFromEvent } from "./aiTilesetChangeCard";
+import { storeCardFromEvent } from "./aiStoreCard";
+import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentStats, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
@@ -232,6 +234,8 @@ export interface PiCommandSurface {
   readonly getApprovedTilesetFamilies?: () => readonly string[];
   /** 조수가 ask_tileset_change 로 칩셋 계열 변경을 물었다. 패널은 턴이 끝난 뒤 질문 카드를 띄운다. */
   readonly onTilesetChangeQuestion?: (question: TilesetChangeQuestion) => void;
+  /** 조수가 스토어 도구(ask_missing_tiles·store_publish·store_set_visibility)로 물었다. 패널은 턴이 끝난 뒤 카드를 띄운다. */
+  readonly onStoreCard?: (request: StoreCardRequest) => void;
   /** 중단 시 미승인 변경을 폐기한다. 실시간·단계별 모드에서 이미 적용한 작업은 남는다. */
   readonly signal?: AbortSignal;
   /**
@@ -547,6 +551,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     const question = tilesetQuestionFromEvent(raw);
     if (question) surface.onTilesetChangeQuestion?.(question);
+    const storeCard = storeCardFromEvent(raw);
+    if (storeCard) surface.onStoreCard?.(storeCard);
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
@@ -611,6 +617,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         }
         const question = tilesetQuestionFromEvent(raw);
         if (question) surface.onTilesetChangeQuestion?.(question);
+        const storeCard = storeCardFromEvent(raw);
+        if (storeCard) surface.onStoreCard?.(storeCard);
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         showConstructionEvent(scopePiGhostEvent(event, "ultrabrain-plan"));
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });

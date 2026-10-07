@@ -1,0 +1,10 @@
+{
+ "schema": "beodeul-building-review-decisions/1",
+ "exportedAt": "2026-10-07T15:34:00+0900",
+ "counts": {
+  "allow": 0,
+  "deny": 0,
+  "pending": 0
+ },
+ "log": []
+}

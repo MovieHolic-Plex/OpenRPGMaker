@@ -48,7 +48,7 @@ def _profile(pid):
 def list_profiles():
     _path()
     from profiles import all_profiles
-    return [{'id': p['id'], 'label': p['label'], 'gate': p.get('gate', True)} for p in all_profiles()]
+    return [{'id': p['id'], 'label': p['label'], 'gate': p.get('gate', True), 'store': 'bundle' in p} for p in all_profiles()]
 
 
 def module(profile=DEFAULT):
@@ -132,6 +132,9 @@ def store_status(profile, fresh=False):
     q = module(profile)
     pr = _profile(profile)
     allowed = q.snapshot()['counts']['allow']
+    if 'bundle' not in pr:
+        return {'profile': profile, 'label': pr['label'], 'allowed': allowed, 'installed': 0, 'bakeNeeded': False,
+                'plan': {'ok': False, 'error': '이 프로필은 아직 설치·스토어 팩이 없습니다.'}, 'planPending': False, 'job': _job_view()}
     catalog = ROOT / pr['bundle']['catalog']
     installed = len(json.loads(catalog.read_text())['buildings']) if catalog.exists() else 0
     entry = PLAN.get(profile)
@@ -247,9 +250,11 @@ def dispatch(handler, method):
     if rest == '/api/profiles' and method == 'GET':
         return q.Handler.reply(handler, 200, json.dumps({'current': profile, 'profiles': list_profiles()}, ensure_ascii=False).encode())
     if rest == '/' and method == 'GET':
-        label = _profile(profile)['label']
+        pr = _profile(profile)
+        label = pr['label']
+        noun = '검수' if pr.get('kind') == 'props' else '건물 검수'
         html = (ROOT / 'src/harnesses/beodeul-building-review/web/index.html').read_text()
-        html = html.replace('버들항 건물 검수', f'{label} 건물 검수').replace('버들항 · 건물 검수', f'{label} · 건물 검수')
+        html = html.replace('버들항 건물 검수', f'{label} {noun}').replace('버들항 · 건물 검수', f'{label} · {noun}')
         return q.Handler.reply(handler, 200, html.encode(), 'text/html; charset=utf-8')
     saved = handler.path
     handler.path = rest + ('?' + parts.query if parts.query else '')

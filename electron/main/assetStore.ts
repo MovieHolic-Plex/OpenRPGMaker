@@ -5,7 +5,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node
 import { join } from "node:path";
 import { app, ipcMain, safeStorage, shell, webContents } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
-import { storeCatalogSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema, storeBlobSchema } from "../shared/schemas";
+import { storeCatalogSchema, storeLoginSchema, storeSlugSchema, storeUploadSchema, storeUrlSchema, storeBlobSchema, storeVisibilitySchema } from "../shared/schemas";
 import { AssetStoreClient, sameOriginUrl, StoreError } from "./assetStoreClient";
 import type { StorePackManifest } from "../../src/assetStore/format";
 
@@ -123,6 +123,12 @@ export function registerAssetStore(): void {
     const input = storeUploadSchema.parse(payload);
     const result = await storeClient().upload({ manifest: input.manifest as StorePackManifest, blobs: input.blobs, ...(input.targetSlug ? { targetSlug: input.targetSlug } : {}) }, progress);
     broadcast(OPRN_CHANNELS.storeChanged, { kind: "uploaded", slug: result.slug });
+    return result;
+  }));
+  ipcMain.handle(OPRN_CHANNELS.storeVisibility, (_event, payload: unknown) => wrap(async () => {
+    const { slug, hidden } = storeVisibilitySchema.parse(payload);
+    const result = await storeClient().setVisibility(slug, hidden);
+    broadcast(OPRN_CHANNELS.storeChanged, { kind: "visibility", slug, result: result.status });
     return result;
   }));
 }
