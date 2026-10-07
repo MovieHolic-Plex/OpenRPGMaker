@@ -26,6 +26,11 @@ export interface PiAgentRequest {
   /** Inherited by team members so task paraphrasing cannot drop the modern-map palette constraint. */
   readonly modernTilesetOnly?: boolean;
   readonly villageContract?: import("./villageContract").VillageContract;
+  /**
+   * 이 실행이 오프닝 제작 책임자인가. 비우면 task 낱말로 판정한다(requestsOpeningProduction).
+   * 팀의 단계 실행은 task 끝에 사용자 원문 전체를 붙이므로 낱말 판정이 모든 단계를 오프닝 담당으로 만든다 — 팀이 명시한다.
+   */
+  readonly openingProduction?: boolean;
   readonly applyMode?: PiApplyMode;
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;

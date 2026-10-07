@@ -817,7 +817,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       mailbox.register(agentId, member.label, null);
       emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '핵심 플레이 제작' });
       try {
-        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
           initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 16 : 32),
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), '이번 단계에서는 기존 뼈대의 핵심 플레이만 작성한다. 제공된 도구 범위는 고정이다. 장식 도구를 검색하거나 다른 쓰기를 우회하지 않는다. 종료 전에 report_first_play를 호출한다.'] },
@@ -955,7 +955,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         mailbox.register(agentId, member.label, null);
         emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작' });
         try {
-          const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+          const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
             initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, places ? (attempt ? 24 : 48) : (attempt ? 16 : 24)),
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 3) : FIRST_SCENE_INSTRUCTIONS),
@@ -1009,19 +1009,24 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       mailbox.register(agentId, member.label, null);
       emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '작품 타이틀과 오프닝 제작' });
       try {
-        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+        // 이 단계가 팀의 오프닝 제작 책임자다 — 오프닝 완료 검사(plan_opening·실제 그림 확인·마지막 review_opening)를 여기서 채우고
+        // 그 영수증이 팀 마지막 관문으로 간다(trackOpening). 다른 단계는 openingProduction:false 라 재촉받지 않는다.
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: true,
           initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 12 : 24),
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...FIRST_PRESENTATION_INSTRUCTIONS] },
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
           toolNames: ['get_title_screen', 'get_opening', 'get_map_region', 'get_event', 'show_map_region',
-            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media'],
+            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media',
+            'plan_opening', 'edit_opening', 'show_opening_image', 'review_opening'],
           onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         if (!reported) throw new Error('작품 타이틀/오프닝 제작 보고가 없습니다.');
-        const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspectFirstScene(base, done.project, firstPlay), ...inspectFirstPresentation(done.project)];
+        const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspectFirstScene(base, done.project, firstPlay), ...inspectFirstPresentation(done.project),
+          ...(done.openingProduction?.issues ?? [])];
         if (issues.length) throw new Error(issues.join(' / '));
         working = cloneProjectSharingSharedDictionaries(done.project);
+        trackOpening(done);
         emit({ type: 'agent_done', agentId, ok: true, summary: '작품 타이틀과 오프닝 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
         await reviewFirstScene();
         break;
@@ -1040,7 +1045,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, openingProduction: false, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       // 팀장 도구는 읽기뿐이다 — 팀원이 발행할 때마다 바뀌는 작업 사본을 읽게 한다.
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools, liveProject: () => working },
     );
