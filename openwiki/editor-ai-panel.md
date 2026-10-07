@@ -28,6 +28,38 @@
 
 # Editor AI Panel & Tools
 
+## AI 존재감 — 지도 이름표 · 상태 줄 · 받은함 (2026-10-07)
+
+문제: 조수가 「실행 중」이어도 지도(개발자의 눈이 있는 곳)엔 흔적이 없고, 진행·결과·검토가 오른쪽 패널 한 곳에 층층이 쌓여
+「지금 뭐 하나 / 어디를 봐야 하나 / 내가 뭘 해야 하나」가 안 보였다. 원칙: **눈은 지도 하나에, 사람이 필요하면 지도 쪽에서 신호가 먼저 튄다.**
+
+- **단일 원천** `src/editor/panels/aiPresence.ts` — 팀 보드(`publishTeamActivity`)와 영역 작업(`REGION_TASK_STATUS_EVENT`)을
+  `Presence[]` 로 합친다. 새 관측을 만들지 않고 기존 `teamObservation` 을 사람 말로만 바꾼다. 상태 6종:
+  대기 · 일하는 중 · 내 차례(검토 대기) · 초안 완료 · 적용됨 · 실패. 「모델 응답 대기」는 「생각 중」으로(`aiTeamObservation.ts` 원문도 바꿨다).
+  `source: "chat" | "region"` — 드래그로 시킨 영역 일은 대화 일과 **다른 스레드**로 돌고 상태 줄에도 별도 칩이다.
+- **지도 위 이름표** `src/editor/aiMapPresence.ts` — `.phaser-container` 위 DOM 오버레이. 영역은 영역 작업이면 사용자가 드래그한 사각형,
+  대화 일이면 그 맵의 고스트 초안 바운딩 박스(맵당 조수 한 명 규칙 → 그 맵에 **쓰는** 조수 한 명에게만, 검수는 이름표만).
+  좌표는 `resolveRegionClientRect`. 팬·줌은 EditScene 의 `repositionAiMapPresence()`, 도크 열림 같은 레이아웃 변화는 이름표가 떠 있는 동안
+  rAF 대조(`writeIfChanged`)로 따라간다(실측: 훅만으로는 도크를 열 때 상자가 옛 자리에 남았다).
+- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 지도 아래 한 줄. 칩 = 이름 · 지금 하는 일 · 단계 수, 사람이 필요하면 줄 전체가 앰버(검토)/빨강(실패).
+  칩을 누르면 **지도 위 팝오버**(최근 3단계 · 조수 상세 · 지도로 이동 · 멈춤). 「작업 기록」은 기존 로그 입구(`ai-workspace-log-trigger`)로 연결, 「멈춤」은 `requestTeamStop`.
+  적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
+- **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
+  `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
+- **여러 맵 · 여러 조수 (2026-10-07 후속)**: 다른 맵에서 같이 도는 실행(`background: true`, 맵별 대기열)은 팀 활동 버스에 게시하지 않아
+  처음 구현에서는 존재감에 안 잡혔다. 이제 `aiChatPanel` 이 `onActivity` 보드를 `reportBackgroundBoard(ticketId, board)` 로 올리고,
+  `aiPresence` 가 `mapRunQueue().tickets()` + 그 보드를 `source: "background"` Presence 로 합친다(앞 턴 표 `foreground` 는 중복이라 뺀다).
+  대기 중이면 「같은 맵 N번째로 기다리는 중 / 팀 작업이 끝나길 / 동시에 도는 작업이 많아」 를 보여 준다. 색은 표면 전체에서 겹치지 않게 순번(`tone`).
+  상태 줄은 칩 4개까지(필요한 것 먼저), 나머지는 「+N 더 보기」 → 맵별로 묶은 목록 팝오버(내 차례 맵 → 지금 보는 맵 → 나머지). 맵이 둘 이상이면 칩에 맵 이름이 붙고,
+  지금 보는 맵이 아닌 칩은 점선. 「멈춤」은 전체(`stopAllPresences`), 팝오버의 멈춤은 그 실행만(`stopPresence`). 받은함은 다른 맵 검토를
+  「검토하기」로 해당 실행 카드(`.ai-map-run-card[data-ticket-id]`)에 데려가고, 실패는 「확인했어요」로 치운다(`dismissPresence`).
+  증거: `scripts/qa/ai-presence-multimap.mjs`(6맵·7실행, 실제 대기열에 표를 올려 재생). 부하 높은 박스에서는 `unshare -rn` 로 dev 서버와 크로미움을 같이 띄운다.
+- 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
+- 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
+- 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며
+  모델 호출·SQLite 저장 검수가 아니다. 이 세션에서 gates·vitest·전체 typecheck 는 돌리지 않았다(`test/aiTeamObservation.test.ts` 문자열만 맞춤).
+- 아직 안 한 것: 질문(ask) 카드를 받은함으로 옮기기, 팀 레일·크게 보기·스튜디오 보드 정리, 「작업 표시」 4단계 설정 제거, 카메라 따라가기 토글.
+
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
 일반 편집기는 오른쪽 복원 레일 44px만 예약한다. AI 창은 지도 위에 380px(좁은 화면은
@@ -615,10 +647,11 @@ AI 를 여는 순간 팔레트가 사라져 "시키고 바로 손보기"가 한 
   `ruleAuditViolationCountCached()` (도구줄 ⋯ 배지와 같은 수)이며 `RULE_AUDIT_UPDATED_EVENT` 로 갱신한다.
   `oprn:ai-sidebar-tools` 는 그리기 패널을 연다. `oprn:ai-sidebar-show` 는 더 듣는 곳이 없다(도크는 항상 보인다).
   회귀: `test/leftActivityBar.test.ts`.
-- 막대 항목(2026-09-27): 그리기 · 맵 · **즐겨찾기**(`leftFavoritesPane.ts`) · **진행**(`leftProgressPane.ts`) · **연결**(`leftLinksPane.ts`) … 검사.
+- 막대 항목(2026-10-07): 그리기 · 맵 · **기물**(`src/editor/panels/leftPropsPane.ts`) · **진행**(`leftProgressPane.ts`) · **연결**(`leftLinksPane.ts`) · 공방 · 스토어 … 검사.
   패널은 펼쳐질 때만 그린다(`show()`), 숨은 패널은 `root.hidden` 에서 돌아선다. 마지막 패널은 `oprn:left-activity-pane` 에 저장.
-  - 즐겨찾기: 별표한 타일과 최근 고른 타일 18개. 최근 목록은 `tileBrushTools.recordRecentTile` 로 옮겼다(팔레트 「최근」 분류와 공유).
-    칸 클릭 = `selectPaletteTile`(팔레트와 같은 경로), 우클릭 = 즐겨찾기 토글. 변경 알림 `TILE_SHORTCUTS_CHANGED_EVENT`.
+  - 기물: 현재 맵의 칩셋에서 완성된 조합·구조물·실내 가구를 6개씩 추천한다. 카드 선택 → 기존 스탬프 페인트로 반복 배치.
+    종류 선택과 이름·태그 검색으로 전체 카탈로그를 찾는다. 검색은 아직 펼치지 않은 카드도 포함한다.
+    옛 즐찾 패널 설정은 기물로 이관한다. 추천·출처 검사·표시 비용은 [기물 바로 고르기](editor-workflows-misc.md#왼쪽-기물--바로-고르기-2026-10-07).
   - 진행: 캔버스 여정 띠와 같은 `evaluateAuthoringJourney`·진행 저장소. 첫 미완료 단계가 「다음」, 「시작/열기」는 `runAuthoringTask`.
   - 연결: `mapLinkStats.collectMapLinkGraph`(같은 명령 순회) — 시작 맵에서 너비 우선으로 닿는지 판정해 「고립/도달 불가」를 위에 모은다.
     양방향 이동은 ↔ 한 줄로 합친다(마을 하나에 집 15채 = 15줄). 이동 행 클릭 = 그 이벤트로 카메라.

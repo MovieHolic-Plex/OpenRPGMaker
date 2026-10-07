@@ -64,6 +64,10 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 `OVERCOMMIT_FACTOR=2` 의 허용 한계(9GB)를 초과한다. `mapEventSceneParity` 같은 무거운 파일이 한 워커에
 몰리면 힙 바닥(3584MB)을 넘겨 cgroup 이 프로세스를 죽인다. 대응: `test:parity` 에 `--maxWorkers=2
 --minWorkers=1` 고정 (`test:quarantine`·게이트 browser 스테이지와 같은 패턴). 로컬(상한 없음)에는 영향 없다.
+12GB 이하 슬라이스에서는 그 뒤 워커 1개 × 힙 75%(약 9GB)로 다시 좁혀진다. 타입체크가 이미 10GB 를
+잡고 있으면 16GB 인 `ci-fast.slice` 를 넘고, 테스트는 통과한 채 `onTaskUpdate` 타임아웃으로 잡이 죽는다
+(2026-10-07, run 37597174386). parity 는 타입체크와 같은 `/home/dev/ci/typecheck.lock` 으로 직렬화한다.
+힙을 3584MB 로 되돌리지 않는다.
 
 ## ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
 

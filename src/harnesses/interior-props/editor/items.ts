@@ -65,6 +65,7 @@ export function itemFromSpec(key: string, object: SpecObject, current: RgbaImage
     width: (Math.max(...xs) - Math.min(...xs) + 1) * TILE,
     height: (Math.max(...ys) - Math.min(...ys) + 1) * TILE,
     padTop: bounds ? bounds.y0 : 0,
+    footRows: object.h, risePx: object.up,
     isNew: false, refs: [], use: object.use,
   };
 }
@@ -74,7 +75,7 @@ export function itemFromDefinition(def: ItemDefinition): WorkshopItem {
   const height = Math.ceil(drawn / TILE) * TILE;
   return {
     key: def.key, title: def.title, description: def.description, kind: def.kind, category: def.category,
-    width: def.tilesW * TILE, height, padTop: height - drawn, isNew: true, refs: def.refs, use: def.use,
+    width: def.tilesW * TILE, height, padTop: height - drawn, footRows: def.tilesH, risePx: def.rise, isNew: true, refs: def.refs, use: def.use,
   };
 }
 

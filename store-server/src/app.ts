@@ -13,7 +13,7 @@ import type { StoreConfig } from "./config";
 import type { Db } from "./db";
 import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, setFileOrigin, type Ctx } from "./http";
 import {
-  addVersion, adminQueue, adminSetStatus, authorVisibility, blobServable, catalogOverview, createItem, itemDetail, listCatalog, myItems,
+  addVersion, adminMarkReviewed, adminQueue, adminSetStatus, authorVisibility, blobServable, catalogOverview, createItem, itemDetail, listCatalog, myItems,
   recordDownload, reportItem, singleManifest, sweepOrphanBlobs, versionManifest, type SingleInput,
 } from "./items";
 import { LANG_COOKIE, langFromAcceptLanguage, matchLang, type Lang } from "./web/i18n";
@@ -30,7 +30,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
   const limits = {
     // 큰 팩은 blob 이 수백 개다(버들항 96개). 사용자마다 센다 — 로그인 없이는 올릴 수 없다.
     blob: new RateLimiter(1500, 60_000),
-    create: new RateLimiter(20, 60_000),
+    create: new RateLimiter(config.createPerMinute, 60_000),
     report: new RateLimiter(20, 60_000),
     login: new RateLimiter(30, 60_000),
     device: new RateLimiter(60, 60_000),
@@ -227,6 +227,12 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     await adminSetStatus(db, auth, ctx.params.slug!, String(body.status ?? "") as StoreItemStatus, String(body.note ?? ""));
     sendJson(ctx.res, 200, { ok: true });
   });
+  router.post("/api/v1/admin/items/:slug/reviewed", async (ctx) => {
+    const auth = await requireWriter(db, ctx);
+    requireAdmin(auth);
+    await adminMarkReviewed(db, auth, ctx.params.slug!);
+    sendJson(ctx.res, 200, { ok: true });
+  });
 
   // ── 웹 화면 ─────────────────────────────────────────────────────────
   router.get("/", (ctx) => page(ctx, async (v) => {
@@ -309,6 +315,13 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const auth = await requireWriter(db, ctx, form.get("csrf"));
     requireAdmin(auth);
     await adminSetStatus(db, auth, ctx.params.slug!, (form.get("status") ?? "") as StoreItemStatus, form.get("note") ?? "");
+    redirect(ctx.res, "/admin");
+  });
+  router.post("/admin/items/:slug/reviewed", async (ctx) => {
+    const form = await readForm(ctx.req);
+    const auth = await requireWriter(db, ctx, form.get("csrf"));
+    requireAdmin(auth);
+    await adminMarkReviewed(db, auth, ctx.params.slug!);
     redirect(ctx.res, "/admin");
   });
   router.get("/login", (ctx) => page(ctx, (v) => pages.login(v, safeNext(ctx.url.searchParams.get("next")))));

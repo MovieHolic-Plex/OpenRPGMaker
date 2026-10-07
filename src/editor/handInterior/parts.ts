@@ -11,6 +11,8 @@ const KIND_WORDS: Record<string, string> = {
   wall: "wall 벽 앞 북쪽 벽 가구",
   hang: "hang 벽 벽면 걸이",
   flat: "flat 바닥 무늬 깔개 밟음",
+  door: "door 문 방문 칸막이 틈 열린 문",
+  sidedoor: "sidedoor 옆문 문 세로 칸막이 틈 열린 문 미닫이",
 };
 
 export interface PartRow {
@@ -94,7 +96,7 @@ export function searchParts(query: string, category = "", spec: HandInteriorSpec
   return { ids, hits, tokens, allMatch: all.length, partial: scored.length - all.length };
 }
 
-export type RoomGroupKind = "floor" | "wall" | "hang" | "flat" | "table" | "line" | "dais";
+export type RoomGroupKind = "floor" | "wall" | "hang" | "flat" | "door" | "sidedoor" | "table" | "line" | "dais";
 export interface RoomPart { readonly id: string; readonly ko: string; readonly w?: number; readonly h?: number; readonly rooms: number; readonly count: number; readonly desc?: string }
 export interface RoomResult {
   readonly key: string; readonly ko: string; readonly mode: "room" | "building";
@@ -161,7 +163,7 @@ export function roomParts(q: string, perGroup = 12, spec: HandInteriorSpec = HAN
   const key = r.mode === "alias" ? r.keys.join("+") : r.key;
   const ko = r.mode === "building" ? t.buildings[r.key]!.split(" — ")[0]! : (roomKeys ?? []).map((k) => t.kinds[k]!.ko).join(" + ");
   return {
-    key, ko, mode: r.mode === "building" ? "building" : "room", exampleDocs: maps.map((m) => `hand-interior-v5-map-${m}`), roomCount: rows.length, groups,
+    key, ko, mode: r.mode === "building" ? "building" : "room", exampleDocs: maps.map((m) => `${t.docPrefix ?? "hand-interior-v5-map-"}${m}`), roomCount: rows.length, groups,
     ...(r.mode === "building" ? { rooms: rows.map(([, , room, items]) => ({ room, ko: t.kinds[room]?.ko ?? room, items: items.map(([id, n]) => (n > 1 ? `${id}×${n}` : id)).join(", ") })) } : {}),
     ...(alsoTagged.length ? { alsoTagged } : {}),
   };

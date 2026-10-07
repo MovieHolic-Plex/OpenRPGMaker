@@ -175,7 +175,7 @@ Rules:
 - 질문(뭐야, 몇 개야, 알려줘, 보여줘)은 mode=question, tools 는 조회 툴만.
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
-- 해리포터풍·마법 학교·호그와트풍 장소(대연회장·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
+- 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:

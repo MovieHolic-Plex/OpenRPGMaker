@@ -79,6 +79,7 @@ export const OPRN_CHANNELS = {
   storeLogin: "oprn:store.login",
   storeLogout: "oprn:store.logout",
   storeUpload: "oprn:store.upload",
+  storeVisibility: "oprn:store.visibility",
   /** 메인 → 렌더러 알림: 받기·올리기 진행, 설치·로그인 변화. */
   storeProgress: "oprn:store.progress",
   storeChanged: "oprn:store.changed",

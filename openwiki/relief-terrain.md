@@ -21,7 +21,7 @@
 | 들림 | `relief/screen.ts` | `reliefLiftField`/`cellLift`/`pointLift`(타일 중심), `footLift`(물리 발 좌표), `reliefPickPoint`(보이는 윗면/벽 화소), `reliefRenderOptions`, `reliefSignature`, `reliefRowStrips`, `reliefTileSlotChangedCells` |
 | 원본 바닥 | `editor/reliefGroundSurface.ts` · `mapTileDrawCore.ts` | 현재 칩셋의 하층·겹침·2층·그림자·autotile을 16px 셀로 합성해 윗면/경사로에 투영. 작은 셀 캐시와 셀 서명으로 부분 갱신 |
 | 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트. `window` 옵션(잘라 낸 격자를 절대 좌표 무늬로 굽기), `reliefPadPx`(굽지 않고 pad 계산) |
-| 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다 |
+| 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다(페이지판은 `scripts/check-relief-pages.mts`) |
 | 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다(런타임). `reliefFieldOf` 는 「높이가 있는가」를 relief 객체마다 한 번만 잰다 |
 | 편집기 띠 | `editor/reliefLiveStrips.ts` · `relief/paged.ts` | 화면 주변 땅 좌표 페이지를 보존하고 붓질/팬에 필요한 페이지만 굽는다. (줄, 윗면/벽, 256px 열 묶음) 텍스처의 바뀐 상자만 올린다 |
 | 런타임 | `player/playSceneRelief.ts` | 띠·벽면 장식 배치, depth 규칙, 캐릭터 들림(`installReliefSpriteLift`), 카메라 위 확장(`reliefTopOverhangPx`) |
@@ -148,6 +148,28 @@ culling(추적 수·버킷 수·죽은 수), resident 타일 객체 수, 청크 
 초기 ground 지문/기하 격자는 여전히 O(WH) 셀 저장이며, 기하가 바뀐 때의 patch-plan 비교도 전체 격자를 본다.
 이 수정은 warm 서명·ground 준비와 보존 픽셀·죽은 객체/빈 청크를 줄인다. total 메모리/프레임 지연의
 상한을 입증하지 않으며, 맵 가장자리의 전체 폭 임시 dependency raster도 따로 계측해야 한다.
+
+## 페이지 굽기 회귀 수정 (2026-10-07)
+
+UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 표본마다 **걸친 256px 페이지를 통째로** 다시 굽던 것이다.
+페이지 창은 맵 왼·오른쪽 끝에 닿으면 `reliefWindowFor` 가 폭 전체로 넓히므로(작은 맵은 모든 페이지가 그렇다) 페이지 하나가 거의
+맵 한 줄 띠를 굽고, 표본 하나가 그런 페이지 2장을 굽었다. 전체 굽기(계획 불가)는 거주 페이지마다 따로 굽어 맵 전체 굽기의 2배였다.
+
+- `paged.ts sync` 는 같은 pad 에서 계획 창(`planReliefPatch` 의 `ReliefWindowPlan`)을 **창마다 한 번** 굽고, 걸친 페이지에는
+  그 창의 정확한 사각형만 덮어쓴다(`patch`) — #1978 의 `applyReliefPatch` 와 같은 일을 페이지에 한다. 바뀐 줄·사각형도 그 범위만 낸다.
+  pad 가 바뀐 표본만 예전처럼 걸친 페이지를 통째로 굽는다(래스터 맨 위 위쪽 옛 화소를 지우기 위해).
+- 통째로 굽는 페이지는 **같은 줄 띠끼리 창 하나**로 굽는다(`paintBand`).
+- 바닥 표면(`reliefGroundSurface.ts`)은 제자리에서 고쳐져 이전·다음 장면의 `opts.ground` 가 같은 객체다. 그래서 `reliefLiveStrips` 는
+  지난 굽기 때의 `cells` 사본을 들고 있다가, 같은 표면의 서명만 바뀌었으면 사본을 이전 장면의 바닥으로 넣어 `planReliefPatch` 가
+  바뀐 칸 둘레만 창으로 잡게 한다. 표면 객체가 바뀌면(맵·타일셋·그림 교체) 지문이 같아도 화소가 다를 수 있어 전체를 굽는다.
+- 진단: `__oprnEditReliefStats()` 에 `fullReasons`(first·ground·plan·forced)와 `backing.bakes`(통째 페이지 수·사각형 덮어쓰기 수).
+- 정확성: `scripts/check-relief-pages.mts` 가 무작위 붓질·제자리 바닥 칸 바꾸기·화면 이동마다 화면 범위 RGBA·주인 줄·띠를 전체 굽기와 견준다
+  (`node_modules/.bin/esbuild scripts/check-relief-pages.mts --bundle --platform=node --format=esm --alias:@=./src --outfile=/tmp/c.mjs && node /tmp/c.mjs 30`).
+  바닥 사본을 빼면 첫 바닥 바꾸기에서 불일치를 낸다(변이 확인).
+- 실측(node, 부하 평균 20~37, 반지름 2 붓 40표본 중앙값): 34×28 표본 126~141ms → 27~31ms, 100×100 116~135ms → 25~30ms(#1978 창 굽기 26~29ms 와 같음).
+  거주 페이지 전체 굽기 34×28 479~510ms → 183~229ms, 100×100(16페이지) 1338~1521ms → 779~874ms.
+  브라우저(9888 과 같은 빌드, 사용자 프로젝트 사본 「물결 항구」 34×28, 드래그 두 번)에서 `renderReliefLayer` 한 번당 JS 519~896ms → 184~208ms.
+  헤드리스 크롬의 긴 작업 대부분은 swiftshader WebGL 되읽기(`(program)` · `GLES2::ReadPixels`)라 GPU 가 있는 사용자 화면과 무관하다 — JS 시간만 근거로 쓴다.
 
 ## 지형 설치 확장 (2026-10-03)
 

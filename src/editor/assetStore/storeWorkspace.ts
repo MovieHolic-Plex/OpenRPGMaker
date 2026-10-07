@@ -9,14 +9,14 @@ import {
   STORE_ITEM_KINDS, STORE_KIND_NAMES, STORE_LICENSE_NAMES, STORE_LICENSE_SHORT, STORE_LICENSES,
   type StoreCatalogPage, type StoreItemDetail, type StoreItemKind, type StoreItemSummary, type StoreLicense,
 } from "@/assetStore/format";
-import { storeCredits, storeItemsInProject } from "@/assetStore/pack";
+import { aiMadeAssets, storeCredits, storeItemsInProject } from "@/assetStore/pack";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { addStoreItemToProject } from "./storeApply";
 import { fillStoreImage, storeBridge, storeFailure, type StoreFailure } from "./storeBridge";
-import { buildUploadPack, previewGrade, uploadCandidates } from "./storeUpload";
+import { aiMadeNote, buildUploadPack, previewGrade, uploadCandidates } from "./storeUpload";
 
 type Tab = "browse" | "installed" | "project" | "upload";
 const TAB_LABELS: Record<Tab, string> = { browse: "둘러보기", installed: "받은 것", project: "이 프로젝트", upload: "올리기" };
@@ -539,6 +539,7 @@ function uploadView(): HTMLElement {
     assetIds: candidates.filter((c) => c.kind === "asset" && form.picked.has(c.id)).map((c) => c.id),
   };
   const grade = selection.tilesetIds.length + selection.assetIds.length > 0 ? previewGrade(project, selection) : null;
+  const aiMade = selectionAiMade(selection);
   const bind = (key: "title" | "summary" | "description" | "tags" | "credits", attrs: Record<string, string> = {}, area = false) => el(area ? "textarea" : "input", {
     attrs: { ...attrs, ...(area ? {} : { value: form[key] }) }, dataset: { testid: `store-upload-${key}`, focusKey: `upload-${key}` },
     ...(area ? { text: form[key] } : {}),
@@ -567,7 +568,7 @@ function uploadView(): HTMLElement {
   const submit = el("button", { class: "store-button", text: "올리기", attrs: { type: "button" }, dataset: { testid: "store-upload-submit" }, on: { click: () => void submitUpload(selection) } });
   return el("div", { class: "store-upload", children: [
     ...(state.uploadResult ? [el("p", { class: "store-ok store-upload-done", dataset: { testid: "store-upload-result" }, text: state.uploadResult.status === "pending"
-      ? `올렸습니다 (판본 ${state.uploadResult.version}). 새 작가의 첫 공개는 운영자가 한 번 확인한 뒤 목록에 보입니다.`
+      ? `올렸습니다 (판본 ${state.uploadResult.version}). 운영자가 확인한 뒤 목록에 보입니다.`
       : `올렸습니다 (판본 ${state.uploadResult.version}). 지금 스토어에 보입니다.` })] : []),
     el("section", { class: "store-upload-col", children: [
       el("h3", { text: "1. 올릴 것 고르기" }),
@@ -589,8 +590,11 @@ function uploadView(): HTMLElement {
         el("input", { attrs: { type: "radio", name: "store-license", ...(form.license === license ? { checked: "" } : {}) }, on: { change: () => { form.license = license; } } }), licenseName(license),
       ] }))] }),
       el("fieldset", { children: [el("legend", { text: "AI 생성 여부 (필수)" }), ...([["yes", "AI 도구로 만든 부분이 있다"], ["no", "전부 직접 만들었다"]] as const).map(([value, label]) => el("label", { class: "store-radio", children: [
-        el("input", { attrs: { type: "radio", name: "store-ai", ...(form.ai === value ? { checked: "" } : {}) }, dataset: { testid: `store-upload-ai-${value}` }, on: { change: () => { form.ai = value; } } }), label,
-      ] }))] }),
+        el("input", {
+          attrs: { type: "radio", name: "store-ai", ...((aiMade.length > 0 ? value === "yes" : form.ai === value) ? { checked: "" } : {}), ...(aiMade.length > 0 && value === "no" ? { disabled: "" } : {}) },
+          dataset: { testid: `store-upload-ai-${value}` }, on: { change: () => { form.ai = value; } },
+        }), label,
+      ] })), ...(aiMade.length > 0 ? [el("p", { class: "store-hint", dataset: { testid: "store-upload-ai-forced" }, text: aiMadeNote(aiMade) })] : [])] }),
       el("label", { children: ["크레딧 표기", bind("credits", { maxlength: "400", placeholder: "그림: 이름" })] }),
       el("label", { class: "store-radio", children: [
         el("input", { attrs: { type: "checkbox", ...(form.agree ? { checked: "" } : {}) }, dataset: { testid: "store-upload-agree" }, on: { change: (event) => { form.agree = (event.target as HTMLInputElement).checked; } } }),
@@ -602,12 +606,18 @@ function uploadView(): HTMLElement {
   ] });
 }
 
+/** 고른 것 안의 AI 가 만든 자산(타일셋 그림·이식 시트 포함). 있으면 「직접 만들었다」를 고를 수 없다. */
+function selectionAiMade(selection: { tilesetIds: string[]; assetIds: string[] }): { name: string; by: string }[] {
+  return selection.tilesetIds.length + selection.assetIds.length > 0 ? aiMadeAssets(store.getCurrent(), selection) : [];
+}
+
 async function submitUpload(selection: { tilesetIds: string[]; assetIds: string[] }): Promise<void> {
   const form = state.upload;
   const problems: string[] = [];
   if (selection.tilesetIds.length + selection.assetIds.length === 0) problems.push("올릴 것을 하나 이상 고르세요.");
   if (form.title.trim().length < 2) problems.push("제목을 2자 이상 적어 주세요.");
-  if (!form.ai) problems.push("AI 생성 여부를 골라 주세요.");
+  const aiMade = selectionAiMade(selection);
+  if (!form.ai && aiMade.length === 0) problems.push("AI 생성 여부를 골라 주세요.");
   if (!form.agree) problems.push("권리·이용약관 확인에 동의해 주세요.");
   if (problems.length > 0) { state.uploadError = { message: "올리기 전에 확인해 주세요.", status: 0, details: problems }; render(); return; }
   state.uploadError = null;
@@ -617,7 +627,7 @@ async function submitUpload(selection: { tilesetIds: string[]; assetIds: string[
   try {
     const built = await buildUploadPack(store.getCurrent(), selection, {
       title: form.title, summary: form.summary, description: form.description, tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 12),
-      kind: form.kind, license: form.license, aiGenerated: form.ai === "yes", credits: form.credits,
+      kind: form.kind, license: form.license, aiGenerated: aiMade.length > 0 || form.ai === "yes", credits: form.credits,
     });
     const unsubscribe = storeBridge()!.onProgress((event) => {
       if (event.phase !== "upload") return;

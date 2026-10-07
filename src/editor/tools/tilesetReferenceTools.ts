@@ -149,6 +149,9 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
     }, required: ["categoryId"], additionalProperties: false },
     run(project, args) {
       args = referenceArgs(project, args);
+      // 엄격 스키마 모델(Gemini·GPT)은 안 쓰는 칸도 기본값으로 채워 보낸다(빈 id 는 referenceArgs 가 지운다, offset 은 0) — 한꺼번에 읽기의 offset 0 은 「안 줌」.
+      // 실측(2026-10-07, jp_city 실내 조수 시험): 실패 8건 중 6건이 offset:0 을 채운 한꺼번에 읽기였다.
+      if (args.documentId === undefined && args.imageId === undefined && (args.offset === 0 || args.offset === null)) args = { ...args, offset: undefined };
       const tileset = project.tilesets[String(args.tilesetId)];
       if (isRetiredInteriorTileset(String(args.tilesetId), tileset)) throw new ToolError(retiredInteriorMessage(String(args.tilesetId)), { code: "retired-interior-tileset" });
       if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.`);

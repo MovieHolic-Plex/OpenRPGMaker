@@ -5,6 +5,258 @@
 
 <!-- releases -->
 
+## 0.174.0 — 2026-10-07
+
+### 기능
+
+- **interior** — 방 짓기 역할표 roomKit — build_hand_interior_room 이 칩셋 id 대신 타일셋의 역할표를 읽는다 (`2257ad4`)
+- **interior** — 바닥 깔기 규칙 lay rowShift — 줄마다 무늬를 밀어 깔아 넓은 바닥의 반복 무늬를 끊는다(일본 마루 2종) (`a6f9c98`)
+- **ai-ui** — 여러 맵·여러 조수 — 맵별 대기열 실행을 존재감에 합치고 맵별 목록으로 본다 (`d2bbae1`)
+
+### 수정
+
+- **jp-city** — 마루 밝은 널을 윗줄 1px 광택으로 — 넓은 빈 바닥에서 띠로 줄 서 보였다 (`668dffd`)
+- **qa** — opening-assistant-run takes --model-like for unlisted models; declare brokerResults (`5144e8c`)
+- **ai-ui** — 상태 줄의 안 쓰는 store import 제거 (`e2a7c19`)
+- **release** — 아이콘 도구가 홈 package.json 때문에 ESM으로 깨지지 않게 한다 (`a978088`)
+- **tiles** — old mart floor back; no monster-ball shapes in monster interiors (`4ac8618`)
+
+### 문서
+
+- 방 짓기 역할표 roomKit·바닥 깔기 규칙 (`043ca94`)
+
+### 잡무
+
+- **jp-city** — 참고문서 다시 굽기 — 마루 광택·줄 밀기 반영(엔진 실측) (`ad5994d`)
+
+## 0.173.0 — 2026-10-07
+
+### 기능
+
+- **store** — 「AI 생성」 표시를 코드로 강제 — AI 자산 표식(generatedBy)·buildPack 최종 관문·조수 제안은 늘 켬 (`c1fca61`)
+- **store** — 검열 1단계 — 보류 낱말은 확인 대기로, 바로 공개된 상품은 운영 「사후 확인」 목록에 (`7d92281`)
+
+## 0.172.0 — 2026-10-07
+
+### 기능
+
+- **workshop** — 「직접 그려 줘」를 실내 밖 맵으로 — 공방 「맵 기물」이 그 맵 칩셋 색·화풍으로 그려 그 칩셋에 굽는다 (`75780c4`)
+
+### 수정
+
+- **relief** — 높이 붓 표본마다 페이지 통째 굽기를 계획 창 덮어쓰기로 되돌린다 (`7393f26`)
+
+### 테스트
+
+- **workshop** — 맵 기물 공방 가짜 모델 캡처(정의→후보→굽기) (`49a19be`)
+
+## 0.171.1 — 2026-10-07
+
+### 수정
+
+- ci-fast parity를 타입체크와 같은 메모리 락으로 직렬화한다 (`ffe04ff`)
+- **workshop** — 맞게 그린 기물을 되돌리던 귀퉁이 검사와 줄 폭 실수에 전체 다시 그리기 (`de23b9c`)
+
+### 성능
+
+- **workshop** — 실내 기물 한 판을 5장→3장, 자기 점검 호출을 뺀다 (`95eb37a`)
+
+### 문서
+
+- **workshop** — 실제 모델로 잰 한 판 시간과 헛걸음 셋 (`feeab06`)
+
+### 테스트
+
+- **workshop** — 칩셋 굽기·번호 이주·모델 답 수선·조수 스토어 도구 테스트, 공방 굽기마다 생기던 빈 칸 44개 제거 (`6a8fbea`)
+
+## 0.171.0 — 2026-10-07
+
+### 기능
+
+- **tiles** — bake the redrawn interiors into monster-overworld and monster-rooms (`32dff05`)
+- **tiles** — monster interiors redrawn in the GBA style (`012763f`)
+- **monster** — houses and centers get a working second floor (`ead3e1b`)
+- **tiles** — walkable stair feet and an appended interior section (`5cb5eb9`)
+- **editor** — add categorized prop picker with full catalog search (`0e76cc1`)
+
+### 수정
+
+- **tiles** — keep the monster overworld sheet under its 320-color cap (`474623b`)
+- **editor** — refine prop categories and record browser proof (`714f31c`)
+
+### 문서
+
+- **openwiki** — interior redraw, walkable stairs and second floors; stairs runtime QA (`d4d305f`)
+
+## 0.170.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 일본 집 실내 장소 다시 게시(관문 interior pass 10회차) (`3859e5b`)
+- **jp-city** — 실내 가구 방별 분류 14종 · 계단 난간 · 여러 층 장소 가져오기 · 오브젝트 갤러리 공용+분류 부제 (`f97ce14`)
+- **tiles** — bake the GBA-style monster overworld, wild, coast and climate sheets (`9884b8f`)
+- **tiles** — town paths in earth tone; drop the original-map renderer (`70c750d`)
+- **tiles** — monster town buildings and bridges in the GBA style (`df80428`)
+- **tiles** — monster overworld ground and trees redrawn in a GBA 2nd-gen style (`285523f`)
+
+### 수정
+
+- **jp-city** — 짓는 법 문서에서 뺀 2층 장식 문 구절 삭제, 2층 복도 벽면에 벽시계·달력 (`7102ee5`)
+- **jp-city** — 매트 술 두 칸 폭으로 보이게, 인터폰 = 벽걸이 분류, 이불 짝에서 자기 자신 뺌, 러그 문구 통일, 블록 자체검사·현관 데모 그림 다시 굽기 (`73a50fb`)
+- **jp-city** — 러그는 2칸 가구 밑이 아니라 따로(사전·예제·규칙 일치, 거실 러그 남동으로 되돌림), 매트 설명 붉은 갈색 테두리, 2층 복도 장식 닫힌 문 뺌, 사전 w×h 뜻 명시 (`4fbdee1`)
+- **jp-city** — 원룸에 공부 책상·의자·스탠드, 1층 거실 러그를 좌탁·소파 밑으로, 욕실 매트는 탈의실·세탁 분류, 참고문서 분류 순서 = categories.py (`b9eaef6`)
+- **jp-city** — 현관 매트(베이지·주황 테두리·술)·슬리퍼(발등 띠+깔창)·아가리카마치 단 앞면 다시 찍음, 매트·슬리퍼는 마루 줄 규칙, 편집기 probe 상세 칸 확인 (`1fd6894`)
+- **harness** — GBA redraw passes the overworld checks honestly (`76e153b`)
+
+### 문서
+
+- **jp-city** — 참고문서·런타임 화면 다시 굽기(새 현관 매트·슬리퍼, 매트 자리 규칙) (`85c45fe`)
+- **jp-city** — 실내 참고문서 다시 굽기 — 가구 사전에 category·categoryKo, 짓는 법에 분류 14종, 새 계단 그림(엔진 실측) (`9832e08`)
+- **jp-city** — 실내 분류·계단 난간·여러 층 가져오기 위키, 런타임 QA 다시 찍음(15/15), 편집기 probe netns 실행기 (`a17d8cb`)
+
+### 잡무
+
+- **jp-city** — 편집기 probe 증거 다시 찍음 (`6c8adef`)
+- **jp-city** — interior_entry 자체검사 그림(새 계단) (`ac2c6f3`)
+- **harness** — keep the monster sheet redeploy script in the harness (`affe07a`)
+- **harness** — bring tileset-authoring sources and seeds onto main (`daf89e1`)
+
+## 0.169.0 — 2026-10-07
+
+### 기능
+
+- **store** — 팩에 캐릭터 칸 설명(content.characters)을 싣고 넣을 때 조수가 생김새로 찾게 한다 (`ab80156`)
+- **ai-ui** — 지도 이름표 · 상태 줄 · 받은함으로 AI 작업을 한눈에 (`fa46c58`)
+- **workshop** — 고른 기물을 손 도트 실내 칩셋에 굽기(공방 2단계)와 조수 「직접 그려 줘」 연결 (`06c0d70`)
+
+### 수정
+
+- 마법 학교 캐릭터 공급자를 하네스 카탈로그 계약에 연결한다 (`9631af0`)
+- **ai-ui** — 상태 줄의 안 쓰는 needsUser import를 뺀다 (`9333181`)
+
+## 0.168.0 — 2026-10-07
+
+### 기능
+
+- **wizarding** — 기숙사 침실 — 사주식 침대·트렁크·옷장·서는 거울 등 조각 9 + 빌더 변형 shared.dorm (`bc70dd4`)
+- **super-harness** — 해리포터 테마 팩을 공용 번들 wizarding_world 로 받는다 — 세계관·낱말·재료 관문, 조수 경로에 기숙사 낱말 (`57aaadc`)
+
+### 수정
+
+- **building-review** — 소품 심사에서 우물 광장·모래밭 같은 대형 제외 (`7e5e934`)
+
+## 0.167.0 — 2026-10-07
+
+### 기능
+
+- **building-review** — 소품·울타리 프로필 beodeul-props + 라운드 1(기존 73개 + 새 울타리 3종) (`c6364fc`)
+- **assistant** — 스토어 도구 6개와 「없는 타일 → 묻기 → 스토어 → 그리기」 흐름 (`1cce2a6`)
+- **asset-store** — 데스크톱 다리에 숨기기·보이기, 코딩 에이전트용 명령줄(storeCli.ts) (`d0f9694`)
+- **building-review** — 타일셋 프로필 일반화 + ZIP 대신 스토어 올리기(스테이징/운영) (`be32336`)
+- **wizarding** — 방 구조 손보기 — 남벽 윗면 한 줄·가구에 맞춰 방 줄이기·서가 줄+열람 탁자·탁상 소품 다양화 (`d6a3325`)
+- **super-harness** — 버들항 건물 검수를 슈퍼하네싱 탭(/harness/beodeul)으로 통합 (`56c6795`)
+
+### 수정
+
+- **beodeul** — 건물 번들의 빈 윗칸을 빈 목록으로 본다 (`98cdc55`)
+- **super-harness** — 오래된 체크아웃에서도 검수 탭을 쓰도록 BUILDING_REVIEW_ROOT 지원 (`37cc476`)
+
+### 문서
+
+- **tool-catalog** — 스토어 도구 6개 행 추가 (`abf080c`)
+- **asset-store** — 조수와 스토어 — 도구·카드·보안 경계·열어 두기·명령줄 (`ef8ad3f`)
+
+### 잡무
+
+- **asset-store** — 마법 학교 팩 표지를 고친 방(남벽 윗면·탁상 소품)으로 다시 찍음 (`6ffad4e`)
+
+## 0.166.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — 결정 로그 저장소화 + 허용한 건물 42채를 공용 번들 beodeul_reviewed 로 설치 (`15f0b57`)
+- **asset-store** — 마법 학교 팩 시트 이름에서 원작 이름을 빼고(displayName) 기존 상품에 판본 더하기(--new-version) (`050b729`)
+- **asset-store** — 마법 학교 번들을 공식 스토어 팩으로 — 칩셋+참고문서+걷기 칩 35명, 운영 올리기 스크립트 (`92421c1`)
+- **beodeul-building-review** — 통나무 후보는 원본 통나무 오두막을 비교 기준으로(게이트 확장, 점수·대조군 불변) (`ad1dfa4`)
+- **beodeul-building-review** — round 10 통나무집 7장, r9 탑을 집 바닥선에 맞춤, 화면에 바닥 그림자 (`c73b127`)
+
+### 수정
+
+- **beodeul-building-review** — r9-15/16 접합부를 끝 칸 대신 전폭 칸으로(틈 반려 해소) (`1763958`)
+
+### 문서
+
+- **beodeul-building-review** — round 10 통나무집·탑 접지·바닥 그림자·게이트 통나무 기준 (`d69d453`)
+
+### 잡무
+
+- regenerate openwiki/harness indexes after sync (`f0dff1e`)
+
+## 0.165.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 일본 집 실내 장소 게시 — 2층 단독주택(1·2층) jp-city-house-interior-21x15 · 원룸 jp-city-apartment-1k-12x13 (관문 interior pass) (`11edda6`)
+- **jp-city** — 원룸 부엌↔방 문(1K), 아이방 좌탁, 문서 정정(장식 광 문·shoji-open 제거), 조수 시험 3·4회 증거(4회: 호출 24·실패 0·269초, 문 직접 배치) (`cabf53a`)
+- **jp-city** — 옆문 2종 그림(작업자), 참고문서·변조 10종 재굽기, 런타임 QA 15/15 (`b2d8601`)
+- **jp-city** — 옆문 2종 그림 (`ce8a5c9`)
+- **jp-city** — 예제에 옆문 4곳(욕실·탈의실·LDK·유닛 배스), 2층 복도 줄임·방문 x7·광 문·건조대·깔개, 변조 sidedoorNotInGap, 규칙 문서·probe 줄 번호 (`82a8af0`)
+- **jp-city** — 옆문 종류 sidedoor — 세로 칸막이 3줄 틈 통로 칸에, 조립기 sidedoor-not-in-gap, 자리표시 2종 · 안 쓰는 문 부품 4종 뺌(닫힌 후스마·쇼지 문·화장실 문, 열린 쇼지) (`c7c092f`)
+- **jp-city** — 실내 참고문서·변조 9종 재굽기(새 1층·방문), 렌더·런타임 QA 15/15 증거 (`79e88c6`)
+- **jp-city** — 1층 다시 짜기 — 복도 동서·화실/화장실을 복도 북쪽에 열린 방문으로, 2층 방문 3·광 문, 원룸 통로 2칸·현관 문턱, 변조 door-not-in-gap, 참고문서 규칙 갱신, 열린 문·카펫·방석·욕조·다다미 그림(작업자 2), read_tileset_reference 한꺼번에 읽기 offset 0 허용 (`cdc70e2`)
+- **jp-city** — 열린 방문 4종·현관문 문턱 그림 (`e524c16`)
+- **jp-city** — 실내 문 종류 door — 가로 칸막이 1칸 틈에 인방+열린 문틀(통로 유지), 조립기 door-not-in-gap 검사, 자리표시 블록 interior_doors (`0a6c743`)
+- **jp-city** — 참고문서 용도 jp-interior — 짓는 법·가구 사전 94종·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 8종(엔진 실측), 실내 런타임 probe, 위키 (`4e2e4de`)
+- **jp-city** — 일본 실내 방 표(rooms.json) — 방 종류 12·건물 2, list_hand_interior_parts({tileset:"jp_city", room}) 가 예제 방 가구를 준다 (`3ef360e`)
+- **jp-city** — 일본 집 예제 실내 — 2층 단독주택(1층·2층 계단 이어짐)·원룸 1K 를 조수 도구 그대로 짓는 interior.mjs, 베이지 카펫·신발장은 옆벽 가구 (`172154c`)
+- **jp-city** — 일본 실내 LDK interior_ldk — 부엌·식탁·소파·TV·책장 22종, 탁자 2(dining·kcounter), 탁상 9 · 계단통은 아랫줄을 밟는다 (`2085233`)
+- **jp-city** — 일본 실내 현관·계단·문·창·벽걸이 interior_entry — 25종, 데모 방 2개 (`0e586b8`)
+- **jp-city** — 일본 실내 욕실·화장실(interior_wet)·침실·아이방(interior_bed) 블록 + 방 예제 3종 (`79a640a`)
+- **jp-city** — 화실 interior_washitsu — 좌탁·고타쓰·장롱·불단·도코노마·지가이다나·이불·안돈·꽃꽂이·브라운관 TV 와 탁상 물건 4종 (`0a343c6`)
+- **jp-city** — interior_shell 구조 표면 — 바닥 7·벽면 5 손 도트, 집 데모 방 (`0fd687d`)
+- **jp-city** — 실내 조립기·도구가 jp_city 사양도 짓는다 — build_hand_interior_room·list_hand_interior_parts 에 tileset:"jp_city", 조수 정책 줄 (`9a07801`)
+- **jp-city** — 일본 실내 키트 틀 — 바닥·벽면·천장·가구·탁자·탁상 등록기(ikit), 방 미리보기, 사양 굽기(jpInteriorSpec), 구조 자리표 (`97926e1`)
+- **monster** — route 1 takes the start theme's name (`953130f`)
+- **monster** — pack delegated-approval theme cast (desert man/trainer, coast x3) (`4436af0`)
+- **monster** — snow start gets a snow route 1, swapped towns keep their walkers, gyms and badges (`e7dde08`)
+- **monster** — chapter-1 townsfolk and route trainers wear the start theme's approved walkers (`f95f854`)
+- **harness** — theme-cast-v1 — desert/snow/coast townsfolk and route trainer walking candidates (`e1b8731`)
+- **monster** — start theme carries into chapter 1 — gym board by leader type, native route species, themed second town (`8fc159a`)
+- **battle** — emerald-style monster battles — terrain backgrounds, Gen3 narration, one foe at a time (`6d12396`)
+
+### 수정
+
+- **jp-city** — 재배치 충돌 표시 한 줄 지움(regionReferenceSnapshots) (`af37e31`)
+- **jp-city** — 실내 장소 limitations 는 문자열, 규칙 문장을 새 평면대로 (`0ada44d`)
+- **jp-city** — 열린 문짝이 보이게(반쯤 열린 후스마·젖혀진 문)·러그 채도(작업자), 재굽기·런타임 QA 15/15 (`2e12610`)
+- **jp-city** — 열린 문짝이 보이게·러그 채도 (`7cd93d8`)
+- **jp-city** — 관문 3차 — 카펫 채도·방석·욕조·다다미 짜임 (`d575298`)
+- **jp-city** — 실내 층 이동 순서 — 없는 맵으로 가는 links 사전 거절·정책·참고문서 4단계, 조수 시험 하네스 --start-tileset·ctx, 그림 2차 반영 재굽기, probe 길은 canMove BFS (`bb8d560`)
+- **jp-city** — 실내 관문 지적 그림 7건 — 카펫 팥색 단색 짜임·다다미 헤리 어두운 띠·창/커튼 세로 주름·신발 한 켤레·욕조 桶·변기 탱크/뚜껑/몸 단계·방석 감색+붉은 술 (`14fba2a`)
+- **jp-city** — 실내 관문 1회차 지적 — 2층 복도+방문 칸막이·원룸 부엌 조리대·LDK 한 줄 정렬·화실 벽장, 예제 JSON 이 start·links 를 들고 있게, 조수 시험 --start-tileset (`25caab4`)
+- **jp-city** — 실내 가구 쓰임(use)·바라보는 쪽(facing)을 조수 도구의 id 로 — ikit selftest 가 막는다 (`69be9af`)
+- **qa** — headless monster tactics heal before a lethal hit (`4707e5a`)
+- **battle** — command line keeps its own result after the foe switches (`ed06adc`)
+- **battle** — frozen turns read as frozen, emerald ice thaws, swapped gyms swap leaders (`13cc0e1`)
+- **battle** — forced switch opens the party list, fainted ally gets its line, themed trainers keep the intro (`934f848`)
+- **qa** — monster autoplay keeps move coverage when learning new moves (`5192c32`)
+- **battle** — emerald status badge sits in the HP box, Lv labels match, prize lines without broken josa (`1fd577d`)
+- **monster** — emerald games skip party followers without field art instead of green slimes (`6093245`)
+
+### 문서
+
+- **openwiki** — frozen turns, thaw, command result lookup, route names, delegated cast (`dd2ecc8`)
+- **openwiki** — snow route 1, gym personas, resident remap (`d3aa092`)
+- **openwiki** — emerald battle overhaul, chapter-1 theme, theme cast wiring (`250e872`)
+
+### 테스트
+
+- **jp-city** — 실내 런타임 probe 15/15 — 방마다·계단 왕복·원룸, 조수 시험 하네스는 고쳐 지은 맵과 들어오는 착지 칸도 센다 (`5938de0`)
+
+### 잡무
+
+- **jp-city** — 굽기 — 일본 실내 6블록 881칸 덧붙임(핀 9007), jpInteriorSpec 가구 94·탁자 2·탁상 20 (`849d451`)
+
 ## 0.164.0 — 2026-10-07
 
 ### 기능

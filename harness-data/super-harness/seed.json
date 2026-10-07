@@ -55,6 +55,22 @@
       "기와집 사랑채",
       "관아",
       "주막 안"
+    ],
+    "마법 학교": [
+      "대연회장",
+      "기숙사 침실",
+      "기숙사 휴게실",
+      "성채 복도",
+      "마법약 교실",
+      "도서관 제한 구역",
+      "부엉이 탑",
+      "약초 온실",
+      "병동",
+      "시계탑 기어실",
+      "지팡이 가게",
+      "과자점 지하 창고",
+      "빗자루 경기장",
+      "호수 보트 창고"
     ]
   },
   "rules": [
@@ -120,10 +136,25 @@
       "native": [],
       "artRoute": "interior-props",
       "note": "SF 칩셋이 없다."
+    },
+    {
+      "id": "wizarding",
+      "ko": "마법 학교(해리포터풍)",
+      "native": [
+        "wizarding_world"
+      ],
+      "artRoute": "wizarding-pieces",
+      "note": "고딕 성채 마법 학교. 공간 13종(+복도·휴게실·기숙사 침실 변형)은 조수 도구 build_wizarding_space({space, variant}) 한 번으로 짓는다(벽·문·바닥·가구·통행 자동) — 카드 build 에 이 호출을 적고 타일을 한 칸씩 칠하라고 쓰지 않는다. 공간 목록·가구 id 는 list_wizarding_spaces. 없는 기물은 scripts/content/wizarding/pieces/<모듈>.py 로 그려 굽는다(CONTRACT.md)."
     }
   ],
   "borrowStructure": {
     "tilesets": [],
     "rule": "시대가 다른 바닥·벽·천장도 빌려서 맵을 먼저 만들지 않는다. 실제 재료 조사와 독립 검수가 먼저다."
-  }
+  },
+  "themeBundles": {
+    "theme-3e7ac64c5cf1d943e08a": [
+      "wizarding_world"
+    ]
+  },
+  "themeBundlesNote": "테마 전용 팩(packId)을 이미 구운 공용 번들이 채운 경우. 재료 관문은 packId 와 함께 이 번들 칩셋도 그 테마의 칩셋으로 받는다."
 }

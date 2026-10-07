@@ -14,8 +14,28 @@ import motion as M
 import recipes as R
 
 CATALOG_FILES = ('charsetCatalog.ts', 'easyrpgRtp.ts', 'scarloxyPack.ts',
-                 'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'sharedCharacterGraphics.json')
+                 'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'wizardingCharsets.ts',
+                 'wizardingCharsets.json', 'sharedCharacterGraphics.json')
 WALKING_GROUPS = {'Actor', 'People', 'Monster', 'Animal', 'Scarloxy', 'Farm', 'Template'}
+
+
+def wizarding_catalog(directory):
+    """Read the baked wizarding sheets. The count lives in the roster, the shape in the template."""
+    source = (directory / 'wizardingCharsets.ts').read_text()
+    block = source.split('export const WIZARDING_CHARSET_ASSETS', 1)
+    if len(block) != 2:
+        raise ValueError('마법 학교 캐릭터 원본 목록을 찾을 수 없습니다')
+    body = block[1].split('satisfies', 1)[0]
+    fields = dict(re.findall(r'(\w+):\s*`([^`]*)`', body))
+    group = re.search(r'group:\s*"([^"]+)"', body)
+    count = json.loads((directory / 'wizardingCharsets.json').read_text()).get('sheets')
+    if not group or not isinstance(count, int) or count < 1 or not all(fields.get(key) and '${n}' in fields[key] for key in ('id', 'name', 'path', 'textureKey')):
+        raise ValueError('마법 학교 캐릭터 원본 목록 형식을 읽을 수 없습니다')
+    return [dict(id=fields['id'].replace('${n}', str(number)),
+                 name=fields['name'].replace('${n}', str(number)),
+                 path=fields['path'].replace('${n}', str(number)),
+                 textureKey=fields['textureKey'].replace('${n}', str(number)),
+                 group=group[1]) for number in range(1, count + 1)]
 
 
 def editor_catalog():
@@ -23,7 +43,8 @@ def editor_catalog():
     directory = H.ROOT / 'src/assets'
     providers = re.findall(r'\.\.\.([A-Z_]+)', (directory / 'charsetCatalog.ts').read_text().split('export const CHARSET_ASSETS:')[1].split('];')[0])
     expected = {'EASYRPG_CHARSET_ASSETS', 'SCARLOXY_CHARSET_ASSETS',
-                'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS'}
+                'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS',
+                'WIZARDING_CHARSET_ASSETS'}
     if set(providers) != expected:
         raise ValueError('에디터 캐릭터 카탈로그 공급자가 바뀌었습니다. 원본 목록 연결을 갱신하세요.')
     result = []
@@ -46,6 +67,7 @@ def editor_catalog():
         result.append(dict(id=f'easyrpg-charset-monster{number}', name=label,
                            path=f'assets/generated/charsets/Monster{number}.png',
                            textureKey=f'tex_easyrpg_charset_monster{number}', group='Monster'))
+    result.extend(wizarding_catalog(directory))
     if len({r['id'] for r in result}) != len(result):
         raise ValueError('에디터 원본 ID가 중복됐습니다')
     return result
@@ -93,6 +115,9 @@ def create(name='에디터 전체 캐릭터 원본'):
     sheets, skipped, files = [], [], {}
     try:
         for entry in editor_catalog():
+            if entry['group'] == 'Wizarding':
+                skipped.append(dict(assetId=entry['id'], reason='마법 학교 시트는 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
+                continue
             if entry['group'] not in WALKING_GROUPS or entry['group'] == 'Animal':
                 skipped.append(dict(assetId=entry['id'], reason='Animal은 고정한 동물 영역의 별도 실행으로 제작' if entry['group'] == 'Animal' else '문·기물·탈것은 걷는 캐릭터 원본이 아님'))
                 continue

@@ -4,6 +4,7 @@ import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthor
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
+import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import { BEODEUL_DOOR_TEXTURE, createBeodeulDoorTileset, ensureBeodeulDoorReferences } from "./beodeulDoor";
 import { BEODEUL_GROUND_TEXTURE, createBeodeulGroundTileset, ensureBeodeulGroundReferences } from "./beodeulGround";
 import { BEODEUL_WARM_TREES_TEXTURE, createBeodeulWarmTreesTileset } from './beodeulWarmTrees';
@@ -30,6 +31,7 @@ import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTileset
 import { bundledAssetRef, COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_NAME, COMBINED_TOWN_TILESET_TEXTURE_KEY, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
+import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -122,10 +124,14 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     const id = bundledTilesetIdForAsset(asset);
     if (project.tilesets[id]) {
       if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
+      // 공방에서 그려 넣은 칸(맵 기물)은 번들 끝 뒤에 붙어 있다. 아래 ensure 가 번들 칸을 늘리면 겹치므로
+      // 떼어 두었다가 새 끝 뒤에 다시 붙인다(번호가 바뀌면 맵 칸도 고친다). 손 도트 실내는 자기 ensure 가 한다.
+      const parkedWorkshop = asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE ? null : detachWorkshopTiles(project.tilesets[id]);
       if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) changed = ensureWorldmapSelectedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_DOOR_TEXTURE) changed = ensureBeodeulDoorReferences(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) changed = ensureBeodeulArchitectureTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_FORMS_TEXTURE) changed = ensureBeodeulFormsTileset(project.tilesets[id]) || changed;
+      if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) changed = ensureBeodeulReviewedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === BEODEUL_GROUND_TEXTURE || asset.textureKey === BEODEUL_CITY_TEXTURE)
         changed = ensureBeodeulGroundReferences(project.tilesets[id]) || changed;
       // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
@@ -134,6 +140,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
         changed = ensureBeodeulFacilityKits(project.tilesets[id]) || changed;
         changed = ensureBeodeulForms(project.tilesets[id]) || changed;
+        changed = ensureBeodeulReviewed(project.tilesets[id]) || changed;
       }
       // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
       if (asset.textureKey === JOSEON_BARAM_TEXTURE) {
@@ -161,6 +168,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (isEmeraldMonsterKitTexture(asset.textureKey)) changed = ensureEmeraldMonsterKitTileset(project.tilesets[id]) || changed;
       // 생성 칩셋 공용 실내(손 도트 v5): 옛 정의(Tibo 번호 기반)는 새 정의로 통째로 바꾼다. 옛 칩셋을 쓰던 맵은 그대로 두고 경고만.
       if (asset.textureKey === ATLAS_BIOME_INTERIOR_TEXTURE) changed = ensureAtlasBiomeInteriorCurrent(project, id) || changed;
+      if (parkedWorkshop) changed = attachWorkshopTiles(project, id, parkedWorkshop) || changed;
       continue;
     }
     project.tilesets[id] = bundledEasyRpgTileset(asset);
@@ -311,6 +319,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === BEODEUL_WARM_TREES_TEXTURE) return createBeodeulWarmTreesTileset();
   if (asset.textureKey === BEODEUL_ARCHITECTURE_TEXTURE) return createBeodeulArchitectureTileset();
   if (asset.textureKey === BEODEUL_FORMS_TEXTURE) return createBeodeulFormsTileset();
+  if (asset.textureKey === BEODEUL_REVIEWED_TEXTURE) return createBeodeulReviewedTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();

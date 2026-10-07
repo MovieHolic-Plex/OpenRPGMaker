@@ -280,7 +280,7 @@
       "id": "r9-building-09",
       "sourceMatches": true,
       "entranceMetadataPresent": true,
-      "sha": "34004e7ad8e25bcf1d70fe3e309310b07e72c81970a6cd9449ea7f8ab90e391b"
+      "sha": "5853e8d12dce37172cadbaece7b35afc8237032113f9e486ceeeaf4317299b4e"
     },
     {
       "id": "r9-building-10",
@@ -316,13 +316,13 @@
       "id": "r9-building-15",
       "sourceMatches": true,
       "entranceMetadataPresent": true,
-      "sha": "e29c5a8ae097430577e0f93d31350b8378c89186b21b24e49ddf095c6be31be2"
+      "sha": "a8be7f7356b55fb6144c5a0e833e5852ba8980954f2fc3516ce21e5ae1725fa4"
     },
     {
       "id": "r9-building-16",
       "sourceMatches": true,
       "entranceMetadataPresent": true,
-      "sha": "a176555189e94c9172dfddd4f71578dee8fc386bc02cbb12ee104cb3e8d9c027"
+      "sha": "ffa610ebf1a2283aaa177b1d5a059321888064830f769e26f78c1eb0aa1c764d"
     },
     {
       "id": "r9-building-17",
@@ -341,6 +341,48 @@
       "sourceMatches": true,
       "entranceMetadataPresent": true,
       "sha": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a"
+    },
+    {
+      "id": "r10-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "bc55279e984f4383893fa5537f6a5dbf556dd1f93ef6c54a969bb3076ea31863"
+    },
+    {
+      "id": "r10-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "e0d0e9fd0242d695f6a93e21a1910de36ac79db8154326c8df49bdb41530d882"
+    },
+    {
+      "id": "r10-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c18dbd51781236383486d434df084697b1f55d18dd7b2d2093461261606e1a1a"
+    },
+    {
+      "id": "r10-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "ed3875f61af8e52c49efdb0d2d1c2ee39e24c8fb0245d5e4fc9e79b51f2dacfe"
+    },
+    {
+      "id": "r10-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "2157f4de22275ee619adeeb9207a99e5e68690899883c03be85f4fb835017774"
+    },
+    {
+      "id": "r10-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "8b8562099c7b07c47b13873d44bd9ce637c09ae328f350c406acce771c7802c6"
+    },
+    {
+      "id": "r10-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd"
     }
   ],
   "visualApproval": "requires-vision-gate-and-human-decision"

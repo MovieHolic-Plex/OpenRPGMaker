@@ -1,0 +1,732 @@
+{
+  "extends": "monster-overworld",
+  "id": "monster-dungeon",
+  "title": "몬스터 수집 던전 (얼음 동굴·용암 동굴·유령 탑·발전소/아지트·고대 유적·해저 동굴)",
+  "tilesetId": "monster_dungeon",
+  "tilesetName": "몬스터 수집 던전 · OPRN 손 도트",
+  "textureKey": "tex_monster_dungeon",
+  "sections": [],
+  "gates": null,
+  "palette": {
+    "dg_snow": [
+      "#8ea4c4",
+      "#b8c8e0",
+      "#d8e2f0",
+      "#e8eef8",
+      "#f8fbff"
+    ],
+    "dg_ice": [
+      "#78b2de",
+      "#9ccff0",
+      "#c4e6fa",
+      "#f0faff"
+    ],
+    "dg_icewall": [
+      "#22406e",
+      "#3e6a9c",
+      "#6c98c4",
+      "#a6c6e6",
+      "#d2e6f6"
+    ],
+    "dg_icerock": [
+      "#34588a",
+      "#6890c0",
+      "#9cc2e4",
+      "#d4e8f6",
+      "#ffffff"
+    ],
+    "dg_ash": [
+      "#2a1612",
+      "#3c201a",
+      "#4e2a22",
+      "#60362a",
+      "#764434"
+    ],
+    "dg_lvwall": [
+      "#1c0c0c",
+      "#4a1c18",
+      "#722e22",
+      "#8e4430",
+      "#b0603e"
+    ],
+    "dg_lvtop": [
+      "#4a1c18",
+      "#58251d",
+      "#632d21",
+      "#6f3426",
+      "#764434"
+    ],
+    "dg_lava": [
+      "#e0481a",
+      "#f06a22",
+      "#f8a040",
+      "#ffe070"
+    ],
+    "dg_crust": [
+      "#24120e",
+      "#4a2a22",
+      "#5e3a2e",
+      "#8a3a1e"
+    ],
+    "dg_lvrock": [
+      "#1c0e0e",
+      "#3a2020",
+      "#583430",
+      "#784a40",
+      "#9a6450"
+    ],
+    "dg_sewall": [
+      "#1e1814",
+      "#3a2e26",
+      "#5a4a3e",
+      "#7c6c5c",
+      "#9c8c7a"
+    ],
+    "dg_setop": [
+      "#3a2e26",
+      "#463a31",
+      "#504439",
+      "#5b4d42",
+      "#7c6854"
+    ],
+    "dg_sefloor": [
+      "#3a2e24",
+      "#4c3c2e",
+      "#5c4a3a",
+      "#6c5846",
+      "#7c6854"
+    ],
+    "dg_serock": [
+      "#1e1814",
+      "#3a2e26",
+      "#5c4c40",
+      "#7e6c5c",
+      "#a08e7c"
+    ],
+    "dg_weed": [
+      "#164a32",
+      "#2a7048",
+      "#4c9a62"
+    ],
+    "dg_shell": [
+      "#a0605a",
+      "#e8b0a0",
+      "#fbe8d8"
+    ],
+    "dg_ghfl": [
+      "#4a4260",
+      "#5e5678",
+      "#726a8e",
+      "#8a82a8"
+    ],
+    "dg_ghwall": [
+      "#2e2448",
+      "#463466",
+      "#5e4a88",
+      "#7c66aa",
+      "#a28ccc"
+    ],
+    "dg_ghceil": [
+      "#121018",
+      "#c8c4d8",
+      "#ecebf4"
+    ],
+    "dg_ghstone": [
+      "#4e4462",
+      "#7a7090",
+      "#a49cba",
+      "#cec8de"
+    ],
+    "dg_moss": [
+      "#3a6a3a",
+      "#5a8a48",
+      "#7aa858"
+    ],
+    "dg_iron": [
+      "#2e2e38",
+      "#4e4e5c",
+      "#7a7a8a"
+    ],
+    "dg_flame": [
+      "#e86820",
+      "#ffc040",
+      "#fff4b0"
+    ],
+    "dg_bronze": [
+      "#5e4020",
+      "#8a6430",
+      "#b88c48"
+    ],
+    "dg_pwfl": [
+      "#4a525e",
+      "#626c78",
+      "#78828e",
+      "#98a2ac"
+    ],
+    "dg_pwceil": [
+      "#c8ccd4",
+      "#eef0f4"
+    ],
+    "dg_pwwall": [
+      "#38424e",
+      "#4e5a68",
+      "#68788a",
+      "#8a9aaa"
+    ],
+    "dg_pipe": [
+      "#3a6a50",
+      "#58946c",
+      "#88c098"
+    ],
+    "dg_warp": [
+      "#3080c0",
+      "#60c0f0",
+      "#b8f0ff"
+    ],
+    "dg_copper": [
+      "#8a4a20",
+      "#c07030",
+      "#e8a058"
+    ],
+    "dg_cable": [
+      "#123a3a",
+      "#1e5a58",
+      "#4a9490"
+    ],
+    "dg_pwtop": [
+      "#3c5a64",
+      "#56808a",
+      "#78a4ac",
+      "#a8ccd0"
+    ],
+    "dg_pwface": [
+      "#1e4650",
+      "#2e6470",
+      "#4a8a96",
+      "#9cd0d6"
+    ],
+    "dg_rusand": [
+      "#9c7a4a",
+      "#b89060",
+      "#cca474",
+      "#dcb888",
+      "#f0dcb0"
+    ],
+    "dg_rustone": [
+      "#6a5a48",
+      "#857260",
+      "#a08c74",
+      "#bca88c",
+      "#d8c6a8"
+    ],
+    "dg_ruceil": [
+      "#8a7454",
+      "#d8c49c",
+      "#f0e2c4"
+    ],
+    "dg_rubrick": [
+      "#5e4a24",
+      "#8a6e34",
+      "#ae9048",
+      "#ccb064",
+      "#e8d48c"
+    ],
+    "dg_rurock": [
+      "#4a3a2c",
+      "#6e5640",
+      "#94785a",
+      "#b89c7a"
+    ],
+    "dg_rublock": [
+      "#4a6a64",
+      "#6e928a",
+      "#9cc0b4",
+      "#c4e2d4"
+    ],
+    "dg_rublockf": [
+      "#2a403e",
+      "#46625e",
+      "#6e8e86",
+      "#94b4aa"
+    ],
+    "dg_clay": [
+      "#6a3a20",
+      "#a0582e",
+      "#c88050"
+    ],
+    "dg_cinder": [
+      "#e8dcd4"
+    ],
+    "dg_lvedge": [
+      "#5c4c4a",
+      "#8c7a74"
+    ],
+    "dg_exitlight": [
+      "#e8dcb8",
+      "#fff8e4"
+    ],
+    "dg_coral": [
+      "#9a3a2a",
+      "#e06848",
+      "#f49870",
+      "#ffd0b0"
+    ],
+    "dg_ghmat": [
+      "#8a3a24",
+      "#d86a34",
+      "#f4a060"
+    ],
+    "dg_pwpanel": [
+      "#7c8896",
+      "#a2aebb",
+      "#c6d0da"
+    ],
+    "sea": [
+      "#0a5fc2",
+      "#0b70d6",
+      "#1286e4",
+      "#3aa8f0",
+      "#8fd2fa"
+    ]
+  },
+  "bake": {
+    "backing": "ic_snow0",
+    "autotile": [
+      [
+        "ic_ice",
+        "ic_at",
+        "path",
+        {
+          "slide": "ice",
+          "terrain": "snow",
+          "label": "얼음 판(미끄럼 — 들어온 방향으로 바위·벽·눈까지)"
+        }
+      ],
+      [
+        "ic_wall",
+        "ic_wall_at",
+        "wall",
+        {
+          "connectTiles": "ic_wall_((top110|side55|side205)_\\d|face\\d)"
+        }
+      ],
+      [
+        "lv_cb",
+        "lv_cb_at",
+        "path",
+        {
+          "terrain": "stone",
+          "label": "식은 용암 껍질 판(용암을 건너는 다리 — 걷는다)",
+          "connectTiles": "lv_cb_alt\\d+_\\d"
+        }
+      ],
+      [
+        "lv_lava",
+        "lv_at",
+        "water",
+        {
+          "terrain": "none",
+          "label": "용암(막힘·4프레임 기포 — 물이 아니라 파도타기 불가)",
+          "connectGroups": [
+            "lv_cb"
+          ],
+          "connectTiles": "lv_cb_alt\\d+_\\d|lv_crust\\d+_f\\d|lv_ate\\d+_\\d_f\\d"
+        }
+      ],
+      [
+        "lv_wall",
+        "lv_wall_at",
+        "wall",
+        {
+          "connectTiles": "lv_wall_((top110|side55|side205)_\\d|face\\d)"
+        }
+      ],
+      [
+        "se_pool",
+        "se_at",
+        "water",
+        {
+          "label": "해저 물웅덩이(패인 못·4프레임 물결 — 파도타기 자리)",
+          "connectGroups": [
+            "se_isle"
+          ]
+        }
+      ],
+      [
+        "se_isle",
+        "se_isle_at",
+        "path",
+        {
+          "terrain": "stone",
+          "label": "물 위 바위섬(파도타기로 닿는 땅 — 둥근 귀·남쪽 앞면)"
+        }
+      ],
+      [
+        "se_wall",
+        "se_wall_at",
+        "wall",
+        {
+          "connectTiles": "se_wall_((top110|side55|side205)_\\d|face\\d)"
+        }
+      ],
+      [
+        "pw_pb",
+        "pw_pb_at",
+        "block"
+      ],
+      [
+        "ru_pb",
+        "ru_pb_at",
+        "block"
+      ]
+    ],
+    "autotile_names": {
+      "ic_ice": "얼음 판",
+      "ic_wall": "얼음 동굴 벽",
+      "lv_lava": "용암",
+      "lv_wall": "화산암 벽",
+      "se_pool": "해저 물웅덩이",
+      "se_wall": "젖은 바위 벽",
+      "pw_pb": "아지트 칸막이",
+      "ru_pb": "유적 돌담",
+      "lv_cb": "식은 용암 껍질 판",
+      "se_isle": "물 위 바위섬"
+    },
+    "object_kinds": {
+      "decor": [
+        "rug",
+        "h_rug",
+        "h_mat",
+        "c_emblem",
+        "g_leader_mat",
+        "g_dais",
+        "g_edais",
+        "gh_stairs"
+      ],
+      "prop": [
+        "sign",
+        "counter",
+        "shelf",
+        "table",
+        "chair",
+        "bed",
+        "plant",
+        "tv",
+        "pc",
+        "machine",
+        "statue",
+        "stairs_up",
+        "window_pair",
+        "ic_stal",
+        "lv_stal",
+        "lv_vent",
+        "se_stal",
+        "gh_obelisk",
+        "gh_censer",
+        "pw_gen",
+        "pw_console",
+        "pw_coil",
+        "ru_pillar",
+        "ru_altar",
+        "ru_braille"
+      ],
+      "building": [
+        "house_",
+        "two_",
+        "shop_",
+        "cabin_",
+        "center",
+        "mart",
+        "gym_",
+        "gable_",
+        "cave_mouth"
+      ],
+      "tree": [
+        "tree_",
+        "pine_",
+        "forest_"
+      ]
+    },
+    "rules": [
+      {
+        "re": "ic_snow\\d|ic_snow_s",
+        "terrain": "snow",
+        "label": "눈 바닥"
+      },
+      {
+        "re": "ic_crack",
+        "label": "금 간 얼음(위층 덧그림) — 밟으면 깨져 아래층으로 떨어지는 이벤트 자리, 미끄럼은 그대로"
+      },
+      {
+        "re": "(ic|lv|se)_hole",
+        "label": "바닥 구멍 사다리(아래층으로) — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "(ic|lv|se)_ladder",
+        "label": "벽에 기댄 사다리(위층 덧그림, 벽 앞면 칸 위) — 위층으로 가는 이동 이벤트 자리"
+      },
+      {
+        "re": "(ic|lv|se)_door",
+        "label": "벽에 뚫린 굴 입구(위층 덧그림, 벽 앞면 칸 위) — 이동 이벤트 자리"
+      },
+      {
+        "re": "(ic|lv|se)_exit",
+        "label": "출구 빛(맵 아래 가장자리 바닥) — 이동 이벤트 자리"
+      },
+      {
+        "re": "ic_rough",
+        "slide": "stop",
+        "label": "거친 얼음(위층 덧그림) — 미끄럼이 여기서 멈춘다"
+      },
+      {
+        "re": "ic_rock\\d",
+        "pass": "shut",
+        "label": "얼음 바위(미끄럼을 멈춘다·밀기 이벤트 자리)"
+      },
+      {
+        "re": "ic_crystal",
+        "pass": "shut",
+        "label": "얼음 결정"
+      },
+      {
+        "re": "ic_drift",
+        "pass": "shut",
+        "label": "눈 더미"
+      },
+      {
+        "re": "ic_void|lv_void|se_void",
+        "pass": "shut",
+        "label": "동굴 밖 어둠"
+      },
+      {
+        "re": "ic_wall_oc\\d+|lv_wall_oc\\d+|se_wall_oc\\d+",
+        "pass": "shut",
+        "terrain": "stone",
+        "label": "동굴 벽(맵 바깥 모서리)"
+      },
+      {
+        "re": "(ic|lv|se)_wall_((top110|side55|side205)_\\d|face\\d)",
+        "pass": "shut",
+        "terrain": "stone",
+        "label": "동굴 벽 곧은 변(북 110·서 55·동 205 윗면 잔돌 교대 칸, 곧은 앞면 덩이 변형 — 쇼케이스가 해시로 섞는다)"
+      },
+      {
+        "re": "lv_fl\\d|lv_fl_s",
+        "label": "화산 동굴 바닥(적갈, 4·5 는 흰 재 점 — 9~11칸에 하나꼴)"
+      },
+      {
+        "re": "lv_cinder",
+        "label": "불씨 바닥(걷는다)"
+      },
+      {
+        "re": "lv_ember\\d",
+        "pass": "shut",
+        "label": "불씨 바위"
+      },
+      {
+        "re": "lv_boulder",
+        "pass": "shut",
+        "label": "화산암 바위(밀기 이벤트 자리)"
+      },
+      {
+        "re": "lv_cracked",
+        "pass": "shut",
+        "label": "부술 수 있는 바위(이벤트 자리)"
+      },
+      {
+        "re": "se_fl\\d|se_fl_s",
+        "label": "젖은 바닥"
+      },
+      {
+        "re": "se_puddle",
+        "label": "얕은 물 고임(걷는다)"
+      },
+      {
+        "re": "se_shell\\d",
+        "label": "조개 껍데기(걷는다)"
+      },
+      {
+        "re": "se_weed\\d",
+        "pass": "shut",
+        "label": "해초"
+      },
+      {
+        "re": "se_coral",
+        "pass": "shut",
+        "label": "산호"
+      },
+      {
+        "re": "se_rock",
+        "pass": "shut",
+        "label": "젖은 바위(밀기 이벤트 자리)"
+      },
+      {
+        "re": "se_hole_o",
+        "label": "바위섬 구멍 사다리(위층 덧그림) — 아래층 이동 이벤트 자리"
+      },
+      {
+        "re": "lv_cb_alt\\d+_\\d",
+        "terrain": "stone",
+        "label": "껍질 판 다리 가장자리 변형(용암 쪽 윤곽이 다른 판 — 손으로 섞는다)"
+      },
+      {
+        "re": "lv_crust\\d+_f\\d",
+        "pass": "shut",
+        "terrain": "none",
+        "label": "용암 위 굳은 껍질 덩이(막힘 — 용암과 같다, 넓은 면에 띄엄띄엄)"
+      },
+      {
+        "re": "lv_ate\\d+_\\d_f\\d",
+        "pass": "shut",
+        "terrain": "none",
+        "label": "용암 곧은 가장자리 자국 변형(막힘 — 용암과 같다, 쇼케이스가 칸 해시로 섞는다)"
+      },
+      {
+        "re": "lv_cb_glow\\d",
+        "label": "껍질 판 붉은 틈(위층 덧그림, 장식)"
+      },
+      {
+        "re": "gh_fl\\d|gh_fl_s|gh_dim_\\w+",
+        "label": "탑 바닥"
+      },
+      {
+        "re": "gh_mat",
+        "label": "출구 매트 — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "gh_grave_\\w",
+        "pass": "shut",
+        "label": "묘비"
+      },
+      {
+        "re": "gh_offer",
+        "pass": "shut",
+        "label": "꽃 공양 단지"
+      },
+      {
+        "re": "gh_candle",
+        "pass": "shut",
+        "label": "촛대"
+      },
+      {
+        "re": "(gh|pw|ru)_wall_\\w+",
+        "pass": "shut",
+        "label": "뒷벽(통행 불가)"
+      },
+      {
+        "re": "(gh|pw|ru)_edge_\\w+",
+        "pass": "shut",
+        "label": "방 바깥 여백(통행 불가)"
+      },
+      {
+        "re": "pw_fl\\d|pw_fl_\\w+",
+        "label": "금속 판 바닥"
+      },
+      {
+        "re": "pw_spin_u",
+        "slide": "up",
+        "label": "회전 화살표(위) — 밟으면 벽·정지 칸까지 미끄러진다"
+      },
+      {
+        "re": "pw_spin_d",
+        "slide": "down",
+        "label": "회전 화살표(아래) — 밟으면 벽·정지 칸까지 미끄러진다"
+      },
+      {
+        "re": "pw_spin_l",
+        "slide": "left",
+        "label": "회전 화살표(왼쪽) — 밟으면 벽·정지 칸까지 미끄러진다"
+      },
+      {
+        "re": "pw_spin_r",
+        "slide": "right",
+        "label": "회전 화살표(오른쪽) — 밟으면 벽·정지 칸까지 미끄러진다"
+      },
+      {
+        "re": "pw_spin_stop",
+        "slide": "stop",
+        "label": "정지 칸 — 미끄러짐이 멈춘다"
+      },
+      {
+        "re": "pw_warp",
+        "label": "워프 판 — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "pw_switch",
+        "label": "레버 스위치 — 차단기를 여는 이벤트를 올릴 자리"
+      },
+      {
+        "re": "pw_gate",
+        "pass": "shut",
+        "label": "차단기(닫힘) — 스위치 이벤트로 열린 그림(pw_gate_open)으로 바꾼다"
+      },
+      {
+        "re": "pw_gate_open",
+        "label": "차단기(열림)"
+      },
+      {
+        "re": "pw_crate",
+        "pass": "shut",
+        "label": "나무 상자"
+      },
+      {
+        "re": "pw_drum",
+        "pass": "shut",
+        "label": "노란 드럼통"
+      },
+      {
+        "re": "pw_stairs_dn",
+        "label": "내려가는 계단(아래층) — 이동 이벤트 자리"
+      },
+      {
+        "re": "ru_pb_crack\\d?",
+        "label": "돌담 윗면 금(위층 덧그림, 장식)"
+      },
+      {
+        "re": "pw_cable_\\w+",
+        "label": "바닥 전선(걷는다)"
+      },
+      {
+        "re": "ru_sand\\d|ru_sand_(s|e|se|c)",
+        "terrain": "sand",
+        "label": "유적 모래 바닥"
+      },
+      {
+        "re": "ru_fl\\d|ru_fl_s|ru_fl\\d_e",
+        "label": "판석 바닥(0~3 은 2×2 한 장, 4 는 무늬 판, _e 는 왼쪽 담 끝 그늘)"
+      },
+      {
+        "re": "ru_exit",
+        "terrain": "sand",
+        "label": "출구(바깥 빛) — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "ru_rubble\\d",
+        "pass": "shut",
+        "label": "무너진 돌"
+      },
+      {
+        "re": "ru_urn",
+        "pass": "shut",
+        "label": "토기 항아리"
+      }
+    ]
+  },
+  "roles": [
+    "ice_floor",
+    "snow_floor",
+    "ice_wall",
+    "lava",
+    "lava_floor",
+    "lava_wall",
+    "tower_floor",
+    "grave",
+    "plant_floor",
+    "spin",
+    "spin_stop",
+    "ruin_floor",
+    "ruin_wall",
+    "sea_water",
+    "sea_wall"
+  ]
+}

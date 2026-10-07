@@ -23,6 +23,7 @@ import { isPassable, passabilityOf } from "../../../src/project/collision";
 import { tileLayerPolicy } from "../../../src/editor/tileLayerPolicy";
 import { MAP_UPPER_LAYER_DEPTH, mapUpperTileDepth } from "../../../src/player/characterDepth";
 import type { GameMap, Project, AutotileGroup } from "../../../src/project/types";
+import { buildHandInteriorLayers, JP_INTERIOR_SPEC, type HandInteriorInput } from "../../../src/editor/handInterior/builder";
 
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const TS = createJpCityTileset();
@@ -606,7 +607,7 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
 
 // =============================================================================================== 8. 손 도트 거리 시설(blocks/street_hand.py): 전봇대·전선 4층 · 노면 표시 2층 · 블록 담·문기둥 3층
 {
-  const HAND = [...KITS.values()].map((k) => k.id).filter((id) => !/^jp-((recipe|road|door|prop|bldg)-|fumikiri|underpass|footbridge)/.test(id) && !OWN_CATEGORY_BLOCKS.has(KIT_INDEX[id]?.source?.block ?? ""));
+  const HAND = [...KITS.values()].map((k) => k.id).filter((id) => !/^jp-((recipe|road|door|prop|bldg|in)-|fumikiri|underpass|footbridge)/.test(id) && !OWN_CATEGORY_BLOCKS.has(KIT_INDEX[id]?.source?.block ?? ""));
   const up = (id: string) => kitOf(id).rows.map((r) => r.upperTiles);
   const stampL = (p: Project, id: string, x: number, y: number, layer: string) => call(p, "stamp_layer_block", { mapId: "m", x, y, layers: { [layer]: up(id) }, reshape: false });
   const W = 24, H = 18, LANE = [13, 16], HOUSE = "jp-bldg-house-hip2", HX = 3;
@@ -757,6 +758,71 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
       emptiness: rep.emptiness, rules: null };
   }
   OUT.exampleBlocks = blocks;
+}
+
+
+// ── 일본 집 실내: 예제 3맵을 실제 도구(build_hand_interior_room, tileset jp_city)로 짓고, 한 가지씩 틀린 변조를 조립기에 넣어 오류 코드·좌표를 잰다 ──
+{
+  const EXD = path.join(HERE, "..", "interior", "examples");
+  const exRead = (f: string) => JSON.parse(fs.readFileSync(path.join(EXD, `${f}.json`), "utf8"));
+  const LINKS: Record<string, true> = { "house-1f": true, "house-2f": true, "apartment-1k": true };   // start·links 는 예제 JSON 이 들고 있다
+  const argsOf = (f: string) => {
+    const ex = exRead(f);
+    return { tileset: "jp_city", mapId: `jp-city-${f}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
+      start: [{ x: ex.start[0], y: ex.start[1] }], links: ex.links ?? [] };
+  };
+  const p = createEmptyToolProject("jp-interior-refs");
+  const examples: Record<string, unknown> = {};
+  // 층 순서(도구가 없는 맵으로 가는 links 를 거부한다): ① 모든 층을 links 없이 ② 같은 mapId·replace:true 로 links 를 넣어 다시.
+  for (const f of Object.keys(LINKS)) call(p, "build_hand_interior_room", { ...argsOf(f), links: [] });
+  for (const f of Object.keys(LINKS)) {
+    const args = { ...argsOf(f), replace: true };
+    const r = call(p, "build_hand_interior_room", args);
+    const map = p.maps[args.mapId]!;
+    const W = map.width;
+    const codes = Array.from({ length: map.height }, (_, y) => Array.from({ length: W }, (_, x) => (isPassable(p, map, x, y) ? "." : "X")).join(""));
+    examples[f] = { args, rooms: exRead(f).rooms, W, H: map.height, summary: r.summary, data: r.data, layers: layersOf(map), codes,
+      events: (map.events ?? []).map((e) => ({ id: e.id, x: e.x, y: e.y, to: (e.pages?.[0]?.commands?.[0] as { mapId?: string; x?: number; y?: number } | undefined) })) };
+  }
+  // 변조 — 정상 입력(house-1f)에서 한 가지만 바꾼다. 조립기(buildHandInteriorLayers)를 jp_city 정의·사양으로 직접 불러 issues(코드·좌표)와 층을 받는다.
+  const base = argsOf("house-1f");
+  const TSI = p.tilesets.jp_city!;
+  type In = typeof base;
+  const mv = (id: string, x: number, y: number, nth = 0) => (a: In) => { let k = 0; a.objects = a.objects.map((o: { id: string; x: number; y: number }) => (o.id === id && k++ === nth ? { ...o, x, y } : o)); };
+  const add = (o: { id: string; x: number; y: number }) => (a: In) => { a.objects = [...a.objects, o]; };
+  const addGoods = (g: { id: string; x: number; y: number }) => (a: In) => { a.goods = [...a.goods, g]; };
+  const ITAMPERS: { key: string; title: string; fix: string; tweak: (a: In) => void }[] = [
+    { key: "wallOffFace", title: "벽 가구(싱크대)를 거실 한가운데 (17,12) 로", fix: "wall 종류는 북쪽 벽면 바로 아래 첫 바닥 줄에만 — 부엌 북쪽 벽 줄(y=3)로 되돌린다", tweak: mv("kitchen-sink", 17, 12) },
+    { key: "hangLowRow", title: "걸이(벽시계)를 복도 벽면 아랫줄 (8,8) 에", fix: "hang 은 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄) y=7 에 건다", tweak: mv("wall-clock", 8, 8) },
+    { key: "goodsOnFloor", title: "탁상 물건(다기)을 다다미 바닥 (6,5) 에", fix: "탁상 물건은 윗면 있는 가구(좌탁·식탁·카운터) 칸 위에만 — 좌탁 (3,4) 로", tweak: (a) => { a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "tea-set" ? { ...g, x: 6, y: 5 } : g)); } },
+    { key: "stairsMidFloor", title: "올라가는 계단을 복도 가운데 (9,10) 로", fix: "계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 복도 북쪽 벽 (11,9)", tweak: mv("stairs-up-wood", 9, 10) },
+    { key: "doorBlocked", title: "LDK 들어가는 칸 (13,10) 에 좌탁을 놓아 복도→LDK 통로를 막음", fix: "칸막이 틈 앞 칸은 비운다 — 가구를 한 칸 옆으로", tweak: (a) => { mv("low-table", 13, 10)(a); a.goods = a.goods.map((g: { id: string; x: number; y: number }) => (g.id === "remote" ? { ...g, x: 13, y: 10 } : g)); } },
+    { key: "overlap", title: "우산꽂이를 신발장 칸 (11,12) 에 겹침", fix: "발자국이 겹치지 않게 다른 칸으로", tweak: mv("umbrella-stand", 11, 12) },
+    { key: "goodsNoLayer", title: "소파를 좌탁 바로 남쪽 (13,12) 으로 붙여 좌탁 칸 4층에 소파 등받이가 걸린 뒤 리모컨(14,11)", fix: "좌탁과 소파 사이에 한 줄 띄운다(소파 등받이 overhang 이 좌탁 칸의 3·4층을 차지한다)", tweak: mv("sofa-n", 13, 12) },
+    { key: "doorNotInGap", title: "열린 후스마를 세로 칸막이 틈 (6,11) 에", fix: "문(door 종류)은 가로 칸막이('#' 줄)의 1칸 틈 칸에만 — 화실 문 틈 (7,6). 세로 칸막이 3줄 틈 통로 칸에는 옆문(sidedoor 종류 door-side-*)을 단다", tweak: add({ id: "fusuma-open", x: 6, y: 11 }) },
+    { key: "sidedoorNotInGap", title: "옆문을 복도 한가운데 (9,10) 에", fix: "옆문(sidedoor)은 세로 칸막이('#' 열) 3줄 틈의 통로 칸(셋째 줄)에만 — 탈의실 입구 (6,11)·LDK 입구 (12,10)", tweak: add({ id: "door-side-western", x: 9, y: 10 }) },
+    { key: "unknownObject", title: "없는 가구 id \"sofa\"", fix: "list_hand_interior_parts({tileset:\"jp_city\"}) 의 id 를 그대로 쓴다(방향 있는 가구는 -s/-n/-e/-w)", tweak: add({ id: "sofa", x: 17, y: 12 }) },
+  ];
+  const sha = (a: number[]) => a.join(",");
+  const good = buildHandInteriorLayers(base as unknown as HandInteriorInput, TSI, JP_INTERIOR_SPEC);
+  const errorsI: Record<string, unknown> = {};
+  for (const t of ITAMPERS) {
+    const a = structuredClone(base) as In; t.tweak(a);
+    let out: ReturnType<typeof buildHandInteriorLayers> | null = null; let thrown: string | null = null;
+    try { out = buildHandInteriorLayers(a as unknown as HandInteriorInput, TSI, JP_INTERIOR_SPEC); } catch (e) { thrown = (e as Error).message; }
+    const before = JSON.stringify(p.maps["jp-city-house-1f"]);
+    const res = call(p, "build_hand_interior_room", { ...a, replace: true });
+    const toolCode = res.ok ? null : res.code, toolSummary = res.summary, toolWarnings = res.warnings;
+    const mapUnchanged = JSON.stringify(p.maps["jp-city-house-1f"]) === before;
+    if (!mapUnchanged) call(p, "build_hand_interior_room", { ...base, replace: true });
+    errorsI[t.key] = { title: t.title, fix: t.fix, thrown, toolCode, toolSummary, toolWarnings, mapUnchanged,
+      issues: (out?.issues ?? []).map((i) => ({ severity: i.severity, code: i.code, x: i.x ?? null, y: i.y ?? null, message: i.message })),
+      unreachedFloor: out?.unreachedFloor ?? [], args: { objects: a.objects, goods: a.goods },
+      layers: out ? { "1": out.lowerTiles, "2": out.lowerOverlayTiles, "3": out.upperTiles, "4": out.upperOverlayTiles } : null,
+      changed: out ? ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"].filter((k) => sha((out as unknown as Record<string, number[]>)[k]!) !== sha((good as unknown as Record<string, number[]>)[k]!)) : [] };
+  }
+  void addGoods;
+  OUT.interior = { examples, errors: errorsI, goodIssues: good.issues };
 }
 
 fs.writeFileSync(path.join(HERE, "engine-results.json"), JSON.stringify(OUT));

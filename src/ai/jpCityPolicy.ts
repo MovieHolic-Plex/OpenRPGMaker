@@ -39,7 +39,7 @@ export interface JpCityTarget {
 
 /**
  * 이 요청이 일본 도시 칩셋 작업인가. 대상 맵이 이미 jp_city 이면 그 맵(생성·수정만), 아니면 «야외 시공 생성» 요청이 칩셋을 부르거나 일본 거리를 말했을 때 새 맵.
- * 실내(jp_city 에는 실내가 없다)·NPC·질문·수정 요청이 «일본 편의점» 낱말 하나로 끌려오지 않게 의도 선언을 같이 본다.
+ * 실내(jp_city 실내는 build_hand_interior_room tileset:"jp_city" 경로 — 여기서 받지 않는다)·NPC·질문·수정 요청이 «일본 편의점» 낱말 하나로 끌려오지 않게 의도 선언을 같이 본다.
  * 호출자는 PAW 전용 게이트가 켜진 요청(requestsModernMap)에서는 부르지 않는다 — 게이트가 이긴다.
  */
 export function jpCityTargetFor(
@@ -67,13 +67,14 @@ export function scopeUsesJpCity(project: Pick<Project, "tilesets" | "maps">, map
 export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
   "list_jp_city_building_parts", "build_jp_city_building", "list_tileset_references", "read_tileset_reference",
   "create_map", "fill_region", "lay_path", "paint_tiles", "stamp_object", "check_reachability", "show_map_region", "ask_tileset_change",
-  "set_map_transit", "inspect_map_transit", "import_region_reference",
+  "set_map_transit", "inspect_map_transit", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room",
 ];
 
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */
 export const JP_CITY_POINTER_LINE =
   "일본 상가·상점가·골목 거리 풍경은 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다), "
-  + "건물은 build_jp_city_building(id 는 list_jp_city_building_parts), 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_beodeul_town 은 쓰지 않는다.";
+  + "건물은 build_jp_city_building(id 는 list_jp_city_building_parts), 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_beodeul_town 은 쓰지 않는다. "
+  + "일본 집 실내(현관·화실·LDK·욕실·원룸)는 build_hand_interior_room({tileset:\"jp_city\", plan, …}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}).";
 
 /**
  * 칠하기 도구(fill_region·lay_path·paint_tiles)의 참고문서 게이트를 «한 번에» 통과하는 읽기 목록. 실측(2026-10-04 헤드리스 시험): 조수가 입구 용도(jp-start)를

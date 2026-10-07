@@ -108,6 +108,15 @@ export interface CharsetLabelOverride {
   readonly label: string;
   readonly tags?: readonly string[];
   readonly origin?: "user" | "ai";
+  /**
+   * "uploaded" = 업로드 캐릭터 시트(textureKey 가 에셋 id) 칸의 설명. 기본 목록에 없는 칸이면 NPC 그림 목록에 새 항목으로 더한다 —
+   * 에셋 스토어 팩의 캐릭터(StorePackCharacter)가 이 길로 들어와 조수가 외형으로 고른다.
+   */
+  readonly spriteType?: "uploaded";
+  readonly gender?: "male" | "female" | "none";
+  readonly age?: "child" | "youth" | "middle" | "elder";
+  /** 외형 한두 문장(검색 결과 description). */
+  readonly appearance?: string;
 }
 
 export type TileGroupRole = "building" | "castle" | "fence" | "roof" | "terrain" | "water" | "wall" | "prop";
@@ -316,7 +325,8 @@ export interface StructureKitRow {
 // 스탬프 출처 유니언: 붓질 학습·DB 작성·실내 카탈로그.
 // 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
 // pack-preset: 사용자가 올린 서드파티 팩을 프리셋으로 구울 때 심은 물체(rpgmakerMv/tilesetPreset.ts).
-export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog" | "pack-preset";
+// workshop: 공방에서 그려 고른 기물을 칩셋에 구운 물체(project/workshopTiles.ts).
+export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog" | "pack-preset" | "workshop";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
@@ -491,6 +501,12 @@ export interface TilesetDef {
     plainWalls?: Record<string, number>;
   };
   /**
+   * 방 짓기 역할표(2026-10-07) — 이 칩셋에서 바닥·벽면·천장·가구가 어느 칸인지와 까는 규칙.
+   * build_hand_interior_room 은 칩셋 id 가 아니라 이것을 읽으므로, 스토어로 받아 id 가 바뀐 사본에서도 방을 지을 수 있다.
+   * builtin = 편집기가 들고 있는 번들 사양 이름(atlas_biome_interior · jp_city), spec = 사양 통째(HandInteriorSpec 모양 — 번들 밖 칩셋).
+   */
+  roomKit?: { builtin?: string; spec?: unknown };
+  /**
    * 칩셋 계열(그림체 묶음, 2026-09-25). 같은 계열끼리는 조수가 말없이 바꿔도 되고, 다른 계열로 가려면
    * 사용자 승인이 필요하다(`src/project/tilesetFamily.ts`). 없으면 원본·번들 이름에서 추정한다.
    */
@@ -635,6 +651,11 @@ export interface UploadedAsset {
   };
   /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
   origin?: import("../../assetStore/format").StoreAssetOrigin;
+  /**
+   * AI 가 만든 자산이면 만든 경로(예: "workshop", "image-generation", "original-music").
+   * 스토어에 올릴 때 「AI 생성」 표시를 끌 수 없게 한다(src/assetStore/pack.ts aiMadeAssets).
+   */
+  generatedBy?: string;
 }
 
 export interface AssetSet {

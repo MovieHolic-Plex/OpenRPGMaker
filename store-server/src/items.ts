@@ -28,6 +28,7 @@ import type { Auth, User } from "./auth";
 import type { BlobStore } from "./blobStore";
 import type { StoreConfig } from "./config";
 import { inTx, type Db, type Tx } from "./db";
+import { holdMatcher, manifestText } from "./moderation";
 import { HttpError } from "./http";
 
 const PAGE_SIZE = 24;
@@ -193,13 +194,23 @@ export async function audit(tx: Db | Tx, actorId: number | null, action: string,
   await tx.query("insert into store_audit (actor_id, action, item_id, detail) values ($1, $2, $3, $4)", [actorId, action, itemId, detail]);
 }
 
-/** 새 상품. 자동 검사를 지나면 신뢰 작가는 바로 공개, 아니면 사전 확인 대기. */
+/** 보류 낱말에 걸린 낱말들(운영자는 검사하지 않는다 — 운영자가 곧 확인하는 사람이다). */
+function holdHits(config: StoreConfig, author: User, manifest: StorePackManifest): string[] {
+  return author.role === "admin" ? [] : holdMatcher(config.holdWords).hits(manifestText(manifest));
+}
+const heldReason = (hits: readonly string[]): string | null => (hits.length ? `보류 낱말: ${hits.join(", ")}` : null);
+
+/**
+ * 새 상품. 자동 검사를 지나면 신뢰 작가는 바로 공개, 아니면 사전 확인 대기.
+ * 보류 낱말에 걸리면 신뢰 작가라도 확인 대기다. 바로 공개된 것도 운영자의 「사후 확인」 목록에 오른다(reviewed_version).
+ */
 export async function createItem(db: Db, config: StoreConfig, store: BlobStore, author: User, input: unknown): Promise<{ slug: string; status: StoreItemStatus; version: number }> {
   const manifest = parseManifest(input);
   return inTx(db, async (tx) => {
     const totalBytes = await checkBlobs(tx, store, manifest);
     const trusted = author.role === "admin" || await approvedCount(tx, author.id) >= config.trustThreshold;
-    const status: StoreItemStatus = trusted ? "visible" : "pending";
+    const hits = holdHits(config, author, manifest);
+    const status: StoreItemStatus = trusted && hits.length === 0 ? "visible" : "pending";
     let slug = "";
     for (let attempt = 0; attempt < 5 && !slug; attempt += 1) {
       const candidate = slugify(manifest.title, randomBytes(4).toString("hex"));
@@ -208,14 +219,15 @@ export async function createItem(db: Db, config: StoreConfig, store: BlobStore, 
     }
     if (!slug) throw new HttpError(503, "주소를 만들지 못했습니다. 다시 시도해 주세요.", "slug");
     const { rows } = await tx.query(
-      `insert into store_items (slug, author_id, title, summary, description, credits, kind, grade, license, ai_generated, tags, status, first_visible_at, cover_sha, previews, counts, locales)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, case when $12 = 'visible' then now() end, $13, $14, $15, $16) returning id`,
+      `insert into store_items (slug, author_id, title, summary, description, credits, kind, grade, license, ai_generated, tags, status, first_visible_at, cover_sha, previews, counts, locales, reviewed_version, held_reason)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12, case when $12 = 'visible' then now() end, $13, $14, $15, $16, $17, $18) returning id`,
       [slug, author.id, manifest.title, manifest.summary, manifest.description, manifest.credits, manifest.kind, packGrade(manifest.content),
-        manifest.license, manifest.aiGenerated, manifest.tags, status, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest), manifest.locales ?? {}],
+        manifest.license, manifest.aiGenerated, manifest.tags, status, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest), manifest.locales ?? {},
+        author.role === "admin" ? 1 : 0, heldReason(hits)],
     );
     const itemId = Number(rows[0].id);
     await insertVersion(tx, itemId, 1, manifest, totalBytes);
-    await audit(tx, author.id, "create", itemId, { status, grade: packGrade(manifest.content) });
+    await audit(tx, author.id, "create", itemId, { status, grade: packGrade(manifest.content), ...(hits.length ? { held: hits } : {}) });
     return { slug, status, version: 1 };
   });
 }
@@ -235,15 +247,19 @@ export async function addVersion(db: Db, config: StoreConfig, store: BlobStore, 
     const version = Number(row.latest_version) + 1;
     await insertVersion(tx, Number(row.id), version, manifest, totalBytes);
     const trusted = auth.user.role === "admin" || await approvedCount(tx, Number(row.author_id)) >= config.trustThreshold;
-    const status: StoreItemStatus = row.status === "visible" && !trusted ? "pending" : row.status as StoreItemStatus;
+    const hits = holdHits(config, auth.user, manifest);
+    // 보류 낱말이 새로 들어간 판본은 숨긴 상품이어도 확인 대기로 — 운영자가 공개하기 전에는 아무도 못 받는다
+    const status: StoreItemStatus = hits.length > 0 ? "pending" : row.status === "visible" && !trusted ? "pending" : row.status as StoreItemStatus;
     if (status !== row.status) await tx.query("update store_items set status=$2 where id=$1", [row.id, status]);
+    await tx.query("update store_items set held_reason = coalesce($2, held_reason), reviewed_version = case when $3 then $4 else reviewed_version end where id=$1",
+      [row.id, heldReason(hits), auth.user.role === "admin", version]);
     await tx.query(
       `update store_items set title=$2, summary=$3, description=$4, credits=$5, kind=$6, grade=$7, license=$8, ai_generated=$9, tags=$10,
        latest_version=$11, cover_sha=$12, previews=$13, counts=$14, locales=$15, updated_at=now() where id=$1`,
       [row.id, manifest.title, manifest.summary, manifest.description, manifest.credits, manifest.kind, packGrade(manifest.content), manifest.license,
         manifest.aiGenerated, manifest.tags, version, manifest.previews[0] ?? null, manifest.previews, contentCounts(manifest), manifest.locales ?? {}],
     );
-    await audit(tx, auth.user.id, "version", Number(row.id), { version, status });
+    await audit(tx, auth.user.id, "version", Number(row.id), { version, status, ...(hits.length ? { held: hits } : {}) });
     return { slug, version, status };
   });
 }
@@ -274,11 +290,23 @@ export async function adminSetStatus(db: Db, auth: Auth, slug: string, status: S
     if (!row) throw new HttpError(404, "상품을 찾지 못했습니다.", "not_found");
     await tx.query(
       `update store_items set status=$2, hidden_by = case when $2 = 'visible' then null else 'admin' end,
-       first_visible_at = coalesce(first_visible_at, case when $2 = 'visible' then now() end), updated_at=now() where id=$1`,
+       first_visible_at = coalesce(first_visible_at, case when $2 = 'visible' then now() end),
+       reviewed_version = latest_version, held_reason = case when $2 = 'visible' then null else held_reason end, updated_at=now() where id=$1`,
       [row.id, status],
     );
     if (status !== "hidden") await tx.query("update store_reports set status='resolved' where item_id=$1", [row.id]);
     await audit(tx, auth.user.id, `admin_${status}`, Number(row.id), { note: note.slice(0, 500), from: row.status });
+  });
+}
+
+/** 사후 확인: 공개된 상품을 운영자가 봤다고 적는다. 상태는 바꾸지 않는다(작가가 숨긴 것은 그대로 숨김). */
+export async function adminMarkReviewed(db: Db, auth: Auth, slug: string): Promise<void> {
+  await inTx(db, async (tx) => {
+    const row = await findItem(tx, slug);
+    if (!row) throw new HttpError(404, "상품을 찾지 못했습니다.", "not_found");
+    if (row.status === "pending") throw new HttpError(409, "확인 대기 상품은 공개하거나 내려 주세요.", "conflict");
+    await tx.query("update store_items set reviewed_version = latest_version where id=$1", [row.id]);
+    await audit(tx, auth.user.id, "admin_reviewed", Number(row.id), { version: Number(row.latest_version) });
   });
 }
 
@@ -319,8 +347,18 @@ export async function myItems(db: Db, user: User, lang?: StoreLocale | null): Pr
   return rows.map((row) => ({ ...summary(row, lang), status: row.status as StoreItemStatus, hiddenBy: (row.hidden_by as string | null) ?? null }));
 }
 
-export async function adminQueue(db: Db, lang?: StoreLocale | null): Promise<{ pending: StoreItemSummary[]; reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[] }> {
+export interface AdminQueue {
+  pending: (StoreItemSummary & { heldReason: string | null })[];
+  reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[];
+  /** 바로 공개됐지만 운영자가 아직 안 본 상품(또는 본 뒤 새 판본이 올라온 상품). 오래된 것부터 최대 100건. */
+  unreviewed: (StoreItemSummary & { status: string; reviewedVersion: number })[];
+}
+
+export async function adminQueue(db: Db, lang?: StoreLocale | null): Promise<AdminQueue> {
   const pending = await db.query(`${ITEM_SELECT} where i.status = 'pending' order by i.created_at`);
+  const unreviewed = await db.query(
+    `${ITEM_SELECT} where i.status in ('visible','hidden') and i.latest_version > coalesce(i.reviewed_version, 0) order by i.updated_at limit 100`,
+  );
   const reported = await db.query(
     `${ITEM_SELECT} where i.status in ('visible','hidden') and exists (select 1 from store_reports r where r.item_id = i.id and r.status = 'open') order by i.updated_at desc`,
   );
@@ -329,7 +367,11 @@ export async function adminQueue(db: Db, lang?: StoreLocale | null): Promise<{ p
     const reports = await db.query("select reason, detail, created_at from store_reports where item_id = $1 and status = 'open' order by created_at", [row.id]);
     result.push({ ...summary(row, lang), status: String(row.status), reports: reports.rows.map((r) => ({ reason: String(r.reason), detail: String(r.detail), createdAt: new Date(r.created_at).toISOString() })) });
   }
-  return { pending: pending.rows.map((row) => summary(row, lang)), reported: result };
+  return {
+    pending: pending.rows.map((row) => ({ ...summary(row, lang), heldReason: (row.held_reason as string | null) ?? null })),
+    reported: result,
+    unreviewed: unreviewed.rows.map((row) => ({ ...summary(row, lang), status: String(row.status), reviewedVersion: Number(row.reviewed_version ?? 0) })),
+  };
 }
 
 /** 웹에서 낱장 하나를 올릴 때: 서버가 에셋 하나짜리 팩(타일셋이면 기본 타일셋 포함)으로 감싼다. */

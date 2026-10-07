@@ -64,7 +64,12 @@ import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
+import { mountAiStatusBar } from "./aiStatusBar";
+import { reportBackgroundBoard } from "./aiPresence";
+import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
+import { createStoreCard } from "./aiStoreCard";
+import type { StoreCardRequest } from "@/editor/tools/storeTools";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
@@ -2125,12 +2130,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
     // 조수가 ask_tileset_change 로 물었으면 턴이 끝난 뒤 질문 카드를 띄운다(마지막 질문 하나).
     let tilesetQuestion = null as TilesetChangeQuestion | null;
+    let storeCard = null as StoreCardRequest | null;
     const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
         onEvent: event => progress.event(event),
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
+        onStoreCard: (request) => { storeCard = request; },
         appendBubble: (role, line) => appendBubble(role, line),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
@@ -2174,6 +2181,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
+    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard);
+  };
+  /** 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다. */
+  const showStoreCard = (request: StoreCardRequest): void => {
+    const owner = conversationId;
+    const card = createStoreCard(request, (followUp) => {
+      if (disposed || owner !== conversationId) return;
+      restoreComposer(followUp);
+      void send();
+    });
+    log.append(card);
+    followConversationLog(log);
   };
   /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
   const showTilesetChangeCard = (question: TilesetChangeQuestion): void => {
@@ -2254,7 +2273,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, start: () => done });
     return release;
   };
-  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput): Promise<void> => {
+  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }): Promise<void> => {
     const owner = conversationId;
     if (run.mapId && !store.getCurrent().maps[run.mapId]) throw new Error("보낸 맵이 사라졌어요");
     card.setStatus("의도 읽는 중…");
@@ -2271,15 +2290,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     signal.throwIfAborted();
     card.setStatus("작업 중");
     let tilesetQuestion = null as TilesetChangeQuestion | null;
+    let storeCard = null as StoreCardRequest | null;
     let phase: string | undefined;
     await runPiCommand(command, {
       background: true,
       focus: "visible-only",
       signal,
       onEvent: (event) => card.event(event),
-      onActivity: (state) => { phase = state.phase; },
+      onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
+      onStoreCard: (request) => { storeCard = request; },
       appendBubble: (role, line) => card.say(role, line),
       appendProcess: (text) => card.note(text),
       appendCard: (element) => card.attach(element),
@@ -2295,12 +2316,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.finish({ ok: !signal.aborted && phase !== "실패" && phase !== "중단",
       message: signal.aborted || phase === "중단" ? "중단" : phase === "실패" ? "실패" : phase === "검토 대기" ? "검토 필요" : "끝남" });
     if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
+    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard);
   };
   const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
     const project = store.getCurrent();
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
     let ticketId: number | null = null;
+    const ticketRef: { id: number | null } = { id: null };
     const card = createMapRunCard({ mapName: exclusive ? "프로젝트 전체" : mapName, label: run.shown.replace(/\s+/gu, " ").trim().slice(0, 80),
       onCancel: () => { if (ticketId !== null) mapRunQueue().cancel(ticketId); } });
     log.append(card.root);
@@ -2314,8 +2337,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (ticket.status !== "waiting" && ticket.status !== "running") unsubscribe();
     });
-    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (_ticket, signal) => runBackgroundMapTurn(card, signal, run) });
+    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
     ticketId = ticket.id;
+    card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
   };
   const send = async (): Promise<void> => {
@@ -3392,6 +3416,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   panel.append(teamSidebar.root);
   const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar, input,
     requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
+  // AI 존재감 세 표면 중 지도 쪽 둘 — 지도 위 이름표와 지도 아래 상태 줄. 같은 원천(aiPresence)만 본다.
+  const unmountStatusBar = mountAiStatusBar();
+  const unmountMapPresence = mountAiMapPresence();
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
@@ -4118,6 +4145,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.dispose();
     studioShell = null;
     wideAssistant.dispose();
+    unmountStatusBar();
+    unmountMapPresence();
     workspace.dispose();
     teamSidebar.dispose();
     suggestions.dispose();

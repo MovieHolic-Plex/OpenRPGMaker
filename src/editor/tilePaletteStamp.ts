@@ -25,6 +25,9 @@ export type PaletteStamp = {
   readonly source: {
     readonly endTile: number;
     readonly startTile: number;
+    /** Named-object pickers keep the owning chipset so map changes cannot reuse foreign indices. */
+    readonly tilesetId?: string;
+    readonly tileSize?: number;
   };
   readonly width: number;
 };

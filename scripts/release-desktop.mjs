@@ -137,6 +137,9 @@ try {
   execFileSync("npm", ["ci"], { cwd: buildRoot, stdio: "inherit", env });
   execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildRoot, stdio: "inherit", env });
   execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildRoot, stdio: "inherit", env });
+  // icon-tool.js is CJS. Without this, Node walks up to ~/package.json ("type":"module") and dies on require.
+  writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}
+");
   execFileSync(
     "npx",
     ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "--x64"],

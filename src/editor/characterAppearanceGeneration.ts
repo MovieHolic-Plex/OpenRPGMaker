@@ -144,7 +144,7 @@ export function createCharacterAppearanceGenerationController(deps: AppearanceGe
     deps.update((project) => {
       const currentRecord = project.database.characterAppearances?.find((entry) => entry.id === appearanceId);
       if (!currentRecord) throw new ImageGenerationError("외형을 찾을 수 없습니다.");
-      project.assets.uploaded[id] = { id, name, kind, dataUrl: candidate.dataUrl, meta: {} };
+      project.assets.uploaded[id] = { id, name, kind, dataUrl: candidate.dataUrl, meta: {}, generatedBy: "character-appearance" };
       project.resourceProfiles.push({ assetId: id, name, kind });
       currentRecord[targetSlot] = { resourceId: id };
     }, { scope: "database", collection: "characterAppearances", label: "캐릭터 외형 AI 그림 적용", origin: "ai" });

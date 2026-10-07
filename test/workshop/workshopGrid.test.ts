@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   collectOpaqueColors, gridToAnswer, imageToGrid, makePalette, onBackground, opaqueBounds,
-  parseDrawAnswer, renderGrid, scaleImage,
+  parseDrawAnswer, renderGrid, scaleImage, repairStringExpressions, rowsNeedingFix, applyRowFix,
 } from "@/harnesses/_core/workshop/grid";
 
 const palette = makePalette([
@@ -55,5 +55,32 @@ describe("격자 ↔ 그림", () => {
     expect([...bg.data.slice(4, 8)]).toEqual([150, 120, 90, 255]);
     expect(opaqueBounds(image)).toEqual({ x0: 0, y0: 0, x1: 1, y1: 1 });
     expect(collectOpaqueColors(image).length).toBe(3);
+  });
+});
+
+describe("모델 답 수선(2026-10-07 실측 꼴)", () => {
+  it("JSON 안에 남긴 .replace·[a:b]·if False else 를 값으로 풀어 읽는다", () => {
+    const sliced = '{"legend":{"a":"wood:2"},"rows":["aaa"[0:2],"a."]}';
+    expect(parseDrawAnswer(sliced, palette)).toMatchObject({ ok: true, grid: { width: 2, height: 2 } });
+    const replaced = '{"legend":{"a":"wood:2"},"rows":["aа".replace("а","a"),"a."]}';
+    expect(parseDrawAnswer(replaced, palette)).toMatchObject({ ok: true, grid: { cells: ["wood:2", "wood:2", "wood:2", null] } });
+    const conditional = '{"legend":{"a":"wood:2"},"rows":["aaa"[0:2] if False else "a.","aa"]}';
+    expect(parseDrawAnswer(conditional, palette)).toMatchObject({ ok: true, grid: { cells: ["wood:2", null, "wood:2", "wood:2"] } });
+    expect(repairStringExpressions('{"a":"x\\"y"}')).toBe('{"a":"x\\"y"}');
+  });
+  it("[0:0] 으로 지운 빈 줄은 뺀다", () => {
+    expect(parseDrawAnswer('{"legend":{"a":"wood:2"},"rows":["aa","aa"[0:0],"a."]}', palette)).toMatchObject({ ok: true, grid: { height: 2 } });
+  });
+  it("키릴 「о」는 legend 의 라틴 「o」로 읽고, 그 밖의 깨진 JSON 은 그대로 거절한다", () => {
+    expect(parseDrawAnswer('{"legend":{"o":"wood:2"},"rows":["oо"]}', palette)).toMatchObject({ ok: true, grid: { cells: ["wood:2", "wood:2"] } });
+    expect(parseDrawAnswer('{"legend":{"a":"wood:2"},"rows":["a." "a"]}', palette).ok).toBe(false);
+  });
+  it("폭이 틀린 줄만 골라 다시 받고 덮어 쓴다", () => {
+    const text = '{"legend":{"a":"wood:2"},"rows":["aa","aaa","a."],"note":"n"}';
+    expect(rowsNeedingFix(text, 2, 3)).toEqual({ rows: ["aa", "aaa", "a."], bad: [1] });
+    expect(rowsNeedingFix(text, 2, 4)).toBeNull();
+    const patched = applyRowFix(text, '고친 줄: {"rows":{"1":".a"}}')!;
+    expect(parseDrawAnswer(patched, palette)).toMatchObject({ ok: true, note: "n", grid: { cells: ["wood:2", "wood:2", null, "wood:2", "wood:2", null] } });
+    expect(applyRowFix(text, '{"rows":{"9":"aa"}}')).toBeNull();
   });
 });

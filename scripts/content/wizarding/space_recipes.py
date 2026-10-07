@@ -44,30 +44,32 @@ CONTRAST_MIN = 35  # 실내 바닥과 북벽 벽면의 평균 밝기 차 하한(
 # ───────────────────────── 벽 묶음 (실내 고리) ─────────────────────────
 # n 북벽(1×4 가로 반복) · nw/ne 북쪽 모서리 · w/e 서·동 벽(세로 반복) · s 남벽(가로 반복) · sw/se 남쪽 모서리
 # door1/door2 북벽 문(열림 상태 — 통행) · doorS 남벽 출입구. 없는 자리는 생략(모서리는 n·s, 남쪽 문은 틈).
+# capSouth: 남벽은 윗면(천장 끝) 한 줄만 쓴다 — 3/4 시점에서 방 남벽의 정면·창은 보이지 않는다(사용자 2026-10-07 「방 구조가 허접」:
+# 아래에 창 달린 벽 정면이 있으면 건물을 반으로 자른 단면처럼 보였다). 이때 남쪽 문은 doorS 대신 바닥 틈.
 WALLSETS = {
     'castle': dict(ko='성채 석벽', n='wz-castle-wall-n', nw='wz-castle-wall-nw', ne='wz-castle-wall-ne',
                    w='wz-castle-wall-w', e='wz-castle-wall-e', s='wz-castle-wall-s', sw='wz-castle-wall-sw', se='wz-castle-wall-se',
                    door1='wz-castle-door1-open', door2='wz-castle-door2-open', doorS='wz-castle-door-s',
                    rhythm=['n', 'n', 'wz-castle-wall-n-window', 'n', 'n', 'wz-castle-wall-n-pillar'],
-                   sRhythm=['s', 's', 's', 'wz-castle-wall-s-window', 's', 's']),
+                   sRhythm=['s'], capSouth=True),
     'infirmary': dict(ko='병동 석회벽', n='wz-inf-wall-n', nw='wz-inf-wall-nw', ne='wz-inf-wall-ne',
                       w='wz-inf-wall-w', e='wz-inf-wall-e', s='wz-inf-wall-s', sw='wz-inf-wall-sw', se='wz-inf-wall-se',
-                      door1='wz-inf-door-open', rhythm=['n', 'wz-inf-wall-n-window-big', 'n', 'wz-inf-wall-n-window'], sRhythm=['s']),
+                      door1='wz-inf-door-open', rhythm=['n', 'wz-inf-wall-n-window-big', 'n', 'wz-inf-wall-n-window'], sRhythm=['s'], capSouth=True),
     'greenhouse': dict(ko='온실 철틀 유리벽', n='wz-gh-wall-n', nw='wz-gh-corner-nw', ne='wz-gh-corner-ne',
                        w='wz-gh-side-w', e='wz-gh-side-e', s='wz-gh-wall-s', sw='wz-gh-corner-sw', se='wz-gh-corner-se',
                        door1='wz-gh-door-open', rhythm=['n', 'wz-gh-roof', 'n', 'wz-gh-vent-closed', 'wz-gh-roof'], sRhythm=['s']),
     'owlery': dict(ko='부엉이 탑 돌벽', n='wz-owl-wall-n', w='wz-owl-wall-w', e='wz-owl-wall-e', s='wz-owl-wall-s',
                    door1='wz-owl-door-open',
-                   rhythm=['n', 'wz-owl-window', 'n', 'wz-owl-wall-n-stained', 'wz-owl-window-bare', 'n', 'wz-owl-wall-n-beam'], sRhythm=['s']),
+                   rhythm=['n', 'wz-owl-window', 'n', 'wz-owl-wall-n-stained', 'wz-owl-window-bare', 'n', 'wz-owl-wall-n-beam'], sRhythm=['s'], capSouth=True),
     'owlcastle': dict(ko='부엉이 탑(성채 석벽 + 비행 창)', n='wz-castle-wall-n', nw='wz-castle-wall-nw', ne='wz-castle-wall-ne',
                       w='wz-castle-wall-w', e='wz-castle-wall-e', s='wz-castle-wall-s', sw='wz-castle-wall-sw', se='wz-castle-wall-se',
                       door1='wz-owl-door-open', door2='wz-castle-door2-open', doorS='wz-castle-door-s',
-                      rhythm=['n', 'n', 'wz-owl-window', 'n', 'n', 'wz-castle-wall-n-pillar', 'n', 'wz-owl-window-bare'], sRhythm=['s']),
+                      rhythm=['n', 'n', 'wz-owl-window', 'n', 'n', 'wz-castle-wall-n-pillar', 'n', 'wz-owl-window-bare'], sRhythm=['s'], capSouth=True),
     'postoffice': dict(ko='우체국 목재 벽', n='wz-post-iwall', w='wz-post-ibeam', e='wz-post-ibeam', s='wz-post-wainscot', sw='wz-post-ibeam', se='wz-post-ibeam',
                        rhythm=['n'], sRhythm=['s']),
     'honeydukes': dict(ko='지하 창고 오크 보 벽', n='wz-hd-wall-n', w='wz-castle-wall-w', e='wz-castle-wall-e',
                        s='wz-castle-wall-s', sw='wz-castle-wall-sw', se='wz-castle-wall-se', door1='wz-hd-panel-open', doorS='wz-castle-door-s',
-                       rhythm=['n'], sRhythm=['s']),
+                       rhythm=['n'], sRhythm=['s'], capSouth=True),
     'pitch': dict(ko='경기장 터널 벽·울타리', n='wz-qd-tunnel-wall4', w='wz-qd-fence-v', e='wz-qd-fence-v',
                   s='wz-qd-fence-g', sw='wz-qd-fence-corner-sw', se='wz-qd-fence-corner-se',
                   door1='wz-qd-tunnel-arch', door2='wz-qd-door-open', northFloor='wz-qd-flag', rhythm=['n'],
@@ -99,8 +101,14 @@ SCONCE = F('wz-castle-sconce', 'north-wall', 2, 4, 0, wallTop=2, wallMatch='plai
 CURTAINS = F('wz-furn-curtain-open', 'north-wall', 0, 2, 0, wallTop=1, wallMatch='window')
 TABLE_CHAIRS = F('wz-furn-table-small', 'center', 1, 1, 1, with_=[['wz-castle-rug-red', 0, 0, True], ['wz-furn-chair-back-left', -1, 0], ['wz-furn-chair-back-right', 2, 0],
                                                                     ['wz-furn-prop-book-open', 0, 0], ['wz-furn-prop-inkwell', 1, 0]])
-LONG_TABLE = F('wz-furn-bench-long', 'grid', 10, 18, 0, gap=1, with_=[['wz-furn-bench-seat', 0, -1], ['wz-furn-bench-seat', 0, 2],
-                                                                     ['wz-furn-prop-bottles', 1, 0]])
+# 탁상 소품은 탁자마다 다르게(vary) — 같은 소품이 모든 탁자에 찍히면 도장 찍은 것처럼 보인다.
+LONG_TABLE = F('wz-furn-bench-long', 'grid', 8, 12, 0, gap=1, with_=[['wz-furn-bench-seat', 0, -1], ['wz-furn-bench-seat', 0, 2]],
+               vary=[[['wz-furn-prop-bottles', 1, 0]], [['wz-inf-candle', 0, 0], ['wz-furn-prop-bottles', 2, 0]],
+                     [['wz-furn-prop-book-closed', 2, 0]], [['wz-inf-candle', 1, 0]], []])
+# 도서관 열람 탁자: 의자 둘 + 탁상 소품 하나
+READ_TABLE = F('wz-furn-table-small', 'grid', 2, 4, 0, gapX=3, gapY=1, with_=[['wz-furn-chair-back-left', -1, 0], ['wz-furn-chair-back-right', 2, 0]],
+               vary=[[['wz-furn-prop-book-open', 0, 0], ['wz-furn-prop-inkwell', 1, 0]], [['wz-furn-prop-scroll', 0, 0], ['wz-furn-prop-quill', 1, 0]],
+                     [['wz-furn-prop-book-closed', 1, 0]], [['wz-inf-candle', 0, 0], ['wz-furn-prop-book-open', 1, 0]]])
 SLATE = dict(tile='wz-castle-floor-flag')
 
 SPACES = {
@@ -120,7 +128,7 @@ SPACES = {
                           floor=dict(autotile='wz-castle-flag'), defaultDoors=[dict(side='s'), dict(side='n')],
                           furniture=[*BANNERS, CURTAINS, F('wz-castle-sconce', 'north-wall', 1, 2, 0, wallTop=2, wallMatch='plain'),
                                      F('wz-furn-candlestick', 'side-wall', 1, 3, 1), F('wz-furn-barrel', 'corner', 0, 1, 0)]),
-            common=dict(ko='기숙사 휴게실', size=dict(min=[16, 12], default=[24, 17], max=[40, 30]),
+            common=dict(ko='기숙사 휴게실', size=dict(min=[16, 12], default=[20, 14], max=[40, 30]),
                         floor=SLATE, runner=None, defaultDoors=[dict(side='s')],
                         furniture=[F('wz-furn-fireplace', 'north-wall', 1, 1, 1, wallTop=1, wallMatch='plain'),
                                    F('wz-furn-bookshelf', 'north-wall', 1, 3, 0, wallTop=1, wallMatch='plain'),
@@ -131,6 +139,16 @@ SPACES = {
                                    F('wz-furn-barrel', 'beside', 1, 2, 0, near=['wz-furn-crate-stack']),
                                    F('wz-furn-candlestick', 'beside', 2, 2, 0, near=['wz-furn-fireplace']),
                                    F('wz-furn-lantern-hanging', 'north-wall', 0, 2, 0, wallTop=2, wallMatch='plain')]),
+            # 기숙사 침실: 사주식 침대가 북벽에 머리를 대고 한 줄(침대 사이 협탁, 발치에 트렁크), 옆벽에 옷장·거울, 가운데 깔개.
+            dorm=dict(ko='기숙사 침실', size=dict(min=[12, 10], default=[18, 14], max=[30, 24]),
+                      floor=SLATE, runner=None, defaultDoors=[dict(side='s')],
+                      furniture=[F('wz-dorm-bed-green', 'grid', 3, 5, 0, gapX=0, gapY=1, rowsFrom='north', alt=['wz-dorm-bed-green-closed'],
+                                   with_=[['wz-dorm-nightstand', 2, 0], ['wz-dorm-trunk', 0, 3]]),
+                                 F('wz-dorm-lamp-green', 'north-wall', 2, 3, 0, wallTop=2, wallMatch='plain'),
+                                 F('wz-furn-banner-snake', 'north-wall', 1, 1, 0, wallTop=1, wallMatch='plain'),
+                                 F('wz-dorm-wardrobe', 'side-wall', 1, 2, 0),
+                                 F('wz-dorm-mirror', 'beside', 1, 1, 0, near=['wz-dorm-wardrobe']),
+                                 F('wz-dorm-rug-green', 'center', 1, 1, 0)]),
         )),
     'owlery': dict(
         ko='부엉이 탑', indoor=True, layout='room', wall='owlcastle',
@@ -156,7 +174,7 @@ SPACES = {
                    F('wz-nv-pot-teaching-kit-blackboard', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='plain'),
                    F('wz-pot-herb-hanger', 'north-wall', 1, 2, 0, wallTop=1, wallMatch='plain'),
                    F('wz-pot-wall-lamp', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='plain'),
-                   F('wz-pot-cauldron-bench-green', 'grid', 10, 18, 0, gap=1, alt=['wz-pot-cauldron-bench-violet']),
+                   F('wz-pot-cauldron-bench-green', 'grid', 6, 8, 0, gapX=2, gapY=1, alt=['wz-pot-cauldron-bench-violet']),
                    F('wz-pot-basin', 'north-wall', 0, 1, 1, wallTop=4),
                    F('wz-nv-pot-ingredient-storage-drawers', 'side-wall', 1, 2, 0),
                    F('wz-nv-pot-ingredient-storage-dried-herbs', 'side-wall', 0, 2, 0),
@@ -166,7 +184,7 @@ SPACES = {
         npcSpaces=['potions'], npcWords=['마법약']),
     'clocktower': dict(
         ko='시계탑 기어실', indoor=True, layout='room', wall='castle',
-        size=dict(min=[16, 12], default=[24, 18], max=[40, 30]), floor=dict(tile='wz-clock-grate'),
+        size=dict(min=[16, 12], default=[18, 15], max=[40, 30]), floor=dict(tile='wz-clock-grate'),
         runner=dict(ns='wz-clock-floor-plate', ew='wz-clock-floor-plate'),
         doors=dict(door1='wz-clock-door-open'), rhythm=['n', 'n', 'wz-clock-wall-gear', 'n', 'wz-castle-wall-n-pillar'],
         defaultDoors=[dict(side='s')],
@@ -214,13 +232,14 @@ SPACES = {
         npcSpaces=['wandshop'], npcWords=['지팡이']),
     'library': dict(
         ko='도서관 제한 구역', indoor=True, layout='room', wall='castle',
-        size=dict(min=[16, 12], default=[24, 17], max=[40, 30]), floor=SLATE,
+        size=dict(min=[16, 12], default=[24, 20], max=[40, 30]), floor=SLATE,
         doors=dict(door2='wz-lib-arch'), rhythm=['n', 'n', 'wz-castle-wall-n-pillar'],
         defaultDoors=[dict(side='s')],
         furniture=[F('wz-lib-shelf-chain-3x3', 'north-wall', 1, 3, 0, wallTop=1, wallMatch='plain'),
                    F('wz-lib-shelf-chain-2x3', 'north-wall', 1, 2, 0, wallTop=1, wallMatch='plain'),
                    F('wz-lib-ladder', 'north-wall', 0, 2, 0, wallTop=2, wallMatch='plain'),
-                   F('wz-lib-shelf-plain-2x3', 'grid', 12, 18, 0, gap=1),
+                   F('wz-lib-shelf-plain-2x3', 'grid', 14, 18, 0, gapX=0, gapY=1),
+                   READ_TABLE,
                    F('wz-lib-record-table', 'edge', 1, 1, 0),
                    F('wz-lib-lectern', 'beside', 1, 1, 0, near=['wz-lib-record-table']),
                    F('wz-furn-bookshelf-low', 'side-wall', 0, 2, 0),
@@ -252,7 +271,7 @@ SPACES = {
         size=dict(min=[16, 12], default=[26, 18], max=[40, 30]), floor=dict(tile='wz-castle-floor-oak'),
         defaultDoors=[dict(side='s')],
         furniture=[F('wz-inf-chart', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='plain'),
-                   F('wz-inf-bed-empty', 'grid', 6, 10, 0, gap=1, rowsFrom='north', alt=['wz-inf-bed-patient'],
+                   F('wz-inf-bed-empty', 'grid', 4, 6, 0, gap=1, rowsFrom='north', alt=['wz-inf-bed-patient'],
                      with_=[['wz-inf-bed-shadow', 0, 0, True], ['wz-inf-curtain-closed', 2, 0]]),
                    F('wz-inf-shelf', 'side-wall', 1, 1, 0),
                    F('wz-inf-table', 'beside', 1, 2, 0, near=['wz-inf-bed-empty', 'wz-inf-bed-patient'], with_=[['wz-inf-candle', 0, 1]]),
@@ -263,7 +282,7 @@ SPACES = {
         npcSpaces=['infirmary'], npcWords=['치료', '환자']),
     'honeydukes': dict(
         ko='허니듀크 지하 창고', indoor=True, layout='room', wall='honeydukes',
-        size=dict(min=[16, 12], default=[22, 16], max=[36, 28]), floor=dict(tile='wz-hd-floor-sugar-a'),
+        size=dict(min=[16, 12], default=[18, 14], max=[36, 28]), floor=dict(tile='wz-hd-floor-sugar-a'),
         defaultDoors=[dict(side='s')],
         furniture=[F('wz-hd-stairs-down', 'north-wall', 1, 1, 1, wallTop=2, wallMatch='plain'),
                    F('wz-hd-shelf', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='plain'),
@@ -440,6 +459,8 @@ def main(check=False):
                 if key in it:
                     it[key] = [x for x in it[key] if ok(x, f"{where}/{it['kit']}.{key}")]
                     if not it[key]: del it[key]
+            if 'vary' in it:
+                it['vary'] = [[dict(kit=w[0], dx=w[1], dy=w[2]) for w in vs if ok(w[0], f"{where}/{it['kit']}.vary")] for vs in it['vary']]
             if 'with' in it:
                 kept = []
                 for w in it['with']:
@@ -464,10 +485,11 @@ def main(check=False):
             if k in ('rhythm', 'sRhythm'):
                 o[k] = [r for r in v if r in ('n', 's') or ok(r, f'벽 {wid}.{k}')]
             elif k == 'ko': o[k] = v
+            elif k == 'capSouth': continue
             elif ok(v, f'벽 {wid}.{k}'): o[k] = v
         for need in ('n', 'w', 'e', 's'):
             if need not in o: raise SystemExit(f'벽 묶음 {wid} 의 필수 조각 {need} 가 굽기에 없다')
-        o['northRows'] = used[o['n']]['h']; o['southRows'] = used[o['s']]['h']
+        o['northRows'] = used[o['n']]['h']; o['southRows'] = 1 if ws.get('capSouth') else used[o['s']]['h']
         wallsets[wid] = o
 
     spaces = {}

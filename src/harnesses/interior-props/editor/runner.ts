@@ -8,7 +8,7 @@ import type {
 import { interiorGate, interiorHardCheck, parseInteriorVerdict } from "./checks";
 import { cropCells, FLAT_KINDS, itemFromDefinition, itemFromSpec, SHEET_PATH, specObjects, VIEW_FAIL } from "./items";
 import { paletteForItem } from "./palette";
-import { DIRECTIONS, drawBrief, drawSystemPrompt, EXAMPLES, NEW_DIRECTIONS, REVIEW_REFS, reviewBrief, reviewSystemPrompt, selfCheckText } from "./prompts";
+import { DIRECTIONS, drawBrief, drawSystemPrompt, EXAMPLES, NEW_DIRECTIONS, REVIEW_REFS, reviewBrief, reviewSystemPrompt } from "./prompts";
 
 const BACKGROUND: Rgba = [150, 120, 90, 255];
 const ANCHOR_LIMIT = 4;
@@ -49,7 +49,9 @@ export function createInteriorRunner(): WorkshopRunner {
 
   const runner: WorkshopRunner = {
     harnessId: "interior-props",
-    candidates: 5,
+    // 2026-10-07: 5장 → 3장, 자기 점검 뺌(사용자 「너무 오래 걸린다」). 한 판 호출 약 20번 → 약 9번.
+    // 독립 검수가 같은 것(지금보다 나빠졌나·윗면)을 보므로 자기 점검을 빼도 거르는 힘은 남는다.
+    candidates: 3,
     prepare(env) {
       if (prepared) return prepared;
       const attempt = (async () => {
@@ -120,11 +122,6 @@ export function createInteriorRunner(): WorkshopRunner {
       for (const anchor of ctx.anchors) parts.push(label(`기준 그림: ${anchor.title}${anchor.picked ? " (이 프로젝트에서 고른 것)" : ""}`), image(shot(env, anchor.grid, paletteOf(anchor.itemKey, ctx.palette))));
       ctx.rejected.forEach((rejected, index) => parts.push(label(`버린 것 ${index + 1}`), image(shot(env, rejected.grid, ctx.palette))));
       return [{ role: "system", content: drawSystemPrompt() }, { role: "user", content: parts }] satisfies ChatMessage[];
-    },
-    selfCheckMessage(ctx, grid, env) {
-      const parts: ContentPart[] = [label(selfCheckText(ctx)), label("네 격자(8배)"), image(shot(env, grid, ctx.palette))];
-      if (ctx.current) parts.push(label("지금 그림(8배)"), image(shot(env, ctx.current, ctx.palette)));
-      return { role: "user", content: parts };
     },
     async reviewMessages(ctx, env) {
       const parts: ContentPart[] = [label(reviewBrief(ctx))];

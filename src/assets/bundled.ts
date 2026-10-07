@@ -8,6 +8,7 @@ import beodeulGroundCatalog from './beodeulGroundCatalog.json';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
+import beodeulReviewedCatalog from './beodeulReviewedCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
@@ -123,6 +124,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
   {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
+  {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
   // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
   // 재생성: scripts/content/build-beodeul-city.py, 정의는 project/defaults/beodeulCity.ts, openwiki/beodeul-city.md.
   {textureKey:"tex_beodeul_city",path:"assets/beodeul-city/beodeul-city-chipset.png",name:"버들항 v6 · 로마풍 항구 도시 (손 도트)"},
@@ -160,6 +162,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
+  if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;

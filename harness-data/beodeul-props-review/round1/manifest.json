@@ -1,0 +1,703 @@
+{
+ "candidates": [
+  {
+   "id": "p1-fence-wood",
+   "name": "나무 울타리 16칸 세트",
+   "role": "울타리",
+   "image": "fence-wood-set.png",
+   "description": "기둥-가로대 울타리. 칸마다 위·오른쪽·아래·왼쪽 이웃 여부(16가지)로 골라 놓는다. 칸 순서: 4×4, 번호 = 위1+오른쪽2+아래4+왼쪽8.",
+   "kind": "autotile",
+   "cell": 16,
+   "scene": "scenes/fence-wood-set.png"
+  },
+  {
+   "id": "p1-fence-stone",
+   "name": "낮은 돌담 16칸 세트",
+   "role": "울타리",
+   "image": "fence-stone-set.png",
+   "description": "낮은 돌담. 위 윗면+앞면 벽돌, 이웃 여부 16가지. 칸 순서·번호는 나무 울타리와 같다.",
+   "kind": "autotile",
+   "cell": 16,
+   "scene": "scenes/fence-stone-set.png"
+  },
+  {
+   "id": "p1-gate-wood",
+   "name": "나무 울타리 문 (2×1)",
+   "role": "울타리",
+   "image": "gate-wood.png",
+   "description": "닫힌 울타리 문. 양옆은 나무 울타리의 동서(좌우) 연결 칸과 이어진다.",
+   "kind": "prop",
+   "scene": "scenes/gate-wood.png"
+  },
+  {
+   "id": "e-prop-stall_cheese_meat",
+   "name": "버들항 소품 노점: 치즈·고기 2×4",
+   "role": "소품",
+   "image": "existing-bd-prop-stall_cheese_meat.png",
+   "description": "기존 키트 bd-prop-stall_cheese_meat (2×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-stall_cheese_meat",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-stall_jug_bottle",
+   "name": "버들항 소품 노점: 옹기·술병 2×4",
+   "role": "소품",
+   "image": "existing-bd-prop-stall_jug_bottle.png",
+   "description": "기존 키트 bd-prop-stall_jug_bottle (2×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-stall_jug_bottle",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-stall_herb_flower",
+   "name": "버들항 소품 노점: 약초·꽃 2×4",
+   "role": "소품",
+   "image": "existing-bd-prop-stall_herb_flower.png",
+   "description": "기존 키트 bd-prop-stall_herb_flower (2×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-stall_herb_flower",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-flower_cart",
+   "name": "버들항 소품 꽃 수레 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-flower_cart.png",
+   "description": "기존 키트 bd-prop-flower_cart (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-flower_cart",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-veg_cart",
+   "name": "버들항 소품 채소 손수레 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-veg_cart.png",
+   "description": "기존 키트 bd-prop-veg_cart (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-veg_cart",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-crate_apple",
+   "name": "버들항 소품 과일 상자 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-crate_apple.png",
+   "description": "기존 키트 bd-prop-crate_apple (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-crate_apple",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-crate_cabbage",
+   "name": "버들항 소품 양배추 상자 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-crate_cabbage.png",
+   "description": "기존 키트 bd-prop-crate_cabbage (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-crate_cabbage",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-lamp_double",
+   "name": "버들항 소품 쌍등 가로등 2×3",
+   "role": "소품",
+   "image": "existing-bd-prop-lamp_double.png",
+   "description": "기존 키트 bd-prop-lamp_double (2×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-lamp_double",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-anchor_display",
+   "name": "버들항 소품 닻 전시대 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-anchor_display.png",
+   "description": "기존 키트 bd-prop-anchor_display (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-anchor_display",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-net_rack",
+   "name": "버들항 소품 그물 건조대 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-net_rack.png",
+   "description": "기존 키트 bd-prop-net_rack (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-net_rack",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-fish_crates",
+   "name": "버들항 소품 얼음 생선 궤짝 2×1",
+   "role": "소품",
+   "image": "existing-bd-prop-fish_crates.png",
+   "description": "기존 키트 bd-prop-fish_crates (2×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-fish_crates",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-stall_veg",
+   "name": "버들항 소품 노점: 호박·양배추 3×4",
+   "role": "소품",
+   "image": "existing-bd-prop-stall_veg.png",
+   "description": "기존 키트 bd-prop-stall_veg (3×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-stall_veg",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-fish_barrel",
+   "name": "버들항 소품 생선 통 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-fish_barrel.png",
+   "description": "기존 키트 bd-prop-fish_barrel (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-fish_barrel",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-mooring_bollard",
+   "name": "버들항 소품 계선주 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-mooring_bollard.png",
+   "description": "기존 키트 bd-prop-mooring_bollard (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-mooring_bollard",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-goods_pile",
+   "name": "버들항 소품 통·상자·자루 더미 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-goods_pile.png",
+   "description": "기존 키트 bd-prop-goods_pile (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-goods_pile",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-bread_rack",
+   "name": "버들항 소품 빵 진열대 1×2",
+   "role": "소품",
+   "image": "existing-bd-prop-bread_rack.png",
+   "description": "기존 키트 bd-prop-bread_rack (1×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-bread_rack",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-sandwich_board",
+   "name": "버들항 소품 입간판 (분필) 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-sandwich_board.png",
+   "description": "기존 키트 bd-prop-sandwich_board (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-sandwich_board",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-crate_fish",
+   "name": "버들항 소품 생선 상자 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-crate_fish.png",
+   "description": "기존 키트 bd-prop-crate_fish (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-crate_fish",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-cloth_stand",
+   "name": "버들항 소품 옷감 걸이 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-cloth_stand.png",
+   "description": "기존 키트 bd-prop-cloth_stand (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-cloth_stand",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-door_pots",
+   "name": "버들항 소품 문간 화분 둘 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-door_pots.png",
+   "description": "기존 키트 bd-prop-door_pots (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-door_pots",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-table_mugs",
+   "name": "버들항 소품 주막 탁자 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-table_mugs.png",
+   "description": "기존 키트 bd-prop-table_mugs (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-table_mugs",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-parasol_table",
+   "name": "버들항 소품 파라솔 탁자 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-parasol_table.png",
+   "description": "기존 키트 bd-prop-parasol_table (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-parasol_table",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-planter_round",
+   "name": "버들항 소품 둥근 돌 화분 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-planter_round.png",
+   "description": "기존 키트 bd-prop-planter_round (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-planter_round",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-sword_barrel",
+   "name": "버들항 소품 칼 꽂은 통 1×1",
+   "role": "소품",
+   "image": "existing-bd-prop-sword_barrel.png",
+   "description": "기존 키트 bd-prop-sword_barrel (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-sword_barrel",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-flowerbox_long",
+   "name": "버들항 소품 긴 꽃상자 2×1",
+   "role": "소품",
+   "image": "existing-bd-prop-flowerbox_long.png",
+   "description": "기존 키트 bd-prop-flowerbox_long (2×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-flowerbox_long",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-laundry_rack",
+   "name": "버들항 소품 빨래 건조대 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-laundry_rack.png",
+   "description": "기존 키트 bd-prop-laundry_rack (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-laundry_rack",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-lamp_crook",
+   "name": "버들항 소품 목 굽은 가로등 1×3",
+   "role": "소품",
+   "image": "existing-bd-prop-lamp_crook.png",
+   "description": "기존 키트 bd-prop-lamp_crook (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-lamp_crook",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-tree_planter",
+   "name": "버들항 소품 화분 속 가로수 2×3",
+   "role": "소품",
+   "image": "existing-bd-prop-tree_planter.png",
+   "description": "기존 키트 bd-prop-tree_planter (2×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-tree_planter",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-bench_wood",
+   "name": "버들항 소품 나무 벤치 2×1",
+   "role": "소품",
+   "image": "existing-bd-prop-bench_wood.png",
+   "description": "기존 키트 bd-prop-bench_wood (2×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-bench_wood",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-column_monument",
+   "name": "버들항 소품 기념 원주 1×4",
+   "role": "소품",
+   "image": "existing-bd-prop-column_monument.png",
+   "description": "기존 키트 bd-prop-column_monument (1×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-column_monument",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-statue_sage",
+   "name": "버들항 소품 현자 석상 2×4",
+   "role": "소품",
+   "image": "existing-bd-prop-statue_sage.png",
+   "description": "기존 키트 bd-prop-statue_sage (2×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-statue_sage",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-well_roofed",
+   "name": "버들항 소품 돌 우물 (지붕) 2×2",
+   "role": "소품",
+   "image": "existing-bd-prop-well_roofed.png",
+   "description": "기존 키트 bd-prop-well_roofed (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-well_roofed",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-flowerbed",
+   "name": "버들항 소품 꽃밭 2×1",
+   "role": "소품",
+   "image": "existing-bd-prop-flowerbed.png",
+   "description": "기존 키트 bd-prop-flowerbed (2×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-flowerbed",
+   "cell": 16
+  },
+  {
+   "id": "e-prop-hedge",
+   "name": "버들항 소품 다듬은 산울타리 3×2",
+   "role": "소품",
+   "image": "existing-bd-prop-hedge.png",
+   "description": "기존 키트 bd-prop-hedge (3×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-prop-hedge",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-eef4bc",
+   "name": "버들항 나무 1×3",
+   "role": "나무",
+   "image": "existing-bd-tree-eef4bc.png",
+   "description": "기존 키트 bd-tree-eef4bc (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-eef4bc",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-03a8f7",
+   "name": "버들항 나무 3×3",
+   "role": "나무",
+   "image": "existing-bd-tree-03a8f7.png",
+   "description": "기존 키트 bd-tree-03a8f7 (3×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-03a8f7",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-28ad5e",
+   "name": "버들항 나무 1×3",
+   "role": "나무",
+   "image": "existing-bd-tree-28ad5e.png",
+   "description": "기존 키트 bd-tree-28ad5e (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-28ad5e",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-c27062",
+   "name": "버들항 나무 1×3",
+   "role": "나무",
+   "image": "existing-bd-tree-c27062.png",
+   "description": "기존 키트 bd-tree-c27062 (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-c27062",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-3e8732",
+   "name": "버들항 나무 3×3",
+   "role": "나무",
+   "image": "existing-bd-tree-3e8732.png",
+   "description": "기존 키트 bd-tree-3e8732 (3×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-3e8732",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-f4f319",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-f4f319.png",
+   "description": "기존 키트 bd-tree-f4f319 (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-f4f319",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-e9d9b3",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-e9d9b3.png",
+   "description": "기존 키트 bd-tree-e9d9b3 (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-e9d9b3",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-37f48b",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-37f48b.png",
+   "description": "기존 키트 bd-tree-37f48b (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-37f48b",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-1a786c",
+   "name": "버들항 나무 3×4",
+   "role": "나무",
+   "image": "existing-bd-tree-1a786c.png",
+   "description": "기존 키트 bd-tree-1a786c (3×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-1a786c",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-47e17a",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-47e17a.png",
+   "description": "기존 키트 bd-tree-47e17a (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-47e17a",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-d105b2",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-d105b2.png",
+   "description": "기존 키트 bd-tree-d105b2 (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-d105b2",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-0f7ed1",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-0f7ed1.png",
+   "description": "기존 키트 bd-tree-0f7ed1 (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-0f7ed1",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-d61d7e",
+   "name": "버들항 나무 3×4",
+   "role": "나무",
+   "image": "existing-bd-tree-d61d7e.png",
+   "description": "기존 키트 bd-tree-d61d7e (3×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-d61d7e",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-a80c85",
+   "name": "버들항 나무 3×3",
+   "role": "나무",
+   "image": "existing-bd-tree-a80c85.png",
+   "description": "기존 키트 bd-tree-a80c85 (3×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-a80c85",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-7ecdb8",
+   "name": "버들항 나무 3×3",
+   "role": "나무",
+   "image": "existing-bd-tree-7ecdb8.png",
+   "description": "기존 키트 bd-tree-7ecdb8 (3×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-7ecdb8",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-cc0fcb",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-cc0fcb.png",
+   "description": "기존 키트 bd-tree-cc0fcb (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-cc0fcb",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-132848",
+   "name": "버들항 나무 2×2",
+   "role": "나무",
+   "image": "existing-bd-tree-132848.png",
+   "description": "기존 키트 bd-tree-132848 (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-132848",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-1e09f0",
+   "name": "버들항 나무 3×4",
+   "role": "나무",
+   "image": "existing-bd-tree-1e09f0.png",
+   "description": "기존 키트 bd-tree-1e09f0 (3×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-1e09f0",
+   "cell": 16
+  },
+  {
+   "id": "e-tree-bdd36e",
+   "name": "버들항 나무 3×4",
+   "role": "나무",
+   "image": "existing-bd-tree-bdd36e.png",
+   "description": "기존 키트 bd-tree-bdd36e (3×4칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-tree-bdd36e",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-bush-c",
+   "name": "벽 밑 덤불(짙은 둥근)",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-bush-c.png",
+   "description": "기존 키트 bd-mpart-bush-c (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-bush-c",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-bush-e",
+   "name": "벽 밑 덤불(밝은 둥근)",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-bush-e.png",
+   "description": "기존 키트 bd-mpart-bush-e (2×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-bush-e",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-cypress-tub",
+   "name": "통 속 사이프러스",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-cypress-tub.png",
+   "description": "기존 키트 bd-mpart-cypress-tub (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-cypress-tub",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-flower-patch",
+   "name": "화단 꽃무더기",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-flower-patch.png",
+   "description": "기존 키트 bd-mpart-flower-patch (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-flower-patch",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-hedge",
+   "name": "다듬은 산울타리 조각",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-hedge.png",
+   "description": "기존 키트 bd-mpart-hedge (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-hedge",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-lamp-post",
+   "name": "정원 가로등(쌍등)",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-lamp-post.png",
+   "description": "기존 키트 bd-mpart-lamp-post (1×3칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-lamp-post",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-low-wall",
+   "name": "낮은 정원 돌담 조각",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-low-wall.png",
+   "description": "기존 키트 bd-mpart-low-wall (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-low-wall",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-rail",
+   "name": "낮은 난간(난간동자) 조각",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-rail.png",
+   "description": "기존 키트 bd-mpart-rail (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-rail",
+   "cell": 16
+  },
+  {
+   "id": "e-mpart-shrub-tub",
+   "name": "통 속 둥근 관목",
+   "role": "정원·부품",
+   "image": "existing-bd-mpart-shrub-tub.png",
+   "description": "기존 키트 bd-mpart-shrub-tub (1×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-mpart-shrub-tub",
+   "cell": 16
+  },
+  {
+   "id": "e-out-fence-run",
+   "name": "외곽 나무 울타리(문틈)",
+   "role": "야외",
+   "image": "existing-bd-out-fence-run.png",
+   "description": "기존 키트 bd-out-fence-run (4×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-out-fence-run",
+   "cell": 16
+  },
+  {
+   "id": "e-out-hanging-sign",
+   "name": "외곽 나무집 걸이 간판",
+   "role": "야외",
+   "image": "existing-bd-out-hanging-sign.png",
+   "description": "기존 키트 bd-out-hanging-sign (1×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-out-hanging-sign",
+   "cell": 16
+  },
+  {
+   "id": "e-out-hay-barrels",
+   "name": "외곽 건초·통·상자",
+   "role": "야외",
+   "image": "existing-bd-out-hay-barrels.png",
+   "description": "기존 키트 bd-out-hay-barrels (3×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-out-hay-barrels",
+   "cell": 16
+  },
+  {
+   "id": "e-out-signpost",
+   "name": "외곽 이정표",
+   "role": "야외",
+   "image": "existing-bd-out-signpost.png",
+   "description": "기존 키트 bd-out-signpost (1×2칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-out-signpost",
+   "cell": 16
+  },
+  {
+   "id": "e-out-woodpile",
+   "name": "외곽 장작더미",
+   "role": "야외",
+   "image": "existing-bd-out-woodpile.png",
+   "description": "기존 키트 bd-out-woodpile (2×1칸). 사람이 허용/거절한 적 없는 기존 그림.",
+   "kind": "existing",
+   "sourceKit": "bd-out-woodpile",
+   "cell": 16
+  }
+ ]
+}
