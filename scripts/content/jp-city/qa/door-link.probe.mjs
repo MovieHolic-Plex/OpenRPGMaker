@@ -58,6 +58,7 @@ try {
     await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [leg.street, ...leg.startAt]);
     await page.waitForTimeout(900);
     await tap("up"); // 위를 보게
+    await page.waitForTimeout(1200); // 순간이동 페이드가 걷힐 때까지
     await page.screenshot({ path: join(OUT, `${tag}a-street.png`) });
     let st = await stepTo("up", leg.enter.slice(1), leg.street);
     st = await waitMap(leg.interior);
