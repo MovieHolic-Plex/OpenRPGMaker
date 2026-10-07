@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.175.0 — 2026-10-07
+
+### 기능
+
+- **interior** — 업로드 칩셋 방 짓기 역할표 만들기 — 타일셋 「방 짓기」 탭 (`c576adb`)
+
+### 정리
+
+- **purge** — remove scripts, tests, wiki pages and evidence tied to deleted chipsets (`556a4c5`)
+- **purge** — drop removed tool names from blueprint and skill notes (`3148de8`)
+- **purge** — remove forest, climate, Tibo and shared-village defaults and dead tool-name tables (`f7322cd`)
+- **purge** — remove pack-town, PAW, dungeon/interior session, forest recipe and tall-grass tools (`0c0a491`)
+- **purge** — remove forest/combined-town village, house, fence and castle generators and village contract (`d9c9b9d`)
+- **purge** — remove demo and showcase projects drawn on deleted chipsets (`ed31551`)
+
+### 잡무
+
+- **assets** — delete third-party art, audio and fonts (copyright) (`effd2b2`)
+- **content** — delete every registered place not drawn on our own chipsets (copyright) (`247ddd5`)
+
 ## 0.174.0 — 2026-10-07
 
 ### 기능
