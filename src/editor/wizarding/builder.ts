@@ -27,8 +27,10 @@ export interface WizardingFurnitureRecipe {
   readonly access?: boolean; readonly with?: readonly WithRecipe[];
   /** beside: 옆에 붙일 키트 id(가구·벽 조각). */
   readonly near?: readonly string[];
-  /** grid: 덩이 사이 칸 수(기본 1). */
-  readonly gap?: number;
+  /** grid: 덩이 사이 칸 수(기본 1). gapX·gapY 가 있으면 그 축은 그 값(서가 gapX 0 = 이어 붙은 책장 줄). */
+  readonly gap?: number; readonly gapX?: number; readonly gapY?: number;
+  /** grid: 덩이마다 고르는 탁상 소품 묶음 하나(with 뒤에 붙는다) — 모든 탁자에 같은 소품이 찍히지 않게. */
+  readonly vary?: readonly (readonly WithRecipe[])[];
   /** grid: north = 첫 줄을 북벽에 붙인다(wallTop). */
   readonly rowsFrom?: "north";
   /** grid: 같은 크기 다른 그림(30% 로 바꿔 끼운다, 예: 빈 침대 ↔ 환자 침대). */
@@ -43,7 +45,9 @@ export interface WizardingNpcSuggestion { readonly id: string; readonly name: st
 interface WallSetRecipe {
   readonly ko: string; readonly n: string; readonly nw?: string; readonly ne?: string; readonly w: string; readonly e: string; readonly s: string;
   readonly sw?: string; readonly se?: string; readonly door1?: string; readonly door2?: string; readonly doorS?: string; readonly northFloor?: string;
-  readonly rhythm: readonly string[]; readonly sRhythm: readonly string[]; readonly northRows: number; readonly southRows: number;
+  readonly rhythm: readonly string[]; readonly sRhythm: readonly string[]; readonly northRows: number;
+  /** 1 = 남벽은 윗면(천장 끝) 한 줄만 — 3/4 시점에서 남벽 정면은 보이지 않는다. 남쪽 문은 틈. */
+  readonly southRows: number;
 }
 interface GroundRecipe {
   readonly clearing?: string; readonly band?: number; readonly border?: readonly string[];
@@ -213,7 +217,39 @@ export const WIZARDING_ISSUE_CODES: readonly string[] = Object.values(ISSUE);
 
 interface ResolvedDoor { readonly side: WizardingDoorSide; readonly kind: "single" | "double"; readonly offset: number; readonly width: number; readonly piece: Piece | null; readonly pieceCount: number }
 
+/**
+ * 공간 한 장을 짓는다. 실내(room)에서 height 를 주지 않으면 가구가 끝나는 줄 아래로 통로 3줄만 남기고 남벽을 당겨 다시 짓는다
+ * (사용자 2026-10-07: 「공간이 남으면 그건 공간이 너무 큰 것」 — 서가·약 솥 아래 절반이 빈 바닥이던 것).
+ * 다시 지을 때 가구 수는 처음 넓이로 센다(줄이면 개수가 줄고 또 줄어드는 되먹임을 막는다).
+ */
 export function buildWizardingSpace(input: WizardingSpaceInput, tileset: TilesetDef, specIn: WizardingSpaceSpec = WIZARDING_SPACE_SPEC): WizardingSpaceResult {
+  const first = buildOnce(input, tileset, specIn);
+  const rec = resolveRecipeIn(specIn, input);
+  if (!rec || rec.layout !== "room" || input.height !== undefined || first.issues.some((i) => i.severity === "error")) return first;
+  const loose = new Set(["edge", "corner", "side-wall", "beside", "north-wall"]);
+  const looseKits = new Set(rec.furniture.filter((f) => loose.has(f.placement)).map((f) => f.kit));
+  const ws = rec.wall ? specIn.wallsets[rec.wall] : undefined;
+  const SR = ws?.southRows ?? 2, NR = ws?.northRows ?? 4;
+  let bottom = -1;
+  for (const p of first.placed) {
+    if (p.role !== "furniture" || looseKits.has(p.kit) || p.y < NR) continue;
+    bottom = Math.max(bottom, p.y + (specIn.pieces[p.kit]?.h ?? 1) - 1);
+  }
+  if (bottom < 0) return first;
+  const H2 = Math.max(rec.size.min[1], bottom + 1 + 3 + SR);
+  if (H2 >= first.height) return first;
+  const again = buildOnce({ ...input, height: H2 }, tileset, specIn, first.width * first.height);
+  return again.issues.some((i) => i.severity === "error") || again.components !== 1 ? first : again;
+}
+
+function resolveRecipeIn(specIn: WizardingSpaceSpec, input: WizardingSpaceInput): WizardingSpaceRecipe | null {
+  const base = specIn.spaces[input.space];
+  if (!base) return null;
+  const v = input.variant ? base.variants?.[input.variant] : undefined;
+  return (v ? { ...base, ...v } : base) as WizardingSpaceRecipe;
+}
+
+function buildOnce(input: WizardingSpaceInput, tileset: TilesetDef, specIn: WizardingSpaceSpec, countArea?: number): WizardingSpaceResult {
   const issues: WizardingIssue[] = [];
   const err = (code: string, message: string, x?: number, y?: number) => issues.push({ severity: "error", code, message, ...(x !== undefined ? { x, y } : {}) });
   const warn = (code: string, message: string, x?: number, y?: number) => issues.push({ severity: "warning", code, message, ...(x !== undefined ? { x, y } : {}) });
@@ -305,7 +341,7 @@ export function buildWizardingSpace(input: WizardingSpaceInput, tileset: Tileset
       if (!piece) continue;
       pieceCount = kind === "double" && !door2Id ? 2 : 1;
       width = piece.w * pieceCount;
-    } else if (recipe.layout === "room" && d.side === "s" && ws?.doorS) {
+    } else if (recipe.layout === "room" && d.side === "s" && ws?.doorS && SR > 1) {
       piece = need(ws.doorS, "남쪽 출입구");
       pieceCount = width;
     }
@@ -819,7 +855,7 @@ export function buildWizardingSpace(input: WizardingSpaceInput, tileset: Tileset
     const alts = (r.alt ?? []).map((id) => resolve(id)).filter((p): p is Piece => !!p && p.w === parts0[0]!.piece.w && p.h === parts0[0]!.piece.h);
     let gx0 = 0, gy0 = 0, gx1 = 0, gy1 = 0;
     for (const pt of parts0) { gx0 = Math.min(gx0, pt.dx); gy0 = Math.min(gy0, pt.dy); gx1 = Math.max(gx1, pt.dx + pt.piece.w - 1); gy1 = Math.max(gy1, pt.dy + pt.piece.h - 1); }
-    const gw = gx1 - gx0 + 1, gh = gy1 - gy0 + 1, gap = r.gap ?? 1;
+    const gw = gx1 - gx0 + 1, gh = gy1 - gy0 + 1, gapX = r.gapX ?? r.gap ?? 1, gapY = r.gapY ?? r.gap ?? 1;
     const bb = areaBounds(floorKindOf(r.on));
     if (bb.x1 < 0) return 0;
     // 가운데 통로: 예약 칸(러너)이 가운데에 있으면 그 폭 + 양쪽 한 칸, 아니면 두 칸
@@ -827,19 +863,22 @@ export function buildWizardingSpace(input: WizardingSpaceInput, tileset: Tileset
     let aisleL = Math.floor(mid) - 1, aisleR = Math.ceil(mid);
     for (let x = 0; x < W; x++) for (let y = bb.y0; y <= bb.y1; y++) if (b.reserved[y * W + x] && Math.abs(x + 0.5 - mid) < 3 && y > bb.y0 + 1 && y < bb.y1 - 1) { aisleL = Math.min(aisleL, x - 1); aisleR = Math.max(aisleR, x + 1); }
     const leftXs: number[] = [];
-    for (let x = aisleL - gw; x >= bb.x0 + 1; x -= gw + gap) leftXs.push(x);
+    for (let x = aisleL - gw; x >= bb.x0 + 1; x -= gw + gapX) leftXs.push(x);
     const cols: [number, number | null][] = leftXs.map((x) => [x, W - x - gw] as [number, number]);
     if (!cols.length && gw <= bb.x1 - bb.x0 - 1) cols.push([Math.floor((W - gw) / 2), null]);
     const top = r.rowsFrom === "north" ? (r.wallTop ?? NR) : bb.y0 + 1;
-    const rows: number[] = [];
-    for (let y = top; y + gh - 1 <= bb.y1 - 2; y += gh + gap) rows.push(y);
     // 줄 단위(위→아래)로 채운다: 한 줄은 모든 열 쌍을 시도하고, 쌍은 좌우가 같이 들어가야 한다.
     const perRow = cols.reduce((t, c) => t + (c[1] === null ? 1 : 2), 0);
     if (!perRow) return 0;
     const rowsWanted = Math.max(1, Math.round(n / perRow));
     let got = 0, rowsDone = 0;
-    const pick = () => (alts.length && rnd() < 0.3 ? [{ ...parts0[0]!, piece: alts[Math.floor(rnd() * alts.length)]! }, ...parts0.slice(1)] : parts0);
-    for (const y of rows) {
+    const varySets = (r.vary ?? []).map((set) => set.map((w) => { const p = resolve(w.kit); return p ? { piece: p, dx: w.dx, dy: w.dy, under: !!w.under } : null; }).filter((x): x is GroupPart => !!x));
+    const pick = () => {
+      const base = alts.length && rnd() < 0.3 ? [{ ...parts0[0]!, piece: alts[Math.floor(rnd() * alts.length)]! }, ...parts0.slice(1)] : parts0;
+      return varySets.length ? [...base, ...varySets[Math.floor(rnd() * varySets.length)]!] : base;
+    };
+    // 줄은 위에서부터 한 칸씩 내려가며 찾는다: 앞선 grid(서가 줄) 밑에 다음 grid(열람 탁자)가 이어 붙도록. 한 줄이 들어가면 gh+gapY 만큼 건너뛴다.
+    for (let y = top; y + gh - 1 <= bb.y1 - 2; ) {
       if (rowsDone >= rowsWanted) break;
       let inRow = 0;
       for (const [xl, xr] of cols) {
@@ -855,7 +894,7 @@ export function buildWizardingSpace(input: WizardingSpaceInput, tileset: Tileset
         b.commit();
         inRow++;
       }
-      if (inRow) { got += inRow; rowsDone++; }
+      if (inRow) { got += inRow; rowsDone++; y += gh + gapY; } else y++;
     }
     return got;
   };
@@ -885,7 +924,7 @@ export function buildWizardingSpace(input: WizardingSpaceInput, tileset: Tileset
     return got;
   };
   const defArea = recipe.size.default[0] * recipe.size.default[1];
-  const scale = Math.max(0.4, Math.min(3, Math.pow((W * H) / defArea, 0.75)));
+  const scale = Math.max(0.4, Math.min(3, Math.pow((countArea ?? W * H) / defArea, 0.75)));
   const countFor = (r: WizardingFurnitureRecipe): number => {
     const baseN = r.count[0] + (r.count[1] - r.count[0]) * density;
     if (r.placement === "corner") return Math.max(0, Math.min(4, Math.round(baseN)));

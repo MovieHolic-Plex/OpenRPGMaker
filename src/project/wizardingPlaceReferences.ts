@@ -49,15 +49,15 @@ export const WIZARDING_PLACE_REFERENCES = [
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-clocktower-24x18",
+    "id": "wz-space-clocktower-18x15",
     "name": "마법 학교 · 시계탑 기어실",
     "kind": "completed-place",
     "placeKind": "facility",
     "revision": 2,
     "x": 0,
     "y": 0,
-    "width": 24,
-    "height": 18,
+    "width": 18,
+    "height": 15,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-clocktower.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -66,14 +66,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-clocktower",
     "snapshotProjectId": "oprn-place-wz-space-clocktower-v2",
     "rules": [
-      "24×18칸 시계탑 기어실 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'clocktower', seed:1}) 결과. 문 칸 s(12,17)",
+      "18×15칸 시계탑 기어실 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'clocktower', seed:1}) 결과. 문 칸 s(9,14)",
       "쓴 키트: `wz-clock-dial-back`, `wz-clock-gear-l-spin`, `wz-clock-gear-m-spin`, `wz-clock-gear-s-spin`, `wz-clock-oilcan`, `wz-clock-stair`, `wz-clock-stool`, `wz-clock-toolchest`, `wz-clock-toolrack`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-clocktower`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-greenhouse-24x17",
+    "id": "wz-space-greenhouse-24x15",
     "name": "마법 학교 · 온실(맨드레이크)",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -81,7 +81,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 24,
-    "height": 17,
+    "height": 15,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-greenhouse.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -90,22 +90,22 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-greenhouse",
     "snapshotProjectId": "oprn-place-wz-space-greenhouse-v2",
     "rules": [
-      "24×17칸 온실(맨드레이크) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'greenhouse', seed:1}) 결과. 문 칸 s(12,16)",
-      "쓴 키트: `wz-gh-earmuff-rack`, `wz-gh-mandrake-pot`, `wz-gh-pot-empty`, `wz-gh-pot-full`, `wz-gh-pot-row`, `wz-gh-soilbox`, `wz-gh-toothflower`, `wz-gh-vine-bush`, `wz-gh-vine-wall`, `wz-gh-watercan`, `wz-gh-workbench`",
+      "24×15칸 온실(맨드레이크) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'greenhouse', seed:1}) 결과. 문 칸 s(12,14)",
+      "쓴 키트: `wz-gh-earmuff-basket`, `wz-gh-earmuff-rack`, `wz-gh-mandrake-pot`, `wz-gh-pot-empty`, `wz-gh-pot-full`, `wz-gh-pot-row`, `wz-gh-purplethorn`, `wz-gh-soilbox`, `wz-gh-tentaclevine`, `wz-gh-toothflower`, `wz-gh-vine-bush`, `wz-gh-vine-wall`, `wz-gh-watercan`, `wz-gh-workbench`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-greenhouse`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-honeydukes-22x16",
+    "id": "wz-space-honeydukes-18x14",
     "name": "마법 학교 · 허니듀크 지하 창고",
     "kind": "completed-place",
     "placeKind": "facility",
     "revision": 2,
     "x": 0,
     "y": 0,
-    "width": 22,
-    "height": 16,
+    "width": 18,
+    "height": 14,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-honeydukes.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -114,14 +114,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-honeydukes",
     "snapshotProjectId": "oprn-place-wz-space-honeydukes-v2",
     "rules": [
-      "22×16칸 허니듀크 지하 창고 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'honeydukes', seed:1}) 결과. 문 칸 s(11,15)",
+      "18×14칸 허니듀크 지하 창고 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'honeydukes', seed:1}) 결과. 문 칸 s(9,13)",
       "쓴 키트: `wz-hd-box-beans`, `wz-hd-box-frog`, `wz-hd-jar-green`, `wz-hd-jar-red`, `wz-hd-jar-violet`, `wz-hd-shelf`, `wz-hd-stack-1x2`, `wz-hd-stack-2x2`, `wz-hd-stairs-down`, `wz-hd-tub`, `wz-hd-workbench`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-honeydukes`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-infirmary-26x18",
+    "id": "wz-space-infirmary-26x13",
     "name": "마법 학교 · 병동",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -129,7 +129,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 26,
-    "height": 18,
+    "height": 13,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-infirmary.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -138,14 +138,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-infirmary",
     "snapshotProjectId": "oprn-place-wz-space-infirmary-v2",
     "rules": [
-      "26×18칸 병동 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'infirmary', seed:1}) 결과. 문 칸 s(13,17)",
-      "쓴 키트: `wz-inf-basin`, `wz-inf-bed-empty`, `wz-inf-bed-patient`, `wz-inf-candle`, `wz-inf-cart`, `wz-inf-chart`, `wz-inf-curtain-closed`, `wz-inf-screen`, `wz-inf-shelf`, `wz-inf-table`",
+      "26×13칸 병동 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'infirmary', seed:1}) 결과. 문 칸 s(13,12)",
+      "쓴 키트: `wz-inf-basin`, `wz-inf-bed-empty`, `wz-inf-candle`, `wz-inf-cart`, `wz-inf-chart`, `wz-inf-curtain-closed`, `wz-inf-screen`, `wz-inf-shelf`, `wz-inf-table`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-infirmary`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-library-24x17",
+    "id": "wz-space-library-24x19",
     "name": "마법 학교 · 도서관 제한 구역",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -153,7 +153,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 24,
-    "height": 17,
+    "height": 19,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-library.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -162,14 +162,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-library",
     "snapshotProjectId": "oprn-place-wz-space-library-v2",
     "rules": [
-      "24×17칸 도서관 제한 구역 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'library', seed:1}) 결과. 문 칸 s(12,16)",
-      "쓴 키트: `wz-furn-bookshelf-low`, `wz-furn-candlestick`, `wz-lib-ladder`, `wz-lib-lectern`, `wz-lib-record-table`, `wz-lib-shelf-chain-2x3`, `wz-lib-shelf-chain-3x3`, `wz-lib-shelf-plain-2x3`",
+      "24×19칸 도서관 제한 구역 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'library', seed:1}) 결과. 문 칸 s(12,18)",
+      "쓴 키트: `wz-furn-bookshelf-low`, `wz-furn-candlestick`, `wz-furn-chair-back-left`, `wz-furn-chair-back-right`, `wz-furn-table-small`, `wz-inf-candle`, `wz-lib-ladder`, `wz-lib-lectern`, `wz-lib-record-table`, `wz-lib-shelf-chain-2x3`, `wz-lib-shelf-chain-3x3`, `wz-lib-shelf-plain-2x3`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-library`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-owlery-22x16",
+    "id": "wz-space-owlery-22x12",
     "name": "마법 학교 · 부엉이 탑",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -177,7 +177,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 22,
-    "height": 16,
+    "height": 12,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-owlery.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -186,14 +186,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-owlery",
     "snapshotProjectId": "oprn-place-wz-space-owlery-v2",
     "rules": [
-      "22×16칸 부엉이 탑 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'owlery', seed:1}) 결과. 문 칸 s(11,15)",
+      "22×12칸 부엉이 탑 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'owlery', seed:1}) 결과. 문 칸 s(11,11)",
       "쓴 키트: `wz-owl-mail-sack`, `wz-owl-mailbox`, `wz-owl-perch-1x3`, `wz-owl-perch-2x3`, `wz-owl-stair-up`, `wz-owl-water-dish`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-owlery`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-postoffice-20x15",
+    "id": "wz-space-postoffice-20x14",
     "name": "마법 학교 · 호그스미드 부엉이 우체국(실내)",
     "kind": "completed-place",
     "placeKind": "settlement",
@@ -201,7 +201,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 20,
-    "height": 15,
+    "height": 14,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-postoffice.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -210,14 +210,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-postoffice",
     "snapshotProjectId": "oprn-place-wz-space-postoffice-v2",
     "rules": [
-      "20×15칸 호그스미드 눈 덮인 우체국 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'postoffice', seed:1}) 결과. 문 칸 s(10,14)",
+      "20×14칸 호그스미드 눈 덮인 우체국 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'postoffice', seed:1}) 결과. 문 칸 s(10,13)",
       "쓴 키트: `wz-furn-crate-stack`, `wz-post-counter`, `wz-post-iwall-win`, `wz-post-parcel`, `wz-post-parcels`, `wz-post-perch`, `wz-post-sack`, `wz-post-sort`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-postoffice`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-potions-24x17",
+    "id": "wz-space-potions-24x14",
     "name": "마법 학교 · 지하 마법약 교실",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -225,7 +225,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 24,
-    "height": 17,
+    "height": 14,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-potions.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -234,14 +234,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-potions",
     "snapshotProjectId": "oprn-place-wz-space-potions-v2",
     "rules": [
-      "24×17칸 지하 마법약 교실 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'potions', seed:1}) 결과. 문 칸 s(12,16)",
-      "쓴 키트: `wz-nv-pot-ingredient-storage-drawers`, `wz-nv-pot-ingredient-storage-dried-herbs`, `wz-nv-pot-teaching-kit-blackboard`, `wz-pot-cauldron-bench-green`, `wz-pot-cauldron-bench-violet`, `wz-pot-herb-hanger`, `wz-pot-hood`, `wz-pot-prep-bench`, `wz-pot-root-basket`, `wz-pot-shelf`, `wz-pot-wall-lamp`",
+      "24×14칸 지하 마법약 교실 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'potions', seed:1}) 결과. 문 칸 s(12,13)",
+      "쓴 키트: `wz-nv-pot-ingredient-storage-drawers`, `wz-nv-pot-ingredient-storage-dried-herbs`, `wz-nv-pot-teaching-kit-blackboard`, `wz-pot-basin`, `wz-pot-cauldron-bench-green`, `wz-pot-cauldron-bench-violet`, `wz-pot-herb-hanger`, `wz-pot-hood`, `wz-pot-prep-bench`, `wz-pot-root-basket`, `wz-pot-shelf`, `wz-pot-wall-lamp`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-potions`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-quidditch-32x24",
+    "id": "wz-space-quidditch-32x22",
     "name": "마법 학교 · 퀴디치 경기장·선수 터널",
     "kind": "completed-place",
     "placeKind": "natural",
@@ -249,7 +249,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 32,
-    "height": 24,
+    "height": 22,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-quidditch.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -258,22 +258,22 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-quidditch",
     "snapshotProjectId": "oprn-place-wz-space-quidditch-v2",
     "rules": [
-      "32×24칸 퀴디치 선수 터널·경기장 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'quidditch', seed:1}) 결과. 문 칸 n(16,3) s(15,23) s(16,23)",
+      "32×22칸 퀴디치 선수 터널·경기장 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'quidditch', seed:1}) 결과. 문 칸 n(16,3) s(15,21) s(16,21)",
       "쓴 키트: `wz-qd-ball-crate-open`, `wz-qd-broom-rack`, `wz-qd-goal-kit`, `wz-qd-locker-g`, `wz-qd-locker-h`, `wz-qd-locker-r`, `wz-qd-locker-s`, `wz-qd-target`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-quidditch`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-shared-common-24x17",
+    "id": "wz-space-shared-common-20x14",
     "name": "마법 학교 · 기숙사 휴게실",
     "kind": "completed-place",
     "placeKind": "facility",
     "revision": 2,
     "x": 0,
     "y": 0,
-    "width": 24,
-    "height": 17,
+    "width": 20,
+    "height": 14,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-shared-common.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -282,7 +282,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-shared-common",
     "snapshotProjectId": "oprn-place-wz-space-shared-common-v2",
     "rules": [
-      "24×17칸 공용(성채·공통 가구) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'shared', variant:'common', seed:1}) 결과. 문 칸 s(12,16)",
+      "20×14칸 공용(성채·공통 가구) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'shared', variant:'common', seed:1}) 결과. 문 칸 s(10,13)",
       "쓴 키트: `wz-furn-banner-badger`, `wz-furn-banner-eagle`, `wz-furn-banner-lion`, `wz-furn-banner-snake`, `wz-furn-barrel`, `wz-furn-bookshelf`, `wz-furn-bookshelf-low`, `wz-furn-cabinet-closed`, `wz-furn-candlestick`, `wz-furn-chair-back-left`, `wz-furn-chair-back-right`, `wz-furn-crate-stack`, `wz-furn-curtain-open`, `wz-furn-fireplace`, `wz-furn-lantern-hanging`, `wz-furn-table-small`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-shared`."
     ],
@@ -313,7 +313,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-shared-30x22",
+    "id": "wz-space-shared-30x18",
     "name": "마법 학교 · 성채 대연회장(공용 홀)",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -321,7 +321,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 30,
-    "height": 22,
+    "height": 18,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-shared.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -330,14 +330,14 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-shared",
     "snapshotProjectId": "oprn-place-wz-space-shared-v2",
     "rules": [
-      "30×22칸 공용(성채·공통 가구) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'shared', seed:1}) 결과. 문 칸 s(14,21) s(15,21) n(14,3) n(15,3)",
-      "쓴 키트: `wz-castle-sconce`, `wz-furn-banner-badger`, `wz-furn-banner-eagle`, `wz-furn-banner-lion`, `wz-furn-banner-snake`, `wz-furn-barrel`, `wz-furn-bench-long`, `wz-furn-bench-seat`, `wz-furn-candlestick`, `wz-furn-curtain-open`, `wz-furn-fireplace`",
+      "30×18칸 공용(성채·공통 가구) 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'shared', seed:1}) 결과. 문 칸 s(14,17) s(15,17) n(14,3) n(15,3)",
+      "쓴 키트: `wz-castle-sconce`, `wz-furn-banner-badger`, `wz-furn-banner-eagle`, `wz-furn-banner-lion`, `wz-furn-banner-snake`, `wz-furn-barrel`, `wz-furn-bench-long`, `wz-furn-bench-seat`, `wz-furn-candlestick`, `wz-furn-curtain-open`, `wz-furn-fireplace`, `wz-inf-candle`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-shared`."
     ],
     "limitations": "사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다."
   },
   {
-    "id": "wz-space-wandshop-20x15",
+    "id": "wz-space-wandshop-20x14",
     "name": "마법 학교 · 다이애건 앨리 지팡이 가게",
     "kind": "completed-place",
     "placeKind": "facility",
@@ -345,7 +345,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "x": 0,
     "y": 0,
     "width": 20,
-    "height": 15,
+    "height": 14,
     "tilesetId": "wizarding_world",
     "preview": "/assets/region-references/wz-space-wandshop.png",
     "tilesetPreview": "/assets/wizarding-world/wizarding-world-chipset.png",
@@ -354,7 +354,7 @@ export const WIZARDING_PLACE_REFERENCES = [
     "sourceMapId": "wz-place-space-wandshop",
     "snapshotProjectId": "oprn-place-wz-space-wandshop-v2",
     "rules": [
-      "20×15칸 다이애건 앨리 지팡이 가게 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'wandshop', seed:1}) 결과. 문 칸 s(10,14)",
+      "20×14칸 다이애건 앨리 지팡이 가게 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). build_wizarding_space({space:'wandshop', seed:1}) 결과. 문 칸 s(10,13)",
       "쓴 키트: `wz-furn-cabinet-closed`, `wz-furn-candlestick`, `wz-furn-crate-stack`, `wz-nv-wand-stock-ladder-ladder`, `wz-nv-wand-wand-testing-table-height16-table`, `wz-nv-wand-wandtrial-shelves-east-run`, `wz-nv-wand-wandtrial-shelves-west-run`, `wz-nv-wand-wandtrial-target-target`, `wz-nv-wand-wood-service-counter-counter`",
       "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-wandshop`."
     ],

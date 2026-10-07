@@ -132,7 +132,7 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
       space: { type: "string", enum: [...WIZARDING_SPACE_KEYS], description: "공간 키" },
       variant: { type: "string", description: "변형(shared: corridor·common). 생략하면 기본" },
       width: { type: "integer", minimum: 8, maximum: 64, description: "맵 폭(생략하면 공간 기본)" },
-      height: { type: "integer", minimum: 12, maximum: 48, description: "맵 높이(생략하면 공간 기본)" },
+      height: { type: "integer", minimum: 12, maximum: 48, description: "맵 높이(생략하면 공간 기본 크기로 짓고, 실내는 가구가 끝나는 줄 아래 통로 3줄만 남기고 줄인다 — 빈 바닥을 남기지 않는다)" },
       doors: { type: "array", items: DOOR_ITEM, description: "출입구. 첫 문이 주 출입구(시작 칸·러너 기준)" },
       furnitureMode: { type: "string", enum: [...FURNITURE_MODES], description: "auto 레시피 가구(기본) · list furniture 만 · none 가구 없음" },
       furniture: { type: "array", items: FURNITURE_ITEM, description: "놓을 가구(좌표를 주면 그 자리, 아니면 자동 자리)" },
