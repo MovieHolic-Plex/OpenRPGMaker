@@ -78,7 +78,7 @@ function missingTilesCard(question: MissingTilesQuestion, followUp: StoreCardFol
   all.push(draw, existing);
   const view = shell("답변 필요", "필요한 타일이 없어요", "ai-store-missing-card", [
     el("p", { class: "ai-tileset-change-reason", text: question.need }),
-    el("p", { class: "ai-tileset-change-detail", text: `스토어에서 「${question.query}」을(를) 찾아봤어요. 마음에 드는 게 있으면 넣고, 없으면 아래에서 골라 주세요.` }),
+    el("p", { class: "ai-tileset-change-detail", text: `스토어에서 ${question.query ? `「${question.query}」을(를) ` : ""}찾아봤어요. 마음에 드는 게 있으면 넣고, 없으면 아래에서 골라 주세요.` }),
     results,
   ], [draw, existing]);
 
