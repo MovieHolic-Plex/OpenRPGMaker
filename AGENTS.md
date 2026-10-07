@@ -57,6 +57,9 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `jp-city` · 시드 `harness-data/jp-city/seed.json`(항목 40, wave houses/station/park/shrine)
   → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
   → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
+- **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
+  → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
+  → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`

@@ -23,6 +23,7 @@ import { BEODEUL_ARCHITECTURE_HARNESS } from "../beodeul-architecture/harness";
 import { BEODEUL_BUILDING_REVIEW_HARNESS } from "../beodeul-building-review/harness";
 import { GAME_CONCEPTS_HARNESS } from "../game-concepts/harness";
 import { MURIM_CHIPSET_HARNESS } from "../murim-chipset/harness";
+import { DUNGEON_CHIPSET_HARNESS } from "../dungeon-chipset/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -43,6 +44,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   BEODEUL_BUILDING_REVIEW_HARNESS,
   GAME_CONCEPTS_HARNESS,
   MURIM_CHIPSET_HARNESS,
+  DUNGEON_CHIPSET_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

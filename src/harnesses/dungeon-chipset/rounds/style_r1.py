@@ -30,25 +30,28 @@ def overlay(base, rows, leg, w, h, base_off=(0, 0)):
 
 
 def autotile(body, frame_rows, inner_rows, leg):
-    """A2 식: frame 32×32(가운데 16×16 = 몸통 자리, 모서리·변) + inner 16×16(네 귀 안 모서리). '.' = 몸통."""
-    frame = overlay(body, frame_rows, leg, 32, 32, (8, 8))
-    inner = overlay(body, inner_rows, leg, 16, 16)
+    """A2 식: frame 32×32(모서리·변 조각, 가운데 16×16 자리는 비움) + inner 16×16(네 귀 안 모서리).
+    '.' 은 투명으로 남겨 조립할 때 **그 칸 자리의** 몸통 화소가 비치게 한다(몸통을 조각에 미리 굽지 않는다)."""
+    frame = grid(frame_rows, leg, 32, 32)
+    inner = grid(inner_rows, leg, 16, 16)
     q = lambda c, qx, qy: c.crop(qx * 8, qy * 8, 8, 8)  # noqa: E731
     edge = {'N': frame.crop(8, 0, 16, 8), 'S': frame.crop(8, 24, 16, 8),
             'W': frame.crop(0, 8, 8, 16), 'E': frame.crop(24, 8, 8, 16)}
     outer = {'NW': q(frame, 0, 0), 'NE': q(frame, 3, 0), 'SW': q(frame, 0, 3), 'SE': q(frame, 3, 3)}
     inn = {'NW': q(inner, 0, 0), 'NE': q(inner, 1, 0), 'SW': q(inner, 0, 1), 'SE': q(inner, 1, 1)}
-    at = dot.Autotile(frame.crop(8, 8, 16, 16), edge, outer, inn)
-    at.frame_tile, at.inner_tile = frame, inner
-    return at
+    return dot.Autotile(body, edge, outer, inn)
 
 
 def a2_block(at):
-    """조각을 A2 블록 32×48 로 보인다: 윗줄 = 외딴 칸 · 안 모서리 칸, 아래 32×32 = 틀."""
+    """조립 결과를 A2 모양 32×48 로 보인다: 윗줄 = 외딴 칸 · 네 귀 안 모서리 칸, 아래 32×32 = 2×2 덩어리."""
+    N, E, S, W = dot.N, dot.E, dot.S, dot.W
     cv = Cv(32, 48)
     cv.paste(at.tile(0), 0, 0)
-    cv.paste(at.inner_tile, 16, 0)
-    cv.paste(at.frame_tile, 0, 16)
+    cv.paste(at.tile(N | E | S | W), 16, 0)
+    cv.paste(at.tile(E | S | dot.SE), 0, 16)
+    cv.paste(at.tile(W | S | dot.SW), 16, 16)
+    cv.paste(at.tile(N | E | dot.NE), 0, 32)
+    cv.paste(at.tile(N | W | dot.NW), 16, 32)
     return cv
 
 
@@ -164,7 +167,7 @@ A_CEIL_INNER = [
     'lcbcbce..ecbcbcl',
 ]
 A_FLOOR = [
-    '2222211220222552',
+    '2211111220255552',
     '2522111122222255',
     '5552211112227225',
     '5522221112202222',
@@ -317,7 +320,7 @@ def b_floor():
 
 def b_face():
     cv = grid(['0000000000000000', '1111111111111111']
-              + [('1101111111110111' if y % 4 == 0 else '1111111011111111' if y % 4 == 2 else '1' * 16)
+              + [('1121111111112111' if y % 4 == 0 else '1111111211111111' if y % 4 == 2 else '1' * 16)
                  for y in range(2, 30)] + ['1111111111111111', '0000000000000000'], LB_FACE)
     for rows, x, y in ((B_FACE_BIG, 0, 2), (B_FACE_MED, 9, 1), (B_FACE_SML, 7, 11), (B_FACE_MED, 11, 9),
                        (B_FACE_BIG, 3, 13), (B_FACE_SML, 13, 17), (B_FACE_MED, 10, 20), (B_FACE_BIG, 14, 22),
@@ -472,23 +475,23 @@ def cave_c():
 # 물칸끼리만 이어진 것으로 본다. 북쪽 물가 = 바닥이 물로 떨어지는 짧은 앞면(3/4), 남·동·서 = 바닥 끝 턱.
 LWA = legend(a=('water', 0), b=('water', 1), c=('water', 2), d=('water', 3), e=('water', 4),
              **{str(i): ('cfloor', i) for i in range(8)})
-WA_BODY = [
-    'bbccbbbbbbbbbbbb',
-    'bbbbbbbbbabbbbbb',
-    'bbbbbbecbbbbbbbb',
-    'aabbbbbbbbbbccbb',
-    'bbbbbbbbbbbbbbbb',
-    'bbbbbccbbbbbbbbe',
+WA_BODY = [   # 버들항 물처럼 가로 물결 획(c 3칸 · d 2칸), 홑점 반짝이는 쓰지 않는다
+    'bbcccbbbbbbbbbbb',
     'bbbbbbbbbbbbaabb',
-    'bccbbbbbbbbbbbbb',
-    'bbbbbbbbbbccbbbb',
-    'bbbbebbbbbbbbbbb',
-    'bbbbbbbbbbbbbbcc',
-    'bbaabbbbccbbbbbb',
+    'bbbbbbbbddbbbbbb',
+    'aabbbbbbbbbbcccb',
     'bbbbbbbbbbbbbbbb',
-    'bbbbbbbbbbbbebbb',
-    'ccbbbbbbbbbbbbbb',
-    'bbbbbbbccbbbbbbb',
+    'bbbbbcccbbbbbbbb',
+    'bbbbbbbbbbbbbbbb',
+    'cbbbbbbbbbbddbbc',
+    'bbbbbbbaabbbbbbb',
+    'bbbddbbbbbbbbbbb',
+    'bbbbbbbbbbcccbbb',
+    'bbaabbbbbbbbbbbb',
+    'bbbbbbbbbbbbbbbb',
+    'bbbbbbbcccbbbbbb',
+    'ccbbbbbbbbbbbbbc',
+    'bbbbbbbbbbbbbbbb',
 ]
 WA_FRAME = (
     ['5' * 32,
@@ -657,42 +660,27 @@ STAIRS_A = (
 )
 
 LSB = dict(LB, v=dot.C('void', 0))
-STAIRS_B = [
-    '11112111111101111111211111111211',
-    '12111111211111111111111121111111',
-    '111oooooooooooooooooooooooooo111',
-    '11oqrrqrrqrqrrqrrqrrqrqrrqrrqo11',
-] + _rows_in('1o', 'o1', [
-    'qqpqqqpqqpqqqpqqpqqqpqqqpqqq',
-    'pppoppppoppppopppoppppoppppp',
-    'vvvvvvvvvvvvvvvvvvvvvvvvvvvv',
-    'vvvvvvvvvvvvvvvvvvvvvvvvvvvv',
-    'ooovvoooooooovvvooooooooovvo',
-    'oppppppppqppppppppppqppppppo',
-    'opppqpppppppppqppppppppppppv',
-    'oopppppppppppppppppppppppppo',
-    'ooooooooqoooooooooooqooooooo',
-    'oqqqqqrqqqqqqqqqqrqqqqqqqqqo',
-    'oqqqqqqqqqqqrqqqqqqqqqqqqqqo',
-    'opqqqqqqqqqqqqqqqqqqqqqrqqqo',
-    'ooppqqpppqqpppppqqpppppqqppo',
-    'oooooooooooorooooooooooooooo',
-    'oqrrrrsrrrrrrrrrrrrsrrrrrrro',
-    'oqrrrrrrrrrrrrsrrrrrrrrrrrro',
-    'oqrrrrrrrrrrrrrrrrrrrrrsrrro',
-    'oqqrrqqqrrqqqqrrrqqqrrqqrrqo',
-    'oooooooooosoooooooooooooooso',
-    'orsssshssssssssssshsssssssso',
-    'orssssssssssshssssssssssssso',
-    'orsssssssssssssssssssshsssso',
-    'orsssshssssssssssssssssssso1'[:-1] + 'o',
-    'orrssrrrssrrrsssrrrssrrrsrro',
-    'oqqqqqqqqqqqqqqqqqqqqqqqqqqo',
-    'oooooooooooooooooooooooooooo',
-]) + [
-    '11o0oo1o0o0oo1oo0oo1o0oo0oo0o011'.replace('0', '1'),
-    '12111111121111111112111111121111',
-]
+# B: 다듬지 않은 디딤돌 — 어둠 속으로 멀어질수록 작고 어두운 돌. 둘레는 B 바닥 흙, 옆벽은 바윗덩이.
+SB_NEAR = ['.hssr..', 'hsssrq.', 'srrrqqp', '.qqqpp.', '..ppo..']
+SB_MID = ['.rrq..', 'rrqqp.', '.qqpp.', '..po..']
+SB_FAR = ['.qp..', 'qppo.', '.oo..']
+SB_WALL = ['.qp.', 'qqpo', 'qppo', '.po.']
+
+
+def stairs_b():
+    rows = (['11112111111101111111211111111211', '12111111211111111111111121111111', '11' + 'o' * 28 + '11']
+            + ['1o' + ('v' * 28 if y < 9 else 'o' * 28) + 'o1' for y in range(3, 30)]
+            + ['12111111121111111112111111121111', '11211111111121111111111211111111'])
+    cv = grid(rows, LSB, 32, 32)
+    # 디딤돌을 줄마다 붙여 놓아 턱(층계)으로 읽히게: 먼 줄 → 가까운 줄로 갈수록 크고 밝다.
+    ledges = ([(SB_FAR, x, 10) for x in (3, 8, 13, 18, 23)]
+              + [(SB_MID, x, 15) for x in (2, 7, 12, 17, 22)]
+              + [(SB_NEAR, x, 20) for x in (2, 8, 14, 20)]
+              + [(SB_NEAR, x, 25) for x in (4, 10, 16, 22)])
+    for st, x, y in [(SB_WALL, 2, 4), (SB_WALL, 26, 5)] + ledges:
+        stamp(cv, st, LSB, x, y)
+    return cv
+
 
 LSC = legend(a=('cata', 0), b=('cata', 1), c=('cata', 2), d=('cata', 3), e=('cata', 4), f=('cata', 5), g=('cata', 6),
              v=('void', 0), **{str(i): ('vrock', i) for i in range(5)})
@@ -734,10 +722,16 @@ STAIRS_C = (
 )
 
 
+def stairs_tile(letter):
+    if letter == 'B':
+        return stairs_b()
+    rows, leg = {'A': (STAIRS_A, LSA), 'C': (STAIRS_C, LSC)}[letter]
+    return grid(rows, leg, 32, 32)
+
+
 def stairs_candidate(letter):
     def fn():
-        rows, leg = {'A': (STAIRS_A, LSA), 'B': (STAIRS_B, LSB), 'C': (STAIRS_C, LSC)}[letter]
-        cv = grid(rows, leg, 32, 32)
+        cv = stairs_tile(letter)
         cave = CAVES[letter]()
         g = ['#########', '#########', '#########', '#.......#', '#.......#', '#.......#', '#.......#', '#########']
         vign = dot.render_cave(g, cave['ceil'], cave['face'], cave['floor'])
@@ -1018,6 +1012,31 @@ def cave_candidate(make):
 
 
 CAVES = {'A': cave_a, 'B': cave_b, 'C': cave_c}
+STYLE_NOTE = {
+    'A': '버들항 정통 띠 — 어둠 + 갈색 윗면 띠 + 밝은 끝선, 녹회색 돌 앞면, 갈색 반점 흙',
+    'B': '바위 윗면 — 갈라진 바위 윗면 + 빛 받는 앞턱, 큰 바윗덩이 앞면, 어두운 흙과 자갈',
+    'C': '검푸른 층리 — 울퉁불퉁한 돌 혹 테두리, 물결 층리 앞면, 차가운 회색 자갈',
+}
+
+# 세트 장면(시트 맨 아래): 글자 하나의 다섯 항목을 한 곳에. x ≥ SET_BRICK_FROM 의 앞면은 맥락 벽돌.
+SET_GRID = [
+    '############',
+    '############',
+    '############',
+    '##.....#...#',
+    '#......#...#',
+    '#.www......#',
+    '#.wwww.....#',
+    '##.ww...##.#',
+    '############',
+]
+SET_BRICK_FROM = 8
+SET_DOOR = (8, 1)
+SET_STAIRS = (9, 5)
+SET_CHEST = (5, 4)
+SET_TORCH_WALL = ((2, 1), (6, 1))
+SET_TORCH_FLOOR = ((2, 3), (6, 3))
+SET_ACTOR = (7, 6)
 
 CANDIDATES = {
     'style.cave': {k: cave_candidate(v) for k, v in CAVES.items()},

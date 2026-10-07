@@ -122,9 +122,9 @@
    "brief": "바닥 위 얕은 물, 가장자리 젖은 띠.", "accept": ["바닥 무늬와 섞여 보임"]}
  ],
  "refs": {
-  "sea-cave:wall": {"file": "tiledata/beodeul-variants/sea-cave/render-1x.png", "box": [32, 32, 176, 128], "label": "버들항 바다 동굴 — 천장 테두리·앞면·흙바닥"},
-  "castle-catacombs:wall": {"file": "tiledata/beodeul-variants/castle-catacombs/render-1x.png", "box": [40, 40, 176, 128], "label": "버들항 지하묘지 — 벽돌 앞면·판석"},
-  "sea-cave:pool": {"file": "tiledata/beodeul-variants/sea-cave/render-1x.png", "box": [400, 128, 128, 80], "label": "버들항 바다 동굴 — 물웅덩이"},
+  "sea-cave:wall": {"file": "tiledata/beodeul-variants/sea-cave/render-1x.png", "box": [40, 40, 112, 96], "label": "버들항 바다 동굴 — 천장 테두리·앞면·흙바닥"},
+  "castle-catacombs:wall": {"file": "tiledata/beodeul-variants/castle-catacombs/render-1x.png", "box": [40, 40, 112, 96], "label": "버들항 지하묘지 — 벽돌 앞면·판석"},
+  "sea-cave:pool": {"file": "tiledata/beodeul-variants/sea-cave/render-1x.png", "box": [400, 120, 120, 96], "label": "버들항 바다 동굴 — 물웅덩이"},
   "temple-ruins:stairs_down": {"file": "tiledata/beodeul-variants/temple-ruins/parts/stairs_down.png", "label": "버들항 신전 — 내림 계단 1×1"},
   "castle-catacombs:stairs_up_face": {"file": "tiledata/beodeul-variants/castle-catacombs/parts/stairs_up_face.png", "label": "버들항 지하묘지 — 오름 계단(앞면)"},
   "temple-ruins:door_wood": {"file": "tiledata/beodeul-variants/temple-ruins/parts/door_wood.png", "label": "버들항 신전 — 나무문"},

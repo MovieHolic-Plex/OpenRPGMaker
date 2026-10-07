@@ -50,6 +50,7 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 - [joseon-baram](joseon-baram.md) — 조선(바람의나라풍) 칩셋 joseon_baram 조각 관문·판정·지도 관문·재굽기·16구역 적대 검수 (기존 도구를 한 입구로)
 - [murim-chipset](murim-chipset.md) — 무림(중국 무협) 칩셋 murim_wuxia 조각 후보(코드 손 도트)·잠긴 팔레트·기계 관문·고르기 시트·사람 pick(해시에 묶임)
 
+- [dungeon-chipset](dungeon-chipset.md) — 공용 던전·동굴 칩셋(beodeul_dungeon · 버들항과 같은 oprn-atlas 계열) 손 도트 후보·관문·사람 고르기
 - [pokemon-character-casting](pokemon-character-casting.md) — native NPC 후보의 사용자 Allow/Deny·SQLite 판정·현재 승인에 묶인 출력과 공용 등록.
 
 
