@@ -1,0 +1,483 @@
+{
+ "schema": "beodeul-building-review-decisions/1",
+ "exportedAt": "2026-10-07T13:58:36+0900",
+ "counts": {
+  "allow": 42,
+  "deny": 15,
+  "pending": 0
+ },
+ "log": [
+  {
+   "seq": 1,
+   "item": "r2-building-01",
+   "sha": "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T03:56:46+00:00"
+  },
+  {
+   "seq": 2,
+   "item": "r2-building-02",
+   "sha": "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T03:56:53+00:00"
+  },
+  {
+   "seq": 3,
+   "item": "r2-building-06",
+   "sha": "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T03:58:04+00:00"
+  },
+  {
+   "seq": 4,
+   "item": "r2-building-10",
+   "sha": "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T03:58:12+00:00"
+  },
+  {
+   "seq": 5,
+   "item": "r3-building-01",
+   "sha": "e678faf11d54a4e1a5f5a160177ce1fab4cb503b12d4eeeabde960358ef7e1bd",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:21+00:00"
+  },
+  {
+   "seq": 6,
+   "item": "r3-building-02",
+   "sha": "390b8a1c81d20ed1b428915b28193b627fb4f5ee921f7dc40c68b19485d2ffed",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:23+00:00"
+  },
+  {
+   "seq": 7,
+   "item": "r3-building-03",
+   "sha": "31a3cdd2a1a84e731d995692593f9a8038b643f4e685c589b0b3e897f9f21906",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:25+00:00"
+  },
+  {
+   "seq": 8,
+   "item": "r3-building-04",
+   "sha": "53253d45c9f01e7ab6f00df765e01b412ee40ceb99abe3564b3095c9a4614f6e",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:28+00:00"
+  },
+  {
+   "seq": 9,
+   "item": "r3-building-05",
+   "sha": "01644d98f7ed103877f09da5ce682205e9fbf76798b08c4fe63a954c900ecd34",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:31+00:00"
+  },
+  {
+   "seq": 10,
+   "item": "r3-building-06",
+   "sha": "d0f817cbcb9e70d3d3808ea063716dc1247fc6f5a8a3a15cc75ec7f7fad90d12",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:34+00:00"
+  },
+  {
+   "seq": 11,
+   "item": "r3-building-07",
+   "sha": "fe8826c9bc509661164a757f6694f138edd6bb63c505dfeafb076eec899cb181",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:37+00:00"
+  },
+  {
+   "seq": 12,
+   "item": "r3-building-08",
+   "sha": "2f6af1d64b7681edc57e08855bc011370bc895e9b351f206ac39ef5c4fafbb94",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:39+00:00"
+  },
+  {
+   "seq": 13,
+   "item": "r3-building-09",
+   "sha": "0e15779056bc82f5c10f79ecca8d35e8f8bc998473e7c32750911d1872b73e9c",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-05T10:55:44+00:00"
+  },
+  {
+   "seq": 14,
+   "item": "r3-building-10",
+   "sha": "5c80c93319f4328f2a6d4a640ccfd36986d645713457f10c4101732081782447",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T10:55:46+00:00"
+  },
+  {
+   "seq": 15,
+   "item": "r2-building-03",
+   "sha": "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T11:38:54+00:00"
+  },
+  {
+   "seq": 16,
+   "item": "r2-building-04",
+   "sha": "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T11:38:57+00:00"
+  },
+  {
+   "seq": 17,
+   "item": "r2-building-05",
+   "sha": "f0658ae5f4ecab3608ee4983ae73fc9dfd9def33ff41d67806ae184cb4b09b98",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T11:38:58+00:00"
+  },
+  {
+   "seq": 18,
+   "item": "r2-building-07",
+   "sha": "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T11:38:59+00:00"
+  },
+  {
+   "seq": 19,
+   "item": "r2-building-08",
+   "sha": "360ea659cb47f719b6ed89a67d72eeffe435c616123209c2babd0a7a4f94bebf",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-05T11:39:03+00:00"
+  },
+  {
+   "seq": 20,
+   "item": "r2-building-09",
+   "sha": "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T11:39:04+00:00"
+  },
+  {
+   "seq": 21,
+   "item": "r3-building-09",
+   "sha": "1c81f0367c2ee8fc4b62bb66446d5200a007df2d1d54d5af498d38aecd12a007",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T14:11:41+00:00"
+  },
+  {
+   "seq": 22,
+   "item": "r6-building-01",
+   "sha": "6fffb65abe676fd5eb33dab086ab73a58aa2d96d7d5ee28c532e98bc6508dbee",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:15+00:00"
+  },
+  {
+   "seq": 23,
+   "item": "r6-building-02",
+   "sha": "84a631a8fe78724cb479368da55834d11f02fe53773a9ca22b7418c96313c7bb",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:20+00:00"
+  },
+  {
+   "seq": 24,
+   "item": "r6-building-03",
+   "sha": "575ab85f9f2a52bed0dae0a66f8b092303076a8311a74278df7f6e6b8203deb8",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:26+00:00"
+  },
+  {
+   "seq": 25,
+   "item": "r6-building-04",
+   "sha": "03f8fa092477a1b2d51c03144fc04c45d89959eaf63db905822ce50352fa718d",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:27+00:00"
+  },
+  {
+   "seq": 26,
+   "item": "r6-building-05",
+   "sha": "cdeaf95fd167d0c58b564a99b801ee17bfbef32cf84bd21a29e98b76d9c52256",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:29+00:00"
+  },
+  {
+   "seq": 27,
+   "item": "r6-building-06",
+   "sha": "fdf779db7d3ccf4c83813aa2fe0c7ed306f83104a5ccdf6291a082147d6ac54f",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:30+00:00"
+  },
+  {
+   "seq": 28,
+   "item": "r6-building-07",
+   "sha": "4741b8156ceff2dc11be88786cf3db5e537254f6674dce875ad89ff1e6268294",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:35+00:00"
+  },
+  {
+   "seq": 29,
+   "item": "r6-building-08",
+   "sha": "96b8ea6683f3e385165dd6496d125f26de37e777bd4e698a5861885ebcfd3b4c",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:40+00:00"
+  },
+  {
+   "seq": 30,
+   "item": "r6-building-09",
+   "sha": "c14b1df990f81c6fc3d3db3834c72573a0d0d157e2c36113b1fb62b1bd940384",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:45+00:00"
+  },
+  {
+   "seq": 31,
+   "item": "r6-building-10",
+   "sha": "52e9e4a6e239cbd941234be716b92b11bc0fa4a3d156629778243d4bae5cb4f3",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-05T15:19:47+00:00"
+  },
+  {
+   "seq": 32,
+   "item": "r7-building-01",
+   "sha": "c58d40ebf0192822336385efee2e83d728f568b6142cfa44d725f8f9bc0fea52",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:03:40+00:00"
+  },
+  {
+   "seq": 33,
+   "item": "r7-building-02",
+   "sha": "8e03cfc09b6bf53662425207a5bc54718fbc5ad36bcc0920687ab8cfd5149888",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:03:42+00:00"
+  },
+  {
+   "seq": 34,
+   "item": "r7-building-03",
+   "sha": "1e6c1d875d5fb760e32c91aa716658863f4f6b1725860433c41a7651c8780819",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:03:45+00:00"
+  },
+  {
+   "seq": 35,
+   "item": "r7-building-04",
+   "sha": "cb58b43d379de25b97de3480fc1fc97e21a6df83781de1e199034b80b349b5bb",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:03:49+00:00"
+  },
+  {
+   "seq": 36,
+   "item": "r7-building-06",
+   "sha": "8ed66a0978f6f8e7193375ac8c7227b253c8f9dba0803e9fc7b7f14527587299",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:03:50+00:00"
+  },
+  {
+   "seq": 37,
+   "item": "r7-building-07",
+   "sha": "922470e97eaa432204d9b44996a8549884ea5dfbc7558ce17b9163075d02d7ff",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:03:57+00:00"
+  },
+  {
+   "seq": 38,
+   "item": "r7-building-08",
+   "sha": "8600281394c5dbd3beaed845487e56fbe4d80a3429885fb1a8cb8ea1bb6f207c",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:00+00:00"
+  },
+  {
+   "seq": 39,
+   "item": "r7-building-09",
+   "sha": "502cd3f61670649a64e54ce19f055d1e3e30cb37db4c816fc2d0b3f991a83e14",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:04+00:00"
+  },
+  {
+   "seq": 40,
+   "item": "r7-building-17",
+   "sha": "15f86c2f8512a1db4e6ddb2e7f44a17e6650035fe34fc14f85f725a66d1bfddb",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:07+00:00"
+  },
+  {
+   "seq": 41,
+   "item": "r7-building-22",
+   "sha": "14e858fa152bab7ca0315e140dbe5ebe5f6dadbaa6b43c0689cde1ab499223d1",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:09+00:00"
+  },
+  {
+   "seq": 42,
+   "item": "r7-building-24",
+   "sha": "41b0a5137b945997750c15f3afe828f2bbee5f1d1ba7e11db60359db96664091",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:11+00:00"
+  },
+  {
+   "seq": 43,
+   "item": "r8-building-01",
+   "sha": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:13+00:00"
+  },
+  {
+   "seq": 44,
+   "item": "r8-building-02",
+   "sha": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:17+00:00"
+  },
+  {
+   "seq": 45,
+   "item": "r8-building-03",
+   "sha": "ab259e0900fb30da9d22046ff017be82ba5c6686049013fb8bce0e9c0113d7e5",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:22+00:00"
+  },
+  {
+   "seq": 46,
+   "item": "r8-building-04",
+   "sha": "f0eb854cee2fd757f3f483356f8adcebee9da4d63bfacbf2db2b2685de27479c",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:24+00:00"
+  },
+  {
+   "seq": 47,
+   "item": "r8-building-05",
+   "sha": "94e01cbc061df7baaf925cde37f72a442cb0a73bf868fc8dac55e6563b0a3e3a",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:29+00:00"
+  },
+  {
+   "seq": 48,
+   "item": "r8-building-06",
+   "sha": "58c3bb59f08662523925a90f0f97276495f9c66e7454255c3e833000187e1b02",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:31+00:00"
+  },
+  {
+   "seq": 49,
+   "item": "r8-building-07",
+   "sha": "c1187c1dedc6d5bbf06e30ca40d9b678a787f37761e13e948d9eec2f6268ce30",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T03:04:34+00:00"
+  },
+  {
+   "seq": 50,
+   "item": "r8-building-08",
+   "sha": "e1f8046f10d5be8259522e844211a5dc79e1c36e961c5cd52b14adaa4b8442fd",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T03:04:37+00:00"
+  },
+  {
+   "seq": 51,
+   "item": "r10-building-05",
+   "sha": "2157f4de22275ee619adeeb9207a99e5e68690899883c03be85f4fb835017774",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:34:54+00:00"
+  },
+  {
+   "seq": 52,
+   "item": "r10-building-06",
+   "sha": "8b8562099c7b07c47b13873d44bd9ce637c09ae328f350c406acce771c7802c6",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:34:57+00:00"
+  },
+  {
+   "seq": 53,
+   "item": "r10-building-07",
+   "sha": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:35:00+00:00"
+  },
+  {
+   "seq": 54,
+   "item": "r10-building-07",
+   "sha": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd",
+   "decision": "pending",
+   "note": "",
+   "at": "2026-10-07T04:35:04+00:00"
+  },
+  {
+   "seq": 55,
+   "item": "r10-building-07",
+   "sha": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T04:35:08+00:00"
+  },
+  {
+   "seq": 56,
+   "item": "r10-building-01",
+   "sha": "bc55279e984f4383893fa5537f6a5dbf556dd1f93ef6c54a969bb3076ea31863",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:35:11+00:00"
+  },
+  {
+   "seq": 57,
+   "item": "r10-building-02",
+   "sha": "e0d0e9fd0242d695f6a93e21a1910de36ac79db8154326c8df49bdb41530d882",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T04:35:14+00:00"
+  },
+  {
+   "seq": 58,
+   "item": "r10-building-03",
+   "sha": "c18dbd51781236383486d434df084697b1f55d18dd7b2d2093461261606e1a1a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:35:16+00:00"
+  },
+  {
+   "seq": 59,
+   "item": "r10-building-04",
+   "sha": "ed3875f61af8e52c49efdb0d2d1c2ee39e24c8fb0245d5e4fc9e79b51f2dacfe",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T04:35:19+00:00"
+  }
+ ]
+}
