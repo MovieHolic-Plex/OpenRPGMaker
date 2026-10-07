@@ -11,6 +11,8 @@ import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
 import type { SpatialDesignReference } from "@/project/spatial/types";
 import type { TilesetDef } from "@/project/types";
 import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
+import { isJpCityTileset, JP_CITY_ID, JP_CITY_PREFIX } from "@/project/defaults/jpCity";
+import jpInteriorSpec from "@/assets/jpInteriorSpec.json";
 
 const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
   tree: "잎 없는 고목", volcano: "화산 봉우리", gate: "성문·문루", terrain: "기후 지형", harbor: "항구 부품", house: "집 외형", prop: "마을 소품",
@@ -129,6 +131,7 @@ function objectCards(): SpatialGalleryCard[] {
         usage: 0,
         tilesetId: tileset.id,
         objectId: kit.id,
+        ...(isJpCityKit(tileset, kit.id) ? { subtitle: jpCityKitSubtitle(kit.id, kit.ai) } : {}),
       });
     }
   }
@@ -173,12 +176,30 @@ function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, ki
   }
   // 손 도트 실내 v5(atlas_biome_interior): 가구 381종 킷은 번들 시드 — 공용 오브젝트.
   if (tileset.id === "atlas_biome_interior") return kitId.startsWith("hand-interior:");
+  // 일본 도시(jp_city): `jp-` 부품(실내 가구 jp-in-* 포함)은 번들이 소유한다 — 공용 오브젝트.
+  if (isJpCityKit(tileset, kitId)) return true;
   if (tileset.id === SHARED_VILLAGE_OBJECT_ID
     && tileset.image.type === "bundled"
     && tileset.image.id === SHARED_VILLAGE_OBJECT_TEXTURE) {
     return kitId.startsWith("shared-village:");
   }
   return false;
+}
+
+const JP_INTERIOR_CATEGORY: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries((jpInteriorSpec as { objects: Record<string, { category_ko: string }> }).objects).map(([id, o]) => [`${JP_CITY_PREFIX}in-${id}`, o.category_ko]));
+const JP_ROLE_LABEL: Readonly<Record<string, string>> = { building: "건물", prop: "거리 소품", terrain: "길·바닥", wall: "담·대문", fence: "울타리" };
+
+function isJpCityKit(tileset: Pick<TilesetDef, "id" | "image">, kitId: string): boolean {
+  return tileset.id === JP_CITY_ID && isJpCityTileset(tileset) && kitId.startsWith(JP_CITY_PREFIX);
+}
+
+/** 일본 도시 번들 부품의 카드 부제 — 실내 가구는 방 분류(categories.py), 나머지는 역할. 검색도 이 글자를 본다. */
+function jpCityKitSubtitle(kitId: string, ai: { role?: string; tags?: string[] } | undefined): string {
+  const room = JP_INTERIOR_CATEGORY[kitId];
+  if (room) return `일본 실내 · ${room}`;
+  if (ai?.tags?.includes("학교")) return "일본 도시 · 학교";
+  return `일본 도시 · ${JP_ROLE_LABEL[ai?.role ?? ""] ?? "부품"}`;
 }
 
 function spaceCards(): SpatialGalleryCard[] {

@@ -32,11 +32,12 @@ import collections, math, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 JP = os.path.dirname(HERE)
 ROOT = os.path.abspath(os.path.join(JP, '..', '..', '..'))
-for p in (JP, os.path.join(JP, 'houses'), os.path.join(ROOT, 'scripts', 'content', 'atlas-pick')):
+for p in (HERE, JP, os.path.join(JP, 'houses'), os.path.join(ROOT, 'scripts', 'content', 'atlas-pick')):
     if p not in sys.path: sys.path.insert(0, p)
 import numpy as np                                             # noqa: E402
 from PIL import Image                                          # noqa: E402
 from modern_style_bible_proof import K, Cv, RAMPS              # noqa: E402
+import categories as CATS                                       # noqa: E402
 
 OL = K('sumi', -1)
 TOP_SHADE = (-2, -2, -1, -1)            # 벽면 윗줄 위 4행(천장 띠 밑 그늘) — room2.py 0.62~0.86 배
@@ -227,6 +228,9 @@ class Registry:
             interior['ceilings'][id_] = loc
             groups.append(dict(id='jp:interior-ceiling-%s' % id_, name='실내 천장 띠 · %s' % cd['ko'], role='wall', defaultLayer='lower',
                                cells=sorted(set(loc), key=loc.index), desc=cd['desc'] or cd['ko'], rules='실내에 닿는 막힌 칸. 조립 도구가 자동으로 깐다.'))
+        # 분류는 categories.py 한 곳이 정본 — 데코레이터의 cat= 는 덮어쓴다. 빠진 가구가 있으면 굽기가 멈춘다.
+        CATS.check(self.objs)
+        for id_, o in self.objs.items(): o['cat'], o['cat_ko'] = CATS.BY_ID[id_]
         for id_, o in self.objs.items():
             arr, U = self.obj_image(id_)
             R_, C_ = arr.shape[0] // 16, arr.shape[1] // 16

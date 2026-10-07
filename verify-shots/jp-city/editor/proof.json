@@ -1,0 +1,242 @@
+{
+  "base": "http://127.0.0.1:9928",
+  "house": [
+    {
+      "id": "preset:jp-city-house-interior-21x15",
+      "name": "일본 2층 단독주택 실내(1층·2층) · 2층 단독주택 1층",
+      "w": 21,
+      "h": 15,
+      "tileset": "jp_city",
+      "painted": 315,
+      "events": [
+        "이동@11,9"
+      ],
+      "transfers": [
+        "\"mapId\":\"preset:jp-city-house-interior-21x15:jp-city-house-2f\""
+      ]
+    },
+    {
+      "id": "preset:jp-city-house-interior-21x15:jp-city-house-2f",
+      "name": "일본 2층 단독주택 실내(1층·2층) · 2층 단독주택 2층",
+      "w": 22,
+      "h": 12,
+      "tileset": "jp_city",
+      "painted": 264,
+      "events": [
+        "이동@19,10",
+        "이동@20,10"
+      ],
+      "transfers": [
+        "\"mapId\":\"preset:jp-city-house-interior-21x15\"",
+        "\"mapId\":\"preset:jp-city-house-interior-21x15\""
+      ]
+    }
+  ],
+  "apt": [
+    {
+      "id": "preset:jp-city-apartment-1k-12x13",
+      "name": "일본 원룸 아파트(1K) 실내",
+      "w": 12,
+      "h": 13,
+      "tileset": "jp_city",
+      "painted": 156,
+      "events": [],
+      "transfers": []
+    }
+  ],
+  "objectCards": [
+    {
+      "source": "default",
+      "text": "현관 단(上がり框) 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "신발장(下駄箱) 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "좁은 신발장 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "현관 매트 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "슬리퍼 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "신발 한 켤레 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "우산꽂이 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "나무 계단(위) 일본 실내 · 계단"
+    },
+    {
+      "source": "default",
+      "text": "나무 계단 2칸 폭 일본 실내 · 계단"
+    },
+    {
+      "source": "default",
+      "text": "내려가는 계단 구멍(난간) 일본 실내 · 계단"
+    },
+    {
+      "source": "default",
+      "text": "양실 문 일본 실내 · 문"
+    },
+    {
+      "source": "default",
+      "text": "오시이레(押入れ) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "새시 창 + 레이스 커튼 일본 실내 · 창"
+    },
+    {
+      "source": "default",
+      "text": "작은 불투명 창 일본 실내 · 창"
+    },
+    {
+      "source": "default",
+      "text": "쇼지 창 일본 실내 · 창"
+    },
+    {
+      "source": "default",
+      "text": "두꺼운 커튼 창 일본 실내 · 창"
+    },
+    {
+      "source": "default",
+      "text": "에어컨 일본 실내 · 벽걸이"
+    },
+    {
+      "source": "default",
+      "text": "벽시계 일본 실내 · 벽걸이"
+    },
+    {
+      "source": "default",
+      "text": "달력 일본 실내 · 벽걸이"
+    },
+    {
+      "source": "default",
+      "text": "인터폰 일본 실내 · 현관"
+    },
+    {
+      "source": "default",
+      "text": "전등 스위치 일본 실내 · 벽걸이"
+    },
+    {
+      "source": "default",
+      "text": "카미다나(神棚) 일본 실내 · 벽걸이"
+    },
+    {
+      "source": "default",
+      "text": "차부다이(둥근 밥상) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "자타쿠(긴 낮은 탁자) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "방석 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "좌의자(남향) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "좌의자(북향) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "좌의자(동향) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "좌의자(서향) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "고타쓰 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "오동나무 장롱(簞笥) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "불단(仏壇) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "도코노마(床の間) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "지가이다나(違い棚) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "깔린 이부자리(布団) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "갠 이불 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "등롱(行灯) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "꽃꽂이(生け花) 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "브라운관 TV 일본 실내 · 화실"
+    },
+    {
+      "source": "default",
+      "text": "싱크대 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "조리대 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "가스대·후드 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "냉장고 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "레인지 선반 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "식기장 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "분리수거함 일본 실내 · 부엌"
+    },
+    {
+      "source": "default",
+      "text": "식탁 의자(남 향) 일본 실내 · 다이닝"
+    },
+    {
+      "source": "default",
+      "text": "식탁 의자(북 향) 일본 실내 · 다이닝"
+    }
+  ],
+  "errors": []
+}
