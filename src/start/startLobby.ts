@@ -2,10 +2,11 @@
 import type { RecentProjectEntry } from "../../electron/shared/start";
 import { el } from "@/util/dom";
 
+// 배경은 자체 손 도트 장소 렌더만 쓴다(2026-10-07 저작권 정리로 숲마을·성채 장소 그림을 지웠다).
 const SCENES = [
-  { label: "성채", title: "강 너머의 왕국", image: "/assets/region-references/river-fortress.png" },
-  { label: "마을", title: "호숫가의 작은 마을", image: "/assets/region-references/lake-village.png" },
-  { label: "숲", title: "폭포 너머의 길", image: "/assets/region-references/outdoor-opening-overlook.png" },
+  { label: "궁궐", title: "국내성의 아침", image: "/assets/region-references/gungnae-full.png" },
+  { label: "마을", title: "들판 너머의 마을", image: "/assets/region-references/joseon-v20.png" },
+  { label: "숲", title: "숲가의 오솔길", image: "/assets/region-references/wz-nat-example-forest-edge.png" },
 ] as const;
 const MOTION_KEY = "oprn:start-lobby-motion-paused";
 

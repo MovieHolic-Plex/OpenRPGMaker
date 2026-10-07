@@ -9,7 +9,19 @@ export function openingImageProject(project: Project, resourceIds: readonly stri
   } });
 }
 
-export function requestsOpeningProduction(task: string): boolean {
+/**
+ * 장르 프리셋 지시문에는 제작 매뉴얼 전문(AUTHORING_PRESET_BEGIN … END)이 실린다. 매뉴얼의 「제목과 오프닝은 … 제작한다」는
+ * 저작 규칙이지 사용자의 오프닝 요청이 아니다 — 판정에서 뺀다.
+ * 왜(2026-10-07 실측): 매뉴얼 문장 때문에 첫 제작의 모든 팀원이 오프닝 제작 요청으로 판정됐다. 단계마다 도구가 고정이라
+ * plan_opening·review_opening 을 부를 수 없는데도 끝마다 오프닝 재촉을 두 번씩 받았고, 팀 마지막 관문은 기록을 남길 수 없는
+ * 오프닝 검토 영수증을 요구해 다 지은 게임을 「오프닝 제작 미완료」로 실패시켰다.
+ */
+export function withoutAuthoringPresetManual(task: string): string {
+  return task.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, '');
+}
+
+export function requestsOpeningProduction(rawTask: string): boolean {
+  const task = withoutAuthoringPresetManual(rawTask);
   return /오프닝|opening\b/iu.test(task)
     && /만들|제작|연출|개선|새로|바꿔|바꾸|다시|멋|밋밋|create|design|rewrite|improve|polish|redo/iu.test(task)
     && !/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task);

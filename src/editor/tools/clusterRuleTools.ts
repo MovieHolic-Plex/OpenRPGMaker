@@ -1,4 +1,4 @@
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import {
   asPlacementFacing,
   asPlacementZone,

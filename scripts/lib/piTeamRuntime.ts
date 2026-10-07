@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompletion.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { inspectFirstPresentation, FIRST_PRESENTATION_INSTRUCTIONS } from '../../src/ai/piAgent/firstPresentation';
@@ -25,12 +24,11 @@ import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts
 import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
-import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
-import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces } from '../../src/ai/piAgent/firstScene.ts';
-import { hasPlayableSegmentSkeleton } from '../../src/project/playableSegmentContract.ts';
+import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
+import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
@@ -107,14 +105,6 @@ const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
 const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
-  if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
-  // 마을 계약은 단독 실행 전용이다. 팀 요청에 실려 오면 모든 팀원이 author_village 한 호출로만 묶이므로 벗긴다.
-  if (request.villageContract) request = { ...request, villageContract: undefined };
-  const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
-  const assertModernProposal = (before: Project, after: Project) => {
-    const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
-    if (violation) throw new Error(violation);
-  };
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
   const base = request.project;
@@ -280,14 +270,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       const findings = romanceArtRepairFindings(merged.project, snapshot);
       if (findings.length) throw new Error(findings.join(' / '));
     }
-    assertModernProposal(working, merged.project);
     working = merged.project;
     const conflicts = [...new Set([...touched.filter((id) => busyMaps.has(id)), ...merged.conflicts])].sort();
     return { spills: merged.spills.flatMap((spill) => [...spill.keys]), conflicts };
   }
 
   // Only accepted child writes enter the shared team project. Serialize publication across members.
-  const villageMapIds = new Set<string>();
   let openingReport: { fingerprint: string; issues: readonly string[] } | undefined;
   const openingFingerprint = (project: Project) => JSON.stringify([project.system.opening,
     (project.system.opening?.scenes ?? []).map(s => s.resourceId ? project.assets.uploaded[s.resourceId] ?? s.resourceId : null)]);
@@ -322,7 +310,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const findings = romanceArtRepairFindings(proposed, snapshot);
         if (findings.length) throw new Error(findings.join(' / '));
       }
-      assertModernProposal(working, proposed);
       authorMergedSpatialProposal(proposed, working);
       // 브라우저로는 다시 비워서 보낸다(수십 MB). ACK 도 같은 키를 비워 돌아오므로 받은 뒤 다시 붙인다.
       // 그대로인 타일셋도 뺀다 — 통째로 실으면 마을 한 번에 이 줄이 100MB 가 넘어 브라우저가 30초 동안 한 줄도 못 받았다.
@@ -386,10 +373,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
-        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
         trackOpening(done);
-        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         ledger = settleAssignment(ledger, agentId, complete);
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         const summary = complete ? summaryOf(done) : completionFailure(done);
@@ -476,11 +462,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
-        if (mode === "project") { assertModernProposal(working, done.project); working = cloneProjectSharingSharedDictionaries(done.project); }
-        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
+        if (mode === "project") { working = cloneProjectSharingSharedDictionaries(done.project); }
         trackInterior(done, snapshot);
         trackOpening(done);
-        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         if (!complete) report += "\n" + completionFailure(done);
         const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: complete, summary: report, changedKeys: changes, spills: [], conflicts: [] };
         outcomes.set(agentId, outcome);
@@ -817,7 +802,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       mailbox.register(agentId, member.label, null);
       emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '핵심 플레이 제작' });
       try {
-        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
           initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 16 : 32),
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), '이번 단계에서는 기존 뼈대의 핵심 플레이만 작성한다. 제공된 도구 범위는 고정이다. 장식 도구를 검색하거나 다른 쓰기를 우회하지 않는다. 종료 전에 report_first_play를 호출한다.'] },
@@ -826,7 +811,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         const reportedPlay = firstPlay as FirstPlayReceipt | undefined;
         if (!reportedPlay) throw new Error('핵심 플레이 제작 보고가 없어 장식 단계로 넘어가지 않습니다.');
-        assertModernProposal(working, done.project);
         const issues = inspectFirstPlay(base, done.project, reportedPlay);
         const play = judgePlayableSegment(done.project);
         if (issues.length || !play.ok) throw new Error('핵심 플레이 미완료: ' + [...issues, ...play.blockers].join(' / '));
@@ -921,6 +905,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       'find_tools', 'list_tileset_references', 'read_tileset_reference', 'list_hand_interior_parts',
       'build_hand_interior_room', 'list_wizarding_spaces', 'build_wizarding_space', 'set_map_properties', 'set_start_position', 'author_wild_route',
       'move_event', 'upsert_event'];
+    // 스토리 길 맵은 뼈대가 산책길·만남 광장을 깔아 둔다. 몬스터 도로 도구(author_wild_route)를 주면 그걸로 다시 깔아
+    // 짙은 풀숲과 나무 벽뿐인 1번 도로가 됐다(2026-10-07 「기억의 길은 허접하다」). 대신 실제 버들항 소품 목록과 stamp_object 를 준다.
+    const placeToolsFor = (project: Project) => playableSegmentGenre(project) === 'story-cutscene'
+      ? [...placeTools.filter(name => name !== 'author_wild_route'), 'stamp_object'] : placeTools;
     for (const stage of ['places', 'entry'] as const) {
       const places = stage === 'places';
       const inspect = places ? inspectFirstScenePlaces
@@ -934,8 +922,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const task = [places
           ? '첫 장소 구조 담당: 기존 두 장소의 방/길 구조와 가구·출입 동선만 완성한다. 배우/DB/오프닝/첫 대상의 이벤트 내용은 다음 담당의 작업이다. 주인공 그림이나 얼굴을 검색하지 않는다.'
           : '첫 입력 담당: 두 장소의 구조는 이미 작성했다. 아래 실제 자산 목록에서 골라 첫 행동 대상과 마무리 대상을 지금 upsert_event로 배치하고, 짧은 일회성 맵 도입/조작 안내를 작성한다. 방을 처음부터 다시 짓거나 인물 DB/외형을 바꾸지 않는다. 자산 검색은 완료되어 목록을 제공했다. 검색을 반복하지 않는다. 첫 읽기에서 현재 이벤트/맵을 확인한 뒤 쓰기를 시작한다.',
-          ...(places ? [FIRST_SCENE_INSTRUCTIONS[1], FIRST_SCENE_INSTRUCTIONS[2],
-            '각 타일셋의 용도 MD 전 페이지와 가까운 예제의 실제 이미지를 먼저 읽는다. 바닥만 있는 길도 구조/소품을 구성한다. 시작 위치/양방향 transfer 목적지는 통행 가능하게 맞춘다.'] : [...FIRST_SCENE_INSTRUCTIONS]),
+          ...(places ? [FIRST_SCENE_INSTRUCTIONS[1], FIRST_SCENE_INSTRUCTIONS[2], FIRST_SCENE_INSTRUCTIONS[3],
+            '각 타일셋의 용도 MD 전 페이지와 가까운 예제의 실제 이미지를 먼저 읽는다. 바닥만 있는 길도 구조/소품을 구성한다. 시작 위치/양방향 transfer 목적지는 통행 가능하게 맞춘다.',
+            ...storyRouteBrief(snapshot)] : [...FIRST_SCENE_INSTRUCTIONS]),
           '핵심 이벤트 근거: ' + JSON.stringify(firstPlay),
           ...(places ? [] : ['핵심 대상의 실제 자산 이름/태그: ' + JSON.stringify(firstSceneGraphicEvidence(snapshot, firstPlay)),
             '실제로 사용 가능한 사물 목록(이 밖의 id를 만들지 않는다): ' + JSON.stringify(firstSceneObjectCatalog())]), repair,
@@ -955,12 +944,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         mailbox.register(agentId, member.label, null);
         emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작' });
         try {
-          const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+          const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
             initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, places ? (attempt ? 24 : 48) : (attempt ? 16 : 24)),
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
-            systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 3) : FIRST_SCENE_INSTRUCTIONS),
+            systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 4) : FIRST_SCENE_INSTRUCTIONS),
               places ? '이번 단계는 두 장소의 구조/가구/통행만 작성하고 report_first_scene_places로 끝낸다. 오프닝과 대상 이벤트는 다음 단계에서 작성한다.' : '이번 단계는 보이는 첫 대상/마무리 대상과 짧은 맵 도입을 작성하고 report_first_scene로 끝낸다.'] },
-          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeTools
+          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeToolsFor(snapshot)
             : ['get_event','get_map_region','get_database_records','upsert_event','move_event','get_opening','show_map_region','check_reachability','run_lint'],
             onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
           toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
@@ -968,7 +957,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspect(base, done.project, firstPlay)];
           const play = judgePlayableSegment(done.project);
           if (issues.length || !play.ok) throw new Error([...issues, ...play.blockers].join(' / '));
-          assertModernProposal(working, done.project);
           working = cloneProjectSharingSharedDictionaries(done.project);
           emit({ type: 'agent_done', agentId, ok: true, summary: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
           break;
@@ -1009,19 +997,24 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       mailbox.register(agentId, member.label, null);
       emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '작품 타이틀과 오프닝 제작' });
       try {
-        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+        // 이 단계가 팀의 오프닝 제작 책임자다 — 오프닝 완료 검사(plan_opening·실제 그림 확인·마지막 review_opening)를 여기서 채우고
+        // 그 영수증이 팀 마지막 관문으로 간다(trackOpening). 다른 단계는 openingProduction:false 라 재촉받지 않는다.
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: true,
           initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 12 : 24),
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...FIRST_PRESENTATION_INSTRUCTIONS] },
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
           toolNames: ['get_title_screen', 'get_opening', 'get_map_region', 'get_event', 'show_map_region',
-            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media'],
+            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media',
+            'plan_opening', 'edit_opening', 'show_opening_image', 'review_opening'],
           onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         if (!reported) throw new Error('작품 타이틀/오프닝 제작 보고가 없습니다.');
-        const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspectFirstScene(base, done.project, firstPlay), ...inspectFirstPresentation(done.project)];
+        const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspectFirstScene(base, done.project, firstPlay), ...inspectFirstPresentation(done.project),
+          ...(done.openingProduction?.issues ?? [])];
         if (issues.length) throw new Error(issues.join(' / '));
         working = cloneProjectSharingSharedDictionaries(done.project);
+        trackOpening(done);
         emit({ type: 'agent_done', agentId, ok: true, summary: '작품 타이틀과 오프닝 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
         await reviewFirstScene();
         break;
@@ -1040,7 +1033,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, openingProduction: false, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       // 팀장 도구는 읽기뿐이다 — 팀원이 발행할 때마다 바뀌는 작업 사본을 읽게 한다.
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools, liveProject: () => working },
     );
@@ -1074,15 +1067,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
     emit({ type: "team_report", text: finished });
   }
-  for (const id of orchDone.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
   // The coordinator's snapshot is not a new per-map repair receipt. Preserve child failures.
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
   const interiorCompletion = [...interiorReports.values()];
-  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
   const openingProduction = requestsOpeningProduction(request.task) && !request.readOnly
     ? { issues: openingReport ? (openingReport.fingerprint === openingFingerprint(working) ? openingReport.issues : ['검토 뒤 오프닝/그림이 변경됐습니다. 새 검토가 필요합니다.']) : ['제작 팀원의 오프닝 구성·실제 이미지 전달 검토가 없습니다.'], playbackVerified: false as const } : undefined;
-  emit({ type: "agent_done", agentId: orchestratorId, ok: !openingProduction?.issues.length && !villageCompletion?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
-    summary: openingProduction?.issues.length ? '오프닝 제작 미완료: ' + openingProduction.issues.join('; ') : interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
+  emit({ type: "agent_done", agentId: orchestratorId, ok: !openingProduction?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
+    summary: openingProduction?.issues.length ? '오프닝 제작 미완료: ' + openingProduction.issues.join('; ') : interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
@@ -1091,7 +1082,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const done: PiAgentDoneEvent = {
     ...(openingProduction ? { openingProduction } : {}),
     interiorCompletion,
-    ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: working,
     stats: { ms: Date.now() - started, turns: orchDone.stats.turns + subTurns, toolCalls: toolCalls + orchDone.stats.toolCalls, toolErrors: toolErrors + orchDone.stats.toolErrors, usage: addPiAgentUsage(subUsage, orchDone.stats.usage) },
@@ -1127,5 +1117,5 @@ function summaryOf(done: PiAgentDoneEvent): string {
 }
 
 function completionFailure(done: PiAgentDoneEvent): string {
-  return [done.openingProduction?.issues.length ? '오프닝 제작 미완료: ' + done.openingProduction.issues.join('; ') : '', done.villageCompletion?.issues.length ? '마을 미완료: ' + done.villageCompletion.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
+  return [done.openingProduction?.issues.length ? '오프닝 제작 미완료: ' + done.openingProduction.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
 }

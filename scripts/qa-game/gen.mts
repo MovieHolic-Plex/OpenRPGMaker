@@ -20,6 +20,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
+import { runPiTeam } from "../lib/piTeamRuntime.ts";
+import { defaultTeamSpec } from "../../src/ai/piAgent/teamSpec.ts";
 import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
 import { createPiRunRecorder } from "./lib/recorder.ts";
@@ -47,6 +49,8 @@ import type { Project } from "../../src/project/types.ts";
 import { renderToolRegionPngBase64 } from "./render.mts";
 import { setCutsceneArtGenerator } from "../../src/editor/tools/cutsceneArtTools.ts";
 import { headlessFetchAsset, headlessGenerateImage } from "./lib/headlessImage.mts";
+import { generateOpeningStill } from "../../src/editor/openingImageGeneration.ts";
+import { resolveAssetResourceUrl } from "../../src/assets/generatedAssetResourceResolver.ts";
 import { setCutsceneAssetFetcher } from "../../src/editor/cutsceneArt/charsetFrames.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap as headlessBuildWorldmap } from "../lib/worldmapBuild.mjs";
@@ -84,6 +88,18 @@ async function agentKeys(request: PiAgentRequest, cache: Map<string, string | un
   let codexApiKey: string | undefined;
   if (!("openai-codex" in providerApiKeys)) { try { codexApiKey = await get("openai-codex"); } catch { codexApiKey = undefined; } }
   return { apiKey, providerApiKeys, codexApiKey };
+}
+
+/** 타이틀·오프닝 그림 확인은 등록된 그림 자체를, 나머지는 맵 렌더를 돌려준다. */
+function headlessToolImage(project: Project, toolName: string, data: unknown): string {
+  const resourceId = (data as { resourceId?: unknown } | undefined)?.resourceId;
+  if ((toolName === "show_title_opening" || toolName === "show_opening_image") && typeof resourceId === "string") {
+    const url = resolveAssetResourceUrl(resourceId, { project });
+    if (url?.startsWith("data:image/")) return url.slice(url.indexOf(",") + 1);
+    if (url && /^\/?assets\//u.test(url)) return fs.readFileSync(path.join("public", url.replace(/^\//u, ""))).toString("base64");
+    throw new Error(`그림을 찾을 수 없습니다: ${resourceId}`);
+  }
+  return renderToolRegionPngBase64(project, data);
 }
 
 function logLine(prefix: string, event: PiAgentEvent): void {
@@ -159,11 +175,12 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
   const readOnly = plan.readOnly || plan.planOnly;
-  const team = command.mode === "team" && !readOnly && !plan.villageContract;
+  const team = command.mode === "team" && !readOnly;
   const routineEdit = plan.routineEdit === true && !readOnly && !team && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || plan.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: false, groupCount: groups.length });
-  if (groups.length !== 1 || team) throw new Error("헤드리스 생성은 단독 실행만 지원합니다(팀·다중 묶음 미지원).");
+  // 팀(장르 프리셋 첫 제작)은 브라우저처럼 runPiTeam 으로 돈다. 다중 묶음 병렬은 여전히 미지원.
+  if (groups.length !== 1) throw new Error("헤드리스 생성은 묶음 하나만 지원합니다(다중 묶음 병렬 미지원).");
   const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
   const modelTask = composePiTask(command.task, classified.intentNote);
   fs.writeFileSync(path.join(out, "classification.json"), JSON.stringify({ ...classified, team, routineEdit, applyMode, mergedFromBundles }, null, 2));
@@ -173,7 +190,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   let planText = "";
   let executionTask = modelTask;
   try {
-    if (needsUltrabrainPlanTurn({ villageContract: plan.villageContract, readOnly, team, routineEdit, applyMode })) {
+    if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       const t1 = Date.now();
       const request = buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, scopedByUser: false,
@@ -192,12 +209,16 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       fs.writeFileSync(path.join(out, "plan.txt"), planText);
     }
     const request = buildPiRunRequest({
-      team, planOnly: plan.planOnly, readOnly, applyMode, villageContract: plan.villageContract,
+      team, planOnly: plan.planOnly, readOnly, applyMode,
       brain, deep, writer: modelForRole(config, "writer"), modelTask, executionTask, mapIds: groups[0]!, ...here, project: base,
       scopedByUser: false, mapBundleMerge: mergedFromBundles, maxTurns: plan.maxTurns,
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
+      ...(team ? { teamSpec: config.piTeam ?? defaultTeamSpec() } : {}),
     });
-    const runRequest: PiAgentRequest = arg("timeout-ms") ? { ...request, timeoutMs: Number(arg("timeout-ms")) } : request;
+    // QA_IMAGE_PROVIDER=codex — Google 이미지 용량(429)이 막혔을 때 타이틀 키아트도 GPT Image 로(headlessGenerateImage 와 같은 스위치).
+    const viaCodexImages = process.env.QA_IMAGE_PROVIDER === "codex";
+    const runRequest: PiAgentRequest = { ...request, ...(arg("timeout-ms") ? { timeoutMs: Number(arg("timeout-ms")) } : {}),
+      ...(viaCodexImages ? { imageProvider: "openai-codex", imageModel: "codex-image-default" } : {}) };
     fs.writeFileSync(path.join(out, "request.json"), JSON.stringify({ ...runRequest, project: "(seed.json)" }, null, 2));
     const publication = createPiPublication(base, applyMode, {
       appendBubble: (_role, text) => console.log(`[bubble] ${text}`),
@@ -210,15 +231,24 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     const readOnlyRun = readOnly;
     // 계획 턴(수 분)에서 푼 OAuth 토큰을 그대로 들고 가면 긴 실행 도중 만료된다 — 동반 서비스처럼 실행 요청마다 새로 푼다.
     keys.clear();
-    const done: PiAgentDoneEvent = await runPiAgent(runRequest, {
-      ...await agentKeys(runRequest, keys), onToolCall: phase.onToolCall,
+    // 팀원 이벤트는 agent_event 로 싸여 온다 — 도구 기록이 팀원 것까지 잡히게 풀고 id 에 팀원을 붙인다.
+    const unwrapTeam = (event: PiAgentEvent): PiAgentEvent => event.type === "agent_event" && "id" in event.event
+      ? { ...event.event, id: `${event.agentId}:${(event.event as { id: string }).id}` } as PiAgentEvent : event.type === "agent_event" ? event.event : event;
+    const runner = team ? runPiTeam : runPiAgent;
+    const runKeys = await agentKeys(runRequest, keys);
+    if (viaCodexImages && runKeys.codexApiKey) runKeys.providerApiKeys["openai-codex"] = runKeys.codexApiKey;
+    const done: PiAgentDoneEvent = await runner(runRequest, {
+      ...runKeys, onToolCall: phase.onToolCall,
       ...(readOnlyRun ? { readOnlyTools: true } : {}),
       ...(runRequest.timeoutMs ? { timeoutMs: runRequest.timeoutMs } : {}),
-      onEvent: (event) => { phase.onEvent(event); logLine("[build]", event); },
+      onEvent: (event) => { phase.onEvent(team ? unwrapTeam(event) : event); logLine(team && event.type === "agent_event" ? `[${event.agentId}]` : "[build]", team && event.type === "agent_event" ? event.event : event); },
       // 브라우저는 캔버스로 show_map_region 이미지를 그린다. 헤드리스는 render 와 같은 타일 렌더러(pngjs)로 대신한다 —
       // 넘기지 않으면 런타임이 「맵 이미지 전달 경로가 없습니다」로 호출을 실패시킨다.
-      renderToolImage: async (project, _toolName, data) => renderToolRegionPngBase64(project, data),
-      ...(plan.villageContract || readOnlyRun || applyMode === "review" ? {} : { onCheckpoint: (checkpoint) => publication.publish(checkpoint) }),
+      renderToolImage: async (project, toolName, data) => headlessToolImage(project, toolName, data),
+      // 브라우저는 호스트가 오프닝 스틸을 그려 돌려준다(piRenderBroker). 헤드리스는 같은 함수에 이미지 제공자를 직접 건다.
+      generateOpeningImage: (project, args, signal) => generateOpeningStill(args, { project, signal, generateImage: headlessGenerateImage,
+        resolveReference: async (id) => `data:image/png;base64,${headlessToolImage(project, "show_opening_image", { resourceId: id })}` }),
+      ...(readOnlyRun || applyMode === "review" ? {} : { onCheckpoint: (checkpoint) => publication.publish(checkpoint) }),
     });
     mark("build", t2);
     stats.build = done.stats;
@@ -242,6 +272,11 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     stats.publications = publication.count;
     stats.finalApply = typeof finalApply === "object" && finalApply ? { ok: (finalApply as { ok: boolean }).ok, reason: (finalApply as { reason?: string }).reason, issue: (finalApply as { issue?: string }).issue } : finalApply;
     stats.changedKeys = changedProjectKeys(base, final);
+  } catch (error) {
+    // 실패한 판도 그때까지 발행된 결과를 남긴다 — 어디까지 지어졌는지가 분석의 절반이다.
+    fs.writeFileSync(path.join(out, "project.json"), serialize(store.getCurrent()));
+    fs.writeFileSync(path.join(out, "error.txt"), error instanceof Error ? error.stack ?? error.message : String(error));
+    stats.error = error instanceof Error ? error.message : String(error);
   } finally {
     recorder.close();
     const usage = (key: string) => ((stats[key] as { usage?: unknown } | undefined)?.usage);

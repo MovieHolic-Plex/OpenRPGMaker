@@ -14,6 +14,7 @@
 // 스토리는 기억 조사 + 이어지는 장면. 셋 다 「핵심 행동 → 문 → 길 → 구간 끝」이고 구간 끝은 핵심 행동의 스위치가 연다.
 
 import { runTool } from "@/editor/tools";
+import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWalkBeodeul";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -165,7 +166,12 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
   "story-cutscene": {
     routeName: "기억의 길",
-    paveRoute() {},
+    paveRoute(ctx, tilesetId) {
+      // 빈 풀밭으로 두면 첫 장소 단계가 몬스터 도로(author_wild_route)로 깔았다(2026-10-07) — 만남 광장이 있는 산책길을 먼저 깐다.
+      const map = ctx.project.maps[SEGMENT_ROUTE_MAP_ID]!;
+      const tileset = ctx.project.tilesets[tilesetId];
+      if (canPaintStoryWalk(tileset)) paintBeodeulStoryWalk(ctx.project, map, tileset, { exit: { x: 0, y: 6 }, meet: { x: 22, y: 6 } });
+    },
     placeStarter(ctx, at) {
       tool(ctx, "upsert_event", {
         mapId: at.mapId,

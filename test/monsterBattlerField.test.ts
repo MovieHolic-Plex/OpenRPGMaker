@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { battleField } from "@/player/battleFieldDom";
 import { createBattleRuntime } from "@/battle/runtime";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { giveMonster } from "@/project/monsterCollection";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { startSession } from "@/project/session";

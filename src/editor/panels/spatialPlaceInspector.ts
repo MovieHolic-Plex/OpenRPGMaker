@@ -57,13 +57,6 @@ export function renderSpatialPlacesInspector(
       ],
     }));
   }
-  if (card?.compatibility === "house-shape") {
-    body.push(el("p", {
-      class: "spatial-readonly-note",
-      text: "건물 외형 도안입니다. 그림에 보이는 층수만으로 실내 공간이나 계단 연결이 만들어지지는 않습니다.",
-      dataset: { testid: "spatial-place-exterior-only" },
-    }));
-  }
   if (card && !place) {
     // 꾸러미 시설 카드 — 편집할 PlaceDesign 이 없어도 번들 사실을 보여 준다.
     const bundle = card.source === "default"

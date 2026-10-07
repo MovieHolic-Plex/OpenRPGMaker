@@ -1,4 +1,4 @@
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import { isPaletteSlotRole, normalizePalettePresetId } from "@/project/tilesetPalette";
 import type { PalettePreset, PaletteSlot, PaletteSlotRole, TilesetDef } from "@/project/types";
 import { genId } from "@/util/id";

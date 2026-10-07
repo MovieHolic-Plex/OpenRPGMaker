@@ -444,7 +444,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   const syncStampMode = (on: boolean): void => { quickPlacement = on; stampToggle.setAttribute("aria-pressed", String(on)); paintSettingsSummary(); };
 
-  settingsPopover.append(settingRow("빠른 배치", "계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.", stampToggle));
+  settingsPopover.append(settingRow("바로 깔기", "계획·승인 없이 바로 배치합니다. 필요할 때 켜세요.", stampToggle));
 
   const actions = el("div", {
     class: "ai-composer-actions",

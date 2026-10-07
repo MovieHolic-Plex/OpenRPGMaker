@@ -13,7 +13,6 @@ describe("ai activity disk mirror endpoint", () => {
 
   const e2eConsumers = [
     "desktop-editor-interactions.spec.ts",
-    "ice-grand-expanse-play.spec.ts",
     "title-play-controls.spec.ts",
   ].map((name) => readFileSync(new URL(`./e2e/${name}`, import.meta.url), "utf8"));
   it("공용 본체가 클라이언트와 같은 경로를 매칭한다", () => {

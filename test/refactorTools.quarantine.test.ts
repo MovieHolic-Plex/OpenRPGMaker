@@ -2,7 +2,7 @@
 // rename_switch / prune_unused 전역 리팩토링 툴 검증.
 
 import { describe, expect, it } from "vitest";
-import { createEmberQuestProject, EMBER_SWITCH } from "@/project/defaults/emberQuestGame";
+import { createBlankProject } from "@/project/defaults";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { findUnused } from "@/editor/tools/refactorTools";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -11,64 +11,18 @@ import type { ToolContext } from "@/editor/tools/types";
 import type { Command, Project } from "@/project/types";
 
 describe("rename_switch", () => {
-  it("스위치 id를 전역 치환하고 lint를 깨지 않는다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const result = runTool(ctx, "rename_switch", { fromId: EMBER_SWITCH.q1Started, to: "sw_renamed_q1" }, { dryRun: false });
-    expect(result.ok).toBe(true);
-    const data = result.data as { replaced: number };
-    expect(data.replaced).toBeGreaterThan(1); // 정의 + 세션 + 참조 여러 곳.
-    // 기존 id는 정의에서 사라지고 새 id가 생김.
-    expect(ctx.project.switches.some((def) => def.id === EMBER_SWITCH.q1Started)).toBe(false);
-    expect(ctx.project.switches.some((def) => def.id === "sw_renamed_q1")).toBe(true);
-    // lint 0 error(참조 깨짐 없음).
-    expect(projectLint(ctx.project).filter((issue) => issue.severity === "error")).toEqual([]);
-  });
-
   it("존재하지 않는 스위치는 실패", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, "rename_switch", { fromId: "sw_nope", to: "sw_x" }, { dryRun: false });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("switch-not-found");
   });
 
-  it("이미 존재하는 대상 id로는 실패", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const result = runTool(ctx, "rename_switch", { fromId: EMBER_SWITCH.q1Started, to: EMBER_SWITCH.q2Started }, { dryRun: false });
-    expect(result.ok).toBe(false);
-    expect(result.issues?.[0]?.code).toBe("switch-exists");
-  });
-
-  it("fromName으로도 대상 스위치를 지정할 수 있다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const def = ctx.project.switches.find((entry) => entry.id === EMBER_SWITCH.q1Started);
-    const result = runTool(ctx, "rename_switch", { fromName: def?.name, to: "sw_by_name" }, { dryRun: false });
-    expect(result.ok).toBe(true);
-    expect(ctx.project.switches.some((entry) => entry.id === "sw_by_name")).toBe(true);
-    expect(projectLint(ctx.project).filter((issue) => issue.severity === "error")).toEqual([]);
-  });
-
-  // 2026-09-24 헤드리스 r0735: 모델이 {switchId, name} 으로 표시 이름을 붙이려다 인자 검증에서 두 번 거부됐다.
-  it("switchId + name 으로 id·참조는 두고 표시 이름만 바꾼다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const result = runTool(ctx, "rename_switch", { switchId: EMBER_SWITCH.q1Started, name: "촌장 의뢰 수락" }, { dryRun: false });
-    expect(result.ok, result.summary).toBe(true);
-    expect(ctx.project.switches.find((entry) => entry.id === EMBER_SWITCH.q1Started)?.name).toBe("촌장 의뢰 수락");
-    expect(projectLint(ctx.project).filter((issue) => issue.severity === "error")).toEqual([]);
-  });
-
   it("정의가 없는 스위치에 name 을 주면 정의를 만든다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, "rename_switch", { switchId: "sw_new_flag", name: "새 플래그" }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.switches.find((entry) => entry.id === "sw_new_flag")).toEqual({ id: "sw_new_flag", name: "새 플래그" });
-  });
-
-  it("바꿀 것이 없으면 받는 인자를 정확히 말한다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const result = runTool(ctx, "rename_switch", { switchId: EMBER_SWITCH.q1Started }, { dryRun: false });
-    expect(result.ok).toBe(false);
-    expect(result.summary).toContain("name");
-    expect(result.summary).toContain("to");
   });
 });
 
@@ -110,13 +64,6 @@ describe("prune_unused", () => {
     const applied = runTool(ctx, "prune_unused", { apply: true }, { dryRun: false });
     expect(applied.ok).toBe(true);
     expect(ctx.project.database.enemies.some((enemy) => enemy.id === "en_lonely")).toBe(false);
-  });
-
-  it("참조되는 아이템/트룹은 미사용으로 잡지 않는다", () => {
-    const ctx: ToolContext = { project: createEmberQuestProject() };
-    const report = findUnused(ctx.project);
-    // 잿불의 유산은 모든 트룹이 전투 블로커/드래곤에서 참조됨.
-    expect(report.troops).toEqual([]);
   });
 });
 

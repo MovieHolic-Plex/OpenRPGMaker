@@ -216,4 +216,33 @@ describe("공방 엔진", () => {
     expect(retried.attempts[0].verdict?.codes).toEqual(["READ"]);
     expect(retried.attempts.map((a) => a.verdict?.verdict)).toEqual(["FAIL", "PASS"]);
   });
+
+  it("자기 점검이 없는 실행기는 그리기 → 검수, 호출 2번", async () => {
+    const runner = fakeRunner();
+    delete (runner as { selfCheckMessage?: unknown }).selfCheckMessage;
+    const { engine, store } = engineWith(scriptedChat({}), runner);
+    const round = await engine.startRound(item);
+    await engine.idle();
+    expect((await store.getRound(round.id))!.runs.map((r) => [r.status, r.calls])).toEqual([["done", 2], ["done", 2]]);
+  });
+
+  it("폭이 틀린 줄만 있으면 그 줄만 다시 받는다(전체 격자를 다시 받지 않는다)", async () => {
+    const runner = fakeRunner();
+    delete (runner as { selfCheckMessage?: unknown }).selfCheckMessage;
+    const asks: string[] = [];
+    const chat: ChatFn = async (surface, request) => {
+      if (surface === "workshop-review") return pass;
+      const last = request.messages[request.messages.length - 1]?.content;
+      asks.push(typeof last === "string" ? last : "");
+      if (asks.length === 1) return '{"legend":{"a":"k"},"rows":["aa","aaa"]}';
+      return '{"rows":{"1":"aa"}}';
+    };
+    const { engine, store } = engineWith(chat, { ...runner, candidates: 1, directions: () => [{ letter: "A", text: "가" }] });
+    const round = await engine.startRound(item);
+    await engine.idle();
+    const a = (await store.getRound(round.id))!.runs[0];
+    expect([a.status, a.calls]).toEqual(["done", 3]);
+    expect(asks[1]).toContain("줄 1(3글자)");
+    expect(a.grid).toEqual({ width: 2, height: 2, cells: ["k", "k", "k", "k"] });
+  });
 });

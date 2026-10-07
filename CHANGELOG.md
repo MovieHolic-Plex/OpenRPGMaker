@@ -5,6 +5,164 @@
 
 <!-- releases -->
 
+## 0.177.1 — 2026-10-08
+
+### 수정
+
+- **assistant** — align single-cell exits and validate portal placement (`56b86b3`)
+
+### 문서
+
+- **assistant** — preserve raw verification exit evidence (`f08811f`)
+- **assistant** — record verified exit events and runtime round trips (`203da6f`)
+
+### 테스트
+
+- **assistant** — verify exit coordinates and retain saved checkpoint evidence (`0b0f5c0`)
+
+## 0.177.0 — 2026-10-08
+
+### 기능
+
+- **interior** — 마법 학교 방 짓기 역할표 · 조립 부품 가구 · RPG Maker 오토타일 블록 · AI 초안 (`b3b09bb`)
+
+### 수정
+
+- **jp-city** — 마루 줄 밀기 해시·광택·이음새 — 적대적 관문 interior 12회차 통과 (`fc8b979`)
+
+### 문서
+
+- **interior** — 역할표 — 오토타일 블록·AI 초안·조립 부품 가구·마법 학교 번들, build_wizarding_space 는 네모만 (`12c60b2`)
+- **evidence** — 맵 기물 공방·스토어 사후 확인 화면 캡처 (#2326·#2327) (`3d42236`)
+
+## 0.176.0 — 2026-10-08
+
+### 기능
+
+- **ai** — 다른 맵 실행을 메인 대화에서 떼어 「다른 스레드」 트레이로 (`d0afbc8`)
+- **qa-game** — QA_IMAGE_PROVIDER=codex also routes title key art (`b8f84df`)
+- **qa-game** — gen runs the genre-preset team path like the browser (`c7c871b`)
+
+### 수정
+
+- **assistant** — adversarial review of the romance preset first build (`940bb15`)
+- **assistant** — first-build opening rejects JSON-escaped quotes in narration (`d943cf5`)
+- **assistant** — rebuilt interiors carry start position and stranded events onto the new floor (`65fbf43`)
+- **electron** — packaged assistant worker reads bundled reference images from the unpacked renderer dir (`e0e1518`)
+- **assistant** — first-scene interiors get a visible exit, story routes start as a real walk (`836bf5f`)
+- **assistant** — genre-preset first build no longer fails on an unreachable opening receipt (`37741da`)
+
+### 정리
+
+- **ai** — ⋯ 메뉴를 자주 쓰는 3줄 + 「고급·진단」 접힘으로 (`7cb1e84`)
+
+### 테스트
+
+- **e2e** — ⋯ 메뉴 고급·진단 접힘을 열고 누르도록 (`a5acd24`)
+
+## 0.175.0 — 2026-10-07
+
+### 기능
+
+- **interior** — 업로드 칩셋 방 짓기 역할표 만들기 — 타일셋 「방 짓기」 탭 (`c576adb`)
+
+### 정리
+
+- **purge** — remove scripts, tests, wiki pages and evidence tied to deleted chipsets (`556a4c5`)
+- **purge** — drop removed tool names from blueprint and skill notes (`3148de8`)
+- **purge** — remove forest, climate, Tibo and shared-village defaults and dead tool-name tables (`f7322cd`)
+- **purge** — remove pack-town, PAW, dungeon/interior session, forest recipe and tall-grass tools (`0c0a491`)
+- **purge** — remove forest/combined-town village, house, fence and castle generators and village contract (`d9c9b9d`)
+- **purge** — remove demo and showcase projects drawn on deleted chipsets (`ed31551`)
+
+### 잡무
+
+- **assets** — delete third-party art, audio and fonts (copyright) (`effd2b2`)
+- **content** — delete every registered place not drawn on our own chipsets (copyright) (`247ddd5`)
+
+## 0.174.0 — 2026-10-07
+
+### 기능
+
+- **interior** — 방 짓기 역할표 roomKit — build_hand_interior_room 이 칩셋 id 대신 타일셋의 역할표를 읽는다 (`2257ad4`)
+- **interior** — 바닥 깔기 규칙 lay rowShift — 줄마다 무늬를 밀어 깔아 넓은 바닥의 반복 무늬를 끊는다(일본 마루 2종) (`a6f9c98`)
+- **ai-ui** — 여러 맵·여러 조수 — 맵별 대기열 실행을 존재감에 합치고 맵별 목록으로 본다 (`d2bbae1`)
+
+### 수정
+
+- **jp-city** — 마루 밝은 널을 윗줄 1px 광택으로 — 넓은 빈 바닥에서 띠로 줄 서 보였다 (`668dffd`)
+- **qa** — opening-assistant-run takes --model-like for unlisted models; declare brokerResults (`5144e8c`)
+- **ai-ui** — 상태 줄의 안 쓰는 store import 제거 (`e2a7c19`)
+- **release** — 아이콘 도구가 홈 package.json 때문에 ESM으로 깨지지 않게 한다 (`a978088`)
+- **tiles** — old mart floor back; no monster-ball shapes in monster interiors (`4ac8618`)
+
+### 문서
+
+- 방 짓기 역할표 roomKit·바닥 깔기 규칙 (`043ca94`)
+
+### 잡무
+
+- **jp-city** — 참고문서 다시 굽기 — 마루 광택·줄 밀기 반영(엔진 실측) (`ad5994d`)
+
+## 0.173.0 — 2026-10-07
+
+### 기능
+
+- **store** — 「AI 생성」 표시를 코드로 강제 — AI 자산 표식(generatedBy)·buildPack 최종 관문·조수 제안은 늘 켬 (`c1fca61`)
+- **store** — 검열 1단계 — 보류 낱말은 확인 대기로, 바로 공개된 상품은 운영 「사후 확인」 목록에 (`7d92281`)
+
+## 0.172.0 — 2026-10-07
+
+### 기능
+
+- **workshop** — 「직접 그려 줘」를 실내 밖 맵으로 — 공방 「맵 기물」이 그 맵 칩셋 색·화풍으로 그려 그 칩셋에 굽는다 (`75780c4`)
+
+### 수정
+
+- **relief** — 높이 붓 표본마다 페이지 통째 굽기를 계획 창 덮어쓰기로 되돌린다 (`7393f26`)
+
+### 테스트
+
+- **workshop** — 맵 기물 공방 가짜 모델 캡처(정의→후보→굽기) (`49a19be`)
+
+## 0.171.1 — 2026-10-07
+
+### 수정
+
+- ci-fast parity를 타입체크와 같은 메모리 락으로 직렬화한다 (`ffe04ff`)
+- **workshop** — 맞게 그린 기물을 되돌리던 귀퉁이 검사와 줄 폭 실수에 전체 다시 그리기 (`de23b9c`)
+
+### 성능
+
+- **workshop** — 실내 기물 한 판을 5장→3장, 자기 점검 호출을 뺀다 (`95eb37a`)
+
+### 문서
+
+- **workshop** — 실제 모델로 잰 한 판 시간과 헛걸음 셋 (`feeab06`)
+
+### 테스트
+
+- **workshop** — 칩셋 굽기·번호 이주·모델 답 수선·조수 스토어 도구 테스트, 공방 굽기마다 생기던 빈 칸 44개 제거 (`6a8fbea`)
+
+## 0.171.0 — 2026-10-07
+
+### 기능
+
+- **tiles** — bake the redrawn interiors into monster-overworld and monster-rooms (`32dff05`)
+- **tiles** — monster interiors redrawn in the GBA style (`012763f`)
+- **monster** — houses and centers get a working second floor (`ead3e1b`)
+- **tiles** — walkable stair feet and an appended interior section (`5cb5eb9`)
+- **editor** — add categorized prop picker with full catalog search (`0e76cc1`)
+
+### 수정
+
+- **tiles** — keep the monster overworld sheet under its 320-color cap (`474623b`)
+- **editor** — refine prop categories and record browser proof (`714f31c`)
+
+### 문서
+
+- **openwiki** — interior redraw, walkable stairs and second floors; stairs runtime QA (`d4d305f`)
+
 ## 0.170.0 — 2026-10-07
 
 ### 기능

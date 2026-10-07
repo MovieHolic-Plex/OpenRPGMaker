@@ -1,4 +1,3 @@
-import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import type { Project } from "@/project/types";
 import { bundledChipsetFrameCount } from "@/assets/bundled";
 import { DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
@@ -35,103 +34,7 @@ const samePalette = (palette: MapGenerationPalette): MapGenerationProfile["palet
 });
 
 const PROFILES = [
-  {
-    tilesetId: FOREST_HARMONY_ID,
-    layout: "settlement",
-    palettes: samePalette({ base: 240, path: 360, obstacle: 289, accent: 288 }),
-  },
-  {
-    tilesetId: "easyrpg_chipset_dungeon",
-    layout: "dungeon",
-    palettes: {
-      village: { base: 240, path: 270, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 270, obstacle: 306, accent: 288 },
-      cave: { base: 300, path: 330, obstacle: 366, accent: 384 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_interior",
-    layout: "rooms",
-    palettes: {
-      village: { base: 72, path: 72, obstacle: 366, accent: 325 },
-      forest: { base: 12, path: 12, obstacle: 366, accent: 355 },
-      cave: { base: 102, path: 102, obstacle: 430, accent: 408 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_ship",
-    layout: "ship",
-    palettes: samePalette({ base: 120, path: 396, obstacle: 222, accent: 385 }),
-  },
-  {
-    tilesetId: "easyrpg_chipset_world",
-    layout: "world",
-    palettes: {
-      village: { base: 240, path: 241, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 241, obstacle: 290, accent: 318 },
-      cave: { base: 243, path: 241, obstacle: 306, accent: 385 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_retro_dungeon",
-    layout: "dungeon",
-    palettes: {
-      village: { base: 240, path: 270, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 270, obstacle: 306, accent: 384 },
-      cave: { base: 300, path: 330, obstacle: 366, accent: 385 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_retro_exterior",
-    layout: "settlement",
-    palettes: {
-      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
-      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_retro_house",
-    layout: "rooms",
-    palettes: {
-      village: { base: 72, path: 72, obstacle: 42, accent: 325 },
-      forest: { base: 102, path: 102, obstacle: 42, accent: 355 },
-      cave: { base: 132, path: 132, obstacle: 42, accent: 408 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_combined_town",
-    layout: "settlement",
-    palettes: {
-      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
-      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
-    },
-  },
-  {
-    tilesetId: "easyrpg_chipset_retro_world",
-    layout: "world",
-    palettes: {
-      village: { base: 240, path: 241, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 241, obstacle: 290, accent: 318 },
-      cave: { base: 243, path: 241, obstacle: 306, accent: 385 },
-    },
-  },
-  {
-    // 위 480칸이 합본 마을과 같은 ID 이므로 팔레트도 같다. 아래 반쪽(레트로 월드맵)은 생성이 안 쓴다.
-    tilesetId: "easyrpg_chipset_combined_town_retro_world",
-    layout: "settlement",
-    palettes: {
-      village: { base: 240, path: 360, obstacle: 306, accent: 288 },
-      forest: { base: 240, path: 360, obstacle: 290, accent: 318 },
-      cave: { base: 423, path: 360, obstacle: 306, accent: 385 },
-    },
-  },
-  {
-    tilesetId: "modern_exteriors_nocturne",
-    layout: "city",
-    palettes: samePalette({ base: 0, path: 1, obstacle: 30, accent: 10 }),
-  },
+  // 숲마을·EasyRPG·녹턴 칩셋 프로필은 2026-10-07 저작권 정리로 칩셋과 함께 지웠다 — Scarloxy 만 남는다.
   {
     tilesetId: "scarloxy_chipset_grassland",
     layout: "settlement",

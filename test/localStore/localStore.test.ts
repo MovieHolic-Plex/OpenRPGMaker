@@ -4,7 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import type { Project } from "@/project/types";
@@ -49,7 +49,7 @@ describe("local project store", () => {
 
   it("저장 → 읽기 왕복이 직렬화 텍스트를 그대로 보존하고 sha256 이 그 텍스트의 해시다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     const expected = serialize(project);
 
     const saved = await store.saveProject(project);
@@ -68,7 +68,7 @@ describe("local project store", () => {
 
   it("저장할 때마다 revision 이 오르고 맵 미러 행이 문서의 맵과 일치한다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    const base = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const base = projectWithoutEventDrafts(createScarloxyDemoProject());
     const [mapId] = Object.keys(base.maps);
     if (!mapId) throw new Error("fixture needs a map");
 
@@ -89,7 +89,7 @@ describe("local project store", () => {
 
   it("export-json 은 저장된 텍스트를 그대로 돌려준다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     const expected = serialize(project);
     await store.saveProject(project);
 
@@ -104,7 +104,7 @@ describe("local project store", () => {
 
   it("타일셋을 tileset_blobs 로 접어 저장하고 읽을 때 펼친 글이 바이트 단위로 같다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     const expected = serialize(project);
     const tilesetIds = Object.keys(project.tilesets);
     expect(tilesetIds.length).toBeGreaterThan(0);
@@ -129,7 +129,7 @@ describe("local project store", () => {
 
   it("접지 않은 옛 행을 그대로 읽고, 타일셋을 고친 저장은 바뀐 본문만 남긴다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     const legacy = serialize(project);
     await store.saveSerialized(JSON.stringify(JSON.parse(legacy), null, 1), null);
     store.close();
@@ -156,7 +156,7 @@ describe("local project store", () => {
 
   it("backup 이 backups/ 에 VACUUM INTO 사본을 만든다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    await store.saveProject(projectWithoutEventDrafts(createHouseTemplateGalleryProject()));
+    await store.saveProject(projectWithoutEventDrafts(createScarloxyDemoProject()));
 
     const backupPath = store.backup();
     expect(backupPath.startsWith(join(projectDir, "backups"))).toBe(true);
@@ -167,7 +167,7 @@ describe("local project store", () => {
 
   it("닫은 뒤 다시 열면 같은 문서를 읽는다", async () => {
     const first = await initLocalProjectStore({ projectDir });
-    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const project = projectWithoutEventDrafts(createScarloxyDemoProject());
     await first.saveProject(project);
     const sha = first.loadSnapshot()?.sha256;
     first.close();

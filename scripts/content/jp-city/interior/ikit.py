@@ -116,8 +116,9 @@ class Registry:
         self._built = None
 
     # ── 등록 ──
-    def floor(self, id_, ko, cols=4, rows=4, tags=(), desc=''):
-        def deco(fn): self.floors[id_] = dict(ko=ko, cols=cols, rows=rows, draw=fn, tags=list(tags), desc=desc); return fn
+    def floor(self, id_, ko, cols=4, rows=4, tags=(), desc='', lay=None):
+        """lay='rowShift' — 줄마다 무늬를 가로로 밀어 깐다(가로로만 이어지는 널 마루처럼 cols 주기로 이음새 없이 반복되는 무늬만)."""
+        def deco(fn): self.floors[id_] = dict(ko=ko, cols=cols, rows=rows, draw=fn, tags=list(tags), desc=desc, lay=lay); return fn
         return deco
 
     def wall(self, id_, ko, cols=4, tags=(), desc=''):
@@ -169,6 +170,14 @@ class Registry:
         if sh & 2: t = shade_cols(t, WEST_SHADE)
         return t
 
+    def lay_x(self, id_, x, y):
+        """맵 칸 (x,y) 가 쓸 무늬 열 — lay='rowShift' 면 줄마다 밀린다. builder.ts floorLayX 와 같은 식이어야 한다."""
+        f = self.floors[id_]
+        if f.get('lay') != 'rowShift': return x
+        h = (y + 1) & 0xFFFFFFFF                     # murmur3 fmix32 — builder.ts floorLayX 와 같은 식
+        h ^= h >> 16; h = (h * 0x85ebca6b) & 0xFFFFFFFF; h ^= h >> 13; h = (h * 0xc2b2ae35) & 0xFFFFFFFF; h ^= h >> 16
+        return x + h % f['cols']
+
     def wall_cell(self, id_, x, row, west):
         wd = self.walls[id_]
         a = self._period(('w', id_), wd['draw'], wd['cols'] * 16, 32)
@@ -210,7 +219,7 @@ class Registry:
                     for sh in range(4):
                         loc.append(add('floor.%s.%d.%d.%d' % (id_, x, y, sh), self.floor_cell(id_, x, y, sh), 'floor',
                                        '%s 바닥%s' % (f['ko'], ('', ' · 벽 밑 그늘', ' · 서쪽 그늘', ' · 벽 밑·서쪽 그늘')[sh]), f['desc'], f['tags']))
-            interior['floors'][id_] = dict(ko=f['ko'], cols=f['cols'], rows=f['rows'], tiles=loc)
+            interior['floors'][id_] = dict(ko=f['ko'], cols=f['cols'], rows=f['rows'], tiles=loc, **({'lay': f['lay']} if f.get('lay') else {}))
             groups.append(dict(id='jp:interior-floor-%s' % id_, name='실내 바닥 · %s' % f['ko'], role='terrain', defaultLayer='lower',
                                cells=sorted(set(loc), key=loc.index), desc=f['desc'] or f['ko'], rules='실내 바닥. 손 도트 실내 조립 도구(build_hand_interior_room, tileset jp_city)가 벽 밑·서쪽 그늘 변형까지 고른다.'))
         for id_, wd in self.walls.items():

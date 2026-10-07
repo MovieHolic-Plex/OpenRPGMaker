@@ -6,8 +6,10 @@
 // 화면마다 달랐던 「모델 응답 대기 / 작업을 마쳤어요 / 초안 종료 / 적용」을 아래 6가지로 통일한다.
 
 import type { TeamBoardAgent, TeamBoardState } from "@/ai/piAgent/teamBoardState";
-import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import { requestTeamStop, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
+import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
+import { store } from "@/project/store";
 import { teamObservation } from "./aiTeamObservation";
 
 export type PresenceState = "waiting" | "working" | "review" | "draft" | "applied" | "failed";
@@ -30,8 +32,10 @@ export interface PresenceRegion {
 
 export interface Presence {
   readonly id: string;
-  /** chat = 대화창 요청(팀 포함), region = 지도를 드래그해서 시킨 일. 둘은 서로 다른 스레드로 돈다. */
-  readonly source: "chat" | "region";
+  /** chat = 대화창 앞 턴(팀 포함), background = 다른 맵에서 같이 도는 실행(맵별 대기열), region = 지도를 드래그해서 시킨 일. 전부 서로 다른 스레드다. */
+  readonly source: "chat" | "background" | "region";
+  /** 맵별 대기열 표 번호(background). 취소·확인 이동에 쓴다. */
+  readonly ticketId?: number;
   /** region 일은 사용자가 드래그한 정확한 영역. chat 일은 도구가 만진 영역이 있을 때만 지도 위에서 채운다. */
   readonly region?: PresenceRegion;
   readonly name: string;
@@ -122,6 +126,21 @@ export function needsUser(presence: Presence): boolean {
   return presence.state === "review" || presence.state === "failed";
 }
 
+/** 한 번에 하나만 취소·중단할 때. background 는 대기열 표를, 앞 턴은 팀 중지 슬롯을 쓴다. */
+export function stopPresence(presence: Presence): void {
+  if (presence.source === "background" && presence.ticketId !== undefined) mapRunQueue().cancel(presence.ticketId);
+  else requestTeamStop();
+}
+
+/** 전부 멈춘다 — 앞 턴 + 모든 대기열 표. */
+export function stopAllPresences(): void {
+  requestTeamStop();
+  for (const ticket of mapRunQueue().tickets()) {
+    if (ticket.foreground) continue;
+    if (ticket.status === "waiting" || ticket.status === "running") mapRunQueue().cancel(ticket.id);
+  }
+}
+
 export function isActive(presence: Presence): boolean {
   return presence.state === "working" || presence.state === "waiting";
 }
@@ -130,13 +149,70 @@ type Listener = (presences: readonly Presence[]) => void;
 const listeners = new Set<Listener>();
 let boardPresences: readonly Presence[] = [];
 const regionPresences = new Map<string, Presence>();
+/** 다른 맵에서 도는 실행이 흘려 준 보드 — 키는 대기열 표 번호. */
+const backgroundBoards = new Map<number, TeamBoardState>();
+const dismissed = new Set<string>();
 let current: readonly Presence[] = [];
 let unsubscribeBoard: (() => void) | null = null;
 
+/** 맵별 실행이 보드 상태를 올린다(앞 턴과 달리 팀 활동 버스를 쓰지 않으므로). null 이면 거둔다. */
+export function reportBackgroundBoard(ticketId: number, board: TeamBoardState | null): void {
+  if (board) backgroundBoards.set(ticketId, board); else backgroundBoards.delete(ticketId);
+  publish();
+}
+
+/** 실패 같은 「확인만 하면 되는」 항목을 받은함에서 치운다. */
+export function dismissPresence(id: string): void {
+  dismissed.add(id);
+  publish();
+}
+
+function mapNameOf(mapKey: string): { mapId: string | null; mapName: string | null } {
+  if (mapKey === "__project__") return { mapId: null, mapName: "프로젝트 전체" };
+  const map = store.getCurrent().maps[mapKey];
+  return { mapId: map ? mapKey : null, mapName: map?.name ?? mapKey };
+}
+
+function backgroundPresences(): Presence[] {
+  const out: Presence[] = [];
+  const seen = new Set<number>();
+  for (const ticket of mapRunQueue().tickets()) {
+    if (ticket.foreground) continue;
+    const active = ticket.status === "waiting" || ticket.status === "running";
+    const board = backgroundBoards.get(ticket.id);
+    if (!active && !board) continue;
+    seen.add(ticket.id);
+    out.push(...presencesForTicket(ticket, board));
+  }
+  // 표는 끝나 사라졌는데 보드가 남은 것(검토 대기 등)은 그대로 둔다. 적용·버림이면 거둔다.
+  for (const [id, board] of backgroundBoards) {
+    if (seen.has(id)) continue;
+    if (board.phase === "적용됨" || board.phase === "버림" || board.phase === "완료") backgroundBoards.delete(id);
+  }
+  return out;
+}
+
+function presencesForTicket(ticket: MapRunTicket, board: TeamBoardState | undefined): Presence[] {
+  const where = mapNameOf(ticket.mapKey);
+  const base = { source: "background" as const, ticketId: ticket.id, readsOnly: false, mapId: where.mapId, mapName: where.mapName };
+  if (board && board.agents.length > 0) {
+    return derivePresences(board).map((p, i) => ({ ...p, ...base, id: `bg${ticket.id}:${p.id}`, mapId: p.mapId ?? where.mapId, mapName: p.mapName ?? where.mapName, readsOnly: p.readsOnly, task: p.task || ticket.label, tone: i }));
+  }
+  const waiting = ticket.status === "waiting";
+  const action = !waiting ? "생각 중"
+    : ticket.wait === "capacity" ? "동시에 도는 작업이 많아 기다리는 중"
+    : ticket.wait === "exclusive" ? "팀 작업이 끝나길 기다리는 중"
+    : `같은 맵 ${ticket.ahead + 1}번째로 기다리는 중`;
+  return [{ ...base, id: `bg${ticket.id}`, name: "조수", tone: 0, state: waiting ? "waiting" : "working", task: ticket.label,
+    action, steps: 0, startedAt: ticket.startedAt ?? undefined, recent: [] }];
+}
+
 function publish(): void {
-  const chat = boardPresences.map(p => ({ ...p, tone: p.tone % 4 }));
-  const regions = [...regionPresences.values()].map((p, index) => ({ ...p, tone: (chat.length + index) % 4 }));
-  current = [...chat, ...regions];
+  const chat = boardPresences;
+  const background = backgroundPresences();
+  const regions = [...regionPresences.values()];
+  // 색은 표면 전체에서 겹치지 않게 순서대로 — 지도의 파란 상자 = 상태 줄의 파란 칩.
+  current = [...chat, ...background, ...regions].filter(p => !dismissed.has(p.id)).map((p, index) => ({ ...p, tone: index % 4 }));
   for (const next of [...listeners]) next(current);
 }
 
@@ -173,8 +249,10 @@ export function subscribeAiPresence(listener: Listener): () => void {
       boardPresences = derivePresences(board);
       publish();
     });
+    const offQueue = mapRunQueue().subscribe(() => publish());
     unsubscribeBoard = () => {
       offBoard();
+      offQueue();
       window.removeEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
     };
   } else {
@@ -187,6 +265,8 @@ export function subscribeAiPresence(listener: Listener): () => void {
       unsubscribeBoard = null;
       boardPresences = [];
       regionPresences.clear();
+      backgroundBoards.clear();
+      dismissed.clear();
       current = [];
     }
   };

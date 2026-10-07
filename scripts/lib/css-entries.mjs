@@ -17,7 +17,6 @@ export const FALLBACK_ENTRIES = [
   "src/styles/event/index.css", // src/editor/panels/eventEditor/modal.ts
   "src/styles/database/index.css", // src/editor/panels/databaseModal.ts
   "src/player/player.css", // src/player/exportEntry.ts
-  "src/benchmark/ui/styles.css", // src/benchmark/ui/landing.ts
 ];
 
 export function walk(dir, filter, files = []) {

@@ -16,7 +16,7 @@ import type { DeleteResult } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { createBlankMap, TILE } from "@/project/defaults";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";

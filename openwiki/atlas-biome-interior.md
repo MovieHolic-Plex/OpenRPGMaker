@@ -42,6 +42,35 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
 - 도구 `src/editor/tools/handInteriorTools.ts`: `list_hand_interior_parts`, `build_hand_interior_room`(error 면 맵을 만들지 않는다, `links` 로 층 이동). 사양 `src/assets/handInteriorSpec.json`.
 - 두 도구는 `tileset:"jp_city"` 로 **일본 집 실내**(사양 `src/assets/jpInteriorSpec.json`, 그림은 jp_city 번들)도 짓는다 — 조립기·규칙은 같고 사양만 다르다. `builder.ts` 의 `HAND_INTERIOR_SPECS`. 상세는 `openwiki/jp-city.md` 「일본 집 실내」.
   부품 찾기는 `src/editor/handInterior/parts.ts`(아래 「가구 메모·방 표」).
+- **방 짓기 역할표 `TilesetDef.roomKit` (2026-10-07):** 조립기는 칩셋 id 가 아니라 타일셋 정의의 역할표를 읽는다(`roomSpecOf`).
+  `{builtin:"atlas_biome_interior"|"jp_city"}` = 편집기가 들고 있는 사양, `{spec}` = 사양 통째(번들 밖 칩셋용). 번들 두 칩셋은 builtin 을 들고 태어나고
+  옛 저장본은 `ensureAtlasBiomeInteriorCurrent`·`ensureJpCityTileset` 이 채운다. 그래서 **스토어 사본(id 가 `store_…` 로 바뀐 것)도 그대로 짓는다**.
+  역할표 없는 칩셋은 쓸 수 있는 목록과 「방 짓기 탭에서 만들어 달라」는 안내와 함께 거절한다 — `list_hand_interior_parts` 인자 없이 → `roomTilesets`.
+- **역할표 만들기 — 타일셋 「방 짓기」 탭 (2026-10-07, UGC):** 자료집 → 타일 → 칩셋 → 「방 짓기」(`tilesetRoomKitPanel.ts`).
+  사람이 시트에서 **바닥 무늬(사각형 1~8칸) · 벽면 위 줄 · 벽면 아래 줄(같은 칸 수) · 천장 칸 하나** 를 끌어 고르면 견본 방(네모·ㄱ자)을 바로 지어 보여 주고,
+  저장하면 `src/project/roomKit.ts` 가 변형 칸을 만들어 칩셋 끝 뒤 새 줄에 이식한다(`installRoomKit`, 바닥 통과·나머지 막힘, `tileMeta` 「방 짓기 · …」).
+  - 변형 칸: 바닥 칸×그림자 4(벽 밑·서쪽, 곱셈 어둡게) + 벽면 칸×서쪽 2(윗줄은 천장 띠 밑 그늘) + 천장 32(방 안 쪽 변에 어두운 선+밝은 선) + 바깥 1.
+  - 사양 id 는 고정: 바닥 `floor` · 벽면 `wall` · 천장 `default`. 도구 enum 에도 이 둘을 넣었다. `spec.picks` 에 고른 칸을 남겨 다시 열면 이어 고친다.
+  - 벽 줄을 위·아래 따로 고르는 이유: 마법 학교처럼 벽 4줄을 **가로로 이어 둔 시트**가 있다 — 사각형 두 줄만 받으면 고를 수 없다.
+  - 변형 시트 에셋 id = `roomkit_<칸 크기>_<해시>`(스토어 사본은 `store_<slug>__` 앞붙음). `bundledChipsetGeometry` 가 이 id 로 칸 크기·줄 16칸을 안다 —
+    업로드 이식 원본은 기본이 16px·30칸이라 32·48px 칩셋 변형 칸이 깨진다. AI 생성이 아니므로 `generatedBy` 를 달지 않는다.
+  - 다시 저장하면 새 칸을 덧붙이고 사양만 바꾼다(이미 지은 맵은 옛 칸 그대로). 번들 역할표(builtin) 칩셋은 탭이 「이미 있음」만 보인다.
+  - **직접 올린 칩셋(image.type uploaded)만** 만든다. 번들 칩셋에 칸을 덧붙이면 `count > 번들 count` 가 되어 번들 갱신(ensure…)이 멈춘다 — 번들은 굽기 스크립트로 넣는다(아래 마법 학교).
+  - **RPG Maker A2(16×12칸)·A4(16×15칸) 시트**를 칸 수로 알아보고(`rpgMakerAutotileSheet`) 블록을 한 번 누르면 이음매 없는 가운데를 뗀다(`rpgMakerBlockPicks`):
+    윗면 블록(2×3) = 아래 2×2 칸의 가운데 쿼터 창 → 바닥·천장, A4 벽 블록(2×2) = 반 칸 오른쪽 창의 위·아래 줄 → 벽면 두 줄. 고른 칸은 칸 번호 대신 픽셀 창 `{px,py}` 로 남는다.
+    칸을 그대로 고르면 오토타일 테두리가 칸마다 남아 바닥·벽에 격자가 생긴다(2026-10-08 합성 A4 시트로 비교).
+  - **AI 초안**: 열·줄 번호를 단 시트(`labeledSheet`)를 `requestTilesetMapping` 으로 보내 `{floor,wallTop,wallBottom,ceiling,reason}` 을 받는다(`roomKitDraftPrompt`·`parseRoomKitDraft` — 코드 울타리·뒷말이 붙어도 첫 JSON 객체를 찾는다).
+    오토타일 시트면 AI 가 짚은 칸의 블록 가운데로 바꾼다. 초안은 저장하지 않는다 — 사람이 견본 방을 보고 고친 뒤 저장.
+- **가구 = 칩셋 조립 부품 (`kitHandObjects`, 2026-10-08):** 역할표에 가구 표(objects)가 없으면 칩셋의 section 조립 부품을 가구로 쓴다(공방 부품은 따로).
+  역할 wall·terrain·fence·roof·building·water 는 뺀다. 발밑 줄 = 네 방향 다 막힌 칸이 처음 나오는 줄부터 아래 끝, 놓는 곳 설명에 「벽에 붙·벽 앞·north-wall」 = 벽 가구, 「벽에 건·걸이」 = 걸이, 막힌 칸이 없고 위층 칸도 없으면 밟는 무늬.
+  업로드 칩셋은 자료집 → 오브젝트에서 부품을 등록하면 늘어난다.
+- **마법 학교 번들 역할표 (2026-10-08):** `scripts/content/wizarding/roomkit_wz.py` 를 `bake_wz.py` 가 부른다 — 바닥(A·B·C 변형을 한 판으로 묶고 rowShift) 13 · 벽 세트 북벽 아래 두 줄 8 · 어두운 천장 32 + 바깥.
+  변형 색은 마법 학교 팔레트 최근접으로 붙인다. 번호는 pins `roomkit/…` 키(기존 칸·예제 불변, 2508 → 2669칸). 사양 `src/assets/wizardingRoomSpec.json`, `roomKit {builtin:"wizarding_world"}`.
+  가구는 조립 부품 320종(벽난로 = 벽 가구, 침대 = 바닥 가구). `build_wizarding_space` 는 그대로 네모 공간 생성기다 — 모양 있는 방은 `build_hand_interior_room({tileset:"wizarding_world"})`.
+  - 확인(2026-10-07): 역할표 없던 마법 학교 칩셋에 성채 포석·석벽·어두운 천장을 골라 저장 → `__oprnEditorTool("build_hand_interior_room")` ㄱ자 방이 실제 편집기(Phaser)에서 이식 칸으로 그려짐.
+- **바닥 깔기 규칙 `floors[].lay` (2026-10-07):** `"rowShift"` 면 줄마다 무늬를 가로로 밀어 깐다(`floorLayX`, jp `ikit.lay_x` 와 같은 식).
+  한 판을 바둑판처럼 반복하면 넓은 빈 바닥에서 밝은 널이 같은 자리에 줄 섰다(일본 마루). 가로로만 이어지는 무늬에만 쓴다.
+- 도구 설명은 「네모 하나로만 그리지 말 것(ㄱ·ㄷ·T·알코브)」과 ㄱ자 평면 예시를 싣는다 — 조수 호출 114번 중 99번이 바깥 모양 네모였다(2026-10-07 qa-runs 집계).
 - 폐기된 실내 칩셋 `src/project/retiredInteriorTilesets.ts`: `easyrpg_chipset_interior`·`tibo_interior_expanded`·LPC 가구(32·16). 조수 목록(참고문서·공용 장소/오브젝트·킷)에서 빼고,
   `create_map`·`import_region_reference`·`stamp_object`·참고문서 읽기에서 `retired-interior-tileset` 으로 거부. 공용 장소 중 실내 태그(`공간형태:건물 내부`)인데 v5 칩셋이 아닌 것도 숨긴다.
   방 세션 도구 묶음(`INTERIOR_ROOM_SESSION_TOOLS`, place_concept·get_concept_facility 포함)은 레지스트리에서 deprecated(노출·Pi 해석 제외, `runTool` 실행 호환은 유지).

@@ -1,0 +1,321 @@
+[
+ {
+  "id": "ev_ember_child",
+  "x": 13,
+  "y": 14,
+  "trigger": {
+   "kind": "action"
+  },
+  "commands": [],
+  "pages": [
+   {
+    "id": "child_page",
+    "name": "꼬마 미루",
+    "conditions": [],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people3"
+     },
+     "direction": "down",
+     "pattern": 31
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "random",
+     "speed": 2,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "꼬마 미루",
+      "body": "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~"
+     },
+     {
+      "kind": "text",
+      "speaker": "꼬마 미루",
+      "body": "파수꾼 아저씨는 무서워 보여도 마을에서 제일 착해."
+     }
+    ]
+   },
+   {
+    "id": "child_clear",
+    "name": "꼬마 미루",
+    "conditions": [
+     {
+      "kind": "switch",
+      "switchId": "sw_ember_q1_clear",
+      "value": true
+     }
+    ],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people3"
+     },
+     "direction": "down",
+     "pattern": 31
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "random",
+     "speed": 2,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "꼬마 미루",
+      "body": "화로에 불이 돌아왔어! 아린 누나(형)? 최고야!"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "ev_ember_inn",
+  "x": 6,
+  "y": 9,
+  "trigger": {
+   "kind": "action"
+  },
+  "commands": [],
+  "pages": [
+   {
+    "id": "inn_page",
+    "name": "여관 주인 마사",
+    "conditions": [],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people1"
+     },
+     "direction": "down",
+     "pattern": 73
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "여관 주인 마사",
+      "body": "여행자는 쉬어야 멀리 가는 법이죠. 하룻밤 15G입니다."
+     },
+     {
+      "kind": "inn",
+      "price": 15
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "ev_ember_guard",
+  "x": 28,
+  "y": 11,
+  "trigger": {
+   "kind": "action"
+  },
+  "commands": [],
+  "pages": [
+   {
+    "id": "guard_closed",
+    "name": "파수꾼 데릭",
+    "conditions": [],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people2"
+     },
+     "direction": "down",
+     "pattern": 31
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "동문 밖 안개 숲은 요즘 마물이 들끓어서 함부로 내보낼 수 없어."
+     },
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "촌장 로안 님의 허락을 받아 오면 문을 열어 주지."
+     }
+    ]
+   },
+   {
+    "id": "guard_open",
+    "name": "파수꾼 데릭",
+    "conditions": [
+     {
+      "kind": "switch",
+      "switchId": "sw_ember_q1_started",
+      "value": true
+     }
+    ],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people2"
+     },
+     "direction": "down",
+     "pattern": 31
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "촌장님께 이야기는 들었다. 동문은 열어 두었어."
+     },
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "숲의 사냥꾼 브란이 지리를 잘 아니 길을 물어봐. 다치면 여관에서 쉬고."
+     }
+    ]
+   },
+   {
+    "id": "guard_clear",
+    "name": "파수꾼 데릭",
+    "conditions": [
+     {
+      "kind": "switch",
+      "switchId": "sw_ember_q1_clear",
+      "value": true
+     }
+    ],
+    "graphic": {
+     "sprite": {
+      "type": "bundled",
+      "id": "tex_easyrpg_charset_people2"
+     },
+     "direction": "down",
+     "pattern": 31
+    },
+    "trigger": {
+     "kind": "action"
+    },
+    "priority": "same",
+    "overlapForbidden": true,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "네가 성소의 불을 되살렸다니... 파수꾼으로서 경례를 보내지."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "ev_ember_gate_a",
+  "x": 30,
+  "y": 12,
+  "trigger": {
+   "kind": "playerTouch"
+  },
+  "commands": [],
+  "pages": [
+   {
+    "id": "ev_ember_gate_a_closed",
+    "name": "동문",
+    "conditions": [],
+    "graphic": {
+     "transparent": true
+    },
+    "trigger": {
+     "kind": "playerTouch"
+    },
+    "priority": "below",
+    "overlapForbidden": false,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "text",
+      "speaker": "파수꾼 데릭",
+      "body": "잠깐! 촌장님의 허락 없이는 내보낼 수 없어."
+     }
+    ]
+   },
+   {
+    "id": "ev_ember_gate_a_open",
+    "name": "동문",
+    "conditions": [
+     {
+      "kind": "switch",
+      "switchId": "sw_ember_q1_started",
+      "value": true
+     }
+    ],
+    "graphic": {
+     "transparent": true
+    },
+    "trigger": {
+     "kind": "playerTouch"
+    },
+    "priority": "below",
+    "overlapForbidden": false,
+    "movement": {
+     "type": "fixed",
+     "speed": 3,
+     "frequency": 3
+    },
+    "commands": [
+     {
+      "kind": "transfer",
+      "mapId": "map_mist_forest",
+      "x": 2,
+      "y": 14,
+      "fade": "black"
+     }
+    ]
+   }
+  ]
+ }
+]

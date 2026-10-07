@@ -3,7 +3,6 @@ import type { PiCharsetSelectionGate } from './charsetSelectionGate';
 import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
-import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
@@ -30,7 +29,6 @@ import type { chatCompletion } from "@/ai/llmClient";
 import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
-import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
 
 export interface PiToolTextContent {
   readonly type: "text";
@@ -64,7 +62,6 @@ export interface PiToolCallRecord {
 
 export interface CreatePiToolsetOptions {
   readonly charsetGate?: PiCharsetSelectionGate;
-  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
   readonly domains?: readonly string[];
@@ -179,8 +176,6 @@ export function harvestFindToolsNames(result: ToolResult): string[] {
 export interface ResolvePiToolOptions {
   readonly charsetGate?: PiCharsetSelectionGate;
   readonly referenceGate?: PiTilesetReferenceGate;
-  /** 현대 칩셋 정책 — 발견·폴백으로 만든 쓰기 셰이프도 처음 선언된 도구와 같은 검사를 받는다. */
-  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   /** 읽기 전용 실행 — 쓰기 툴은 절대 셰이프가 되지 않는다. */
   readonly readOnly?: boolean;
   /** 실행의 하드 경계(팀 역할 제한 등). 설정되면 이 목록 안 이름만 만든다. */
@@ -230,7 +225,6 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     toolNames: [name],
     charsetGate: options.charsetGate,
     referenceGate: options.referenceGate,
-    modernTilesetPolicy: options.modernTilesetPolicy,
     readOnly: options.readOnly,
     onCall: options.onCall,
     scopeMapIds: options.scopeMapIds,
@@ -295,10 +289,6 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
           : runTool(ctx, tool.name, args));
       if (tool.name === "find_tools" && options.findToolsCallable) result = scopeFindToolsResult(result, options.findToolsCallable);
-      if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
-        const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
-        if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
-      }
       if (tool.mode === 'write' && result.ok && options.charsetGate && !tool.placesCuratedCast) {
         const violation = options.charsetGate.afterWrite(beforeProject, ctx.project);
         if (violation) { ctx.project = beforeProject; result = violation; }
@@ -355,9 +345,6 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'preview_choreography') for (const image of await retroChoreographyPreviewImages(result.data)) {
-        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
-      }
-      if (tool.name === 'author_village') for (const image of await villageReferenceImages(result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       return { content, details: result };

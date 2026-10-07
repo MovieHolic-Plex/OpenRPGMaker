@@ -68,10 +68,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "sculpt_relief",
   "design_terrain", "lay_terrain_road", "place_terrain_ramp",
   "paint_road",
-  "stamp_structure",
   "build_house",
-  "build_village",
-  "build_castle",
   "clear_region",
   "clear_map",
   "set_map_properties",
@@ -80,7 +77,6 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "script_cutscene",
   "move_event",
   "remove_event",
-  "author_house",
   "place_props",
 ]);
 
@@ -90,16 +86,6 @@ export type ToolUndoScope =
 
 /** canonical construction undo 정책: existing target → map, new target → project. */
 export function toolUndoScope(name: string, args: Record<string, unknown>): ToolUndoScope {
-  if (name === "author_village") {
-    const target = args.target;
-    if (typeof target === "object" && target !== null && !Array.isArray(target)) {
-      const kind = (target as Record<string, unknown>).kind;
-      if (kind === "new") return { kind: "project" };
-      const mapId = (target as Record<string, unknown>).mapId;
-      if (typeof mapId === "string" && mapId.length > 0) return { kind: "map", mapId };
-    }
-    return { kind: "project" };
-  }
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
   if (mapId && MAP_ONLY_WRITE_TOOLS.has(name)) return { kind: "map", mapId };
   return { kind: "project" };

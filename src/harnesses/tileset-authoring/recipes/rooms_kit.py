@@ -5,7 +5,7 @@
 바닥은 3톤 규칙 무늬 두 변형 `(x+y)%2` — 1px 잡음 없음. 벽 장식(창·칠판·문·현창)은 천장 끝 띠(벽 위 칸 y 0..2) 아래에서 시작한다.
 
 - 사천왕 방(em EliteFour 네 방, 13×14): 뒷벽 두 줄 가운데에 봉인 문(3칸), 문 앞은 그냥 바닥이다(단상 없음). 뒷벽 밑에 매달린 등이 칸마다 하나.
-  바닥 맨 위 줄과 양 옆 줄은 한 톤 진한 테두리. 가운데에 5×5 경기장 선(네모 테 · 가운데 가로선 · 몬스터볼 원 — 위·아래 반원을 테마 두 색으로 채우되
+  바닥 맨 위 줄과 양 옆 줄은 한 톤 진한 테두리. 가운데에 5×5 경기장 선(네모 테 · 가운데 가로선 · 원 안 별 — 별을 테마 두 색으로 채우되
   바닥 네모 무늬가 비친다, 가로선은 바깥 원에서 안쪽 원까지 관통). 좌우 옆벽에 붙은 3×5 테마 블록(`lg_side_<테마>_l/_r`, 방 쪽 모서리 깎은 팔각 상자:
   윗면 띠 + 앞면 결 + 같은 결을 한 톤 어둡게 감아 도는 빗면 + 윗모서리 흰 사선)이 방의 정체를 만든다 — 유령: 이끼 돌 테두리 속 어두운 감실,
   얼음: 빗살 얼음 결정 판, 드래곤: 엇갈린 비늘(주황 테) 사이로 솟은 가시, 악: 길이 제각각인 밤 빌딩 창 줄. 아래 벽 두 줄 가운데 3칸이 트여
@@ -438,7 +438,7 @@ FIELD_N = 5
 
 def lg_field(P, th: str):
     """5×5 칸(80px) 경기장 선(원작 사천왕 방에서 잰 비례: 테 = 방 폭의 0.4, 볼 지름 = 테 폭의 0.6):
-    네모 테 2px · 가운데 가로선 2px(바깥 원에서 안쪽 원까지 관통) · 몬스터볼 — 바깥 원 2px, 위 반원은 테마 색 A, 아래 반원은 테마 색 B
+    네모 테 2px · 가운데 가로선 2px(바깥 원 밖까지) · 바깥 원 2px · 원 안 네 갈래 별(빛 받는 왼쪽 위 절반은 테마 색 A, 나머지는 B, 테두리는 선 색)
     (바닥 네모 무늬가 같은 칸에서 한 톤 밝게 비친다), 안쪽 원 2px 속은 바닥 그대로 · 네 모서리 3×3 점. 선 색은 테마 램프 rm_lgf_<테마>[4].
     바닥 그대로인 칸은 None(물체에서 빠지고 바닥이 남는다)."""
     A, A_hi, B, B_hi, line = P[f"rm_lgf_{th}"]
@@ -452,17 +452,23 @@ def lg_field(P, th: str):
     a, b_ = 3, S - 4
     cx = cy = S / 2
     base_hi = px.tint(t[2], 1.09)
+    # 가운데는 네 갈래 별(별빛 리그) — 예전엔 위·아래 반원을 두 색으로 채운 몬스터볼 원이었다(원작 상표 모양, 2026-10-07 사용자).
+    star = i2.star_mask(S, 18.5, 6.0)
+    star_edge = lambda x, y: any(0 <= x + dx < S and 0 <= y + dy < S and star[y + dy][x + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
     for y in range(S):
         for x in range(S):
             d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
             c = big.getpixel((x, y))
             onrect = (a <= x <= b_ and (a <= y <= a + 1 or b_ - 1 <= y <= b_)) or (a <= y <= b_ and (a <= x <= a + 1 or b_ - 1 <= x <= b_))
-            mid = a <= x <= b_ and cy - 1 <= y + 0.5 <= cy + 1 and not d < 5.6
-            if 21.0 <= d <= 23.0 or 5.6 <= d <= 7.6 or onrect or mid:
+            mid = a <= x <= b_ and cy - 1 <= y + 0.5 <= cy + 1 and d > 23.0
+            if 21.0 <= d <= 23.0 or onrect or mid:
                 big.putpixel((x, y), line)
-            elif 7.6 < d < 21.0:
+            elif star[y][x]:
                 hi = c == base_hi
-                big.putpixel((x, y), (A_hi if hi else A) if y + 0.5 < cy else (B_hi if hi else B))
+                lit = (x + 0.5 - cx) + (y + 0.5 - cy) < 0
+                big.putpixel((x, y), (A_hi if hi else A) if lit else (B_hi if hi else B))
+            elif d < 21.0 and star_edge(x, y):
+                big.putpixel((x, y), line)
     for qx, qy in ((a, a), (b_ - 1, a), (a, b_ - 1), (b_ - 1, b_ - 1)):  # 모서리 점(3×3)
         px.rect(big, qx - 1, qy - 1, qx + 2, qy + 2, line)
         px.rect(big, qx, qy, qx + 1, qy + 1, t[1])

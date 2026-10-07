@@ -2,8 +2,7 @@
 //
 // 왜 필요한가: 모듈 테스트는 interactWithFarmPlot 을 직접 부른다. 실제 플레이어가 걸어가서
 // 도끼를 들고 조사했을 때 나무가 사라지고 나무(item_wood)가 손에 들어오는지는 브라우저에서만
-// 증명된다. 픽스처는 scripts/qa/runtime/life-tree-chop-fixture.mts 가 **일반 저작 경로**
-// (createFarmingDemoProject)로 굽는다 — 손으로 쓴 프로젝트가 아니다.
+// 증명된다. 픽스처 JSON 을 굽던 생성기(농장 데모)는 2026-10-07 저작권 정리로 지웠다 — 지금 픽스처는 고정본이다.
 //
 // 경로는 test/farmingStarterTree.test.ts 가 통행/작물/이벤트/건물을 전부 검사한 저작 경로와
 // 같다: (4,4) → 우로 (10,4) → 아래로 (10,11) → 좌로 (7,11), 그리고 좌향 조사.

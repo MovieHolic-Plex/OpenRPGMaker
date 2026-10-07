@@ -46,6 +46,25 @@
   적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
 - **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
   `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
+- **여러 맵 · 여러 조수 (2026-10-07 후속)**: 다른 맵에서 같이 도는 실행(`background: true`, 맵별 대기열)은 팀 활동 버스에 게시하지 않아
+  처음 구현에서는 존재감에 안 잡혔다. 이제 `aiChatPanel` 이 `onActivity` 보드를 `reportBackgroundBoard(ticketId, board)` 로 올리고,
+  `aiPresence` 가 `mapRunQueue().tickets()` + 그 보드를 `source: "background"` Presence 로 합친다(앞 턴 표 `foreground` 는 중복이라 뺀다).
+  대기 중이면 「같은 맵 N번째로 기다리는 중 / 팀 작업이 끝나길 / 동시에 도는 작업이 많아」 를 보여 준다. 색은 표면 전체에서 겹치지 않게 순번(`tone`).
+  상태 줄은 칩 4개까지(필요한 것 먼저), 나머지는 「+N 더 보기」 → 맵별로 묶은 목록 팝오버(내 차례 맵 → 지금 보는 맵 → 나머지). 맵이 둘 이상이면 칩에 맵 이름이 붙고,
+  지금 보는 맵이 아닌 칩은 점선. 「멈춤」은 전체(`stopAllPresences`), 팝오버의 멈춤은 그 실행만(`stopPresence`). 받은함은 다른 맵 검토를
+  「검토하기」로 해당 실행 카드(`.ai-map-run-card[data-ticket-id]`)에 데려가고, 실패는 「확인했어요」로 치운다(`dismissPresence`).
+  증거: `scripts/qa/ai-presence-multimap.mjs`(6맵·7실행, 실제 대기열에 표를 올려 재생). 부하 높은 박스에서는 `unshare -rn` 로 dev 서버와 크로미움을 같이 띄운다.
+- **메인 스레드 분리 (2026-10-08)**: 오른쪽 도크의 로그는 사용자와 조수의 **하나뿐인 대화**다. 다른 맵에서 같이 도는 실행 카드(`aiMapRunCard`)는
+  더는 로그에 섞지 않고 `aiSideThreads` 의 「다른 스레드」 트레이(대화 바로 위, 기본 접힘, 머리말 「N개 진행 중 · 실패 N」)로 올린다.
+  로그에는 사용자 문장과 「↗ 「맵」 스레드에서 따로 진행해요」 한 줄만 남는다(`enqueueMapRun`). 트레이는 `createSideThreads()`(aiWorkspace 가 만들고 `sideThreads()` 로 조회)이며
+  대화 새로 시작·이전 대화 불러오기로 지워지지 않는다. 받은함 「검토하기」는 `sideThreads()?.reveal(ticketId)` 로 트레이를 펴서 그 카드로 간다.
+  카드가 사람의 선택을 받는 중이면 `data-review="1"`(트레이 테두리 앰버). 영역(드래그) 작업은 여전히 표시만 분리 — 실행 격리는 맵당 조수 하나 규칙과 부딪쳐 설계가 필요하다.
+  증거: `scripts/qa/ai-side-threads.mjs` → `verify-shots/ai-presence/09·10*.png`(로그 안 카드 0 · 트레이 3).
+- **옵션 정리 1차 (2026-10-08)**: 전수 조사(조작 약 235개·중복 묶음 11)에서 가장 가벼운 것부터. 「⋯」 메뉴(컴포저)는 자주 쓰는 `감독 지침 · 설정 · 완료 기준 다시 보기`만 펴 두고
+  나머지(맥락 압축·저작 모달 5·설정집 정리·진단 보고서·사용 로그·전체 기록·도구 목록)는 「고급·진단」 `<details>` 한 칸으로 접는다(`createAiActionMenuItems` 가 `primary`/`advanced` 를 따로 돌려준다.
+  숨은 헤더 메뉴는 옛 순서 `items` 유지). 저작 모달 5줄에 똑같이 붙던 「도구 350」 메타를 뺐다. 컴포저 「작업 설정」의 행 제목 「빠른 배치」를 「바로 깔기」로 통일.
+  **코드와 위키가 다르던 곳(조사 결과)**: 모델 칩은 만들기만 하고 어디에도 붙지 않는다(`aiComposer.ts` 401-415), 「추천」 팝오버는 여는 곳이 없다, `aiStartScreenCards.ts` 카드 빌더 4종은 소비처가 없다,
+  헤더 `moreWrap` 메뉴는 `hidden`+`inert` 툴바 안이라 안 보인다. 이 죽은 것들은 아직 지우지 않았다(다음 단계). 증거 `scripts/qa/ai-options-menu.mjs` → `verify-shots/ai-presence/11·12*.png`.
 - 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
 - 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
 - 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며

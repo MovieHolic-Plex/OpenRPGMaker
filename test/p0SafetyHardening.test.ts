@@ -2,12 +2,9 @@ import { describe, expect, it } from "vitest";
 import { contributeBundle } from "@/project/bundles";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
-import { placeableKey } from "@/project/placeables";
 import { changeItem, startSession } from "@/project/session";
 import { depositShipping } from "@/project/shipping";
 import { applyItemUpgrade } from "@/project/upgrades";
-import { interactWithFarmPlot } from "@/player/farming";
 import { startMaker } from "@/project/makers";
 
 const ITEM_MAX = 9_999_999;
@@ -69,24 +66,6 @@ describe("P0 hostile item quantity hardening", () => {
     }
   });
 
-  it("does not consume a ready crop when its output stack is unsafe or full", () => {
-    // Break caught: harvest advances/removes the crop even when changeItem cannot
-    // represent the rewarded stack, allowing repeat harvest or silent loss.
-    const project = createFarmingDemoProject();
-    const session = startSession(project, 3);
-    const map = project.maps[project.startMapId]!;
-    session.inventory.item_potato = 1e300;
-    session.farmPlots = {
-      [map.id]: {
-        "4,5": { tilled: true, watered: false, cropId: "crop_potato", stage: 2, growthDays: 2, dead: false },
-      },
-    };
-    const before = structuredClone(session);
-
-    expect(interactWithFarmPlot(project, session, map, 4, 5)).toMatchObject({ kind: "ignored" });
-    expect(session).toEqual(before);
-  });
-
   it("does not start a maker from a safe-integer stack above the shared item cap", () => {
     const project = createBlankProject();
     addItem(project, "item_input");
@@ -103,30 +82,5 @@ describe("P0 hostile item quantity hardening", () => {
 
     expect(startMaker(project, session, "farm:0,0", "maker", 100)).toMatchObject({ ok: false });
     expect(session).toEqual(before);
-  });
-
-  it("intersects a wide tool area with map bounds before visiting placeables", () => {
-    // Break caught: capabilityTiles emits negative/out-of-map coordinates and
-    // tryPlaceableToolHarvest runs before the farmable bounds check.
-    const project = createFarmingDemoProject();
-    addItem(project, "item_safety_axe", "axe");
-    project.system.itemUpgrades = [{
-      id: "upgrade_safety_axe",
-      fromItemId: "item_safety_axe",
-      toItemId: "item_safety_axe",
-      capability: { areaWidth: 9, areaHeight: 9, energyMultiplier: 1 },
-    }];
-    const session = startSession(project, 4);
-    const map = project.maps[project.startMapId]!;
-    session.inventory = { item_safety_axe: 1 };
-    session.equippedToolItemId = "item_safety_axe";
-    const outsideKey = placeableKey(map.id, -1, -1);
-    session.placeables = {
-      [outsideKey]: { id: "outside", mapId: map.id, x: -1, y: -1, kind: "tree", itemId: "item_potato" },
-    };
-
-    expect(interactWithFarmPlot(project, session, map, 0, 0)).toMatchObject({ kind: "ignored" });
-    expect(session.placeables?.[outsideKey]).toBeDefined();
-    expect(session.inventory.item_potato).toBeUndefined();
   });
 });

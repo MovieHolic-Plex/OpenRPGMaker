@@ -307,6 +307,8 @@ app.whenReady().then(async () => {
     join(app.getAppPath(), "scripts", "oh-my-pi-worker.ts"),
   ].find((candidate) => candidate && existsSync(candidate));
   if (!workerBin && workerScript) process.env.OPRN_OH_MY_PI_WORKER_SCRIPT = workerScript;
+  // 조수 워커(컴파일된 실행 파일)는 자기 위치로 public/ 을 찾지 못한다 — 번들 참고 그림을 읽을 렌더러 폴더를 물려준다.
+  process.env.OPRN_RENDERER_DIR ??= rendererDir;
   companionServer = await startCompanionServer();
   ipcMain.on(OPRN_CHANNELS.companionOrigin, (event) => {
     event.returnValue = companionServer?.origin ?? null;

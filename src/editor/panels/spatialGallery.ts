@@ -17,7 +17,6 @@ import { worldDefById } from "@/project/defaults/spatial/geographyCatalog";
 import { renderPlaceCardThumb, savedPlacePreviewImage } from "@/editor/panels/spatialPlacePreview";
 import { spaceCanvasLayout } from "@/editor/panels/spatialSpaceLayoutView";
 import {
-  blankSettlementRegionDesign,
   geographyDraftTarget,
   geographyFromProject,
   type GeographyDesign,
@@ -177,8 +176,6 @@ function renderSpaceThumb(card: SpatialGalleryCard): HTMLElement {
   return el("div", { class: "spatial-card-fallback" });
 }
 
-/** 마을 설계서 카드용 정주지 프리뷰 설계 — 레시피 id 당 한 번만 만든다. */
-const settlementThumbDesigns = new Map<string, GeographyDesign>();
 
 function geographyThumbDesign(card: SpatialGalleryCard): GeographyDesign | undefined {
   const kind = card.kind === "worlds" ? "world" : "region";
@@ -186,15 +183,6 @@ function geographyThumbDesign(card: SpatialGalleryCard): GeographyDesign | undef
   const live = geographyFromProject(project, geographyDraftTarget(card, kind));
   if (live) return live;
   if (card.source !== "default" || !card.localId) {
-    // 마을 설계서 카드: 레시피이지만 정주지 프리뷰로 무엇을 만드는지 보여 준다.
-    if (kind === "region" && card.regionKind === "settlement" && card.localId) {
-      let design = settlementThumbDesigns.get(card.localId);
-      if (!design) {
-        design = blankSettlementRegionDesign(project, card.localId, card.name);
-        settlementThumbDesigns.set(card.localId, design);
-      }
-      return design;
-    }
     return undefined;
   }
   return kind === "region" ? catalogRegionDesign(card.localId) : catalogWorldDesign(card.localId);

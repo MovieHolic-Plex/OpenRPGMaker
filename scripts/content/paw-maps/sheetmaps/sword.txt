@@ -1,5 +1,0 @@
-# sword.png 6x3 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  
-   0 .  ~o .  .  .  .  
-   1 ~b +b ~l ~b +b ~b 
-   2 +b #b +b +b #b +b 

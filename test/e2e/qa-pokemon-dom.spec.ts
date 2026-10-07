@@ -4,7 +4,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "../support/scarloxyPokemonProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import type { Project } from "@/project/types";

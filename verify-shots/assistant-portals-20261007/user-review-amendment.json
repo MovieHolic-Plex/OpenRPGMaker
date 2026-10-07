@@ -1,0 +1,8 @@
+{
+  "status": "fail",
+  "source": "user-review",
+  "reason": "외부 문은 가로 1칸인데 실내 남쪽 틈은 가로 2칸이다. 최초 시각 검수가 폭 일치를 놓쳤다.",
+  "supersedesVisualReviewDigest": "706f3b276d4b10c447725cac710f6a6c9adcd6f5127cf62b99be0da5a4b4ac68",
+  "evidence": "runtime-key-taps-r2/13-arrival-stable-0.png",
+  "runtimePassDoesNotValidateExitWidth": true
+}

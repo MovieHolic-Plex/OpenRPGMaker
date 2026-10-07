@@ -1,1 +1,0 @@
-Original native Python pixel artwork, requested by user. Role=company_agent. Every primitive is placed on16x32; four authored head views, planted/swing legs, individual outfit. No image generation, resampling, palette conversion or imported artwork. Source scripts: scripts/asset-gen/pokemon-characters/. Source hashes in authoring.json.

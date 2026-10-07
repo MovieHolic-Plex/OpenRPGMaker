@@ -6,7 +6,6 @@ import { TILESET_ART_STYLES, tilesetArtStyle, type TilesetArtStyleId } from "@/p
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
-import { openExternalTilesetCatalog } from "./externalTilesetCatalog";
 
 const TILESET_SELECTION_KEY = "oprn:database.selectedTilesetId";
 let selectedTilesetId: string | null = null;
@@ -71,7 +70,6 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
   host.append(el("div", { class: "tileset-library", dataset: { testid: "db-tilesets-workspace" }, children: [
     el("aside", { class: "tileset-library-sidebar", children: [
       el("header", { children: [el("h2", { text: "타일" }), el("span", { text: String(tilesets.length) })] }),
-      el("button", { class: "btn small", text: "외부 타일셋 다운로드", attrs: { type: "button" }, dataset: { testid: "external-tileset-open" }, on: { click: () => openExternalTilesetCatalog((id) => { setSelectedTileset(id); rerender(); }) } }),
       search, el("p", { class: "tileset-library-hint", text: "화풍별로 묶여 있습니다." }), rows,
     ] }),
     selected ? el("section", { class: "tileset-library-detail", dataset: { testid: "db-detail-form" }, children: [

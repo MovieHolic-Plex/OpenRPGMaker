@@ -132,8 +132,9 @@ export type VillageLandmark = (typeof VILLAGE_LANDMARKS)[number];
 export const VILLAGE_SETTLEMENT_LAYOUTS = ["plaza-ring", "street-grid", "clusters"] as const;
 export { VILLAGE_MORPHOLOGIES, type VillageMorphology } from "@/editor/tools/village/morphologyTypes";
 import type { VillageMorphology } from "@/editor/tools/village/morphologyTypes";
-export { RELIEF_STYLES, type ReliefStyle } from "@/editor/tools/village/relief";
-import type { ReliefStyle } from "@/editor/tools/village/relief";
+/** 마을 시공 계약의 지형 기복 어휘(옛 village/relief.ts — 숲마을 시공기와 함께 2026-10-07 지웠다). */
+export const RELIEF_STYLES = ["none", "hills"] as const;
+export type ReliefStyle = (typeof RELIEF_STYLES)[number];
 export type VillageSettlementLayout = (typeof VILLAGE_SETTLEMENT_LAYOUTS)[number];
 
 export type VillageResidentPlan = {

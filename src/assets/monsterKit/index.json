@@ -52,7 +52,7 @@
   "count": 2224,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "j9"
+  "run": "j10"
  },
  {
   "theme": "monster-rooms",
@@ -63,7 +63,7 @@
   "count": 1136,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "m2"
+  "run": "m4"
  },
  {
   "theme": "monster-wild",

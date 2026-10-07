@@ -1,6 +1,6 @@
 // 일본 도시(jp_city) 거리 건물의 문 ↔ 실내 맵을 한 번에 잇는다 — link_jp_city_interior.
 //   거리 쪽: 문 칸은 건물 맨 아래 줄이라 막혀 있다(밟히지 않음). 그래서 문 앞 접근칸(문 바로 아래 통행 칸)에
-//            밟으면 들어가는 발판을 둔다 — author_house 의 집 문(createHouseDoorStepEvent)과 같은 배치.
+//            밟으면 들어가는 발판을 둔다(옛 숲마을 집 문 발판과 같은 배치).
 //   실내 쪽: 장소 평면의 맨 아래 줄 출입구 틈(현관 문턱·자동문)이 나가는 발판이다. 도착은 틈 바로 위 칸.
 //   나올 때는 거리의 문 앞 한 칸 더 아래(발판을 다시 밟지 않게)에 내린다.
 // 실내는 등록 장소 id(place — 여러 층이면 층마다 새 맵, 첫 층에 잇는다) 또는 이미 있는 실내 맵(interiorMapId).
@@ -131,7 +131,7 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     if (!mapId) throw new ToolError("mapId 가 없고 지금 보는 맵도 없다 — 거리 jp_city 맵 id 를 준다", { code: "map-not-found" });
     const street = requireMap(draft, mapId);
     if (!isJpCityTileset(draft.tilesets[street.tilesetId])) {
-      throw new ToolError(`맵 ${mapId} 의 칩셋 ${street.tilesetId} 는 ${JP_CITY_ID} 가 아니다 — 일본 도시 거리 맵에서만 쓴다. 다른 칩셋 집은 author_house·create_transfer_pair`, { code: "tileset-family-mismatch", mapId });
+      throw new ToolError(`맵 ${mapId} 의 칩셋 ${street.tilesetId} 는 ${JP_CITY_ID} 가 아니다 — 일본 도시 거리 맵에서만 쓴다. 다른 칩셋 건물은 create_transfer_pair`, { code: "tileset-family-mismatch", mapId });
     }
     const place = typeof args.place === "string" && args.place.trim() ? args.place.trim() : "";
     const givenInterior = typeof args.interiorMapId === "string" && args.interiorMapId.trim() ? args.interiorMapId.trim() : "";

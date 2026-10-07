@@ -12,7 +12,7 @@ import {
 } from "@/battle/battleStates";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import { createBlankProject } from "@/project/defaults";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import type { Project, StateRecord } from "@/project/types";
 

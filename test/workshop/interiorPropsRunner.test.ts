@@ -96,6 +96,15 @@ describe("깨짐 검사·꼭대기 면 판정", () => {
     const padded = { ...item, padTop: 6 };
     expect(interiorHardCheck(padded, solid(box()), null).join()).toContain("위 패딩");
   });
+  it("귀퉁이: 지금 그림도 칠한 귀퉁이는 통과, 새로 칠한 귀퉁이 둘이면 배경, 새 기물은 네 귀퉁이 다일 때만", () => {
+    // 옷장처럼 밑변이 캔버스 끝까지 닿는 기물(번들 91종) — 지금 그림의 아래 두 귀퉁이가 칠해져 있다
+    const wide = box().map((r, y) => (y >= 4 ? r.map(() => "wood:4") : r));
+    expect(interiorHardCheck(item, solid(wide), solid(wide)).join()).not.toContain("귀퉁이");
+    expect(interiorHardCheck(item, solid(wide), null).join()).not.toContain("귀퉁이");
+    const all = box().map((r) => r.map(() => "wood:4"));
+    expect(interiorHardCheck(item, solid(all), solid(wide)).join()).toContain("귀퉁이");
+    expect(interiorHardCheck(item, solid(all), solid(box())).join()).toContain("귀퉁이");
+  });
   const verdict = (topRows: number | null): Verdict => ({ verdict: "PASS", codes: [], top: "윗판", topRows, reasons: "", fix: "", worse: false });
   it(`가구는 꼭대기 윗면 ${TOP_MIN}행 미만이면 FRONT 로 떨어뜨린다`, () => {
     const gated = interiorGate(item, verdict(2));
@@ -140,19 +149,19 @@ describe("interior-props 실행기", () => {
     await expect(runner.prepare(env)).resolves.toBeUndefined();
   });
 
-  it("방향: 있는 기물은 DIRECTIONS, 새 기물은 NEW_DIRECTIONS, 5장", async () => {
+  it("방향: 있는 기물은 DIRECTIONS, 새 기물은 NEW_DIRECTIONS, 3장", async () => {
     const runner = createInteriorRunner();
     const env = fakeEnv();
     await runner.prepare(env);
     await runner.prepare(env);
     expect(env.loaded.filter((u) => u.includes("interior-chipset")).length).toBe(1);
     const items = runner.items([{ key: "new:herb", title: "약초 걸이", description: "말린 약초", tilesW: 1, tilesH: 1, rise: 16, kind: "wall", category: "약방", use: [], refs: ["bookshelf"] }]);
-    expect(items.length).toBe(415);
+    expect(items.length).toBe(specObjects().length + 1);
     const existing = items.find((i) => i.key === "crate:cabbage")!;
     const fresh = items.find((i) => i.key === "new:herb")!;
     expect(runner.directions(existing)).toEqual(DIRECTIONS);
     expect(runner.directions(fresh)).toEqual(NEW_DIRECTIONS);
-    expect(runner.candidates).toBe(5);
+    expect(runner.candidates).toBe(3);
     expect(runner.currentGrid(fresh)).toBeNull();
   });
 

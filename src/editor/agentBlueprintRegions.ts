@@ -89,9 +89,7 @@ const RECT_LIST_KEYS: readonly string[] = ["hotspots", "wings"];
  * 그 영역은 IoU 로 맵 전체를 덮는 `clear` 칸을 이기고 나머지 칸을 전부 done 으로 밀어낸다.
  */
 const MAP_DIMENSION_TOOLS: ReadonlySet<string> = new Set([
-  "create_map", "resize_map", "generate_map", "build_castle",
-  "start_dungeon_room_session", "run_dungeon_room_pipeline",
-  "start_interior_room_session", "run_interior_room_pipeline",
+  "create_map", "resize_map", "generate_map",
 ]);
 
 export function blueprintRegionsForToolCall(toolName: string, args: Record<string, unknown>): BlueprintCallRegions {

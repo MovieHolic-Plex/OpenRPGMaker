@@ -4,6 +4,8 @@ import { createNewProjectSeed } from "../../../src/editor/genrePacks.ts";
 import { newProjectChoiceById } from "../../../src/editor/newProjectChoices.ts";
 import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "../../../src/project/defaults/defaultOpeningSequence.ts";
 import { normalizeGameDesignBrief, type GameDesignBrief } from "../../../src/project/gameDesignBrief.ts";
+import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset } from "../../../src/project/dialogueStyles.ts";
+import { withVerifiedPlayableSegment } from "../../../src/project/playableSegment.ts";
 import type { AiConfig } from "../../../src/ai/llmClient.ts";
 import type { Project } from "../../../src/project/types.ts";
 
@@ -35,5 +37,11 @@ export function buildBrowserSeed(input: QaBrief): { project: Project; brief: Gam
   if (opening && isUntouchedDefaultOpening(opening, project.meta.title)) {
     project.system.opening = briefOpeningSequence(opening, briefOpeningMotive(brief), project.meta.title);
   }
-  return { project: deserialize(serialize(project)), brief };
+  if (project.system.dialogueStyle === undefined) {
+    const dialogueStyle = brief.interview ? "pixel-cinematic" : recommendedDialogueStyleForPreset(brief.presetId);
+    if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) project.system.dialogueStyle = dialogueStyle;
+  }
+  // 끝낼 수 있는 첫 구간 뼈대 — 브라우저는 조수 턴 전에 코드가 깐다(projectInterviewStartup). 이게 있어야 팀이 첫 제작 단계(coreFirst)로 돈다.
+  const skeleton = withVerifiedPlayableSegment(project);
+  return { project: deserialize(serialize(skeleton ?? project)), brief };
 }

@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { captureStatusMultiplier, captureSuccessRate } from "@/project/monsterCollection";
 import { createBattleRuntime } from "@/battle/runtime";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import type { BattleRuntime } from "@/battle/types";
 import type { MonsterInstance } from "@/project/session";

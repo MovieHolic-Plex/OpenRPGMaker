@@ -65,6 +65,7 @@ import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
 import { mountAiStatusBar } from "./aiStatusBar";
+import { reportBackgroundBoard } from "./aiPresence";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
@@ -84,6 +85,7 @@ import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { createMapRunCard, type MapRunCard } from "./aiMapRunCard";
+import { sideThreads } from "./aiSideThreads";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { genId } from "@/util/id";
 import { createPendingWorkTracker } from "@/util/pendingWork";
@@ -2076,7 +2078,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
-    villageContract: plan.villageContract,
     ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
     planOnly: plan.planOnly,
     maxTurns: plan.maxTurns,
@@ -2273,7 +2274,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, start: () => done });
     return release;
   };
-  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput): Promise<void> => {
+  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }): Promise<void> => {
     const owner = conversationId;
     if (run.mapId && !store.getCurrent().maps[run.mapId]) throw new Error("보낸 맵이 사라졌어요");
     card.setStatus("의도 읽는 중…");
@@ -2297,7 +2298,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       focus: "visible-only",
       signal,
       onEvent: (event) => card.event(event),
-      onActivity: (state) => { phase = state.phase; },
+      onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
       onStoreCard: (request) => { storeCard = request; },
@@ -2323,9 +2324,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
     let ticketId: number | null = null;
+    const ticketRef: { id: number | null } = { id: null };
     const card = createMapRunCard({ mapName: exclusive ? "프로젝트 전체" : mapName, label: run.shown.replace(/\s+/gu, " ").trim().slice(0, 80),
       onCancel: () => { if (ticketId !== null) mapRunQueue().cancel(ticketId); } });
-    log.append(card.root);
+    // 다른 맵의 실행은 메인 대화가 아니라 「다른 스레드」 트레이에 둔다. 트레이가 없을 때(헤드리스)만 로그로 되돌아간다.
+    const tray = sideThreads();
+    if (tray) {
+      tray.adopt(card.root);
+      appendBubble("system", `↗ 「${exclusive ? "프로젝트 전체" : mapName}」 스레드에서 따로 진행해요 — 위 「다른 스레드」에서 볼 수 있어요`);
+    } else log.append(card.root);
     followConversationLog(log);
     let ticket: MapRunTicket | null = null;
     const unsubscribe = mapRunQueue().subscribe(() => {
@@ -2336,8 +2343,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (ticket.status !== "waiting" && ticket.status !== "running") unsubscribe();
     });
-    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (_ticket, signal) => runBackgroundMapTurn(card, signal, run) });
+    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
     ticketId = ticket.id;
+    card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
   };
   const send = async (): Promise<void> => {
@@ -3799,7 +3807,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mountResizeHandle();
   };
   applyAssistantViewPolicy();
-  commandMenu.replaceChildren(secondaryActions, ...composerMenu.items);
+  // 자주 쓰는 것만 펴 두고, 진단·저작 모달·유지보수는 「고급·진단」 한 칸으로 접는다(2026-10-08 옵션 정리).
+  const advancedMenu = el("details", { class: "ai-command-menu-advanced", dataset: { testid: "ai-command-menu-advanced" } });
+  advancedMenu.append(el("summary", { class: "ai-command-menu-advanced-summary", children: [el("span", { text: "고급·진단" }), el("span", { class: "ai-command-menu-meta", text: ` ${composerMenu.advanced.length}` })] }), ...composerMenu.advanced);
+  commandMenu.replaceChildren(secondaryActions, ...composerMenu.primary, advancedMenu);
   syncGlassIdle();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.

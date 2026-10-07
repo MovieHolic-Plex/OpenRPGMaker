@@ -1,0 +1,10 @@
+{
+  "inputMode": "natural",
+  "gates": {
+    "visual": {
+      "status": "pending"
+    }
+  },
+  "failure": "waitFor: Timeout 360000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('boot-loader') to be hidden\u001b[22m\n\u001b[2m    13 × locator resolved to visible <div role=\"status\" aria-live=\"polite\" data-progress=\"js\" id=\"oprn-boot-loader\" data-testid=\"boot-loader\">…</div>\u001b[22m\n",
+  "failurePhase": "editor-start"
+}

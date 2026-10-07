@@ -2,10 +2,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { backup, DatabaseSync } from 'node:sqlite';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
-import { createEmberQuestProject } from '../../../project/defaults/emberQuestGame';
+import { createCapabilityFixtureProject, fixtureEvent } from './capabilityFixture';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { createBlankProject } from '../../../project/defaults';
-import { COMBINED_TOWN_TILESET_ID } from '../../../project/defaults/constants';
+import { DEFAULT_TILESET_ID } from '../../../project/defaults/constants';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 import { execFileSync } from 'node:child_process';
 import { deserialize } from '../../../project/io';
@@ -18,7 +18,7 @@ export async function prepareWorldmapProof(root: string, selected?: string): Pro
   for (const id of ids) {
     const dir = resolve(root, id), projectDir = resolve(dir, 'project');
     // monster: 빈 프로젝트에서 조수 혼자 전체 몬스터 게임을 만든다(build_monster_game create 는 빈 프로젝트만 받는다).
-    const fresh = id.startsWith('monster') ? createBlankProject() : createEmberQuestProject();
+    const fresh = id.startsWith('monster') ? createBlankProject() : createCapabilityFixtureProject();
     // monster-followup: 이미 만든 몬스터 게임에 사용자가 이어서 고쳐 달라는 경우 — 캠페인은 모델 없이 같은 도구로 미리 깐다.
     let prebuilt: Project | undefined;
     if (id === 'monster-followup') {
@@ -50,11 +50,11 @@ export async function prepare(root: string, selected?: string): Promise<void> {
   for (const entry of cases) {
     const dir = resolve(root, entry.id), projectDir = resolve(dir, 'project');
     if (existsSync(resolve(dir, 'initial.json')) || existsSync(resolve(projectDir, 'project.sqlite'))) throw Error(`기존 실행 덮어쓰기 거부: ${dir}`);
-    const project = createEmberQuestProject();
+    const project = createCapabilityFixtureProject();
     // Minimal fixture, not authored game content. Keep the shipped database/assets
     // and a second map as a sentinel for accidental changes to another map.
     const original = project.maps[seed.mapId]!;
-    const map = createBlankMap('잿불 마을', 24, 18, COMBINED_TOWN_TILESET_ID);
+    const map = createBlankMap('잿불 마을', 24, 18, DEFAULT_TILESET_ID);
     map.id = seed.mapId;
     map.events = ['ev_ember_child', 'ev_ember_inn', 'ev_ember_guard'].map((id, i) => {
       const event = structuredClone(original.events.find(value => value.id === id)!);
@@ -62,10 +62,10 @@ export async function prepare(root: string, selected?: string): Promise<void> {
       for (const page of event.pages ?? []) page.movement = { type: 'fixed', speed: 3, frequency: 3 };
       return event;
     });
-    const other = createBlankMap('재진입 검증 맵', 24, 18, COMBINED_TOWN_TILESET_ID);
+    const other = createBlankMap('재진입 검증 맵', 24, 18, DEFAULT_TILESET_ID);
     other.id = 'map_capability_return';
     const portal = (id: string, target: string) => {
-      const event = structuredClone(original.events.find(value => value.id === 'ev_ember_gate_a')!);
+      const event = fixtureEvent('ev_ember_gate_a');
       event.id = id; event.x = 2; event.y = 8; event.trigger = { kind: 'action' };
       event.pages = [event.pages![0]!];
       event.pages[0]!.id = `${id}_page`; event.pages[0]!.name = '재진입 검증 문';

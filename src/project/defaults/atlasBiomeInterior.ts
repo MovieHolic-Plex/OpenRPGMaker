@@ -41,6 +41,7 @@ export function createAtlasBiomeInteriorTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     referenceDocuments: REFERENCES.filter((r) => r.tilesetId === ATLAS_BIOME_INTERIOR_ID).map((r) => structuredClone(r.category)),
+    roomKit: { builtin: ATLAS_BIOME_INTERIOR_ID },
   };
 }
 
@@ -81,8 +82,19 @@ export function ensureAtlasBiomeInteriorReferences(tileset: TilesetDef): boolean
   if (!isAtlasBiomeInteriorTileset(tileset) || tileset.id !== ATLAS_BIOME_INTERIOR_ID || tileset.referenceSourceTilesetId) return false;
   let changed = false;
   for (const { tilesetId, category } of REFERENCES) {
-    if (tilesetId !== tileset.id || (tileset.referenceDocuments ?? []).some((c) => c.id === category.id)) continue;
-    tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), structuredClone(category)];
+    if (tilesetId !== tileset.id) continue;
+    const existing = (tileset.referenceDocuments ?? []).find(c => c.id === category.id);
+    if (!existing) {
+      tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), structuredClone(category)];
+      changed = true;
+      continue;
+    }
+    // 같은 시트 판본에도 새 문서를 배포한다. 기존 문서·그림(저자 수정 포함)은 덮지 않는다.
+    const documents = category.documents.filter(d => !existing.documents.some(old => old.id === d.id));
+    const images = category.images.filter(i => !existing.images.some(old => old.id === i.id));
+    if (!documents.length && !images.length) continue;
+    const next = { ...existing, documents: [...existing.documents, ...structuredClone(documents)], images: [...existing.images, ...structuredClone(images)] };
+    tileset.referenceDocuments = tileset.referenceDocuments!.map(c => c === existing ? next : c);
     changed = true;
   }
   return changed;
@@ -100,7 +112,10 @@ export function ensureAtlasBiomeInteriorCurrent(project: InteriorProject, id: st
   const parked = detachWorkshopTiles(tileset);
   const changed = refreshAtlasBiomeInterior(project, id);
   const moved = parked ? attachWorkshopTiles(project, id, parked) : false;
-  return changed || moved;
+  const current = project.tilesets[id]!;
+  const kit = !current.roomKit;
+  if (kit) current.roomKit = { builtin: ATLAS_BIOME_INTERIOR_ID };
+  return changed || moved || kit;
 }
 
 /**

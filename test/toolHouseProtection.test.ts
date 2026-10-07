@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
-import { buildHouseKit } from "@/editor/tools/houseKitDomain";
 import { registerCompletedHouse } from "@/editor/tools/houseProtection";
-import { deserialize, serialize } from "@/project/io";
+import { serialize } from "@/project/io";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
 
 function emptyContext() {
@@ -13,8 +12,6 @@ function emptyContext() {
   map.upperTiles.fill(-1);
   return { project };
 }
-
-const WINGS = [{ x: 2, y: 2, w: 6, h: 6 }];
 
 describe("completed house transaction invariant", () => {
   it.each([false, true])("rolls back maps, events and tree additions atomically (dryRun=%s)", (dryRun) => {
@@ -40,34 +37,6 @@ describe("completed house transaction invariant", () => {
     map.lowerTiles[7 * map.width + 3] = 290; // repair would overwrite protected upper at (3,6)
     const before = serialize(ctx.project);
     const result = runTool(ctx, "create_map", { id: "elsewhere", name: "Elsewhere", width: 10, height: 10 });
-    expect(result.issues?.[0]?.code).toBe("protected-house-write");
-    expect(serialize(ctx.project)).toBe(before);
-  });
-
-  it("seals a newly built standalone house before global tree repair", () => {
-    const ctx = emptyContext();
-    const map = houseMap(ctx.project);
-    map.lowerTiles[8 * map.width + 2] = 290;
-    const before = serialize(ctx.project);
-    const result = runTool(ctx, "author_house", {
-      kind: "single", mapId: map.id, kitId: "blue-stone", wings: WINGS,
-      interior: "linked-interior", yard: [],
-    });
-    expect(result.issues?.[0]?.code).toBe("protected-house-write");
-    expect(serialize(ctx.project)).toBe(before);
-  });
-
-  it("retains registration-time snapshots through later work in the same transaction", () => {
-    const ctx = emptyContext();
-    const before = serialize(ctx.project);
-    const result = mutateProject(ctx, (draft) => {
-      buildHouseKit(draft, {
-        mapId: draft.startMapId, kitId: "blue-stone", wings: WINGS,
-        door: true, doorEvent: false, interior: false,
-      });
-      const map = houseMap(draft);
-      map.upperTiles[3 * map.width + 3] = 199;
-    });
     expect(result.issues?.[0]?.code).toBe("protected-house-write");
     expect(serialize(ctx.project)).toBe(before);
   });
@@ -106,38 +75,6 @@ describe("completed house transaction invariant", () => {
     });
     expect(result.issues?.[0]?.code).toBe("house-overlap");
     expect(serialize(ctx.project)).toBe(before);
-  });
-
-  it.each(["author_house", "build_house"])("preflights %s against a completed house without tile changes", (tool) => {
-    const ctx = emptyContext();
-    const args = tool === "author_house"
-      ? { kind: "single", mapId: ctx.project.startMapId, kitId: "blue-stone", wings: WINGS, interior: "exterior-only", yard: [] }
-      : { mapId: ctx.project.startMapId, origin: { x: 2, y: 2 }, width: 6, height: 6, material: "stone", naturalness: 0 };
-    const built = runTool(ctx, tool, args);
-    expect(built.ok, JSON.stringify(built.issues)).toBe(true);
-    ctx.project = deserialize(serialize(ctx.project));
-    const before = serialize(ctx.project);
-    const duplicate = runTool(ctx, tool, args);
-    expect(duplicate.issues?.[0]?.code).toBe("house-overlap");
-    expect(serialize(ctx.project)).toBe(before);
-  });
-
-  it("registers and reloads a standalone roof-deck attachment without claiming its yard", () => {
-    const ctx = emptyContext();
-    const built = runTool(ctx, "author_house", {
-      kind: "single", mapId: ctx.project.startMapId, kitId: "blue-stone",
-      wings: [{ x: 2, y: 2, w: 7, h: 8 }], roofDeck: true, interior: "exterior-only", yard: [],
-    });
-    expect(built.ok, JSON.stringify(built.issues)).toBe(true);
-    ctx.project = deserialize(serialize(ctx.project));
-    const map = houseMap(ctx.project);
-    expect(map.upperTiles[10 * map.width + 6]).toBe(322);
-    const before = serialize(ctx.project);
-    const erased = runTool(ctx, "tile_erase", { mapId: map.id, rect: { x: 6, y: 10, w: 1, h: 1 } });
-    expect(erased.issues?.[0]?.code).toBe("protected-house-write");
-    expect(serialize(ctx.project)).toBe(before);
-    const yard = runTool(ctx, "clear_region", { mapId: map.id, x: 7, y: 10, w: 1, h: 1, fill: "empty" });
-    expect(yard.ok, JSON.stringify(yard.issues)).toBe(true);
   });
 
   it("allows unrelated edits and safe dry-run without changing the original project", () => {

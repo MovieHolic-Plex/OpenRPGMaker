@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
@@ -9,8 +9,7 @@ import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
-import { BEODEUL_GROUND_POLICY_LINE, HOUSE_VARIETY_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
-import { MODERN_TILESET_POLICY_LINE } from '../modernTilesetPolicy';
+import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 
@@ -47,14 +46,14 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "기존 높이 지형 수정: inspect_terrain({mapId,includeCatalog:false})에서 features의 id/options, 집의 placementId/parts와 잠금 칸을 읽는다. 윤곽·능선·계곡·호수는 design_terrain editId, 도로는 lay_terrain_road editId를 사용한다. 생략한 점·설정은 유지되며 폭만 바꾸려고 새 지형을 겹쳐 만들지 않는다. 기존 버들항 조립 집의 지붕만 넓히려면 resize_terrain_house_roof를 사용한다. 잠금과 집 전체/문 앞 높이를 보존하고 마지막 수정 뒤 모든 집의 실제 통행과 그림을 다시 확인한다.",
     "절벽 위 집/입체 지형: sculpt_relief 또는 design_terrain으로 높이와 집터를 만들고, inspect_terrain.houseKits의 원본 외관 kitId를 고르되 catalog.nextOffset으로 다음 쪽도 조회하고 place_terrain_house로 평평한 집터에 놓는다. 다양한 집 요청에는 원본의 탑·박공·비대칭 날개·긴 집 등 서로 다른 형태를 골라야 하며, houseStyles의 색만 바꾼 조립식 집으로 대신하지 않는다. 크기/지붕 폭 조절을 요청했을 때만 houseStyles를 쓴다. 버들항은 이 집 도구를 쓰며 옛 author_house 재료로 대체하지 않는다. lay_terrain_road는 실제 매끈한 경사로를 자동 연결한다. 필요하면 place_terrain_ramp로 보완한다. 마지막에 inspect_terrain과 check_terrain_access(from, 모든 doorFront)로 집터 평탄성·출발점→문 앞 통행을 확인한다. 경사로 없이 평면 길만 칠해 놓고 고지에 도달한다고 보고하지 않는다. 시야 차단은 기본 꺼짐이다.",
     "버들항 살림집 bd-house-h101_0의 문 열림은 공용 apply_beodeul_door_animation(mapId,eventId,frameMs?) 도구로 기존 양방향 출입구에 적용한다. find_tools로 찾는다. 다른 문 그림에 이 시안을 억지로 덮지 않는다.",
+    "출입구는 문 그림·밟는 문앞·반대편 착지·귀환을 함께 확인한다. place_door 결과 data.transferEndpoint는 문 하단이 아닌 바로 앞 통행 칸이며 create_transfer_pair의 a/b 또는 link_maps의 from/to에 그대로 넣는다. 집 배치 도구가 돌려준 doorFront를 연결할 때도 실제 문 하단 doorAt을 함께 전달한다. 문앞이 막혔다고 옆 빈칸에 이동 이벤트만 대신 놓지 않는다. 장애물과 길을 고친 다음 같은 문앞에 다시 연결한다. 착지 칸에는 출구 이벤트·가구를 겹치지 않으며, 방 안에서 출구까지 걸어 닿아야 한다.",
     BEODEUL_GROUND_POLICY_LINE,
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
     USER_FACING_REPORT_RULE,
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
     ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
     ...scope,
-    MODERN_TILESET_POLICY_LINE,
-    `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_village(숲마을 생성기) 가 아니라 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
+    `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·사막이면 버들항 마을은 author_beodeul_town theme:"snow"·"desert" 로 짓고, 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
     HAND_INTERIOR_POLICY_LINE,
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...jpCityPromptLines(project, mapIds),
@@ -71,14 +70,12 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "사용자가 기존 완성 장면의 복사/그대로 재현을 요청한 경우에만 list_shared_scenes → inspect_shared_scene → read_spatial_reference의 전체 문서/그림 → build_shared_scene을 사용한다. 그 결과는 원본 장면 사본이라고 보고한다. 도시와 연결된 시설 전체는 links:include, 독립 시설의 외부 연결 생략은 links:omit을 명시하고 누락을 보고한다. 반환된 새 맵 ID로 실제 그림을 확인한다.",
     "네 지식밖의 사실은 web_search 로 확인한다. (a) 최신 사실 — 버전·릴리스·요금·현행 표준. (b) 사용자가 실존 작품을 비유한 경우(‘해리포터 같은’, ‘OO 느낌으로’) — 그 작품의 분위기·장소·직업·사건 구조를 검색해 설계의 근거로 삼는다. 암기로 바로 쓰지 말고 최소 한 번은 검색해 사실을 고정한 뒤 계획을 세운다 — 그러지 않으면 세계관이 사용자의 기대와 달라진다. 고유명사(인물·지명·마법 이름)는 그대로 쓰지 않고 새 이름을 짓는다. 검색 결과를 사용자에게 전할 때는 근거 URL을 밝힌다. 프로젝트 안의 사실은 검색하지 말고 프로젝트 조회 도구로 읽는다.",
     "완료하면 무엇을 했는지 한두 문장으로 보고하고 종료한다. 사용자에게 되묻지 않는다 — 판단이 필요하면 합리적인 기본값을 택하고 보고에 적는다(예외: 칩셋 계열 변경은 ask_tileset_change, 없는 타일은 ask_missing_tiles 로 묻는다).",
-    // 집 규칙은 채팅 세션과 같은 문장을 쓴다 — 툴 설명만으로는 모델이 templateId 를 비워 사각형만 깔았다(2026-09-17).
-    HOUSE_VARIETY_POLICY_LINE,
     TILESET_FAMILY_POLICY_LINE,
     STORE_TILE_SOURCE_POLICY_LINE,
   ];
 }
 
-/** 참고문서가 네 층 타일셋이라고 선언하는 표지 — 용도 첫 문서의 첫 줄(scripts/content/rasak/build_assistant_pack.py 가 쓴다). */
+/** 참고문서가 네 층 타일셋이라고 선언하는 표지 — 용도 첫 문서의 첫 줄(옛 Rasak 조수 팩 생성기가 쓰던 표지 — 사용자가 가져온 네 층 팩 문서도 같은 표지를 쓸 수 있다). */
 export const FOUR_LAYER_REFERENCE_MARKER = "layer-model: mz4";
 
 /**

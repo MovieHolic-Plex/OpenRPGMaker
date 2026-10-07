@@ -1,7 +1,5 @@
 import { openNewPlaceDialog } from "./spatialNewPlaceDialog";
 import { regionReferenceImage, regionReferenceInspector } from "./regionReferenceView";
-import { renderWorldGenTab } from "@/editor/panels/databaseWorldGenView";
-import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import { renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { listSpatialGalleryCards, spatialCardById, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
@@ -266,10 +264,6 @@ function renderLegacyStage(session: SpatialAuthoringSession, rerender: () => voi
     renderTilesetSpacesTab(host, rerender);
     return host;
   }
-  if (session.legacyOrigin === "worldGen" && session.tab === "regions") {
-    renderWorldGenTab(host, rerender);
-    return host;
-  }
   return null;
 }
 
@@ -278,17 +272,6 @@ export function renderSpatialCanvas(
   card: SpatialGalleryCard | undefined,
   rerender: () => void,
 ): HTMLElement {
-  // 기존 마을 설계는 지역 탭의 레거시 스테이지 — 레시피(집 형태·설계서) 편집 표면을 그대로 띄운다.
-  if (session.legacyOrigin === "villages" && session.tab === "regions") {
-    const host = el("div", { class: "spatial-legacy-host" });
-    renderVillageTab(host, rerender);
-    return el("div", {
-      class: "spatial-canvas",
-      attrs: { tabindex: "0", "aria-label": "장소 캔버스" },
-      dataset: { testid: "spatial-canvas" },
-      children: [host],
-    });
-  }
   if (session.tab === "tiles") return renderSpatialTilesCanvas(session, card, rerender);
   if (session.tab === "objects") return renderSpatialObjectsCanvas(session, card);
   if (session.tab === "spaces") return renderSpatialSpacesCanvas(session, card, rerender);

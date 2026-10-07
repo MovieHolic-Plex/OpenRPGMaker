@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "reviewer": "codex-root",
+  "notes": "집 문과 접근로가 같은 열에 있고 문앞 착지에 기물이 없다. 실내는 침대·탁자·의자가 보이며 남쪽 출구와 착지 바닥이 비어 있다. 마을 동쪽과 들판 서쪽 왕복 후 캐릭터가 각각 경계의 빈 잔디에 서 있다. 적용·재로드 그림의 집과 도로가 같다. 동쪽 출구는 길 끝과 떨어진 잔디 한 칸으로 발견하기 어려워 시각 유도 보정이 남는다. 전체 SQLite 문서 SHA 불일치 관문은 실패로 유지한다.",
+  "resultDigest": "d966526eebfec3c3e85c0a5849e60cb31a21f11d764f5d8dfaa5075b44d484f9",
+  "images": [
+    {
+      "file": "after.png",
+      "sha256": "5e8565dbafeb876ead8113096f0db5f08b3a3f0f3af89f164a79a6d882ba5d8e"
+    },
+    {
+      "file": "reloaded.png",
+      "sha256": "c7492705cea2a37a4982b119cf65ca4061b2f9f8163ef04b0d3118f2051f0b73"
+    },
+    {
+      "file": "runtime-key-taps-r2/11-enter-0-9.png",
+      "sha256": "6a02bdd4c53a360d96ecbbdab4e3a7dc1a8bd4e7375676798c54b894c5a0c81a"
+    },
+    {
+      "file": "runtime-key-taps-r2/13-arrival-stable-0.png",
+      "sha256": "f2c07a70083de4c3494f3a49eecb56c56ecbbdafa1cc12eb4db490959232ffc5"
+    },
+    {
+      "file": "runtime-key-taps-r2/15-returned-0.png",
+      "sha256": "e2565460c7d9d771997011a4137db224588b9c394fdb4ec4d7cf4dcbbb7bc8c9"
+    },
+    {
+      "file": "runtime-key-taps-r2/52-enter-1-37.png",
+      "sha256": "dedb1dc64f9766050fd0693879885202edee75a90934c1ebd1c295ef1cc6b0ca"
+    },
+    {
+      "file": "runtime-key-taps-r2/54-arrival-stable-1.png",
+      "sha256": "873e8ee9451b1a4b224f73b912e76b0d024be27983afbddb42003385b80351d7"
+    },
+    {
+      "file": "runtime-key-taps-r2/56-returned-1.png",
+      "sha256": "d842dc46d9004c1aeb2f3a550c16f76ffebe6815ba77d7893c66ac3782acb19f"
+    }
+  ]
+}

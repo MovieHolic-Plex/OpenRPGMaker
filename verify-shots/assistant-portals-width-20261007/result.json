@@ -1,0 +1,166 @@
+{
+  "inputMode": "natural",
+  "gates": {
+    "visual": {
+      "status": "pending"
+    },
+    "data": {
+      "status": "fail",
+      "checks": [
+        {
+          "id": "native-pi-completed",
+          "ok": true,
+          "detail": "실제 입력창·모델 응답 완료, 오류 없음"
+        },
+        {
+          "id": "house-door-linked",
+          "ok": true,
+          "detail": "첫 집의 실제 원본 문앞: {\"x\":6,\"y\":9}"
+        },
+        {
+          "id": "east-edge-linked",
+          "ok": true,
+          "detail": "마을 동쪽 맵 끝에서 들판 연결"
+        },
+        {
+          "id": "interior-authored",
+          "ok": true,
+          "detail": "손 도트 실내 가구 배치 존재"
+        },
+        {
+          "id": "house-exit-width-matched",
+          "ok": true,
+          "detail": "첫 집 문 폭 1칸과 실내의 실제 남쪽 틈 폭·귀환 이벤트 일치(start 선언과 무관)"
+        },
+        {
+          "id": "start-preserved",
+          "ok": true,
+          "detail": "시작 맵·위치 보존"
+        },
+        {
+          "id": "sentinel-preserved",
+          "ok": true,
+          "detail": "기존 표본 맵 전체 보존"
+        },
+        {
+          "id": "sqlite-reloaded",
+          "ok": false,
+          "detail": "동일 SQLite SHA·새 브라우저 context의 저장본 재로드"
+        },
+        {
+          "id": "house-raster-bd-house-village-cream",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        },
+        {
+          "id": "house-raster-bd-house-village-brick",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        },
+        {
+          "id": "house-raster-bd-house-village-stone",
+          "ok": true,
+          "detail": "설치된 원본 집 전체 도트와 좌표 일치"
+        }
+      ]
+    },
+    "runtime": {
+      "pass": false,
+      "detail": "실제 통행 경로 없음: map_portal_village (1,14)→(6,9)"
+    }
+  },
+  "modelRequests": [
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791379147917
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "bb6d302b-d88b-4a53-9461-a2e7ef98b2d3",
+      "at": 1791379155706
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "bb6d302b-d88b-4a53-9461-a2e7ef98b2d3",
+      "at": 1791379161341
+    },
+    {
+      "endpoint": "/v1/agent/run",
+      "model": "gemini-3.8-flash",
+      "runId": "dc2c3101-574d-44bd-a38a-421c0574259b",
+      "at": 1791379207923
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791379415077
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791379415083
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791379415096
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "at": 1791379415138
+    }
+  ],
+  "persistence": {
+    "projectId": "58452846-cb30-4e86-bddb-331c16bcc799",
+    "projectDir": "/home/main/.codex/worktrees/0035/rpg-zzu/qa-runs/harnesses/assistant-capability/20261007-portals-width-real-r1/map-portals/project",
+    "beforeRevision": 2,
+    "afterRevision": 18,
+    "afterSha256": "e144b22e77604dae11e5e31ea678f647f4c6b7d5e707b44348bbb22591834af8",
+    "reloadedSha256": "941c45453a0e8d4182ccb3047020dad3558b2955667e620f22646941d6175d87",
+    "sameTarget": true,
+    "sameStoredDocument": false,
+    "reloadEqual": true,
+    "flush": {
+      "kind": "saved",
+      "dirty": false
+    },
+    "indexedDb": {
+      "exists": true,
+      "conversations": 0,
+      "userEntries": 0
+    }
+  },
+  "portals": [
+    {
+      "mapId": "map_portal_village",
+      "x": 6,
+      "y": 9,
+      "target": {
+        "y": 5,
+        "mapId": "map_house1_interior",
+        "x": 4,
+        "kind": "transfer"
+      }
+    },
+    {
+      "mapId": "map_portal_village",
+      "x": 39,
+      "y": 14,
+      "target": {
+        "mapId": "map_outer_field",
+        "y": 14,
+        "kind": "transfer",
+        "x": 1
+      }
+    }
+  ]
+}

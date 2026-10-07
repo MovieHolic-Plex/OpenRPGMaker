@@ -1,4 +1,4 @@
-// 맵별 실행 카드 — 다른 맵에서 같이 도는(또는 같은 맵에서 차례를 기다리는) 조수 실행 하나를 채팅 로그에 보여 준다(2026-10-03).
+// 맵별 실행 카드 — 다른 맵에서 같이 도는(또는 같은 맵에서 차례를 기다리는) 조수 실행 하나를 보여 준다(2026-10-03). 메인 대화(로그)에는 들어가지 않고 aiSideThreads 트레이에 올라간다(2026-10-08).
 //
 // 앞에서 도는 실행은 패널의 상태줄·작업 카드·캔버스 카드를 쓴다. 그 자리는 하나뿐이라, 같이 도는 실행은 각자 이 카드에
 // 맵 이름·상태·최근 단계·조수 말·중단 단추를 갖는다. 실행 본문은 aiChatPanel 이 aiMapRunQueue 로 돌린다.
@@ -89,6 +89,7 @@ export function createMapRunCard(input: { readonly mapName: string; readonly lab
       process.append(element);
     },
     attachPrompt(element) {
+      root.dataset.review = "1";
       messages.append(element);
     },
     finish(outcome) {

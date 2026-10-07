@@ -35,7 +35,7 @@ const ROOT = process.cwd();
 const SRC_DIR = join(ROOT, "src");
 
 // 게이트가 책임지는 CSS 우주. 이 밖(예: node_modules)의 파일은 도달 계산에만 쓰고 위반 판정은 안 한다.
-const CSS_ROOTS = ["src/styles", "src/player", "src/benchmark"];
+const CSS_ROOTS = ["src/styles", "src/player"];
 
 // 엔트리는 하드코딩하지 않고 src/**/*.ts 의 `import "....css"` 로 **발견**한다.
 // 엔트리가 늘거나 옮겨져도 게이트가 따라가야 하기 때문이다. 목록·폴백은 scripts/lib/css-entries.mjs.

@@ -49,7 +49,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부). " +
     "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
-    "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 author_house 로 놓지 말 것. 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
+    "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
   domains: ["map"],
   preservesAuthoredRaster: true,
@@ -241,7 +241,7 @@ function buildTown(draft: Project, args: Record<string, unknown>): ToolExecResul
     if (existing.tilesetId !== BEODEUL_TILESET_ID && !kitsOf(draft.tilesets[existing.tilesetId]).has("bd-block-res-20x13")) {
       throw new ToolError(
         `맵 ${mapId} 는 버들항 타일셋이 아니다(${existing.tilesetId}). author_beodeul_town 은 버들항 맵에서만 쓴다. ` +
-          "같은 계열의 마을은 author_village 로, 버들항으로 바꾸려면 사용자에게 칩셋 변경을 먼저 물어라.",
+          "버들항으로 바꾸려면 사용자에게 칩셋 변경(ask_tileset_change)을 먼저 물어라.",
         { code: "beodeul-tileset-required", mapId },
       );
     }

@@ -1,0 +1,16 @@
+{
+  "foldedDocumentOnly": true,
+  "changedPaths": [
+    {
+      "path": ".tilesets.beodeul_ground.$blob",
+      "before": "8ddc5bdea34c877029e1e72e18651af3e4e4784867c688f7eddc251ca233b64f",
+      "after": "6eb7492bc3317cdd4efc09885a7578944bdb7281d4306303b2cb73a470ba8079"
+    },
+    {
+      "path": ".tilesets.beodeul_architecture.$blob",
+      "before": "1ebe215fe678f4841beae0b6f634297843cab8495d67a958e828f302458a4d31",
+      "after": "53560384d959d083041072e403d3f76ca3fabbb7acd2fea0a272275a47ad9d94"
+    }
+  ],
+  "oldBlobBodiesUnavailableAfterGc": true
+}

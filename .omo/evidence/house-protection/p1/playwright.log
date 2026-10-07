@@ -1,8 +1,0 @@
-
-Running 4 tests using 1 worker
-
-[1/4] [chromium] › test/e2e/ai-house-protection.spec.ts:78:3 › completed house survives same-turn destruction with selection
-[2/4] [chromium] › test/e2e/ai-house-protection.spec.ts:78:3 › completed house survives same-turn destruction with confirmDestroy
-[3/4] [chromium] › test/e2e/ai-house-protection.spec.ts:78:3 › completed house survives same-turn destruction with overExisting-clear
-[4/4] [chromium] › test/e2e/ai-house-protection.spec.ts:78:3 › completed house survives same-turn destruction with overExisting-keep
-  4 passed (4.9m)

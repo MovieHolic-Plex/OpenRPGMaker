@@ -1,5 +1,6 @@
 import { r2ConfigFromEnv, type R2Config } from "./r2";
 import { randomBytes } from "node:crypto";
+import { DEFAULT_HOLD_WORDS, parseHoldWords } from "./moderation";
 
 /** 환경 변수 → 설정. 비밀값은 환경에서만 읽고 어디에도 쓰지 않는다. */
 export interface StoreConfig {
@@ -16,8 +17,12 @@ export interface StoreConfig {
   readonly contactEmail: string;
   /** 승인된 공개 상품이 이 수 미만인 작가의 새 상품은 사전 확인(pending)을 거친다. */
   readonly trustThreshold: number;
+  /** 상품 글에 이 낱말이 있으면 신뢰 작가라도 운영자 확인 대기로 보낸다(moderation.ts). */
+  readonly holdWords: readonly string[];
   /** 서로 다른 신고자 수가 이 값에 닿으면 자동으로 숨긴다. */
   readonly reportHideThreshold: number;
+  /** 한 IP 가 1분에 만들 수 있는 상품·판본 수. */
+  readonly createPerMinute: number;
   /** 한 사람이 한 시간에 올릴 수 있는 blob 바이트. 디스크를 채우는 공격을 막는다. */
   readonly uploadBytesPerHour: number;
   readonly trustProxy: boolean;
@@ -58,7 +63,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): StoreConfig {
     } : null,
     contactEmail: env.STORE_CONTACT_EMAIL ?? "admin@openrpgmaker.com",
     trustThreshold: Number(env.STORE_TRUST_THRESHOLD ?? 3),
+    holdWords: [...(env.STORE_HOLD_WORDS_DEFAULTS === "0" ? [] : DEFAULT_HOLD_WORDS), ...parseHoldWords(env.STORE_HOLD_WORDS)],
     reportHideThreshold: Number(env.STORE_REPORT_HIDE_THRESHOLD ?? 3),
+    createPerMinute: Number(env.STORE_CREATE_PER_MINUTE ?? 20),
     uploadBytesPerHour: Number(env.STORE_UPLOAD_BYTES_PER_HOUR ?? 1024 * 1024 * 1024),
     trustProxy: env.STORE_TRUST_PROXY === "1",
     secret: env.STORE_SECRET?.trim() || randomBytes(32).toString("hex"),

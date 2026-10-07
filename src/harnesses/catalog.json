@@ -308,6 +308,41 @@
       "workshopRunner": true
     },
     {
+      "id": "map-objects",
+      "title": "공방 · 맵 기물 (16px, 지금 맵 칩셋)",
+      "summary": "지금 맵의 칩셋(16px)에 없는 물건(나무·바위·간판·조각상·바닥 무늬…)을 그 칩셋에서 뽑은 팔레트와 닮은 물체를 기준으로 새로 찍는다. 후보 3장 → 기계 검사 → 독립 검수(화풍·읽힘·3/4) → 최대 3번 다시 그린 뒤 사람이 고르고, 고른 것을 그 칩셋에 굽는다.",
+      "scope": {},
+      "triggers": [
+        "조수가 필요한 타일이 없다고 물었고 사용자가 스토어 대신 「직접 그려 줘」를 골랐을 때(손 도트 실내가 아닌 맵)",
+        "에디터 사용자가 지금 맵 칩셋에 물건 하나를 자기 AI 계정으로 그려 넣고 싶을 때(왼쪽 막대 「공방」)"
+      ],
+      "seed": "src/harnesses/map-objects/editor/prompts.ts",
+      "doc": "openwiki/harnesses/map-objects.md",
+      "stages": [
+        {
+          "id": "draw",
+          "title": "후보 그리기",
+          "summary": "기물 하나에 후보 3장(방향 A~C). 팔레트는 그 칩셋 색, 기준은 그 칩셋의 닮은 물체·시트 조각."
+        },
+        {
+          "id": "review",
+          "title": "독립 검수",
+          "summary": "다른 대화의 vision 모델이 화풍(STYLE)·읽힘(READ)·3/4(FRONT·TOPDOWN)·배경(BG)을 본다."
+        },
+        {
+          "id": "pick",
+          "title": "고르고 굽기",
+          "summary": "사람이 고르면 그 칩셋 끝에 칸을 붙이고 물체(workshop:…)를 만든다. 조수는 stamp_tileset_object 로 놓는다."
+        }
+      ],
+      "entrypoints": {
+        "cli": false,
+        "editorUi": true,
+        "assistantTool": false
+      },
+      "workshopRunner": true
+    },
+    {
       "id": "jp-city",
       "title": "일본 도시 칩셋 도트 (jp_city · modern3)",
       "summary": "번들 타일셋 jp_city 에 넣을 주택가·역·공원·신사 그림(건물 부품·소품·바닥 타일·여러 칸 키트) 후보를 3/4 시점으로 찍는다. 항목마다 작업자 5명이 다른 방향으로 pxgrid 램프 격자에 한 글자씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 고른 결과는 harness-data/jp-city/picked/ 까지만 남기고, 시트에 굽는 일은 scripts/content/jp-city/bake_jp.py 가 한다. 다른 타일셋은 별도 하네스다.",
@@ -707,6 +742,21 @@
       "seed": "harness-data/assistant-capability/seed.json",
       "doc": "openwiki/harnesses/assistant-capability.md",
       "stages": [
+        {
+          "id": "portals",
+          "title": "출입구 실제 수행",
+          "summary": "격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다."
+        },
+        {
+          "id": "portal-controls",
+          "title": "출입구 결함 반례",
+          "summary": "막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다."
+        },
+        {
+          "id": "portal-recheck",
+          "title": "저장 출입구 플레이 재관측",
+          "summary": "모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다."
+        },
         {
           "id": "film-worldmaps",
           "title": "월드맵 실제 녹화",

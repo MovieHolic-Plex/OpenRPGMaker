@@ -37,6 +37,10 @@ export interface AiActionMenuActions {
 export interface AiActionMenuItems {
   /** 메뉴 컨테이너에 그대로 넣을 항목들(선언 순서 = 표시 순서). */
   readonly items: readonly HTMLButtonElement[];
+  /** 자주 쓰는 항목 — 컴포저 메뉴는 이것만 바로 펼친다(2026-10-08). */
+  readonly primary: readonly HTMLButtonElement[];
+  /** 개발·진단·저작 모달·유지보수 항목 — 「고급·진단」 접힘 안으로 보낸다. */
+  readonly advanced: readonly HTMLButtonElement[];
   readonly setHistoryOpen: (open: boolean) => void;
   readonly setAcceptanceState: (hasSnapshot: boolean, hidden: boolean) => void;
 }
@@ -45,7 +49,7 @@ export interface AiActionMenuItems {
 export type AiActionMenuMeta = Partial<Record<"compact" | "instructions" | "tools" | "settings", () => string | null>>;
 
 interface ItemSpec {
-  readonly key: keyof AiActionMenuMeta | "export" | "usage-log" | "history" | "wiki" | "acceptance";
+  readonly key: keyof AiActionMenuMeta | "export" | "usage-log" | "history" | "wiki" | "acceptance" | "authoring";
   readonly label: string;
   readonly icon: DeckIconName;
   readonly testid: string | null;
@@ -64,7 +68,7 @@ export function createAiActionMenuItems(options: {
   const itemClass = header ? "ai-more-menu-item" : "ai-command-menu-item";
   // 데크(2026-09-03): 아이콘 + 라벨 + 오른쪽 메타. 텍스트만 있던 6줄 목록이 640px 팝오버의 절반을 비웠다.
   const build = (spec: ItemSpec): HTMLButtonElement => {
-    const metaText = spec.key === "export" || spec.key === "usage-log" || spec.key === "history" || spec.key === "wiki" || spec.key === "acceptance" ? null : options.meta?.[spec.key]?.() ?? null;
+    const metaText = spec.key === "export" || spec.key === "usage-log" || spec.key === "history" || spec.key === "wiki" || spec.key === "acceptance" || spec.key === "authoring" ? null : options.meta?.[spec.key]?.() ?? null;
     return el("button", {
       class: itemClass,
       attrs: {
@@ -164,21 +168,24 @@ export function createAiActionMenuItems(options: {
   };
   setAcceptanceState(false, false);
 
+  const authoring = options.actions.openAuthoring ? ([['quests', '퀘스트 프리셋'], ['presets', '플레이 프리셋'], ['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const).map(([tab, label]) => build({
+    key: 'authoring', icon: 'book', label, testid: `feature16-open-${tab}-${options.variant}`,
+    run: () => options.actions.openAuthoring?.(tab),
+  })) : [];
+  const wiki = options.actions.refreshWiki ? [build({
+    key: "wiki", icon: "book", label: "이전 대화로 설정집 정리",
+    testid: header ? "ai-more-wiki" : "ai-command-menu-wiki",
+    run: options.actions.refreshWiki,
+  })] : [];
+  const primary = [instructions, settings, ...(acceptance ? [acceptance] : [])];
+  const advanced = [compact, ...authoring, ...wiki, exportItem, usageLog, history, tools];
+
   return {
     setHistoryOpen,
     setAcceptanceState,
-    items: [
-      compact, instructions,
-      ...(options.actions.openAuthoring ? ([['quests', '퀘스트 프리셋'], ['presets', '플레이 프리셋'], ['library', '프롬프트 라이브러리'], ['dialogue', '대사 목록·문체 검토'], ['inspector', '프롬프트 검사기']] as const).map(([tab, label]) => build({
-        key: 'tools', icon: 'book', label, testid: `feature16-open-${tab}-${options.variant}`,
-        run: () => options.actions.openAuthoring?.(tab),
-      })) : []),
-      ...(options.actions.refreshWiki ? [build({
-        key: "wiki", icon: "book", label: "이전 대화로 설정집 정리",
-        testid: header ? "ai-more-wiki" : "ai-command-menu-wiki",
-        run: options.actions.refreshWiki,
-      })] : []),
-      exportItem, usageLog, history, tools, settings, ...(acceptance ? [acceptance] : []),
-    ],
+    primary,
+    advanced,
+    // 헤더(숨은 툴바) 메뉴는 예전 순서를 유지한다.
+    items: [compact, instructions, ...authoring, ...wiki, exportItem, usageLog, history, tools, settings, ...(acceptance ? [acceptance] : [])],
   };
 }

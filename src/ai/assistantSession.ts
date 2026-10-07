@@ -38,9 +38,8 @@ import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
-import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
+import { getTool, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
-import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
 import type { ToolContext, ToolResult } from "@/editor/tools";
 import {
   harnessToolReason,
@@ -312,7 +311,6 @@ import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
-import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
 import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
@@ -4194,31 +4192,6 @@ export class AssistantSession {
     return { kind: "done", beforeTokens: contextTokens, afterTokens: compactedTokens, summary };
   }
 
-  /**
-   * 뷰포트 같은 라이브 상태는 순수 도구 안이 아니라 호출 경계에서 구체적인 인자로 고정한다.
-   * 그래야 프리뷰와 나중 적용이 같은 영역을 시공하고, 감사 로그 재생도 카메라 위치에 흔들리지 않는다.
-   */
-  private resolveToolCallArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
-    if (name !== "author_village") return args;
-    const target = args.target;
-    if (!isRecord(target) || target.kind !== "existing" || target.bounds !== undefined) return args;
-    if (target.fullMap === true || args.fullMap === true) return args;
-    const mapId = target.mapId;
-    if (typeof mapId !== "string") return args;
-    const snapshot = resolveContextViewport(this.contextOptions);
-    if (!snapshot || snapshot.mapId !== mapId) return args;
-    const map = this.ctx.project.maps[mapId];
-    if (!map) return args;
-
-    const normalized = normalizeToolArgs(name, args);
-    const normalizedTarget = normalized.target;
-    if (!isRecord(normalizedTarget)) return args;
-    return {
-      ...normalized,
-      target: { ...normalizedTarget, bounds: viewportVillageBounds(snapshot, map) },
-    };
-  }
-
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
     if (!SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
     const mapId = toolTargetMapId(proposal.args);
@@ -5139,7 +5112,7 @@ export class AssistantSession {
       for (const call of toolCalls) {
         const parsedCall = parseToolCall(call);
         const name = parsedCall.name;
-        const split = splitToolCallReason(this.resolveToolCallArgs(name, parsedCall.args));
+        const split = splitToolCallReason(parsedCall.args);
         const args = split.args;
         const callReason = split.reason;
         const tool = getTool(name);
@@ -5512,9 +5485,6 @@ export class AssistantSession {
           }
           if (name === "preview_choreography" && toolResult.ok) {
             roundImages.push(...await operation.wait(retroChoreographyPreviewImages(toolResult.data)));
-          }
-          if (name === "author_village" && toolResult.ok) {
-            roundImages.push(...await operation.wait(villageReferenceImages(toolResult.data)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).

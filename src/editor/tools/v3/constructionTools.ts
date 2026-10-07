@@ -9,7 +9,6 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { worldmapAutoTile, worldmapEraseTile, worldmapMaterialGroup } from '@/project/worldmapAutoBrush';
 import { autotileGroupLayer, shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { isPassable, tilePassability } from "@/project/collision";
-import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { roleCapabilities } from "@/project/tileRoles";
 import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
@@ -26,16 +25,12 @@ import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } f
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
 import { protectedHouseCells } from "../houseProtection";
 import {
-  forestCoverageTarget,
   forestPackingFor,
   forestPlacementPlan,
   forestTreeKindFromResolvedMaterial,
   type ForestDensity,
   treeFootprintCells,
 } from "../forestDensity";
-import { paintForestGroves } from "../village/forestGroves";
-import { finishForestHarmonyForest, forestWaterKindFor, paintForestWater, planForestWater } from "../village/forestDressing";
-import { prepareVillageTreeKit } from "../village/treeKit";
 import {
   FOUR_LAYER_GUIDANCE_SHORT,
   TOOL_LAYER_ENUM,
@@ -63,7 +58,7 @@ import {
 } from "../roadObstacles";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
-import { isPathSurfaceTile, type ScatterPacking } from "../placementTools";
+import { type ScatterPacking } from "../placementTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import { coerceInt, coercePoint, coercePointArray, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
@@ -557,7 +552,7 @@ const buildWall: ToolDefinition = {
       throw new ToolError(
         `'${group.name}' 은(는) 벽 전개 패턴이 없어 build_wall 로 세울 수 없습니다. ` +
           (buildable.length ? `이 타일셋에서 build_wall 로 세울 수 있는 벽: ${buildable.slice(0, 8).join(", ")}. ` : "이 타일셋에는 build_wall 로 세울 수 있는 벽 재료가 없습니다. ") +
-          (interior ? "실내 방(벽·문·가구)은 place_concept(get_concept_facility → plan) 으로 방들을 한 번에 지으세요 — 방마다 새 mapId 로 짓고 create_transfer_pair 로 잇습니다. " : "") +
+          (interior ? "실내 방(벽·문·가구)은 build_hand_interior_room 으로 지으세요 — 방마다 새 mapId 로 짓고 create_transfer_pair 로 잇습니다. " : "") +
           "같은 재료로 다시 부르지 마세요.",
         { code: "pattern-undefined", mapId: map.id },
       );
@@ -626,7 +621,9 @@ function placeOnWall(kind: "door" | "window", draft: Project, args: Record<strin
   const label = kind === "door" ? "문" : "창문";
   return withSoftConfirm({
     summary: `${map.name} (${at.x},${at.y}) 벽에 '${group.name}' ${label} ${applied}칸 설치.`,
-    data: { at, cells: applied, groupId: group.id },
+    data: { at, cells: applied, groupId: group.id,
+      ...(kind === 'door' ? { front: { x: at.x, y: at.y + 1 }, transferEndpoint: { mapId: map.id, x: at.x, y: at.y + 1, doorAt: at } } : {}),
+    },
   }, softConfirm);
 }
 
@@ -648,7 +645,7 @@ function doorLikeEdits(tileset: TilesetDef, group: TileGroupMetadata, at: Point,
 const placeDoor: ToolDefinition = {
   name: "place_door",
   description:
-    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 문 시각 배치의 정본 툴. 실제 맵 이동은 create_transfer_pair.",
+    "문 어휘를 벽 셀에 설치한다(v3 공정 2단계). 대상 셀이 벽(벽 어휘 타일)이 아니면 거부. 문 어휘가 세로 1×2 패턴이면 위 칸까지 자동 전개. layer 인자 없음 — 어휘 layerHome이 결정. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 문 시각 배치의 정본 툴. 실제 맵 이동은 create_transfer_pair. 결과 data.transferEndpoint를 a/b에 그대로 넣어 문앞을 연결한다. 문 그림 칸과 밟는 문앞 칸을 혼동하지 않는다.",
   mode: "write",
   version: 3,
   parameters: {
@@ -796,65 +793,6 @@ function bareBoardWarnings(map: GameMap, filledCells: number, layer: string): st
   ];
 }
 
-/** 숲마을 칩의 숲은 침엽수 260/290이 아니라 굽이숲 수관이다. 군락이 없으면 null.
- * 순서: 물 예약·칠하기(수관이 피해 가게) → 수관·밑동 → 숨은 ★ 수관 길(dense) → 풀밭 꾸밈(forestDressing.ts). */
-function placeGroveCanopy(
-  draft: Project,
-  map: GameMap,
-  tileset: TilesetDef,
-  area: Rect,
-  density: "dense" | "impassable",
-  seed: number,
-): ToolExecResult | null {
-  const kit = prepareVillageTreeKit(tileset);
-  const grove = kit.grove;
-  if (!grove) return null;
-  const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => `${x},${y}`));
-  for (const event of map.events) blocked.add(`${event.x},${event.y}`);
-  const free = (x: number, y: number): boolean => {
-    if (!inMapBounds(map, x, y) || blocked.has(`${x},${y}`)) return false;
-    const index = y * map.width + x;
-    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
-    const upper = map.upperTiles[index] ?? TILE.EMPTY;
-    if (upper !== TILE.EMPTY) return false;
-    if (isLakeAutotileTile(lower) || lower === TILE.WALL || isPathSurfaceTile(lower)) return false;
-    const pass = tilePassability(tileset, lower, TILE.EMPTY);
-    return pass.up || pass.down || pass.left || pass.right;
-  };
-  const water = planForestWater(map, area, forestWaterKindFor(area, density), seed, free);
-  const waterCells = paintForestWater(map, tileset, water);
-  const dry = (x: number, y: number): boolean => free(x, y) && !water.cells.has(y * map.width + x);
-  const painted = paintForestGroves(map, area, grove, dry, seed, forestCoverageTarget(density), undefined, true);
-  const dressed = finishForestHarmonyForest({ map, tileset, area, density, seed, kit, water, waterCells, free: dry });
-  const reachable = reachableCellCount(draft, map, area);
-  const waterText = dressed.water === "stream" ? `개울 ${waterCells}칸` : dressed.water === "pond" ? `연못 ${waterCells}칸` : "물 없음";
-  const secretText = dressed.secretSpots.length > 0
-    ? ` 숨은 수관 길 ${dressed.secretSpots.length}곳(★ ${dressed.secretPathCells}칸) — 보물상자는 place_chest 로`
-      + ` ${dressed.secretSpots.map(({ x, y }) => `(${x},${y})`).join("·")} 에 둔다.`
-    : "";
-  return {
-    summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 굽이숲 수관(density=${density})`
-      + ` — 수관 ${painted.canopyCells}칸, 밑동 ${painted.trunkRuns}줄, ${waterText},`
-      + ` 작은 나무 ${dressed.smallTrees}·덤불 ${dressed.shrubs}·돌 ${dressed.stones},`
-      + ` 밖에서 걸어 들어올 수 있는 칸 ${reachable}.${secretText}`,
-    data: {
-      placed: painted.canopyCells,
-      density,
-      material: "굽이숲 수관",
-      canopyCells: painted.canopyCells,
-      trunkRuns: painted.trunkRuns,
-      reachableCells: reachable,
-      water: dressed.water,
-      waterCells,
-      smallTrees: dressed.smallTrees,
-      shrubs: dressed.shrubs,
-      stones: dressed.stones,
-      secretPathCells: dressed.secretPathCells,
-      secretSpots: dressed.secretSpots,
-    },
-  };
-}
-
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
@@ -921,8 +859,6 @@ const placeProps: ToolDefinition = {
     // 수종·덤불·하층식생이 섞인 지형이다(렌더 실측: 한 재료 dense 는 산울타리 밭으로 읽혔다).
     if (density && forestMaterial && args.count === undefined && forestCompositionApplies(density)) {
       const seed = args.seed === undefined ? 11 : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
-      const grove = placeGroveCanopy(draft, map, tileset, area, density, seed);
-      if (grove) return grove;
       const composition = plantForestComposition(draft, {
         mapId: map.id,
         area,

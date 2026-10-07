@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFakePostgrest } from "./fakePostgrest";
 import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize, serializeForComparison } from "@/project/io";
 import { createMemoryRepository } from "@/project/persistence/memoryRepository";
@@ -55,7 +55,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("저장 → 읽기: 같은 내용, sha256 은 직렬화 텍스트의 해시, 권한은 legacy", async () => {
       const { repository, target } = await open();
-      const project = createHouseTemplateGalleryProject();
+      const project = createScarloxyDemoProject();
       const saved = await repository.save(project, target, { mode: "create", target });
       expect(saved.kind).toBe("saved");
       if (saved.kind !== "saved") return;
@@ -75,7 +75,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("loadProject 는 권한 콜백을 부르고 프로젝트를 돌려준다", async () => {
       const { repository, target } = await open();
-      await repository.save(createHouseTemplateGalleryProject(), target);
+      await repository.save(createScarloxyDemoProject(), target);
       const modes: string[] = [];
       const project = await repository.loadProject(target, (authority) => { modes.push(authority.mode); });
       expect(project).not.toBeNull();
@@ -84,7 +84,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("맵 패치: 서로 다른 맵을 고친 두 편집기가 차례로 저장하면 둘 다 남는다", async () => {
       const { repository, target } = await open();
-      const base = createHouseTemplateGalleryProject();
+      const base = createScarloxyDemoProject();
       await repository.save(base, target);
       const [aId, bId] = mapIds(base);
       const editorA = structuredClone(base);
@@ -104,7 +104,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("맵 패치: 같은 맵을 다르게 고치면 두 번째는 충돌", async () => {
       const { repository, target } = await open();
-      const base = createHouseTemplateGalleryProject();
+      const base = createScarloxyDemoProject();
       await repository.save(base, target);
       const [mapId] = mapIds(base);
       const editorA = structuredClone(base);
@@ -120,7 +120,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("커밋: 기록한 커밋이 목록 맨 앞에 오고 tip 이 된다", async () => {
       const { repository, target } = await open();
-      const project = createHouseTemplateGalleryProject();
+      const project = createScarloxyDemoProject();
       await repository.save(project, target);
       const recorded = await repository.commits.record({
         project, identity, reviewStatus: "direct", summary: "첫 커밋", toolNames: [],
@@ -192,7 +192,7 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
 
     it("대상이 null 이면 쓰기는 not-configured", async () => {
       const { repository } = await open();
-      const project = createHouseTemplateGalleryProject();
+      const project = createScarloxyDemoProject();
       await expect(repository.commits.record({ project, identity, reviewStatus: "direct", summary: "x", toolNames: [] }, null))
         .resolves.toEqual({ kind: "not-configured" });
       await expect(repository.ai.recordActivity({ logId: "l", channel: "c", instruction: "i", payload: null }, null))

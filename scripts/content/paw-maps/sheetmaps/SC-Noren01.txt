@@ -1,6 +1,0 @@
-# SC-Noren01.png 12x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  6  7  8  9  10 11 
-   0 +g +g +g +G +G +G +r +r +r +o +o +o 
-   1 +g +g +g +G +G +G +r +r +r +o +o +o 
-   2 +g +g +g +G +G +G +r +r +r +o +o +o 
-   3 +g +g +g +G +G +G +r +r +r +o +o +o 

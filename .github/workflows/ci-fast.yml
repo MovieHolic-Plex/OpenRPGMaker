@@ -67,8 +67,11 @@ jobs:
         run: npm run gates:self-hosted
 
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
+      # 이 단계도 12GB 잡 cgroup 안에서 힙 약 9GB 를 연다. 타입체크(10GB)와 겹치면
+      # ci-fast.slice 16GB 를 넘고, 42개 테스트가 통과한 뒤 vitest onTaskUpdate 가 타임아웃된다
+      # (2026-10-07, run 37597174386 · 37600500943). 타입체크와 같은 락으로 둘 중 하나만 연다.
       - name: parity 스위트
-        run: npm run test:parity
+        run: flock -w 1800 /home/dev/ci/typecheck.lock npm run test:parity
 
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
       - name: 앱 빌드

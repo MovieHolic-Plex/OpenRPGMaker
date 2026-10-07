@@ -10,6 +10,7 @@
 | `pokemon-character-casting` | 포켓몬 캐릭터 후보 승인 | 장르 `monster-collect` 전용 | `harness-data/pokemon-character-casting/seed.json` | `openwiki/harnesses/pokemon-character-casting.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `map-objects` | 공방 · 맵 기물 (16px, 지금 맵 칩셋) | 장르 무관 | `src/harnesses/map-objects/editor/prompts.ts` | `openwiki/harnesses/map-objects.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 | `super-harness` | 슈퍼하네싱 (기물·파생·공간) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
@@ -119,6 +120,21 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `draw` — 후보 그리기: 기물 하나에 후보 5장(방향 A~E). 깨지면 고치기 2번, 자기 점검 1번.
 - `review` — 독립 검수: 다른 대화의 vision 모델이 3/4·「지금보다 나빠졌나」를 본다. 가구는 꼭대기 윗면 3행 미만이면 FRONT.
 - `pick` — 고르기: 사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다.
+
+**들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
+
+## map-objects — 공방 · 맵 기물 (16px, 지금 맵 칩셋)
+
+지금 맵의 칩셋(16px)에 없는 물건(나무·바위·간판·조각상·바닥 무늬…)을 그 칩셋에서 뽑은 팔레트와 닮은 물체를 기준으로 새로 찍는다. 후보 3장 → 기계 검사 → 독립 검수(화풍·읽힘·3/4) → 최대 3번 다시 그린 뒤 사람이 고르고, 고른 것을 그 칩셋에 굽는다.
+
+**이럴 때 쓴다:**
+- 조수가 필요한 타일이 없다고 물었고 사용자가 스토어 대신 「직접 그려 줘」를 골랐을 때(손 도트 실내가 아닌 맵)
+- 에디터 사용자가 지금 맵 칩셋에 물건 하나를 자기 AI 계정으로 그려 넣고 싶을 때(왼쪽 막대 「공방」)
+
+**단계** (`npm run harness -- map-objects <단계>`):
+- `draw` — 후보 그리기: 기물 하나에 후보 3장(방향 A~C). 팔레트는 그 칩셋 색, 기준은 그 칩셋의 닮은 물체·시트 조각.
+- `review` — 독립 검수: 다른 대화의 vision 모델이 화풍(STYLE)·읽힘(READ)·3/4(FRONT·TOPDOWN)·배경(BG)을 본다.
+- `pick` — 고르고 굽기: 사람이 고르면 그 칩셋 끝에 칸을 붙이고 물체(workshop:…)를 만든다. 조수는 stamp_tileset_object 로 놓는다.
 
 **들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
 
@@ -257,6 +273,9 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - 에디터 조수의 기능별 수행 능력, 기존 콘텐츠 보존, 완료 보고와 실제 결과를 점검할 때
 
 **단계** (`npm run harness -- assistant-capability <단계>`):
+- `portals` — 출입구 실제 수행: 격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다.
+- `portal-controls` — 출입구 결함 반례: 막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다.
+- `portal-recheck` — 저장 출입구 플레이 재관측: 모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다.
 - `film-worldmaps` — 월드맵 실제 녹화: 기본 대륙과 포켓몬풍 지역을 실제 입력창에서 만들고 MP4·도구 기록·SQLite 새 context 재로드를 남긴다. core 점수와 별도 증거다.
 - `list` — 과제 목록: 요구·보존·플레이·시각 기준이 미리 정해진 사례를 나열한다.
 - `prepare` — 격리 정본 준비: 실행마다 별도 SQLite 프로젝트와 초기 상태를 만든다. 기존 폴더 덮어쓰기 금지.

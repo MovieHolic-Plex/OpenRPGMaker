@@ -1,0 +1,12 @@
+{
+  "kind": "saved-output-runtime-recheck",
+  "modelCalls": 0,
+  "observation": "runtime-key-taps-r2",
+  "observerDigest": "c3af93c19bb8e786fbbff120733f39b4ea1dbf517ad038aa605be1c0d33a9d97",
+  "originalResultDigest": "d966526eebfec3c3e85c0a5849e60cb31a21f11d764f5d8dfaa5075b44d484f9",
+  "sourceDigest": "97c285c5f9f67ced3923b01a4d9163487f747ae6d6b58736b625dfe176d09142",
+  "pass": true,
+  "beats": 56,
+  "errors": [],
+  "failures": []
+}

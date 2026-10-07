@@ -4,7 +4,7 @@
   python3 scripts/content/wizarding/bake_wz.py --dry      # 보고만
   python3 scripts/content/wizarding/bake_wz.py --all      # 검수 무시(미리보기 전용 — 출하 금지)
 
-산출: public/assets/wizarding-world/wizarding-world-chipset.png · src/assets/wizardingWorldTileset.json · src/assets/wizardingWorldSheet.json
+산출: public/assets/wizarding-world/wizarding-world-chipset.png · src/assets/wizardingWorldTileset.json · src/assets/wizardingWorldSheet.json · src/assets/wizardingRoomSpec.json
       public/assets/generated/charsets/Wizarding<N>.png · src/assets/wizardingCharsets.json
       tiledata/wizarding/pins.json · tiledata/wizarding/bake-report.json · tiledata/wizarding/examples/<id>.{json,png}
 번호는 자리 키 핀(`pins.json`)으로 고정 — 그림을 고쳐도 번호가 안 바뀌고 새 칸은 끝에 덧붙는다. 애니메이션 칸은 한 행 안에 연속 배치.
@@ -15,7 +15,7 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, '..', 'jp-city'))
-import wzlib, loader            # noqa: E402
+import wzlib, loader, roomkit_wz  # noqa: E402
 import bake_lib as BL           # noqa: E402  (jp_city 굽기 보조 — pc 표·시트·재조립·정의 검사)
 
 ROOT = wzlib.ROOT
@@ -27,7 +27,8 @@ P = dict(png=os.path.join(ROOT, 'public/assets/wizarding-world/wizarding-world-c
          chars=os.path.join(ROOT, 'src/assets/wizardingCharsets.json'),
          charpng=os.path.join(ROOT, 'public/assets/generated/charsets'),
          pins=os.path.join(wzlib.TD, 'pins.json'), report=os.path.join(wzlib.TD, 'bake-report.json'),
-         examples=os.path.join(wzlib.TD, 'examples'))
+         examples=os.path.join(wzlib.TD, 'examples'),
+         roomspec=os.path.join(ROOT, 'src/assets/wizardingRoomSpec.json'), spacespec=os.path.join(ROOT, 'src/assets/wizardingSpaceSpec.json'))
 WALK_PC = wzlib.WALK_PC
 FAMILY_KO = dict(architecture='건축', surfaces='바닥', furniture='가구', nature='자연', characters='인물', creatures='생물', vehicles='탈것', effects='효과')
 ROLE_FROM_FAMILY = dict(architecture='wall', surfaces='terrain', furniture='prop', nature='prop', creatures='prop', vehicles='prop', effects='prop', characters='prop')
@@ -156,6 +157,9 @@ def bake(dry=False, take_all=False):
                                     variantMap={str(m): tid_of[wzlib.canon(m)] for m in range(256)}, layer=a['layer'], edgeConnects=True))
         piece_cells[a['id']] = {(0, 0): (tid_of[255], a['pc'])}
 
+    # 2b) 방 짓기 역할표(build_hand_interior_room) — 변형 칸은 pins 의 roomkit/… 키로 끝에 덧붙는다.
+    room_spec = roomkit_wz.build(pieces, piece_cells, img, put, json.load(open(P['spacespec'], encoding='utf-8')))
+
     count = max(list(img) + [0]) + 1
     count = max(count, pins.next_id)
     assert math.ceil(count / TPR) * 16 <= BL.MAX_H, ('시트 높이 초과', count)
@@ -274,13 +278,15 @@ def bake(dry=False, take_all=False):
             ex_out.append(res)
     rep['examples'] = [dict(id=e['id'], w=e['w'], h=e['h'], skipped=e['skipped']) for e in ex_out]
 
-    out = dict(data=data, sheet=sheet, report=rep, chars=char_meta, char_sheets=sheets, examples=ex_out)
+    rep['roomkit'] = dict(floors=len(room_spec['floors']), walls=len(room_spec['walls']))
+    out = dict(data=data, sheet=sheet, report=rep, chars=char_meta, char_sheets=sheets, examples=ex_out, room_spec=room_spec)
     if dry: return out
     for k in ('png',): os.makedirs(os.path.dirname(P[k]), exist_ok=True)
     os.makedirs(P['charpng'], exist_ok=True); os.makedirs(P['examples'], exist_ok=True)
     sheet.save(P['png'], optimize=True)
     wr = lambda path, obj, **kw: open(path, 'w', encoding='utf-8').write(json.dumps(obj, ensure_ascii=False, **kw) + '\n')
     wr(P['tileset'], data, separators=(',', ':'))
+    wr(P['roomspec'], room_spec, separators=(',', ':'))
     wr(P['sheet'], dict(count=count, tilesPerRow=TPR), separators=(',', ': '))
     pins_out = dict(version=1, tilesPerRow=TPR, cells=dict(sorted(pins.map.items(), key=lambda kv: kv[1])), strips=pins.strips)
     wr(P['pins'], pins_out, indent=0)
