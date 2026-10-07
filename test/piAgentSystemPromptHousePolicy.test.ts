@@ -11,9 +11,9 @@ describe("Pi 시공 에이전트 시스템 프롬프트 — 집 규칙", () => {
     expect(AGENT_UX_POLICY_LINES).toContain(HOUSE_VARIETY_POLICY_LINE);
   });
 
-  it("정책 줄이 참고 사례 레시피 id 접두어를 알려준다", () => {
+  it("정책 줄이 지운 참고 사례 레시피(ref-walled·ref-castle, 2026-10-07 저작권 정리)를 더는 권하지 않는다", () => {
     expect(HOUSE_VARIETY_POLICY_LINE).toContain("templateId");
-    expect(HOUSE_VARIETY_POLICY_LINE).toContain("ref-walled-");
-    expect(HOUSE_VARIETY_POLICY_LINE).toContain("ref-castle-");
+    expect(HOUSE_VARIETY_POLICY_LINE).not.toContain("ref-walled-");
+    expect(HOUSE_VARIETY_POLICY_LINE).not.toContain("ref-castle-");
   });
 });

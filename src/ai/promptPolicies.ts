@@ -8,8 +8,7 @@ import { MODERN_TILESET_POLICY_LINE } from './modernTilesetPolicy';
  * 2026-09-17: Pi 프롬프트에는 이 줄이 없어서 author_house 가 templateId 없는 사각형만 깔았다.
  */
 export const HOUSE_VARIETY_POLICY_LINE =
-  "- 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/tier-front/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라."
-  + " 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 레시피(ref-walled-*, ref-castle-*)도 templateId 로 쓸 수 있다 — 성곽·도시 테마면 우선 섞어라.";
+  "- 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/tier-front/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라.";
 
 /**
  * 칩셋 계열 규칙(2026-09-25 사용자 결정) — 채팅 세션과 Pi 시공 에이전트가 같은 문장을 받는다.

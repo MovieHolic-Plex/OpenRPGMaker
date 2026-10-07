@@ -159,12 +159,8 @@ describe("assistant tools: v5 only", () => {
       const page = (runTool(ctx, "list_spatial_designs", { limit: 200, offset }).data as { shared: { rows: typeof rows; nextOffset?: number } }).shared;
       rows.push(...page.rows); if (page.nextOffset === undefined) break;
     }
-    expect(rows.length).toBeGreaterThan(100);
     expect(rows.filter((r) => /tibo_interior_expanded|easyrpg_chipset_interior|lpc_wooden/u.test(r.tilesetId ?? ""))).toEqual([]);
     expect(rows.filter((r) => (r.tags ?? []).includes("공간형태:건물 내부") && r.tilesetId !== "atlas_biome_interior")).toEqual([]);
-    const tiboInterior = runTool(ctx, "import_region_reference", { id: "reviewed:shared_authored-map_five_more_1_20260921" });
-    expect(tiboInterior.ok).toBe(false);
-    expect(tiboInterior.issues?.[0]?.code).toBe("retired-interior-tileset");
     const kit = ctx.project.tilesets.tibo_interior_expanded?.structureKits?.[0]?.id;
     if (kit) expect(runTool(ctx, "stamp_object", { objectId: `kit:tibo_interior_expanded/${kit}`, mapId: ctx.project.startMapId, x: 1, y: 1 }).issues?.[0]?.code).toBe("retired-interior-tileset");
   });

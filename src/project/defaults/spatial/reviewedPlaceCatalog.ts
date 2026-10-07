@@ -1,14 +1,13 @@
 import type { SharedContentSnapshot } from "../../sharedContentSchema";
 import data from './reviewedPlaces/catalog.json';
-import { RIVER_VILLAGE_PLACE, RIVER_VILLAGE_PLACE_TILESET } from './riverVillagePlace';
 import type { Project, GameMap, TilesetDef } from '@/project/types';
 import type { PlaceDesign, SpatialId } from '@/project/spatial/types';
 
 // Authored, reviewed rasters; no remote project lookup is needed to browse or copy.
 const existing = data as unknown as { roots: string[]; places: Record<string, PlaceDesign>; tilesets: Record<string, TilesetDef>; assets: Project['assets']['uploaded'] };
-const catalog: typeof existing = { ...existing, roots: [RIVER_VILLAGE_PLACE.id, ...existing.roots],
-  places: { ...existing.places, [RIVER_VILLAGE_PLACE.id]: RIVER_VILLAGE_PLACE },
-  tilesets: { ...existing.tilesets, [RIVER_VILLAGE_PLACE_TILESET.id]: RIVER_VILLAGE_PLACE_TILESET } };
+// 2026-10-07 사용자 결정(저작권): 번들 검수 장소(Tibo 실내·EasyRPG 던전·숲마을 강변 마을)는 전부 지웠다 — catalog.json 은 빈 목록이다.
+// 공용 DB(호스트) 장소만 이 카탈로그에 설치된다.
+const catalog: typeof existing = { ...existing, roots: [...existing.roots], places: { ...existing.places }, tilesets: { ...existing.tilesets } };
 export const REVIEWED_PLACES = catalog.roots.map(id => ({ id, name: catalog.places[id]!.name, kind: catalog.places[id]!.kind }));
 /** Replace the host catalog projection without touching project-owned copies. */
 const sharedIds = new Set<string>();
