@@ -48,7 +48,7 @@ const sections = Object.entries(seed.categories).map(([categoryId, category]) =>
         const meta = `<p class="meta">${Math.round((stats.ms ?? a.result.elapsedMs ?? 0) / 1000)}초 · 도구 ${stats.toolCalls ?? '—'}회(오류 ${stats.toolErrors ?? '—'}) · 토큰 ${stats.usage?.totalTokens ? Math.round(stats.usage.totalTokens / 1000) + 'k' : '—'}${a.result.persistence?.reloadEqual === false ? ' · <span class="bad">재로드 불일치</span>' : ''}</p>`;
         const mapHtml = maps.map(m => {
           const src = copy(run, a.attempt, m.render.file);
-          const checks = m.checks.map(c => `<li class="${c.ok ? 'good' : 'bad'}">${c.ok ? '✓' : '✕'} ${esc(c.detail)}</li>`).join('');
+          const checks = m.checks.map(c => `<li class="${c.ok ? 'good' : c.advisory ? 'note' : 'bad'}">${c.ok ? '✓' : c.advisory ? '·' : '✕'} ${esc(c.detail)}</li>`).join('');
           return `<figure><a href="${src}" target="_blank"><img loading="lazy" src="${src}" style="width:${Math.min(m.render.width * 2, 640)}px"></a>
 <figcaption>${esc(m.name)} · ${m.size.join('×')} · ${esc(m.tilesetId)} · NPC ${m.npcs}</figcaption><ul class="checks">${checks}</ul></figure>`;
         }).join('');
@@ -79,7 +79,7 @@ h1{font-size:21px;margin:0 0 4px}h2{font-size:17px;margin:32px 0 6px;border-bott
 .arms{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px}.arm{border-left:3px solid var(--c);padding-left:12px}
 .arm h4{margin:0 0 6px;display:flex;gap:6px;align-items:center}.cell{margin:0 0 14px}.meta{color:var(--t2);font-size:12.5px;margin:2px 0}
 figure{margin:6px 0}img{image-rendering:pixelated;max-width:100%;border:1px solid var(--rule);display:block}figcaption{font-size:12px;color:var(--mu)}
-.checks{list-style:none;padding:0;margin:4px 0;font-size:12.5px}.good{color:var(--good)}.bad{color:var(--bad);font-weight:600}.muted{color:var(--mu)}
+.checks{list-style:none;padding:0;margin:4px 0;font-size:12.5px}.good{color:var(--good)}.bad{color:var(--bad);font-weight:600}.muted{color:var(--mu)}.note{color:var(--mu)}
 .why{font-size:12px;color:var(--t2);word-break:break-all}blockquote{margin:4px 0;padding:6px 10px;background:var(--s2);border-radius:6px;white-space:pre-wrap;font-size:13px}
 .tools{font:11.5px ui-monospace,monospace;color:var(--mu);word-break:break-all}
 </style></head><body>

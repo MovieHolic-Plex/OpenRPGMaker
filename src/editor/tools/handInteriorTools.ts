@@ -242,6 +242,63 @@ function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandIn
   return input;
 }
 
+
+type XYLike = { x: number; y: number };
+/**
+ * 평면 바깥의 「막힌 칸('#')만 있는」 여백을 한 칸만 남기고 잘라 낸다. 좌표 인자(가구·탁자·깔개·단·물건·구역·출입구·links)는
+ * 같은 만큼 옮긴다. 실측(2026-10-07 space-craft): gpt-6.1-sol 이 서재 82칸을 44×28 평면 구석에 그려 맵 대부분이 빈 공간이었다.
+ */
+function trimPlanMargin(args: Record<string, unknown>): { args: Record<string, unknown>; dx: number; dy: number; trimmed?: true } {
+  const plan = Array.isArray(args.plan) ? (args.plan as unknown[]).filter((row): row is string => typeof row === "string") : [];
+  if (plan.length === 0) return { args, dx: 0, dy: 0 };
+  const W = Math.max(...plan.map((row) => row.length));
+  let x0 = W, y0 = plan.length, x1 = -1, y1 = -1;
+  const include = (x: unknown, y: unknown) => {
+    if (typeof x !== "number" || typeof y !== "number") return;
+    x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+  };
+  plan.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] !== "#") include(x, y); });
+  if (x1 < 0) return { args, dx: 0, dy: 0 };
+  const points = (value: unknown): XYLike[] => Array.isArray(value) ? value.filter((v): v is XYLike => !!v && typeof v === "object" && typeof (v as XYLike).x === "number" && typeof (v as XYLike).y === "number") : [];
+  for (const key of ["objects", "goods", "start", "links"]) for (const p of points(args[key])) include(p.x, p.y);
+  for (const key of ["tables", "daises"]) for (const p of points(args[key]) as (XYLike & { w?: number; h?: number })[]) { include(p.x, p.y); include(p.x + (p.w ?? 1) - 1, p.y + (p.h ?? 1) - 1); }
+  for (const zone of Array.isArray(args.zones) ? args.zones as Record<string, number>[] : []) { include(zone.x0, zone.y0); include(zone.x1, zone.y1); }
+  for (const line of Array.isArray(args.lines) ? args.lines as { cells?: unknown; rect?: Record<string, number> }[] : []) {
+    for (const p of points(line.cells)) include(p.x, p.y);
+    if (line.rect) { include(line.rect.x0, line.rect.y0); include(line.rect.x1, line.rect.y1); }
+  }
+  const dx = Math.max(0, x0 - 1), dy = Math.max(0, y0 - 1);
+  const right = Math.min(W - 1, x1 + 1), bottom = Math.min(plan.length - 1, y1 + 1);
+  if (dx === 0 && dy === 0 && right === W - 1 && bottom === plan.length - 1) return { args, dx: 0, dy: 0 };
+  const shift = <T extends XYLike>(p: T): T => ({ ...p, x: p.x - dx, y: p.y - dy });
+  const shiftList = (value: unknown) => Array.isArray(value) ? value.map((v) => v && typeof v === "object" && typeof (v as XYLike).x === "number" ? shift(v as XYLike) : v) : value;
+  const next: Record<string, unknown> = { ...args, plan: plan.slice(dy, bottom + 1).map((row) => row.padEnd(W, "#").slice(dx, right + 1)) };
+  for (const key of ["objects", "goods", "start", "links", "tables", "daises"]) if (key in args) next[key] = shiftList(args[key]);
+  if (Array.isArray(args.zones)) next.zones = (args.zones as Record<string, number>[]).map((z) => ({ ...z, x0: z.x0 - dx, x1: z.x1 - dx, y0: z.y0 - dy, y1: z.y1 - dy }));
+  if (Array.isArray(args.lines)) next.lines = (args.lines as { cells?: unknown; rect?: Record<string, number> }[]).map((line) => ({
+    ...line,
+    ...(line.cells ? { cells: shiftList(line.cells) } : {}),
+    ...(line.rect ? { rect: { x0: line.rect.x0 - dx, x1: line.rect.x1 - dx, y0: line.rect.y0 - dy, y1: line.rect.y1 - dy } } : {}),
+  }));
+  return { args: next, dx, dy, trimmed: true };
+}
+
+/** 다른 맵에서 이 맵으로 오는 이동의 도착 칸을 같은 만큼 옮긴다(다시 짓기에서 여백을 잘랐을 때). */
+function shiftIncomingTransfers(draft: Project, mapId: string, dx: number, dy: number): number {
+  let moved = 0;
+  const walk = (value: unknown): void => {
+    if (Array.isArray(value)) { value.forEach(walk); return; }
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    if (record.kind === "transfer" && record.mapId === mapId && typeof record.x === "number" && typeof record.y === "number") {
+      record.x = (record.x as number) - dx; record.y = (record.y as number) - dy; moved++;
+    }
+    Object.values(record).forEach(walk);
+  };
+  for (const other of Object.values(draft.maps)) if (other.id !== mapId) walk(other.events);
+  return moved;
+}
+
 export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   name: "build_hand_interior_room",
   mode: "write",
@@ -289,7 +346,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     additionalProperties: false,
   },
   invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
-  run(draft, args): ToolExecResult {
+  run(draft, rawArgs): ToolExecResult {
+    const trimmed = trimPlanMargin(rawArgs);
+    const args = trimmed.args;
     const tilesetId = pickTileset(draft, args);
     const exitWidth = (args.exitWidth as number | undefined) ?? 1;
     const exits = Array.isArray(args.plan) && args.plan.every(row => typeof row === 'string')
@@ -330,6 +389,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       ...structuredClone(existing?.events ?? []).filter((e) => !e.id.startsWith(`${mapId}-link-`)),
       ...links.map((l, i) => transfer(mapId, l.x, l.y, { mapId: l.toMapId, x: l.toX, y: l.toY, direction: l.direction }, i)),
     ];
+    // 여백을 잘라 다시 지으면 이 맵의 기존 이벤트·시작 위치·들어오는 이동을 같은 만큼 먼저 옮긴다 — 그다음 문 맞춤이 남은 어긋남을 고친다.
+    if (trimmed.trimmed && existing) {
+      for (const event of events) if (!event.id.startsWith(`${mapId}-link-`)) { event.x -= trimmed.dx; event.y -= trimmed.dy; }
+      if (draft.startMapId === mapId) draft.startPos = { ...draft.startPos, x: draft.startPos.x - trimmed.dx, y: draft.startPos.y - trimmed.dy };
+      shiftIncomingTransfers(draft, mapId, trimmed.dx, trimmed.dy);
+    }
     const doorNotes: string[] = [];
     if (fitsGapDoors) fitDoorsToPlan(draft, mapId, events, shape, doorNotes);
     const map: GameMap = {
@@ -340,12 +405,15 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     } as GameMap;
     delete (map as Partial<GameMap>).lowerTileStacks; delete (map as Partial<GameMap>).upperTileStacks; delete (map as Partial<GameMap>).shadowBits; delete (map as Partial<GameMap>).relief;
     draft.maps[mapId] = map;
+    const trimNote = trimmed.trimmed
+      ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
+      : "";
     if (!existing) {
       if (!draft.maps[draft.mapTree.mapId]) draft.mapTree = { mapId, children: [] };
       else if (draft.mapTree.mapId !== mapId && !draft.mapTree.children.some((c) => c.mapId === mapId)) draft.mapTree.children.push({ mapId, children: [] });
       if (!draft.maps[draft.startMapId]) { draft.startMapId = mapId; const s = built.start[Math.floor(built.start.length / 2)]; draft.startPos = { x: s?.x ?? 0, y: s?.y ?? 0 }; }
     }
-    const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
+    const warnings = [...(trimNote ? [trimNote] : []), ...built.issues.filter((i) => i.severity === "warning").map((i) => i.message)];
     if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
