@@ -258,7 +258,8 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
       const url = resolveAssetResourceUrl(id, { project });
       const bytes = url?.startsWith('data:image/png;base64,') ? Buffer.from(url.slice(url.indexOf(',') + 1), 'base64')
         : url && /^\/?assets\//u.test(url) ? fs.readFileSync(path.join('public', url.replace(/^\//u, ''))) : null;
-      if (!bytes) throw new Error(`캐릭터 칩 원본을 읽을 수 없습니다: ${id}`);
+      // 못 읽는 시트(헤드리스에 없는 공용 칩 등)는 빈 칸으로 그린다 — 한 장 때문에 미리보기 전체가 실패하면 모델이 그 검색 결과를 통째로 못 쓴다.
+      if (!bytes) { sheets.set(id, { width: 288, height: 256, data: new Uint8ClampedArray(288 * 256 * 4) }); continue; }
       const png = PNG.sync.read(bytes);
       sheets.set(id, { width: png.width, height: png.height, data: new Uint8ClampedArray(png.data) });
     }

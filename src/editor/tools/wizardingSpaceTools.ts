@@ -196,15 +196,17 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
     } as GameMap;
     for (const k of ["lowerTileStacks", "upperTileStacks", "shadowBits", "relief", "terrainDesign", "doodadGroups", "visualTopOverhangPx", "worldmapSource"] as const) delete (next as Partial<GameMap>)[k];
     draft.maps[mapId] = next;
-    if (created && draft.startMapId === mapId) draft.startPos = { x: built.spawn.x, y: built.spawn.y };
+    // 시작 맵을 다시 지으면 옛 시작 칸이 벽·가구 밑이 될 수 있다(실측: 커밋 무결성 거부) — 시작 맵이면 늘 새 spawn 으로 옮긴다.
+    if (draft.startMapId === mapId) draft.startPos = { x: built.spawn.x, y: built.spawn.y };
 
     const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
     if (droppedEvents) warnings.push(`맵 밖으로 나간 이벤트 ${droppedEvents}개를 지웠다`);
+    const npcLine = (resolveWizardingRecipe(space, input.variant)?.recipe.npcs ?? []).slice(0, 4).map((n) => n.name).join("·") || "없음";
     const furniture = built.placed.filter((p) => p.role === "furniture").map((p) => ({ kit: p.kit, x: p.x, y: p.y }));
     const doorText = built.doorCells.map((d) => `${d.side}(${d.x},${d.y})`).join(" ");
     return {
       summary: `${built.ko} ${W}×${H} 를 ${created ? "새 맵" : "맵"} '${next.name}'(${mapId}, ${WIZARDING_WORLD_ID}) 에 지었다 — 출입구 ${doorText}, 시작 칸 (${built.spawn.x},${built.spawn.y}), 걸어 닿는 칸 ${built.walkableCount}(한 덩이), 가구 ${furniture.length}개`
-        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: doorCells 에 이동 이벤트(transfer)를 달고, NPC 는 list_wizarding_spaces 의 npcs 걷기 칩으로 place_npc.`,
+        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: doorCells 에 이동 이벤트(transfer)를 달고, NPC 는 list_npc_graphics({query:'마법약 교수'·'호그와트 학생'·'사서' 같은 역할}) 로 Wizarding 걷기 칩 그림을 본 뒤 그 selectionId 로 place_npc(추천 칩: ${npcLine}).`,
       data: {
         mapId, created, tilesetId: WIZARDING_WORLD_ID, space, variant: built.variant, width: W, height: H,
         doorCells: built.doorCells, spawn: built.spawn, placed: furniture,
