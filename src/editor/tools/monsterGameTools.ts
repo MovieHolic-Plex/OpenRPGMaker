@@ -56,7 +56,7 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
     configureMonsterPresentation(fresh);configureEmeraldMonsterStyle(fresh);configureEmeraldMonsterOpening(fresh);
     const renamed=args.names&&typeof args.names==='object'?renameCampaign(fresh,args.names as CampaignNames):0;
     replaceProjectContents(p,fresh);
-    return {summary:'공용 원작 캠페인을 재사용해 실제72맵·60종·8체육관·리그·엔딩 게임을 생성했습니다. 구조 검토와 실제 플레이/저장은 별도입니다.',data:{...reviewMonsterGame(p),mode:'create',source:'original-starlight-islands-campaign',sessionPreserved:false,renamedStrings:renamed,...(typeof args.firstGymType==='string'?{firstGymType:args.firstGymType}:{})}};
+    return {summary:`공용 원작 캠페인을 재사용해 실제${Object.keys(p.maps).length}맵(집·센터 2층 포함)·60종·8체육관·리그·엔딩 게임을 생성했습니다. 구조 검토와 실제 플레이/저장은 별도입니다.`,data:{...reviewMonsterGame(p),mode:'create',source:'original-starlight-islands-campaign',sessionPreserved:false,renamedStrings:renamed,...(typeof args.firstGymType==='string'?{firstGymType:args.firstGymType}:{})}};
   }},
   ...(['read_monster_game','review_monster_game'] as const).map(name=>({name,description:name==='read_monster_game'?'현재 전체 몬스터 게임의 실제 맵/종별 정면·뒷면·타입·기술·생태/메뉴/상점/오프닝/진행 연결을 읽는다.':'마지막 변경 뒤 전체72맵/60종/8배지와 실제 자원·스토리·스타터·상점·연결 검토. 구조 검사는 실제 플레이/저장 완료 증거가 아님.',mode:'read' as const,parameters:{type:'object' as const,additionalProperties:false,properties:{}},run:((p)=>{const data=reviewMonsterGame(p);return {summary:data.issues.length?'전체 몬스터 게임에 제작 문제가 남았습니다.':'전체 캠페인 구조와 리소스 연결을 검토했습니다. 실제 플레이/저장은 별도입니다.',data};}) as ToolDefinition['run']})),
 ];
