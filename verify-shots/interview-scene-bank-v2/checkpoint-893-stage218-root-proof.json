@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 893,
+  "remainingAtSnapshot": 564,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-07T04:58:57.055625+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 893,
+      "manifestSha256": "54f91bf59d577112fcf5f6ec1858a172228392a19706a1a02ba64f85ab0b1956",
+      "finishedAt": "2026-10-07T04:58:26.150090+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-893-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "adventure--reunion--explore--bright--quests--episode,adventure--reunion--explore--bright--journey--short,adventure--reunion--explore--bright--chapters--short,adventure--reunion--explore--mystic--journey--episode,monster--hatch--partner--warm--habitat--short,monster--hatch--partner--warm--case--short"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 893,
+      "manifestSha256": "54f91bf59d577112fcf5f6ec1858a172228392a19706a1a02ba64f85ab0b1956",
+      "finishedAt": "2026-10-07T04:58:52.263711+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-893-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--hatch--partner--warm--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-monster--hatch--partner--warm--habitat--short.png",
+      "sha256": "1e8d9e9e60e67a356f983e07ed00c81e47716ed189f550ef4985c105a8d52806",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--warm--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-monster--hatch--partner--warm--case--short.png",
+      "sha256": "09a997401aeaf8f50b4f5fac17fd51e478f5b6d627bb3062966849357cadada1",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--bright--journey--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-adventure--reunion--explore--bright--journey--short.png",
+      "sha256": "80d8df6e1628188dd7c389b6f65c60df56aa87b0d83b52932efd5f9ff5805a27",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--bright--quests--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-adventure--reunion--explore--bright--quests--episode.png",
+      "sha256": "3aa91fea3683cc50c5134ae285a56d1c2e3c0ec80b575871787814af4f7202cf",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--bright--chapters--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-adventure--reunion--explore--bright--chapters--short.png",
+      "sha256": "a66e5c58feafa8093220221c8a6500c709d9f3ea64cc5870e4e46bc2c4f79b04",
+      "rootViewed": true
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--journey--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-893-stage218-selected-adventure--reunion--explore--mystic--journey--episode.png",
+      "sha256": "3407f845a9e6408f591585c6a0fa35b0cba418142dbff036016ab006cc097e6c",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "893 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. Only actually published and ancestor-complete scenes included; no all893 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-893-stage218-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-893-stage218-click-proof.json"
+  }
+}

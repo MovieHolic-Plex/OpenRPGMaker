@@ -3244,6 +3244,21 @@
       "sha256": "ce6b3eb8dc9db4f548240cf728a2c972544422d5bd38913d2f2633b30c42bf0c",
       "promptSha256": "a6341c8c288ac57b0bc8b564fd8d77428d284af768baa27bf2064ad67abb7249"
     },
+    "adventure--reunion--explore--bright--quests": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests-8ee7613abe78.png",
+      "sha256": "8ee7613abe78c78979265baff4fe577ff402af7e0c04611e01bbb089044fce43",
+      "promptSha256": "5ecae03f929b979932bc4321ae6e61237cf9921c9ce970f2f0e4ad5481b1404f"
+    },
+    "adventure--reunion--explore--bright--quests--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests--scene-6b88cf5e758f.png",
+      "sha256": "6b88cf5e758f631b349be3e8420688c90dc940171087198c8874224710e34db4",
+      "promptSha256": "57ec89f385cfd6b80ea47e43cb30f1722ff24e1e29af4b66ceb4f2b93a3a9304"
+    },
+    "adventure--reunion--explore--bright--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests--episode-3caf5dd206e9.png",
+      "sha256": "3caf5dd206e9afa6ec6e825cdf676618d3f6426633974f470aa2e71a46434851",
+      "promptSha256": "79d18da903e76292453981058d23b4a496301eaeeb9bd3d19b50f17ebed86ebc"
+    },
     "adventure--reunion--explore--bright--chapters": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--chapters-e005a6928619.png",
       "sha256": "e005a6928619d4bc4a51b1d61638ec3c1b38c71284ea513e04dbdab3842ef936",
@@ -3284,20 +3299,35 @@
       "sha256": "a429fb549900b39158286ffa717a300d64426a114fa3b5188e00164697b56096",
       "promptSha256": "c9ad3f4d52aad59591bbd648ff12b6eab0a2d30c2be3cf10ed0f90f19ce18c90"
     },
+    "adventure--reunion--explore--mystic--quests": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests-f890b44b1afc.png",
+      "sha256": "f890b44b1afc2b4d7c12f177124740253a0aee30005e59ae8ef2754b60667c7d",
+      "promptSha256": "05ab446f1b285d4124a43039633e6e4046c938476148cf7d0fc2915f638d1dbf"
+    },
+    "adventure--reunion--explore--mystic--quests--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests--scene-394c0f0a1974.png",
+      "sha256": "394c0f0a1974684bc1e0480fa0eaf60cc52319eec1b5d13628819061985e4449",
+      "promptSha256": "0bab1515dcda7d32d602e3426ad0870089bf00734a012f5f4b47ae3051ff3e85"
+    },
+    "adventure--reunion--explore--mystic--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests--episode-33cdeeddd824.png",
+      "sha256": "33cdeeddd824cd9e462a527dbcca1b0a57e9ec9adadb0893e0ae56d901adae46",
+      "promptSha256": "f7225cf22eae6e5ead232431135e4657da62cacef01e1038fe97b82764f4d42b"
+    },
+    "adventure--reunion--explore--mystic--chapters": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--chapters-aaab70442770.png",
+      "sha256": "aaab70442770c86294f5bf1890d7022af31d06c7157afe4adf72fb8d403d218e",
+      "promptSha256": "92f1e62f9783fb2bae55c6e86ec8b80c8c2e0a9410131be1df1c6506bc7f8f2f"
+    },
+    "adventure--reunion--explore--mystic--chapters--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--chapters--scene-1140b6bd4f31.png",
+      "sha256": "1140b6bd4f31a60577bf5fe9919708c1e89b5fba6ba149d61ea1db500875da20",
+      "promptSha256": "c0eec4589f4e952d7700b4f620fb1139eff0f8a6addec52f159f15520da22139"
+    },
     "adventure--reunion--explore--warm": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm-3b628c7f63f4.png",
       "sha256": "3b628c7f63f46291dd3af6c4f04086e0fa0ed52b85ad96b1a037bcf66b81cdd8",
       "promptSha256": "a6b9c60fb36f9c1de6e10264e0950abe1c3588eab311b13f6d44daaa1a2913bb"
-    },
-    "adventure--reunion--explore--warm--journey": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm--journey-2e9860f390dc.png",
-      "sha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
-      "promptSha256": "28a81d8898945d79c90d2feaf5b187820e4fedf7d6286ca0a57c50345912224b"
-    },
-    "adventure--reunion--explore--warm--quests": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm--quests-f9ea1905b8d4.png",
-      "sha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
-      "promptSha256": "629114d9f35bbc008ce54641ac6a9501b9ad6befdf8fe48c0bc78b8b14d8fcd4"
     },
     "adventure--reunion--explore--warm--chapters": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm--chapters-a3838503ff8f.png",

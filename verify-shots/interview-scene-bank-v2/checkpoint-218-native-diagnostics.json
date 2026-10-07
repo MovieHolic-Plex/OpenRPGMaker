@@ -1,0 +1,69 @@
+{
+  "scope": "Read-only NEAREST diagnostics individually viewed by ROOT after whole unchanged originals. Cloth/stone/ground/architecture ambiguities only, not generated assets or replacement production images. 217 preliminary warm journey positive was withdrawn after actual ground diagnostic; original OWN/native/review records retained.",
+  "records": [
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-215-bright-quest-lower-left-opening.png",
+      "sha256": "ae1bafc0ca678d2648362425c548f7737064356d9299e2f2e61747e361526629",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-215-adventure--reunion--explore--bright--quests.png",
+      "sourceNativeSha256": "58a05f6fdfecd597a25654797b0dd8dc6eeef411ef36b1b2232d27505d21e1a1",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-215-bright-quest-ground-trace.png",
+      "sha256": "5b24f3e0601a2686c5ebd785b3f2dcb10ddf45cc467840ada58f964ca08e288c",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-215-adventure--reunion--explore--bright--quests.png",
+      "sourceNativeSha256": "58a05f6fdfecd597a25654797b0dd8dc6eeef411ef36b1b2232d27505d21e1a1",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-215-bright-return-cloth.png",
+      "sha256": "d3a24e93a67f1079ee88046ed43b27cf737715c8b07e825aa5fa5de34df96f16",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-215-adventure--reunion--explore--bright--quests--short.png",
+      "sourceNativeSha256": "4f50cb3bfa01c574125b33fd5a34be84460f1e48e3f98664fcecb78744a2f681",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-216-cloth0.png",
+      "sha256": "dea7a009f0e806aa2e698353d1d8eb802a305878a367e63569242987b061382b",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-216-adventure--reunion--explore--bright--quests.png",
+      "sourceNativeSha256": "8ee7613abe78c78979265baff4fe577ff402af7e0c04611e01bbb089044fce43",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-216-leftwall3.png",
+      "sha256": "a8dcf4a2001d7be11079b7ca92baace44a519373752b4afa876eaff73cb60452",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-216-adventure--reunion--explore--mystic--journey--scene.png",
+      "sourceNativeSha256": "15224241581c080291d11bbf312ebc98ae1687bd267ea0ffe9ff2f6e4d589878",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-216-cloth8.png",
+      "sha256": "0f4b42f97abda961d5a78dfb133e0db2ca9cf9bc9e3adfdb844d236ae3a4cabe",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-216-adventure--reunion--explore--warm--journey--episode.png",
+      "sourceNativeSha256": "490bbd12467cab78fe972727aeaa68d522c1424caabb9a84acd5ed498b121c83",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-217-warm-parent-trace.png",
+      "sha256": "2f61b6f0a700b86d613730387d2907bfc6837309f8f79e60fa798138887b66f9",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-217-adventure--reunion--explore--warm--journey.png",
+      "sourceNativeSha256": "400da81c1371f8fabc055eee518cb8de09df2eb9eb7f1fb2775efb7003963243",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    },
+    {
+      "path": "verify-shots/interview-scene-bank-v2/diagnostic-stage218-217-warm-episode-trace.png",
+      "sha256": "1102c13b2734a6dd1e621614b704872e20b831cb3aa752afc1a0194308d4c318",
+      "sourceNative": "qa-runs/harnesses/interview-scene-bank/v2-production-217-adventure--reunion--explore--warm--journey--episode.png",
+      "sourceNativeSha256": "6f6ab6b36a841a2b385a74bb0b0664b1f46bb3b12dcca62d0bc5246c2ad1fe78",
+      "readOnlyNearestDiagnosticNotProduction": true,
+      "rootViewed": true
+    }
+  ]
+}

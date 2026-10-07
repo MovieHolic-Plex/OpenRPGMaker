@@ -1,0 +1,46 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 893,
+  "removedThisCheckpoint": [
+    {
+      "key": "adventure--reunion--explore--bright--quests",
+      "sourceSha256": "c99a9c344105165d4b6156897e817b6da05e8a979a560c41b47ea6f4799ebb75",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests-c99a9c344105.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--bright--quests-2-c99a9c344105.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALquestparentattempt2 OWN/WHOLEunchangednative directlyread/viewed during212questchildrencomparison. OriginalOWN requires questbase THREEplainsealedparcels/actualforkedroads towarddifferentEMPTYnearbydestinations, everyselectedfocalfact insideleft60/quietright35. Actualrequired differentdestinationcastle/village isright x85-100 behindactual60.3controls, selected forked road continuesbehindrightcontrols: compositionONLYF. Original nearthreshold/foregroundfloor/partialarchitecture allowed, no retro212wholebuilding/woodlandmargin/cloth/roof/return criteria. Other6originalchecks retainedfrompreservedoriginalreview; physicalparcelbows/clasps/cloth/material are not logos, no arbitrary paper/body penalty. ExactoriginalOWN/nativehash/priorreviewretained, frozen868210historicalproof preserved. New212questchildren independentlyreviewed, parentreplacement required.",
+      "replacementSha256": "8ee7613abe78c78979265baff4fe577ff402af7e0c04611e01bbb089044fce43",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-218"
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--quests",
+      "sourceSha256": "1cc1cf150fa109bd92a25c0071ae26d259095b3f6e5715f44767dbf786643d28",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests-1cc1cf150fa1.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--quests-3-1cc1cf150fa1.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during213actualchildcomparison. OriginalOWN THREEactualplainsealedclothparcels/actualforkedtraversableroads towarddifferentEMPTYdestinations andmysteriousmonumentalruins allselectedleft60/quietright35. Actualmonumentalruindestination RIGHTx73-100 and selectedforkbehind1008controls: compositionF. ActualisolatedwoodendirectionSIGNBOARD withTHREEarrowboards x950-1090, explicitlyforbidden originalSIGNS/boards: noTextF evenblank. No inventedlettering/parcelclothlogo. No retro213wholearchitecture/woodland/plainkeepsakecloth/twilight/nativeedge criteria. Other5originalchecksretained. ExactoriginalOWN/nativehash/priorreviewretained, frozen868210historicalproof preserved. Replacementrequired beforedescendantsdeploy.",
+      "replacementSha256": "f890b44b1afc2b4d7c12f177124740253a0aee30005e59ae8ef2754b60667c7d",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-218"
+    },
+    {
+      "key": "adventure--reunion--explore--mystic--chapters",
+      "sourceSha256": "3765b5bfbd10b4412b75fdab0f42b167425a63f9cae5c924cd6ebde9caaec91d",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--chapters-3765b5bfbd10.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--mystic--chapters-1-3765b5bfbd10.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT FULLexact ORIGINALMYSTICchapterOWN/WHOLEunchangednative directlyread/viewed afternew214MYSTICmood parent inspection. Originalrequireschapterarchitecturalthreshold betweenTWOSUBSTANTIALLYDIFFERENTlandscaperegions and monumentalruins, selectedleft60/quietright35. Actualdifferentdesertregion andrequiredarches RIGHTx75-100 behind1008controls: compositionONLYF. Originalnearforegroundpartialarchitecture allowed, no retro214wholebuilding/nativewoodland/cloth/twilight/openhome criteria. Other6originalchecksretained. Distinctactualnearforegroundroll/pack/hugearch vsnew214mooddistantwholemonument/stop/lowopening. OWN/nativehash/priorreviewretained, frozen868210 preserved; replacementrequired.",
+      "replacementSha256": "aaab70442770c86294f5bf1890d7022af31d06c7157afe4adf72fb8d403d218e",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-218"
+    }
+  ],
+  "resolvedCumulative": 230
+}

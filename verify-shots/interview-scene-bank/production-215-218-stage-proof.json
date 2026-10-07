@@ -1,0 +1,1216 @@
+{
+  "batches": [
+    {
+      "batch": "v2-production-215",
+      "passedAttempts": 4,
+      "rejectedAttempts": 6,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-215",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-215-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T03:52:26.840676+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-215-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-215",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-215-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T03:52:55.137718+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-215-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-215",
+          "command": [
+            "/home/main/saza-backend/venv/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-215",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T03:52:55.191603+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "adventure--reunion--explore--bright--quests",
+          "nativeSha256": "58a05f6fdfecd597a25654797b0dd8dc6eeef411ef36b1b2232d27505d21e1a1",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "2d17e64266e852da1a070d859c92f8f1403077e596bc1ba456aba840cb3603ba",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Wholeemptyabandonedstop/plainBLUEfoldedcloth MID, exactlyTHREEplainsealedclothparcels onactualUNROOFEDBASEtable LOW, realtwoWHOLEEMPTYstoneSIDEopenings/ALLweatheredstairs LEFT/UP andactualLEFTforks SUN/noscope. Allselectedarchitecturewholebefore1008/nativeedges; read-onlyNEARESTlowerleftdarkshape isordinarytree/cliffshadow, not croppedthirdchosenopening. ActualphysicalGROUNDmudtrace nearstop not visible: allChoicesF, other6P. DiffactualBRIGHTmoodnearforegroundtable/portal bydistantsmallstopMID/forks/twoopenings. No unselectednearbyrightruinfailure, wholebranchhelduntiltracefixed."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. Wholeemptyabandonedstop/plainBLUEfoldedcloth MID, exactlyTHREEplainsealedclothparcels onactualUNROOFEDBASEtable LOW, realtwoWHOLEEMPTYstoneSIDEopenings/ALLweatheredstairs LEFT/UP andactualLEFTforks SUN/noscope. Allselectedarchitecturewholebefore1008/nativeedges; read-onlyNEARESTlowerleftdarkshape isordinarytree/cliffshadow, not croppedthirdchosenopening. ActualphysicalGROUNDmudtrace nearstop not visible: allChoicesF, other6P. DiffactualBRIGHTmoodnearforegroundtable/portal bydistantsmallstopMID/forks/twoopenings. No unselectednearbyrightruinfailure, wholebranchhelduntiltracefixed. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--bright--quests--short",
+          "nativeSha256": "4f50cb3bfa01c574125b33fd5a34be84460f1e48e3f98664fcecb78744a2f681",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "2c63bd59854e4709c604db7d5a3d40ad0334520381b1d9d2215a07373ad202ad",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WholeOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYinnerfloor LOWLEFT actualUNROOFEDtidyRETURNtable/plainBLUEfoldedcloth, exactlyTHREEplainsealedclothparcels/actualUNROOFEDBASEtable MIDLEFT, WHOLEclearedsmallOPENRUIN/actualfloor/SIDEopening/ALLstairs UP andWHOLEabandonedstop/EMPTYinnerfloor/interruptedGROUNDtrace MID/LEFTreturntrail SUN. ActualstoprightINNERwall/eave atx1015-1041 beyond1008controls: compositionONLYF. Other6P; read-onlyNEARESTBLUEcloth shows foldedfabricbindinglikehem notbook/text; no inventedTOParchitecturecrop. Diffnew215questparent bywholeOPENreturnhome/actualseparateRETURNtable/clearedruin."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. WholeOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYinnerfloor LOWLEFT actualUNROOFEDtidyRETURNtable/plainBLUEfoldedcloth, exactlyTHREEplainsealedclothparcels/actualUNROOFEDBASEtable MIDLEFT, WHOLEclearedsmallOPENRUIN/actualfloor/SIDEopening/ALLstairs UP andWHOLEabandonedstop/EMPTYinnerfloor/interruptedGROUNDtrace MID/LEFTreturntrail SUN. ActualstoprightINNERwall/eave atx1015-1041 beyond1008controls: compositionONLYF. Other6P; read-onlyNEARESTBLUEcloth shows foldedfabricbindinglikehem notbook/text; no inventedTOParchitecturecrop. Diffnew215questparent bywholeOPENreturnhome/actualseparateRETURNtable/clearedruin. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--journey--scene",
+          "nativeSha256": "458aca36b2bb34781f4ef4aa3453f9e0189e1b5ae96193e2586e613ee077aa09",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a30c22e0745352cd1732e45ce3e39d2f18ec03d0d1191a54c471bf7bfa9e9da1",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualfirsttwo-wayfork/WHOLEEMPTYbench/plainREDcloth/GROUNDtrace MID, WHOLEancientarchedmonument/actualallINNERcols/platforms/ALLstairs LEFT withactualnativeTOPmargin. Requiredstoproof/INNERwall x1015-1130 and chosenLOWERrightSIDEopening/ALLstairs x1200-1360 behind1008controls: compositionONLYF. OrdinaryRIGHTmountainnaturalarch notchosenstonearchitecturalcut; nobody/paper/sign. Other6P; diffnew214JOURNEYstopUP/portalLOWleft/restrightLOW bymonumentUPleft/firstbenchMID/rightstopLOW."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT actualfirsttwo-wayfork/WHOLEEMPTYbench/plainREDcloth/GROUNDtrace MID, WHOLEancientarchedmonument/actualallINNERcols/platforms/ALLstairs LEFT withactualnativeTOPmargin. Requiredstoproof/INNERwall x1015-1130 and chosenLOWERrightSIDEopening/ALLstairs x1200-1360 behind1008controls: compositionONLYF. OrdinaryRIGHTmountainnaturalarch notchosenstonearchitecturalcut; nobody/paper/sign. Other6P; diffnew214JOURNEYstopUP/portalLOWleft/restrightLOW bymonumentUPleft/firstbenchMID/rightstopLOW. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests",
+          "nativeSha256": "f890b44b1afc2b4d7c12f177124740253a0aee30005e59ae8ef2754b60667c7d",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "daffb971cbaece87df3c90a4bb6146037b82b581f8c82b786b1db969e4123959",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT, WHOLEabandonedstop/plainWHITEfoldedcloth/interruptedGROUNDtrace MID, exactlyTHREEplainsealedclothparcels/actualUNROOFEDBASEtable LOWLEFT actualforkstowarddifferentWHOLEEMPTYopenings LEFT. Allactualchosenwholebefore1008/nativeedges, no signs/bodies/print/home/RETURNtable. Plainclothfoldsnotpaper. Diffactualnew214MYSTICmood archrowUP/portalLOW bythreeparcelsLOW/stopMID/ancientruinUPLEFT. All7P. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--scene",
+          "nativeSha256": "394c0f0a1974684bc1e0480fa0eaf60cc52319eec1b5d13628819061985e4449",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f67798e07d6abd877ba29f5b744d5ba810dd8d0351f641784a8774975c95e6ec",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT, WHOLEabandonedstop/visibleEMPTYfloor MID, actualfirsttwo-wayfork/WHOLEEMPTYbench/plainBLUEcloth/interruptedGROUNDtrace MIDLOW plusactualUNROOFEDBASEtable exactlyTHREEplainsealedparcels LOWRIGHTLEFT, discoverableWHOLESIDEopening/ALLstairs LEFT. Allactualwholebefore1008/nativeedges. No paper/sign/body. Diffactualnew215MYSTICquestparent monumentLEFT/stopMIDlower/parcelsLOW byfirstbench/fork/camera/portalLEFTmiddle; substantialdifferentactualterrainstageplacement notsamecameraaddingprops. All7P. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters",
+          "nativeSha256": "aaab70442770c86294f5bf1890d7022af31d06c7157afe4adf72fb8d403d218e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "6d63d3b76172d0dfd6c061e23040f78de78f9787ed0ba111ee0536fcd26616ff",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT directlylinksactualBLEACHEDstoneuplandLEFT andgreenwoods; WHOLEabandonedstop/plainWHITEfoldedcloth/interruptedGROUNDtrace MIDLOWLEFT actualWHOLESIDEopening/ALLstairs MIDLEFT. Allactualselectedarchitecturewholebefore1008/nativeedges, nativeTOPbleachedterraintopcontinuationnotarchitecturecrop. No questparcels/home/RETURNtable/companionscopeyet/body/print. Diffactualnew214MYSTICmood widearchedrow/stopLEFT/portalLOWcenter bychapterthresholdUPLEFT betweenrealbleachedLEFTregionandwoodsstage. All7P. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--episode",
+          "nativeSha256": "33cdeeddd824cd9e462a527dbcca1b0a57e9ec9adadb0893e0ae56d901adae46",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "9689216b5e5e0b47b26069b98c91a19c254604845d4f0949f6bb5fb1fbc51ceb",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT WHOLEabandonedstop/EMPTYfloor/interruptedGROUNDtrace MID, actualUNROOFEDBASEtable exactlyTHREEplainsealedparcels MIDLEFT differentWHOLESIDEopenings/actualLEFTforks; WHOLESMALLOPENclearedRUIN/actualinnerfloor/SIDEopening/ALLstairs LOW withTWOactualEMPTYstonebenches/plainBLUEcloth. Allwholebefore1008/nativeedges, no body/paper/sign/glyph/home/RETURNtable. Diffactualnew215MYSTICquestparent bysmallclearedRUIN/twocompanionplaces LOWLEFT. All7P. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--short",
+          "nativeSha256": "15e8cd05da9f2f06b8260673c4d270238b53ad2ef61ad74e68b5aab9a9937c74",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f81f15e220852deca524d06fb13dcd9ed82b8713d4d0d6e1410bc17a908b1d54",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT WHOLEOPENreturnhome/fullroof/chimneys/BOTHdoorsoutward/visibleEMPTYinnerfloor LOW andactualUNROOFEDtidyRETURNtable/plainWHITEcloth, exactlyTHREEplainsealedparcels onactualUNROOFEDBASEtable MID WHOLEabandonedstop/interruptedGROUNDtrace/LEFTreturntrail, WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT plusWHOLEsideopenings. ActualseparatesmallOPENclearedRUIN/visiblewalkableinnerfloor absent: allChoices/latestChoiceF, other5P. Largeintactmonumentplatformdoesnotreplacerequiredresolvedsmallruin. Allactualwholebefore1008/nativeedges; no inventedbook/sign/body. Diffnew215MYSTICquestparent byopenhome/RETURNtable."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEOPENreturnhome/fullroof/chimneys/BOTHdoorsoutward/visibleEMPTYinnerfloor LOW andactualUNROOFEDtidyRETURNtable/plainWHITEcloth, exactlyTHREEplainsealedparcels onactualUNROOFEDBASEtable MID WHOLEabandonedstop/interruptedGROUNDtrace/LEFTreturntrail, WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT plusWHOLEsideopenings. ActualseparatesmallOPENclearedRUIN/visiblewalkableinnerfloor absent: allChoices/latestChoiceF, other5P. Largeintactmonumentplatformdoesnotreplacerequiredresolvedsmallruin. Allactualwholebefore1008/nativeedges; no inventedbook/sign/body. Diffnew215MYSTICquestparent byopenhome/RETURNtable. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--scene",
+          "nativeSha256": "5fa3ab7fd3940fb3b9b89fd88de92118b3fef6072c3350f7c2287da6b1e25dc2",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a2743fbf4a75ac3f5ddd3c5b2c5b70e4f00e66697b8df348f465c0bca74543c8",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT WHOLEancientarchedmonument/ALLstairs UPLEFT emptyabandonedstop/GROUNDtrace MID, actualfirsttwo-wayfork/WHOLEEMPTYbench/plainREDcloth MIDLOW, WHOLESIDEopening/ALLstairs LOWLEFT. RequiredchapterthresholdnotpresentlinkingactualvisiblyDIFFERENTgreenwoods/bleachedstoneuplandLEFT: allChoicesF. BleacheduplandRIGHTx80-100 isnotrequiredLEFTstageandwouldbehiddenbehindcontrols: compositionF foractualrequiredalternatechapterregion. Other5P/no print/body/sign/nativearchitecturecrop. Diffactualnew215MYSTICchapterparent thresholdUPLEFT/bleachedLEFT region byfirstbench/LOWfork butchoiceincomplete."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/ALLstairs UPLEFT emptyabandonedstop/GROUNDtrace MID, actualfirsttwo-wayfork/WHOLEEMPTYbench/plainREDcloth MIDLOW, WHOLESIDEopening/ALLstairs LOWLEFT. RequiredchapterthresholdnotpresentlinkingactualvisiblyDIFFERENTgreenwoods/bleachedstoneuplandLEFT: allChoicesF. BleacheduplandRIGHTx80-100 isnotrequiredLEFTstageandwouldbehiddenbehindcontrols: compositionF foractualrequiredalternatechapterregion. Other5P/no print/body/sign/nativearchitecturecrop. Diffactualnew215MYSTICchapterparent thresholdUPLEFT/bleachedLEFT region byfirstbench/LOWfork butchoiceincomplete. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--episode",
+          "nativeSha256": "bf2472ca835630d842cc8ddc3c973dd2b93d856ea7a2423c1a83d94aabab0120",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a0a1e5bcc31d35c3e282a6f5af32d048f86af3501fcc3c8de4bbc3563af532c9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT WHOLESMALLOPENclearedRUIN/actualinnerfloor/SIDEopening/ALLstairs LOWLEFT TWOEMPTYstonebenches/plainREDcloth LOW, WHOLEabandonedstop/GROUNDtrace MID. RequiredwholechapterthresholdlinkingvisiblyDIFFERENTBLEACHEDstoneupland/greenwoods LEFT absent: allChoicesF. Ordinaryleftcliffwhitehighlights notactualdifferentbiomeregion. Other6P, no inventedhiddenrightregion/architecturecrop/sign/body. Diffactualnew215MYSTICchapterparent actualthresholdUPLEFT/bleachedLEFTregion byclearedsmallruin/twocompanionplacesLOW."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative and fullactualparentOWN/native directlyinspected/compared. CoolTWILIGHT WHOLEancientarchedmonument/allINNERframes/platforms/ALLstairs UPLEFT WHOLESMALLOPENclearedRUIN/actualinnerfloor/SIDEopening/ALLstairs LOWLEFT TWOEMPTYstonebenches/plainREDcloth LOW, WHOLEabandonedstop/GROUNDtrace MID. RequiredwholechapterthresholdlinkingvisiblyDIFFERENTBLEACHEDstoneupland/greenwoods LEFT absent: allChoicesF. Ordinaryleftcliffwhitehighlights notactualdifferentbiomeregion. Other6P, no inventedhiddenrightregion/architecturecrop/sign/body. Diffactualnew215MYSTICchapterparent actualthresholdUPLEFT/bleachedLEFTregion byclearedsmallruin/twocompanionplacesLOW. Visiblecoarsesquareclusters/stair-stepcontours/flatshades allplanes. Ownonly; positions targets/actual60.3/nativeedgeshard. Builtin21510fulfilled0failed explicitlyclosed; nativeunchanged. Privateinspectiononly, frozen887214 QAledger untouched."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-216",
+      "passedAttempts": 2,
+      "rejectedAttempts": 8,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-216",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-216-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:04:18.073987+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-216-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-216",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-216-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:04:41.950163+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-216-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-216",
+          "command": [
+            "/home/main/saza-backend/venv/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-216",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:04:42.007024+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "adventure--reunion--explore--bright--quests",
+          "nativeSha256": "8ee7613abe78c78979265baff4fe577ff402af7e0c04611e01bbb089044fce43",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "47245652a6f08809926e13c106b4c7f8b142f635a8fdc6300eaccb47c1f1d26e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. Wholeemptyabandonedstop/visibleEMPTYfloor BLUEWHITEplainfoldedcloth MID, actualdistinctmuddyGROUNDfootprints interruptedatLEFTfork, exactlyTHREEsealedclothparcels actualUNROOFEDBASEtable MIDLOW, differentWHOLEEMPTYsideopenings/EVERYweatheredstair LEFT/UP. EnergeticSUN; no scopeyet. Everychosenroof/eave/wall/innerfloor/steps wholebefore1008/nativeedges. Read-onlyNEARESTcloth0 shows alternatingBLUEWHITEfabricfold/hem bands; no actuallettering/emblem or conclusivelyexposedbookpages, do not invent openbook failure from blanket pattern. Differentactual013BRIGHTnearforegroundtable/portal bywidehighsmallstopMID/actualthreeparcels/LEFTforks. All7P. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--bright--quests--short",
+          "nativeSha256": "5d22427ac9f8bea26f857fa10c7ce16cfe7fed0a08292b165d419d247cda17c9",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "fe813aa1c2ef561dab78122e731f93433b45d554f60d65c0475e6b875a4adf5a",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WholeOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYwalkablefloor MIDRIGHTLEFT, actualUNROOFEDRETURNtable WHITEfoldedcloth, actualseparateBASEtable exactlyTHREEsealedparcels LOWLEFT, wholeSMALLOPENclearedRUIN/visiblefloor/SIDEopening/EVERYstair UPLEFT. Actualabandonedstop/EMPTYfloor MIDLEFT plusdistinctGROUNDtrace/LEFTreturntrail. Requiredpersonalkeepsakecloth atabandonedstop absent; RETURNtablecloth alone notseparatestopkeepsake. allChoicesONLYF; latestChoice actualreturn/clearedruinP. Other6P; actualreturnroofright984 before1008/no nativeedgecut. Differentnew216questparent byseparateOPENhome/RETURNtable/clearedruin."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. WholeOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYwalkablefloor MIDRIGHTLEFT, actualUNROOFEDRETURNtable WHITEfoldedcloth, actualseparateBASEtable exactlyTHREEsealedparcels LOWLEFT, wholeSMALLOPENclearedRUIN/visiblefloor/SIDEopening/EVERYstair UPLEFT. Actualabandonedstop/EMPTYfloor MIDLEFT plusdistinctGROUNDtrace/LEFTreturntrail. Requiredpersonalkeepsakecloth atabandonedstop absent; RETURNtablecloth alone notseparatestopkeepsake. allChoicesONLYF; latestChoice actualreturn/clearedruinP. Other6P; actualreturnroofright984 before1008/no nativeedgecut. Differentnew216questparent byseparateOPENhome/RETURNtable/clearedruin. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--journey--scene",
+          "nativeSha256": "15224241581c080291d11bbf312ebc98ae1687bd267ea0ffe9ff2f6e4d589878",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "1cfd55c7d0dfe4390d0d198db7cd5b69a4885ac677a78fddfbc86d02e0b11888",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT WHOLEancientarchedmonument/everyinnerframe/platform/EVERYstep UPLEFT actualabandonedstop/EMPTYfloor MID, firstfork/WHOLEEMPTYbench REDdrapedcloth/GROUNDtrace MIDLOWLEFT andWHOLESIDEopening/EVERYstep LOWRIGHTLEFT. Actualstop andchosenopening wholebefore1008/nativeedges. Required JOURNEY trail throughsideopening to differentwholeEMPTYrestbenchdestination notpresent: onlyclothbenchbeforeopening atfirstfork. allChoicesONLYF; latestChoice firstdeparture/fork/benchclothP. Other6P/nobody/sign/print. Differentactual214JOURNEYstopUP/portalLOWLEFT/restpavilionLOW bymonumentUPLEFT/firstclothbenchMID/stopMID."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. CoolTWILIGHT WHOLEancientarchedmonument/everyinnerframe/platform/EVERYstep UPLEFT actualabandonedstop/EMPTYfloor MID, firstfork/WHOLEEMPTYbench REDdrapedcloth/GROUNDtrace MIDLOWLEFT andWHOLESIDEopening/EVERYstep LOWRIGHTLEFT. Actualstop andchosenopening wholebefore1008/nativeedges. Required JOURNEY trail throughsideopening to differentwholeEMPTYrestbenchdestination notpresent: onlyclothbenchbeforeopening atfirstfork. allChoicesONLYF; latestChoice firstdeparture/fork/benchclothP. Other6P/nobody/sign/print. Differentactual214JOURNEYstopUP/portalLOWLEFT/restpavilionLOW bymonumentUPLEFT/firstclothbenchMID/stopMID. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--short",
+          "nativeSha256": "fc13e528a40cd63f6dca02563f8f0c13fa43e46ecc79f96acb8a96bc8bdf0143",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "ce762509ac866989ad25fada163b67710e92257dc105ddabc68dde01aac2aa7e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualmonument UPLEFT, clearedSMALLOPENruin/visiblefloor/steps MID, BASEtable THREEsealedparcels MIDLEFT, oneOPENroofedhome LOW withplainclothRETURNtable andGROUNDtrace. ActualconnectedchosenmonumentLEFTstonewall croppedatnativeLEFT (read-onlyNEARESTleftwall3): compositionF. Requiredseparateabandonedstop absent, home notshowBOTHoutwarddoors: allChoices/latestChoiceF. Actualhome onlyonevisibleoutwarddoor notfullexactscope; no inventedbody/print/sign. Other4P; differs215MYSTICquestparent throughsmallclearedruin/home/RETURNtable."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. CoolTWILIGHT actualmonument UPLEFT, clearedSMALLOPENruin/visiblefloor/steps MID, BASEtable THREEsealedparcels MIDLEFT, oneOPENroofedhome LOW withplainclothRETURNtable andGROUNDtrace. ActualconnectedchosenmonumentLEFTstonewall croppedatnativeLEFT (read-onlyNEARESTleftwall3): compositionF. Requiredseparateabandonedstop absent, home notshowBOTHoutwarddoors: allChoices/latestChoiceF. Actualhome onlyonevisibleoutwarddoor notfullexactscope; no inventedbody/print/sign. Other4P; differs215MYSTICquestparent throughsmallclearedruin/home/RETURNtable. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--scene",
+          "nativeSha256": "1140b6bd4f31a60577bf5fe9919708c1e89b5fba6ba149d61ea1db500875da20",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "3c754a8b7f8eb598dbd148959f1031bb5b170291f8070c37ba5d87a3d1489c80",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. CoolTWILIGHT WHOLEancientarchedchapterthreshold/ALLinnerframes/platforms/EVERYstep UPLEFT linksactualBLEACHEDuplandLEFT andGREENwoodsLEFT incontinuousworld, wholeabandonedstop/visibleEMPTYfloor MID, actualfirstfork/WHOLEEMPTYbench REDdrapedcloth/actualinterruptedGROUNDmudprints LOWLEFT, actualdiscoverableWHOLESIDEopening/EVERYstair MIDLEFT. Allchosenwholebefore1008/nativeedges; ordinarybleachedLEFTterraincontinuation notcutarchitecture. No book/body/sign/paper/identity. Differentactual215chapterparent archUPMIDDLE/stopLOWMID viaarchUPLEFT/stopMID/firstbenchLOW/explicitforkgroundtrace/changedravinecamera. All7P. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--episode",
+          "nativeSha256": "ea407d1617b5c48c16957b6a7ebb077a566d8734d9185753dda6231eb846c5e5",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "9589059ace952e64da071e4173fdf86d96df3ddec657d6e08f9802f3b5887444",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT wholechapterthreshold/monument UPLEFT linksactualBLEACHEDLEFTregion/GREENwoods beforecontrols, actualroofedabandonedstop/EMPTYfloor/REDplainfoldedcloth MIDLOW withTWOEMPTYrestbenches/actualGROUNDtrace. RequiredseparateSMALLOPENclearedstoneRUIN/visiblewalkableinnerfloor/SIDEopening/EVERYstair absent: roofedstop doesnotreplaceselectedsmallruin. allChoices/latestChoiceF; other5P, everyactualchosencomplexwholebefore1008/nativeedges. Differentactual215chapterparent throughpairedrestbenches/stopMID ratherthanLOW."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. CoolTWILIGHT wholechapterthreshold/monument UPLEFT linksactualBLEACHEDLEFTregion/GREENwoods beforecontrols, actualroofedabandonedstop/EMPTYfloor/REDplainfoldedcloth MIDLOW withTWOEMPTYrestbenches/actualGROUNDtrace. RequiredseparateSMALLOPENclearedstoneRUIN/visiblewalkableinnerfloor/SIDEopening/EVERYstair absent: roofedstop doesnotreplaceselectedsmallruin. allChoices/latestChoiceF; other5P, everyactualchosencomplexwholebefore1008/nativeedges. Differentactual215chapterparent throughpairedrestbenches/stopMID ratherthanLOW. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--short",
+          "nativeSha256": "aeaf8a792a59cbb68cba6adf31e569a4a7504e2ecc26739813a424774307594f",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "83a5666f3d37b080b194d0a387d49e3f2f0abf815a8c3a9e0ca72a804af653a8",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualwholechapterthreshold/monument UPLEFT linksBLEACHEDLEFTupland/GREENwoods, wholeSMALLOPENclearedRUIN/sideopening/ALLstairs MIDLEFT, WHOLEOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYfloor LOWLEFT actualUNROOFEDRETURNtable BLUEcloth/GROUNDtrace/LEFTreturntrail. Requiredseparateabandonedtravelersstop/keepsakecloth absent: onehome cannotreplacebothselectedstopandhome. allChoicesONLYF, latestChoice scopeP. Actualrequiredprimarymonument/ruin/home allwholebefore1008/nativeedges; ordinarydistantbleachedlandscape ruins notinventedprimarynativecrop. Other6P. Differentactual215chapterparent byreturnhome/RETURNtable/clearedruin."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. CoolTWILIGHT actualwholechapterthreshold/monument UPLEFT linksBLEACHEDLEFTupland/GREENwoods, wholeSMALLOPENclearedRUIN/sideopening/ALLstairs MIDLEFT, WHOLEOPENreturnhome/fullroof/chimney/BOTHdoorsoutward/visibleEMPTYfloor LOWLEFT actualUNROOFEDRETURNtable BLUEcloth/GROUNDtrace/LEFTreturntrail. Requiredseparateabandonedtravelersstop/keepsakecloth absent: onehome cannotreplacebothselectedstopandhome. allChoicesONLYF, latestChoice scopeP. Actualrequiredprimarymonument/ruin/home allwholebefore1008/nativeedges; ordinarydistantbleachedlandscape ruins notinventedprimarynativecrop. Other6P. Differentactual215chapterparent byreturnhome/RETURNtable/clearedruin. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--scene",
+          "nativeSha256": "c0130e2a26cdc40c2af2efea8a15fb53110a746baaa40fc1398989b36da20986",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "604e8aff426c8b86bbc7662d76562989d596defd237c051bcc361707ba906a84",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Actualsunnywholeabandonedstop/EMPTYfloor UPLEFT, firstfork/WHOLEEMPTYstonebench REDdrapedcloth/actualGROUNDmudprints MIDLEFT, WHOLESIDEopening/ALLstairs UPLEFT. ExactOWN selectedWARMbase contradicts erroneouslyappended SELECTED BRIGHT SUNLIGHT; do not editexactreceipt orclaimwarmfaithful. allChoicesF fidelityhold for coherentnewrequest; also no actualseparatedestinationrestbench reachedafteropening. Other6P, latestChoice firstforkP; wholebefore1008/nativeedges/no body/sign. Differentactualold047warmJOURNEYintimateforegroundsupplies/RIGHTdestination bywidehighLEFTforestfork."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. Actualsunnywholeabandonedstop/EMPTYfloor UPLEFT, firstfork/WHOLEEMPTYstonebench REDdrapedcloth/actualGROUNDmudprints MIDLEFT, WHOLESIDEopening/ALLstairs UPLEFT. ExactOWN selectedWARMbase contradicts erroneouslyappended SELECTED BRIGHT SUNLIGHT; do not editexactreceipt orclaimwarmfaithful. allChoicesF fidelityhold for coherentnewrequest; also no actualseparatedestinationrestbench reachedafteropening. Other6P, latestChoice firstforkP; wholebefore1008/nativeedges/no body/sign. Differentactualold047warmJOURNEYintimateforegroundsupplies/RIGHTdestination bywidehighLEFTforestfork. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--episode",
+          "nativeSha256": "490bbd12467cab78fe972727aeaa68d522c1424caabb9a84acd5ed498b121c83",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "a7d8b7323f9719ecb66dbdea64b811cf439932ca3a0ec9b7cd915adb3ea19019",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ActualsunnyWHOLESMALLOPENclearedRUIN/sideopening/EVERYstair UPLEFT TWOEMPTYstoneRESTBENCHES REDcloth, wholeabandonedstop/EMPTYfloor/plainREDfoldedcloth MIDLEFT/GROUNDmudtrace/actualLEFTjourneytrail. Read-onlyNEARESTcloth8 showsirregularredfabrichem/folds notbookcovertext. ExactOWN selectedWARMbase contradicts appendedSELECTED BRIGHT SUNLIGHT: allChoicesF fidelityholdforcoherentnewrequest, originalexactreceipt/nativepreserved. Other6P, actualsmallruin/pairedrests latestChoiceP; allwholebefore1008/nativeedges/no body/sign. Differentold047warmJOURNEY bypairedrestRUINUP/stopMIDLEFT/highwidecamera."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. ActualsunnyWHOLESMALLOPENclearedRUIN/sideopening/EVERYstair UPLEFT TWOEMPTYstoneRESTBENCHES REDcloth, wholeabandonedstop/EMPTYfloor/plainREDfoldedcloth MIDLEFT/GROUNDmudtrace/actualLEFTjourneytrail. Read-onlyNEARESTcloth8 showsirregularredfabrichem/folds notbookcovertext. ExactOWN selectedWARMbase contradicts appendedSELECTED BRIGHT SUNLIGHT: allChoicesF fidelityholdforcoherentnewrequest, originalexactreceipt/nativepreserved. Other6P, actualsmallruin/pairedrests latestChoiceP; allwholebefore1008/nativeedges/no body/sign. Differentold047warmJOURNEY bypairedrestRUINUP/stopMIDLEFT/highwidecamera. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--short",
+          "nativeSha256": "254890be06f9cc8b611c6d17dc0ad9fa7593e369fc514c477d9d25c1f4305ab8",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "d07d80db89c7c9a5f5f23b035428be7787ca4f4f5586007d6d54633bd02c5dc0",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Actualsunnywholeabandonedroofedstop UPLEFT/GROUNDtrace, separateclearedSMALLOPENruin MIDLEFT/sideopening/EVERYstair, differentWHOLEEMPTYrestbench LOWLEFT, OPENreturnwalls/outwarddoors/clothTABLE LOWLEFT. RequiredreturnhomeFULLroof missing, actualkeepsakeclothatabandonedstop absent: allChoices/latestChoiceF. ExactOWN WARMbase contradicts appendedBRIGHT SUNLIGHT, keepownunchanged/redrawcoherent. Other5P, wholeactualarchitecturebefore1008/nativeedges/nobody/sign/print; differentold047JOURNEY throughreturncomplex/smallclearedruin/LEFTdestinationrestbench."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLOWN/WHOLEnative directly read/viewed/compared. Actualsunnywholeabandonedroofedstop UPLEFT/GROUNDtrace, separateclearedSMALLOPENruin MIDLEFT/sideopening/EVERYstair, differentWHOLEEMPTYrestbench LOWLEFT, OPENreturnwalls/outwarddoors/clothTABLE LOWLEFT. RequiredreturnhomeFULLroof missing, actualkeepsakeclothatabandonedstop absent: allChoices/latestChoiceF. ExactOWN WARMbase contradicts appendedBRIGHT SUNLIGHT, keepownunchanged/redrawcoherent. Other5P, wholeactualarchitecturebefore1008/nativeedges/nobody/sign/print; differentold047JOURNEY throughreturncomplex/smallclearedruin/LEFTdestinationrestbench. Coarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Positionsonlytargets; actual60.3/nativeedgecontracts only. Builtin21610fulfilled0failed explicitclosed. Privateinspection/frozen887214QA unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-217",
+      "passedAttempts": 0,
+      "rejectedAttempts": 10,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-217",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-217-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:21:02.371868+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-217-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-217",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-217-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:21:25.171675+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-217-review-batch.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-217",
+          "command": [
+            "/home/main/saza-backend/venv/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-217",
+            "--defer-build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:21:25.229577+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "adventure--reunion--explore--warm--journey",
+          "nativeSha256": "400da81c1371f8fabc055eee518cb8de09df2eb9eb7f1fb2775efb7003963243",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f5300e74502d0eb156fd8e9be80c5e9243b6f28fcd896b0fd88caa104b15cf6d",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber WHOLEroofedabandonedSTOP/visibleEMPTYfloor/REDdrapedcloth/actualtwoEMPTYcups/bedroll/walllantern MIDLEFT, WHOLEdiscoverableSIDEopening/ALLstairs UPLEFT differentWHOLEEMPTYstoneRESTBENCH beyondopening UPLEFT/actualLEFTcontinuousroute. Allactualchosenarchitecturewholebefore1008/nativeedges. ROOT preliminarywhole-view positive was withdrawn after read-onlyNEARESTactualground inspection: groundisscatteredgravel/earthtexture, distinctrequestedmuddyFOOTPRINTSEQUENCE notconfirmed. allChoicesONLYF, other6P. ActualcoherentWARMbranch/requestretained, differentold047parent bywholeleftdestinationbenchUP versusforegroundpack/RIGHTdestination."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. Warmamber WHOLEroofedabandonedSTOP/visibleEMPTYfloor/REDdrapedcloth/actualtwoEMPTYcups/bedroll/walllantern MIDLEFT, WHOLEdiscoverableSIDEopening/ALLstairs UPLEFT differentWHOLEEMPTYstoneRESTBENCH beyondopening UPLEFT/actualLEFTcontinuousroute. Allactualchosenarchitecturewholebefore1008/nativeedges. ROOT preliminarywhole-view positive was withdrawn after read-onlyNEARESTactualground inspection: groundisscatteredgravel/earthtexture, distinctrequestedmuddyFOOTPRINTSEQUENCE notconfirmed. allChoicesONLYF, other6P. ActualcoherentWARMbranch/requestretained, differentold047parent bywholeleftdestinationbenchUP versusforegroundpack/RIGHTdestination. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--bright--quests--short",
+          "nativeSha256": "267999eb198441b7023c61b6e6c4d178f1a2b04eafe8984817128b1ffb59516e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "989499d8cc29df83dfa99359aade1ddb86411aac0d318740ada819315d3510ef",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "SUN WHOLEabandonedSTOP/REDdrapedcloth MIDLEFT, wholeSMALLOPENclearedRUIN/sideopening/ALLstairs UPLEFT, exactlyTHREEsealedparcels UNROOFEDBASEtable MID, WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYfloor LOWLEFT BLUEdrapedcloth UNROOFEDRETURNtable. ActualRETURNtable rightedge/leg x1020-1035 behind1008: compositionF. ActualdifferentTWOexplorationopenings/groundFOOTPRINTSEQUENCE notconfirmed, onlyUPsingleopening visible: allChoicesF. LatestChoice physicalreturn/clearedruinP, other5P/no print/body/sign. Diffactual216questparent throughseparateHOME/RETURNtable/clearedruin."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. SUN WHOLEabandonedSTOP/REDdrapedcloth MIDLEFT, wholeSMALLOPENclearedRUIN/sideopening/ALLstairs UPLEFT, exactlyTHREEsealedparcels UNROOFEDBASEtable MID, WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYfloor LOWLEFT BLUEdrapedcloth UNROOFEDRETURNtable. ActualRETURNtable rightedge/leg x1020-1035 behind1008: compositionF. ActualdifferentTWOexplorationopenings/groundFOOTPRINTSEQUENCE notconfirmed, onlyUPsingleopening visible: allChoicesF. LatestChoice physicalreturn/clearedruinP, other5P/no print/body/sign. Diffactual216questparent throughseparateHOME/RETURNtable/clearedruin. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--journey--scene",
+          "nativeSha256": "de8c66bcbecfc747ba23e8b8832cee4fe0341f3ab2b057fb0a59c2a93a68d2b1",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "f413301b4f3f979edaaf86b9186a32847cdcecd76beeacf62a9afacf5dff3989",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualancientMONUMENT UPLEFT actualINNERfloors/ALLstairs, WHOLESTOP/EMPTYfloor/REDdrapedcloth LOWLEFT, actualfirstfork/SIDEopening/ALLstairs MIDLEFT differentEMPTYstoneRESTBENCH UPLEFT beyondopening linkedLEFTpath. ActualmonumentTOParch/tower cutnativeTOP: compositionF. ActualdistinctmuddyGROUNDfootprintsequence notconfirmedamongordinarygravel: allChoicesF. Other5P/firstdeparture latestChoiceP/no identity/print/sign. Differentactual214parentstopUP/portalLOWLEFT/restpavilionLOW throughstopLOW/firstforkMID/restbenchUP."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. CoolTWILIGHT actualancientMONUMENT UPLEFT actualINNERfloors/ALLstairs, WHOLESTOP/EMPTYfloor/REDdrapedcloth LOWLEFT, actualfirstfork/SIDEopening/ALLstairs MIDLEFT differentEMPTYstoneRESTBENCH UPLEFT beyondopening linkedLEFTpath. ActualmonumentTOParch/tower cutnativeTOP: compositionF. ActualdistinctmuddyGROUNDfootprintsequence notconfirmedamongordinarygravel: allChoicesF. Other5P/firstdeparture latestChoiceP/no identity/print/sign. Differentactual214parentstopUP/portalLOWLEFT/restpavilionLOW throughstopLOW/firstforkMID/restbenchUP. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--short",
+          "nativeSha256": "3511e80cb786d7626e10fd17112b7b113e845b12c16fc131e0bf07c80e998b5d",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "d797a352e18b43a7016cac08c06a9e882ed9334d94ff3cf040be5ea04f0d75e3",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualmonument UPLEFT, WHOLEclearedSMALLOPENruin/visiblefloor/SIDEopening MID, exactlyTHREEsealedparcels BASEtable MIDLEFT, WHOLEabandonedSTOP/REDdrapedcloth LOWLEFT, OPENreturnHOME/fullroof/BOTHdoorsoutward/EMPTYfloor BLUEdrapedcloth RETURNtable LOWRIGHT. ActualrequiredHOME rightINNERfloor/wall x1100-1250 and actualRETURNtable x1180-1320 behind1008: compositionF. Other6P, actualnativeTOPmonumentinside; no inventedletter/glyph/sign failure. Different215MYSTICquestparent throughactualseparateSTOP/clearedruin/HOME/RETURNtable."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. CoolTWILIGHT actualmonument UPLEFT, WHOLEclearedSMALLOPENruin/visiblefloor/SIDEopening MID, exactlyTHREEsealedparcels BASEtable MIDLEFT, WHOLEabandonedSTOP/REDdrapedcloth LOWLEFT, OPENreturnHOME/fullroof/BOTHdoorsoutward/EMPTYfloor BLUEdrapedcloth RETURNtable LOWRIGHT. ActualrequiredHOME rightINNERfloor/wall x1100-1250 and actualRETURNtable x1180-1320 behind1008: compositionF. Other6P, actualnativeTOPmonumentinside; no inventedletter/glyph/sign failure. Different215MYSTICquestparent throughactualseparateSTOP/clearedruin/HOME/RETURNtable. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--episode",
+          "nativeSha256": "0b7e827f7cdde7de878cde1d00989a5ed85cdbb32155a8231dc02408e31a3611",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "91c4725b817a91da7d5238431dcbf4de71c81ba5028d9587f49f82317757a37b",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualmonument UPLEFT/ALLstairs, WHOLESTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, WHOLEclearedSMALLOPENstoneRUIN/visiblefloor/SIDEopening/EVERYstair LOWLEFT TWOEMPTYstoneRESTBENCHES. ActualmonumentTOPlefttower cutnativeTOP: compositionF. ActualWHOLEchapterthresholdlinkedDIFFERENTBLEACHEDLEFTupland/GREENwoods absent: ordinarysamepinecanyon cliffs notalternatebiomeregion. allChoicesF, other5P/latestChoice smallruin/pairedrestsP. Different215chapterparent byclearedruin/twobenchesLOW/STOPMID."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. CoolTWILIGHT actualmonument UPLEFT/ALLstairs, WHOLESTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, WHOLEclearedSMALLOPENstoneRUIN/visiblefloor/SIDEopening/EVERYstair LOWLEFT TWOEMPTYstoneRESTBENCHES. ActualmonumentTOPlefttower cutnativeTOP: compositionF. ActualWHOLEchapterthresholdlinkedDIFFERENTBLEACHEDLEFTupland/GREENwoods absent: ordinarysamepinecanyon cliffs notalternatebiomeregion. allChoicesF, other5P/latestChoice smallruin/pairedrestsP. Different215chapterparent byclearedruin/twobenchesLOW/STOPMID. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--short",
+          "nativeSha256": "83e917f6363c3ffb6c4946c12dbb780fc495c166ec9286d9468241ecf45fb80d",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "3d71cf19e792dee99415205adba1db825fceded41cf4c36808c16216e9983b3d",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHT actualchaptermonumentlinksBLEACHEDLEFTupland/GREENwoods, WHOLESTOP/REDdrapedcloth MIDLEFT, WHOLEclearedSMALLOPENruin/sideopening/ALLstairs MID, WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYfloor LOWLEFT BLUEdrapedcloth RETURNtable. ActualmonumentTOPtower cutnativeTOP andconnectedLEFTwing cutnativeLEFT; actualRETURNtable x1025-1120 behind1008: compositionONLYF. Other6P/nobody/sign/glyph; do notreinterpretordinaryclothfoldasbook. Different215chapterparent throughHOME/clearedruin/RETURNtableLOW."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. CoolTWILIGHT actualchaptermonumentlinksBLEACHEDLEFTupland/GREENwoods, WHOLESTOP/REDdrapedcloth MIDLEFT, WHOLEclearedSMALLOPENruin/sideopening/ALLstairs MID, WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYfloor LOWLEFT BLUEdrapedcloth RETURNtable. ActualmonumentTOPtower cutnativeTOP andconnectedLEFTwing cutnativeLEFT; actualRETURNtable x1025-1120 behind1008: compositionONLYF. Other6P/nobody/sign/glyph; do notreinterpretordinaryclothfoldasbook. Different215chapterparent throughHOME/clearedruin/RETURNtableLOW. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--scene",
+          "nativeSha256": "e8ab8dd962f912117ce461410e9b5df0a38f21b28dbd1d36e2370a27d4934144",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "191c39a5d8ceacf8e2cf3b9eb42052c33aea95f43c1b9ea0ade9a1114d181222",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcups/bedrolls/walllantern MIDLEFT firstfork, actualWHOLESIDEopening/EVERYstep UPLEFT EMPTYwoodbenchbeforeopening MIDLEFT. RequiredactualseparateEMPTYstoneRESTBENCH destination beyondopening absent (woodbench beforeopening isnotselecteddestination); requesteddistinctGROUNDfootprints notconfirmed: allChoicesONLYF, other6P/latestChoicefirstdepartureP. Actualarchitecturewholebefore1008/nativeedges; differentnew217journeyparent bySTOPMID/sideopeningUPLEFT ratherthanSTOPLEFT/openingUPMID/benchUPRIGHTLEFT."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcups/bedrolls/walllantern MIDLEFT firstfork, actualWHOLESIDEopening/EVERYstep UPLEFT EMPTYwoodbenchbeforeopening MIDLEFT. RequiredactualseparateEMPTYstoneRESTBENCH destination beyondopening absent (woodbench beforeopening isnotselecteddestination); requesteddistinctGROUNDfootprints notconfirmed: allChoicesONLYF, other6P/latestChoicefirstdepartureP. Actualarchitecturewholebefore1008/nativeedges; differentnew217journeyparent bySTOPMID/sideopeningUPLEFT ratherthanSTOPLEFT/openingUPMID/benchUPRIGHTLEFT. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--episode",
+          "nativeSha256": "6f6ab6b36a841a2b385a74bb0b0664b1f46bb3b12dcca62d0bc5246c2ad1fe78",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "884c795b81e2621e81105f0b31946b0b8fee441cff6f88d99363165a7abdc477",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcupsplusadditionalcups/bedroll/walllantern MIDLEFT, WHOLESMALLOPENclearedstoneRUIN/SIDEopening/ALLsteps UPLEFT TWOactualEMPTYstoneRESTBENCHES/REDdrapedcloth, actualLEFTtrail. Read-onlyNEARESTground showsordinarywaterfilledmudpatches/gravel, no distinctrequestedFOOTPRINTsequence: allChoicesONLYF. Other6P, actualsmallruin/pairedrests latestChoiceP/allchosenwholebefore1008/nativeedges/nobody/sign/print. Extra cupsnotnewexact-countfailure since OWN notexactlytwo. Differentactualnew217JOURNEYparent throughsmallclearedruin/twobenchesUP."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcupsplusadditionalcups/bedroll/walllantern MIDLEFT, WHOLESMALLOPENclearedstoneRUIN/SIDEopening/ALLsteps UPLEFT TWOactualEMPTYstoneRESTBENCHES/REDdrapedcloth, actualLEFTtrail. Read-onlyNEARESTground showsordinarywaterfilledmudpatches/gravel, no distinctrequestedFOOTPRINTsequence: allChoicesONLYF. Other6P, actualsmallruin/pairedrests latestChoiceP/allchosenwholebefore1008/nativeedges/nobody/sign/print. Extra cupsnotnewexact-countfailure since OWN notexactlytwo. Differentactualnew217JOURNEYparent throughsmallclearedruin/twobenchesUP. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--short",
+          "nativeSha256": "fda72cceb5e536faa01a3a4e82da7cfebf9e37b8cf07e8de1442d9ed60942559",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "14909e3226e1cf92b9100b6de7201adba8924f1030b23e2098b19248b31cb7d8",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYwalkablefloor UPLEFT BLUEdrapedcloth actualUNROOFEDRETURNtable, WHOLEclearedSMALLOPENruin/sideopening/ALLsteps MIDLEFT WHOLESTOP/EMPTYfloor/REDdrapedcloth/walllantern/cups LOWLEFT LEFTreturntrail. RequireddifferentEMPTYstoneRESTBENCH rightINNERseat/support x1030-1115 behind1008: compositionF. ActualisolatedwoodendirectionSIGNBOARD atx105-160/y720-770: noTextF evenblank, forbiddenown. Other5P/latestChoice returnP, no inventedRETURNcup failure (own217doesnotrequireONLYcloth). Differentnew217JOURNEYparent throughHOMEUP/clearedruinMID/STOPLOW."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. Warmamber WHOLEOPENreturnHOME/fullroof/chimney/BOTHdoorsoutward/EMPTYwalkablefloor UPLEFT BLUEdrapedcloth actualUNROOFEDRETURNtable, WHOLEclearedSMALLOPENruin/sideopening/ALLsteps MIDLEFT WHOLESTOP/EMPTYfloor/REDdrapedcloth/walllantern/cups LOWLEFT LEFTreturntrail. RequireddifferentEMPTYstoneRESTBENCH rightINNERseat/support x1030-1115 behind1008: compositionF. ActualisolatedwoodendirectionSIGNBOARD atx105-160/y720-770: noTextF evenblank, forbiddenown. Other5P/latestChoice returnP, no inventedRETURNcup failure (own217doesnotrequireONLYcloth). Differentnew217JOURNEYparent throughHOMEUP/clearedruinMID/STOPLOW. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--quests--scene",
+          "nativeSha256": "29e6f7451d4316625ca7f2d0b2e20112d4520acc2d573dc2cf375aebf4eed4d7",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "bfdab8e2a62de0a13751c913967789b5c5be44862c6b683f76ed88391c809478",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcups/bedroll/walllantern UPLEFT, actualUNROOFEDBASEtable exactlyTHREEsealedparcels MIDLEFT FIRSTfork andtwoactualSIDEopenings/ALLstairs. RequiredsecondopeningrightINNERwall/raisedfloor/steps atx1030-1160 behind1008: compositionF. ActualrequestedFOOTPRINTsequence notconfirmedamongpathgravel: allChoicesF. Other5P/firstdeparture latestChoiceP/nobody/sign/paper/print. Differentactualold048WARMquestparent foregroundpackages/RIGHTopening bywholeSTOPUP/firstforkLOW/twoopeningsLEFT; replacementparentstillneeded."
+          ],
+          "note": "ROOT FULLexactOWN/WHOLEunchangednative and actualparentFULLexactOWN/WHOLEnative personallyread/viewed/compared. Warmamber WHOLESTOP/EMPTYfloor/REDdrapedcloth/twoEMPTYcups/bedroll/walllantern UPLEFT, actualUNROOFEDBASEtable exactlyTHREEsealedparcels MIDLEFT FIRSTfork andtwoactualSIDEopenings/ALLstairs. RequiredsecondopeningrightINNERwall/raisedfloor/steps atx1030-1160 behind1008: compositionF. ActualrequestedFOOTPRINTsequence notconfirmedamongpathgravel: allChoicesF. Other5P/firstdeparture latestChoiceP/nobody/sign/paper/print. Differentactualold048WARMquestparent foregroundpackages/RIGHTopening bywholeSTOPUP/firstforkLOW/twoopeningsLEFT; replacementparentstillneeded. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; actual60.3/nativeedges hard/numericpositionsonlytargets. Builtin217explicit10fulfilled0failedclosed. Privateinspection/frozen887214historicalQA unchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publication": "official import/review only; gate/build deferred; no new count claimed"
+    },
+    {
+      "batch": "v2-production-218",
+      "passedAttempts": 4,
+      "rejectedAttempts": 6,
+      "nativeUnmodified": true,
+      "stages": {
+        "import-batch": {
+          "batch": "v2-production-218",
+          "stage": "import-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "import-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-import.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:44:40.774659+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-import-batch.log"
+        },
+        "review-batch": {
+          "batch": "v2-production-218",
+          "stage": "review-batch",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "review-batch",
+            "--records",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-reviews.json"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:45:06.990759+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-review-batch.log"
+        },
+        "gate": {
+          "batch": "v2-production-218",
+          "stage": "gate",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "gate"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:51:08.573193+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-gate.log"
+        },
+        "build": {
+          "batch": "v2-production-218",
+          "stage": "build",
+          "command": [
+            "npm",
+            "run",
+            "harness",
+            "--",
+            "interview-scene-bank",
+            "build"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:57:07.518383+00:00",
+          "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-218-build.log"
+        },
+        "wrapper": {
+          "batch": "v2-production-218",
+          "command": [
+            "/home/main/saza-backend/venv/bin/python3",
+            "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+            "v2-production-218"
+          ],
+          "returncode": 0,
+          "finishedAt": "2026-10-07T04:57:09.093099+00:00"
+        }
+      },
+      "records": [
+        {
+          "key": "adventure--reunion--explore--warm--quests",
+          "nativeSha256": "dda61a297ac6f7cc3f2cded25e94956f8657dd68ec0292ccb8c9be41655af861",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "8e2c47266d0b83c41d962229e40003fac60cc4a44063defee73b7b84914abdb2",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber whole abandonedSTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, realwalllantern/plaincups/undecoratedbedrolls, exactly3sealedparcels UNROOFEDBASEtableLOWMIDLEFT. TWO actualWHOLEEMPTYSIDEopenings/EVERYstair UPLEFT/UPMID withactualLEFTforks, interruptedERODEDsidetrack besidecluster before1008. Allchosenarchitecturewholebefore1008/nativeedges. No scope/identity/sign/print. Differentactual013warmparent foregroundnook/portal through smallSTOP/3parcels/twoopenings/highwidecamera."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. Warmamber whole abandonedSTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, realwalllantern/plaincups/undecoratedbedrolls, exactly3sealedparcels UNROOFEDBASEtableLOWMIDLEFT. TWO actualWHOLEEMPTYSIDEopenings/EVERYstair UPLEFT/UPMID withactualLEFTforks, interruptedERODEDsidetrack besidecluster before1008. Allchosenarchitecturewholebefore1008/nativeedges. No scope/identity/sign/print. Differentactual013warmparent foregroundnook/portal through smallSTOP/3parcels/twoopenings/highwidecamera. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey",
+          "nativeSha256": "abd734c78ef0b7a1a7f6d88fecd0ed1d8870eb1f5b3b75765c49ee4209f96c7c",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "b04fd75774e1f9349b27a7160958aa5196a30fac0b3abdadb1317e147dad42c2",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber whole abandonedSTOP/EMPTYfloor/REDdrapedcloth UPLEFT withwalllantern/plaincup/undecoratedbedrolls, WHOLESIDEopening/EVERYstair MIDLEFT, differentWHOLEEMPTYstoneRESTBENCH LOWRIGHTLEFT before1008. ContinuousLEFTroute actuallytouchesSIDEstairlanding andlinksSTOP/benchbeyond; no claimof invisiblecave passage. ActualinterruptedERODEDSIDEBRANCH UPnearcliff separatefrommainroute. Allchosenwhole/nativeedges/controlsafe. Differentactual013warmmood foregroundsupplies and original047foregroundpack/rightdestination through tinySTOPUP/doorwayMID/benchLOW."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. Warmamber whole abandonedSTOP/EMPTYfloor/REDdrapedcloth UPLEFT withwalllantern/plaincup/undecoratedbedrolls, WHOLESIDEopening/EVERYstair MIDLEFT, differentWHOLEEMPTYstoneRESTBENCH LOWRIGHTLEFT before1008. ContinuousLEFTroute actuallytouchesSIDEstairlanding andlinksSTOP/benchbeyond; no claimof invisiblecave passage. ActualinterruptedERODEDSIDEBRANCH UPnearcliff separatefrommainroute. Allchosenwhole/nativeedges/controlsafe. Differentactual013warmmood foregroundsupplies and original047foregroundpack/rightdestination through tinySTOPUP/doorwayMID/benchLOW. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--bright--quests--short",
+          "nativeSha256": "e5869de5102200b520ed750bee84c857b095363009691e9c8b93f7702167d429",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "5aeaaf7999f892576ece543612d3475a70099b50f1b6be5d481ee65312107c84",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "SUN wholeSTOP/REDdrapedcloth LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT,3sealedparcels BASEtableMID, HOMEUPLEFT/BLUEdrapedRETURNtable/LEFTreturnroad. HOMECLOSEDdoor/noBOTHoutwarddoors/noEMPTYvisiblefloor: latestChoiceF. Onlyoneactualexplorationopening visible, requiredtwoquestopeningsnotconfirmed: allChoicesF. Actualchosenarchitecturewholebefore1008/nativeedges, other5P/no identities/sign/print. Differentactual216BRIGHTquestparent through3distinctscopeplaces."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. SUN wholeSTOP/REDdrapedcloth LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT,3sealedparcels BASEtableMID, HOMEUPLEFT/BLUEdrapedRETURNtable/LEFTreturnroad. HOMECLOSEDdoor/noBOTHoutwarddoors/noEMPTYvisiblefloor: latestChoiceF. Onlyoneactualexplorationopening visible, requiredtwoquestopeningsnotconfirmed: allChoicesF. Actualchosenarchitecturewholebefore1008/nativeedges, other5P/no identities/sign/print. Differentactual216BRIGHTquestparent through3distinctscopeplaces. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--journey--scene",
+          "nativeSha256": "b99a055ea743fa37054a592c35c444ca06ad78ac39c5d0c242517e9807a6aae9",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "88da01d893d6fc0fb34d84d38ebd732050db292fcd340726da6e5c4112cb7b1e",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPLEFT insideallnativeedges/controlboundary, wholeSTOP/EMPTYfloor/REDdrapedcloth LEFTMIDLOW. Actualfirsttwo-wayfork MID, wholeSIDEdoorway/EMPTYwalkablecorridor/EVERYstair MIDLEFT, differentWHOLEEMPTYstoneRESTBENCH MIDRIGHTLEFT beyondopening onactualLEFTroute. ActualinterruptedERODEDSIDEBRANCH DOWNRIGHTfork separatefrommainroute. Differentactual214mysticjourneyparent STOPUP/portalLOWLEFT/restpavilionLOW through monumentUP/STOPLEFT/firstforkMID/benchMIDRIGHTLEFT. No bodies/print/sign."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPLEFT insideallnativeedges/controlboundary, wholeSTOP/EMPTYfloor/REDdrapedcloth LEFTMIDLOW. Actualfirsttwo-wayfork MID, wholeSIDEdoorway/EMPTYwalkablecorridor/EVERYstair MIDLEFT, differentWHOLEEMPTYstoneRESTBENCH MIDRIGHTLEFT beyondopening onactualLEFTroute. ActualinterruptedERODEDSIDEBRANCH DOWNRIGHTfork separatefrommainroute. Differentactual214mysticjourneyparent STOPUP/portalLOWLEFT/restpavilionLOW through monumentUP/STOPLEFT/firstforkMID/benchMIDRIGHTLEFT. No bodies/print/sign. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--quests--short",
+          "nativeSha256": "47b04941bef4633fc85bca1ba69acaf70a7a3a983b12362ef9e9df157073554f",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "3e9c2a48634cee8e9a0296dc591a6c110d997be2b3f9bb1dc8c2ad2c08c3f735",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPMIDLEFT nativeinside. WHOLEOPENroofedHOME/fullroof/chimney/BOTHoutwarddoors/visibleEMPTYinnerfloor UPLEFT, UNROOFEDRETURNtable BLUEdrapedcloth. WholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT, TWOactualWHOLEEMPTYquestopenings/EVERYstair LEFT/MIDRIGHTLEFT; UNROOFEDBASEtable exactly3sealedparcels MIDLEFT. WholeSTOP/EMPTYfloor/REDdrapedcloth LOWLEFT/actualinterruptedERODEDSIDEBRANCH LOWcliffroadcollapse/LEFTreturnpath. Allchosenwholebefore1008/nativeedges/nobody/sign/print. Differentactual215questparent STOPMID/parcelsLOW/monumentUPLEFT through HOMEUP/ruinMID/STOPLOW/parcelsMID/monumentUPMID. ExtraRETURNbasket/cup notforbiddenbyown218."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPMIDLEFT nativeinside. WHOLEOPENroofedHOME/fullroof/chimney/BOTHoutwarddoors/visibleEMPTYinnerfloor UPLEFT, UNROOFEDRETURNtable BLUEdrapedcloth. WholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT, TWOactualWHOLEEMPTYquestopenings/EVERYstair LEFT/MIDRIGHTLEFT; UNROOFEDBASEtable exactly3sealedparcels MIDLEFT. WholeSTOP/EMPTYfloor/REDdrapedcloth LOWLEFT/actualinterruptedERODEDSIDEBRANCH LOWcliffroadcollapse/LEFTreturnpath. Allchosenwholebefore1008/nativeedges/nobody/sign/print. Differentactual215questparent STOPMID/parcelsLOW/monumentUPLEFT through HOMEUP/ruinMID/STOPLOW/parcelsMID/monumentUPMID. ExtraRETURNbasket/cup notforbiddenbyown218. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--episode",
+          "nativeSha256": "59140261275965b965ac80c073cf8feaec7983bcf8fe31696441acef7fa2b224",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "47605b9a635ff7f07cde90e5f310ee5f7767272d2ecba8f6bf5dfe7de8d495ec",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPLEFT nativeinside, wholeSTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair LOWLEFT TWOEMPTYstoneRESTBENCHES. ActualinterruptedERODEDbranchMIDRIGHTcliffcollapse before1008. ActualDIFFERENTBLEACHEDLEFTupland/linkedchapterthresholdabsent, ordinarypinecanyon/graylimestonecliffnotseparatebiomeregion: allChoicesONLYF. Allchosenarchitecturewhole/controlsafe, latestsmallruin/pairedrestsP/no identities/print/sign. Different215chapterparent throughSTOPMID/clearedruinLOW/twobenches."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. CoolTWILIGHTwholeMONUMENT/TOP/INNERfloor/EVERYstair UPLEFT nativeinside, wholeSTOP/EMPTYfloor/REDdrapedcloth MIDLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair LOWLEFT TWOEMPTYstoneRESTBENCHES. ActualinterruptedERODEDbranchMIDRIGHTcliffcollapse before1008. ActualDIFFERENTBLEACHEDLEFTupland/linkedchapterthresholdabsent, ordinarypinecanyon/graylimestonecliffnotseparatebiomeregion: allChoicesONLYF. Allchosenarchitecturewhole/controlsafe, latestsmallruin/pairedrestsP/no identities/print/sign. Different215chapterparent throughSTOPMID/clearedruinLOW/twobenches. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--mystic--chapters--short",
+          "nativeSha256": "c0de3a12fa39ce86595de8d6e0047a6953200eb8f1352b22bee352385ce0b48e",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "cf16109e42373d2a5eb06b4ef376edd400ce4986f678a58cc444573ddaa34f74",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "CoolTWILIGHTwholeMONUMENTUPMIDLEFT/TOP/INNERfloor/EVERYstair nativeinside/controlsafe, wholeSTOP/REDdrape LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT. HOME/BLUERETURNtableUPLEFT/erodedsidetrackLOWLEFT/LEFTreturnroute. HOMECLOSEDdoor/noBOTHoutwarddoors/noEMPTYinnerfloor: latestChoiceF. ActualDIFFERENTBLEACHEDLEFTupland/linkedchapterthresholdabsent: allChoicesF. Actualchosenarchitecturewholebefore1008/nativeedges, ordinaryrightwaternotextra failure. No bodies/sign/print. Different215chapterparent through3scopeplaces/HOME/clearedruin."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. CoolTWILIGHTwholeMONUMENTUPMIDLEFT/TOP/INNERfloor/EVERYstair nativeinside/controlsafe, wholeSTOP/REDdrape LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT. HOME/BLUERETURNtableUPLEFT/erodedsidetrackLOWLEFT/LEFTreturnroute. HOMECLOSEDdoor/noBOTHoutwarddoors/noEMPTYinnerfloor: latestChoiceF. ActualDIFFERENTBLEACHEDLEFTupland/linkedchapterthresholdabsent: allChoicesF. Actualchosenarchitecturewholebefore1008/nativeedges, ordinaryrightwaternotextra failure. No bodies/sign/print. Different215chapterparent through3scopeplaces/HOME/clearedruin. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--scene",
+          "nativeSha256": "c15ce4af24842072a1722f66ba13ef1ef6828c16d4b07ec9b91ace884cd47f69",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "5e4d40ddb7d837b1b7e3b0762f6b6a3a5068e13b0dc3b16fb6d75646cce9e043",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber wholeSTOP/EMPTYfloor/REDdrape/plaincups/realwalllantern MIDLEFT, firsttwo-wayfork andactualerodedSIDEBRANCHDOWNMIDRIGHT, wholeSIDEopening/EVERYstair UPLEFTRIGHT. RequiredEMPTYstoneRESTBENCH actualx1030-1104/restfloorx1155 behind1008: compositionF. Selectedundecoratedbedrolls notconfirmed: allChoicesF; do notinferinsidecrate. New218own explicitlycupsANDbedrolls, futureORinstructioncannotretrochangeit. Other5P/firstdepartureP/no bodies/sign/print. Differentactualnew218journeyparent STOPUP/doorwayMID/benchLOW through STOPMID/firstforkLOW/doorUPRIGHT/rightbench."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. Warmamber wholeSTOP/EMPTYfloor/REDdrape/plaincups/realwalllantern MIDLEFT, firsttwo-wayfork andactualerodedSIDEBRANCHDOWNMIDRIGHT, wholeSIDEopening/EVERYstair UPLEFTRIGHT. RequiredEMPTYstoneRESTBENCH actualx1030-1104/restfloorx1155 behind1008: compositionF. Selectedundecoratedbedrolls notconfirmed: allChoicesF; do notinferinsidecrate. New218own explicitlycupsANDbedrolls, futureORinstructioncannotretrochangeit. Other5P/firstdepartureP/no bodies/sign/print. Differentactualnew218journeyparent STOPUP/doorwayMID/benchLOW through STOPMID/firstforkLOW/doorUPRIGHT/rightbench. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--episode",
+          "nativeSha256": "de987848d76a242fc55f5c8951a99298cc7caadbefd33563ef77c2d0cc7af1a0",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "400b37a408d650f217848461672de8f47ba04079fb101f5ae094283b517085a9",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber wholeSTOP/EMPTYfloor/REDdrape/actualundecoratedbedrolls/plaincups/walllanternLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening MIDUPLEFT TWOEMPTYstoneRESTBENCHES. DifferentWHOLEEMPTYstonebenchbeyondopening UPRIGHTLEFT; itsactualraiseddestinationfloor/rightwall x1008-1014 behindactual1008controlboundary. SelectedSIDEopening upperattachedstairs continueintoandcutnativeTOP. compositionONLYF; no arbitrarynumerictargetgate. ActualinterruptedERODEDbranchMIDLOW/continuousLEFTroute/latestsmallruin/pairedrestsP/nobody/sign/print. Differentactualnew218journeyparent byclearedruin/twobenchesUP/STOPLEFT."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. Warmamber wholeSTOP/EMPTYfloor/REDdrape/actualundecoratedbedrolls/plaincups/walllanternLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening MIDUPLEFT TWOEMPTYstoneRESTBENCHES. DifferentWHOLEEMPTYstonebenchbeyondopening UPRIGHTLEFT; itsactualraiseddestinationfloor/rightwall x1008-1014 behindactual1008controlboundary. SelectedSIDEopening upperattachedstairs continueintoandcutnativeTOP. compositionONLYF; no arbitrarynumerictargetgate. ActualinterruptedERODEDbranchMIDLOW/continuousLEFTroute/latestsmallruin/pairedrestsP/nobody/sign/print. Differentactualnew218journeyparent byclearedruin/twobenchesUP/STOPLEFT. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        },
+        {
+          "key": "adventure--reunion--explore--warm--journey--short",
+          "nativeSha256": "3dbaf0db0427821ccaecdbb5b45e44c9f6a284e94a104ff8bc5f3605f9762ec5",
+          "nativeDimensions": [
+            1672,
+            941
+          ],
+          "requestSha256": "eef8fffb14698668a6380dc21455684916d72e91a0957cbd9381a35b04cfbf0c",
+          "rootViewedNativeAndOwnFullRequest": true,
+          "referenceReceipts": [],
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Warmamber wholeSTOP/EMPTYfloor/REDdrape LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT, HOME/fullroof/chimney/BLUEdrapedUNROOFEDRETURNtableUPLEFT, actualinterruptedERODEDbranchbesideSTOP/LEFTreturnroad. ActualHOMEdoorsCLOSED/noBOTHoutwarddoors/noEMPTYwalkableinnerfloor: latestChoiceF. DifferentrequiredEMPTYstoneRESTBENCHbeyondopening notconfirmed, companionsbedrollsnotconfirmed: allChoicesF. Allactualchosenarchitecturewholebefore1008/nativeedges/no print/sign/body. Actualnew218journeyparent STOPUP/doorMID/benchLOW differsbyHOMEUP/clearedruinMID/STOPLOW plusdifferenthighmountaincamera."
+          ],
+          "note": "ROOT personally FULLexactOWN/WHOLEunchangednative andactualparent FULLexactOWN/WHOLEnative read/viewed/compared. Warmamber wholeSTOP/EMPTYfloor/REDdrape LOWLEFT, wholeclearedSMALLOPENruin/EMPTYfloor/SIDEopening/EVERYstair MIDLEFT, HOME/fullroof/chimney/BLUEdrapedUNROOFEDRETURNtableUPLEFT, actualinterruptedERODEDbranchbesideSTOP/LEFTreturnroad. ActualHOMEdoorsCLOSED/noBOTHoutwarddoors/noEMPTYwalkableinnerfloor: latestChoiceF. DifferentrequiredEMPTYstoneRESTBENCHbeyondopening notconfirmed, companionsbedrollsnotconfirmed: allChoicesF. Allactualchosenarchitecturewholebefore1008/nativeedges/no print/sign/body. Actualnew218journeyparent STOPUP/doorMID/benchLOW differsbyHOMEUP/clearedruinMID/STOPLOW plusdifferenthighmountaincamera. Truecoarsevisiblesquareclusters/stairstepcontours/flatshades allplanes. Ownonly/no retroextra requirements; suggestednumerictargetsnotgates, actual60.3/nativeedgeshard. Builtin218explicit10fulfilled0failedclosed. Historicalfrozen887214QAunchanged."
+        }
+      ],
+      "whole1457Complete": false,
+      "publishedAtBuild": 893,
+      "publication": "Full official stages actually completed; attempt passes not unique additions"
+    }
+  ],
+  "originalAttemptCount": 40,
+  "passedAttempts": 10,
+  "rejectedAttempts": 30,
+  "nativeUnmodified": true,
+  "whole1457Complete": false,
+  "scope": "Original ROOT decisions at each stage retained, not unique additions; sourcecorrectives andexistingchildrecomparisonsseparate."
+}

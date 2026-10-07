@@ -1,0 +1,185 @@
+{
+  "groups": [
+    {
+      "batch": 216,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-216-original-warm-journey-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through216": 104,
+        "finishedAt": "2026-10-07T04:03:05.735817+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--explore--warm--journey",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--warm--journey-1-2e9860f390dc.png",
+          "nativeSha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--reunion--explore--warm--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected EXPLORATION: clearly discoverable side opening, weathered stairs and hidden passage foreground.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: A connected destination-led journey: tangible near route leads from selected departure/mission props through a midpoint toward another clearly different distant destination. One continuous world, no itinerary diagram.",
+          "exactOriginalOwnSha256": "4dcc29922d34eee9507183a5113a12b2cb3a5ef3e7f4325c8f528fe997acc8f3",
+          "preservedOriginalReview": {
+            "sourceSha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+            "promptSha256": "28a81d8898945d79c90d2feaf5b187820e4fedf7d6286ca0a57c50345912224b",
+            "reviewer": "Codex direct original visual inspection: v2-production-047",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm protected abandoned travelers stopping nook with blankets/plain closed keepsake box/pack/cup and discoverable near weathered hidden stairs. Actual continuous path through midpoint toward different EMPTY destination. Fresh near stopping-floor journey shot versus parent wider sheltered bench. All planes retain sharp square pixel clusters/stepped shade ramps; bare selected furniture/floor foreground, no people/humanoids/bodies, readable or pseudo text, open books/paper/documents/posters/clocks/numerals, logos/paw emblems, flags/banners/heraldry, blur or collage. Different camera from parent."
+          },
+          "corrective": {
+            "sourceSha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+            "promptSha256": "28a81d8898945d79c90d2feaf5b187820e4fedf7d6286ca0a57c50345912224b",
+            "reviewer": "Codex root original adventure parents own/native corrective after216 actual own/native inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks connected destination-led journey from near departure props through midpoint to another clearly different distant destination with focal selected props left60/quiet right35. Actual required different distant stone destination and connecting bridge/stairs at RIGHT x70-100 behind actual1008controls: compositionONLYF. Actual original protected welcoming lantern nook/plain supplies/sideopening are present LEFT. Original foreground partial architecture and supplies are allowed; no retro wholebuilding/native margin/actual mudprints/plaincloth/sunset requirements. Other6 original checks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks connected destination-led journey from near departure props through midpoint to another clearly different distant destination with focal selected props left60/quiet right35. Actual required different distant stone destination and connecting bridge/stairs at RIGHT x70-100 behind actual1008controls: compositionONLYF. Actual original protected welcoming lantern nook/plain supplies/sideopening are present LEFT. Original foreground partial architecture and supplies are allowed; no retro wholebuilding/native margin/actual mudprints/plaincloth/sunset requirements. Other6 original checks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "adventure--reunion--explore--warm--journey",
+          "sha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+          "review": {
+            "sourceSha256": "2e9860f390dc965eaa48103785ea771f9bc7f907ae029b48066f305643c4a73b",
+            "promptSha256": "28a81d8898945d79c90d2feaf5b187820e4fedf7d6286ca0a57c50345912224b",
+            "reviewer": "Codex root original adventure parents own/native corrective after216 actual own/native inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks connected destination-led journey from near departure props through midpoint to another clearly different distant destination with focal selected props left60/quiet right35. Actual required different distant stone destination and connecting bridge/stairs at RIGHT x70-100 behind actual1008controls: compositionONLYF. Actual original protected welcoming lantern nook/plain supplies/sideopening are present LEFT. Original foreground partial architecture and supplies are allowed; no retro wholebuilding/native margin/actual mudprints/plaincloth/sunset requirements. Other6 original checks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks connected destination-led journey from near departure props through midpoint to another clearly different distant destination with focal selected props left60/quiet right35. Actual required different distant stone destination and connecting bridge/stairs at RIGHT x70-100 behind actual1008controls: compositionONLYF. Actual original protected welcoming lantern nook/plain supplies/sideopening are present LEFT. Original foreground partial architecture and supplies are allowed; no retro wholebuilding/native margin/actual mudprints/plaincloth/sunset requirements. Other6 original checks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+          }
+        }
+      ]
+    },
+    {
+      "batch": 216,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-216-original-warm-quests-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through216": 105,
+        "finishedAt": "2026-10-07T04:08:55.353723+00:00"
+      },
+      "history": [
+        {
+          "key": "adventure--reunion--explore--warm--quests",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--warm--quests-1-f9ea1905b8d4.png",
+          "nativeSha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--reunion--explore--warm--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSeeking a missing loved one: abandoned travelers stopping place, plain personal keepsake, interrupted path. No assumed relationship, face, photograph, body or writing.\nSelected EXPLORATION: clearly discoverable side opening, weathered stairs and hidden passage foreground.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an empty sheltered village outpost with several different plain unmarked parcels and physical roads branching toward different nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+          "exactOriginalOwnSha256": "96b549ce3cda4ff06bb82af19bb51b6413840dcd79eb1800fa738ddfb913ee2c",
+          "preservedOriginalReview": {
+            "sourceSha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+            "promptSha256": "629114d9f35bbc008ce54641ac6a9501b9ad6befdf8fe48c0bc78b8b14d8fcd4",
+            "reviewer": "Codex direct original visual inspection: v2-production-048",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm sheltered empty village quest base: near plain small CLOSED keepsake box/travel pack/bedroll/cup, discoverable stone side opening with nearby weathered stairs, multiple unmarked sealed packages and actual forked roads toward different EMPTY destinations. Fresh larger base terrace shot versus parent small warm covered stopping bench. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          },
+          "corrective": {
+            "sourceSha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+            "promptSha256": "629114d9f35bbc008ce54641ac6a9501b9ad6befdf8fe48c0bc78b8b14d8fcd4",
+            "reviewer": "Codex root original adventure parents own/native corrective after216 actual own/native inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks sheltered village quest base with unmarked parcels and actual roads branching toward different nearby destinations, clearly discoverable side opening/weathered stairs/hidden passage foreground, focal chosen props LEFT60/quiet RIGHT35. Actual chosen discoverable stone SIDEopening/ALLstairs at RIGHTx85-100 behind actual1008controls: compositionF. Actual isolatedwooden horizontal directionSIGNBOARD atx1130-1182 is forbidden original SIGNS/questboards even blank: noTextF. Actual original warm lantern shelter/companionsupplies/near packagesLEFT retained. No retro wholebuilding/native margins/threeexactparcels/personalredcloth/actual mudprints/sunset requirements. Other5 originalchecks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks sheltered village quest base with unmarked parcels and actual roads branching toward different nearby destinations, clearly discoverable side opening/weathered stairs/hidden passage foreground, focal chosen props LEFT60/quiet RIGHT35. Actual chosen discoverable stone SIDEopening/ALLstairs at RIGHTx85-100 behind actual1008controls: compositionF. Actual isolatedwooden horizontal directionSIGNBOARD atx1130-1182 is forbidden original SIGNS/questboards even blank: noTextF. Actual original warm lantern shelter/companionsupplies/near packagesLEFT retained. No retro wholebuilding/native margins/threeexactparcels/personalredcloth/actual mudprints/sunset requirements. Other5 originalchecks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "onlyOwnOriginalRequirementsApplied": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "adventure--reunion--explore--warm--quests",
+          "sha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+          "review": {
+            "sourceSha256": "f9ea1905b8d4778de8ecf89522da01a7abaedbc78ceacc0e918050c74a308a20",
+            "promptSha256": "629114d9f35bbc008ce54641ac6a9501b9ad6befdf8fe48c0bc78b8b14d8fcd4",
+            "reviewer": "Codex root original adventure parents own/native corrective after216 actual own/native inspection",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks sheltered village quest base with unmarked parcels and actual roads branching toward different nearby destinations, clearly discoverable side opening/weathered stairs/hidden passage foreground, focal chosen props LEFT60/quiet RIGHT35. Actual chosen discoverable stone SIDEopening/ALLstairs at RIGHTx85-100 behind actual1008controls: compositionF. Actual isolatedwooden horizontal directionSIGNBOARD atx1130-1182 is forbidden original SIGNS/questboards even blank: noTextF. Actual original warm lantern shelter/companionsupplies/near packagesLEFT retained. No retro wholebuilding/native margins/threeexactparcels/personalredcloth/actual mudprints/sunset requirements. Other5 originalchecks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+            ],
+            "notes": "ROOT FULLexact ORIGINALOWN/WHOLEunchangednative directlyread/viewed during216actualchildcomparison. Original exact OWN asks sheltered village quest base with unmarked parcels and actual roads branching toward different nearby destinations, clearly discoverable side opening/weathered stairs/hidden passage foreground, focal chosen props LEFT60/quiet RIGHT35. Actual chosen discoverable stone SIDEopening/ALLstairs at RIGHTx85-100 behind actual1008controls: compositionF. Actual isolatedwooden horizontal directionSIGNBOARD atx1130-1182 is forbidden original SIGNS/questboards even blank: noTextF. Actual original warm lantern shelter/companionsupplies/near packagesLEFT retained. No retro wholebuilding/native margins/threeexactparcels/personalredcloth/actual mudprints/sunset requirements. Other5 originalchecks retained. ExactoriginalOWN/nativehash/priorreviewretained, frozen887214historicalproof preserved. Replacementrequired beforedescendantsdeploy."
+          }
+        }
+      ]
+    }
+  ],
+  "correctivesInThisInterval": 2,
+  "cumulativeActualCorrectiveSources164To218": 105,
+  "scope": "ROOT whole original native/full exact OWN, original review retained. Only original requirements; existing childcomparison216 separate. All contradictory216warmrequests/native preserved and rerendered with coherent subsequent requests; not rewritten."
+}
