@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **165쪽 / 5536KB / 약 1,612,054 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **166쪽 / 5564KB / 약 1,620,439 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -18,7 +18,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/beodeul-city.md` | 77KB | 6KB | 510 | ~23,285 |
 | `openwiki/charset-actor-harness.md` | 70KB | 7KB | 501 | ~22,067 |
 | `openwiki/editor-ai-panel.md` | 646KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 4176 | ~189,193 |
-| `openwiki/editor-ai-tools.md` | 363KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 2995 | ~105,427 |
+| `openwiki/editor-ai-tools.md` | 366KB | 90KB ⚠상한 초과 — 절을 더 쪼개라 | 3006 | ~106,092 |
 | `openwiki/editor-database.md` | 414KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2475 | ~121,519 |
 | `openwiki/editor-event-authoring.md` | 180KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1099 | ~52,507 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -27,8 +27,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,150 |
 | `openwiki/editor-workflows-misc.md` | 85KB | 33KB | 600 | ~23,742 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1055 | ~31,954 |
-| `openwiki/jp-city.md` | 51KB | 7KB | 310 | ~15,107 |
-| `openwiki/runtime-battle.md` | 334KB | 32KB | 1915 | ~97,743 |
+| `openwiki/jp-city.md` | 57KB | 7KB | 333 | ~16,783 |
+| `openwiki/runtime-battle.md` | 336KB | 32KB | 1930 | ~98,290 |
 | `openwiki/runtime-pre-edit-routing.md` | 115KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 851 | ~34,565 |
 | `openwiki/runtime-project-schema.md` | 220KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1611 | ~61,645 |
 | `openwiki/runtime-sessions.md` | 137KB | 50KB | 834 | ~36,898 |
@@ -49,6 +49,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-commands.md` | 6 | 127, 140, 141, 143, 146, 147 |
 | `openwiki/editor-observability.md` | 1 | 401 |
 | `openwiki/editor-pre-edit-routing.md` | 5 | 913, 922, 930, 934, 958 |
+| `openwiki/emerald-runtime-surfaces.md` | 1 | 115 |
 | `openwiki/runtime-project-schema.md` | 1 | 106 |
 | `openwiki/state-system.md` | 2 | 5, 89 |
 
@@ -85,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
-| `openwiki/harnesses/beodeul-building-review.md` | 3 | `.pixels.json`, `node/install.py`, `output/beodeul-building-review/round7-v3-gate-status.json` |
+| `openwiki/harnesses/beodeul-building-review.md` | 2 | `.pixels.json`, `output/beodeul-building-review/round7-v3-gate-status.json` |
 | `openwiki/harnesses/charset-actor.md` | 6 | `actions.px.json`, `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 2 | `.check.json`, `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
@@ -94,12 +95,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/modern-chipset.md` | 2 | `.input.json`, `previous-tileset.json` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
 | `openwiki/harnesses/native-space-installation.md` | 7 | `art-supplementary-evidence.json`, `authoring-input.json`, `draft-project-proof.json`, `library.json`, `preparation-proof.json`, `project.oprn.json`, `stair-binding.json` |
-| `openwiki/harnesses/pokemon-character-casting.md` | 2 | `data/waves/full-cast-v1.json`, `world-manifest.json` |
+| `openwiki/harnesses/pokemon-character-casting.md` | 3 | `data/waves/full-cast-v1.json`, `waves/theme-cast-v1.json`, `world-manifest.json` |
 | `openwiki/harnesses/super-harness.md` | 34 | `.aN.png`, `B.json`, `DATA/reference-catalog.json`, `art-actor-actions-next.json`, `art-actor-actions.json`, `art-actors-status.json`, `art-actors.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-pending-materials.json`, `art-prepare-result.json`, `art-result.json`, `art-result.previous.json`, `art-supplementary-evidence.json`, `card.json`, `concept-request.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `reference-source.json`, `result-review.json`, `runtime-assets.json`, `supervisor-authorization.json`, `theme-material-progress.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/harnesses/wand-runtime-preparation.md` | 2 | `project.oprn.json`, `shelf-binding.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
-| `openwiki/jp-city.md` | 2 | `.css`, `scripts/tmp-jp-gen.mts` |
+| `openwiki/jp-city.md` | 3 | `-x2.png`, `.css`, `scripts/tmp-jp-gen.mts` |
 | `openwiki/large-village-generation.md` | 6 | `-standalone.html`, `HANDOFF.json`, `output/evidence/town-reference/town-reference.html`, `scripts/force-save-large-village.mts`, `scripts/force-save-village-50.mts`, `src/project/defaults/largeRiverMarketVillageBuild.ts` |
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/modern-city.md` | 2 | `-plan.json`, `.oprn.json` |
@@ -147,6 +148,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/ui-discovery-pilot.md` | 2 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html` |
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
 | `openwiki/village-layout-research.md` | 1 | `scripts/qa/capture-restored-river-village.mjs` |
+| `openwiki/wizarding-world.md` | 1 | `.verdict.json` |
 | `openwiki/world-structure-authoring.md` | 1 | `verify-shots/runtime-qa/world-structure-tools/SUMMARY.md` |
 
 ## 페이지별 절 좌표
@@ -245,7 +247,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 19KB · 215줄 · ~5,742 토큰
+### `openwiki/asset-store.md` — 19KB · 216줄 · ~5,858 토큰
 
 - `L6` 결정 (사용자, 2026-10-06)
 - `L26` 구성 요소
@@ -253,31 +255,31 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L48` 팩 형식과 프로젝트에 넣기
 - `L63` 올리기 가드
   - `L73` 그림 규격 (2026-10-07)
-- `L90` 서버
-  - `L106` 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
-  - `L119` 앞단은 Cloudflare (2026-10-06)
-- `L126` 보안 검토 반영 (2026-10-06)
-- `L148` 실행·시험
-- `L173` 화면 디자인
-- `L183` 다국어 (2026-10-06)
-- `L195` 공용 캐릭터 그림 진열 (2026-10-06)
-- `L206` 함정
+- `L91` 서버
+  - `L107` 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
+  - `L120` 앞단은 Cloudflare (2026-10-06)
+- `L127` 보안 검토 반영 (2026-10-06)
+- `L149` 실행·시험
+- `L174` 화면 디자인
+- `L184` 다국어 (2026-10-06)
+- `L196` 공용 캐릭터 그림 진열 (2026-10-06)
+- `L207` 함정
 
-### `openwiki/atlas-biome-interior.md` — 26KB · 162줄 · ~7,732 토큰
+### `openwiki/atlas-biome-interior.md` — 26KB · 163줄 · ~7,814 토큰
 
 - `L8` 원본과 칸
 - `L37` 코드
-- `L51` 참고문서 「손 도트 실내 (v5)」
-- `L56` 가구 메모·방 표 (2026-09-29)
-- `L75` 예제 맵·정본
-- `L81` 검증
-- `L87` 배·던전 — atlas_biome_dungeon
-- `L92` 남은 것
-- `L99` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
-- `L107` 고른 후보 반영 (2026-10-01)
-- `L125` 새 기물 길 (2026-10-01)
-- `L138` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
-  - `L153` 서버 하네스의 자동 공용 등록 (2026-10-04)
+- `L52` 참고문서 「손 도트 실내 (v5)」
+- `L57` 가구 메모·방 표 (2026-09-29)
+- `L76` 예제 맵·정본
+- `L82` 검증
+- `L88` 배·던전 — atlas_biome_dungeon
+- `L93` 남은 것
+- `L100` 편집기 「새 맵 → 실내」 기본 (2026-10-01)
+- `L108` 고른 후보 반영 (2026-10-01)
+- `L126` 새 기물 길 (2026-10-01)
+- `L139` 소품 하네스 — 여러 명이 찍고 사용자가 고른다 (2026-10-01)
+  - `L154` 서버 하네스의 자동 공용 등록 (2026-10-04)
 
 ### `openwiki/authoring-play-presets.md` — 11KB · 88줄 · ~3,520 토큰
 
@@ -628,7 +630,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L4167` 완료 음원 결과와 연결 재개 (2026-10-05)
 - `L4173` 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
 
-### `openwiki/editor-ai-tools.md` — 363KB · 2995줄 · ~105,427 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 366KB · 3006줄 · ~106,092 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` EasyRPG 계열 칩셋 차단 — 대체품이 생기기 전까지 (2026-10-06)
 - `L24` 월드맵 자동 붓 자연어 경로 (2026-10-05)
@@ -751,19 +753,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2844` Structured optional read arrays (2026-10-04)
 - `L2854` NPC, shop and readable opening production (2026-10-04)
 - `L2863` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
-- `L2907` Emerald native sprite contract (2026-10-04 correction)
-- `L2913` 세계 지도 지형 도구 (2026-10-03)
-- `L2923` Bounded romance authoring tools
-  - `L2927` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
-- `L2935` 글자·장면 오프닝 연출 (2026-10-04)
-- `L2945` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
-- `L2953` OST·효과음 직접 작곡 (2026-10-05)
-- `L2957` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
-- `L2963` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
-- `L2972` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
-  - `L2982` naturalize_beodeul_hamlet (2026-10-04)
-- `L2987` compose_beodeul_courtyard_village (2026-10-04)
-- `L2992` refine_beodeul_courtyard_vegetation (2026-10-04)
+- `L2918` Emerald native sprite contract (2026-10-04 correction)
+- `L2924` 세계 지도 지형 도구 (2026-10-03)
+- `L2934` Bounded romance authoring tools
+  - `L2938` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L2946` 글자·장면 오프닝 연출 (2026-10-04)
+- `L2956` 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+- `L2964` OST·효과음 직접 작곡 (2026-10-05)
+- `L2968` 작은 편집의 래스터 보존과 선택지 취소 (2026-10-05)
+- `L2974` 슈퍼하네싱 사용자 선택 기물 우선 사용 (2026-10-05)
+- `L2983` 키트 시트 야외 빈 터 꾸미기 — `find_empty_ground` · `furnish_outdoor_area` (2026-10-07)
+  - `L2993` naturalize_beodeul_hamlet (2026-10-04)
+- `L2998` compose_beodeul_courtyard_village (2026-10-04)
+- `L3003` refine_beodeul_courtyard_vegetation (2026-10-04)
 
 ### `openwiki/editor-database.md` — 414KB · 2475줄 · ~121,519 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1221,7 +1223,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L77` Existing authored animation compatibility
 - `L94` 2026-10-04 canonical adoption and publication
 
-### `openwiki/emerald-runtime-surfaces.md` — 10KB · 102줄 · ~2,456 토큰
+### `openwiki/emerald-runtime-surfaces.md` — 11KB · 117줄 · ~3,000 토큰 · 깨진 줄 1
 
 - `L5` Owners
 - `L14` Geometry and reference
@@ -1230,6 +1232,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L39` Shipping icon dependencies
 - `L78` Genuine predecessor Continue evidence (2026-10-04)
 - `L94` Approved field-kit surfaces (2026-10-05)
+- `L103` 전투 개편 (2026-10-07, 사용자 「전투는 형편없다」)
 
 ### `openwiki/feature16-battle-ui.md` — 6KB · 48줄 · ~1,534 토큰
 
@@ -1418,7 +1421,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L199` Public draft deployment
   - `L215` Wand scene panels and trial timing
 
-### `openwiki/harnesses/pokemon-character-casting.md` — 23KB · 184줄 · ~5,898 토큰
+### `openwiki/harnesses/pokemon-character-casting.md` — 25KB · 203줄 · ~6,390 토큰
 
 - `L3` Campaign NPC adoption and natural entrances (2026-10-06)
 - `L63` Portable harness (2026-10-05)
@@ -1430,6 +1433,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` Newly authored candidate workflow (2026-10-05)
 - `L157` Template edits (current strategy, user-directed 2026-10-05)
 - `L173` Complete sixteen-role template collection (2026-10-05)
+- `L185` Theme townsfolk and trainers (theme-cast-v1, 2026-10-07)
 
 ### `openwiki/harnesses/pokemon-character-motion.md` — 35KB · 247줄 · ~9,580 토큰
 
@@ -1626,7 +1630,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L149` 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
 - `L176` 한계
 
-### `openwiki/jp-city.md` — 51KB · 310줄 · ~15,107 토큰 · 통째읽기 잘림
+### `openwiki/jp-city.md` — 57KB · 333줄 · ~16,783 토큰 · 통째읽기 잘림
 
 - `L6` 식별자
 - `L17` 파일
@@ -1656,9 +1660,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L241` kitmap 공용 검사기 (`scripts/content/jp-city/maps/kitmap.mjs`)
 - `L248` 탈것 — 차·버스·노면전차·전철·지하철 (2026-10-07)
 - `L264` 노면전차 거리·지하철역 블록 + さくら町駅 예제 (2026-10-07)
-- `L275` 실제 거리 조사 (2026-10-06)
-- `L279` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
-  - `L296` 굽는 법 (한 줄)
+- `L275` 일본 집 실내 (블록 `interior_*` 7개, `BLOCK_ORDER` 끝) — 2026-10-07
+- `L298` 실제 거리 조사 (2026-10-06)
+- `L302` AI 참고문서 (10용도 · 61쪽 · 그림 167장)
+  - `L319` 굽는 법 (한 줄)
 
 ### `openwiki/large-village-generation.md` — 35KB · 594줄 · ~10,229 토큰
 
@@ -2044,7 +2049,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 334KB · 1915줄 · ~97,743 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 336KB · 1930줄 · ~98,290 토큰 · 통째읽기 잘림
 
 - `L3` 주인공 연출 5종 · 사용자 재반려 후 수정 (2026-10-05)
 - `L25` FF6 조사 후 주인공 연출 5종 재저작 · 직전 반려 판 기록 (2026-10-05)
@@ -2117,16 +2122,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1743` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
 - `L1753` 트레이너 전투의 도입 문구 (2026-09-24)
   - `L1760` Emerald trainer portraits (2026-10-04)
-- `L1814` 포획 불가 전투의 가방 목록 (2026-09-25)
-- `L1825` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
-- `L1839` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
-- `L1849` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
-- `L1866` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
-- `L1879` 공용 몬스터 옛 그림 폐기 (2026-10-02)
-  - `L1883` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
-- `L1888` Emerald authored monster profile
-- `L1892` Monster result EXP gauge (2026-10-04)
-  - `L1910` Emerald trainer source dimensions correction (2026-10-04)
+- `L1816` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L1827` 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+- `L1841` 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+- `L1851` 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+- `L1868` 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+- `L1881` 공용 몬스터 옛 그림 폐기 (2026-10-02)
+  - `L1885` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
+- `L1890` Emerald authored monster profile
+- `L1894` Monster result EXP gauge (2026-10-04)
+  - `L1912` Emerald trainer source dimensions correction (2026-10-04)
+  - `L1918` 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 47KB · 323줄 · ~12,984 토큰
 
@@ -2983,6 +2989,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L165` 수용 기준과 다음 검증
 - `L180` 장소 라이브러리의 기준 도안
 - `L188` 공용 세 마을 · 굽은 지형과 출입구 (2026-09-23)
+
+### `openwiki/wizarding-world.md` — 14KB · 130줄 · ~4,263 토큰
+
+- `L7` 식별자
+- `L19` 현재 굽기 (2026-10-07)
+- `L25` 공간 (wzlib.SPACES)
+- `L30` 파일
+- `L51` 굽기 순서 (한 번에)
+- `L62` 검수 흐름
+- `L71` 조수 공간 빌더
+- `L108` 통행 관문 WZ-ISLAND
+- `L113` 조수 실경로 시험 (qa:game, 기획 `scripts/qa-game/briefs/wizarding-school.json`)
+- `L125` 한계
 
 ### `openwiki/world-generation-rules.md` — 9KB · 116줄 · ~2,645 토큰
 
