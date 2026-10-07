@@ -12,6 +12,7 @@ export const PUBLIC_EXCLUDE = [
   "src/harnesses/pokemon-character-casting/references",
   "harness/pokemon-like-characters/references",
   "harness-data/pokemon-character-casting",
+  "scripts/asset-gen/pokemon-characters/references", // 브렌든 원작 걷기 그림(ATTRIBUTION.md 가 원작이라고 밝힘)
   "harness/pokemon-like-field-kit", // 포챠나 원작 필드 그림을 판형으로 쓴 파생 그림(README 45행)
   // 상용 팩·외부 내려받기 학습 자료. src 는 import 하지 않는다.
   "tiledata/rasak-fantasy", "tiledata/rasak-modern", "tiledata/refmap", "tiledata/pixel-art-world",
