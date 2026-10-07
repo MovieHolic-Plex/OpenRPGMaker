@@ -8,14 +8,18 @@
 // DOM 계약: `ai-status-bar`(루트, data-attention=review|failed|none) · `ai-status-chip`(data-state, data-tone) ·
 // `ai-status-pop` · `ai-status-log` · `ai-status-stop`.
 
-import { requestTeamStop } from "@/ai/piAgent/teamActivity";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
-import { isActive, needsUser, PRESENCE_LABEL, subscribeAiPresence, type Presence } from "./aiPresence";
+import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+import { isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, type Presence } from "./aiPresence";
 
 /** 끝난 일(적용됨)은 이 시간 뒤에 줄에서 물러난다. 실패·검토 대기는 사람이 처리할 때까지 남는다. */
 const SETTLED_HIDE_MS = 6000;
+/** 줄에 직접 놓는 칩 수. 넘치면 「+N」 로 접고 눌러서 맵별 목록으로 본다. */
+const MAX_CHIPS = 4;
+const ALL = "__all__";
 
 function clock(ms: number): string {
   const seconds = Math.max(0, Math.round(ms / 1000));
@@ -36,9 +40,9 @@ export function mountAiStatusBar(): () => void {
     on: { click: () => openLogs() },
   });
   const stop = el("button", {
-    class: "ai-status-btn is-stop", text: "■ 멈춤", attrs: { type: "button", title: "지금 도는 AI 작업을 멈춥니다" },
+    class: "ai-status-btn is-stop", text: "■ 멈춤", attrs: { type: "button", title: "지금 도는 AI 작업을 모두 멈춥니다" },
     dataset: { testid: "ai-status-stop" },
-    on: { click: () => { requestTeamStop(); } },
+    on: { click: () => { stopAllPresences(); } },
   });
   const pop = el("div", { class: "ai-status-pop", dataset: { testid: "ai-status-pop" }, attrs: { role: "dialog", "aria-label": "AI 작업 상세", hidden: "" } });
   const root = el("aside", {
@@ -64,7 +68,7 @@ export function mountAiStatusBar(): () => void {
   };
 
   const placePop = (): void => {
-    const chip = chips.querySelector<HTMLElement>(`[data-presence-id="${CSS.escape(openId ?? "")}"]`);
+    const chip = openId === ALL ? chips.querySelector<HTMLElement>(".is-more") : chips.querySelector<HTMLElement>(`[data-presence-id="${CSS.escape(openId ?? "")}"]`);
     if (!chip) { closePop(); return; }
     const chipRect = chip.getBoundingClientRect();
     pop.style.left = `${Math.max(8, Math.round(chipRect.left))}px`;
@@ -105,9 +109,43 @@ export function mountAiStatusBar(): () => void {
       el("ul", { class: "ai-status-pop-recent", children: rows }),
       el("div", { class: "ai-status-pop-actions", children: [
         ...(presence.source === "chat" ? [el("button", { class: "ai-status-btn", text: "조수 상세", attrs: { type: "button" }, dataset: { testid: "ai-status-detail" }, on: { click: () => { closePop(); window.dispatchEvent(new Event("oprn:ai-open-team")); } } })] : []),
-        ...(presence.mapId ? [el("button", { class: "ai-status-btn", text: "지도로 이동", attrs: { type: "button" }, dataset: { testid: "ai-status-locate" }, on: { click: () => locate(presence) } })] : []),
-        ...(isActive(presence) ? [el("button", { class: "ai-status-btn is-stop", text: "멈춤", attrs: { type: "button" }, on: { click: () => { requestTeamStop(); closePop(); } } })] : []),
+        ...(presence.mapId ? [el("button", { class: "ai-status-btn", text: presence.mapId && presence.mapId !== editorState.get().currentMapId ? "그 맵으로 이동" : "지도로 이동", attrs: { type: "button" }, dataset: { testid: "ai-status-locate" }, on: { click: () => locate(presence) } })] : []),
+        ...(isActive(presence) ? [el("button", { class: "ai-status-btn is-stop", text: "멈춤", attrs: { type: "button" }, on: { click: () => { stopPresence(presence); closePop(); } } })] : []),
       ] }),
+    );
+  }
+
+  function openFor(id: string): void {
+    if (openId === id) { closePop(); return; }
+    openId = id;
+    if (id === ALL) renderAll(); else { const p = presences.find(item => item.id === id); if (p) renderPop(p); }
+    pop.hidden = false;
+    placePop();
+    for (const chip of chips.querySelectorAll<HTMLElement>(".ai-status-chip")) chip.setAttribute("aria-expanded", String((chip.dataset.presenceId ?? (chip.classList.contains("is-more") ? ALL : "")) === id));
+  }
+
+  /** 맵별로 묶은 전체 목록 — 여러 맵에서 여러 조수가 돌 때의 「한 번에 보기」. */
+  function renderAll(): void {
+    const groups = new Map<string, Presence[]>();
+    for (const presence of presences) {
+      const key = presence.mapName ?? "프로젝트 전체";
+      groups.set(key, [...(groups.get(key) ?? []), presence]);
+    }
+    const here = editorState.get().currentMapId;
+    // 사람이 움직여야 하는 맵 → 지금 보는 맵 → 나머지 순. 급한 것이 스크롤 밖으로 밀리지 않게.
+    const rank = (items: Presence[]): number => items.some(needsUser) ? 0 : items[0]?.mapId === here ? 1 : 2;
+    const ordered = [...groups].sort((x, y) => rank(x[1]) - rank(y[1]));
+    pop.replaceChildren(
+      el("header", { children: [el("strong", { text: `AI 작업 ${presences.length}개` }), el("span", { class: "ai-status-tag", text: `${groups.size}곳` })] }),
+      ...ordered.map(([name, items]) => el("section", { class: "ai-status-group", children: [
+        el("h5", { children: [el("span", { text: name }), ...(items[0]?.mapId && items[0].mapId === here ? [el("em", { text: " · 지금 보는 맵" })] : [])] }),
+        ...items.map(item => el("button", { class: "ai-status-row", attrs: { type: "button" }, dataset: { state: item.state, presenceId: item.id }, children: [
+          el("span", { class: "ai-status-dot", dataset: { tone: String(item.tone), state: item.state } }),
+          el("b", { text: item.name }),
+          el("span", { class: "ai-status-action", text: item.action }),
+          el("span", { class: "ai-status-tag", dataset: { state: item.state }, text: PRESENCE_LABEL[item.state] }),
+        ], on: { click: () => { openId = null; openFor(item.id); } } })),
+      ] })),
     );
   }
 
@@ -119,26 +157,31 @@ export function mountAiStatusBar(): () => void {
     if (!visible) { closePop(); return; }
     const attention = presences.some(p => p.state === "failed") ? "failed" : presences.some(p => p.state === "review") ? "review" : "none";
     root.dataset.attention = attention;
-    chips.replaceChildren(...presences.map(presence => el("button", {
+    const ordered = [...presences].sort((a, b) => Number(needsUser(b)) - Number(needsUser(a)));
+    const shown = ordered.length > MAX_CHIPS ? ordered.slice(0, MAX_CHIPS - 1) : ordered;
+    const rest = ordered.slice(shown.length);
+    const here = editorState.get().currentMapId;
+    const mapsInvolved = new Set(presences.map(p => p.mapId ?? "")).size;
+    chips.replaceChildren(...shown.map(presence => el("button", {
       class: "ai-status-chip",
       attrs: { type: "button", "aria-expanded": String(openId === presence.id), title: `${presence.name} · ${PRESENCE_LABEL[presence.state]}` },
-      dataset: { testid: "ai-status-chip", presenceId: presence.id, state: presence.state, tone: String(presence.tone), source: presence.source },
+      dataset: { testid: "ai-status-chip", presenceId: presence.id, state: presence.state, tone: String(presence.tone), source: presence.source, elsewhere: String(Boolean(presence.mapId && here && presence.mapId !== here)) },
       children: [
         el("span", { class: `ai-status-dot${isActive(presence) ? " is-pulse" : ""}`, dataset: { tone: String(presence.tone), state: presence.state } }),
+        ...(mapsInvolved > 1 && presence.mapName ? [el("span", { class: "ai-status-map", text: presence.mapName })] : []),
         el("b", { text: presence.name }),
         el("span", { class: "ai-status-action", text: `${presence.action}${stepText(presence)}` }),
       ],
-      on: { click: () => {
-        if (openId === presence.id) { closePop(); return; }
-        openId = presence.id;
-        renderPop(presence);
-        pop.hidden = false;
-        placePop();
-        for (const chip of chips.querySelectorAll(".ai-status-chip")) chip.setAttribute("aria-expanded", String((chip as HTMLElement).dataset.presenceId === presence.id));
-      } },
-    })));
+      on: { click: () => openFor(presence.id) },
+    })), ...(rest.length ? [el("button", {
+      class: "ai-status-chip is-more", attrs: { type: "button", "aria-expanded": String(openId === ALL), title: "나머지 작업 모두 보기" },
+      dataset: { testid: "ai-status-more", attention: String(rest.some(needsUser)) },
+      children: [el("b", { text: `+${rest.length}` }), el("span", { class: "ai-status-action", text: rest.some(needsUser) ? "확인 필요" : "더 보기" })],
+      on: { click: () => openFor(ALL) },
+    })] : []));
     stop.hidden = !presences.some(isActive);
-    if (openId) {
+    if (openId === ALL) renderAll();
+    else if (openId) {
       const open = presences.find(p => p.id === openId);
       if (open) renderPop(open); else closePop();
     }

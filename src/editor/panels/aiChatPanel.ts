@@ -65,6 +65,7 @@ import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
 import { mountAiStatusBar } from "./aiStatusBar";
+import { reportBackgroundBoard } from "./aiPresence";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
@@ -2273,7 +2274,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, start: () => done });
     return release;
   };
-  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput): Promise<void> => {
+  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }): Promise<void> => {
     const owner = conversationId;
     if (run.mapId && !store.getCurrent().maps[run.mapId]) throw new Error("보낸 맵이 사라졌어요");
     card.setStatus("의도 읽는 중…");
@@ -2297,7 +2298,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       focus: "visible-only",
       signal,
       onEvent: (event) => card.event(event),
-      onActivity: (state) => { phase = state.phase; },
+      onActivity: (state) => { phase = state.phase; if (ticketRef.id !== null) reportBackgroundBoard(ticketRef.id, state); },
       getApprovedTilesetFamilies: () => approvedTilesetFamilies,
       onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
       onStoreCard: (request) => { storeCard = request; },
@@ -2323,6 +2324,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
     let ticketId: number | null = null;
+    const ticketRef: { id: number | null } = { id: null };
     const card = createMapRunCard({ mapName: exclusive ? "프로젝트 전체" : mapName, label: run.shown.replace(/\s+/gu, " ").trim().slice(0, 80),
       onCancel: () => { if (ticketId !== null) mapRunQueue().cancel(ticketId); } });
     log.append(card.root);
@@ -2336,8 +2338,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (ticket.status !== "waiting" && ticket.status !== "running") unsubscribe();
     });
-    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (_ticket, signal) => runBackgroundMapTurn(card, signal, run) });
+    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
     ticketId = ticket.id;
+    card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
   };
   const send = async (): Promise<void> => {

@@ -6,7 +6,7 @@
 
 import { currentTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { el } from "@/util/dom";
-import { needsUser, subscribeAiPresence, type Presence } from "./aiPresence";
+import { dismissPresence, needsUser, subscribeAiPresence, type Presence } from "./aiPresence";
 
 export function createAiInbox(options: { readonly openLogs: () => void }): { root: HTMLElement; dispose(): void } {
   const list = el("div", { class: "ai-inbox-list" });
@@ -17,6 +17,23 @@ export function createAiInbox(options: { readonly openLogs: () => void }): { roo
   });
 
   const card = (presence: Presence): HTMLElement => {
+    const where = presence.mapName && presence.source === "background" ? ` · ${presence.mapName}` : "";
+    // 다른 맵에서 돈 실행의 검토는 그 실행 카드(대화 로그)가 쥐고 있다 — 거기로 데려간다.
+    if (presence.state === "review" && presence.source === "background") {
+      return el("article", {
+        class: "ai-inbox-card is-review", dataset: { testid: "ai-inbox-card", state: "review", tone: String(presence.tone), source: "background" },
+        children: [
+          el("h4", { text: `변경 검토 — ${presence.name}${where}` }),
+          el("p", { text: "초안이에요, 아직 적용 전 · 해당 작업 카드에서 적용하거나 버릴 수 있어요." }),
+          el("div", { class: "ai-inbox-actions", children: [
+            el("button", { class: "ai-inbox-btn is-primary", text: "검토하기", attrs: { type: "button" }, dataset: { testid: "ai-inbox-open-run" }, on: { click: () => {
+              window.dispatchEvent(new Event("oprn:ai-open-chat"));
+              requestAnimationFrame(() => document.querySelector<HTMLElement>(`.ai-map-run-card[data-ticket-id="${presence.ticketId}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" }));
+            } } }),
+          ] }),
+        ],
+      });
+    }
     if (presence.state === "review") {
       const actions = (): ReturnType<typeof currentTeamReviewActions> => currentTeamReviewActions();
       const report = actions()?.openReport;
@@ -36,10 +53,11 @@ export function createAiInbox(options: { readonly openLogs: () => void }): { roo
     return el("article", {
       class: "ai-inbox-card is-failed", dataset: { testid: "ai-inbox-card", state: "failed", tone: String(presence.tone) },
       children: [
-        el("h4", { text: `${presence.action} — ${presence.name}` }),
+        el("h4", { text: `${presence.action} — ${presence.name}${where}` }),
         ...(presence.note ? [el("p", { text: presence.note, attrs: { translate: "no" } })] : []),
         el("div", { class: "ai-inbox-actions", children: [
           el("button", { class: "ai-inbox-btn", text: "기록 보기", attrs: { type: "button" }, on: { click: () => options.openLogs() } }),
+          el("button", { class: "ai-inbox-btn", text: "확인했어요", attrs: { type: "button" }, dataset: { testid: "ai-inbox-dismiss" }, on: { click: () => dismissPresence(presence.id) } }),
         ] }),
       ],
     });

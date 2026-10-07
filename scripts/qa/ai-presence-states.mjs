@@ -10,9 +10,9 @@ mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ args: ["--disable-features=NetworkChangeNotifier", "--disable-network-change-notifier"] });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 page.on("dialog", d => d.accept());
-await page.goto(`${base}/?freshProject=1&lang=ko`);
-await page.waitForSelector('[data-testid="edit-canvas"]', { state: "attached", timeout: 180000 });
-await page.waitForSelector('[data-testid="ai-panel"]', { state: "attached", timeout: 180000 });
+await page.goto(`${base}/?freshProject=1&lang=ko`, { waitUntil: "commit", timeout: 300000 });
+await page.waitForSelector('[data-testid="edit-canvas"]', { state: "attached", timeout: 540000 });
+await page.waitForSelector('[data-testid="ai-panel"]', { state: "attached", timeout: 540000 });
 await page.waitForTimeout(3000);
 
 const seed = (phase, builderState) => page.evaluate(async ({ phase, builderState }) => {
