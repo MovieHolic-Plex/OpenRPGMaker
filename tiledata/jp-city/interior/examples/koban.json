@@ -56,8 +56,8 @@
   },
   {
    "id": "pb-bicycle",
-   "x": 1,
-   "y": 3
+   "x": 9,
+   "y": 6
   },
   {
    "id": "door-side-sliding",
@@ -66,7 +66,7 @@
   },
   {
    "id": "pb-file-cabinet",
-   "x": 8,
+   "x": 9,
    "y": 3
   },
   {
@@ -76,7 +76,7 @@
   },
   {
    "id": "pb-office-chair-s",
-   "x": 8,
+   "x": 9,
    "y": 4
   },
   {
@@ -94,7 +94,7 @@
   },
   {
    "id": "pb-documents",
-   "x": 9,
+   "x": 8,
    "y": 5
   }
  ],

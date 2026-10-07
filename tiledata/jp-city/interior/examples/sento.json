@@ -52,22 +52,22 @@
   {
    "id": "pb-wash-stool",
    "x": 1,
-   "y": 4
+   "y": 5
   },
   {
    "id": "pb-wash-stool",
    "x": 2,
-   "y": 4
+   "y": 5
   },
   {
    "id": "pb-wash-stool",
    "x": 3,
-   "y": 4
+   "y": 5
   },
   {
    "id": "pb-wash-stool",
    "x": 4,
-   "y": 4
+   "y": 5
   },
   {
    "id": "pb-mural",
@@ -127,7 +127,7 @@
   {
    "id": "pb-scale",
    "x": 12,
-   "y": 10
+   "y": 11
   },
   {
    "id": "getabako",
