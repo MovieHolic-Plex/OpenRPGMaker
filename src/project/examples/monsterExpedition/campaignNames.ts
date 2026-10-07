@@ -89,7 +89,8 @@ function replacer(pairs: readonly (readonly [string, string])[]) {
 export function renameCampaign(project: Project, names: CampaignNames): number {
   const pairs: [string, string][] = [];
   const add = (from: string, to: string | undefined) => { const next = to?.trim(); if (next && next !== from) pairs.push([from, next]); };
-  for (const key of Object.keys(ORIGINAL) as (keyof typeof ORIGINAL)[]) add(ORIGINAL[key], names[key]);
+  // 1번길은 시작 테마가 이름을 바꿨을 수 있다(사막 = 「1번길 · 모래바람 길」) — 지금 맵 이름에서 바꾼다.
+  for (const key of Object.keys(ORIGINAL) as (keyof typeof ORIGINAL)[]) add(key === "firstRoute" ? project.maps[FIRST_ROUTE]?.name ?? ORIGINAL[key] : ORIGINAL[key], names[key]);
   EXPEDITION_GYMS.forEach((gym, i) => {
     const given = names.gyms?.[i];
     // 시작 테마·관장 타입이 체육관 이름과 배지를 바꿨을 수 있다(서리꽃 마을 1관 = 「서리꽃 체육관」) — 지금 이름에서 바꾼다.

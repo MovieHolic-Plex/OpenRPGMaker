@@ -6,7 +6,7 @@ import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarlox
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { EXPEDITION_AUDIO as audio } from "./audio";
 import { EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
-import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as routes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
+import { EXPEDITION_TOWNS as towns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as planRoutes, EXPEDITION_SIDE_AREAS as sides } from "./worldPlan";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
 import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
@@ -45,6 +45,7 @@ export interface ExpeditionManifest {
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
 const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast" };
+const START_ROUTE_NAMES: Readonly<Record<StartTheme, string>> = { desert: "1번길 · 모래바람 길", snow: "1번길 · 서리 들길", coast: "1번길 · 바닷바람 길" };
 
 /** 관장 타입을 바꾼 관의 배지 이름. 본래 타입이면 worldPlan 의 배지를 그대로 쓴다. */
 const TYPE_BADGE: Readonly<Record<string, string>> = {
@@ -66,6 +67,8 @@ const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
 };
 
 export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme } = {}): ExpeditionManifest {
+  // 시작 테마의 1번길 이름도 그 땅으로 — 사막 모랫길 위에 「1번길 · 별싹 들판」 표지가 떴다(2026-10-07 사막 런타임 캡처).
+  const routes = planRoutes.map(r => r.key === "meadow" && options.startTheme ? { ...r, name: START_ROUTE_NAMES[options.startTheme] } : r);
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
   project.mapConnections = [];
