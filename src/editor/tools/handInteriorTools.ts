@@ -134,7 +134,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     + "lines = 깔개·울타리·창살·선로·제단 난간(칸 목록 또는 rect), daises = 밟는 단, goods = 탁상 물건(윗면 있는 가구 칸 위). "
     + "결과는 통행 BFS(출입구에서 모든 바닥·가구 옆 칸)와 오류를 돌려준다 — error 가 있으면 맵을 만들지 않는다. 층 사이 계단은 links 로 이동 이벤트를 단다. "
     + "먼저 list_tileset_references({tilesetId:\"atlas_biome_interior\"}) 의 손 도트 실내 조립법(정답 배열·예제 그림)을 읽는다. "
-    + "일본 현대 집(현관 타타키·화실 다다미·LDK·욕실·화장실·아파트 원룸)은 tileset:\"jp_city\" 로 짓는다 — 가구·바닥·벽면 id 는 list_hand_interior_parts({tileset:\"jp_city\"}) 로 찾고, 조립법은 list_tileset_references({tilesetId:\"jp_city\"}) 의 일본 실내 용도를 읽는다.",
+    + "일본 현대 집(현관 타타키·화실 다다미·LDK·욕실·화장실·아파트 원룸)은 tileset:\"jp_city\" 로 짓는다 — 가구·바닥·벽면 id 는 list_hand_interior_parts({tileset:\"jp_city\"}) 로 찾고, 조립법은 list_tileset_references({tilesetId:\"jp_city\"}) 의 일본 실내 용도를 읽는다. "
+    + "jp_city 방문(door 종류: 열린 양식 문·화장실 문·후스마·쇼지)은 objects 에 넣되 좌표 = 가로 칸막이('#' 줄)의 1칸 틈 칸 — 틈 위 인방과 아래 벽면 높이 문틀을 그리고 통로는 막지 않는다(세로 칸막이 틈에는 못 단다).",
   parameters: {
     type: "object",
     properties: {

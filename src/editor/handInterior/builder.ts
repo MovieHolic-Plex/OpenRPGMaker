@@ -7,6 +7,7 @@
 //        막힌 칸 중 실내에 닿는(8방) 칸 = 천장 띠, 닿지 않는 칸 = 공허.
 //  층:   1층 = 구조, 2층 = 바닥 무늬(깔개·줄 자동 타일 중 밟는 것), 3·4층 = 그리는 순서대로 가구 조각, 탁상 물건은 4층.
 //  순서: 걸이 = 벽면 윗줄 y·16, 바닥 무늬 = 맨 먼저, 나머지 = (y + 높이)·16 — 남쪽 가구가 나중(앞)에 그려진다.
+//  문(door, jp_city): 가로 칸막이의 1칸 틈 (x,y) 에 단다 — 틈 칸 = 인방 ★, 그 아래 벽면 높이 두 줄 = 열린 문틀(윗줄 ★ · 아랫줄 2층). 통로는 막지 않는다.
 import spec from "@/assets/handInteriorSpec.json";
 import jpSpec from "@/assets/jpInteriorSpec.json";
 import { passabilityOf } from "@/project/collision";
@@ -16,7 +17,7 @@ export const HAND_INTERIOR_TILESET_ID = "atlas_biome_interior";
 
 type SpecCell = readonly [number, number, number, number];
 interface SpecObject {
-  readonly ko: string; readonly category: string; readonly category_ko: string; readonly kind: "floor" | "wall" | "hang" | "flat";
+  readonly ko: string; readonly category: string; readonly category_ko: string; readonly kind: "floor" | "wall" | "hang" | "flat" | "door";
   readonly w: number; readonly h: number; readonly up: number; readonly cells: readonly SpecCell[];
   readonly surface?: readonly number[]; readonly animated?: boolean; readonly stairs?: "up" | "down";
   /** 조수용 메모(tiledata/hand-interior/v5/notes6.py): 무엇인지 한 줄 · 쓰는 방 태그 · 놓는 곳 · 짝 소품 id. */
@@ -195,7 +196,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     if (had) issues.push({ severity: "error", code: "overlap", message: `${label} (${x},${y}) 가 ${had} 와 겹친다`, x, y });
     footprint.set(i, label);
   };
-  const drawKey = (kind: SpecObject["kind"], y: number, h: number) => (kind === "hang" ? y * 16 : kind === "flat" ? -1 : (y + h) * 16);
+  const drawKey = (kind: SpecObject["kind"], y: number, h: number) => (kind === "hang" ? y * 16 : kind === "flat" ? -1 : kind === "door" ? (y + 3) * 16 : (y + h) * 16);
 
   // "dining 1x3" / "dais 5x2 wood" 처럼 크기를 이름에 넣은 id 는 탁자·단 자동 타일로 푼다(예제 정답 배열의 표기).
   const tables: HandInteriorTable[] = [...(input.tables ?? [])];
@@ -230,6 +231,13 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       const cols = Array.from({ length: Math.max(1, d.w) }, (_, dx) => o.x + dx);
       const ok = o.id === "round arch" ? cols.some((x) => A.face[o.y]?.[x] === 1) : cols.every((x) => A.face[o.y]?.[x] === 1);
       if (!ok) issues.push({ severity: "error", code: "hang-not-on-face", message: `${label} 는 걸이 — 벽면 두 줄 중 윗줄(막힌 칸 바로 아래 줄)에 건다`, x: o.x, y: o.y });
+    } else if (d.kind === "door") {
+      // 가로 칸막이(막힌 줄)의 1칸 틈: 좌우가 막혔고, 위(북쪽 방)와 아래 두 줄이 걸을 수 있는 바닥이며, 아래 두 줄 좌우는 벽면·막힘.
+      const solid = (x: number, y: number) => !A.inn(x, y);
+      const sideOk = (y: number) => !A.isFloor(o.x - 1, y) && !A.isFloor(o.x + 1, y);
+      const ok = A.isFloor(o.x, o.y) && solid(o.x - 1, o.y) && solid(o.x + 1, o.y) && A.inn(o.x, o.y - 1)
+        && A.isFloor(o.x, o.y + 1) && A.isFloor(o.x, o.y + 2) && sideOk(o.y + 1) && sideOk(o.y + 2);
+      if (!ok) issues.push({ severity: "error", code: "door-not-in-gap", message: `${label} 문은 가로 칸막이('#' 줄)의 1칸 틈 칸에 단다 — 좌우가 '#', 틈 위가 북쪽 방, 틈 아래 두 줄(벽면 높이)이 바닥이어야 한다. 세로 칸막이의 3줄 틈에는 문을 달 수 없다(통로만)`, x: o.x, y: o.y });
     } else if (d.stairs === "down") {
       for (let dy = 0; dy < Math.max(1, d.h); dy++) for (let dx = 0; dx < d.w; dx++) claim(o.x + dx, o.y + dy, label);
     }

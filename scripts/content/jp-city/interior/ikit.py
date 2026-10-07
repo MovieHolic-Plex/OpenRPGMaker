@@ -9,7 +9,9 @@
   · 벽면 = 2줄(32px) × cols 칸 그림 한 장 → 윗줄 위 4행 천장 밑 그늘 + 서쪽 그림자 변형. 번호 = ((줄-1)*cols + x%cols)*2 + 서쪽.
   · 천장 = 칸 하나를 비트(1 남쪽 안 · 2 북쪽 안 · 4 서쪽 안 · 8 동쪽 안 · 16 북쪽 공허)마다 32변형.
   · 가구 = 그림 폭 w*16, 높이 (U+h)*16 (U = ceil(up/16), 위 U 줄이 솟은 부분). 발밑 h 줄이 footprint.
-    kind floor(바닥) · wall(북쪽 벽면 바로 아래 첫 바닥 줄, 위로 벽면을 덮어 솟는다) · hang(벽면 윗줄 y 에 거는 것, 그림 높이 hrows 줄) · flat(밟는 바닥 무늬, 2층).
+    kind floor(바닥) · wall(북쪽 벽면 바로 아래 첫 바닥 줄, 위로 벽면을 덮어 솟는다) · hang(벽면 윗줄 y 에 거는 것, 그림 높이 hrows 줄) · flat(밟는 바닥 무늬, 2층)
+         · door(가로 칸막이의 1칸 틈에 다는 열린 문 — 그림은 16×32 = 틈 아래 벽면 두 줄 높이의 문틀·문짝. 틈 칸 자체에는 이 파일이 천장 띠(인방)를 덧붙인다.
+           통행: 인방·윗줄 ★(캐릭터 위로 그려지고 지나간다) · 아랫줄 flat(2층). 좌표 x,y = 평면의 틈 칸).
     칸 통행: footprint 는 solid(막힘)이 기본, walk 로 준 칸은 flat(밟음·2층), 솟은 칸·걸이 = star(★ 지나감).
   · 탁자 = draw(c, w, h) 로 3×3·1×3·3×1·1×1 을 그려 L/M/R/S × T/M/B/S 조각 16개로 자른다.
   · 탁상 물건 = 16×16, 윗면 있는 가구 칸 위(4층).
@@ -127,9 +129,10 @@ class Registry:
     def obj(self, id_, ko, w=1, h=1, up=0, kind='floor', cat='home', cat_ko='집', walk=(), solid=None, surface=False,
             stairs=None, use=(), facing=None, desc='', tags=(), place='', pair=(), states=None, hrows=2):
         """up = 발밑 위로 솟는 px(0~48). hang 은 h 를 쓰지 않고 그림 높이 hrows 줄(벽면 윗줄부터)."""
-        assert kind in ('floor', 'wall', 'hang', 'flat'), kind
+        assert kind in ('floor', 'wall', 'hang', 'flat', 'door'), kind
+        assert kind != 'door' or (w == 1 and up == 0), ('문은 폭 1칸·up 0 — 그림 16×32', id_)
         def deco(fn):
-            self.objs[id_] = dict(ko=ko, w=w, h=(0 if kind == 'hang' else h), up=up, kind=kind, cat=cat, cat_ko=cat_ko, walk=[tuple(p) for p in walk],
+            self.objs[id_] = dict(ko=ko, w=w, h=(0 if kind in ('hang', 'door') else h), up=up, kind=kind, cat=cat, cat_ko=cat_ko, walk=[tuple(p) for p in walk],
                                   solid=None if solid is None else [tuple(p) for p in solid], surface=surface, stairs=stairs, use=list(use),
                                   facing=facing, desc=desc, tags=list(tags), place=place, pair=list(pair), states=states, hrows=hrows, draw=fn)
             return fn
@@ -153,7 +156,7 @@ class Registry:
     def obj_image(self, id_):
         o = self.objs[id_]
         U = math.ceil(o['up'] / 16)
-        rows = o['hrows'] if o['kind'] == 'hang' else U + o['h']
+        rows = 2 if o['kind'] == 'door' else o['hrows'] if o['kind'] == 'hang' else U + o['h']
         return self._canvas(o['draw'], o['w'] * 16, rows * 16), U
 
     def floor_cell(self, id_, x, y, sh):
@@ -227,24 +230,29 @@ class Registry:
             arr, U = self.obj_image(id_)
             R_, C_ = arr.shape[0] // 16, arr.shape[1] // 16
             spec_cells, grid, base = [], [[None] * C_ for _ in range(R_)], None
+            if o['kind'] == 'door':
+                # 틈 칸 = 인방(천장 띠가 문 위로 이어진다, 남·북 양쪽이 실내인 띠 = 비트 1|2). 지나가는 ★.
+                lin = add('obj.%s.lintel' % id_, self._canvas(default_ceiling, 16, 16, 3), 'star', '%s 인방' % o['ko'], o['desc'], o['tags'])
+                spec_cells.append([0, 0, lin, 3]); grid.insert(0, [lin])
             for ry in range(R_):
                 for cx in range(C_):
                     t = arr[ry * 16:ry * 16 + 16, cx * 16:cx * 16 + 16]
                     if not t[:, :, 3].max(): continue
-                    dy = ry if o['kind'] == 'hang' else ry - U
-                    if o['kind'] == 'flat' or (dy >= 0 and o['kind'] != 'hang' and (cx, dy) in o['walk']): pc, layer = 'flat', 2
+                    dy = ry if o['kind'] == 'hang' else ry + 1 if o['kind'] == 'door' else ry - U
+                    if o['kind'] == 'door': pc, layer = ('star', 3) if ry == 0 else ('flat', 2)
+                    elif o['kind'] == 'flat' or (dy >= 0 and o['kind'] != 'hang' and (cx, dy) in o['walk']): pc, layer = 'flat', 2
                     elif o['kind'] == 'hang' or dy < 0: pc, layer = 'star', 3
                     elif o['solid'] is None or (cx, dy) in o['solid']: pc, layer = 'solid', 3
                     else: pc, layer = 'star', 3
                     local = add('obj.%s.%d.%d' % (id_, cx, ry), t, pc, '%s %d,%d' % (o['ko'], cx, ry), o['desc'], o['tags'])
-                    grid[ry][cx] = local
+                    grid[ry + (1 if o['kind'] == 'door' else 0)][cx] = local
                     spec_cells.append([cx, dy, local, layer])
             meta = {k: o[k] for k in ('ko', 'w', 'h', 'up', 'kind', 'surface', 'stairs', 'use', 'facing', 'desc', 'tags', 'place', 'pair', 'states') if o[k] not in (None, [], '')}
             meta.update(category=o['cat'], category_ko=o['cat_ko'], cells=spec_cells, w=o['w'], h=o['h'], up=o['up'])
             interior['objects'][id_] = meta
-            snap = {'wall': 'wall-north', 'hang': 'wall-north'}.get(o['kind'], 'floor')
+            snap = {'wall': 'wall-north', 'hang': 'wall-north', 'door': 'wall-north'}.get(o['kind'], 'floor')
             ai = dict(snap=snap, tags=o['tags'], description=o['desc'] or o['ko'], placementRules=o['place'] or '', repeatability='fixed', growthAxis=None,
-                      anchor=dict(dx=0, dy=R_ - 1), access=[], role='prop')
+                      anchor=dict(dx=0, dy=len(grid) - 1), access=[], role="prop")
             kits.append(dict(id='jp-in-%s' % id_, name=o['ko'], grid=grid, parts=[], ai=ai))
         for id_, td in self.tables.items():
             pieces = {}
@@ -276,7 +284,7 @@ class Registry:
             if off: bad.append('%s 팔레트 밖 %d색 %s' % (local, len(off), off[:3]))
         for id_, o in self.objs.items():
             arr, U = self.obj_image(id_)
-            if o['kind'] != 'hang' and arr.shape[0] != (U + o['h']) * 16: bad.append('%s 높이' % id_)
+            if o['kind'] not in ('hang', 'door') and arr.shape[0] != (U + o['h']) * 16: bad.append('%s 높이' % id_)
             wrong = [u for u in o.get('use') or () if u not in USE_IDS]
             if wrong: bad.append('%s use %s — 쓰임 id 는 %s 중에서(handInterior parts.ts USE_WORDS)' % (id_, wrong, ' '.join(USE_IDS)))
             if o.get('facing') not in (None, 'N', 'S', 'E', 'W'): bad.append('%s facing %r' % (id_, o['facing']))
