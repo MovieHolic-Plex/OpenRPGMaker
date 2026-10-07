@@ -117,6 +117,7 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
 | 빌더 전(`qa-runs/wz-base`) | 1303s | 253 | 16×16~20×16 5장 | 낱칸 칠하기, 시작 칸 막힘·참고문서 거부 반복, 부엉이 탑 벽이 무너짐. 엔딩 도달 |
 | 빌더 1판(`wz-builder`) | 521s | 95 | 24×17~30×22 5장 | 연회 탁자·약 솥·서가가 열로, 전부 도달. 엔딩 도달. 시작 맵 재건축이 시작 칸을 막아 커밋 거부 1회, NPC 는 EasyRPG 칩 |
 | 빌더 2판(`wz-builder2`) | 347s | 75 | 같음 | NPC 전원 Wizarding 칩. 교수를 1칸 문 바로 앞에 세워 자동 플레이 막힘(blocker 1) |
+| 빌더 3판(`wz-builder3`, 아래 수정 뒤) | 428s | 80 | 12×24~30×22 5장 | blocker 0, 자동 플레이 엔딩 도달, NPC 8명 전원 Wizarding 칩, 문 앞 막힘 없음 |
 
 고친 것: 시작 맵을 다시 지으면 시작 칸을 spawn 으로 옮긴다 · Wizarding 인물 검색어(마법약 교수·호그와트 학생·부엉이 관리인·간호사…, `wizardingCharsets.ts` `wizardingTags`) ·
 결과에 `keepClear`(문 앞 두 칸)와 「비워 둘 것」 문장 · 헤드리스 칩 미리보기가 못 읽는 시트 하나로 전체 실패하던 것(`scripts/qa-game/render.mts`).
