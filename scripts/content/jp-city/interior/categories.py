@@ -19,8 +19,8 @@ CATEGORIES = [
                          'tokonoma', 'chigaidana', 'oshiire', 'futon', 'futon-folded', 'andon', 'ikebana', 'tv-old']),
     ('bedroom', '침실', ['bed-single', 'bed-double', 'wardrobe', 'closet-doors', 'dresser-low', 'mirror-stand', 'bed-side-table']),
     ('kids', '아이방·서재', ['bunk-bed', 'desk-study', 'desk-chair-s', 'desk-chair-n', 'desk-chair-e', 'desk-chair-w']),
-    ('bath', '욕실', ['bathtub', 'bathtub-lid', 'shower-faucet', 'bath-mirror', 'bath-stool', 'bath-bucket', 'bath-mat']),
-    ('dressing', '탈의실·세탁', ['washbasin', 'washing-machine', 'laundry-basket', 'towel-rack', 'laundry-rack']),
+    ('bath', '욕실', ['bathtub', 'bathtub-lid', 'shower-faucet', 'bath-mirror', 'bath-stool', 'bath-bucket']),
+    ('dressing', '탈의실·세탁', ['bath-mat', 'washbasin', 'washing-machine', 'laundry-basket', 'towel-rack', 'laundry-rack']),
     ('toilet', '화장실', ['toilet', 'toilet-handwash', 'toilet-paper', 'toilet-mat', 'toilet-slippers']),
 ]
 

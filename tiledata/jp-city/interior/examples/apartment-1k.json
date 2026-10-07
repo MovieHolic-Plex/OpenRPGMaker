@@ -202,6 +202,16 @@
    "id": "door-open-western",
    "x": 6,
    "y": 6
+  },
+  {
+   "id": "desk-study",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 6,
+   "y": 4
   }
  ],
  "tables": [],
@@ -224,6 +234,11 @@
   {
    "id": "alarm-clock",
    "x": 2,
+   "y": 3
+  },
+  {
+   "id": "desk-lamp",
+   "x": 7,
    "y": 3
   }
  ],

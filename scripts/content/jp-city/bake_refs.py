@@ -2465,10 +2465,9 @@ def _in_item(oid):
     return it
 
 
-_IN_CATS = []
-for _o in JPI['objects'].values():
-    if not any(c == _o['category'] for c, _, _ in _IN_CATS): _IN_CATS.append((_o['category'], _o['category_ko'], 0))
-_IN_CATS = [(c, ko, sum(1 for o in JPI['objects'].values() if o['category'] == c)) for c, ko, _ in _IN_CATS]
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'interior'))
+import categories as _CATS                                     # noqa: E402 — 분류 순서·이름의 정본
+_IN_CATS = [(c, ko, sum(1 for o in JPI['objects'].values() if o['category'] == c)) for c, ko, _ in _CATS.CATEGORIES]
 
 
 def doc_in_rules():
