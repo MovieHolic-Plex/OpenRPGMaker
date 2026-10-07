@@ -5,6 +5,30 @@
 
 <!-- releases -->
 
+## 0.174.0 — 2026-10-07
+
+### 기능
+
+- **interior** — 방 짓기 역할표 roomKit — build_hand_interior_room 이 칩셋 id 대신 타일셋의 역할표를 읽는다 (`2257ad4`)
+- **interior** — 바닥 깔기 규칙 lay rowShift — 줄마다 무늬를 밀어 깔아 넓은 바닥의 반복 무늬를 끊는다(일본 마루 2종) (`a6f9c98`)
+- **ai-ui** — 여러 맵·여러 조수 — 맵별 대기열 실행을 존재감에 합치고 맵별 목록으로 본다 (`d2bbae1`)
+
+### 수정
+
+- **jp-city** — 마루 밝은 널을 윗줄 1px 광택으로 — 넓은 빈 바닥에서 띠로 줄 서 보였다 (`668dffd`)
+- **qa** — opening-assistant-run takes --model-like for unlisted models; declare brokerResults (`5144e8c`)
+- **ai-ui** — 상태 줄의 안 쓰는 store import 제거 (`e2a7c19`)
+- **release** — 아이콘 도구가 홈 package.json 때문에 ESM으로 깨지지 않게 한다 (`a978088`)
+- **tiles** — old mart floor back; no monster-ball shapes in monster interiors (`4ac8618`)
+
+### 문서
+
+- 방 짓기 역할표 roomKit·바닥 깔기 규칙 (`043ca94`)
+
+### 잡무
+
+- **jp-city** — 참고문서 다시 굽기 — 마루 광택·줄 밀기 반영(엔진 실측) (`ad5994d`)
+
 ## 0.173.0 — 2026-10-07
 
 ### 기능
