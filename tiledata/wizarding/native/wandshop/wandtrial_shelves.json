@@ -1,0 +1,168 @@
+{
+ "name": "wandtrial_shelves",
+ "item": "wandtrial_shelves",
+ "candidate": "h1-A",
+ "source": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_shelves/h1-A.png",
+ "sha256": "8a6a2b16132392ee8efa3240f3cd65b8ee9f76b540719d246f8193b80fca3da2",
+ "set": {
+  "id": "wandtrial shelves",
+  "name_ko": "높은 지팡이 상자 선반 방향 묶음",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "floor",
+  "canvas": [
+   112,
+   64
+  ],
+  "footprint": {
+   "w": 7,
+   "h": 1
+  },
+  "description": "서/동 바닥 1×2 모듈과 북쪽 5×1 선반. 짙은 목재, 32px 솟음. 서/동 꼭대기 윗면 16~22px, 북쪽 꼭대기 윗면 12~16px. 안쪽 선반판은 꼭대기 면을 대신하지 않는다. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다.",
+  "parent": "wandtrial shelves",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "west",
+    "label": "west",
+    "w": 16,
+    "h": 64,
+    "foot": [
+     1,
+     2
+    ],
+    "see": "서벽에 등판, 동쪽 접근. 실제 1×2 발밑과 32px 높이 분리. 닫힌 긴 상자 8개 이상, 꼭대기 윗면 16~22px. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다.",
+    "topMin": 16,
+    "mount": "floor",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial shelves west",
+    "topMax": 22,
+    "topRatio": [
+     0.25,
+     0.35
+    ],
+    "topBasis": "actual opaque object projection bbox height; exclude empty margins",
+    "topContinuous": true,
+    "minFrontBoxes": 8
+   },
+   {
+    "key": "east",
+    "label": "east",
+    "w": 16,
+    "h": 64,
+    "foot": [
+     1,
+     2
+    ],
+    "see": "동벽에 등판, 서쪽 접근. 서쪽을 좌우 반전하지 않고 왼쪽 위 광원 유지. 상자 8개 이상, 꼭대기 윗면 16~22px. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다.",
+    "topMin": 16,
+    "mount": "floor",
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial shelves east",
+    "topMax": 22,
+    "topRatio": [
+     0.25,
+     0.35
+    ],
+    "topBasis": "actual opaque object projection bbox height; exclude empty margins",
+    "topContinuous": true,
+    "minFrontBoxes": 8
+   },
+   {
+    "key": "north",
+    "label": "north",
+    "w": 80,
+    "h": 48,
+    "foot": [
+     5,
+     1
+    ],
+    "see": "북쪽 벽 앞 남향, 5×1 발밑. 24개 이상의 좁은 긴 상자 끝이 층층이 구분. 꼭대기 윗면 12~16px. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다. 실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다.",
+    "topMin": 12,
+    "mount": "floor",
+    "x": 32,
+    "y": 16,
+    "locked": false,
+    "child": "wandtrial shelves north",
+    "topMax": 16,
+    "topRatio": [
+     0.25,
+     0.35
+    ],
+    "topBasis": "actual opaque object projection bbox height; exclude empty margins",
+    "topContinuous": true,
+    "minFrontBoxes": 24
+   }
+  ],
+  "contract": {
+   "era": "medieval British magical shop",
+   "camera": "south above, orthogonal 3/4, no isometric side skew",
+   "light": "upper left",
+   "palette": "theme-3e7ac64c5cf1d943e08a dedicated 42 colors; isolated palette.pal only",
+   "registration": "human choice required; production sheet is not installed as one object",
+   "boxMinimum": 24,
+   "poses": {
+    "west": [
+     [
+      1,
+      4
+     ],
+     [
+      1,
+      6
+     ],
+     [
+      1,
+      8
+     ]
+    ],
+    "east": [
+     [
+      9,
+      4
+     ],
+     [
+      9,
+      6
+     ],
+     [
+      9,
+      8
+     ]
+    ],
+    "north": [
+     [
+      1,
+      1
+     ]
+    ]
+   },
+   "groundAnchor": "each slot bottom left footprint origin = (0,h-foot.h*16)",
+   "overhangPx": 32,
+   "access": "western x2 and eastern x8; north shelf y2",
+   "reuse": "Existing images are geometry reference only; create dedicated native pixels from transparent seed.",
+   "coordinateSpace": "floor-local cells; screen px = floor px + (0,32)",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "topFaceReview": "실제 불투명 기물 투영 bbox 높이 H 대비 연속된 꼭대기 면 깊이 D는 약25~35%로 설계한다. 전체 슬롯 사용시 북선반12~16px, 서·동16~22px, 표적8~11px. 투명 여백이면 H를 실측해 floor(0.25*H+0.5)..floor(0.35*H+0.5)로 다시 산정하고 full-slot topMin만으로 승인하지 않는다. 수납 내부 선반판·테두리·광택선은 꼭대기 면으로 세지 않는다. 밝은 윗면과 어두운 남쪽 전면을 실제 신규 PNG에서 각각 확인한다. 북24개/좌우8개 이상의 상자 구분은 남쪽 전면 내부에 유지한다. 기존 참고 PNG의 통과 이력은 승인 근거가 아니다. slotResults에 opaqueBBox,height,top_face_rows,topRatio,topRegion,frontRegion,boxCount,lightEvidence와 칸별 PASS/FAIL·수정 지시를 기록한다."
+  },
+  "refs": [
+   "bookshelf 2w",
+   "bookshelf 3w"
+  ],
+  "tags": [
+   "medieval",
+   "wand-trial"
+  ],
+  "use": [
+   "display"
+  ],
+  "contextRoom": "scholar"
+ }
+}

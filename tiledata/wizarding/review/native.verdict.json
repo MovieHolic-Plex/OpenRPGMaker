@@ -1,0 +1,846 @@
+{
+ "module": "native",
+ "reviewer": "super-harness native review (데모 영수증)",
+ "pieces": {
+  "wz-nv-wand-aged-dark-boards-plain-a": {
+   "verdict": "PASS",
+   "hash": "bd9801ff1fe0eab57fbb1debc418d1015ff39727782d7708fca7fb5cdb9affd0",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-aged-dark-boards-plain-b": {
+   "verdict": "PASS",
+   "hash": "96482275fdfc6c0a475aaf8cdda91cbcaa040278c519054292768a287f890a87",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-aged-dark-boards-worn": {
+   "verdict": "PASS",
+   "hash": "06b76ac6fb6ed0797409630d1fc47e17720e0399840f9e6d5d63114322535724",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-aged-dark-boards-transition": {
+   "verdict": "PASS",
+   "hash": "b23572e23a63436c4bb7d05f61d2e1e4ea1f2e33c7da00534a17b088b95be1d4",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-brass-measure-and-record-measure-extended": {
+   "verdict": "PASS",
+   "hash": "d228ce3bc00f471205bf3107504674f4cf1d469ced4943bdcfcc60b6979d8fbb",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-brass-measure-and-record-measure-coiled": {
+   "verdict": "PASS",
+   "hash": "e72b1a1ebae53733e870bb496bbe310733e58ac56a01763572219fc88c742338",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-n-face": {
+   "verdict": "PASS",
+   "hash": "354f4012b51752bec13d036103dd85e30cf74f6d25b3916b92a1e0a36549fa80",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-w-cap": {
+   "verdict": "PASS",
+   "hash": "07122b7adf32abff1f60c5e1da047903682672fb28fa9d74e3447184d43efa5b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-e-cap": {
+   "verdict": "PASS",
+   "hash": "d193f05f6fe31cd52b353fa66575570babf67102a88c246d73a93b3d9d2f8f8a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-s-cap": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-partition": {
+   "verdict": "PASS",
+   "hash": "18e3ed14c8cb641a0637ade4aa3d2a6405526580571c8a008c24eedfd455fe6b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-n-end": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-w-end": {
+   "verdict": "PASS",
+   "hash": "07122b7adf32abff1f60c5e1da047903682672fb28fa9d74e3447184d43efa5b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-e-end": {
+   "verdict": "PASS",
+   "hash": "d193f05f6fe31cd52b353fa66575570babf67102a88c246d73a93b3d9d2f8f8a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-s-end": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-partition-end": {
+   "verdict": "PASS",
+   "hash": "dc7b62fee67f507d4cc8e8c9c27024d9c5e3ad969603630d12578293f22fadee",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-n": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-w": {
+   "verdict": "PASS",
+   "hash": "07122b7adf32abff1f60c5e1da047903682672fb28fa9d74e3447184d43efa5b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-e": {
+   "verdict": "PASS",
+   "hash": "d193f05f6fe31cd52b353fa66575570babf67102a88c246d73a93b3d9d2f8f8a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-s": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-inner-ne": {
+   "verdict": "PASS",
+   "hash": "d193f05f6fe31cd52b353fa66575570babf67102a88c246d73a93b3d9d2f8f8a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-inner-nw": {
+   "verdict": "PASS",
+   "hash": "07122b7adf32abff1f60c5e1da047903682672fb28fa9d74e3447184d43efa5b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-inner-se": {
+   "verdict": "PASS",
+   "hash": "01dd830043439e7bdb093a390ba6fcf93eb04ab98716b2ff515bbc487e9206c6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-inner-sw": {
+   "verdict": "PASS",
+   "hash": "90a844d27f333ec2a26fa0cc5962d24a5ca8ca73d7e3949351cc13770145df89",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-ne": {
+   "verdict": "PASS",
+   "hash": "d193f05f6fe31cd52b353fa66575570babf67102a88c246d73a93b3d9d2f8f8a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-nw": {
+   "verdict": "PASS",
+   "hash": "07122b7adf32abff1f60c5e1da047903682672fb28fa9d74e3447184d43efa5b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-se": {
+   "verdict": "PASS",
+   "hash": "a3315064e87a10e73e704d6de4c825240ac8be6f128a33aee8f2d82182351b3c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-outer-sw": {
+   "verdict": "PASS",
+   "hash": "06036a3daa8494e673c5f0475a547531e2c5c8b23cca8bb538c137d5411a4a6b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-t-join": {
+   "verdict": "PASS",
+   "hash": "7d04ac360e9f5e93881ab62d2eec8ec56e47e08c017303e5df42017c85b1c640",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-entry-jamb": {
+   "verdict": "PASS",
+   "hash": "8d4dcaca91e5492c193add7bee4afb8da83ac099818d168aaba8ec0e764cc03e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-staff-jamb": {
+   "verdict": "PASS",
+   "hash": "dc7b62fee67f507d4cc8e8c9c27024d9c5e3ad969603630d12578293f22fadee",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-n-base": {
+   "verdict": "PASS",
+   "hash": "d3b7a8fb477c36f01109164f25738d07aa6fc6a4697b524c03d5883b70904566",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-nw-base": {
+   "verdict": "PASS",
+   "hash": "5847b5a73c6fcb65f45684f95373a3a1f47d730feb3d2d5645e4808c63a11a5d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-ne-base": {
+   "verdict": "PASS",
+   "hash": "22362ae28c8f85d4db98cf6fac96680d956f796ecf05963aeb5c373757aba2d1",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-t-w": {
+   "verdict": "PASS",
+   "hash": "3955ca7a1ec489d5a18e2d697969693de38eb6f0b3743ec278598a497a80a1b8",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-dark-timber-wall-t-e": {
+   "verdict": "PASS",
+   "hash": "d76056b5d9ec0117ac4861dd9d40f7fd97fd68e128292d72a9a39bae73d96c01",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-deep-display-window-recess": {
+   "verdict": "PASS",
+   "hash": "fb16e71daea349399d8e4869dea52c6845893639fa16debfe2889766fed7e06b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-stock-ladder-ladder": {
+   "verdict": "PASS",
+   "hash": "98565ade13926b3d5c67ee983ff7fb80c86c7daceb7a315434a3fccc79990edd",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-0": {
+   "verdict": "PASS",
+   "hash": "9b716e926e6ab88ac6f75e7583299b089c7deba67fc60e524317f9a22d77963f",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-1": {
+   "verdict": "PASS",
+   "hash": "a0cf8fea236cea3bd8b8ab16b6687e6e2cb51dcf683423b25a3d3d1b016ff6bf",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-2": {
+   "verdict": "PASS",
+   "hash": "b4ddb5c65a8daa2bfa1ee302c1cc99abc466cf5f6228405b88ab8945de54e66d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-3": {
+   "verdict": "PASS",
+   "hash": "59ae8e41eac68db244f3597f78a00b21871d5fc1ceace65800dc9b33b24c9c86",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-4": {
+   "verdict": "PASS",
+   "hash": "4bfcc6df51ff1081741556fef6440bf2f0af3e662557e7b32ec132ebaf2cc321",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-5": {
+   "verdict": "PASS",
+   "hash": "ba7a5d090a72eabf1eb950044b5e4dc5f86fc3ef38a76eff932d3f6716661d21",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-6": {
+   "verdict": "PASS",
+   "hash": "8aa655407155696a4a044fe6a273b232ceab3e28cb51412faca1de9867baa3b7",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-7": {
+   "verdict": "PASS",
+   "hash": "87a8fccc5d94d57b668049da6e3e5f28e418a9256f782a70e21eb375e2bd9662",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-8": {
+   "verdict": "PASS",
+   "hash": "e9765d59e391efba76ad1aa6cfd12786b322f9d50c0c1c60a014bfff2b272e73",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-9": {
+   "verdict": "PASS",
+   "hash": "bc8a6467b9fc396200788fbaf543df295be5896eb8245b9c8d9933de411ba475",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-10": {
+   "verdict": "PASS",
+   "hash": "087ea1049484061f94fa3e24d945923f6cb72dca2536944fe154417a8912c90c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-11": {
+   "verdict": "PASS",
+   "hash": "78a1dbf37b1526e3339a65d67af85ab34703e04390eecf9ccaa8d7348498e229",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-12": {
+   "verdict": "PASS",
+   "hash": "c1136035a41c2c2c12801a679b236a32a4b67fae5f9fd3ddaadc536ca9b4d3ed",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-13": {
+   "verdict": "PASS",
+   "hash": "e066fb1676b509e85dde691a76def23e6056693c1bce551320d0ac33ed6f55bc",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-14": {
+   "verdict": "PASS",
+   "hash": "7b138654ab7a397f9770819f503d372d1b483f997b96feb6059844a02c7345ac",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-timber-ceiling-cutaway-mask-15": {
+   "verdict": "PASS",
+   "hash": "81a93ce892ce17f772a3cceb604321acbbeccf1e725f5bdcffae2d1429d896b3",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wand-response-extra-seq-anim": {
+   "verdict": "PASS",
+   "hash": "5146a48a62aa76677cfc6308d9975109e90262e47f06c9574f3c5e1de84c639c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wand-testing-table-height16-table": {
+   "verdict": "PASS",
+   "hash": "ef3032a071bcc8eed719370af8fdd2a9d3f59691e48eb1af6d3f8bd4abd672c9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wand-third-and-rack-third-wand": {
+   "verdict": "PASS",
+   "hash": "dae2db06ce648ebbf29a665162f316ced70e6d876eb2c189a19f83bb742e7dcb",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wand-third-and-rack-rack": {
+   "verdict": "PASS",
+   "hash": "9320eab4229dcf0a14373a7dde8e5e32e165cb2d309f83b19779d950af88c40e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-boxes-closed": {
+   "verdict": "PASS",
+   "hash": "32cc4ba57f477b14e418387b77a9ad4fb64d988f8c2700ef5643b6d973ebb196",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-boxes-open": {
+   "verdict": "PASS",
+   "hash": "a6b6ced815c201c63a7c9a18d2fbfd16f6ba6dc18914c63d5790ef465616c4a0",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-boxes-stack": {
+   "verdict": "PASS",
+   "hash": "ac6f897e2993f24894d44fd44673c5bb9947d98bc1ce5f58b18e1c323bb5e844",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-lights-west": {
+   "verdict": "PASS",
+   "hash": "e7f4298047449c4be3857f2ccf35b7ceaef8d1501a7fdc25137e7c8c88c468aa",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-lights-east": {
+   "verdict": "PASS",
+   "hash": "cd9b2b344e9eeb6579a0406f3b3166a5c4fddf0f437c8965e4f430791e6a7a75",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-response-seq-anim": {
+   "verdict": "PASS",
+   "hash": "d6434a2c5edc0f3118e1003f56a0c5166dd356f40f0ee0756b7935a4dbcf51a4",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-shelves-west-run": {
+   "verdict": "PASS",
+   "hash": "f390d38a42f7e7ec0520a5355b4f03f925ef317c263c5b28a1b5a976099d9524",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-shelves-east-run": {
+   "verdict": "PASS",
+   "hash": "9c0b57d95bd6ec96c023d3931ce61a06379f6e4a87f97c296c6ddb1a48db0d9e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-target-target": {
+   "verdict": "PASS",
+   "hash": "a74c42d06d251da683ecbec71931c760ab9dd9e62576dd7cf6617913d35ee712",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-traces-traces": {
+   "verdict": "PASS",
+   "hash": "28b3c3ed047a7c8ec66c1dfa81d21c251829ce319b5f5ba08784e67e23393664",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wandtrial-wands-pair": {
+   "verdict": "PASS",
+   "hash": "0481614f4318b3cf3893683f233eb01a7fc086491bc11fe08bc4116ee6eda0cc",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-service-counter-counter": {
+   "verdict": "PASS",
+   "hash": "c7cd35d245e4d91aa97870a99a60633f9270df0f9df3df00bfd490459778a9cc",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-entry-open": {
+   "verdict": "PASS",
+   "hash": "90afbc51ead2d4d8d4f8ba03c32ab95d8caf7050887f9b60853e78be151efa61",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-entry-closed": {
+   "verdict": "PASS",
+   "hash": "eedb58dd489156242b5f20bc9089c7f493357c081429d44590bc47e3b506d0ec",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-entry-locked": {
+   "verdict": "PASS",
+   "hash": "7f04b99cef5680ae1fcfc4927f67119e8de06e9b6af4aaea6f080a20b2fb236d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-staff-open": {
+   "verdict": "PASS",
+   "hash": "90afbc51ead2d4d8d4f8ba03c32ab95d8caf7050887f9b60853e78be151efa61",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-staff-closed": {
+   "verdict": "PASS",
+   "hash": "b1189bea288a94b2320d43bd59293d31a97edacf271f9a181a0370dfec6eaa63",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-wand-wood-shop-doors-r2-staff-locked": {
+   "verdict": "PASS",
+   "hash": "92e67efd6f506cdd1a27ce98bf84710a011f0c5f183bf18115c3b73cced2ec8b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-botanical-ingredients-dried": {
+   "verdict": "PASS",
+   "hash": "36fe704cb62ba0a39030235fb17cc38936e935c5cfddbc8ec0ed64ba059ebf85",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-botanical-ingredients-root": {
+   "verdict": "PASS",
+   "hash": "4c912d714e6f3c39cafbfcd586ec12d473b67a5ab37e1aec97752568daf2514c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-botanical-ingredients-cut": {
+   "verdict": "PASS",
+   "hash": "ff6ebd9db4e80d656b118cd156f12edcb57196be228d1195ad1f9d28cfa2fef8",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-botanical-ingredients-measured-pouch": {
+   "verdict": "PASS",
+   "hash": "266526b48801bbd93b461bab6e4ab94d18d2425a2d61924229e2ca9eadda97a6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-stored": {
+   "verdict": "PASS",
+   "hash": "4b29cbddf8927fb1c1c5738f3593c1604bfa6a4089d8fc23681ef25addf08736",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-flask": {
+   "verdict": "PASS",
+   "hash": "7ce7e0bccfc1432328fe95e99aa0004cde7faa24258859df63d6a3312afe57fa",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-stoppered": {
+   "verdict": "PASS",
+   "hash": "78fe3882c85882b8b60fe35a3c8a25b63b29c4991b443b665f234eb0ce8690a7",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-green": {
+   "verdict": "PASS",
+   "hash": "9c8fb4f69e84ebb2f2cbd899ada0e2cda5ff233e06e1a4888aacd770326a2bc9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-purple": {
+   "verdict": "PASS",
+   "hash": "78db34c78cdd483334634e1a9e1ae1baea102c18cc7650aa42192726a1a15285",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-amber": {
+   "verdict": "PASS",
+   "hash": "fa9b5f73e5d6b7e331093d364920938fd4b9067251cd65a142f9e8c35d36bdf1",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-glass-reagents-finished": {
+   "verdict": "PASS",
+   "hash": "44e5ea0ab92f4c4b5cbb49e2339a37f974f1c52715b6edcf298faac4178b8a03",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-hood-lighting-hood": {
+   "verdict": "PASS",
+   "hash": "16ec280aa92bf20568a288834245d3c6177ad1bfd883fb62b73448b7b5c03700",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-hood-lighting-candle-anim": {
+   "verdict": "PASS",
+   "hash": "c7c397b0bc8cce179019391329613da30b7f680088ab0bc9bbd32a1bbf44a884",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-ingredient-storage-drawers": {
+   "verdict": "PASS",
+   "hash": "75d74c7b58e9cbc6ed0f00a648f7943ed8111f5fcffd1615ae0b1df695bd1dfd",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-ingredient-storage-glass-display": {
+   "verdict": "PASS",
+   "hash": "7293e43b4eeb2415bb0dbb6d672e027082d2303e6d2401118c9167d78a3220e4",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-ingredient-storage-dried-herbs": {
+   "verdict": "PASS",
+   "hash": "331e0970796c3d4e1e76bea418f7ea6c9056d8d130eef98b3462fdcd46603cf3",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-iron-cauldrons-cauldron-burner-stirrer": {
+   "verdict": "PASS",
+   "hash": "2df77da9c2e15c7c13c052c244ad061ace247d72f35af6a30bdcc18146dad370",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-low-window-window": {
+   "verdict": "PASS",
+   "hash": "1463f32a05027bddd44c93e89e259a2146d810d59c8f93f61e8b80adbd50dde9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-mixing-tools-scale": {
+   "verdict": "PASS",
+   "hash": "9aa70438e3ff0853fece355bcbc239eb4b96096f9d140e92722d200af48b25eb",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-mixing-tools-mortar-pestle": {
+   "verdict": "PASS",
+   "hash": "b5035de04fc359903ae3b74ff05e503b6f35eb3d96b7d9dce2d36caee158e11f",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-mixing-tools-knife-board": {
+   "verdict": "PASS",
+   "hash": "0e8e20ab7468b64bd6d624ebc60558612c5348d1dd5ca86aa7f2c9ed631ef65c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-mixing-tools-tray": {
+   "verdict": "PASS",
+   "hash": "5f6ad82b67c32c9a4f294f4c453b61c0c032580561641ade7ba84e7ecf78a862",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-bubble-anim": {
+   "verdict": "PASS",
+   "hash": "ae10a1577b86f70055f71b9a206d20cc1b9d4417e05ec39b67299df6e87996d8",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-steam-anim": {
+   "verdict": "PASS",
+   "hash": "b686185b835dded30cc0a0fc97b034c11f2c7b23cca57f5645a39a6571dbe169",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-green-anim": {
+   "verdict": "PASS",
+   "hash": "40476d278f66005602a2db364a1f08abeccf7a2181872ea2c5f5072419ed90d6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-purple-anim": {
+   "verdict": "PASS",
+   "hash": "40658ee8e6db38e0c5428fdb90c11aff4fab9445ff78a7c6d659250e573015b2",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-amber-anim": {
+   "verdict": "PASS",
+   "hash": "41aa2e7013e53fb7194cd32a582d8789c1a4e095a45a2a319c321335e32a0d76",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-potion-response-bottle-anim": {
+   "verdict": "PASS",
+   "hash": "9584f615523f61359467c102eaab16f4ebf90d6fb34cc5ce2687cfa1c00939e8",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-prep-bench-bench": {
+   "verdict": "PASS",
+   "hash": "ea1db7dacebc06f7588bb5ae602de42454d41e17c4759a8a00f3f5e355004f78",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-r9-arched-prep-door-open": {
+   "verdict": "PASS",
+   "hash": "13df937284512eb7830dddca5cd1f06ef6108bf2788000f2e4126e52fa095c36",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-r9-arched-prep-door-closed": {
+   "verdict": "PASS",
+   "hash": "55cbfbd987c21ba5395cb795a71b8adb46b466a1bfdf778dc905bb6663938ae3",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-r9-arched-prep-door-locked": {
+   "verdict": "PASS",
+   "hash": "44135e3df599d07547c5db7e91ddd65c80d007f1050e3d07169904fa77965b32",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-center": {
+   "verdict": "PASS",
+   "hash": "16a5fba58651aafffdaa6a3c53b77058cc624ec33dff7e251f29e475ffcb6233",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-wet": {
+   "verdict": "PASS",
+   "hash": "12e7813db09a2cc2f47c073dbf09f7621eb845704bcdbf8c36e5ddd7080971bf",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-worn": {
+   "verdict": "PASS",
+   "hash": "4fb104a38940c81c3925371a432e052cb291cecd1bb3be61b1fdea46662e9292",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-n": {
+   "verdict": "PASS",
+   "hash": "414c0b7d5791e99fd1f9f13b31cd3621952821f163a2abc16d09c32a08309ec5",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-e": {
+   "verdict": "PASS",
+   "hash": "2b1a68e07dab9ac805718a5525debcfde3fc922a12db77453f5ff6643c152be6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-s": {
+   "verdict": "PASS",
+   "hash": "b818fa46c803cd55916e1bb4f6ee635aeb2cd1cdbc2cb248c2b6f84fa75e9c1c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-w": {
+   "verdict": "PASS",
+   "hash": "e8e585b3727416733c6b41f3bef11e85cc0c51e262d460cb4a555a85a9ff0429",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-outer-ne": {
+   "verdict": "PASS",
+   "hash": "81b00da798f74b9dc3240951e9becf8ca51278570f6a43f1dac53aab66b72e95",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-outer-se": {
+   "verdict": "PASS",
+   "hash": "7d7f5f04498e503bad8aa0ab8d770b89fe5cde597f5a32913774564502c92124",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-outer-sw": {
+   "verdict": "PASS",
+   "hash": "930dac719d9940af2e66619358a9b4c30a8700cb8df5ef1e51c8aacfad19d26e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-outer-nw": {
+   "verdict": "PASS",
+   "hash": "d00bbb06e8825242686954982e8d7d5f2febe4ef2a51fd083f14952f633cf745",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-inner-ne": {
+   "verdict": "PASS",
+   "hash": "30ea363fcb337ae6f80a7724d1812a66553c7f2c6db6f67c0d349872d26c63db",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-inner-se": {
+   "verdict": "PASS",
+   "hash": "06f016ccaeac8ac95d1b41f0f56bf8b39de0f8ddc99389b6a58d5209ae08aa7e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-inner-sw": {
+   "verdict": "PASS",
+   "hash": "1a2741f0e419181de6c17f6a82d7d98fc261d1b576e481635d3316e41932645b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-inner-nw": {
+   "verdict": "PASS",
+   "hash": "97a537d8b64681e9cdfdff140b993de483d5d648a67a354c7c9b6d0f68bc5488",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-threshold": {
+   "verdict": "PASS",
+   "hash": "8cab1965591259946cbb42bd03e5d926640023274527b0e21b5419c122d1b5b6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-drain-groove": {
+   "verdict": "PASS",
+   "hash": "93f0cd3ff5067fea80635266bb837061743e08ab703b27cd69ac5a9288f3f441",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-drain": {
+   "verdict": "PASS",
+   "hash": "db53ed61430d8451976a9e78cfe23665b99dd6bbb35b4d4dd53ef808ef634c88",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-reagent-stain": {
+   "verdict": "PASS",
+   "hash": "fbb53ac017d1d0316adbab9c872e92fc36ddda2b9fb56fa26ee0420a76b6358e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v2-stone-floor-quiet-48x32": {
+   "verdict": "PASS",
+   "hash": "08c2f18d90d4f759b9e13ce0230f9ff2041737acae1e670318576fd405b24049",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-n": {
+   "verdict": "PASS",
+   "hash": "63e8efe2eb902035a754b2b9b6464bad4d88996170cb427f93100beb68966b47",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-e": {
+   "verdict": "PASS",
+   "hash": "3cf88ed3d8238b5d183d9a19c6a081a7580d485401a4929dae9c9e47e0c2b712",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-s": {
+   "verdict": "PASS",
+   "hash": "2069c28345fb0d8c666dc2f61bbfcd28b05c6fc19834a9b375fbfc4a161204e1",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-w": {
+   "verdict": "PASS",
+   "hash": "4adf95a9ee407a57632283f189771c529e5eaa326d32c04b695e50149cf8370a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-outer-ne": {
+   "verdict": "PASS",
+   "hash": "cefbf8c46f41ec3896567811de72a8d7839e57ccb6161b8e18cf80095ea2d0d1",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-outer-se": {
+   "verdict": "PASS",
+   "hash": "95ed99bc91c18d1d977588cfb80ae98797f3d8b0a486bb50c9c0deeeb902c63d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-outer-sw": {
+   "verdict": "PASS",
+   "hash": "13bb5e9272aafd5cf09b5d742a706a87a96e2522f609cd40ce924adbb0469cd9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-outer-nw": {
+   "verdict": "PASS",
+   "hash": "98e749806cd4173b06c29806cbf4da495a1ff925aa3dc900388c92f9f80ba2a2",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-inner-ne": {
+   "verdict": "PASS",
+   "hash": "8a99ee7bd2ab5b5ae488d04de47d2b70f8d94ed7d6b13706b280fb0cd3217d9b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-inner-se": {
+   "verdict": "PASS",
+   "hash": "2bad009b6cca09a0c004150fadb1fdea099e98b26e78a02f9abee83c7f2f5695",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-inner-sw": {
+   "verdict": "PASS",
+   "hash": "c4b7a911bba2f784e6ebfa286234ca7a6dcd7e9f47740bc72ee0c7f62bd14859",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-inner-nw": {
+   "verdict": "PASS",
+   "hash": "8c1fde384250cdd29e69fb4339ad16ddf43c7f4423a541cc704ec718940e9296",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-end-n": {
+   "verdict": "PASS",
+   "hash": "0261d3d3ab4cf95bdf4462c8b183f01fd401441f06635e613738166d4320a98b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-end-e": {
+   "verdict": "PASS",
+   "hash": "1f6b7e5c4445e4b48295767425684daaa44abf060ff97847cd556b2efa88433a",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-end-s": {
+   "verdict": "PASS",
+   "hash": "b7640043f59cf5af568413a1ddaacee800d65934a92ade4bd31982bcbfabe89c",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-end-w": {
+   "verdict": "PASS",
+   "hash": "997c6cec7ccac894c36767dd68b16b8f46ad90f97606d75e7336450d45233d59",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-junction-t": {
+   "verdict": "PASS",
+   "hash": "de176bed2579679c119680c65b9dc63b14f796589d3a142bdd081157460facc5",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-junction-cross": {
+   "verdict": "PASS",
+   "hash": "1ad8b1f9c5294e1e2d584621ca293e250901a9e8bfc43e6cce3e3b6daa0e0ea0",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-door-n": {
+   "verdict": "PASS",
+   "hash": "e20b6139bf54ce552f8e0f4005b5c880f49999909db162b9f9f1e1f415de3493",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-door-e": {
+   "verdict": "PASS",
+   "hash": "0eb50e7a16084cd0744a5860c2babd541ebada97de18058f8d896ba91ff59a04",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-door-s": {
+   "verdict": "PASS",
+   "hash": "739e4959343048902ced205ee096034eec4c94a04f3af02a2f0ff55823bbc6a3",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-door-w": {
+   "verdict": "PASS",
+   "hash": "cc78e4dc379cc1c403578f32744071fa48213bba3fabd7918a30562ab97c7c2b",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-north32": {
+   "verdict": "PASS",
+   "hash": "797548745a0dfba08590fad875f684ae2e9e9f4719d73b48a74aa7ccbf984441",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-north-large-0": {
+   "verdict": "PASS",
+   "hash": "0f2954fc564d2e7900bb732ec9e511bf22955cabb47c5da60ca0c1207e98707e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-north-large-1": {
+   "verdict": "PASS",
+   "hash": "c0bf17204be8711c46642ad4208ae1cf708b4a347c844ee5572082b9cfb155bd",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-north-large-2": {
+   "verdict": "PASS",
+   "hash": "5b69fe6108271aecbb27d3803933af2a3882141006640156b716e2f8d91414eb",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-w-course": {
+   "verdict": "PASS",
+   "hash": "075a0c20de67371dfacdab2ab7493185d0b0193a52d9325f4ff39bd3a22105b1",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-e-course": {
+   "verdict": "PASS",
+   "hash": "3b8bed01f71817ab3d991943e432c0cb835835354f89f580082bf2d3d2225e32",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-repair-v3-connected-stone-wall-s-course": {
+   "verdict": "PASS",
+   "hash": "9b8bd8cac2fa959256dbd4d12f0750059201d515ed388689a8b509556847477d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-south-stair-stair": {
+   "verdict": "PASS",
+   "hash": "9f024e43f357f54522d255ea8dcfb54da2c4c48b88662291f3b687f70e8557d9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stair-transition-inactive": {
+   "verdict": "PASS",
+   "hash": "f7513d1822dfc4a5f56504b0d08013e766af5c6d1b2927135be8ca353fa83ff9",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stair-transition-down": {
+   "verdict": "PASS",
+   "hash": "281dc02c3426d193bf1a759e8740c10303620a29c849df6c4c7d052b8fceb7c5",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stair-transition-return": {
+   "verdict": "PASS",
+   "hash": "b49c5922c3426df7a187d28af2a8017deb92fab719d430aef3635887a7f259b5",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stone-wash-idle": {
+   "verdict": "PASS",
+   "hash": "97f43d612d7def841ac8b279132a56acbafbe74acf09e2ab5daed4751af0cb72",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stone-wash-drying-hanger": {
+   "verdict": "PASS",
+   "hash": "55a97472eb1ba8b6dad2abb1bce679719759ae8e1f0430b979e6b743c0686527",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-stone-wash-rinse-anim": {
+   "verdict": "PASS",
+   "hash": "6539a273ea7e4a6eea88c639b67b89aede632fc6372803eda5b9b69fd0c418d6",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-teaching-kit-table": {
+   "verdict": "PASS",
+   "hash": "522e5130bcd123a0de62ef6899c9d2ab89b2c33c0c2a7d8582cbd32bc4bed66d",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-teaching-kit-blackboard": {
+   "verdict": "PASS",
+   "hash": "adc26f20b7ccfd15bd9ec6004e1e67b02b872c0d9bb4a6b1d9dfec9a0dc23232",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-teaching-kit-book-parchment": {
+   "verdict": "PASS",
+   "hash": "b4f0060dca4e36c7f9b7662bd1d96acccc700d51f83affb1e2138643b70a9b2e",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  },
+  "wz-nv-pot-work-benches-bench": {
+   "verdict": "PASS",
+   "hash": "8db056802fc11f81b790f055b58feb296d111c6d78859ede2e334f97d74d4a91",
+   "reason": "슈퍼하네스 독립 native 검수 통과 원본, 데모 레시피가 실제로 사용. 화소 변경 없음."
+  }
+ }
+}

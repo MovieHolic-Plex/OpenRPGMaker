@@ -1,0 +1,103 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-hd-wall-n": {
+  "verdict": "PASS",
+  "reason": "돌 블록 벽 읽힘, 유색 윤곽·3단 명암, 좌상 광원, 1x4 하단 X 통행 맞음."
+ },
+ "wz-hd-beam-h": {
+  "verdict": "PASS",
+  "reason": "오크 들보 결·유색 윤곽 일관, 머리 위 C 층, 스타일 기준과 같은 화풍."
+ },
+ "wz-hd-beam-v": {
+  "verdict": "PASS",
+  "reason": "오크 들보 결·유색 윤곽 일관, 머리 위 C 층, 스타일 기준과 같은 화풍."
+ },
+ "wz-hd-beam-x": {
+  "verdict": "PASS",
+  "reason": "오크 들보 결·유색 윤곽 일관, 머리 위 C 층, 스타일 기준과 같은 화풍."
+ },
+ "wz-hd-panel-closed": {
+  "verdict": "PASS",
+  "reason": "돌벽 속 비밀 패널로 읽힘, 3상태 크기·피벗 동일."
+ },
+ "wz-hd-panel-moving": {
+  "verdict": "PASS",
+  "reason": "틈이 벌어진 중간 상태로 모양이 실제로 달라짐, 크기·피벗 동일."
+ },
+ "wz-hd-panel-open": {
+  "verdict": "PASS",
+  "reason": "열린 통로가 읽히고 하단 칸 F,F 로 통행 가능, 크기·피벗 동일."
+ },
+ "wz-hd-passage-threshold": {
+  "verdict": "PASS",
+  "reason": "어두운 통로 위 석재 문턱으로 읽힘, 윗면+정면 3/4, F,F 통행. 다소 밋밋하나 기준 충족."
+ },
+ "wz-hd-floor-sugar-a": {
+  "verdict": "PASS",
+  "reason": "나무 판재 바닥에 성긴 설탕 알갱이, 잡음 밀도 낮고 이음 무난."
+ },
+ "wz-hd-floor-sugar-b": {
+  "verdict": "PASS",
+  "reason": "A 와 같은 계열의 변형, 반복 무늬 튀지 않음."
+ },
+ "wz-hd-floor-packing": {
+  "verdict": "PASS",
+  "reason": "바닥 위 f 오버레이로 포장 부스러기 성기게 흩어짐, 읽힘 무난."
+ },
+ "wz-hd-stairs-down": {
+  "verdict": "PASS",
+  "reason": "재검수: 녹색 덩어리가 사라지고 계단통 입구에 주황 빛이 분홍 테두리와 함께 놓여 따뜻한 조명으로 읽힌다. 밝은 디딤판 띠와 어두운 챌판 띠가 1px 윤곽·못 점으로 번갈아 뚜렷하게 구분돼 나무 계단으로 읽힌다. 좌우 난간 대칭, 윗면+정면 3/4. 빛 번짐 모서리가 다소 각지지만 기준은 충족한다."
+ },
+ "wz-hd-workbench": {
+  "verdict": "PASS",
+  "reason": "3x2 작업대 상판과 정면 읽힘, 상판 높이 적정, 3/4 시점, 재질감 있음."
+ },
+ "wz-hd-scale": {
+  "verdict": "PASS",
+  "reason": "저울로 읽힘, 윤곽·명암 같은 화풍, f 오버레이."
+ },
+ "wz-hd-jar-red": {
+  "verdict": "PASS",
+  "reason": "붉은 사탕 유리병 읽힘, 뚜껑·유리 반사, 화풍 일치."
+ },
+ "wz-hd-jar-green": {
+  "verdict": "PASS",
+  "reason": "녹색 사탕 유리병 읽힘, 뚜껑·유리 반사, 화풍 일치."
+ },
+ "wz-hd-jar-violet": {
+  "verdict": "PASS",
+  "reason": "보라 사탕 유리병 읽힘, 뚜껑·유리 반사, 화풍 일치."
+ },
+ "wz-hd-box-frog": {
+  "verdict": "PASS",
+  "reason": "갈색 상자 정면에 개구리 얼굴 초콜릿 상자로 읽힘, 1x 에서도 식별."
+ },
+ "wz-hd-box-beans": {
+  "verdict": "PASS",
+  "reason": "줄무늬 색색 젤리빈 상자로 읽힘, 윤곽·명암 적정."
+ },
+ "wz-hd-stack-1x2": {
+  "verdict": "PASS",
+  "reason": "상자 적치 읽힘, 윗면+정면 3/4, 색 구분 명확."
+ },
+ "wz-hd-stack-2x2": {
+  "verdict": "PASS",
+  "reason": "피라미드형 상자 더미로 읽힘, 가려짐 자연스럽고 화풍 일치."
+ },
+ "wz-hd-shelf": {
+  "verdict": "PASS",
+  "reason": "2x3 선반 칸·적재 읽힘, 3/4 시점, 통행 S/C 적절."
+ },
+ "wz-hd-paper-roll": {
+  "verdict": "PASS",
+  "reason": "포장지 두루마리로 읽힘, 윤곽·명암 무난, f 오버레이."
+ },
+ "wz-hd-twine-ball": {
+  "verdict": "PASS",
+  "reason": "노끈 뭉치로 읽힘, 격자 결 표현, 1x 식별 가능."
+ },
+ "wz-hd-tub": {
+  "verdict": "PASS",
+  "reason": "과자가 담긴 통으로 읽힘, 나무 테·재질감, 화풍 일치."
+ }
+}

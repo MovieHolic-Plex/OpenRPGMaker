@@ -1,0 +1,22 @@
+# boathouse 검수 노트
+- wz-lake-water-deep: 4프레임 어두운 파랑 물결, 잡음 적음. 합격.
+- wz-lake-water-shallow: 4프레임 밝은 얕은 물, 깊은 물과 구분됨. 합격.
+- wz-lake-pebble: 불규칙 배치로 격자감 줄임, 회색 자갈 땅으로 읽힘. 보통.
+- wz-lake-shore (오토타일): 물가 거품 줄+젖은 자갈, 예제에서 자연스럽게 이어짐. 합격.
+- wz-lake-shore-edge-n: 북쪽 물가 한 줄, 예제 배치 확인. 합격.
+- wz-lake-dock-h / dock-v / dock-end: 긴 결 판자, 평면 띠 아님. 합격.
+- wz-lake-dock-band: 갑판 옆면 어두운 띠+물. 합격.
+- wz-lake-dock-piles: 말뚝+물 비침. 합격.
+- wz-lake-plank-wet: 젖은 판자, 물방울 점 2곳으로 줄임. 합격.
+- wz-lake-railing: 난간 한 칸, 읽힘. 합격.
+- wz-lake-ramp: 2x3 젖은 판자 경사, 끝이 물에 잠김. 합격.
+- wz-lake-bollard: 밧줄 감긴 계선주. 합격.
+- wz-lake-ropehook: 밧줄 꾸러미 걸이, 회색 점 약간 지저분. 보통.
+- wz-lake-lamp-post: 1x2 등불 기둥, 사람 키와 비슷. 합격.
+- wz-lake-dock-join: 물-부두 접합 옆면. 보통(예제에서 가는 띠로만 보임).
+- wz-lake-oar-single: 눕힌 노, 날 보임. 합격.
+- wz-lake-oar-crossed: 두 겹으로 굵게, 날이 선명. 합격.
+- wz-lake-boathouse(7)/-5: 슬레이트 지붕+목재 벽+큰 개구부, 사람 대비 적절. 합격(지붕 변화 약함).
+- wz-lake-bh-end-l / bh-wall / bh-door / bh-end-r: 조립 조각, 이음 맞음. 합격.
+- wz-lake-boat-{up,down,left,right}[-oars]: 2x4 선체, 좌석·등불·밧줄/노 상태. 합격(p2).
+- wz-lake-example-dock 16x14: 자갈 호숫가+창고+진수대+부두+보트 2척. 합격.

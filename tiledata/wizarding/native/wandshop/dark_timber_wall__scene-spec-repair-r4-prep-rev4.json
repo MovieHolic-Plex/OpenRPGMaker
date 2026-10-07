@@ -1,0 +1,1044 @@
+{
+ "name": "dark_timber_wall__scene-spec-repair-r4-prep-rev4",
+ "item": "dark_timber_wall",
+ "candidate": "h1-A",
+ "source": "art-output/scene-spec-repair-r4-prep-rev4/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h1-A.png",
+ "sha256": "9255c56f740a883ce0cccd87b7337a5f47588c7b3c2cdf888287a57f1135197c",
+ "set": {
+  "id": "dark-timber-wall",
+  "name_ko": "dark-timber-wall",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "wall",
+  "canvas": [
+   400,
+   32
+  ],
+  "footprint": {
+   "w": 25,
+   "h": 0
+  },
+  "description": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. W-cap/E-cap/outer-W/outer-E local x1..14,y12..15 반복 남쪽 끝면 제거; 오크 윗면과 세로 길결을 y0..15 연속. 실제 W-end/E-end만 남쪽 끝마감. 접합 어둠 최대2px. NW/NE 내외 모서리·T·문틀 이음에 검은 노치 없이 연결한다.\n현재 별도 영수증 native FAIL 유지: N-face의 32px 북입면과 오크 팔레트·길결, 반복 cap의 y12~15 끝판 제거 및 실제 W/E-end의 2px 종단을 보존한다. 낮춘 벽의 top은 중심[5,5,11,8)와 실제 structure_bits의 N/S/W/E 팔 합집합으로 배치하고, 남쪽 노출 정면만 y8~9 최대2px에 둔다. S 연결 중심에는 정면·끝선을 두지 않는다. 모서리/T/문틀은 같은 합집합으로 연결해 추가 y9~10 끝띠와 검은 노치를 없앤다. 문짝 개폐 수정은 이번 벽 시트에 적용하지 않는다.",
+  "parent": "dark-timber-wall",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "N-face",
+    "label": "N-face",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot N-face; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall N-face"
+   },
+   {
+    "key": "W-cap",
+    "label": "W-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "W-cap/E-cap/outer-W/outer-E local x1..14,y12..15 반복 남쪽 끝면 제거; 오크 윗면과 세로 길결을 y0..15 연속. 실제 W-end/E-end만 남쪽 끝마감. 접합 어둠 최대2px. NW/NE 내외 모서리·T·문틀 이음에 검은 노치 없이 연결한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall W-cap"
+   },
+   {
+    "key": "E-cap",
+    "label": "E-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "W-cap/E-cap/outer-W/outer-E local x1..14,y12..15 반복 남쪽 끝면 제거; 오크 윗면과 세로 길결을 y0..15 연속. 실제 W-end/E-end만 남쪽 끝마감. 접합 어둠 최대2px. NW/NE 내외 모서리·T·문틀 이음에 검은 노치 없이 연결한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 32,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall E-cap"
+   },
+   {
+    "key": "S-cap",
+    "label": "S-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot S-cap; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 48,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall S-cap"
+   },
+   {
+    "key": "partition",
+    "label": "partition",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot partition; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 64,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall partition"
+   },
+   {
+    "key": "N-end",
+    "label": "N-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot N-end; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 80,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall N-end"
+   },
+   {
+    "key": "W-end",
+    "label": "W-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot W-end; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 96,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall W-end"
+   },
+   {
+    "key": "E-end",
+    "label": "E-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot E-end; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 112,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall E-end"
+   },
+   {
+    "key": "S-end",
+    "label": "S-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot S-end; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 128,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall S-end"
+   },
+   {
+    "key": "partition-end",
+    "label": "partition-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot partition-end; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 144,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall partition-end"
+   },
+   {
+    "key": "outer-N",
+    "label": "outer-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-N; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 160,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-N"
+   },
+   {
+    "key": "outer-W",
+    "label": "outer-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "W-cap/E-cap/outer-W/outer-E local x1..14,y12..15 반복 남쪽 끝면 제거; 오크 윗면과 세로 길결을 y0..15 연속. 실제 W-end/E-end만 남쪽 끝마감. 접합 어둠 최대2px. NW/NE 내외 모서리·T·문틀 이음에 검은 노치 없이 연결한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 176,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-W"
+   },
+   {
+    "key": "outer-E",
+    "label": "outer-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "W-cap/E-cap/outer-W/outer-E local x1..14,y12..15 반복 남쪽 끝면 제거; 오크 윗면과 세로 길결을 y0..15 연속. 실제 W-end/E-end만 남쪽 끝마감. 접합 어둠 최대2px. NW/NE 내외 모서리·T·문틀 이음에 검은 노치 없이 연결한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 192,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-E"
+   },
+   {
+    "key": "outer-S",
+    "label": "outer-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-S; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 208,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-S"
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot inner-NE; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 224,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-NE"
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot inner-NW; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 240,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-NW"
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot inner-SE; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 256,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-SE"
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot inner-SW; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 272,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-SW"
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-NE; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 288,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-NE"
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-NW; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 304,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-NW"
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-SE; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 320,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SE"
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot outer-SW; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 336,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SW"
+   },
+   {
+    "key": "T-join",
+    "label": "T-join",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot T-join; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 352,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall T-join"
+   },
+   {
+    "key": "entry-jamb",
+    "label": "entry-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot entry-jamb; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 368,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall entry-jamb"
+   },
+   {
+    "key": "staff-jamb",
+    "label": "staff-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot staff-jamb; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 384,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall staff-jamb"
+   }
+  ],
+  "contract": {
+   "palette": "dedicated42 only",
+   "lighting": "upper left",
+   "camera": "approved orthogonal south-above 3/4; axes screen parallel",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "assemblyAllowed": false,
+   "candidateCount": 1,
+   "nativeAttempts": 1,
+   "requirement": "dark-timber-wall",
+   "joinDarkMaxPx": 2,
+   "continuousEdges": true,
+   "forbidBlackTileGaps": true,
+   "repair": "N-face의 32px 북입면과 오크 팔레트·길결, 반복 cap의 y12~15 끝판 제거 및 실제 W/E-end의 2px 종단을 보존한다. 낮춘 벽의 top은 중심[5,5,11,8)와 실제 structure_bits의 N/S/W/E 팔 합집합으로 배치하고, 남쪽 노출 정면만 y8~9 최대2px에 둔다. S 연결 중심에는 정면·끝선을 두지 않는다. 모서리/T/문틀은 같은 합집합으로 연결해 추가 y9~10 끝띠와 검은 노치를 없앤다. 문짝 개폐 수정은 이번 벽 시트에 적용하지 않는다.",
+   "sourcePNG": {
+    "path": "art-output/scene-spec-repair-r4-prep-rev3/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h2-A.png",
+    "sha256": "d4a746967348448bec4ff139b580a234d12b3f6bb06687ff51605d3466c24595",
+    "label": "02 h2-A dark-timber-wall · 기계 PASS · 독립 FAIL · 보조 pxlint MISSING"
+   },
+   "sourceVerdict": "FAIL; independent replacement review pending",
+   "maskSurfaceContract": {
+    "mask-0": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-1": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-2": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-3": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-4": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-5": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-6": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-7": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-8": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-9": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-10": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-11": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-12": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-13": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-14": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-15": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   }
+  }
+ }
+}

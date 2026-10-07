@@ -1,0 +1,99 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-cre-owl-barn-perch": {
+  "verdict": "PASS",
+  "reason": "Reads as a barn owl on a perch at 1x: pale facial disc, hooked beak, tawny back. Orthogonal 3/4 view, style matches style-ref (coloured 1px outline, 3-4 shade steps, top-left light). Walk codes consistent with a perched prop."
+ },
+ "wz-cre-owl-barn-land": {
+  "verdict": "PASS",
+  "reason": "Reads as a barn owl landing with spread wings; silhouette distinct from perch. Scale fits a person 24x32. Style and viewpoint consistent."
+ },
+ "wz-cre-owl-barn-mail": {
+  "verdict": "PASS",
+  "reason": "Reads as a barn owl carrying a letter; the envelope is legible at 1x. Scale and style consistent with perch version."
+ },
+ "wz-cre-owl-eagle-perch": {
+  "verdict": "PASS",
+  "reason": "Re-review: eagle owl perched now reads as an owl at 1x. Ear tufts are short stubs, orange eyes sit in a lighter disc with a small beak, brown body with tan streaks. 3/4 view, scale and 1px coloured outline match the barn owl set."
+ },
+ "wz-cre-owl-eagle-land": {
+  "verdict": "PASS",
+  "reason": "Re-review: eagle owl landing with wings spread now reads as an owl at 1x. Ear tufts are short stubs, orange eyes sit in a lighter disc with a small beak, brown body with tan streaks. 3/4 view, scale and 1px coloured outline match the barn owl set."
+ },
+ "wz-cre-owl-eagle-mail": {
+  "verdict": "PASS",
+  "reason": "Re-review: eagle owl carrying a letter now reads as an owl at 1x. Ear tufts are short stubs, orange eyes sit in a lighter disc with a small beak, brown body with tan streaks. 3/4 view, scale and 1px coloured outline match the barn owl set."
+ },
+ "wz-cre-owl-snowy-perch": {
+  "verdict": "PASS",
+  "reason": "Re-review: snowy owl perched now reads as a snowy owl. Round white head with orange eye ring and small hooked beak, grey speckles on the chest, no horn bumps. Style and scale match the other owls."
+ },
+ "wz-cre-owl-snowy-land": {
+  "verdict": "PASS",
+  "reason": "Re-review: snowy owl landing with wings spread now reads as a snowy owl. Round white head with orange eye ring and small hooked beak, grey speckles on the chest, no horn bumps. Style and scale match the other owls."
+ },
+ "wz-cre-owl-snowy-mail": {
+  "verdict": "PASS",
+  "reason": "Re-review: snowy owl carrying a letter now reads as a snowy owl. Round white head with orange eye ring and small hooked beak, grey speckles on the chest, no horn bumps. Style and scale match the other owls."
+ },
+ "wz-cre-thestral-down": {
+  "verdict": "PASS",
+  "reason": "front-facing thestral: skeletal horse with bat wings folded and white pupil-less eyes reads clearly. 3/4 top view, correct scale (about horse-sized beside a 24x32 person), style matches style-ref. Walk codes follow the module's front/right/left pattern."
+ },
+ "wz-cre-thestral-up": {
+  "verdict": "PASS",
+  "reason": "back view reads as thestral rump and tail with folded wings. 3/4 top view, correct scale (about horse-sized beside a 24x32 person), style matches style-ref. Walk codes follow the module's front/right/left pattern."
+ },
+ "wz-cre-thestral-right": {
+  "verdict": "PASS",
+  "reason": "side view reads as a skeletal winged horse, head to the right. 3/4 top view, correct scale (about horse-sized beside a 24x32 person), style matches style-ref. Walk codes follow the module's front/right/left pattern."
+ },
+ "wz-cre-thestral-left": {
+  "verdict": "PASS",
+  "reason": "side view reads as a skeletal winged horse, head to the left; mirrors right in shading logic. 3/4 top view, correct scale (about horse-sized beside a 24x32 person), style matches style-ref. Walk codes follow the module's front/right/left pattern."
+ },
+ "wz-cre-thestral-wings": {
+  "verdict": "PASS",
+  "reason": "Spread bat wings read clearly as thestral wings; membrane and finger bones visible with 3-4 shade steps. Passable upper part coded C."
+ },
+ "wz-cre-thestral-harness": {
+  "verdict": "PASS",
+  "reason": "Harnessed thestral reads as a saddled skeletal horse; straps and buckle visible, same size and pivot as base states in the visibility group."
+ },
+ "wz-cre-thestral-harness-unseen": {
+  "verdict": "PASS",
+  "reason": "Re-review: the strap set now curves around an empty body ellipse with collar, girth and chest straps and gold buckles, matching the visible harness's strap positions, so it reads as a harness floating on an unseen creature rather than a chair or ladder. Same 48x48 size and pivot as the visible state. Minor note: the centre cross strap looks a little like a wheel at 8x, but it is acceptable at 1x."
+ },
+ "wz-cre-thestral-walk": {
+  "verdict": "PASS",
+  "reason": "Walk animation frames differ in leg positions and the loop is clean; differences are small but real (legs alternate). Same size and pivot as the base states. Minor note: exaggerate leg swing by 1px if retouched."
+ },
+ "wz-cre-frog-pack": {
+  "verdict": "PASS",
+  "reason": "Chocolate frog box reads as a frog-shaped pack at 1x: green-brown frog on a box, correct scale for a small prop, style matches style-ref."
+ },
+ "wz-cre-frog-leap": {
+  "verdict": "PASS",
+  "reason": "Re-review: 4 frames now read as a frog. Bulging eye on top of the head, mouth line, long bent hind legs that extend in the jump, and the body lifts and lands; frames clearly change shape and loop cleanly. Scale and style fit a small prop."
+ },
+ "wz-cre-owl-barn": {
+  "verdict": "PASS",
+  "reason": "Character sheet is 4 directions x 3 frames, rows up/right/down/left, wing flaps change shape. Front and sides read as a barn owl. Note: back view is blobby; acceptable at 24x32."
+ },
+ "wz-cre-owl-eagle": {
+  "verdict": "PASS",
+  "reason": "Character sheet is complete (4x3), directions in correct row order and flap frames change the silhouette; reads as an eagle owl at walk scale. Note: back view is weak."
+ },
+ "wz-cre-owl-snowy": {
+  "verdict": "PASS",
+  "reason": "Character sheet is complete (4x3), directions in correct row order, frames change shape; reads as a snowy owl at walk scale thanks to the white body. Note: back view is blobby."
+ },
+ "wz-cre-mandrake": {
+  "verdict": "PASS",
+  "reason": "4 directions x 3 frames with a leaf crown; scream face in front, profile mouth at sides, back view faceless; legs alternate; proportions match native walk sheets. Reads as a mandrake."
+ },
+ "wz-cre-frog": {
+  "verdict": "PASS",
+  "reason": "Re-review: 4 directions x 3 frames now read as a toad or frog. Wide flat head, bulging eyes on top, wide mouth line in front, wide bent hind legs, side view with an extended hind leg. Row order up, right, down, left is correct and legs alternate. No bear-like ear bumps remain."
+ }
+}

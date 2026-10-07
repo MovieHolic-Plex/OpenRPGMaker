@@ -1,0 +1,250 @@
+{
+ "module": "castle_kit",
+ "sealed": "2026-10-07T09:17:35.053490+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-castle-wall-n": {
+   "verdict": "PASS",
+   "hash": "63553187e088ec003cbded7bf7f7e5f7001033bb394a3280df9f01fc947bdd01",
+   "reason": "성채 석벽으로 읽힘. 0행 반점 윗면(25%)+남쪽 정면 석재 3단, 유색 윤곽·3~4단 명암, 16 주기 이음새 없음. SSSS."
+  },
+  "wz-castle-wall-n-repair": {
+   "verdict": "PASS",
+   "hash": "bfa761fbf13e6f426aeff1d01e35d24a772e5b148f889e83b5835df360310358",
+   "reason": "수정 확인: 교체석이 기존 단 높이·줄눈에 맞춘 약간 밝은 블록으로 바뀌어 수선 흔적으로 읽히고 스티커처럼 뜨지 않음. wall-n 사이에 놓아도 이음 맞음."
+  },
+  "wz-castle-wall-n-moss": {
+   "verdict": "PASS",
+   "hash": "fdb9ed91ba1627d0979f300fe0864703afef4b83f197eb400f1bd7c09a34e96a",
+   "reason": "이끼 낀 줄눈이 석재 위에 자연스럽게 읽힘. 윗면+정면, 16 주기."
+  },
+  "wz-castle-wall-n-window": {
+   "verdict": "PASS",
+   "hash": "b7642b385d36bdcff95263096310d17d4bd1cb0c1269d2fbc8e03f8e55710958",
+   "reason": "첨두 납살 창+깊은 창턱으로 1배에서도 읽힘. 유리 반사선, 대칭."
+  },
+  "wz-castle-wall-n-window2": {
+   "verdict": "PASS",
+   "hash": "59f9796b04e6c6d52f5dd1ee048c18ae2bcffc6992406a6ed0e69700fddd5124",
+   "reason": "2칸 폭 첨두 쌍창, 창틀 두께·창턱 충분, 대칭."
+  },
+  "wz-castle-wall-n-pillar": {
+   "verdict": "PASS",
+   "hash": "86531509d6c9a0eb53d86f12ef7da024f43219907eb7fe79f652518eb3945bc1",
+   "reason": "벽면보다 밝은 돌출 버트레스로 읽힘, 블록 결 있음."
+  },
+  "wz-castle-wall-n-buttress-ext": {
+   "verdict": "PASS",
+   "hash": "2052a6865432b2ab9db72540f7f324a8de34cdb3cc8e03f28b4a0c9da7f92430",
+   "reason": "계단식 단이 있는 외벽 버트레스+이끼, 읽힘."
+  },
+  "wz-castle-wall-nw": {
+   "verdict": "PASS",
+   "hash": "79ef7a78bfe3ec9073ac9f35ba9cb78dc1e42a4445c0742b9df9630b08195a7d",
+   "reason": "북서 모서리: 윗면 띠가 세로로 이어지고 바깥쪽 유색 윤곽. 벽-n·벽-w와 이어 붙여도 맞음."
+  },
+  "wz-castle-wall-ne": {
+   "verdict": "PASS",
+   "hash": "9227be60392b9697038218a71da1e1106945c2a774751543ed0aa38f9ccd74e4",
+   "reason": "북동 모서리, nw와 대칭. 이음 맞음."
+  },
+  "wz-castle-wall-w": {
+   "verdict": "PASS",
+   "hash": "e3323a31007bf04e7e587ffe10786fcba46cfb1ad8108415840d2eb453852c0d",
+   "reason": "서벽 윗면 띠 1칸, 세로 반복 이음새 없음, 방 쪽 윤곽."
+  },
+  "wz-castle-wall-e": {
+   "verdict": "PASS",
+   "hash": "d8d8e85eaa1080ec16258ad02bc80d5795e018da6b9f9ca44d28c48660e64812",
+   "reason": "동벽 윗면 띠, w와 대칭."
+  },
+  "wz-castle-wall-s": {
+   "verdict": "PASS",
+   "hash": "44ab6284fb15c1c69542e57ad2245f9945f9a26e32b8f919d9e32bf0696b4512",
+   "reason": "남쪽 낮춘 벽: 0행 윗면+1행 낮은 정면, 석재 블록. 반복 이음 맞음."
+  },
+  "wz-castle-wall-sw": {
+   "verdict": "PASS",
+   "hash": "c685823caee97bd02c851538259c80580c4374f89b97a1d2166f77097733fe06",
+   "reason": "남서 모서리, 윗면 띠와 정면이 만남. 예제에서 이어짐."
+  },
+  "wz-castle-wall-se": {
+   "verdict": "PASS",
+   "hash": "3762d54de3f0f0513c5c64c52996dabbec0b06ae5845b0ff17104bc36f507ed0",
+   "reason": "남동 모서리, sw와 대칭."
+  },
+  "wz-castle-wall-n-end-l": {
+   "verdict": "PASS",
+   "hash": "112dc596668c5462e7d3ee5c8af81463ddfc8e317c17ef24d408e23ec17eac2d",
+   "reason": "벽 끝마감: 윗면·정면이 유색 윤곽으로 끊김, 통로 옆에 놓아도 자연스러움."
+  },
+  "wz-castle-wall-n-end-r": {
+   "verdict": "PASS",
+   "hash": "51ee7ca728a1267dcfc89c6b0bf58d7e4cbd5d33601ae72d260ed589639b871a",
+   "reason": "end-l과 대칭 끝마감."
+  },
+  "wz-castle-wall-t-w": {
+   "verdict": "PASS",
+   "hash": "29bc35caceac073e7fdeb21b5f0d9b2c3da7e6ad48c2dfc4fd6e190ae5a13430",
+   "reason": "수정 확인: 세로 윗면 띠가 wall-w와 같은 폭·위치·윤곽이 되어, 아래 wall-w와 이음새 없이 T자로 이어짐(합성 5배 확인). 0행 윗면과 연결됨."
+  },
+  "wz-castle-wall-t-e": {
+   "verdict": "PASS",
+   "hash": "839dd2e8f10cb95223b8ed3d4143e92ddf82091b995643e7256cc4d029b02f6b",
+   "reason": "수정 확인: 세로 윗면 띠가 wall-e와 같은 폭·위치로 아래 wall-e와 끊김 없이 이어짐(합성 확인)."
+  },
+  "wz-castle-floor-flag": {
+   "verdict": "PASS",
+   "hash": "e19668bb07e7eff1d61db4039673ff6c0a6facea5c11fb485eeba7632c99df2e",
+   "reason": "포석 바닥, 3×3 반복 이음새 없음, 블록+드문 점."
+  },
+  "wz-castle-floor-flag-b": {
+   "verdict": "PASS",
+   "hash": "46c373544b0c1f9970be01a181d1d278a3adb03d3371d21cab7bb47103a15dca",
+   "reason": "작은 블록 포석 변형, 이음새 없음."
+  },
+  "wz-castle-floor-flag-c": {
+   "verdict": "PASS",
+   "hash": "f7c8b2f71d1af2894aa6e23c43b9cb7d8f36e7cbbe2b84ea918e994b0f89b6cc",
+   "reason": "큰 판석 변형, 이음새 없음."
+  },
+  "wz-castle-floor-flag-worn": {
+   "verdict": "PASS",
+   "hash": "850bf6e2ed2a1f3374e1cc16009db8a2631f166a28424294d85e34831bae1dae",
+   "reason": "닳은 포석, 블록마다 모서리 균열 하나 — 변형으로 섞기에 읽힘·이음새 없음."
+  },
+  "wz-castle-floor-flag-worn-b": {
+   "verdict": "PASS",
+   "hash": "92dc5ca5fc417f54df065d38fc1f085d483a05ab13d2efcdcff381b402a38cb0",
+   "reason": "수정 확인: 균열이 16칸당 2개로 줄고 밝은 균열 하이라이트 제거, 3×3 반복(8배)에서 잡음 없이 닳은 포석으로 읽힘, 이음새 없음."
+  },
+  "wz-castle-floor-flag-worn-c": {
+   "verdict": "PASS",
+   "hash": "bff0af37428944b40455bf322702562dd3393e82edda7690ed866b6f732a3e59",
+   "reason": "큰 판석+깨진 작은 돌 줄, 과하지 않음, 이음새 없음."
+  },
+  "wz-castle-floor-oak": {
+   "verdict": "PASS",
+   "hash": "5a90e6c8d3ff962e4ce3e99eba427483ddcef60bde598b33429f9d8c946ca238",
+   "reason": "오크 마루, 긴 판자 결·엇갈린 이음, 이음새 없음."
+  },
+  "wz-castle-floor-oak-b": {
+   "verdict": "PASS",
+   "hash": "58821c8c4629de08fa9b96ae48e332c02ced5e708b268f64aee9964170940264",
+   "reason": "오크 변형, 이음새 없음."
+  },
+  "wz-castle-floor-oak-c": {
+   "verdict": "PASS",
+   "hash": "f7583a20bbbf9d4871ef52166b568a566ad50825e8721c588f9e6f0201c14436",
+   "reason": "오크 변형, 이음새 없음."
+  },
+  "wz-castle-door1-closed": {
+   "verdict": "PASS",
+   "hash": "c86893a7c05221b60f74c0fd1e864f81319dedfa9505e032a0b05f3305f98d96",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 오크 판·쇠띠·황동 손잡이·첨두 문틀이 그대로 읽힘. SSSS 막힘, 상태 묶음 같은 크기."
+  },
+  "wz-castle-door1-open": {
+   "verdict": "PASS",
+   "hash": "d58b0bf22e935d4bfabf8aa52d744403cea03e5068b90774f6d02568cc2bb8f3",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 문짝이 왼쪽 문설주로 젖혀지고 안쪽 어둠+바닥이 보여 열림으로 읽힘. SSCF 통행."
+  },
+  "wz-castle-door1-locked": {
+   "verdict": "PASS",
+   "hash": "2b17efb6297f602eb0a941fb856962563d03590225cc9bfc3616f39f5e3145b6",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 가로 빗장+황동 자물쇠 분명. SSSS 막힘, 닫힘과 같은 피벗."
+  },
+  "wz-castle-door2-closed": {
+   "verdict": "PASS",
+   "hash": "d9e1a3ee8c8a6f5792647caf56eeac3ead6d69fde246cb5c2e00ff57caab299e",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 쌍문 대칭, 쇠띠·손잡이 읽힘. 막힘."
+  },
+  "wz-castle-door2-open": {
+   "verdict": "PASS",
+   "hash": "faf539bfff0688a0539fbfa649fa1e9e5aac2c40913ec1a8d43c7847458a0ace",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 양 문짝이 양옆으로 젖혀지고 바닥 보임. SSSSCCFF 통행."
+  },
+  "wz-castle-door2-locked": {
+   "verdict": "PASS",
+   "hash": "63be4113e5513f26ba41a16f74ffab6944f598ddb3ca99872f74924ddd00e70c",
+   "reason": "재측정(python): 문짝/개구부 y=22 아치 꼭지 ~ y=61, 문턱 y=62 → 40px, 기준 32~40 충족. 가로 빗장+자물쇠 분명, 막힘."
+  },
+  "wz-castle-passage1": {
+   "verdict": "PASS",
+   "hash": "d4c6c18515ff633a3958ca3867779a49479f9c058ed86933252c9e58b09ea6d9",
+   "reason": "재측정: 개구부 y=22~61 = 40px, 문과 같은 아치로 맞춰짐. 첨두 아치 통로+뒤 바닥 보임, SSCF 통행."
+  },
+  "wz-castle-passage2": {
+   "verdict": "PASS",
+   "hash": "72a3584eb66195e8eb9d0b6915e3bc5966a5b10f4bf856632930e23250fb88bf",
+   "reason": "재측정: 개구부 y=22~61 = 40px. 2칸 첨두 아치 통로, 뒤 바닥 보임, SSSSCCFF 통행."
+  },
+  "wz-castle-door-s": {
+   "verdict": "PASS",
+   "hash": "7305e4c6a913c93b59e8c1b9d3280e0860be9a2cb2e5e96c326f6fb2f2a52662",
+   "reason": "수정 확인: 남벽 윗면 띠가 가운데에서 끊기고 양쪽 얇은 문설주+아래 밝은 문턱, 가운데로 포석 바닥이 이어져 출입구로 읽힘(남벽 줄에 합성해 5배·1배 확인). FF 통행."
+  },
+  "wz-castle-stair-up": {
+   "verdict": "PASS",
+   "hash": "9ffd31fc3ef701edf71ead47eba18c91eeb7498e2240b3a9136efa96401f6500",
+   "reason": "밝은 디딤판·어두운 챌면이 번갈아 오르는 돌계단으로 읽힘, 2×2, F."
+  },
+  "wz-castle-stair-down": {
+   "verdict": "PASS",
+   "hash": "a62b2d93454f43adcfab2dc9df7f6a0ee1d3a108e3c8bd5431846cc0ce2f34b6",
+   "reason": "위쪽이 어둠으로 내려가는 계단으로 읽혀 오름과 구분됨, F."
+  },
+  "wz-castle-floor-stair": {
+   "verdict": "PASS",
+   "hash": "70f749a2cd731daa07d808432408ed6f7404b3ddde865db8b330f2327b60a35d",
+   "reason": "디딤면 8px×2단 바닥, 반복 이음 맞음."
+  },
+  "wz-castle-threshold-stone-oak": {
+   "verdict": "PASS",
+   "hash": "8296958c9547357b4b4b40d8364d5c317e04dc5d5eb33826dc18a8b1163a9f33",
+   "reason": "석재→황동 띠→오크 전이 1칸, 읽힘."
+  },
+  "wz-castle-threshold-oak-stone": {
+   "verdict": "PASS",
+   "hash": "b5cb8a0241527810c07d37a91d88a1f7afd658ce3cc1a5fd42d01c840a66b2ec",
+   "reason": "오크→황동 띠→석재 전이, 대칭."
+  },
+  "wz-castle-rail-h": {
+   "verdict": "PASS",
+   "hash": "5ad505c474c3cf61ebdc029b36a2638f9fd5d4f802bc0282a81ada7278923bc6",
+   "reason": "돌 난간 가로: 윗면 갓돌+난간동자 3개, 뒤 투명, S."
+  },
+  "wz-castle-rail-v": {
+   "verdict": "PASS",
+   "hash": "7a45db56a2cd9609f2451f65e653b2c73a7d0758dfd2418f5d5bb31938a85551",
+   "reason": "세로 난간 윗면 띠+마디, 세로 반복, S."
+  },
+  "wz-castle-rail-end": {
+   "verdict": "PASS",
+   "hash": "033355b4357bd82b5516746ca0bca81fae8ae3686cba804940cdc32558d0da70",
+   "reason": "끝 기둥(받침+갓), 읽힘."
+  },
+  "wz-castle-sconce": {
+   "verdict": "PASS",
+   "hash": "c93104fc5114fc6f167e5af1d362960f29e9a986e788143443feed6597f97af7",
+   "reason": "황동 받침+촛대로 읽힘(불꽃은 효과 작업자 몫), 작지만 1배 식별 가능."
+  },
+  "wz-castle-wall-s-window": {
+   "verdict": "PASS",
+   "hash": "fbf1c5264c3a5f8f331f62805884324203d8d2e33519c5449bc3aa99688457d7",
+   "reason": "남쪽 낮은 벽 윗면+작은 첨두 창, 예제에서 창으로 읽힘."
+  }
+ },
+ "autotiles": {
+  "wz-castle-flag": {
+   "verdict": "PASS",
+   "hash": "96ae4fa29022eb56603dfaadc5aec217c7453f4774026eae60347b9b3560cc0c",
+   "reason": "포석 오토타일: 속 16 주기 이음새 없음, 바깥=어두운 틈 링, 모서리·안쪽 모서리 일관, 전 칸 불투명. 무작위 맵에서 끊김 없음."
+  },
+  "wz-castle-oak": {
+   "verdict": "PASS",
+   "hash": "780dffdb12161dc0ae67393661026502925fe01c1554b60ffb3a5ab12a4cd949",
+   "reason": "오크 오토타일: 바깥 링이 포석 바닥과 같은 격자로 구워져 포석 위 합성 시 이음새 없음(직접 합성 확인), 오른쪽·아래 그림자, 안쪽 모서리 처리 됨."
+  }
+ },
+ "characters": {}
+}

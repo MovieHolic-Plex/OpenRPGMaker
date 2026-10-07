@@ -1,0 +1,160 @@
+{
+ "name": "theme_potions_stair_transition",
+ "item": "theme_potions_stair_transition",
+ "candidate": "h2-A",
+ "source": "art-output/repair-r5-missing-production/content/tiledata/hand-interior/pick/candidates/theme_potions_stair_transition/h2-A.png",
+ "sha256": "3ddac855bcb80c0b7b93b5291424b90644a39efa51a9f53100e9f8c9a39fc6c8",
+ "set": {
+  "id": "theme potions stair-transition",
+  "name_ko": "stair-transition",
+  "name_en": "theme potions stair-transition",
+  "parent": "theme potions stair-transition",
+  "derive": "production",
+  "kind": "flat",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 3,
+   "h": 1
+  },
+  "canvas": [
+   48,
+   16
+  ],
+  "description": "계단 본체·디딤면을 재제작하지 않는다. E(8,13)의 작은 전용 비활성/하강/복귀 룬 상태칩3개를16×16 투명overlay로 직접 저작한다. 실제 이동 이벤트 소켓은 발(136,223),접근(8,12)/(136,207)이며 상태칩과 구별한다. local(8,15)을 같은 발앵커로 쓴다. 룬은 x3..12/y9..14만 사용하며 inactive도 식별가능한 어두운 룬을 둔다. passage=inherit로3폭 계단/출입을 보존하고 장애물·문을 추가하지 않는다. 연결 층 mapId는 설치 시 실제 정본에서 지정한다; 임의 목적지나 runtime완료를 만들지 않는다.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "inactive",
+    "label": "inactive",
+    "see": "inactive",
+    "x": 0,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 2,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "inactive",
+    "attachment": "stair-event-sole",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      9,
+      13,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "down",
+    "label": "down",
+    "see": "down",
+    "x": 16,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 2,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "down",
+    "attachment": "stair-event-sole",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      9,
+      13,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "inactive"
+   },
+   {
+    "key": "return",
+    "label": "return",
+    "see": "return",
+    "x": 32,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 2,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "return",
+    "attachment": "stair-event-sole",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      9,
+      13,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "down"
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r5-missing-production/scene-contract.json",
+   "instructions": "전용42색과 concept-art.png의 거친 고딕 석재·오크·황동·절제된 약액 발광을 따른다. 승인23×14/368×224 장면을 유지한다. 교사 sole(136,47)/hand(150,42), 보조자 sole(328,127)/hand(328,123), 북쪽 몸1→상판2→손7과 칠판 읽을면(98,2)..(126,14)을 보호한다. 배기5개 부모·소켓 및 하단 끝(40,102)/(152,102)을 보존한다. 기존16종과 인물 원본은 다시 그리지 않는다. 빈 시드는 승인 그림이 아니다.\n계단 본체·디딤면을 재제작하지 않는다. E(8,13)의 작은 전용 비활성/하강/복귀 룬 상태칩3개를16×16 투명overlay로 직접 저작한다. 실제 이동 이벤트 소켓은 발(136,223),접근(8,12)/(136,207)이며 상태칩과 구별한다. local(8,15)을 같은 발앵커로 쓴다. 룬은 x3..12/y9..14만 사용하며 inactive도 식별가능한 어두운 룬을 둔다. passage=inherit로3폭 계단/출입을 보존하고 장애물·문을 추가하지 않는다. 연결 층 mapId는 설치 시 실제 정본에서 지정한다; 임의 목적지나 runtime완료를 만들지 않는다.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "stair-transition",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r5-missing-production/attachment-contract.json"
+  }
+ }
+}

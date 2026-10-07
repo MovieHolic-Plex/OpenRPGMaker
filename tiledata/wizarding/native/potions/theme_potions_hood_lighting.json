@@ -1,0 +1,425 @@
+{
+ "name": "theme_potions_hood_lighting",
+ "item": "theme_potions_hood_lighting",
+ "candidate": "h14-A",
+ "source": "art-output/repair-r4-actors-vault/content/tiledata/hand-interior/pick/candidates/theme_potions_hood_lighting/h14-A.png",
+ "sha256": "6d227e0f6a5d095054df5103d046a36a3861a7f2298a689c8ae603e71da66310",
+ "set": {
+  "id": "theme potions hood-lighting",
+  "name_ko": "hood-lighting",
+  "name_en": "theme potions hood-lighting",
+  "parent": "theme potions hood-lighting",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   16
+  ],
+  "description": "전용 시연 솥/학생 솥 위의 배기 후드·석벽 배기 연결과 황동 벽등/촛불4프레임. 후드는 상부 레이어, 벽등은 좌우 벽면. 통로/교반자 머리/시연 시야를 가리지 않는 높이 및 접합.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "hood",
+    "label": "hood",
+    "see": "hood",
+    "w": 16,
+    "h": 8,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     7
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0,
+    "contact": [
+     8,
+     7
+    ],
+    "contact_y": 7,
+    "attachment": "cauldron-rim-minus-16px",
+    "geometry": {
+     "opaqueBounds": [
+      4,
+      0,
+      12,
+      8
+     ],
+     "top_y": [
+      0,
+      2
+     ],
+     "vertical_y": [
+      3,
+      7
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "inlet": [
+     8,
+     7
+    ],
+    "exhaust": [
+     8,
+     0
+    ]
+   },
+   {
+    "key": "candle0",
+    "label": "candle0",
+    "see": "candle0",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 0
+   },
+   {
+    "key": "candle1",
+    "label": "candle1",
+    "see": "candle1",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 0
+   },
+   {
+    "key": "candle2",
+    "label": "candle2",
+    "see": "candle2",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 0
+   },
+   {
+    "key": "candle3",
+    "label": "candle3",
+    "see": "candle3",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0
+   },
+   {
+    "key": "duct-vertical",
+    "label": "duct-vertical",
+    "see": "duct-vertical",
+    "w": 4,
+    "h": 8,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     2,
+     8
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 0,
+    "contact": [
+     2,
+     7
+    ],
+    "contact_y": 7,
+    "attachment": "exhaust-chain",
+    "geometry": {
+     "opaqueBounds": [
+      0,
+      0,
+      4,
+      8
+     ]
+    },
+    "inlet": [
+     2,
+     7
+    ],
+    "exhaust": [
+     2,
+     0
+    ],
+    "endpoints": {
+     "north": [
+      2,
+      0
+     ],
+     "south": [
+      2,
+      8
+     ]
+    },
+    "coordinateConvention": "contact/inlet/exhaust are pixels 0<=x<w,0<=y<h; endpoints may lie on half-open source boundaries"
+   },
+   {
+    "key": "duct-short",
+    "label": "duct-short",
+    "see": "duct-short",
+    "w": 4,
+    "h": 4,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     2,
+     4
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 84,
+    "y": 0,
+    "contact": [
+     2,
+     3
+    ],
+    "contact_y": 3,
+    "attachment": "exhaust-chain",
+    "geometry": {
+     "opaqueBounds": [
+      0,
+      0,
+      4,
+      4
+     ]
+    },
+    "inlet": [
+     2,
+     3
+    ],
+    "exhaust": [
+     2,
+     0
+    ],
+    "endpoints": {
+     "north": [
+      2,
+      0
+     ],
+     "south": [
+      2,
+      4
+     ]
+    },
+    "coordinateConvention": "contact/inlet/exhaust are pixels 0<=x<w,0<=y<h; endpoints may lie on half-open source boundaries"
+   },
+   {
+    "key": "vault-collar",
+    "label": "vault-collar",
+    "see": "vault-collar",
+    "w": 8,
+    "h": 4,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     4,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 88,
+    "y": 0,
+    "contact": [
+     4,
+     3
+    ],
+    "contact_y": 3,
+    "attachment": "exhaust-chain",
+    "geometry": {
+     "opaqueBounds": [
+      0,
+      0,
+      8,
+      4
+     ]
+    },
+    "inlet": [
+     4,
+     3
+    ],
+    "exhaust": [
+     4,
+     0
+    ],
+    "endpoints": {
+     "north": [
+      4,
+      0
+     ],
+     "south": [
+      4,
+      4
+     ]
+    },
+    "coordinateConvention": "contact/inlet/exhaust are pixels 0<=x<w,0<=y<h; endpoints may lie on half-open source boundaries"
+   },
+   {
+    "key": "duct-return",
+    "label": "하단 작업대 전용 황동 우회관",
+    "see": "duct-return",
+    "w": 18,
+    "h": 14,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0,
+    "contact": [
+     16,
+     2
+    ],
+    "contact_y": 2,
+    "attachment": "lower exhaust return behind upper bench fascia",
+    "geometry": {
+     "opaqueBounds": [
+      0,
+      0,
+      18,
+      14
+     ],
+     "opaquePath": [
+      [
+       16,
+       2
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       12
+      ],
+      [
+       0,
+       12
+      ]
+     ],
+     "pathWidth": 2,
+     "transparentOutsidePath": true
+    },
+    "inlet": [
+     16,
+     2
+    ],
+    "exhaust": [
+     0,
+     12
+    ],
+    "endpoints": {
+     "inlet": [
+      16,
+      2
+     ],
+     "outlet": [
+      0,
+      12
+     ]
+    },
+    "coordinateConvention": "inlet/exhaust/contact are actual in-range centreline pixels; seam centres may overlap at connection, never reuse old (8,7)"
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r4-actors-vault/scene-contract.json",
+   "instructions": "전용 시연 솥/학생 솥 위의 배기 후드·석벽 배기 연결과 황동 벽등/촛불4프레임. 후드는 상부 레이어, 벽등은 좌우 벽면. 통로/교반자 머리/시연 시야를 가리지 않는 높이 및 접합.\nRead current sceneContract, theme-brief.json and concept-art.png. Use only the dedicated 42 colours. No stock artwork or palette. Logical ground cells remain fixed; rendered pixels are the resolved ground/support/hood anchors in scene-contract.json. Use the approved 23x14 coordinates. Read approved planning and compare each required attachment, footprint and actor scale; no room PASS before complete native coverage.\nRead scene-contract and attachment-contract: teacher sole(136,47)/hand(150,42), assistant sole(328,127)/hand(328,123), same sole in walking/action. North bodies behind tables, hand/tool separate above top. Board pixel(96,0), readable rect(98,2,126,14). Five named new cut-vault rib parents are ordered, with in-range source sockets. Lower exhaust endpoints(40,102)/(152,102) on ribs in y98..105 gap; continuous duct-return alpha behind upper bench fascia, not terminating at table front. Each slot contact/inlet/exhaust is an actual in-range pixel; boundary endpoints separately declared. Use only42 theme colours. Verify real native PNG alpha and all three comparison regions before verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "hood-lighting",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r4-actors-vault/attachment-contract.json"
+  }
+ }
+}

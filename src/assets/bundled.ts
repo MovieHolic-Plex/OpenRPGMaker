@@ -19,6 +19,7 @@ import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
+import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
@@ -213,6 +214,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 일본 도시(2026-10) — modern3 팔레트 손 도트 상가·주택·역·신사를 48열 16px 칸으로 구운 시트. modern_city 와 별개 번들이다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/jp-city/bake_jp.py, 정의는 project/defaults/jpCity.ts, openwiki/jp-city.md.
   {textureKey:"tex_jp_city",path:"assets/jp-city/jp-city-chipset.png",name:"일본 도시 · 상가·주택·역·신사 (도트)"},
+  // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
+  {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
@@ -281,6 +285,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
+  if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;

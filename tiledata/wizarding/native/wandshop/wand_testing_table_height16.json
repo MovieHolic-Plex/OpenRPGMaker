@@ -1,0 +1,171 @@
+{
+ "name": "wand_testing_table_height16",
+ "item": "wand_testing_table_height16",
+ "candidate": "h1-A",
+ "source": "art-output/scene-table-height-preparation-r10/content/tiledata/hand-interior/pick/candidates/wand_testing_table_height16/h1-A.png",
+ "sha256": "1f4cb415ff3092e73bc94aa4ba65634dcd4bca6b7d24c2e2ec27568df3e5bd42",
+ "set": {
+  "id": "wand-testing-table-height16",
+  "name_ko": "지팡이 시험대 높이16",
+  "category": "shop",
+  "category_ko": "지팡이 상점",
+  "kind": "floor",
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "description": "전용 오크·황동 지팡이 시험대. 바닥2×1(32×16), 투명32×32 슬롯. 상판 내부 local y9..13=5행, 전면/두 다리 y14..29=16행, groundAnchor(0,14), south30. scene 슬롯(64,146), 상면(64,155), 접지남단176. 이전 낮은 벤치를 높여 실제 상판 높이16px. 두 다리/접지 그림자/좌상광원과 전용 팔레트를 보존한다. 아래 y30..31 및 위 여백은 투명. 상자/지팡이를 그리지 않고 별도 원본으로 얹는다.",
+  "parent": "wand-testing-table-height16",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "table",
+    "label": "16px 높은 시험대",
+    "x": 0,
+    "y": 0,
+    "w": 32,
+    "h": 32,
+    "foot": [
+     2,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "topMin": 5,
+    "origin": [
+     0,
+     14
+    ],
+    "groundAnchor": [
+     0,
+     14
+    ],
+    "groundSouth": 30,
+    "see": "전용 오크·황동 지팡이 시험대. 바닥2×1(32×16), 투명32×32 슬롯. 상판 내부 local y9..13=5행, 전면/두 다리 y14..29=16행, groundAnchor(0,14), south30. scene 슬롯(64,146), 상면(64,155), 접지남단176. 이전 낮은 벤치를 높여 실제 상판 높이16px. 두 다리/접지 그림자/좌상광원과 전용 팔레트를 보존한다. 아래 y30..31 및 위 여백은 투명. 상자/지팡이를 그리지 않고 별도 원본으로 얹는다.",
+    "child": "wand-testing-table-height16 table",
+    "locked": false
+   }
+  ],
+  "contract": {
+   "requirement": "wand-testing-table",
+   "position": [
+    4,
+    8
+   ],
+   "surfaceOffset": [
+    0,
+    -5
+   ],
+   "floorPx": [
+    64,
+    123
+   ],
+   "screenPx": [
+    64,
+    155
+   ],
+   "projectedGroundFootprintPx": [
+    32,
+    16
+   ],
+   "groundFootprintScreenBounds": [
+    64,
+    160,
+    96,
+    176
+   ],
+   "topDepthPx": 5,
+   "verticalTabletopHeightPx": 16,
+   "groundSouthPx": 176,
+   "slotCanvasPx": [
+    32,
+    32
+   ],
+   "slotScreenOrigin": [
+    64,
+    146
+   ],
+   "groundAnchor": [
+    0,
+    14
+   ],
+   "groundSouthLocal": 30,
+   "actualTopInteriorHostLocalBounds": [
+    1,
+    9,
+    31,
+    14
+   ],
+   "topInteriorScreenBounds": [
+    65,
+    155,
+    95,
+    160
+   ],
+   "verticalFaceLocalBounds": [
+    0,
+    14,
+    32,
+    30
+   ],
+   "verticalFaceScreenBounds": [
+    64,
+    160,
+    96,
+    176
+   ],
+   "propBudgetSurfaceLocalBounds": [
+    0,
+    0,
+    32,
+    4
+   ],
+   "closedBoxCells": [
+    [
+     4,
+     8
+    ],
+    [
+     5,
+     8
+    ]
+   ],
+   "closedBoxScreenOrigins": [
+    [
+     64,
+     155
+    ],
+    [
+     80,
+     155
+    ]
+   ],
+   "closedBoxScreenAlphaBounds": [
+    [
+     66,
+     155,
+     78,
+     158
+    ],
+    [
+     82,
+     155,
+     94,
+     158
+    ]
+   ],
+   "wandsScreenAlphaBounds": [
+    65,
+    158,
+    95,
+    159
+   ],
+   "nativeItem": "wand-testing-table-height16",
+   "candidate": "h1-A"
+  }
+ }
+}

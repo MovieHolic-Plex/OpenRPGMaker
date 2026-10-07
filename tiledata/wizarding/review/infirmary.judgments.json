@@ -1,0 +1,119 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-inf-wall-n": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-n-window": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘. 아치 창문 유리 하이라이트·창턱 명암 정상."
+ },
+ "wz-inf-wall-n-window-big": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘. 아치 창문 유리 하이라이트·창턱 명암 정상."
+ },
+ "wz-inf-wall-w": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-e": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-s": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-sw": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-se": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-nw": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-wall-ne": {
+  "verdict": "PASS",
+  "reason": "밝은 석회암 블록 벽, 유색 1px 윤곽·3~4단 명암·좌상단 빛이 style-ref 돌벽과 같은 결. 몸체 S, 1배로도 병동 벽으로 읽힘."
+ },
+ "wz-inf-door-closed": {
+  "verdict": "PASS",
+  "reason": "아치형 나무문+철띠, 높이 4칸(32~40px 규격), 나무 결·철 반사 style-ref 문과 동일 화풍. SSSS, states 같은 크기·피벗."
+ },
+ "wz-inf-door-open": {
+  "verdict": "PASS",
+  "reason": "열린 문짝이 옆으로 접히고 어두운 안쪽이 보임. 하단 S·상부 C 로 통행 가능, 닫힘 상태와 같은 크기·피벗."
+ },
+ "wz-inf-door-locked": {
+  "verdict": "PASS",
+  "reason": "닫힌 문과 같은 틀에 자물쇠·가로 철띠가 추가돼 잠김으로 읽힘. 크기·피벗 동일."
+ },
+ "wz-inf-floor-a": {
+  "verdict": "PASS",
+  "reason": "석재 바닥 판석, 벽과 같은 팔레트, 윤곽 없이 타일링 가능, F."
+ },
+ "wz-inf-floor-b": {
+  "verdict": "PASS",
+  "reason": "floor-a 변형 판석, 같은 명도대라 반복 시 튀지 않음, F."
+ },
+ "wz-inf-bed-shadow": {
+  "verdict": "PASS",
+  "reason": "재검: 불투명 회색 슬래브·체커 디더가 사라지고 안쪽이 투명한 얇은 L자 그림자 띠(좌 1px 옅게, 우·하 2px 짙게)만 남음. 바닥 판석 위에 합성하면 잡음 없이 침대 아래 접지 그림자로 읽히고, 병상을 덮으면 발치·우측 가장자리만 살짝 보여 3/4 시점·좌상단 빛(우·하 그림자)과 맞음. f 통행 가능, 2x3 크기가 병상과 일치. 단독으로는 가는 선이지만 병상 전용 오버레이라 문제 없음."
+ },
+ "wz-inf-bed-empty": {
+  "verdict": "PASS",
+  "reason": "2x3 병상: 흰 시트·베개·나무 틀, 윗면+남쪽 정면 3/4, 좌우 대칭, 1배로도 침대로 읽힘. 명암 3~4단, S 통행 차단."
+ },
+ "wz-inf-bed-patient": {
+  "verdict": "PASS",
+  "reason": "빈 침대와 같은 틀에 담요 덮은 환자 머리가 보임. 얼굴이 약간 각져도 환자로 읽힘. 크기·시점 일치."
+ },
+ "wz-inf-curtain-closed": {
+  "verdict": "PASS",
+  "reason": "1x3 닫힌 커튼, 세로 주름·상단 레일 명암, 하단 단차 정상. 시점·화풍 일치, S."
+ },
+ "wz-inf-curtain-open": {
+  "verdict": "PASS",
+  "reason": "묶어 모은 커튼이 한쪽에 서고 윗부분 레일이 닫힘 상태와 같은 크기·피벗. C 로 통과 가능. 하단 단이 약간 거칠지만 읽힘에는 지장 없음."
+ },
+ "wz-inf-screen": {
+  "verdict": "PASS",
+  "reason": "2x2 접이 칸막이, 패널 주름·나무 틀, 윗면 보임, 병동 가리개로 읽힘. S."
+ },
+ "wz-inf-cart": {
+  "verdict": "PASS",
+  "reason": "1x2 수레: 금속 상판+선반+바퀴, 상판이 윗면으로 보이고 의료 수레로 읽힘. S."
+ },
+ "wz-inf-bandage": {
+  "verdict": "PASS",
+  "reason": "바닥에 놓인 붕대 롤과 풀린 끝자락, 흰·회 명암 4단과 유색 윤곽. 종이 롤처럼 보일 여지는 있으나 꼬리와 심 때문에 붕대로 읽힘. f 통행 가능."
+ },
+ "wz-inf-splint": {
+  "verdict": "PASS",
+  "reason": "나무 부목+감은 천 띠, 바닥 소품 f. 1배 읽힘 양호, 화풍 일치."
+ },
+ "wz-inf-basin": {
+  "verdict": "PASS",
+  "reason": "금속 세면대야, 윗면 타원+물 푸른 하이라이트, 재질 반사·3/4 윗면 확인. 상판 크기 규격. S."
+ },
+ "wz-inf-shelf": {
+  "verdict": "PASS",
+  "reason": "2x2 약장: 나무 틀 선반에 병·붕대 소품, 정면 3/4 대칭, 병 색이 팔레트 안. S."
+ },
+ "wz-inf-chart": {
+  "verdict": "PASS",
+  "reason": "나무 판에 종이 차트·눈금 선, 소품으로 읽힘, 윤곽·명암 화풍 일치. S."
+ },
+ "wz-inf-candle": {
+  "verdict": "PASS",
+  "reason": "촛대 위 초와 불꽃, 폭이 좁고 회색 위주이나 양초로 읽히며 윤곽·명암 일치. S."
+ },
+ "wz-inf-table": {
+  "verdict": "PASS",
+  "reason": "나무 협탁, 상판 윗면 14~16px 규격, 나무 결 3단 명암, 앞면 보임. S."
+ }
+}

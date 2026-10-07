@@ -1,0 +1,62 @@
+{
+ "name": "stock_ladder",
+ "item": "stock_ladder",
+ "candidate": "h5-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/stock_ladder/h5-A.png",
+ "sha256": "83b734eb1ea4e64b44fe86275d1b014ef87a3b0a28599950fa710ed96d247593",
+ "set": {
+  "id": "stock-ladder",
+  "name_ko": "stock-ladder",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "floor",
+  "canvas": [
+   16,
+   48
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 1
+  },
+  "description": "북쪽 고정 오크사다리 foot(6,1), 사용자리(6,2). projection floor[96,-16,112,32)→screen[96,16,112,64). 1×1 충돌, 높이와 분리. 머리 연속면12..17px/불투명H48의25~35%, 각 내부 디딤판은 별도 측정.",
+  "parent": "stock-ladder",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "ladder",
+    "label": "ladder",
+    "w": 16,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "see": "북쪽 고정 오크사다리 foot(6,1), 사용자리(6,2). projection floor[96,-16,112,32)→screen[96,16,112,64). 1×1 충돌, 높이와 분리. 머리 연속면12..17px/불투명H48의25~35%, 각 내부 디딤판은 별도 측정. 슬롯 ladder을 방향·상태별로 독립 저작한다. 좌상단광원/전용42색. 내부선반판·테두리·광택선을 꼭대기면으로 세지 않는다.",
+    "layer": 2,
+    "topMin": 12,
+    "mount": "floor",
+    "topMax": 17,
+    "topRatio": [
+     0.25,
+     0.35
+    ],
+    "topBasis": "actual opaque object bbox height",
+    "topContinuous": true,
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "stock-ladder ladder"
+   }
+  ],
+  "contract": {
+   "camera": "남쪽 위 직교3/4, 좌상단 광원; actual bbox 기반 윗면25~35%; 내부 판/광택선 제외",
+   "palette": "전용42색 only",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "선택·설치 금지; 아래 설치 좌표와 레이어를 제작 후 독립 검수",
+   "reuse": "빈 seed에서 전용 신규 픽셀 제작; stock 참고는 구조 비교만"
+  }
+ }
+}

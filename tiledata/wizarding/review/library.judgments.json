@@ -1,0 +1,119 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-lib-floor-worn-a": {
+  "verdict": "PASS",
+  "reason": "4x3 반복 시 세로줄 사라짐: 석재 블록 길이·줄 어긋남이 달라 이음 규칙성이 안 튄다. 1px 유색 윤곽, 3단 명암, 돌바닥으로 읽힘, 통행 F."
+ },
+ "wz-lib-floor-worn-b": {
+  "verdict": "PASS",
+  "reason": "어두운 닳은 포석, 블록 오프셋과 금이 있어 반복해도 튀지 않음. 공용 포석보다 어두움. 읽힘·화풍 양호."
+ },
+ "wz-lib-arch": {
+  "verdict": "PASS",
+  "reason": "밝은 돌 아치 고리와 안쪽 어두운 통로·계단, 열린 아치로 읽힘. 윤곽·3~4단 명암 style-ref 석벽과 일치, 문 높이 4칸 적정. walk C 통행."
+ },
+ "wz-lib-gate-closed": {
+  "verdict": "PASS",
+  "reason": "돌 문틀 + 철창 세로살·가로띠로 닫힌 철문 읽힘, 정면 대칭, 철 반사 1px. walk S."
+ },
+ "wz-lib-gate-open": {
+  "verdict": "PASS",
+  "reason": "양쪽에 젖혀진 두꺼운 문짝+황동 경첩, 가운데 어둠과 계단으로 열림 읽힘. 같은 크기 2x4·states 묶음, walk C 통행."
+ },
+ "wz-lib-gate-locked": {
+  "verdict": "PASS",
+  "reason": "닫힌 철문 위에 쇠사슬 X와 황동 맹꽁이자물쇠로 잠김 읽힘. 사슬이 약간 얽혔으나 1배에서도 구분됨. walk S."
+ },
+ "wz-lib-fence": {
+  "verdict": "PASS",
+  "reason": "철살 세로+가로 레일 반복, 철 반사선 있음, 1배에서 철제 울타리로 읽힘. walk S."
+ },
+ "wz-lib-fence-end": {
+  "verdict": "PASS",
+  "reason": "굵은 기둥+뾰족 캡과 가로 레일 끝, 울타리 끝마감으로 읽힘."
+ },
+ "wz-lib-shelf-chain-2x3": {
+  "verdict": "PASS",
+  "reason": "8배: 놋쇠 레일과 고리에서 내려오는 1px 교대 사슬 링이 보이고 책이 옆에 달려 사슬 묶인 서가로 읽힘. 목재 3단 명암·유색 윤곽, 윗부분 C·몸체 S. 칸 오른쪽이 비는 것은 허용."
+ },
+ "wz-lib-shelf-chain-3x3": {
+  "verdict": "PASS",
+  "reason": "2x3과 같은 처리. 사슬·놋쇠 고리가 책보다 밝아 구별되고 책 8권이 줄지어 가득 차 서가로 읽힘. 화풍·통행 이상 없음."
+ },
+ "wz-lib-shelf-plain-2x3": {
+  "verdict": "PASS",
+  "reason": "다양한 책 색, 오크 서가 윗판·측판 결, 지팡이 서가 native와 같은 화풍. 위 행 C·아래 S."
+ },
+ "wz-lib-grimoire-locked": {
+  "verdict": "PASS",
+  "reason": "붉은 표지에 쇠 띠와 황동 자물쇠, 잠금 마법서로 읽힘, 윗면 보이는 3/4. f."
+ },
+ "wz-lib-grimoire-open": {
+  "verdict": "PASS",
+  "reason": "8배: 자주색 표지 위에 왼쪽 글줄 쪽·오른쪽 쪽이 가운데 홈으로 갈려 펼친 책으로 읽힘, 1px 유색 윤곽. 오른쪽 쪽의 어두운 삽화가 다소 무거우나 허용 범위."
+ },
+ "wz-lib-keyring": {
+  "verdict": "PASS",
+  "reason": "8배: 위의 회색 1px 고리에서 놋쇠 열쇠 3개가 길이를 달리해 늘어짐. 각 열쇠에 둥근 머리(구멍 보임)·세로 몸통·옆 이빨이 있어 열쇠로 읽힘. 1배에서도 고리에 걸린 열쇠 묶음으로 보임. 3단 명암·유색 윤곽, 통행 f."
+ },
+ "wz-lib-lectern": {
+  "verdict": "PASS",
+  "reason": "비스듬한 윗판 위의 펼친 책과 기둥·받침, 3/4로 읽힘. 오크 결 명암 양호."
+ },
+ "wz-lib-ladder": {
+  "verdict": "PASS",
+  "reason": "1x3 오크 사다리, 가로대·측목 구분, 위 C 아래 S. 서가에 기댄 각도는 없지만 읽힘 양호."
+ },
+ "wz-lib-record-table": {
+  "verdict": "PASS",
+  "reason": "양피지·펜·책이 놓인 탁자 윗면 3/4로 보임, 오크 결·다리, 상판 비율 적정. 읽힘 양호."
+ },
+ "wz-wand-testdoor-closed": {
+  "verdict": "PASS",
+  "reason": "판벽 문, native 판문과 같은 틀·재질, 닫힘. walk S."
+ },
+ "wz-wand-testdoor-open": {
+  "verdict": "PASS",
+  "reason": "같은 크기·피벗, 어두운 열린 틈, walk C 통행."
+ },
+ "wz-wand-testdoor-locked": {
+  "verdict": "PASS",
+  "reason": "닫힌 문에 황동 자물쇠, 같은 피벗, walk S."
+ },
+ "wz-wand-scorch-1": {
+  "verdict": "PASS",
+  "reason": "8배: 이어진 검은 그을음 덩어리 가운데 2px 불씨, 가장자리 흩어진 점이 번짐처럼 보여 그을린 자국으로 읽힘. 이전의 잡음 인상 해소. 통행 f."
+ },
+ "wz-wand-scorch-2": {
+  "verdict": "PASS",
+  "reason": "방사형 그을림 자국, 투명 덧그림 f, 칸 가운데 정렬, 다른 두 변형과 구별됨."
+ },
+ "wz-wand-scorch-3": {
+  "verdict": "PASS",
+  "reason": "두 덩이 그을림과 불씨 점, 읽힘 양호."
+ },
+ "wz-wand-floor-oak": {
+  "verdict": "PASS",
+  "reason": "어두운 오크 판 반복, native aged_dark_boards와 같은 색결, 이음 눈에 띄지 않음."
+ },
+ "wz-wand-box-wall": {
+  "verdict": "PASS",
+  "reason": "천장까지 쌓인 지팡이 상자 칸, 색 라벨, 서가 윗단 C·몸체 S. 읽힘·화풍 양호."
+ },
+ "wz-wand-display-1": {
+  "verdict": "PASS",
+  "reason": "붉은 방석 위 지팡이(나선 장미목 손잡이), 세 종 서로 구별, 3/4 윗면 보임."
+ },
+ "wz-wand-display-2": {
+  "verdict": "PASS",
+  "reason": "붉은 방석 위 지팡이(황동 둥근 손잡이), 세 종 서로 구별, 3/4 윗면 보임."
+ },
+ "wz-wand-display-3": {
+  "verdict": "PASS",
+  "reason": "붉은 방석 위 지팡이(뼈색 마디 손잡이), 세 종 서로 구별, 3/4 윗면 보임."
+ },
+ "wz-wand-tape": {
+  "verdict": "PASS",
+  "reason": "황동 줄자 통과 줄 끝(눈금 흰 끝)으로 읽힘, f. 작지만 허용."
+ }
+}
