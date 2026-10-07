@@ -1,0 +1,40 @@
+{
+  "proof": [
+    {
+      "id": "03a8f7",
+      "exactSelectedStudy": true,
+      "alphaPreserved": true
+    },
+    {
+      "id": "3e8732",
+      "exactSelectedStudy": true,
+      "alphaPreserved": true
+    },
+    {
+      "id": "1a786c",
+      "exactSelectedStudy": true,
+      "alphaPreserved": true
+    },
+    {
+      "id": "north",
+      "alphaPreserved": true,
+      "blockingCellsPreserved": true
+    },
+    {
+      "id": "north-open",
+      "alphaPreserved": true,
+      "blockingCellsPreserved": true
+    },
+    {
+      "id": "west",
+      "alphaPreserved": true,
+      "blockingCellsPreserved": true
+    },
+    {
+      "id": "east",
+      "alphaPreserved": true,
+      "blockingCellsPreserved": true
+    }
+  ],
+  "sha256": "9dd32e609c6dad1544d3ab96ec86f6abf11f0c88b17e50e3b5356b4765931e1b"
+}

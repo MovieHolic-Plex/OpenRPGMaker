@@ -1,0 +1,24 @@
+{
+  "savedTarget": "/home/main/.local/share/oprn/beodeul-building-review/review.sqlite",
+  "reloadedFrom": "http://127.0.0.1:18317/api/state",
+  "candidateCount": 20,
+  "counts": {
+    "allow": 18,
+    "deny": 1,
+    "pending": 1
+  },
+  "candidate": "r3-building-09",
+  "newImageSha": "1c81f0367c2ee8fc4b62bb66446d5200a007df2d1d54d5af498d38aecd12a007",
+  "decision": "pending",
+  "allPriorHumanEventsPreserved": true,
+  "bodyBelowY56Unchanged": true,
+  "actualTextureAndStructurePassed": true,
+  "noProductionMockDecisionsWritten": true,
+  "uiProof": "gallery-tabs-browser-proof.json",
+  "approvedTabProof": "round5-approved-tab-proof.json",
+  "millPreviewProof": "round5-mill-browser-proof.json",
+  "gameProjectUnchanged": {
+    "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+    "path": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite"
+  }
+}

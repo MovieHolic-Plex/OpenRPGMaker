@@ -1,0 +1,94 @@
+{
+  "events": [
+    [
+      "r2-building-01",
+      "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1",
+      "allow",
+      ""
+    ],
+    [
+      "r2-building-02",
+      "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d",
+      "allow",
+      ""
+    ],
+    [
+      "r2-building-06",
+      "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8",
+      "allow",
+      ""
+    ],
+    [
+      "r2-building-10",
+      "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-01",
+      "e678faf11d54a4e1a5f5a160177ce1fab4cb503b12d4eeeabde960358ef7e1bd",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-02",
+      "390b8a1c81d20ed1b428915b28193b627fb4f5ee921f7dc40c68b19485d2ffed",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-03",
+      "31a3cdd2a1a84e731d995692593f9a8038b643f4e685c589b0b3e897f9f21906",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-04",
+      "53253d45c9f01e7ab6f00df765e01b412ee40ceb99abe3564b3095c9a4614f6e",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-05",
+      "01644d98f7ed103877f09da5ce682205e9fbf76798b08c4fe63a954c900ecd34",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-06",
+      "d0f817cbcb9e70d3d3808ea063716dc1247fc6f5a8a3a15cc75ec7f7fad90d12",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-07",
+      "fe8826c9bc509661164a757f6694f138edd6bb63c505dfeafb076eec899cb181",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-08",
+      "2f6af1d64b7681edc57e08855bc011370bc895e9b351f206ac39ef5c4fafbb94",
+      "allow",
+      ""
+    ],
+    [
+      "r3-building-09",
+      "0e15779056bc82f5c10f79ecca8d35e8f8bc998473e7c32750911d1872b73e9c",
+      "deny",
+      ""
+    ],
+    [
+      "r3-building-10",
+      "5c80c93319f4328f2a6d4a640ccfd36986d645713457f10c4101732081782447",
+      "allow",
+      ""
+    ]
+  ],
+  "countsBefore": {
+    "allow": 13,
+    "deny": 0,
+    "pending": 6
+  },
+  "sourceHash": "472b94105db9224bead486b64f5754d5dcaee28ed20050604dc848c310522460"
+}

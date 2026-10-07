@@ -1,0 +1,55 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { openLocalProjectStore } from '../../electron/local-store/store.ts';
+import { canMove } from '../../src/project/collision.ts';
+import { serialize } from '../../src/project/io/serialize.ts';
+const projectDir = '/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004';
+const out = 'output/assistant-house-entry';
+let store = await openLocalProjectStore({ projectDir });
+const info = store.info();
+const first = store.loadSnapshot()!;
+store.close();
+store = await openLocalProjectStore({ projectDir });
+const snap = store.loadSnapshot()!;
+assert.deepEqual(snap, first);
+store.close();
+const project = snap.project;
+console.log(JSON.stringify({info, startMapId:project.startMapId, startPos:project.startPos,
+ maps:Object.values(project.maps).map(m=>({id:m.id,name:m.name,size:[m.width,m.height],events:m.events}))},null,2));
+const outdoor = project.maps[project.startMapId]!;
+function doors(map:any) { return map.events.flatMap((e:any)=>(e.pages?.length ? e.pages : [e]).flatMap((p:any)=>p.trigger?.kind === 'playerTouch' ? (p.commands ?? []).filter((c:any)=>c.kind==='transfer').map((c:any)=>({from:{mapId:map.id,x:e.x,y:e.y},to:{mapId:c.mapId,x:c.x,y:c.y},eventId:e.id})) : [])); }
+const enter = doors(outdoor).find((d:any)=>d.to.mapId !== outdoor.id);
+assert(enter, 'Outdoor touch transfer must exist');
+const indoor = project.maps[enter.to.mapId]!;
+const exit = doors(indoor).find((d:any)=>d.to.mapId===outdoor.id);
+assert(exit, 'Return touch transfer must exist');
+const directions = [['up',0,-1],['left',-1,0],['right',1,0],['down',0,1]] as const;
+function path(map:any, start:any, target:any) {
+ const queue=[{x:start.x,y:start.y,moves:[] as any[]}];
+ const seen=new Set([`${start.x},${start.y}`]);
+ const gates=doors(map);
+ for(let i=0;i<queue.length;i++) {
+  const pos=queue[i]!;
+  if(pos.x===target.x && pos.y===target.y) return pos.moves;
+  for(const [dir,dx,dy] of directions) {
+   const x=pos.x+dx,y=pos.y+dy,key=`${x},${y}`;
+   if(seen.has(key)||!canMove(project,map,pos.x,pos.y,x,y)) continue;
+   if(gates.some((d:any)=>d.from.x===x && d.from.y===y) && !(target.x===x && target.y===y)) continue;
+   seen.add(key); queue.push({x,y,moves:[...pos.moves,{kind:'move',dir}]});
+  }
+ }
+ throw new Error(`Unreachable ${map.id}: ${JSON.stringify(start)} -> ${JSON.stringify(target)}`);
+}
+const entryWalk=path(outdoor,project.startPos,enter.from);
+let roam:any;
+for(let distance=5;distance>=2&&!roam;distance--) {
+ const candidate={mapId:indoor.id,x:enter.to.x,y:enter.to.y-distance};
+ try { const moves=path(indoor,enter.to,candidate); if(moves.length>=2) roam={to:candidate,moves}; } catch {}
+}
+assert(roam,'Interior should allow walking away from the door');
+const exitWalk=path(indoor,roam.to,exit.from);
+const proof={projectDir,projectId:info.projectId,revision:snap.revision,sha256:snap.sha256,reopenedIdentically:true,
+ start:{mapId:outdoor.id,...project.startPos},enter,exit,entryWalk,roam,exitWalk};
+fs.writeFileSync(`${out}/reloaded-project.json`,serialize(project));
+fs.writeFileSync(`${out}/proof.json`,JSON.stringify(proof,null,2));
+console.log(JSON.stringify(proof,null,2));

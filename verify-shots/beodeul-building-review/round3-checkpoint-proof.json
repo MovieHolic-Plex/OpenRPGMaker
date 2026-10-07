@@ -1,0 +1,7 @@
+{
+  "signedResultReusedOnExactInputs": true,
+  "cachedVerdictTamperBlocked": true,
+  "changedImageRequiresFreshReview": true,
+  "noModelCallsDuringFixtureCheck": true,
+  "allWritesIsolated": true
+}

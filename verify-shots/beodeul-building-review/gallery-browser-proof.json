@@ -1,0 +1,15 @@
+{
+  "noteSurvivesCandidateSwitchAndReload": true,
+  "noteSavedWithoutDecision": true,
+  "noteAndDenyPersisted": true,
+  "quickNoteChips": true,
+  "allowPersisted": true,
+  "filtersAndSearch": true,
+  "newCandidateFilterCount": 10,
+  "typingDoesNotDecide": true,
+  "actionsAlwaysInViewport": true,
+  "focusMode": true,
+  "mobileReviewAndReturn": true,
+  "pageErrors": [],
+  "allWritesIsolated": true
+}

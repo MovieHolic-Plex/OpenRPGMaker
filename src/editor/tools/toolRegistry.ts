@@ -26,6 +26,13 @@ import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { BEODEUL_DOOR_TOOLS } from "./beodeulDoorTools";
+import { BEODEUL_HAMLET_TOOLS } from './beodeulHamletTools';
+import { BEODEUL_COURTYARD_TOOLS } from './beodeulCourtyardTools';
+import { BEODEUL_VEGETATION_TOOLS } from './beodeulVegetationTools';
+import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
+import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
+import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
@@ -265,6 +272,13 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...BEODEUL_DOOR_TOOLS,
+  ...BEODEUL_GROUND_TOOLS,
+  ...BEODEUL_LIGHT_TOOLS,
+  ...BEODEUL_HAMLET_TOOLS,
+  ...BEODEUL_COURTYARD_TOOLS,
+  ...BEODEUL_VEGETATION_TOOLS,
+  ...BEODEUL_ARCHITECTURE_TOOLS,
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
   ...AUTHORING_HARNESS_TOOLS,

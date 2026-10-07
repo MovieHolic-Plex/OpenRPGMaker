@@ -1,0 +1,10 @@
+{
+  "errors": [],
+  "selectionChangesCanvas": true,
+  "mobileNoOverflow": true,
+  "mobile": {
+    "width": 288,
+    "scrollWidth": 288,
+    "canvasWidth": 288
+  }
+}

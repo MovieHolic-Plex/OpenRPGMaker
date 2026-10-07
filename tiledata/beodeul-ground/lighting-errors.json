@@ -1,0 +1,15 @@
+[
+  {
+    "code": "missing-cast-shadow",
+    "sourceLocal": [
+      0,
+      1
+    ],
+    "exampleMapCell": [
+      0,
+      6
+    ],
+    "mutation": "erase visible cast source cell",
+    "detected": true
+  }
+]

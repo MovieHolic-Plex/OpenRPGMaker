@@ -12,6 +12,10 @@ import forestHarmonyTreeShadows from "./forestHarmonyTreeShadows.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
+import beodeulGroundCatalog from './beodeulGroundCatalog.json';
+import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
+import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
+import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
@@ -171,6 +175,11 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
+  {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
+  {textureKey:"tex_beodeul_door",path:"assets/beodeul-door/door-states.png",name:"버들항 · 문 열림 손 도트 시안"},
+  {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
+  {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
+  {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:"tex_shared_forest_village_objects",path:"assets/shared-village/objects.png",name:"숲마을 · 선별 소품 19종"},
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
   {textureKey:"tex_forest_harmony_grass_joins",path:"assets/forest-harmony/grass-joins.png",name:"숲마을 · 잔디 사선 경계"},
@@ -246,6 +255,11 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_atlas_cartography") return 136;
+  if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
+  if (key === "tex_beodeul_door") return 16;
+  if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
+  if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
+  if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;

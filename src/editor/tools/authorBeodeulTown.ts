@@ -1,3 +1,5 @@
+import { naturalizeBeodeulHamlet } from './beodeulHamletTools';
+import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 // author_beodeul_town — 버들항 문법으로 마을·도시를 블록 키트 조립으로 깐다(2026-10-01).
 // 버들항(beodeul_city)은 한 채씩 집을 놓는 타일셋이 아니라 「가로 격자 → 블록 키트(bd-block-*) → 길 이음 → 공원·가로수」
 // 순서로 조립하는 타일셋이다. author_village 는 숲마을 전용 절차 생성기라 버들항을 받지 못한다(village-tileset-mismatch).
@@ -11,6 +13,10 @@ import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
+
+import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
+import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
+import { clearBeodeulGroundDressing, dressBeodeulGround } from "./beodeulGroundTools";
 
 const BEODEUL_TILESET_ID = "beodeul_city";
 const PAVING = "버들항 길 포석";
@@ -35,7 +41,7 @@ interface Seg { start: number; size: number; gapAfter: number }
 export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
   name: "author_beodeul_town",
   description:
-    "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. theme 으로 문법을 고른다. " +
+    "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. houseCount 3~5를 지정하면 40×30의 소규모 밝은 잔디 마을: 별채 박공·이층·돌집·ㄱ자·낮은 집의 서로 다른 외형, 굽은 길과 샛길·우물 마당·살림·나무 군락. 새 마을을 만들 때 기존 맵은 보존한다. theme 으로 문법을 고른다. " +
     "마을(기본 theme:\"river\" 강가 마을 · \"coast\" 포구 · \"desert\" 사막 오아시스 · \"snow\" 설원 · \"swamp\" 늪 수상 마을): " +
     "사용자가 고른 버들항 변형 마을의 문법 — 물(강·바다·못·늪)을 먼저 깔고, 굽은 큰길(폭 2) 하나가 맵을 가로지르고(강은 아치 다리로 건넘), 뒷길·이음길이 고리를 만들고(막다른 길 없음), " +
     "큰길 위 광장(우물·좌판·벤치·등)과 그 북쪽 앵커 건물(여관·회관·대상 숙소), 길을 바라보는 집(문 앞 칸 = 길, 이웃 키트 반복 없음, 간격 1~3칸), " +
@@ -56,13 +62,35 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       width: { type: "integer", description: `새 맵 가로(기본 ${DEFAULT_W}, ${MIN_W}~${MAX_TOOL_MAP_DIMENSION}). 블록 격자에 맞춰 줄어든다.` },
       height: { type: "integer", description: `새 맵 세로(기본 ${DEFAULT_H}, ${MIN_H}~${MAX_TOOL_MAP_DIMENSION}). 블록 띠에 맞춰 줄어든다.` },
       seed: { type: "integer", description: "배치 변주 시드(같은 값 = 같은 마을). 생략하면 7" },
+      houseCount: {type:"integer",minimum:3,maximum:5,description:"집 3~5채의 작은 잔디 마을. 5이면 서로 다른 집 외형 5종. 생략하면 기존 테마 마을/도시."},
+      church: {type:'boolean',description:'소규모 houseCount 모드에 석조 교회와 마당을 추가한다. 오른쪽 빈 띠를 포함해 폭 54칸. 기본 false.'},
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
   },
   invalidArgsExample: { width: 60, height: 60 },
   run(draft, args) {
-    return buildTown(draft, args);
+    if(typeof args.mapId==='string') clearBeodeulGroundDressing(draft,args.mapId);
+    const result=args.houseCount===undefined?buildTown(draft,args):buildSmallBeodeulVillage(draft,args);
+    const theme=String(args.theme??(args.harbour===true?'coast':'river'));
+    const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
+    if(mapId&&args.houseCount!==undefined&&args.church===true){
+      const church=addBeodeulVillageChurch(draft,mapId);
+      result.data={...(result.data as Record<string,unknown>),church,width:draft.maps[mapId]!.width};
+      result.summary+=' 석조 교회와 마당을 연결했습니다.';
+    }
+    if(mapId&&['river','coast','city'].includes(theme)) {
+      const dressing=dressBeodeulGround(draft,mapId,'living',Number(args.seed??7));
+      result.data={...(result.data as Record<string,unknown>),groundDressing:dressing.data};
+      result.summary+=` ${dressing.summary}`;
+    }
+    if(mapId&&args.houseCount!==undefined){
+      const composition=naturalizeBeodeulHamlet(draft,mapId);
+      result.data={...(result.data as Record<string,unknown>),composition:composition.data};result.summary+=` ${composition.summary}`;
+      const light=harmonizeBeodeulDaylight(draft,mapId);
+      result.data={...(result.data as Record<string,unknown>),daylight:light.data};result.summary+=` ${light.summary}`;
+    }
+    return result;
   },
 };
 

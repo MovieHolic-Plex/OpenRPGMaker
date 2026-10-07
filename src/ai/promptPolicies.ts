@@ -18,7 +18,10 @@ export const HOUSE_VARIETY_POLICY_LINE =
 export const TILESET_FAMILY_POLICY_LINE =
   "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다). 세계 지도 요청의 edit_world_terrain·author_worldmap_structure는 해당 지도 방식의 전용 칩셋으로 별도 맵을 만들며 기존 맵의 칩셋은 보존한다.";
 
+export const BEODEUL_GROUND_POLICY_LINE = "버들항 작은 마을(집 3~5채)은 author_beodeul_town({houseCount:요청한수})로 서로 다른 집 외형을 배치한다. 버들항 건물은 기존 지붕 윗면과 원본 윤곽·도트 질감 (측면은 필수 아님)의 3/4 탑뷰를 지킨다. 작은 민가는 공용 bd-house-village-*로 문 1개·벽 콘셉트 1개·개별 창문·기초를 갖춘다. 기존 예제 집 보정은 refine_beodeul_village({mapId,church:true})로 기존 길/나무를 보존한다. 새 작은 마을에 교회를 요청하면 author_beodeul_town({houseCount:요청한수,church:true}). 버들항 밝은 잔디는 색을 어둡게 바꾸지 않는다. 집·나무·길·출입 배치 뒤 dress_beodeul_ground({mapId,style:\"living\"})로 얇은 기초·밑동·풀/꽃 군락·낙엽·잔돌과 집 곁 화단·통·장작을 덧그린다. 밝은 잔디 마을의 광원/접지/자연스러움 보정은 harmonize_beodeul_daylight({mapId})로 원본 집을 유지하고 땅 그림자·낮춘 연석·큰 저대비 잔디 변화를 적용한다. 작은 houseCount 마을은 큰길/광장·흙 접근로/마당·식생 구도를 자동 적용하고 일광 보정한다. 지원하는 기존 작은 마을에서 길/마당 구도 변경을 요청하면 naturalize_beodeul_hamlet({mapId})로 집·지붕·문을 유지하며 반영한다. 작은 예제(민가 5채+교회)를 우물 공동마당·숲/텃밭 가장자리로 재배치하라고 명시한 경우 compose_beodeul_courtyard_village({mapId})를 사용한다(이벤트 없는 인식된 예제만). 공동마당 예제의 나무/풀 깊이·울타리/돌벽 지적은 refine_beodeul_courtyard_vegetation({mapId})로 건물·길 위치를 유지하며 원본 수관 겹침·풀 높이·실제 텃밭 경계의 연결 울타리를 보정한다. 단순 접지/색 보정에는 집을 옮기지 않는다. 자연 지형만 요청했으면 style:\"natural\". 기존 맵 꾸미기 요청은 새 맵 생성이나 author_beodeul_town 재시공을 하지 않는다. 참고문서 용도 beodeul-ground-dressing의 MD·그림을 먼저 읽고 find_tools로 도구를 찾는다. 사막·눈·늪에는 밝은 잔디 꾸밈을 강제하지 않는다.";
+
 export const AGENT_UX_POLICY_LINES = [
+  BEODEUL_GROUND_POLICY_LINE,
   MODERN_TILESET_POLICY_LINE,
   "## UX 응답 정책(반드시 준수)",
   "- 능력 경계: 이 엔진은 2D 타일 RPG 에디터이며 맵별 옵트인 실시간 액션 전투(공격·회피·가드)를 지원합니다. set_action_combat/make_action_enemy와 실제 리소스·적·트룹으로 저작하세요. 3D 오픈월드, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.",

@@ -21,6 +21,12 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
 
+- **버들항 새 건물 후보를 사람이 하나씩 허용/거절할 때** → `beodeul-building-review` · 시드 `harness-data/beodeul-building-review/seed.json` · `npm run harness -- beodeul-building-review produce|build|validate|gate|publish|serve|status|export` · 문서 `openwiki/harnesses/beodeul-building-review.md`. 사용자가 새 지붕·창문·벽 질감 저작을 명시 허용한 후보 경로다. 원본 도트 질감을 보존하고, 독립적인 질감·구조 Visual QA와 숨긴 반려 표본 검사를 모두 통과한 후보만 공개한다. build는 비공개 초안이다. 검사 생략·강제 PASS·점수 완화 금지. 사람이 현재 그림 해시에 대해 허용하기 전에는 번들·지도에 설치하지 않는다. 이전 form-wing/inn/smithy/warehouse는 사용자 반려이며 기준작으로 쓰지 않는다. 기존 원본 보존 보정은 아래 beodeul-architecture 경로를 따른다.
+
+**버들항 건물 보정:** 기존 지붕·윤곽·도트 질감을 보존한다. 3/4 탑뷰는 원본 지붕 윗면으로 충분하며 측면은 필수 조건이 아니다. 창문·중복 문·벽색·기초만 국소 보정한다. 다른 칩셋과 월드맵 아이콘은 각 전용 시점 계약을 따른다.
+
+- **버들항 민가·교회 그림/창문·문·벽 재질·기초를 저작할 때** → `beodeul-architecture` · 시드 `harness-data/beodeul-architecture/seed.json` · `npm run harness -- beodeul-architecture build|validate|review` · 문서 `openwiki/harnesses/beodeul-architecture.md`. 원본과 보정본의 지붕·투명 윤곽·수정 영역을 대조하고 검수 그림을 연다. 기계 통과를 시각 합격으로 대신하지 않는다.
+
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 

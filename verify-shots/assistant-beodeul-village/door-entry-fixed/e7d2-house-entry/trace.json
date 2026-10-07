@@ -1,0 +1,415 @@
+[
+ {
+  "i": 1,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0,\"w\":20,\"h\":15}"
+ },
+ {
+  "i": 2,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"제작 규칙 집 버들항\",\"mapId\":\"map_blank_start\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 3,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 4,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 5,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"offset\":0}"
+ },
+ {
+  "i": 7,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 2개 발견: lay_path, check_reachability",
+  "args": "{\"query\":\"lay_path check_reachability\",\"domain\":\"map\",\"limit\":2}"
+ },
+ {
+  "i": 8,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (0–5891, 1/2쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"bd-pieces-houses-1\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 9,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (0–5871, 1/3쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"bd-pieces-props\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 10,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 읽는 순서·짓는 순서 (0–2803, 1/1쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-order\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 11,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 구조 규칙·사용자 판정 (0–1926, 1/1쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-rules\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 12,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"offset\":20}"
+ },
+ {
+  "i": 13,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (5891–11002, 2/2쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"bd-pieces-houses-1\",\"imageId\":\"\",\"offset\":5891}"
+ },
+ {
+  "i": 14,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (5871–11816, 2/3쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"bd-pieces-props\",\"imageId\":\"\",\"offset\":5871}"
+ },
+ {
+  "i": 15,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / pieces-houses-a.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"\",\"imageId\":\"bd-pieces-houses-a\",\"offset\":0}"
+ },
+ {
+  "i": 16,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / pieces-trees.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"\",\"imageId\":\"bd-pieces-trees\",\"offset\":0}"
+ },
+ {
+  "i": 17,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 예제 · 학자의 집 (0–5974, 1/2쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-map-scholar\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 18,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "방 침실: 예제 10맵 12방에서 쓰인 가구 27종(종류별) + 태그가 맞는 16종. 예제 참고문서 documentId: hand-interior-v5-map-pharmacy, hand-interior-v5-map-smithy, hand-interior-v5-map-scholar, hand-interior-v5-map-manor_1f ….",
+  "args": "{\"room\":\"침실\",\"query\":\"\",\"category\":\"\",\"limit\":30}"
+ },
+ {
+  "i": 19,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"offset\":60}"
+ },
+ {
+  "i": 20,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / hand-interior-scholar.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"\",\"imageId\":\"hand-interior-scholar\",\"offset\":0}"
+ },
+ {
+  "i": 21,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 예제 · 학자의 집 (5974–7008, 2/2쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-map-scholar\",\"imageId\":\"\",\"offset\":5974}"
+ },
+ {
+  "i": 22,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 사전(바닥·벽면·천장·탁자·줄·단·탁상 물건) (0–16493, 1/1쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-dictionary\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 23,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (11816–13221, 3/3쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-pieces\",\"documentId\":\"bd-pieces-props\",\"imageId\":\"\",\"offset\":11816}"
+ },
+ {
+  "i": 24,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"offset\":0}"
+ },
+ {
+  "i": 25,
+  "name": "get_project_summary",
+  "ok": true,
+  "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 1000, 트룹 7",
+  "args": "{}"
+ },
+ {
+  "i": 26,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / 자동타일 · 길·물·모랫길 (0–1190, 1/1쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"bd-autotiles\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 27,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / at-road.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-at-road\",\"offset\":0}"
+ },
+ {
+  "i": 28,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "손 도트 실내 (v5) / 손 도트 실내 · 정상/오류 그림과 검사 코드 (0–1937, 1/1쪽)",
+  "args": "{\"tilesetId\":\"atlas_biome_interior\",\"categoryId\":\"hand-interior-v5\",\"documentId\":\"hand-interior-v5-errors\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 29,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 1개 발견: run_scene_test",
+  "args": "{\"query\":\"run_scene_test\",\"domain\":\"system\",\"limit\":1}"
+ },
+ {
+  "i": 30,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 7×6」 → map_blank_start (8,1) 7×6 · 32칸 · 입구 (10,6) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (10,7) 에서 끝낸다",
+  "args": "{\"objectId\":\"kit:beodeul_city/bd-house-h101_0\",\"mapId\":\"map_blank_start\",\"x\":8,\"y\":1,\"layers\":\"upper\",\"referencePurpose\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 31,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '버들항 작은 집 실내' 13×9 (map_beodeul_small_home, atlas_biome_interior) — 출입구에서 닿는 칸 26, 닿지 못한 빈 바닥 15, 경고 5 — 출입구에서 닿지 못하는 빈 바닥 15칸: (8,3) (8,4) (10,4) (11,4) (8,5) (9,5) (10,5) (11,5) (8,6) (9,6) — 가구가 길을 막았거나 방이 닫혔다 / 침대 파랑(bed blue) @(9,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 / 협탁(nightstand) @(10,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 / 옷장(wardrobe) @(11,3) 옆에 닿는 칸이 없다 — 쓸 수 없는 가구 …",
+  "args": "{\"mapId\":\"map_beodeul_small_home\",\"name\":\"버들항 작은 집 실내\",\"replace\":false,\"plan\":[\"#############\",\"#......#....#\",\"#......#....#\",\"#......#....#\",\"#......#....#\",\"#......#....#\",\"#...........#\",\"#......#....#\",\"####.########\"],\"floor\":\"plank\",\"wall\":\"plaster\",\"ceiling\":\"default\",\"zones\":[{\"x0\":8,\"y0\":1,\"x1\":11,\"y1\":7,\"floor\":\"dplank\",\"wall\":\"plaster\"}],\"objects\":[{\"id\":\"cupboard\",\"x\":1,\"y\":3},{\"id\":\"window\",\"x\":4,\"y\":1},{\"id\":\"chair N\",\"x\":3,\"y\":5},{\"id\":\"plant\",\"x\":1,\"y\":7},{\"id\":\"bed blue\",\"x\":9,\"y\":3},{\"id\":\"nightstand\",\"x\":10,\"y\":3},{\"id\":\"wardrobe\",\"x\":11,\"y\":3},{\"id\":\"window\",\"x\":8,\"y\":1},{"
+ },
+ {
+  "i": 32,
+  "name": "lay_path",
+  "ok": false,
+  "summary": "타일셋 참고문서 선행 읽기 필요 (13건): read_tileset_reference(tilesetId:\"beodeul_city\", categoryId:\"beodeul-city-water\", documentId:\"bd-water-kits\", offset:0); read_tileset_reference(tilesetId:\"beodeul_city\", categoryId:\"beodeul-city-water\", imageId:\"bd-at-water\") — 이미지 입력 전달 필요; read_tileset_reference(tilesetId:\"beodeul_city\", categoryId:\"beodeul-city-water\", imageId:\"bd-at-sand\") — 이미지 입력 전달 필요; read_tileset_",
+  "args": "{\"mapId\":\"map_blank_start\",\"points\":[{\"x\":10,\"y\":7},{\"x\":10,\"y\":13}],\"material\":\"버들항 길 포석\",\"naturalness\":0,\"seed\":7,\"referencePurpose\":\"beodeul-city-water\"}"
+ },
+ {
+  "i": 33,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "버들항 작은 집 실내(map_beodeul_small_home) 영역 (0,0)~(13,9) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_beodeul_small_home\",\"x\":0,\"y\":0,\"w\":13,\"h\":9}"
+ },
+ {
+  "i": 34,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '버들항 작은 집 실내' 13×9 (map_beodeul_small_home, atlas_biome_interior) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0",
+  "args": "{\"mapId\":\"map_beodeul_small_home\",\"name\":\"버들항 작은 집 실내\",\"replace\":true,\"plan\":[\"#############\",\"#......#....#\",\"#......#....#\",\"#......#....#\",\"#...........#\",\"#...........#\",\"#...........#\",\"#......#....#\",\"####.########\"],\"floor\":\"plank\",\"wall\":\"plaster\",\"ceiling\":\"default\",\"zones\":[{\"x0\":8,\"y0\":1,\"x1\":11,\"y1\":7,\"floor\":\"dplank\",\"wall\":\"plaster\"}],\"objects\":[{\"id\":\"cupboard\",\"x\":1,\"y\":3},{\"id\":\"window\",\"x\":4,\"y\":1},{\"id\":\"chair N\",\"x\":3,\"y\":5},{\"id\":\"plant\",\"x\":1,\"y\":7},{\"id\":\"bed blue\",\"x\":9,\"y\":3},{\"id\":\"nightstand\",\"x\":10,\"y\":3},{\"id\":\"wardrobe\",\"x\":11,\"y\":3},{\"id\":\"window\",\"x\":8,\"y\":1},{\""
+ },
+ {
+  "i": 35,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / 강·폭포·다리·호수 항구 키트 (0–6092, 1/1쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"bd-water-kits\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 36,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / at-water.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-at-water\",\"offset\":0}"
+ },
+ {
+  "i": 37,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / at-sand.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-at-sand\",\"offset\":0}"
+ },
+ {
+  "i": 38,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-upper.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-river-upper\",\"offset\":0}"
+ },
+ {
+  "i": 39,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-straight-ns.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-river-straight-ns\",\"offset\":0}"
+ },
+ {
+  "i": 40,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-canal-straight-ew.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-canal-straight-ew\",\"offset\":0}"
+ },
+ {
+  "i": 41,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-bend-ns-ew.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-river-bend-ns-ew\",\"offset\":0}"
+ },
+ {
+  "i": 42,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-canal-bend-ew-ns.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-canal-bend-ew-ns\",\"offset\":0}"
+ },
+ {
+  "i": 43,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-bridge-arch.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-bridge-arch\",\"offset\":0}"
+ },
+ {
+  "i": 44,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-waterfall-drop.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-waterfall-drop\",\"offset\":0}"
+ },
+ {
+  "i": 45,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-waterfall-wall.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-waterfall-wall\",\"offset\":0}"
+ },
+ {
+  "i": 46,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-lake.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-harbour-lake\",\"offset\":0}"
+ },
+ {
+  "i": 47,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-square.png — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city-water\",\"documentId\":\"\",\"imageId\":\"bd-kit-harbour-square\",\"offset\":0}"
+ },
+ {
+  "i": 48,
+  "name": "lay_path",
+  "ok": true,
+  "summary": "빈 맵에 '버들항 길 포석' 길 7칸 — 자연도 0, 오토타일 재계산 7칸(inner corner 포함).",
+  "args": "{\"mapId\":\"map_blank_start\",\"points\":[{\"x\":10,\"y\":7},{\"x\":10,\"y\":13}],\"material\":\"버들항 길 포석\",\"naturalness\":0,\"seed\":7,\"referencePurpose\":\"beodeul-city-water\"}"
+ },
+ {
+  "i": 49,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → map_blank_start (3,3) 3×3 · 9칸",
+  "args": "{\"objectId\":\"kit:beodeul_city/bd-tree-03a8f7\",\"mapId\":\"map_blank_start\",\"x\":3,\"y\":3,\"layers\":\"upper\",\"referencePurpose\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 50,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×4」 → map_blank_start (16,5) 3×4 · 12칸",
+  "args": "{\"objectId\":\"kit:beodeul_city/bd-tree-1a786c\",\"mapId\":\"map_blank_start\",\"x\":16,\"y\":5,\"layers\":\"upper\",\"referencePurpose\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 51,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → map_blank_start (4,10) 3×3 · 9칸",
+  "args": "{\"objectId\":\"kit:beodeul_city/bd-tree-3e8732\",\"mapId\":\"map_blank_start\",\"x\":4,\"y\":10,\"layers\":\"upper\",\"referencePurpose\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 52,
+  "name": "create_transfer_pair",
+  "ok": true,
+  "summary": "출입구 쌍 생성: 빈 맵(10,7) ↔ 버들항 작은 집 실내(4,8)",
+  "args": "{\"a\":{\"mapId\":\"map_blank_start\",\"x\":10,\"y\":7},\"b\":{\"mapId\":\"map_beodeul_small_home\",\"x\":4,\"y\":8},\"fade\":\"black\"}"
+ },
+ {
+  "i": 53,
+  "name": "set_start_position",
+  "ok": true,
+  "summary": "시작 위치 설정: 빈 맵 (10, 10)",
+  "args": "{\"mapId\":\"map_blank_start\",\"x\":10,\"y\":10}"
+ },
+ {
+  "i": 54,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 20×15 (빈 맵)",
+  "args": "{\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0,\"w\":20,\"h\":15}"
+ },
+ {
+  "i": 55,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 13×9 (버들항 작은 집 실내)",
+  "args": "{\"mapId\":\"map_beodeul_small_home\",\"x\":0,\"y\":0,\"w\":13,\"h\":9}"
+ },
+ {
+  "i": 56,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 전부 도달 가능",
+  "args": "{\"mapId\":\"map_blank_start\",\"from\":{\"x\":10,\"y\":10},\"targets\":[{\"x\":10,\"y\":7}]}"
+ },
+ {
+  "i": 57,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 전부 도달 가능",
+  "args": "{\"mapId\":\"map_beodeul_small_home\",\"from\":{\"x\":4,\"y\":7},\"targets\":[{\"x\":8,\"y\":6},{\"x\":10,\"y\":5},{\"x\":4,\"y\":8}]}"
+ },
+ {
+  "i": 58,
+  "name": "run_scene_test",
+  "ok": true,
+  "summary": "scene test 성공 (10/10 스텝)",
+  "args": "{\"mapId\":\"map_blank_start\",\"start\":{\"x\":10,\"y\":10},\"steps\":[{\"kind\":\"move\",\"to\":{\"x\":10,\"y\":7}},{\"kind\":\"wait\",\"ticks\":30},{\"kind\":\"expect\",\"mapId\":\"map_beodeul_small_home\",\"playerAt\":{\"x\":4,\"y\":7},\"lastTransfer\":{\"fromMapId\":\"map_blank_start\",\"eventId\":\"ev_gate_bae695ea-4cbc-4aea-a7e3-de95642a529a\",\"toMapId\":\"map_beodeul_small_home\"}},{\"kind\":\"move\",\"to\":{\"x\":8,\"y\":6}},{\"kind\":\"move\",\"to\":{\"x\":10,\"y\":5}},{\"kind\":\"move\",\"to\":{\"x\":4,\"y\":8}},{\"kind\":\"wait\",\"ticks\":30},{\"kind\":\"expect\",\"mapId\":\"map_blank_start\",\"playerAt\":{\"x\":10,\"y\":8},\"lastTransfer\":{\"fromMapId\":\"map_beodeul_small_home\",\"eventI"
+ },
+ {
+  "i": 59,
+  "name": "run_scene_test",
+  "ok": true,
+  "summary": "scene test 성공 (6/6 스텝)",
+  "args": "{\"mapId\":\"map_blank_start\",\"start\":{\"x\":10,\"y\":8},\"steps\":[{\"kind\":\"move\",\"to\":{\"x\":10,\"y\":7}},{\"kind\":\"wait\",\"ticks\":30},{\"kind\":\"expect\",\"mapId\":\"map_beodeul_small_home\",\"playerAt\":{\"x\":4,\"y\":7}},{\"kind\":\"move\",\"to\":{\"x\":4,\"y\":8}},{\"kind\":\"wait\",\"ticks\":30},{\"kind\":\"expect\",\"mapId\":\"map_blank_start\",\"playerAt\":{\"x\":10,\"y\":8}}]}"
+ }
+]

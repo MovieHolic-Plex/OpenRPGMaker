@@ -1,0 +1,99 @@
+{
+  "sequence": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    0
+  ],
+  "observations": [
+    {
+      "stage": 0,
+      "frame": 11,
+      "at": 40905
+    },
+    {
+      "stage": 1,
+      "frame": 51,
+      "at": 41589
+    },
+    {
+      "stage": 2,
+      "frame": 58,
+      "at": 41718
+    },
+    {
+      "stage": 3,
+      "frame": 65,
+      "at": 41842
+    },
+    {
+      "stage": 4,
+      "frame": 72,
+      "at": 41957
+    },
+    {
+      "stage": 5,
+      "frame": 79,
+      "at": 42079
+    },
+    {
+      "stage": 6,
+      "frame": 86,
+      "at": 42194
+    },
+    {
+      "stage": 7,
+      "frame": 93,
+      "at": 42319
+    },
+    {
+      "stage": 6,
+      "frame": 386,
+      "at": 46226
+    },
+    {
+      "stage": 5,
+      "frame": 392,
+      "at": 46328
+    },
+    {
+      "stage": 4,
+      "frame": 399,
+      "at": 46443
+    },
+    {
+      "stage": 3,
+      "frame": 406,
+      "at": 46560
+    },
+    {
+      "stage": 2,
+      "frame": 413,
+      "at": 46671
+    },
+    {
+      "stage": 1,
+      "frame": 420,
+      "at": 46787
+    },
+    {
+      "stage": 0,
+      "frame": 427,
+      "at": 46900
+    }
+  ],
+  "allEightStatesRendered": true,
+  "returnedClosed": true,
+  "runtimeErrors": []
+}

@@ -1,0 +1,107 @@
+{
+  "checked": 20,
+  "hashesMatch": true,
+  "rgbaReproductionCount": 10,
+  "assets": [
+    {
+      "candidate": "r3-building-01",
+      "asset": "review-r3-building-01-roof",
+      "sha": "5cf433a62cf8220711ce16f44f80b21c2c6bfac63fa57e3b8059fbafbef08981"
+    },
+    {
+      "candidate": "r3-building-01",
+      "asset": "review-sign-bed",
+      "sha": "337058a4ce2bcbcf4dde6538cfa562c637309b7ac87394c780e27346e61c26f4"
+    },
+    {
+      "candidate": "r3-building-02",
+      "asset": "review-r3-building-02-roof",
+      "sha": "5765f357ea7c5c74ede8d3304da911826147f5393cd6950393190f1ba4779297"
+    },
+    {
+      "candidate": "r3-building-02",
+      "asset": "review-sign-key",
+      "sha": "748b1646502186e9557df0583f9b1ed9192a564a516ea944eab6cf6055f516de"
+    },
+    {
+      "candidate": "r3-building-03",
+      "asset": "review-r3-building-03-roof",
+      "sha": "3dbd086de0df77e0843392064fc91ea246b3a00234f104169e095a21a53cb416"
+    },
+    {
+      "candidate": "r3-building-03",
+      "asset": "review-sign-bread",
+      "sha": "57e47d85f11e5fa4e943862e5100aa1a0dab49381ea345720261bf1acccdf08f"
+    },
+    {
+      "candidate": "r3-building-04",
+      "asset": "review-r3-building-04-roof",
+      "sha": "7c1f133748ab6f35fb33b09e3cef203b6bc9a052149708afe84728d81464263b"
+    },
+    {
+      "candidate": "r3-building-04",
+      "asset": "review-sign-bottle",
+      "sha": "ef658006527a8320146501a44f71710f130802851c9394f7d44f1c4492e2c211"
+    },
+    {
+      "candidate": "r3-building-05",
+      "asset": "review-r3-building-05-roof",
+      "sha": "026c9835240b1c47a5b14614435a93a41c0df8645e3086c5bb81ee6bc68661f1"
+    },
+    {
+      "candidate": "r3-building-05",
+      "asset": "review-sign-book",
+      "sha": "3b310e76f1e5d8c6f7f70e3ac8ee9a519c0872070fd5730cf3d5773de0658cfe"
+    },
+    {
+      "candidate": "r3-building-06",
+      "asset": "review-r3-building-06-roof",
+      "sha": "5a7a9cd723b664dea680bd3deb8bb4fa0fb6c18870518990d190567de85761bd"
+    },
+    {
+      "candidate": "r3-building-06",
+      "asset": "review-sign-scales",
+      "sha": "b263ff18ea802953419df73bcc76f65da3302ad99458d4460e90f40de45665c5"
+    },
+    {
+      "candidate": "r3-building-07",
+      "asset": "review-r3-building-07-roof",
+      "sha": "f97dcef6bf1614f8765e045e196cb526ab6d07bbedea3cc02e23bc85dd457792"
+    },
+    {
+      "candidate": "r3-building-07",
+      "asset": "review-sign-bed",
+      "sha": "337058a4ce2bcbcf4dde6538cfa562c637309b7ac87394c780e27346e61c26f4"
+    },
+    {
+      "candidate": "r3-building-08",
+      "asset": "review-r3-building-08-roof",
+      "sha": "b15f65cb41e74433a91922ccd370ff03dbfc7100f5bdf3192b2b98c407885674"
+    },
+    {
+      "candidate": "r3-building-08",
+      "asset": "review-sign-shield",
+      "sha": "bd00997a13d5480f8b0383e2e8d5999eae9a9e4b83c3d83275a3bcdbaa548a0f"
+    },
+    {
+      "candidate": "r3-building-09",
+      "asset": "review-r3-building-09-roof",
+      "sha": "7698bb4bd0d30757aac5ee04ba759a49c2ecf074239d567023cc3caf828beb75"
+    },
+    {
+      "candidate": "r3-building-09",
+      "asset": "review-sign-sack",
+      "sha": "eeba00bbb55b65313c3f17f47e2f90d9ac660b9f98ba9e3b716445a89fc779d0"
+    },
+    {
+      "candidate": "r3-building-10",
+      "asset": "review-r3-building-10-roof",
+      "sha": "3ce5db9d1a59a3bc1990d20f20961866803d98d3f55a1a004c20d148f86ecee9"
+    },
+    {
+      "candidate": "r3-building-10",
+      "asset": "review-sign-quill",
+      "sha": "95c54db4d347ad6ddd273f40eeaf32cd31c66fec1930749868d96f10295031dd"
+    }
+  ]
+}

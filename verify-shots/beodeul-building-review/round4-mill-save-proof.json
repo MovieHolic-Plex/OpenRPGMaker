@@ -1,0 +1,17 @@
+{
+  "savedTarget": "/home/main/.local/share/oprn/beodeul-building-review/review.sqlite",
+  "reloadedFrom": "http://127.0.0.1:18317/api/state",
+  "candidateCount": 20,
+  "counts": {
+    "allow": 13,
+    "deny": 0,
+    "pending": 7
+  },
+  "candidate": "r3-building-09",
+  "newImageSha": "b0f0ed28b6e3129679c4ec531afc9c062d1833ad3a9ae77682d6a641ae26b8ba",
+  "decision": "pending",
+  "allPriorHumanEventsPreserved": true,
+  "bodyBelowY56Unchanged": true,
+  "actualTextureAndStructurePassed": true,
+  "noProductionMockDecisionsWritten": true
+}

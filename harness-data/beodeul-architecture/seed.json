@@ -1,0 +1,24 @@
+{
+  "tileset": "beodeul_city",
+  "brief": "기와 픽셀은 원본으로 복원/고정. stone 지붕 아래 박공 벽 전체의 돌무늬와 중앙 원형창만 정리. 기존 한 문·개별 창문·통일된 벽색/기초 유지.",
+  "perspective": "원본 지붕 윗면과 윤곽을 보존. 측면은 필수 아님. 전체 재저작 금지.",
+  "concepts": [
+    "cream",
+    "brick",
+    "stone",
+    "sage",
+    "ochre",
+    "church"
+  ],
+  "source": "src/harnesses/beodeul-architecture/node/build.py",
+  "structuralBrief": "2026-10-05: 기존 여섯 보정 건물은 그대로. 별도 beodeul_forms 시트에 가로 긴 민가·좁은 2층·ㄱ자 별채·현관/다락 여관·낮은 작업장 대장간·하역 차양 창고를 원본 1:1 도트 조립으로 추가한다.",
+  "structuralFamilies": [
+    "long",
+    "narrow",
+    "wing",
+    "inn",
+    "smithy",
+    "warehouse"
+  ],
+  "structuralSource": "src/harnesses/beodeul-architecture/node/forms.py"
+}

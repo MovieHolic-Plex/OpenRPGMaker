@@ -1,0 +1,20 @@
+{
+  "primaryInteractionChangesActualMap": true,
+  "wellCrop": [
+    416,
+    256
+  ],
+  "before": [
+    864,
+    480
+  ],
+  "after": [
+    864,
+    544
+  ],
+  "narrowFits": {
+    "width": 328,
+    "scroll": 328
+  },
+  "errors": []
+}

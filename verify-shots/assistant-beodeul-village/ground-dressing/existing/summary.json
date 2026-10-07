@@ -1,0 +1,243 @@
+{
+ "label": "existing",
+ "round": "ground-dressing",
+ "text": "현재 야외 맵의 밝은 잔디는 유지하고 집 기초와 나무 밑동을 다듬어줘. 빈 잔디 위에 풀·꽃 군락과 낙엽·잔돌, 집 곁 살림 소품을 적당히 꾸며줘. 지금 집·나무·길·문 열림과 실내 왕복은 유지해. 기존 맵을 꾸미고 새 맵은 만들지 마.",
+ "model": "opencodex/gpt-6-astra",
+ "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+ "ms": 81213,
+ "before": {
+  "maps": {
+   "map_blank_start": "beodeul_city",
+   "map_beodeul_small_home": "atlas_biome_interior"
+  },
+  "currentMapId": "map_blank_start"
+ },
+ "afterMaps": {
+  "map_blank_start": "beodeul_city",
+  "map_beodeul_small_home": "atlas_biome_interior"
+ },
+ "target": {
+  "id": "map_blank_start",
+  "size": [
+   20,
+   15
+  ],
+  "tilesetId": "beodeul_city"
+ },
+ "blankCellRatioRaw": 0,
+ "exposedTools": 25,
+ "villageContract": false,
+ "toolCalls": 16,
+ "failed": 0,
+ "byTool": {
+  "get_map_region": 1,
+  "read_project_wiki": 1,
+  "get_project_summary": 1,
+  "find_tools": 2,
+  "list_tileset_references": 1,
+  "read_tileset_reference": 5,
+  "dress_beodeul_ground": 1,
+  "show_map_region": 1,
+  "get_event": 1,
+  "check_reachability": 1,
+  "find_events": 1
+ },
+ "stats": {
+  "ms": 73423,
+  "turns": 9,
+  "toolCalls": 17,
+  "toolErrors": 0,
+  "usage": {
+   "input": 319285,
+   "output": 964,
+   "cacheRead": 0,
+   "cacheWrite": 0,
+   "totalTokens": 320249,
+   "calls": 9
+  }
+ },
+ "metrics": {
+  "emptiness": {
+   "lawn": {
+    "share": 0.77,
+    "screens": 1,
+    "over40": 1,
+    "worst": 0.77,
+    "overAt": [
+     [
+      0,
+      0,
+      0.77
+     ]
+    ]
+   },
+   "open": {
+    "share": 0.77,
+    "screens": 1,
+    "over40": 1,
+    "worst": 0.77,
+    "overAt": [
+     [
+      0,
+      0,
+      0.77
+     ]
+    ]
+   }
+  },
+  "blockRepeats": {
+   "blocks": 0,
+   "distinct": 0,
+   "neighbourRepeats": [],
+   "overused": []
+  },
+  "cityForm": {
+   "deadEnds": [
+    {
+     "at": [
+      10,
+      7
+     ],
+     "kind": "cell",
+     "width": 1
+    },
+    {
+     "at": [
+      10,
+      13
+     ],
+     "kind": "cell",
+     "width": 1
+    }
+   ],
+   "lines": {
+    "count": 1,
+    "longStraight": [],
+    "longestLen": 7
+   },
+   "graph": {
+    "meanDepth": 0,
+    "maxDepth": 0,
+    "components": 1,
+    "isolated": []
+   },
+   "spacing": {
+    "vGaps": [],
+    "hGaps": [],
+    "cv": null
+   },
+   "bentStreetCells": 0,
+   "canal": {
+    "cells": 0,
+    "orient": null,
+    "bends": 0,
+    "straightShare": null,
+    "straight": false
+   },
+   "nodes": [],
+   "landmarks": [],
+   "blocks": {
+    "count": 0,
+    "distinct": 0,
+    "neighbourRepeats": [],
+    "overused": []
+   }
+  },
+  "originality": {
+   "sameCells": 0,
+   "ofCells": 300,
+   "sameShare": 0,
+   "sameShareOfObjectCells": 0
+  },
+  "districts": [
+   {
+    "id": "bd-castle",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-estate",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-forum",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-cathedral",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-windmill",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour-west",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-river-bridge",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   }
+  ],
+  "districtsPresent": 0,
+  "districtsAtOriginalOrigin": 0,
+  "stampedKits": 0,
+  "doors": 0,
+  "landReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "streetReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "defects": {
+   "deadEndPavedCells": [
+    [
+     10,
+     7
+    ],
+    [
+     10,
+     13
+    ]
+   ],
+   "deadEndStreets": [],
+   "roadIntoWater": [],
+   "blockedDoorFronts": [],
+   "sameKitRepeats": []
+  },
+  "designedObjectCells": 62
+ },
+ "finalText": "assistant: 밝은 잔디를 그대로 두고 집의 얇은 기초와 나무 밑동을 다듬었으며, 빈 잔디에 풀·꽃 군락과 낙엽·잔돌, 집 곁 화단과 통을 추가했습니다. 새 맵은 만들지 않았고 기존 집·나무·길과 문 열림·실내 왕복 연결은 건드리지 않았으며, 문 앞까지 통행 가능한 것도 확인했습니다."
+}

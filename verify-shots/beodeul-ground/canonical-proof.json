@@ -1,0 +1,15 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "storeFile": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite",
+  "revision": 6,
+  "sha256": "ecd86bb4f7c9f5156a7f0cfdda5c88a5e8b2e133768c9dacb0f3f633cf3ffbb0",
+  "reopenedTwice": true,
+  "assistantToolCalls": 16,
+  "assistantGroundToolCalls": 1,
+  "guideAllPagesAndImagesRead": true,
+  "originalGroundHouseTreesDoorEventsInteriorPreserved": true,
+  "blockedCellsPreserved": 62,
+  "groundGrafts": 41,
+  "referenceCategories": 13
+}

@@ -1,0 +1,124 @@
+{
+  "candidateOnly": true,
+  "nativeAtlasHash": "4c451a7b86b2f8e6f173f99b2baa425238398f3eef1a360d13bc7f1aa686cdd0",
+  "sourceProjectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "sourceRevision": 18,
+  "labels": [
+    "현재",
+    "접촉 그림자",
+    "굵은 줄기·뿌리",
+    "수관 명암 정리",
+    "낮고 넓은 수관",
+    "밑동·수관·숲 통합"
+  ],
+  "edits": [
+    {
+      "id": "current",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 0
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 0
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 0
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 49
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 49
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 124
+        }
+      ]
+    },
+    {
+      "id": "roots",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 229
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 229
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 231
+        }
+      ]
+    },
+    {
+      "id": "volume",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 1572
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 1572
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 1625
+        }
+      ]
+    },
+    {
+      "id": "squat",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 2041
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 2036
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 2074
+        }
+      ]
+    },
+    {
+      "id": "integrated",
+      "edits": [
+        {
+          "sourceKit": "bd-tree-03a8f7",
+          "changedBodyPixels": 1800
+        },
+        {
+          "sourceKit": "bd-tree-3e8732",
+          "changedBodyPixels": 1800
+        },
+        {
+          "sourceKit": "bd-tree-1a786c",
+          "changedBodyPixels": 1830
+        }
+      ]
+    }
+  ],
+  "sourceAtlasUnchanged": true,
+  "integerPixelsOnly": true,
+  "contextHouse": "bd-house-village-stone",
+  "housePixelHash": "3822bccd0ca1a713220b1fca2177c316d342a3c5182ecd3037c40d288d45e44c",
+  "houseAndSoloTreeGroundLine": 100,
+  "sameHouseAndNativeScaleInAllVariants": true
+}
