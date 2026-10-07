@@ -215,7 +215,10 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       ...(team ? { teamSpec: config.piTeam ?? defaultTeamSpec() } : {}),
     });
-    const runRequest: PiAgentRequest = arg("timeout-ms") ? { ...request, timeoutMs: Number(arg("timeout-ms")) } : request;
+    // QA_IMAGE_PROVIDER=codex — Google 이미지 용량(429)이 막혔을 때 타이틀 키아트도 GPT Image 로(headlessGenerateImage 와 같은 스위치).
+    const viaCodexImages = process.env.QA_IMAGE_PROVIDER === "codex";
+    const runRequest: PiAgentRequest = { ...request, ...(arg("timeout-ms") ? { timeoutMs: Number(arg("timeout-ms")) } : {}),
+      ...(viaCodexImages ? { imageProvider: "openai-codex", imageModel: "codex-image-default" } : {}) };
     fs.writeFileSync(path.join(out, "request.json"), JSON.stringify({ ...runRequest, project: "(seed.json)" }, null, 2));
     const publication = createPiPublication(base, applyMode, {
       appendBubble: (_role, text) => console.log(`[bubble] ${text}`),
@@ -232,8 +235,10 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     const unwrapTeam = (event: PiAgentEvent): PiAgentEvent => event.type === "agent_event" && "id" in event.event
       ? { ...event.event, id: `${event.agentId}:${(event.event as { id: string }).id}` } as PiAgentEvent : event.type === "agent_event" ? event.event : event;
     const runner = team ? runPiTeam : runPiAgent;
+    const runKeys = await agentKeys(runRequest, keys);
+    if (viaCodexImages && runKeys.codexApiKey) runKeys.providerApiKeys["openai-codex"] = runKeys.codexApiKey;
     const done: PiAgentDoneEvent = await runner(runRequest, {
-      ...await agentKeys(runRequest, keys), onToolCall: phase.onToolCall,
+      ...runKeys, onToolCall: phase.onToolCall,
       ...(readOnlyRun ? { readOnlyTools: true } : {}),
       ...(runRequest.timeoutMs ? { timeoutMs: runRequest.timeoutMs } : {}),
       onEvent: (event) => { phase.onEvent(team ? unwrapTeam(event) : event); logLine(team && event.type === "agent_event" ? `[${event.agentId}]` : "[build]", team && event.type === "agent_event" ? event.event : event); },
