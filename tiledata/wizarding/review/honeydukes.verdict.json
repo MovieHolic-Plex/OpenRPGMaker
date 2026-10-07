@@ -1,12 +1,12 @@
 {
  "module": "honeydukes",
- "sealed": "2026-10-07T08:50:37.458453+09:00",
+ "sealed": "2026-10-07T10:21:07.079700+09:00",
  "reviewer": "sonnet adversarial",
  "pieces": {
   "wz-hd-wall-n": {
    "verdict": "PASS",
-   "hash": "19383f58fc49fcab240bf566cc5a1eb79a18a833790f86202a050098ec08294c",
-   "reason": "돌 블록 벽 읽힘, 유색 윤곽·3단 명암, 좌상 광원, 1x4 하단 X 통행 맞음."
+   "hash": "73061992d77decce318e31b287dc01bdd0c4c346b1d17e95c6e8df4faf59392d",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-hd-beam-h": {
    "verdict": "PASS",
@@ -45,13 +45,13 @@
   },
   "wz-hd-floor-sugar-a": {
    "verdict": "PASS",
-   "hash": "2ecd6308fc9aa14b1b9a1aaba8400d52d956b858642d5e0ea0fe616e7513fab7",
-   "reason": "나무 판재 바닥에 성긴 설탕 알갱이, 잡음 밀도 낮고 이음 무난."
+   "hash": "b5782d310eeecd4af42cf27df6c6dd3e61cf00a1c50cd95a1ca053d7d88ab9b7",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-hd-floor-sugar-b": {
    "verdict": "PASS",
-   "hash": "f35814d9c889780638e02a69ccab2ae2a70326290e39bc43f9cadbf3343c58b9",
-   "reason": "A 와 같은 계열의 변형, 반복 무늬 튀지 않음."
+   "hash": "08278c868683c3166a1842d1bed2b4997f09551106c68f18ece1e15d5bbb9308",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
   },
   "wz-hd-floor-packing": {
    "verdict": "PASS",
