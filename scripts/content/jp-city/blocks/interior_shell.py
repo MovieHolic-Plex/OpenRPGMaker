@@ -76,11 +76,11 @@ def _planks(ramp, hi, mid, lo, seed):
     return d
 
 
-@R.floor('flooring', '플로어링(나무 마루)', cols=8, rows=4, tags=('거실', 'LDK', '복도', '양실'), desc='밝은 나무 널 마루(フローリング) — 양실·LDK·복도.')
+@R.floor('flooring', '플로어링(나무 마루)', cols=8, rows=4, tags=('거실', 'LDK', '복도', '양실'), desc='밝은 나무 널 마루(フローリング) — 양실·LDK·복도.', lay='rowShift')
 def _flooring(c): _planks('yuka', kc('yuka', 1), kc('yuka', 0), kc('yuka', -1), 1)(c)
 
 
-@R.floor('flooring-dark', '짙은 플로어링', cols=8, rows=4, tags=('거실', '복도', '침실'), desc='짙은 나무 마루 — 복도·양실.')
+@R.floor('flooring-dark', '짙은 플로어링', cols=8, rows=4, tags=('거실', '복도', '침실'), desc='짙은 나무 마루 — 복도·양실.', lay='rowShift')
 def _flooring_dark(c): _planks('ita', kc('ita', 1), kc('ita', 0), kc('ita', -1), 2)(c)
 
 

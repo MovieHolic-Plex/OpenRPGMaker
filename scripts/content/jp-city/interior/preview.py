@@ -73,7 +73,7 @@ def render_room(room, lib=None):
             if g[cy][cx] and face[cy][cx]: t = lib.wall[w].wall_cell(w, cx, face[cy][cx], west)
             elif g[cy][cx]:
                 sh = (1 if cy > 0 and face[cy - 1][cx] else 0) | (2 if west else 0)
-                t = lib.floor[f].floor_cell(f, cx, cy, sh)
+                t = lib.floor[f].floor_cell(f, lib.floor[f].lay_x(f, cx, cy), cy, sh)
             elif top[cy][cx]:
                 nv = 1 if cy == 0 else (0 if inn(cx, cy - 1) or top[cy - 1][cx] else 1)
                 b = (1 if inn(cx, cy + 1) else 0) | (2 if inn(cx, cy - 1) else 0) | (4 if inn(cx - 1, cy) else 0) | (8 if inn(cx + 1, cy) else 0) | 16 * nv
