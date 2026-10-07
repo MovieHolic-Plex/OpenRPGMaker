@@ -44,6 +44,20 @@ export interface ExpeditionManifest {
 }
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
+const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast" };
+
+/** 관장 타입 → 체육관 판(gyms/gym_<키>). 판 여덟 가지에 타입 열여덟을 가장 가까운 분위기로 나눈다. */
+const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
+  grass: "grass", bug: "grass",
+  water: "water",
+  fire: "fire",
+  psychic: "psychic", electric: "psychic", fairy: "psychic",
+  fighting: "dojo", ground: "dojo", rock: "dojo", normal: "dojo",
+  ice: "ice",
+  ghost: "ghost", dark: "ghost", poison: "ghost",
+  dragon: "dragon", steel: "dragon", flying: "dragon",
+};
+
 export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme } = {}): ExpeditionManifest {
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
   project.maps = {};
@@ -65,18 +79,26 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   const coord = (p: Point) => `${p.x},${p.y}`;
   const reserve = (map: GameMap, p: Point) => reserved.get(map.id)!.add(coord(p));
 
+  // 시작 테마가 있으면 둘째 마을(1관)도 그 땅의 마을 판을 쓴다 — 사막 마을·사막 길 다음에 꽃밭 마을과 정원 체육관이 나와
+  // 분위기가 튀었다(2026-10-07 사용자 지적). 같은 기후의 뒤쪽 마을(모래종·서리꽃)과 판·안내 문장을 맞바꾼다.
+  // 바닷가는 바꾸지 않는다 — 물결 항구는 잔교·배 출구 좌표가 그 판에 묶여 있고(harborExit), 바닷가 시작 마을도 풀밭 판이다.
+  const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : undefined;
+  const lookOf = (key: string): string => !swappedTown ? key : key === "grove" ? swappedTown : key === swappedTown ? "grove" : key;
+  const lookTown = (t: (typeof towns)[number]) => towns.find(other => other.key === lookOf(t.key))!;
+
   function make(key: string, name: string, source: string, track: keyof typeof audio, role: "town" | "field" | "interior" | "dungeon"): GameMap {
+    const look = role === "town" ? lookOf(key) : key;
     const t = templates[source];
     if (!t) throw Error(`Missing reviewed map ingredient ${source}`);
     const map: GameMap = { id: id(key), name, width: t.width, height: t.height, tilesetId: t.tilesetId, tileSize: 16,
       lowerTiles: [...t.lower], upperTiles: [...t.upper], events: [], encounterRate: 0,
       mapRole: role, bgm: { mode: "custom", resourceId: audio[track], fadeInMs: 350 }, battleBackground: undefined };
-    if (key === "ember" || key === "frost") {
+    if (look === "ember" || look === "frost") {
       const oldWidth = map.width, insert = 6;
       const lower: number[] = [], upper: number[] = [];
       for (let y = 0; y < map.height; y++) for (let x = 0; x < oldWidth + insert; x++) {
         if (x >= 2 && x < 2 + insert) {
-          lower.push(y === 0 || y === map.height - 1 ? t.lower[y * oldWidth]! : t.names[key === "frost" ? "snow0" : "ash0"]!);
+          lower.push(y === 0 || y === map.height - 1 ? t.lower[y * oldWidth]! : t.names[look === "frost" ? "snow0" : "ash0"]!);
           upper.push(-1);
         } else {
           const cell = y * oldWidth + (x < 2 ? x : x - insert);
@@ -88,7 +110,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     }
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
     const startTown = !options.startTheme ? undefined : key === "home" ? START_TOWNS[options.startTheme] : key === "meadow" ? START_ROUTES[options.startTheme] : undefined;
-    const sketch = startTown?.sketch ?? TOWN_SKETCHES[key];
+    const sketch = startTown?.sketch ?? TOWN_SKETCHES[look];
     if (sketch) composeTown(project, map, t, sketch);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
@@ -351,11 +373,16 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
 
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
 
-  function wild(map: GameMap, habitat: string, level: number): string[] {
+  function wild(map: GameMap, habitat: string, level: number, accent?: string): string[] {
     const fits = (s: (typeof EXPEDITION_SPECIES)[number]) => s.stage > 0 && minimumLevel(s.id) <= level - 2 && (level >= 20 || !starterFamilies.has(s.family));
     let pool = EXPEDITION_SPECIES.filter(s => s.habitat === habitat && fits(s)).map(s => s.id);
     // 스타터를 빼고 한 종만 남으면 이웃 서식지의 첫 단계 종을 빌려 온다(풀숲에 벌레가 섞이듯).
     if (pool.length < 2 && neighbourHabitat[habitat]) pool = [...pool, ...EXPEDITION_SPECIES.filter(s => s.habitat === neighbourHabitat[habitat] && s.stage === 1 && fits(s)).map(s => s.id)];
+    // 시작 테마의 첫 길: 그 땅의 첫 단계 종을 둘째 자리(Lv2)에 — 사막 1번길 풀숲에서 바람삐·심지충만 나왔다(2026-10-07 사용자 지적).
+    if (accent) {
+      const native = EXPEDITION_SPECIES.filter(s => s.habitat === accent && s.stage === 1 && fits(s) && !pool.includes(s.id)).map(s => s.id);
+      if (native.length) pool = [pool[0]!, ...native, ...pool.slice(1)].filter(Boolean);
+    }
     map.encounterRate = 14;
     // Named habitats prevent encounters on the transport/entry row and indoor surfaces.
     map.locations = [{ id: `${map.id}_habitat`, name: "몬스터 서식지", x: 1, y: 3, w: map.width - 2, h: map.height - 6 }];
@@ -395,8 +422,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: "summit", mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? "summit" : "home"));
   }
 
-  const townMaps = new Map(towns.map(t => [t.key, make(t.key, t.name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : t.template, t.music, "town")]));
-  const gymMaps = new Map(gyms.map(g => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${g.key}`, "gym", "interior")]));
+  const townMaps = new Map(towns.map(t => [t.key, make(t.key, t.name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
+  // 관장 타입을 기획서가 바꾸면(사막 기획서 1관 = 땅) 체육관 판도 그 타입의 판으로 — 「땅 관장」이 꽃밭 정원 체육관에 서 있었다(2026-10-07 사용자 지적).
+  const gymType = (i: number, g: (typeof gyms)[number]): string => options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? g.type;
+  const gymKeys = gyms.map((g, i) => GYM_KEY_BY_TYPE[gymType(i, g)] ?? g.key);
+  const gymMaps = new Map(gyms.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");
   const museum = make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior");
   const school = make("school", "조련사 학교", "rooms/school", "town", "interior");
@@ -424,10 +454,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${t.name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
       [{ kind: "shop", itemIds: ["item_capture_orb", "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
-    npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : t.flavor, { x: 6, y: 5 },
+    npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
     npc(map, "guide", "여행 안내원", `${t.name}에 온 걸 환영해요. ${i === 0 ? "북동쪽 집이 천문박사의 연구소예요." : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
-    npc(map, "local", "마을 주민", t.flavor, { x: 3, y: 10 }, [], i % 8);
+    npc(map, "local", "마을 주민", lookTown(t).flavor, { x: 3, y: 10 }, [], i % 8);
     // Return travel is earned by reaching a town, with no permanent progress rollback.
     event(map, "visit", entries.get(map.id)!, [sw(`mx_visit_${t.key}`)], { trigger: "auto", below: true,
       pages: [{ id: `${map.id}_visit_done`, name: "방문 기록", conditions: [{ kind: "switch", switchId: `mx_visit_${t.key}`, value: false }], graphic: invisible, movement: fixed, priority: "below", trigger: { kind: "auto" }, commands: [sw(`mx_visit_${t.key}`)] }] });
@@ -435,7 +465,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
 
   for (const r of routes) {
     const map = make(r.key, r.name, r.key === "meadow" && options.startTheme ? START_ROUTES[options.startTheme]?.template ?? r.template : r.template, r.music, "field");
-    const wildPool = wild(map, r.habitat, r.level);
+    const wildPool = wild(map, r.habitat, r.level, r.key === "meadow" && options.startTheme ? START_HABITAT[options.startTheme] : undefined);
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
@@ -484,14 +514,15 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   for (const [i, g] of gyms.entries()) {
     const map = gymMaps.get(g.town)!;
     const base = sources.get(map.id)!;
-    const done = templates[`gyms/gym_${g.key}_after`];
+    const key = gymKeys[i]!;
+    const done = templates[`gyms/gym_${key}_after`];
     const puzzleSwitch = `mx_gym_${i + 1}_puzzle`;
     const changes: Command[] = [];
-    if (!["psychic", "ice"].includes(g.key) && !done) throw Error(`Missing authored device state ${g.key}`);
+    if (!["psychic", "ice"].includes(key) && !done) throw Error(`Missing authored device state ${key}`);
     if (done) for (let cell = 0; cell < map.width * map.height; cell++) for (const layer of ["lower", "upper"] as const) {
       if (base[layer][cell] !== done[layer][cell]) changes.push({ kind: "changeTile", mapId: map.id, layer, x: cell % map.width, y: Math.floor(cell / map.width), tile: done[layer][cell]! });
     }
-    if (g.key === "psychic") {
+    if (key === "psychic") {
       for (const digit of "12345678") {
         const pair = base.marks![digit]!;
         for (const [j, cell] of pair.entries()) {
@@ -499,28 +530,28 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
           event(map, `warp_${digit}_${j}`, { x: cell[0]!, y: cell[1]! }, [sw(puzzleSwitch), { kind: "transfer", mapId: map.id, x: target[0]!, y: target[1]!, fade: "black" }], { trigger: "playerTouch", below: true });
         }
       }
-    } else if (g.key === "ice") {
+    } else if (key === "ice") {
       for (const [j, cell] of (base.marks?.x ?? []).entries()) event(map, `crack_${j}`, { x: cell[0]!, y: cell[1]! },
         [text("얼음이 갈라졌다! 입구에서 다시 발판을 살펴보자."), transfer(map, entries.get(map.id)!)], { trigger: "playerTouch", below: true });
       // The engine's authored slideTiles implements the ice travel itself.
     } else {
-      if (!changes.length) throw Error(`Empty authored device state ${g.key}`);
+      if (!changes.length) throw Error(`Empty authored device state ${key}`);
       type Device = { key: string; at: Point; title: string; question: string; yes: string; no: string; changes: Command[] };
       const at = (x: number, y: number) => ({ x, y });
       const split = (predicate: (c: Command) => boolean) => changes.filter(predicate);
-      const devices: Device[] = g.key === "grass" ? [
+      const devices: Device[] = key === "grass" ? [
         // Keep the operator south of the cells that become the rotating barrier.
         { key: "pivot", at: at(8,17), title: "회전 손잡이", question: "손잡이를 돌려 회전문의 방향을 바꿀까?", yes: "돌린다", no: "그대로 둔다", changes: split(c => c.kind === "changeTile" && c.y > 10) },
         { key: "cut", at: at(12,6), title: "얽힌 가지", question: "비치된 정원 가위로 길을 덮은 가지를 정리할까?", yes: "가지를 정리한다", no: "나중에", changes: split(c => c.kind === "changeTile" && c.y <= 10) }
-      ] : g.key === "fire" ? [
+      ] : key === "fire" ? [
         { key: "quiz_1", at: at(7,15), title: "화로 퀴즈 1", question: "물 타입 기술은 불꽃 타입에게 효과적인가?", yes: "효과적이다", no: "효과가 없다", changes: split(c => c.kind === "changeTile" && c.x < 10) },
         { key: "quiz_2", at: at(9,9), title: "화로 퀴즈 2", question: "풀 타입 동료가 불꽃 기술을 맞으면 피해가 커지는가?", yes: "피해가 커진다", no: "피해가 줄어든다", changes: split(c => c.kind === "changeTile" && c.x >= 10) }
-      ] : g.key === "dragon" ? [
+      ] : key === "dragon" ? [
         { key: "boulder_1", at: at(9,8), title: "둥근 바위", question: "북쪽 틈으로 바위를 밀어 발판을 만들까?", yes: "북쪽으로 민다", no: "기다린다", changes: split(c => c.kind === "changeTile" && c.x < 11) },
         { key: "boulder_2", at: at(13,9), title: "두 번째 바위", question: "서쪽 틈으로 바위를 밀어 발판을 만들까?", yes: "서쪽으로 민다", no: "기다린다", changes: split(c => c.kind === "changeTile" && c.x >= 11) }
-      ] : [{ key: "main", at: g.key === "water" ? at(1,10) : g.key === "ghost" ? at(1,2) : at(6,15),
-        title: g.key === "water" ? "수로 밸브" : g.key === "ghost" ? "기억의 문양" : "격파 수련판",
-        question: g.key === "water" ? "밸브를 열어 징검돌을 띄울까?" : g.key === "ghost" ? "문양에 등불을 놓아 숨은 다리를 밝힐까?" : "동료와 함께 수련판을 격파할까?",
+      ] : [{ key: "main", at: key === "water" ? at(1,10) : key === "ghost" ? at(1,2) : at(6,15),
+        title: key === "water" ? "수로 밸브" : key === "ghost" ? "기억의 문양" : "격파 수련판",
+        question: key === "water" ? "밸브를 열어 징검돌을 띄울까?" : key === "ghost" ? "문양에 등불을 놓아 숨은 다리를 밝힐까?" : "동료와 함께 수련판을 격파할까?",
         yes: "장치를 작동한다", no: "나중에", changes }];
       for (const d of devices) {
         const flag = `${puzzleSwitch}_${d.key}`;
@@ -532,20 +563,20 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
         manifest.devices.push({ mapId: map.id, eventId: e.id, switchId: flag, cells: d.changes.length });
       }
     }
-    if (g.key === "fire") {
+    if (key === "fire") {
       // Lower vent mouths are falls; the upper steam plume is only artwork.
       for (const [j, cell] of (base.marks?.v ?? []).entries()) event(map, `vent_${j}`, { x: cell[0]!, y: cell[1]! },
         [text("증기 구멍으로 미끄러졌다! 입구에서 안전한 발판을 찾아보자."), transfer(map, entries.get(map.id)!)], { trigger: "playerTouch", below: true });
     }
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
-    if (g.key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
-    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? g.type, i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
+    if (key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
+    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
       [text(g.after, g.leader), { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text(`${g.badge}를 받았다! 다음 길이 열렸다.`)], puzzleSwitch, audio.trainerBattle);
     const leaderEvent = map.events.find(e => e.id.endsWith("_leader"))!;
     const previous = i === 0 ? "mx_starter" : `mx_badge_${i}`;
     const body = leaderEvent.pages![0]!.commands;
     leaderEvent.pages![0]!.commands = [{ kind: "fork", condition: condition(previous), then: body, else: [text("먼저 앞 지역 관장의 약속을 받아 와 주세요.", g.leader)] }];
-    npc(map, "gym_guide", "체육관 안내원", g.key === "psychic" ? "같은 무늬의 워프 판은 서로 이어집니다. 돌아온 방의 다른 판을 찾아보세요." : g.key === "ice" ? "얼음 위에서는 벽이나 바위에 닿을 때까지 미끄러집니다. 금 간 얼음은 피하세요." : g.key === "fire" ? "퀴즈 기계 둘을 풀면 셔터가 열립니다. 증기 구멍을 밟으면 입구로 돌아가니 벽돌 발판으로 돌아가세요." : "장치를 조작하면 관장에게 가는 길이 열립니다. 밸브, 문양, 수련판, 바위 앞에서 확인 버튼을 누르세요.", { x: 2, y: map.height - 3 }, [], 4);
+    npc(map, "gym_guide", "체육관 안내원", key === "psychic" ? "같은 무늬의 워프 판은 서로 이어집니다. 돌아온 방의 다른 판을 찾아보세요." : key === "ice" ? "얼음 위에서는 벽이나 바위에 닿을 때까지 미끄러집니다. 금 간 얼음은 피하세요." : key === "fire" ? "퀴즈 기계 둘을 풀면 셔터가 열립니다. 증기 구멍을 밟으면 입구로 돌아가니 벽돌 발판으로 돌아가세요." : "장치를 조작하면 관장에게 가는 길이 열립니다. 밸브, 문양, 수련판, 바위 앞에서 확인 버튼을 누르세요.", { x: 2, y: map.height - 3 }, [], 4);
   }
 
   for (const [i, wanted] of [{ x: 4, y: hideout.height - 5 }, { x: hideout.width - 5, y: 7 }].entries()) {
