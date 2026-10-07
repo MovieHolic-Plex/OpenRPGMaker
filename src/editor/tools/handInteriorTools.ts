@@ -131,6 +131,29 @@ function fitDoorsToPlan(draft: Project, mapId: string, events: GameEvent[], shap
     event.x = target.x; event.y = target.y;
     occupied.add(`${target.x},${target.y}`);
   }
+  // 문이 아닌 이벤트(인물·조사물)가 줄어든 평면 밖이나 벽에 남으면 가장 가까운 빈 바닥으로 — 맵을 줄여 짓는 것을 막지 않는다.
+  for (const event of events) {
+    if (eventTransfers(event).some((t) => t.mapId !== mapId) || shape.isFloor(event.x, event.y)) continue;
+    let best: { x: number; y: number } | null = null, bestDistance = Infinity;
+    for (let y = 0; y < shape.height; y++) for (let x = 0; x < shape.width; x++) {
+      const distance = Math.abs(x - event.x) + Math.abs(y - event.y);
+      if (distance < bestDistance && shape.isFloor(x, y) && !occupied.has(`${x},${y}`) && !shape.openings.some((o) => o.x === x && o.y === y)) { best = { x, y }; bestDistance = distance; }
+    }
+    if (!best) continue;
+    occupied.delete(`${event.x},${event.y}`);
+    notes.push(`이벤트 ${event.id} (${event.x},${event.y}) → 바닥 (${best.x},${best.y})`);
+    event.x = best.x; event.y = best.y;
+    occupied.add(`${best.x},${best.y}`);
+  }
+  // 시작 위치: 다시 지은 시작 맵에서 벽·밖이 되면 출입구 안쪽으로(평면을 줄이면 「시작 위치가 통행 불가」로 커밋이 거부됐다).
+  if (draft.startMapId === mapId && !shape.isFloor(draft.startPos.x, draft.startPos.y)) {
+    const opening = nearestOpening(shape, draft.startPos);
+    const inward = opening && shape.inwardOf(opening);
+    if (inward) {
+      notes.push(`시작 위치 (${draft.startPos.x},${draft.startPos.y}) → 출입구 안쪽 (${inward.x},${inward.y})`);
+      draft.startPos = { ...draft.startPos, x: inward.x, y: inward.y };
+    }
+  }
   // 들어오는 이동: 벽·천장이나 문 칸 위로 떨어지면 가장 가까운 틈의 안쪽 바닥으로.
   const doorCells = new Set(events.filter((e) => eventTransfers(e).some((t) => t.mapId !== mapId)).map((e) => `${e.x},${e.y}`));
   for (const other of Object.values(draft.maps)) {
@@ -254,7 +277,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     }
     const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
     if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);
-    warnings.push(...doorNotes.map((note) => `자동 문 맞춤: ${note}`));
+    warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${HAND_INTERIOR_TILESET_ID}) — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
       data: { mapId, tilesetId: HAND_INTERIOR_TILESET_ID, width: built.width, height: built.height, reachable: built.reachable, floorCells: built.floorCells,
