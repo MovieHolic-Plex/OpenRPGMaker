@@ -5,6 +5,31 @@
 
 <!-- releases -->
 
+## 0.176.0 — 2026-10-08
+
+### 기능
+
+- **ai** — 다른 맵 실행을 메인 대화에서 떼어 「다른 스레드」 트레이로 (`d0afbc8`)
+- **qa-game** — QA_IMAGE_PROVIDER=codex also routes title key art (`b8f84df`)
+- **qa-game** — gen runs the genre-preset team path like the browser (`c7c871b`)
+
+### 수정
+
+- **assistant** — adversarial review of the romance preset first build (`940bb15`)
+- **assistant** — first-build opening rejects JSON-escaped quotes in narration (`d943cf5`)
+- **assistant** — rebuilt interiors carry start position and stranded events onto the new floor (`65fbf43`)
+- **electron** — packaged assistant worker reads bundled reference images from the unpacked renderer dir (`e0e1518`)
+- **assistant** — first-scene interiors get a visible exit, story routes start as a real walk (`836bf5f`)
+- **assistant** — genre-preset first build no longer fails on an unreachable opening receipt (`37741da`)
+
+### 정리
+
+- **ai** — ⋯ 메뉴를 자주 쓰는 3줄 + 「고급·진단」 접힘으로 (`7cb1e84`)
+
+### 테스트
+
+- **e2e** — ⋯ 메뉴 고급·진단 접힘을 열고 누르도록 (`a5acd24`)
+
 ## 0.175.0 — 2026-10-07
 
 ### 기능
