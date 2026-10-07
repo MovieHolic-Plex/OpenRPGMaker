@@ -12,7 +12,7 @@ import { requestTeamStop } from "@/ai/piAgent/teamActivity";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
-import { isActive, needsUser, PRESENCE_LABEL, subscribeAiPresence, type Presence } from "./aiPresence";
+import { isActive, PRESENCE_LABEL, subscribeAiPresence, type Presence } from "./aiPresence";
 
 /** 끝난 일(적용됨)은 이 시간 뒤에 줄에서 물러난다. 실패·검토 대기는 사람이 처리할 때까지 남는다. */
 const SETTLED_HIDE_MS = 6000;
