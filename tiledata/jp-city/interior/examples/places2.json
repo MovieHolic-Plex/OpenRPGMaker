@@ -1,0 +1,352 @@
+[
+ {
+  "file": "konbini",
+  "placeId": "jp-city-konbini-14x13",
+  "name": "일본 편의점(コンビニ) 실내",
+  "kind": "konbini",
+  "kindKo": "편의점",
+  "alias": [
+   "コンビニ",
+   "편의점",
+   "convenience store"
+  ],
+  "building": "jp_konbini",
+  "rules": [
+   "자동문 입구 → 창가 잡지대 · 가운데 섬 진열대 줄 · 북쪽 벽 음료 냉장고 · 개방형 도시락 냉장 · 입구 옆 계산대(계산기·핫스낵·커피) + 뒤 담배 선반 · 칸막이 너머 뒷방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/konbini.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-konbini-14x13\"})."
+  ]
+ },
+ {
+  "file": "supermarket",
+  "placeId": "jp-city-supermarket-16x14",
+  "name": "일본 동네 슈퍼 실내",
+  "kind": "supermarket",
+  "kindKo": "동네 슈퍼",
+  "alias": [
+   "スーパー",
+   "슈퍼",
+   "슈퍼마켓",
+   "supermarket"
+  ],
+  "building": "jp_supermarket",
+  "rules": [
+   "입구 옆 계산대 레인·카트·바구니 → 채소 경사 진열대 · 벽 냉장 진열(정육·생선) · 가운데 섬 진열대·냉동고.",
+   "평면·가구는 tiledata/jp-city/interior/examples/supermarket.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-supermarket-16x14\"})."
+  ]
+ },
+ {
+  "file": "ramen",
+  "placeId": "jp-city-ramen-10x10",
+  "name": "일본 라멘집 실내",
+  "kind": "ramen",
+  "kindKo": "라멘집",
+  "alias": [
+   "ラーメン",
+   "라멘",
+   "라면집",
+   "ramen"
+  ],
+  "building": "jp_ramen",
+  "rules": [
+   "입구 옆 식권기·물 서버 → L자 카운터 + 스툴 → 카운터 안쪽 주방 줄(육수 솥·면 삶는 칸·조리대·개수대·냉장고).",
+   "평면·가구는 tiledata/jp-city/interior/examples/ramen.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-ramen-10x10\"})."
+  ]
+ },
+ {
+  "file": "izakaya",
+  "placeId": "jp-city-izakaya-13x12",
+  "name": "일본 이자카야 실내",
+  "kind": "izakaya",
+  "kindKo": "이자카야",
+  "alias": [
+   "居酒屋",
+   "이자카야",
+   "선술집",
+   "izakaya"
+  ],
+  "building": "jp_izakaya",
+  "rules": [
+   "카운터 + 스툴 · 다다미 좌석 단(좌탁·방석) · 테이블석 · 술병 선반 · 붉은 초롱 · 노렌 너머 주방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/izakaya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-izakaya-13x12\"})."
+  ]
+ },
+ {
+  "file": "sushi",
+  "placeId": "jp-city-sushi-10x12",
+  "name": "일본 초밥집 실내",
+  "kind": "sushi",
+  "kindKo": "초밥집",
+  "alias": [
+   "寿司",
+   "스시",
+   "초밥",
+   "sushi"
+  ],
+  "building": "jp_sushi",
+  "rules": [
+   "카운터 위 유리 생선 진열 케이스 · 카운터 의자 · 작은 테이블석 · 계산대.",
+   "평면·가구는 tiledata/jp-city/interior/examples/sushi.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sushi-10x12\"})."
+  ]
+ },
+ {
+  "file": "kissaten",
+  "placeId": "jp-city-kissaten-10x10",
+  "name": "일본 킷사텐(찻집) 실내",
+  "kind": "kissaten",
+  "kindKo": "킷사텐(찻집)",
+  "alias": [
+   "喫茶店",
+   "킷사텐",
+   "찻집",
+   "다방",
+   "카페",
+   "cafe"
+  ],
+  "building": "jp_kissaten",
+  "rules": [
+   "짙은 나무 바닥 · 2인 탁자와 의자 · 카운터 + 계산대 · 화분.",
+   "평면·가구는 tiledata/jp-city/interior/examples/kissaten.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-kissaten-10x10\"})."
+  ]
+ },
+ {
+  "file": "bakery",
+  "placeId": "jp-city-bakery-9x14",
+  "name": "일본 동네 빵집 실내",
+  "kind": "bakery",
+  "kindKo": "빵집",
+  "alias": [
+   "パン屋",
+   "빵집",
+   "베이커리",
+   "bakery"
+  ],
+  "building": "jp_bakery",
+  "rules": [
+   "셔터 걷은 입구 → 쟁반·집게 대 → 빵 진열대·벽 빵 선반 → 입구 가까운 계산대 · 칸막이 너머 오븐 있는 뒷방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/bakery.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bakery-9x14\"})."
+  ]
+ },
+ {
+  "file": "bookstore",
+  "placeId": "jp-city-bookstore-9x14",
+  "name": "일본 동네 서점 실내",
+  "kind": "bookstore",
+  "kindKo": "서점",
+  "alias": [
+   "本屋",
+   "서점",
+   "책방",
+   "bookstore"
+  ],
+  "building": "jp_bookstore",
+  "rules": [
+   "벽 책장 · 가운데 평대·양면 책장 · 계산대 · 뒷방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/bookstore.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bookstore-9x14\"})."
+  ]
+ },
+ {
+  "file": "pharmacy",
+  "placeId": "jp-city-pharmacy-9x14",
+  "name": "일본 동네 약국 실내",
+  "kind": "pharmacy",
+  "kindKo": "약국",
+  "alias": [
+   "薬局",
+   "ドラッグストア",
+   "약국",
+   "pharmacy"
+  ],
+  "building": "jp_pharmacy",
+  "rules": [
+   "벽 약 선반·가운데 양면 선반 · 상담 카운터·계산대 · 뒷방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/pharmacy.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-pharmacy-9x14\"})."
+  ]
+ },
+ {
+  "file": "florist",
+  "placeId": "jp-city-florist-9x14",
+  "name": "일본 동네 꽃집 실내",
+  "kind": "florist",
+  "kindKo": "꽃집",
+  "alias": [
+   "花屋",
+   "꽃집",
+   "florist"
+  ],
+  "building": "jp_florist",
+  "rules": [
+   "입구까지 나온 꽃 양동이 단 · 유리문 꽃 냉장고 · 포장 작업대 · 화분 · 계산대.",
+   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x14\"})."
+  ]
+ },
+ {
+  "file": "yaoya",
+  "placeId": "jp-city-yaoya-9x14",
+  "name": "일본 채소가게(八百屋) 실내",
+  "kind": "yaoya",
+  "kindKo": "채소가게",
+  "alias": [
+   "八百屋",
+   "채소가게",
+   "야채가게",
+   "과일가게",
+   "greengrocer"
+  ],
+  "building": "jp_yaoya",
+  "rules": [
+   "입구 쪽으로 나온 경사 채소 진열대·과일 상자 · 얼음 위 생선 진열대 · 계산대.",
+   "평면·가구는 tiledata/jp-city/interior/examples/yaoya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-yaoya-9x14\"})."
+  ]
+ },
+ {
+  "file": "barber",
+  "placeId": "jp-city-barber-9x14",
+  "name": "일본 동네 이발소 실내",
+  "kind": "barber",
+  "kindKo": "이발소",
+  "alias": [
+   "理髪店",
+   "床屋",
+   "이발소",
+   "미용실",
+   "barber"
+  ],
+  "building": "jp_barber",
+  "rules": [
+   "거울 앞 이발 의자 줄(거울을 본다) · 샴푸대 · 대기 벤치 · 이발소 기둥 · 계산대.",
+   "평면·가구는 tiledata/jp-city/interior/examples/barber.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-barber-9x14\"})."
+  ]
+ },
+ {
+  "file": "sento",
+  "placeId": "jp-city-sento-14x13",
+  "name": "일본 공중목욕탕(센토) 실내",
+  "kind": "sento",
+  "kindKo": "목욕탕(센토)",
+  "alias": [
+   "銭湯",
+   "센토",
+   "목욕탕",
+   "대중목욕탕",
+   "bathhouse"
+  ],
+  "building": "jp_sento",
+  "rules": [
+   "현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고) → 칸막이 문 → 욕장(씻는 자리 줄·의자, 북쪽 큰 욕조, 뒤 벽 후지산 그림).",
+   "평면·가구는 tiledata/jp-city/interior/examples/sento.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sento-14x13\"})."
+  ]
+ },
+ {
+  "file": "laundry",
+  "placeId": "jp-city-laundry-9x8",
+  "name": "일본 코인세탁(コインランドリー) 실내",
+  "kind": "laundry",
+  "kindKo": "코인세탁",
+  "alias": [
+   "コインランドリー",
+   "코인세탁",
+   "빨래방",
+   "laundromat"
+  ],
+  "building": "jp_laundry",
+  "rules": [
+   "벽 세탁기·건조기 줄 · 가운데 개는 탁자 · 입구 옆 벤치·세제 자판기·동전 교환기.",
+   "평면·가구는 tiledata/jp-city/interior/examples/laundry.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-laundry-9x8\"})."
+  ]
+ },
+ {
+  "file": "koban",
+  "placeId": "jp-city-koban-11x8",
+  "name": "일본 파출소(交番) 실내",
+  "kind": "koban",
+  "kindKo": "파출소(交番)",
+  "alias": [
+   "交番",
+   "파출소",
+   "경찰",
+   "police box"
+  ],
+  "building": "jp_koban",
+  "rules": [
+   "입구 책상·의자 · 동네 지도판 · 철제 캐비닛 · 경찰 자전거 · 옆문 안쪽 사무실.",
+   "평면·가구는 tiledata/jp-city/interior/examples/koban.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-koban-11x8\"})."
+  ]
+ },
+ {
+  "file": "clinic",
+  "placeId": "jp-city-clinic-14x8",
+  "name": "일본 동네 의원(내과) 실내",
+  "kind": "clinic",
+  "kindKo": "동네 의원",
+  "alias": [
+   "内科",
+   "クリニック",
+   "의원",
+   "병원",
+   "내과",
+   "clinic"
+  ],
+  "building": "jp_clinic",
+  "rules": [
+   "입구 → 접수 카운터 → 대기 소파 → 옆문 안쪽 진찰실(의사 책상·진찰대·커튼·약품장·신장계).",
+   "평면·가구는 tiledata/jp-city/interior/examples/clinic.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-clinic-14x8\"})."
+  ]
+ },
+ {
+  "file": "mansion-2ldk",
+  "placeId": "jp-city-mansion-2ldk-15x20",
+  "name": "일본 맨션 2LDK 실내(베란다)",
+  "kind": "mansion",
+  "kindKo": "맨션 2LDK",
+  "alias": [
+   "マンション",
+   "2LDK",
+   "맨션",
+   "아파트",
+   "베란다"
+  ],
+  "building": "jp_mansion",
+  "rules": [
+   "공용 복도 → 철문 현관·신발장 → 복도(화장실·욕실) → LDK(대면 키친·식탁·소파·TV) + 방 2(침실·아이방) → 유리 미닫이 → 남쪽 베란다(빨래 장대·실외기·난간 한 줄).",
+   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-15x20\"})."
+  ]
+ },
+ {
+  "file": "mokuchin",
+  "placeId": "jp-city-mokuchin-8x8",
+  "name": "일본 목조 아파트(木造アパート) 6조 한 칸",
+  "kind": "mokuchin",
+  "kindKo": "목조 아파트 한 칸",
+  "alias": [
+   "木造アパート",
+   "목조 아파트",
+   "쇼와 아파트",
+   "자취방",
+   "6조"
+  ],
+  "building": "jp_mokuchin",
+  "rules": [
+   "작은 현관 → 옛 싱크·작은 냉장고 → 다다미 6조(고타쓰·행거·골판지) · 창가 이불 말림.",
+   "평면·가구는 tiledata/jp-city/interior/examples/mokuchin.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mokuchin-8x8\"})."
+  ]
+ },
+ {
+  "file": "hiraya",
+  "placeId": "jp-city-hiraya-15x14",
+  "name": "일본 단층 옛집(平屋) 실내",
+  "kind": "hiraya",
+  "kindKo": "단층 옛집(平屋)",
+  "alias": [
+   "平屋",
+   "단층집",
+   "옛집",
+   "시골집",
+   "이로리"
+  ],
+  "building": "jp_hiraya",
+  "rules": [
+   "현관 → 다다미방 2~3칸(장지문) + 이로리 방 + 부엌 → 남쪽 엔가와 툇마루·디딤돌.",
+   "평면·가구는 tiledata/jp-city/interior/examples/hiraya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-hiraya-15x14\"})."
+  ]
+ }
+]

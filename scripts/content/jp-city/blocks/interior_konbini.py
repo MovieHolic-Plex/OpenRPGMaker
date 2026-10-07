@@ -476,13 +476,6 @@ def g_snack(c):
 
 
 # ───────────────────────── 분류표 ─────────────────────────
-# categories.py 는 이 작업자가 고칠 수 없다 — 감독자가 `store` 분류를 넣을 때까지 메모리에서만 등록해 굽기 검사(CATS.check)를 통과시킨다.
-def _register_cats():
-    ids = [i for i in R.objs if i not in CATS.BY_ID]
-    for i in ids: CATS.BY_ID[i] = ('store', '편의점·슈퍼')
-
-
-_register_cats()
 
 
 def build(): return R.build()

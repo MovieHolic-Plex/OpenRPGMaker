@@ -1,0 +1,199 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "##...####"
+ ],
+ "floor": "sh-concrete",
+ "wall": "sh-white",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 13,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
+ "objects": [
+  {
+   "id": "door-open-western",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "sh-shutter",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "window-sash",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "fridge",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cupboard",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-fish-ice",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "trash-bins",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "window-sash",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "sh-fish-ice",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sh-counter",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "sh-register",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "sh-counter",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 5,
+   "y": 12
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 7,
+   "y": 12
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-scale",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 7,
+   "y": 10
+  }
+ ],
+ "name": "일본 채소가게(八百屋) 실내",
+ "start": [
+  3,
+  12
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "yaoya",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 13
+  }
+ ]
+}

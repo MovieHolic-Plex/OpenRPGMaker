@@ -28,6 +28,12 @@ BUILDINGS = {
     'jp_apartment': '일본 원룸 아파트(1K) — 현관·부엌 복도·유닛 배스·방(apartment-1k)',
 }
 MAPS = (('house-1f', 'jp_house'), ('house-2f', 'jp_house'), ('apartment-1k', 'jp_apartment'))
+# 2묶음(가게·공공·집 보강): 예제마다 맵 전체가 방 하나 — 종류·건물·별칭은 examples/places2.json(interior.mjs 가 장소로 게시하는 표와 같은 것).
+PLACES2 = json.load(open(os.path.join(EX, 'places2.json'), encoding='utf-8'))
+for _p in PLACES2:
+    KINDS[_p['kind']] = (_p['kindKo'], _p['alias'])
+    BUILDINGS[_p['building']] = '%s(%s)' % (_p['name'], _p['file'])
+MAPS = MAPS + tuple((_p['file'], _p['building']) for _p in PLACES2)
 
 
 def main():

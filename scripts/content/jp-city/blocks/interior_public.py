@@ -4,8 +4,7 @@
 칸 16px, 3/4 시점(윗면 + 정면 한 면), 왼위 빛, 외곽선 1px, 팔레트 modern3 만. 글자·숫자·상표·사람 없음.
 캔버스 규약(ikit): floor/wall 은 주기 캔버스, obj = w*16 × (up/16 + h)*16, hang = w*16 × hrows*16, table = fn(c,w,h).
 
-※ 분류표(categories.py)에 이 id 들이 아직 없다 — 이 파일이 import 될 때 메모리에서만 BY_ID 에 끼워 넣는다
-  (selftest·preview 가 돌도록). 정식 등록은 감독이 categories.py 에 해야 한다. 파일은 건드리지 않았다.
+분류는 interior/categories.py(sento·laundry·koban·clinic).
 """
 import os, sys
 
@@ -16,26 +15,6 @@ import categories as CATS
 
 BLOCK = 'interior_public'
 R = Registry(BLOCK, '공공·목욕탕')
-
-# ── 분류 제안(감독이 categories.py 로 옮길 것) ────────────────────────────────
-PROPOSED = {
-    'sento': ('목욕탕', ['pb-bandai', 'pb-locker', 'pb-basket-shelf', 'pb-scale', 'pb-massage-chair', 'pb-milk-fridge',
-                         'pb-wash-station', 'pb-wash-stool', 'pb-mural', 'pb-noren-m', 'pb-noren-f']),
-    'laundry': ('코인세탁', ['pb-washer', 'pb-dryer', 'pb-fold-table', 'pb-bench', 'pb-vending', 'pb-changer']),
-    'koban': ('파출소', ['pb-police-desk', 'pb-office-chair-s', 'pb-office-chair-n', 'pb-map-board', 'pb-file-cabinet', 'pb-bicycle']),
-    'clinic': ('의원', ['pb-reception', 'pb-waiting-sofa-s', 'pb-waiting-sofa-n', 'pb-exam-bed', 'pb-curtain', 'pb-doctor-desk',
-                        'pb-med-cabinet', 'pb-scale-height']),
-}
-
-
-def _patch_categories():
-    for cat, (ko, ids) in PROPOSED.items():
-        for i in ids:
-            if i not in CATS.BY_ID:
-                CATS.BY_ID[i] = (cat, ko)
-
-
-_patch_categories()
 
 # ── 도우미 ────────────────────────────────────────────────────────────────────
 _KC = {}

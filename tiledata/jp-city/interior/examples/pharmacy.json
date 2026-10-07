@@ -1,0 +1,174 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####"
+ ],
+ "floor": "sh-wood",
+ "wall": "cloth-beige",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 13,
+   "floor": "sh-wood",
+   "wall": "cloth-beige"
+  }
+ ],
+ "objects": [
+  {
+   "id": "door-open-western",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "genkan-door",
+   "x": 4,
+   "y": 13
+  },
+  {
+   "id": "window-sash",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "cupboard",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fridge",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "window-sash",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sh-drug-island",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "sh-drug-island",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "sh-consult",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "sh-counter",
+   "x": 6,
+   "y": 12
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-medicine",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "sh-medicine",
+   "x": 6,
+   "y": 12
+  }
+ ],
+ "name": "일본 동네 약국 실내",
+ "start": [
+  4,
+  12
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "pharmacy",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 13
+  }
+ ]
+}

@@ -1,0 +1,183 @@
+{
+ "name": "일본 공중목욕탕(센토) 실내",
+ "plan": [
+  "##############",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#####.########",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#######.######"
+ ],
+ "floor": "flooring",
+ "wall": "juraku",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 13,
+   "y1": 6,
+   "floor": "pb-sento-tile",
+   "wall": "pb-sento-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "pb-wash-station",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-wash-station",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "pb-wash-station",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-wash-station",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-wash-stool",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "pb-wash-stool",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "pb-wash-stool",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "pb-wash-stool",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "pb-mural",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "pb-noren-m",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "pb-noren-f",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "door-open-western",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "pb-locker",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "pb-locker",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "pb-locker",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "pb-locker",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "pb-basket-shelf",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "pb-milk-fridge",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "pb-massage-chair",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "pb-scale",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "getabako",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "pb-bandai",
+   "x": 9,
+   "y": 11
+  },
+  {
+   "id": "genkan-door",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "pb-bench",
+   "x": 1,
+   "y": 11
+  }
+ ],
+ "tables": [
+  {
+   "style": "pb-bath",
+   "x": 7,
+   "y": 3,
+   "w": 6,
+   "h": 3
+  }
+ ],
+ "goods": [
+  {
+   "id": "pb-milk-bottle",
+   "x": 9,
+   "y": 11
+  }
+ ],
+ "start": [
+  7,
+  11
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "sento",
+   "x0": 0,
+   "y0": 0,
+   "x1": 13,
+   "y1": 12
+  }
+ ]
+}

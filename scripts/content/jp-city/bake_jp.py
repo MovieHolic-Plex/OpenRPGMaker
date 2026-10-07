@@ -39,7 +39,8 @@ PALETTE = os.path.join(ROOT, 'tiledata', 'atlas-pick', 'palette', 'modern3.pal')
 BLOCKS_DIR = os.path.join(HERE, 'blocks')
 # 블록 합치는 순서(이름 고정). 블록을 추가할 때는 맨 끝에 덧붙인다. 번호는 핀이 지키므로 순서는 새 번호가 매겨지는 순서일 뿐이다.
 BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'street_hand', 'school', 'transit_street', 'transit_station',
-               'interior_shell', 'interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors']
+               'interior_shell', 'interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
+               'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')

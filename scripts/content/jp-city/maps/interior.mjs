@@ -26,7 +26,10 @@ const exit = process.env.INTERIOR_EXIT_MAP ? { toMapId: process.env.INTERIOR_EXI
 const HOUSE_1F = "jp-city-house-1f", HOUSE_2F = "jp-city-house-2f", APT = "jp-city-apartment-1k";
 // start·links(계단 이동)는 예제 JSON 이 들고 있다 — 조수가 보는 예제 그대로. 현관 밖 이동만 환경 변수로 덧붙인다(출구 칸 = 맨 아래 줄 틈).
 const exitCell = (plan) => { const y = plan.length - 1; return { x: plan[y].indexOf("."), y }; };
-const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT, "apartment-1k", true]].map(([id, file, door]) => {
+// 2묶음(2026-10-07): 가게·공공·집 보강 예제 19곳 — 한 장소 = 한 맵, 표는 examples/places2.json.
+const PLACES2 = JSON.parse(fs.readFileSync(join(EX, "places2.json"), "utf8"));
+const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT, "apartment-1k", true],
+  ...PLACES2.map((p) => [`jp-city-${p.file}`, p.file, true])].map(([id, file, door]) => {
   const ex = read(file);
   return { id, file, start: ex.start, links: [...(ex.links ?? []), ...(exit && door ? [{ ...exitCell(ex.plan), ...exit }] : [])] };
 });
@@ -94,6 +97,8 @@ if (process.argv.includes("--publish")) {
       rules: ["현관 타타키(좁은 신발장·문턱) → 부엌 복도(싱크·조리대·가스대·냉장고·세탁기) · 서쪽 유닛 배스(욕조+변기, 미닫이 옆문) · 문 → 북쪽 방(침대·TV·좌탁).",
         "평면·가구는 tiledata/jp-city/interior/examples/apartment-1k.json."],
       limitations: "실내만이다 — 현관 밖 이동은 비어 있다. NPC·이벤트 없음." },
+    ...PLACES2.map((p) => ({ file: p.file, placeId: p.placeId, name: p.name, maps: [`jp-city-${p.file}`], main: `jp-city-${p.file}`, rules: p.rules,
+      limitations: "실내만이다 — 거리 건물 문과는 link_jp_city_interior 로 잇는다. 점원·손님 NPC·이벤트 없음." })),
   ];
   for (const g of groups) {
     const proj = structuredClone(tpl);

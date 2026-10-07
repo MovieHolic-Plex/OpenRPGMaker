@@ -22,14 +22,6 @@ import categories as CATS                           # noqa
 BLOCK = 'interior_shop'
 R = Registry(BLOCK, '상점')
 
-# 분류표(categories.py)에 상점 분류가 아직 없다 — 틀 파일을 고치지 말라는 지시라 여기서 import 시점에 끼워 넣는다.
-# (진짜 굽기 전에는 categories.py CATEGORIES 에 ('shop','가게',[…]) 를 넣어야 한다 — 보고서 참고)
-SHOP_IDS = ('sh-counter', 'sh-register', 'sh-shutter', 'sh-shutter-2', 'sh-wall-shelf', 'sh-bread-shelf', 'sh-bread-table', 'sh-tray-stand', 'sh-oven',
-            'sh-bookshelf', 'sh-book-table', 'sh-book-island', 'sh-drug-shelf', 'sh-drug-island', 'sh-consult',
-            'sh-flower-buckets', 'sh-flower-cooler', 'sh-plant-pot', 'sh-wrap-table', 'sh-veg-stand', 'sh-fruit-box', 'sh-fish-ice',
-            'sh-barber-chair-s', 'sh-barber-chair-n', 'sh-barber-chair-e', 'sh-barber-chair-w', 'sh-barber-mirror', 'sh-shampoo',
-            'sh-waiting-bench', 'sh-barber-pole')
-for _i in SHOP_IDS: CATS.BY_ID.setdefault(_i, ('shop', '가게'))
 
 
 # ─────────────────────────── 공통 부품 ───────────────────────────
