@@ -55,6 +55,7 @@ if (startTileset) {
   currentMapId = Object.keys(project.maps).find((id) => project.maps[id]!.tilesetId === startTileset);
 }
 const before = new Set(Object.keys(project.maps));
+const beforeJson = new Map(Object.entries(project.maps).map(([id, m]) => [id, JSON.stringify(m)]));
 
 // ---- what the assistant can see ----
 const intent = { mode: "create", space: "interior", facility: null, targetMapId: null, useSelection: false, clarify: null, clarifyOptions: [],
@@ -133,13 +134,32 @@ try {
   reloaded = store.loadSnapshot()!.project as Project;
 } finally { store.close(); }
 const reloadEqual = JSON.stringify(reloaded) === JSON.stringify(JSON.parse(JSON.stringify(result)));
-const newMaps = Object.values(reloaded.maps).filter((m) => !before.has(m.id));
+// 새 맵 + 조수가 고쳐 지은 원래 맵(보고 있던 맵을 replace 로 1층으로 바꾼 경우 등).
+const newMaps = Object.values(reloaded.maps).filter((m) => !before.has(m.id) || beforeJson.get(m.id) !== JSON.stringify(m));
+/** 이벤트 명령에서 다른 맵으로 가는 이동(mapId·x·y) — 들어오는 착지 칸과 나가는 칸을 찾는다. */
+function transfers(): { from: string; fx: number; fy: number; to: string; x: number; y: number }[] {
+  const out: { from: string; fx: number; fy: number; to: string; x: number; y: number }[] = [];
+  for (const m of Object.values(reloaded.maps)) for (const ev of m.events as { x: number; y: number }[]) {
+    const walk = (v: unknown): void => {
+      if (!v || typeof v !== "object") return;
+      if (Array.isArray(v)) { v.forEach(walk); return; }
+      const o = v as Record<string, unknown>;
+      if (typeof o.mapId === "string" && reloaded.maps[o.mapId] && typeof o.x === "number" && typeof o.y === "number" && o !== (ev as unknown)) out.push({ from: m.id, fx: ev.x, fy: ev.y, to: o.mapId, x: o.x, y: o.y });
+      for (const k of Object.keys(o)) walk(o[k]);
+    };
+    walk(ev);
+  }
+  return out;
+}
+const TRANSFERS = transfers();
 const mapsOut = newMaps.map((m) => {
   const { png, note } = renderMapPng(reloaded, m, 2);
   fs.writeFileSync(`${OUT}/map-${m.id}.png`, png);
-  // BFS from the bottom-row walkable cells with the runtime move rule
+  // BFS from the bottom-row walkable cells (현관 틈), 시작 위치, 다른 맵에서 들어오는 착지 칸 — runtime move rule
   const start: [number, number][] = [];
   for (let x = 0; x < m.width; x++) if (canMove(reloaded, m, x, m.height - 1, x, m.height - 2) || canMove(reloaded, m, x, m.height - 2, x, m.height - 1)) start.push([x, m.height - 1]);
+  if (reloaded.startMapId === m.id && reloaded.startPos) start.push([reloaded.startPos.x, reloaded.startPos.y]);
+  for (const t of TRANSFERS) if (t.to === m.id && t.from !== m.id) start.push([t.x, t.y]);
   const seen = new Set(start.map(([x, y]) => `${x},${y}`)); const q = [...start];
   while (q.length) { const [x, y] = q.pop()!; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const X = x + dx!, Y = y + dy!; if (!seen.has(`${X},${Y}`) && canMove(reloaded, m, x, y, X, Y)) { seen.add(`${X},${Y}`); q.push([X, Y]); } } }
   let walkable = 0;
@@ -147,6 +167,7 @@ const mapsOut = newMaps.map((m) => {
     if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => canMove(reloaded, m, x, y, x + dx!, y + dy!))) walkable++;
   }
   return { id: m.id, name: m.name, tilesetId: m.tilesetId, family: reloaded.tilesets[m.tilesetId]?.family, size: [m.width, m.height], events: m.events.length,
+    entrances: start.length, exits: TRANSFERS.filter((t) => t.from === m.id && t.to !== m.id).map((t) => ({ at: [t.fx, t.fy], to: t.to, toAt: [t.x, t.y], reached: seen.has(`${t.fx},${t.fy}`) })),
     reachableFromEntrance: start.length ? seen.size : 0, walkableCells: walkable, unreachedWalkable: start.length ? walkable - seen.size : walkable, renderNote: note ?? null,
     upperFilled: m.upperTiles.filter((t) => t >= 0).length + (m.upperOverlayTiles ?? []).filter((t) => t >= 0).length };
 });
