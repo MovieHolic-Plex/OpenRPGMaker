@@ -7667,18 +7667,20 @@
         "review": {
           "sourceSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
           "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
-          "reviewer": "Codex direct original visual inspection: v2-production-048",
+          "reviewer": "Codex root original warm-parent own/native corrective during210",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Root directly opened native original and parent: Parent replacement: fresh high oblique warm timber-stone nursery, ONE unmistakably cracked speckled egg in straw, EMPTY padded bed, folded plain cloth and TWO fully visible filled food-water bowls. Previously visible paw logo is absent; no progression/scope forced. New camera versus old frontal window nursery. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          "findings": [
+            "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          ],
+          "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
         },
         "gate": {
           "ok": true,
@@ -26698,7 +26700,64 @@
         "review": {
           "sourceSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
           "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
-          "reviewer": "Codex direct original visual inspection: v2-production-202",
+          "reviewer": "Codex root original202 own/native corrective after207 immediate-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+          ],
+          "notes": "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 507327,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-3-33f4ec5ebae1.png",
+        "sha256": "33f4ec5ebae134c8b33eea5f1173e2b36df993a8ebd15746e5bf03d6856b2ea3",
+        "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+        "generationPromptSha256": "b3467ca7b974fb8086babf0e4647751f3f637ce6341a2f1195b134cfc9458846",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "33f4ec5ebae134c8b33eea5f1173e2b36df993a8ebd15746e5bf03d6856b2ea3",
+          "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Whole3EMPTY COVER/HURDLE/separatedPOST tacticalstations UP, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID,3actualINNERhabitats LOW SUNSET/noscope. BothactualINNERruincols/ALLstairsLEFT. ActualINNERwetlandwater/reeds CUTnativeLEFTedge, no completebank/woodlandmargin on thatside: compositionONLYF, other6P; no skywatermark here. DistinctactualWARMmoodparent by reversingcourseLOW/careUP tocourseUP/careMID+3habitats."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. Whole3EMPTY COVER/HURDLE/separatedPOST tacticalstations UP, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID,3actualINNERhabitats LOW SUNSET/noscope. BothactualINNERruincols/ALLstairsLEFT. ActualINNERwetlandwater/reeds CUTnativeLEFTedge, no completebank/woodlandmargin on thatside: compositionONLYF, other6P; no skywatermark here. DistinctactualWARMmoodparent by reversingcourseLOW/careUP tocourseUP/careMID+3habitats. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-4-ce98509fc683.png",
+        "sha256": "ce98509fc6837e6b359d63da856339c9942d071bd13e408717f344dc04017fa0",
+        "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+        "generationPromptSha256": "5b99cf1bc4436fa481e6bc9d3bbe28aecad32801f801d7c2d46ad81bdc1f6c8f",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "ce98509fc6837e6b359d63da856339c9942d071bd13e408717f344dc04017fa0",
+          "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -26709,13 +26768,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPwholeEMPTYcourse MIDWHOLEprotectednursery FIRSTcrackegg/plainPALEcloth/BLUEwater LOWthreeREALOPENwalkableINNERwetlandforestRUIN SUNSET/noscope. BothactualINNERruincolumns/allstairs end before60.3; separateouterposts/wall not INNERcolumns. Allroofswhole. Different actualNEW202WARMmood by threeactualhabitats. Skycloudmaterial not print. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Whole three EMPTY COVER/HURDLE/separated POSTS UP, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater MID, three actual INNER habitats LOW SUNSET/noscope. Enclosedpond with whole earthbanks/woodland margin; read-only NEAREST left diagnostic confirmed water does not exit nativeedge. Both actual INNER ruin columns/ALLstairs and forest opening before1008. Diff actual WARMmood careUP/courseLOW by courseUP/careMID and three habitats. No skywatermark. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 507327,
+          "colors": 398661,
           "findings": []
         }
       }
@@ -26962,6 +27021,61 @@
           "colors": 519106,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-5-34a50e427a74.png",
+        "sha256": "34a50e427a747751aee388d9609ea94b34acbf9c5b6b0d0f2530817dc2cd0b6a",
+        "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+        "generationPromptSha256": "ccbdc767103064ca2958f9b5aaea4a356040c08283b1fd3d698c913e152f1296",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "34a50e427a747751aee388d9609ea94b34acbf9c5b6b0d0f2530817dc2cd0b6a",
+          "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and wholeemptylowstonebench/plainwoodcarebox SUN/noscope,3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT. BOTH actualINNERruincols/ALLstairs leftcomplete. ActualselectedINNERwetlandwater/reeds CUTnativeLEFTedge: compositionONLYF; others6P. DistinctactualNEW204BRIGHT by realthreehabitatpassages, not recolor."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. WholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and wholeemptylowstonebench/plainwoodcarebox SUN/noscope,3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT. BOTH actualINNERruincols/ALLstairs leftcomplete. ActualselectedINNERwetlandwater/reeds CUTnativeLEFTedge: compositionONLYF; others6P. DistinctactualNEW204BRIGHT by realthreehabitatpassages, not recolor. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-6-bf9973ad2bf9.png",
+        "sha256": "bf9973ad2bf98814d3a57e9b352d9983450306aa476fa0da6122f966f04e46bf",
+        "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+        "generationPromptSha256": "e354024e594474a90757b898e84f20e72afeb3a32e999d06d644428eaf6223c7",
+        "attempt": 6,
+        "review": {
+          "sourceSha256": "bf9973ad2bf98814d3a57e9b352d9983450306aa476fa0da6122f966f04e46bf",
+          "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater UP withwholequietemptylowstonebench/plainwoodcarebox,3actualINNERhabitats SMALLenclosedreedWETpond/completebanks MIDRUIN actualbothINNERcols/ALLstairs andFOREST LOW SUN/noscope. All7P. AfterWHOLEnative, read-onlyNEARESTdiagnostics confirmed pondwater completeinside native with visibleearthbank, notanedge-exitingriver; actualFOREST darkINNERopening/trail completes beforeactual60.3. Outerordinarytreebranches/rootfoliage are not extraINNERcolumns/stairs. No imposedmicro57bound in208OWN. DiffactualNEW204BRIGHT by3realhabitatpassages. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 577065,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--partner--bright--case": [
@@ -27156,6 +27270,86 @@
           "colors": 336916,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-3-99a925c1def0.png",
+        "sha256": "99a925c1def0bc2056603ac8350f8a88e2fc2eef15ea17507508bbc242abaceb",
+        "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+        "generationPromptSha256": "22e8de6ab4874f127dbd89e64f727e22e8b5a8096e974896ad0dbbd79d8e0635",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "99a925c1def0bc2056603ac8350f8a88e2fc2eef15ea17507508bbc242abaceb",
+          "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Wholequietemptylowstonebench/plainwoodcarebox UP/wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID, CLOSEDblankGROUNDbook/TWO separate physicalGROUNDmudpawdepressions, threeactualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT LOW MOON/noscope. ActualforestINNERopening reachesabout58-59percent, exceedingTHISOWNexplicitrepairbelow57percent: compositionONLYF; do not falselyclaimallthosepixels arebehindactual60.3 controls. Others6P, binding/pageedgesnotlogo. DistinctactualNEW206SECRET realthreehabitatpassages."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. Wholequietemptylowstonebench/plainwoodcarebox UP/wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID, CLOSEDblankGROUNDbook/TWO separate physicalGROUNDmudpawdepressions, threeactualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT LOW MOON/noscope. ActualforestINNERopening reachesabout58-59percent, exceedingTHISOWNexplicitrepairbelow57percent: compositionONLYF; do not falselyclaimallthosepixels arebehindactual60.3 controls. Others6P, binding/pageedgesnotlogo. DistinctactualNEW206SECRET realthreehabitatpassages. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-4-398b0dc6025b.png",
+        "sha256": "398b0dc6025bce2aa41f9675e52a4225b515eb227cbcb41f8d421b06f156bfd6",
+        "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+        "generationPromptSha256": "9a29563ed77c14347b0aea8c6bff82e8327684b4a1e759ac40f1f4bd0c880160",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "398b0dc6025bce2aa41f9675e52a4225b515eb227cbcb41f8d421b06f156bfd6",
+          "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater UP/wholequietemptylowstonebench/plainwoodcarebox withCLOSEDplainGROUNDbook/TWOphysicalGROUNDmuddepressions,3actualINNERhabitats SMALLenclosedWETpond/completebanks MIDRUINbothactualINNERcols/ALLstairs FOREST LOW MOON/noscope. ActualdarkFOREST INNERopening extendsbeyondactual60.3 towardx62: compositionONLYF, other6P. No arbitrary57percentbound/6-55gate. Groundtracesnotprintedlogo, plainbindingmaterialnotlogo. DiffactualNEW206SECRET by realthreehabitatpassages."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater UP/wholequietemptylowstonebench/plainwoodcarebox withCLOSEDplainGROUNDbook/TWOphysicalGROUNDmuddepressions,3actualINNERhabitats SMALLenclosedWETpond/completebanks MIDRUINbothactualINNERcols/ALLstairs FOREST LOW MOON/noscope. ActualdarkFOREST INNERopening extendsbeyondactual60.3 towardx62: compositionONLYF, other6P. No arbitrary57percentbound/6-55gate. Groundtracesnotprintedlogo, plainbindingmaterialnotlogo. DiffactualNEW206SECRET by realthreehabitatpassages. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-5-019ef003b351.png",
+        "sha256": "019ef003b351554bd08693cb73b675c1007d4fcd50d65e14ad2147d2d2fdf74e",
+        "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+        "generationPromptSha256": "244f9b427ffb770fae4c6b2df293af52b693fefcbb5244a468bfc58ffdf6a6c3",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "019ef003b351554bd08693cb73b675c1007d4fcd50d65e14ad2147d2d2fdf74e",
+          "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater/empty lowstonebench/plainwoodcarebox UP, CLOSED plain FACE-DOWN GROUNDbook TWO separate actual GROUNDmudprints MOON/noscope; compacttriangle three real INNERhabitats LOW. Enclosedwetpond/wholeearthbanks/nativewoodland; actualFOREST inneropening and RUIN portalINNERcols/ALLstairs before1008. Detached exterior posts notINNER. Diff actual206SECRET by real three habitat passages. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 353872,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--partner--secret--case": [
@@ -27232,7 +27426,39 @@
         "review": {
           "sourceSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
           "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
-          "reviewer": "Codex direct original visual inspection: v2-production-047",
+          "reviewer": "Codex root original047 own/native corrective after209 immediate-stage proof",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+          ],
+          "notes": "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 385228,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route-2-17b71cc79d93.png",
+        "sha256": "17b71cc79d93e4b2ff2c65a27f2d57d4a5e2bf65cdd447e0e30bbfdaac709eb0",
+        "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
+        "generationPromptSha256": "02e37dbea0c53edbe962e3b3263b99fd8b6eb5732bff0885ce51be522da5dc66",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "17b71cc79d93e4b2ff2c65a27f2d57d4a5e2bf65cdd447e0e30bbfdaac709eb0",
+          "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -27243,13 +27469,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native original and parent: Warm continuous care-nursery departure: ONE cracked speckled egg in straw, EMPTY padded companion bed/folded plain cloth/TWO separate filled plain food-water bowls; actual traversable path to different EMPTY settlement. Fresh departure shot versus old frontal nursery window room. All planes retain sharp square pixel clusters/stepped shade ramps; bare selected furniture/floor foreground, no people/humanoids/bodies, readable or pseudo text, open books/paper/documents/posters/clocks/numerals, logos/paw emblems, flags/banners/heraldry, blur or collage. Different camera from parent."
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. Wholequietemptylowstonebench/plainwoodcarebox andprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater UP, twoWHOLEvisiblydifferenthouses/fullroofs/chimneys/doors/bases LOW LEFTtrail SUNSET/noscope. All7P, actualselectedforms wholebefore1008. Clothmaterialhem/seam notprintedlogo. Diffactual048WARMmood near-overheadinteriorcare by exterior travelhousestages; original048mood owncompositioncorrective separatelyheld. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 385228,
+          "colors": 399937,
           "findings": []
         }
       }
@@ -27264,18 +27490,20 @@
         "review": {
           "sourceSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
           "promptSha256": "c08dccc128c250b370a8474de7f3abf117b0ece81ddb04a89edcc561f3b03fda",
-          "reviewer": "Codex direct original visual inspection: v2-production-047",
+          "reviewer": "Codex root original warm-parent own/native corrective during210",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Root directly opened native original and parent: Warm continuous vaulted care nursery: ONE cracked speckled egg in straw, EMPTY padded bed/folded plain cloth/TWO filled plain food-water bowls and THREE actual openings wetland/forest/ruins. Fresh vaulted habitat camera versus old single-window nursery. All planes retain sharp square pixel clusters/stepped shade ramps; bare selected furniture/floor foreground, no people/humanoids/bodies, readable or pseudo text, open books/paper/documents/posters/clocks/numerals, logos/paw emblems, flags/banners/heraldry, blur or collage. Different camera from parent."
+          "findings": [
+            "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          ],
+          "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
         },
         "gate": {
           "ok": true,
@@ -27321,18 +27549,20 @@
         "review": {
           "sourceSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
           "promptSha256": "2ef6622a3e8afb60ffa5ed6a1aa3ff1dc8f0b0a20f42fbc20ecb64719faa2341",
-          "reviewer": "Codex direct original visual inspection: v2-production-048",
+          "reviewer": "Codex root original warm-parent own/native corrective during210",
           "checks": {
             "pixelArt": true,
-            "composition": true,
+            "composition": false,
             "allChoices": true,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Root directly opened native original and parent: Warm local interrupted nursery: cracked egg/empty padded bed/folded plain cloth/TWO filled food-water bowls now occupy near LEFT; overturned bag/spilled rope/vacated bedroll and muddy trail connect to broken local doorway. Corrects rejected right-care composition; new camera versus old neat window parent. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          "findings": [
+            "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          ],
+          "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
         },
         "gate": {
           "ok": true,
@@ -63246,6 +63476,36 @@
           "colors": 340724,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret--case--short-7-b4b2f7d8ecca.png",
+        "sha256": "b4b2f7d8ecca4eafe2981888e3b8acd4a3ad9c49a4302b028a49a19f234f0bb5",
+        "promptSha256": "dfd13d50bf8c435cf8a5e10959f5730a48135949652980ab289b667cd6f6f11e",
+        "generationPromptSha256": "da151fa749d3283a16a0291489dbdd9b401a28e4024d9b8100a7f349df60f047",
+        "attempt": 7,
+        "review": {
+          "sourceSha256": "b4b2f7d8ecca4eafe2981888e3b8acd4a3ad9c49a4302b028a49a19f234f0bb5",
+          "promptSha256": "dfd13d50bf8c435cf8a5e10959f5730a48135949652980ab289b667cd6f6f11e",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. WHOLEopenreturnhome/outwarddoors/EMPTYinnerfloor UP, tidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater MID, all three EMPTY COVER/HURDLE/separatedmaneuverPOSTS before60.3, wholeOPENlocalrefuge/EMPTYpail/physicalearthtrace LOW. CLOSEDblankGROUNDbook/two separate physicalGROUNDpawdepressions MOONreturn. All7P. Rightmostactualpost complete justleftofactualcontrols; no arbitrary6-55 gate. Lowerrefugeroof has genuine nativeleftmargin. Functionalbinding not logo. DistinctactualNEW200CASE by openreturnhome/table and tacticalclearingMID insteadUP. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 301373,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--team--warm--route--scene": [
@@ -63354,7 +63614,7 @@
         "review": {
           "sourceSha256": "682a7c749fa65595e0eb55bdd32e80385122fbade7fc6eda1efa13e7c824445b",
           "promptSha256": "64ea84548e07fb109fa4f4ff731261b1d1d42a29ff8d38fa00d9635b5c5077bd",
-          "reviewer": "Codex direct original visual inspection: v2-production-201",
+          "reviewer": "Codex root original child recompare to actual new209parent",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -63365,7 +63625,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT personally FULLexactOWN/WHOLEnative and FULLexactOWN/WHOLEactual parent, NEW200ROUTE/HAB/CASE and originalwarmROUTE/HAB. UPthreeREALWHOLEINNERwetlandforestRUIN MIDwholeEMPTYcourse LOWWHOLEprotectednurseryFIRSTcrackegg/plaincloth/BLUEwater WARM SUNSET/FIRST BAREunpadded/no growth/book. BothactualINNERcolumns/allstairs and stations before60.3; no nativecrop. Different actualORIGINALwarmHAB nearindooregg/threevaults to threeLEFTlayers/newdistantfirstmoment. Requires directrecomparison if parent replaced. Remainingchecks ROOTdirect P: coherentcoarsesquaregrid/stairsteps/flatshade allplanes, no inventedprotagonist/species/body; ordinaryclothtrim/bookbinding/clasp/pageedges/physicalearthtrace not automatically print. Actual60.3 controls and own requirements only, native unchanged."
+          "notes": "ROOT personally FULLexact originalchild OWN/WHOLEactual unchangednative and FULLexactnew209parentOWN/WHOLEnative directly inspected and compared. All7 P own201. Three REAL walkable INNERwet/forest/ruin UP, actualINNERcols/ALLstairs before1008, whole threeEMPTY COVER/HURDLE/separatedPOSTS MID/protectedFIRSTcrackegg/plaincloth/BLUEwater LOW SUNSET/FIRST bareunpaddedearth. Actual wetwater/reeds fullyinside nativeedge, no requiredwholeform cutoff. No growthmat/body/logo. Diff new209parent courseUP/careMID/habLOW by habitatUP/courseMID/careLOW. No retro enclosedpond/triangle/drapedcloth requirement. Original OWN/native/priorreview retained. No automatic restore, only original own requirements."
         },
         "gate": {
           "ok": true,
@@ -63386,7 +63646,39 @@
         "review": {
           "sourceSha256": "767b3bae2bf2b31131b605ceaba60e00add7369681d505e93cfb438fa4b1cfaa",
           "promptSha256": "82e32261001cfbf2894e68f3882e6f57db6c3cd9f4fddce1513f485d184b9428",
-          "reviewer": "Codex direct original visual inspection: v2-production-202",
+          "reviewer": "Codex root original child recompare to actual new209parent",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT personally FULLexact originalchild OWN/WHOLEactual unchangednative and FULLexactnew209parentOWN/WHOLEnative directly inspected and compared. Composition ONLY F on original202WHOLE/nativeedge requirement: actual INNERwetwater/reeds are CUT at nativeLEFT. Other6 P. Threeactual INNERhabitats UP/whole threeEMPTYcourse MID/protectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and real largerEMPTYGROUNDwovenmat LOW SUNSETgrowth. ActualINNERruincols/ALLstairs before1008; distinct new209parent courseUP/careMID/habLOW by habitatUP/courseMID/careLOW plusgrowthmat. No retro209enclosedpond/order/triangle/margin requirement. Original OWN/native/priorreview retained. No automatic restore, only original own requirements."
+          ],
+          "notes": "ROOT personally FULLexact originalchild OWN/WHOLEactual unchangednative and FULLexactnew209parentOWN/WHOLEnative directly inspected and compared. Composition ONLY F on original202WHOLE/nativeedge requirement: actual INNERwetwater/reeds are CUT at nativeLEFT. Other6 P. Threeactual INNERhabitats UP/whole threeEMPTYcourse MID/protectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and real largerEMPTYGROUNDwovenmat LOW SUNSETgrowth. ActualINNERruincols/ALLstairs before1008; distinct new209parent courseUP/careMID/habLOW by habitatUP/courseMID/careLOW plusgrowthmat. No retro209enclosedpond/order/triangle/margin requirement. Original OWN/native/priorreview retained. No automatic restore, only original own requirements."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 486139,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--episode-2-33a03d02c033.png",
+        "sha256": "33a03d02c033d2d55f84c6614a7c643505fbd3e0b1695bb9f2961efe8d740f5a",
+        "promptSha256": "82e32261001cfbf2894e68f3882e6f57db6c3cd9f4fddce1513f485d184b9428",
+        "generationPromptSha256": "ee07c7f83936da4bbef1e4fa7e17f68ff27ca066dd898e26af71344f032dfe76",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "33a03d02c033d2d55f84c6614a7c643505fbd3e0b1695bb9f2961efe8d740f5a",
+          "promptSha256": "82e32261001cfbf2894e68f3882e6f57db6c3cd9f4fddce1513f485d184b9428",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -63397,13 +63689,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPthreeREALOPENwalkableINNERwetlandforestRUIN MIDwholeEMPTYCOVER/HURDLE/separatedPOSTS LOWWHOLEprotectednursery FIRSTcrackegg/plainPALEclothlaidacrossstraw/drapedfront/BLUEwater and separate largerEMPTYGROUNDgrowthmat SUNSET/growth. BothactualINNERarchcolumns/allstairs and allcourse stations before60.3; detachedfrontcolumn not INNER. Different actualNEW202WARMHAB UPcourseMIDcareLOWhabitats, reversed plus growthmat. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. UPcompacttriangle threeactualINNERhabitats fullyenclosedreedpond/wholebanks/woodlandmargins, bothactualINNERruincols/ALLstairs/forestopening before1008; MIDthreewholeEMPTY COVER/HURDLE/separatedPOSTS LOWprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater plusreal largerEMPTYGROUNDwovenMAT SUNSETgrowth. All7P; no nativecut/body/print. Forest INNER completes before1008; exteriorroots/outerposts notINNER. Diffactual209WARMHAB courseUP/careMID/habLOW byhabitatUP/courseMID/careLOW+mat. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 486139,
+          "colors": 467173,
           "findings": []
         }
       }
@@ -63545,6 +63837,113 @@
           "width": 1672,
           "height": 941,
           "colors": 581908,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--short-6-e1f3acaa914d.png",
+        "sha256": "e1f3acaa914d606d54f12d393c18d9ed2e5e45d9cb11643fadf955d210627c72",
+        "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+        "generationPromptSha256": "2519fd52abfc91ce097ddce99cecd1a29adb1342b5f74459dc23369bea13823b",
+        "attempt": 6,
+        "review": {
+          "sourceSha256": "e1f3acaa914d606d54f12d393c18d9ed2e5e45d9cb11643fadf955d210627c72",
+          "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Actual3habitats WETLEFT/RUINMID/FORESTRIGHT, actualINNERruincols/ALLstairs left. WHOLEopenhome/outwarddoors/EMPTYinnerfloor UP/tableFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID plus wholethreeEMPTYtacticalstations SUNSETreturn. ActualINNERwetlandwater/reeds CUTnativeLEFTedge: compositionONLYF. All other6P, no watermark in this new207native. DistinctactualNEW202WARMHAB by openreturnhome/table; original202 parent separately foundskylogo and flaggedforcorrective, no autorestore."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. Actual3habitats WETLEFT/RUINMID/FORESTRIGHT, actualINNERruincols/ALLstairs left. WHOLEopenhome/outwarddoors/EMPTYinnerfloor UP/tableFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID plus wholethreeEMPTYtacticalstations SUNSETreturn. ActualINNERwetlandwater/reeds CUTnativeLEFTedge: compositionONLYF. All other6P, no watermark in this new207native. DistinctactualNEW202WARMHAB by openreturnhome/table; original202 parent separately foundskylogo and flaggedforcorrective, no autorestore. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--short-7-c4f01112ba90.png",
+        "sha256": "c4f01112ba90bf81e4e4b283eb2bf96a85b5b04e5ddde92c296b23ffbbfdaa89",
+        "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+        "generationPromptSha256": "e481aca59284293a738876c16143a6fac405bbe1a89161e9412214e88a3bf9f6",
+        "attempt": 7,
+        "review": {
+          "sourceSha256": "c4f01112ba90bf81e4e4b283eb2bf96a85b5b04e5ddde92c296b23ffbbfdaa89",
+          "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEopenreturnhome/outwarddoors/EMPTYinnerfloor UP/tableFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID withwholethreeEMPTYtacticalstations,3actualINNERhabitats LOW SUNSETreturn. ActualforestINNERopening rightsidebeyondactual60.3 and actualwetlandedgecutnativeLEFT: compositionONLYF. Read-onlyNEARESTeggdiagnostic confirmed actualthinBLACKconnectingangularFIRSTcrack, notjustspeckles; allChoicesP. Other6P. DiffactualNEW208WARMHAB by openreturnhome/table; parentFheld."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WHOLEopenreturnhome/outwarddoors/EMPTYinnerfloor UP/tableFIRSTcrackegg/PALEdrapedcloth/BLUEwater MID withwholethreeEMPTYtacticalstations,3actualINNERhabitats LOW SUNSETreturn. ActualforestINNERopening rightsidebeyondactual60.3 and actualwetlandedgecutnativeLEFT: compositionONLYF. Read-onlyNEARESTeggdiagnostic confirmed actualthinBLACKconnectingangularFIRSTcrack, notjustspeckles; allChoicesP. Other6P. DiffactualNEW208WARMHAB by openreturnhome/table; parentFheld. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--short-8-5a0a2cca4817.png",
+        "sha256": "5a0a2cca481784a887a27f3f8b4ba8e1857ef35942c1019f848945c40f9e996c",
+        "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+        "generationPromptSha256": "ec31845b959f86d3d9fa1ba38409b06b2b9ca26e2c1f2d133aeea0efc546473b",
+        "attempt": 8,
+        "review": {
+          "sourceSha256": "5a0a2cca481784a887a27f3f8b4ba8e1857ef35942c1019f848945c40f9e996c",
+          "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLE openhome/outwarddoors/visible EMPTYinnerfloor UP, actual tidy TABLE care FIRSTcrackegg/PALEdrapedcloth/BLUEwater under functional plain canopy MID, three whole EMPTY tactical stations and three actual INNERhabitats LOW SUNSETreturn. Actual INNERportal columns before1008; detached outerflutedpost is not INNER. Read-only NEAREST ruin diagnostic plus WHOLE native confirm lowest actual stair tread right edge extends beyond actual1008 controls: composition ONLY F; other six P. Diff NEW209WARMHAB by returnhome/realTABLE, not canopy logo."
+          ],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE openhome/outwarddoors/visible EMPTYinnerfloor UP, actual tidy TABLE care FIRSTcrackegg/PALEdrapedcloth/BLUEwater under functional plain canopy MID, three whole EMPTY tactical stations and three actual INNERhabitats LOW SUNSETreturn. Actual INNERportal columns before1008; detached outerflutedpost is not INNER. Read-only NEAREST ruin diagnostic plus WHOLE native confirm lowest actual stair tread right edge extends beyond actual1008 controls: composition ONLY F; other six P. Diff NEW209WARMHAB by returnhome/realTABLE, not canopy logo. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--short-9-889e77d52e4a.png",
+        "sha256": "889e77d52e4a74d38d7537127a7bb121e745ab9d1db174c85b0819e85a39bfe1",
+        "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+        "generationPromptSha256": "b899f39ebaf653ebfae4ea7e173b5c0febc2cd128dc710e739f371ad77cff115",
+        "attempt": 9,
+        "review": {
+          "sourceSha256": "889e77d52e4a74d38d7537127a7bb121e745ab9d1db174c85b0819e85a39bfe1",
+          "promptSha256": "914d77cd96c9bc79097c326833235e05e9732509692c24d1ad297abe570c0031",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor UP, actualtidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater MID withwholethreeEMPTYtactical COVER/HURDLE/separatedPOSTS, three actualINNERhabitats LOW SUNSETreturn. Actual INNERruincols/ALLstairtreads nowwholebefore1008, but actual INNERwetpondwater/reeds CUTnativeLEFT; read-only NEAREST pond diagnostic confirmscut. CompositionONLYF, other6P. Diffactual209WARMHAB bywholeopenhome/realTABLE; no growthmat/body/print."
+          ],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. WHOLEOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor UP, actualtidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater MID withwholethreeEMPTYtactical COVER/HURDLE/separatedPOSTS, three actualINNERhabitats LOW SUNSETreturn. Actual INNERruincols/ALLstairtreads nowwholebefore1008, but actual INNERwetpondwater/reeds CUTnativeLEFT; read-only NEAREST pond diagnostic confirmscut. CompositionONLYF, other6P. Diffactual209WARMHAB bywholeopenhome/realTABLE; no growthmat/body/print. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 482735,
           "findings": []
         }
       }
@@ -63801,7 +64200,39 @@
         "review": {
           "sourceSha256": "8fb50d3edd481b424e3a0a738559bcc833155bfc3761535784b2de01d53dc943",
           "promptSha256": "983b15dcb12a4e7af2c4a137e0c2310b8c48fe78fda8e73b863dd1bcf8c62984",
-          "reviewer": "Codex direct original visual inspection: v2-production-203",
+          "reviewer": "Codex root original child recompare to actual new208BRIGHTHAB parent",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "ROOT FULLexact originalchildOWN/WHOLEactualnative and FULLexactnew208parentOWN/WHOLEnative directly inspected and compared. Own203actualINNERwetwater/reeds cutnativeLEFTedge; compositionONLYF. Not restored. Coherentcoarsepixels, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater/wholequietemptylowstonebench/plainwoodcarebox and3actualhabitats SUN/FIRSTbareunpaddedapproach present, actualINNERruincols/ALLstairs beforecontrols. Other6P. No retro208fullyenclosedpond/order/extra6-55margin. Distinctnew208parentcareUP/habLOW versuschildhabUP/careLOW; currentparentP doesnotautomaticallypasschild. All original nativebytes/OWN/priorofficialreview retained. After208immediate-stage proof; no automatic descendant restore."
+          ],
+          "notes": "ROOT FULLexact originalchildOWN/WHOLEactualnative and FULLexactnew208parentOWN/WHOLEnative directly inspected and compared. Own203actualINNERwetwater/reeds cutnativeLEFTedge; compositionONLYF. Not restored. Coherentcoarsepixels, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater/wholequietemptylowstonebench/plainwoodcarebox and3actualhabitats SUN/FIRSTbareunpaddedapproach present, actualINNERruincols/ALLstairs beforecontrols. Other6P. No retro208fullyenclosedpond/order/extra6-55margin. Distinctnew208parentcareUP/habLOW versuschildhabUP/careLOW; currentparentP doesnotautomaticallypasschild. All original nativebytes/OWN/priorofficialreview retained. After208immediate-stage proof; no automatic descendant restore."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 681908,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat--scene-2-4b255ba00279.png",
+        "sha256": "4b255ba00279ebe8ebe1f0c1501e567c9ad828e2b6d7ba0905d28002c72567e9",
+        "promptSha256": "983b15dcb12a4e7af2c4a137e0c2310b8c48fe78fda8e73b863dd1bcf8c62984",
+        "generationPromptSha256": "7b39ae613c44e2a1a668da86872c88d2963d53c27bbea841ea809b1d760b592f",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "4b255ba00279ebe8ebe1f0c1501e567c9ad828e2b6d7ba0905d28002c72567e9",
+          "promptSha256": "983b15dcb12a4e7af2c4a137e0c2310b8c48fe78fda8e73b863dd1bcf8c62984",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -63812,13 +64243,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULLexactOWN/WHOLEnative and FULLactualparentOWN/WHOLEnative, new202warmCASE/HAB, new200secretCASE and originalbrightPARTNERROUTE/HAB. UPthreeREALOPENINNERwetlandforestRUIN MIDwholeEMPTYlowstonebench/plaincarebox LOWWHOLEprotectednursery FIRSTcrackegg/plainPALEdrapedcloth/BLUEwater SUN/FIRST bareunpadded. BothactualINNERarchcolumns/allactualstairs before60.3; detachedfrontcolumn/sidewall beyondcontrols not INNERstairs/columns. Allrequiredcareformswhole. No mat/course/samplelab/capture/body. DiffactualORIGINALbrightPARTNERHAB indoor3vaults/foreworkbench to outdoorthreeLEFThabitats/care. Coherent coarsepixelgrid/stairstepcontours/flatshade allplanes; no inventedidentity/species/body/text/sign/logo except explicitfailure. Only OWN, no originalparent foodbedrequirements retroapplied. Native unchanged. Requires directrecomparison if originalparent replaced."
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. UP compacttriangle actual enclosed WETpond/completeearthbanks and nativewoodland, FOREST inneropening, RUIN actualINNERcols/ALLstairs before1008; empty lowstonebench/plainwoodcarebox MID and protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW SUN/FIRST bareunpaddedearth. All selectedforms whole; detached ruins exteriorpost beyond1008 notINNER. No growthmat/home/table/body/print. Diff actual208BRIGHTHAB careUP/habLOW by habitatUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 681908,
+          "colors": 531447,
           "findings": []
         }
       }
@@ -63930,6 +64361,61 @@
           "colors": 447039,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat--episode-5-d16ec46b4e8c.png",
+        "sha256": "d16ec46b4e8ce162cd2082623208f478d0c3ddd9cd4beb5137d2748531ef8140",
+        "promptSha256": "9a3971eef9d16439f131cc366525383d98d372644c65fee259683a8eccc96db7",
+        "generationPromptSha256": "db7b78849fb0a749ebdcd2ee6807cef326425afa8dad7197bcd89f77f39d3753",
+        "attempt": 5,
+        "review": {
+          "sourceSha256": "d16ec46b4e8ce162cd2082623208f478d0c3ddd9cd4beb5137d2748531ef8140",
+          "promptSha256": "9a3971eef9d16439f131cc366525383d98d372644c65fee259683a8eccc96db7",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and actual separatelywoven largerEMPTYGROUNDmat SUNgrowth. ActualINNERwetlandwater/reeds cutnativeLEFTedge and actualforestinneropening extendsbeyondTHISOWNrepair57percent: compositionONLYF. Others6P. DistinctactualNEW207BRIGHTHAB reversecareUP/habLOW plus growthmat. ParentF held."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and actual separatelywoven largerEMPTYGROUNDmat SUNgrowth. ActualINNERwetlandwater/reeds cutnativeLEFTedge and actualforestinneropening extendsbeyondTHISOWNrepair57percent: compositionONLYF. Others6P. DistinctactualNEW207BRIGHTHAB reversecareUP/habLOW plus growthmat. ParentF held. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat--episode-6-5a3afaf67984.png",
+        "sha256": "5a3afaf67984ff2e7e4212d05f43aaf25c7db08a914d67fbc80b5531ef691c07",
+        "promptSha256": "9a3971eef9d16439f131cc366525383d98d372644c65fee259683a8eccc96db7",
+        "generationPromptSha256": "444dfd5a30c4536eb1360cbb3f5234336e977d3124e5efb69c70018a335f0bbf",
+        "attempt": 6,
+        "review": {
+          "sourceSha256": "5a3afaf67984ff2e7e4212d05f43aaf25c7db08a914d67fbc80b5531ef691c07",
+          "promptSha256": "9a3971eef9d16439f131cc366525383d98d372644c65fee259683a8eccc96db7",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. UP3actualINNERhabitats SMALLenclosedWETpond/completebanks/RUINactualbothINNERcols/ALLstairs/FORESTopening allbeforeactual60.3, MIDwholequietemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and real separatelywovenlargerEMPTYGROUNDmat SUNgrowth. All7P. Selectedformswholeinside native; no arbitrary6-55 gate. Matweave/clothshade not print/body. DiffactualNEW208BRIGHTHAB reversingcareUP/habLOW plus growthmat. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 618227,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--partner--bright--habitat--short": [
@@ -63967,7 +64453,7 @@
         "review": {
           "sourceSha256": "dcd8319713d06c68262fc58ca8eeeb58d5140c5d05ba4311e50fa2c41331f0e1",
           "promptSha256": "eddb4f2432f1b5dce874e894d9052f548e9f4a3170f1f02e24a6f2b23518794d",
-          "reviewer": "Codex direct original visual inspection: v2-production-204",
+          "reviewer": "Codex root original child recompare to actual new208BRIGHTHAB parent",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -63978,7 +64464,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT personally FULLexactOWN and WHOLEnative, with full actualparent OWN/WHOLEnative inspections across this ongoing review; no truncated lastcall credited (2048 whole reopened). UPwholeOPENreturnhome/outwarddoors/visibleemptyfloor MIDwholetidyTABLE actually holding FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plainwoodcarebox; adjacent wholeemptylowstonebench. LOWthreeactualINNERhabitats RUINleftmost, bothINNERcols/ALLstairs completeleft, entire actualwetlandwalkway and water before x60.3. SUNreturn/no growthmat. Doorstep ordinaryentrymat not creaturegrowthmat. Physicalboxclasp not logo. Distinct NEW204HAB by home/table/return; parentF means hold until restoredparent directrecomparison. Coherent coarsepixelgrid/stairsteps/flatshade acrossallplanes. No inventedidentity/species/body/text/sign/logo. Only ownrequirements applied, no retroactivefuturefoodbed or aesthetic penalties. Native unchanged."
+          "notes": "ROOT FULLexact originalchildOWN/WHOLEactualnative and FULLexactnew208parentOWN/WHOLEnative directly inspected and compared. All7P on exactOWN204. WHOLEOPENhome/outwarddoors/visibleEMPTYactualinnerfloor UP/tidyrealTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID/wholeemptylowstonebench and3actualINNERhabitats LOW SUNreturn. ActualRUINleftmost, bothactualINNERarchcols/ALLstairs completeleft; actualINNERwetwater/bridge remainbeforeactual60.3, outerfoliage/detachedposts not actualINNERstairs. No nativehousecropping, body/species/printedlogo, no growthmat. Functionalcareboxclasp/clothmaterial notlogo. New208parent hascareUP/habLOW, childaddsactualwholeOPENreturnhome/tidytable beyondrecolor; no retro208enclosedpond/changedorder/6-55gate. All original nativebytes/OWN/priorofficialreview retained. After208immediate-stage proof; no automatic descendant restore."
         },
         "gate": {
           "ok": true,
@@ -64174,6 +64660,36 @@
           "colors": 274584,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--route--episode-3-dca89e2d5856.png",
+        "sha256": "dca89e2d5856d6d9b88a03cebde512a0de86ca2c9a5e6b06ec195eb8e7bc213a",
+        "promptSha256": "6f94cad747a6575167cce7b2f393b460012d6093bfc3338e6b6e4b243a45ee41",
+        "generationPromptSha256": "2837916c9b4c99f44bb5a7f2302cda3593630c4c23906a3bbcb647c5c5025219",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "dca89e2d5856d6d9b88a03cebde512a0de86ca2c9a5e6b06ec195eb8e7bc213a",
+          "promptSha256": "6f94cad747a6575167cce7b2f393b460012d6093bfc3338e6b6e4b243a45ee41",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. UPtwoWHOLEdifferenthouses/chimneys/doors/bases/LEFTtrail MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater plus CLOSEDblankGROUNDbook/TWO separate physicalGROUNDmuddepressions and separatelywoven largerEMPTYGROUNDmat MOONgrowth. All7P. Matweave/bookbinding/materialseams not logo, no inventedbody/TEAM/course. Entireselectedforms completeinside nativeandbeforeactual60.3. DistinctactualNEW206SECRETROUTE reversehousesUP/careLOW withactualmat. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 293534,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--partner--secret--route--short": [
@@ -64206,6 +64722,663 @@
           "width": 1672,
           "height": 941,
           "colors": 384404,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--route--short-2-a1aa2c74ce07.png",
+        "sha256": "a1aa2c74ce077985d13b2611bae3999cb9b7682da815987df7aa440c3d1f9dca",
+        "promptSha256": "91b7bd64b98fb2270d718ceea9a0385f741511219aaaf9cf8abd650e92fff599",
+        "generationPromptSha256": "60c855c07f7ece6729a646e9f86c228aceb30f73fa6ef37ca7e492e31d863fee",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a1aa2c74ce077985d13b2611bae3999cb9b7682da815987df7aa440c3d1f9dca",
+          "promptSha256": "91b7bd64b98fb2270d718ceea9a0385f741511219aaaf9cf8abd650e92fff599",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. WHOLEopenreturnhome/outwarddoors/visibleEMPTYinnerfloor UP, realtidyTABLE physicallyholding nurseryFIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withwholeemptylowstonebench, twoWHOLEdifferenthouses/chimneys/doors/bases/LEFTtrail LOW, CLOSEDplainGROUNDbook/TWO physicalGROUNDmuddepressions MOONreturn. All7P. Genuineleftmargins, no growthmat, boxfunctionalclasp not printedlogo; rearhomefurnituredoesnotoccupyclearactualinnerfloor/threshold. DistinctactualNEW206SECRETROUTE actualopenreturnhome/table. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 302339,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--scene-1-10b9fa6e4662.png",
+        "sha256": "10b9fa6e4662c94ac2d4179ceac1ebf7d340e4cbf068b10d7e49dc93f32e4a44",
+        "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+        "generationPromptSha256": "13eab8e9f086357b6bbf5f22b3e8671085417807bd1433e9675dcfdc769919f5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "10b9fa6e4662c94ac2d4179ceac1ebf7d340e4cbf068b10d7e49dc93f32e4a44",
+          "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater plus actualtwoGROUNDmuddepressions MOON/FIRST bareunpaddedground/nogrowthmat/nohome/table. ActualINNERwetlandwater/reeds CUTnativeLEFTedge: compositionF. Requestedblankbook has isolatedcentralGOLDthree-diamondcoveremblem distinctfrombinding: noTextF. Other5P. DistinctactualNEW207SECRETHAB reversehabUP/careLOW; parentFheld."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater plus actualtwoGROUNDmuddepressions MOON/FIRST bareunpaddedground/nogrowthmat/nohome/table. ActualINNERwetlandwater/reeds CUTnativeLEFTedge: compositionF. Requestedblankbook has isolatedcentralGOLDthree-diamondcoveremblem distinctfrombinding: noTextF. Other5P. DistinctactualNEW207SECRETHAB reversehabUP/careLOW; parentFheld. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--scene-2-f5295a0931ae.png",
+        "sha256": "f5295a0931ae6da1f80f7d3b258ffc9ab320a39d1dda3c07e38114ec60b26a63",
+        "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+        "generationPromptSha256": "71ef9c263b2f493fd12d9cff728264804c4f78d400420d20ebf01b904a9555ec",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f5295a0931ae6da1f80f7d3b258ffc9ab320a39d1dda3c07e38114ec60b26a63",
+          "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP3actualINNERhabitats SMALLenclosedreedpond/wholebank/RUINactualINNERcols/ALLstairs/FOREST beforeactual60.3 MIDwholequietemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater withactualTWOphysicalGROUNDmuddepressions MOON/FIRSTbareunpaddedearth/nogrowthmat/nohome/table. RequestedblankGROUNDbook has isolatedcentral GOLDfloralcoveremblem distinctfromspine/binding: noTextONLYF; other6P. DistinctactualNEW208SECRETHAB reversehabUP/careLOW. ParentFheld."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. UP3actualINNERhabitats SMALLenclosedreedpond/wholebank/RUINactualINNERcols/ALLstairs/FOREST beforeactual60.3 MIDwholequietemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater withactualTWOphysicalGROUNDmuddepressions MOON/FIRSTbareunpaddedearth/nogrowthmat/nohome/table. RequestedblankGROUNDbook has isolatedcentral GOLDfloralcoveremblem distinctfromspine/binding: noTextONLYF; other6P. DistinctactualNEW208SECRETHAB reversehabUP/careLOW. ParentFheld. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--scene-3-5740cd861d7b.png",
+        "sha256": "5740cd861d7be849e6707789d36d628ffb5ec587c28fb90131f122c109e4f4f0",
+        "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+        "generationPromptSha256": "92b5cc9df85331acc693035697b303910a03c951c89428ff7975cc7a6607881a",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "5740cd861d7be849e6707789d36d628ffb5ec587c28fb90131f122c109e4f4f0",
+          "promptSha256": "fb677f6b2e5d9803c92c08f070f6cae9ece20b836a06c6383c4215c253b79b94",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Upper compacttriangle actual enclosed WETpond/completebank with native woodland margin, RUIN INNERcolumns/ALLstairs and FOREST inneropening before1008, quiet empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW on bare unpaddedearth MOON/FIRST. CLOSED blank FACE-DOWN GROUND book with functionalbinding/pageedges and TWO spaced actual physical GROUND pawdepressions. Read-only NEAREST pond-left diagnostic confirms fullbank/water inside native. No growthmat/home/table. Diff NEW209SECRETHAB by reversing habitatUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 292773,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--habitat--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--episode-1-d7340863b4fa.png",
+        "sha256": "d7340863b4fafee6679f87a3519d0f6bfa4aa8a7702f189121c516b94d473e72",
+        "promptSha256": "9fc1eebbe9883d7f984b49e7931edaa936dbb3f6ac453794c211569615050f10",
+        "generationPromptSha256": "5ab1d2d36a3867b762aa7b0c084e51247e812428ebeb53d414ef927a805b2b87",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d7340863b4fafee6679f87a3519d0f6bfa4aa8a7702f189121c516b94d473e72",
+          "promptSha256": "9fc1eebbe9883d7f984b49e7931edaa936dbb3f6ac453794c211569615050f10",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater plus CLOSEDplainGROUNDbook/TWO separate physicalGROUNDmuddepressions and real separatelywovenlargerEMPTYGROUNDmat MOONgrowth. ActualINNERwetwater/reeds CUTnativeLEFTedge and actualforestINNERopening beyondactual60.3 controls: compositionONLYF; others6P. Physicalspinebinding/functionalcareboxclasp/matweave not printedlogo. DistinctactualNEW207SECRETHAB reversehabUP/careLOW+growthmat; parentFheld."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. UP3actualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater plus CLOSEDplainGROUNDbook/TWO separate physicalGROUNDmuddepressions and real separatelywovenlargerEMPTYGROUNDmat MOONgrowth. ActualINNERwetwater/reeds CUTnativeLEFTedge and actualforestINNERopening beyondactual60.3 controls: compositionONLYF; others6P. Physicalspinebinding/functionalcareboxclasp/matweave not printedlogo. DistinctactualNEW207SECRETHAB reversehabUP/careLOW+growthmat; parentFheld. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--episode-2-27bad3580512.png",
+        "sha256": "27bad358051265bf7b929b9580b3b399c450129b7beaca825c876faffe445310",
+        "promptSha256": "9fc1eebbe9883d7f984b49e7931edaa936dbb3f6ac453794c211569615050f10",
+        "generationPromptSha256": "de4a120325283b1abf2361f9a1b7ac9104405636ee2c6f89baac35ee512595db",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "27bad358051265bf7b929b9580b3b399c450129b7beaca825c876faffe445310",
+          "promptSha256": "9fc1eebbe9883d7f984b49e7931edaa936dbb3f6ac453794c211569615050f10",
+          "reviewer": "Codex root original child recompare to actual new209parent",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact originalchild OWN/WHOLEactual unchangednative and FULLexactnew209parentOWN/WHOLEnative directly inspected and compared. All7 P on own208. Actualenclosedwetpond/completebanks/actualINNERruincols/ALLstairs/forestinner before1008 UP, whole empty lowstonebench/plaincarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW/CLOSEDblankGROUNDbook TWOphysicalGROUNDprints/realseparate largerEMPTYGROUNDwovenmat MOONgrowth. Functionalbinding/closure/spine/pageedges not isolatedlogo. Diff actual new209parent careUP/habLOW by habUP/careLOW and growthmat. No retro209triangle/faceDOWN requirement. Original OWN/native/priorreview retained. No automatic restore, only original own requirements."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 282959,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--short-1-cb3016af7e07.png",
+        "sha256": "cb3016af7e0744df6f6abd77ed6acdaba18b5624241a729447ff1103c7fde0ee",
+        "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+        "generationPromptSha256": "e5fe5b0d4a71ab195415e86756a3b037618482f73d01ab5fb9feafe6b2dc3cc6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cb3016af7e0744df6f6abd77ed6acdaba18b5624241a729447ff1103c7fde0ee",
+          "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+          "reviewer": "Codex direct original visual inspection: v2-production-207",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEopenreturnhome/outwarddoors/visibleEMPTYinnerfloor UP tidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withwholeemptylowstonebench, CLOSEDplainGROUNDbook/TWO physicalGROUNDmuddepressions, threeactualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT LOW MOONreturn. SelectedhomeROOF CUT nativeTOPedge and actualINNERwetwater/reeds CUTnativeLEFTedge: compositionONLYF. Other6P, careboxfunctionalclasp/bookbinding not logo, ordinaryentryrugnotgrowthmat. DistinctactualNEW207SECRETHAB by openreturnhome/table; parentFheld."
+          ],
+          "notes": "ROOT FULL exact OWN and WHOLE unchanged actual native directly inspected, actual200SECRETCASE/202WARMHAB/204BRIGHT/206SECRET/206SECRETROUTE and actualnew207BRIGHTHAB/SECRETHAB whole originals directly compared. WHOLEopenreturnhome/outwarddoors/visibleEMPTYinnerfloor UP tidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withwholeemptylowstonebench, CLOSEDplainGROUNDbook/TWO physicalGROUNDmuddepressions, threeactualINNERhabitats WETLEFT/RUINMID/FORESTRIGHT LOW MOONreturn. SelectedhomeROOF CUT nativeTOPedge and actualINNERwetwater/reeds CUTnativeLEFTedge: compositionONLYF. Other6P, careboxfunctionalclasp/bookbinding not logo, ordinaryentryrugnotgrowthmat. DistinctactualNEW207SECRETHAB by openreturnhome/table; parentFheld. Coherent squarepixelgrid/stairsteps/flatshade on all planes, no inventedidentity/species/body/writing except statedprintedcoverfailure. Only207OWN applied, earlierOWN/order/205hardmargin not retroactively changed. Builtin207 tenfulfilled0failed explicitlyclosed. No originalnative editing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--short-2-bfcbe8e1abe1.png",
+        "sha256": "bfcbe8e1abe16bae90e7e556357599554926abee924d8bc1c360847ffea88498",
+        "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+        "generationPromptSha256": "9fc8d2e45774fdd57fe423e661426dd3cde5cd0a87df61534f4a30944d16d7cd",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "bfcbe8e1abe16bae90e7e556357599554926abee924d8bc1c360847ffea88498",
+          "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEopenhome/outwarddoors/EMPTYinnerfloor UP realtidyTABLE physicallysupports FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withwholeemptylowstonebench/CLOSEDplainGROUNDbook/TWO physicalGROUNDmuddepressions,3actualINNERhabitats LOW MOONreturn. ActualforestINNERopening extendsbeyondactual60.3 and actualINNERwetwater/reedscutnativeLEFT: compositionONLYF; other6P. HomeROOF has actualTOPmargin nowfixed, plainboxphysicalclasp/bookbindingnotlogo; ordinaryentryrugnotgrowthmat. DiffactualNEW208SECRETHAB byopenreturnhome/table; parentFheld."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WHOLEopenhome/outwarddoors/EMPTYinnerfloor UP realtidyTABLE physicallysupports FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withwholeemptylowstonebench/CLOSEDplainGROUNDbook/TWO physicalGROUNDmuddepressions,3actualINNERhabitats LOW MOONreturn. ActualforestINNERopening extendsbeyondactual60.3 and actualINNERwetwater/reedscutnativeLEFT: compositionONLYF; other6P. HomeROOF has actualTOPmargin nowfixed, plainboxphysicalclasp/bookbindingnotlogo; ordinaryentryrugnotgrowthmat. DiffactualNEW208SECRETHAB byopenreturnhome/table; parentFheld. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat--short-3-c25f17556ca1.png",
+        "sha256": "c25f17556ca120ea5ce9519caa1869ae09bf6ef4124eace7fe2cd28b1b67193f",
+        "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+        "generationPromptSha256": "cdfff3ef3c84e7bc0a282599556cdacce93a10c2a561f80b8259058e559bcea4",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "c25f17556ca120ea5ce9519caa1869ae09bf6ef4124eace7fe2cd28b1b67193f",
+          "promptSha256": "73b6095e8c4829cdc4ea85159ae635e25d9108aa98ba7a7d8f63d654cbee7902",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE openhome/outwarddoors/EMPTYinnerfloor UP, tidy real TABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID, empty lowstonebench/blank FACE-DOWN CLOSED GROUND book and two physical GROUND prints, compacttriangle of actual INNER wetpond/ruin/forest LOW MOONreturn. Complete earthbanks/native woodland margins; both actual INNER ruin columns/ALLstairs and forestopening before1008. Detached outerpost/wall not INNER. No growthmat/body/printedemblem. Diff NEW209SECRETHAB by whole returnhome/realTABLE. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 347934,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case--scene-1-15c37ce7deb7.png",
+        "sha256": "15c37ce7deb73c6a9e62f483194638b429b09dea4aa36e883232baed37defd24",
+        "promptSha256": "adbf98101531c43793d5239784663f20ad8af126d62af80397ae5c4c321b7d26",
+        "generationPromptSha256": "5989c06602043df7e266e918f54cf7413e7dab42cac852523a7f0e34d0a124b1",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "15c37ce7deb73c6a9e62f483194638b429b09dea4aa36e883232baed37defd24",
+          "promptSha256": "adbf98101531c43793d5239784663f20ad8af126d62af80397ae5c4c321b7d26",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/threshold +tippedEMPTYhollowpail/physicalearthtrace UP, wholequietemptylowstonebench/plainwoodcarebox MID, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW TWOphysicalGROUNDmuddepressions MOON/FIRSTbareunpaddedground/nogrowthmat/nohome/table. ActualrequiredplainGROUNDbook has isolatedcentral GOLDflowercoveremblem: noTextONLYF; other6P. Allselectedformscompleteleftbeforeactual60.3; clothhemphysicalmaterialnotlogo. DiffactualNEW206SECRETCASE reversecaseUP/careLOW."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/threshold +tippedEMPTYhollowpail/physicalearthtrace UP, wholequietemptylowstonebench/plainwoodcarebox MID, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW TWOphysicalGROUNDmuddepressions MOON/FIRSTbareunpaddedground/nogrowthmat/nohome/table. ActualrequiredplainGROUNDbook has isolatedcentral GOLDflowercoveremblem: noTextONLYF; other6P. Allselectedformscompleteleftbeforeactual60.3; clothhemphysicalmaterialnotlogo. DiffactualNEW206SECRETCASE reversecaseUP/careLOW. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case--scene-2-ed71e032a84a.png",
+        "sha256": "ed71e032a84a70bad7cd67458bfb6f658570fd149e209b50ae730d7d54458c6f",
+        "promptSha256": "adbf98101531c43793d5239784663f20ad8af126d62af80397ae5c4c321b7d26",
+        "generationPromptSha256": "7a44006d5cc5a2e1493d8ee67992d80a389aabb37e154c137a0ce6a77a3585d7",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ed71e032a84a70bad7cd67458bfb6f658570fd149e209b50ae730d7d54458c6f",
+          "promptSha256": "adbf98101531c43793d5239784663f20ad8af126d62af80397ae5c4c321b7d26",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE OPEN localrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYhollowpail/physicalearthtrace UP, empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW with CLOSED blankFACE-DOWN GROUNDbook TWOspacedphysicalGROUNDprints MOON/FIRST bareunpaddedearth. No growthmat/returnhome/table. All selectedforms whole before1008/nativeedges. Diff actual206SECRETCASE by reversing refugeLOW/careMID torefugeUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 270725,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case--episode-1-5197abfc5367.png",
+        "sha256": "5197abfc5367f352a05d15b9538328706181144698659bc953d8a4ab9edc590b",
+        "promptSha256": "2f9f058ce758b6ddc78629a88f41758971db6f28c9dd014b81ea2527046a47c7",
+        "generationPromptSha256": "74fcc37561c1c2851ffe3ed6521f00d338f4a97814a117af34273f85814831f3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "5197abfc5367f352a05d15b9538328706181144698659bc953d8a4ab9edc590b",
+          "promptSha256": "2f9f058ce758b6ddc78629a88f41758971db6f28c9dd014b81ea2527046a47c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-208",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/threshold +EMPTYhollowpail/physicalearthtrace UP, wholequietemptylowstonebench/plainwoodcarebox MID, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW TWOphysicalGROUNDmuddepressions and realseparate largerEMPTYGROUNDwovenrestMAT MOONgrowth. RequiredplainGROUNDbook has isolatedcentral GOLDthree-petalcoveremblem: noTextONLYF; other6P. Wholeobjectsleftbeforeactual60.3, groundmatfringe/materialnotbareearthorprintedtext. DiffactualNEW206SECRETCASE reversecaseUP/careLOW+growthmat."
+          ],
+          "notes": "ROOT personally FULLexactOWN/WHOLEactual unchangednative inspected and directlycomparedactualparent; NEW208BRIGHTHAB/SECRETHAB/WARMHAB, actualWARMmood/204BRIGHT/206SECRET/206SECRETCASE fullOWN/whole natives directly seen. WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/threshold +EMPTYhollowpail/physicalearthtrace UP, wholequietemptylowstonebench/plainwoodcarebox MID, wholeprotectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW TWOphysicalGROUNDmuddepressions and realseparate largerEMPTYGROUNDwovenrestMAT MOONgrowth. RequiredplainGROUNDbook has isolatedcentral GOLDthree-petalcoveremblem: noTextONLYF; other6P. Wholeobjectsleftbeforeactual60.3, groundmatfringe/materialnotbareearthorprintedtext. DiffactualNEW206SECRETCASE reversecaseUP/careLOW+growthmat. Coherent squarepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except statedisolatedcoveremblem. Only208OWN applied; positionsaretargets, actual60.3/whole nativeedgesrequired. Earlier20757percent/205hardmargin decisionsunchanged. Builtin208tenfulfilled0failed explicitlyclosed. Nativeunchanged."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case--episode-2-819c754bda70.png",
+        "sha256": "819c754bda70a65794db93b95e1139edac5aa8baad12ffff56ebcaab23dc2090",
+        "promptSha256": "2f9f058ce758b6ddc78629a88f41758971db6f28c9dd014b81ea2527046a47c7",
+        "generationPromptSha256": "d398dc16651da875991baf0a0e91e709d423f49c1eb4e01276e97772fb464663",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "819c754bda70a65794db93b95e1139edac5aa8baad12ffff56ebcaab23dc2090",
+          "promptSha256": "2f9f058ce758b6ddc78629a88f41758971db6f28c9dd014b81ea2527046a47c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE OPEN localrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYpail/earthtrace UP, empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW with real separatelywoven larger EMPTYGROUND growthmat/CLOSED blankFACE-DOWN GROUNDbook TWOspacedphysicalGROUNDprints MOONgrowth. No returnhome/table. All selectedforms whole before1008/nativeedges. Diff actual206SECRETCASE reversecaseUP/careLOW plus realgrowthmat; matweave/bookbinding not printedlogo. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 297843,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret--case--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case--short-1-803d3f0b1f26.png",
+        "sha256": "803d3f0b1f26d211db944afd6e96ce134516ff1dcaf3fb2337a27cafb801d65d",
+        "promptSha256": "f88ad3d2fca660802c0f99ada41c1f828c5db62576aeaf9316300d99d7c5f62b",
+        "generationPromptSha256": "40170b02424b3d6eeb08a1db2b854b63654c717fa9497a56a25c0a5edd2957fa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "803d3f0b1f26d211db944afd6e96ce134516ff1dcaf3fb2337a27cafb801d65d",
+          "promptSha256": "f88ad3d2fca660802c0f99ada41c1f828c5db62576aeaf9316300d99d7c5f62b",
+          "reviewer": "Codex direct original visual inspection: v2-production-209",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLEOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor UP, tidyrealTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID, empty lowstonebench/CLOSEDblankFACE-DOWN GROUNDbook TWOphysicalGROUNDprints and WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYpail/earthtrace LOW MOONreturn. Nativeleftrefugeroof has real margin, notcut. No growthmat/body/logo; physicalbinding/pageedges permitted. Diff actual206SECRETCASE by whole actualreturnhome/table and changedrefugestaging. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 341072,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--route--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--scene-1-9b3ac9afd150.png",
+        "sha256": "9b3ac9afd15071ac697c0ad1c24c96ae4f1d0dee241c84239ad7d3bc6ad2bcba",
+        "promptSha256": "076eb656db06b41c67398fdd175a2fc9c0240f6a0997bccfc5371d4dcde124e1",
+        "generationPromptSha256": "4974262cfdb940661c0454fe47ca487b142188c464ebfe3c7047ed3a36842f59",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9b3ac9afd15071ac697c0ad1c24c96ae4f1d0dee241c84239ad7d3bc6ad2bcba",
+          "promptSha256": "076eb656db06b41c67398fdd175a2fc9c0240f6a0997bccfc5371d4dcde124e1",
+          "reviewer": "Codex root original child recompare to actual new210BRIGHTHAB parent",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULLexact originalchildOWN/WHOLEactualnative and FULLexactnew210parentOWN/WHOLEnative directly inspected and compared. All7P on exact OWN209. WHOLE two visibly different villagehouses/fullroofs/chimneys/doors/bases UP/LEFTtrail, emptylowstonebench/plainwoodcarebox MID, protectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW SUNSET/FIRST bareunpaddedground. Allselectedforms wholebefore1008/nativeedges. No growthmat/returnhome/table/body/print. Diff actualNEW210WARMROUTE careUP/housesLOW by twohousesUP/careLOW. No automatic restore from parent; independently rootcompared originals. All original nativebytes/OWN/priorofficialreview retained. After209immediate-stage proof, before210official import/gate/build; no automatic descendant restore."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 401147,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--route--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--episode-1-02eba35c0643.png",
+        "sha256": "02eba35c0643d87e870b46f3d4a36ef1cdbeac69030d07ed7c9b467e8aab26b0",
+        "promptSha256": "323f3da6e9db7a0eab8540b76db6849a9a7a165bd227ea5933353517bb3bc991",
+        "generationPromptSha256": "7dd5021248e9cb02e2c1c1afb60b46e97e02fba513e64b21d3e1a28bfa0ed24b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "02eba35c0643d87e870b46f3d4a36ef1cdbeac69030d07ed7c9b467e8aab26b0",
+          "promptSha256": "323f3da6e9db7a0eab8540b76db6849a9a7a165bd227ea5933353517bb3bc991",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. TwoWHOLEdifferenthouses/fullroof/chimney/door/base LEFTtrail UP, emptylowstonebench/plaincarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW plusreal separatelywoven largerEMPTYGROUNDgrowthMAT SUNSETgrowth. All7P; no returnhome/table/body/print/nativecut/hiddenselectedforms. DiffNEW210WARMROUTE careUP/housesLOW byhousesUP/careLOW+growthmat. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 412926,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--route--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route--short-1-f35b0ddf390d.png",
+        "sha256": "f35b0ddf390de8cd60e48bdaa7f170d2339ae18ac6b156fec74dbe81ac14c182",
+        "promptSha256": "0d443baf6754d82dc44f1156d1353e0ce4b5f101f6d065eb77f3354f60af224b",
+        "generationPromptSha256": "f1ffdb5de62c1a20c8cf301dade7407436df815358a17d7755360972c98bd9c9",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f35b0ddf390de8cd60e48bdaa7f170d2339ae18ac6b156fec74dbe81ac14c182",
+          "promptSha256": "0d443baf6754d82dc44f1156d1353e0ce4b5f101f6d065eb77f3354f60af224b",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. WHOLEOPENhome/outwarddoors/visibleEMPTYinnerfloor UP actualtidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plainwoodcarebox ONTOP MID withemptylowstonebench, twoWHOLEdifferenthouses/fullroof/chimney/doors/bases LOW LEFTtrail SUNSETreturn. All7P; plainentryrug notgrowthmat. Read-only NEARESTeggdiagnostic confirmsangularBLACKfirstcrack and subtlespeckledshell, no body. DiffNEW210WARMROUTE bywholeactualreturnhome/realTABLE. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 501309,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--habitat--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--scene-1-d4ff45a544b6.png",
+        "sha256": "d4ff45a544b6806bffac9819bc623a8d7fbb217b62a34d5dafdc565eb6705498",
+        "promptSha256": "1b5238ec391adf1069377589491d47b0d120e82992035812304c0c3a21cfcc97",
+        "generationPromptSha256": "c780550608051f5f297d6f2a44425abc68a58fb0f2d33b204b7e593228dc14fd",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d4ff45a544b6806bffac9819bc623a8d7fbb217b62a34d5dafdc565eb6705498",
+          "promptSha256": "1b5238ec391adf1069377589491d47b0d120e82992035812304c0c3a21cfcc97",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. UPcompacttriangle threeactualINNERhabitats enclosedreedWETpond/completebanks/woodlandmargin, FOREST inneropening andRUIN bothactualINNERcols/ALLstairsbefore1008 MIDquietemptylowstonebench/plainwoodcarebox LOWprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater SUNSET/FIRSTbareunpaddedapproach. All7P; detachedouterruinpost/wall notINNER; no growthmat/home/table/body/print. Diffactual047WARMHAB nearinteriorcare/threevaults byexteriorhabitatUP/careLOW. Originalparenthiddenforest/ruin correctiveheld. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 475542,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--habitat--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--episode-1-8163249c45d5.png",
+        "sha256": "8163249c45d538ddd025af8b3bfac54648767433c08978e58e1ac0bc677bd0e2",
+        "promptSha256": "dc21837f1e69f827ce22b680a5b39bdf660e3b2399274d173e8fc508e7a6049c",
+        "generationPromptSha256": "0f83ebdf98f79cd32b88986ba78f9b3b7a4c1cfff5233c42fc61c778f14c7f72",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8163249c45d538ddd025af8b3bfac54648767433c08978e58e1ac0bc677bd0e2",
+          "promptSha256": "dc21837f1e69f827ce22b680a5b39bdf660e3b2399274d173e8fc508e7a6049c",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "UPthreeactualINNERwet/forest/ruin MIDquietemptylowstonebench/plainwoodcarebox LOWprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater plusreal separatelywoven largerEMPTYGROUNDmat SUNSETgrowth. ActualINNERcols/ALLstairs/forestopening before1008; read-onlyNEARESTwetleftdiagnostic confirmsactual selectedreeds arecutnativeLEFT andpond lackswholeleftwoodlandmargin. CompositionONLYF, other6P. Diffactual047WARMHAB interiorvaultedcare byexteriorhabitatUP/careLOW+mat; originalparentheld. No retroarbitrary6-55gate."
+          ],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. UPthreeactualINNERwet/forest/ruin MIDquietemptylowstonebench/plainwoodcarebox LOWprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater plusreal separatelywoven largerEMPTYGROUNDmat SUNSETgrowth. ActualINNERcols/ALLstairs/forestopening before1008; read-onlyNEARESTwetleftdiagnostic confirmsactual selectedreeds arecutnativeLEFT andpond lackswholeleftwoodlandmargin. CompositionONLYF, other6P. Diffactual047WARMHAB interiorvaultedcare byexteriorhabitatUP/careLOW+mat; originalparentheld. No retroarbitrary6-55gate. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 438948,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--habitat--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat--short-1-22f658cdf9a6.png",
+        "sha256": "22f658cdf9a617ed13923988f1b898f47bc3444ef684c8e72f4c6c7b57d9887d",
+        "promptSha256": "7976ea7dbd84d7669d8c0eb25e38b4e49abf9bba759451bc96d8278f7114ae52",
+        "generationPromptSha256": "2bd832eb1c3725b34ebe8d00bba40217d1fc435c01b7c5625aac680978a75185",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "22f658cdf9a617ed13923988f1b898f47bc3444ef684c8e72f4c6c7b57d9887d",
+          "promptSha256": "7976ea7dbd84d7669d8c0eb25e38b4e49abf9bba759451bc96d8278f7114ae52",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "WHOLEOPENhome/outwarddoors/visibleEMPTYinnerfloor UP actualtidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withemptylowstonebench, threeactualINNERhabitats LOW SUNSETreturn. ActualINNERruincols/ALLstairs/forestopening before1008 butactualselectedINNERwetwater/reedbank CUTnativeLEFT. CompositionONLYF, other6P; no growthmat/body/print. Plainentryrug notgrowthmat. Diffactual047WARMHAB interiorvaultcare bywholeopenreturnhome/table/exteriorhabitats; originalparentheld."
+          ],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. WHOLEOPENhome/outwarddoors/visibleEMPTYinnerfloor UP actualtidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID withemptylowstonebench, threeactualINNERhabitats LOW SUNSETreturn. ActualINNERruincols/ALLstairs/forestopening before1008 butactualselectedINNERwetwater/reedbank CUTnativeLEFT. CompositionONLYF, other6P; no growthmat/body/print. Plainentryrug notgrowthmat. Diffactual047WARMHAB interiorvaultcare bywholeopenreturnhome/table/exteriorhabitats; originalparentheld. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 441180,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--case--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--case--scene-1-9c465e3d5a13.png",
+        "sha256": "9c465e3d5a13684d13d6a8d0b6513dcaadde539959312f64eab45475d010b393",
+        "promptSha256": "75fc60eb5d01a3585df14c1d382e9e193d0f9fbfa1e3d34aad2188584438dcec",
+        "generationPromptSha256": "4406bfc191b06109608dcd93da131ae2e2c64b520f6f9ffb4fc27933dea69ede",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9c465e3d5a13684d13d6a8d0b6513dcaadde539959312f64eab45475d010b393",
+          "promptSha256": "75fc60eb5d01a3585df14c1d382e9e193d0f9fbfa1e3d34aad2188584438dcec",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYhollowpail/actualphysicalearthtrace UP emptylowstonebench/plaincarebox MIDprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW SUNSET/FIRST bareunpaddedearth. All7P; no growthmat/home/table/body/print/nativecut/selectedfeaturesbehindcontrols. Diffactual048WARMCASE interiorbroken-door-care by distantrefugeUP/careLOW; original048case trace/door hidden correctiveheld. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 453761,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm--case--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--case--episode-1-971e43399203.png",
+        "sha256": "971e43399203941e324adccd76c9d914015c639fdbfcc49f79edbd79f12c7c3e",
+        "promptSha256": "ffc73c91705c154fb19c5ed4b4f9c69d3fdc780c07556ce35e19a4e53cbcd3a8",
+        "generationPromptSha256": "8813e4403d34e602551d7b028e57478e767cc092fbed2c52c0b092ae07b153ad",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "971e43399203941e324adccd76c9d914015c639fdbfcc49f79edbd79f12c7c3e",
+          "promptSha256": "ffc73c91705c154fb19c5ed4b4f9c69d3fdc780c07556ce35e19a4e53cbcd3a8",
+          "reviewer": "Codex direct original visual inspection: v2-production-210",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT personally FULLexact own and WHOLEunchangednative inspected and directactualparent comparison. WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYhollowpail/actualearthtrace UP emptylowstonebench/plaincarebox MIDprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW plusreal separatelywoven largerEMPTYGROUNDmat SUNSETgrowth. All7P, allselectedwholeleftbefore1008, no returnhome/table/body/print. Diffactual048WARMCASE interiorbroken-door-care by distantrefugeUP/careLOW+growthmat; originalparentheld. Visiblecoarsesquarepixelclusters/stairstepcontours/flatshades allplanes. Onlyexact210OWN applied, x6-55target/actual60.3 andnativeedges hard. No invented identity/species/printedlogo. Builtin210tenfulfilled0failed explicitlyclosed; nativeunchanged."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 417850,
           "findings": []
         }
       }

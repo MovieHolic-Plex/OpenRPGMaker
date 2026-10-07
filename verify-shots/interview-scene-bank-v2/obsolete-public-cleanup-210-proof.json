@@ -1,0 +1,59 @@
+{
+  "scope": "Only obsolete rejected public copies with a currently published independently reviewed replacement; all original private sources and exact generation requests retained. No current published bytes removed.",
+  "published": 868,
+  "removedThisCheckpoint": [
+    {
+      "key": "monster--hatch--team--warm--habitat",
+      "sourceSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-6946d1cdd055.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-2-6946d1cdd055.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof.",
+      "replacementSha256": "ce98509fc6837e6b359d63da856339c9942d071bd13e408717f344dc04017fa0",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-210"
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat",
+      "sourceSha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-3c965907cc81.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-1-3c965907cc81.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "replacementSha256": "bf9973ad2bf98814d3a57e9b352d9983450306aa476fa0da6122f966f04e46bf",
+      "officialBuildBatch": "v2-production-210"
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat",
+      "sourceSha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-cd5f3e7da472.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-1-cd5f3e7da472.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "rootOriginalOwnAndNativeReviewed": true,
+      "privateNativeAndOwnRequestRetained": true,
+      "replacementSha256": "019ef003b351554bd08693cb73b675c1007d4fcd50d65e14ad2147d2d2fdf74e",
+      "officialBuildBatch": "v2-production-210"
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat--episode",
+      "sourceSha256": "767b3bae2bf2b31131b605ceaba60e00add7369681d505e93cfb438fa4b1cfaa",
+      "oldPublicPath": "public/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--episode-767b3bae2bf2.png",
+      "privateOriginalPath": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat--episode-1-767b3bae2bf2.png",
+      "replacementPublished": true,
+      "oldPublicRemoved": true,
+      "resolved": true,
+      "reason": "ROOT personally FULLexact originalchild OWN/WHOLEactual unchangednative and FULLexactnew209parentOWN/WHOLEnative directly inspected and compared. Composition ONLY F on original202WHOLE/nativeedge requirement: actual INNERwetwater/reeds are CUT at nativeLEFT. Other6 P. Threeactual INNERhabitats UP/whole threeEMPTYcourse MID/protectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater and real largerEMPTYGROUNDwovenmat LOW SUNSETgrowth. ActualINNERruincols/ALLstairs before1008; distinct new209parent courseUP/careMID/habLOW by habitatUP/courseMID/careLOW plusgrowthmat. No retro209enclosedpond/order/triangle/margin requirement. Original OWN/native/priorreview retained. No automatic restore, only original own requirements.",
+      "replacementSha256": "33a03d02c033d2d55f84c6614a7c643505fbd3e0b1695bb9f2961efe8d740f5a",
+      "privateNativeAndOwnRequestRetained": true,
+      "officialBuildBatch": "v2-production-210"
+    }
+  ],
+  "resolvedCumulative": 219
+}

@@ -1,0 +1,279 @@
+{
+  "batch": "v2-production-209",
+  "passedAttempts": 9,
+  "rejectedAttempts": 1,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-209",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-209-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T01:19:52.660897+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-209-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-209",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-209-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T01:20:17.727109+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-209-review-batch.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-209",
+      "command": [
+        "/home/main/saza-backend/venv/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-209",
+        "--defer-build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T01:20:17.789767+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--team--warm--habitat",
+      "nativeSha256": "ce98509fc6837e6b359d63da856339c9942d071bd13e408717f344dc04017fa0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5b99cf1bc4436fa481e6bc9d3bbe28aecad32801f801d7c2d46ad81bdc1f6c8f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Whole three EMPTY COVER/HURDLE/separated POSTS UP, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater MID, three actual INNER habitats LOW SUNSET/noscope. Enclosedpond with whole earthbanks/woodland margin; read-only NEAREST left diagnostic confirmed water does not exit nativeedge. Both actual INNER ruin columns/ALLstairs and forest opening before1008. Diff actual WARMmood careUP/courseLOW by courseUP/careMID and three habitats. No skywatermark. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat--short",
+      "nativeSha256": "5a0a2cca481784a887a27f3f8b4ba8e1857ef35942c1019f848945c40f9e996c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "ec31845b959f86d3d9fa1ba38409b06b2b9ca26e2c1f2d133aeea0efc546473b",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "WHOLE openhome/outwarddoors/visible EMPTYinnerfloor UP, actual tidy TABLE care FIRSTcrackegg/PALEdrapedcloth/BLUEwater under functional plain canopy MID, three whole EMPTY tactical stations and three actual INNERhabitats LOW SUNSETreturn. Actual INNERportal columns before1008; detached outerflutedpost is not INNER. Read-only NEAREST ruin diagnostic plus WHOLE native confirm lowest actual stair tread right edge extends beyond actual1008 controls: composition ONLY F; other six P. Diff NEW209WARMHAB by returnhome/realTABLE, not canopy logo."
+      ],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE openhome/outwarddoors/visible EMPTYinnerfloor UP, actual tidy TABLE care FIRSTcrackegg/PALEdrapedcloth/BLUEwater under functional plain canopy MID, three whole EMPTY tactical stations and three actual INNERhabitats LOW SUNSETreturn. Actual INNERportal columns before1008; detached outerflutedpost is not INNER. Read-only NEAREST ruin diagnostic plus WHOLE native confirm lowest actual stair tread right edge extends beyond actual1008 controls: composition ONLY F; other six P. Diff NEW209WARMHAB by returnhome/realTABLE, not canopy logo. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat--scene",
+      "nativeSha256": "5740cd861d7be849e6707789d36d628ffb5ec587c28fb90131f122c109e4f4f0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "92b5cc9df85331acc693035697b303910a03c951c89428ff7975cc7a6607881a",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Upper compacttriangle actual enclosed WETpond/completebank with native woodland margin, RUIN INNERcolumns/ALLstairs and FOREST inneropening before1008, quiet empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW on bare unpaddedearth MOON/FIRST. CLOSED blank FACE-DOWN GROUND book with functionalbinding/pageedges and TWO spaced actual physical GROUND pawdepressions. Read-only NEAREST pond-left diagnostic confirms fullbank/water inside native. No growthmat/home/table. Diff NEW209SECRETHAB by reversing habitatUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat--short",
+      "nativeSha256": "c25f17556ca120ea5ce9519caa1869ae09bf6ef4124eace7fe2cd28b1b67193f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "cdfff3ef3c84e7bc0a282599556cdacce93a10c2a561f80b8259058e559bcea4",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE openhome/outwarddoors/EMPTYinnerfloor UP, tidy real TABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID, empty lowstonebench/blank FACE-DOWN CLOSED GROUND book and two physical GROUND prints, compacttriangle of actual INNER wetpond/ruin/forest LOW MOONreturn. Complete earthbanks/native woodland margins; both actual INNER ruin columns/ALLstairs and forestopening before1008. Detached outerpost/wall not INNER. No growthmat/body/printedemblem. Diff NEW209SECRETHAB by whole returnhome/realTABLE. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat",
+      "nativeSha256": "019ef003b351554bd08693cb73b675c1007d4fcd50d65e14ad2147d2d2fdf74e",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "244f9b427ffb770fae4c6b2df293af52b693fefcbb5244a468bfc58ffdf6a6c3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater/empty lowstonebench/plainwoodcarebox UP, CLOSED plain FACE-DOWN GROUNDbook TWO separate actual GROUNDmudprints MOON/noscope; compacttriangle three real INNERhabitats LOW. Enclosedwetpond/wholeearthbanks/nativewoodland; actualFOREST inneropening and RUIN portalINNERcols/ALLstairs before1008. Detached exterior posts notINNER. Diff actual206SECRET by real three habitat passages. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--case--scene",
+      "nativeSha256": "ed71e032a84a70bad7cd67458bfb6f658570fd149e209b50ae730d7d54458c6f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7a44006d5cc5a2e1493d8ee67992d80a389aabb37e154c137a0ce6a77a3585d7",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE OPEN localrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYhollowpail/physicalearthtrace UP, empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW with CLOSED blankFACE-DOWN GROUNDbook TWOspacedphysicalGROUNDprints MOON/FIRST bareunpaddedearth. No growthmat/returnhome/table. All selectedforms whole before1008/nativeedges. Diff actual206SECRETCASE by reversing refugeLOW/careMID torefugeUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--case--episode",
+      "nativeSha256": "819c754bda70a65794db93b95e1139edac5aa8baad12ffff56ebcaab23dc2090",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "d398dc16651da875991baf0a0e91e709d423f49c1eb4e01276e97772fb464663",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLE OPEN localrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYpail/earthtrace UP, empty lowstonebench/plainwoodcarebox MID, protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW with real separatelywoven larger EMPTYGROUND growthmat/CLOSED blankFACE-DOWN GROUNDbook TWOspacedphysicalGROUNDprints MOONgrowth. No returnhome/table. All selectedforms whole before1008/nativeedges. Diff actual206SECRETCASE reversecaseUP/careLOW plus realgrowthmat; matweave/bookbinding not printedlogo. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat--scene",
+      "nativeSha256": "4b255ba00279ebe8ebe1f0c1501e567c9ad828e2b6d7ba0905d28002c72567e9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "7b39ae613c44e2a1a668da86872c88d2963d53c27bbea841ea809b1d760b592f",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. UP compacttriangle actual enclosed WETpond/completeearthbanks and nativewoodland, FOREST inneropening, RUIN actualINNERcols/ALLstairs before1008; empty lowstonebench/plainwoodcarebox MID and protected FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW SUN/FIRST bareunpaddedearth. All selectedforms whole; detached ruins exteriorpost beyond1008 notINNER. No growthmat/home/table/body/print. Diff actual208BRIGHTHAB careUP/habLOW by habitatUP/careLOW. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--case--short",
+      "nativeSha256": "803d3f0b1f26d211db944afd6e96ce134516ff1dcaf3fb2337a27cafb801d65d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "40170b02424b3d6eeb08a1db2b854b63654c717fa9497a56a25c0a5edd2957fa",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. WHOLEOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor UP, tidyrealTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater AND plaincarebox ONTOP MID, empty lowstonebench/CLOSEDblankFACE-DOWN GROUNDbook TWOphysicalGROUNDprints and WHOLEOPENlocalrefuge/fullroof/EMPTYinnerfloor/tippedEMPTYpail/earthtrace LOW MOONreturn. Nativeleftrefugeroof has real margin, notcut. No growthmat/body/logo; physicalbinding/pageedges permitted. Diff actual206SECRETCASE by whole actualreturnhome/table and changedrefugestaging. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    },
+    {
+      "key": "monster--hatch--partner--warm--route--scene",
+      "nativeSha256": "9b3ac9afd15071ac697c0ad1c24c96ae4f1d0dee241c84239ad7d3bc6ad2bcba",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4974262cfdb940661c0454fe47ca487b142188c464ebfe3c7047ed3a36842f59",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULL exact own and WHOLE unchanged native inspected, directly compared actual parents. Two WHOLEvisiblydifferent villagehouses/fullroof/chimney/door/base LEFTtrail UP, empty lowstonebench/plainwoodcarebox MID, protectedFIRSTcrackegg/PALEdrapedcloth/BLUEwater LOW SUNSET/FIRST bareunpaddedearth. All selectedforms inside native and before1008. No growthmat/returnhome/table/body/print. Diff actual047WARMROUTE interior-threshold camera/distantvillage by distant exterior housesUP/careLOW. Original047parent hiddenvillage issue separately audited, parent held until corrected. Coherent visible squareclusters/stairstepcontours/flatshades allplanes. Only exact209OWN applied; x6-55target, actual60.3/nativeedges hard. No retro originalcriteria or automaticchildrestore. Builtin10fulfilled0failed explicitlyclosed."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

@@ -1,0 +1,404 @@
+{
+  "groups": [
+    {
+      "batch": 207,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-207-original202-warm-habitat-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through207": 92,
+        "finishedAt": "2026-10-07T00:38:34.001728+00:00"
+      },
+      "history": [
+        {
+          "key": "monster--hatch--team--warm--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--warm--habitat-2-6946d1cdd055.png",
+          "nativeSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 팀을 구성하고 전투에 도전 — 성장과 조합으로 강한 상대를 넘어가요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--hatch--team--warm--habitat. This identifier is metadata; never draw it.\n\nFINAL SELECTED SCENE BRIEF. Use this brief and the selected facts above, with ONE independent camera for this image.\nTrue 1990s 16-bit SNES RPG pixel art. Large square pixel clusters, staircase contours, flat 2-4-tone shading, the same grid on every plane. Rich, deliberately hand-clustered architecture and woods; no painting, realistic texture, gradients, antialiasing, blur, bloom or grain.\nVERY DISTANT WIDE ESTABLISHING SHOT. All selected objects and buildings are SMALL and WHOLE on the left, with visible woodland around the entire roofs, chimneys, both eaves, walls, floors and bases. Nothing selected touches any image edge. All meaningful selected features including inner columns and steps stay before x60.3%, where the actual input panel starts. Right side is ordinary continuous woods, without any selected object. Never use a close-up, an interior filling the picture, or cropped foreground architecture.\nFirst companion HATCH: one naturally speckled egg with its FIRST CRACK, whole and unopened, in straw in a small protected timber-and-stone nursery cradle, a plain soft cloth and a separate open BLUE water bowl. No hatchling or invented species/body.\nTEAM CHALLENGE: THREE actual visibly DIFFERENT EMPTY tactical stations in a small connected training clearing: one low stone COVER barrier, one timber HURDLE and one group of separated MANEUVERING POSTS with different approach lanes. All three WHOLE stations visible before actual controls x60.3. No bodies/trainers, banners/logos, collection samples/rack/jars/books, capture gear or exclusive personal-bond tableau.\nNo humans, humanoids, creature bodies, text, direction signs, printed emblems, logos, open books, paper sheets, banners, menus or panels. Natural egg speckles and material seams are not printed logos.\nWarm inviting SUNSET companionship.\nHABITAT: three REAL OPEN actual walkable INNER passages, distinctly reed/water WETLAND, dense FOREST and stone RUIN. BOTH actual INNER ruin columns and ALL actual stairs complete before actual controls x60.3. Outer posts are not inner columns. No travel village or local case.\nINDEPENDENT DISTANT oblique camera: UPPER LEFT WHOLE EMPTY three-station tactical clearing COVER barrier/HURDLE/separated POSTS; MIDDLE LEFT WHOLEprotectednursery/crackedegg/plaincloth/BLUEwater; LOWER LEFT threeREALWHOLEINNERhabitatpassages. No scope yet.\nAll selected forms SMALL and WHOLE on LEFT with surrounding woods around entire roofs/chimneys/eaves/bases. Actual meaningful INNERcolumns/stairs and all tactical stations before x60.3 controls. Quiet continuous ordinary woods on right; no selected landmark/prop/distant settlement there. Egg FIRSTCRACK clearly visible thin BLACK angular zigzag; otherwise WHOLE UNOPENED naturallyspeckled egg, no species/body. Connectedfences or actually illuminatedlanterns allowed; never blanksignboards/directionmarkers. Compose independently beyond recolor of actual parent; no inputimages.\nVISIBLE CARE: a plainly visible undecorated soft PALE CLOTH laid across straw and DRAPED over the nursery front ledge, separate from egg and BLUEwater. Straw or wooden ledge alone never substitutes for this cloth.\nNEW FILE REQUIREMENT: FULLY OPAQUE edge-to-edge continuous landscape, every background pixel alpha255, including dark woods/shadows. No transparent sprite/cutout. Native unchanged.",
+          "exactOriginalOwnSha256": "949e4f9e68fc486ef55f273a47817a69692cfc19cfd725cf6c7aaeb2a66090e9",
+          "preservedOriginalReview": {
+            "sourceSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+            "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+            "reviewer": "Codex direct original visual inspection: v2-production-202",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "ROOT personally FULLexactOWN/WHOLEnative and actualparents FULLexactOWN/WHOLEnative, including new202warmMOOD/ROUTE/HAB/CASE and new200SECRETROUTE/CASE. UPwholeEMPTYcourse MIDWHOLEprotectednursery FIRSTcrackegg/plainPALEcloth/BLUEwater LOWthreeREALOPENwalkableINNERwetlandforestRUIN SUNSET/noscope. BothactualINNERruincolumns/allstairs end before60.3; separateouterposts/wall not INNERcolumns. Allroofswhole. Different actualNEW202WARMmood by threeactualhabitats. Skycloudmaterial not print. Coherent coarse squarepixelclusters/stairstepcontours/flatshade allplanes, no inventedprotagonist/species/body/text/sign/logo. Only actual OWN and actual60.3 controls, not future criteria. Native unchanged."
+          },
+          "corrective": {
+            "sourceSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+            "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+            "reviewer": "Codex root original202 own/native corrective after207 immediate-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+            ],
+            "notes": "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "otherFiveOriginalChecksRetained": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "monster--hatch--team--warm--habitat",
+          "sha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+          "review": {
+            "sourceSha256": "6946d1cdd055f0d78b5d9169a287b74aeea27102ae7c19b1e38009574eca1055",
+            "promptSha256": "d18531be0699f18c346c0c5c5da845b1bfbaafc7f5d011c2332bc1fb68fe1763",
+            "reviewer": "Codex root original202 own/native corrective after207 immediate-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": false,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+            ],
+            "notes": "ROOT personally reread FULL exact original202OWN and reopened WHOLE unchanged native while directly comparing207WARMRETURN toactual202parent. A faint isolated two-loop white WATERMARK/LOGO in upper-rightsky is actual printedemblem, independently confirmed by read-only NEAREST diagnostic (1510,0,1672,95). noText F. OriginalOWN asks all selectedforms WHOLE/no selectedobject touching anynativeedge; actualINNERwetlandwater/reedbank at nativeLEFT edge is cut: composition F. Otherfive original checks retained from preserved direct originalreview; no invented retro207habitatordering/57percentbound/fullyenclosedpond. All own/native/hash/priorreview preserved; originalbyteunchanged. Frozen858-stage206 evidence remains historical; this correction is subsequent to206commit and207immediate-stage proof."
+          }
+        }
+      ]
+    },
+    {
+      "batch": 209,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-209-original047-warm-route-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 1,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through209": 93,
+        "finishedAt": "2026-10-07T01:27:49.333714+00:00"
+      },
+      "history": [
+        {
+          "key": "monster--hatch--partner--warm--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--route-1-81c783cd6ec5.png",
+          "nativeSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--hatch--partner--warm--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Protected shared care nook, inviting warm afternoon and tidy helpful supplies. No sinister threat.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.",
+          "exactOriginalOwnSha256": "dc731dc0487f1177beae0aef4b9cac948e45f27c7b261c516dc0fdc98f094eaf",
+          "preservedOriginalReview": {
+            "sourceSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+            "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
+            "reviewer": "Codex direct original visual inspection: v2-production-047",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm continuous care-nursery departure: ONE cracked speckled egg in straw, EMPTY padded companion bed/folded plain cloth/TWO separate filled plain food-water bowls; actual traversable path to different EMPTY settlement. Fresh departure shot versus old frontal nursery window room. All planes retain sharp square pixel clusters/stepped shade ramps; bare selected furniture/floor foreground, no people/humanoids/bodies, readable or pseudo text, open books/paper/documents/posters/clocks/numerals, logos/paw emblems, flags/banners/heraldry, blur or collage. Different camera from parent."
+          },
+          "corrective": {
+            "sourceSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+            "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
+            "reviewer": "Codex root original047 own/native corrective after209 immediate-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+            ],
+            "notes": "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "otherSixOriginalChecksRetained": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "monster--hatch--partner--warm--route",
+          "sha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+          "review": {
+            "sourceSha256": "81c783cd6ec5431c74b1e6204726c671c8ed8243853d99dd950a081200192bb3",
+            "promptSha256": "e3a4c1ad331e1478213e056089365d64163707ba02203ba9f2d26f9c57099345",
+            "reviewer": "Codex root original047 own/native corrective after209 immediate-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+            ],
+            "notes": "ROOT personally FULLexact original047 OWN/WHOLE unchanged native directly read/viewed during209child-parent comparison. OriginalOWN requires selected progression travelpath toward a different empty settlement and left60 focal selectedprops; actual selected distant village and destination are entirely at right x73-96 behind actual60.3 controls: composition ONLY F. OriginalOWN shelterinterior crop is allowed and is not a new205/208wholehouse rule. Other six originalchecks retained from preserved direct originalreview, no invented retro egg nursery/benchbox/twohouses/sunset/pond/mat/return criteria. Full exact OWN/native hashes/priorreview retained; frozen858206 evidence remains historical. New209firstchild inspected separately, requires repairedparent beforepublication."
+          }
+        }
+      ]
+    },
+    {
+      "batch": 210,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-210-three-original-warm-partner-parents-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 3,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through210": 96,
+        "finishedAt": "2026-10-07T01:37:41.853469+00:00"
+      },
+      "history": [
+        {
+          "key": "monster--hatch--partner--warm",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm-2-eca582a9b1a9.png",
+          "nativeSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nLATEST CHOICE: 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\nSCENE ID: monster--hatch--partner--warm. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSELECTED HATCH PREMISE: ONE speckled egg in straw INSIDE a timber-and-stone nursery with ONE unmistakable jagged BLACK crack on its fully visible front. No hatchling or creature silhouette. SELECTED DEEP PARTNER BOND: nearby EMPTY padded companion resting bed, care workbench, folded completely PLAIN cloth and TWO separate fully visible completely PLAIN undecorated bowls, one with brown food pellets and one with blue water. SELECTED WARM MOOD: protected inviting afternoon light and helpful tidy shared care supplies. No progression/scope is selected yet; do not force journey/habitat/local case. Fresh near-overhead oblique small nursery care camera, all selected egg/bed/bowls/cloth inside LEFT60%; quiet fully drawn right35%. Different from old frontal nursery window camera. HARD FAIL BEFORE: old food bowl had a white paw LOGO. New bowls, cloth, floor and furniture MUST be COMPLETELY UNMARKED, no paw logo, pictogram, engraving, insignia, symbol, letters, numeral or emblem anywhere. No capture net/basket, tactical arena/hurdles, specimen jars, research laboratory or unrelated branches. Every plane uses equally sharp magnified square pixel clusters/stepped shading. Bare foreground floor and selected furniture only, no plant/flower/candle/door-jamb framing. No people, humanoids, portrait/photos/body/species/hatchling, text/pseudo-writing, open books or any paper sheets/posters/documents/boards, clocks/watch faces/numerals, flags/banners/tapestries/heraldry/fleur-de-lis, gradients/blur/collage.",
+          "exactOriginalOwnSha256": "3c86e507f0c4e490d8c42381b47a1ab459a1948f1a57f68c611dfe83f38d3c30",
+          "preservedOriginalReview": {
+            "sourceSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+            "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
+            "reviewer": "Codex direct original visual inspection: v2-production-048",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Parent replacement: fresh high oblique warm timber-stone nursery, ONE unmistakably cracked speckled egg in straw, EMPTY padded bed, folded plain cloth and TWO fully visible filled food-water bowls. Previously visible paw logo is absent; no progression/scope forced. New camera versus old frontal window nursery. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          },
+          "corrective": {
+            "sourceSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+            "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "otherSixOriginalChecksRetained": true
+        },
+        {
+          "key": "monster--hatch--partner--warm--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--habitat-1-5212abe95b00.png",
+          "nativeSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--hatch--partner--warm--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Protected shared care nook, inviting warm afternoon and tidy helpful supplies. No sinister threat.\nFRESH SHOT: low diagonal foreground detail. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "5a3bfbf43e0cb531590d3664765d1df5ef91f22b5d8ffbb3332ebc40a4423223",
+          "preservedOriginalReview": {
+            "sourceSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+            "promptSha256": "c08dccc128c250b370a8474de7f3abf117b0ece81ddb04a89edcc561f3b03fda",
+            "reviewer": "Codex direct original visual inspection: v2-production-047",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm continuous vaulted care nursery: ONE cracked speckled egg in straw, EMPTY padded bed/folded plain cloth/TWO filled plain food-water bowls and THREE actual openings wetland/forest/ruins. Fresh vaulted habitat camera versus old single-window nursery. All planes retain sharp square pixel clusters/stepped shade ramps; bare selected furniture/floor foreground, no people/humanoids/bodies, readable or pseudo text, open books/paper/documents/posters/clocks/numerals, logos/paw emblems, flags/banners/heraldry, blur or collage. Different camera from parent."
+          },
+          "corrective": {
+            "sourceSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+            "promptSha256": "c08dccc128c250b370a8474de7f3abf117b0ece81ddb04a89edcc561f3b03fda",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "otherSixOriginalChecksRetained": true
+        },
+        {
+          "key": "monster--hatch--partner--warm--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm--case-2-7065f7e0c3d6.png",
+          "nativeSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--hatch--partner--warm--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS FROM A DIFFERENT CAMERA: warm helpful timber-and-stone nursery, ONE speckled egg in straw with unmistakable jagged BLACK CRACK, EMPTY padded companion bed, folded plain care cloth and TWO separate fully visible PLAIN bowls with brown food pellets/blue water. ALL focal care/egg props MUST be wholly inside LEFT 60%, never behind the right interview controls as in failed candidate. Preserve LOCAL CASE in the SAME small nursery: overturned plain travel bag/spilled rope/vacated bedroll and muddy environmental trace connecting belongings to nearby broken doorway, all visible LEFT/midground. Right35% is fully drawn quiet floor/wall. No training arena, capture net/basket, specimen jars or invented species. All planes equally hard pixel focus; no foreground foliage framing. No text-like marks, open books/papers/posters/clocks/numerals, people/body/hatchling/silhouette, paw emblems/logos/flags/heraldry, gradients/blur/collage. Fresh shot distinct from failed right-care scene and parent frontal window room.",
+          "exactOriginalOwnSha256": "8daafa187da551d58ac0df994bdbfba0152fe43291d9f1b3fc60bded70a4fcfa",
+          "preservedOriginalReview": {
+            "sourceSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+            "promptSha256": "2ef6622a3e8afb60ffa5ed6a1aa3ff1dc8f0b0a20f42fbc20ecb64719faa2341",
+            "reviewer": "Codex direct original visual inspection: v2-production-048",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Warm local interrupted nursery: cracked egg/empty padded bed/folded plain cloth/TWO filled food-water bowls now occupy near LEFT; overturned bag/spilled rope/vacated bedroll and muddy trail connect to broken local doorway. Corrects rejected right-care composition; new camera versus old neat window parent. All planes preserve hard square pixel clusters/stepped shading; no imposed character identity/body/people, pixel filter or palette reduction. Uncertain/missing chosen details fail rather than inferred approval."
+          },
+          "corrective": {
+            "sourceSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+            "promptSha256": "2ef6622a3e8afb60ffa5ed6a1aa3ff1dc8f0b0a20f42fbc20ecb64719faa2341",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true,
+          "otherSixOriginalChecksRetained": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "monster--hatch--partner--warm",
+          "sha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+          "review": {
+            "sourceSha256": "eca582a9b1a9f9d10dedece4aea8a8d406ed95d6c1fadb7cc1b1e3211fbde378",
+            "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires ALL selected egg/bed/bowls/cloth inside LEFT60. Actual padded restingbed extends to x1150 behind actual1008controls; compositionONLYF. No retro nurseryexterior/benchbox/sunset/wholebuilding requirement. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--warm--habitat",
+          "sha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+          "review": {
+            "sourceSha256": "5212abe95b007a6c141786def45776a98c3248e54c3c06883711cdf9bb838ed5",
+            "promptSha256": "c08dccc128c250b370a8474de7f3abf117b0ece81ddb04a89edcc561f3b03fda",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original047 requires selected actualwetland/forest/ruin openings, selected focalpropsLEFT60 and quietright. Actual INNERforestopening extends beyond1008 and actual RUINopening/cols/ALLstairs wholly behind actual1008controls. CompositionONLYF, no retro208enclosedpond/ordering/nativeedge/wholeexterior criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--warm--case",
+          "sha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+          "review": {
+            "sourceSha256": "7065f7e0c3d6d44528fd169b3c404bbffd820855138486cd891645cb99768dc0",
+            "promptSha256": "2ef6622a3e8afb60ffa5ed6a1aa3ff1dc8f0b0a20f42fbc20ecb64719faa2341",
+            "reviewer": "Codex root original warm-parent own/native corrective during210",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+            ],
+            "notes": "ROOT personally FULLexact originalOWN and WHOLEunchangednative opened/read while comparing210actualchildren toactualoriginalparents. Original048 explicitly requires localcase/trace/brokenDOOR visible LEFT/midground, quietright35. Actual selected brokenDOOR entirely beyond1008 and connecting physicalearthtrace extends undercontrols. CompositionONLYF, no retro emptyrefuge/pail/wholeexterior/benchbox/return criteria. Other six original checks retained from preserved originaldirectreview. Priorreview/native/OWN/hashes retained. Subsequent to frozen858206commit and209immediate-stage proof; not a newfullvisualaudit of oldotherchecks."
+          }
+        }
+      ]
+    }
+  ],
+  "correctivesInThisInterval": 5,
+  "cumulativeActualCorrectiveSources164To210": 96,
+  "scope": "ROOT whole original native/full exact OWN, original review retained. Only original requirements; existing child corrections208/209 separate from sourcecount."
+}

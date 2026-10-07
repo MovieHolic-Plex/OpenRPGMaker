@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+    "--all-published",
+    "--paths",
+    "monster--hatch--team--secret--case--short,monster--hatch--team--warm--habitat--episode,monster--hatch--partner--bright--habitat--scene,monster--hatch--partner--secret--habitat--episode,monster--hatch--partner--secret--habitat--short,monster--hatch--partner--secret--case--short"
+  ],
+  "kind": "selected",
+  "returncode": 0,
+  "published": 868,
+  "manifestSha256": "9edc09c9d132806918321c6fafc2542648b04b9f19d6ea456c6e1a3b53917765",
+  "finishedAt": "2026-10-07T01:52:44.942216+00:00",
+  "snapshotUnchanged": true,
+  "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-868-click-proof.json",
+  "completeWholePlan": false
+}

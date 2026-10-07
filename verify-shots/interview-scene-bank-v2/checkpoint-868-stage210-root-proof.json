@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 868,
+  "remainingAtSnapshot": 589,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-07T01:52:46.616062+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 868,
+      "manifestSha256": "9edc09c9d132806918321c6fafc2542648b04b9f19d6ea456c6e1a3b53917765",
+      "finishedAt": "2026-10-07T01:52:22.561841+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-868-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--hatch--team--secret--case--short,monster--hatch--team--warm--habitat--episode,monster--hatch--partner--bright--habitat--scene,monster--hatch--partner--secret--habitat--episode,monster--hatch--partner--secret--habitat--short,monster--hatch--partner--secret--case--short"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 868,
+      "manifestSha256": "9edc09c9d132806918321c6fafc2542648b04b9f19d6ea456c6e1a3b53917765",
+      "finishedAt": "2026-10-07T01:52:44.942216+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-868-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--hatch--team--secret--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--team--secret--case--short.png",
+      "sha256": "669baf5d6256f9ab496572e19ddc6505df93c0b7c1003ad8430b3a6b058dd69c",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--team--warm--habitat--episode.png",
+      "sha256": "2a98983f829b8d3b5424d20fa2eb76ee7b9c005380953d0cb9c84cff936ca5de",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--partner--bright--habitat--scene.png",
+      "sha256": "834f94c5bf0dc7b0b97bc0b5190639316b9536fc2567f7a4d69286339f4c2fa7",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--partner--secret--habitat--episode.png",
+      "sha256": "c091d090b9e1e4b2fb235d071c2313b8840820c62ab107fccd8312a467bc84d0",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--partner--secret--habitat--short.png",
+      "sha256": "6ea2dfafd5e028691e274201569d670be258dec73c8505208593b7a53b3daaad",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--secret--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-868-stage210-selected-monster--hatch--partner--secret--case--short.png",
+      "sha256": "827168e7099b85b219f12501e5e50c3e865ae45adb80751377f4f737f4933bb2",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "868 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. New211 remains private and excluded from this frozen210 snapshot; no all868 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-868-stage210-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-868-stage210-click-proof.json"
+  }
+}
