@@ -765,15 +765,11 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
 {
   const EXD = path.join(HERE, "..", "interior", "examples");
   const exRead = (f: string) => JSON.parse(fs.readFileSync(path.join(EXD, `${f}.json`), "utf8"));
-  const LINKS: Record<string, { start: [number, number]; links: { x: number; y: number; toMapId: string; toX: number; toY: number; direction: string }[] }> = {
-    "house-1f": { start: [9, 13], links: [{ x: 9, y: 9, toMapId: "jp-city-house-2f", toX: 9, toY: 5, direction: "down" }] },
-    "house-2f": { start: [9, 5], links: [9, 10].map((x) => ({ x, y: 4, toMapId: "jp-city-house-1f", toX: 9, toY: 10, direction: "down" })) },
-    "apartment-1k": { start: [7, 12], links: [] },
-  };
+  const LINKS: Record<string, true> = { "house-1f": true, "house-2f": true, "apartment-1k": true };   // start·links 는 예제 JSON 이 들고 있다
   const argsOf = (f: string) => {
-    const ex = exRead(f), L = LINKS[f]!;
+    const ex = exRead(f);
     return { tileset: "jp_city", mapId: `jp-city-${f}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
-      start: [{ x: L.start[0], y: L.start[1] }], links: L.links };
+      start: [{ x: ex.start[0], y: ex.start[1] }], links: ex.links ?? [] };
   };
   const p = createEmptyToolProject("jp-interior-refs");
   const examples: Record<string, unknown> = {};

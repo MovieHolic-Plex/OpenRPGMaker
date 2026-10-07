@@ -2,7 +2,7 @@
 // 실내를 짓는다. 칩셋은 조수가 고른다(맵을 미리 만들지 않는다). 기록: 고른 칩셋, 옛 실내 칩셋 시도·거부, 도구 호출,
 // 결과 그림(편집기 렌더러), 통행 BFS(엔진 canMove), 저장 → 재로드. 첫 실행이면 노출 도구 목록·참고문서 목록도 덤프한다.
 //
-//   bun scripts/qa/hand-interior-assistant-run.mts --label bakery --task "빵집 실내를 만들어줘" [--model klb/claude-opus-5.5] [--max-turns 80]
+//   bun scripts/qa/hand-interior-assistant-run.mts --label bakery --task "빵집 실내를 만들어줘" [--model klb/claude-opus-5.5] [--max-turns 80] [--start-tileset jp_city]
 //
 // 모델 설정은 ~/.omp/agent/models.yml(키는 증거에 쓰지 않는다). 프로젝트 .oprn-projects/hand-interior-trial-<label>(git 밖),
 // 증거 verify-shots/hand-interior-assistant/<label>/.
@@ -44,6 +44,14 @@ const projectId = store.info().projectId;
 { const r = await store.saveSerialized(JSON.stringify(createBlankProject()), store.loadSnapshot()?.sha256 ?? null); if (r.kind !== "saved") throw new Error(r.kind); }
 let project = store.loadSnapshot()!.project as Project;
 store.close();
+// --start-tileset <id>: 사용자가 그 칩셋 맵을 보고 있는 상태에서 시작(예: jp_city 거리 맵을 보다가 「집 실내」 요청). 없으면 새 프로젝트 기본 맵을 본다.
+const startTileset = arg("start-tileset");
+let currentMapId: string | undefined;
+if (startTileset) {
+  const r = runTool({ project }, "create_map", { name: "보고 있는 맵", width: 24, height: 18, tilesetId: startTileset });
+  if (!r.ok) throw new Error(`시작 맵 실패: ${r.summary}`);
+  currentMapId = Object.keys(project.maps).find((id) => project.maps[id]!.tilesetId === startTileset);
+}
 const before = new Set(Object.keys(project.maps));
 
 // ---- what the assistant can see ----
@@ -97,7 +105,7 @@ const trace: { i: number; name: string; ok: boolean; summary: string; args: stri
 const log: string[] = [];
 const started = Date.now();
 const done = await runPiAgent(
-  { provider, model: modelId, task, mapIds: [], currentMapId: undefined as never, project, maxTurns, thinkingLevel: "high" as never, initialToolNames: exposed },
+  { provider, model: modelId, task, mapIds: currentMapId ? [currentMapId] : [], currentMapId: currentMapId as never, project, maxTurns, thinkingLevel: "high" as never, initialToolNames: exposed },
   {
     model: model as never, apiKey: prov.apiKey,
     renderToolImage: async (p: Project, _n: string, data: unknown) => renderToolRegionPngBase64(p, data),

@@ -5,8 +5,8 @@
 //   node scripts/content/jp-city/maps/interior.mjs            # → maps/out/interior-*.{map,report}.json + verify-shots/jp-city/interior-*-{1x,x3}.png
 //   node scripts/content/jp-city/maps/interior.mjs --publish  # 검사 + 관문(--stage interior) 통과 시 장소 3곳 게시
 //
-// 이동: 1층 계단 발칸 (9,9) → 2층 계단통 앞 (9,5) / 2층 계단통 아랫줄 (9,4)(10,4) → 1층 계단 앞 (9,10).
-// 현관(1층 (9,14)·원룸 (7,13))은 맵 아래 끝 틈 — 밖으로 나가는 이동은 거리 맵을 붙일 때 links 로 단다(INTERIOR_EXIT_* 환경 변수).
+// 이동(예제 JSON 의 links): 1층 계단 발칸 (9,9) → 2층 계단통 옆 (18,10) / 2층 계단통 아랫줄 (19,10)(20,10) → 1층 계단 앞 (9,10).
+// 현관은 맵 아래 끝 틈 — 밖으로 나가는 이동은 거리 맵을 붙일 때 links 로 단다(INTERIOR_EXIT_* 환경 변수).
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import { join } from "node:path";
@@ -24,11 +24,12 @@ const read = (f) => JSON.parse(fs.readFileSync(join(EX, `${f}.json`), "utf8"));
 const exit = process.env.INTERIOR_EXIT_MAP ? { toMapId: process.env.INTERIOR_EXIT_MAP, toX: Number(process.env.INTERIOR_EXIT_X), toY: Number(process.env.INTERIOR_EXIT_Y), direction: "down" } : null;
 
 const HOUSE_1F = "jp-city-house-1f", HOUSE_2F = "jp-city-house-2f", APT = "jp-city-apartment-1k";
-const MAPS = [
-  { id: HOUSE_1F, file: "house-1f", start: [9, 13], links: [{ x: 9, y: 9, toMapId: HOUSE_2F, toX: 9, toY: 5, direction: "down" }, ...(exit ? [{ x: 9, y: 14, ...exit }] : [])] },
-  { id: HOUSE_2F, file: "house-2f", start: [9, 5], links: [9, 10].map((x) => ({ x, y: 4, toMapId: HOUSE_1F, toX: 9, toY: 10, direction: "down" })) },
-  { id: APT, file: "apartment-1k", start: [7, 12], links: exit ? [{ x: 7, y: 13, ...exit }] : [] },
-];
+// start·links(계단 이동)는 예제 JSON 이 들고 있다 — 조수가 보는 예제 그대로. 현관 밖 이동만 환경 변수로 덧붙인다(출구 칸 = 맨 아래 줄 틈).
+const exitCell = (plan) => { const y = plan.length - 1; return { x: plan[y].indexOf("."), y }; };
+const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT, "apartment-1k", true]].map(([id, file, door]) => {
+  const ex = read(file);
+  return { id, file, start: ex.start, links: [...(ex.links ?? []), ...(exit && door ? [{ ...exitCell(ex.plan), ...exit }] : [])] };
+});
 
 const project = createEmptyToolProject("jp-interior");
 const results = [];
@@ -79,9 +80,9 @@ if (process.argv.includes("--publish")) {
   const groups = [
     { file: "house", placeId: "jp-city-house-interior-22x15", name: "일본 2층 단독주택 실내(1층·2층)", maps: [HOUSE_1F, HOUSE_2F], main: HOUSE_1F,
       rules: ["1층: 현관(타타키+아가리카마치 띠·신발장) → 복도 북쪽 벽 계단, 서쪽 화실(도코노마·불단·좌탁), 동쪽 LDK(대면 부엌 카운터·식탁·TV), 북쪽 물 쓰는 곳(욕실·탈의실·화장실).",
-        "2층: 계단통(아랫줄 밟으면 1층) · 부부 침실(더블 침대·옷장) · 아이방(이층침대·공부 책상).",
+        "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 문.",
         "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."],
-      limitations: ["현관 밖 이동은 비어 있다 — 거리 맵에 붙일 때 (9,14) 에 links 를 단다."] },
+      limitations: ["현관 밖 이동은 비어 있다 — 거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다."] },
     { file: "apartment-1k", placeId: "jp-city-apartment-1k-11x14", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT,
       rules: ["현관 타타키(좁은 신발장) → 부엌 복도(싱크·가스대·냉장고·세탁기) · 서쪽 유닛 배스(욕조+변기) · 북쪽 방(침대·TV·좌탁).",
         "평면·가구는 tiledata/jp-city/interior/examples/apartment-1k.json."],

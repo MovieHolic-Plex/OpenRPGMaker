@@ -3,26 +3,26 @@
   "id": "jp-city-house-2f",
   "size": [
    22,
-   9
+   12
   ]
  },
  "start": [
-  9,
-  5
+  18,
+  10
  ],
- "summary": "손 도트 실내 '2층 단독주택 2층' 22×9 (jp-city-house-2f, jp_city) — 출입구에서 닿는 칸 72, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '2층 단독주택 2층' 22×12 (jp-city-house-2f, jp_city) — 출입구에서 닿는 칸 83, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-house-2f",
   "tilesetId": "jp_city",
   "width": 22,
-  "height": 9,
-  "reachable": 72,
-  "floorCells": 92,
+  "height": 12,
+  "reachable": 83,
+  "floorCells": 103,
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 9,
-    "y": 5
+    "x": 18,
+    "y": 10
    }
   ],
   "links": 2,
@@ -31,18 +31,18 @@
  "warnings": [],
  "links": [
   {
-   "x": 9,
-   "y": 4,
+   "x": 19,
+   "y": 10,
    "to": "jp-city-house-1f",
    "reached": true
   },
   {
-   "x": 10,
-   "y": 4,
+   "x": 20,
+   "y": 10,
    "to": "jp-city-house-1f",
    "reached": true
   }
  ],
- "reach": 72,
+ "reach": 83,
  "ok": true
 }
