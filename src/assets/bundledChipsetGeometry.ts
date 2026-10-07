@@ -23,7 +23,15 @@ import {
 } from "@/project/defaults/constants";
 
 /** Source atlas geometry, shared by frame registration, previews and tile grafts. */
+/**
+ * 방 짓기 역할표 변형 칸 시트(src/project/roomKit.ts) — id `roomkit_<칸 크기>_<해시>`, 줄마다 16칸. 칩셋 칸 크기를 그대로 쓴다.
+ * 스토어에서 넣으면 id 앞에 `store_<slug>__` 가 붙는다(assetStore/format.ts storeProjectId).
+ */
+const ROOM_KIT_KEY = /^(?:store_[A-Za-z0-9_]+__)?roomkit_(16|24|32|48)_/u;
+
 export function bundledChipsetTileSize(key: string): number {
+  const roomKit = ROOM_KIT_KEY.exec(key);
+  if (roomKit) return Number(roomKit[1]);
   if (key === "tex_slates_32" || key === "tex_atlas_cartography") return 32;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_SIZE;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_SIZE;
@@ -33,6 +41,7 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  if (ROOM_KIT_KEY.test(key)) return 16;
   if (key === "tex_worldmap_authoring") return 12;
   if (key === "tex_atlas_cartography") return 8;
   if (key === 'tex_beodeul_warm_trees') return 8;

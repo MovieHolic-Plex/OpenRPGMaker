@@ -61,7 +61,7 @@ lay_path·place_props·arrange_rows·paint_road·stamp_structure·build_house·s
 | `generate_map` | 전용 프로필 | 「전용 맵 생성 로직이 아직 없습니다」로 실패(`mapGenerationProfiles.ts:166`) |
 | 문법 프로필 | 타일셋별 | 없으면 RM2k 문법 `RM_TYPE_GRAMMAR_PROFILE` 로 떨어진다(`grammarProfiles.ts:105`) |
 | 조립법 도구 | forest_harmony 만 | 사용 불가 |
-| 방 짓기(`build_hand_interior_room`) | 역할표 `roomKit` 이 있는 칩셋(v5·jp_city, 그 스토어 사본) | 역할표가 없으면 거절 — 채우는 길은 다음 단계 |
+| 방 짓기(`build_hand_interior_room`) | 역할표 `roomKit` 이 있는 칩셋(v5·jp_city, 그 스토어 사본, 「방 짓기」 탭에서 역할표를 만든 업로드 칩셋) | 역할표가 없으면 거절하고 「방 짓기」 탭을 안내 — 가구 표는 번들 칩셋만 |
 
 업로드 경로 `makeTilesetFromUpload`(`src/editor/panels/resourceManager.ts:81`)는 칸 수만 계산하고
 전부 통행 가능·하위 레이어·지형 0 으로 만든다. 메타는 아무것도 유도하지 않는다.
