@@ -25,10 +25,12 @@ def box(c, x, y, w, h, fill, edge):
 @R.obj('agarikamachi', '현관 단(上がり框)', kind='flat', cat='home', cat_ko='집', tags=('현관', '단', '玄関'), place='마루 바닥 맨 아랫줄(타타키와 맞닿는 줄)에 가로로 이어 깐다',
        desc='마루와 타타키 사이 나무 단 가장자리(上がり框). 가로로 이어 붙는 1×1. 마루 맨 아랫줄에 한 줄로 깐다 — 위쪽은 투명이라 마루 무늬가 보인다.')
 def _agari(c):
+    # 위 8줄은 투명(마루가 보인다). 밝은 모서리 두 줄 → 마루보다 한 단 어두운 단 앞면(챌판) → 맨 아래 그늘 = 타타키보다 높은 단.
     c.HL(0, 8, 16, W_(-3))
     c.R(0, 9, 16, 2, W_(2)); c.HL(0, 9, 16, W_(3))
-    c.R(0, 11, 16, 3, W_(0)); c.HL(0, 12, 16, W_(-1))
-    c.HL(0, 14, 16, W_(-2)); c.HL(0, 15, 16, W_(-3))
+    c.R(0, 11, 16, 4, W_(-1)); c.HL(0, 11, 16, W_(0))
+    for x in (5, 13): c.VL(x, 12, 3, W_(-2))                    # 앞면 판 이음
+    c.HL(0, 15, 16, W_(-3))
 
 
 def _getabako(c, w):
@@ -60,22 +62,41 @@ def _gb2(c): _getabako(c, 2)
 def _gb1(c): _getabako(c, 1)
 
 
-@R.obj('genkan-mat', '현관 매트', w=2, h=1, kind='flat', tags=('현관', '매트', '깔개'), place='타타키 문 앞',
-       desc='현관 문 앞 발매트. 2×1 평면 깔개 — 타타키 위에 깐다.')
+@R.obj('genkan-mat', '현관 매트', w=2, h=1, kind='flat', tags=('현관', '매트', '깔개'), place='아가리카마치 바로 위 마루(신발을 벗고 올라선 자리)',
+       desc='현관 마루 쪽 매트(玄関マット). 2×1 평면 깔개 — 베이지 바탕·주황 테두리·양 끝 술. 아가리카마치 띠 바로 위 마루 줄에 깐다(타타키가 아니다).')
 def _mat(c):
-    c.R(2, 2, 28, 12, K('kon', -2))
-    c.R(3, 3, 26, 10, K('kon', -1))
-    c.R(5, 5, 22, 6, K('kon', 0))
-    c.HL(6, 7, 20, K('kon', 1)); c.HL(6, 9, 20, K('kon', 1))
-    c.HL(3, 13, 26, K('kon', -2)); c.HL(4, 14, 24, K('conc', -2))
+    MO, MB, ML, MD = K('soil', -2), K('kinari', 0), K('kinari', 1), K('kinari', -1)
+    c.R(3, 3, 26, 10, MO)                                         # 외곽
+    c.R(4, 4, 24, 8, K('daidai', -1))                             # 테두리
+    c.R(6, 5, 20, 6, MB); c.HL(6, 5, 20, ML)                      # 바탕 + 위 빛
+    for x in range(8, 25, 4):                                     # 짠 무늬(마름모 점)
+        c.P(x, 7, MD); c.P(x + 1, 8, MD); c.P(x, 9, MD); c.P(x - 1, 8, MD)
+    c.HL(4, 11, 24, K('daidai', -2))                              # 아래 테두리 그늘
+    for y in range(4, 12, 2):                                     # 양 끝 술
+        c.P(2, y, ML); c.P(29, y, ML)
+    c.HL(4, 13, 24, K('ita', -3))                                 # 바닥 그늘
 
 
-@R.obj('slippers', '슬리퍼', kind='flat', tags=('현관', '슬리퍼', '신발'), place='아가리카마치 위 마루', desc='현관 마루 위에 가지런히 놓인 슬리퍼 한 켤레. 1×1 평면.')
+@R.obj('slippers', '슬리퍼', kind='flat', tags=('현관', '슬리퍼', '신발'), place='아가리카마치 위 마루(매트 옆), 발끝이 집 안(북쪽)을 향하게',
+       desc='현관 마루에 가지런히 놓인 손님용 슬리퍼 한 켤레(위에서 본 납작한 모양: 남색 발등 띠 + 밝은 바닥 깔창). 1×1 평면.')
 def _slip(c):
-    for x0 in (2, 9):
-        c.R(x0, 3, 5, 10, K('midori', -2)); c.R(x0 + 1, 4, 3, 8, K('midori', 0))
-        c.R(x0 + 1, 4, 3, 3, K('midori', 1)); c.HL(x0 + 1, 7, 3, K('midori', -1))
-        c.HL(x0, 13, 5, K('conc', -2)); c.HL(x0 + 1, 2, 3, K('midori', -2))
+    G = ('.oooo.',
+         'oBBBBo',
+         'oBbbBo',
+         'oBBBBo',
+         'oddddo',
+         'oiiiio',
+         'oiIiio',
+         'oiiiio',
+         'oiiiio',
+         '.oiio.',
+         '..oo..')
+    COL = {'o': K('yoru', -2), 'B': K('kon', 0), 'b': K('kon', 1), 'd': K('kon', -2), 'i': K('kinari', 0), 'I': K('kinari', 1)}
+    for x0 in (2, 8):
+        for r, row in enumerate(G):
+            for i, ch in enumerate(row):
+                if ch in COL: c.P(x0 + i, 2 + r + (1 if x0 == 8 else 0), COL[ch])
+        c.HL(x0 + 1, 13 + (1 if x0 == 8 else 0), 4, K('ita', -3))   # 그늘
 
 
 @R.obj('shoes-pair', '신발 한 켤레', kind='flat', tags=('현관', '신발', '타타키'), place='타타키 위, 신발장 앞', desc='타타키에 벗어 둔 구두 한 켤레. 1×1 평면.')

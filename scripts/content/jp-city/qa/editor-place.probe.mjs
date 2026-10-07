@@ -109,6 +109,12 @@ try {
   await page.waitForTimeout(800);
   const objCards = await page.locator("[data-testid^='spatial-card-tileset-kit/jp_city/jp-in-']").evaluateAll((els) =>
     els.map((el) => ({ source: el.dataset.source, text: el.innerText.replace(/\s+/g, " ").trim() })));
+  // 일본 실내 카드 하나를 골라 상세(타일셋 = 일본 도시)까지 — 앞 선택 잔상이 증거에 남지 않게.
+  await page.getByTestId("spatial-card-tileset-kit/jp_city/jp-in-stairs-up-wood").click();
+  await page.waitForTimeout(800);
+  const fields = await page.locator(".asset-browser-detail").locator("input, select").evaluateAll((els) => els.map((el) => el.tagName === "SELECT" ? el.selectedOptions[0]?.textContent ?? "" : el.value));
+  log(`상세(나무 계단) 칸: ${fields.join(" | ")}`);
+  assert.ok(fields.some((v) => v.startsWith("일본 도시")) && fields.includes("jp-in-stairs-up-wood"), "상세 = jp_city 계단 키트");
   await page.screenshot({ path: `${out}/06-objects-jp-interior.png` });
   const total = await page.locator(".asset-browser-count").innerText();
   log(`오브젝트 「일본 실내」 검색: ${total}, 첫 쪽 ${objCards.length}장 — ${objCards.slice(0, 6).map((c) => `${c.text}[${c.source}]`).join(" | ")}`);
