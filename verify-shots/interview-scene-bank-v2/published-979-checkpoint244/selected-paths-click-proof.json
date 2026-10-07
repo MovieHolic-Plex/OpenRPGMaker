@@ -1,0 +1,231 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 979,
+  "targets": [
+    "adventure--unknown--explore--mystic--journey--short",
+    "adventure--unknown--explore--mystic--quests--episode",
+    "adventure--unknown--explore--mystic--chapters",
+    "adventure--unknown--explore--mystic--chapters--episode",
+    "adventure--unknown--explore--mystic--chapters--short",
+    "adventure--unknown--explore--warm--journey"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--unknown--explore--mystic--journey--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 92.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 7.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 8.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "ms": 9.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-deac2ec93bfb.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--journey",
+          "ms": 14,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--journey-dc35ac8bd166.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--journey--short",
+          "ms": 11.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--journey--short-c640a2ac84ef.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--mystic--quests--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 8.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 9.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 6.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "ms": 13.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-deac2ec93bfb.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--quests",
+          "ms": 9.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--quests-4daa00f1a946.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--quests--episode",
+          "ms": 5.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--quests--episode-e0efc61a56fd.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--mystic--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "ms": 4.900000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-deac2ec93bfb.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--chapters",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters-02cbeea17e7b.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--mystic--chapters--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "ms": 4.900000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-deac2ec93bfb.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--chapters",
+          "ms": 9.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters-02cbeea17e7b.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--chapters--episode",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters--episode-324c6781a2b6.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--mystic--chapters--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 6.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "ms": 6.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-deac2ec93bfb.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--chapters",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters-02cbeea17e7b.png"
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--chapters--short",
+          "ms": 9.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters--short-df0c3f9101b4.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--warm--journey",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 7.599999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 14.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--warm",
+          "ms": 7,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm-9f6d73219394.png"
+        },
+        {
+          "key": "adventure--unknown--explore--warm--journey",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm--journey-26830f93fea1.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

@@ -1,0 +1,116 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 972,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--companions--warm--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--quests",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--reunion--companions--warm--chapters--scene",
+          "caption": "소중한 사람을 찾으러 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--mystic--quests",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-972-stage242-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-972-stage242-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-972-stage242-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-972-stage242-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all972 fresh native visual audit."
+}

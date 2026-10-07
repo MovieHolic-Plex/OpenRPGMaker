@@ -1,0 +1,25 @@
+{
+  "published": 972,
+  "remaining": 485,
+  "snapshot": {
+    "interviewSceneBank.json": "ed8f403a0517d925ba02f1298274854cad073ce8d249e514162a6f258bbc7dc1",
+    "ledger.json": "6b91557e3f4f6d984073e0e0694af9a30d5f30dabbfb2c4b4728c6106c9334b8"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--reunion--companions--warm--chapters--scene",
+    "adventure--unknown--explore--bright--quests--episode",
+    "adventure--unknown--explore--bright--chapters--episode",
+    "adventure--unknown--explore--bright--chapters--short",
+    "adventure--unknown--explore--mystic--journey--scene",
+    "adventure--unknown--explore--mystic--quests"
+  ],
+  "clicks": 35,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrections134135136ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 136
+}

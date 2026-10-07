@@ -1,0 +1,122 @@
+{
+  "snapshotPublished": 972,
+  "sourceManifestSha256": "ed8f403a0517d925ba02f1298274854cad073ce8d249e514162a6f258bbc7dc1",
+  "sources": [
+    {
+      "key": "adventure--reunion--companions--warm--chapters--scene",
+      "sha256": "4e81f3c82be8f0a71b2cca3a762b796c1df61be5d659feab385808bf5589f272",
+      "generationPromptSha256": "bdeb9d70f0d962094f59d85a5877e7042734595c5ad3e3a9ef13775ed8ac21fe",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--bright--quests--episode",
+      "sha256": "92b2c291037363aa194b6abd0d25fca429cdb4fa349373fbba60d1487a987451",
+      "generationPromptSha256": "fce856d5239abc845eb7404083c94e404e6b1e26962902e58dc9d65b9a5b35ee",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--bright--chapters--scene",
+      "sha256": "899f5e00becf38831b76ee7780b0a5244f9489fb5bdeb400a45c4331096942f9",
+      "generationPromptSha256": "06f325eeb6ffc4d2ab2f70b1882711232dc0a86370009beb6faa54b231380417",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--bright--chapters--episode",
+      "sha256": "513dd43f14627fd9a6b9c145599713590a5fc3887cf71f76b76fb88ccf966e0d",
+      "generationPromptSha256": "9a99a182be53a8d3b5910bb4a1ff91c2bb637639a713bb4eec61c6ffbecfd48e",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--bright--chapters--short",
+      "sha256": "c57574ef7242d24707a06e580d31da6fab26e37fd154f72ba68445be1e19944d",
+      "generationPromptSha256": "89c84ce5d1b83a8c03f57a393e605f2d70437440f697bdd20d30b78c44363dd3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--mystic",
+      "sha256": "deac2ec93bfb99d6f769feb2bd4360f475cebb2fc9bc962f17b28a1c989ed191",
+      "generationPromptSha256": "0441ce0a2f82168fa093ebdde422b6b74380a967ebb64a46048a428795645d84",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--mystic--journey--scene",
+      "sha256": "ef23163aa018fcd3dd4007cf09734ddf4426a715cad7aa144aede77f65579c20",
+      "generationPromptSha256": "92274ef27af943c9b40657531d834518b60eb0091deb283a10c2dd25c7e49d7a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--mystic--quests",
+      "sha256": "4daa00f1a946bc56883acabd953ec71367150ea438086069a46a747420d0a417",
+      "generationPromptSha256": "47bd78b8ebd99299c2348a14c28783fea0786c334a5824280e19ed0020a47534",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 637408,
+  "notFreshAll972NativeVisualAudit": true,
+  "source137OriginalCorrectionAfterSnapshot": true
+}

@@ -1,0 +1,231 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 966,
+  "targets": [
+    "adventure--reunion--companions--mystic--quests--short",
+    "adventure--reunion--companions--warm--quests--scene",
+    "adventure--reunion--companions--warm--chapters",
+    "adventure--unknown--explore--bright--journey--short",
+    "adventure--unknown--explore--bright--quests--scene",
+    "adventure--unknown--explore--bright--chapters"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--reunion--companions--mystic--quests--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 25,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 7.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 8.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic",
+          "ms": 9.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-e58e5198560a.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests",
+          "ms": 11.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests-d2c23b8fbb11.png"
+        },
+        {
+          "key": "adventure--reunion--companions--mystic--quests--short",
+          "ms": 9.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic--quests--short-b49a81adee59.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--warm--quests--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 9.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 11.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--quests",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--quests-ad4c92ea94d3.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--quests--scene",
+          "ms": 6.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--quests--scene-76401d6a7bc9.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--reunion--companions--warm--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion-1c1ef633c8a2.png"
+        },
+        {
+          "key": "adventure--reunion--companions",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions-4b86432c1edd.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png"
+        },
+        {
+          "key": "adventure--reunion--companions--warm--chapters",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--chapters-f2fcaf9f4692.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--bright--journey--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 3.9000000953674316,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 4,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright",
+          "ms": 4,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright-071d5ea3c70f.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright--journey",
+          "ms": 6.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--journey-a200e84a5a9d.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright--journey--short",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--journey--short-4beb06af6017.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--bright--quests--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 6.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright-071d5ea3c70f.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright--quests",
+          "ms": 3.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--quests-c9a515647321.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright--quests--scene",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--quests--scene-39ad62ded08a.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--explore--bright--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 6.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 5.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright-071d5ea3c70f.png"
+        },
+        {
+          "key": "adventure--unknown--explore--bright--chapters",
+          "ms": 5.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--chapters-d91c3d6990cf.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

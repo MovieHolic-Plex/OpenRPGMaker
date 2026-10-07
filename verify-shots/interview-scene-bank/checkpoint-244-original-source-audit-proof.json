@@ -1,0 +1,600 @@
+{
+  "originalSourceCorrections": 8,
+  "cumulativeOriginalSourceCorrections": 138,
+  "notNewGenerations": true,
+  "onlyOriginalOwnApplied": true,
+  "records": [
+    {
+      "key": "adventure--unknown--explore--bright--journey",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--bright--journey-2-586d873e963f.png",
+        "sha256": "586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce",
+        "promptSha256": "f034172009ff243be13744488d37ff02bcca8343a16a1859a8dc7a57dda1e3ed",
+        "generationPromptSha256": "ed931d59fa11f1b01bdf7f05831bab0cb877dc061325873d2b5a022461859548",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce",
+          "promptSha256": "f034172009ff243be13744488d37ff02bcca8343a16a1859a8dc7a57dda1e3ed",
+          "reviewer": "Codex direct original visual inspection: v2-production-052",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Bright journey redraw: fresh HIGH OBLIQUE elevated pier view, EMPTY small furled-canvas ship/coiled rope near departure, LEFT near hidden side passage and weathered stairs. Traversable connected island causeway links intermediate landings toward different EMPTY far ruin beyond maritime approach. Clearly staged midpoint/destination differs from prior generic open bay, not a repeated side-on vessel beneath large arch. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 703087,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source131-586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source131-ed931d59fa11f1b01bdf7f05831bab0cb877dc061325873d2b5a022461859548.txt",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT read FULL unchanged original OWN and viewed WHOLE unchanged native. OWN explicitly requires a continuous traversable pier/causeway from foreground through actual midpoint island landing to different EMPTY island ruin. Native foreground pier ends at water/boat, visibly separated by broad water gap from mid-island: no actual continuous walking route to midpoint. Terminal EMPTY ruin and required stairs are at far RIGHT beyond production controls beginning x1008. Fail latest journey, all selected facts and selected focal composition under original OWN; no retroactive warm/RED/three-pack/new whole-edge constraints. Remaining previous checks retained, not fresh actual parent comparison or new generation. Prior source052 pass preserved separately; correction pending official review after immutable953 checkpoint.",
+      "number": 131,
+      "after": {
+        "sourceSha256": "586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce",
+        "promptSha256": "f034172009ff243be13744488d37ff02bcca8343a16a1859a8dc7a57dda1e3ed",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source131",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT read FULL unchanged original OWN and viewed WHOLE unchanged native. OWN explicitly requires a continuous traversable pier/causeway from foreground through actual midpoint island landing to different EMPTY island ruin. Native foreground pier ends at water/boat, visibly separated by broad water gap from mid-island: no actual continuous walking route to midpoint. Terminal EMPTY ruin and required stairs are at far RIGHT beyond production controls beginning x1008. Fail latest journey, all selected facts and selected focal composition under original OWN; no retroactive warm/RED/three-pack/new whole-edge constraints. Remaining previous checks retained, not fresh actual parent comparison or new generation. Prior source052 pass preserved separately; correction pending official review after immutable953 checkpoint.",
+          "allChoices: ROOT read FULL unchanged original OWN and viewed WHOLE unchanged native. OWN explicitly requires a continuous traversable pier/causeway from foreground through actual midpoint island landing to different EMPTY island ruin. Native foreground pier ends at water/boat, visibly separated by broad water gap from mid-island: no actual continuous walking route to midpoint. Terminal EMPTY ruin and required stairs are at far RIGHT beyond production controls beginning x1008. Fail latest journey, all selected facts and selected focal composition under original OWN; no retroactive warm/RED/three-pack/new whole-edge constraints. Remaining previous checks retained, not fresh actual parent comparison or new generation. Prior source052 pass preserved separately; correction pending official review after immutable953 checkpoint.",
+          "latestChoice: ROOT read FULL unchanged original OWN and viewed WHOLE unchanged native. OWN explicitly requires a continuous traversable pier/causeway from foreground through actual midpoint island landing to different EMPTY island ruin. Native foreground pier ends at water/boat, visibly separated by broad water gap from mid-island: no actual continuous walking route to midpoint. Terminal EMPTY ruin and required stairs are at far RIGHT beyond production controls beginning x1008. Fail latest journey, all selected facts and selected focal composition under original OWN; no retroactive warm/RED/three-pack/new whole-edge constraints. Remaining previous checks retained, not fresh actual parent comparison or new generation. Prior source052 pass preserved separately; correction pending official review after immutable953 checkpoint."
+        ],
+        "notes": "ROOT read FULL unchanged original OWN and viewed WHOLE unchanged native. OWN explicitly requires a continuous traversable pier/causeway from foreground through actual midpoint island landing to different EMPTY island ruin. Native foreground pier ends at water/boat, visibly separated by broad water gap from mid-island: no actual continuous walking route to midpoint. Terminal EMPTY ruin and required stairs are at far RIGHT beyond production controls beginning x1008. Fail latest journey, all selected facts and selected focal composition under original OWN; no retroactive warm/RED/three-pack/new whole-edge constraints. Remaining previous checks retained, not fresh actual parent comparison or new generation. Prior source052 pass preserved separately; correction pending official review after immutable953 checkpoint."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--unknown--explore--bright--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: curious departure for unknown world: EMPTY small sailing ship with furled undecorated canvas, clearly visible COILED rope beside actual pier, unknown islands beyond. Selected EXPLORATION: foreground near LEFT half-concealed actual side opening with weathered descending stairs and hidden passage, never omitted for ship or parcels. BRIGHT inviting energetic daylight. JOURNEY: foreground continuous traversable stone pier/causeway leads past actual midpoint island landing to a clearly different distant EMPTY island ruin; show the connected physical route clearly, not undifferentiated open sea alone. PRIOR FAILURE: repeated parent side-on ship centered under LEFT arch / RIGHT rock arch. Fresh HIGH OBLIQUE view downward across near elevated pier toward SMALL distant boat and connected island causeway, no repeat of large central vessel under arch. New independent oblique near-threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%. Every plane equally sharp coarse square clusters and stepped shades. No humans/humanoids/body/species/portrait/photos, writing/pseudotext, papers/boards/posters/documents/open books/clocks/numerals, ANY flags/banners/cloth symbols/heraldry/logos, blurred foreground/plants, gradients or collage. Small CLOSED keepsake tins have ENTIRELY BARE lids and sides except functional latch/hinge; never any stars/seals/painted emblem. Plain ship sail is sailcloth only, no faction symbol/flag or invented crew.",
+      "pendingOfficialReview": false
+    },
+    {
+      "number": 132,
+      "key": "adventure--unknown--explore--bright--quests",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--bright--quests-2-8e6b54853094.png",
+        "sha256": "8e6b54853094573e09ba770fc530a3bcbea0a161c03a9455e78ca9e6f7e5dd32",
+        "promptSha256": "10e4eae81897232dd3cc944de61ad43246fbbdc5bfd6b2f7007d81e5aeaf485c",
+        "generationPromptSha256": "07856ccdacb5343e7722cc87d3fc16fa92db83066d20d10cc5fdb4538a92047b",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8e6b54853094573e09ba770fc530a3bcbea0a161c03a9455e78ca9e6f7e5dd32",
+          "promptSha256": "10e4eae81897232dd3cc944de61ad43246fbbdc5bfd6b2f7007d81e5aeaf485c",
+          "reviewer": "Codex direct original visual inspection: v2-production-052",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Bright quest redraw: THREE separate plain SEALED wrapped parcels near LEFT worktable; actual near road fork reaches EMPTY base stall/town destination, actual near LEFT partly concealed side passage with visible weathered stairs. Furled plain ship and clearly visible rope coil retained. Fresh table/side-stair/fork camera versus parent harbor introduction. Plain horizontal stall roof is canopy, not banner or insignia. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 665882,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source132-adventure--unknown--explore--bright--quests-8e6b54853094.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source132-07856ccdacb5343e7722cc87d3fc16fa92db83066d20d10cc5fdb4538a92047b.txt",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Explicit selected EMPTY furled-canvas ship and actual coiledrope are RIGHT behind x1008 production controls, violating original LEFT60 focal staging. Required actual near-midground Y-road fork to EMPTY destinations is not clearly present: generic single winding pier/town stair road and LEFT side passage do not establish two quest destinations. THREE actual sealed parcels/LEFT half-concealed passage/fullweathered stairs, daylight, no writing/flags/bodies otherwise retained. Correction only explicit original selected facts/actual panel occlusion; not retro whole-building/REDstop/BLUEcloth/new packcounts/LEFT arid region requirements. Remaining prior checks retained, not fresh all-seven/source generation.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "8e6b54853094573e09ba770fc530a3bcbea0a161c03a9455e78ca9e6f7e5dd32",
+        "promptSha256": "10e4eae81897232dd3cc944de61ad43246fbbdc5bfd6b2f7007d81e5aeaf485c",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source132",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Explicit selected EMPTY furled-canvas ship and actual coiledrope are RIGHT behind x1008 production controls, violating original LEFT60 focal staging. Required actual near-midground Y-road fork to EMPTY destinations is not clearly present: generic single winding pier/town stair road and LEFT side passage do not establish two quest destinations. THREE actual sealed parcels/LEFT half-concealed passage/fullweathered stairs, daylight, no writing/flags/bodies otherwise retained. Correction only explicit original selected facts/actual panel occlusion; not retro whole-building/REDstop/BLUEcloth/new packcounts/LEFT arid region requirements. Remaining prior checks retained, not fresh all-seven/source generation.",
+          "allChoices: ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Explicit selected EMPTY furled-canvas ship and actual coiledrope are RIGHT behind x1008 production controls, violating original LEFT60 focal staging. Required actual near-midground Y-road fork to EMPTY destinations is not clearly present: generic single winding pier/town stair road and LEFT side passage do not establish two quest destinations. THREE actual sealed parcels/LEFT half-concealed passage/fullweathered stairs, daylight, no writing/flags/bodies otherwise retained. Correction only explicit original selected facts/actual panel occlusion; not retro whole-building/REDstop/BLUEcloth/new packcounts/LEFT arid region requirements. Remaining prior checks retained, not fresh all-seven/source generation.",
+          "latestChoice: ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Explicit selected EMPTY furled-canvas ship and actual coiledrope are RIGHT behind x1008 production controls, violating original LEFT60 focal staging. Required actual near-midground Y-road fork to EMPTY destinations is not clearly present: generic single winding pier/town stair road and LEFT side passage do not establish two quest destinations. THREE actual sealed parcels/LEFT half-concealed passage/fullweathered stairs, daylight, no writing/flags/bodies otherwise retained. Correction only explicit original selected facts/actual panel occlusion; not retro whole-building/REDstop/BLUEcloth/new packcounts/LEFT arid region requirements. Remaining prior checks retained, not fresh all-seven/source generation."
+        ],
+        "notes": "ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Explicit selected EMPTY furled-canvas ship and actual coiledrope are RIGHT behind x1008 production controls, violating original LEFT60 focal staging. Required actual near-midground Y-road fork to EMPTY destinations is not clearly present: generic single winding pier/town stair road and LEFT side passage do not establish two quest destinations. THREE actual sealed parcels/LEFT half-concealed passage/fullweathered stairs, daylight, no writing/flags/bodies otherwise retained. Correction only explicit original selected facts/actual panel occlusion; not retro whole-building/REDstop/BLUEcloth/new packcounts/LEFT arid region requirements. Remaining prior checks retained, not fresh all-seven/source generation."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--unknown--explore--bright--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: curious departure for unknown world: EMPTY small sailing ship with furled undecorated canvas, clearly visible COILED rope beside actual pier, unknown islands beyond. Selected EXPLORATION: foreground near LEFT half-concealed actual side opening with weathered descending stairs and hidden passage, never omitted for ship or parcels. BRIGHT inviting energetic daylight. QUESTS from base: THREE different plain SEALED cloth-wrapped parcels near LEFT table plus actual near-midground Y-road fork to EMPTY destinations. PRIOR FAILURE: chosen exploration lost its hidden side opening and weathered stairs. Put an actual near LEFT half-concealed stone side passage with visibly descending weathered stairs beside departure supplies; distant ordinary town stairs do not substitute. Clearly visible coil of rope beside pier. New independent oblique near-threshold camera, focal selected facts LEFT60%, quiet fully drawn RIGHT35%. Every plane equally sharp coarse square clusters and stepped shades. No humans/humanoids/body/species/portrait/photos, writing/pseudotext, papers/boards/posters/documents/open books/clocks/numerals, ANY flags/banners/cloth symbols/heraldry/logos, blurred foreground/plants, gradients or collage. Small CLOSED keepsake tins have ENTIRELY BARE lids and sides except functional latch/hinge; never any stars/seals/painted emblem. Plain ship sail is sailcloth only, no faction symbol/flag or invented crew."
+    },
+    {
+      "number": 133,
+      "key": "adventure--unknown--explore--bright--chapters",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--bright--chapters-1-1d4aaa05bc43.png",
+        "sha256": "1d4aaa05bc43ef8e997ef94d192197addd01f697fd4c112369de7f0b9f1bf268",
+        "promptSha256": "d91afc1a5d94a996223009816b8b4d099a6bce62656ceef8e716c583267d0479",
+        "generationPromptSha256": "1a6919cf5703d8181d6069cac6771d5d10e2b0ff6663de3d7ffb150b4bc3d3d1",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "1d4aaa05bc43ef8e997ef94d192197addd01f697fd4c112369de7f0b9f1bf268",
+          "promptSha256": "d91afc1a5d94a996223009816b8b4d099a6bce62656ceef8e716c583267d0479",
+          "reviewer": "Codex direct original visual inspection: v2-production-052",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Bright chapter native: near LEFT actual hidden side opening and weathered stairs/coiled rope, EMPTY plain furled-canvas ship/pier. Actual large architectural gate clearly divides lush GREEN FOREST and ARID OCHRE DESERT in one continuous world. Fresh elevated harbor-threshold view versus parent side-on harbor; no banners/emblems. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 641897,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source133-adventure--unknown--explore--bright--chapters-1d4aaa05bc43.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source133-1a6919cf5703d8181d6069cac6771d5d10e2b0ff6663de3d7ffb150b4bc3d3d1.txt",
+      "failChecks": [
+        "composition"
+      ],
+      "note": "ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Original chose near-midground actual monumental boundary gate between GREEN FOREST LEFT and OCHRE DESERT RIGHT plus EMPTY furled-canvas boat/coiledrope and LEFT exploration passage/stairs. Actual gate right half and the selected sailing boat lie behind production right controls x1008, original LEFT60 focal composition F. Original greenLEFT/aridRIGHT terrain requirement is present. Remaining six prior checks retained; do NOT retroactively demand new aridUPLEFT-greenLOWLEFT/REDstop/whole-building/native-edge/newcounts/returnscope. Not fresh all-seven parent audit or new generation.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "1d4aaa05bc43ef8e997ef94d192197addd01f697fd4c112369de7f0b9f1bf268",
+        "promptSha256": "d91afc1a5d94a996223009816b8b4d099a6bce62656ceef8e716c583267d0479",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source133",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Original chose near-midground actual monumental boundary gate between GREEN FOREST LEFT and OCHRE DESERT RIGHT plus EMPTY furled-canvas boat/coiledrope and LEFT exploration passage/stairs. Actual gate right half and the selected sailing boat lie behind production right controls x1008, original LEFT60 focal composition F. Original greenLEFT/aridRIGHT terrain requirement is present. Remaining six prior checks retained; do NOT retroactively demand new aridUPLEFT-greenLOWLEFT/REDstop/whole-building/native-edge/newcounts/returnscope. Not fresh all-seven parent audit or new generation."
+        ],
+        "notes": "ROOT FULL exact original OWN/WHOLE unchanged native and actual original BRIGHT depth3 parent seen. Original chose near-midground actual monumental boundary gate between GREEN FOREST LEFT and OCHRE DESERT RIGHT plus EMPTY furled-canvas boat/coiledrope and LEFT exploration passage/stairs. Actual gate right half and the selected sailing boat lie behind production right controls x1008, original LEFT60 focal composition F. Original greenLEFT/aridRIGHT terrain requirement is present. Remaining six prior checks retained; do NOT retroactively demand new aridUPLEFT-greenLOWLEFT/REDstop/whole-building/native-edge/newcounts/returnscope. Not fresh all-seven parent audit or new generation."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--unknown--explore--bright--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nCurious departure for unknown world: small sailing ship with furled canvas, coiled rope and empty pier, unknown islands beyond harbor. No crew, flags or letters.\nSelected EXPLORATION: clearly discoverable side opening, weathered stairs and hidden passage foreground.\nMOOD: Open energetic clear daylight and adventurous inviting colors.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: New stage for each major chapter: compose at a strong architectural threshold between two substantially different landscape regions, preserving near selected mission/boat/keepsake and chosen play. No separate panels or recap text.\nEXPLICIT CHAPTER TERRAIN CONTRACT: actual near-midground monumental gate divides GREEN FOREST with lush trees/ground LEFT from ARID OCHRE DESERT with bare red rock/sand dunes and no grass RIGHT. One continuous world; same green valley, distant snowy mountain alone, or identical ruin landscape on both sides fails. Preserve selected EMPTY furled-canvas small boat, actual coiled rope and LEFT hidden side passage/descending weathered stairs near harbor base. No unselected personal search keepsake or battle equipment."
+    },
+    {
+      "number": 134,
+      "key": "adventure--unknown--explore--mystic--journey",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--journey-2-b5f17591f299.png",
+        "sha256": "b5f17591f29996fc9ebbfc9404e60a9b1dffbacc62bb63c5655d27b8fef95d2f",
+        "promptSha256": "41e6c2ad835624dc24a326a7bbe5745d695a26fb64a9c19c0eab2fe4a85f623c",
+        "generationPromptSha256": "5b08cebab6bae9db5a254e374eaca6c6779d59ac7a056003216f622eba472f64",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "b5f17591f29996fc9ebbfc9404e60a9b1dffbacc62bb63c5655d27b8fef95d2f",
+          "promptSha256": "41e6c2ad835624dc24a326a7bbe5745d695a26fb64a9c19c0eab2fe4a85f623c",
+          "reviewer": "Codex direct original visual inspection: v2-production-053",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Mystic journey redraw: actual near LEFT hidden side passage with visible weathered stairs, EMPTY plain furled ship/coiled rope by near pier, continuous clearly visible stone causeway from near quay THROUGH actual intermediate ancient island landing toward different far monumental ruin. All prior omitted connected journey staging now physically present. Fresh elevated side-entry/causeway view versus old generic frontal bay. Native original unchanged, unfiltered and unscaled; unclear choices fail explicitly."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 530426,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source134-adventure--unknown--explore--mystic--journey-b5f17591f299.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source134-5b08cebab6bae9db5a254e374eaca6c6779d59ac7a056003216f622eba472f64.txt",
+      "failChecks": [
+        "composition"
+      ],
+      "note": "ROOT FULL exact original OWN/WHOLE unchanged native seen. Actual furled EMPTYship strongly staged RIGHT behind controlsx1008; actual selected terminal monumental journey destination also RIGHT behind controls, contradicting original chosen focalpropsLEFT60/quietRIGHT35. Actual continuous stone causeway via intermediate EMPTY ruined island, nearLEFT concealed sideopening/weatheredstairs and real coiledrope are present; latestjourney/allChoices retained. Correction only ORIGINAL explicit staging, no retro wholeboat/building/TOPcrop, BLUEcloth/REDstop/packcount/LEFTarid/mystic twilight additional gates. Remaining prior checks retained, not fresh allseven.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "b5f17591f29996fc9ebbfc9404e60a9b1dffbacc62bb63c5655d27b8fef95d2f",
+        "promptSha256": "41e6c2ad835624dc24a326a7bbe5745d695a26fb64a9c19c0eab2fe4a85f623c",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source134",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exact original OWN/WHOLE unchanged native seen. Actual furled EMPTYship strongly staged RIGHT behind controlsx1008; actual selected terminal monumental journey destination also RIGHT behind controls, contradicting original chosen focalpropsLEFT60/quietRIGHT35. Actual continuous stone causeway via intermediate EMPTY ruined island, nearLEFT concealed sideopening/weatheredstairs and real coiledrope are present; latestjourney/allChoices retained. Correction only ORIGINAL explicit staging, no retro wholeboat/building/TOPcrop, BLUEcloth/REDstop/packcount/LEFTarid/mystic twilight additional gates. Remaining prior checks retained, not fresh allseven."
+        ],
+        "notes": "ROOT FULL exact original OWN/WHOLE unchanged native seen. Actual furled EMPTYship strongly staged RIGHT behind controlsx1008; actual selected terminal monumental journey destination also RIGHT behind controls, contradicting original chosen focalpropsLEFT60/quietRIGHT35. Actual continuous stone causeway via intermediate EMPTY ruined island, nearLEFT concealed sideopening/weatheredstairs and real coiledrope are present; latestjourney/allChoices retained. Correction only ORIGINAL explicit staging, no retro wholeboat/building/TOPcrop, BLUEcloth/REDstop/packcount/LEFTarid/mystic twilight additional gates. Remaining prior checks retained, not fresh allseven."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--unknown--explore--mystic--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: curious departure for unknown world, EMPTY small sailing ship with plain furled canvas, clearly visible actual COILED rope near pier, unknown islands beyond. EXPLORATION MUST REMAIN: actual near LEFT half-concealed dark stone SIDE PASSAGE with clearly visible WEATHERED DESCENDING STAIRS immediately beside departure supplies. Do not substitute distant RIGHT ordinary town stairs/ruin or an open arch looking onto sea. MYSTICAL monumental ancient ruins and mysterious discrete pixel depth. JOURNEY: a clearly visible connected traversable near stone pier/causeway route leads through actual intermediate EMPTY island landing toward different distant monumental EMPTY ruin. Make the complete physical route and midpoint legible alongside the maritime departure. Generic open bay with a single moored vessel alone fails progression. HARD FAILURE: Mystic native preserves EMPTY furled ship/coiled rope and LEFT hidden opening/stairs with ancient ruin depth. Latest JOURNEY lacks a clearly connected route through actual intermediate destination; generic open bay repeats departure staging rather than demonstrating destination-led progression. New camera is physically different from parent right-stair/left-ship scene, but selected progression remains uncertain. Fresh HIGH OBLIQUE camera, chosen focal props LEFT60%, quiet fully drawn RIGHT35%. All planes equally sharp coarse square pixel clusters, stepped edges/shade ramps, bare near floor. No people/humanoids/body/species/photos/portraits, writing/pseudotext, papers/posters/boards/documents/open books/clocks/numerals, ANY flags/banners/tapestries/vertical hanging cloth/heraldry/emblems/logos, blur/gradients/collage. Bare undecorated stone/timber architecture ONLY, never decorated towers. Plain furled ship sail allowed ONLY as undecorated sailcloth, no faction symbols, flags or crew. Avoid copying old parent large frontal ship against generic bay.\nDESTINATION-LED JOURNEY CAMERA CONTRACT: elevated oblique approach, actual connected stone island causeway with plainly visible intermediate EMPTY landing and different distant EMPTY ruin destination. Preserve near small EMPTY furled-canvas ship/pier and coiled rope. Generic open bay with one central moored ship under large near arch alone FAILS; do not repeat parent harbor camera.\nPRESERVE EXPLORATION AS ACTUAL NEAR LEFT HIDDEN SIDE PASSAGE WITH VISIBLE WEATHERED DESCENDING STAIRS beside departure supplies. Exposed ordinary distant town stairs on right or an arch looking only onto sea does not express the chosen hidden exploration opening."
+    },
+    {
+      "number": 135,
+      "key": "adventure--unknown--explore--mystic--quests",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--quests-2-1a850eb81042.png",
+        "sha256": "1a850eb810425bcfe65e6b2a53f0659b57020f2b10c93ab62efa7cd290442cbf",
+        "promptSha256": "ca65b4b88e621853272e7efad189eec04a65d1f61677a6de36ebb19eb9d1d0a8",
+        "generationPromptSha256": "adf736290654c9295406c9665ff48cdc90bb1fab551674b31f62a9a5ad70303e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "1a850eb810425bcfe65e6b2a53f0659b57020f2b10c93ab62efa7cd290442cbf",
+          "promptSha256": "ca65b4b88e621853272e7efad189eec04a65d1f61677a6de36ebb19eb9d1d0a8",
+          "reviewer": "Codex direct original visual inspection: v2-production-053",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Mystic quest redraw: near LEFT actual partly hidden side passage/weathered stairs with THREE separate SEALED plain cloth parcels nearby; actual Y-road fork to different EMPTY nearby ruin/village destinations, EMPTY plain furled ship/pier and coiled rope. Previously omitted near exploration opening is now clearly visible. Fresh sheltered base/side-entry/fork camera versus parent right stair/left ship. Native original unchanged, unfiltered and unscaled; unclear choices fail explicitly."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 520252,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source135-adventure--unknown--explore--mystic--quests-1a850eb81042.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source135-adf736290654c9295406c9665ff48cdc90bb1fab551674b31f62a9a5ad70303e.txt",
+      "failChecks": [
+        "composition",
+        "allChoices"
+      ],
+      "note": "ROOT FULL exact original OWN/WHOLE unchanged native seen. EMPTYship and actual coiledrope staged RIGHT behind controlsx1008, contradicting ORIGINAL chosen focalpropsLEFT60/quietRIGHT35. Native actual freestanding pointed direction SIGNBOARD on near-midground roadfork contradicts ORIGINAL FORBIDDEN signs and explicit no boards; functional fence/table joints not treated as signs. Three sealed parcels/actual roadfork/LEFT hiddenopening/weatheredstairs and monumental depth present, latestQUEST retained; no guessed legible text or retro wholebuilding/BLUEcloth/REDstop/count/LEFT arid gates. Remaining prior checks retained, not fresh allseven.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "1a850eb810425bcfe65e6b2a53f0659b57020f2b10c93ab62efa7cd290442cbf",
+        "promptSha256": "ca65b4b88e621853272e7efad189eec04a65d1f61677a6de36ebb19eb9d1d0a8",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source135",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exact original OWN/WHOLE unchanged native seen. EMPTYship and actual coiledrope staged RIGHT behind controlsx1008, contradicting ORIGINAL chosen focalpropsLEFT60/quietRIGHT35. Native actual freestanding pointed direction SIGNBOARD on near-midground roadfork contradicts ORIGINAL FORBIDDEN signs and explicit no boards; functional fence/table joints not treated as signs. Three sealed parcels/actual roadfork/LEFT hiddenopening/weatheredstairs and monumental depth present, latestQUEST retained; no guessed legible text or retro wholebuilding/BLUEcloth/REDstop/count/LEFT arid gates. Remaining prior checks retained, not fresh allseven.",
+          "allChoices: ROOT FULL exact original OWN/WHOLE unchanged native seen. EMPTYship and actual coiledrope staged RIGHT behind controlsx1008, contradicting ORIGINAL chosen focalpropsLEFT60/quietRIGHT35. Native actual freestanding pointed direction SIGNBOARD on near-midground roadfork contradicts ORIGINAL FORBIDDEN signs and explicit no boards; functional fence/table joints not treated as signs. Three sealed parcels/actual roadfork/LEFT hiddenopening/weatheredstairs and monumental depth present, latestQUEST retained; no guessed legible text or retro wholebuilding/BLUEcloth/REDstop/count/LEFT arid gates. Remaining prior checks retained, not fresh allseven."
+        ],
+        "notes": "ROOT FULL exact original OWN/WHOLE unchanged native seen. EMPTYship and actual coiledrope staged RIGHT behind controlsx1008, contradicting ORIGINAL chosen focalpropsLEFT60/quietRIGHT35. Native actual freestanding pointed direction SIGNBOARD on near-midground roadfork contradicts ORIGINAL FORBIDDEN signs and explicit no boards; functional fence/table joints not treated as signs. Three sealed parcels/actual roadfork/LEFT hiddenopening/weatheredstairs and monumental depth present, latestQUEST retained; no guessed legible text or retro wholebuilding/BLUEcloth/REDstop/count/LEFT arid gates. Remaining prior checks retained, not fresh allseven."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--unknown--explore--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: curious departure for unknown world, EMPTY small sailing ship with plain furled canvas, clearly visible actual COILED rope near pier, unknown islands beyond. EXPLORATION MUST REMAIN: actual near LEFT half-concealed dark stone SIDE PASSAGE with clearly visible WEATHERED DESCENDING STAIRS immediately beside departure supplies. Do not substitute distant RIGHT ordinary town stairs/ruin or an open arch looking onto sea. MYSTICAL monumental ancient ruins and mysterious discrete pixel depth. QUESTS: THREE different plain SEALED cloth-wrapped parcels on near LEFT worktable and actual near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. HARD FAILURE: Mystic native has THREE plain SEALED wrapped parcels, EMPTY furled ship/coiled rope and actual road fork/near destinations. Chosen EXPLORATION near hidden side opening and weathered stairs are omitted; only exposed distant ordinary town/ruin stairs on RIGHT. Mere LEFT open architectural arch over sea is not a hidden traversable side passage. Fresh HIGH OBLIQUE camera, chosen focal props LEFT60%, quiet fully drawn RIGHT35%. All planes equally sharp coarse square pixel clusters, stepped edges/shade ramps, bare near floor. No people/humanoids/body/species/photos/portraits, writing/pseudotext, papers/posters/boards/documents/open books/clocks/numerals, ANY flags/banners/tapestries/vertical hanging cloth/heraldry/emblems/logos, blur/gradients/collage. Bare undecorated stone/timber architecture ONLY, never decorated towers. Plain furled ship sail allowed ONLY as undecorated sailcloth, no faction symbols, flags or crew. Avoid copying old parent large frontal ship against generic bay.\nPRESERVE EXPLORATION AS ACTUAL NEAR LEFT HIDDEN SIDE PASSAGE WITH VISIBLE WEATHERED DESCENDING STAIRS beside departure supplies. Exposed ordinary distant town stairs on right or an arch looking only onto sea does not express the chosen hidden exploration opening."
+    },
+    {
+      "number": 136,
+      "key": "adventure--unknown--explore--mystic",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-1-32e137fc8fb9.png",
+        "sha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+        "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5",
+        "generationPromptSha256": "2c81145c698a423a96a4fb419f6d0a8af45f44985b82d070dd13c61634f5c7aa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+          "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Furled vessel left, weathered steps into dark ruin right and monumental island arches create mysterious discovery. Plain spiral masonry is ornament without writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 539411,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source136-adventure--unknown--explore--mystic-32e137fc8fb9.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source136-2c81145c698a423a96a4fb419f6d0a8af45f44985b82d070dd13c61634f5c7aa.txt",
+      "failChecks": [
+        "composition",
+        "allChoices"
+      ],
+      "note": "ROOT FULL exact original OWN/WHOLE unchanged native and actual UNKNOWN EXPLORE depth2 FULL OWN/WHOLE seen. Selected hiddenstoneopening/weatheredstairs foreground staged farRIGHT behind controlsx1008, contradicting ORIGINAL FRESH focal selectedpropsLEFT/quietRIGHT. Actual COILEDrope required beside EMPTYpier absent: visible lines around mooringposts are loose mooringlines, not a pile of coiledrope. Original low diagonalcloseforeground allowed; giant ship nativeLEFT/TOP crop NOT newly failed under later WHOLEstructure rules. Mystic monumental backgrounddepth/furled ship/no crew/writing preserved. Correction original selectedrequirements only; remaining prior checks retained, not freshallseven.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+        "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source136",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exact original OWN/WHOLE unchanged native and actual UNKNOWN EXPLORE depth2 FULL OWN/WHOLE seen. Selected hiddenstoneopening/weatheredstairs foreground staged farRIGHT behind controlsx1008, contradicting ORIGINAL FRESH focal selectedpropsLEFT/quietRIGHT. Actual COILEDrope required beside EMPTYpier absent: visible lines around mooringposts are loose mooringlines, not a pile of coiledrope. Original low diagonalcloseforeground allowed; giant ship nativeLEFT/TOP crop NOT newly failed under later WHOLEstructure rules. Mystic monumental backgrounddepth/furled ship/no crew/writing preserved. Correction original selectedrequirements only; remaining prior checks retained, not freshallseven.",
+          "allChoices: ROOT FULL exact original OWN/WHOLE unchanged native and actual UNKNOWN EXPLORE depth2 FULL OWN/WHOLE seen. Selected hiddenstoneopening/weatheredstairs foreground staged farRIGHT behind controlsx1008, contradicting ORIGINAL FRESH focal selectedpropsLEFT/quietRIGHT. Actual COILEDrope required beside EMPTYpier absent: visible lines around mooringposts are loose mooringlines, not a pile of coiledrope. Original low diagonalcloseforeground allowed; giant ship nativeLEFT/TOP crop NOT newly failed under later WHOLEstructure rules. Mystic monumental backgrounddepth/furled ship/no crew/writing preserved. Correction original selectedrequirements only; remaining prior checks retained, not freshallseven."
+        ],
+        "notes": "ROOT FULL exact original OWN/WHOLE unchanged native and actual UNKNOWN EXPLORE depth2 FULL OWN/WHOLE seen. Selected hiddenstoneopening/weatheredstairs foreground staged farRIGHT behind controlsx1008, contradicting ORIGINAL FRESH focal selectedpropsLEFT/quietRIGHT. Actual COILEDrope required beside EMPTYpier absent: visible lines around mooringposts are loose mooringlines, not a pile of coiledrope. Original low diagonalcloseforeground allowed; giant ship nativeLEFT/TOP crop NOT newly failed under later WHOLEstructure rules. Mystic monumental backgrounddepth/furled ship/no crew/writing preserved. Correction original selectedrequirements only; remaining prior checks retained, not freshallseven."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nLATEST CHOICE: 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nSCENE ID: adventure--unknown--explore--mystic. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nCurious departure for unknown world: small sailing ship with furled canvas, coiled rope and empty pier, unknown islands beyond harbor. No crew, flags or letters.\nSelected EXPLORATION: clearly discoverable side opening, weathered stairs and hidden passage foreground.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: low diagonal foreground detail. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, logos, flag emblems, blur or collage.\n"
+    },
+    {
+      "number": 137,
+      "key": "adventure--unknown--explore--mystic--chapters",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters-1-f1ca10a84652.png",
+        "sha256": "f1ca10a846528efad632ebc2a31c135a5e2645d25112cadae799ef0786f6695f",
+        "promptSha256": "319d5553004444847f3900114cc69ddca55308bd54bb4903b887007889efa04e",
+        "generationPromptSha256": "18662b371eebbdafa06a4caec3361de355c6104d5d3acaf545f6373413bc62f4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f1ca10a846528efad632ebc2a31c135a5e2645d25112cadae799ef0786f6695f",
+          "promptSha256": "319d5553004444847f3900114cc69ddca55308bd54bb4903b887007889efa04e",
+          "reviewer": "Codex direct original visual inspection: v2-production-052",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Mystic chapter native: LEFT actual hidden stair passage/coiled rope and EMPTY plain furled ship. Monumental ancient architectural threshold distinctly connects GREEN FOREST and ARID OCHRE DESERT across one continuous physical world. Fresh high oblique near harbor/threshold camera versus old frontal side entry. Every plane coarse crisp pixel clusters. Every original remains unfiltered/unscaled; no approval from PNG metadata alone."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 601320,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source137-adventure--unknown--explore--mystic--chapters-f1ca10a84652.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source137-18662b371eebbdafa06a4caec3361de355c6104d5d3acaf545f6373413bc62f4.txt",
+      "failChecks": [
+        "composition"
+      ],
+      "note": "ROOT FULL original OWN/WHOLE unchanged native and actualcurrent241 MYSTICdepth3 parent FULL OWN/WHOLE seen. ORIGINAL literal focal selected props LEFT60%/quietRIGHT35% violated: chosen monumental regionalgate rightwall/floor extends past1008 behindactualcontrols. ORIGINAL GREENforestLEFT/OCHREaridRIGHT correct and retained; cropped gateTOP not failed under later WHOLErule; no new twilight/UPorientation/RED/microcount gates. Original ship/furledcanvas/actualcoiledrope/LEFTconcealedpassage/weatheredstairs retained; compositionONLY correction. Not newgeneration or all-seven freshaudit.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "f1ca10a846528efad632ebc2a31c135a5e2645d25112cadae799ef0786f6695f",
+        "promptSha256": "319d5553004444847f3900114cc69ddca55308bd54bb4903b887007889efa04e",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source137",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL original OWN/WHOLE unchanged native and actualcurrent241 MYSTICdepth3 parent FULL OWN/WHOLE seen. ORIGINAL literal focal selected props LEFT60%/quietRIGHT35% violated: chosen monumental regionalgate rightwall/floor extends past1008 behindactualcontrols. ORIGINAL GREENforestLEFT/OCHREaridRIGHT correct and retained; cropped gateTOP not failed under later WHOLErule; no new twilight/UPorientation/RED/microcount gates. Original ship/furledcanvas/actualcoiledrope/LEFTconcealedpassage/weatheredstairs retained; compositionONLY correction. Not newgeneration or all-seven freshaudit."
+        ],
+        "notes": "ROOT FULL original OWN/WHOLE unchanged native and actualcurrent241 MYSTICdepth3 parent FULL OWN/WHOLE seen. ORIGINAL literal focal selected props LEFT60%/quietRIGHT35% violated: chosen monumental regionalgate rightwall/floor extends past1008 behindactualcontrols. ORIGINAL GREENforestLEFT/OCHREaridRIGHT correct and retained; cropped gateTOP not failed under later WHOLErule; no new twilight/UPorientation/RED/microcount gates. Original ship/furledcanvas/actualcoiledrope/LEFTconcealedpassage/weatheredstairs retained; compositionONLY correction. Not newgeneration or all-seven freshaudit."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--unknown--explore--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nCurious departure for unknown world: small sailing ship with furled canvas, coiled rope and empty pier, unknown islands beyond harbor. No crew, flags or letters.\nSelected EXPLORATION: clearly discoverable side opening, weathered stairs and hidden passage foreground.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: New stage for each major chapter: compose at a strong architectural threshold between two substantially different landscape regions, preserving near selected mission/boat/keepsake and chosen play. No separate panels or recap text.\nEXPLICIT CHAPTER TERRAIN CONTRACT: actual near-midground monumental gate divides GREEN FOREST with lush trees/ground LEFT from ARID OCHRE DESERT with bare red rock/sand dunes and no grass RIGHT. One continuous world; same green valley, distant snowy mountain alone, or identical ruin landscape on both sides fails. Preserve selected EMPTY furled-canvas small boat, actual coiled rope and LEFT hidden side passage/descending weathered stairs near harbor base. No unselected personal search keepsake or battle equipment."
+    },
+    {
+      "number": 138,
+      "key": "adventure--unknown--explore--warm--journey",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--warm--journey-2-21b023f5b3f9.png",
+        "sha256": "21b023f5b3f963cd068db7540bbd0c82c213544a13bd0297eed2d7821761250e",
+        "promptSha256": "836fc75dbe31657f112e643ed7f6068163c23892faed4870d483a8f000b82b47",
+        "generationPromptSha256": "9612fdf5a94325a40b45e0c6dd6bac5ade26239ada744c5d5f7196c0ff7711bf",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "21b023f5b3f963cd068db7540bbd0c82c213544a13bd0297eed2d7821761250e",
+          "promptSha256": "836fc75dbe31657f112e643ed7f6068163c23892faed4870d483a8f000b82b47",
+          "reviewer": "Codex direct original visual inspection: v2-production-053",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native candidate and applicable native parent: Warm journey redraw: LEFT near dark side passage with clearly weathered stairs, EMPTY small plain furled ship/pier/coiled rope, welcoming helpful lantern/rest supplies. Actual continuous near stone causeway through intermediate EMPTY island landing toward different far ruin destination. New elevated sheltered side-entry/route view versus old table/wood dock introduction. Prior missing near LEFT opening and generic bay fixed. Native original unchanged, unfiltered and unscaled; unclear choices fail explicitly."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 577318,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source138-adventure--unknown--explore--warm--journey-21b023f5b3f9.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source138-9612fdf5a94325a40b45e0c6dd6bac5ade26239ada744c5d5f7196c0ff7711bf.txt",
+      "failChecks": [
+        "composition"
+      ],
+      "note": "ROOT FULL original OWN/WHOLE unchangednative and originalactualWarmdepth3parent FULL OWN/WHOLE seen. ORIGINAL chosenfocalprogressionprops LEFT60%/quietRIGHT35% violated: selected journey actualMIDisland landing/different EMPTYDEST floor/monumentalarch and selectedship behind1008controls RIGHT. ORIGINAL nearLEFTconcealedstoneopening/weatheredstairs/actualcoiledrope/softwelcominglantern/sharedprotectedsupplies retained; no laterWHOLE/red/cup/microcount/arbitrarytwilight gates. CompositionONLY officialcorrection, no newgeneration/freshallsevenclaim.",
+      "pendingOfficialReview": false,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "21b023f5b3f963cd068db7540bbd0c82c213544a13bd0297eed2d7821761250e",
+        "promptSha256": "836fc75dbe31657f112e643ed7f6068163c23892faed4870d483a8f000b82b47",
+        "reviewer": "Codex ROOT full original OWN and WHOLE native correction source138",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL original OWN/WHOLE unchangednative and originalactualWarmdepth3parent FULL OWN/WHOLE seen. ORIGINAL chosenfocalprogressionprops LEFT60%/quietRIGHT35% violated: selected journey actualMIDisland landing/different EMPTYDEST floor/monumentalarch and selectedship behind1008controls RIGHT. ORIGINAL nearLEFTconcealedstoneopening/weatheredstairs/actualcoiledrope/softwelcominglantern/sharedprotectedsupplies retained; no laterWHOLE/red/cup/microcount/arbitrarytwilight gates. CompositionONLY officialcorrection, no newgeneration/freshallsevenclaim."
+        ],
+        "notes": "ROOT FULL original OWN/WHOLE unchangednative and originalactualWarmdepth3parent FULL OWN/WHOLE seen. ORIGINAL chosenfocalprogressionprops LEFT60%/quietRIGHT35% violated: selected journey actualMIDisland landing/different EMPTYDEST floor/monumentalarch and selectedship behind1008controls RIGHT. ORIGINAL nearLEFTconcealedstoneopening/weatheredstairs/actualcoiledrope/softwelcominglantern/sharedprotectedsupplies retained; no laterWHOLE/red/cup/microcount/arbitrarytwilight gates. CompositionONLY officialcorrection, no newgeneration/freshallsevenclaim."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--unknown--explore--warm--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW ALL SELECTED FACTS: curious departure for unknown world, EMPTY small sailing ship with plain furled canvas, clearly visible actual COILED rope near pier, unknown islands beyond. EXPLORATION MUST REMAIN: actual near LEFT half-concealed dark stone SIDE PASSAGE with clearly visible WEATHERED DESCENDING STAIRS immediately beside departure supplies. Do not substitute distant RIGHT ordinary town stairs/ruin or an open arch looking onto sea. WARM sheltered helpful preparations with softly welcoming lantern light rendered as hard pixel bands. JOURNEY: a clearly visible connected traversable near stone pier/causeway route leads through actual intermediate EMPTY island landing toward different distant monumental EMPTY ruin. Make the complete physical route and midpoint legible alongside the maritime departure. Generic open bay with a single moored vessel alone fails progression. HARD FAILURE: Warm native retains EMPTY furled ship/coiled rope and shared protected supplies/lantern mood, but chosen near LEFT hidden side opening/weathered stairs omitted (distant RIGHT cave cannot substitute). Latest JOURNEY remains generic open bay with no clearly staged continuous route through actual midpoint toward different destination. Fresh HIGH OBLIQUE camera, chosen focal props LEFT60%, quiet fully drawn RIGHT35%. All planes equally sharp coarse square pixel clusters, stepped edges/shade ramps, bare near floor. No people/humanoids/body/species/photos/portraits, writing/pseudotext, papers/posters/boards/documents/open books/clocks/numerals, ANY flags/banners/tapestries/vertical hanging cloth/heraldry/emblems/logos, blur/gradients/collage. Bare undecorated stone/timber architecture ONLY, never decorated towers. Plain furled ship sail allowed ONLY as undecorated sailcloth, no faction symbols, flags or crew. Avoid copying old parent large frontal ship against generic bay.\nDESTINATION-LED JOURNEY CAMERA CONTRACT: elevated oblique approach, actual connected stone island causeway with plainly visible intermediate EMPTY landing and different distant EMPTY ruin destination. Preserve near small EMPTY furled-canvas ship/pier and coiled rope. Generic open bay with one central moored ship under large near arch alone FAILS; do not repeat parent harbor camera.\nPRESERVE EXPLORATION AS ACTUAL NEAR LEFT HIDDEN SIDE PASSAGE WITH VISIBLE WEATHERED DESCENDING STAIRS beside departure supplies. Exposed ordinary distant town stairs on right or an arch looking only onto sea does not express the chosen hidden exploration opening."
+    }
+  ],
+  "actualExitReceipts": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source131-original-unknown-bright-journey-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T14:35:11.815345+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 131,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/sources132-133-original-unknown-bright-progression-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T14:54:26.830735+00:00",
+      "originalSourceRejectionsThisStage": 2,
+      "cumulativeOriginalSourceRejections": 133,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/sources134-136-original-unknown-mystic-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T16:05:05.665021+00:00",
+      "originalSourceRejectionsThisStage": 3,
+      "cumulativeOriginalSourceRejections": 136,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source137-original-unknown-mystic-chapter-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T17:37:43.182666+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 137,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source138-original-unknown-warm-journey-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T17:48:44.074193+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "cumulativeOriginalSourceRejections": 138,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0
+    }
+  ],
+  "pendingSource139Excluded": true
+}

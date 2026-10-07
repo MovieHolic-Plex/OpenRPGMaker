@@ -1,0 +1,99 @@
+{
+  "scope": "Only obsolete rejected original public copies after actual current passing replacements/native/exactOWN archives verified; pendingsource139 kept public",
+  "published": 979,
+  "removedThisInterval": 9,
+  "resolvedCumulative": 265,
+  "priorActualProof": "obsolete-public-cleanup-236-proof.json",
+  "removed": [
+    {
+      "number": 130,
+      "key": "adventure--reunion--companions--warm--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm--chapters-2dc677e44384.png",
+      "nativeSha256": "2dc677e443841c15ca080b624fd0e5c2e5be773f4a568eed15f4aebcfb83cf12",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-adventure--reunion--companions--warm--chapters-2dc677e44384.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source130-61b9d393bb353853423d439d97420fbe1aa9375397c953feef5e68b36a8098e5.txt",
+      "replacementSha256": "f2fcaf9f46920bb676b5961a2a06af6854d16566d0cb8e8ab012e7f09a89ec95",
+      "replacementOwnSha256": "522aab26ef527aee29e403afb988d3e02bc610dddbf88fb92e19f1c433227132"
+    },
+    {
+      "number": 131,
+      "key": "adventure--unknown--explore--bright--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--journey-586d873e963f.png",
+      "nativeSha256": "586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source131-586d873e963f970662267765b03981ba8877797f7c6669b9c118f16be03c57ce.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source131-ed931d59fa11f1b01bdf7f05831bab0cb877dc061325873d2b5a022461859548.txt",
+      "replacementSha256": "a200e84a5a9d62e10b3ccca0f62695330305612a46b31bf07ad0263354a21c25",
+      "replacementOwnSha256": "75853f39e70f29bfd0af89ce36d51998ab1484e2d39e414f7c35e3e52bbfcdbd"
+    },
+    {
+      "number": 132,
+      "key": "adventure--unknown--explore--bright--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--quests-8e6b54853094.png",
+      "nativeSha256": "8e6b54853094573e09ba770fc530a3bcbea0a161c03a9455e78ca9e6f7e5dd32",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source132-adventure--unknown--explore--bright--quests-8e6b54853094.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source132-07856ccdacb5343e7722cc87d3fc16fa92db83066d20d10cc5fdb4538a92047b.txt",
+      "replacementSha256": "c9a515647321f14708187e0536ba0d2a5484dbb6bb61b6fae22dc6e72d054bab",
+      "replacementOwnSha256": "0510eae1946f16d793016956c3761acadb7205b07c4f0c2c63e96bad92b6adcc"
+    },
+    {
+      "number": 133,
+      "key": "adventure--unknown--explore--bright--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright--chapters-1d4aaa05bc43.png",
+      "nativeSha256": "1d4aaa05bc43ef8e997ef94d192197addd01f697fd4c112369de7f0b9f1bf268",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source133-adventure--unknown--explore--bright--chapters-1d4aaa05bc43.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source133-1a6919cf5703d8181d6069cac6771d5d10e2b0ff6663de3d7ffb150b4bc3d3d1.txt",
+      "replacementSha256": "d91c3d6990cf3eb5e9d25f81002f13ee75e22704b41269c966d01321d7da5cf3",
+      "replacementOwnSha256": "c8a3c0681dc9fe23f1e26b68644943afe2568ec2fe56d82c6469dba766cbe7a9"
+    },
+    {
+      "number": 134,
+      "key": "adventure--unknown--explore--mystic--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--journey-b5f17591f299.png",
+      "nativeSha256": "b5f17591f29996fc9ebbfc9404e60a9b1dffbacc62bb63c5655d27b8fef95d2f",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source134-adventure--unknown--explore--mystic--journey-b5f17591f299.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source134-5b08cebab6bae9db5a254e374eaca6c6779d59ac7a056003216f622eba472f64.txt",
+      "replacementSha256": "dc35ac8bd16661127581fcb1975090604b39f5d79c6eb97135f9a2bbd6c0266c",
+      "replacementOwnSha256": "5a7703505b029889425f944d79e119b5bd8caf7b18ea3bbd15c92ab552be5b73"
+    },
+    {
+      "number": 135,
+      "key": "adventure--unknown--explore--mystic--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--quests-1a850eb81042.png",
+      "nativeSha256": "1a850eb810425bcfe65e6b2a53f0659b57020f2b10c93ab62efa7cd290442cbf",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source135-adventure--unknown--explore--mystic--quests-1a850eb81042.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source135-adf736290654c9295406c9665ff48cdc90bb1fab551674b31f62a9a5ad70303e.txt",
+      "replacementSha256": "4daa00f1a946bc56883acabd953ec71367150ea438086069a46a747420d0a417",
+      "replacementOwnSha256": "47bd78b8ebd99299c2348a14c28783fea0786c334a5824280e19ed0020a47534"
+    },
+    {
+      "number": 136,
+      "key": "adventure--unknown--explore--mystic",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-32e137fc8fb9.png",
+      "nativeSha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source136-adventure--unknown--explore--mystic-32e137fc8fb9.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source136-2c81145c698a423a96a4fb419f6d0a8af45f44985b82d070dd13c61634f5c7aa.txt",
+      "replacementSha256": "deac2ec93bfb99d6f769feb2bd4360f475cebb2fc9bc962f17b28a1c989ed191",
+      "replacementOwnSha256": "0441ce0a2f82168fa093ebdde422b6b74380a967ebb64a46048a428795645d84"
+    },
+    {
+      "number": 137,
+      "key": "adventure--unknown--explore--mystic--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic--chapters-f1ca10a84652.png",
+      "nativeSha256": "f1ca10a846528efad632ebc2a31c135a5e2645d25112cadae799ef0786f6695f",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source137-adventure--unknown--explore--mystic--chapters-f1ca10a84652.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source137-18662b371eebbdafa06a4caec3361de355c6104d5d3acaf545f6373413bc62f4.txt",
+      "replacementSha256": "02cbeea17e7b6c71a435447b4b0f90df358f40b36cd94eed1bbae9fc6d13677f",
+      "replacementOwnSha256": "d47c7d127a17e2162d973c89f7df4d07eee4f7aa404f14f5b04938130496a9a5"
+    },
+    {
+      "number": 138,
+      "key": "adventure--unknown--explore--warm--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm--journey-21b023f5b3f9.png",
+      "nativeSha256": "21b023f5b3f963cd068db7540bbd0c82c213544a13bd0297eed2d7821761250e",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source138-adventure--unknown--explore--warm--journey-21b023f5b3f9.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source138-9612fdf5a94325a40b45e0c6dd6bac5ade26239ada744c5d5f7196c0ff7711bf.txt",
+      "replacementSha256": "26830f93fea1e57af7e32e092b299c281335809ce59cdebda220adf68e55e503",
+      "replacementOwnSha256": "e1a48eaab74fb6337fd999948464bac5ad701a4555d843fc10a5b83c89bb6550"
+    }
+  ]
+}

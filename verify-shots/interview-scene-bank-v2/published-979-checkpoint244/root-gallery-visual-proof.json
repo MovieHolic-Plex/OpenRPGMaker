@@ -1,0 +1,19 @@
+{
+  "published": 979,
+  "sources": 8,
+  "actualClickCount": 16,
+  "widths": [
+    320,
+    736
+  ],
+  "rootWholeScreenshotsSeen": [
+    "verify-shots/interview-scene-bank-v2/gallery-979-stage244-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-979-stage244-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-979-stage244-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-979-stage244-736-last.png"
+  ],
+  "scopedVisualPass": true,
+  "nativeProductionPNGsUnchanged": true,
+  "notFreshAll979NativeVisualAudit": true,
+  "observation": "ROOT directlyopened allfour first/last screenshots: images/captions/selection update, buttonswrapwithin320/736, no horizontaloverflow/overlap or runtimeerror. Theseare representative backgroundselector previews, notactualeditor/AIhandoff."
+}

@@ -61,7 +61,8 @@ export async function run(argv: string[]): Promise<number> {
     const source = ledger.entries[key]?.find(c => c.sha256 === contract.sourceSha256);
     const facts = spec.prompt.slice(spec.prompt.indexOf('GENRE:'));
     if (!source || source.promptSha256 !== sha(spec.prompt) || !facts.startsWith('GENRE:') ||
-      !prompt.startsWith('Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,') ||
+      !(prompt.startsWith('Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,') ||
+        prompt.startsWith('Use case: precise-object-edit. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nEDIT the attached EXACT SAME KEY native as the sole target.')) ||
       !prompt.includes(facts) || !prompt.includes(`Target SHA256=${contract.sourceSha256}.`)) return false;
     const archived = resolve(dataDir, 'edit-sources', `${source.sha256}.png`);
     const original = existsSync(archived) ? archived : sourceFile(key, source);

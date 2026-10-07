@@ -63,9 +63,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     const top = el("div", { class: "ci-top" });
     const navigation = el("div", { class: "ci-navigation" });
     const controls = el("div", { class: "ci-controls", children: [top, body, navigation] });
-    const caption = el("aside", { class: "ci-scene-caption", children: [
-      el("span", { text: "YOUR NEXT STORY" }), el("strong", { text: "당신이 고른 세계" }),
-    ] });
+    const caption = el("aside", { class: "ci-scene-caption", attrs: { "aria-label": "배경 그림 조작" } });
     const status = el("p", { class: "ci-status", attrs: { role: "status", "aria-live": "polite" } });
     const done = (brief: GameDesignBrief | null) => {
       if (closed) return;

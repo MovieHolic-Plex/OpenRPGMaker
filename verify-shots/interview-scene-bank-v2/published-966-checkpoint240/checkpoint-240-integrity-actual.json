@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "scripts/qa/interview-scene-bank-integrity.py"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "interviewSceneBank.json": "0e4b979a120aa54989246ab7e28924402b0254b7238d32d01608ae2ca9a443d1",
+    "ledger.json": "dfdb9e4a21ec6287d6fe20599d85ab36b0942db80a7aa8248f45c16b8443d959"
+  },
+  "published": 966,
+  "finishedAt": "2026-10-07T15:45:13.068170+00:00",
+  "scope": "Scoped current published hash/request-contract integrity and six explicit production click paths; not fresh full-native visual audit/full app boot/AIhandoff"
+}

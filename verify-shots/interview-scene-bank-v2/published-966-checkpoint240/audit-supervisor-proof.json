@@ -1,0 +1,24 @@
+{
+  "published": 966,
+  "remaining": 491,
+  "snapshot": {
+    "interviewSceneBank.json": "0e4b979a120aa54989246ab7e28924402b0254b7238d32d01608ae2ca9a443d1",
+    "ledger.json": "dfdb9e4a21ec6287d6fe20599d85ab36b0942db80a7aa8248f45c16b8443d959"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--reunion--companions--mystic--quests--short",
+    "adventure--reunion--companions--warm--quests--scene",
+    "adventure--reunion--companions--warm--chapters",
+    "adventure--unknown--explore--bright--chapters",
+    "adventure--unknown--explore--bright--journey--short",
+    "adventure--unknown--explore--bright--quests--scene"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceAudits134135136PendingSeparateOfficialCorrection": "Their original old passing ledger snapshots are historical; corrections after this stable proof, before next official build."
+}

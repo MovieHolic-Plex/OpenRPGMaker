@@ -1,0 +1,20 @@
+{
+  "publishedSnapshot": 972,
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "actualChoiceClicks": 35,
+  "errors": [],
+  "generationRequests": 0,
+  "reviewer": "Codex ROOT personally viewed all six whole unchanged production screenshots",
+  "screensViewed": [
+    "adventure--reunion--companions--warm--chapters--scene",
+    "adventure--unknown--explore--bright--quests--episode",
+    "adventure--unknown--explore--bright--chapters--episode",
+    "adventure--unknown--explore--bright--chapters--short",
+    "adventure--unknown--explore--mystic--journey--scene",
+    "adventure--unknown--explore--mystic--quests"
+  ],
+  "scopedVisualPass": true,
+  "source137OriginalAuditPendingAtSnapshot": true,
+  "scope": "Six explicit native paths in actual production isolated interview only. Selected art readable left, captionremoved, compactactions visible, rightanswer/footercontrols fit. 800px dialog in900pxviewport; not full app boot/AIhandoff/fresh all972 native visualapproval. Historical originalMysticCHAP source137 fault pending separate officialcorrection."
+}

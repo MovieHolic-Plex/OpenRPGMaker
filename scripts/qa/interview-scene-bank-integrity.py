@@ -38,7 +38,7 @@ for key,scene in manifest['scenes'].items():
   assert hashlib.sha256(archived.read_bytes()).hexdigest()==source['sha256'],key
   assert hashlib.sha256(original_request.read_bytes()).hexdigest()==source['generationPromptSha256'],key
   own=request.read_text()
-  assert own.startswith('Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,'),key
+  assert own.startswith(('Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT,', 'Use case: precise-object-edit. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nEDIT the attached EXACT SAME KEY native as the sole target.')),key
   assert f"Target SHA256={source['sha256']}." in own and f'SCENE ID: {key}. This identifier is metadata; never draw it.' in own,key
  assert r['sourceSha256']==digest and r['promptSha256']==c['promptSha256'] and not r['findings'],key
  assert all(r['checks'][k] is True for k in seed['visualChecks']) and c['gate']['ok'] is True,key

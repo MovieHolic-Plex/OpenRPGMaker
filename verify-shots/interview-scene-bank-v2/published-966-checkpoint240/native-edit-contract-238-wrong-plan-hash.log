@@ -1,0 +1,8 @@
+
+> oprn@0.120.1 harness
+> vite-node --script scripts/harness.mts -- interview-scene-bank import-batch --records /home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/native-edit-contract-238-wrong-plan-hash.json
+
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:3217674) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+생성 요청이 현재 장면 프롬프트와 맞지 않는다.
