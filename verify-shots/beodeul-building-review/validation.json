@@ -205,12 +205,6 @@
       "sha": "cb58b43d379de25b97de3480fc1fc97e21a6df83781de1e199034b80b349b5bb"
     },
     {
-      "id": "r7-building-05",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "902b352fc97dd4c1fed71eb899d65283b5fcd0370958d74ce4e71e4ab5bcb352"
-    },
-    {
       "id": "r7-building-06",
       "sourceMatches": true,
       "entranceMetadataPresent": true,
@@ -235,76 +229,10 @@
       "sha": "502cd3f61670649a64e54ce19f055d1e3e30cb37db4c816fc2d0b3f991a83e14"
     },
     {
-      "id": "r7-building-10",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "460a4cb95f0473700d72baafffa27b938c251bd81b02b8694207da51e64a62e9"
-    },
-    {
-      "id": "r7-building-11",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "3a37d11db8ab4fd6393b264fbc4b7d4198f73a4b90b451d5810bf656cd4c19ef"
-    },
-    {
-      "id": "r7-building-12",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "7dfc47f5fd0aa0b63b991147429bf3836907b0f80cfcab1c025b5079916c79a1"
-    },
-    {
-      "id": "r7-building-13",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "ca6b2b70c4d458922cf19ce6715e5c4a6e90f7688ca13ea4fe9eb958d9f62b05"
-    },
-    {
-      "id": "r7-building-14",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "ec4b0d9ba2b678f4d6f9f15444e4017406bd12ff6b20ff92f8293fe4a523dd63"
-    },
-    {
-      "id": "r7-building-15",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "fd954f5a63b97c2333bf13a45b2e7d150351c8f44791588c1bd7593d969f7c13"
-    },
-    {
-      "id": "r7-building-16",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "0119220dae8d4ec21994cb343c73f9f242fd399cd71c655da1d6a80c606bd622"
-    },
-    {
       "id": "r7-building-17",
       "sourceMatches": true,
       "entranceMetadataPresent": true,
       "sha": "15f86c2f8512a1db4e6ddb2e7f44a17e6650035fe34fc14f85f725a66d1bfddb"
-    },
-    {
-      "id": "r7-building-18",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "d33bdecf326fde7f993e492227bf8c7412bb9d77fc08f0cf1e789461c1787a9d"
-    },
-    {
-      "id": "r7-building-19",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "dce11488aad894bdad4ff217861f1c4b6770347211d7cdf8e44cc51f1c66db24"
-    },
-    {
-      "id": "r7-building-20",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "3f5f2443e194dc7e7a8f491b1ebaa022008a86922a6abad49132f328da87c3be"
-    },
-    {
-      "id": "r7-building-21",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "e5fd9cb047dd8585337f98b0c800b1d61360580156cb8a98740b65fb2934cfff"
     },
     {
       "id": "r7-building-22",
@@ -323,12 +251,6 @@
       "sourceMatches": true,
       "entranceMetadataPresent": true,
       "sha": "41b0a5137b945997750c15f3afe828f2bbee5f1d1ba7e11db60359db96664091"
-    },
-    {
-      "id": "r7-building-25",
-      "sourceMatches": true,
-      "entranceMetadataPresent": true,
-      "sha": "5e4c5bb725b5bda2ae316304b69d8594edf7c0aaa421fdd374b0db169e1c71f0"
     }
   ],
   "visualApproval": "requires-vision-gate-and-human-decision"
