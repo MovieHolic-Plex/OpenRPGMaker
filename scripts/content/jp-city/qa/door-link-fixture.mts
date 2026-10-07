@@ -6,7 +6,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { serializePretty } from "@/project/io";
 import { createJpCityTileset } from "@/project/defaults/jpCity";
-import { canMove } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { preloadRegionReferenceScene, setRegionReferenceDownloadLoader } from "@/project/regionReferenceImport";
@@ -105,7 +105,12 @@ for (const link of LINKS) {
   const interior = ctx.project.maps[data.interiorMapId]!;
   // 들어가기 시험: 발판 바로 아래 칸에서 위로 한 걸음 — 그 칸이 걸을 수 있는 발판을 고른다(나온 칸이 발판 옆줄일 수 있다).
   const sm = ctx.project.maps[street.id]!;
-  const front = data.fronts.find((c) => canMove(ctx.project, sm, c.x, c.y + 1, c.x, c.y)) ?? data.fronts[0]!;
+  // 아래에서 못 오면(문 앞 보도가 한 줄이고 그 아래가 소품) 옆에서 발판으로 들어간다.
+  const pad = new Set(data.fronts.map((c) => `${c.x},${c.y}`));
+  const approaches = data.fronts.flatMap((c) => ([["up", 0, 1], ["right", -1, 0], ["left", 1, 0]] as const).map(([dir, dx, dy]) => ({ dir, c, from: { x: c.x + dx, y: c.y + dy } })));
+  const ap = approaches.find(({ c, from }) => !pad.has(`${from.x},${from.y}`) && isPassable(ctx.project, sm, from.x, from.y) && canMove(ctx.project, sm, from.x, from.y, c.x, c.y));
+  if (!ap) throw new Error(`${link.building}: 문 앞 발판으로 걸어 들어갈 칸이 없다`);
+  const front = ap.c;
   // 실내를 실제로 돌아다닌다: 도착 칸에서 가장 먼 칸까지 갔다가 출입구로 나온다.
   const far = farthest(interior, data.entryLanding);
   const tour = route(interior, data.entryLanding, [far]) ?? [];
@@ -113,7 +118,7 @@ for (const link of LINKS) {
   if (!inside) throw new Error(`${data.interiorMapId}: (${far.x},${far.y}) → 출입구 길이 없다`);
   legs.push({
     label: `${link.building} → ${interior.name}`, street: street.id, interior: data.interiorMapId,
-    startAt: [front.x, front.y + 1], enter: ["up", front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y],
+    startAt: [ap.from.x, ap.from.y], enter: [ap.dir, front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y],
     tourSteps: tour, exitSteps: inside, exitAt: [data.exitLanding.x, data.exitLanding.y],
   });
 }

@@ -60,9 +60,9 @@ try {
     await page.waitForTimeout(1200); // 순간이동 페이드가 걷힐 때까지 — 미리 방향 키를 누르지 않는다(이미 위를 보고 있으면 그 탭이 발판을 밟는다)
     await page.screenshot({ path: join(OUT, `${tag}a-street.png`) });
     let st = await state();
-    for (let i = 0; i < 3 && st.currentMapId === leg.street && !(st.x === leg.enter[1] && st.y === leg.enter[2]); i++) { await tap("up"); st = await state(); }
+    for (let i = 0; i < 3 && st.currentMapId === leg.street && !(st.x === leg.enter[1] && st.y === leg.enter[2]); i++) { await tap(leg.enter[0]); st = await state(); }
     st = await waitMap(leg.interior);
-    record(st.currentMapId === leg.interior && st.x === leg.entryAt[0] && st.y === leg.entryAt[1], `${tag}a. ${leg.label} — 문 앞 (${leg.enter[1]},${leg.enter[2]}) 밟고 들어가기`, `${st.currentMapId} (${st.x},${st.y}) / 기대 (${leg.entryAt})`);
+    record(st.currentMapId === leg.interior && st.x === leg.entryAt[0] && st.y === leg.entryAt[1], `${tag}a. ${leg.label} — 문 앞 발판 (${leg.enter[1]},${leg.enter[2]}) 으로 ${leg.enter[0]} 한 걸음`, `${st.currentMapId} (${st.x},${st.y}) / 기대 (${leg.entryAt})`);
     await page.screenshot({ path: join(OUT, `${tag}b-inside.png`) });
     let ok = true; const trail = [];
     for (const [d, x, y] of leg.tourSteps) { st = await stepTo(d, [x, y], leg.interior); trail.push(`${st.x},${st.y}`); if (st.currentMapId !== leg.interior || st.x !== x || st.y !== y) { ok = false; break; } }
