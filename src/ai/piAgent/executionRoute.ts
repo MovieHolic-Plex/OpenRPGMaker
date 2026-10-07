@@ -10,7 +10,6 @@
 
 import { conceptCardsForText, formatConceptCardNote } from "../conceptCards";
 import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
-import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
@@ -81,8 +80,6 @@ export interface PiIntentNoteInput {
   readonly targetMap: PiIntentNoteTargetMap | null;
   /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계를 못박는다. */
   readonly selection: IntentSelectionFact | null;
-  /** 요청이 팩 도시 타일셋(Rasak 등) 마을이면 그 타일셋 — 숲마을 노트 대신 build_pack_town 노트(packTownRoute). */
-  readonly packTown?: PackTownTarget | null;
   /** 요청이 버들항 계열 마을이면 그 대상 — 숲마을 노트 대신 author_beodeul_town 노트(beodeulTownRoute). */
   readonly beodeulTown?: BeodeulTownTarget | null;
   /** 요청·대상 맵이 일본 도시(jp_city) 칩셋이면 그 대상 — 숲마을 노트 대신 build_jp_city_building 노트(jpCityPolicy). */
@@ -111,8 +108,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
   const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
-  const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap)
-    : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
+  const villageNote = input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : null;
   const scopeNote = input.selection

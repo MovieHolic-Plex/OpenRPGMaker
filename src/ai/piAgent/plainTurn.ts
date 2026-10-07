@@ -6,7 +6,6 @@ import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PR
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
 import { conceptCardsForText } from "../conceptCards";
-import { packTownTargetFor } from "./packTownRoute";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
@@ -24,7 +23,6 @@ import type { PiTeamSpec } from "./teamSpec";
 // 기존 호출자·테스트가 이 모듈에서 쓰던 이름을 그대로 쓰도록 다시 내보낸다.
 export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
-import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
@@ -114,20 +112,15 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
-    // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
-    const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
     // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
     // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
-    // PAW 전용 게이트가 켜진 요청은 게이트가 이기고, 팩 도시 타일셋 마을은 그쪽이 이긴다.
-    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
-    const jpCity = packTown || modernMap ? null
-      : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
-    // 팩 마을·jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
-    const beodeulTown = packTown || jpCity ? null
+    // PAW 전용 게이트·팩 도시 타일셋(Rasak·REFMAP) 마을 노트는 2026-10-07 저작권 정리로 지웠다.
+    const jpCity = jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town(beodeulTownRoute).
+    const beodeulTown = jpCity ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
-      packTown,
       beodeulTown,
       jpCity,
       requestText: text,
@@ -144,20 +137,18 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : modernMap ? " → 현대 맵" : "");
+      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
     } else {
       // Send exact intent/adventure candidates through the real Pi request path.
       // This is exposure only: discovery can expand it, including full fallback.
-      initialToolNames = modernMap
-        ? [...MODERN_MAP_INITIAL_TOOLS]
-        : [...new Set([
-          ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
-          // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
-          ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
-        ])];
+      initialToolNames = [...new Set([
+        ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
+        // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
+        ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
+      ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
       // 키트 시트 야외 맵(몬스터 수집 마을 등)의 빈 터 꾸미기 — 도구를 보이게 하고 노트로 이름을 부른다(2026-10-07 이어 고치기 r8~r11).

@@ -51,7 +51,6 @@ import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
-import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
@@ -225,7 +224,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
-  const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
     project: cloneProjectSharingSharedDictionaries(base),
@@ -249,7 +247,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const gameSystemProduction = new PiGameSystemProduction();
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && requestsOpeningProduction(request.task), request.task);
-  const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
+  const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
   const scopeGuard = piMapScopeGuard(request);
@@ -275,7 +273,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (!definition) return undefined;
       return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall,
         apply: async (toolName, args, signal) => {
-          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, charsetGate, modernTilesetPolicy, ...scopeGuard });
+          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, charsetGate, ...scopeGuard });
           if (!write) throw new Error(`그림 등록/연결 도구가 없습니다: ${toolName}`);
           return write.execute(`${name}:apply`, args, signal);
         },
@@ -293,7 +291,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       onCall: recordCall,
       referenceGate,
       charsetGate,
-      modernTilesetPolicy,
       findToolsCallable,
       eventAssistChat: eventAssistChat as never,
       ...scopeGuard,
@@ -507,7 +504,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     onCall: recordCall,
     referenceGate,
     charsetGate,
-    modernTilesetPolicy,
     findToolsCallable,
     eventAssistChat: eventAssistChat as never,
     ...scopeGuard,
@@ -589,7 +585,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
   if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
   if (/음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) systemPrompt.push('[음악 저작] 기존 recommend_bgm은 곡 선택이다. 새 곡 요청이면 get_music_composer -> compose_music -> get_music_score -> set_game_audio로 실제 원문 음표와 독립 파트를 만든다. 모티프/응답/쉼/구간별 악기 진입을 설계한다. 다른 게임의 곡을 복사하지 않는다. WAV 바이트와 측정값은 실제 합성이며 모델은 소리를 듣지 않는다. 원곡 수준/청취 완료/스튜디오 오케스트라라고 주장하지 않는다. 세션/M2 전투곡 우선순위를 확인한다.');
-  if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);
     systemPrompt.push(buildToolCapabilityIndex(openingProduction.requested ? allowedDefinitions.filter(t => /opening|animatic/.test(t.name) || openingSupport.has(t.name)) : allowedDefinitions));
@@ -817,18 +812,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
     if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
-      const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${[...i.problems, ...(i.pack ?? [])].join(", ")}`).join(" / ");
+      const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
-      // 팩 세트 맵(check_pack_map)은 좌표가 붙은 확실한 결함이라 한 번 더 권고한다(같은 결과면 멈춘다). 나머지는 한 번뿐.
-      for (let round = 0; layout.length && round < 2 && turns < maxTurns && !options.signal?.aborted; round++) {
-        if (round > 0 && !layout.some(i => i.pack?.length)) break;
+      // 권고는 한 번뿐이다(팩 세트 맵 check_pack_map 재권고는 2026-10-07 팩 프리셋과 함께 지웠다).
+      if (layout.length && turns < maxTurns && !options.signal?.aborted) {
         emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 고칩니다: ${describe(layout)}`, data: layout });
-        const before = JSON.stringify(layout);
         await promptResuming(piLayoutRepairPrompt(layout));
         layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
         emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
           summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
-        if (JSON.stringify(layout) === before) break;
       }
     }
     let previousInteriorIssues = '';

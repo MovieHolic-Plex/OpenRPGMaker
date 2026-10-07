@@ -3,7 +3,7 @@
 // jp_city 가 없었다. 그래서 ① 일본 상가 거리 요청이 author_village(숲마을) 마을 계약에 걸리고 ② 조수가 칩셋 id 를 모르며
 // ③ 건물 도구가 자연어 점수 승격에만 기대 노출됐다(이자카야 빌딩·일본풍 상점가 문장은 승격 0건).
 // packTownRoute·beodeulTownRoute 와 같은 모양이다 — 대상 판정 + 노트 + 계약 건너뛰기. defaults/jpCity.ts 는 2MB JSON 을 끌어오므로
-// 텍스처 키 문자열만 쓴다(modernTilesetPolicy.isBundledJpCityTileset 과 같은 이유).
+// 텍스처 키 문자열만 쓴다.
 // 주의: 이 파일의 노트·문장은 모델 지시문(task)에 실린다 — requestsModernMap 의 PAW 전용 게이트를 켜는 낱말(현대·모던·modern)을 쓰지 않는다.
 
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
@@ -16,7 +16,7 @@ export function isJpCityTilesetDef(tileset: Pick<TilesetDef, "image"> | undefine
   return tileset?.image.type === "bundled" && tileset.image.id === JP_CITY_TEXTURE;
 }
 
-/** 사용자가 칩셋을 직접 가리킨 식별자·이름 — 이 경우 PAW 전용 게이트도 물러선다(modernTilesetPolicy.requestsModernMap). */
+/** 사용자가 칩셋을 직접 가리킨 식별자·이름. */
 const NAMES_JP_CITY_RE = /jp[_-]city|oprn-jp|일본\s*도시\s*(?:칩셋|타일셋|\(도트\))/iu;
 /** 일본 거리 풍경 요청 — jp_city 가 이 저장소에서 그 일을 하는 유일한 번들이다(상가·주택가·학교·지하철역·노면전차 거리). */
 const JP_STREET_RE = /일본(?:풍|식)?\s*(?:상가|상점가|상점\s*거리|쇼핑\s*거리|편의점|이자카야|골목|동네\s*거리|거리|주택가|(?:초등)?학교|소학교|지하철(?:역)?|전철역|역\s*앞|노면\s*전차|버스\s*정류장)/u;
