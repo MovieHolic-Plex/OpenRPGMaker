@@ -17,7 +17,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path.append(str(ROOT / 'src/harnesses/beodeul-building-review/node'))
+# 이 코드가 오래된 체크아웃에서 돌 때는 BUILDING_REVIEW_ROOT 로 최신 main 체크아웃의 검수 코드를 쓴다(그 체크아웃이 데이터·번들·스토어 스크립트를 함께 가진다).
+sys.path.append(str(Path(os.environ.get('BUILDING_REVIEW_ROOT') or ROOT) / 'src/harnesses/beodeul-building-review/node'))
 import mount as beodeul_review  # noqa: E402  버들항 건물 검수 화면(/harness/beodeul)
 
 
