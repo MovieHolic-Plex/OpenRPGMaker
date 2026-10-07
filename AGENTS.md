@@ -127,6 +127,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
    - 릴리스·버전 (네 축 구분, 빌드 라벨, `npm run release` 절차): `openwiki/release-and-version.md`
+   - 라이선스 (에디터 SUL · 런타임 MIT · 게임 산출물 자유 · 기본 에셋 OPRN 게임 사용 · CLA, 런타임에 에디터 코드 끌어들이지 않기): `openwiki/licensing.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
 
 

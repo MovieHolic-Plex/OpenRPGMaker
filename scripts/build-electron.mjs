@@ -7,6 +7,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { readOAuthClientsFromPiAi } from "./lib/oauthClients.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
@@ -54,6 +55,14 @@ function assertNoTopLevelImportMeta(file) {
   throw new Error(`${file}: 모듈 최상위에서 import.meta.url 을 읽는다 — CJS 번들에서는 비어 있어 앱 시작이 죽는다. 함수 안으로 옮겨 지연 평가하라.\n${list}`);
 }
 
+// 남의 앱 OAuth 클라이언트 값(src/ai/oauth/clientConfig.ts)은 저장소에 없다. 패키징된 앱에는 node_modules 가 없으므로
+// 빌드 때 설치된 참조 구현에서 읽어 주입한다. 환경변수가 있으면 그것이 이긴다. 못 읽으면 로그인만 실패한다.
+const OAUTH_ENV = { antigravityClientId: "OPRN_ANTIGRAVITY_CLIENT_ID", antigravityClientSecret: "OPRN_ANTIGRAVITY_CLIENT_SECRET", codexClientId: "OPRN_CODEX_CLIENT_ID" };
+const oauthClients = readOAuthClientsFromPiAi();
+for (const [key, name] of Object.entries(OAUTH_ENV)) if (process.env[name]?.trim()) oauthClients[key] = process.env[name].trim();
+const missingOAuth = Object.keys(OAUTH_ENV).filter((key) => !oauthClients[key]);
+if (missingOAuth.length) process.stderr.write(`warning: OAuth 클라이언트 값 없음 — ${missingOAuth.join(", ")} (해당 로그인은 패키지 앱에서 실패한다)\n`);
+
 await mkdir(OUT_DIR, { recursive: true });
 // 자산 브라우저가 받은 RAR 팩(예: Rasak Modern)을 메인 프로세스에서 푼다 — node-unrar-js 는 wasm 을 따로 읽는다.
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
@@ -70,6 +79,7 @@ for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
     platform,
     target,
     external,
+    define: { __OPRN_OAUTH_CLIENTS__: JSON.stringify(oauthClients) },
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
   if (format === "cjs") assertNoTopLevelImportMeta(outfile);
