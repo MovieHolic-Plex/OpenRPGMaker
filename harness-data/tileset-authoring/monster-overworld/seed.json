@@ -1,0 +1,2398 @@
+{
+  "id": "monster-overworld",
+  "title": "몬스터 수집 야외 (Scarloxy 느낌, 원본 도트)",
+  "tilesetId": "monster_overworld",
+  "tilesetName": "몬스터 수집 야외 · OPRN 손 도트 (Scarloxy 화풍 연구)",
+  "textureKey": "tex_monster_overworld",
+  "family": "oprn-atlas",
+  "tileSize": 16,
+  "tilesPerRow": 16,
+  "view": "정면 위 3/4, 건물은 깊이 있는 두 경사면 지붕. 빛은 왼쪽 위, 그림자는 오른쪽 아래. 윤곽은 검정이 아니라 그 재료의 가장 어두운 톤.",
+  "originality": "기준 팩(Scarloxy, CC BY 4.0, 저장소에 번들)의 픽셀을 복사하지 않는다. study 단계가 잰 램프·질감 수치·구조 문법(바위 고리·덩이진 풀·그물 물결)만 계약으로 삼고 모든 픽셀을 직접 찍는다.",
+  "reference": {
+    "pack": "Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01), CC BY 4.0",
+    "sheets": {
+      "grassland": "public/assets/scarloxy/scarloxy-chipset-grassland.png",
+      "wilds": "public/assets/scarloxy/scarloxy-chipset-wilds.png"
+    },
+    "regions": {
+      "grass": [
+        "grassland",
+        66,
+        6,
+        12,
+        24
+      ],
+      "sand": [
+        "grassland",
+        16,
+        16,
+        16,
+        16
+      ],
+      "sand_edge": [
+        "grassland",
+        0,
+        0,
+        48,
+        48
+      ],
+      "rock_ring": [
+        "grassland",
+        48,
+        0,
+        48,
+        48
+      ],
+      "water": [
+        "grassland",
+        60,
+        108,
+        24,
+        24
+      ],
+      "water_bank": [
+        "grassland",
+        48,
+        96,
+        48,
+        48
+      ],
+      "tree": [
+        "grassland",
+        160,
+        0,
+        32,
+        48
+      ],
+      "tree_round": [
+        "grassland",
+        192,
+        0,
+        32,
+        48
+      ],
+      "roof": [
+        "grassland",
+        160,
+        144,
+        120,
+        56
+      ],
+      "house_wall": [
+        "grassland",
+        0,
+        192,
+        80,
+        32
+      ],
+      "center": [
+        "grassland",
+        384,
+        144,
+        96,
+        96
+      ],
+      "house_flat": [
+        "grassland",
+        0,
+        144,
+        80,
+        80
+      ],
+      "gym": [
+        "wilds",
+        96,
+        144,
+        112,
+        112
+      ],
+      "gable": [
+        "grassland",
+        160,
+        144,
+        112,
+        112
+      ],
+      "gym_fire": [
+        "wilds",
+        208,
+        144,
+        112,
+        112
+      ],
+      "gym_water": [
+        "wilds",
+        320,
+        144,
+        112,
+        112
+      ]
+    }
+  },
+  "palette": {
+    "grass": [
+      "#2e8a5e",
+      "#4fb489",
+      "#7acaa3",
+      "#a6dcc2",
+      "#c6ecda"
+    ],
+    "i2_ol": [
+      "#4a4a62"
+    ],
+    "i2_void": [
+      "#181820"
+    ],
+    "i2_ceil": [
+      "#d8d8e0",
+      "#f8f8f8"
+    ],
+    "i2_c_band": [
+      "#f8d070",
+      "#f09840"
+    ],
+    "i2_c_face": [
+      "#f8f0d8",
+      "#fffaf0"
+    ],
+    "i2_c_mold": [
+      "#f0c8b0",
+      "#d89880"
+    ],
+    "i2_base_navy": [
+      "#a0a0b8",
+      "#384078",
+      "#5868a8"
+    ],
+    "i2_m_band": [
+      "#58b060",
+      "#90d888"
+    ],
+    "i2_m_face": [
+      "#f8f0b8",
+      "#fffad8"
+    ],
+    "i2_base_sky": [
+      "#3868a0",
+      "#88c0e8",
+      "#b8e0f8"
+    ],
+    "i2_h_face": [
+      "#d8d0a0",
+      "#c8c090"
+    ],
+    "i2_gray": [
+      "#707080",
+      "#a0a0b0",
+      "#d0d0d8"
+    ],
+    "i2_fl_center": [
+      "#d8ccb0",
+      "#f0e8cc",
+      "#faf6e6"
+    ],
+    "i2_fl_mart": [
+      "#4068b8",
+      "#5080d0",
+      "#6a96e0"
+    ],
+    "i2_fl_house": [
+      "#8a6430",
+      "#c09048",
+      "#d8ac60"
+    ],
+    "i2_mat": [
+      "#7a2028",
+      "#c03840",
+      "#e86868"
+    ],
+    "i2_salmon": [
+      "#c05850",
+      "#f09888",
+      "#ffc8b8"
+    ],
+    "i2_steel": [
+      "#687080",
+      "#a0a8b8",
+      "#d0d8e0"
+    ],
+    "i2_white": [
+      "#b8b8c8",
+      "#e8e8f0",
+      "#ffffff"
+    ],
+    "i2_green": [
+      "#3a8848",
+      "#58b068",
+      "#88d090"
+    ],
+    "i2_glass": [
+      "#5888c0",
+      "#a8d0f0",
+      "#e8f8ff"
+    ],
+    "i2_red": [
+      "#a02830",
+      "#e04040",
+      "#f88080"
+    ],
+    "i2_gold": [
+      "#b88820",
+      "#f0c840"
+    ],
+    "i2_c_flower": [
+      "#f06080",
+      "#ffd0e0"
+    ],
+    "i2_blue": [
+      "#3858b0",
+      "#6890e0",
+      "#a8c8f8"
+    ],
+    "i2_yellow": [
+      "#c89820",
+      "#f8d048",
+      "#fff0a0"
+    ],
+    "i2_wood": [
+      "#6a4020",
+      "#a06830",
+      "#d09858"
+    ],
+    "i2_card": [
+      "#9a6a30",
+      "#c8944a",
+      "#e8bc78"
+    ],
+    "i2_orange": [
+      "#b04818",
+      "#e87830",
+      "#f8b060"
+    ],
+    "grass_light": [
+      "#b8a878",
+      "#cdbd8c",
+      "#ddd0a4",
+      "#ece2bf"
+    ],
+    "sand": [
+      "#f4b24b",
+      "#fed56f",
+      "#fed976",
+      "#ffdf7d"
+    ],
+    "water": [
+      "#0182e0",
+      "#0388e5",
+      "#179aeb",
+      "#2ab5f2"
+    ],
+    "rock": [
+      "#5a3a30",
+      "#7c5444",
+      "#9e7258",
+      "#bc9270",
+      "#d8b48c"
+    ],
+    "tall": [
+      "#2f4d12",
+      "#1f9a62",
+      "#4cb87c",
+      "#8cd49c"
+    ],
+    "cut_shadow": [
+      "#3f9a6c"
+    ],
+    "leaf": [
+      "#2f4d12",
+      "#3b8a3c",
+      "#5eae4c",
+      "#92cf68",
+      "#c0ee96"
+    ],
+    "trunk": [
+      "#4a2c16",
+      "#764824",
+      "#9c6638",
+      "#c08a52"
+    ],
+    "wood": [
+      "#7d370f",
+      "#a84e1a",
+      "#bf6c27",
+      "#db9138"
+    ],
+    "roof_green": [
+      "#104826",
+      "#247144",
+      "#348457",
+      "#4da276",
+      "#70b376"
+    ],
+    "gold": [
+      "#bf6c27",
+      "#f2d05c"
+    ],
+    "plaster": [
+      "#c4b487",
+      "#fff5d9"
+    ],
+    "roof_purple": [
+      "#332862",
+      "#433779",
+      "#584a93",
+      "#6c5aa7",
+      "#6477b6"
+    ],
+    "roof_red": [
+      "#640100",
+      "#9a0200",
+      "#c72e25",
+      "#f05545",
+      "#fb7466"
+    ],
+    "roof_blue": [
+      "#004d85",
+      "#006ab5",
+      "#0182e0",
+      "#179aeb",
+      "#2ab5f2"
+    ],
+    "roof_teal": [
+      "#0a3f46",
+      "#126068",
+      "#1d8587",
+      "#38a9a0",
+      "#68c6b2"
+    ],
+    "roof_slate": [
+      "#2a3042",
+      "#40485f",
+      "#59627c",
+      "#767fa0",
+      "#98a2c0"
+    ],
+    "roof_orange": [
+      "#5c2416",
+      "#8a3a20",
+      "#b4552c",
+      "#d6773e",
+      "#ec9c5c"
+    ],
+    "roof_pink": [
+      "#6a1f4c",
+      "#92326a",
+      "#b84a8a",
+      "#d96aa8",
+      "#ee90c2"
+    ],
+    "cave_floor": [
+      "#6b5a45",
+      "#857058",
+      "#9a8366",
+      "#ad9674",
+      "#c4ac86"
+    ],
+    "int_wood": [
+      "#6e3f20",
+      "#8f5a2c",
+      "#b07838",
+      "#cc9448",
+      "#e2b068"
+    ],
+    "int_cream": [
+      "#b8a870",
+      "#d8c88c",
+      "#ece0a8",
+      "#fff4c8"
+    ],
+    "int_wall": [
+      "#8a7a52",
+      "#b8a674",
+      "#dccb98",
+      "#f4ead0"
+    ],
+    "int_trim": [
+      "#3a2418",
+      "#5c3a24",
+      "#8a5c38"
+    ],
+    "int_red": [
+      "#8c2430",
+      "#b8384a",
+      "#dc5868",
+      "#f08c94",
+      "#ffc0c4"
+    ],
+    "int_blue": [
+      "#1e5aa8",
+      "#2f7ad8",
+      "#58a0f0",
+      "#9ccdfa"
+    ],
+    "gym_teal": [
+      "#2e7a76",
+      "#4aa496",
+      "#78ccb4",
+      "#aef0d4"
+    ],
+    "gym_gray": [
+      "#5a5a6c",
+      "#80808f",
+      "#a8a8b8",
+      "#cfcfdc"
+    ],
+    "gym_orange": [
+      "#a8501e",
+      "#c8702e",
+      "#e8955a"
+    ],
+    "gym_lav": [
+      "#8a7ac0",
+      "#b0a2dc",
+      "#d4c8f0",
+      "#f0eaff"
+    ],
+    "gym_brick": [
+      "#8a4a30",
+      "#a8643e",
+      "#c8825a",
+      "#e0a07a"
+    ],
+    "gym_dirt": [
+      "#8a7a5a",
+      "#a89470",
+      "#c4b088",
+      "#dccaa0"
+    ],
+    "gym_arrow": [
+      "#1a6a48",
+      "#28a060",
+      "#68dca0"
+    ],
+    "gym_yellow": [
+      "#d09a1e",
+      "#f0c030",
+      "#fff08a"
+    ],
+    "cave_sand": [
+      "#a8924a",
+      "#cdb462",
+      "#decd73",
+      "#eede94"
+    ],
+    "cave_wall": [
+      "#5a2a12",
+      "#93461a",
+      "#c47a35",
+      "#e6b573",
+      "#f5d39b"
+    ],
+    "steel": [
+      "#555f64",
+      "#7a878d",
+      "#b1bcc0",
+      "#f4fefa"
+    ],
+    "glass": [
+      "#004d85",
+      "#006ab5",
+      "#179aeb",
+      "#03d1e9",
+      "#78f7ff"
+    ],
+    "pink": [
+      "#e98593",
+      "#f3a5a6",
+      "#fac7c2"
+    ],
+    "slate": [
+      "#352f4d",
+      "#4b475b",
+      "#5a566a",
+      "#726d85"
+    ],
+    "gym_green": [
+      "#247144",
+      "#3a885a",
+      "#70b376",
+      "#b4cb49"
+    ],
+    "gym_fire": [
+      "#7d370f",
+      "#bf6c27",
+      "#db9138",
+      "#f9bc4c"
+    ],
+    "gym_water": [
+      "#004d85",
+      "#006ab5",
+      "#179aeb",
+      "#2ab5f2"
+    ],
+    "g2_fl_teal": [
+      "#5aa898",
+      "#7cc8b8",
+      "#a6e4d4"
+    ],
+    "g2_fl_yel": [
+      "#c8a830",
+      "#f0d048",
+      "#f8e490",
+      "#fff8d0"
+    ],
+    "g2_fl_dirt": [
+      "#a08868",
+      "#c8b490",
+      "#98887a",
+      "#a88858"
+    ],
+    "g2_plank": [
+      "#5a3a20",
+      "#8a6038",
+      "#b08048",
+      "#d8b070"
+    ],
+    "g2_salmon": [
+      "#b86048",
+      "#e89878",
+      "#f8c0a0"
+    ],
+    "g2_lav": [
+      "#4a3a78",
+      "#7a68b0",
+      "#a090d8",
+      "#d0c8f4"
+    ],
+    "g2_wall": [
+      "#585868",
+      "#8a8a9c",
+      "#b4b4c4",
+      "#dcdce8"
+    ],
+    "g2_slate": [
+      "#2c3c48",
+      "#465a66"
+    ],
+    "g2_arrow": [
+      "#1e7a46",
+      "#6ad49a"
+    ],
+    "g2_stop": [
+      "#9a9aa4",
+      "#ece0a0",
+      "#fff8d0",
+      "#c0b070"
+    ],
+    "g2_arc": [
+      "#103040",
+      "#40d8f0",
+      "#d0ffff"
+    ],
+    "g2_stone": [
+      "#585860",
+      "#7a7a84",
+      "#a0a0aa",
+      "#c8c8d2"
+    ],
+    "g2_rockwall": [
+      "#6a8a50",
+      "#a0c080",
+      "#c4dca4"
+    ],
+    "cliff": [
+      "#4a140a",
+      "#62200e",
+      "#833120",
+      "#a65c46",
+      "#c88c74"
+    ],
+    "mstone": [
+      "#5a5a6c",
+      "#80808f",
+      "#a8a8b8",
+      "#cfcfdc",
+      "#f0f0f4"
+    ],
+    "mshadow": [
+      "#9a6e48"
+    ]
+  },
+  "match": {
+    "grass": {
+      "ref": "grass",
+      "tiles": [
+        "grass0",
+        "grass1",
+        "grass2",
+        "grass3"
+      ]
+    },
+    "sand": {
+      "ref": "sand",
+      "tiles": [
+        "sand0",
+        "sand1"
+      ]
+    },
+    "rock_ring": {
+      "ref": "rock_ring",
+      "tiles": [
+        "rock_at0",
+        "rock_at1",
+        "rock_at2",
+        "rock_at4",
+        "rock_at8"
+      ]
+    },
+    "water": {
+      "ref": "water",
+      "tiles": [
+        "water_at255_f0",
+        "water_at255_f1",
+        "water_at255_f2",
+        "water_at255_f3"
+      ]
+    },
+    "tree": {
+      "ref": "tree",
+      "tiles": [
+        "tree_a.0.0",
+        "tree_a.1.0",
+        "tree_a.0.1",
+        "tree_a.1.1",
+        "tree_a.0.2",
+        "tree_a.1.2"
+      ]
+    }
+  },
+  "roles": [
+    "grass",
+    "tall_grass",
+    "sand",
+    "path_autotile",
+    "rock_ring_autotile",
+    "water_autotile",
+    "ledge_south",
+    "tree_big",
+    "fence",
+    "sign"
+  ],
+  "ledger": "ledger.json",
+  "gates": {
+    "tree": {
+      "kind": "object",
+      "ramp": "leaf",
+      "positives": [
+        "tree",
+        "tree_round"
+      ],
+      "layout": [
+        2,
+        3
+      ],
+      "candidates": {
+        "pine_a": [
+          "pine_a.0.0",
+          "pine_a.1.0",
+          "pine_a.0.1",
+          "pine_a.1.1",
+          "pine_a.0.2",
+          "pine_a.1.2"
+        ]
+      },
+      "negatives": [
+        "tree_disc",
+        "pine_disc"
+      ]
+    },
+    "grass": {
+      "kind": "tile",
+      "positives": [
+        "grass"
+      ],
+      "candidates": {
+        "grass0": [
+          "grass0"
+        ],
+        "grass1": [
+          "grass1"
+        ],
+        "grass2": [
+          "grass2"
+        ],
+        "grass3": [
+          "grass3"
+        ]
+      },
+      "negatives": [
+        "gen3_grass"
+      ]
+    },
+    "sand": {
+      "kind": "tile",
+      "positives": [
+        "sand"
+      ],
+      "candidates": {
+        "sand0": [
+          "sand0"
+        ],
+        "sand1": [
+          "sand1"
+        ]
+      },
+      "negatives": [
+        "gen3_sand"
+      ]
+    },
+    "water": {
+      "kind": "tile",
+      "positives": [
+        "water"
+      ],
+      "candidates": {
+        "water_f0": [
+          "water_at255_f0"
+        ],
+        "water_f1": [
+          "water_at255_f1"
+        ],
+        "water_f2": [
+          "water_at255_f2"
+        ],
+        "water_f3": [
+          "water_at255_f3"
+        ]
+      },
+      "negatives": [
+        "gen3_water"
+      ]
+    },
+    "house": {
+      "kind": "tile",
+      "positives": [
+        "house_flat"
+      ],
+      "layout_by": "house",
+      "auto_houses": true,
+      "candidates": {
+        "house_a": [
+          "house_a.0.0",
+          "house_a.1.0",
+          "house_a.2.0",
+          "house_a.3.0",
+          "house_a.0.1",
+          "house_a.1.1",
+          "house_a.2.1",
+          "house_a.3.1",
+          "house_a.0.2",
+          "house_a.1.2",
+          "house_a.2.2",
+          "house_a.3.2",
+          "house_a.0.3",
+          "house_a.1.3",
+          "house_a.2.3",
+          "house_a.3.3"
+        ],
+        "house_b": [
+          "house_b.0.0",
+          "house_b.1.0",
+          "house_b.2.0",
+          "house_b.3.0",
+          "house_b.0.1",
+          "house_b.1.1",
+          "house_b.2.1",
+          "house_b.3.1",
+          "house_b.0.2",
+          "house_b.1.2",
+          "house_b.2.2",
+          "house_b.3.2",
+          "house_b.0.3",
+          "house_b.1.3",
+          "house_b.2.3",
+          "house_b.3.3"
+        ]
+      },
+      "layouts": {
+        "house_a": [
+          4,
+          4
+        ],
+        "house_b": [
+          4,
+          4
+        ]
+      },
+      "negatives": [
+        "gen3_house"
+      ]
+    },
+    "center": {
+      "kind": "tile",
+      "positives": [
+        "center"
+      ],
+      "candidates": {
+        "center": [
+          "center.0.0",
+          "center.1.0",
+          "center.2.0",
+          "center.3.0",
+          "center.0.1",
+          "center.1.1",
+          "center.2.1",
+          "center.3.1",
+          "center.0.2",
+          "center.1.2",
+          "center.2.2",
+          "center.3.2",
+          "center.0.3",
+          "center.1.3",
+          "center.2.3",
+          "center.3.3"
+        ],
+        "mart": [
+          "mart.0.0",
+          "mart.1.0",
+          "mart.2.0",
+          "mart.3.0",
+          "mart.0.1",
+          "mart.1.1",
+          "mart.2.1",
+          "mart.3.1",
+          "mart.0.2",
+          "mart.1.2",
+          "mart.2.2",
+          "mart.3.2",
+          "mart.0.3",
+          "mart.1.3",
+          "mart.2.3",
+          "mart.3.3"
+        ]
+      },
+      "layouts": {
+        "center": [
+          4,
+          4
+        ],
+        "mart": [
+          4,
+          4
+        ]
+      },
+      "negatives": [
+        "gen3_house"
+      ],
+      "extra_ramps": [
+        "roof_blue"
+      ]
+    },
+    "cave_floor": {
+      "kind": "tile",
+      "positives": [
+        "sand",
+        "grass"
+      ],
+      "candidates": {
+        "cave_floor0": [
+          "cave_floor0"
+        ],
+        "cave_floor1": [
+          "cave_floor1"
+        ],
+        "cave_floor2": [
+          "cave_floor2"
+        ],
+        "cave_floor3": [
+          "cave_floor3"
+        ]
+      },
+      "negatives": [
+        "gen3_sand"
+      ],
+      "extra_ramps": [
+        "cave_floor"
+      ]
+    },
+    "gym": {
+      "kind": "tile",
+      "positives": [
+        "gym",
+        "gym_fire",
+        "gym_water"
+      ],
+      "candidates": {
+        "gym_leaf": [
+          "gym_leaf.0.0",
+          "gym_leaf.1.0",
+          "gym_leaf.2.0",
+          "gym_leaf.3.0",
+          "gym_leaf.4.0",
+          "gym_leaf.5.0",
+          "gym_leaf.6.0",
+          "gym_leaf.0.1",
+          "gym_leaf.1.1",
+          "gym_leaf.2.1",
+          "gym_leaf.3.1",
+          "gym_leaf.4.1",
+          "gym_leaf.5.1",
+          "gym_leaf.6.1",
+          "gym_leaf.0.2",
+          "gym_leaf.1.2",
+          "gym_leaf.2.2",
+          "gym_leaf.3.2",
+          "gym_leaf.4.2",
+          "gym_leaf.5.2",
+          "gym_leaf.6.2",
+          "gym_leaf.0.3",
+          "gym_leaf.1.3",
+          "gym_leaf.2.3",
+          "gym_leaf.3.3",
+          "gym_leaf.4.3",
+          "gym_leaf.5.3",
+          "gym_leaf.6.3",
+          "gym_leaf.0.4",
+          "gym_leaf.1.4",
+          "gym_leaf.2.4",
+          "gym_leaf.3.4",
+          "gym_leaf.4.4",
+          "gym_leaf.5.4",
+          "gym_leaf.6.4",
+          "gym_leaf.0.5",
+          "gym_leaf.1.5",
+          "gym_leaf.2.5",
+          "gym_leaf.3.5",
+          "gym_leaf.4.5",
+          "gym_leaf.5.5",
+          "gym_leaf.6.5",
+          "gym_leaf.0.6",
+          "gym_leaf.1.6",
+          "gym_leaf.2.6",
+          "gym_leaf.3.6",
+          "gym_leaf.4.6",
+          "gym_leaf.5.6",
+          "gym_leaf.6.6"
+        ],
+        "gym_fire": [
+          "gym_fire.0.0",
+          "gym_fire.1.0",
+          "gym_fire.2.0",
+          "gym_fire.3.0",
+          "gym_fire.4.0",
+          "gym_fire.5.0",
+          "gym_fire.6.0",
+          "gym_fire.0.1",
+          "gym_fire.1.1",
+          "gym_fire.2.1",
+          "gym_fire.3.1",
+          "gym_fire.4.1",
+          "gym_fire.5.1",
+          "gym_fire.6.1",
+          "gym_fire.0.2",
+          "gym_fire.1.2",
+          "gym_fire.2.2",
+          "gym_fire.3.2",
+          "gym_fire.4.2",
+          "gym_fire.5.2",
+          "gym_fire.6.2",
+          "gym_fire.0.3",
+          "gym_fire.1.3",
+          "gym_fire.2.3",
+          "gym_fire.3.3",
+          "gym_fire.4.3",
+          "gym_fire.5.3",
+          "gym_fire.6.3",
+          "gym_fire.0.4",
+          "gym_fire.1.4",
+          "gym_fire.2.4",
+          "gym_fire.3.4",
+          "gym_fire.4.4",
+          "gym_fire.5.4",
+          "gym_fire.6.4",
+          "gym_fire.0.5",
+          "gym_fire.1.5",
+          "gym_fire.2.5",
+          "gym_fire.3.5",
+          "gym_fire.4.5",
+          "gym_fire.5.5",
+          "gym_fire.6.5",
+          "gym_fire.0.6",
+          "gym_fire.1.6",
+          "gym_fire.2.6",
+          "gym_fire.3.6",
+          "gym_fire.4.6",
+          "gym_fire.5.6",
+          "gym_fire.6.6"
+        ],
+        "gym_water": [
+          "gym_water.0.0",
+          "gym_water.1.0",
+          "gym_water.2.0",
+          "gym_water.3.0",
+          "gym_water.4.0",
+          "gym_water.5.0",
+          "gym_water.6.0",
+          "gym_water.0.1",
+          "gym_water.1.1",
+          "gym_water.2.1",
+          "gym_water.3.1",
+          "gym_water.4.1",
+          "gym_water.5.1",
+          "gym_water.6.1",
+          "gym_water.0.2",
+          "gym_water.1.2",
+          "gym_water.2.2",
+          "gym_water.3.2",
+          "gym_water.4.2",
+          "gym_water.5.2",
+          "gym_water.6.2",
+          "gym_water.0.3",
+          "gym_water.1.3",
+          "gym_water.2.3",
+          "gym_water.3.3",
+          "gym_water.4.3",
+          "gym_water.5.3",
+          "gym_water.6.3",
+          "gym_water.0.4",
+          "gym_water.1.4",
+          "gym_water.2.4",
+          "gym_water.3.4",
+          "gym_water.4.4",
+          "gym_water.5.4",
+          "gym_water.6.4",
+          "gym_water.0.5",
+          "gym_water.1.5",
+          "gym_water.2.5",
+          "gym_water.3.5",
+          "gym_water.4.5",
+          "gym_water.5.5",
+          "gym_water.6.5",
+          "gym_water.0.6",
+          "gym_water.1.6",
+          "gym_water.2.6",
+          "gym_water.3.6",
+          "gym_water.4.6",
+          "gym_water.5.6",
+          "gym_water.6.6"
+        ]
+      },
+      "layouts": {
+        "gym_leaf": [
+          7,
+          7
+        ],
+        "gym_fire": [
+          7,
+          7
+        ],
+        "gym_water": [
+          7,
+          7
+        ]
+      },
+      "negatives": [
+        "gen3_house"
+      ],
+      "extra_ramps": [
+        "gym_fire",
+        "gym_water",
+        "gym_green"
+      ]
+    },
+    "gable": {
+      "kind": "tile",
+      "positives": [
+        "gable"
+      ],
+      "candidates": {
+        "gable_a": [
+          "gable_a.0.0",
+          "gable_a.1.0",
+          "gable_a.2.0",
+          "gable_a.3.0",
+          "gable_a.4.0",
+          "gable_a.5.0",
+          "gable_a.6.0",
+          "gable_a.0.1",
+          "gable_a.1.1",
+          "gable_a.2.1",
+          "gable_a.3.1",
+          "gable_a.4.1",
+          "gable_a.5.1",
+          "gable_a.6.1",
+          "gable_a.0.2",
+          "gable_a.1.2",
+          "gable_a.2.2",
+          "gable_a.3.2",
+          "gable_a.4.2",
+          "gable_a.5.2",
+          "gable_a.6.2",
+          "gable_a.0.3",
+          "gable_a.1.3",
+          "gable_a.2.3",
+          "gable_a.3.3",
+          "gable_a.4.3",
+          "gable_a.5.3",
+          "gable_a.6.3",
+          "gable_a.0.4",
+          "gable_a.1.4",
+          "gable_a.2.4",
+          "gable_a.3.4",
+          "gable_a.4.4",
+          "gable_a.5.4",
+          "gable_a.6.4",
+          "gable_a.0.5",
+          "gable_a.1.5",
+          "gable_a.2.5",
+          "gable_a.3.5",
+          "gable_a.4.5",
+          "gable_a.5.5",
+          "gable_a.6.5",
+          "gable_a.0.6",
+          "gable_a.1.6",
+          "gable_a.2.6",
+          "gable_a.3.6",
+          "gable_a.4.6",
+          "gable_a.5.6",
+          "gable_a.6.6"
+        ],
+        "gable_b": [
+          "gable_b.0.0",
+          "gable_b.1.0",
+          "gable_b.2.0",
+          "gable_b.3.0",
+          "gable_b.4.0",
+          "gable_b.5.0",
+          "gable_b.6.0",
+          "gable_b.0.1",
+          "gable_b.1.1",
+          "gable_b.2.1",
+          "gable_b.3.1",
+          "gable_b.4.1",
+          "gable_b.5.1",
+          "gable_b.6.1",
+          "gable_b.0.2",
+          "gable_b.1.2",
+          "gable_b.2.2",
+          "gable_b.3.2",
+          "gable_b.4.2",
+          "gable_b.5.2",
+          "gable_b.6.2",
+          "gable_b.0.3",
+          "gable_b.1.3",
+          "gable_b.2.3",
+          "gable_b.3.3",
+          "gable_b.4.3",
+          "gable_b.5.3",
+          "gable_b.6.3",
+          "gable_b.0.4",
+          "gable_b.1.4",
+          "gable_b.2.4",
+          "gable_b.3.4",
+          "gable_b.4.4",
+          "gable_b.5.4",
+          "gable_b.6.4",
+          "gable_b.0.5",
+          "gable_b.1.5",
+          "gable_b.2.5",
+          "gable_b.3.5",
+          "gable_b.4.5",
+          "gable_b.5.5",
+          "gable_b.6.5",
+          "gable_b.0.6",
+          "gable_b.1.6",
+          "gable_b.2.6",
+          "gable_b.3.6",
+          "gable_b.4.6",
+          "gable_b.5.6",
+          "gable_b.6.6"
+        ]
+      },
+      "layouts": {
+        "gable_a": [
+          7,
+          7
+        ],
+        "gable_b": [
+          7,
+          7
+        ]
+      },
+      "negatives": [
+        "gen3_house"
+      ],
+      "extra_ramps": [
+        "roof_purple"
+      ]
+    }
+  },
+  "houses": {
+    "house_a": {
+      "roof": "roof_green",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "house_b": {
+      "roof": "roof_green",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "house_c": {
+      "roof": "roof_purple",
+      "n": 4,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    },
+    "house_d": {
+      "roof": "roof_red",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "house_e": {
+      "roof": "roof_blue",
+      "n": 4,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    },
+    "house_f": {
+      "roof": "roof_teal",
+      "n": 4,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    },
+    "house_g": {
+      "roof": "roof_orange",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "house_h": {
+      "roof": "roof_slate",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "house_i": {
+      "roof": "roof_pink",
+      "n": 5,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          37
+        ],
+        [
+          "W",
+          50
+        ]
+      ]
+    },
+    "house_j": {
+      "roof": "roof_teal",
+      "n": 5,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          41
+        ]
+      ]
+    },
+    "two_a": {
+      "kind": "house2",
+      "roof": "roof_red",
+      "n": 4,
+      "upper": [
+        [
+          "W",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ],
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ]
+    },
+    "two_b": {
+      "kind": "house2",
+      "roof": "roof_green",
+      "n": 4,
+      "upper": [
+        [
+          "W",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ],
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          33
+        ]
+      ]
+    },
+    "two_c": {
+      "kind": "house2",
+      "roof": "roof_orange",
+      "n": 5,
+      "upper": [
+        [
+          "W",
+          9
+        ],
+        [
+          "W",
+          50
+        ]
+      ],
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          37
+        ],
+        [
+          "W",
+          50
+        ]
+      ]
+    },
+    "two_d": {
+      "kind": "house2",
+      "roof": "roof_slate",
+      "n": 4,
+      "upper": [
+        [
+          "W",
+          9
+        ],
+        [
+          "W",
+          33
+        ]
+      ],
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    },
+    "shop_a": {
+      "kind": "shop",
+      "roof": "roof_blue",
+      "accent": "roof_red",
+      "n": 6,
+      "plan": [
+        [
+          "S",
+          7
+        ],
+        [
+          "D",
+          62
+        ]
+      ]
+    },
+    "shop_b": {
+      "kind": "shop",
+      "roof": "roof_teal",
+      "accent": "roof_orange",
+      "n": 6,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "S",
+          38
+        ]
+      ]
+    },
+    "shop_c": {
+      "kind": "shop",
+      "roof": "roof_purple",
+      "accent": "roof_green",
+      "n": 6,
+      "plan": [
+        [
+          "S",
+          7
+        ],
+        [
+          "D",
+          62
+        ]
+      ]
+    },
+    "cabin_a": {
+      "kind": "cabin",
+      "roof": "roof_green",
+      "n": 4,
+      "plan": [
+        [
+          "D",
+          9
+        ],
+        [
+          "W",
+          35
+        ]
+      ]
+    },
+    "cabin_b": {
+      "kind": "cabin",
+      "roof": "roof_slate",
+      "n": 4,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    },
+    "cabin_c": {
+      "kind": "cabin",
+      "roof": "roof_orange",
+      "n": 4,
+      "plan": [
+        [
+          "W",
+          9
+        ],
+        [
+          "D",
+          31
+        ]
+      ]
+    }
+  },
+  "landmarks": {
+    "center": {
+      "kind": "center",
+      "roof": "roof_red"
+    },
+    "mart": {
+      "kind": "center",
+      "roof": "roof_blue",
+      "mart": true
+    },
+    "gym_leaf": {
+      "kind": "gym",
+      "accent": "gym_green"
+    },
+    "gym_fire": {
+      "kind": "gym",
+      "accent": "gym_fire"
+    },
+    "gym_water": {
+      "kind": "gym",
+      "accent": "gym_water"
+    },
+    "gable_a": {
+      "kind": "gable",
+      "roof": "roof_green"
+    },
+    "gable_b": {
+      "kind": "gable",
+      "roof": "roof_purple"
+    }
+  },
+  "building_roles": {
+    "gym_fire": {
+      "wall": [
+        [
+          29,
+          82,
+          38,
+          94
+        ],
+        [
+          73,
+          82,
+          82,
+          94
+        ]
+      ],
+      "openings": [
+        [
+          46,
+          84,
+          65,
+          110
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          48,
+          88,
+          63,
+          110
+        ]
+      ],
+      "frame_zone": [
+        24,
+        78,
+        87,
+        111
+      ],
+      "frame_ramp": "steel",
+      "glass_ramp": "glass"
+    },
+    "gym_water": {
+      "wall": [
+        [
+          29,
+          82,
+          38,
+          94
+        ],
+        [
+          73,
+          82,
+          82,
+          94
+        ]
+      ],
+      "openings": [
+        [
+          46,
+          84,
+          65,
+          110
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          48,
+          88,
+          63,
+          110
+        ]
+      ],
+      "frame_zone": [
+        24,
+        78,
+        87,
+        111
+      ],
+      "frame_ramp": "steel",
+      "glass_ramp": "glass"
+    },
+    "gym": {
+      "wall": [
+        [
+          29,
+          82,
+          38,
+          94
+        ],
+        [
+          73,
+          82,
+          82,
+          94
+        ]
+      ],
+      "openings": [
+        [
+          46,
+          84,
+          65,
+          110
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          48,
+          88,
+          63,
+          110
+        ]
+      ],
+      "frame_zone": [
+        24,
+        78,
+        87,
+        111
+      ],
+      "frame_ramp": "steel",
+      "glass_ramp": "glass"
+    },
+    "gym_v1": {
+      "wall": [
+        [
+          29,
+          82,
+          38,
+          94
+        ],
+        [
+          73,
+          82,
+          82,
+          94
+        ]
+      ],
+      "openings": [
+        [
+          46,
+          84,
+          65,
+          110
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          48,
+          80,
+          62,
+          108
+        ]
+      ],
+      "frame_zone": [
+        24,
+        78,
+        87,
+        111
+      ],
+      "frame_ramp": "steel",
+      "glass_ramp": "glass"
+    },
+    "house_flat": {
+      "door_kind": "wood",
+      "shadow_rgb": [
+        196,
+        180,
+        135
+      ],
+      "roof_ramp": "roof_green",
+      "roof_ymax": 47,
+      "wall": [
+        [
+          36,
+          56,
+          40,
+          70
+        ],
+        [
+          64,
+          56,
+          70,
+          72
+        ]
+      ],
+      "openings": [
+        [
+          9,
+          54,
+          30,
+          79
+        ],
+        [
+          41,
+          55,
+          62,
+          71
+        ]
+      ],
+      "windows": [
+        [
+          41,
+          55,
+          62,
+          71
+        ]
+      ],
+      "doors": [
+        [
+          9,
+          54,
+          30,
+          79
+        ]
+      ]
+    },
+    "house_v1": {
+      "door_kind": "wood",
+      "shadow_rgb": [
+        196,
+        180,
+        135
+      ],
+      "roof_ramp": "roof_red",
+      "roof_ymax": 47,
+      "wall": [
+        [
+          36,
+          56,
+          40,
+          70
+        ]
+      ],
+      "openings": [
+        [
+          4,
+          55,
+          15,
+          71
+        ],
+        [
+          50,
+          55,
+          61,
+          71
+        ],
+        [
+          64,
+          55,
+          75,
+          71
+        ],
+        [
+          19,
+          56,
+          42,
+          79
+        ]
+      ],
+      "windows": [
+        [
+          4,
+          55,
+          15,
+          71
+        ],
+        [
+          50,
+          55,
+          61,
+          71
+        ],
+        [
+          64,
+          55,
+          75,
+          71
+        ]
+      ],
+      "doors": [
+        [
+          19,
+          54,
+          40,
+          79
+        ]
+      ]
+    },
+    "gable": {
+      "door_kind": "wood",
+      "shadow_rgb": [
+        196,
+        180,
+        135
+      ],
+      "roof_ramp": "roof_green",
+      "roof_ymax": 78,
+      "wall": [
+        [
+          34,
+          72,
+          78,
+          79
+        ],
+        [
+          14,
+          86,
+          98,
+          102
+        ]
+      ],
+      "openings": [
+        [
+          45,
+          61,
+          66,
+          77
+        ],
+        [
+          17,
+          87,
+          38,
+          103
+        ],
+        [
+          73,
+          87,
+          94,
+          103
+        ],
+        [
+          45,
+          86,
+          66,
+          111
+        ]
+      ],
+      "windows": [
+        [
+          45,
+          61,
+          66,
+          77
+        ],
+        [
+          17,
+          87,
+          38,
+          103
+        ],
+        [
+          73,
+          87,
+          94,
+          103
+        ]
+      ],
+      "doors": [
+        [
+          45,
+          86,
+          66,
+          111
+        ]
+      ]
+    },
+    "gable_v1": {
+      "door_kind": "wood",
+      "shadow_rgb": [
+        196,
+        180,
+        135
+      ],
+      "roof_ramp": "roof_green",
+      "roof_ymax": 78,
+      "wall": [
+        [
+          34,
+          72,
+          78,
+          79
+        ],
+        [
+          14,
+          86,
+          98,
+          102
+        ]
+      ],
+      "openings": [
+        [
+          47,
+          58,
+          64,
+          74
+        ],
+        [
+          11,
+          90,
+          32,
+          106
+        ],
+        [
+          79,
+          90,
+          100,
+          106
+        ],
+        [
+          45,
+          88,
+          66,
+          111
+        ]
+      ],
+      "windows": [
+        [
+          47,
+          58,
+          64,
+          74
+        ],
+        [
+          11,
+          90,
+          32,
+          106
+        ],
+        [
+          79,
+          90,
+          100,
+          106
+        ]
+      ],
+      "doors": [
+        [
+          45,
+          86,
+          66,
+          111
+        ]
+      ]
+    },
+    "center": {
+      "roof_ramp": "roof_red",
+      "roof_ymax": 64,
+      "wall": [
+        [
+          10,
+          66,
+          27,
+          88
+        ],
+        [
+          68,
+          66,
+          86,
+          88
+        ]
+      ],
+      "openings": [
+        [
+          32,
+          72,
+          63,
+          95
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          32,
+          72,
+          63,
+          95
+        ]
+      ],
+      "frame_zone": [
+        8,
+        62,
+        87,
+        92
+      ],
+      "frame_ramp": "pink"
+    },
+    "center_v1": {
+      "roof_ramp": "roof_red",
+      "roof_ymax": 64,
+      "wall": [
+        [
+          10,
+          66,
+          27,
+          88
+        ],
+        [
+          68,
+          66,
+          86,
+          88
+        ]
+      ],
+      "openings": [
+        [
+          28,
+          70,
+          67,
+          95
+        ]
+      ],
+      "windows": [],
+      "doors": [
+        [
+          28,
+          70,
+          67,
+          95
+        ]
+      ],
+      "frame_zone": [
+        8,
+        62,
+        87,
+        92
+      ],
+      "frame_ramp": "pink"
+    }
+  },
+  "building_negatives": {
+    "gym_v1": "harness-data/tileset-authoring/monster-overworld/negatives/gym_v1.png",
+    "house_v1": "harness-data/tileset-authoring/monster-overworld/negatives/house_v1.png",
+    "gable_v1": "harness-data/tileset-authoring/monster-overworld/negatives/gable_v1.png",
+    "center_v1": "harness-data/tileset-authoring/monster-overworld/negatives/center_v1.png"
+  },
+  "building_gates": {
+    "gym": {
+      "gate": "gym",
+      "ref": [
+        "gym",
+        "gym_fire",
+        "gym_water"
+      ],
+      "negatives": [
+        "gym_v1"
+      ],
+      "skip": [
+        "door_taper",
+        "drop_shadow_miss",
+        "drop_shadow_n",
+        "glass_share"
+      ]
+    },
+    "house": {
+      "gate": "house",
+      "ref": "house_flat",
+      "negatives": [
+        "house_v1"
+      ]
+    },
+    "gable": {
+      "gate": "gable",
+      "ref": "gable",
+      "negatives": [
+        "gable_v1"
+      ]
+    },
+    "center": {
+      "gate": "center",
+      "ref": "center",
+      "negatives": [
+        "center_v1"
+      ],
+      "skip": [
+        "door_taper",
+        "drop_shadow_miss",
+        "drop_shadow_n"
+      ],
+      "skip_by": {
+        "mart": [
+          "frame_share"
+        ]
+      },
+      "note_skip_by": "마트는 센터 색 바꿈이 아니다(흰 벽·간판·진열창, 적대 검수 L1 N6) — 분홍 틀 비중은 센터 전용이라 뺀다"
+    }
+  },
+  "limits": {
+    "max_colors": 320,
+    "note": "야외+동굴+실내+체육관 한 시트. 기준 팩은 시트 3장(야외·황야·실내)이 각각 별도 팔레트라 한 시트 96색 한도를 모든 구역에 적용하면 비좁다 · 실내 2차(2026-10-02)에서 방마다 벽·바닥 색을 따로 두며 320 으로 올림 — 배포 시트는 구역별로 나눈다(기준 팩도 시트 3장)"
+  },
+  "bake": {
+    "rules": [
+      {
+        "re": "item_capsule",
+        "pass": "open",
+        "label": "아이템 캡슐(보상 이벤트 자리·위층)"
+      },
+      {
+        "re": "cuttree",
+        "pass": "shut",
+        "label": "작은 나무(자르기 이벤트 자리 — 야생·체육관과 같은 그림 wild_forest.cut_tree)"
+      },
+      {
+        "re": "rock_stairs2\\.[01]\\.[01]",
+        "pass": "open",
+        "terrain": "stone",
+        "label": "고원 돌계단(두 줄 앞면을 끊는 2×2) — 바위 고원 앞면에서 오르내리는 유일한 길"
+      },
+      {
+        "re": "rock_stairs(_r)?",
+        "pass": "open",
+        "terrain": "stone",
+        "label": "고원 돌계단 — 바위 고원 남쪽 앞면에서 오르내리는 길"
+      },
+      {
+        "re": "tall_fringe_[sew](_v\\d)?(_(a|b|ab))?",
+        "pass": "open",
+        "layer": "upper",
+        "label": "빈 칸(GBA 결 — 풀 다발이 제 테를 가져 잎끝을 안 얹는다, 옛 맵 호환용으로 자리만 남김) · 키 큰 풀 가장자리 잎끝(장식, 위층 — 풀밭 남·동·서 이웃 풀 칸에 얹는다, 조우 없음)"
+      },
+      {
+        "re": "tall\\dr[g]\\d+",
+        "terrain": "tall_grass",
+        "label": "키 큰 풀 덩이 바깥 귀(둥글게 깎은 풀숲 칸, 정본 wild_tall — 조우)"
+      },
+      {
+        "re": "gface_rnd\\d+",
+        "pass": "shut",
+        "terrain": "stone",
+        "label": "바위 고원 앞면 띠 끝의 둥근 어깨·발끝(정본 wild_mountain.face_round — 앞면 그룹 이웃, 통행 불가)"
+      },
+      {
+        "re": "cave_wall_(top110|side55|side205)_\\d",
+        "pass": "shut",
+        "terrain": "stone",
+        "label": "동굴 벽 곧은 변(윗면 잔돌 배치 교대 칸 — 쇼케이스가 at110·at55·at205 와 칸 위치 해시로 섞는다)"
+      }
+    ],
+    "autotile": [
+      [
+        "path",
+        "sand_at",
+        "path",
+        {
+          "connectGroups": [
+            "clearing"
+          ],
+          "edgeConnects": true
+        }
+      ],
+      [
+        "clearing",
+        "clear_at",
+        "path",
+        {
+          "connectGroups": [
+            "path"
+          ],
+          "edgeConnects": true
+        }
+      ],
+      [
+        "plateau",
+        "rock_at",
+        "plateau",
+        {
+          "label": "바위 고원 윗면 — 북·동·서 테로는 못 나간다, 남쪽은 앞면(gface)",
+          "connectGroups": [
+            "gface"
+          ],
+          "connectTiles": "gface_rnd\\d+"
+        }
+      ],
+      [
+        "gface",
+        "gface_at",
+        "block",
+        {
+          "terrain": "stone",
+          "label": "바위 고원 앞면(바위 덩이, 통행 불가 — 돌계단만 통로)",
+          "connectTiles": "gface_rnd\\d+"
+        }
+      ],
+      [
+        "water",
+        "water_at",
+        "water"
+      ],
+      [
+        "cave_wall",
+        "cave_wall_at",
+        "wall",
+        {
+          "connectTiles": "cave_wall_(top110|side55|side205)_\\d"
+        }
+      ],
+      [
+        "pb_teal",
+        "g2_pb_teal_at",
+        "block"
+      ],
+      [
+        "pb_elec",
+        "g2_pb_elec_at",
+        "block"
+      ],
+      [
+        "pb_rock",
+        "g2_pb_rock_at",
+        "block"
+      ],
+      [
+        "cave_sand",
+        "cave_sand_at",
+        "path"
+      ]
+    ],
+    "autotile_names": {
+      "path": "모래길",
+      "clearing": "밝은 공터 풀",
+      "plateau": "바위 고원 윗면",
+      "gface": "바위 고원 앞면",
+      "water": "물(바위 둑)",
+      "cave_wall": "동굴 벽",
+      "pb_teal": "상록 체육관 칸막이",
+      "pb_elec": "보라 체육관 칸막이",
+      "cave_sand": "동굴 모래 구역",
+      "pb_rock": "바위 체육관 돌 칸막이"
+    },
+    "entrances": {
+      "cave_mouth": [
+        1,
+        2
+      ]
+    },
+    "object_kinds": {
+      "decor": [
+        "rug",
+        "h_rug",
+        "h_mat",
+        "c_emblem",
+        "g_leader_mat",
+        "g_dais",
+        "g_edais",
+        "rock_stairs2"
+      ],
+      "prop": [
+        "sign",
+        "counter",
+        "shelf",
+        "table",
+        "chair",
+        "bed",
+        "plant",
+        "tv",
+        "pc",
+        "machine",
+        "statue",
+        "stairs_up",
+        "window_pair"
+      ],
+      "building": [
+        "house_",
+        "two_",
+        "shop_",
+        "cabin_",
+        "center",
+        "mart",
+        "gym_",
+        "gable_",
+        "cave_mouth"
+      ],
+      "tree": [
+        "tree_",
+        "pine_",
+        "forest_"
+      ]
+    }
+  },
+  "retired_gates": {
+    "names": [
+      "tree",
+      "grass",
+      "house",
+      "center",
+      "gym",
+      "gable"
+    ],
+    "why": "2026-10-07 사용자가 GBA 2세대 결로 다시 그리기(나)·길 B 를 골랐다. 이 관문들은 Scarloxy 기준 그림과 닮았는지를 재므로 고른 방향과 반대다. 구조 검사(통행·배치·입구)는 그대로 돈다. 화풍 판정은 사람의 비교판으로 한다."
+  }
+}

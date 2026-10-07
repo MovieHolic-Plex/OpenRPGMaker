@@ -152,7 +152,7 @@
 
 ## 10~12차 — 「맵 퀄리티가 너무 낮다」 재작업 (2026-10-02)
 
-원작 조립본(`lib/pret_ref.py` — pret 디컴파일 `layouts.json`·`map.bin`·`metatiles.bin`·`tiles.png`·JASC 팔레트를 받아 맵 한 장으로 조립, `~/.cache/oprn-pret-ref/` 캐시,
+원작 조립본(옛 `lib/pret_ref.py` — **2026-10-07 저작권 정리로 도구·캐시·렌더 전부 삭제**. pret 디컴파일 `layouts.json`·`map.bin`·`metatiles.bin`·`tiles.png`·JASC 팔레트를 받아 맵 한 장으로 조립, `~/.cache/oprn-pret-ref/` 캐시,
 **학습용이며 결과 그림은 저장소에 넣지 않는다**)과 우리 렌더를 나란히 놓고 독립 적대 검수 세 건(마을·실내·체육관)을 받은 뒤 다시 그렸다.
 판단 기준: 낱장 그림(벽돌 지붕·둥근 센터 지붕·외톨이 나무·바위 고리 둑·그물 물)은 기준 팩 Scarloxy 화풍을 유지하고, **맵 문법과 빠진 타일 종류**는 원작을 따른다.
 
@@ -256,3 +256,20 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
 - `emeraldMonsterKitAssets.ts` → `bundled.ts`/`bundledChipsetGeometry.ts`, `defaults/emeraldMonsterKit.ts` → `defaultAssets.ts` 새/기존 경로에 배선한다. 파생 시트가 참조 포인터를 가지면 새 문서가 가려지므로, 한 홉 `referenceSourceTilesetId` 대신 각 변형이 정본에서 읽은 원본 전체 배열+새 스타일 안내와 표본을 직접 소유한다. 의도적으로 비운 `[]`와 저자 용도는 보충 때 보존한다.
 - 공용 자료 정본은 `tiledata/emerald-monster/`: 현재 정본에서 읽은 75 MD/92 이미지 포인터의 source JSON, 7 MD 안내, prepare source와 README. 배포 JSON은 82 MD/92 이미지 포인터(바이트 내장 없음). 원본색 오류 그림 38장은 동일 구조의 진단 자료이며 새 스타일 그림이라고 주장하지 않는다.
 - 허용된 집중 검증 `npx tsx scripts/qa/emerald-tile-preservation.mts`: 7 PNG 실제 경계·등록 geometry·12개 구조 필드·새/기존 프로젝트·저자/비움·보충 멱등성을 확인한다. 전체 gates/Vitest/typecheck를 돌리지 않았다. 원본 배열 렌더/데이터 비교는 이벤트 실행·미적 동등성·SQLite 저장의 증거가 아니다. root 프로필의 map retarget와 정본 저장/런타임 QA는 별도 통합 소유다.
+
+## GBA 2세대 결로 다시 그리기 (2026-10-07)
+
+사용자 판단: 「포켓몬스터풍인데 왜 기본 칩셋 같냐」 → (나) 원작 디테일 쪽으로 다시 그리기, 비교판에서 **새 그림 + 길 B(흙색)** 를 골랐다.
+타일 이름·순서·캔버스는 그대로라(`tiles.json`·`roles.json` == 이전 run) **맵 72장은 손대지 않고** 그림만 바뀐다.
+
+- 바닥: 민트 풀(`grass`) + 1px 점(`monster_overworld.grass_tex`, 점끼리 맨해튼 거리 >2). 공터·마을 길 `grass_light` 는 흙색 램프(길 B).
+- 키 큰 풀: 칸마다 외곽선 있는 작은 풀 다발 넷을 벽돌처럼 엇갈려(`outdoor2.TUFT_GBA`). 잎끝 `tall_fringe_*`·둥근 귀는 이제 빈 칸(옛 맵 호환으로 이름만 남김, 홈 층 위).
+- 나무: 덩이 일곱을 왼쪽 위 빛으로 겹친 둥근 수관(`forest.crown`, 옛 것은 `crown_scarloxy`). 잎결 잡음은 좌표 해시 `_hh` — 선형 식은 사선 줄무늬가 됐다.
+- 건물: 외곽선·크림 벽·돌 기초·흰 틀 창·나무 문(`buildings.wall_kit`, kit·landmarks 공용). 다리·통나무는 따뜻한 갈색 `trunk`.
+- 기후: 사막 오아시스 풀은 `oasis_grass`(따뜻한 녹색 — 민트는 모래 위에서 청록으로 뜬다, `climate_desert.init`).
+- 관문: Scarloxy 화풍 관문(tree·grass·house·center·gym·gable)은 고른 방향과 반대라 `seed.retired_gates` 에 이유와 함께 은퇴. 구조 검사(통행·배치·입구·야생 정본 바이트 대조)는 그대로 돈다.
+  야생 사본 sha1 대조(`agent/th-wild`)는 소스가 main 에 합류해 끔. 자르기 나무 대조는 같은 정본 그림 + 그 시트 바닥 그늘(`cut_shadow`).
+- 굽기: `bake.py` 는 이름 있는 빈 칸도 위층으로 둔다(아래층이면 땅에 구멍). 배포 절차는 `src/harnesses/tileset-authoring/redeploy.sh <run> <테마…>`
+  (draw → bake → 옛 run 의 견본 맵 `verify-*.json`·`showcase.json` 복사 → wire). 견본을 안 옮기면 참고문서 견본 맵이 0장이 된다.
+- 다시 굽지 않은 시트: gyms·rooms·dungeon(바뀐 공용 조각이 없다). 실내(센터·마트·집 = 본 시트 `interior2.py`)·계단·2층은 별도 작업.
+
