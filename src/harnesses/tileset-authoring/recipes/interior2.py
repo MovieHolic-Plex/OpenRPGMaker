@@ -2,7 +2,7 @@
 문법(눈으로 읽은 것, 픽셀은 복사하지 않음):
 - 뒷벽은 방마다 다르다(32px 가로 띠 골격: 흰 천장 끝 → 색 띠 → 진한 선 → 벽면 → 몰딩 → 걸레받이). 세로 줄무늬·액자 테두리 없음.
 - 옆·아래는 검은 여백 + 흰 천장 끝 가는 띠. 벽 바로 아래 바닥 8px 는 한 톤 어둡게(단색).
-- 바닥은 3톤 규칙 무늬(센터 볼록 사각 8px · 마트 2단 체크 16px · 집 바구니 짜임 8px). 센터 한가운데 몬스터볼 문양 3×3.
+- 바닥은 3톤 규칙 무늬(센터 볼록 사각 8px · 마트 2단 체크 16px · 집 바구니 짜임 8px). 센터 한가운데 별 문양 3×3(몬스터볼 모양은 쓰지 않는다).
 - 가구는 전부 진남회 외곽선 1px 하나, 윗면 하이라이트 1px, 앞면 진한 띠, 오른쪽·아래 한 톤 그림자(반투명). 큰 가구는 뒷벽에 붙어 벽을 덮는다.
 색은 seed.palette 의 i2_* 램프에서만 쓴다."""
 from __future__ import annotations
@@ -84,14 +84,10 @@ def floor(P, kind: str, v: int = 0):
                 c = d if xx == 7 or yy == 7 else l if 1 <= xx <= 5 and 1 <= yy <= 5 else b
                 im.putpixel((x, y), c)
     elif kind == "mart":
-        bd_, b, w, wl = P["i2_fl_mart2"]                                     # 파랑·흰 8px 체크: 흰 칸은 왼쪽 위 빛 1px, 파란 칸은 오른쪽 아래 그늘 1px
+        d, m, l = P["i2_fl_mart"]                                            # 2단 파랑 체크(GBA 다시 그리기 때 파랑·흰 체크로 바꿨다가 사용자가 옛 판이 낫다고 해 되돌림, 2026-10-07)
         for y in range(T):
             for x in range(T):
-                xx, yy = x % 8, y % 8
-                if (x // 8 + y // 8) % 2 == 0:
-                    c = wl if xx == 0 or yy == 0 else w
-                else:
-                    c = bd_ if xx == 7 or yy == 7 else b
+                c = d if x % 8 == 7 or y % 8 == 7 else l if (x // 8 + y // 8) % 2 == 0 else m
                 im.putpixel((x, y), c)
     else:
         im = _planks(P, v)
@@ -136,27 +132,46 @@ def under_wall(im):
     return out
 
 
+def star_mask(S: int, r_out: float, r_in: float, points: int = 4, rot: float = -math.pi / 2):
+    """S×S 안 가운데 별(꼭짓점 points 개) 안쪽 여부 표 — 반지름 r_out(뾰족 끝)·r_in(오목 안쪽) 사이를 직선으로 잇는다."""
+    cx = cy = S / 2
+    out = [[False] * S for _ in range(S)]
+    for y in range(S):
+        for x in range(S):
+            dx, dy = x + 0.5 - cx, y + 0.5 - cy
+            d = math.hypot(dx, dy)
+            if d > r_out:
+                continue
+            ang = (math.atan2(dy, dx) - rot) % (2 * math.pi / points)
+            half = math.pi / points
+            t = abs(ang - half) / half                                     # 0 = 오목한 곳, 1 = 뾰족 끝
+            out[y][x] = d <= r_in + (r_out - r_in) * t
+    return out
+
+
 def emblem(P):
-    """센터 바닥 몬스터볼 문양(3×3 칸, 48px): 바닥 무늬 그대로 톤만 바꾼다 — 위 반원 한 톤 어둡게, 아래 반원 밝게, 가운데 띠와 단추."""
+    """센터 바닥 별 문양(3×3 칸, 48px, 별빛섬): 바닥 무늬 그대로 톤만 바꾼다 — 둥근 테 한 줄, 그 안에 네 갈래 별(빛 받는 왼쪽 위 갈래는 밝게).
+    예전 몬스터볼 문양(위 반원 어둡게·가운데 띠·단추)은 원작 상표 모양이라 지웠다(2026-10-07 사용자)."""
     base = floor(P, "center")
     big = px.new(48, 48)
     for y in range(48):
         for x in range(48):
             big.putpixel((x, y), base.getpixel((x % T, y % T)))
     cx = cy = 24
+    star = star_mask(48, 19.0, 6.0)
+    edge = [[star[y][x] and any(not (0 <= x + dx < 48 and 0 <= y + dy < 48) or not star[y + dy][x + dx]
+                                 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))) for x in range(48)] for y in range(48)]
     for y in range(48):
         for x in range(48):
             d = math.hypot(x + 0.5 - cx, y + 0.5 - cy)
             c = big.getpixel((x, y))
-            if d > 21.5:
-                continue
-            if d > 20.3:
-                big.putpixel((x, y), _shade(c, 0.76)); continue                 # 윤곽 대비 한 톤 올림(L1 N25 — 옅어 얼룩으로 보였다)
-            if abs(y + 0.5 - cy) <= 2.2 and d > 5.5:
-                big.putpixel((x, y), _shade(c, 0.76)); continue
-            if d <= 5.5:
-                big.putpixel((x, y), _shade(c, 0.76) if d > 4.3 else px.tint(c, 1.04)); continue
-            big.putpixel((x, y), _shade(c, 0.88) if y < cy else px.tint(c, 1.04))
+            if 20.3 < d <= 21.5:
+                big.putpixel((x, y), _shade(c, 0.80))
+            elif edge[y][x]:
+                big.putpixel((x, y), _shade(c, 0.76))
+            elif star[y][x]:
+                lit = (x + 0.5 - cx) + (y + 0.5 - cy) < 0
+                big.putpixel((x, y), px.tint(c, 1.05) if lit else _shade(c, 0.9))
     return {f"c_emblem.{i}.{j}": big.crop((i * T, j * T, i * T + T, j * T + T)) for j in range(3) for i in range(3)}
 
 
@@ -313,15 +328,15 @@ def c_counter(P):
     return f.done(P, floor_y=32)
 
 def c_healer(P):
-    """회복기(2×2, 뒷벽에 박힘): 흰 둥근 몸체, 위 유리 돔, 볼 칸 여섯(초록 바탕 빨간·흰 볼), 앞 패널 빨간 십자."""
+    """회복기(2×2, 뒷벽에 박힘): 흰 둥근 몸체, 위 유리 돔, 구슬 칸 여섯(초록 바탕 파란 구슬), 앞 패널 빨간 십자."""
     w, g, gl = P["i2_white"], P["i2_green"], P["i2_glass"]
     f = F(2, 2)
     f.r(3, 6, 28, 30, w[1]); f.r(3, 6, 28, 7, w[2]); f.r(3, 28, 28, 30, w[0])
     f.ell(16, 8, 10, 6, gl[1]); f.ell(14, 6.5, 5, 2.4, gl[2])
     f.r(5, 13, 26, 21, g[0]); f.r(5, 13, 26, 13, g[1])
-    for k in range(6):
+    for k in range(6):                                                    # 포획구슬 여섯: 한 색 구슬 + 왼쪽 위 빛 1px(빨강·흰 반쪽 몬스터볼 모양은 쓰지 않는다)
         x = 7 + (k % 3) * 7; y = 14 + (k // 3) * 4
-        f.r(x, y, x + 3, y + 2, P["i2_red"][1]); f.r(x, y + 2, x + 3, y + 2, w[2]); f.p(x, y, w[2])
+        f.r(x, y, x + 3, y + 2, P["i2_blue"][1]); f.r(x, y + 2, x + 3, y + 2, P["i2_blue"][0]); f.p(x, y, w[2])
     f.r(13, 23, 18, 27, w[2]); f.r(15, 22, 16, 28, P["i2_red"][1]); f.r(12, 24, 19, 25, P["i2_red"][1])
     return f.done(P, floor_y=31, shadow=False)
 
