@@ -15,6 +15,7 @@
   - 조선 바람의나라풍
   - 손 도트 실내 v5
   - jp_city
+  - 마법 학교(`wizarding_world`, 2026-10-07 추가) — 칩셋 + 걷기 칩 시트 5장. 상품 글·시트 이름에 원작 이름(해리포터·호그와트·퀴디치)을 쓰지 않는다(상표 신고 대상). 이름 붙은 원작 인물 그림(예: TS 말포이 게임용)은 올리지 않는다.
 - 저작권 신고는 admin@openrpgmaker.com 으로 받는다. 운영자 계정은 하나다.
 - 편집기는 **Electron 앱만** 쓴다. 웹 편집기와 팀 호스트 브라우저에는 「데스크톱 앱에서 열 수 있습니다」라고만 보인다.
 - **운영: https://store.openrpgmaker.com (2026-10-06 가동, seogo).** 앱의 기본 주소이므로 따로 바꿀 것 없이 바로 보인다.
@@ -203,6 +204,13 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - 운영에 올릴 때는 `admin-link.mjs` 토큰으로 `--link-token`. 분당 blob 상한(1500)에 걸리면 스크립트가 기다렸다가 다시 보낸다.
 - 표지(`showcase`)는 4:3 1200×900 격자를 꽉 채우고 가운데 둔다. 얼굴 4×3(정수 배율), 흉상 4×2, 전신 6×2, 걷기 칩은 어두운 바탕에 그림자.
 - 아직 안 올린 것: 전투 도트(적 140종·파티 시트). 전투 시트는 런타임이 정해진 칸 규격·리소스 id 로 읽으므로, 스토어로 넣었을 때 전투에서 바로 쓰이는지 먼저 확인해야 한다.
+
+## 공식 팩 하나 더 올리기 (2026-10-07)
+
+- 목록은 `store-server/scripts/seedBundles.ts` `SEED_BUNDLES`. 타일셋 말고 같이 넣을 그림은 `extraAssets`, 4개 언어 글은 `locales`(ko 는 자동으로 같이 들어간다), 팩 안 이름을 바꾸려면 `displayName`.
+- 같은 번역을 `store-server/scripts/library_locales.py` `FIXED` 에도 넣는다 — 안 넣으면 `refresh_library.py` 가 「모름」으로 건너뛴다.
+- 올리기는 `store-server/scripts/publishBundle.ts --title <제목>`: `--dry`(매니페스트 검증만) → `--base http://mdc-server:18320 --dev admin@openrpgmaker.com`(스테이징) → `--base https://store.openrpgmaker.com --link-token <admin-link 토큰>`(운영). 이미 있으면 건너뛰고, 고친 팩은 `--new-version` 으로 판본을 더한다. 끝나면 운영자 웹 세션을 지운다.
+- 영어 소개(summary)도 160자 상한이다 — `--dry` 가 잡는다.
 
 ## 함정
 
