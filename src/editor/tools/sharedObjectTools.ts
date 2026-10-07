@@ -111,6 +111,8 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
       const warnings = [
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
+        // 2026-10-07 적대적 검토: 모델이 꽃 상자를 가로수 수관 위에 찍어 소품이 나무 잎에 얹혀 보였다. 덮인 칸을 되돌려 알린다.
+        ...(result.coveredUpper.length ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),
       ];
       // 입구 부위가 있는 킷(특수 건물 등)은 맵 좌표 입구를 돌려준다 — 길을 입구 바로 아래 칸에서 끝내고 이벤트를 입구 칸에 둔다.

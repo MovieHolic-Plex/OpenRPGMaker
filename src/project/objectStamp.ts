@@ -20,6 +20,8 @@ export interface StampResult {
   readonly cells: number;
   readonly slotsAdded: number;
   readonly remapped: number;
+  /** 이미 다른 위층 그림(나무 수관·지붕 등)이 있던 칸을 덮어쓴 칸들. 소품이 수관 위에 얹히는 실수를 알린다. */
+  readonly coveredUpper: readonly { x: number; y: number }[];
 }
 
 type Picture = { chip: string; tile: number } | null;
@@ -104,6 +106,7 @@ export function stampPattern(project: Project, map: GameMap, source: TilesetDef,
   }
   const translated = translateTiles(source, target, [...pattern.lower, ...pattern.upper]);
   let clipped = false, cells = 0;
+  const coveredUpper: { x: number; y: number }[] = [];
   for (let py = 0; py < pattern.height; py += 1) {
     for (let px = 0; px < pattern.width; px += 1) {
       const tx = x + px, ty = y + py;
@@ -113,12 +116,17 @@ export function stampPattern(project: Project, map: GameMap, source: TilesetDef,
       if (tx < 0 || ty < 0 || tx >= map.width || ty >= map.height) { clipped = true; continue; }
       const to = ty * map.width + tx;
       if (lower >= 0) map.lowerTiles[to] = translated.map.get(lower) ?? lower;
-      if (upper >= 0) map.upperTiles[to] = translated.map.get(upper) ?? upper;
+      if (upper >= 0) {
+        const next = translated.map.get(upper) ?? upper;
+        const before = map.upperTiles[to] ?? -1;
+        if (before >= 0 && before !== next) coveredUpper.push({ x: tx, y: ty });
+        map.upperTiles[to] = next;
+      }
       cells += 1;
     }
   }
   const remapped = [...translated.map].filter(([from, to]) => from !== to && to >= 0).length;
   const rx = Math.max(0, x), ry = Math.max(0, y);
   return { rect: { x: rx, y: ry, width: Math.min(map.width, x + pattern.width) - rx, height: Math.min(map.height, y + pattern.height) - ry },
-    clipped, cells, slotsAdded: translated.slotsAdded, remapped };
+    clipped, cells, slotsAdded: translated.slotsAdded, remapped, coveredUpper };
 }

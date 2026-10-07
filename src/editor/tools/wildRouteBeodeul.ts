@@ -18,7 +18,8 @@ import type { ToolDefinition } from "./types";
 const BEODEUL_TEXTURE = "tex_beodeul_city";
 const BEODEUL_ID = "beodeul_city";
 /** 도로는 시내 포석이 아니라 잔디 가장자리가 있는 모랫길 오토타일이다(2026-10-06). */
-const PATH_MATERIAL = "버들항 모랫길";
+export const BEODEUL_SAND_PATH = "버들항 모랫길";
+const PATH_MATERIAL = BEODEUL_SAND_PATH;
 /** 버들항 민무늬 풀(defaultMaps.ts plainGrassTileFor 와 같다). */
 export const BEODEUL_PLAIN_GRASS = 737;
 /** 짙은 잎 무늬 풀 — 통행 가능, 3×3 으로 이어 깔아도 이음새가 없다. 키큰 풀이 없는 시트의 풀숲 대용. */
@@ -119,7 +120,7 @@ type Kit = NonNullable<TilesetDef["structureKits"]>[number];
  * 위에서 아래로 훑으며 아래가 트인 자리(길·풀숲·맵 끝)엔 줄기 나무를, 숲 안쪽엔 수관을 붙여 깔고, 남은 틈은 덤불로 메운다.
  * 측백은 숲 벽에 섞으면 이가 빠져 보여 쓰지 않는다.
  */
-function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
+export function plantBeodeulForestWall(project: Project, map: GameMap, tileset: TilesetDef, reserved: ReadonlySet<number>, rng: Rng,
   stampObject: ToolDefinition): number {
   const w = map.width, h = map.height;
   const kits = (tileset.structureKits ?? []).filter(kit => kit.id.startsWith("bd-tree-"));

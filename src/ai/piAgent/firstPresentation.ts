@@ -14,6 +14,9 @@ export function inspectFirstPresentation(project: Project): string[] {
   const opening = project.system.opening;
   if (!opening?.enabled || !opening.scenes.length) issues.push('첫 제작의 오프닝이 꺼져 있거나 비어 있습니다. 작품에 맞는 그림 또는 저작된 글자 연출로 짧은 도입을 작성하세요.');
   else {
+    // 자막에 JSON 이스케이프가 그대로 남으면 화면에 「\"……어?\"」로 보인다(2026-10-07 헤드리스 판 실측). 맵 대사는 이미 막고 있었다.
+    const escaped = opening.scenes.filter(scene => /\\+["']/u.test(scene.narration ?? '')).map(scene => scene.id);
+    if (escaped.length) issues.push(`오프닝 자막에 JSON 이스케이프 문자(\\")가 보입니다: ${escaped.join(', ')}. 따옴표 앞 역슬래시를 지우고 실제 표시할 문장으로 쓰세요.`);
     const textOpening = hasAuthoredTextOpening(opening.scenes);
     if (!textOpening && !opening.scenes.some(scene => scene.kind === 'image' || scene.kind === 'video')) issues.push('오프닝이 검은 화면의 글뿐입니다. 작품의 장면 그림/영상이 필요합니다.');
     const shots = opening.scenes.filter(scene => scene.kind === 'image');
@@ -49,5 +52,6 @@ export const FIRST_PRESENTATION_INSTRUCTIONS = [
   '독립 모션이 필요한 물체·실루엣·기억 조각은 generate_opening_image(role:foreground,prompt,referenceResourceId)로 실제 투명 PNG를 별도로 생성한다. 완성 배경에서 인물이 움직이는 것처럼 설명하지 않는다. image.direction.layers 최대4개에 resourceId,width(무대비율0.05..1.5),depth:background|foreground,easing:linear|ease-in-out|ease-out,frames2..8을 작성한다. 각 frame={at:0..1,x:-0.5..1.5,y:-0.5..1.5,scale:0.1..3,opacity:0..1,rotation:-180..180}; at은0시작/1끝 엄격히 증가, x/y는 그림 중심. 화면 진입→정지→회전/부유→퇴장 같은 실제 시간표를 저작한다. 과장된 물체 확대·무관한 장식은 피한다. 카메라·타이핑·시차 물체·컷/페이드/와이프 중 이야기와 맞는 3가지 이상을 조합하며 같은 확대를 반복하지 않는다.',
   '원화 생성 예산을 이름만으로 채우지 않는다. 실제 원화를 충분히 만들고 shot distance(원경/중경/클로즈업/세부/행동)와 사건 전후를 달리한다. 기본25~45초에서 짧은 자막이 읽혀야 한다. 장면 수와 길이는 사용자 의도에 맞게 조절하되 첫 오프닝의 최대90초와 건너뛰기를 지킨다. 오프닝 중 다음 배경·전경·BGM과 시작 맵 이미지/엔진이 자동 준비되며, 이 배경 로더를 이벤트로 다시 만들지 않는다.',
   '타이틀은 이야기의 인상, 오프닝은 사건의 시작, 실제 맵 도입은 첫 행동과 조작 안내를 맡는다. 기획과 맞는 구체적 장소/물체/인물을 보이고 같은 긴 설명을 반복하지 않는다. 이미 작성된 맵·선택 결과·엔딩·일회성 조작 안내는 보존한다.',
+  '순서: 그림을 만들기 전에 plan_opening(shots)으로 컷마다 사건·구도·연속성·플레이 진입을 적는다 → 그림 생성 → set_opening/edit_opening으로 계획한 컷 수만큼 연결 → 마지막 변경 뒤 review_opening → show_title_opening 확인. 이 세 기록(계획·실제 그림 확인·마지막 검토)이 없으면 첫 제작 전체가 「오프닝 제작 미완료」로 끝난다.',
   'show_title_opening으로 연결된 타이틀과 모든 오프닝 그림을 보고 전체 원문 및 시작 맵 그림과 대조한다. 각 컷의 구도 차이·사건 전후·동일 물체·첫 행동 연결을 눈으로 검사하고 부족한 그림을 다시 만든다. 이미지 생성 실패·누락은 실패로 보고하며 기본 그림으로 바꾸고 성공이라 말하지 않는다. 실제 브라우저 재생을 했다고 주장하지 않는다.',
 ] as const;

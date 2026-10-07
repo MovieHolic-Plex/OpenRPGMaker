@@ -246,7 +246,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && requestsEmeraldMonsterGame(request.task));
   const gameSystemProduction = new PiGameSystemProduction();
   const npcLayoutProduction = new PiNpcLayoutProduction();
-  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && requestsOpeningProduction(request.task), request.task);
+  const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
@@ -488,6 +488,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           result.content.push({ type: 'text', text: resourceId }, { type: 'image', mimeType: 'image/png', data: png });
           ids.push(resourceId);
         }
+        // 연결된 오프닝 그림을 실제로 본 것도 오프닝 제작 확인으로 친다 — 첫 제작 타이틀·오프닝 단계의 확인 도구가 이것이다.
+        for (const resourceId of ids) openingProduction.saw(ctx.project, resourceId);
         emit({ type: 'execution_status', name: 'presentation.image.delivered', ok: true,
           summary: '연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.', data: { toolCallId: id, resourceIds: ids } });
       }

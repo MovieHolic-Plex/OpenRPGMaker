@@ -5,9 +5,10 @@
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
 import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
+import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { createJpCityTileset, ensureJpCityTileset } from "@/project/defaults/jpCity";
-import type { GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
+import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -138,6 +139,96 @@ function transfer(mapId: string, x: number, y: number, to: { mapId: string; x: n
   } as unknown as GameEvent;
 }
 
+type TransferCommand = Extract<Command, { kind: "transfer" }>;
+/** 이벤트의 맨 위 명령에 든 이동(문). 조건 분기 안의 이동은 문이 아니다. */
+function eventTransfers(event: GameEvent): TransferCommand[] {
+  const lists = [event.commands ?? [], ...(event.pages ?? []).map((page) => page.commands)];
+  return lists.flatMap((commands) => commands.filter((command): command is TransferCommand => command.kind === "transfer"));
+}
+
+/**
+ * 다시 지은 실내에 맞춰 문을 옮긴다. 바깥으로 나가는 문 이벤트는 가장자리 틈 위로, 다른 맵에서 들어오는 이동은 틈 바로 안쪽 바닥으로.
+ * 왜(2026-10-07): 첫 구간 뼈대의 동쪽 문(19,8)이 새 평면에서 벽이 되자 커밋이 「transfer 목적지가 통행 불가」로 두 번 거부됐고,
+ * 모델은 문을 방 안 바닥(18,8)으로 옮겨 통과시켰다 — 벽에 틈도 없는 보이지 않는 이동 칸이 출구가 됐다.
+ */
+function fitDoorsToPlan(draft: Project, mapId: string, events: GameEvent[], shape: HandInteriorShape, notes: string[]): void {
+  const occupied = new Set(events.map((e) => `${e.x},${e.y}`));
+  for (const event of events) {
+    const outbound = eventTransfers(event).filter((t) => t.mapId !== mapId);
+    if (!outbound.length) continue;
+    if (shape.openings.some((o) => o.x === event.x && o.y === event.y)) continue;
+    const target = nearestOpening(shape, event);
+    if (!target) {
+      const outdoors = outbound.find((t) => draft.maps[t.mapId] && draft.maps[t.mapId]!.tilesetId !== HAND_INTERIOR_TILESET_ID);
+      if (outdoors) throw new ToolError(`바깥(${outdoors.mapId})으로 나가는 문 ${event.id}(${event.x},${event.y}) 이 있는데 평면 가장자리에 출입구 틈이 없다 — plan 맨 아래 줄의 '#' 하나를 '.' 로 비워 문을 낸다(그 칸이 출구가 된다)`, { code: "no-exit-gap", mapId });
+      continue;
+    }
+    if (occupied.has(`${target.x},${target.y}`)) continue;
+    occupied.delete(`${event.x},${event.y}`);
+    notes.push(`문 ${event.id} (${event.x},${event.y}) → 출입구 틈 (${target.x},${target.y})`);
+    event.x = target.x; event.y = target.y;
+    occupied.add(`${target.x},${target.y}`);
+  }
+  // 문이 아닌 이벤트(인물·조사물)가 줄어든 평면 밖이나 벽에 남으면 가장 가까운 빈 바닥으로 — 맵을 줄여 짓는 것을 막지 않는다.
+  for (const event of events) {
+    if (eventTransfers(event).some((t) => t.mapId !== mapId) || shape.isFloor(event.x, event.y)) continue;
+    let best: { x: number; y: number } | null = null, bestDistance = Infinity;
+    for (let y = 0; y < shape.height; y++) for (let x = 0; x < shape.width; x++) {
+      const distance = Math.abs(x - event.x) + Math.abs(y - event.y);
+      if (distance < bestDistance && shape.isFloor(x, y) && !occupied.has(`${x},${y}`) && !shape.openings.some((o) => o.x === x && o.y === y)) { best = { x, y }; bestDistance = distance; }
+    }
+    if (!best) continue;
+    occupied.delete(`${event.x},${event.y}`);
+    notes.push(`이벤트 ${event.id} (${event.x},${event.y}) → 바닥 (${best.x},${best.y})`);
+    event.x = best.x; event.y = best.y;
+    occupied.add(`${best.x},${best.y}`);
+  }
+  // 시작 위치: 다시 지은 시작 맵에서 벽·밖이 되면 출입구 안쪽으로(평면을 줄이면 「시작 위치가 통행 불가」로 커밋이 거부됐다).
+  if (draft.startMapId === mapId && !shape.isFloor(draft.startPos.x, draft.startPos.y)) {
+    const opening = nearestOpening(shape, draft.startPos);
+    const inward = opening && shape.inwardOf(opening);
+    if (inward) {
+      notes.push(`시작 위치 (${draft.startPos.x},${draft.startPos.y}) → 출입구 안쪽 (${inward.x},${inward.y})`);
+      draft.startPos = { ...draft.startPos, x: inward.x, y: inward.y };
+    }
+  }
+  // 들어오는 이동: 벽·천장이나 문 칸 위로 떨어지면 가장 가까운 틈의 안쪽 바닥으로.
+  const doorCells = new Set(events.filter((e) => eventTransfers(e).some((t) => t.mapId !== mapId)).map((e) => `${e.x},${e.y}`));
+  for (const other of Object.values(draft.maps)) {
+    if (other.id === mapId) continue;
+    for (const event of other.events) for (const t of eventTransfers(event)) {
+      if (t.mapId !== mapId) continue;
+      if (shape.isFloor(t.x, t.y) && !doorCells.has(`${t.x},${t.y}`)) continue;
+      const opening = nearestOpening(shape, t);
+      const inward = opening && shape.inwardOf(opening);
+      if (!inward) continue;
+      notes.push(`${other.id}/${event.id} 도착 (${t.x},${t.y}) → 출입구 안쪽 (${inward.x},${inward.y})`);
+      const mutable = t as { x: number; y: number; direction?: string };
+      mutable.x = inward.x; mutable.y = inward.y; mutable.direction = inward.direction;
+    }
+  }
+}
+
+/** 맨 아래 출입구 틈 안쪽에 발깔개를 깐다 — 모델이 출구를 표시하지 않았을 때 「여기가 문」이 보이게. */
+function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandInteriorInput {
+  if ((input.objects ?? []).some((o) => o.id === "doormat") || !HAND_INTERIOR_SPEC.objects.doormat) return input;
+  const first = shape.openings.find((o) => o.y === shape.height - 1);
+  const gap = first && nearestOpening(shape, first);   // 이어진 틈의 가운데 — 문 이벤트가 서는 칸과 같다.
+  // 2칸 틈이면 깔개(2칸)가 틈과 딱 맞는다. 1칸 틈은 반 칸 어긋날 수밖에 없다.
+  const inward = gap && shape.inwardOf(gap);
+  if (!inward) return input;
+  const taken = (x: number, y: number) => (input.objects ?? []).some((o) => o.x === x && o.y === y)
+    || (input.tables ?? []).some((t) => x >= t.x && x < t.x + t.w && y >= t.y && y < t.y + t.h)
+    || (input.lines ?? []).some((l) => (l.cells ?? []).some((c) => c.x === x && c.y === y)
+      || (l.rect ? x >= Math.min(l.rect.x0, l.rect.x1) && x <= Math.max(l.rect.x0, l.rect.x1) && y >= Math.min(l.rect.y0, l.rect.y1) && y <= Math.max(l.rect.y0, l.rect.y1) : false));
+  for (const x of [inward.x, inward.x - 1]) {
+    if ([x, x + 1].every((cx) => shape.isFloor(cx, inward.y) && !taken(cx, inward.y))) {
+      return { ...input, objects: [...(input.objects ?? []), { id: "doormat", x, y: inward.y }] };
+    }
+  }
+  return input;
+}
+
 export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   name: "build_hand_interior_room",
   mode: "write",
@@ -187,7 +278,10 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     const tilesetId = pickTileset(draft, args);
     const tileset = ensureInteriorTileset(draft, tilesetId);
     if (!tileset) throw new ToolError(`타일셋 ${tilesetId} 이 없다`, { code: "tileset-not-found" });
-    const input = args as unknown as HandInteriorInput;
+    const shape = handInteriorShapeFromPlan((args as unknown as HandInteriorInput).plan ?? []);
+    // 틈=문 맞춤·문 앞 매트는 손 도트 실내(판타지) 문법이다. 일본 집·스토어 칩셋은 문을 기물(door·sidedoor)로 단다.
+    const fitsGapDoors = tilesetId === HAND_INTERIOR_TILESET_ID;
+    const input = fitsGapDoors ? withDoormat(args as unknown as HandInteriorInput, shape) : args as unknown as HandInteriorInput;
     let built;
     try { built = buildHandInteriorLayers(input, tileset, specFor(draft, tilesetId)); }
     catch (error) {
@@ -213,9 +307,11 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       throw new ToolError(`links 의 toMapId ${[...new Set(missing.map((l) => l.toMapId))].join(", ")} 맵이 아직 없다 — 층이 여럿이면 ① 한 층을 links 없이 짓고 ② 다른 층을 그 층으로 가는 links 와 함께 짓고 ③ 처음 층을 같은 mapId·replace:true 로 links 를 넣어 다시 짓는다(또는 두 층을 다 지은 뒤 create_transfer_pair). 도착 칸(toX,toY)은 그 맵에서 걸을 수 있는 바닥이어야 한다.`, { code: "link-target-missing" });
     }
     const events: GameEvent[] = [
-      ...(existing?.events ?? []).filter((e) => !e.id.startsWith(`${mapId}-link-`)),
+      ...structuredClone(existing?.events ?? []).filter((e) => !e.id.startsWith(`${mapId}-link-`)),
       ...links.map((l, i) => transfer(mapId, l.x, l.y, { mapId: l.toMapId, x: l.toX, y: l.toY, direction: l.direction }, i)),
     ];
+    const doorNotes: string[] = [];
+    if (fitsGapDoors) fitDoorsToPlan(draft, mapId, events, shape, doorNotes);
     const map: GameMap = {
       ...(existing ?? {}),
       id: mapId, name, width: built.width, height: built.height, tilesetId, tileSize: tileset.tileSize,
@@ -230,6 +326,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       if (!draft.maps[draft.startMapId]) { draft.startMapId = mapId; const s = built.start[Math.floor(built.start.length / 2)]; draft.startPos = { x: s?.x ?? 0, y: s?.y ?? 0 }; }
     }
     const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
+    if (shape.plainBox && shape.innerCells >= PLAIN_BOX_MIN_CELLS) warnings.push(`방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 ${shape.innerCells}칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#' 덩이)로 공간을 나누거나 평면을 줄인다`);
+    warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
       summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId}) — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
       data: { mapId, tilesetId, width: built.width, height: built.height, reachable: built.reachable, floorCells: built.floorCells,
