@@ -1096,7 +1096,12 @@ const upsertEvent: ToolDefinition = {
   invalidArgsHint: UPSERT_EVENT_NPC_HINT,
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const patch = args.event as Partial<GameEvent> | undefined;
+    // replacePages 는 인자 표시이지 이벤트 필드가 아니다 — 모델이 event 안에 넣어 보내면(2026-10-07 gemini reward-once)
+    // additionalProperties 로 그대로 저장돼 저장본에 남았다. 저장 전에 떼어 낸다.
+    const rawPatch = args.event as (Partial<GameEvent> & { replacePages?: unknown }) | undefined;
+    const patch: Partial<GameEvent> | undefined = rawPatch && typeof rawPatch === "object" && "replacePages" in rawPatch
+      ? (({ replacePages: _replacePages, ...rest }) => rest)(rawPatch)
+      : rawPatch;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
     // A trigger describes when to run; commands belong beside it. Do this on the

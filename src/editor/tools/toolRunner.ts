@@ -12,7 +12,7 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
-import { rejectWholeRecordRewrite } from "./assistantRewriteGuard";
+import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
@@ -318,10 +318,11 @@ export function runToolDefinition(
   let protectedHouses: HouseSnapshot[];
   try {
     protectedHouses = captureHouseProtection(before);
-    // 조수만: 기존 레코드를 통째로 다시 보내는 쓰기는 바꿀 칸만 보내라고 돌려보낸다(assistantRewriteGuard.ts).
-    if (ctx.assistantRun) rejectWholeRecordRewrite(before, name, normalizedArgs);
+    // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 거부, DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
+    const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
-    exec = tool.run(draft, normalizedArgs);
+    exec = tool.run(draft, guarded?.args ?? normalizedArgs);
+    if (guarded?.warnings.length) exec = { ...exec, warnings: [...guarded.warnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
