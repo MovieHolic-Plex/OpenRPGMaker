@@ -169,3 +169,14 @@ round 8 의 돌 기단+회벽 혼합 두 장(06·07)은 질감 검사가 `WALL_M
 **게이트 확장(점수·대조군 불변):** 질감 검사관은 비교 기준이 회벽·기와뿐이라 통나무 7장을 roof_grain 44~52 / wall_grain 64~66 으로 반려했다(「긴 대각 띠」「거친 반복」 — 재질이 다를 뿐 결함이 아니다). `ANCHORS` 에 원본 통나무 오두막(`cabin-native.png`)을 더하고, `material:"log"` 후보는 비교 그림(오른쪽)을 회벽 집 대신 그 오두막으로 둔다(`reference_key`). 지시문도 이를 알린다. 숨긴 반려 표본·하한(질감 94, 구조 90)은 그대로이고 코드가 바뀌었으니 전체를 재검수했다. 새 재질 후보는 **그 재질의 원본 기준**을 먼저 추가해야 한다.
 
 접합부 틈: r9-15·16 이 구조 검사에서 `DETACHED_WING`/`INADEQUATE_WING_JOINT` 로 반려됐다. 파사드 끝 칸(`e`) 그림은 바깥쪽 2~3px 가 투명이라 두 몸채를 맞대면 틈이 생긴다. 맞닿는 쪽 칸은 `J`(전폭 기둥 칸)로 쓴다. 최종 공개 64장: 허용 37·거절 1·대기 26(r9 19 + r10 7).
+
+### 저장 · 설치 · 서비스 (2026-10-07)
+
+**사람 결정 로그.** 정본은 `review.sqlite` 의 `decisions(seq,item,sha,decision,note,at)`(그림 sha256 에 묶임, 덧붙이기 전용)이고, 저장소 사본은 `harness-data/beodeul-building-review/decisions.json` 이다. 서명 대상이 **아니다**(수정해도 영수증 무효화 없음).
+`npm run harness -- beodeul-building-review decisions export|restore|backup|status` — export 는 기존 로그가 접두사로 남아 있어야 쓰고(되돌림 거부), restore 는 빈 표에만 복원, backup 은 sqlite `.backup` 을 `~/backups/beodeul-review/` 에 떠 14개만 남긴다. 영수증·`gate-secret`·로그·staging 은 git 에 넣지 않는다. **커밋 전에 export.**
+
+**공용 번들 설치.** `npm run harness -- beodeul-building-review install` (`node/install.py`): 결정 로그에서 현재 그림 해시에 **허용**된 후보만(그림 원본 sha256 일치 확인) 골라 `public/assets/beodeul-reviewed/chipset.png` + `src/assets/beodeulReviewedCatalog.json` + `tiledata/beodeul-reviewed/` 출처 사본으로 굽는다. 건물 한 채 = 본체(3층 `bd-house-rv-<라운드>-<번호>`) + 바닥 그림자(2층 `bd-rv-shadow-*`) + 기초(4층 `bd-rv-foundation-*`), 같은 원점. 통행: 벽 칸 막힘(문 칸 포함), 처마·지붕 칸 걸을 수 있음 — 벽은 칸별 밝은 회벽·돌 색 비율로 가려 열 지면에서 이어 붙인 **휴리스틱**이고 통나무집은 지붕 아래 띠 전체를 막는다. 한 번 허용된 뒤 반려로 바뀌면 다음 설치에서 빠진다.
+배선은 `beodeul_forms` 와 같다: `bundled.ts`(tex_beodeul_reviewed), `bundledChipsetGeometry.ts`(16열), `defaultAssets.ts`, `beodeulCity.ts` → `src/project/defaults/beodeulReviewed.ts`(단독 타일셋 `beodeul_reviewed` + `beodeul_city` 이식 `ensureBeodeulReviewed`). 참고문서 `beodeul-reviewed`(문서 49·이미지 3)는 `scripts/content/prepare-beodeul-reviewed-references.mts` 가 만든다 — 64×22 거리 예제(8채, 층 배열 전체), 문 앞/처마 통행 검사, 정상/오류 그림(문 앞 anvil → `canMove` true→false). 전체 재생성: `scripts/content/rebuild-beodeul-reviewed.sh`. 검증: `scripts/qa/beodeul-reviewed-store.mts <프로젝트 폴더 사본>` (신규·빈 프로젝트·기존 프로젝트·멱등·SQLite 저장→재열기, 증거 `verify-shots/beodeul-reviewed/`).
+허용·거절이 없는 r9 와 반려된 r10-02/07 은 설치되지 않는다. 설치 건물이 늘면 install → rebuild 를 다시 돌린다.
+
+**서비스.** 18317 검수 서버는 `systemd --user` 유닛 `beodeul-review.service`(안정된 별도 체크아웃 `~/.local/share/oprn/services/rpg-zzu-beodeul-review`, detached origin/main)로 돌고, 일 1회 `beodeul-review-backup.timer` 가 `decisions backup` 을 부른다. 병합 뒤 `git -C <체크아웃> checkout --detach origin/main && systemctl --user restart beodeul-review`.
