@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **165쪽 / 5525KB / 약 1,608,742 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **165쪽 / 5536KB / 약 1,612,054 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -85,7 +85,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
-| `openwiki/harnesses/beodeul-building-review.md` | 2 | `.pixels.json`, `output/beodeul-building-review/round7-v3-gate-status.json` |
+| `openwiki/harnesses/beodeul-building-review.md` | 3 | `.pixels.json`, `node/install.py`, `output/beodeul-building-review/round7-v3-gate-status.json` |
 | `openwiki/harnesses/charset-actor.md` | 6 | `actions.px.json`, `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 2 | `.check.json`, `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
@@ -1280,7 +1280,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L38` 나무/풀 깊이·연결 울타리·돌벽 통일 (2026-10-04)
 - `L42` 박공 벽 정리와 기와 복원 (2026-10-04 사용자 정정)
 
-### `openwiki/harnesses/beodeul-building-review.md` — 29KB · 140줄 · ~9,289 토큰
+### `openwiki/harnesses/beodeul-building-review.md` — 40KB · 183줄 · ~12,601 토큰
 
 - `L5` 실행
 - `L31` 원본 도트와 초안
@@ -1294,6 +1294,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L91` 원형 제분소와 상태별 탭
   - `L97` 다양성 후보 round 6
   - `L121` JRPG 주택 형태 연구 · round 7
+  - `L141` round 7 철회와 round 8 (2026-10-07)
+  - `L153` round 9 — 창문 파사드 재저작 (2026-10-07)
+  - `L161` round 10 — 통나무집 · 탑 접지 · 바닥 그림자 (2026-10-07)
+  - `L173` 저장 · 설치 · 서비스 (2026-10-07)
 
 ### `openwiki/harnesses/charset-actor.md` — 12KB · 90줄 · ~3,838 토큰
 

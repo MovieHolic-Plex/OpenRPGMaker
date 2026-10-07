@@ -1,0 +1,17 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/tmp/rv-proof",
+  "revisionBefore": 25,
+  "revision": 26,
+  "sha256": "f5b8855b187de6f0e4a2dce5c5167fecf34b883f399a6f955250ef7e7458f2dc",
+  "savedAndReopened": true,
+  "freshHasKits": true,
+  "blankHasKits": true,
+  "existingGainedKits": 126,
+  "mapsAndStartUnchanged": true,
+  "oldTilePassabilityUnchanged": true,
+  "idempotent": true,
+  "referencesIdentical": true,
+  "noDataUrls": true,
+  "buildings": 42
+}
