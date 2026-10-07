@@ -29,8 +29,8 @@ import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } 
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
-import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces } from '../../src/ai/piAgent/firstScene.ts';
-import { hasPlayableSegmentSkeleton } from '../../src/project/playableSegmentContract.ts';
+import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
+import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
@@ -921,6 +921,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       'find_tools', 'list_tileset_references', 'read_tileset_reference', 'list_hand_interior_parts',
       'build_hand_interior_room', 'set_map_properties', 'set_start_position', 'author_wild_route',
       'move_event', 'upsert_event'];
+    // 스토리 길 맵은 뼈대가 산책길·만남 광장을 깔아 둔다. 몬스터 도로 도구(author_wild_route)를 주면 그걸로 다시 깔아
+    // 짙은 풀숲과 나무 벽뿐인 1번 도로가 됐다(2026-10-07 「기억의 길은 허접하다」). 대신 실제 버들항 소품 목록과 stamp_object 를 준다.
+    const placeToolsFor = (project: Project) => playableSegmentGenre(project) === 'story-cutscene'
+      ? [...placeTools.filter(name => name !== 'author_wild_route'), 'stamp_object'] : placeTools;
     for (const stage of ['places', 'entry'] as const) {
       const places = stage === 'places';
       const inspect = places ? inspectFirstScenePlaces
@@ -934,8 +938,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const task = [places
           ? '첫 장소 구조 담당: 기존 두 장소의 방/길 구조와 가구·출입 동선만 완성한다. 배우/DB/오프닝/첫 대상의 이벤트 내용은 다음 담당의 작업이다. 주인공 그림이나 얼굴을 검색하지 않는다.'
           : '첫 입력 담당: 두 장소의 구조는 이미 작성했다. 아래 실제 자산 목록에서 골라 첫 행동 대상과 마무리 대상을 지금 upsert_event로 배치하고, 짧은 일회성 맵 도입/조작 안내를 작성한다. 방을 처음부터 다시 짓거나 인물 DB/외형을 바꾸지 않는다. 자산 검색은 완료되어 목록을 제공했다. 검색을 반복하지 않는다. 첫 읽기에서 현재 이벤트/맵을 확인한 뒤 쓰기를 시작한다.',
-          ...(places ? [FIRST_SCENE_INSTRUCTIONS[1], FIRST_SCENE_INSTRUCTIONS[2],
-            '각 타일셋의 용도 MD 전 페이지와 가까운 예제의 실제 이미지를 먼저 읽는다. 바닥만 있는 길도 구조/소품을 구성한다. 시작 위치/양방향 transfer 목적지는 통행 가능하게 맞춘다.'] : [...FIRST_SCENE_INSTRUCTIONS]),
+          ...(places ? [FIRST_SCENE_INSTRUCTIONS[1], FIRST_SCENE_INSTRUCTIONS[2], FIRST_SCENE_INSTRUCTIONS[3],
+            '각 타일셋의 용도 MD 전 페이지와 가까운 예제의 실제 이미지를 먼저 읽는다. 바닥만 있는 길도 구조/소품을 구성한다. 시작 위치/양방향 transfer 목적지는 통행 가능하게 맞춘다.',
+            ...storyRouteBrief(snapshot)] : [...FIRST_SCENE_INSTRUCTIONS]),
           '핵심 이벤트 근거: ' + JSON.stringify(firstPlay),
           ...(places ? [] : ['핵심 대상의 실제 자산 이름/태그: ' + JSON.stringify(firstSceneGraphicEvidence(snapshot, firstPlay)),
             '실제로 사용 가능한 사물 목록(이 밖의 id를 만들지 않는다): ' + JSON.stringify(firstSceneObjectCatalog())]), repair,
@@ -958,9 +963,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task, openingProduction: false,
             initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, places ? (attempt ? 24 : 48) : (attempt ? 16 : 24)),
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
-            systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 3) : FIRST_SCENE_INSTRUCTIONS),
+            systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 4) : FIRST_SCENE_INSTRUCTIONS),
               places ? '이번 단계는 두 장소의 구조/가구/통행만 작성하고 report_first_scene_places로 끝낸다. 오프닝과 대상 이벤트는 다음 단계에서 작성한다.' : '이번 단계는 보이는 첫 대상/마무리 대상과 짧은 맵 도입을 작성하고 report_first_scene로 끝낸다.'] },
-          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeTools
+          { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeToolsFor(snapshot)
             : ['get_event','get_map_region','get_database_records','upsert_event','move_event','get_opening','show_map_region','check_reachability','run_lint'],
             onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
           toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
