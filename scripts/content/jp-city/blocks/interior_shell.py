@@ -83,44 +83,37 @@ def _flooring(c): _planks('yuka', kc('yuka', 1), kc('yuka', 0), kc('yuka', -1), 
 def _flooring_dark(c): _planks('ita', kc('ita', 1), kc('ita', 0), kc('ita', -1), 2)(c)
 
 
-# 다다미: 4×4칸 주기 안에 8장(1장 = 1×2칸), 가로·세로 혼용, 십자 교차 4곳뿐.
-_TAT = [(0, 0, 'H'), (2, 0, 'H'), (0, 1, 'H'), (2, 1, 'V'), (3, 1, 'V'), (0, 2, 'V'), (1, 2, 'V'), (2, 3, 'H')]
+# 다다미: 4×4칸 주기(토러스) 안에 8장(1장 = 1×2칸 = 16×32px). 가로 4장·세로 4장이 풍차처럼 엇갈려 十 교차가 없다(어디서나 T 접합).
+# 주기 가장자리를 가로지르는 장은 세계 좌표(%64)로 그려 3×3 로 이어 붙여도 잘리지 않는다.
+_TAT = [(0, 0, 'H'), (2, 0, 'V'), (3, 3, 'V'), (3, 1, 'H'), (1, 1, 'V'), (0, 2, 'V'), (2, 2, 'H'), (1, 3, 'H')]
+# (x, y) = 장의 왼쪽/위쪽 칸(주기 안, 가장자리 넘김 포함), 순서 = 아래 격자 번호
+_TAT_GRID = ((0, 0, 1, 2), (3, 4, 1, 3), (5, 4, 6, 6), (5, 7, 7, 2))
 
 
-def _tatami_map():
-    g = [[None] * 4 for _ in range(4)]
-    for i, (x, y, o) in enumerate(_TAT):
-        g[y][x] = i
-        g[y][(x + 1) % 4] = i if o == 'H' else g[y][(x + 1) % 4]
-        if o == 'V': g[(y + 1) % 4][x] = i
-    return g
+HERI_W = 2                                                        # 긴 변 헤리(縁) 두께 2px
 
 
-HERI_W = 1
-
-
-@R.floor('tatami', '다다미', cols=4, rows=4, tags=('화실', '和室'), desc='다다미(畳) — 화실. 한 장 = 1×2칸, 가장자리 헤리(縁).')
+@R.floor('tatami', '다다미', cols=4, rows=4, tags=('화실', '和室'), desc='다다미(畳) — 화실. 한 장 = 1×2칸, 긴 변에만 2px 헤리(縁), 풍차 엇갈림.')
 def _tatami(c):
-    g = _tatami_map()
     heri = kc('midori', -2)                                       # 검은빛 초록 헤리 — 매트 경계가 한눈에 읽힌다
+    heri_in = kc('midori', -1)
     seam = kc('kinari', -2)
     for y in range(c.h):
         for x in range(c.w):
-            mid = g[(y // 16) % 4][(x // 16) % 4]
+            mid = _TAT_GRID[(y // 16) % 4][(x // 16) % 4]
             mx, my, o = _TAT[mid]
+            # 장의 왼쪽 위 기준 좌표 (주기 %64 로 감싸기 — 가장자리를 넘는 장도 이어진다)
             lx = (x - mx * 16) % 64; ly = (y - my * 16) % 64
-            # e = 긴 변에 수직인 좌표(0..15), s = 긴 쪽 좌표(0..31)
             if o == 'H': e0 = ly; e1 = 15 - ly; s0 = lx; s1 = 31 - lx
             else: e0 = lx; e1 = 15 - lx; s0 = ly; s1 = 31 - ly
             ed = min(e0, e1)
-            if ed <= HERI_W - 1: col = heri                        # 긴 변 헤리(縁) — 어두운 초록 띠
-            elif min(s0, s1) == 0: col = seam                      # 짧은 변 이음선
+            if ed < HERI_W: col = heri if ed == 0 else heri_in    # 긴 변: 바깥 1px 어두운 초록 + 안쪽 1px 한 단 밝은 초록
+            elif min(s0, s1) == 0: col = seam                     # 짧은 변: 헤리 없음, 가는 이음선 1px
             else:
                 # 결: 긴 방향으로 1px 간격 가는 줄, 아주 낮은 대비
                 stripe = (e0 + (mid % 2)) % 2
                 col = kc('kinari', 1) if stripe else kc('kinari', 0)
-                if ed == HERI_W: col = kc('kinari', 0)          # 헤리 안쪽 한 줄은 톤을 눌러 헤리와 이어 준다
-                elif rnd(s0 // 3, e0, 30 + mid, 40): col = kc('kinari', 0) if stripe else kc('kinari', 1)
+                if rnd(s0 // 3, e0, 30 + mid, 40): col = kc('kinari', 0) if stripe else kc('kinari', 1)
             c.P(x, y, col)
 
 
@@ -168,17 +161,22 @@ def _tataki(c):
             c.P(x, y, col)
 
 
-@R.floor('carpet', '카펫', cols=4, rows=4, tags=('침실', '아이방', '원룸'), desc='털 짧은 카펫 — 양실 침실.')
+@R.floor('carpet', '카펫', cols=4, rows=4, tags=('침실', '아이방', '원룸'), desc='털 짧은 카펫 — 양실 침실·아이방. 낮은 채도의 먹감청 한 색.')
 def _carpet(c):
-    base = kc('aka', -1); lo = kc('aka', -2)                     # 팥색 한 색만 — 파랑은 물로 읽히고 베이지는 흙으로 읽혔다
+    # 채도를 눌렀다: 팥색(aka)은 이불의 붉은색과 부딪혀 한 덩어리로 읽혔다 → 어두운 청회색(garasu 낮은 단) 한 색, 4톤 저대비 짜임.
+    # 마루(갈색)·타타키(밝은 보라회색)와 명도·색상이 모두 다르다. 얼룩·무작위 점 없음.
+    base = kc('garasu', -2); hi = kc('garasu', -1); lo = kc('garasu', -3)
     for y in range(c.h):
         for x in range(c.w):
             col = base
-            # 짧은 털 = 규칙적인 바구니 짜임: 4×4 칸마다 2px 짧은 결, 칸이 바뀔 때 가로·세로가 번갈아(체크로 어긋난다). 얼룩·무작위 점 없음
+            # 4×4 칸마다 2px 짧은 결, 칸이 바뀔 때 가로·세로가 번갈아(바구니 짜임)
             cx, cy = x // 4, y // 4; lx, ly = x % 4, y % 4
             if (cx + cy) % 2 == 0:
-                if ly == 1 and lx in (1, 2): col = lo
-            elif lx == 1 and ly in (1, 2): col = lo
+                if ly == 1 and lx in (1, 2): col = hi
+                elif ly == 3 and lx in (1, 2): col = lo
+            else:
+                if lx == 1 and ly in (1, 2): col = hi
+                elif lx == 3 and ly in (1, 2): col = lo
             c.P(x, y, col)
 
 

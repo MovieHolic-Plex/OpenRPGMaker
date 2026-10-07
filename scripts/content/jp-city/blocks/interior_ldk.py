@@ -342,10 +342,21 @@ def floor_lamp(c):
     c.R(5, 27, 6, 3, K('tekko', 0)); c.HL(5, 27, 6, K('tekko', 2)); c.HL(5, 29, 6, K('tekko', -3)); c.P(4, 28, K('tekko', -2)); c.P(11, 28, K('tekko', -2))
 
 
-@R.obj('cushion-floor', '방석', 1, 1, kind='flat', desc='바닥 방석(자부통). 푸른 천에 단추 점.', tags=('거실', '다다미'), place='좌탁 둘레 바닥')
+@R.obj('cushion-floor', '방석', 1, 1, kind='flat', desc='바닥 방석(자부통). 팥빛 갈색 천에 가운데 술 한 점, 꿰맨 테두리. 좌탁 둘레에 놓는다 — 감색 방석(zabuton)의 짝 색.',
+       tags=('거실', '다다미'), place='좌탁 둘레 바닥')
 def cushion_floor(c):
-    c.R(3, 4, 10, 9, K('sora', 0)); c.HL(3, 4, 10, K('sora', 2)); c.HL(4, 5, 8, K('sora', 1)); c.VL(3, 5, 8, K('sora', 1)); c.VL(12, 5, 8, K('sora', -1)); c.HL(3, 12, 10, K('sora', -2))
-    box(c, 2, 3, 12, 11, K('sora', -2)); c.P(2, 3, None); c.P(13, 3, None); c.P(2, 13, None); c.P(13, 13, None); c.P(8, 8, K('sora', -2)); c.P(7, 8, K('sora', 2))
+    col = lambda s: K('renga', s)                                                       # 팥빛 갈색 — 감색 zabuton 과 색으로 구분된다
+    top, hl, lo = col(-1), col(0), col(-2)
+    # 윗면(위에서 본 둥근 정사각) → 앞면 두께 2px → 윤곽. 네 귀는 한 칸씩 깎는다.
+    c.R(3, 3, 10, 7, top)                                                               # 윗면
+    c.R(3, 10, 10, 2, lo)                                                               # 앞면(두께 2px)
+    c.HL(3, 2, 10, OL); c.HL(3, 12, 10, OL); c.VL(2, 3, 9, OL); c.VL(13, 3, 9, OL)      # 윤곽
+    for (x, y) in ((3, 3), (12, 3)): c.P(x, y, lo)                                      # 윗귀는 어둡게 눌러 둥글게
+    c.HL(4, 3, 8, col(1)); c.VL(3, 4, 5, hl)                                            # 빛 왼쪽 위 테
+    # 꿰맨 테두리: 안쪽으로 2칸 들여 점선(한 칸 건너, 한 색)
+    for x in range(5, 11, 2): c.P(x, 5, hl); c.P(x, 8, hl)
+    for y in (6, 7): c.P(4, y, hl); c.P(11, y, hl)
+    c.R(7, 6, 2, 2, col(2)); c.P(8, 7, hl)                                              # 가운데 술(房) 한 점 — 2×2, 오른쪽 아래만 어둡게
 
 
 # ───────────────────────── 탁상 물건 (윗면 칸 안, 바닥선 y≈7) ─────────────────────────

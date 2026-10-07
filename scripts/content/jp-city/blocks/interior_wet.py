@@ -55,27 +55,38 @@ def _tub(c, lid=False):
     W = c.w; B = c.h
     x0, x1 = 1, W - 2                      # 욕조 몸 x 범위
     top = B - 21                           # 뒤 테두리 윗줄
-    # 뒤 테두리 + 안쪽 벽(물 위로 보이는 욕조 안벽)
-    c.R(x0, top, x1 - x0 + 1, 2, K('shiro', 2)); c.HL(x0 + 1, top, x1 - x0 - 1, K('shiro', 2))
-    c.R(x0, top + 2, x1 - x0 + 1, 2, K('shiro', -1))
-    # 물
-    c.R(x0 + 1, top + 4, x1 - x0 - 1, 8, K('sora', 1))
-    for i in range(x0 + 3, x1 - 2, 5): c.HL(i, top + 6, 3, K('sora', 2))
-    for i in range(x0 + 6, x1 - 4, 6): c.HL(i, top + 9, 2, K('sora', 2))
-    c.HL(x0 + 1, top + 4, x1 - x0 - 1, K('sora', 0)); c.HL(x0 + 1, top + 11, x1 - x0 - 1, K('sora', 0))
-    # 앞 테두리 윗면 + 앞 가장자리 하이라이트 + 앞면(에이프런)
-    c.R(x0, top + 12, x1 - x0 + 1, 2, K('shiro', 2)); c.HL(x0, top + 14, x1 - x0 + 1, K('shiro', 1))
-    c.R(x0, top + 15, x1 - x0 + 1, 6, K('shiro', 0)); c.VL(x0 + 1, top + 15, 6, K('shiro', 1)); c.VL(x1 - 1, top + 12, 9, K('shiro', -1))
-    c.HL(x0, top + 20, x1 - x0 + 1, K('shiro', -1))
-    c.HL(x0 + 3, top + 17, x1 - x0 - 5, K('shiro', -1))                       # 에이프런 패널 이음선
-    c.R(x1 - 6, top + 17, 3, 2, K('conc', 0))                                  # 배수 점검구
+    wx0, wx1 = x0 + 3, x1 - 3              # 물 x 범위(테두리 두께 3px 안쪽)
+    wy0, wy1 = top + 5, top + 11           # 물 y 범위(안벽 경사 밑 ~ 앞 테두리 위)
+    # 1) 흰 FRP 테두리 — 사방 3px 두께 한 장(밝은 윗면), 왼쪽 위 빛
+    c.R(x0, top, x1 - x0 + 1, 15, K('shiro', 2))
+    c.HL(x0 + 1, top, x1 - x0 - 1, K('shiro', 3)); c.VL(x0, top + 1, 13, K('shiro', 3))
+    c.VL(x1, top + 1, 14, K('shiro', 1))                                       # 오른쪽 끝은 한 단 어둡게
+    # 2) 안쪽 경사(물 위로 보이는 욕조 안벽) — 위에서 아래로 어두워졌다 물 닿는 곳에서 한 번 더 어둡다
+    c.R(wx0 - 1, top + 3, wx1 - wx0 + 3, 2, K('shiro', -1)); c.HL(wx0 - 1, top + 4, wx1 - wx0 + 3, K('shiro', -2))
+    c.VL(wx0 - 1, top + 3, wy1 - top - 2, K('shiro', -1)); c.VL(wx1 + 1, top + 3, wy1 - top - 2, K('shiro', -2))   # 좌우 경사
+    # 3) 물 — 안벽 그늘이 드리운 윗줄, 밝은 가운데, 물 밑 바닥이 비치는 어두운 단(오른쪽 걸터앉는 턱)
+    c.R(wx0, wy0, wx1 - wx0 + 1, wy1 - wy0 + 1, K('sora', 1))
+    c.HL(wx0, wy0, wx1 - wx0 + 1, K('sora', 0))
+    c.R(wx1 - 6, wy0 + 1, 7, 4, K('sora', 0)); c.HL(wx1 - 6, wy0 + 4, 7, K('sora', -1))        # 물속 턱(바닥이 비침)
+    for (rx, ry, rl) in ((wx0 + 3, wy0 + 2, 6), (wx0 + 1, wy0 + 4, 4), (wx0 + 10, wy0 + 5, 5)):  # 잔물결 3줄
+        c.HL(rx, ry, rl, K('sora', 3))
+    c.HL(wx0, wy1, wx1 - wx0 + 1, K('sora', 0))
+    # 4) 배수 마개 — 왼쪽 끝 물 밑 점 하나
+    c.R(wx0 + 1, wy1 - 2, 2, 2, K('tekko', 3)); c.P(wx0 + 1, wy1 - 2, K('conc', 3)); c.HL(wx0 + 1, wy1 - 1, 2, K('tekko', 1))
+    # 5) 앞 테두리 윗면 하이라이트 + 앞면 — 타일 패널(가로 줄눈 + 어긋난 세로 줄눈)
+    c.HL(x0, top + 14, x1 - x0 + 1, K('shiro', 1))
+    c.R(x0, top + 15, x1 - x0 + 1, 6, K('shiro', 0))
+    for tx in range(x0 + 1, x1, 7): c.P(tx, top + 15, K('shiro', 2)); c.VL(tx + 6, top + 15, 2, K('shiro', -1))
+    for tx in range(x0 + 1, x1, 7): c.P(tx, top + 18, K('shiro', 2)); c.VL(tx + 6, top + 18, 2, K('shiro', -1))
+    c.HL(x0, top + 17, x1 - x0 + 1, K('shiro', -1))                           # 가로 줄눈
+    c.HL(x0, top + 20, x1 - x0 + 1, K('shiro', -1))                           # 바닥 그늘
+    c.VL(x1, top + 15, 6, K('shiro', -1))
     outline(c, x0 - 1, top - 1, x1 - x0 + 3, 23)
     if lid:
-        mid = x0 + (x1 - x0) // 2 + 1
-        c.R(mid, top + 3, x1 - mid, 10, K('conc', 2))                          # 접이식 덮개(오른쪽 절반)
-        for i in range(mid + 2, x1, 3): c.VL(i, top + 3, 10, K('conc', 1))
-        c.HL(mid, top + 3, x1 - mid, K('shiro', 2)); c.HL(mid, top + 12, x1 - mid, K('conc', -1)); c.VL(mid, top + 3, 10, K('conc', -1))
-        c.HL(mid - 1, top + 4, 1, K('sora', 0))
+        mid = wx0 + (wx1 - wx0) // 2 + 1
+        c.R(mid, wy0 - 1, wx1 - mid + 1, 8, K('conc', 2))                      # 접이식 덮개(오른쪽 절반)
+        for i in range(mid + 2, wx1 + 1, 3): c.VL(i, wy0 - 1, 8, K('conc', 1))
+        c.HL(mid, wy0 - 1, wx1 - mid + 1, K('shiro', 3)); c.HL(mid, wy1, wx1 - mid + 1, K('conc', -1)); c.VL(mid, wy0 - 1, 8, K('conc', -1))
 
 
 @R.obj('bathtub', '욕조', w=2, h=1, up=8, kind='wall', cat='bath', cat_ko='욕실', tags=WET, place='욕실 안쪽 벽', use=('heal',),
