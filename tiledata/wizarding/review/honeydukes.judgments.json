@@ -2,7 +2,7 @@
  "_reviewer": "sonnet adversarial",
  "wz-hd-wall-n": {
   "verdict": "PASS",
-  "reason": "돌 블록 벽 읽힘, 유색 윤곽·3단 명암, 좌상 광원, 1x4 하단 X 통행 맞음."
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
  },
  "wz-hd-beam-h": {
   "verdict": "PASS",
@@ -34,11 +34,11 @@
  },
  "wz-hd-floor-sugar-a": {
   "verdict": "PASS",
-  "reason": "나무 판재 바닥에 성긴 설탕 알갱이, 잡음 밀도 낮고 이음 무난."
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
  },
  "wz-hd-floor-sugar-b": {
   "verdict": "PASS",
-  "reason": "A 와 같은 계열의 변형, 반복 무늬 튀지 않음."
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
  },
  "wz-hd-floor-packing": {
   "verdict": "PASS",

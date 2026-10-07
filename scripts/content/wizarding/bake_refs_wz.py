@@ -90,7 +90,30 @@ def check_map(ex, lower, upper):
                 i = ay * W + ax
                 if (lower[i] >= 0 and not passable(lower[i])) or (upper[i] >= 0 and not passable(upper[i])):
                     out.append(('WZ-DOOR-BLOCKED', ax, ay, f'{pid} 문 앞 접근칸이 막혔다'))
+    out += islands(W, H, lower, upper)
     return out
+
+
+def walkable(t):
+    return t < 0 or passable(t)
+
+
+def islands(W, H, lower, upper):
+    """걸을 수 있는 칸이 한 덩이인가. 가장 큰 덩이 밖의 걸을 수 있는 칸마다 WZ-ISLAND(갇힌 주머니 — 플레이어가 못 간다)."""
+    ok = [lower[i] >= 0 and walkable(lower[i]) and walkable(upper[i]) for i in range(W * H)]
+    comp = [-1] * (W * H); sizes = []
+    for s in range(W * H):
+        if not ok[s] or comp[s] >= 0: continue
+        cid = len(sizes); comp[s] = cid; stack = [s]; n = 0
+        while stack:
+            i = stack.pop(); n += 1; x, y = i % W, i // W
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                j = ny * W + nx
+                if 0 <= nx < W and 0 <= ny < H and ok[j] and comp[j] < 0: comp[j] = cid; stack.append(j)
+        sizes.append(n)
+    if len(sizes) <= 1: return []
+    main = max(range(len(sizes)), key=lambda c: sizes[c])
+    return [('WZ-ISLAND', i % W, i // W, f'갇힌 통행 주머니({sizes[comp[i]]}칸) — 주 통로와 이어지지 않는다') for i in range(W * H) if ok[i] and comp[i] != main]
 
 
 def arrays(ex, place):
@@ -215,6 +238,7 @@ c0['documents'].append(dict(id='wz-order', name='마법 학교 · 읽는 순서�
     '', '## 이 타일셋에 없는 것',
     '- 사람·생물은 타일이 아니다 — 이벤트의 캐릭터 그림(`tex_oprn_charset_wizarding<N>`)으로 둔다. 세스트랄·마차·보트는 크기가 커서 **정지 키트**(그림 칸)이며 움직이는 탈것이 아니다.',
     '- 검수를 통과하지 못한 조각은 시트에 없다(사전에 있는 id 만 쓴다). 다른 칩셋의 실내 가구·벽을 섞지 않는다.',
+    '', '## 맵 짓기 — 먼저 빌더', '방·야외 한 장은 낱칸 칠하기로 처음부터 그리지 않는다. `build_wizarding_space({space, width?, height?, doors?, furnitureMode?, density?, seed?})` 한 번으로 벽 고리·문·바닥·러너·가구를 짓는다(가구는 놓을 때마다 통행 검사 — 걸을 수 있는 칸이 한 덩이, 문·시작 칸 닿음). 공간 목록·가구 id·NPC 걷기 칩은 `list_wizarding_spaces`. 결과의 doorCells 에 이동 이벤트(transfer)를 달아 방을 잇고, spawn 을 도착 지점으로 쓴다. 지은 뒤 소품을 더할 때만 이 문서의 키트 사전으로 stamp 한다.',
     '', '## 읽는 순서', '1. 이 문서 → 2. `wz-dict-groups`(그룹 사전) → 3. 만들 공간의 용도 `wz-space-<공간>`(조각 사전 → 완성 예제 → 정상/오류) → 4. 공용 성채 벽·바닥은 `wz-space-shared` → 5. 사람은 `wz-characters`, 움직임은 `wz-effects`, 검사 범위는 `wz-check`.',
     '', '## 층과 통행(칸 단위 엔진 판정)', '| 칸 종류 | 홈 층 | 걷기 | 그림 순서 |', '|---|---|---|---|',
     '| F 불투명 땅 | 1층 lowerTiles | 걷는다 | 맨 아래 |', '| X 막힌 땅(물) | 1층 | 막힘 | 맨 아래 |', '| f 투명 덧그림(얼룩·자국) | 2층(붓 홈 위, 잠김) | 걷는다 | 땅 위·사람 밑 |',
@@ -294,6 +318,7 @@ ck['documents'].append(dict(id='wz-check-scope', name='자동 검사 범위', ma
     '| `WZ-LAYER` | 위층 홈 칸(잠긴 defaultLayer upper)이 1층에, 또는 아래층 땅 칸이 3층에 있다 | 칸의 priority·tileMeta(엔진 tileLayerHome 과 같은 식) |',
     '| `WZ-CUT` | 키트 칸이 맵 밖으로 잘렸다 | 배치 좌표 + 키트 크기 |',
     '| `WZ-OVERLAP` | 막힌 기물 칸을 다른 막힌 기물이 덮었다 | 키트 upperTiles 통행 |',
+    '| `WZ-ISLAND` | 걸을 수 있는 칸이 여러 덩이로 갈렸다(가구가 길을 막아 플레이어가 못 가는 주머니) | 칸 lower/upper 통행으로 4방향 연결 덩이를 센다 |',
     '| `WZ-DOOR-BLOCKED` | 열린 문(`…door…-open`) 바로 아래 접근칸이 막혔다 | 그 칸 lower/upper 통행 |',
     '', '보지 않는 것: 이벤트 실행, 미적 품질, 길 전체 연결, 모델의 성공률. 검사 통과를 그런 성공으로 주장하지 않는다.',
     '', '## 층 정보 기준', '모든 칸의 층·통행은 굽기(`bake_wz.py`)가 조각의 walk 글자에서 칸마다 정했다: F→floor(1층 통행), X→solidfloor, f→flat(투명, 잠김·위층 붓·통행), S→solid(3층 막힘), C→star(3층 ★). 그룹의 층은 선언이 아니라 멤버 칸의 엔진 홈에서 유도했다(`bake_lib.derive_group_layer`).'])))

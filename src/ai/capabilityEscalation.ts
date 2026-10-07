@@ -47,6 +47,8 @@ const ESCALATION_COMPANIONS: Readonly<Record<string, readonly string[]>> = {
   // 건물 조립 도구는 부품 id 를 조회 도구로 먼저 확인해야 한다 — 한쪽만 승격되면 모델이 id 를 추측한다(UNKNOWN_PART).
   build_jp_city_building: ["list_jp_city_building_parts"],
   list_jp_city_building_parts: ["build_jp_city_building"],
+  build_wizarding_space: ["list_wizarding_spaces"],
+  list_wizarding_spaces: ["build_wizarding_space"],
 };
 
 function hasSearchableWord(text: string): boolean {

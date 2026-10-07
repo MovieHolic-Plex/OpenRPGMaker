@@ -61,22 +61,21 @@ def _snow_b(c): c.blit(snow_drift_tile(2), 0, 0)
 
 
 def plank_floor():
+    """넓은 가로 판재 8px 두 장(16 주기). 바탕 wood3 한 톤, 이음·맞댐은 한 단 어두운 wood2, 결은 드문 wood4 짧은 선."""
     t = Cv(16, 16)
-    tones = (3, 2, 3, 2)
-    for r in range(4):
-        y = r * 4
-        b = tones[r]
-        t.R(0, y, 16, 4, K('wood', b))
-        t.HL(0, y, 16, K('wood', b + 1))
-        t.HL(0, y + 3, 16, K('wood', 1))
-        jx = (r * 7 + 3) % 16
-        t.VL(jx, y, 3, K('wood', 1))
-        if r % 2 == 0: t.P((jx + 6) % 16, y + 1, K('wood', b - 1))
+    t.R(0, 0, 16, 16, K('wood', 3))
+    for r, (jx, streaks) in enumerate(((5, ((9, 2, 4), (1, 5, 3))), (12, ((2, 3, 4), (13, 5, 2))))):
+        y = r * 8
+        t.HL(0, y + 7, 16, K('wood', 2))                 # 판 사이 틈(낮은 대비)
+        t.VL(jx, y, 7, K('wood', 2))                     # 맞댐 이음
+        for x, yy, w in streaks:                         # 긴 결 몇 줄
+            for i in range(w): t.P((x + i) % 16, y + yy, K('wood', 4))
     return t
 
 
 @REG.piece('wz-post-floor', '우체국 판자 바닥', 1, 1, ['F'], 'surfaces', SP,
-           desc='우체국 안쪽의 짙은 오크 판자 바닥 1×1. 4px 폭 판재, 줄마다 어긋난 이음.', rules='실내 바닥 반복.', tags=['바닥', '실내'],
+           desc='우체국 안쪽의 따뜻한 중간 갈색 넓은 판자 바닥 1×1. 8px 폭 판재 두 장, 낮은 대비 틈과 어긋난 맞댐, 드문 결.',
+           rules='실내 바닥 반복. 크림색 회벽·짙은 징두리와 대비된다.', tags=['바닥', '실내'],
            role='terrain', repeat=True)
 def _floor(c): c.blit(plank_floor(), 0, 0)
 
@@ -1017,50 +1016,75 @@ def _parcels(c):
     c.outline()
 
 
-# 실내 목재 벽
-def _wall_planks(t, y0, y1, seed=0):
-    for x in range(0, 16, 4):
-        tier = 3 if (x // 4 + seed) % 2 == 0 else 2
-        t.R(x, y0, 4, y1 - y0, K('wood', tier)); t.VL(x, y0, y1 - y0, K('wood', 1)); t.VL(x + 1, y0, y1 - y0, K('wood', tier + 1))
-    t.P(6, y0 + 9, K('wood', 1)); t.P(13, y0 + 20, K('wood', 1))
+# 실내 벽: 크림색 회벽 판 + 짙은 목재 기둥·가로대 + 아래 짙은 나무 징두리
+PLASTER = (K('linen', 1), K('linen', 2), K('skin', 4))     # 그늘·바탕·밝은 점(따뜻한 크림)
+
+
+def _wall_face(c, oy=0, h=64):
+    """1×4 뒷벽(64px) 정면을 oy 부터 h px 만큼 c 의 y=0 에 그린다. 조각마다 같은 함수로 잘라 써서 이어진다.
+    0~5 천장 보 · 6~49 회벽(27~28 가로대) · 50~63 징두리. x=15·0·1 이 목재 기둥(16 주기)."""
+    def row(y, x, w, col):
+        if oy <= y < oy + h: c.HL(x, y - oy, w, col)
+    for y in range(64):
+        if y <= 5:                                        # 천장 보
+            col = (K('wood', 0), K('wood', 2), K('wood', 1), K('wood', 1), K('wood', 1), K('wood', 0))[y]
+            row(y, 0, 16, col); continue
+        if y >= 50:                                       # 징두리
+            if y == 50: row(y, 0, 16, K('wood', 4))
+            elif y == 51: row(y, 0, 16, K('wood', 2))
+            elif y >= 61: row(y, 0, 16, K('wood', 1) if y < 63 else K('wood', 0))
+            else:
+                row(y, 0, 16, K('wood', 2))
+                if 53 <= y <= 59:                         # 오목 판 둘(16 주기)
+                    for x0 in (2, 9):                     # 위·왼 그늘 wood1, 아래·오른 빛 wood3 → 닫힌 오목 판
+                        if y == 53: row(y, x0, 6, K('wood', 1))
+                        elif y == 59: row(y, x0 + 1, 5, K('wood', 3)); row(y, x0, 1, K('wood', 1))
+                        else: row(y, x0, 1, K('wood', 1)); row(y, x0 + 5, 1, K('wood', 3))
+            continue
+        # 회벽
+        row(y, 2, 13, PLASTER[1])
+        if y == 6: row(y, 2, 13, PLASTER[0])               # 보 아래 그늘
+        if y in (27, 28):                                  # 가로대
+            row(y, 2, 13, K('wood', 2) if y == 27 else K('wood', 1))
+        if y == 29: row(y, 2, 13, PLASTER[0])
+        if y == 49: row(y, 2, 13, PLASTER[0])               # 징두리 위 그늘
+        row(y, 15, 1, K('wood', 0)); row(y, 0, 1, K('wood', 2)); row(y, 1, 1, K('wood', 1))   # 기둥
+    for x, y, col in ((6, 14, PLASTER[2]), (7, 14, PLASTER[2]), (11, 38, PLASTER[2]), (4, 42, PLASTER[0]), (12, 19, PLASTER[0])):
+        row(y, x, 1, col)                                 # 드문 회벽 결
 
 
 @REG.piece('wz-post-iwall', '우체국 목재 뒷벽(1x4)', 1, 4, ['X', 'X', 'X', 'X'], 'architecture', SP,
-           '널판 벽: 위 갓보, 세로 널, 가운데 가로 보, 아래 웨인스코트.', rules='가로로 반복해 뒷벽을 이룬다.', tags=('post', 'wall', 'interior'), role='wall', repeat=True)
+           '크림색 회벽 뒷벽: 위 짙은 천장 보, 칸마다 짙은 목재 기둥과 가운데 가로대, 아래 짙은 나무 징두리.',
+           rules='가로로 반복해 뒷벽을 이룬다. 바닥 판자보다 훨씬 밝은 회벽이 벽과 바닥을 가른다.', tags=('post', 'wall', 'interior'), role='wall', repeat=True)
 def _iwall(c):
-    # 윗면(천장 보 윗부분이 아니라 벽 위 마감)
-    c.R(0, 0, 16, 8, K('wood', 1)); c.HL(0, 0, 16, K('wood', 2)); c.HL(0, 7, 16, K('wood', 0)); c.HL(0, 1, 16, K('wood', 3))
-    c.R(0, 3, 16, 3, K('wood', 2)); c.HL(0, 3, 16, K('wood', 3))
-    _wall_planks(c, 8, 38)
-    # 가로 보
-    c.R(0, 36, 16, 4, K('wood', 2)); c.HL(0, 36, 16, K('wood', 4)); c.HL(0, 39, 16, K('wood', 0)); c.HL(0, 38, 16, K('wood', 1))
-    # 아래 웨인스코트
-    c.R(0, 40, 16, 24, K('wood', 2))
-    for x in (0, 8):
-        c.R(x + 1, 43, 6, 15, K('wood', 1)); c.HL(x + 1, 43, 6, K('wood', 0)); c.VL(x + 1, 43, 15, K('wood', 0)); c.HL(x + 1, 57, 6, K('wood', 3)); c.VL(x + 6, 44, 14, K('wood', 3))
-    c.HL(0, 40, 16, K('wood', 3)); c.HL(0, 60, 16, K('wood', 3)); c.R(0, 61, 16, 3, K('wood', 1)); c.HL(0, 63, 16, K('wood', 0)); c.HL(0, 61, 16, K('wood', 2))
+    _wall_face(c)
+
+
+@REG.piece('wz-post-wainscot', '우체국 징두리 벽(1x1)', 1, 1, ['X'], 'architecture', SP,
+           '뒷벽 아래 짙은 나무 징두리만 떼어 낸 한 칸(위 회벽 그늘 2px 포함). 낮은 칸막이·계산대 뒤 벽에 쓴다.',
+           rules='뒷벽 맨 아래 칸과 같은 높이로 이어진다. 가로로 반복.', tags=('post', 'wall', 'interior', 'wainscot'), role='wall', repeat=True)
+def _wainscot(c):
+    _wall_face(c, 48, 16)
 
 
 @REG.piece('wz-post-ibeam', '목재 기둥 벽(1x1)', 1, 1, ['X'], 'architecture', SP,
-           '실내 옆벽용 통나무 기둥 면. 쇠띠가 둘러졌다.', rules='실내 좌우 가장자리 벽.', tags=('post', 'wall', 'interior'), role='wall', repeat=True)
+           '실내 옆벽: 크림색 회벽 띠 양쪽을 짙은 목재 기둥이 감싼다.', rules='실내 좌우 가장자리 벽(세로 반복).', tags=('post', 'wall', 'interior'), role='wall', repeat=True)
 def _ibeam(c):
-    c.R(0, 0, 16, 16, K('wood', 2))
-    c.R(2, 0, 12, 16, K('wood', 3)); c.VL(2, 0, 16, K('wood', 4)); c.VL(3, 0, 16, K('wood', 4)); c.VL(12, 0, 16, K('wood', 2)); c.VL(13, 0, 16, K('wood', 1))
-    c.VL(0, 0, 16, K('wood', 0)); c.VL(15, 0, 16, K('wood', 0)); c.VL(1, 0, 16, K('wood', 1)); c.VL(14, 0, 16, K('wood', 1))
-    c.P(7, 4, K('wood', 2)); c.P(8, 5, K('wood', 2)); c.P(6, 11, K('wood', 2)); c.P(8, 12, K('wood', 2))
-    for y in (3, 12):
-        c.HL(2, y, 12, K('iron', 1)); c.HL(2, y + 1, 12, K('iron', 2)); c.P(3, y, K('iron', 3)); c.P(12, y, K('iron', 3))
+    c.R(0, 0, 16, 16, PLASTER[1])
+    c.VL(4, 0, 16, PLASTER[0])                            # 왼 기둥이 드리운 그늘
+    c.R(0, 0, 4, 16, K('wood', 1)); c.VL(0, 0, 16, K('wood', 0)); c.VL(1, 0, 16, K('wood', 2))
+    c.R(12, 0, 4, 16, K('wood', 1)); c.VL(12, 0, 16, K('wood', 2)); c.VL(15, 0, 16, K('wood', 0))
+    c.P(8, 5, PLASTER[2]); c.P(7, 11, PLASTER[0])
 
 
 @REG.piece('wz-post-iwall-win', '목재 벽 격자창(1x2)', 1, 2, ['X', 'X'], 'architecture', SP,
-           '널판 벽에 난 작은 격자창. 불빛이 새어 든다.', rules='뒷벽 사이에 끼워 넣는다.', tags=('post', 'wall', 'window', 'interior'), role='wall')
+           '회벽에 난 작은 격자창. 짙은 나무틀 사이로 불빛이 새어 든다.', rules='뒷벽 1~2행 자리에 끼워 넣는다.', tags=('post', 'wall', 'window', 'interior'), role='wall')
 def _iwin(c):
-    c.R(0, 0, 16, 32, K('wood', 2))
-    _wall_planks(c, 0, 32, 1)
-    c.R(3, 6, 10, 15, K('wood', 1)); c.HL(3, 6, 10, K('wood', 4)); c.HL(3, 20, 10, K('wood', 0))
+    _wall_face(c, 16, 32)
+    c.R(3, 6, 10, 15, K('wood', 1)); c.HL(3, 6, 10, K('wood', 2)); c.HL(3, 20, 10, K('wood', 0))
     c.R(4, 7, 8, 13, K('fire', 2)); c.R(5, 8, 6, 4, K('fire', 3)); c.P(5, 8, K('fire', 4)); c.P(6, 8, K('fire', 4))
     c.VL(7, 7, 13, K('wood', 2)); c.VL(8, 7, 13, K('wood', 1)); c.HL(4, 13, 8, K('wood', 2)); c.HL(4, 14, 8, K('wood', 1))
-    c.R(2, 20, 12, 2, K('wood', 3)); c.HL(2, 20, 12, K('wood', 4)); c.HL(2, 21, 12, K('wood', 0))
+    c.R(2, 20, 12, 2, K('wood', 3)); c.HL(2, 20, 12, K('wood', 4)); c.HL(2, 21, 12, K('wood', 1))
 
 
 # ───────────── 배치 7: 예제 ─────────────

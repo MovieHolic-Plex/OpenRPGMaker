@@ -1,199 +1,203 @@
 {
-  "_reviewer": "sonnet adversarial",
-  "wz-post-door-closed": {
-    "verdict": "PASS",
-    "reason": "recheck: door now 1x3, taller than the 24x32 person; closed plank door reads clearly"
-  },
-  "wz-post-door-ajar": {
-    "verdict": "PASS",
-    "reason": "recheck: door now 1x3 at proper scale; ajar leaf with warm interior light reads"
-  },
-  "wz-post-door-open": {
-    "verdict": "PASS",
-    "reason": "recheck: door now 1x3 at proper scale; dark interior and mat read as open door"
-  },
-  "wz-post-wall-l": {
-    "verdict": "PASS",
-    "reason": "recheck: wall now 1x3 storey, fits the taller door and person scale"
-  },
-  "wz-post-wall-m": {
-    "verdict": "PASS",
-    "reason": "recheck: wall now 1x3 storey with X brace, scale fixed"
-  },
-  "wz-post-wall-r": {
-    "verdict": "PASS",
-    "reason": "recheck: wall now 1x3 storey, scale fixed"
-  },
-  "wz-post-wall-w": {
-    "verdict": "PASS",
-    "reason": "recheck: window wall now 1x3 storey, scale fixed"
-  },
-  "wz-post-kit-office": {
-    "verdict": "PASS",
-    "reason": "recheck: reassembled with 1x3 walls/door and centered chimney; symmetric and readable"
-  },
-  "wz-post-kit-house": {
-    "verdict": "PASS",
-    "reason": "recheck: reassembled with 1x3 walls/door, chimney centered and snow cap within roof"
-  },
-  "wz-post-gable": {
-    "verdict": "PASS",
-    "reason": "recheck: dormer window now sits inside the gable triangle"
-  },
-  "wz-post-snowcobble": {
-    "verdict": "PASS",
-    "reason": "recheck: outer edge now reads as heaped snow bank, no dark outline"
-  },
-  "wz-post-snow-a": {
-    "verdict": "PASS",
-    "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
-  },
-  "wz-post-snow-b": {
-    "verdict": "PASS",
-    "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
-  },
-  "wz-post-sack": {
-    "verdict": "PASS",
-    "reason": "recheck: two pale sacks hang from a wooden frame, clearly a sack rack"
-  },
-  "wz-post-perch": {
-    "verdict": "PASS",
-    "reason": "recheck: wide crossbar with wraps on a stand reads as a perch; acceptable"
-  },
-  "wz-post-sort": {
-    "verdict": "PASS",
-    "reason": "recheck: letter pigeonhole shelf reads well; walk fix accepted"
-  },
-  "wz-post-floor": {
-    "verdict": "PASS",
-    "reason": "짙은 판재 바닥, 판 이음 엇갈림·옹이·3단 명암, 4×4로 깔아도 이음새 없음. 실내 바닥 F."
-  },
-  "wz-post-print-a": {
-    "verdict": "PASS",
-    "reason": "구두 앞창+뒤꿈치 두 덩이, 안쪽이 왼위 그늘·오른아래 흰 테로 눈 위 파인 자국으로 읽힘. f 덧그림."
-  },
-  "wz-post-print-b": {
-    "verdict": "PASS",
-    "reason": "좌우 발이 엇갈린 발자국, 파인 명암 방향 맞음. f 덧그림."
-  },
-  "wz-post-puddle": {
-    "verdict": "PASS",
-    "reason": "얼음 테두리 두른 푸른 타원 웅덩이, 왼위 반사선. 윗면 시점 맞음. f."
-  },
-  "wz-post-threshold": {
-    "verdict": "PASS",
-    "reason": "눈 윗면+앞 돌 문턱 한 줄, 눈→문턱 전이로 읽힘. F."
-  },
-  "wz-post-plinth": {
-    "verdict": "PASS",
-    "reason": "눈 얹은 돌 기단 블록, 이음 엇갈림·마모점·3단 명암. X."
-  },
-  "wz-post-roof-ridge": {
-    "verdict": "PASS",
-    "reason": "두툼한 눈 능선+아래 슬레이트, 윗면 탑뷰. S."
-  },
-  "wz-post-roof-ridge-l": {
-    "verdict": "PASS",
-    "reason": "용마루 왼끝 눈 처짐·끝 마감. S."
-  },
-  "wz-post-roof-ridge-r": {
-    "verdict": "PASS",
-    "reason": "용마루 오른끝, 왼끝과 거울. S."
-  },
-  "wz-post-roof-a": {
-    "verdict": "PASS",
-    "reason": "슬레이트 겹 행+눈 덩이 하나, 지붕 윗면 3/4로 읽힘(거리 예제에서 지붕으로 읽힘). S."
-  },
-  "wz-post-roof-b": {
-    "verdict": "PASS",
-    "reason": "슬레이트 행 변형, 이음 없이 a/c와 이어짐. S."
-  },
-  "wz-post-roof-c": {
-    "verdict": "PASS",
-    "reason": "슬레이트 행 변형. S."
-  },
-  "wz-post-roof-l": {
-    "verdict": "PASS",
-    "reason": "지붕 왼 가장자리 박공널 1px, 슬레이트와 이어짐. S."
-  },
-  "wz-post-roof-r": {
-    "verdict": "PASS",
-    "reason": "지붕 오른 가장자리, roof-l과 거울. S."
-  },
-  "wz-post-eave-l": {
-    "verdict": "PASS",
-    "reason": "슬레이트 끝+눈 턱+짙은 처마널, 처마 C 통행 맞음."
-  },
-  "wz-post-eave-m": {
-    "verdict": "PASS",
-    "reason": "처마 가운데 반복, 눈 턱 이음 OK. C."
-  },
-  "wz-post-eave-r": {
-    "verdict": "PASS",
-    "reason": "처마 오른끝, eave-l과 거울. C."
-  },
-  "wz-post-window": {
-    "verdict": "PASS",
-    "reason": "불 켜진 격자창(창살·창턱·불빛 2톤), 1배에서 창으로 읽힘. 정면 대칭."
-  },
-  "wz-post-bay": {
-    "verdict": "PASS",
-    "reason": "눈 얹은 창턱+여섯 칸 불빛 진열창, 상점 내닫이창으로 읽힘. 대칭. SS."
-  },
-  "wz-post-sign": {
-    "verdict": "PASS",
-    "reason": "걸이 쇠대에 매단 판, 흰 눈 동그라미+노란 부리+귀깃 부엉이 얼굴과 붉은 봉랍 봉투 — 문자 없이 우체국 간판으로 읽힘. CC."
-  },
-  "wz-post-slot": {
-    "verdict": "PASS",
-    "reason": "회벽 위 황동 테 우편 투입구, 금속 반사 1px. S."
-  },
-  "wz-post-mailbox": {
-    "verdict": "PASS",
-    "reason": "눈 모자 얹은 빨간 기둥 우체통(투입구·황동 명판), 윗면 눈 캡 보임, 빨강 4단. 높이 약 30px 1×2 적정. S,S."
-  },
-  "wz-post-lamp": {
-    "verdict": "PASS",
-    "reason": "눈 얹은 갓·불빛 유리·철 기둥·받침, 3칸 가로등으로 읽힘. C,C,S 맞음. 정적."
-  },
-  "wz-post-barrel": {
-    "verdict": "PASS",
-    "reason": "윗면 타원에 눈, 앞면 나무 결+쇠테 2줄, 3/4 통으로 읽힘. S."
-  },
-  "wz-post-crate": {
-    "verdict": "PASS",
-    "reason": "눈 덮인 윗면+앞 널 이음, 나무 상자로 읽힘. S."
-  },
-  "wz-post-chimney": {
-    "verdict": "PASS",
-    "reason": "붉은 벽돌 몸통+윗면 어두운 연도 구멍·눈 모자, 아래 눈 받침 — 지붕 위 굴뚝으로 읽힘, 윗면 보임. S,S."
-  },
-  "wz-post-letters": {
-    "verdict": "PASS",
-    "reason": "붉은 봉랍 점 찍힌 흰 봉투 더미, 1배에서 편지 더미. f."
-  },
-  "wz-post-counter": {
-    "verdict": "PASS",
-    "reason": "윗면 상판 11px+앞판 17px(허리 높이), 황동 종·펼친 장부·잉크병과 깃펜으로 우체국 카운터로 읽힘, native 카운터와 같은 결. SSS×2."
-  },
-  "wz-post-parcel": {
-    "verdict": "PASS",
-    "reason": "끈 십자 묶은 소포 두 상자 쌓임, 윗면+앞면. S."
-  },
-  "wz-post-parcels": {
-    "verdict": "PASS",
-    "reason": "상자 더미+묶은 꾸러미, 소포 무더기로 읽힘. SS."
-  },
-  "wz-post-iwall": {
-    "verdict": "PASS",
-    "reason": "세로 판벽+아래 징두리 패널, 실내 목재 벽 1×4로 읽힘, 나무 결 3단. X."
-  },
-  "wz-post-ibeam": {
-    "verdict": "PASS",
-    "reason": "쇠띠 두른 참나무 기둥, 세로로 이으면 기둥 벽으로 읽힘. X."
-  },
-  "wz-post-iwall-win": {
-    "verdict": "PASS",
-    "reason": "판벽 속 불 켜진 격자창 1×2, 창살·창턱 명확. X."
-  }
+ "_reviewer": "sonnet adversarial",
+ "wz-post-door-closed": {
+  "verdict": "PASS",
+  "reason": "recheck: door now 1x3, taller than the 24x32 person; closed plank door reads clearly"
+ },
+ "wz-post-door-ajar": {
+  "verdict": "PASS",
+  "reason": "recheck: door now 1x3 at proper scale; ajar leaf with warm interior light reads"
+ },
+ "wz-post-door-open": {
+  "verdict": "PASS",
+  "reason": "recheck: door now 1x3 at proper scale; dark interior and mat read as open door"
+ },
+ "wz-post-wall-l": {
+  "verdict": "PASS",
+  "reason": "recheck: wall now 1x3 storey, fits the taller door and person scale"
+ },
+ "wz-post-wall-m": {
+  "verdict": "PASS",
+  "reason": "recheck: wall now 1x3 storey with X brace, scale fixed"
+ },
+ "wz-post-wall-r": {
+  "verdict": "PASS",
+  "reason": "recheck: wall now 1x3 storey, scale fixed"
+ },
+ "wz-post-wall-w": {
+  "verdict": "PASS",
+  "reason": "recheck: window wall now 1x3 storey, scale fixed"
+ },
+ "wz-post-kit-office": {
+  "verdict": "PASS",
+  "reason": "recheck: reassembled with 1x3 walls/door and centered chimney; symmetric and readable"
+ },
+ "wz-post-kit-house": {
+  "verdict": "PASS",
+  "reason": "recheck: reassembled with 1x3 walls/door, chimney centered and snow cap within roof"
+ },
+ "wz-post-gable": {
+  "verdict": "PASS",
+  "reason": "recheck: dormer window now sits inside the gable triangle"
+ },
+ "wz-post-snowcobble": {
+  "verdict": "PASS",
+  "reason": "recheck: outer edge now reads as heaped snow bank, no dark outline"
+ },
+ "wz-post-snow-a": {
+  "verdict": "PASS",
+  "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
+ },
+ "wz-post-snow-b": {
+  "verdict": "PASS",
+  "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
+ },
+ "wz-post-sack": {
+  "verdict": "PASS",
+  "reason": "recheck: two pale sacks hang from a wooden frame, clearly a sack rack"
+ },
+ "wz-post-perch": {
+  "verdict": "PASS",
+  "reason": "recheck: wide crossbar with wraps on a stand reads as a perch; acceptable"
+ },
+ "wz-post-sort": {
+  "verdict": "PASS",
+  "reason": "recheck: letter pigeonhole shelf reads well; walk fix accepted"
+ },
+ "wz-post-floor": {
+  "verdict": "PASS",
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+ },
+ "wz-post-print-a": {
+  "verdict": "PASS",
+  "reason": "구두 앞창+뒤꿈치 두 덩이, 안쪽이 왼위 그늘·오른아래 흰 테로 눈 위 파인 자국으로 읽힘. f 덧그림."
+ },
+ "wz-post-print-b": {
+  "verdict": "PASS",
+  "reason": "좌우 발이 엇갈린 발자국, 파인 명암 방향 맞음. f 덧그림."
+ },
+ "wz-post-puddle": {
+  "verdict": "PASS",
+  "reason": "얼음 테두리 두른 푸른 타원 웅덩이, 왼위 반사선. 윗면 시점 맞음. f."
+ },
+ "wz-post-threshold": {
+  "verdict": "PASS",
+  "reason": "눈 윗면+앞 돌 문턱 한 줄, 눈→문턱 전이로 읽힘. F."
+ },
+ "wz-post-plinth": {
+  "verdict": "PASS",
+  "reason": "눈 얹은 돌 기단 블록, 이음 엇갈림·마모점·3단 명암. X."
+ },
+ "wz-post-roof-ridge": {
+  "verdict": "PASS",
+  "reason": "두툼한 눈 능선+아래 슬레이트, 윗면 탑뷰. S."
+ },
+ "wz-post-roof-ridge-l": {
+  "verdict": "PASS",
+  "reason": "용마루 왼끝 눈 처짐·끝 마감. S."
+ },
+ "wz-post-roof-ridge-r": {
+  "verdict": "PASS",
+  "reason": "용마루 오른끝, 왼끝과 거울. S."
+ },
+ "wz-post-roof-a": {
+  "verdict": "PASS",
+  "reason": "슬레이트 겹 행+눈 덩이 하나, 지붕 윗면 3/4로 읽힘(거리 예제에서 지붕으로 읽힘). S."
+ },
+ "wz-post-roof-b": {
+  "verdict": "PASS",
+  "reason": "슬레이트 행 변형, 이음 없이 a/c와 이어짐. S."
+ },
+ "wz-post-roof-c": {
+  "verdict": "PASS",
+  "reason": "슬레이트 행 변형. S."
+ },
+ "wz-post-roof-l": {
+  "verdict": "PASS",
+  "reason": "지붕 왼 가장자리 박공널 1px, 슬레이트와 이어짐. S."
+ },
+ "wz-post-roof-r": {
+  "verdict": "PASS",
+  "reason": "지붕 오른 가장자리, roof-l과 거울. S."
+ },
+ "wz-post-eave-l": {
+  "verdict": "PASS",
+  "reason": "슬레이트 끝+눈 턱+짙은 처마널, 처마 C 통행 맞음."
+ },
+ "wz-post-eave-m": {
+  "verdict": "PASS",
+  "reason": "처마 가운데 반복, 눈 턱 이음 OK. C."
+ },
+ "wz-post-eave-r": {
+  "verdict": "PASS",
+  "reason": "처마 오른끝, eave-l과 거울. C."
+ },
+ "wz-post-window": {
+  "verdict": "PASS",
+  "reason": "불 켜진 격자창(창살·창턱·불빛 2톤), 1배에서 창으로 읽힘. 정면 대칭."
+ },
+ "wz-post-bay": {
+  "verdict": "PASS",
+  "reason": "눈 얹은 창턱+여섯 칸 불빛 진열창, 상점 내닫이창으로 읽힘. 대칭. SS."
+ },
+ "wz-post-sign": {
+  "verdict": "PASS",
+  "reason": "걸이 쇠대에 매단 판, 흰 눈 동그라미+노란 부리+귀깃 부엉이 얼굴과 붉은 봉랍 봉투 — 문자 없이 우체국 간판으로 읽힘. CC."
+ },
+ "wz-post-slot": {
+  "verdict": "PASS",
+  "reason": "회벽 위 황동 테 우편 투입구, 금속 반사 1px. S."
+ },
+ "wz-post-mailbox": {
+  "verdict": "PASS",
+  "reason": "눈 모자 얹은 빨간 기둥 우체통(투입구·황동 명판), 윗면 눈 캡 보임, 빨강 4단. 높이 약 30px 1×2 적정. S,S."
+ },
+ "wz-post-lamp": {
+  "verdict": "PASS",
+  "reason": "눈 얹은 갓·불빛 유리·철 기둥·받침, 3칸 가로등으로 읽힘. C,C,S 맞음. 정적."
+ },
+ "wz-post-barrel": {
+  "verdict": "PASS",
+  "reason": "윗면 타원에 눈, 앞면 나무 결+쇠테 2줄, 3/4 통으로 읽힘. S."
+ },
+ "wz-post-crate": {
+  "verdict": "PASS",
+  "reason": "눈 덮인 윗면+앞 널 이음, 나무 상자로 읽힘. S."
+ },
+ "wz-post-chimney": {
+  "verdict": "PASS",
+  "reason": "붉은 벽돌 몸통+윗면 어두운 연도 구멍·눈 모자, 아래 눈 받침 — 지붕 위 굴뚝으로 읽힘, 윗면 보임. S,S."
+ },
+ "wz-post-letters": {
+  "verdict": "PASS",
+  "reason": "붉은 봉랍 점 찍힌 흰 봉투 더미, 1배에서 편지 더미. f."
+ },
+ "wz-post-counter": {
+  "verdict": "PASS",
+  "reason": "윗면 상판 11px+앞판 17px(허리 높이), 황동 종·펼친 장부·잉크병과 깃펜으로 우체국 카운터로 읽힘, native 카운터와 같은 결. SSS×2."
+ },
+ "wz-post-parcel": {
+  "verdict": "PASS",
+  "reason": "끈 십자 묶은 소포 두 상자 쌓임, 윗면+앞면. S."
+ },
+ "wz-post-parcels": {
+  "verdict": "PASS",
+  "reason": "상자 더미+묶은 꾸러미, 소포 무더기로 읽힘. SS."
+ },
+ "wz-post-iwall": {
+  "verdict": "PASS",
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+ },
+ "wz-post-ibeam": {
+  "verdict": "PASS",
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+ },
+ "wz-post-iwall-win": {
+  "verdict": "PASS",
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+ },
+ "wz-post-wainscot": {
+  "verdict": "PASS",
+  "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+ }
 }
