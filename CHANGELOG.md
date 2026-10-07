@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.177.1 — 2026-10-08
+
+### 수정
+
+- **assistant** — align single-cell exits and validate portal placement (`56b86b3`)
+
+### 문서
+
+- **assistant** — preserve raw verification exit evidence (`f08811f`)
+- **assistant** — record verified exit events and runtime round trips (`203da6f`)
+
+### 테스트
+
+- **assistant** — verify exit coordinates and retain saved checkpoint evidence (`0b0f5c0`)
+
 ## 0.177.0 — 2026-10-08
 
 ### 기능
