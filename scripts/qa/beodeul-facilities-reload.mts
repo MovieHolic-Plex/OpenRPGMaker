@@ -1,0 +1,14 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {openLocalProjectStore} from '../../electron/local-store/store';
+import {renderMapPng} from '../qa-game/render.mts';
+const out='output/beodeul-facilities',saved=JSON.parse(fs.readFileSync(`${out}/save-result.json`,'utf8'));
+const store=await openLocalProjectStore({projectDir:saved.projectDir}),s=store.loadSnapshot()!;
+assert.equal(s.sha256,saved.sha256);assert.equal(s.revision,saved.revision);
+const authored=JSON.parse(fs.readFileSync(`${out}/authored-project.json`,'utf8'));
+assert.deepEqual(s.project.maps,authored.maps);
+const expected=JSON.parse(fs.readFileSync('src/assets/beodeulFacilitiesReferences.json','utf8'));
+assert.deepEqual(s.project.tilesets.beodeul_city!.referenceDocuments!.find(c=>c.id==='beodeul-facilities'),expected[0]);
+assert.equal(s.project.tilesets.beodeul_city!.structureKits!.filter(k=>k.id.startsWith('bd-facility-')).length,32);
+fs.writeFileSync(`${out}/reloaded-project.json`,JSON.stringify(s.project));
+fs.writeFileSync('verify-shots/beodeul-facilities/reloaded.png',renderMapPng({...s.project,startMapId:''},s.project.maps.map_beodeul_village50!).png);
+fs.writeFileSync('verify-shots/beodeul-facilities/canonical-proof.json',JSON.stringify({...saved,savedAndReopened:true,entireAuthoredMapMatches:true,commonFacilityKitsAndReferencesMatch:true},null,2));
+store.close();console.log('Canonical village and all 32 common facility kits reopened');

@@ -1,0 +1,239 @@
+{
+  "scenarioId": "assistant-house-entry",
+  "projectPath": "output/assistant-house-entry/reloaded-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "01-outside",
+      "note": "AI 조수가 지정한 시작점 — 버들항 집 앞",
+      "shot": "02-01-outside.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "02-entered",
+      "note": "문 앞까지 실제로 걸어 실내에 진입 — 즉시 되돌아가지 않는 착지",
+      "shot": "03-02-entered.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_beodeul_small_home",
+        "x": 4,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_beodeul_small_home",
+          "x": 4,
+          "y": 7,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pauseFrames"
+        },
+        {
+          "kind": "stepFrames",
+          "frames": 40,
+          "deltaMs": 16
+        },
+        {
+          "kind": "resumeFrames"
+        }
+      ],
+      "frameReceipts": [
+        {
+          "sequence": 1,
+          "frames": 40,
+          "deltaMs": 16,
+          "startFrame": 77,
+          "endFrame": 117
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "03-inside-walk",
+      "note": "현관에서 실내 안쪽으로 걸어 이동",
+      "shot": "04-03-inside-walk.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_beodeul_small_home",
+        "x": 4,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_beodeul_small_home",
+          "x": 4,
+          "y": 3,
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "04-returned",
+      "note": "실내 출구까지 걸어서 같은 집 앞으로 복귀",
+      "shot": "05-04-returned.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "playerRoute",
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            }
+          ]
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 10,
+          "y": 8,
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pauseFrames"
+        },
+        {
+          "kind": "stepFrames",
+          "frames": 40,
+          "deltaMs": 16
+        },
+        {
+          "kind": "resumeFrames"
+        }
+      ],
+      "frameReceipts": [
+        {
+          "sequence": 2,
+          "frames": 40,
+          "deltaMs": 16,
+          "startFrame": 287,
+          "endFrame": 327
+        }
+      ]
+    }
+  ]
+}

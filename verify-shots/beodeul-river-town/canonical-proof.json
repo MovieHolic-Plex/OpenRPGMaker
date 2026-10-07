@@ -1,0 +1,26 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "revision": 18,
+  "sha256": "b5c69f999f7d8525f4ff7fa372112fbcf11ec56eda4202a34ce2783eb7c003b5",
+  "savedAndReopened": true,
+  "mapId": "map_beodeul_river_town",
+  "buildings": 41,
+  "bridges": 3,
+  "all41ActualEntrancesAndSixBridgeBanksConnectedByAuthoredStreets": true,
+  "allAuthoredMapLayersAndEventsMatchSavedIntent": true,
+  "existingMapsPreserved": true,
+  "newAndExistingProjectsHaveSharedReferences": true,
+  "exteriorOnly": true,
+  "runtimeRouteSteps": 296,
+  "runtime": {
+    "beats": 10,
+    "routeSteps": 296,
+    "allThreeBridgeDecksCrossed": true,
+    "errors": 0,
+    "visualReview": [
+      "02-village-start.png",
+      "07-church.png"
+    ]
+  }
+}

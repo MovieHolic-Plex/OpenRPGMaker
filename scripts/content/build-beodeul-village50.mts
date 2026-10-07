@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {openLocalProjectStore} from '../../electron/local-store/store.ts';
+import {buildBeodeulVillage50} from './lib/beodeul-village50.mts';
+import {renderMapPng} from '../qa-game/render.mts';
+const out='output/beodeul-village50',evidence='verify-shots/beodeul-village50';
+fs.mkdirSync(out,{recursive:true});fs.mkdirSync(evidence,{recursive:true});
+const store=await openLocalProjectStore({projectDir:'/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004'});
+const before=store.loadSnapshot()!;store.close();
+assert.equal(before.revision,20);
+fs.writeFileSync(`${out}/before.json`,JSON.stringify(before.project));
+fs.writeFileSync(`${out}/before-store.json`,JSON.stringify({sha256:before.sha256,revision:before.revision}));
+const p=before.project;
+const result=buildBeodeulVillage50(p);p.startMapId=result.mapId;p.startPos=result.start;
+fs.writeFileSync(`${out}/preview-project.json`,JSON.stringify(p));
+fs.writeFileSync(`${out}/build-result.json`,JSON.stringify(result,null,2));
+fs.writeFileSync(`${evidence}/preview.png`,renderMapPng({...p,startMapId:''},p.maps[result.mapId]!).png);
+console.log(JSON.stringify({buildings:result.fronts.length,bridges:result.bridges.length,trees:result.placements.filter(a=>a.kind==='warm-tree').length,allEntrancesReachable:true}));

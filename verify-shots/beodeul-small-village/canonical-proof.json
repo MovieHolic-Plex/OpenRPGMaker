@@ -1,0 +1,25 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "storeFile": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite",
+  "revision": 7,
+  "sha256": "afaf9aac144a58f357f580267aa40f4740271032321260292c6d8911c17510ca",
+  "reopenedIdentically": true,
+  "mapId": "map_beodeul_rest",
+  "mapName": "버들쉼터",
+  "size": [
+    40,
+    30
+  ],
+  "houses": 5,
+  "distinctHouseKits": 5,
+  "originalTwoMapsPreserved": true,
+  "oldTwoTreeConnectionsFixed": true,
+  "originalOverlayCellsAndPassabilityPreserved": true,
+  "fiveDoorsConnectedByRoads": true,
+  "startMapId": "map_beodeul_rest",
+  "startPos": {
+    "x": 18,
+    "y": 17
+  }
+}

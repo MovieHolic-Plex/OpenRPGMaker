@@ -1,0 +1,1821 @@
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_cluster.png?url, use /assets/generated/pixel-fx/airship_cluster.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_dive.png?url, use /assets/generated/pixel-fx/airship_dive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_dragon.png?url, use /assets/generated/pixel-fx/airship_dragon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_dragon_hit.png?url, use /assets/generated/pixel-fx/airship_dragon_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_flame.png?url, use /assets/generated/pixel-fx/airship_flame.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_gale.png?url, use /assets/generated/pixel-fx/airship_gale.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_gun_hit.png?url, use /assets/generated/pixel-fx/airship_gun_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_roar.png?url, use /assets/generated/pixel-fx/airship_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_storm.png?url, use /assets/generated/pixel-fx/airship_storm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/airship_tracer.png?url, use /assets/generated/pixel-fx/airship_tracer.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_acid_splash.png?url, use /assets/generated/pixel-fx/alchemist_acid_splash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_bomb_blast.png?url, use /assets/generated/pixel-fx/alchemist_bomb_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_bomb_fuse.png?url, use /assets/generated/pixel-fx/alchemist_bomb_fuse.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_elixir.png?url, use /assets/generated/pixel-fx/alchemist_elixir.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_flask.png?url, use /assets/generated/pixel-fx/alchemist_flask.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_stimulant.png?url, use /assets/generated/pixel-fx/alchemist_stimulant.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_stone.png?url, use /assets/generated/pixel-fx/alchemist_stone.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_stone_hit.png?url, use /assets/generated/pixel-fx/alchemist_stone_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_toxic.png?url, use /assets/generated/pixel-fx/alchemist_toxic.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_transmute.png?url, use /assets/generated/pixel-fx/alchemist_transmute.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/alchemist_vials.png?url, use /assets/generated/pixel-fx/alchemist_vials.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/arcane.png?url, use /assets/generated/pixel-fx/arcane.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/archmage_elements_sky.png?url, use /assets/generated/pixel-fx/archmage_elements_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/archmage_prism.png?url, use /assets/generated/pixel-fx/archmage_prism.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_bomb.png?url, use /assets/generated/pixel-fx/balloon_bomb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_carpet.png?url, use /assets/generated/pixel-fx/balloon_carpet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_confetti.png?url, use /assets/generated/pixel-fx/balloon_confetti.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_crash.png?url, use /assets/generated/pixel-fx/balloon_crash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_crash_hit.png?url, use /assets/generated/pixel-fx/balloon_crash_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_flare.png?url, use /assets/generated/pixel-fx/balloon_flare.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_sandbag.png?url, use /assets/generated/pixel-fx/balloon_sandbag.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_sandbag_hit.png?url, use /assets/generated/pixel-fx/balloon_sandbag_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_scout.png?url, use /assets/generated/pixel-fx/balloon_scout.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/balloon_updraft.png?url, use /assets/generated/pixel-fx/balloon_updraft.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_discord.png?url, use /assets/generated/pixel-fx/bard_discord.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_finale_hit.png?url, use /assets/generated/pixel-fx/bard_finale_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_finale_stage.png?url, use /assets/generated/pixel-fx/bard_finale_stage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_hymn.png?url, use /assets/generated/pixel-fx/bard_hymn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_notes_blue.png?url, use /assets/generated/pixel-fx/bard_notes_blue.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_notes_red.png?url, use /assets/generated/pixel-fx/bard_notes_red.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_requiem_hit.png?url, use /assets/generated/pixel-fx/bard_requiem_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_requiem_sky.png?url, use /assets/generated/pixel-fx/bard_requiem_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_sonic_hit.png?url, use /assets/generated/pixel-fx/bard_sonic_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_sonic_wave.png?url, use /assets/generated/pixel-fx/bard_sonic_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/bard_tempo.png?url, use /assets/generated/pixel-fx/bard_tempo.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/basilisk_gorgon_sky.png?url, use /assets/generated/pixel-fx/basilisk_gorgon_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/basilisk_petrify.png?url, use /assets/generated/pixel-fx/basilisk_petrify.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_claw.png?url, use /assets/generated/pixel-fx/beast_tamer_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_hawk.png?url, use /assets/generated/pixel-fx/beast_tamer_hawk.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_king_hit.png?url, use /assets/generated/pixel-fx/beast_tamer_king_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_king_sky.png?url, use /assets/generated/pixel-fx/beast_tamer_king_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_mend.png?url, use /assets/generated/pixel-fx/beast_tamer_mend.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_roar.png?url, use /assets/generated/pixel-fx/beast_tamer_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_snake.png?url, use /assets/generated/pixel-fx/beast_tamer_snake.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_stampede.png?url, use /assets/generated/pixel-fx/beast_tamer_stampede.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/beast_tamer_wolf.png?url, use /assets/generated/pixel-fx/beast_tamer_wolf.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_axe_hit.png?url, use /assets/generated/pixel-fx/berserker_axe_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_axe_spin.png?url, use /assets/generated/pixel-fx/berserker_axe_spin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_crash.png?url, use /assets/generated/pixel-fx/berserker_crash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_doom.png?url, use /assets/generated/pixel-fx/berserker_doom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_doom_hit.png?url, use /assets/generated/pixel-fx/berserker_doom_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_frenzy.png?url, use /assets/generated/pixel-fx/berserker_frenzy.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_rend.png?url, use /assets/generated/pixel-fx/berserker_rend.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_roar.png?url, use /assets/generated/pixel-fx/berserker_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_smash.png?url, use /assets/generated/pixel-fx/berserker_smash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/berserker_whirl.png?url, use /assets/generated/pixel-fx/berserker_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/book_demon_barrage.png?url, use /assets/generated/pixel-fx/book_demon_barrage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/book_demon_grimoire_sky.png?url, use /assets/generated/pixel-fx/book_demon_grimoire_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/book_demon_paper_cut.png?url, use /assets/generated/pixel-fx/book_demon_paper_cut.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/book_demon_rune.png?url, use /assets/generated/pixel-fx/book_demon_rune.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/brawler_uppercut.png?url, use /assets/generated/pixel-fx/brawler_uppercut.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_cutlery.png?url, use /assets/generated/pixel-fx/butler_cutlery.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_final.png?url, use /assets/generated/pixel-fx/butler_final.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_knife.png?url, use /assets/generated/pixel-fx/butler_knife.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_service.png?url, use /assets/generated/pixel-fx/butler_service.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_silver_rain.png?url, use /assets/generated/pixel-fx/butler_silver_rain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_tea.png?url, use /assets/generated/pixel-fx/butler_tea.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/butler_vanish.png?url, use /assets/generated/pixel-fx/butler_vanish.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/candle_imp_ember.png?url, use /assets/generated/pixel-fx/candle_imp_ember.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/candle_imp_melt.png?url, use /assets/generated/pixel-fx/candle_imp_melt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/candle_imp_meltdown_sky.png?url, use /assets/generated/pixel-fx/candle_imp_meltdown_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/candle_imp_wax.png?url, use /assets/generated/pixel-fx/candle_imp_wax.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_afterimage.png?url, use /assets/generated/pixel-fx/cat_afterimage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_claw.png?url, use /assets/generated/pixel-fx/cat_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_frenzy_hit.png?url, use /assets/generated/pixel-fx/cat_frenzy_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_frenzy_sky.png?url, use /assets/generated/pixel-fx/cat_frenzy_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_hairball.png?url, use /assets/generated/pixel-fx/cat_hairball.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_hairball_hit.png?url, use /assets/generated/pixel-fx/cat_hairball_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_hiss.png?url, use /assets/generated/pixel-fx/cat_hiss.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_jab.png?url, use /assets/generated/pixel-fx/cat_jab.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_nine_lives.png?url, use /assets/generated/pixel-fx/cat_nine_lives.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cat_pounce.png?url, use /assets/generated/pixel-fx/cat_pounce.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chimera_rampage_sky.png?url, use /assets/generated/pixel-fx/chimera_rampage_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chimera_triple_breath.png?url, use /assets/generated/pixel-fx/chimera_triple_breath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_arrow.png?url, use /assets/generated/pixel-fx/chronomancer_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_arrow_hit.png?url, use /assets/generated/pixel-fx/chronomancer_arrow_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_hands.png?url, use /assets/generated/pixel-fx/chronomancer_hands.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_haste.png?url, use /assets/generated/pixel-fx/chronomancer_haste.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_rewind.png?url, use /assets/generated/pixel-fx/chronomancer_rewind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_sand.png?url, use /assets/generated/pixel-fx/chronomancer_sand.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_skip.png?url, use /assets/generated/pixel-fx/chronomancer_skip.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_slow.png?url, use /assets/generated/pixel-fx/chronomancer_slow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_stop_hit.png?url, use /assets/generated/pixel-fx/chronomancer_stop_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/chronomancer_stop_sky.png?url, use /assets/generated/pixel-fx/chronomancer_stop_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_blessing.png?url, use /assets/generated/pixel-fx/cleric_blessing.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_halo.png?url, use /assets/generated/pixel-fx/cleric_halo.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_heal.png?url, use /assets/generated/pixel-fx/cleric_heal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_judgment_cross.png?url, use /assets/generated/pixel-fx/cleric_judgment_cross.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_judgment_hit.png?url, use /assets/generated/pixel-fx/cleric_judgment_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_mass_heal.png?url, use /assets/generated/pixel-fx/cleric_mass_heal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_purify.png?url, use /assets/generated/pixel-fx/cleric_purify.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_revive.png?url, use /assets/generated/pixel-fx/cleric_revive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_sanctuary.png?url, use /assets/generated/pixel-fx/cleric_sanctuary.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cleric_smite.png?url, use /assets/generated/pixel-fx/cleric_smite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/clockwork_gear_blast.png?url, use /assets/generated/pixel-fx/clockwork_gear_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/clockwork_parade_sky.png?url, use /assets/generated/pixel-fx/clockwork_parade_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/clockwork_screw.png?url, use /assets/generated/pixel-fx/clockwork_screw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/clockwork_windup.png?url, use /assets/generated/pixel-fx/clockwork_windup.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cow_milk.png?url, use /assets/generated/pixel-fx/cow_milk.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cow_stampede_sky.png?url, use /assets/generated/pixel-fx/cow_stampede_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cyclops_eye_beam.png?url, use /assets/generated/pixel-fx/cyclops_eye_beam.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/cyclops_titan_sky.png?url, use /assets/generated/pixel-fx/cyclops_titan_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_afterimage.png?url, use /assets/generated/pixel-fx/dancer_afterimage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_curtain.png?url, use /assets/generated/pixel-fx/dancer_curtain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_charm.png?url, use /assets/generated/pixel-fx/dancer_charm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_fanburn.png?url, use /assets/generated/pixel-fx/dancer_fanburn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_fanwave.png?url, use /assets/generated/pixel-fx/dancer_fanwave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_grand_glow.png?url, use /assets/generated/pixel-fx/dancer_grand_glow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_pirouette.png?url, use /assets/generated/pixel-fx/dancer_pirouette.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_ribbon.png?url, use /assets/generated/pixel-fx/dancer_ribbon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_waltz.png?url, use /assets/generated/pixel-fx/dancer_waltz.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dancer_wardance.png?url, use /assets/generated/pixel-fx/dancer_wardance.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark.png?url, use /assets/generated/pixel-fx/dark.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_angel_black_feather.png?url, use /assets/generated/pixel-fx/dark_angel_black_feather.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_angel_judgment_sky.png?url, use /assets/generated/pixel-fx/dark_angel_judgment_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_blood.png?url, use /assets/generated/pixel-fx/dark_knight_blood.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_chain.png?url, use /assets/generated/pixel-fx/dark_knight_chain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_doom_hit.png?url, use /assets/generated/pixel-fx/dark_knight_doom_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_doom_sky.png?url, use /assets/generated/pixel-fx/dark_knight_doom_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_flame.png?url, use /assets/generated/pixel-fx/dark_knight_flame.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_gravity.png?url, use /assets/generated/pixel-fx/dark_knight_gravity.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_slash.png?url, use /assets/generated/pixel-fx/dark_knight_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_soul.png?url, use /assets/generated/pixel-fx/dark_knight_soul.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_wave.png?url, use /assets/generated/pixel-fx/dark_knight_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_knight_wave_hit.png?url, use /assets/generated/pixel-fx/dark_knight_wave_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_abyss.png?url, use /assets/generated/pixel-fx/dark_lord_abyss.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_chains.png?url, use /assets/generated/pixel-fx/dark_lord_chains.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_eclipse.png?url, use /assets/generated/pixel-fx/dark_lord_eclipse.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_eclipse_hit.png?url, use /assets/generated/pixel-fx/dark_lord_eclipse_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_hellbolt.png?url, use /assets/generated/pixel-fx/dark_lord_hellbolt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_meteor.png?url, use /assets/generated/pixel-fx/dark_lord_meteor.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_orb.png?url, use /assets/generated/pixel-fx/dark_lord_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_orb_hit.png?url, use /assets/generated/pixel-fx/dark_lord_orb_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_pact.png?url, use /assets/generated/pixel-fx/dark_lord_pact.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dark_lord_ward.png?url, use /assets/generated/pixel-fx/dark_lord_ward.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_general_doom_sky.png?url, use /assets/generated/pixel-fx/demon_general_doom_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_inferno_sky.png?url, use /assets/generated/pixel-fx/demon_inferno_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_awaken.png?url, use /assets/generated/pixel-fx/demon_knight_awaken.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_flamespin.png?url, use /assets/generated/pixel-fx/demon_knight_flamespin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_release.png?url, use /assets/generated/pixel-fx/demon_knight_release.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_release_hit.png?url, use /assets/generated/pixel-fx/demon_knight_release_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_slash.png?url, use /assets/generated/pixel-fx/demon_knight_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_smash.png?url, use /assets/generated/pixel-fx/demon_knight_smash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_thrust.png?url, use /assets/generated/pixel-fx/demon_knight_thrust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_wave.png?url, use /assets/generated/pixel-fx/demon_knight_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_wave_hit.png?url, use /assets/generated/pixel-fx/demon_knight_wave_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_knight_x.png?url, use /assets/generated/pixel-fx/demon_knight_x.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/demon_pact.png?url, use /assets/generated/pixel-fx/demon_pact.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/desert_warrior_blades_sky.png?url, use /assets/generated/pixel-fx/desert_warrior_blades_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/desert_warrior_crescent.png?url, use /assets/generated/pixel-fx/desert_warrior_crescent.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/desert_warrior_scorpion.png?url, use /assets/generated/pixel-fx/desert_warrior_scorpion.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/desert_warrior_sunfire.png?url, use /assets/generated/pixel-fx/desert_warrior_sunfire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/djinn_genie_sky.png?url, use /assets/generated/pixel-fx/djinn_genie_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/djinn_sandstorm.png?url, use /assets/generated/pixel-fx/djinn_sandstorm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/djinn_wish.png?url, use /assets/generated/pixel-fx/djinn_wish.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_bark_hit.png?url, use /assets/generated/pixel-fx/dog_bark_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_bark_wave.png?url, use /assets/generated/pixel-fx/dog_bark_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_bite.png?url, use /assets/generated/pixel-fx/dog_bite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_bone.png?url, use /assets/generated/pixel-fx/dog_bone.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_bone_hit.png?url, use /assets/generated/pixel-fx/dog_bone_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_howl_hit.png?url, use /assets/generated/pixel-fx/dog_howl_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_howl_sky.png?url, use /assets/generated/pixel-fx/dog_howl_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_loyal.png?url, use /assets/generated/pixel-fx/dog_loyal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_scratch.png?url, use /assets/generated/pixel-fx/dog_scratch.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_tackle.png?url, use /assets/generated/pixel-fx/dog_tackle.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dog_whirl.png?url, use /assets/generated/pixel-fx/dog_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/doll_bind.png?url, use /assets/generated/pixel-fx/doll_bind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/doll_pin_curse.png?url, use /assets/generated/pixel-fx/doll_pin_curse.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/doll_stitch.png?url, use /assets/generated/pixel-fx/doll_stitch.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/doll_strings.png?url, use /assets/generated/pixel-fx/doll_strings.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/doll_theater_sky.png?url, use /assets/generated/pixel-fx/doll_theater_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_claw.png?url, use /assets/generated/pixel-fx/dragonewt_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_flame.png?url, use /assets/generated/pixel-fx/dragonewt_flame.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_flame_hit.png?url, use /assets/generated/pixel-fx/dragonewt_flame_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_frost.png?url, use /assets/generated/pixel-fx/dragonewt_frost.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_inferno.png?url, use /assets/generated/pixel-fx/dragonewt_inferno.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_inferno_hit.png?url, use /assets/generated/pixel-fx/dragonewt_inferno_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_scales.png?url, use /assets/generated/pixel-fx/dragonewt_scales.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_tailspin.png?url, use /assets/generated/pixel-fx/dragonewt_tailspin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_venom.png?url, use /assets/generated/pixel-fx/dragonewt_venom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragonewt_wingcrash.png?url, use /assets/generated/pixel-fx/dragonewt_wingcrash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragoon_dive.png?url, use /assets/generated/pixel-fx/dragoon_dive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/dragoon_dragon_sky.png?url, use /assets/generated/pixel-fx/dragoon_dragon_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_bore.png?url, use /assets/generated/pixel-fx/drill_bore.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_core.png?url, use /assets/generated/pixel-fx/drill_core.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_core_hit.png?url, use /assets/generated/pixel-fx/drill_core_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_emerge.png?url, use /assets/generated/pixel-fx/drill_emerge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_magma.png?url, use /assets/generated/pixel-fx/drill_magma.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_rockfall.png?url, use /assets/generated/pixel-fx/drill_rockfall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_shock.png?url, use /assets/generated/pixel-fx/drill_shock.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_spin.png?url, use /assets/generated/pixel-fx/drill_spin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_temper.png?url, use /assets/generated/pixel-fx/drill_temper.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/drill_tunnel.png?url, use /assets/generated/pixel-fx/drill_tunnel.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_bark.png?url, use /assets/generated/pixel-fx/druid_bark.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_bear_spirit.png?url, use /assets/generated/pixel-fx/druid_bear_spirit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_claw.png?url, use /assets/generated/pixel-fx/druid_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_moonbeam.png?url, use /assets/generated/pixel-fx/druid_moonbeam.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_regrowth.png?url, use /assets/generated/pixel-fx/druid_regrowth.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_roots.png?url, use /assets/generated/pixel-fx/druid_roots.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_swarm.png?url, use /assets/generated/pixel-fx/druid_swarm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_thorn.png?url, use /assets/generated/pixel-fx/druid_thorn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_tree_hit.png?url, use /assets/generated/pixel-fx/druid_tree_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/druid_world_tree.png?url, use /assets/generated/pixel-fx/druid_world_tree.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/earth.png?url, use /assets/generated/pixel-fx/earth.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_calm.png?url, use /assets/generated/pixel-fx/elder_calm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_oath.png?url, use /assets/generated/pixel-fx/elder_oath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_rap.png?url, use /assets/generated/pixel-fx/elder_rap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_revive.png?url, use /assets/generated/pixel-fx/elder_revive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_scold.png?url, use /assets/generated/pixel-fx/elder_scold.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_spirit.png?url, use /assets/generated/pixel-fx/elder_spirit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elder_wisdom.png?url, use /assets/generated/pixel-fx/elder_wisdom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/elf_archer_spirit_arrow.png?url, use /assets/generated/pixel-fx/elf_archer_spirit_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_bloom.png?url, use /assets/generated/pixel-fx/fairy_bloom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_dash.png?url, use /assets/generated/pixel-fx/fairy_dash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_dash_hit.png?url, use /assets/generated/pixel-fx/fairy_dash_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_dust.png?url, use /assets/generated/pixel-fx/fairy_dust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_dust_hit.png?url, use /assets/generated/pixel-fx/fairy_dust_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_grove_hit.png?url, use /assets/generated/pixel-fx/fairy_grove_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_grove_sky.png?url, use /assets/generated/pixel-fx/fairy_grove_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_lullaby.png?url, use /assets/generated/pixel-fx/fairy_lullaby.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_pollen.png?url, use /assets/generated/pixel-fx/fairy_pollen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_vines.png?url, use /assets/generated/pixel-fx/fairy_vines.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_fork.png?url, use /assets/generated/pixel-fx/farmer_fork.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_harvest.png?url, use /assets/generated/pixel-fx/farmer_harvest.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_hay.png?url, use /assets/generated/pixel-fx/farmer_hay.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fairy_swarm.png?url, use /assets/generated/pixel-fx/fairy_swarm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_scarecrow.png?url, use /assets/generated/pixel-fx/farmer_scarecrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_seeds.png?url, use /assets/generated/pixel-fx/farmer_seeds.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_turnip.png?url, use /assets/generated/pixel-fx/farmer_turnip.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/farmer_wheat.png?url, use /assets/generated/pixel-fx/farmer_wheat.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fire.png?url, use /assets/generated/pixel-fx/fire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flame_spirit_nova_sky.png?url, use /assets/generated/pixel-fx/flame_spirit_nova_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_aroma.png?url, use /assets/generated/pixel-fx/flower_girl_aroma.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_bloom.png?url, use /assets/generated/pixel-fx/flower_girl_bloom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_bloom_glow.png?url, use /assets/generated/pixel-fx/flower_girl_bloom_glow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_bouquet.png?url, use /assets/generated/pixel-fx/flower_girl_bouquet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_bouquet_hit.png?url, use /assets/generated/pixel-fx/flower_girl_bouquet_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_petal_heal.png?url, use /assets/generated/pixel-fx/flower_girl_petal_heal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_storm.png?url, use /assets/generated/pixel-fx/flower_girl_storm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_sunflower.png?url, use /assets/generated/pixel-fx/flower_girl_sunflower.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_thorn.png?url, use /assets/generated/pixel-fx/flower_girl_thorn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/flower_girl_wreath.png?url, use /assets/generated/pixel-fx/flower_girl_wreath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/focus.png?url, use /assets/generated/pixel-fx/focus.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fortune_teller_meteor_sky.png?url, use /assets/generated/pixel-fx/fortune_teller_meteor_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/fortune_teller_zodiac.png?url, use /assets/generated/pixel-fx/fortune_teller_zodiac.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_armada.png?url, use /assets/generated/pixel-fx/galleon_armada.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_armada_hit.png?url, use /assets/generated/pixel-fx/galleon_armada_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_ball.png?url, use /assets/generated/pixel-fx/galleon_ball.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_blast.png?url, use /assets/generated/pixel-fx/galleon_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_chain.png?url, use /assets/generated/pixel-fx/galleon_chain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_chain_hit.png?url, use /assets/generated/pixel-fx/galleon_chain_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_fog.png?url, use /assets/generated/pixel-fx/galleon_fog.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_grape.png?url, use /assets/generated/pixel-fx/galleon_grape.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_grapple.png?url, use /assets/generated/pixel-fx/galleon_grapple.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_oil.png?url, use /assets/generated/pixel-fx/galleon_oil.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_oil_fire.png?url, use /assets/generated/pixel-fx/galleon_oil_fire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/galleon_shanty.png?url, use /assets/generated/pixel-fx/galleon_shanty.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_ace.png?url, use /assets/generated/pixel-fx/gambler_ace.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_allin.png?url, use /assets/generated/pixel-fx/gambler_allin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_bluff.png?url, use /assets/generated/pixel-fx/gambler_bluff.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_coin.png?url, use /assets/generated/pixel-fx/gambler_coin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_coin_flip.png?url, use /assets/generated/pixel-fx/gambler_coin_flip.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_dice.png?url, use /assets/generated/pixel-fx/gambler_dice.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_dice_hit.png?url, use /assets/generated/pixel-fx/gambler_dice_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_jackpot_hit.png?url, use /assets/generated/pixel-fx/gambler_jackpot_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_jackpot_sky.png?url, use /assets/generated/pixel-fx/gambler_jackpot_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gambler_slot.png?url, use /assets/generated/pixel-fx/gambler_slot.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_cathedral.png?url, use /assets/generated/pixel-fx/gargoyle_pal_cathedral.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_cathedral_hit.png?url, use /assets/generated/pixel-fx/gargoyle_pal_cathedral_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_claw.png?url, use /assets/generated/pixel-fx/gargoyle_pal_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_dive.png?url, use /assets/generated/pixel-fx/gargoyle_pal_dive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_gaze.png?url, use /assets/generated/pixel-fx/gargoyle_pal_gaze.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_rockfall.png?url, use /assets/generated/pixel-fx/gargoyle_pal_rockfall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_skin.png?url, use /assets/generated/pixel-fx/gargoyle_pal_skin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_tail.png?url, use /assets/generated/pixel-fx/gargoyle_pal_tail.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gargoyle_pal_wingwall.png?url, use /assets/generated/pixel-fx/gargoyle_pal_wingwall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/general_banner.png?url, use /assets/generated/pixel-fx/general_banner.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ghost_pal_parade_sky.png?url, use /assets/generated/pixel-fx/ghost_pal_parade_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ghost_pal_possess.png?url, use /assets/generated/pixel-fx/ghost_pal_possess.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/girl_alchemist_gear_saw.png?url, use /assets/generated/pixel-fx/girl_alchemist_gear_saw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/girl_alchemist_mecha_sky.png?url, use /assets/generated/pixel-fx/girl_alchemist_mecha_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/girl_alchemist_pop.png?url, use /assets/generated/pixel-fx/girl_alchemist_pop.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/girl_alchemist_repair.png?url, use /assets/generated/pixel-fx/girl_alchemist_repair.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/girl_alchemist_robot.png?url, use /assets/generated/pixel-fx/girl_alchemist_robot.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_moss_landslide_sky.png?url, use /assets/generated/pixel-fx/golem_moss_landslide_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_moss_wall.png?url, use /assets/generated/pixel-fx/golem_moss_wall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_avalanche.png?url, use /assets/generated/pixel-fx/golem_pal_avalanche.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_avalanche_hit.png?url, use /assets/generated/pixel-fx/golem_pal_avalanche_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_boulder.png?url, use /assets/generated/pixel-fx/golem_pal_boulder.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_boulder_hit.png?url, use /assets/generated/pixel-fx/golem_pal_boulder_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_clay.png?url, use /assets/generated/pixel-fx/golem_pal_clay.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_fist.png?url, use /assets/generated/pixel-fx/golem_pal_fist.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_pillars.png?url, use /assets/generated/pixel-fx/golem_pal_pillars.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_quake.png?url, use /assets/generated/pixel-fx/golem_pal_quake.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_roll.png?url, use /assets/generated/pixel-fx/golem_pal_roll.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/golem_pal_sandwall.png?url, use /assets/generated/pixel-fx/golem_pal_sandwall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_broth.png?url, use /assets/generated/pixel-fx/grandma_broth.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_feast.png?url, use /assets/generated/pixel-fx/grandma_feast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_herb.png?url, use /assets/generated/pixel-fx/grandma_herb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_ladle.png?url, use /assets/generated/pixel-fx/grandma_ladle.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_lid.png?url, use /assets/generated/pixel-fx/grandma_lid.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_moxa.png?url, use /assets/generated/pixel-fx/grandma_moxa.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/grandma_yarn.png?url, use /assets/generated/pixel-fx/grandma_yarn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_barrier.png?url, use /assets/generated/pixel-fx/guard_barrier.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_bash.png?url, use /assets/generated/pixel-fx/guard_bash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_charge.png?url, use /assets/generated/pixel-fx/guard_charge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_counter.png?url, use /assets/generated/pixel-fx/guard_counter.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_fortress_slam.png?url, use /assets/generated/pixel-fx/guard_fortress_slam.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_fortress_wall.png?url, use /assets/generated/pixel-fx/guard_fortress_wall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_holy_shield.png?url, use /assets/generated/pixel-fx/guard_holy_shield.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_quake.png?url, use /assets/generated/pixel-fx/guard_quake.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_quake_ring.png?url, use /assets/generated/pixel-fx/guard_quake_ring.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/guard_taunt.png?url, use /assets/generated/pixel-fx/guard_taunt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_broadside.png?url, use /assets/generated/pixel-fx/gunboat_broadside.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_depth.png?url, use /assets/generated/pixel-fx/gunboat_depth.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_fortress.png?url, use /assets/generated/pixel-fx/gunboat_fortress.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_fortress_hit.png?url, use /assets/generated/pixel-fx/gunboat_fortress_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_plate.png?url, use /assets/generated/pixel-fx/gunboat_plate.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_ram.png?url, use /assets/generated/pixel-fx/gunboat_ram.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_repair.png?url, use /assets/generated/pixel-fx/gunboat_repair.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_shell.png?url, use /assets/generated/pixel-fx/gunboat_shell.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_shell_hit.png?url, use /assets/generated/pixel-fx/gunboat_shell_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunboat_smokescreen.png?url, use /assets/generated/pixel-fx/gunboat_smokescreen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_bullet.png?url, use /assets/generated/pixel-fx/gunner_bullet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_bullet_hit.png?url, use /assets/generated/pixel-fx/gunner_bullet_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_burst.png?url, use /assets/generated/pixel-fx/gunner_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_butt.png?url, use /assets/generated/pixel-fx/gunner_butt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_flare.png?url, use /assets/generated/pixel-fx/gunner_flare.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_grenade_blast.png?url, use /assets/generated/pixel-fx/gunner_grenade_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_grenade_spin.png?url, use /assets/generated/pixel-fx/gunner_grenade_spin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_pocks.png?url, use /assets/generated/pixel-fx/gunner_pocks.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_scope.png?url, use /assets/generated/pixel-fx/gunner_scope.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_spinfire.png?url, use /assets/generated/pixel-fx/gunner_spinfire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_volley.png?url, use /assets/generated/pixel-fx/gunner_volley.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunner_volley_hit.png?url, use /assets/generated/pixel-fx/gunner_volley_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_bullet.png?url, use /assets/generated/pixel-fx/gunslinger_bullet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_deadeye.png?url, use /assets/generated/pixel-fx/gunslinger_deadeye.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_dust.png?url, use /assets/generated/pixel-fx/gunslinger_dust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_fan.png?url, use /assets/generated/pixel-fx/gunslinger_fan.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_hat.png?url, use /assets/generated/pixel-fx/gunslinger_hat.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_noon.png?url, use /assets/generated/pixel-fx/gunslinger_noon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gunslinger_ricochet.png?url, use /assets/generated/pixel-fx/gunslinger_ricochet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_card.png?url, use /assets/generated/pixel-fx/gypsy_card.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_card_hit.png?url, use /assets/generated/pixel-fx/gypsy_card_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_cardstorm.png?url, use /assets/generated/pixel-fx/gypsy_cardstorm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_crystal.png?url, use /assets/generated/pixel-fx/gypsy_crystal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_curse.png?url, use /assets/generated/pixel-fx/gypsy_curse.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_dance.png?url, use /assets/generated/pixel-fx/gypsy_dance.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_fate_hit.png?url, use /assets/generated/pixel-fx/gypsy_fate_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_fate_sky.png?url, use /assets/generated/pixel-fx/gypsy_fate_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_lovers.png?url, use /assets/generated/pixel-fx/gypsy_lovers.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/gypsy_wheel.png?url, use /assets/generated/pixel-fx/gypsy_wheel.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_cyclone.png?url, use /assets/generated/pixel-fx/harpy_pal_cyclone.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_feather.png?url, use /assets/generated/pixel-fx/harpy_pal_feather.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_feather_hit.png?url, use /assets/generated/pixel-fx/harpy_pal_feather_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_featherfall.png?url, use /assets/generated/pixel-fx/harpy_pal_featherfall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_shriek.png?url, use /assets/generated/pixel-fx/harpy_pal_shriek.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_storm.png?url, use /assets/generated/pixel-fx/harpy_pal_storm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_storm_hit.png?url, use /assets/generated/pixel-fx/harpy_pal_storm_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_talon.png?url, use /assets/generated/pixel-fx/harpy_pal_talon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_veil.png?url, use /assets/generated/pixel-fx/harpy_pal_veil.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/harpy_pal_wingbeat.png?url, use /assets/generated/pixel-fx/harpy_pal_wingbeat.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/heal.png?url, use /assets/generated/pixel-fx/heal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/heavy_knight_bulwark_sky.png?url, use /assets/generated/pixel-fx/heavy_knight_bulwark_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/heavy_knight_mace_crush.png?url, use /assets/generated/pixel-fx/heavy_knight_mace_crush.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hermit_bamboo.png?url, use /assets/generated/pixel-fx/hermit_bamboo.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hermit_crane.png?url, use /assets/generated/pixel-fx/hermit_crane.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hermit_falls.png?url, use /assets/generated/pixel-fx/hermit_falls.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hermit_mist.png?url, use /assets/generated/pixel-fx/hermit_mist.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hermit_mountain_sky.png?url, use /assets/generated/pixel-fx/hermit_mountain_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_brave_burst.png?url, use /assets/generated/pixel-fx/hero_brave_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_brave_sword.png?url, use /assets/generated/pixel-fx/hero_brave_sword.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_cross.png?url, use /assets/generated/pixel-fx/hero_cross.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_dust.png?url, use /assets/generated/pixel-fx/hero_dust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_flame_aura.png?url, use /assets/generated/pixel-fx/hero_flame_aura.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_flame_slash.png?url, use /assets/generated/pixel-fx/hero_flame_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_meteor_impact.png?url, use /assets/generated/pixel-fx/hero_meteor_impact.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_meteor_trail.png?url, use /assets/generated/pixel-fx/hero_meteor_trail.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_pierce.png?url, use /assets/generated/pixel-fx/hero_pierce.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_rising.png?url, use /assets/generated/pixel-fx/hero_rising.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_warcry.png?url, use /assets/generated/pixel-fx/hero_warcry.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hero_whirl.png?url, use /assets/generated/pixel-fx/hero_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/holy.png?url, use /assets/generated/pixel-fx/holy.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/horse_hoof.png?url, use /assets/generated/pixel-fx/horse_hoof.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/horse_pegasus_sky.png?url, use /assets/generated/pixel-fx/horse_pegasus_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/hunter_bear_trap.png?url, use /assets/generated/pixel-fx/hunter_bear_trap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ice.png?url, use /assets/generated/pixel-fx/ice.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_balloons.png?url, use /assets/generated/pixel-fx/jester_balloons.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_carnival_sky.png?url, use /assets/generated/pixel-fx/jester_carnival_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_confetti.png?url, use /assets/generated/pixel-fx/jester_confetti.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_jack_box.png?url, use /assets/generated/pixel-fx/jester_jack_box.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_juggle.png?url, use /assets/generated/pixel-fx/jester_juggle.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/jester_masks.png?url, use /assets/generated/pixel-fx/jester_masks.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/kappa_flood_sky.png?url, use /assets/generated/pixel-fx/kappa_flood_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/kappa_water_jet.png?url, use /assets/generated/pixel-fx/kappa_water_jet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_aura.png?url, use /assets/generated/pixel-fx/king_aura.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_banner.png?url, use /assets/generated/pixel-fx/king_banner.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_crown_drop.png?url, use /assets/generated/pixel-fx/king_crown_drop.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_decree.png?url, use /assets/generated/pixel-fx/king_decree.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_guard.png?url, use /assets/generated/pixel-fx/king_guard.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_realm_hit.png?url, use /assets/generated/pixel-fx/king_realm_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_realm_sky.png?url, use /assets/generated/pixel-fx/king_realm_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_scepter.png?url, use /assets/generated/pixel-fx/king_scepter.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_scepter_hit.png?url, use /assets/generated/pixel-fx/king_scepter_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/king_tribute.png?url, use /assets/generated/pixel-fx/king_tribute.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/kitsune_foxfire.png?url, use /assets/generated/pixel-fx/kitsune_foxfire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/kitsune_ninefire_sky.png?url, use /assets/generated/pixel-fx/kitsune_ninefire_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/knife.png?url, use /assets/generated/pixel-fx/knife.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lamia_coil.png?url, use /assets/generated/pixel-fx/lamia_coil.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lamia_serpent_sky.png?url, use /assets/generated/pixel-fx/lamia_serpent_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lantern_ghost_eye.png?url, use /assets/generated/pixel-fx/lantern_ghost_eye.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lantern_ghost_glow.png?url, use /assets/generated/pixel-fx/lantern_ghost_glow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lantern_ghost_parade_sky.png?url, use /assets/generated/pixel-fx/lantern_ghost_parade_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lantern_ghost_wisp.png?url, use /assets/generated/pixel-fx/lantern_ghost_wisp.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/leaf.png?url, use /assets/generated/pixel-fx/leaf.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lion_king_sky.png?url, use /assets/generated/pixel-fx/lion_king_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/lion_swipe.png?url, use /assets/generated/pixel-fx/lion_swipe.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/living_armor_hollow.png?url, use /assets/generated/pixel-fx/living_armor_hollow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/living_armor_legion_sky.png?url, use /assets/generated/pixel-fx/living_armor_legion_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/living_armor_soul_edge.png?url, use /assets/generated/pixel-fx/living_armor_soul_edge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_blizzard.png?url, use /assets/generated/pixel-fx/mage_blizzard.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_chain_bolt.png?url, use /assets/generated/pixel-fx/mage_chain_bolt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_fire_burst.png?url, use /assets/generated/pixel-fx/mage_fire_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_fireball_orb.png?url, use /assets/generated/pixel-fx/mage_fireball_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_gravity.png?url, use /assets/generated/pixel-fx/mage_gravity.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_mana_shield.png?url, use /assets/generated/pixel-fx/mage_mana_shield.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_meteor_blast.png?url, use /assets/generated/pixel-fx/mage_meteor_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_meteor_rock.png?url, use /assets/generated/pixel-fx/mage_meteor_rock.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_missile_hit.png?url, use /assets/generated/pixel-fx/mage_missile_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_missile_orb.png?url, use /assets/generated/pixel-fx/mage_missile_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_snow.png?url, use /assets/generated/pixel-fx/mage_snow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_star_hit.png?url, use /assets/generated/pixel-fx/mage_star_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mage_starfall_sky.png?url, use /assets/generated/pixel-fx/mage_starfall_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_broom.png?url, use /assets/generated/pixel-fx/maid_broom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_bubbles.png?url, use /assets/generated/pixel-fx/maid_bubbles.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_clean_sky.png?url, use /assets/generated/pixel-fx/maid_clean_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_duster.png?url, use /assets/generated/pixel-fx/maid_duster.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_plate.png?url, use /assets/generated/pixel-fx/maid_plate.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/maid_tea.png?url, use /assets/generated/pixel-fx/maid_tea.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mandrake_scream.png?url, use /assets/generated/pixel-fx/mandrake_scream.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mandrake_wail_sky.png?url, use /assets/generated/pixel-fx/mandrake_wail_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/martial_artist_crescent_kick.png?url, use /assets/generated/pixel-fx/martial_artist_crescent_kick.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mercenary_axe_spin.png?url, use /assets/generated/pixel-fx/mercenary_axe_spin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mercenary_warlord_sky.png?url, use /assets/generated/pixel-fx/mercenary_warlord_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_abacus.png?url, use /assets/generated/pixel-fx/merchant_abacus.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_bomb.png?url, use /assets/generated/pixel-fx/merchant_bomb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_bomb_hit.png?url, use /assets/generated/pixel-fx/merchant_bomb_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_coin.png?url, use /assets/generated/pixel-fx/merchant_coin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_coin_hit.png?url, use /assets/generated/pixel-fx/merchant_coin_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_contract.png?url, use /assets/generated/pixel-fx/merchant_contract.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_haggle.png?url, use /assets/generated/pixel-fx/merchant_haggle.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_market.png?url, use /assets/generated/pixel-fx/merchant_market.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_scale.png?url, use /assets/generated/pixel-fx/merchant_scale.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_vault_hit.png?url, use /assets/generated/pixel-fx/merchant_vault_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merchant_vault_sky.png?url, use /assets/generated/pixel-fx/merchant_vault_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merfolk_maelstrom_sky.png?url, use /assets/generated/pixel-fx/merfolk_maelstrom_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merfolk_tide_wave.png?url, use /assets/generated/pixel-fx/merfolk_tide_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/merfolk_trident_throw.png?url, use /assets/generated/pixel-fx/merfolk_trident_throw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mimic_pal_chomp.png?url, use /assets/generated/pixel-fx/mimic_pal_chomp.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mimic_pal_gnash.png?url, use /assets/generated/pixel-fx/mimic_pal_gnash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mimic_pal_lure.png?url, use /assets/generated/pixel-fx/mimic_pal_lure.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mimic_pal_maw_sky.png?url, use /assets/generated/pixel-fx/mimic_pal_maw_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_blast.png?url, use /assets/generated/pixel-fx/miner_blast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_burrow.png?url, use /assets/generated/pixel-fx/miner_burrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_gem.png?url, use /assets/generated/pixel-fx/miner_gem.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_lantern.png?url, use /assets/generated/pixel-fx/miner_lantern.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_pick.png?url, use /assets/generated/pixel-fx/miner_pick.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/miner_rockfall.png?url, use /assets/generated/pixel-fx/miner_rockfall.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/minotaur_pal_labyrinth_sky.png?url, use /assets/generated/pixel-fx/minotaur_pal_labyrinth_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_acid_blob.png?url, use /assets/generated/pixel-fx/mon_acid_blob.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_acid_splash.png?url, use /assets/generated/pixel-fx/mon_acid_splash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_arrow_hit.png?url, use /assets/generated/pixel-fx/mon_arrow_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_backstab_slash.png?url, use /assets/generated/pixel-fx/mon_backstab_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_bandage_wrap.png?url, use /assets/generated/pixel-fx/mon_bandage_wrap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_blizzard_sky.png?url, use /assets/generated/pixel-fx/mon_blizzard_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_bone_arrow.png?url, use /assets/generated/pixel-fx/mon_bone_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_boulder.png?url, use /assets/generated/pixel-fx/mon_boulder.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_burn.png?url, use /assets/generated/pixel-fx/mon_burn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_charge_dust.png?url, use /assets/generated/pixel-fx/mon_charge_dust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_claw_rake.png?url, use /assets/generated/pixel-fx/mon_claw_rake.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_cleave_arc.png?url, use /assets/generated/pixel-fx/mon_cleave_arc.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_curse_skull.png?url, use /assets/generated/pixel-fx/mon_curse_skull.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_dark_burn.png?url, use /assets/generated/pixel-fx/mon_dark_burn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_dark_crater.png?url, use /assets/generated/pixel-fx/mon_dark_crater.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_dark_flame.png?url, use /assets/generated/pixel-fx/mon_dark_flame.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_dark_meteor.png?url, use /assets/generated/pixel-fx/mon_dark_meteor.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_demon_aura.png?url, use /assets/generated/pixel-fx/mon_demon_aura.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_devour_jaws.png?url, use /assets/generated/pixel-fx/mon_devour_jaws.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_drain.png?url, use /assets/generated/pixel-fx/mon_drain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_eye_ray.png?url, use /assets/generated/pixel-fx/mon_eye_ray.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_fang_bite.png?url, use /assets/generated/pixel-fx/mon_fang_bite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_fire_breath.png?url, use /assets/generated/pixel-fx/mon_fire_breath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_flame_pillar.png?url, use /assets/generated/pixel-fx/mon_flame_pillar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_frost_burst.png?url, use /assets/generated/pixel-fx/mon_frost_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_frost_orb.png?url, use /assets/generated/pixel-fx/mon_frost_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_gale_screen.png?url, use /assets/generated/pixel-fx/mon_gale_screen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_gaze_screen.png?url, use /assets/generated/pixel-fx/mon_gaze_screen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_hellfire_bite.png?url, use /assets/generated/pixel-fx/mon_hellfire_bite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_hex_flame.png?url, use /assets/generated/pixel-fx/mon_hex_flame.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_howl_ring.png?url, use /assets/generated/pixel-fx/mon_howl_ring.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_judgment_sky.png?url, use /assets/generated/pixel-fx/mon_judgment_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_quake_crack.png?url, use /assets/generated/pixel-fx/mon_quake_crack.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_rampage_screen.png?url, use /assets/generated/pixel-fx/mon_rampage_screen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_ray_hit.png?url, use /assets/generated/pixel-fx/mon_ray_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_roar_ring.png?url, use /assets/generated/pixel-fx/mon_roar_ring.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_rock_burst.png?url, use /assets/generated/pixel-fx/mon_rock_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_rot_cloud.png?url, use /assets/generated/pixel-fx/mon_rot_cloud.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_screech_ring.png?url, use /assets/generated/pixel-fx/mon_screech_ring.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_scythe_x.png?url, use /assets/generated/pixel-fx/mon_scythe_x.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_shell_barrier.png?url, use /assets/generated/pixel-fx/mon_shell_barrier.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_slam_hit.png?url, use /assets/generated/pixel-fx/mon_slam_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_smoke_bomb.png?url, use /assets/generated/pixel-fx/mon_smoke_bomb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_smoke_cloud.png?url, use /assets/generated/pixel-fx/mon_smoke_cloud.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_spear_pierce.png?url, use /assets/generated/pixel-fx/mon_spear_pierce.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_spore_cloud.png?url, use /assets/generated/pixel-fx/mon_spore_cloud.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_sting.png?url, use /assets/generated/pixel-fx/mon_sting.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_tusk_hit.png?url, use /assets/generated/pixel-fx/mon_tusk_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_vine_lash.png?url, use /assets/generated/pixel-fx/mon_vine_lash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_wail_sky.png?url, use /assets/generated/pixel-fx/mon_wail_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_wave_screen.png?url, use /assets/generated/pixel-fx/mon_wave_screen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_web_ball.png?url, use /assets/generated/pixel-fx/mon_web_ball.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mon_web_net.png?url, use /assets/generated/pixel-fx/mon_web_net.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_chi_burst.png?url, use /assets/generated/pixel-fx/monk_chi_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_chi_orb.png?url, use /assets/generated/pixel-fx/monk_chi_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_dragon_aura.png?url, use /assets/generated/pixel-fx/monk_dragon_aura.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_dragon_hit.png?url, use /assets/generated/pixel-fx/monk_dragon_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_earth_palm.png?url, use /assets/generated/pixel-fx/monk_earth_palm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_incense.png?url, use /assets/generated/pixel-fx/monk_elder_incense.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_lotus.png?url, use /assets/generated/pixel-fx/monk_elder_lotus.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_nirvana_light.png?url, use /assets/generated/pixel-fx/monk_elder_nirvana_light.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_nirvana_sky.png?url, use /assets/generated/pixel-fx/monk_elder_nirvana_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_roar.png?url, use /assets/generated/pixel-fx/monk_elder_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_staff_rings.png?url, use /assets/generated/pixel-fx/monk_elder_staff_rings.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_temple_bell.png?url, use /assets/generated/pixel-fx/monk_elder_temple_bell.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_vajra.png?url, use /assets/generated/pixel-fx/monk_elder_vajra.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_elder_zen.png?url, use /assets/generated/pixel-fx/monk_elder_zen.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_fist_flurry.png?url, use /assets/generated/pixel-fx/monk_fist_flurry.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_iron_body.png?url, use /assets/generated/pixel-fx/monk_iron_body.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_meditate.png?url, use /assets/generated/pixel-fx/monk_meditate.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_rising_kick.png?url, use /assets/generated/pixel-fx/monk_rising_kick.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/monk_whirl_kick.png?url, use /assets/generated/pixel-fx/monk_whirl_kick.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mothman_hallucination.png?url, use /assets/generated/pixel-fx/mothman_hallucination.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mothman_moonwing_sky.png?url, use /assets/generated/pixel-fx/mothman_moonwing_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mothman_scale_dust.png?url, use /assets/generated/pixel-fx/mothman_scale_dust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mound_maw_sky.png?url, use /assets/generated/pixel-fx/mound_maw_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mound_pit.png?url, use /assets/generated/pixel-fx/mound_pit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mushroom_ring_sky.png?url, use /assets/generated/pixel-fx/mushroom_ring_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/mushroom_spores.png?url, use /assets/generated/pixel-fx/mushroom_spores.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_clone_hit.png?url, use /assets/generated/pixel-fx/ninja_clone_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_clone_smoke.png?url, use /assets/generated/pixel-fx/ninja_clone_smoke.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_fire_breath.png?url, use /assets/generated/pixel-fx/ninja_fire_breath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_kunai.png?url, use /assets/generated/pixel-fx/ninja_kunai.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_kunai_hit.png?url, use /assets/generated/pixel-fx/ninja_kunai_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_log_puff.png?url, use /assets/generated/pixel-fx/ninja_log_puff.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_needle.png?url, use /assets/generated/pixel-fx/ninja_needle.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_paralyze.png?url, use /assets/generated/pixel-fx/ninja_paralyze.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_shuriken.png?url, use /assets/generated/pixel-fx/ninja_shuriken.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_shuriken_hit.png?url, use /assets/generated/pixel-fx/ninja_shuriken_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_splash.png?url, use /assets/generated/pixel-fx/ninja_splash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_thousand_hit.png?url, use /assets/generated/pixel-fx/ninja_thousand_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_thousand_sky.png?url, use /assets/generated/pixel-fx/ninja_thousand_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ninja_water_dragon.png?url, use /assets/generated/pixel-fx/ninja_water_dragon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_checkmate.png?url, use /assets/generated/pixel-fx/noble_checkmate.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_command.png?url, use /assets/generated/pixel-fx/noble_command.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_crest.png?url, use /assets/generated/pixel-fx/noble_crest.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_duel_hit.png?url, use /assets/generated/pixel-fx/noble_duel_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_duel_sky.png?url, use /assets/generated/pixel-fx/noble_duel_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_gauntlet.png?url, use /assets/generated/pixel-fx/noble_gauntlet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_parry.png?url, use /assets/generated/pixel-fx/noble_parry.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_rose.png?url, use /assets/generated/pixel-fx/noble_rose.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_rose_hit.png?url, use /assets/generated/pixel-fx/noble_rose_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noble_thrust.png?url, use /assets/generated/pixel-fx/noble_thrust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_chandelier.png?url, use /assets/generated/pixel-fx/noblewoman_chandelier.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_charm.png?url, use /assets/generated/pixel-fx/noblewoman_charm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_fan_slap.png?url, use /assets/generated/pixel-fx/noblewoman_fan_slap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_gem.png?url, use /assets/generated/pixel-fx/noblewoman_gem.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_gem_hit.png?url, use /assets/generated/pixel-fx/noblewoman_gem_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_parasol.png?url, use /assets/generated/pixel-fx/noblewoman_parasol.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_perfume.png?url, use /assets/generated/pixel-fx/noblewoman_perfume.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_rose_sky.png?url, use /assets/generated/pixel-fx/noblewoman_rose_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_rose_thorn.png?url, use /assets/generated/pixel-fx/noblewoman_rose_thorn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/noblewoman_waltz.png?url, use /assets/generated/pixel-fx/noblewoman_waltz.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_bolas.png?url, use /assets/generated/pixel-fx/nomad_bolas.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_bolas_hit.png?url, use /assets/generated/pixel-fx/nomad_bolas_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_camel.png?url, use /assets/generated/pixel-fx/nomad_camel.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_dust_devil.png?url, use /assets/generated/pixel-fx/nomad_dust_devil.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_javelin.png?url, use /assets/generated/pixel-fx/nomad_javelin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_javelin_hit.png?url, use /assets/generated/pixel-fx/nomad_javelin_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_mirage.png?url, use /assets/generated/pixel-fx/nomad_mirage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_oasis.png?url, use /assets/generated/pixel-fx/nomad_oasis.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_sand_toss.png?url, use /assets/generated/pixel-fx/nomad_sand_toss.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_wrath_sky.png?url, use /assets/generated/pixel-fx/nomad_wrath_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nomad_wrath_spears.png?url, use /assets/generated/pixel-fx/nomad_wrath_spears.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nun_candles.png?url, use /assets/generated/pixel-fx/nun_candles.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nun_cross_smash.png?url, use /assets/generated/pixel-fx/nun_cross_smash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nun_miracle_sky.png?url, use /assets/generated/pixel-fx/nun_miracle_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nun_rosary.png?url, use /assets/generated/pixel-fx/nun_rosary.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/nun_vial.png?url, use /assets/generated/pixel-fx/nun_vial.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ogre_kid_giant_sky.png?url, use /assets/generated/pixel-fx/ogre_kid_giant_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_flask.png?url, use /assets/generated/pixel-fx/old_warrior_flask.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_ironwall_sky.png?url, use /assets/generated/pixel-fx/old_warrior_ironwall_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_medal.png?url, use /assets/generated/pixel-fx/old_warrior_medal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_stance.png?url, use /assets/generated/pixel-fx/old_warrior_stance.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_story.png?url, use /assets/generated/pixel-fx/old_warrior_story.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/old_warrior_thrust.png?url, use /assets/generated/pixel-fx/old_warrior_thrust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_bloodx.png?url, use /assets/generated/pixel-fx/oni_warrior_bloodx.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_charge.png?url, use /assets/generated/pixel-fx/oni_warrior_charge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_ghostfire.png?url, use /assets/generated/pixel-fx/oni_warrior_ghostfire.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_ghostfire_hit.png?url, use /assets/generated/pixel-fx/oni_warrior_ghostfire_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_parade.png?url, use /assets/generated/pixel-fx/oni_warrior_parade.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_parade_hit.png?url, use /assets/generated/pixel-fx/oni_warrior_parade_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_roar.png?url, use /assets/generated/pixel-fx/oni_warrior_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_skysmash.png?url, use /assets/generated/pixel-fx/oni_warrior_skysmash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_twinslash.png?url, use /assets/generated/pixel-fx/oni_warrior_twinslash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/oni_warrior_whirl.png?url, use /assets/generated/pixel-fx/oni_warrior_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_aegis.png?url, use /assets/generated/pixel-fx/paladin_aegis.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_consecrate.png?url, use /assets/generated/pixel-fx/paladin_consecrate.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_excalibur_hit.png?url, use /assets/generated/pixel-fx/paladin_excalibur_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_excalibur_sky.png?url, use /assets/generated/pixel-fx/paladin_excalibur_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_hands.png?url, use /assets/generated/pixel-fx/paladin_hands.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_holy_slash.png?url, use /assets/generated/pixel-fx/paladin_holy_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_shield.png?url, use /assets/generated/pixel-fx/paladin_shield.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_smite.png?url, use /assets/generated/pixel-fx/paladin_smite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/paladin_whirl.png?url, use /assets/generated/pixel-fx/paladin_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/pirate_broadside.png?url, use /assets/generated/pixel-fx/pirate_broadside.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/pirate_cannonball.png?url, use /assets/generated/pixel-fx/pirate_cannonball.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/poison.png?url, use /assets/generated/pixel-fx/poison.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_beads.png?url, use /assets/generated/pixel-fx/priest_monk_beads.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_bell.png?url, use /assets/generated/pixel-fx/priest_monk_bell.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_chant.png?url, use /assets/generated/pixel-fx/priest_monk_chant.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_incense.png?url, use /assets/generated/pixel-fx/priest_monk_incense.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_lotus.png?url, use /assets/generated/pixel-fx/priest_monk_lotus.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_staff.png?url, use /assets/generated/pixel-fx/priest_monk_staff.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/priest_monk_vajra.png?url, use /assets/generated/pixel-fx/priest_monk_vajra.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/prince_rapier.png?url, use /assets/generated/pixel-fx/prince_rapier.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/prince_royal_light.png?url, use /assets/generated/pixel-fx/prince_royal_light.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/princess_hymn_sky.png?url, use /assets/generated/pixel-fx/princess_hymn_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/princess_rose_barrier.png?url, use /assets/generated/pixel-fx/princess_rose_barrier.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_arrow.png?url, use /assets/generated/pixel-fx/ranger_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_arrow_hit.png?url, use /assets/generated/pixel-fx/ranger_arrow_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_arrow_rain.png?url, use /assets/generated/pixel-fx/ranger_arrow_rain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_charge.png?url, use /assets/generated/pixel-fx/ranger_charge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_fire_arrow.png?url, use /assets/generated/pixel-fx/ranger_fire_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_fire_hit.png?url, use /assets/generated/pixel-fx/ranger_fire_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_frost_arrow.png?url, use /assets/generated/pixel-fx/ranger_frost_arrow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_frost_hit.png?url, use /assets/generated/pixel-fx/ranger_frost_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_leaves.png?url, use /assets/generated/pixel-fx/ranger_leaves.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_power_hit.png?url, use /assets/generated/pixel-fx/ranger_power_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_scope.png?url, use /assets/generated/pixel-fx/ranger_scope.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_storm_bolt.png?url, use /assets/generated/pixel-fx/ranger_storm_bolt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_storm_charge.png?url, use /assets/generated/pixel-fx/ranger_storm_charge.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ranger_storm_hit.png?url, use /assets/generated/pixel-fx/ranger_storm_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/reaper_doom_sky.png?url, use /assets/generated/pixel-fx/reaper_doom_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/reaper_mark.png?url, use /assets/generated/pixel-fx/reaper_mark.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_dragon_pal_awaken_sky.png?url, use /assets/generated/pixel-fx/red_dragon_pal_awaken_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_catastrophe_hit.png?url, use /assets/generated/pixel-fx/red_mage_catastrophe_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_catastrophe_sky.png?url, use /assets/generated/pixel-fx/red_mage_catastrophe_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_convert.png?url, use /assets/generated/pixel-fx/red_mage_convert.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_double_cast.png?url, use /assets/generated/pixel-fx/red_mage_double_cast.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_flare_blade.png?url, use /assets/generated/pixel-fx/red_mage_flare_blade.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_fleche.png?url, use /assets/generated/pixel-fx/red_mage_fleche.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_frost_hit.png?url, use /assets/generated/pixel-fx/red_mage_frost_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_frost_orb.png?url, use /assets/generated/pixel-fx/red_mage_frost_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_riposte.png?url, use /assets/generated/pixel-fx/red_mage_riposte.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/red_mage_twin_bolt.png?url, use /assets/generated/pixel-fx/red_mage_twin_bolt.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ronin_ash_stance.png?url, use /assets/generated/pixel-fx/ronin_ash_stance.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ronin_draw.png?url, use /assets/generated/pixel-fx/ronin_draw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ronin_last_sky.png?url, use /assets/generated/pixel-fx/ronin_last_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ronin_rain_cut.png?url, use /assets/generated/pixel-fx/ronin_rain_cut.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_comb.png?url, use /assets/generated/pixel-fx/rooster_comb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_dawn.png?url, use /assets/generated/pixel-fx/rooster_dawn.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_egg.png?url, use /assets/generated/pixel-fx/rooster_egg.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_egg_burst.png?url, use /assets/generated/pixel-fx/rooster_egg_burst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_flame_crow.png?url, use /assets/generated/pixel-fx/rooster_flame_crow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_gust.png?url, use /assets/generated/pixel-fx/rooster_gust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_peck.png?url, use /assets/generated/pixel-fx/rooster_peck.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_spur.png?url, use /assets/generated/pixel-fx/rooster_spur.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_sunrise_hit.png?url, use /assets/generated/pixel-fx/rooster_sunrise_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/rooster_sunrise_sky.png?url, use /assets/generated/pixel-fx/rooster_sunrise_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_anchor_slam.png?url, use /assets/generated/pixel-fx/sailor_anchor_slam.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_harpoon.png?url, use /assets/generated/pixel-fx/sailor_harpoon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_harpoon_hit.png?url, use /assets/generated/pixel-fx/sailor_harpoon_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_hoist_sail.png?url, use /assets/generated/pixel-fx/sailor_hoist_sail.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_jet.png?url, use /assets/generated/pixel-fx/sailor_jet.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_jet_hit.png?url, use /assets/generated/pixel-fx/sailor_jet_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_kraken_hit.png?url, use /assets/generated/pixel-fx/sailor_kraken_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_kraken_sky.png?url, use /assets/generated/pixel-fx/sailor_kraken_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_rope_whip.png?url, use /assets/generated/pixel-fx/sailor_rope_whip.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_rum.png?url, use /assets/generated/pixel-fx/sailor_rum.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sailor_tidal_crash.png?url, use /assets/generated/pixel-fx/sailor_tidal_crash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_blood_hit.png?url, use /assets/generated/pixel-fx/samurai_blood_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_blood_moon.png?url, use /assets/generated/pixel-fx/samurai_blood_moon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_cherry.png?url, use /assets/generated/pixel-fx/samurai_cherry.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_final_sky.png?url, use /assets/generated/pixel-fx/samurai_final_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_final_slash.png?url, use /assets/generated/pixel-fx/samurai_final_slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_iai_flash.png?url, use /assets/generated/pixel-fx/samurai_iai_flash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_mind_eye.png?url, use /assets/generated/pixel-fx/samurai_mind_eye.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_moon.png?url, use /assets/generated/pixel-fx/samurai_moon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_petals.png?url, use /assets/generated/pixel-fx/samurai_petals.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_sheath.png?url, use /assets/generated/pixel-fx/samurai_sheath.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_thunder_hit.png?url, use /assets/generated/pixel-fx/samurai_thunder_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_thunder_line.png?url, use /assets/generated/pixel-fx/samurai_thunder_line.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_wind_hit.png?url, use /assets/generated/pixel-fx/samurai_wind_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/samurai_wind_wave.png?url, use /assets/generated/pixel-fx/samurai_wind_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scarecrow_crow.png?url, use /assets/generated/pixel-fx/scarecrow_crow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scarecrow_crow_swarm.png?url, use /assets/generated/pixel-fx/scarecrow_crow_swarm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scarecrow_moon_sky.png?url, use /assets/generated/pixel-fx/scarecrow_moon_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scarecrow_reap.png?url, use /assets/generated/pixel-fx/scarecrow_reap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_analyze.png?url, use /assets/generated/pixel-fx/scholar_analyze.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_formula.png?url, use /assets/generated/pixel-fx/scholar_formula.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_ink.png?url, use /assets/generated/pixel-fx/scholar_ink.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_library.png?url, use /assets/generated/pixel-fx/scholar_library.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_pages.png?url, use /assets/generated/pixel-fx/scholar_pages.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_runes.png?url, use /assets/generated/pixel-fx/scholar_runes.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scholar_smack.png?url, use /assets/generated/pixel-fx/scholar_smack.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_afterimage.png?url, use /assets/generated/pixel-fx/scout_afterimage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_assassin_cut.png?url, use /assets/generated/pixel-fx/scout_assassin_cut.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_assassin_hit.png?url, use /assets/generated/pixel-fx/scout_assassin_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_backstab.png?url, use /assets/generated/pixel-fx/scout_backstab.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_bomb.png?url, use /assets/generated/pixel-fx/scout_bomb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_flurry.png?url, use /assets/generated/pixel-fx/scout_flurry.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_knife.png?url, use /assets/generated/pixel-fx/scout_knife.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_knife_hit.png?url, use /assets/generated/pixel-fx/scout_knife_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_shadow_puff.png?url, use /assets/generated/pixel-fx/scout_shadow_puff.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_smoke.png?url, use /assets/generated/pixel-fx/scout_smoke.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_steal.png?url, use /assets/generated/pixel-fx/scout_steal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/scout_venom.png?url, use /assets/generated/pixel-fx/scout_venom.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_blur.png?url, use /assets/generated/pixel-fx/sdance_blur.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_crescent.png?url, use /assets/generated/pixel-fx/sdance_crescent.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_cross.png?url, use /assets/generated/pixel-fx/sdance_cross.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_moon.png?url, use /assets/generated/pixel-fx/sdance_moon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_petal_hit.png?url, use /assets/generated/pixel-fx/sdance_petal_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_petal_sky.png?url, use /assets/generated/pixel-fx/sdance_petal_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_rhythm.png?url, use /assets/generated/pixel-fx/sdance_rhythm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_ribbon.png?url, use /assets/generated/pixel-fx/sdance_ribbon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_twin.png?url, use /assets/generated/pixel-fx/sdance_twin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_wave.png?url, use /assets/generated/pixel-fx/sdance_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sdance_wave_hit.png?url, use /assets/generated/pixel-fx/sdance_wave_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_bind.png?url, use /assets/generated/pixel-fx/seraph_bind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_feather.png?url, use /assets/generated/pixel-fx/seraph_feather.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_feather_hit.png?url, use /assets/generated/pixel-fx/seraph_feather_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_heal.png?url, use /assets/generated/pixel-fx/seraph_heal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_judgment_hit.png?url, use /assets/generated/pixel-fx/seraph_judgment_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_judgment_sky.png?url, use /assets/generated/pixel-fx/seraph_judgment_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_revive.png?url, use /assets/generated/pixel-fx/seraph_revive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_smite.png?url, use /assets/generated/pixel-fx/seraph_smite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_spear.png?url, use /assets/generated/pixel-fx/seraph_spear.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/seraph_veil.png?url, use /assets/generated/pixel-fx/seraph_veil.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sheep_dream_sky.png?url, use /assets/generated/pixel-fx/sheep_dream_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sheep_wool.png?url, use /assets/generated/pixel-fx/sheep_wool.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/shrine_maiden_fox.png?url, use /assets/generated/pixel-fx/shrine_maiden_fox.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/shrine_maiden_gohei.png?url, use /assets/generated/pixel-fx/shrine_maiden_gohei.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/shrine_maiden_ofuda.png?url, use /assets/generated/pixel-fx/shrine_maiden_ofuda.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/shrine_maiden_seal.png?url, use /assets/generated/pixel-fx/shrine_maiden_seal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/shrine_maiden_torii_sky.png?url, use /assets/generated/pixel-fx/shrine_maiden_torii_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/siren_aria_sky.png?url, use /assets/generated/pixel-fx/siren_aria_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/siren_charm.png?url, use /assets/generated/pixel-fx/siren_charm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skeleton_pal_legion_sky.png?url, use /assets/generated/pixel-fx/skeleton_pal_legion_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_harpoon.png?url, use /assets/generated/pixel-fx/skiff_harpoon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_harpoon_hit.png?url, use /assets/generated/pixel-fx/skiff_harpoon_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_hook.png?url, use /assets/generated/pixel-fx/skiff_hook.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_leviathan.png?url, use /assets/generated/pixel-fx/skiff_leviathan.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_leviathan_hit.png?url, use /assets/generated/pixel-fx/skiff_leviathan_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_net.png?url, use /assets/generated/pixel-fx/skiff_net.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_wake.png?url, use /assets/generated/pixel-fx/skiff_wake.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_wave.png?url, use /assets/generated/pixel-fx/skiff_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_whirlpool.png?url, use /assets/generated/pixel-fx/skiff_whirlpool.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/skiff_wind.png?url, use /assets/generated/pixel-fx/skiff_wind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/slash.png?url, use /assets/generated/pixel-fx/slash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sleep.png?url, use /assets/generated/pixel-fx/sleep.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/slime_pal_jelly.png?url, use /assets/generated/pixel-fx/slime_pal_jelly.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/slime_pal_king_sky.png?url, use /assets/generated/pixel-fx/slime_pal_king_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sorceress_curse_mark.png?url, use /assets/generated/pixel-fx/sorceress_curse_mark.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sprite_ice_freeze.png?url, use /assets/generated/pixel-fx/sprite_ice_freeze.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/sprite_ice_zero_sky.png?url, use /assets/generated/pixel-fx/sprite_ice_zero_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_chop.png?url, use /assets/generated/pixel-fx/squire_chop.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_combo.png?url, use /assets/generated/pixel-fx/squire_combo.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_courage.png?url, use /assets/generated/pixel-fx/squire_courage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_knighting.png?url, use /assets/generated/pixel-fx/squire_knighting.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_knighting_hit.png?url, use /assets/generated/pixel-fx/squire_knighting_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_leap.png?url, use /assets/generated/pixel-fx/squire_leap.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_rush.png?url, use /assets/generated/pixel-fx/squire_rush.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_shield.png?url, use /assets/generated/pixel-fx/squire_shield.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/squire_whirl.png?url, use /assets/generated/pixel-fx/squire_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/succubus_kiss.png?url, use /assets/generated/pixel-fx/succubus_kiss.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_dragon.png?url, use /assets/generated/pixel-fx/summoner_dragon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_dragon_hit.png?url, use /assets/generated/pixel-fx/summoner_dragon_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_golem.png?url, use /assets/generated/pixel-fx/summoner_golem.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_hound.png?url, use /assets/generated/pixel-fx/summoner_hound.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_imp.png?url, use /assets/generated/pixel-fx/summoner_imp.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_lance.png?url, use /assets/generated/pixel-fx/summoner_lance.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_lance_hit.png?url, use /assets/generated/pixel-fx/summoner_lance_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_sylph.png?url, use /assets/generated/pixel-fx/summoner_sylph.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_thunderbird.png?url, use /assets/generated/pixel-fx/summoner_thunderbird.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/summoner_ward.png?url, use /assets/generated/pixel-fx/summoner_ward.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_flash.png?url, use /assets/generated/pixel-fx/swordsman_flash.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_focus.png?url, use /assets/generated/pixel-fx/swordsman_focus.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_ghost.png?url, use /assets/generated/pixel-fx/swordsman_ghost.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_grand.png?url, use /assets/generated/pixel-fx/swordsman_grand.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_grand_hit.png?url, use /assets/generated/pixel-fx/swordsman_grand_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_thrusts.png?url, use /assets/generated/pixel-fx/swordsman_thrusts.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_thunder.png?url, use /assets/generated/pixel-fx/swordsman_thunder.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_wave.png?url, use /assets/generated/pixel-fx/swordsman_wave.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_wave_hit.png?url, use /assets/generated/pixel-fx/swordsman_wave_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/swordsman_whirl.png?url, use /assets/generated/pixel-fx/swordsman_whirl.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_armor.png?url, use /assets/generated/pixel-fx/tank_armor.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_barrage.png?url, use /assets/generated/pixel-fx/tank_barrage.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_bunker.png?url, use /assets/generated/pixel-fx/tank_bunker.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_crush.png?url, use /assets/generated/pixel-fx/tank_crush.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_mega.png?url, use /assets/generated/pixel-fx/tank_mega.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_mega_hit.png?url, use /assets/generated/pixel-fx/tank_mega_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_mg.png?url, use /assets/generated/pixel-fx/tank_mg.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_rocket.png?url, use /assets/generated/pixel-fx/tank_rocket.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_rocket_hit.png?url, use /assets/generated/pixel-fx/tank_rocket_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_shell.png?url, use /assets/generated/pixel-fx/tank_shell.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tank_shell_hit.png?url, use /assets/generated/pixel-fx/tank_shell_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tanuki_leaf.png?url, use /assets/generated/pixel-fx/tanuki_leaf.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tanuki_transform_sky.png?url, use /assets/generated/pixel-fx/tanuki_transform_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_ambush.png?url, use /assets/generated/pixel-fx/thief_ambush.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_fan.png?url, use /assets/generated/pixel-fx/thief_fan.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_heist_hit.png?url, use /assets/generated/pixel-fx/thief_heist_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_heist_sky.png?url, use /assets/generated/pixel-fx/thief_heist_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_poison_hit.png?url, use /assets/generated/pixel-fx/thief_poison_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_poison_knife.png?url, use /assets/generated/pixel-fx/thief_poison_knife.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_shadow.png?url, use /assets/generated/pixel-fx/thief_shadow.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_smoke.png?url, use /assets/generated/pixel-fx/thief_smoke.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_stab.png?url, use /assets/generated/pixel-fx/thief_stab.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thief_steal.png?url, use /assets/generated/pixel-fx/thief_steal.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/thunder.png?url, use /assets/generated/pixel-fx/thunder.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tiger_claw.png?url, use /assets/generated/pixel-fx/tiger_claw.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tiger_king_sky.png?url, use /assets/generated/pixel-fx/tiger_king_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/treant_forest_sky.png?url, use /assets/generated/pixel-fx/treant_forest_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/treant_roots.png?url, use /assets/generated/pixel-fx/treant_roots.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tribal_boomerang.png?url, use /assets/generated/pixel-fx/tribal_boomerang.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/tribal_spirit_sky.png?url, use /assets/generated/pixel-fx/tribal_spirit_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_abduct.png?url, use /assets/generated/pixel-fx/ufo_abduct.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_dome.png?url, use /assets/generated/pixel-fx/ufo_dome.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_meteor.png?url, use /assets/generated/pixel-fx/ufo_meteor.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_mind.png?url, use /assets/generated/pixel-fx/ufo_mind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_mothership.png?url, use /assets/generated/pixel-fx/ufo_mothership.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_mothership_hit.png?url, use /assets/generated/pixel-fx/ufo_mothership_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_probe.png?url, use /assets/generated/pixel-fx/ufo_probe.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_ray.png?url, use /assets/generated/pixel-fx/ufo_ray.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_ray_hit.png?url, use /assets/generated/pixel-fx/ufo_ray_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_warp.png?url, use /assets/generated/pixel-fx/ufo_warp.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/ufo_warp_hit.png?url, use /assets/generated/pixel-fx/ufo_warp_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_dive.png?url, use /assets/generated/pixel-fx/valkyrie_dive.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_feather.png?url, use /assets/generated/pixel-fx/valkyrie_feather.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_gale.png?url, use /assets/generated/pixel-fx/valkyrie_gale.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_javelin.png?url, use /assets/generated/pixel-fx/valkyrie_javelin.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_javelin_hit.png?url, use /assets/generated/pixel-fx/valkyrie_javelin_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_lance_hit.png?url, use /assets/generated/pixel-fx/valkyrie_lance_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_lance_rain.png?url, use /assets/generated/pixel-fx/valkyrie_lance_rain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_thrust.png?url, use /assets/generated/pixel-fx/valkyrie_thrust.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_valhalla_hit.png?url, use /assets/generated/pixel-fx/valkyrie_valhalla_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_valhalla_sky.png?url, use /assets/generated/pixel-fx/valkyrie_valhalla_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/valkyrie_wings.png?url, use /assets/generated/pixel-fx/valkyrie_wings.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_bats.png?url, use /assets/generated/pixel-fx/vampire_bats.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_bloodburst.png?url, use /assets/generated/pixel-fx/vampire_bloodburst.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_bloodmoon.png?url, use /assets/generated/pixel-fx/vampire_bloodmoon.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_bloodorb.png?url, use /assets/generated/pixel-fx/vampire_bloodorb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_bloodspikes.png?url, use /assets/generated/pixel-fx/vampire_bloodspikes.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_claws.png?url, use /assets/generated/pixel-fx/vampire_claws.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_drain.png?url, use /assets/generated/pixel-fx/vampire_drain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_fang.png?url, use /assets/generated/pixel-fx/vampire_fang.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_mist.png?url, use /assets/generated/pixel-fx/vampire_mist.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/vampire_moonbite.png?url, use /assets/generated/pixel-fx/vampire_moonbite.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/villager_mob_sky.png?url, use /assets/generated/pixel-fx/villager_mob_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/villager_pebbles.png?url, use /assets/generated/pixel-fx/villager_pebbles.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/water.png?url, use /assets/generated/pixel-fx/water.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/weaken.png?url, use /assets/generated/pixel-fx/weaken.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/wind.png?url, use /assets/generated/pixel-fx/wind.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_bat_swarm.png?url, use /assets/generated/pixel-fx/witch_bat_swarm.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_cauldron.png?url, use /assets/generated/pixel-fx/witch_cauldron.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_drain_beam.png?url, use /assets/generated/pixel-fx/witch_drain_beam.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_drain_orb.png?url, use /assets/generated/pixel-fx/witch_drain_orb.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_frog_puff.png?url, use /assets/generated/pixel-fx/witch_frog_puff.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_hex.png?url, use /assets/generated/pixel-fx/witch_hex.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_mirror.png?url, use /assets/generated/pixel-fx/witch_mirror.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_nightmare_hit.png?url, use /assets/generated/pixel-fx/witch_nightmare_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_nightmare_sky.png?url, use /assets/generated/pixel-fx/witch_nightmare_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_poison_hit.png?url, use /assets/generated/pixel-fx/witch_poison_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_sabbath_hit.png?url, use /assets/generated/pixel-fx/witch_sabbath_hit.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/witch_sabbath_sky.png?url, use /assets/generated/pixel-fx/witch_sabbath_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/wraith_mage_drain.png?url, use /assets/generated/pixel-fx/wraith_mage_drain.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/wraith_mage_harvest_sky.png?url, use /assets/generated/pixel-fx/wraith_mage_harvest_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/yeti_avalanche_sky.png?url, use /assets/generated/pixel-fx/yeti_avalanche_sky.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/yeti_frost_roar.png?url, use /assets/generated/pixel-fx/yeti_frost_roar.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/yeti_snowball.png?url, use /assets/generated/pixel-fx/yeti_snowball.png?url.
+Assets in the public directory are served at the root path.
+Instead of /public/assets/generated/pixel-fx/zombie_pal_horde_sky.png?url, use /assets/generated/pixel-fx/zombie_pal_horde_sky.png?url.
+{"sequence":[0,1,2,3,4,5,6,7,6,5,4,3,2,1,0],"observations":[{"stage":0,"frame":11,"at":40905},{"stage":1,"frame":51,"at":41589},{"stage":2,"frame":58,"at":41718},{"stage":3,"frame":65,"at":41842},{"stage":4,"frame":72,"at":41957},{"stage":5,"frame":79,"at":42079},{"stage":6,"frame":86,"at":42194},{"stage":7,"frame":93,"at":42319},{"stage":6,"frame":386,"at":46226},{"stage":5,"frame":392,"at":46328},{"stage":4,"frame":399,"at":46443},{"stage":3,"frame":406,"at":46560},{"stage":2,"frame":413,"at":46671},{"stage":1,"frame":420,"at":46787},{"stage":0,"frame":427,"at":46900}],"allEightStatesRendered":true,"returnedClosed":true,"runtimeErrors":[]}

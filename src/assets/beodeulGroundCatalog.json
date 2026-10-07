@@ -1,0 +1,4022 @@
+{
+  "id": "beodeul_ground",
+  "texture": "tex_beodeul_ground",
+  "tileSize": 16,
+  "tilesPerRow": 8,
+  "count": 648,
+  "recipes": [
+    {
+      "id": "bdg-grass-0",
+      "name": "풀 무더기 1",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          0,
+          1
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-grass-1",
+      "name": "풀 무더기 2",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          2,
+          3
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-grass-2",
+      "name": "풀 무더기 3",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          4,
+          5
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-flowers-pink",
+      "name": "작은 꽃 군락 pink",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          6,
+          7
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-flowers-white",
+      "name": "작은 꽃 군락 white",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          8,
+          9
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-flowers-blue",
+      "name": "작은 꽃 군락 blue",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          10,
+          11
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-stones",
+      "name": "잔돌과 풀",
+      "width": 1,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          12
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-litter",
+      "name": "나무 아래 낙엽",
+      "width": 2,
+      "height": 1,
+      "layer": 2,
+      "rows": [
+        [
+          13,
+          14
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-roots",
+      "name": "3×3 수관 아래 퍼지는 밑동",
+      "width": 3,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          15,
+          16,
+          17
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-root-shadow",
+      "name": "기존 뿌리 아래 접지 그림자",
+      "width": 3,
+      "height": 1,
+      "layer": 2,
+      "rows": [
+        [
+          18,
+          19,
+          20
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation",
+      "name": "h101_0 얇은 기초·풀 경계",
+      "width": 7,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          21,
+          22,
+          -1,
+          23,
+          24,
+          25,
+          26
+        ],
+        [
+          27,
+          28,
+          -1,
+          29,
+          30,
+          31,
+          32
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-flowerbed",
+      "name": "집 앞 작은 화단",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          33,
+          34
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-barrel",
+      "name": "집 곁 작은 통",
+      "width": 1,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          35
+        ],
+        [
+          36
+        ]
+      ],
+      "blocked": true
+    },
+    {
+      "id": "bdg-firewood",
+      "name": "집 곁 장작",
+      "width": 2,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          37,
+          38
+        ]
+      ],
+      "blocked": true
+    },
+    {
+      "id": "bdg-worn-soil",
+      "name": "밟힌 흙",
+      "width": 2,
+      "height": 1,
+      "layer": 2,
+      "rows": [
+        [
+          39,
+          40
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-tree-neck",
+      "name": "수관 안쪽에서 이어지는 줄기",
+      "width": 3,
+      "height": 1,
+      "layer": 4,
+      "rows": [
+        [
+          -1,
+          41,
+          -1
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation-h104_0",
+      "name": "h104_0 전용 기초·풀 경계",
+      "width": 7,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          48,
+          49,
+          -1,
+          50,
+          51,
+          52,
+          53
+        ],
+        [
+          54,
+          55,
+          -1,
+          56,
+          57,
+          58,
+          59
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation-h107_0",
+      "name": "h107_0 전용 기초·풀 경계",
+      "width": 6,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          60,
+          61,
+          62,
+          -1,
+          63,
+          64
+        ],
+        [
+          65,
+          66,
+          67,
+          -1,
+          68,
+          69
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation-h112_0",
+      "name": "h112_0 전용 기초·풀 경계",
+      "width": 4,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          70,
+          71,
+          -1,
+          72
+        ],
+        [
+          73,
+          74,
+          -1,
+          75
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation-h109_1",
+      "name": "h109_1 전용 기초·풀 경계",
+      "width": 8,
+      "height": 4,
+      "layer": 4,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          76,
+          77,
+          78,
+          79,
+          80
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          81,
+          82,
+          83,
+          84,
+          85
+        ],
+        [
+          86,
+          -1,
+          87,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          88,
+          -1,
+          89,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-foundation-cathedral",
+      "name": "cathedral 전용 기초·풀 경계",
+      "width": 12,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          -1,
+          97,
+          98,
+          99,
+          100
+        ],
+        [
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          -1,
+          108,
+          109,
+          110,
+          111
+        ]
+      ],
+      "blocked": false
+    },
+    {
+      "id": "bdg-light-house-cream",
+      "name": "원본 회벽·목골 별채집 · 작은 덧문창 · 짧은 일광/접촉 그림자",
+      "width": 8,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          -1
+        ],
+        [
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 5,
+      "anchor": "bd-house-village-cream"
+    },
+    {
+      "id": "bdg-light-house-brick",
+      "name": "원본 회벽·목골 이층집 · 세로창 · 짧은 일광/접촉 그림자",
+      "width": 8,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          -1
+        ],
+        [
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 7,
+      "anchor": "bd-house-village-brick"
+    },
+    {
+      "id": "bdg-light-house-stone",
+      "name": "원본 사암 돌벽 박공집 · 작은 원형창 · 짧은 일광/접촉 그림자",
+      "width": 5,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          142,
+          143,
+          144,
+          145,
+          -1
+        ],
+        [
+          146,
+          147,
+          148,
+          149,
+          150
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 5,
+      "anchor": "bd-house-village-stone"
+    },
+    {
+      "id": "bdg-light-house-sage",
+      "name": "원본 회벽·목골 ㄱ자집 · 가로창 · 짧은 일광/접촉 그림자",
+      "width": 9,
+      "height": 5,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          151,
+          152,
+          153,
+          154,
+          155,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161
+        ],
+        [
+          162,
+          163,
+          164,
+          165,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          166,
+          167,
+          168,
+          169,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 5,
+      "anchor": "bd-house-village-sage"
+    },
+    {
+      "id": "bdg-light-house-ochre",
+      "name": "원본 회벽·목골 낮은 집 · 쌍창 · 짧은 일광/접촉 그림자",
+      "width": 7,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          -1
+        ],
+        [
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 5,
+      "anchor": "bd-house-village-ochre"
+    },
+    {
+      "id": "bdg-light-house-church",
+      "name": "원본 석조 성당 · 푸른 첨탑 · 짧은 일광/접촉 그림자",
+      "width": 13,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          -1
+        ],
+        [
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 12,
+      "anchor": "bd-house-village-church"
+    },
+    {
+      "id": "bdg-light-tree-03a8f7",
+      "name": "수관 그늘 · 밑동 접촉 03a8f7",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          208,
+          209,
+          210,
+          211
+        ],
+        [
+          212,
+          213,
+          214,
+          215
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 2,
+      "anchor": "bd-tree-03a8f7"
+    },
+    {
+      "id": "bdg-light-tree-3e8732",
+      "name": "수관 그늘 · 밑동 접촉 3e8732",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          216,
+          217,
+          218,
+          219
+        ],
+        [
+          220,
+          221,
+          222,
+          223
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 2,
+      "anchor": "bd-tree-3e8732"
+    },
+    {
+      "id": "bdg-light-tree-1a786c",
+      "name": "수관 그늘 · 밑동 접촉 1a786c",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          224,
+          225,
+          226
+        ],
+        [
+          227,
+          228,
+          229,
+          230
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "dx": 0,
+      "dy": 3,
+      "anchor": "bd-tree-1a786c"
+    },
+    {
+      "id": "bdg-light-meadow-0",
+      "name": "낮은 대비의 큰 잔디/흙 변화 1",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          231,
+          232,
+          233,
+          234
+        ],
+        [
+          235,
+          236,
+          237,
+          238
+        ],
+        [
+          239,
+          240,
+          241,
+          242
+        ]
+      ],
+      "blocked": false,
+      "lighting": true
+    },
+    {
+      "id": "bdg-light-meadow-1",
+      "name": "낮은 대비의 큰 잔디/흙 변화 2",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          243,
+          244,
+          245,
+          246
+        ],
+        [
+          247,
+          248,
+          249,
+          250
+        ],
+        [
+          251,
+          252,
+          253,
+          254
+        ]
+      ],
+      "blocked": false,
+      "lighting": true
+    },
+    {
+      "id": "bdg-light-meadow-2",
+      "name": "낮은 대비의 큰 잔디/흙 변화 3",
+      "width": 4,
+      "height": 3,
+      "layer": 2,
+      "rows": [
+        [
+          255,
+          256,
+          257,
+          258
+        ],
+        [
+          259,
+          260,
+          261,
+          262
+        ],
+        [
+          263,
+          264,
+          265,
+          266
+        ]
+      ],
+      "blocked": false,
+      "lighting": true
+    },
+    {
+      "id": "bdg-light-road-2666-0",
+      "name": "원본 포석 2666 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          267
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 2666,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-2666-1",
+      "name": "원본 포석 2666 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          268
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 2666,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-3221-0",
+      "name": "원본 포석 3221 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          269
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 3221,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-3221-1",
+      "name": "원본 포석 3221 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          270
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 3221,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-3353-0",
+      "name": "원본 포석 3353 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          271
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 3353,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-3353-1",
+      "name": "원본 포석 3353 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          272
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 3353,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-4674-0",
+      "name": "원본 포석 4674 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          273
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 4674,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-4674-1",
+      "name": "원본 포석 4674 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          274
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 4674,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-9585-0",
+      "name": "원본 포석 9585 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          275
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 9585,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-9585-1",
+      "name": "원본 포석 9585 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          276
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 9585,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-17443-0",
+      "name": "원본 포석 17443 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          277
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 17443,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-17443-1",
+      "name": "원본 포석 17443 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          278
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 17443,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23015-0",
+      "name": "원본 포석 23015 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          279
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23015,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23015-1",
+      "name": "원본 포석 23015 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          280
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23015,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23016-0",
+      "name": "원본 포석 23016 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          281
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23016,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23016-1",
+      "name": "원본 포석 23016 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          282
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23016,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23017-0",
+      "name": "원본 포석 23017 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          283
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23017,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23017-1",
+      "name": "원본 포석 23017 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          284
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23017,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23018-0",
+      "name": "원본 포석 23018 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          285
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23018,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23018-1",
+      "name": "원본 포석 23018 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          286
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23018,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23019-0",
+      "name": "원본 포석 23019 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          287
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23019,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23019-1",
+      "name": "원본 포석 23019 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          288
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23019,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23020-0",
+      "name": "원본 포석 23020 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          289
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23020,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23020-1",
+      "name": "원본 포석 23020 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          290
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23020,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23021-0",
+      "name": "원본 포석 23021 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          291
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23021,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23021-1",
+      "name": "원본 포석 23021 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          292
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23021,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23022-0",
+      "name": "원본 포석 23022 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          293
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23022,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23022-1",
+      "name": "원본 포석 23022 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          294
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23022,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23023-0",
+      "name": "원본 포석 23023 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          295
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23023,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23023-1",
+      "name": "원본 포석 23023 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          296
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23023,
+      "variant": 1
+    },
+    {
+      "id": "bdg-light-road-23024-0",
+      "name": "원본 포석 23024 · 낮춘 연석 1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          297
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23024,
+      "variant": 0
+    },
+    {
+      "id": "bdg-light-road-23024-1",
+      "name": "원본 포석 23024 · 낮춘 연석 2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          298
+        ]
+      ],
+      "blocked": false,
+      "lighting": true,
+      "baseTile": 23024,
+      "variant": 1
+    },
+    {
+      "id": "bdg-hamlet-soil-0",
+      "name": "마을 지면 · soil-0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          304
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 0
+    },
+    {
+      "id": "bdg-hamlet-soil-1",
+      "name": "마을 지면 · soil-1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          305
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 1
+    },
+    {
+      "id": "bdg-hamlet-soil-2",
+      "name": "마을 지면 · soil-2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          306
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 2
+    },
+    {
+      "id": "bdg-hamlet-soil-3",
+      "name": "마을 지면 · soil-3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          307
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 3
+    },
+    {
+      "id": "bdg-hamlet-soil-4",
+      "name": "마을 지면 · soil-4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          308
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 4
+    },
+    {
+      "id": "bdg-hamlet-soil-5",
+      "name": "마을 지면 · soil-5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          309
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 5
+    },
+    {
+      "id": "bdg-hamlet-soil-6",
+      "name": "마을 지면 · soil-6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          310
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 6
+    },
+    {
+      "id": "bdg-hamlet-soil-7",
+      "name": "마을 지면 · soil-7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          311
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 7
+    },
+    {
+      "id": "bdg-hamlet-soil-8",
+      "name": "마을 지면 · soil-8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          312
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 8
+    },
+    {
+      "id": "bdg-hamlet-soil-9",
+      "name": "마을 지면 · soil-9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          313
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 9
+    },
+    {
+      "id": "bdg-hamlet-soil-10",
+      "name": "마을 지면 · soil-10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          314
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 10
+    },
+    {
+      "id": "bdg-hamlet-soil-11",
+      "name": "마을 지면 · soil-11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          315
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 11
+    },
+    {
+      "id": "bdg-hamlet-soil-12",
+      "name": "마을 지면 · soil-12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          316
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 12
+    },
+    {
+      "id": "bdg-hamlet-soil-13",
+      "name": "마을 지면 · soil-13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          317
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 13
+    },
+    {
+      "id": "bdg-hamlet-soil-14",
+      "name": "마을 지면 · soil-14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          318
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 14
+    },
+    {
+      "id": "bdg-hamlet-soil-15",
+      "name": "마을 지면 · soil-15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          319
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "soil",
+      "mask": 15
+    },
+    {
+      "id": "bdg-hamlet-stone-0",
+      "name": "마을 지면 · stone-0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          320
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 0
+    },
+    {
+      "id": "bdg-hamlet-stone-1",
+      "name": "마을 지면 · stone-1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          321
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 1
+    },
+    {
+      "id": "bdg-hamlet-stone-2",
+      "name": "마을 지면 · stone-2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          322
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 2
+    },
+    {
+      "id": "bdg-hamlet-stone-3",
+      "name": "마을 지면 · stone-3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          323
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 3
+    },
+    {
+      "id": "bdg-hamlet-stone-4",
+      "name": "마을 지면 · stone-4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          324
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 4
+    },
+    {
+      "id": "bdg-hamlet-stone-5",
+      "name": "마을 지면 · stone-5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          325
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 5
+    },
+    {
+      "id": "bdg-hamlet-stone-6",
+      "name": "마을 지면 · stone-6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          326
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 6
+    },
+    {
+      "id": "bdg-hamlet-stone-7",
+      "name": "마을 지면 · stone-7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          327
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 7
+    },
+    {
+      "id": "bdg-hamlet-stone-8",
+      "name": "마을 지면 · stone-8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          328
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 8
+    },
+    {
+      "id": "bdg-hamlet-stone-9",
+      "name": "마을 지면 · stone-9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          329
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 9
+    },
+    {
+      "id": "bdg-hamlet-stone-10",
+      "name": "마을 지면 · stone-10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          330
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 10
+    },
+    {
+      "id": "bdg-hamlet-stone-11",
+      "name": "마을 지면 · stone-11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          331
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 11
+    },
+    {
+      "id": "bdg-hamlet-stone-12",
+      "name": "마을 지면 · stone-12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          332
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 12
+    },
+    {
+      "id": "bdg-hamlet-stone-13",
+      "name": "마을 지면 · stone-13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          333
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 13
+    },
+    {
+      "id": "bdg-hamlet-stone-14",
+      "name": "마을 지면 · stone-14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          334
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 14
+    },
+    {
+      "id": "bdg-hamlet-stone-15",
+      "name": "마을 지면 · stone-15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          335
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "stone",
+      "mask": 15
+    },
+    {
+      "id": "bdg-hamlet-meadow-0",
+      "name": "마을 지면 · meadow-0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          336
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 0
+    },
+    {
+      "id": "bdg-hamlet-meadow-1",
+      "name": "마을 지면 · meadow-1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          337
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 1
+    },
+    {
+      "id": "bdg-hamlet-meadow-2",
+      "name": "마을 지면 · meadow-2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          338
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 2
+    },
+    {
+      "id": "bdg-hamlet-meadow-3",
+      "name": "마을 지면 · meadow-3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          339
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 3
+    },
+    {
+      "id": "bdg-hamlet-meadow-4",
+      "name": "마을 지면 · meadow-4",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          340
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 4
+    },
+    {
+      "id": "bdg-hamlet-meadow-5",
+      "name": "마을 지면 · meadow-5",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          341
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 5
+    },
+    {
+      "id": "bdg-hamlet-meadow-6",
+      "name": "마을 지면 · meadow-6",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          342
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 6
+    },
+    {
+      "id": "bdg-hamlet-meadow-7",
+      "name": "마을 지면 · meadow-7",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          343
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 7
+    },
+    {
+      "id": "bdg-hamlet-meadow-8",
+      "name": "마을 지면 · meadow-8",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          344
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 8
+    },
+    {
+      "id": "bdg-hamlet-meadow-9",
+      "name": "마을 지면 · meadow-9",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          345
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 9
+    },
+    {
+      "id": "bdg-hamlet-meadow-10",
+      "name": "마을 지면 · meadow-10",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          346
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 10
+    },
+    {
+      "id": "bdg-hamlet-meadow-11",
+      "name": "마을 지면 · meadow-11",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          347
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 11
+    },
+    {
+      "id": "bdg-hamlet-meadow-12",
+      "name": "마을 지면 · meadow-12",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          348
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 12
+    },
+    {
+      "id": "bdg-hamlet-meadow-13",
+      "name": "마을 지면 · meadow-13",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          349
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 13
+    },
+    {
+      "id": "bdg-hamlet-meadow-14",
+      "name": "마을 지면 · meadow-14",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          350
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 14
+    },
+    {
+      "id": "bdg-hamlet-meadow-15",
+      "name": "마을 지면 · meadow-15",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          351
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "meadow",
+      "mask": 15
+    },
+    {
+      "id": "bdg-hamlet-steps-0",
+      "name": "마을 지면 · steps-0",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          352
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "steps",
+      "variant": 0
+    },
+    {
+      "id": "bdg-hamlet-steps-1",
+      "name": "마을 지면 · steps-1",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          353
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "steps",
+      "variant": 1
+    },
+    {
+      "id": "bdg-hamlet-steps-2",
+      "name": "마을 지면 · steps-2",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          354
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "steps",
+      "variant": 2
+    },
+    {
+      "id": "bdg-hamlet-steps-3",
+      "name": "마을 지면 · steps-3",
+      "width": 1,
+      "height": 1,
+      "layer": 1,
+      "rows": [
+        [
+          355
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "steps",
+      "variant": 3
+    },
+    {
+      "id": "bdg-hamlet-vegetable-bed",
+      "name": "마을 지면 · vegetable-bed",
+      "width": 3,
+      "height": 2,
+      "layer": 2,
+      "rows": [
+        [
+          356,
+          357,
+          358
+        ],
+        [
+          359,
+          360,
+          361
+        ]
+      ],
+      "blocked": false,
+      "hamlet": true,
+      "kind": "vegetable-bed"
+    },
+    {
+      "id": "bdg-woodland-north",
+      "name": "숲 깊이 · north",
+      "width": 8,
+      "height": 5,
+      "layer": 3,
+      "rows": [
+        [
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375
+        ],
+        [
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ],
+        [
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391
+        ],
+        [
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          400,
+          401,
+          402,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          4
+        ]
+      ],
+      "anchors": [
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 0,
+          "pixelY": 0,
+          "foot": [
+            24,
+            43
+          ]
+        },
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 80,
+          "pixelY": 2,
+          "foot": [
+            104,
+            45
+          ]
+        },
+        {
+          "kit": "bd-tree-3e8732",
+          "pixelX": 58,
+          "pixelY": 13,
+          "foot": [
+            82,
+            56
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 32,
+          "pixelY": 0,
+          "foot": [
+            56,
+            59
+          ]
+        }
+      ],
+      "overlapPixels": 1384
+    },
+    {
+      "id": "bdg-woodland-north-shadow",
+      "name": "숲 깊이 · north-shadow",
+      "width": 8,
+      "height": 5,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          403,
+          404,
+          405,
+          -1,
+          -1,
+          406,
+          407,
+          408
+        ],
+        [
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416
+        ],
+        [
+          -1,
+          -1,
+          417,
+          418,
+          419,
+          420,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [],
+      "kind": "grove-shadow"
+    },
+    {
+      "id": "bdg-woodland-north-open",
+      "name": "숲 깊이 · north-open",
+      "width": 8,
+      "height": 5,
+      "layer": 3,
+      "rows": [
+        [
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          -1
+        ],
+        [
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435
+        ],
+        [
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443
+        ],
+        [
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          451,
+          452,
+          453,
+          454,
+          455
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          5,
+          3
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          7,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          7,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          7,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          7,
+          4
+        ]
+      ],
+      "anchors": [
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 36,
+          "pixelY": 4,
+          "foot": [
+            60,
+            47
+          ]
+        },
+        {
+          "kit": "bd-tree-3e8732",
+          "pixelX": 70,
+          "pixelY": 8,
+          "foot": [
+            94,
+            51
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 0,
+          "pixelY": 0,
+          "foot": [
+            24,
+            59
+          ]
+        }
+      ],
+      "overlapPixels": 489
+    },
+    {
+      "id": "bdg-woodland-north-open-shadow",
+      "name": "숲 깊이 · north-open-shadow",
+      "width": 8,
+      "height": 5,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          456,
+          457,
+          458,
+          459,
+          460,
+          -1
+        ],
+        [
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468
+        ],
+        [
+          469,
+          470,
+          471,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [],
+      "kind": "grove-shadow"
+    },
+    {
+      "id": "bdg-woodland-west",
+      "name": "숲 깊이 · west",
+      "width": 7,
+      "height": 9,
+      "layer": 3,
+      "rows": [
+        [
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          -1
+        ],
+        [
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          -1
+        ],
+        [
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          -1
+        ],
+        [
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          -1
+        ],
+        [
+          496,
+          497,
+          498,
+          499,
+          500,
+          501,
+          -1
+        ],
+        [
+          502,
+          503,
+          504,
+          505,
+          506,
+          507,
+          -1
+        ],
+        [
+          508,
+          509,
+          510,
+          511,
+          512,
+          513,
+          -1
+        ],
+        [
+          514,
+          515,
+          516,
+          517,
+          518,
+          519,
+          -1
+        ],
+        [
+          520,
+          521,
+          522,
+          523,
+          524,
+          525,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          4,
+          6
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          7
+        ]
+      ],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          0,
+          8
+        ],
+        [
+          1,
+          8
+        ],
+        [
+          2,
+          8
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          8
+        ],
+        [
+          5,
+          8
+        ],
+        [
+          6,
+          8
+        ]
+      ],
+      "anchors": [
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 35,
+          "pixelY": 5,
+          "foot": [
+            59,
+            48
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 0,
+          "pixelY": 0,
+          "foot": [
+            24,
+            59
+          ]
+        },
+        {
+          "kit": "bd-tree-3e8732",
+          "pixelX": 8,
+          "pixelY": 40,
+          "foot": [
+            32,
+            83
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 48,
+          "pixelY": 48,
+          "foot": [
+            72,
+            107
+          ]
+        },
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 0,
+          "pixelY": 78,
+          "foot": [
+            24,
+            121
+          ]
+        },
+        {
+          "kit": "bd-tree-3e8732",
+          "pixelX": 43,
+          "pixelY": 80,
+          "foot": [
+            67,
+            123
+          ]
+        }
+      ],
+      "overlapPixels": 1772
+    },
+    {
+      "id": "bdg-woodland-west-shadow",
+      "name": "숲 깊이 · west-shadow",
+      "width": 7,
+      "height": 9,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          526,
+          527,
+          528,
+          -1,
+          -1
+        ],
+        [
+          529,
+          530,
+          531,
+          532,
+          533,
+          534,
+          -1
+        ],
+        [
+          535,
+          536,
+          537,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          538,
+          539,
+          540,
+          541,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          542,
+          543,
+          544,
+          -1
+        ],
+        [
+          545,
+          546,
+          547,
+          548,
+          549,
+          550,
+          -1
+        ],
+        [
+          551,
+          552,
+          553,
+          554,
+          555,
+          556,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [],
+      "kind": "grove-shadow"
+    },
+    {
+      "id": "bdg-woodland-east",
+      "name": "숲 깊이 · east",
+      "width": 7,
+      "height": 8,
+      "layer": 3,
+      "rows": [
+        [
+          557,
+          558,
+          559,
+          560,
+          561,
+          562,
+          -1
+        ],
+        [
+          563,
+          564,
+          565,
+          566,
+          567,
+          568,
+          -1
+        ],
+        [
+          569,
+          570,
+          571,
+          572,
+          573,
+          574,
+          -1
+        ],
+        [
+          575,
+          576,
+          577,
+          578,
+          579,
+          580,
+          581
+        ],
+        [
+          582,
+          583,
+          584,
+          585,
+          586,
+          587,
+          588
+        ],
+        [
+          589,
+          590,
+          591,
+          592,
+          593,
+          594,
+          595
+        ],
+        [
+          596,
+          597,
+          598,
+          -1,
+          599,
+          600,
+          -1
+        ],
+        [
+          601,
+          602,
+          603,
+          -1,
+          -1,
+          -1,
+          -1
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          2,
+          4
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          1,
+          6
+        ]
+      ],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          4,
+          0
+        ],
+        [
+          5,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ],
+        [
+          5,
+          1
+        ],
+        [
+          6,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          4,
+          2
+        ],
+        [
+          5,
+          2
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          4,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          5
+        ],
+        [
+          0,
+          6
+        ],
+        [
+          2,
+          6
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          0,
+          7
+        ],
+        [
+          1,
+          7
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          7
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          7
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "anchors": [
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 0,
+          "pixelY": 0,
+          "foot": [
+            24,
+            43
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 48,
+          "pixelY": 0,
+          "foot": [
+            72,
+            59
+          ]
+        },
+        {
+          "kit": "bd-tree-3e8732",
+          "pixelX": 21,
+          "pixelY": 25,
+          "foot": [
+            45,
+            68
+          ]
+        },
+        {
+          "kit": "bd-tree-03a8f7",
+          "pixelX": 0,
+          "pixelY": 64,
+          "foot": [
+            24,
+            107
+          ]
+        },
+        {
+          "kit": "bd-tree-1a786c",
+          "pixelX": 54,
+          "pixelY": 48,
+          "foot": [
+            78,
+            107
+          ]
+        }
+      ],
+      "overlapPixels": 1102
+    },
+    {
+      "id": "bdg-woodland-east-shadow",
+      "name": "숲 깊이 · east-shadow",
+      "width": 7,
+      "height": 8,
+      "layer": 2,
+      "rows": [
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          604,
+          605,
+          606,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          607,
+          608,
+          609,
+          610,
+          611,
+          612,
+          -1
+        ],
+        [
+          -1,
+          613,
+          614,
+          615,
+          616,
+          617,
+          -1
+        ],
+        [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        [
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624
+        ],
+        [
+          625,
+          626,
+          627,
+          -1,
+          628,
+          629,
+          630
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [],
+      "kind": "grove-shadow"
+    },
+    {
+      "id": "bdg-woodland-fringe-0",
+      "name": "숲 깊이 · fringe-0",
+      "width": 3,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          631,
+          632,
+          633
+        ],
+        [
+          634,
+          635,
+          636
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "kind": "fringe"
+    },
+    {
+      "id": "bdg-woodland-fringe-1",
+      "name": "숲 깊이 · fringe-1",
+      "width": 3,
+      "height": 2,
+      "layer": 4,
+      "rows": [
+        [
+          637,
+          638,
+          639
+        ],
+        [
+          640,
+          641,
+          642
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [],
+      "upperCells": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "kind": "fringe"
+    },
+    {
+      "id": "bdg-woodland-fence-horizontal",
+      "name": "숲 깊이 · fence-horizontal",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          643
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence"
+    },
+    {
+      "id": "bdg-woodland-fence-vertical",
+      "name": "숲 깊이 · fence-vertical",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          644
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence"
+    },
+    {
+      "id": "bdg-woodland-fence-corner",
+      "name": "숲 깊이 · fence-corner",
+      "width": 1,
+      "height": 1,
+      "layer": 3,
+      "rows": [
+        [
+          645
+        ]
+      ],
+      "blocked": false,
+      "woodland": true,
+      "blockingCells": [
+        [
+          0,
+          0
+        ]
+      ],
+      "upperCells": [],
+      "kind": "fence"
+    }
+  ],
+  "lighting": {
+    "sun": "upper-left",
+    "shadowOffset": [
+      13,
+      7
+    ],
+    "maxCastAlpha": 51,
+    "maxContactAlpha": 94,
+    "preserveNativeArt": true
+  }
+}

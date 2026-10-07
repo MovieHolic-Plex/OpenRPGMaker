@@ -1,0 +1,15 @@
+{
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "revision": 25,
+  "sha256": "ea3317c4c13b9098d06e77672e82ad26211327cb31e649f5d0717d238b587a86",
+  "kind": "saved",
+  "separateProcessReopened": true,
+  "allSixMapsMatch": true,
+  "startMatches": true,
+  "all18SharedKitsMatch": true,
+  "sharedReferencesMatch": true,
+  "mapId": "map_beodeul_forms_village",
+  "width": 50,
+  "height": 50
+}

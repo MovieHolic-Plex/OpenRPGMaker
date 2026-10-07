@@ -1,0 +1,38 @@
+[
+  {
+    "concept": "cream",
+    "changedFromRevision15": 0,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  },
+  {
+    "concept": "brick",
+    "changedFromRevision15": 0,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  },
+  {
+    "concept": "stone",
+    "changedFromRevision15": 660,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  },
+  {
+    "concept": "sage",
+    "changedFromRevision15": 0,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  },
+  {
+    "concept": "ochre",
+    "changedFromRevision15": 0,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  },
+  {
+    "concept": "church",
+    "changedFromRevision15": 0,
+    "allChangesInsideGableWall": true,
+    "roofRestored": true
+  }
+]

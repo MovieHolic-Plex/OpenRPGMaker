@@ -1,0 +1,60 @@
+{
+  "changed": 161,
+  "promoted": [
+    {
+      "x": 22,
+      "y": 37
+    },
+    {
+      "x": 21,
+      "y": 38
+    },
+    {
+      "x": 20,
+      "y": 38
+    },
+    {
+      "x": 19,
+      "y": 38
+    },
+    {
+      "x": 18,
+      "y": 38
+    },
+    {
+      "x": 17,
+      "y": 38
+    },
+    {
+      "x": 16,
+      "y": 38
+    },
+    {
+      "x": 15,
+      "y": 38
+    },
+    {
+      "x": 14,
+      "y": 38
+    },
+    {
+      "x": 14,
+      "y": 39
+    },
+    {
+      "x": 14,
+      "y": 40
+    },
+    {
+      "x": 14,
+      "y": 41
+    },
+    {
+      "x": 14,
+      "y": 42
+    }
+  ],
+  "churchToSouthBridgePaved": true,
+  "mixedRoadEdgesJoined": true,
+  "objectsEventsShadowsAndPalettePreserved": true
+}

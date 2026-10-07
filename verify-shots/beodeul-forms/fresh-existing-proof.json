@@ -1,0 +1,8 @@
+{
+  "freshHasSixFamilies": true,
+  "existingHasSixFamilies": true,
+  "sourceHas18Kits": true,
+  "referencesMatch": true,
+  "idempotent": true,
+  "oldMapsAndPassagePreserved": true
+}

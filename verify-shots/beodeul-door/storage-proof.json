@@ -1,0 +1,12 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "revision": 2,
+  "sha256": "28fc2ab0b96b5a164f728a812f7f4a0697ea4641118536900e8c5a2e4e9cb0e2",
+  "freshProjectHasSharedAsset": true,
+  "existingProjectHasSharedAsset": true,
+  "referenceBackfill": true,
+  "reloadedSameDoorDefinition": true,
+  "mapsUnchanged": true,
+  "previewOnly": true
+}

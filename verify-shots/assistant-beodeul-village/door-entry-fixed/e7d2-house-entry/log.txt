@@ -1,0 +1,62 @@
+OK   get_map_region — 빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   list_tileset_references — 버들항 · 건물·소품·나무 조각 사전 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_tileset_references — 손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   find_tools — 편집기 툴 2개 발견: lay_path, check_reachability
+OK   list_tileset_references — 손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (0–5891, 1/2쪽)
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (0–5871, 1/3쪽)
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 읽는 순서·짓는 순서 (0–2803, 1/1쪽)
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 구조 규칙·사용자 판정 (0–1926, 1/1쪽)
+OK   list_hand_interior_parts — 방 침실: 예제 10맵 12방에서 쓰인 가구 27종(종류별) + 태그가 맞는 16종. 예제 참고문서 documentId: hand-interior-v5-map-pharmacy, hand-interior-v5-map-smithy, hand-interior-v5-map-scholar, hand-interior-v5-map-manor_1f ….
+OK   list_tileset_references — 손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (5891–11002, 2/2쪽)
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (5871–11816, 2/3쪽)
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / pieces-houses-a.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / pieces-trees.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 예제 · 학자의 집 (0–5974, 1/2쪽)
+OK   list_tileset_references — 버들항 · 자동타일과 강·폭포·다리·항구 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   get_project_summary — 프로젝트 '새 프로젝트' — 맵 1개, 아이템 1000, 트룹 7
+OK   read_tileset_reference — 손 도트 실내 (v5) / hand-interior-scholar.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 예제 · 학자의 집 (5974–7008, 2/2쪽)
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 사전(바닥·벽면·천장·탁자·줄·단·탁상 물건) (0–16493, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (11816–13221, 3/3쪽)
+assistant: 기존 빈 맵에 작은 살림집 한 채와 짧은 진입로, 나무 세 그루를 배치하겠습니다. 실내는 거실과 침실을 나누고, 출입 칸과 도착 칸을 분리해 걸어서 왕복하도록 연결하겠습니다. 
+OK   find_tools — 편집기 툴 1개 발견: run_scene_test
+OK   set_build_spec — 
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / 자동타일 · 길·물·모랫길 (0–1190, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / at-road.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 손 도트 실내 (v5) / 손 도트 실내 · 정상/오류 그림과 검사 코드 (0–1937, 1/1쪽)
+OK   stamp_object — 「버들항 살림집 7×6」 → map_blank_start (8,1) 7×6 · 32칸 · 입구 (10,6) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (10,7) 에서 끝낸다
+OK   build_hand_interior_room — 손 도트 실내 '버들항 작은 집 실내' 13×9 (map_beodeul_small_home, atlas_biome_interior) — 출입구에서 닿는 칸 26, 닿지 못한 빈 바닥 15, 경고 5 — 출입구에서 닿지 못하는 빈 바닥 15칸: (8,3) (8,4) (10,4) (11,4) (8,5) (9,5) (10,5) (11,5) (8,6) (9,6) 
+FAIL lay_path — 타일셋 참고문서 선행 읽기 필요 (13건): read_tileset_reference(tilesetId:"beodeul_city", categoryId:"beodeul-city-water", documentId:"bd-water-kits", offset:0); read_tileset_reference(tilesetId:"beodeul_city", categ
+OK   get_map_region — 버들항 작은 집 실내(map_beodeul_small_home) 영역 (0,0)~(13,9) — 이벤트 0개, 물 0칸
+OK   build_hand_interior_room — 손 도트 실내 '버들항 작은 집 실내' 13×9 (map_beodeul_small_home, atlas_biome_interior) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / 강·폭포·다리·호수 항구 키트 (0–6092, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / at-water.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / at-sand.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-upper.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-straight-ns.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-canal-straight-ew.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-river-bend-ns-ew.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-canal-bend-ew-ns.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-bridge-arch.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-waterfall-drop.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-waterfall-wall.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-lake.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-square.png — 실제 이미지를 확인하세요.
+OK   lay_path — 빈 맵에 '버들항 길 포석' 길 7칸 — 자연도 0, 오토타일 재계산 7칸(inner corner 포함).
+OK   stamp_object — 「버들항 나무 3×3」 → map_blank_start (3,3) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 3×4」 → map_blank_start (16,5) 3×4 · 12칸
+OK   stamp_object — 「버들항 나무 3×3」 → map_blank_start (4,10) 3×3 · 9칸
+OK   create_transfer_pair — 출입구 쌍 생성: 빈 맵(10,7) ↔ 버들항 작은 집 실내(4,8)
+OK   set_start_position — 시작 위치 설정: 빈 맵 (10, 10)
+OK   check_reachability — 도달성: 전부 도달 가능
+OK   check_reachability — 도달성: 전부 도달 가능
+OK   run_scene_test — scene test 성공 (10/10 스텝)
+OK   show_map_region — 맵 미리보기: (0,0) 20×15 (빈 맵)
+OK   show_map_region — 맵 미리보기: (0,0) 13×9 (버들항 작은 집 실내)
+OK   run_scene_test — scene test 성공 (6/6 스텝)
+assistant: 버들항 살림집 한 채, 문 앞 포석길과 나무 세 그루를 배치하고, 거실·침실이 있는 실내를 양방향으로 연결했습니다. 시작점에서 걸어 들어가 침실까지 이동한 뒤 다시 나오는 시험을 통과했으며, 양쪽 착지 칸을 출입 칸과 분리해 즉시 되돌아가지 않는 것도 확인했습니다.  | 위치 | 좌표 | |---|---| | 야외 문 앞 출입 칸 | **(10, 7)** | | 실내 출구 | **(4, 8)** | | 집에서 나왔을 때 야외 착지 | **(10, 8)** | | 집에 들어갔을 때 실내 착지 | **(4, 7)** | | 최종 시작 위치 | **(10, 10)** — 문 앞에서 길을 따라 3칸 거리 |  야외는 기존 **‘빈 맵’**, 실내는 새 **‘버들항 작은 집 실내’**입니다. 두 맵의 실제 그림과 동

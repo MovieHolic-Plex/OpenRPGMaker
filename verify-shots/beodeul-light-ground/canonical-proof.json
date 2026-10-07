@@ -1,0 +1,365 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "storeFile": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite",
+  "revision": 11,
+  "sha256": "30434511120896be167381477e5c593b00af334ab87cdd39c1292ca132787ca8",
+  "savedAndReopened": true,
+  "originalBuildingPixelsAndPositionsPreserved": true,
+  "allOriginalUpperLayersPreserved": true,
+  "originalTwoDemoMapsPreserved": true,
+  "eventsAndStartPreserved": true,
+  "all1620CollisionCellsUnchanged": true,
+  "originalLayer2ArtPreserved": true,
+  "repeatIsNoOp": true,
+  "commonSourceAvailableInFreshAndExistingProjects": true,
+  "mapId": "map_beodeul_rest",
+  "sun": "upper-left",
+  "shadowCells": 161,
+  "roadCells": 176,
+  "meadowCells": 190,
+  "anchors": [
+    {
+      "kit": "bd-tree-03a8f7",
+      "x": 29,
+      "y": 1
+    },
+    {
+      "kit": "bd-tree-03a8f7",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "kit": "bd-tree-3e8732",
+      "x": 1,
+      "y": 19
+    },
+    {
+      "kit": "bd-tree-3e8732",
+      "x": 16,
+      "y": 26
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 35,
+      "y": 2
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 36,
+      "y": 8
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 0,
+      "y": 10
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 15,
+      "y": 22
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 43,
+      "y": 23
+    },
+    {
+      "kit": "bd-tree-1a786c",
+      "x": 50,
+      "y": 23
+    },
+    {
+      "kit": "bd-house-village-cream",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "kit": "bd-house-village-brick",
+      "x": 17,
+      "y": 2
+    },
+    {
+      "kit": "bd-house-village-stone",
+      "x": 30,
+      "y": 5
+    },
+    {
+      "kit": "bd-house-village-sage",
+      "x": 5,
+      "y": 18
+    },
+    {
+      "kit": "bd-house-village-ochre",
+      "x": 27,
+      "y": 20
+    },
+    {
+      "kit": "bd-house-village-church",
+      "x": 41,
+      "y": 3
+    }
+  ],
+  "placements": [
+    {
+      "recipe": "bdg-light-tree-03a8f7",
+      "x": 29,
+      "y": 3,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-tree-03a8f7",
+      "x": 12,
+      "y": 4,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-tree-3e8732",
+      "x": 1,
+      "y": 21,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-tree-3e8732",
+      "x": 16,
+      "y": 28,
+      "cells": 4
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 35,
+      "y": 5,
+      "cells": 4
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 36,
+      "y": 11,
+      "cells": 5
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 0,
+      "y": 13,
+      "cells": 7
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 15,
+      "y": 25,
+      "cells": 7
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 43,
+      "y": 26,
+      "cells": 7
+    },
+    {
+      "recipe": "bdg-light-tree-1a786c",
+      "x": 50,
+      "y": 26,
+      "cells": 7
+    },
+    {
+      "recipe": "bdg-light-house-cream",
+      "x": 4,
+      "y": 8,
+      "cells": 15
+    },
+    {
+      "recipe": "bdg-light-house-brick",
+      "x": 17,
+      "y": 9,
+      "cells": 15
+    },
+    {
+      "recipe": "bdg-light-house-stone",
+      "x": 30,
+      "y": 10,
+      "cells": 9
+    },
+    {
+      "recipe": "bdg-light-house-sage",
+      "x": 5,
+      "y": 23,
+      "cells": 19
+    },
+    {
+      "recipe": "bdg-light-house-ochre",
+      "x": 27,
+      "y": 25,
+      "cells": 13
+    },
+    {
+      "recipe": "bdg-light-house-church",
+      "x": 41,
+      "y": 15,
+      "cells": 25
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 26,
+      "y": 3,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 31,
+      "y": 4,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 9,
+      "y": 4,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 14,
+      "y": 5,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": -2,
+      "y": 21,
+      "cells": 4
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 3,
+      "y": 22,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 13,
+      "y": 28,
+      "cells": 5
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 18,
+      "y": 29,
+      "cells": 2
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 37,
+      "y": 6,
+      "cells": 9
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 33,
+      "y": 11,
+      "cells": 6
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 38,
+      "y": 12,
+      "cells": 7
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": -3,
+      "y": 13,
+      "cells": 1
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 2,
+      "y": 14,
+      "cells": 4
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 12,
+      "y": 25,
+      "cells": 5
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 17,
+      "y": 26,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 40,
+      "y": 26,
+      "cells": 11
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 45,
+      "y": 27,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 52,
+      "y": 27,
+      "cells": 4
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 1,
+      "y": 8,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 10,
+      "y": 9,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 14,
+      "y": 9,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 23,
+      "y": 10,
+      "cells": 8
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 27,
+      "y": 10,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-1",
+      "x": 2,
+      "y": 25,
+      "cells": 10
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 24,
+      "y": 25,
+      "cells": 6
+    },
+    {
+      "recipe": "bdg-light-meadow-2",
+      "x": 32,
+      "y": 26,
+      "cells": 6
+    },
+    {
+      "recipe": "bdg-light-meadow-0",
+      "x": 52,
+      "y": 16,
+      "cells": 4
+    }
+  ],
+  "originalUpperPreserved": true,
+  "originalObjectsAndEventsPreserved": true
+}

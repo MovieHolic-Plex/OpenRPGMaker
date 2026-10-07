@@ -1,0 +1,273 @@
+{
+  "fixtures": [
+    {
+      "id": "bd-facility-inn",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-tavern",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-cafe",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-general-shop",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-weapon-shop",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-armour-shop",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-smithy",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-jeweller",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-apothecary",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-alchemist",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-healer",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-chapel",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-adventurers-guild",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-training-house",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-guardhouse",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-prison",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-village-hall",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-bank",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-stable",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-ferry-office",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-warehouse",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-granary",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-bakery",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-brewery",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-tailor",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-carpenter",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-library",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-inventor",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-mage",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-fortune-teller",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-retired-adventurer",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    },
+    {
+      "id": "bd-facility-missing-family",
+      "wholeKitInBounds": true,
+      "entranceCount": 1,
+      "southApproachPasses": true
+    }
+  ],
+  "blockedEntranceMutationDetected": true,
+  "errorCode": "blocked-facility-entrance",
+  "cell": {
+    "x": 5,
+    "y": 12
+  },
+  "docSizes": [
+    [
+      "bd-facility-guide",
+      5521
+    ],
+    [
+      "bd-facility-catalog-1",
+      72734
+    ],
+    [
+      "bd-facility-catalog-2",
+      80773
+    ],
+    [
+      "bd-facility-catalog-3",
+      117533
+    ],
+    [
+      "bd-facility-catalog-4",
+      80672
+    ],
+    [
+      "bd-facility-catalog-5",
+      72236
+    ],
+    [
+      "bd-facility-catalog-6",
+      72300
+    ],
+    [
+      "bd-facility-catalog-7",
+      92039
+    ],
+    [
+      "bd-facility-catalog-8",
+      90399
+    ],
+    [
+      "bd-facility-town-layer-1",
+      12223
+    ],
+    [
+      "bd-facility-town-layer-2",
+      8982
+    ],
+    [
+      "bd-facility-town-layer-3",
+      10780
+    ],
+    [
+      "bd-facility-town-layer-4",
+      8475
+    ],
+    [
+      "bd-facility-town-placements",
+      13395
+    ],
+    [
+      "bd-facility-town-grafts-1",
+      41494
+    ],
+    [
+      "bd-facility-town-grafts-2",
+      40018
+    ],
+    [
+      "bd-facility-town-grafts-3",
+      28678
+    ]
+  ],
+  "referencesUseStaticPaths": true
+}

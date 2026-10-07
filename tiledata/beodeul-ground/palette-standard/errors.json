@@ -1,0 +1,16 @@
+[
+  {
+    "code": "palette-scope-leak",
+    "pixel": [
+      0,
+      0
+    ],
+    "exampleMapCell": [
+      0,
+      0
+    ],
+    "layer": 1,
+    "detected": true,
+    "groundChangedPixels": 2504
+  }
+]
