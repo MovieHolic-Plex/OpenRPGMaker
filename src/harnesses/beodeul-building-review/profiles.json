@@ -1,0 +1,99 @@
+{
+ "_doc": "검수·설치·스토어 올리기의 타일셋별 설정. 새 타일셋은 항목을 하나 더한다(절차: openwiki/harnesses/beodeul-building-review.md 「새 타일셋 추가」). 서명 대상이 아니다.",
+ "profiles": [
+  {
+   "id": "beodeul",
+   "label": "버들항",
+   "dataEnv": "BEODEUL_BUILDING_REVIEW_DATA",
+   "dataDir": "~/.local/share/oprn/beodeul-building-review",
+   "seedDir": "harness-data/beodeul-building-review",
+   "bundle": {
+    "tilesetId": "beodeul_reviewed",
+    "texture": "tex_beodeul_reviewed",
+    "name": "버들항 · 사람이 허용한 건물",
+    "publicDir": "public/assets/beodeul-reviewed",
+    "publicUrl": "/assets/beodeul-reviewed",
+    "tiledata": "tiledata/beodeul-reviewed",
+    "catalog": "src/assets/beodeulReviewedCatalog.json",
+    "references": "src/assets/beodeulReviewedReferences.json",
+    "referencesId": "beodeul-reviewed",
+    "hostTilesetId": "beodeul_city",
+    "hostTexture": "tex_beodeul_city",
+    "ids": {
+     "house": "bd-house-rv-",
+     "shadow": "bd-rv-shadow-",
+     "foundation": "bd-rv-foundation-",
+     "docs": "bd-rv-"
+    },
+    "tags": [
+     "버들항",
+     "3/4 탑뷰"
+    ],
+    "groundSurface": [
+     136,
+     177,
+     77
+    ]
+   },
+   "example": {
+    "_doc": "참고문서의 거리 예제: 건물 8채, 길, 문 앞을 막는 실제 소품(정상/오류 그림).",
+    "map": {
+     "id": "rv_street",
+     "name": "버들항 · 허용한 건물 거리 예제",
+     "width": 64,
+     "height": 22,
+     "roadRow": 18
+    },
+    "picks": [
+     "r10-04",
+     "r2-04",
+     "r2-02",
+     "r6-02",
+     "r8-06",
+     "r3-01",
+     "r10-01",
+     "r7-08"
+    ],
+    "grassTile": 737,
+    "groundTilesetId": "beodeul_ground",
+    "groundCatalog": "src/assets/beodeulGroundCatalog.json",
+    "roadRecipePattern": "^bdg-hamlet-soil-\\d+$",
+    "roadRecipePrefix": "bdg-hamlet-soil-",
+    "blockerKit": "bd-pick-volcano-cave-anvil"
+   },
+   "store": {
+    "title": "버들항 — 사람이 허용한 건물",
+    "summary": "사람이 하나씩 검수해 허용한 버들항 건물 도트. 본체·바닥 그림자·기초를 한 세트로 놓습니다.",
+    "description": "버들항 16px 손 도트 건물 중 사람이 직접 허용한 것만 모았습니다. 건물마다 본체·바닥 그림자·기초 키트가 있고, 벽은 막히고 지붕 처마는 걸을 수 있게 칸 통행이 구워져 있습니다.\n참고문서(조립 순서·64×22 거리 예제·정상/오류 그림)가 들어 있어 에디터 조수가 바로 이 건물로 거리를 지을 수 있습니다.",
+    "tags": [
+     "건물",
+     "도시",
+     "버들항",
+     "16px"
+    ],
+    "previews": [
+     "assets/beodeul-reviewed/street.png",
+     "assets/beodeul-reviewed/gallery.png",
+     "assets/beodeul-reviewed/normal-error.png"
+    ],
+    "locales": {
+     "en": {
+      "title": "Beodeul Port — Human-Approved Buildings",
+      "summary": "Beodeul Port 16px hand-pixel buildings, each one reviewed and allowed by a person. Body, ground shadow and foundation are placed as one set.",
+      "description": "Only Beodeul Port 16px hand-pixel buildings that a person explicitly allowed are included. Each building has a body, ground-shadow and foundation kit, with walls blocking movement and roof eaves walkable.\nReference docs (build order, a 64x22 street example, and correct/incorrect pictures) are included so the editor assistant can build streets with these buildings right away."
+     },
+     "ja": {
+      "title": "バドゥル港 — 人が許可した建物",
+      "summary": "人が一つずつ確認して許可したバドゥル港の16pxドット建物。本体・地面の影・基礎を一組で置きます。",
+      "description": "人が明示的に許可したバドゥル港の16px手打ちドット建物だけを集めました。建物ごとに本体・地面の影・基礎のキットがあり、壁は通行不可、屋根の軒は歩けるように通行設定が入っています。\n参考文書(配置手順・64×22の通りの例・正しい例/誤った例の図)が入っているので、エディターのアシスタントがこの建物ですぐに通りを作れます。"
+     },
+     "zh": {
+      "title": "柳港 — 人工确认的建筑",
+      "summary": "经人工逐一确认的柳港 16px 手绘像素建筑。主体、地面阴影与地基作为一套放置。",
+      "description": "仅收录经人工明确允许的柳港 16px 手绘像素建筑。每栋建筑都有主体、地面阴影和地基套件,墙体不可通行,屋檐可通行。\n附有参考文档(摆放顺序、64×22 街道示例、正确与错误示例图),编辑器助手可直接用这些建筑搭建街道。"
+     }
+    }
+   }
+  }
+ ]
+}

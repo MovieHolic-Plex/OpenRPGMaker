@@ -9,11 +9,12 @@
 import argparse, json, os, sqlite3, sys, time
 from pathlib import Path
 
+from profiles import load_profile
 ROOT=Path(__file__).resolve().parents[4]
-SOURCE=ROOT/'harness-data/beodeul-building-review'
-DATA=Path(os.environ.get('BEODEUL_BUILDING_REVIEW_DATA',str(Path.home()/'.local/share/oprn/beodeul-building-review')))
+P=load_profile(sys.argv[sys.argv.index('--profile')+1] if '--profile' in sys.argv else None)   # BUILDING_REVIEW_PROFILE or beodeul
+SOURCE=ROOT/P['seedDir'];DATA=P['data']
 LOG=SOURCE/'decisions.json'
-BACKUPS=Path(os.environ.get('BEODEUL_REVIEW_BACKUP_DIR',str(Path.home()/'backups/beodeul-review')))
+BACKUPS=Path(os.environ.get('BEODEUL_REVIEW_BACKUP_DIR',str(Path.home()/'backups'/('beodeul-review' if P['id']=='beodeul' else 'building-review-'+P['id']))))
 KEYS=('seq','item','sha','decision','note','at')
 
 def rows():
@@ -52,5 +53,5 @@ def status():
     print(json.dumps({'dbRows':len(log),'committedRows':len(committed),'behind':len(log)-len(committed),
         'allow':sum(e['decision']=='allow' for e in eff),'deny':sum(e['decision']=='deny' for e in eff),'backups':len(list(BACKUPS.glob('review-*.sqlite')))}))
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('cmd',choices=['export','restore','backup','status']);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('cmd',choices=['export','restore','backup','status']);p.add_argument('--profile');a=p.parse_args()
     {'export':export,'restore':restore,'backup':backup,'status':status}[a.cmd]()

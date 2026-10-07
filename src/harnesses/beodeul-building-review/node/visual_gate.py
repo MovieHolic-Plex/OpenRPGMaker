@@ -49,11 +49,12 @@ def verify_receipt(data,id,sha,location='items'):
     except (OSError,ValueError,KeyError,TypeError,StopIteration):return False
 
 def human_allowed(data,id,sha):
-    """The latest human decision for this exact picture hash is Allow (hash-bound, append-only log)."""
+    """The latest human decision for this exact picture hash is Allow or Deny (hash-bound, append-only log).
+    Name kept; a human Deny also keeps its picture on the screen so the decision stays visible and undoable."""
     try:
         with sqlite3.connect(data/'review.sqlite') as c:
             last=c.execute('select decision from decisions where item=? and sha=? order by seq desc limit 1',(id,sha)).fetchone()
-        return bool(last) and last[0]=='allow'
+        return bool(last) and last[0] in ('allow','deny')
     except sqlite3.Error:return False
 def exempt(data,id,sha,location='items'):
     """User decision 2026-10-07: a picture a human already allowed is not re-gated after tooling moves.

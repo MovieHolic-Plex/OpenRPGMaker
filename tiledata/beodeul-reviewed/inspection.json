@@ -713,11 +713,283 @@
     1,
     2
    ]
+  },
+  {
+   "id": "r9-building-01",
+   "kit": "bd-house-rv-r9-01",
+   "sha256": "6fea91b27c2269d043a49bf5420fbdc8ea580f66d1c5a355b4ff04321ce3840a",
+   "size": [
+    4,
+    7
+   ],
+   "blockedCells": 9,
+   "overhangCells": 13,
+   "entrance": [
+    2,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-02",
+   "kit": "bd-house-rv-r9-02",
+   "sha256": "257ea4505d8b833285650dc6533dcd114636720a568a1b2003fd2dd70f47496b",
+   "size": [
+    8,
+    7
+   ],
+   "blockedCells": 16,
+   "overhangCells": 22,
+   "entrance": [
+    4,
+    5,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-03",
+   "kit": "bd-house-rv-r9-03",
+   "sha256": "dbbd4fd0d9efa702d0fe8e30f6eba4a1244a612cb5950823a33ad2a90bdc60a3",
+   "size": [
+    9,
+    9
+   ],
+   "blockedCells": 24,
+   "overhangCells": 31,
+   "entrance": [
+    2,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-05",
+   "kit": "bd-house-rv-r9-05",
+   "sha256": "6ead4621932ae995ce546de7c7c057a0b88939640ea0d6092cafb320ee01bb34",
+   "size": [
+    6,
+    11
+   ],
+   "blockedCells": 26,
+   "overhangCells": 28,
+   "entrance": [
+    3,
+    9,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-06",
+   "kit": "bd-house-rv-r9-06",
+   "sha256": "b6aca38da6ba4eb3ff831a81e78d9ee4ff4bd07e97975b0f38cf0ed184961e25",
+   "size": [
+    10,
+    12
+   ],
+   "blockedCells": 34,
+   "overhangCells": 41,
+   "entrance": [
+    4,
+    10,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-07",
+   "kit": "bd-house-rv-r9-07",
+   "sha256": "3344177aa3e4585d8902537b62b990aa7cd7e5749bd3999183975a847be429ab",
+   "size": [
+    10,
+    10
+   ],
+   "blockedCells": 35,
+   "overhangCells": 55,
+   "entrance": [
+    5,
+    8,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-08",
+   "kit": "bd-house-rv-r9-08",
+   "sha256": "efd307bb5401823b4713ec43ed8bd5085891503663a9c2197f1a0d154690ccd1",
+   "size": [
+    11,
+    10
+   ],
+   "blockedCells": 33,
+   "overhangCells": 64,
+   "entrance": [
+    6,
+    8,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-10",
+   "kit": "bd-house-rv-r9-10",
+   "sha256": "51daccb878d8a8dfecfaee88339c8fce5f11c209ac434d1470c56c2b033dba18",
+   "size": [
+    11,
+    9
+   ],
+   "blockedCells": 31,
+   "overhangCells": 40,
+   "entrance": [
+    3,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-12",
+   "kit": "bd-house-rv-r9-12",
+   "sha256": "c9e6479c500981703b413727e4d82d4fad6744cc402195490f57a5b555437c61",
+   "size": [
+    4,
+    9
+   ],
+   "blockedCells": 14,
+   "overhangCells": 16,
+   "entrance": [
+    2,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-13",
+   "kit": "bd-house-rv-r9-13",
+   "sha256": "1d691d5c33b6bc976e7faa8819728297d703dbe8452073abcecd1f5e4644e76a",
+   "size": [
+    8,
+    9
+   ],
+   "blockedCells": 26,
+   "overhangCells": 28,
+   "entrance": [
+    4,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-14",
+   "kit": "bd-house-rv-r9-14",
+   "sha256": "4bd6229bb6fa63f75ef1497b782fbcbef58a84e98ba1e24d25d9ed5b2a40d817",
+   "size": [
+    5,
+    11
+   ],
+   "blockedCells": 20,
+   "overhangCells": 25,
+   "entrance": [
+    2,
+    9,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-15",
+   "kit": "bd-house-rv-r9-15",
+   "sha256": "a8be7f7356b55fb6144c5a0e833e5852ba8980954f2fc3516ce21e5ae1725fa4",
+   "size": [
+    9,
+    10
+   ],
+   "blockedCells": 34,
+   "overhangCells": 39,
+   "entrance": [
+    2,
+    8,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-16",
+   "kit": "bd-house-rv-r9-16",
+   "sha256": "ffa610ebf1a2283aaa177b1d5a059321888064830f769e26f78c1eb0aa1c764d",
+   "size": [
+    10,
+    9
+   ],
+   "blockedCells": 29,
+   "overhangCells": 35,
+   "entrance": [
+    3,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-17",
+   "kit": "bd-house-rv-r9-17",
+   "sha256": "d786356f39810fa85781cafe584caf6f9eb957fead8a6d4cfc3ad0b65305bbb3",
+   "size": [
+    4,
+    9
+   ],
+   "blockedCells": 13,
+   "overhangCells": 17,
+   "entrance": [
+    2,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-18",
+   "kit": "bd-house-rv-r9-18",
+   "sha256": "b007340c64ab70d7676207f389d678ac93f95c092f397ad4ba2dc649e79f871a",
+   "size": [
+    6,
+    9
+   ],
+   "blockedCells": 20,
+   "overhangCells": 22,
+   "entrance": [
+    3,
+    7,
+    1,
+    2
+   ]
+  },
+  {
+   "id": "r9-building-19",
+   "kit": "bd-house-rv-r9-19",
+   "sha256": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a",
+   "size": [
+    10,
+    9
+   ],
+   "blockedCells": 30,
+   "overhangCells": 34,
+   "entrance": [
+    2,
+    7,
+    1,
+    2
+   ]
   }
  ],
- "installed": 42,
- "tiles": 768,
- "sheetTiles": 768,
+ "installed": 58,
+ "tiles": 815,
+ "sheetTiles": 816,
  "decisionLog": "harness-data/beodeul-building-review/decisions.json",
  "visualVerdict": "requires actual image review (gallery.png)"
 }

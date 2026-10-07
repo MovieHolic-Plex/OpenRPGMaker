@@ -11,23 +11,40 @@ Passability: wall cells block (door cell included); roof/overhang cells stay wal
 the share of light plaster/stone colour, forced contiguous up from each column's ground row; log houses use their fixed
 wall band. The entrance cell and every bottom-row cell are forced solid; the cell south of the door is outside the kit.
 """
-import json, hashlib, os, shutil, sys, colorsys
+import json, hashlib, os, shutil, sqlite3, sys, colorsys
 from pathlib import Path
 from PIL import Image, ImageDraw
 import numpy as np
+from profiles import load_profile
 
 ROOT=Path(__file__).resolve().parents[4]
-SOURCE=ROOT/'harness-data/beodeul-building-review'
-DATA=Path(os.environ.get('BEODEUL_BUILDING_REVIEW_DATA',str(Path.home()/'.local/share/oprn/beodeul-building-review')))
-TILEDATA=ROOT/'tiledata/beodeul-reviewed';SRC=TILEDATA/'sources'
-OUT=ROOT/'public/assets/beodeul-reviewed'
-CATALOG=ROOT/'src/assets/beodeulReviewedCatalog.json'
+P=load_profile(sys.argv[sys.argv.index('--profile')+1] if '--profile' in sys.argv else None)
+B=P['bundle']
+SOURCE=ROOT/P['seedDir'];DATA=P['data']
+TILEDATA=ROOT/B['tiledata'];SRC=TILEDATA/'sources'
+OUT=ROOT/B['publicDir']
+CATALOG=ROOT/B['catalog']
+IDS=B['ids']
 def digest(b):return hashlib.sha256(b).hexdigest()
+def round_of(item):
+    head=item.split('-')[0];return int(head[1:]) if head[:1]=='r' and head[1:].isdigit() else 0
+def kit_id(item):return item.replace('-building-','-')  # r2-building-01 -> r2-01
+def candidate_meta(item):
+    """Metadata of a candidate: the seed (gate profiles), the review DB (imported profiles) or the committed sources.json."""
+    seed=SOURCE/'seed.json'
+    if seed.exists():
+        found={c['id']:c for c in json.loads(seed.read_text())['candidates']}.get(item)
+        if found:return found
+    db=DATA/'review.sqlite'
+    if db.exists():
+        c=sqlite3.connect(db);row=c.execute('select meta from candidates where id=?',(item,)).fetchone();c.close()
+        if row:return json.loads(row[0])
+    old=json.loads((TILEDATA/'sources.json').read_text()) if (TILEDATA/'sources.json').exists() else {}
+    return old.get(item)
 
 def allowed():
     log=json.loads((SOURCE/'decisions.json').read_text())['log'];last={}
     for r in log:last[(r['item'],r['sha'])]=r
-    seed={c['id']:c for c in json.loads((SOURCE/'seed.json').read_text())['candidates']}
     # Rounds that were replaced keep their decision log; only ids still in the seed, or with a stored source, are installable.
     out=[]
     for (item,sha),r in sorted(last.items()):
@@ -39,11 +56,8 @@ def allowed():
         else:raise SystemExit(f'missing picture for {item} {sha}')
         if digest(raw)!=sha:raise SystemExit(f'{item}: picture no longer hashes to the allowed sha')
         SRC.mkdir(parents=True,exist_ok=True);file.write_bytes(raw)
-        meta=seed.get(item)
-        if meta is None:
-            old=json.loads((TILEDATA/'sources.json').read_text()) if (TILEDATA/'sources.json').exists() else {}
-            meta=old.get(item)
-        if meta is None:raise SystemExit(f'{item}: allowed but not in seed.json or sources.json')
+        meta=candidate_meta(item)
+        if meta is None:raise SystemExit(f'{item}: allowed but not in the seed, the review DB or sources.json')
         out.append((item,sha,meta,Image.open(file).convert('RGBA')))
     return out
 
@@ -117,32 +131,32 @@ def main():
                 ds.line((xx,foot,xx+5,foot+4),fill=(44,51,28,44));ds.point((xx,foot),fill=(40,40,25,105))
                 if xx%5!=0:df.point((xx,foot),fill='#8b7650');df.point((xx,foot+1),fill='#61703b')
                 if xx%11==3:df.point((xx,foot+2),fill='#81983f')
-        rnd,num=item.split('-building-');kid=f'{rnd}-{num}'
+        kid=kit_id(item)
         rows=pack(im,mask)
-        buildings.append(dict(id='bd-house-rv-'+kid,source=item,round=meta.get('round') or int(rnd[1:]),name=meta['name'],material=meta.get('material','plaster'),
+        buildings.append(dict(id=IDS['house']+kid,source=item,round=meta.get('round') or round_of(item),name=meta['name'],material=meta.get('material','plaster'),
             width=w,height=h,rows=rows,parts=[dict(id='door',kind='entrance',dx=dx,dy=dy,w=ew,h=eh)],sha256=sha,
             blocked=[[x,y] for y in range(h) for x in range(w) if mask[y,x]],groundLines=lines,
             shadowRows=pack(shadow),foundationRows=pack(foundation),
             perspective=dict(nativePixelScale=True,nativeRoofTop=True,sideRequired=False)))
-        report.append(dict(id=item,kit='bd-house-rv-'+kid,sha256=sha,size=[w,h],blockedCells=int(mask.sum()),overhangCells=int(opaque.sum()-mask.sum()),entrance=[dx,dy,ew,eh]))
+        report.append(dict(id=item,kit=IDS['house']+kid,sha256=sha,size=[w,h],blockedCells=int(mask.sum()),overhangCells=int(opaque.sum()-mask.sum()),entrance=[dx,dy,ew,eh]))
         sources[item]={k:meta[k] for k in ('id','name','width','height','entrance','round','material') if k in meta}
         for suffix,pic in (('',im),('-shadow',shadow),('-foundation',foundation)):pic.save(TILEDATA/f'{kid}{suffix}.png')
     (TILEDATA/'sources.json').write_text(json.dumps(sources,ensure_ascii=False,indent=1)+'\n')
     count=(len(cells)+15)//16*16;sheet=Image.new('RGBA',(256,count))
     for n,c in enumerate(cells):sheet.paste(c,(n%16*16,n//16*16))
     sheet.save(OUT/'chipset.png')
-    manifest=dict(id='beodeul_reviewed',texture='tex_beodeul_reviewed',tileSize=16,tilesPerRow=16,count=count,buildings=buildings,
+    manifest=dict(id=B['tilesetId'],texture=B['texture'],tileSize=16,tilesPerRow=16,count=count,buildings=buildings,
         priority=priorities+['upper']*(count-len(cells)),passability=passes+[dict(up=True,down=True,left=True,right=True)]*(count-len(cells)))
     CATALOG.write_text(json.dumps(manifest,ensure_ascii=False,separators=(',',':'))+'\n');(TILEDATA/'catalog.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=1)+'\n')
     # gallery at 1x: shadow, body, foundation exactly as the game layers them
     cols=6;cw=max(b['width'] for b in buildings)*16+40;ch=max(b['height'] for b in buildings)*16+30;rowsN=(len(buildings)+cols-1)//cols
-    board=Image.new('RGBA',(cols*cw,rowsN*ch),(136,177,77,255));d=ImageDraw.Draw(board)
+    board=Image.new('RGBA',(cols*cw,rowsN*ch),tuple(B['groundSurface'])+(255,));d=ImageDraw.Draw(board)
     for k,b in enumerate(buildings):
-        kid=b['id'][len('bd-house-rv-'):];x=k%cols*cw+16;y=k//cols*ch+8
+        kid=b['id'][len(IDS['house']):];x=k%cols*cw+16;y=k//cols*ch+8
         for suffix in ('-shadow','','-foundation'):board.alpha_composite(Image.open(TILEDATA/f'{kid}{suffix}.png').convert('RGBA'),(x,y))
         d.text((x,y+b['height']*16+10),kid,fill=(30,40,20,255))
     board.convert('RGB').quantize(128).save(OUT/'gallery.png',optimize=True)
     (TILEDATA/'inspection.json').write_text(json.dumps(dict(buildings=report,installed=len(buildings),tiles=len(cells),sheetTiles=count,
-        decisionLog='harness-data/beodeul-building-review/decisions.json',visualVerdict='requires actual image review (gallery.png)'),ensure_ascii=False,indent=1)+'\n')
+        decisionLog=str((SOURCE/'decisions.json').relative_to(ROOT)),visualVerdict='requires actual image review (gallery.png)'),ensure_ascii=False,indent=1)+'\n')
     print(json.dumps(dict(installed=len(buildings),tiles=len(cells),sheet=count)))
 if __name__=='__main__':main()
