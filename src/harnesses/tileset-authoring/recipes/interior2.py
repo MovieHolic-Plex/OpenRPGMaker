@@ -617,3 +617,20 @@ FURNITURE = {
     "h_rug": (h_rug, "decor"), "h_window": (h_window, "prop"), "h_clock": (h_clock, "prop"), "h_bin": (h_bin, "prop"),
     "h_mat": (h_mat, "decor"), "h_bed": (h_bed, "prop"), "h_shelf": (h_shelf, "prop"),
 }
+
+
+# ---- 실내 3차: 층계 내려가기 · 2층 침실 · 거실 가구 (시트 끝에 덧붙는 새 칸 — 크기는 계약, 그림은 다듬는다) ----
+def _todo(wt, ht):
+    def draw(P):
+        f = F(wt, ht)
+        f.r(2, 2, wt * T - 3, ht * T - 3, P["i2_gray"][1])
+        return f.done(P)
+    return draw
+
+
+FURNITURE3 = {
+    # 이름: (그리는 함수, 종류) — 크기(칸): h_stairs_dn 2×3 · c_escalator_dn 2×3 · h_desk 2×2 · h_console 1×1 · h_wardrobe 1×2 · h_poster 1×1 · h_lamp 1×2 · h_sofa 2×1
+    "h_stairs_dn": (_todo(2, 3), "stairs"), "c_escalator_dn": (_todo(2, 3), "stairs"),
+    "h_desk": (_todo(2, 2), "prop"), "h_console": (_todo(1, 1), "prop"), "h_wardrobe": (_todo(1, 2), "prop"),
+    "h_poster": (_todo(1, 1), "prop"), "h_lamp": (_todo(1, 2), "prop"), "h_sofa": (_todo(2, 1), "prop"),
+}

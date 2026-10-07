@@ -2341,6 +2341,10 @@
       ]
     },
     "object_kinds": {
+      "stairs": [
+        "h_stairs",
+        "c_escalator"
+      ],
       "decor": [
         "rug",
         "h_rug",

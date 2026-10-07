@@ -699,6 +699,14 @@ def build(seed: dict, parts=None, sh: Sheet | None = None) -> Sheet:
                 sh.add(f"g2_pb_{theme}_at{k}", g2.block_cell(P3, k, theme))
         sh.end_section()
 
+    if want("interior"):
+        # 시트 끝에 덧붙인다 — 앞 칸 번호(맵 72장이 쓰는)를 밀지 않는다.
+        sh.section("실내 3차(층계 내려가기·2층 침실·거실 가구)")
+        for name, (fn, _kind) in i2.FURNITURE3.items():
+            for nm, t in bd.cut(fn(P3), name).items():
+                sh.add(nm, t)
+        sh.end_section()
+
     return sh
 
 

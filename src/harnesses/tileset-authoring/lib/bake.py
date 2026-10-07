@@ -300,6 +300,9 @@ def bake(sheet_png: Path, tiles: dict, seed: dict, roles: dict, out: Path) -> di
                     setp(i, OPEN, 0, "lower", f"{oname} 빈 칸")
                 elif kind == "decor":
                     setp(i, OPEN, 0, "lower", f"{oname}(걸을 수 있다)")
+                elif kind == "stairs":                                   # 층계: 발치 한 줄만 밟는다(그 칸에 층 이동 이벤트), 위 줄은 벽 속이라 막는다
+                    foot = y == h - 1
+                    setp(i, OPEN if foot else SHUT, 0, "lower", f"{oname} 계단 발치(밟으면 층 이동)" if foot else f"{oname} 계단")
                 elif kind in ("building", "tree", "prop"):
                     setp(i, (VERT if door_w > 1 else OPEN) if is_door else SHUT, 0, "lower",
                          f"{oname} 입구" if is_door else f"{oname}")
