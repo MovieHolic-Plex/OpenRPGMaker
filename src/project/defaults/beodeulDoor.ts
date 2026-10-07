@@ -16,7 +16,7 @@ export function createBeodeulDoorTileset(): TilesetDef {
       placementRules:'같은 단계의 두 칸을 함께 교체한다. 그림과 출입 이벤트는 별개다.',origin:'ai'}],
     structureKits:Array.from({length:8},(_,i)=>({id:`bd-door-stage-${i}`,name:`문 단계 ${i}${i===0?' · 닫힘':i===7?' · 열림':''}`,
       kind:'section' as const,width:1,height:2,tileSize:16,
-      rows:[{tiles:[-1],upperTiles:[i]},{tiles:[-1],upperTiles:[i+8]}],
+      rows:[{tiles:[-1],upperTiles:[i]},{tiles:[-1],upperTiles:[i+8]}],learnedFrom:'db-authored',
       ai:{description:'버들항 살림집 16×32 문 동작 단계',placementRules:'위아래 칸을 같은 단계로. 문틀 원점 고정.',tags:['버들항','문','door'],role:'prop'}})),
     referenceDocuments:structuredClone(references),
   };

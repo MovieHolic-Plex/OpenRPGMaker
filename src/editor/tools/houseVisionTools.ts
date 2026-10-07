@@ -87,16 +87,16 @@ function observeBeodeulBuildings(project:Project,map:GameMap,bounds:HouseRect|un
   const detected:Array<{kitId:string;name:string;bbox:HouseRect;doorAt:{x:number;y:number};church:boolean;windowStyle?:string}>=[];
   for(const kit of ts.structureKits??[]){
     if(!kit.id.startsWith('bd-house-'))continue;
-    const first=kit.rows.flatMap((r,y)=>r.upperTiles.map((n,x)=>({n,x,y}))).find(p=>p.n>=0);
+    const first=kit.rows.flatMap((r,y)=>(r.upperTiles ?? []).map((n,x)=>({n,x,y}))).find(p=>p.n>=0);
     const door=kit.parts?.find(p=>p.kind==='entrance');if(!first||!door)continue;
     for(let i=0;i<map.width*map.height;i++)if(same(layerTileAt(map,3,i),first.n)){
       const x=i%map.width-first.x,y=Math.floor(i/map.width)-first.y;
       if(x<0||y<0||x+kit.width>map.width||y+kit.height>map.height)continue;
       if(bounds&&(x+kit.width<=bounds.x||x>=bounds.x+bounds.w||y+kit.height<=bounds.y||y>=bounds.y+bounds.h))continue;
-      if(!kit.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||same(layerTileAt(map,3,(y+dy)*map.width+x+dx),n))))continue;
+      if(!kit.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||same(layerTileAt(map,3,(y+dy)*map.width+x+dx),n))))continue;
       const info=beodeulArchitecture.buildings.find(b=>b.id===kit.id);
       detected.push({kitId:kit.id,name:kit.name,bbox:{x,y,w:kit.width,h:kit.height},doorAt:{x:x+door.dx,y:y+door.dy+door.h},
-        church:info?.concept==='church'||kit.id==='bd-house-cathedral',...(info?{windowStyle:info.windowStyle}:{})});
+        church:info?.concept==='church'||kit.id==='bd-house-cathedral',...(info?.windowStyle?{windowStyle:info.windowStyle}:{})});
     }
   }
   const houses=detected.filter((a,ai)=>!detected.some((b,bi)=>bi!==ai&&(b.bbox.w*b.bbox.h>a.bbox.w*a.bbox.h||b.bbox.w*b.bbox.h===a.bbox.w*a.bbox.h&&bi<ai)
