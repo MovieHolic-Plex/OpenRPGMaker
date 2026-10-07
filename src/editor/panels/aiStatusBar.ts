@@ -11,7 +11,6 @@
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
-import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, type Presence } from "./aiPresence";
 
