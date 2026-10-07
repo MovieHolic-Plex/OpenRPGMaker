@@ -188,6 +188,10 @@ const M = {
   adminTitle: ["운영", "Admin", "管理", "管理"],
   adminPending: ["확인 대기 {0}", "Awaiting review: {0}", "確認待ち {0}", "待审核 {0}"],
   adminReported: ["신고 {0}", "Reports: {0}", "報告 {0}", "举报 {0}"],
+  adminUnreviewed: ["사후 확인 {0}", "Published, not yet reviewed: {0}", "事後確認 {0}", "待事后审核 {0}"],
+  adminUnreviewedHint: ["바로 공개된 상품과 새 판본이에요. 봤으면 「확인함」, 문제가 있으면 숨기거나 내리세요.", "These went live without review (new items and new versions). Mark them reviewed, or hide or remove them.", "審査なしで公開された作品と新しい版です。確認したら「確認済み」、問題があれば非表示か削除にしてください。", "这些作品与新版本未经审核直接公开。看过后点「已确认」，有问题请隐藏或下架。"],
+  markReviewed: ["확인함", "Reviewed", "確認済み", "已确认"],
+  heldFor: ["확인 대기 이유 — {0}", "Held for review — {0}", "確認待ちの理由 — {0}", "待审核原因 — {0}"],
   none: ["없음", "None", "なし", "无"],
   approve: ["공개", "Publish", "公開", "公开"],
   remove: ["내리기", "Remove", "削除", "下架"],
@@ -249,25 +253,25 @@ export const DOCS: Record<"terms" | "copyright" | "privacy", Record<Lang, (conta
     ko: (c) => `<p>OPRN 에셋 스토어(이하 스토어)는 OPRN 에디터 사용자가 게임 제작용 그림·소리를 나누는 무료 서비스입니다.</p>
 <h2>올리는 사람</h2><ol><li>내가 권리를 가진 것만 올립니다. 다른 사람의 팩·게임에서 뽑은 그림, 상업 팩의 원본·변형물은 올릴 수 없습니다.</li>
 <li>AI 도구로 만든 부분이 있으면 「AI 생성」을 표시합니다.</li><li>고른 라이선스로 다른 사용자가 쓰는 것을 허락합니다. 이미 받은 사람의 사용 권리는 상품을 숨기거나 내려도 남습니다.</li>
-<li>올린 파일은 자동 검사를 거칩니다. 새 계정의 첫 3건은 운영자가 확인한 뒤 공개됩니다.</li></ol>
+<li>올린 파일은 자동 검사를 거쳐 바로 공개되고, 운영자가 나중에 다시 확인합니다. 원작 게임·툴 동봉 소재·성인물을 떠올리게 하는 낱말이 있으면 운영자가 확인한 뒤 공개됩니다.</li></ol>
 <h2>받는 사람</h2><ol><li>각 상품의 라이선스와 크레딧 표기를 지킵니다. 에디터는 크레딧을 게임에 자동으로 넣습니다.</li><li>「OPRN 게임 사용」 라이선스는 게임 안에서만 자유롭게 쓰고, 원본 파일을 따로 다시 배포하지 않는 조건입니다.</li></ol>
 <h2>운영</h2><p>신고가 쌓이거나 약관을 어긴 상품은 숨기거나 내릴 수 있습니다. 문의: ${c}</p>`,
     en: (c) => `<p class="doc-note">This is a translation. The Korean version is authoritative.</p><p>The OPRN Asset Store (“the Store”) is a free service where OPRN editor users share art and audio for making games.</p>
 <h2>Uploaders</h2><ol><li>Upload only what you hold the rights to. Art ripped from other people's packs or games, and originals or edits of commercial packs, are not allowed.</li>
 <li>Mark anything made with AI tools as “AI-generated”.</li><li>You allow other users to use your upload under the license you choose. People who already downloaded it keep that right even if you hide or remove the item.</li>
-<li>Uploads go through automatic checks. A new account's first three items are reviewed by an admin before they are published.</li></ol>
+<li>Uploads go through automatic checks and are published right away; an admin reviews them afterwards. Items whose text mentions existing games, tool-bundled assets or adult content wait for an admin before they are published.</li></ol>
 <h2>Downloaders</h2><ol><li>Follow each item's license and credit line. The editor adds credits to your game automatically.</li><li>The “OPRN Game Use” license lets you use the asset freely inside games, on the condition that you do not redistribute the source files on their own.</li></ol>
 <h2>Moderation</h2><p>Items that collect reports or break these terms may be hidden or removed. Contact: ${c}</p>`,
     ja: (c) => `<p class="doc-note">これは翻訳です。韓国語版が正本です。</p><p>OPRN アセットストア（以下「ストア」）は、OPRN エディターのユーザーがゲーム制作用の絵や音を共有する無料サービスです。</p>
 <h2>アップロードする方</h2><ol><li>自分が権利を持つものだけをアップロードしてください。他人のパックやゲームから抜き出した絵、商用パックの原本や改変物は禁止です。</li>
 <li>AI ツールで作った部分がある場合は「AI 生成」を表示してください。</li><li>選んだライセンスで他のユーザーが使うことを許可します。すでに入手した人の利用権は、アイテムを非表示・削除しても残ります。</li>
-<li>アップロードしたファイルは自動チェックを受けます。新しいアカウントの最初の 3 件は運営が確認してから公開されます。</li></ol>
+<li>アップロードしたファイルは自動チェックのあとすぐ公開され、運営が後から確認します。既存のゲーム・ツール付属素材・成人向けを思わせる語があると、運営の確認後に公開されます。</li></ol>
 <h2>入手する方</h2><ol><li>各アイテムのライセンスとクレジット表記を守ってください。エディターはクレジットをゲームに自動で入れます。</li><li>「OPRN ゲーム使用」ライセンスは、ゲーム内では自由に使え、元ファイルを単体で再配布しないことが条件です。</li></ol>
 <h2>運営</h2><p>報告が重なったり規約に違反したアイテムは、非表示または削除することがあります。お問い合わせ: ${c}</p>`,
     zh: (c) => `<p class="doc-note">本文为译文，以韩文版本为准。</p><p>OPRN 素材商店（以下简称「商店」）是供 OPRN 编辑器用户分享游戏制作用图像和声音的免费服务。</p>
 <h2>上传者</h2><ol><li>只上传你拥有权利的内容。不得上传从他人素材包或游戏中提取的图像，也不得上传商业素材包的原件或改编版。</li>
 <li>如有使用 AI 工具制作的部分，请标注「AI 生成」。</li><li>你允许其他用户按你选择的许可使用作品。即使作品被隐藏或下架，已下载用户的使用权仍然保留。</li>
-<li>上传的文件会经过自动检查。新账号的前 3 个作品需经管理员审核后公开。</li></ol>
+<li>上传的文件经过自动检查后会立即公开，管理员之后会再次审核。如果文字涉及现有游戏、工具附带素材或成人内容，需经管理员审核后公开。</li></ol>
 <h2>下载者</h2><ol><li>请遵守每个素材的许可和署名要求。编辑器会自动把署名加入游戏。</li><li>「OPRN 游戏使用」许可允许在游戏内自由使用，但不得单独再分发原始文件。</li></ol>
 <h2>运营</h2><p>被多次举报或违反条款的素材可能会被隐藏或下架。联系方式：${c}</p>`,
   },

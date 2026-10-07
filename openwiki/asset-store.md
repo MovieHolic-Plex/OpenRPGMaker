@@ -9,7 +9,7 @@
 - 올리기 C: 웹에서 낱장 올리기 + 편집기에서 완성 팩 올리기. 참고문서가 든 팩은 「조수 사용 가능」 배지.
 - 공개 A: 자동 검증을 통과하면 바로 공개한다.
   - 서로 다른 신고자 3명이 신고하면 자동으로 숨긴다.
-  - 새 작가의 첫 3개는 운영자 확인 뒤 공개한다.
+  - 새 작가의 첫 3개는 운영자 확인 뒤 공개한다. → 2026-10-07 「열어 둔다」로 바뀜(신뢰 기준 0, 보류 낱말·사후 확인으로 대신 — 아래 「조수와 스토어」).
 - **Rasak·REFMAP·MV 팩 계열·PAW 는 스토어에 넣지 않는다.** 첫 진열은 직접 만든 번들 4종이다:
   - 버들항
   - 조선 바람의나라풍
@@ -225,6 +225,13 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 사용자 결정: 지금은 **열어 둔다**(아무나 쉽게 올리고 받는다, 검열은 나중). 조수는 「관련 타일이 없으면 묻고 → 스토어를 찾고 → 없으면 그린다」.
 
 - **열어 두기:** 운영 `/etc/oprn-store/store.env` 와 스테이징 drop-in `oprn-store-staging.service.d/open.conf` 에 `STORE_TRUST_THRESHOLD=0` — 새 작가도 바로 공개. 신고 3건 자동 숨김은 그대로. 검열을 켤 때는 이 값만 다시 올린다(코드 기본값은 3).
+- **검열 1단계(2026-10-07):** 열어 둔 채로 두 가지만 더했다(`store-server/src/moderation.ts`, `migrations/006_moderation.sql`).
+  - **보류 낱말** — 상품 글(제목·소개·설명·크레딧·태그·다른 언어판·에셋/타일셋 이름)에 낱말이 있으면 신뢰 작가라도 `pending`. 거절이 아니라 보류다. 운영 화면에 「확인 대기 이유 — 보류 낱말: …」(`store_items.held_reason`). 새 판본에 낱말이 들어가도 `pending`. 운영자 자신의 업로드는 검사하지 않는다.
+    - 기본 목록 `DEFAULT_HOLD_WORDS` = 원작 게임·회사(포켓몬·닌텐도·파판·드퀘), 툴 동봉 소재(RPG Maker·알만툴·쯔꾸르·RTP), 추출(ripped·리핑), 성인물. `STORE_HOLD_WORDS`(쉼표)로 더하고 `STORE_HOLD_WORDS_DEFAULTS=0` 으로 기본을 끈다.
+    - 영문은 낱말 경계로만 찾는다(`rtp` 가 "art pack" 에 안 걸린다). 한중일은 띄어쓰기·기호를 뺀 글에서 찾는다(「포 켓 몬」도 걸린다). 라틴 악센트는 접고(é→e) 가나 탁점은 남긴다.
+  - **사후 확인** — 바로 공개된 상품도 운영 화면 「사후 확인」 목록에 오른다(`reviewed_version < latest_version`, 오래된 것부터 100건). 「확인함」(`POST /api/v1/admin/items/:slug/reviewed`, 웹 `/admin/items/:slug/reviewed`)은 상태를 바꾸지 않고 본 판본만 적는다. 공개·숨김·내림도 본 것으로 친다. 새 판본이 오면 다시 오른다. 운영자 업로드는 처음부터 본 것. 열이 생기기 전 상품은 마이그레이션이 본 것으로 채운다.
+  - 상품 만들기 한도 `STORE_CREATE_PER_MINUTE`(IP 마다 1분 20건, 시험은 200 — 시험 손님이 모두 127.0.0.1 이다).
+  - 다음 단계 후보: 그림 자체 검사(해시 차단 목록·성인 이미지 분류), 신뢰 기준 다시 올리기.
 - **조수 도구** `src/editor/tools/storeTools.ts`:
   - `ask_missing_tiles`(core) — 질문 자료만 돌려준다. 카드가 스토어를 검색해 보여 주고 사용자가 「넣기」·「직접 그려 줘」·「있는 타일로 해 줘」 중 고른다. 고른 결과는 후속 요청 문장으로 간다.
   - `store_search`·`store_install`(core) — 사용자가 스토어를 직접 말했을 때. 다리 호출은 `prepare` 에서 하고 `run`(동기)은 받아 둔 것을 쓴다. 설치는 `storeApply.prepareStoreItem` → draft 에 `applyPackToProject` + `addStoreProfiles`.
