@@ -1,6 +1,8 @@
 // editor/panels/aiStoreCard.ts
 // 조수의 스토어 도구(storeTools.ts)가 돌려준 질문·제안을 턴이 끝난 뒤 카드로 보여 준다. 위키: openwiki/asset-store.md 「조수와 스토어」.
 // - ask_missing_tiles: 무엇이 없는지 + 스토어 검색 결과(넣기) + 직접 그려 줘 / 있는 타일로 해 줘
+//   「직접 그려 줘」는 지금 맵이 손 도트 실내 칩셋이면 공방(실내 기물)을 새 기물 폼을 채워 연다 — 사용자가 고르고
+//   「프로젝트 칩셋에 넣기」를 누르면(WORKSHOP_BAKED_EVENT) 조수에게 물체 id 와 함께 원래 요청을 잇게 한다.
 // - store_publish: 무엇을 어떤 조건으로 올리는지 + 권리 동의 + 올리기
 // - store_set_visibility: 숨기기·다시 보이기
 // 스토어에 쓰는 동작(넣기·올리기·숨기기)은 전부 사용자가 이 카드의 버튼을 눌렀을 때만 일어난다. 조수는 제안만 한다.
@@ -10,6 +12,9 @@ import { STORE_KIND_LABELS, STORE_LICENSE_LABELS, type StoreItemKind, type Store
 import { addStoreItemToProject } from "@/editor/assetStore/storeApply";
 import { fillStoreImage, storeBridge, storeFailure } from "@/editor/assetStore/storeBridge";
 import { buildUploadPack, uploadCandidates } from "@/editor/assetStore/storeUpload";
+import { editorState } from "@/editor/editorState";
+import { WORKSHOP_BAKED_EVENT, type WorkshopBakedDetail } from "@/editor/workshop/workshopEvents";
+import { ATLAS_BIOME_INTERIOR_ID } from "@/project/defaults/atlasBiomeInterior";
 import { isStoreCardRequest, type MissingTilesQuestion, type StoreCardRequest, type StorePublishProposal, type StoreVisibilityProposal } from "@/editor/tools/storeTools";
 import { getLocale } from "@/i18n";
 import { store } from "@/project/store";
@@ -55,6 +60,32 @@ function button(text: string, testid: string, onClick: () => void, primary = fal
   return el("button", { text, class: primary ? "is-primary" : "", attrs: { type: "button" }, dataset: { testid }, on: { click: onClick } });
 }
 
+/** 지금 맵이 손 도트 실내 칩셋이면 공방(실내 기물)에서 그려 칩셋에 넣을 수 있다. */
+function drawsInWorkshop(): boolean {
+  const project = store.getCurrent();
+  const mapId = editorState.get().currentMapId;
+  return (mapId ? project.maps[mapId]?.tilesetId : undefined) === ATLAS_BIOME_INTERIOR_ID;
+}
+
+/** 공방을 새 기물 폼을 채워 열고, 사용자가 칩셋에 넣으면 한 번 조수에게 잇게 한다. */
+function openWorkshopFor(question: MissingTilesQuestion, status: HTMLElement, followUp: StoreCardFollowUp): void {
+  status.textContent = "공방을 열었어요. 후보를 뽑아 하나 고르고 「프로젝트 칩셋에 넣기」를 누르면 조수가 이어서 놓아요.";
+  const onBaked = (event: Event): void => {
+    window.removeEventListener(WORKSHOP_BAKED_EVENT, onBaked);
+    const baked = (event as CustomEvent<WorkshopBakedDetail>).detail;
+    status.textContent = `「${baked.title}」을(를) 칩셋에 넣었어요. 조수가 이어서 놓을게요.`;
+    followUp(`[사용자가 공방에서 그려 넣음] 「${baked.title}」 물체 id ${baked.objectId} (${baked.columns}×${baked.rows}칸, 칩셋 ${baked.tilesetId}). `
+      + `원래 요청을 이어서 하라: ${question.need} 실내를 새로 짓거나 다시 지으면 build_hand_interior_room 의 objects[].id 에, 이미 있는 맵에 더하면 stamp_tileset_object 의 objectId 에 이 id 를 넣어라.`);
+  };
+  window.addEventListener(WORKSHOP_BAKED_EVENT, onBaked);
+  void import("@/editor/workshop/workshopWorkspace")
+    .then(({ openWorkshop }) => openWorkshop("interior-props", { newItem: { title: question.query, description: question.need } }))
+    .catch((error: unknown) => {
+      window.removeEventListener(WORKSHOP_BAKED_EVENT, onBaked);
+      status.textContent = `공방을 열지 못했어요: ${error instanceof Error ? error.message : String(error)}`;
+    });
+}
+
 function missingTilesCard(question: MissingTilesQuestion, followUp: StoreCardFollowUp): HTMLElement {
   const results = el("div", { class: "ai-store-results", dataset: { testid: "ai-store-results" } });
   const all: HTMLButtonElement[] = [];
@@ -67,6 +98,12 @@ function missingTilesCard(question: MissingTilesQuestion, followUp: StoreCardFol
   };
   const draw = button("직접 그려 줘", "ai-store-draw", () => {
     if (settled) return;
+    if (drawsInWorkshop()) {
+      openWorkshopFor(question, view.status, followUp);
+      settled = true;
+      lock(true);
+      return;
+    }
     settle("직접 그리는 쪽으로 이어 갈게요.");
     followUp(`[사용자 선택] 스토어 것 말고 직접 그리기: ${question.need} 직접 그릴 수 있는 길이 있으면 그 길로 가고, 없으면 그렇다고 솔직히 말한 뒤 있는 타일로 가장 가까운 대안을 만들어라.`);
   });

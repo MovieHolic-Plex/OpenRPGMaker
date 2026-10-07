@@ -33,6 +33,10 @@ export type WorkshopItem = {
   readonly height: number;
   /** 위쪽 비워 둘 줄 수(지금 그림의 투명 윗줄) */
   readonly padTop: number;
+  /** 발밑(막히는) 칸 줄 수 — 칩셋에 구울 때 통행을 정한다(없으면 맨 아래 1줄). */
+  readonly footRows?: number;
+  /** 발밑 위로 솟은 px — 칩셋에 구울 때 손 도트 사양의 up 이 된다. */
+  readonly risePx?: number;
   readonly isNew: boolean;
   /** 가장 닮은 기존 기물 key */
   readonly refs: readonly string[];

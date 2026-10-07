@@ -8,6 +8,7 @@ import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/h
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { createJpCityTileset, ensureJpCityTileset } from "@/project/defaults/jpCity";
 import type { GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
+import { workshopHandObjects } from "@/project/workshopTiles";
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -34,6 +35,12 @@ function ensureInteriorTileset(draft: Project, id: string): TilesetDef | undefin
   else ensureAtlasBiomeInteriorCurrent(draft, id);
   return draft.tilesets[id];
 }
+/** 칩셋 사양 + 사용자가 공방에서 그려 이 칩셋에 구운 기물(id workshop:…). */
+function specFor(project: Project, tilesetId: string): HandInteriorSpec {
+  const base = HAND_INTERIOR_SPECS[tilesetId]!;
+  const workshop = workshopHandObjects(project.tilesets[tilesetId]);
+  return Object.keys(workshop).length ? { ...base, objects: { ...base.objects, ...workshop } as HandInteriorSpec["objects"] } : base;
+}
 const XY = { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], additionalProperties: false } as const;
 
 /** 검색 결과가 이 수 이하면 행마다 설명·태그·놓는 곳·짝 소품까지, 넘으면 id·이름·종류·크기·설명 한 줄만. */
@@ -49,7 +56,7 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     + "③ 인자 없이 → 바닥·벽면·천장·탁자·줄·단·탁상 물건 목록, 가구 분류, 방 종류·건물 id. "
     + "행의 use = 게임에서의 쓰임(sit 앉기 · sleep 자기 · open 열기(아이템 이벤트) · search 조사 · read 읽기 · counter 카운터 너머 대화 · travel 이동 · light 불빛 · save 저장 · heal 회복 · switch 켬/끔 장치 · push 밀기 · trap 함정 · key 열쇠·보물 받침 · gate 여닫는 문 · seal 봉인 · walk 밟음 · block 장식), "
     + "facing = 바라보는 쪽(앉는 가구는 탁자·제단 쪽을 보게 놓는다), states = 같은 물건의 다른 상태 그림(닫힘↔열림 등 — 이벤트 1쪽과 2쪽 그림). use 가 open·search·read·save·heal·switch·key 면 그 칸에 이벤트를 붙일 자리다. "
-    + "결과 id 는 build_hand_interior_room 의 objects[].id 에 그대로 넣는다.",
+    + "결과 id 는 build_hand_interior_room 의 objects[].id 에 그대로 넣는다. 사용자가 공방에서 그려 넣은 기물은 id workshop:… · 분류 workshop(공방)으로 함께 나온다.",
   parameters: {
     type: "object",
     properties: {
@@ -61,9 +68,9 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     },
     additionalProperties: false,
   },
-  run(_project, args): ToolExecResult {
+  run(project, args): ToolExecResult {
     const tilesetId = pickTileset(args);
-    const S = HAND_INTERIOR_SPECS[tilesetId]!;
+    const S = specFor(project, tilesetId);
     const q = typeof args.query === "string" ? args.query.trim() : "";
     const cat = typeof args.category === "string" ? args.category.trim() : "";
     const room = typeof args.room === "string" ? args.room.trim() : "";
@@ -172,7 +179,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (!tileset) throw new ToolError(`타일셋 ${tilesetId} 이 없다`, { code: "tileset-not-found" });
     const input = args as unknown as HandInteriorInput;
     let built;
-    try { built = buildHandInteriorLayers(input, tileset, HAND_INTERIOR_SPECS[tilesetId]); }
+    try { built = buildHandInteriorLayers(input, tileset, specFor(draft, tilesetId)); }
     catch (error) {
       if (error instanceof HandInteriorError) throw new ToolError(error.message, { code: error.code });
       throw error;

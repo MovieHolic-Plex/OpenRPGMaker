@@ -194,6 +194,8 @@ function learnedFromLabel(learnedFrom: StructureKitLearnedFrom | "builtin-parame
       return "실내 카탈로그 시드";
     case "pack-preset":
       return "팩 프리셋";
+    case "workshop":
+      return "공방에서 그림";
   }
 }
 

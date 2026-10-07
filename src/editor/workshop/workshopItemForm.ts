@@ -6,7 +6,7 @@ import { el } from "@/util/dom";
 import { runAction } from "./workshopRoundView";
 import type { WorkshopSession } from "./workshopSession";
 
-export function renderItemForm(session: WorkshopSession, onSaved: (key: string) => void, onCancel: () => void): HTMLElement {
+export function renderItemForm(session: WorkshopSession, onSaved: (key: string) => void, onCancel: () => void, initial?: { readonly title: string; readonly description: string }): HTMLElement {
   const items = session.items();
   const categories = [...new Set(items.map((item) => item.category))].sort();
   const field = (labelText: string, control: HTMLElement) => el("label", { children: [labelText, control] });
@@ -23,6 +23,10 @@ export function renderItemForm(session: WorkshopSession, onSaved: (key: string) 
     children: items.filter((item) => !item.isNew).map((item) => el("option", { value: item.key, text: `${item.title} · ${item.category}` })),
   }) as HTMLSelectElement;
   const error = el("p", { class: "workshop-blocked" });
+  if (initial) {
+    title.value = initial.title;
+    description.value = initial.description;
+  }
 
   async function save(): Promise<void> {
     if (!title.value.trim() || !description.value.trim()) {

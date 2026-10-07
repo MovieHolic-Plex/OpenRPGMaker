@@ -190,7 +190,8 @@ export function isStoreCardRequest(value: unknown): value is StoreCardRequest {
 const askMissingTiles: ToolDefinition = {
   name: "ask_missing_tiles",
   description: "요청을 만들 타일·그림이 프로젝트에 없을 때 사용자에게 묻는다. 화면에 질문 카드가 뜨고, 카드가 스토어를 검색해 결과를 보여 준다 — "
-    + "사용자는 스토어 것을 넣거나, 직접 그리기(공방)나 있는 타일로 대신하기를 고른다. 부른 뒤에는 더 칠하지 말고 이 턴을 끝내라 — 사용자의 답이 다음 요청으로 온다. "
+    + "사용자는 스토어 것을 넣거나, 직접 그리기나 있는 타일로 대신하기를 고른다. 손 도트 실내 맵이면 직접 그리기가 공방(실내 기물)을 열고, 사용자가 칩셋에 넣으면 물체 id(workshop:…)가 후속 요청으로 온다. "
+    + "부른 뒤에는 더 칠하지 말고 이 턴을 끝내라 — 사용자의 답이 다음 요청으로 온다. "
     + "프로젝트의 타일셋·참고문서·공용 장소로 만들 수 있으면 부르지 말고 그걸 써라.",
   mode: "read",
   domains: ["core"],
@@ -198,7 +199,7 @@ const askMissingTiles: ToolDefinition = {
     type: "object",
     properties: {
       need: { type: "string", description: "무엇이 없는지 사용자에게 보여 줄 쉬운 한국어 한두 문장(예: 「눈 덮인 신전을 만들 타일이 프로젝트에 없어요.」)" },
-      query: { type: "string", description: "스토어 검색어(짧게, 예: 신전, 설원, 상점 실내)" },
+      query: { type: "string", description: "스토어 검색어(짧게, 예: 신전, 설원, 상점 실내). 공방에서 그릴 때 새 기물 이름으로도 쓴다" },
       kind: { type: "string", enum: STORE_ITEM_KINDS, description: "찾을 종류. 맵 타일이면 tileset" },
       purpose: { type: "string", description: "만들려는 것의 용도(예: snow_temple). 후속 요청에 그대로 돌려준다." },
     },

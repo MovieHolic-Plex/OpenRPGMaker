@@ -1,4 +1,5 @@
-// 팩 프리셋 물체(구조물 킷, learnedFrom "pack-preset")를 조수가 이름으로 찍는 도구.
+// 팩 프리셋 물체(구조물 킷, learnedFrom "pack-preset")와 공방에서 그려 칩셋에 구운 물체(learnedFrom "workshop",
+// id workshop:…, project/workshopTiles.ts)를 조수가 이름으로 찍는 도구.
 //
 // 사람 팔레트 킷(list_structure_kits)은 「사람 스탬프 전용」이라 조수가 쓰지 않는다. 팩 프리셋 물체는
 // 사용자가 팩을 올릴 때 프리셋이 심은 것이고, 그 타일셋에서 여러 칸 물체를 놓는 유일한 길이다
@@ -12,7 +13,7 @@ import { requireMap } from "./mapHelpers";
 const KIND_TAGS = new Set(["decal", "prop", "tall", "wallmount", "door", "overhead"]);
 
 function packObjects(tileset: TilesetDef | undefined): SectionStructureKitDef[] {
-  return (tileset?.structureKits ?? []).filter((kit) => kit.learnedFrom === "pack-preset");
+  return (tileset?.structureKits ?? []).filter((kit) => kit.learnedFrom === "pack-preset" || kit.learnedFrom === "workshop");
 }
 
 function objectKind(kit: SectionStructureKitDef): string {
@@ -27,7 +28,7 @@ function growth(kit: SectionStructureKitDef): { x: boolean; y: boolean } {
 function findObject(tileset: TilesetDef | undefined, query: string): SectionStructureKitDef {
   const objects = packObjects(tileset);
   if (objects.length === 0) {
-    throw new ToolError("이 맵의 타일셋에는 팩 물체가 없습니다 — 팩 프리셋으로 만든 타일셋에서만 쓴다.", { code: "no-pack-objects" });
+    throw new ToolError("이 맵의 타일셋에는 팩 물체가 없습니다 — 팩 프리셋으로 만든 타일셋, 또는 공방에서 그려 넣은 기물(workshop:…)이 있는 손 도트 실내 칩셋에서만 쓴다.", { code: "no-pack-objects" });
   }
   const needle = query.trim();
   const exact = objects.find((kit) => kit.id === needle) ?? objects.find((kit) => kit.name === needle);
@@ -120,6 +121,7 @@ const listTilesetObjects: ToolDefinition = {
   name: "list_tileset_objects",
   description:
     "팩 프리셋 타일셋(사용자가 올린 RPG Maker 팩으로 만든 타일셋)의 여러 칸 물체 목록 — 가로등·신호등·자판기·벤치·창문·문·차선·횡단보도 등. "
+    + "손 도트 실내 칩셋에서는 사용자가 공방에서 그려 넣은 기물(id workshop:…)이 나온다. "
     + "id·이름·크기·종류(decal 바닥 표시/prop 막힘/tall 밑줄만 막힘/wallmount 벽·옥상 부착/door 문/overhead 머리 위)·이어 찍기 축. "
     + "놓을 때는 stamp_tileset_object.",
   mode: "read",
