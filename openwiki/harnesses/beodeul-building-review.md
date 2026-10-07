@@ -200,3 +200,10 @@ round 8 의 돌 기단+회벽 혼합 두 장(06·07)은 질감 검사가 `WALL_M
 - 공통 TS 틀은 `src/project/defaults/buildingBundle.ts`(`defineBuildingBundle`), 버들항은 `beodeulReviewed.ts` 가 설정만 넘긴다. 새 타일셋은 같은 틀 + `bundled.ts`/`bundledChipsetGeometry.ts`/`defaultAssets.ts` 배선(AGENTS 의 공용 번들 규칙)을 한다.
 
 **새 타일셋 추가 절차**: ① `profiles.json` 항목 ② 후보 저작(자기 하네스) → `import_candidates.py` ③ 슈퍼하네싱 탭에서 허용/거절 ④ `install.py --profile`(타일셋 고유의 그림자·기초 규칙이 있으면 `install.py` 의 그 부분만 프로필 설정으로 뺀다) ⑤ `rebuild-building-bundle.sh <프로필>` ⑥ `buildingBundle.ts` 로 TS 모듈 + 배선 ⑦ `publishBuildings.ts` `CREATORS` 등록. 기계 게이트(visual_gate)는 버들항 전용이다 — 다른 타일셋은 gate false 로 시작한다.
+
+### 소품·울타리 프로필 `beodeul-props` (2026-10-07)
+
+건물 말고 타일셋으로 놓는 것들(울타리·소품·나무·가로등…)도 같은 심사 화면에서 사람이 허용/거절한다. 기계 게이트 없음(gate false), 번들 설치·스토어는 허용이 쌓인 뒤(프로필에 `bundle` 이 없으면 화면이 스토어 버튼을 숨긴다).
+- 라운드 1(`node/author_props_round1.py` → `harness-data/beodeul-props-review/round1/`): **기존 비건물 키트 73개를 그대로**(bd-prop·bd-tree·정원 부품·야외; 사람이 허용/거절한 적 없는 그림) + **새 울타리 3종** — 나무 기둥-가로대 16칸, 낮은 돌담 16칸(위·오른쪽·아래·왼쪽 이웃 여부 마스크로 16가지, 칸 순서 4×4·번호 = 1+2+4+8), 나무 문 2×1. 새 것의 비교 화면(원본과 비교)은 직접 조립한 울타리 마당 그림이다.
+- 가져오기: `import_candidates.py --profile beodeul-props .../round1/manifest.json`.
+- 아직 없는 것: 설치 규칙(소품은 접지 그림자 + 통행 — 기존 키트는 원래 타일 통행을 가져오고, 새 울타리는 칸이 막힘), 참고문서·예제, 스토어 팩. 허용 결과를 보고 만든다.

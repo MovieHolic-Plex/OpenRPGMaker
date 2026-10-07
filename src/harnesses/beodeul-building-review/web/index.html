@@ -264,7 +264,7 @@ async function storeDo(kind,body){
  try{const r=await fetch(BASE+'/api/store/'+kind,{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':state.token},body:JSON.stringify(body)}),d=await r.json();if(!r.ok)throw Error(d.error||r.status);storeRefresh()}
  catch(e){$('store-body').prepend(Object.assign(document.createElement('p'),{textContent:'시작하지 못했습니다: '+e.message,className:'store-note'}))}
 }
-if(BASE!==''){fetch(BASE+'/api/profiles').then(r=>r.json()).then(d=>{if(d.profiles.length<2)return;const sel=$('profile');for(const p of d.profiles){const o=document.createElement('option');o.value=p.id;o.textContent=p.label;sel.append(o)}sel.value=d.current;sel.hidden=false;sel.onchange=()=>{location.href=(sel.value==='beodeul'?'/harness/beodeul/':'/harness/buildings/'+sel.value+'/')}}).catch(()=>{})}
+if(BASE!==''){fetch(BASE+'/api/profiles').then(r=>r.json()).then(d=>{const cur=d.profiles.find(p=>p.id===d.current);if(cur&&!cur.store)$('store-open').hidden=true;if(d.profiles.length<2)return;const sel=$('profile');for(const p of d.profiles){const o=document.createElement('option');o.value=p.id;o.textContent=p.label;sel.append(o)}sel.value=d.current;sel.hidden=false;sel.onchange=()=>{location.href=('/harness/buildings/'+sel.value+'/')}}).catch(()=>{})}
 $('store-open').onclick=openStore;$('store-close').onclick=closeStore;$('store').onclick=e=>{if(e.target===$('store'))closeStore()};
 $('help-open').onclick=()=>{$('help').hidden=false};$('help').onclick=e=>{if(e.target===$('help'))$('help').hidden=true};
 new ResizeObserver(()=>requestAnimationFrame(draw)).observe($('stage'));window.addEventListener('beforeunload',retain);
