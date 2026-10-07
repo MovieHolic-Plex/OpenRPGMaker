@@ -18,7 +18,7 @@
  },
  {
   "file": "supermarket",
-  "placeId": "jp-city-supermarket-16x12",
+  "placeId": "jp-city-supermarket-16x17",
   "name": "일본 동네 슈퍼 실내",
   "kind": "supermarket",
   "kindKo": "동네 슈퍼",
@@ -30,8 +30,8 @@
   ],
   "building": "jp_supermarket",
   "rules": [
-   "입구 옆 계산대 레인·카트·바구니 → 채소 경사 진열대 · 벽 냉장 진열(정육·생선) · 가운데 섬 진열대·냉동고.",
-   "평면·가구는 tiledata/jp-city/interior/examples/supermarket.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-supermarket-16x12\"})."
+   "입구 옆 계산대 레인·카트·바구니 → 채소 경사 진열대 · 벽 냉장 진열(정육·생선) · 가운데 섬 진열대·냉동고. 안쪽(위) 칸막이 노렌 문 너머 뒷방 창고(콘크리트 바닥): 벽 따라 재고 선반 다섯 + 개수대·쓰레기통.",
+   "평면·가구는 tiledata/jp-city/interior/examples/supermarket.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-supermarket-16x17\"})."
   ]
  },
  {
@@ -164,7 +164,7 @@
  },
  {
   "file": "florist",
-  "placeId": "jp-city-florist-9x11",
+  "placeId": "jp-city-florist-9x16",
   "name": "일본 동네 꽃집 실내",
   "kind": "florist",
   "kindKo": "꽃집",
@@ -175,13 +175,13 @@
   ],
   "building": "jp_florist",
   "rules": [
-   "입구(가운데 2칸) 양옆 벽 따라 바깥식 화분·꽃 양동이(왼쪽 화분+양동이, 오른쪽 양동이) → 가운데 포장 작업대에 붙은 계산대(계산대·금전기) + 왼쪽 벽 가 꽃 양동이 + 안쪽 벽 왼쪽 꽃 냉장 유리장 셋 · 오른쪽 벽 선반 둘.",
-   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x11\"})."
+   "입구(가운데 2칸) 양옆 벽 따라 바깥식 화분·꽃 양동이(왼쪽 화분+양동이, 오른쪽 양동이) → 가운데 포장 작업대에 붙은 계산대(계산대·금전기) + 왼쪽 벽 가 꽃 양동이. 안쪽 칸막이 노렌 문 너머 뒷방 저온 보관실(리놀륨 바닥): 꽃 냉장 유리장 셋 + 오른쪽 재고 선반 둘.",
+   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x16\"})."
   ]
  },
  {
   "file": "yaoya",
-  "placeId": "jp-city-yaoya-10x11",
+  "placeId": "jp-city-yaoya-10x16",
   "name": "일본 채소가게(八百屋) 실내",
   "kind": "yaoya",
   "kindKo": "채소가게",
@@ -194,8 +194,8 @@
   ],
   "building": "jp_yaoya",
   "rules": [
-   "열린 가게 앞 입구(오른쪽 3칸) → 가운데 경사 진열 채소 평대 셋 → 안쪽 왼쪽 구석 계산대(계산대·금전기·계산대·저울) + 안쪽 벽 바구니 선반 다섯 + 양쪽 벽 궤짝·과일 상자.",
-   "평면·가구는 tiledata/jp-city/interior/examples/yaoya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-yaoya-10x11\"})."
+   "열린 가게 앞 입구(오른쪽 3칸) → 가운데 경사 진열 채소 평대 셋 → 안쪽 왼쪽 구석 계산대(계산대·금전기·계산대·저울) + 양쪽 벽 궤짝·과일 상자. 안쪽 칸막이 노렌 문(오른쪽) 너머 뒷방 재고 창고(나무 바닥): 바구니 선반 셋 + 재고 선반 + 궤짝 더미.",
+   "평면·가구는 tiledata/jp-city/interior/examples/yaoya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-yaoya-10x16\"})."
   ]
  },
  {

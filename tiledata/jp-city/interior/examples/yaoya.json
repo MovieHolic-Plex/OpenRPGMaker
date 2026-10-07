@@ -5,6 +5,11 @@
   "#........#",
   "#........#",
   "#........#",
+  "########.#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
   "#........#",
   "#........#",
   "#........#",
@@ -16,102 +21,149 @@
  "floor": "sh-concrete",
  "wall": "sh-white",
  "ceiling": "default",
- "zones": [],
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 5,
+   "floor": "sh-wood",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 9,
+   "y1": 15,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
  "objects": [
   {
-   "id": "sh-counter",
+   "id": "sh-basket-shelf",
    "x": 1,
    "y": 3
   },
   {
-   "id": "sh-register",
+   "id": "sh-basket-shelf",
    "x": 2,
    "y": 3
   },
   {
-   "id": "sh-counter",
+   "id": "sh-basket-shelf",
    "x": 3,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "sh-basket-shelf",
+   "id": "sh-stock-shelf",
    "x": 5,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-crate-stack",
    "x": 6,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-crate-stack",
    "x": 7,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-noren",
    "x": 8,
-   "y": 3
-  },
-  {
-   "id": "sh-veg-stand",
-   "x": 4,
    "y": 5
   },
   {
+   "id": "sh-counter",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-register",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-counter",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 7,
+   "y": 8
+  },
+  {
    "id": "sh-veg-stand",
    "x": 4,
-   "y": 6
+   "y": 10
   },
   {
    "id": "sh-veg-stand",
    "x": 4,
-   "y": 7
+   "y": 11
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 4,
+   "y": 12
   },
   {
    "id": "sh-crate-stack",
    "x": 1,
-   "y": 5
+   "y": 10
   },
   {
    "id": "sh-crate-stack",
    "x": 1,
-   "y": 7
+   "y": 12
   },
   {
    "id": "sh-crate-stack",
    "x": 1,
-   "y": 9
+   "y": 14
   },
   {
    "id": "sh-fruit-box",
    "x": 2,
-   "y": 9
+   "y": 14
   },
   {
    "id": "sh-crate-stack",
    "x": 8,
-   "y": 5
+   "y": 10
   },
   {
    "id": "sh-fruit-box",
    "x": 8,
-   "y": 7
+   "y": 12
   },
   {
    "id": "sh-crate-stack",
    "x": 8,
-   "y": 8
+   "y": 13
   },
   {
    "id": "sh-shutter",
    "x": 6,
-   "y": 10
+   "y": 15
   }
  ],
  "tables": [],
@@ -119,18 +171,18 @@
   {
    "id": "sh-scale",
    "x": 1,
-   "y": 3
+   "y": 8
   },
   {
    "id": "sh-price-dots",
    "x": 3,
-   "y": 3
+   "y": 8
   }
  ],
  "name": "일본 동네 채소가게 실내",
  "start": [
   6,
-  9
+  14
  ],
  "links": [],
  "rooms": [
@@ -139,7 +191,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 9,
-   "y1": 10
+   "y1": 15
   }
  ]
 }

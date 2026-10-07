@@ -5,6 +5,11 @@
   "#.......#",
   "#.......#",
   "#.......#",
+  "#####.###",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
   "#.......#",
   "#.......#",
   "#.......#",
@@ -16,7 +21,24 @@
  "floor": "sh-concrete",
  "wall": "sh-white",
  "ceiling": "default",
- "zones": [],
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5,
+   "floor": "pb-linoleum",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 15,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
  "objects": [
   {
    "id": "sh-flower-cooler",
@@ -34,54 +56,84 @@
    "y": 3
   },
   {
-   "id": "sh-wall-shelf",
+   "id": "sh-stock-shelf",
    "x": 6,
    "y": 3
   },
   {
-   "id": "sh-wall-shelf",
+   "id": "sh-stock-shelf",
    "x": 7,
    "y": 3
   },
   {
+   "id": "sh-noren",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 8
+  },
+  {
    "id": "sh-flower-buckets",
    "x": 1,
-   "y": 6
+   "y": 11
   },
   {
    "id": "sh-wrap-table",
    "x": 4,
-   "y": 6
+   "y": 11
   },
   {
    "id": "sh-counter",
    "x": 6,
-   "y": 6
+   "y": 11
   },
   {
    "id": "sh-register",
    "x": 7,
-   "y": 6
+   "y": 11
   },
   {
    "id": "sh-flower-buckets",
    "x": 2,
-   "y": 9
+   "y": 14
   },
   {
    "id": "sh-plant-pot",
    "x": 1,
-   "y": 9
+   "y": 14
   },
   {
    "id": "sh-flower-buckets",
    "x": 6,
-   "y": 9
+   "y": 14
   },
   {
    "id": "sh-shutter-2",
    "x": 4,
-   "y": 10
+   "y": 15
   }
  ],
  "tables": [],
@@ -89,18 +141,18 @@
   {
    "id": "sh-bouquet",
    "x": 4,
-   "y": 6
+   "y": 11
   },
   {
    "id": "sh-price-dots",
    "x": 6,
-   "y": 6
+   "y": 11
   }
  ],
  "name": "일본 동네 꽃집 실내",
  "start": [
   4,
-  9
+  14
  ],
  "links": [],
  "rooms": [
@@ -109,7 +161,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 10
+   "y1": 15
   }
  ]
 }

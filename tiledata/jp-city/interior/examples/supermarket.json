@@ -5,6 +5,11 @@
   "#..............#",
   "#..............#",
   "#..............#",
+  "#.##############",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
   "#..............#",
   "#..............#",
   "#..............#",
@@ -16,152 +21,204 @@
  "exitWidth": 2,
  "floor": "cv-vinyl",
  "wall": "cv-panel",
- "zones": [],
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 15,
+   "y1": 5,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 15,
+   "y1": 16,
+   "floor": "cv-vinyl",
+   "wall": "cv-panel"
+  }
+ ],
  "objects": [
   {
-   "id": "cv-cooler",
-   "x": 1,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
-   "x": 2,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
+   "id": "cv-back-shelf",
    "x": 3,
    "y": 3
   },
   {
-   "id": "cv-cooler",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
-   "x": 11,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
-   "x": 12,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
-   "x": 13,
-   "y": 3
-  },
-  {
-   "id": "cv-cooler",
-   "x": 14,
-   "y": 3
-  },
-  {
-   "id": "cv-open-case",
+   "id": "cv-back-shelf",
    "x": 5,
    "y": 3
   },
   {
-   "id": "cv-meat-case",
+   "id": "cv-back-shelf",
    "x": 7,
    "y": 3
   },
   {
-   "id": "cv-open-case",
+   "id": "kitchen-sink",
    "x": 9,
    "y": 3
   },
   {
-   "id": "cv-produce",
-   "x": 2,
-   "y": 6
-  },
-  {
-   "id": "cv-produce",
-   "x": 4,
-   "y": 6
-  },
-  {
-   "id": "cv-gondola",
-   "x": 7,
-   "y": 6
-  },
-  {
-   "id": "cv-produce",
+   "id": "cv-back-shelf",
    "x": 10,
-   "y": 6
+   "y": 3
   },
   {
-   "id": "cv-produce",
+   "id": "cv-back-shelf",
    "x": 12,
-   "y": 6
-  },
-  {
-   "id": "cv-gondola",
-   "x": 2,
-   "y": 8
-  },
-  {
-   "id": "cv-gondola",
-   "x": 4,
-   "y": 8
-  },
-  {
-   "id": "cv-gondola",
-   "x": 7,
-   "y": 8
-  },
-  {
-   "id": "cv-gondola",
-   "x": 9,
-   "y": 8
-  },
-  {
-   "id": "cv-freezer",
-   "x": 12,
-   "y": 8
-  },
-  {
-   "id": "cv-checkout",
-   "x": 3,
-   "y": 9
-  },
-  {
-   "id": "cv-checkout",
-   "x": 12,
-   "y": 9
-  },
-  {
-   "id": "cv-cart-rack",
-   "x": 5,
-   "y": 10
-  },
-  {
-   "id": "cv-basket-stack",
-   "x": 9,
-   "y": 10
-  },
-  {
-   "id": "cv-baskets",
-   "x": 10,
-   "y": 10
-  },
-  {
-   "id": "cv-cart",
-   "x": 1,
-   "y": 10
+   "y": 3
   },
   {
    "id": "cv-trash",
    "x": 14,
-   "y": 10
+   "y": 3
+  },
+  {
+   "id": "sh-noren",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "cv-cooler",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "cv-cooler",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "cv-open-case",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "cv-meat-case",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "cv-open-case",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "cv-produce",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "cv-produce",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "cv-gondola",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "cv-produce",
+   "x": 10,
+   "y": 11
+  },
+  {
+   "id": "cv-produce",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "cv-gondola",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "cv-gondola",
+   "x": 4,
+   "y": 13
+  },
+  {
+   "id": "cv-gondola",
+   "x": 7,
+   "y": 13
+  },
+  {
+   "id": "cv-gondola",
+   "x": 9,
+   "y": 13
+  },
+  {
+   "id": "cv-freezer",
+   "x": 12,
+   "y": 13
+  },
+  {
+   "id": "cv-checkout",
+   "x": 3,
+   "y": 14
+  },
+  {
+   "id": "cv-checkout",
+   "x": 12,
+   "y": 14
+  },
+  {
+   "id": "cv-cart-rack",
+   "x": 5,
+   "y": 15
+  },
+  {
+   "id": "cv-basket-stack",
+   "x": 9,
+   "y": 15
+  },
+  {
+   "id": "cv-baskets",
+   "x": 10,
+   "y": 15
+  },
+  {
+   "id": "cv-cart",
+   "x": 1,
+   "y": 15
+  },
+  {
+   "id": "cv-trash",
+   "x": 14,
+   "y": 15
   },
   {
    "id": "cv-autodoor",
    "x": 7,
-   "y": 11
+   "y": 16
   }
  ],
  "tables": [],
@@ -169,7 +226,7 @@
  "name": "일본 동네 슈퍼 실내",
  "start": [
   8,
-  10
+  15
  ],
  "links": [],
  "rooms": [
@@ -178,7 +235,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 15,
-   "y1": 11
+   "y1": 16
   }
  ]
 }
