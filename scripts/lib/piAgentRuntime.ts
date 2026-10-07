@@ -259,6 +259,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   });
   // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
   const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
+  // 공간 시공 실행인가 — 선언 모델이 고른 첫 노출 도구로 판정한다. 목록이 없으면(전체 카탈로그) 모른다고 보고 싣는다.
+  // 공간 규칙·밑그림 도구는 대사·가격·이름 고치기에도 매번 실렸다(2026-10-07 조수 시험: 호출마다 약 6만 토큰).
+  const spatialWork = !request.initialToolNames || request.initialToolNames.some((name) => {
+    const definition = allowedDefinitions.find(tool => tool.name === name);
+    const domains: readonly string[] = definition?.domains ?? [];
+    return domains.includes("tile") || domains.includes("world") || (domains.includes("map") && definition?.mode === "write");
+  });
   const findToolsCallable = (name: string): boolean => allowedNames.has(name);
   // event_command_assist 는 안에서 LLM 을 한 번 더 부른다 — 워커에는 편집기 동반 서비스가 없으니 이 실행의 제공자로 보낸다.
   const eventAssistChat = async (_config: unknown, chat: { messages: readonly unknown[]; signal?: AbortSignal }) => {
@@ -545,7 +552,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       return { content: [{ type: "text", text: "단계가 적용되었습니다. 다음 단계로 진행하세요." }] };
     },
   }));
-  if (!request.readOnly && !options.readOnlyTools) tools.push({
+  if (!request.readOnly && !options.readOnlyTools && spatialWork) tools.push({
     name: "set_build_spec", label: "공간 밑그림",
     description: "시공 전에 맵 위에 영역과 순서를 표시하는 밑그림을 제출한다. 타일을 변경하거나 시공을 승인하지 않는다. 실제 배치는 별도 쓰기 도구로 실행한다.",
     parameters: SET_BUILD_SPEC_TOOL.function.parameters,
@@ -589,7 +596,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
-    : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+    : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork });
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
   if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT, EMERALD_MONSTER_AUTHORING_GUIDE);
   else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
@@ -603,7 +610,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
-  if (!request.readOnly && !options.readOnlyTools) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
+  if (!request.readOnly && !options.readOnlyTools && spatialWork) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For story, lore, NPC dialogue or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. Do not call Writer for mechanical work.");

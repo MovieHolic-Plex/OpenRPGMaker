@@ -127,6 +127,11 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
     ? planRequiredToolSchemas(input.workPlan) as OpenAiTool[]
     : []);
 
+  // 선언 모델이 이미 도구를 골랐으면 낱말 일치 승격을 얹지 않는다. 승격은 요청 낱말과 설명 낱말의 겹침이라
+  // 설명이 긴 도구가 늘 이긴다 — 실측(2026-10-07 조수 시험 12과제): 「아이템 가격만 바꿔」에 edit_world_terrain·author_village,
+  // 「NPC 이동」에 make_villager(73k자)·upsert_event(69k자)가 붙어 과제마다 평균 6만 자, 최대 18만 자가 매 호출 실렸다.
+  // 빠진 도구는 find_tools 와 이름 호출 구제로 여전히 잡힌다.
+  if (input.intent?.source === "llm" && input.intent.tools.length > 0) return tools;
   const capability = capabilityEscalationSchemas(input.requestText, seen);
   appendUnique(tools, seen, capability as OpenAiTool[]);
   return tools;
