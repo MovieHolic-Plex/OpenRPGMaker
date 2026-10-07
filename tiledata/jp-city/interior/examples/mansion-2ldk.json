@@ -59,7 +59,7 @@
   },
   {
    "x0": 1,
-   "y0": 11,
+   "y0": 12,
    "x1": 2,
    "y1": 13,
    "floor": "tataki"
@@ -305,6 +305,21 @@
    "id": "h2-planter",
    "x": 12,
    "y": 17
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "genkan-mat",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "slippers",
+   "x": 2,
+   "y": 9
   }
  ],
  "tables": [

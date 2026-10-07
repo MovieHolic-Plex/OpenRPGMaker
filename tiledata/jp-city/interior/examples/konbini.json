@@ -42,19 +42,14 @@
    "y": 3
   },
   {
-   "id": "cv-cooler",
-   "x": 6,
-   "y": 3
-  },
-  {
    "id": "cv-atm",
    "x": 7,
    "y": 3
   },
   {
    "id": "cv-copier",
-   "x": 1,
-   "y": 4
+   "x": 6,
+   "y": 3
   },
   {
    "id": "cv-gondola",
