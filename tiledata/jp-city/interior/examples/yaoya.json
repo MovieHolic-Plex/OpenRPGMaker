@@ -1,15 +1,16 @@
 {
  "plan": [
-  "#########",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "###..####"
+  "##########",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "######...#"
  ],
  "floor": "sh-concrete",
  "wall": "sh-white",
@@ -17,18 +18,23 @@
  "zones": [],
  "objects": [
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-counter",
    "x": 1,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-register",
    "x": 2,
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-counter",
    "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 4,
    "y": 3
   },
   {
@@ -47,73 +53,83 @@
    "y": 3
   },
   {
+   "id": "sh-basket-shelf",
+   "x": 8,
+   "y": 3
+  },
+  {
    "id": "sh-veg-stand",
-   "x": 1,
+   "x": 4,
    "y": 5
   },
   {
    "id": "sh-veg-stand",
-   "x": 1,
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 4,
    "y": 7
   },
   {
-   "id": "sh-fruit-box",
-   "x": 3,
-   "y": 5
-  },
-  {
-   "id": "sh-scale-table",
-   "x": 5,
+   "id": "sh-crate-stack",
+   "x": 1,
    "y": 5
   },
   {
    "id": "sh-crate-stack",
-   "x": 7,
-   "y": 5
-  },
-  {
-   "id": "sh-counter",
-   "x": 5,
+   "x": 1,
    "y": 7
   },
   {
-   "id": "sh-register",
-   "x": 6,
-   "y": 7
-  },
-  {
-   "id": "sh-counter",
-   "x": 7,
-   "y": 7
+   "id": "sh-crate-stack",
+   "x": 1,
+   "y": 9
   },
   {
    "id": "sh-fruit-box",
-   "x": 7,
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 8,
    "y": 8
   },
   {
-   "id": "sh-shutter-2",
-   "x": 3,
-   "y": 9
+   "id": "sh-shutter",
+   "x": 6,
+   "y": 10
   }
  ],
  "tables": [],
  "goods": [
   {
    "id": "sh-scale",
-   "x": 5,
-   "y": 7
+   "x": 1,
+   "y": 3
   },
   {
    "id": "sh-price-dots",
-   "x": 7,
-   "y": 7
+   "x": 3,
+   "y": 3
   }
  ],
- "name": "일본 채소가게(八百屋) 실내",
+ "name": "일본 동네 채소가게 실내",
  "start": [
-  3,
-  8
+  6,
+  9
  ],
  "links": [],
  "rooms": [
@@ -121,8 +137,8 @@
    "room": "yaoya",
    "x0": 0,
    "y0": 0,
-   "x1": 8,
-   "y1": 9
+   "x1": 9,
+   "y1": 10
   }
  ]
 }

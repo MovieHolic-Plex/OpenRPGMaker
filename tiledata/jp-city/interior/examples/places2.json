@@ -110,7 +110,7 @@
  },
  {
   "file": "bakery",
-  "placeId": "jp-city-bakery-9x14",
+  "placeId": "jp-city-bakery-10x14",
   "name": "일본 동네 빵집 실내",
   "kind": "bakery",
   "kindKo": "빵집",
@@ -122,13 +122,13 @@
   ],
   "building": "jp_bakery",
   "rules": [
-   "셔터 걷은 입구 → 쟁반·집게 대 → 북쪽 벽 빵 진열 선반(가운데 문) · 빵 평대 · 입구 가까운 계산대 · 북쪽 벽 오른쪽 끝 유리 창구 너머 타일 벽·타일 바닥 공방 뒷방(오븐 둘 · 반죽대 · 발효 선반 · 개수대).",
-   "평면·가구는 tiledata/jp-city/interior/examples/bakery.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bakery-9x14\"})."
+   "가운데 빵 진열 섬(평대 둘, 빵·가격표) → 입구(오른쪽 2칸) 양옆 쟁반·집게 대와 왼쪽 화분 → 안쪽 벽 왼쪽 빵 선반·벽 선반 둘(가운데 직원 통로) + 오른쪽 끝 계산대(계산대·금전기·계산대)와 그 위 유리 배식창 → 통로 끝 노렌 너머 타일 벽·타일 바닥 공방 뒷방(오븐 둘 · 개수대 · 반죽대 · 발효 선반 둘).",
+   "평면·가구는 tiledata/jp-city/interior/examples/bakery.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bakery-10x14\"})."
   ]
  },
  {
   "file": "bookstore",
-  "placeId": "jp-city-bookstore-9x14",
+  "placeId": "jp-city-bookstore-11x14",
   "name": "일본 동네 서점 실내",
   "kind": "bookstore",
   "kindKo": "서점",
@@ -140,13 +140,13 @@
   ],
   "building": "jp_bookstore",
   "rules": [
-   "북쪽 벽 서가 줄(가운데 문) · 왼쪽 책 섬 평대 · 입구 쪽 낮은 책상 · 계산대 · 칸막이 노렌 너머 창 없는 나무 바닥 좁은 창고 뒷방(반품 선반 셋 · 책 상자 더미 둘).",
-   "평면·가구는 tiledata/jp-city/interior/examples/bookstore.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bookstore-9x14\"})."
+   "입구(오른쪽 2칸) → 가운데 책장 섬 둘(양면 서가, 앞뒤 2단) + 안쪽 벽 서가 한 줄 + 오른쪽 벽 세로 계산대(계산대·금전기·계산대, 입구 쪽 옆벽) · 왼쪽 앞 책 평대 · 오른쪽 아래 골판지 → 오른쪽 노렌 너머 반납 선반 둘·책 궤짝 둘 창고 뒷방.",
+   "평면·가구는 tiledata/jp-city/interior/examples/bookstore.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-bookstore-11x14\"})."
   ]
  },
  {
   "file": "pharmacy",
-  "placeId": "jp-city-pharmacy-9x14",
+  "placeId": "jp-city-pharmacy-9x15",
   "name": "일본 동네 약국 실내",
   "kind": "pharmacy",
   "kindKo": "약국",
@@ -158,13 +158,13 @@
   ],
   "building": "jp_pharmacy",
   "rules": [
-   "북쪽 벽 약 선반 줄(가운데 문) · 왼쪽 약 섬 선반 · 대기 벤치 · 상담 카운터·계산대 · 칸막이 노렌 너머 흰 벽 조제실 뒷방(약 서랍장 둘 · 재고 선반 · 조제대 · 손 씻는 세면대).",
-   "평면·가구는 tiledata/jp-city/interior/examples/pharmacy.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-pharmacy-9x14\"})."
+   "입구(왼쪽 2칸) 가까이 진열 섬 둘(오른쪽 줄)과 왼쪽 상담석 · 오른쪽 아래 대기 의자 → 안쪽 벽을 가로지르는 조제 카운터(조제대·계산대·금전기·조제대, 오른쪽 끝 직원 통로의 노렌) 너머 약장·재고 선반·세면대 조제실.",
+   "평면·가구는 tiledata/jp-city/interior/examples/pharmacy.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-pharmacy-9x15\"})."
   ]
  },
  {
   "file": "florist",
-  "placeId": "jp-city-florist-9x10",
+  "placeId": "jp-city-florist-9x11",
   "name": "일본 동네 꽃집 실내",
   "kind": "florist",
   "kindKo": "꽃집",
@@ -175,13 +175,13 @@
   ],
   "building": "jp_florist",
   "rules": [
-   "뒷방 없는 한 칸 가게. 북쪽 벽 유리 꽃 냉장고 줄(가운데 선반) · 왼쪽에 꽃 양동이 단 둘 · 오른쪽 구석에 포장 작업대(꽃다발)·화분 · 그 아래 계산대.",
-   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x10\"})."
+   "입구(가운데 2칸) 양옆 벽 따라 바깥식 화분·꽃 양동이(왼쪽 화분+양동이, 오른쪽 양동이) → 가운데 포장 작업대에 붙은 계산대(계산대·금전기) + 왼쪽 벽 가 꽃 양동이 + 안쪽 벽 왼쪽 꽃 냉장 유리장 셋 · 오른쪽 벽 선반 둘.",
+   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x11\"})."
   ]
  },
  {
   "file": "yaoya",
-  "placeId": "jp-city-yaoya-9x10",
+  "placeId": "jp-city-yaoya-10x11",
   "name": "일본 채소가게(八百屋) 실내",
   "kind": "yaoya",
   "kindKo": "채소가게",
@@ -194,13 +194,13 @@
   ],
   "building": "jp_yaoya",
   "rules": [
-   "뒷방 없는 한 칸 가게. 북쪽 벽 바구니 선반 줄 · 경사 채소 진열대 둘·과일 상자 · 오른쪽 구석에 저울대·상자 더미 · 그 아래 계산대와 곁 과일 상자.",
-   "평면·가구는 tiledata/jp-city/interior/examples/yaoya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-yaoya-9x10\"})."
+   "열린 가게 앞 입구(오른쪽 3칸) → 가운데 경사 진열 채소 평대 셋 → 안쪽 왼쪽 구석 계산대(계산대·금전기·계산대·저울) + 안쪽 벽 바구니 선반 다섯 + 양쪽 벽 궤짝·과일 상자.",
+   "평면·가구는 tiledata/jp-city/interior/examples/yaoya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-yaoya-10x11\"})."
   ]
  },
  {
   "file": "barber",
-  "placeId": "jp-city-barber-9x9",
+  "placeId": "jp-city-barber-10x9",
   "name": "일본 동네 이발소 실내",
   "kind": "barber",
   "kindKo": "이발소",
@@ -213,8 +213,8 @@
   ],
   "building": "jp_barber",
   "rules": [
-   "뒷방 없는 한 칸 가게. 북쪽 벽 거울 셋·세면대 둘·샴푸대 · 거울 앞 이발 의자 셋 · 대기 벤치 · 이발소 기둥 · 계산대(가운데 아래) · 오른쪽 구석 수건 선반·세탁기.",
-   "평면·가구는 tiledata/jp-city/interior/examples/barber.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-barber-9x9\"})."
+   "입구(왼쪽 2칸) 옆 막대 간판·작은 계산대(계산대·금전기) → 안쪽 벽 거울 셋 아래 이발 의자 세 개 한 줄(사이 세면대) + 벽 선반·샴푸 → 맞은편(남쪽) 벽 대기 벤치 + 오른쪽 수건 선반.",
+   "평면·가구는 tiledata/jp-city/interior/examples/barber.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-barber-10x9\"})."
   ]
  },
  {

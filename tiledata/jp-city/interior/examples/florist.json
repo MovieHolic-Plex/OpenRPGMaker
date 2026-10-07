@@ -9,7 +9,8 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "###..####"
+  "#.......#",
+  "####..###"
  ],
  "floor": "sh-concrete",
  "wall": "sh-white",
@@ -33,87 +34,72 @@
   },
   {
    "id": "sh-wall-shelf",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "sh-flower-cooler",
-   "x": 5,
-   "y": 3
-  },
-  {
-   "id": "sh-flower-cooler",
    "x": 6,
    "y": 3
   },
   {
-   "id": "sh-flower-cooler",
+   "id": "sh-wall-shelf",
    "x": 7,
    "y": 3
   },
   {
    "id": "sh-flower-buckets",
    "x": 1,
-   "y": 5
-  },
-  {
-   "id": "sh-flower-buckets",
-   "x": 1,
-   "y": 7
+   "y": 6
   },
   {
    "id": "sh-wrap-table",
-   "x": 5,
-   "y": 5
-  },
-  {
-   "id": "sh-plant-pot",
-   "x": 7,
-   "y": 5
+   "x": 4,
+   "y": 6
   },
   {
    "id": "sh-counter",
-   "x": 5,
-   "y": 7
+   "x": 6,
+   "y": 6
   },
   {
    "id": "sh-register",
-   "x": 6,
-   "y": 7
+   "x": 7,
+   "y": 6
   },
   {
-   "id": "sh-counter",
-   "x": 7,
-   "y": 7
+   "id": "sh-flower-buckets",
+   "x": 2,
+   "y": 9
   },
   {
    "id": "sh-plant-pot",
-   "x": 7,
-   "y": 8
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "sh-flower-buckets",
+   "x": 6,
+   "y": 9
   },
   {
    "id": "sh-shutter-2",
-   "x": 3,
-   "y": 9
+   "x": 4,
+   "y": 10
   }
  ],
  "tables": [],
  "goods": [
   {
    "id": "sh-bouquet",
-   "x": 5,
-   "y": 5
+   "x": 4,
+   "y": 6
   },
   {
    "id": "sh-price-dots",
-   "x": 5,
-   "y": 7
+   "x": 6,
+   "y": 6
   }
  ],
  "name": "일본 동네 꽃집 실내",
  "start": [
-  3,
-  8
+  4,
+  9
  ],
  "links": [],
  "rooms": [
@@ -122,7 +108,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 9
+   "y1": 10
   }
  ]
 }

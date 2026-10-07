@@ -5,7 +5,7 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "####.####",
+  "#######.#",
   "#.......#",
   "#.......#",
   "#.......#",
@@ -13,7 +13,8 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "###..####"
+  "#.......#",
+  "##..#####"
  ],
  "floor": "sh-wood",
  "wall": "cloth-beige",
@@ -31,18 +32,13 @@
    "x0": 0,
    "y0": 6,
    "x1": 8,
-   "y1": 13,
+   "y1": 14,
    "floor": "sh-wood",
    "wall": "cloth-beige"
   }
  ],
  "objects": [
   {
-   "id": "sh-noren",
-   "x": 4,
-   "y": 5
-  },
-  {
    "id": "pb-med-cabinet",
    "x": 1,
    "y": 3
@@ -53,98 +49,93 @@
    "y": 3
   },
   {
-   "id": "sh-stock-shelf",
+   "id": "pb-med-cabinet",
    "x": 3,
-   "y": 3
-  },
-  {
-   "id": "sh-dispense-counter",
-   "x": 5,
    "y": 3
   },
   {
    "id": "washbasin",
-   "x": 7,
+   "x": 5,
    "y": 3
   },
   {
-   "id": "sh-drug-shelf",
+   "id": "sh-stock-shelf",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-dispense-counter",
    "x": 1,
    "y": 8
   },
   {
-   "id": "sh-drug-shelf",
-   "x": 2,
-   "y": 8
-  },
-  {
-   "id": "sh-drug-shelf",
+   "id": "sh-counter",
    "x": 3,
    "y": 8
   },
   {
-   "id": "sh-drug-shelf",
+   "id": "sh-register",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sh-dispense-counter",
    "x": 5,
-   "y": 8
-  },
-  {
-   "id": "sh-drug-shelf",
-   "x": 6,
-   "y": 8
-  },
-  {
-   "id": "sh-drug-shelf",
-   "x": 7,
    "y": 8
   },
   {
    "id": "sh-drug-island",
-   "x": 1,
-   "y": 10
-  },
-  {
-   "id": "sh-waiting-bench",
-   "x": 1,
-   "y": 12
-  },
-  {
-   "id": "sh-consult",
-   "x": 5,
+   "x": 4,
    "y": 11
   },
   {
-   "id": "sh-counter",
+   "id": "sh-drug-island",
    "x": 6,
    "y": 11
   },
   {
-   "id": "sh-register",
-   "x": 7,
+   "id": "sh-consult",
+   "x": 1,
    "y": 11
   },
   {
-   "id": "sh-shutter-2",
-   "x": 3,
+   "id": "sh-waiting-bench",
+   "x": 5,
    "y": 13
+  },
+  {
+   "id": "sh-noren",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 2,
+   "y": 14
   }
  ],
  "tables": [],
  "goods": [
   {
    "id": "sh-medicine",
-   "x": 5,
-   "y": 11
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-medicine",
+   "x": 3,
+   "y": 8
   },
   {
    "id": "sh-medicine",
    "x": 6,
-   "y": 11
+   "y": 8
   }
  ],
  "name": "일본 동네 약국 실내",
  "start": [
-  3,
-  12
+  2,
+  13
  ],
  "links": [],
  "rooms": [
@@ -153,7 +144,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 13
+   "y1": 14
   }
  ]
 }
