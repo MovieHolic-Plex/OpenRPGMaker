@@ -179,4 +179,6 @@ round 8 의 돌 기단+회벽 혼합 두 장(06·07)은 질감 검사가 `WALL_M
 배선은 `beodeul_forms` 와 같다: `bundled.ts`(tex_beodeul_reviewed), `bundledChipsetGeometry.ts`(16열), `defaultAssets.ts`, `beodeulCity.ts` → `src/project/defaults/beodeulReviewed.ts`(단독 타일셋 `beodeul_reviewed` + `beodeul_city` 이식 `ensureBeodeulReviewed`). 참고문서 `beodeul-reviewed`(문서 49·이미지 3)는 `scripts/content/prepare-beodeul-reviewed-references.mts` 가 만든다 — 64×22 거리 예제(8채, 층 배열 전체), 문 앞/처마 통행 검사, 정상/오류 그림(문 앞 anvil → `canMove` true→false). 전체 재생성: `scripts/content/rebuild-beodeul-reviewed.sh`. 검증: `scripts/qa/beodeul-reviewed-store.mts <프로젝트 폴더 사본>` (신규·빈 프로젝트·기존 프로젝트·멱등·SQLite 저장→재열기, 증거 `verify-shots/beodeul-reviewed/`).
 허용·거절이 없는 r9 와 반려된 r10-02/07 은 설치되지 않는다. 설치 건물이 늘면 install → rebuild 를 다시 돌린다.
 
+**슈퍼하네싱.** `unified.py` 가 같은 화면을 탭 「버들항 건물 검수」(`/harness/beodeul/`, `node/mount.py`)로 호스팅한다 — 자세한 건 `super-harness-integration.md`. 통합 반영 뒤에는 18317 서비스를 내려도 된다.
+
 **서비스.** 18317 검수 서버는 `systemd --user` 유닛 `beodeul-review.service`(안정된 별도 체크아웃 `~/.local/share/oprn/services/rpg-zzu-beodeul-review`, detached origin/main)로 돌고, 일 1회 `beodeul-review-backup.timer` 가 `decisions backup` 을 부른다. 병합 뒤 `git -C <체크아웃> checkout --detach origin/main && systemctl --user restart beodeul-review`.

@@ -1,9 +1,9 @@
 {
  "schema": "beodeul-building-review-decisions/1",
- "exportedAt": "2026-10-07T13:58:36+0900",
+ "exportedAt": "2026-10-07T14:27:51+0900",
  "counts": {
-  "allow": 42,
-  "deny": 15,
+  "allow": 58,
+  "deny": 18,
   "pending": 0
  },
  "log": [
@@ -478,6 +478,158 @@
    "decision": "allow",
    "note": "",
    "at": "2026-10-07T04:35:19+00:00"
+  },
+  {
+   "seq": 60,
+   "item": "r9-building-01",
+   "sha": "6fea91b27c2269d043a49bf5420fbdc8ea580f66d1c5a355b4ff04321ce3840a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:14:41+00:00"
+  },
+  {
+   "seq": 61,
+   "item": "r9-building-02",
+   "sha": "257ea4505d8b833285650dc6533dcd114636720a568a1b2003fd2dd70f47496b",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:14:45+00:00"
+  },
+  {
+   "seq": 62,
+   "item": "r9-building-03",
+   "sha": "dbbd4fd0d9efa702d0fe8e30f6eba4a1244a612cb5950823a33ad2a90bdc60a3",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:14:59+00:00"
+  },
+  {
+   "seq": 63,
+   "item": "r9-building-04",
+   "sha": "95af284d700bd1975f5bb5a485a9f7c2d5540b271a2592aae3ec7ccc55ddc1f1",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T05:15:14+00:00"
+  },
+  {
+   "seq": 64,
+   "item": "r9-building-05",
+   "sha": "6ead4621932ae995ce546de7c7c057a0b88939640ea0d6092cafb320ee01bb34",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:16:31+00:00"
+  },
+  {
+   "seq": 65,
+   "item": "r9-building-06",
+   "sha": "b6aca38da6ba4eb3ff831a81e78d9ee4ff4bd07e97975b0f38cf0ed184961e25",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:17:40+00:00"
+  },
+  {
+   "seq": 66,
+   "item": "r9-building-07",
+   "sha": "3344177aa3e4585d8902537b62b990aa7cd7e5749bd3999183975a847be429ab",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:02+00:00"
+  },
+  {
+   "seq": 67,
+   "item": "r9-building-08",
+   "sha": "efd307bb5401823b4713ec43ed8bd5085891503663a9c2197f1a0d154690ccd1",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:05+00:00"
+  },
+  {
+   "seq": 68,
+   "item": "r9-building-09",
+   "sha": "5853e8d12dce37172cadbaece7b35afc8237032113f9e486ceeeaf4317299b4e",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T05:18:19+00:00"
+  },
+  {
+   "seq": 69,
+   "item": "r9-building-10",
+   "sha": "51daccb878d8a8dfecfaee88339c8fce5f11c209ac434d1470c56c2b033dba18",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:25+00:00"
+  },
+  {
+   "seq": 70,
+   "item": "r9-building-11",
+   "sha": "11a9614bea3ddcabada5aafdc9fa67f5b35a9634c58f66997c0e3e3be51c1f50",
+   "decision": "deny",
+   "note": "",
+   "at": "2026-10-07T05:18:31+00:00"
+  },
+  {
+   "seq": 71,
+   "item": "r9-building-12",
+   "sha": "c9e6479c500981703b413727e4d82d4fad6744cc402195490f57a5b555437c61",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:34+00:00"
+  },
+  {
+   "seq": 72,
+   "item": "r9-building-13",
+   "sha": "1d691d5c33b6bc976e7faa8819728297d703dbe8452073abcecd1f5e4644e76a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:36+00:00"
+  },
+  {
+   "seq": 73,
+   "item": "r9-building-14",
+   "sha": "4bd6229bb6fa63f75ef1497b782fbcbef58a84e98ba1e24d25d9ed5b2a40d817",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:39+00:00"
+  },
+  {
+   "seq": 74,
+   "item": "r9-building-15",
+   "sha": "a8be7f7356b55fb6144c5a0e833e5852ba8980954f2fc3516ce21e5ae1725fa4",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:41+00:00"
+  },
+  {
+   "seq": 75,
+   "item": "r9-building-16",
+   "sha": "ffa610ebf1a2283aaa177b1d5a059321888064830f769e26f78c1eb0aa1c764d",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:44+00:00"
+  },
+  {
+   "seq": 76,
+   "item": "r9-building-17",
+   "sha": "d786356f39810fa85781cafe584caf6f9eb957fead8a6d4cfc3ad0b65305bbb3",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:46+00:00"
+  },
+  {
+   "seq": 77,
+   "item": "r9-building-18",
+   "sha": "b007340c64ab70d7676207f389d678ac93f95c092f397ad4ba2dc649e79f871a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:49+00:00"
+  },
+  {
+   "seq": 78,
+   "item": "r9-building-19",
+   "sha": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a",
+   "decision": "allow",
+   "note": "",
+   "at": "2026-10-07T05:18:51+00:00"
   }
  ]
 }

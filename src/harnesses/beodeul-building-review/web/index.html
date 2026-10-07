@@ -80,7 +80,7 @@ details.details{font-size:11px;color:var(--dim)}details.details p{margin:4px 0;f
 </style></head><body>
 <header class="top"><div class="brand"><b>버들항 건물 검수</b><span>검사 통과 후보만</span></div>
 <div class="progress" aria-label="검수 진행"><div class="bar"><i class="a" id="bar-a"></i><i class="d" id="bar-d"></i></div><div class="txt"><span id="counts"></span><span id="remain"></span></div></div>
-<div class="grow"></div><a class="download" id="download" href="/api/export" aria-disabled="true">허용분 ZIP ↓</a><button class="icon" id="help-open" aria-label="단축키 도움말" title="단축키 (?)">?</button></header>
+<div class="grow"></div><a class="download" id="download" href="api/export" aria-disabled="true">허용분 ZIP ↓</a><button class="icon" id="help-open" aria-label="단축키 도움말" title="단축키 (?)">?</button></header>
 <div class="workspace">
 <aside class="rail">
 <nav class="tabs" role="tablist" aria-label="건물 검수 목록"><button id="tab-pending" role="tab" aria-selected="true" aria-controls="list" data-tab="pending"><span id="count-pending">0</span>대기</button><button id="tab-allowed" role="tab" aria-selected="false" aria-controls="list" data-tab="allowed"><span id="count-allowed">0</span>허용</button><button id="tab-denied" role="tab" aria-selected="false" aria-controls="list" data-tab="denied"><span id="count-denied">0</span>거절</button><button id="tab-all" role="tab" aria-selected="false" aria-controls="list" data-tab="all"><span id="count-all">0</span>전체</button></nav>
@@ -106,7 +106,7 @@ details.details{font-size:11px;color:var(--dim)}details.details p{margin:4px 0;f
 <div class="toast" id="toast" role="status"><i id="toast-dot"></i><span id="toast-text"></span><button id="undo">되돌리기 <kbd>Z</kbd></button></div>
 <div class="help" id="help" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="help-title"><h2 id="help-title">단축키</h2><dl><dt><kbd>A</kbd> / <kbd>D</kbd></dt><dd>허용 / 거절 (메모 함께 저장)</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>이전 / 다음 건물</dd><dt><kbd>R</kbd></dt><dd>메모대로 고쳐 다시 올리기 (거절로 기록 후 수정 작업 시작)</dd><dt><kbd>Z</kbd></dt><dd>방금 결정 되돌리기</dd><dt><kbd>N</kbd></dt><dd>메모 입력 · <kbd>Esc</kbd> 로 빠져나오기</dd><dt><kbd>Ctrl</kbd>+<kbd>Enter</kbd></dt><dd>메모만 저장</dd><dt><kbd>C</kbd></dt><dd>건물만 ↔ 원본과 비교</dd><dt><kbd>0</kbd>–<kbd>6</kbd></dt><dd>맞춤 / 배율</dd><dt><kbd>G</kbd></dt><dd>픽셀 격자</dd><dt><kbd>F</kbd></dt><dd>목록 숨기고 크게 보기</dd><dt><kbd>?</kbd></dt><dd>이 도움말</dd></dl><p style="margin:14px 0 0;color:var(--mute);font-size:12px">결정은 그림 SHA에 묶입니다. 다시 그린 그림은 새로 검수해야 합니다.</p></div></div>
 <script>
-const $=s=>document.getElementById(s),names={pending:'미선택',allow:'허용됨',deny:'거절됨'},qs=new URLSearchParams(location.search);
+const BASE=location.pathname.replace(/\/+$/,''),$=s=>document.getElementById(s),names={pending:'미선택',allow:'허용됨',deny:'거절됨'},qs=new URLSearchParams(location.search);
 let state,index=0,busy=false,ready=false,im=new Image(),gen=0,order=[],refreshing=false,lastUndo=null,toastTimer=0;
 const view={mode:'sprite',zoom:'fit',bg:'grass'};
 const tabDecision={pending:'pending',allowed:'allow',denied:'deny',all:null},tabLabels={pending:'검수 대기',allowed:'허용됨',denied:'거절됨',all:'전체'};
@@ -118,8 +118,8 @@ const store=(()=>{let p;const open=()=>p??=new Promise((ok,no)=>{const r=indexed
  return{async get(k){try{const db=await open();return await new Promise(ok=>{const q=db.transaction('img').objectStore('img').get(k);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok()})}catch{}},async put(k,v){try{(await open()).transaction('img','readwrite').objectStore('img').put(v,k)}catch{}}}})();
 const blobUrls=new Map(),jobs=new Map();let queue=[],active=0;
 function imageUrl(url,urgent=false){if(blobUrls.has(url))return Promise.resolve(blobUrls.get(url));let job=jobs.get(url);if(!job){job={url};job.promise=new Promise((ok,no)=>{job.ok=ok;job.no=no});jobs.set(url,job);queue.push(job)}if(urgent&&queue.includes(job)){queue=queue.filter(j=>j!==job);queue.unshift(job)}pump();return job.promise}
-function pump(){while(active<2&&queue.length&&!busy){const job=queue.shift();active++;(async()=>{try{let blob=await store.get(job.url);if(!blob){const r=await fetch(job.url);if(!r.ok)throw Error('그림 '+r.status);blob=await r.blob();store.put(job.url,blob)}const u=URL.createObjectURL(blob);blobUrls.set(job.url,u);job.ok(u)}catch(e){jobs.delete(job.url);job.no(e)}finally{active--;pump()}})()}}
-const grass=new Image();grass.src='/grass.png';grass.onload=()=>{document.documentElement.style.setProperty('--grass-url','url(/grass.png)');draw()};
+function pump(){while(active<2&&queue.length&&!busy){const job=queue.shift();active++;(async()=>{try{let blob=await store.get(job.url);if(!blob){const r=await fetch(BASE+job.url);if(!r.ok)throw Error('그림 '+r.status);blob=await r.blob();store.put(job.url,blob)}const u=URL.createObjectURL(blob);blobUrls.set(job.url,u);job.ok(u)}catch(e){jobs.delete(job.url);job.no(e)}finally{active--;pump()}})()}}
+const grass=new Image();grass.src=BASE+'/grass.png';grass.onload=()=>{document.documentElement.style.setProperty('--grass-url','url('+BASE+'/grass.png)');draw()};
 /* ---- notes ---- */
 const key=item=>'beodeul-review-note:'+item.id+':'+item.sha;function draft(item){try{return localStorage.getItem(key(item))??item.note}catch{return item.note}}function retain(){const i=current();if(i){try{$('note').value===i.note?localStorage.removeItem(key(i)):localStorage.setItem(key(i),$('note').value)}catch{}}}
 function disabled(){['allow','deny','reset','save-note'].forEach(id=>$(id).disabled=busy||!ready);if(current())$('reset').disabled||=current().decision==='pending';const fixing=current()&&activeJob(current().id);$('repair').disabled=busy||!ready||!repairUp||!!fixing;$('repair').title=!repairUp?'수정 서비스가 꺼져 있습니다 (npm run harness -- beodeul-building-review repair)':fixing?'이미 수정 중입니다':'메모를 남기고 거절 → 작업자가 메모대로 다시 그리고 같은 검사를 거쳐 검수 대기에 다시 올림 (R)'}
@@ -148,13 +148,13 @@ function listing(){summary();const q=$('search').value.trim().toLowerCase(),f=$(
 function showDone(){const c=state.counts;$('done').hidden=false;
  if(tab==='pending'&&!$('search').value&&$('filter').value==='all'){text('done-title',c.pending?'조건에 맞는 건물이 없습니다':'모든 건물을 검수했습니다');text('done-copy',`허용 ${c.allow} · 거절 ${c.deny}`+(c.allow?' — 허용한 건물을 ZIP으로 받을 수 있습니다.':''))}
  else{text('done-title',$('search').value||$('filter').value!=='all'?'조건에 맞는 건물이 없습니다':tabLabels[tab]+' 건물이 없습니다');text('done-copy','다른 탭이나 필터를 골라 보세요.')}
- const acts=[];if(c.allow){const a=document.createElement('a');a.className='download';a.href='/api/export';a.textContent=`허용 ${c.allow}개 ZIP ↓`;acts.push(a)}
+ const acts=[];if(c.allow){const a=document.createElement('a');a.className='download';a.href=BASE+'/api/export';a.textContent=`허용 ${c.allow}개 ZIP ↓`;acts.push(a)}
  for(const t of ['pending','allowed','denied'])if(t!==tab&&state.counts[tabDecision[t]]){const b=document.createElement('button');b.textContent=tabLabels[t]+' 보기';b.onclick=()=>switchTab(t);acts.push(b)}$('done-actions').replaceChildren(...acts)}
 /* ---- selection ---- */
 function select(n,mobile=false){if(busy||!state?.items.length||!order.includes(n))return;retain();$('review').hidden=false;$('done').hidden=true;index=Math.max(0,Math.min(state.items.length-1,n));const i=current(),at=order.indexOf(index);
  text('position',String(at+1).padStart(2,'0')+' / '+order.length);text('role',i.role||'건물');$('round').hidden=!i.round;text('round','R'+(i.round||''));text('title',i.name);
  text('decision',names[i.decision]);$('decision').className=i.decision;text('description',[i.silhouette&&i.silhouette!==i.name?i.silhouette:'',i.description].filter(Boolean).join(' — '));
- text('dimensions',i.width+' × '+i.height+' px');text('hash','SHA256 '+i.sha);$('pixels').href=i.pixels;$('note').value=draft(i);text('status','');$('status').classList.remove('error');
+ text('dimensions',i.width+' × '+i.height+' px');text('hash','SHA256 '+i.sha);$('pixels').href=BASE+i.pixels;$('note').value=draft(i);text('status','');$('status').classList.remove('error');
  text('repair-banner',activeJob(i.id)?'수정 작업 중 · '+activeJob(i.id).message:'');$('prev').disabled=at<=0;$('next').disabled=at>=order.length-1;listing();const el=$('list').querySelector('.card.active');el?.scrollIntoView({block:'nearest'});
  if(mobile)document.body.classList.add('mobile-open');load();prefetch(at)}
 function prefetch(at){for(const d of [1,-1,2])if(order[at+d]!=null)imageUrl(state.items[order[at+d]].image)}
@@ -169,7 +169,7 @@ async function load(){ready=false;disabled();im=new Image();$('canvas').width=0;
  try{const u=await imageUrl(view.mode==='scene'?i.scene:i.image,true);if(turn!==gen)return;const next=new Image();next.src=u;await next.decode();if(turn!==gen)return;im=next;ready=true;$('wait').hidden=true;disabled();draw()}
  catch{if(turn===gen){$('wait').hidden=true;text('status','그림을 불러오지 못했습니다.');$('status').classList.add('error')}}}
 const bgCss={light:'#f4f1e4',dark:'#26312a'};
-function paintStage(z){const st=$('stage').style;if(view.bg==='grass'&&grass.naturalWidth){st.background=`#7f9d55 url(/grass.png) 0 0/${16*z}px ${16*z}px`;st.imageRendering='pixelated'}else if(view.bg==='checker')st.background=`repeating-conic-gradient(#c9cfbf 0 25%,#eef0e6 0 50%) 0 0/${16*z}px ${16*z}px`;else st.background=bgCss[view.bg]||'#0b0e0c'}
+function paintStage(z){const st=$('stage').style;if(view.bg==='grass'&&grass.naturalWidth){st.background=`#7f9d55 url(${BASE}/grass.png) 0 0/${16*z}px ${16*z}px`;st.imageRendering='pixelated'}else if(view.bg==='checker')st.background=`repeating-conic-gradient(#c9cfbf 0 25%,#eef0e6 0 50%) 0 0/${16*z}px ${16*z}px`;else st.background=bgCss[view.bg]||'#0b0e0c'}
 function draw(){if(!ready||!im.naturalWidth)return;const c=$('canvas'),box=$('stage'),pad=view.mode==='scene'?0:8,W=im.naturalWidth+pad*2,H=im.naturalHeight+pad*2;
  const fit=Math.max(1,Math.min(10,Math.floor(Math.min((box.clientWidth-24)/W,(box.clientHeight-24)/H))));const z=view.zoom==='fit'?fit:Number(view.zoom);
  c.width=W*z;c.height=H*z;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);paintStage(z);
@@ -180,7 +180,7 @@ function draw(){if(!ready||!im.naturalWidth)return;const c=$('canvas'),box=$('st
 function setView(k,v){view[k]=v;document.querySelectorAll(`[data-${k}]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[k]===String(v))));if(k==='mode'){if(current())load()}else draw()}
 /* ---- decisions ---- */
 function toast(msg,decision,undoable){text('toast-text',msg);$('toast-dot').className=decision;$('undo').hidden=!undoable;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),undoable?6000:2500)}
-async function post(i,decision,note){const response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':state.token},body:JSON.stringify({id:i.id,sha:i.sha,decision,note})}),s=await response.json();if(!response.ok)throw new Error(s.error||'저장 오류');return s}
+async function post(i,decision,note){const response=await fetch(BASE+'/api/decision',{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':state.token},body:JSON.stringify({id:i.id,sha:i.sha,decision,note})}),s=await response.json();if(!response.ok)throw new Error(s.error||'저장 오류');return s}
 async function decide(decision,move=true,after=null){if(busy||!ready||!current())return;busy=true;disabled();const i=current(),note=$('note').value,before={id:i.id,sha:i.sha,decision:i.decision,note:i.note};retain();text('status','저장 중…');$('status').classList.remove('error');document.body.classList.add('saving');
  try{const s=await post(i,decision,note);state={...s,token:state.token};try{localStorage.removeItem(key(i))}catch{}busy=false;
   if((move&&!$('auto').checked&&tab!=='all')||(decision==='pending'&&i.decision!=='pending'&&tab!=='all')){activateTab(tabOf(decision));syncTabUrl()}
@@ -237,7 +237,7 @@ document.addEventListener('keydown',e=>{if(!$('help').hidden){if(e.key==='Escape
  if(e.key==='ArrowLeft'){e.preventDefault();navigate(-1)}else if(e.key==='ArrowRight'){e.preventDefault();navigate(1)}else if(k==='a')decide('allow');else if(k==='r')requestRepair();else if(k==='d')decide('deny');
  else if(k==='n'){e.preventDefault();$('note').focus()}else if(k==='c')setView('mode',view.mode==='scene'?'sprite':'scene');else if(k==='g'){$('grid').checked=!$('grid').checked;draw()}else if(k==='f')toggleFocus();
  else if(e.key==='0')setView('zoom','fit');else if(['1','2','3','4','6'].includes(e.key))setView('zoom',e.key);else if(e.key==='Escape'){$('close').click()}});
-async function refresh(){if(busy||refreshing)return;refreshing=true;try{const r=await fetch('/api/state');if(!r.ok)throw Error('목록 갱신 실패');const next=await r.json();const signature=s=>JSON.stringify(s.items.map(i=>[i.id,i.sha,i.decision,i.note]));
+async function refresh(){if(busy||refreshing)return;refreshing=true;try{const r=await fetch(BASE+'/api/state');if(!r.ok)throw Error('목록 갱신 실패');const next=await r.json();const signature=s=>JSON.stringify(s.items.map(i=>[i.id,i.sha,i.decision,i.note]));
  if(state&&signature(state)===signature(next)&&state.draftCount===next.draftCount){state.token=next.token;return}const old=current();retain();state=next;const live=new Set(state.items.map(i=>i.id+':'+i.sha));for(const k of cardCache.keys())if(!live.has(k))cardCache.delete(k);listing();
  if(!state.items.length){ready=false;disabled();++gen;$('canvas').width=0;$('review').hidden=true;$('done').hidden=true;$('loading').hidden=false;text('loading',state.draftCount?state.draftCount+'개 후보를 검증 중입니다. 통과한 후보가 여기에 표시됩니다.':'검사를 통과한 후보가 아직 없습니다.');return}
  $('loading').hidden=true;$('review').hidden=false;const requested=qs.get('candidate');const n=old?state.items.findIndex(i=>i.id===old.id&&i.sha===old.sha):state.items.findIndex(i=>i.id===requested);
