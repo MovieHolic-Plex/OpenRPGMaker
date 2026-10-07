@@ -1570,6 +1570,326 @@
       }
     },
     {
+      "id": "r7-building-01",
+      "name": "둥근 창의 작은 돌집",
+      "role": "주택",
+      "width": 64,
+      "height": 112,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r7-building-01",
+          "rect": [
+            0,
+            0,
+            64,
+            112
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 80,
+        "w": 16,
+        "h": 32
+      },
+      "description": "둥근 창의 작은 돌집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-7",
+      "silhouette": "둥근 창의 작은 돌집",
+      "round": 7,
+      "nativeAssetHashes": {
+        "review-r7-building-01": "c58d40ebf0192822336385efee2e83d728f568b6142cfa44d725f8f9bc0fea52"
+      }
+    },
+    {
+      "id": "r7-building-02",
+      "name": "길게 누운 지붕의 농가",
+      "role": "주택",
+      "width": 128,
+      "height": 112,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r7-building-02",
+          "rect": [
+            0,
+            0,
+            128,
+            112
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 48,
+        "y": 80,
+        "w": 16,
+        "h": 32
+      },
+      "description": "길게 누운 지붕의 농가 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-7",
+      "silhouette": "길게 누운 지붕의 농가",
+      "round": 7,
+      "nativeAssetHashes": {
+        "review-r7-building-02": "8e03cfc09b6bf53662425207a5bc54718fbc5ad36bcc0920687ab8cfd5149888"
+      }
+    },
+    {
+      "id": "r7-building-08",
+      "name": "두 박공 사이의 넓은 집",
+      "role": "주택",
+      "width": 160,
+      "height": 160,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r7-building-08",
+          "rect": [
+            0,
+            0,
+            160,
+            160
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 80,
+        "y": 128,
+        "w": 16,
+        "h": 32
+      },
+      "description": "두 박공 사이의 넓은 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-7",
+      "silhouette": "두 박공 사이의 넓은 집",
+      "round": 7,
+      "nativeAssetHashes": {
+        "review-r7-building-08": "8600281394c5dbd3beaed845487e56fbe4d80a3429885fb1a8cb8ea1bb6f207c"
+      }
+    },
+    {
+      "id": "r7-building-09",
+      "name": "긴 맨사드 지붕의 연립집",
+      "role": "주택",
+      "width": 176,
+      "height": 160,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r7-building-09",
+          "rect": [
+            0,
+            0,
+            176,
+            160
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 80,
+        "y": 128,
+        "w": 16,
+        "h": 32
+      },
+      "description": "긴 맨사드 지붕의 연립집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-7",
+      "silhouette": "긴 맨사드 지붕의 연립집",
+      "round": 7,
+      "nativeAssetHashes": {
+        "review-r7-building-09": "502cd3f61670649a64e54ce19f055d1e3e30cb37db4c816fc2d0b3f991a83e14"
+      }
+    },
+    {
+      "id": "r8-building-01",
+      "name": "박공 앞면 이층집",
+      "role": "주택",
+      "width": 64,
+      "height": 144,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r8-building-01",
+          "rect": [
+            0,
+            0,
+            64,
+            144
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 112,
+        "w": 16,
+        "h": 32
+      },
+      "description": "박공 앞면 이층집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-8",
+      "silhouette": "박공 앞면 이층집",
+      "round": 8,
+      "nativeAssetHashes": {
+        "review-r8-building-01": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f"
+      }
+    },
+    {
+      "id": "r8-building-02",
+      "name": "금빛 기와 사각 지붕집",
+      "role": "주택",
+      "width": 128,
+      "height": 144,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r8-building-02",
+          "rect": [
+            0,
+            0,
+            128,
+            144
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 64,
+        "y": 112,
+        "w": 16,
+        "h": 32
+      },
+      "description": "금빛 기와 사각 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-8",
+      "silhouette": "금빛 기와 사각 지붕집",
+      "round": 8,
+      "nativeAssetHashes": {
+        "review-r8-building-02": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f"
+      }
+    },
+    {
+      "id": "r8-building-06",
+      "name": "돌벽 박공 이층집",
+      "role": "주택",
+      "width": 64,
+      "height": 144,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r8-building-06",
+          "rect": [
+            0,
+            0,
+            64,
+            144
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 112,
+        "w": 16,
+        "h": 32
+      },
+      "description": "돌벽 박공 이층집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-8",
+      "silhouette": "돌벽 박공 이층집",
+      "round": 8,
+      "nativeAssetHashes": {
+        "review-r8-building-06": "58c3bb59f08662523925a90f0f97276495f9c66e7454255c3e833000187e1b02"
+      }
+    },
+    {
+      "id": "r8-building-07",
+      "name": "돌벽 올리브 지붕집",
+      "role": "주택",
+      "width": 96,
+      "height": 144,
+      "authoring": "native-parts",
+      "reference": "arch:cream",
+      "components": [
+        {
+          "source": "arch:review-r8-building-07",
+          "rect": [
+            0,
+            0,
+            96,
+            144
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 112,
+        "w": 16,
+        "h": 32
+      },
+      "description": "돌벽 올리브 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+      "lighting": "원본 왼쪽 위 광원",
+      "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+      "source": "authored-native-grid/round-8",
+      "silhouette": "돌벽 올리브 지붕집",
+      "round": 8,
+      "nativeAssetHashes": {
+        "review-r8-building-07": "c1187c1dedc6d5bbf06e30ca40d9b678a787f37761e13e948d9eec2f6268ce30"
+      }
+    },
+    {
       "id": "r9-building-01",
       "name": "작은 돌집",
       "role": "주택",
