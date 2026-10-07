@@ -90,7 +90,30 @@ def check_map(ex, lower, upper):
                 i = ay * W + ax
                 if (lower[i] >= 0 and not passable(lower[i])) or (upper[i] >= 0 and not passable(upper[i])):
                     out.append(('WZ-DOOR-BLOCKED', ax, ay, f'{pid} 문 앞 접근칸이 막혔다'))
+    out += islands(W, H, lower, upper)
     return out
+
+
+def walkable(t):
+    return t < 0 or passable(t)
+
+
+def islands(W, H, lower, upper):
+    """걸을 수 있는 칸이 한 덩이인가. 가장 큰 덩이 밖의 걸을 수 있는 칸마다 WZ-ISLAND(갇힌 주머니 — 플레이어가 못 간다)."""
+    ok = [lower[i] >= 0 and walkable(lower[i]) and walkable(upper[i]) for i in range(W * H)]
+    comp = [-1] * (W * H); sizes = []
+    for s in range(W * H):
+        if not ok[s] or comp[s] >= 0: continue
+        cid = len(sizes); comp[s] = cid; stack = [s]; n = 0
+        while stack:
+            i = stack.pop(); n += 1; x, y = i % W, i // W
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                j = ny * W + nx
+                if 0 <= nx < W and 0 <= ny < H and ok[j] and comp[j] < 0: comp[j] = cid; stack.append(j)
+        sizes.append(n)
+    if len(sizes) <= 1: return []
+    main = max(range(len(sizes)), key=lambda c: sizes[c])
+    return [('WZ-ISLAND', i % W, i // W, f'갇힌 통행 주머니({sizes[comp[i]]}칸) — 주 통로와 이어지지 않는다') for i in range(W * H) if ok[i] and comp[i] != main]
 
 
 def arrays(ex, place):
@@ -294,6 +317,7 @@ ck['documents'].append(dict(id='wz-check-scope', name='자동 검사 범위', ma
     '| `WZ-LAYER` | 위층 홈 칸(잠긴 defaultLayer upper)이 1층에, 또는 아래층 땅 칸이 3층에 있다 | 칸의 priority·tileMeta(엔진 tileLayerHome 과 같은 식) |',
     '| `WZ-CUT` | 키트 칸이 맵 밖으로 잘렸다 | 배치 좌표 + 키트 크기 |',
     '| `WZ-OVERLAP` | 막힌 기물 칸을 다른 막힌 기물이 덮었다 | 키트 upperTiles 통행 |',
+    '| `WZ-ISLAND` | 걸을 수 있는 칸이 여러 덩이로 갈렸다(가구가 길을 막아 플레이어가 못 가는 주머니) | 칸 lower/upper 통행으로 4방향 연결 덩이를 센다 |',
     '| `WZ-DOOR-BLOCKED` | 열린 문(`…door…-open`) 바로 아래 접근칸이 막혔다 | 그 칸 lower/upper 통행 |',
     '', '보지 않는 것: 이벤트 실행, 미적 품질, 길 전체 연결, 모델의 성공률. 검사 통과를 그런 성공으로 주장하지 않는다.',
     '', '## 층 정보 기준', '모든 칸의 층·통행은 굽기(`bake_wz.py`)가 조각의 walk 글자에서 칸마다 정했다: F→floor(1층 통행), X→solidfloor, f→flat(투명, 잠김·위층 붓·통행), S→solid(3층 막힘), C→star(3층 ★). 그룹의 층은 선언이 아니라 멤버 칸의 엔진 홈에서 유도했다(`bake_lib.derive_group_layer`).'])))

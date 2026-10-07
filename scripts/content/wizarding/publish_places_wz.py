@@ -27,6 +27,26 @@ slim = dict(id=TS['id'], image=dict(type='bundled', id=TS['textureKey']), tileSi
             passability=TS['passability'], priority=TS['priority'], terrain=TS['terrain'])
 
 
+def _pass(t):
+    return t < 0 or TS['passability'][t]['up']
+
+
+def islands(W, H, lower, upper):
+    ok = [lower[i] >= 0 and _pass(lower[i]) and _pass(upper[i]) for i in range(W * H)]
+    seen = [False] * (W * H); comps = []
+    for s0 in range(W * H):
+        if not ok[s0] or seen[s0]: continue
+        seen[s0] = True; stack = [s0]; cells = []
+        while stack:
+            i = stack.pop(); cells.append(i); x, y = i % W, i // W
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                j = ny * W + nx
+                if 0 <= nx < W and 0 <= ny < H and ok[j] and not seen[j]: seen[j] = True; stack.append(j)
+        comps.append(cells)
+    comps.sort(key=len, reverse=True)
+    return [i for c in comps[1:] for i in c]
+
+
 def is_flat(t):
     return t >= 0 and TS['priority'][t] == 'lower' and TS['tileMeta'][t].get('locked') and TS['tileMeta'][t].get('defaultLayer') == 'upper'
 
@@ -38,6 +58,9 @@ for f in sorted(os.listdir(EXDIR)):
     if ex.get('skipped'):
         print('건너뜀(빠진 조각)', ex['id'], ex['skipped'][:5]); continue
     W, H = ex['w'], ex['h']
+    isl = islands(W, H, ex['lower'], ex['upper'])
+    if isl:
+        print('건너뜀(갇힌 통행 주머니)', ex['id'], len(isl), '칸'); continue
     L1 = list(ex['lower']); L2 = [-1] * (W * H); L3 = []
     for t in ex['upper']:
         L3.append(-1 if is_flat(t) else t)
