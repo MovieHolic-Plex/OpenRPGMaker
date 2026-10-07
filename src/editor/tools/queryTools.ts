@@ -19,7 +19,7 @@ import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";

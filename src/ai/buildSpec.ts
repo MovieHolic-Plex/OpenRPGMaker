@@ -47,7 +47,7 @@ export interface BuildSpec {
    * 이 밑그림이 전제하는 맵 차원 — planned-map descriptor.
    *
    * 두 가지를 같은 필드로 선언한다:
-   *  1. 아직 생성되지 않은 맵의 합성 차원(create_map/author_village(kind:"new") 직전).
+   *  1. 아직 생성되지 않은 맵의 합성 차원(create_map 직전).
    *  2. **기존 맵을 resize_map 으로 키운 뒤의 차원**(2026-09-15). 기존 맵에서는 현재 크기 이상만
    *     받는다 — 축소는 이벤트·시작 좌표 가드가 필요해서 resize_map 본체가 따로 거부한다.
    *
@@ -95,8 +95,6 @@ interface CheckedAsset {
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
-  // canonical construction facades
-  "author_house", "author_village",
   // 타일 v3 영역 채우기
   "fill_region",
 ]);
@@ -124,7 +122,6 @@ export function toolWritesTiles(toolName: string): boolean {
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
-  "author_house", "author_village",
   "place_npc", "place_battle_blocker",
   "fill_region",
 ]);
@@ -366,27 +363,6 @@ function placementConflict(map: GameMap, asset: CheckedAsset, clearAssets: reado
 
 export function affectedRegions(toolName: string, args: Record<string, unknown>): AffectedRegion[] {
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
-
-  // canonical construction facades — nested target 구조에서 mapId와 영역을 추출한다.
-  if (toolName === "author_house") {
-    const effectiveMapId = mapId ?? nestedTargetMapId(args.target);
-    if (effectiveMapId === null) return [];
-    if (args.kind === "lots" && Array.isArray(args.houses)) {
-      const lotWings = houseLotWings(args.houses);
-      const lotRegions = wingsRegions(effectiveMapId, lotWings, "yard");
-      if (lotRegions !== null) return lotRegions;
-    }
-    const wingRegionsForKit = wingsRegions(effectiveMapId, args.wings, "door");
-    if (wingRegionsForKit !== null) return wingRegionsForKit;
-    return [{ mapId: effectiveMapId, x: 0, y: 0, w: 0, h: 0 }];
-  }
-  if (toolName === "author_village") {
-    const targetMapId = nestedTargetMapId(args.target);
-    if (targetMapId === null) return [];
-    const bounds = nestedTargetBounds(args.target);
-    if (bounds !== null) return [bounds.mapId === targetMapId ? bounds : { ...bounds, mapId: targetMapId }];
-    return [{ mapId: targetMapId, x: 0, y: 0, w: 0, h: 0 }];
-  }
 
   if (mapId === null) return [];
 
@@ -774,41 +750,6 @@ function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegio
   return { mapId, x: args.x, y: args.y, w: 1, h: 1 };
 }
 
-/** author_house kind=lots 의 houses[].wings 를 flat wings 배열로. */
-function houseLotWings(houses: unknown): unknown[] {
-  if (!Array.isArray(houses)) return [];
-  const wings: unknown[] = [];
-  for (const house of houses) {
-    if (typeof house !== "object" || house === null) continue;
-    const list = (house as Record<string, unknown>).wings;
-    if (!Array.isArray(list)) continue;
-    wings.push(...list);
-  }
-  return wings;
-}
-
-function wingsRegions(
-  mapId: string,
-  value: unknown,
-  front: false | "door" | "yard",
-): AffectedRegion[] | null {
-  if (!Array.isArray(value) || value.length === 0) return null;
-  const regions: AffectedRegion[] = [];
-  for (const wing of value) {
-    if (typeof wing !== "object" || wing === null || Array.isArray(wing)) return null;
-    const record = wing as Record<string, unknown>;
-    if (!isFiniteNumber(record.x) || !isFiniteNumber(record.y) || !isFiniteNumber(record.w) || !isFiniteNumber(record.h)) return null;
-    regions.push({ mapId, x: record.x, y: record.y, w: record.w, h: record.h });
-    if (front === "door") {
-      regions.push({ mapId, x: record.x + Math.floor((record.w - 1) / 2), y: record.y + record.h, w: 1, h: 1 });
-    } else if (front === "yard") {
-      // 문 앞 마당 깊이 3칸 (author_house lots 마당 산포 영역)
-      regions.push({ mapId, x: record.x, y: record.y + record.h, w: record.w, h: 3 });
-    }
-  }
-  return regions;
-}
-
 function intersection(a: CheckedAsset, b: CheckedAsset): AffectedRegion | null {
   const x = Math.max(a.x, b.x);
   const y = Math.max(a.y, b.y);
@@ -927,35 +868,6 @@ function assetLabel(rawAsset: unknown, index: number): string {
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null; }
-
-/** canonical construction nested target에서 mapId 추출. */
-function nestedTargetMapId(target: unknown): string | null {
-  if (!isRecord(target)) return null;
-  return typeof target.mapId === "string" && target.mapId.length > 0 ? target.mapId : null;
-}
-
-/** canonical construction nested target에서 bounds 추출 (existing bounds 또는 plannedMap dimensions). */
-function nestedTargetBounds(target: unknown): AffectedRegion | null {
-  if (!isRecord(target)) return null;
-  const mapId = nestedTargetMapId(target);
-  if (mapId === null) return null;
-  if (isRecord(target.bounds)) {
-    const b = target.bounds;
-    if (isFiniteNumber(b.x) && isFiniteNumber(b.y) && isFiniteNumber(b.w) && isFiniteNumber(b.h)) {
-      return { mapId, x: b.x, y: b.y, w: b.w, h: b.h };
-    }
-  }
-  if (isRecord(target.plannedMap)) {
-    const pm = target.plannedMap;
-    if (isFiniteNumber(pm.width) && isFiniteNumber(pm.height)) {
-      return { mapId, x: 0, y: 0, w: pm.width, h: pm.height };
-    }
-  }
-  if (isFiniteNumber(target.width) && isFiniteNumber(target.height)) {
-    return { mapId, x: 0, y: 0, w: target.width, h: target.height };
-  }
-  return null;
-}
 
 function isPoint(value: unknown): value is { x: number; y: number } { return isRecord(value) && isFiniteNumber(value.x) && isFiniteNumber(value.y); }
 

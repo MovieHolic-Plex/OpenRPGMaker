@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // editor/tools/generateMapTool.ts
 // 테마 맵 생성기. create_map+paint 계열의 조합으로 구현하되,
 // **생성→도달성 검사→국소 수리(통로 뚫기) 루프를 내장**해 항상 입구에서 모든 POI에 도달 가능한 맵을 반환한다.

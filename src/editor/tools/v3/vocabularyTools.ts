@@ -11,7 +11,7 @@
 // UI 카드(인라인 편집)는 V3B 몫 — 여기서는 카드 렌더용 데이터만 반환한다.
 
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { VocabLayerHome } from "@/project/tileVocabulary";
 import { isBlockedPassage } from "@/project/tilesetPassage";

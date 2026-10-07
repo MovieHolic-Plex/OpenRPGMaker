@@ -73,7 +73,7 @@ export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */
 export const JP_CITY_POINTER_LINE =
   "일본 상가·상점가·골목 거리 풍경은 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다), "
-  + "건물은 build_jp_city_building(id 는 list_jp_city_building_parts), 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_village·author_house 는 쓰지 않는다.";
+  + "건물은 build_jp_city_building(id 는 list_jp_city_building_parts), 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_beodeul_town 은 쓰지 않는다.";
 
 /**
  * 칠하기 도구(fill_region·lay_path·paint_tiles)의 참고문서 게이트를 «한 번에» 통과하는 읽기 목록. 실측(2026-10-04 헤드리스 시험): 조수가 입구 용도(jp-start)를
@@ -111,7 +111,7 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
       ? `지금 맵 '${target.mapId}' 는 jp_city 이고 이미 내용이 있다 → get_map_region 으로 빈 땅을 찾아 거기에 건물을 더한다(기존 칸을 지우지 않는다).`
       : "jp_city 맵이 아직 없다 → create_map({name, width:50, height:36, tilesetId:\"jp_city\"}) 로 새 맵을 만든다. 지금 보는 맵이 다른 계열이면 실행기가 거부한다 — 그때는 칠하지 말고 ask_tileset_change(toTilesetId:\"jp_city\", reason) 로 사용자에게 견본을 보이고 이 턴을 끝낸다.";
   return [
-    "[일본 거리 시공 — jp_city] 이 요청의 칩셋은 번들 일본 도시(jp_city, 계열 oprn-jp)다. author_village·author_house·author_beodeul_town 은 숲마을·버들항 전용이라 쓰지 않는다 — "
+    "[일본 거리 시공 — jp_city] 이 요청의 칩셋은 번들 일본 도시(jp_city, 계열 oprn-jp)다. author_beodeul_town 은 버들항 전용이라 쓰지 않는다 — "
       + "길과 땅은 fill_region/lay_path·stamp_object(kit:jp_city/jp-road-…), 건물은 build_jp_city_building 이 짓는다. 낱칸 번호로 건물을 칠하지 않는다.",
     where,
     "순서: 땅(보도 연석·생활도로·잔디; 먼저 " + JP_START_READ_LIST + ") → 도로 교차로 키트 stamp_object → 문 앞 보도 → 뒷줄 건물부터 build_jp_city_building(list_jp_city_building_parts 로 id·완성 예제, 사각형이 겹치지 않게 발 y 를 높이+1 이상 띄운다) → "

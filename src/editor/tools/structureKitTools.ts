@@ -41,7 +41,7 @@ const listStructureKits: ToolDefinition = {
   description:
     "사람이 팔레트에 등록한 구조 킷 목록(읽기 전용). mapId를 주면 그 맵 타일셋의 킷만. "
     + "이 킷은 사람 팔레트 스탬프 전용이다 — 타일 시공에 쓰지 말 것. "
-    + "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props. "
+    + "집=place_terrain_house, 마을=author_beodeul_town, 벽=build_wall, 지형=fill_region, 소품=place_props. "
     + "rows/parts/placementText/growth/cellHints는 사람이 등록한 내용의 조회 표면일 뿐이다. "
     + "단 팩 프리셋 물체(learnedFrom=pack-preset, 가로등·자판기 등)는 list_tileset_objects/stamp_tileset_object 로 찍는다.",
   mode: "read",

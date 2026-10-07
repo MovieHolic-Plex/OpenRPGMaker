@@ -8,7 +8,6 @@ import { regionReferenceContext } from "@/project/regionReferences";
 import { runTool } from "@/editor/tools";
 import { spatialAuthoringContext } from "./spatialContext";
 import type { ToolContext } from "@/editor/tools";
-import { HOUSE_KITS } from "@/editor/houseKit";
 import {
   conceptFacilityWall,
   conceptPlaceCount,
@@ -25,9 +24,6 @@ import {
   CONCEPT_PLACE_SIZE_LABELS,
   CONCEPT_WALL_MATERIAL_LABELS,
 } from "@/project/types/conceptBundle";
-import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
-import { villageAuthoringData } from "@/editor/tools/village/authoringData";
-import { villageDesignContext } from "./villageDesignContext";
 import { describePlacementSurface, surfaceRuleFromClusterRule } from "@/project/placementSurface";
 import type { Project, TileGroupMetadata } from "@/project/types";
 import { confidenceScore } from "@/project/tilesetPalette";
@@ -128,12 +124,12 @@ const BALANCE_NOTE = [
 ].join("\n");
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
-  "지형과 고지의 집은 에디터 도구와 같은 design_terrain/sculpt_relief → place_terrain_house → lay_terrain_road/place_terrain_ramp를 쓴다. 현재 버들항 칩셋의 다양한 원본 외관은 inspect_terrain.houseKits에서 조회해 kitId로 배치한다. catalog.nextOffset으로 다음 쪽도 조회한다. 색만 다른 조립식 집으로 다양성을 대신하지 않는다. houseStyles는 크기·지붕 폭 조절 요청에만 쓴다. 기존 지형은 inspect_terrain({mapId,includeCatalog:false})의 features에서 id/options를 읽고 design_terrain 또는 lay_terrain_road의 editId로 재편집한다. 생략한 설정은 유지한다. 조립식 집의 지붕만 바꾸려면 resize_terrain_house_roof를 쓴다. 잠금 칸을 보존하고 집터 일부만 올리거나 내리지 않는다. 원본 kitId는 원래 크기를 유지하며 author_house의 옛 재료 키트는 버들항에 쓰지 않는다. 집 전체와 문 앞은 동일 높이의 빈 땅이어야 하고 벽 폭·층수와 지붕 폭을 따로 정한다. check_terrain_access로 출발점부터 모든 doorFront 칸 자체의 실제 통행을 확인하고 show_map_region의 절벽 높이 포함 그림을 본 뒤 완료를 말한다. 집 외관 도구는 실내/워프를 만들지 않으므로 요청한 실내·이벤트는 별도로 저작한다. 매끈한 경사로는 계단 코드로 대체하지 않는다. 시야 차단 기본은 끔이다.",
+  "지형과 고지의 집은 에디터 도구와 같은 design_terrain/sculpt_relief → place_terrain_house → lay_terrain_road/place_terrain_ramp를 쓴다. 현재 버들항 칩셋의 다양한 원본 외관은 inspect_terrain.houseKits에서 조회해 kitId로 배치한다. catalog.nextOffset으로 다음 쪽도 조회한다. 색만 다른 조립식 집으로 다양성을 대신하지 않는다. houseStyles는 크기·지붕 폭 조절 요청에만 쓴다. 기존 지형은 inspect_terrain({mapId,includeCatalog:false})의 features에서 id/options를 읽고 design_terrain 또는 lay_terrain_road의 editId로 재편집한다. 생략한 설정은 유지한다. 조립식 집의 지붕만 바꾸려면 resize_terrain_house_roof를 쓴다. 잠금 칸을 보존하고 집터 일부만 올리거나 내리지 않는다. 원본 kitId는 원래 크기를 유지한다. 집 전체와 문 앞은 동일 높이의 빈 땅이어야 하고 벽 폭·층수와 지붕 폭을 따로 정한다. check_terrain_access로 출발점부터 모든 doorFront 칸 자체의 실제 통행을 확인하고 show_map_region의 절벽 높이 포함 그림을 본 뒤 완료를 말한다. 집 외관 도구는 실내/워프를 만들지 않으므로 요청한 실내·이벤트는 별도로 저작한다. 매끈한 경사로는 계단 코드로 대체하지 않는다. 시야 차단 기본은 끔이다.",
   // 수정/신규 축(#262 modify 진단). 라우팅 표가 "무엇을 만들 것인가"만 말하고 "만들 것인가
   // 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
   "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋 — 놀람·폭발·기절·유령·마법·회상 같은 연출은 먼저 read_directing_guide), 전투 연출(적 쓰러짐 collapseEffect·전투 안개/구름/비 backdropLayers·상태 몸 표시 battleAura·화면 필터)=read_directing_guide 의 전투 절, 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 기존 울타리·담장 보수=repair_fence(새로 짓지 않음), 타이틀 N단계 개선=improve_title_screen(stage), 수역=fill_region(circle+물 그룹), 야외 집=author_house(interior:\"linked-interior\" 기본, kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height}, countPolicy:\"exact\", bounds 16x16 이상·기존맵 전체 재시공은 fullMap:true). 나무=list_village_tree_assets로 재료 조회 후 find_tools로 배치 도구 탐색**, 성채=build_castle, **모든 신규 실내(시설·일반 방)=build_hand_interior_room(plan 문자열 → 벽·천장 자동, 가구는 list_hand_interior_parts 의 v5 id) — 실내 칩셋은 atlas_biome_interior(손 도트 v5) 하나다. 옛 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)과 place_concept·방 세션은 폐기됐다. 기존 실내 맵 수정=같은 mapId 로 build_hand_interior_room(replace:true). 실내 요청에는 author_house(exterior-only)/author_village 금지 — 다만 들어가서 걷는 집은 author_house(interior:\"linked-interior\")가 정답**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋 — 놀람·폭발·기절·유령·마법·회상 같은 연출은 먼저 read_directing_guide), 전투 연출(적 쓰러짐 collapseEffect·전투 안개/구름/비 backdropLayers·상태 몸 표시 battleAura·화면 필터)=read_directing_guide 의 전투 절, 추격=make_chase_scene, NPC=place_npc/make_villager(상태별 다중 페이지. 대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 타이틀 N단계 개선=improve_title_screen(stage), 수역=fill_region(circle+물 그룹), 야외 집=place_terrain_house(inspect_terrain.houseKits 의 kitId), **마을=author_beodeul_town(버들항 블록 키트 조립)**, **모든 신규 실내(시설·일반 방)=build_hand_interior_room(plan 문자열 → 벽·천장 자동, 가구는 list_hand_interior_parts 의 v5 id) — 실내 칩셋은 atlas_biome_interior(손 도트 v5) 하나다. 옛 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)과 place_concept·방 세션은 폐기됐다. 기존 실내 맵 수정=같은 mapId 로 build_hand_interior_room(replace:true). 실내 요청에는 집 외장·마을 시공 금지 — 들어가서 걷는 집은 외장과 실내를 지은 뒤 create_transfer_pair 로 잇는다**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "기존 이벤트 한 페이지의 명령 자연어 수정은 event_command_assist(mapId,eventId,pageId,prompt). 먼저 get_event로 페이지 ID를 확인한다.",
   "게임 분위기에 맞는 폰트·대화창·UI 요청은 set_project_settings의 fonts(ui/pixel), dialogue(style/font), battle.look(window/font)를 함께 맞춘다. 조선·동양 사극 도트 게임에는 joseon 대화창과 galmuri9 픽셀 글꼴이 어울린다. 사용자가 정한 스타일이 우선하며, 저장된 설정과 실제 플레이 화면을 확인한다.",
   "대화 초상도 선택한다. list_npc_graphics의 face/portraitOptions로 같은 인물을 확인하고, 중요한 인물의 흉상·전신은 list_resources(kind:\"faceset\",query:인물 이름,portraitMode:\"bust\" 또는 \"full\")로 조회해 face.resourceId를 지정한다. 맞는 큰 초상이 없으면 검토된 짝 얼굴을 쓴다. 저수준 upsert_event는 얼굴을 자동 삽입하지 않으므로 changeFace를 대사 앞에 넣는다. 나레이션·간판에는 인물 초상을 붙이지 않는다.",
@@ -169,11 +165,11 @@ const INTRO = [
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요. 지원하지 않는 부분은 시도하지 말고 '못 한 것: …' 한 줄로 명시하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
-  "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,",
+  "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 place_terrain_house, 마을은 author_beodeul_town을 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
   "    구조물 스탬프는 사람 팔레트 전용이다. 타일 시공에 쓰지 마세요.",
-  "    **외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house(exterior-only)를 올리지 말고",
-  "    들어가서 걷는 집(외장+실내)은 author_house(interior:\"linked-interior\") 한 번이 정답이다 — 이때도 **interiorPlan(장소 수·크기·구역·층·물건)을 함께 설계해 넘기세요**. 독립 실내·시설(여관 등)은 참고문서 「손 도트 실내 (v5)」를 읽고 build_hand_interior_room({mapId, plan, floor, wall, objects, tables, lines, goods, links})으로 **새 mapId**를 짓는다. 벽·천장·그림자는 평면에서 자동이다.",
+  "    **외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 집 외장을 올리지 말고",
+  "    들어가서 걷는 집(외장+실내)은 외장(place_terrain_house)+실내를 짓고 create_transfer_pair 로 잇는다. 독립 실내·시설(여관 등)은 참고문서 「손 도트 실내 (v5)」를 읽고 build_hand_interior_room({mapId, plan, floor, wall, objects, tables, lines, goods, links})으로 **새 mapId**를 짓는다. 벽·천장·그림자는 평면에서 자동이다.",
   "    오류면 맵이 생기지 않으니 좌표를 고쳐 다시, 경고(닿지 못한 바닥·쓸 수 없는 가구)도 고친다. **실내는 매번 설계한다 — 같은 도면을 찍어내지 마세요.** create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
   "12. 기존 이벤트를 수정할 때는 get_event로 현재 페이지/커맨드를 먼저 읽고 그 위에 병합하세요.",
@@ -192,7 +188,7 @@ const INTRO = [
   "    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.",
   "15. 스펙 게이트: 공간 쓰기(집/마을/길/청소/NPC·전투 배치/수역·지면)는 set_build_spec 검증 통과 후 실행하세요.",
   "    명세: 대상 맵, 에셋(종류·개수·x,y,w,h·스타일), pathWidth(통로 너비), density(밀도), layoutStyle(배치).",
-  "    맵이 요구 구조물 대비 작으면 author_house/author_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
+  "    맵이 요구 구조물 대비 작으면 최소 크기를 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
   "    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: material=\"물\"(타일 라벨/설명, 그룹 id·vocabId 금지), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props material=\"침엽수\" 등으로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지.",
   "    미지정 값은 합리적으로 정하고 넓은 요청은 명세를 한 줄로 요약하세요. 3회 검증 실패 시 계획을 폐기하고 새 배치를 설계하세요.",
   "    길은 kind:\"road\"로 명시하세요(id·style·재료 라벨로 추론하지 않음). road-road 교차는 허용, 같은 층 terrain-road는 buildOrder에 둘 다 넣고 terrain을 먼저 둘 때만 허용합니다. terrain-terrain 겹침·중복은 순서·overExisting으로 해결되지 않으니 비겹침 영역으로 분할하세요.",
@@ -217,7 +213,7 @@ const INTRO = [
   "19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워",
   "    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).",
   "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.",
-  "    구조물 문법은 집(author_house)가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
+  "    구조물 문법은 집 도구(place_terrain_house)가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
@@ -320,7 +316,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 wings(앵커 위치)·templateId(모양 34종)·kitId(색)·stories/lowWall/chimney·yard 태그만(firewood/mailbox/bench_h/…), 세부 좌표는 코드. 여러 채면 templateId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** 집 → 길 → 나무 → 호수·마당·맵 꾸미기 순서. 앞서 만든 집·길을 보존하고 호수·마당 자리는 계획에서 예약한다. author_village에 theme·pathStyle·yardStyle·forestDensity 등 의도를 채워라(빈 호출 금지). 숲=forestDensity:\"dense\", 울창/빽빽/통행 불가=\"impassable\", 드문드문=\"sparse\" — 테마 문장을 코드가 읽지 않는다. **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, 숲이면 density enum, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집:** inspect_terrain.houseKits 의 kitId 로 place_terrain_house, 여러 채면 kitId 를 집마다 다르게 주고 look_at_houses 로 확인. **마을:** author_beodeul_town 한 호출(집 → 길 → 나무 → 물·마당 순서를 코드가 시공). **place_props:** 숲/들판 산포와 집에서 먼 소품(묘지 등)만 — 구역별, area 넓게, 숲이면 density enum, naturalness 0.55~0.7, 동일 인자 턴당 1회. 집 앞 소품을 광장에 몰지 말 것. **자리 줄:** 신도석·좌석·책상 줄은 산포 대신 arrange_rows(axis=통로축·aisleWidth·rowGap·symmetric). 호수: fill_region+circle(get_map_region data.water.bounds). 길: paint_road. 미합의 재료는 맵 목업 후 [이대로 적용]. 재료는 material=타일 라벨/설명만(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -420,7 +416,7 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
     "## 구조물 스탬프는 사람 팔레트 전용",
     `사람이 등록한 구조물: ${shown.join(", ")}${extra}.`,
     "타일 시공에 구조물 스탬프를 쓰지 마세요.",
-    "집=author_house, 마을=author_village, 벽=build_wall, 지형=fill_region, 소품=place_props.",
+    "집=place_terrain_house, 마을=author_beodeul_town, 벽=build_wall, 지형=fill_region, 소품=place_props.",
   ].join("\n");
 }
 
@@ -526,73 +522,6 @@ function interiorCatalogSection(project: Project, mapId: string | undefined): st
   }
   if (!any) return "";
   return lines.join("\n");
-}
-
-function houseKitSection(): string {
-  const kits = Object.values(HOUSE_KITS).map((kit) => `- ${kit.id}: ${kit.name}`);
-  // 모양(templateId)과 색(kitId)은 서로 다른 축이다. 예전에는 색 축만 안내해서
-  // "다양성 확보" 지시를 지켜도 같은 사각형의 색만 바뀐 집이 나왔다(2026-08-31).
-  const shapes = HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.w}×${def.h})`).join(", ");
-  return [
-    "## 집 외관 — 모양 축과 색 축을 **둘 다** 흔들어라",
-    `### 모양: author_house 의 templateId (${HOUSE_TEMPLATE_DEFS.length}종)`,
-    shapes,
-    "templateId 를 생략하면 wings 그대로의 사각형이 된다 — 여러 채를 깔 때 생략하면 결과가 단조로워진다.",
-    "templateId 를 주면 wings[0]의 x·y 만 앵커로 쓰이고 치수는 카탈로그가 정한다.",
-    "추가 형태 축: stories(1~3, 2층은 h≥9) · lowWall(헛간·창고) · chimney · roofDeck(파랑 평지붕 전용).",
-    "### 색: kitId",
-    ...kits,
-    "kitId 5종은 지붕색 3가지로 접힌다 — blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall. 색군까지 섞어라.",
-    "### 시공·검증",
-    "2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).",
-    "집을 깐 직후 **look_at_houses(mapId)** 로 눈으로 확인하라. verdict 가 monotonous/mixed 면 advice 의 안 쓴 templateId 를 골라 다시 깔아라.",
-    "wing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).",
-    "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
-  ].join("\n");
-}
-
-/**
- * 사용자가 데이터베이스 「마을」탭에 저장한 형태·프리셋. 구조물 킷 섹션과 같은 발상 —
- * "유저가 정해둔 값이 코드 기본값보다 우선"임을 모델에게 알리고 id를 넘긴다.
- */
-function villageAuthoringSection(project: Project): string {
-  const { templates, presets } = villageAuthoringData(project);
-  if (templates.length === 0 && presets.length === 0) return "";
-  const lines: string[] = [];
-  if (presets.length > 0) {
-    lines.push("### 배치 프리셋 (author_village presetId 로 지정)");
-    for (const preset of presets) {
-      const bits = [
-        preset.houseCount === undefined ? "" : `집 ${preset.houseCount}채`,
-        preset.settlementLayout ?? "",
-        preset.pathStyle === undefined ? "" : `길 ${preset.pathStyle}`,
-        preset.roadWidth === undefined ? "" : `폭 ${preset.roadWidth}`,
-        preset.plazaStyle === undefined ? "" : `광장 ${preset.plazaStyle}`,
-        preset.yardStyle === undefined ? "" : `마당 ${preset.yardStyle}`,
-        preset.groundTheme === undefined ? "" : `지면 ${preset.groundTheme}`,
-        preset.npcCount === undefined ? "" : `NPC ${preset.npcCount}`,
-      ].filter(Boolean).join(", ");
-      lines.push(`- ${preset.name || preset.id} (${preset.id}${bits ? `: ${bits}` : ""})`);
-      if (preset.templateIds && preset.templateIds.length > 0) {
-        lines.push(`  형태 후보: ${preset.templateIds.join(", ")}`);
-      }
-      if (preset.note) lines.push(`  메모: ${preset.note.slice(0, 100)}`);
-    }
-  }
-  if (templates.length > 0) {
-    lines.push("### 내 집 형태 (housePlans[].templateId 로 지정)");
-    for (const template of templates) {
-      const kit = template.kitId ? `, 킷 ${template.kitId}` : "";
-      lines.push(`- ${template.name || template.id} (${template.id}, ${template.w}x${template.h}${kit})`);
-      if (template.note) lines.push(`  메모: ${template.note.slice(0, 100)}`);
-    }
-  }
-  return [
-    "## 마을 저작 데이터(유저가 데이터베이스 「마을」탭에서 정한 값 — 코드 기본값보다 우선)",
-    "유저가 직접 만든 프리셋과 집 형태입니다. 마을 요청에서 이 id를 쓰면 유저가 정한 값 그대로 시공됩니다:",
-    ...lines,
-    "author_village({ target, houseCount, countPolicy, presetId }) 로 프리셋을 적용하세요. 목록에 없는 id는 쓰지 마세요.",
-  ].join("\n");
 }
 
 function clusterRulePreferenceSection(project: Project, mapId: string | undefined): string {
@@ -731,11 +660,6 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   if (conceptBundles) sections.push(conceptBundles);
   const interiorCatalog = interiorCatalogSection(project, currentMapId);
   if (interiorCatalog) sections.push(interiorCatalog);
-  // 사용자 저작 마을 데이터는 코드 상수 요약(집 키트)보다 앞이다 — 예산 초과 시 뒤에서 잘리므로
-  // 순서가 곧 우선순위다. 유저가 정한 값이 잘려 나가면 모델이 기본값으로 되돌아간다.
-  const villageAuthoring = villageAuthoringSection(project);
-  if (villageAuthoring) sections.push(villageAuthoring);
-  sections.push(houseKitSection());
   const clusterRulePreferences = clusterRulePreferenceSection(project, currentMapId);
   if (clusterRulePreferences) sections.push(clusterRulePreferences);
   const viewport = resolveContextViewport(options);
@@ -763,8 +687,6 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   const spatial = spatialAuthoringContext(project);
   if (spatial) assembled += `\n\n${spatial}`;
   assembled += `\n\n${regionReferenceContext()}`;
-  const designContract = villageDesignContext(project);
-  if (designContract) assembled += `\n\n${designContract}`;
   const gameBrief = gameDesignBriefContext(project.gameDesignBrief);
   if (gameBrief) assembled += `\n\n${gameBrief}`;
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });

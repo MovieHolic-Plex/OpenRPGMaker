@@ -79,12 +79,9 @@ import { injectToolReasonSchema } from "@/ai/toolReason";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
 import { V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
-import { CASTLE_TOOLS } from "./castleBuilder";
 import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { PACK_TOWN_TOOLS } from "./packTownTools";
-import { VILLAGE_TOOLS } from "./villageBuilder";
-import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
@@ -98,7 +95,6 @@ import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
 import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
-import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { ORIGINAL_MUSIC_TOOLS } from './originalMusicTools';
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
@@ -106,8 +102,6 @@ import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
-import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
-import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
@@ -141,22 +135,9 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
   ["show_tiles", "tile_query"],
 ]);
 
-// construction route manifest: 레거시 쓰기 → canonical facade (LLM 비노출, 직접 실행 호환).
-// preview_house는 읽기 진단이므로 여기 넣지 않는다(공개 유지).
-// build_house_kit / build_house_lots / stamp_structure_kit 는 등록 자체가 제거됐다 —
-// 레지스트리에 정의가 없으므로 superseded 매핑도 두지 않는다. 옛 이름 호출은 unknown-tool 로 거부된다.
-export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
-  ["build_house", "author_house"],
-  ["plan_village", "author_village"],
-  ["materialize_village_spec", "author_village"],
-  ["revise_village_plan", "author_village"],
-  ["run_village_pipeline", "author_village"],
-  ["build_village", "author_village"],
-  ["start_village_session", "author_village"],
-  ["plant_tree_clusters", "author_village"],
-  ["advance_village_build", "author_village"],
-  ["run_village_session", "author_village"],
-]);
+// 옛 쓰기 툴 이름 → 대체 도구(LLM 비노출). 숲마을·합본 마을 시공기(author_village·build_village 계열·author_house)와
+// 그 레거시 이름 매핑은 2026-10-07 저작권 정리로 칩셋과 함께 지웠다 — 옛 이름 호출은 unknown-tool 로 거부된다.
+export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map();
 
 // 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
 function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
@@ -235,8 +216,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...WORLD_CANON_TOOLS,
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
-  AUTHOR_HOUSE_TOOL,
-  AUTHOR_VILLAGE_TOOL,
   AUTHOR_BEODEUL_TOWN_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
@@ -244,10 +223,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
-  ...withDomain(FENCE_REPAIR_TOOLS, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
-  ...withDomain(VILLAGE_TOOLS, "tile"),
-  ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 칸 번호로 짓는 방 세션·개념 시설 시공은
   // 조수 목록에서 뺀다(deprecated: 노출 제외, 실행 호환은 유지 — 옛 세션 재생·테스트).
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
@@ -259,7 +235,6 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile").map(retireEasyRpgGenerator),
-  ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(PACK_TOWN_TOOLS, "tile"),

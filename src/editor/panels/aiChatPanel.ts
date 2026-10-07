@@ -2072,7 +2072,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
-    villageContract: plan.villageContract,
     ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
     planOnly: plan.planOnly,
     maxTurns: plan.maxTurns,

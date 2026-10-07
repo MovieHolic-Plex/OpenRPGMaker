@@ -27,7 +27,6 @@ import {
   disposeDatabaseCinematicsIn,
   renderDatabaseCinematicTab,
 } from "@/editor/panels/databaseCinematicView";
-import { renderVillageTab } from "@/editor/panels/databaseVillageView";
 import {
   renderSwitchesTab,
   renderTermsTab,
@@ -60,11 +59,9 @@ import { listUnlabeledTileIds } from "@/editor/panels/tilesetMetadataControls";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
 import { renderRetroChoreographyTab, resetRetroChoreographyViewState } from "@/editor/panels/databaseRetroChoreographyView";
-import { renderWorldGenTab, resetWorldGenTabViewState } from "@/editor/panels/databaseWorldGenView";
 import { worldCanonHasContent } from "@/project/world/canon";
 import {} from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
-import { BUILTIN_WORLD_GEN_KEYWORD_RULES } from "@/project/worldGenRules";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -101,13 +98,11 @@ export type DatabaseTab =
   | "gameOver"
   | "terms"
   | "terrain"
-  | "villages"
   | "switches"
   | "tilesets"
   | "variables"
   | "worldCanon"
   | "worldCodex"
-  | "worldGen"
   | "spatialTiles"
   | "spatialObjects"
   | "spatialSpaces"
@@ -148,11 +143,9 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "tilesetUnlabeled", label: "미분류 모아보기", testid: "db-tab-tileset-unlabeled" },
   { id: "worldCanon", label: "세계 개요", testid: "db-tab-world-canon" },
   { id: "worldCodex", label: "설정집", testid: "db-tab-world-codex" },
-  { id: "worldGen", label: "공통 생성 기본값", testid: "db-tab-world-gen" },
   { id: "structureKits", label: "부품 보관함", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "기존 방 규칙", testid: "db-tab-tileset-spaces" },
   { id: "scratchConcepts", label: "개념 꾸러미", testid: "db-tab-scratch-concepts" },
-  { id: "villages", label: "기존 마을 설계", testid: "db-tab-villages" },
   { id: "spatialTiles", label: "타일", testid: "db-tab-spatial-tiles" },
   { id: "spatialObjects", label: "오브젝트", testid: "db-tab-spatial-objects" },
   { id: "spatialSpaces", label: "장소 편집", testid: "db-tab-spatial-spaces" },
@@ -242,8 +235,6 @@ export const LEGACY_SPATIAL_ROUTE: Partial<Record<DatabaseTab, DatabaseTab>> = {
   structureKits: "spatialObjects",
   tilesetSpaces: "spatialSpaces",
   scratchConcepts: "spatialPlaces",
-  villages: "spatialRegions",
-  worldGen: "spatialRegions",
 };
 
 const SHELL_TAB_BY_SPATIAL: Partial<Record<DatabaseTab, SpatialShellTab>> = {
@@ -470,8 +461,6 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   }
   const requested = tab === "equipment" ? "items" : tab;
   const legacyOrigin = requested === "tilesetSpaces" ? "tilesetSpaces"
-    : requested === "villages" ? "villages"
-    : requested === "worldGen" ? "worldGen"
     : null;
   activeTab = resolveCanonicalDatabaseTab(requested);
   const shellTab = SHELL_TAB_BY_SPATIAL[activeTab];
@@ -486,7 +475,6 @@ export function databaseTabGroupLabel(tab: DatabaseTab): string | undefined {
   return groupForTab(tab === "equipment" ? "items" : tab)?.label;
 }
 export function switchDatabaseActiveTab(tab: DatabaseTab, panelRoot: HTMLElement): void {
-  if (tab === "worldGen" && activeTab !== tab) resetWorldGenTabViewState();
   if (tab === "retroChoreographies" && activeTab !== tab) resetRetroChoreographyViewState();
   setDatabaseActiveTab(tab);
   const header = panelRoot.querySelector(".db-tabs");
@@ -511,7 +499,6 @@ export function renderDatabasePanel(container: HTMLElement): void {
   disposeDatabasePreviewsIn(container);
   clearChildren(container);
   tabRenderCaches.delete(container);
-  resetWorldGenTabViewState();
   resetRetroChoreographyViewState();
   applyTilesetFolderFacet(activeTab);
   const header = el("div", { class: "db-tabs" });
@@ -691,18 +678,11 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return worldCanonHasContent(project.worldCanon) ? 1 : 0;
     case "worldCodex":
       return project.world?.entities.length ?? 0;
-    case "worldGen": {
-      const builtinIds = new Set(BUILTIN_WORLD_GEN_KEYWORD_RULES.map((rule) => rule.id));
-      return (project.system.worldGen?.keywords ?? []).filter((rule) => !builtinIds.has(rule.id)).length;
-    }
     case "structureKits":
       return Object.values(project.tilesets).reduce(
         (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
         0,
       );
-    case "villages":
-      // 내장 34종은 세지 않는다 — 배지는 "사용자가 저작한 것" 만 센다.
-      return (project.villageTemplates?.length ?? 0) + (project.villagePresets?.length ?? 0);
     default:
       return null;
   }
@@ -732,14 +712,13 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   tilesetUnlabeled: "타일 설명 타일 지식 단어장",
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
-  worldGen: "생성 규칙",
   // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
   spatialPlaces: "장소 방 실내 실외 건물 개념 꾸러미 시설 scratchConcepts",
-  spatialRegions: "생성 규칙 지역 마을 정주지 worldGen villages",
+  spatialRegions: "지역 정주지",
   spatialWorlds: "세계 맵",
 };
 
@@ -864,12 +843,11 @@ function appendTabButton(
       on: {
         click: () => {
           const already = activeTab === tab.id;
-          if (tab.id === "worldGen" && !already) resetWorldGenTabViewState();
           if (tab.id === "retroChoreographies" && !already) resetRetroChoreographyViewState();
           setDatabaseActiveTab(tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
-          renderActiveTab(body, container, { forceFresh: tab.id === "worldGen" && !already });
+          renderActiveTab(body, container);
         },
       },
     }),
@@ -1283,17 +1261,11 @@ function renderActiveTabUnguarded(
     case "scratchConcepts":
       renderScratchConceptTab(content, rerender);
       break;
-    case "villages":
-      renderVillageTab(content, rerender);
-      break;
     case "worldCanon":
       renderWorldCanonTab(body, rerender);
       break;
     case "worldCodex":
       renderWorldCodexTab(body, container);
-      break;
-    case "worldGen":
-      renderWorldGenTab(content, rerender);
       break;
     case "system":
       renderSystemTab(body, rerender);

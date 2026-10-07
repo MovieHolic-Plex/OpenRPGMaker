@@ -36,7 +36,7 @@ console.log(JSON.stringify({maps:72,species:60,resolution:ctx.project.system.pla
 
 const project=createBlankProject();
 const input={project,text:'포켓몬 같은 게임 만들어',currentMapId:project.startMapId,selection:null,hasActivePlan:false,autonomy:resolveAutonomy('balanced'),declarer:()=>{throw Error('unexpected second model intent call');},piTeam:true};
-const route=await classifyPlainPiTurn(input);assert(route.mode==='single'&&!route.plan.villageContract&&route.initialToolNames?.includes('build_monster_game'),'whole-game route narrowed');
+const route=await classifyPlainPiTurn(input);assert(route.mode==='single'&&route.initialToolNames?.includes('build_monster_game'),'whole-game route narrowed');
 const readonly=await classifyPlainPiTurn({...input,autonomy:resolveAutonomy('readonly')});assert(readonly.plan.readOnly&&!readonly.initialToolNames?.includes('build_monster_game'),'read-only changed');
 assert(requestsEmeraldMonsterGame('Can you make a Pokemon-like game?'),'polite request missed');assert(!requestsEmeraldMonsterGame('포켓몬 블랙 같은 게임 만들어'),'explicit other reference overridden');
 for(const field of ['monsterGameProduction','gameSystemProduction'] as const){

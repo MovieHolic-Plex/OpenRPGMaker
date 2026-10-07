@@ -20,7 +20,7 @@ const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
 export { spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialPresentation";
 
 export type SpatialCardSource = "default" | "own" | "placed";
-export type SpatialCompatibilitySource = "room-rule" | "house-shape";
+export type SpatialCompatibilitySource = "room-rule";
 
 export type SpatialGalleryCard = {
   readonly id: string;

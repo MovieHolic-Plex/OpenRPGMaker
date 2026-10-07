@@ -18,7 +18,6 @@ import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import type { PlaceDesign, SpatialId } from "@/project/spatial/types";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
-import { housePreviewMap } from "@/editor/panels/villageHousePreview";
 
 const FACILITY_LAYERS = ["plan", "floor", "walls", "furniture"] as const;
 type PlacePreviewInput = {
@@ -119,12 +118,6 @@ export function previewPlaceRasters(input: PlacePreviewInput & { readonly scale:
 
 /** Compatibility facilities still use their real authored concept plan and tileset vocabulary. */
 function facilityMaps(project: Project, card: SpatialGalleryCard): readonly PlacePreviewMap[] {
-  if (card.compatibility === "house-shape") {
-    const template = project.villageTemplates?.find(entry => entry.id === card.localId);
-    const preview = template ? housePreviewMap(template, project) : undefined;
-    if (!preview) throw new SpatialOperationError("missing", card.id);
-    return [{ map: preview.map, x: 0, y: 0, level: 0 }];
-  }
   const tilesetId = card.tilesetId ?? INTERIOR_ROOM_TILESET_ID;
   const tileset = own(project.tilesets, tilesetId);
   let bundle: ReturnType<typeof conceptFacilityTemplateById>;

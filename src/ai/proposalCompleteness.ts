@@ -209,23 +209,6 @@ const INTERIOR_ROOM_TOOL_NAMES = new Set([
   "furnish_interior_space",
 ]);
 
-function houseCallUsedLinkedInterior(call: ProposalCompletenessCall): boolean {
-  const args = call.args as { readonly interior?: unknown; readonly houses?: unknown };
-  // lots 정규화가 최상위 interior 를 버리므로 houses[] 가 있으면 그것만 본다.
-  // 생략은 파서가 linked-interior 로 기본한다.
-  if (Array.isArray(args.houses)) {
-    return args.houses.every((house) =>
-      typeof house === "object" && house !== null
-      && isLinkedInteriorArg((house as { readonly interior?: unknown }).interior),
-    );
-  }
-  return isLinkedInteriorArg(args.interior);
-}
-
-function isLinkedInteriorArg(value: unknown): boolean {
-  return value === undefined || value === null || value === "linked-interior";
-}
-
 function interiorCompletenessWarnings(
   _requestText: string,
   calls: readonly ProposalCompletenessCall[],
@@ -234,37 +217,9 @@ function interiorCompletenessWarnings(
   // 실내 신축 여부는 선언이 정한다. 선언이 없으면 이 경고를 내지 않는다 — 「여관」「침실」 낱말 정규식으로
   // 실내를 추측하던 경로가 수정 요청에 「새 실내 맵을 시공하세요」를 붙여 신축을 밀어붙였다(2026-08-29).
   if (!intent || intent.mode !== "create") return [];
-  // space:"both" — 들어가서 걷는 집이면 author_house(linked-interior) 한 번이 정답.
-  // 외장만 짓고 실내/전이 없이 끝내면 미이행으로 잡는다.
-  if (intent.space === "both") {
-    const okCalls = calls.filter((call) => call.result.ok);
-    const houseCalls = okCalls.filter((call) => call.name === "author_house");
-    if (houseCalls.length === 0) return [];
-    const linked = houseCalls.every((call) => houseCallUsedLinkedInterior(call));
-    const paired = okCalls.some((call) => call.name === "create_transfer_pair");
-    if (!linked && !paired) {
-      return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 야외+실내 요청인데 외장만 시공했습니다. author_house(interior:"linked-interior")로 짓거나 create_transfer_pair로 이으세요.`];
-    }
-    return [];
-  }
-  if (intent.space === "outdoor") {
-    const okCalls = calls.filter((call) => call.result.ok);
-    const houseCalls = okCalls.filter((call) => call.name === "author_house");
-    if (houseCalls.length === 0) return [];
-    const linked = houseCalls.every((call) => houseCallUsedLinkedInterior(call));
-    if (!linked) {
-      return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 집 시공인데 외장만 지었습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior")로 실내맵과 양방향 전이를 함께 지으세요.`];
-    }
-    return [];
-  }
   if (intent.space !== "interior") return [];
   const okCalls = calls.filter((call) => call.result.ok);
   if (okCalls.some((call) => INTERIOR_ROOM_TOOL_NAMES.has(call.name))) return [];
-  const houseCalls = okCalls.filter((call) => call.name === "author_house");
-  if (houseCalls.length > 0) {
-    if (houseCalls.every((call) => houseCallUsedLinkedInterior(call))) return [];
-    return [`${PROPOSAL_COMPLETENESS_WARNING_PREFIX} 실내 요청인데 야외 집 외장(author_house)만 시공했습니다. 들어가서 걷는 집이면 author_house(interior:"linked-interior"), 외장 없는 독립 실내면 get_concept_facility → place_concept(plan, 새 mapId), 기존 실내 맵을 고치는 것이면 furnish_interior_space({mapId, roomId})를 쓰세요.`];
-  }
   const onlyEmptyMap =
     okCalls.length > 0
     && okCalls.every((call) => call.name === "create_map" || call.name === "generate_map" || call.name === "set_build_spec")
@@ -342,19 +297,6 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   if (call.name === "place_props") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "fill_region" || call.name === "tile_erase") return rectRegion(mapId, call.args.rect);
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
-  // canonical construction facades
-  if (call.name === "author_house") {
-    const effectiveMapId = mapId ?? nestedTargetMapId(call.args.target);
-    if (effectiveMapId === null) return [];
-    if (call.args.kind === "lots" && Array.isArray(call.args.houses)) return houseLotRegions(effectiveMapId, call.args.houses);
-    return wingRegions(effectiveMapId, call.args.wings);
-  }
-  if (call.name === "author_village") {
-    const targetMapId = nestedTargetMapId(call.args.target);
-    if (targetMapId === null) return [];
-    const bounds = nestedTargetRegion(targetMapId, call.args.target);
-    return bounds !== null ? [bounds] : [];
-  }
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
   if (call.name === "tile_structure") {
     const kind = stringValue(call.args.kind);
@@ -377,37 +319,6 @@ function originRect(mapId: string, args: Record<string, unknown>, w: number | nu
   const origin = pointValue(args.origin);
   if (origin === null || w === null || h === null) return [];
   return [{ mapId, x: origin.x, y: origin.y, w, h }];
-}
-
-function houseLotRegions(mapId: string, houses: unknown): AffectedRegion[] {
-  if (!Array.isArray(houses)) return [];
-  const regions: AffectedRegion[] = [];
-  for (const house of houses) {
-    if (!isRecord(house)) continue;
-    regions.push(...wingRegions(mapId, house.wings));
-  }
-  return regions;
-}
-
-function wingRegions(mapId: string, value: unknown): AffectedRegion[] {
-  if (!Array.isArray(value) || value.length === 0) return [];
-  let x0 = Number.POSITIVE_INFINITY;
-  let y0 = Number.POSITIVE_INFINITY;
-  let x1 = Number.NEGATIVE_INFINITY;
-  let y1 = Number.NEGATIVE_INFINITY;
-  for (const wing of value) {
-    if (!isRecord(wing)) return [];
-    const x = numberValue(wing.x);
-    const y = numberValue(wing.y);
-    const w = numberValue(wing.w);
-    const h = numberValue(wing.h);
-    if (x === null || y === null || w === null || h === null) return [];
-    x0 = Math.min(x0, x);
-    y0 = Math.min(y0, y);
-    x1 = Math.max(x1, x + w);
-    y1 = Math.max(y1, y + h);
-  }
-  return [{ mapId, x: x0, y: y0, w: x1 - x0, h: y1 - y0 }];
 }
 
 // {x,y,w,h} 값(인자 rect/데이터 영역)을 AffectedRegion으로. 형식이 아니면 빈 배열.
@@ -549,14 +460,6 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "make_villager" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  // canonical construction: outcome의 actual count를 사용한다.
-  if (call.name === "author_house" || call.name === "author_village") {
-    const data = isRecord(call.result.data) ? call.result.data : null;
-    const construction = data && isRecord(data.construction) ? data.construction : null;
-    const counts = construction && isRecord(construction.counts) ? construction.counts : null;
-    const actual = counts && typeof counts.actual === "number" ? counts.actual : 0;
-    return actual > 0 ? actual : 1;
-  }
   if (call.name === "build_house" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
@@ -612,33 +515,6 @@ function numberValue(value: unknown): number | null {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function nestedTargetMapId(target: unknown): string | null {
-  if (!isRecord(target)) return null;
-  return stringValue(target.mapId);
-}
-
-function nestedTargetRegion(mapId: string, target: unknown): AffectedRegion | null {
-  if (!isRecord(target)) return null;
-  if (isRecord(target.bounds)) {
-    const b = target.bounds;
-    const x = numberValue(b.x);
-    const y = numberValue(b.y);
-    const w = numberValue(b.w);
-    const h = numberValue(b.h);
-    if (x !== null && y !== null && w !== null && h !== null) return { mapId, x, y, w, h };
-  }
-  if (isRecord(target.plannedMap)) {
-    const pm = target.plannedMap;
-    const w = numberValue(pm.width);
-    const h = numberValue(pm.height);
-    if (w !== null && h !== null) return { mapId, x: 0, y: 0, w, h };
-  }
-  const w = numberValue(target.width);
-  const h = numberValue(target.height);
-  if (w !== null && h !== null) return { mapId, x: 0, y: 0, w, h };
-  return null;
 }
 
 function dedupe(values: readonly string[]): string[] {

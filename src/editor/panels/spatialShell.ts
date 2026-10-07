@@ -161,11 +161,7 @@ export function renderSpatialAuthoringShell(
     return;
   }
 
-  const villageStudio = session.legacyOrigin === "villages" && session.tab === "regions";
-  const chrome = villageStudio ? el("div", { class: "spatial-chrome", children: [el("button", {
-    class: "db-ws-btn", text: "지역 목록으로", attrs: { type: "button" }, dataset: { testid: "spatial-village-back" },
-    on: { click: () => { setSpatialTab("regions"); refresh(); } },
-  }), el("strong", { text: "마을 설계서" })] }) : renderSpatialChrome(session, refresh);
+  const chrome = renderSpatialChrome(session, refresh);
   wireMode(chrome, "spatial-mode-design", () => onMode("design"));
   wireMode(chrome, "spatial-mode-instances", () => onMode("instances"));
 
@@ -380,7 +376,7 @@ export function renderSpatialAuthoringShell(
 
   const shell = el("div", {
     class: "spatial-shell",
-    dataset: { testid: `spatial-shell-${tab}`, ...(villageStudio ? { legacyOrigin: "villages" } : {}) },
+    dataset: { testid: `spatial-shell-${tab}` },
     attrs: { tabindex: "0" },
     // 셀은 정확히 두 행(chrome / 본문)이다. 목적 스트립을 셀의 세 번째 자식으로 넣으면
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.

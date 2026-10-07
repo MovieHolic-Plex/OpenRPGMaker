@@ -104,9 +104,7 @@ export function catalogEntry(object: SharedObjectDef): SharedObjectEntry {
   return { id: object.id, kind: "object", name: object.name, category: object.category, tilesetId: object.tilesetId,
     width: object.width, height: object.height, passage: object.passage, tags: object.tags, owner: object.owner, preview: object.preview,
     ...(object.source.kind === "place-kit" ? { referenceId: object.source.referenceId } : {}),
-    use: object.category === "house" && object.id.startsWith("obj:house/") && object.source.kind === "tileset"
-      ? `stamp_object({objectId:'${object.id}', mapId, x, y}) (외형만) 또는 author_house({templateId:'${object.id.slice("obj:house/".length)}'}) (문·실내까지)`
-      : `stamp_object({objectId:'${object.id}', mapId, x, y})` };
+    use: `stamp_object({objectId:'${object.id}', mapId, x, y})` };
 }
 
 /** Every reusable object the assistant can stamp in this project: the shared catalog, then this project's other kits/groups. */

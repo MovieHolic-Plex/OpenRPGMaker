@@ -1,7 +1,7 @@
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { treeKitForTileset, stampTree } from "@/editor/tools/village/treeKit";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { el } from '@/util/dom';
 import type { GameMap, Project, TilesetDef } from '@/project/types';
 import { stampRectHouseKit, type HouseKitId } from '@/editor/houseKit';

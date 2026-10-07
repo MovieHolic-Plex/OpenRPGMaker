@@ -2284,7 +2284,7 @@ function transferEndpointFailure(
   }
   return (
     `${where} 주변에 통행 가능한 착지 칸이 붙은 자리가 없습니다 — 후보 ${noLanding}칸 모두 이웃 4방향이 통행 불가입니다. ` +
-    `맵이 아직 비어 있다면 먼저 fill_region/author_house 등으로 바닥과 구조를 만든 뒤 연결하세요.`
+    `맵이 아직 비어 있다면 먼저 fill_region/place_terrain_house 등으로 바닥과 구조를 만든 뒤 연결하세요.`
   );
 }
 

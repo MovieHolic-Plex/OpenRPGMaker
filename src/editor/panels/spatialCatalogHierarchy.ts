@@ -55,22 +55,7 @@ function placeCards(): SpatialGalleryCard[] {
       });
     }
   }
-  for (const template of project.villageTemplates ?? []) {
-    const id = spatialPresentationId("house-template", "house-shape", template.id);
-    if (known.has(id)) continue;
-    known.add(id);
-    cards.push({
-      id,
-      localId: template.id,
-      name: template.name,
-      source: "own",
-      kind: "places",
-      usage: 0,
-      placeKind: "settlement",
-      compatibility: "house-shape",
-      subtitle: "건물 외형 · 호환 도안",
-    });
-  }
+  // 마을 집 도안(villageTemplates, 합본 마을 집 키트)의 「건물 외형 · 호환 도안」 카드는 2026-10-07 저작권 정리로 지웠다.
   for (const place of Object.values(project.spatialAuthoring?.library.places ?? {})) {
     const id = spatialPresentationId("library-place", "library", place.id);
     if (known.has(id)) continue;
@@ -115,22 +100,7 @@ function regionCards(): SpatialGalleryCard[] {
       regionKind: region.settlement ? "settlement" as const : "terrain" as const,
     });
   }
-  const project = visibleAuthoringProject();
-  for (const preset of project.villagePresets ?? []) {
-    const id = spatialPresentationId("house-preset", "village", preset.id);
-    if (known.has(id)) continue;
-    known.add(id);
-    cards.push({
-      id,
-      localId: preset.id,
-      name: preset.name,
-      source: "own",
-      kind: "regions",
-      usage: 0,
-      regionKind: "settlement",
-      subtitle: "마을 설계서",
-    });
-  }
+  // 마을 설계서(villagePresets) 카드는 숲마을 시공기와 함께 2026-10-07 지웠다.
   return cards;
 }
 

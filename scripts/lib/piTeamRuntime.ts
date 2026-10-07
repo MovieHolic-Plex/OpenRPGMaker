@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompletion.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { inspectFirstPresentation, FIRST_PRESENTATION_INSTRUCTIONS } from '../../src/ai/piAgent/firstPresentation';
@@ -107,9 +106,8 @@ const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
 const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
-  if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
+  if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true };
   // 마을 계약은 단독 실행 전용이다. 팀 요청에 실려 오면 모든 팀원이 author_village 한 호출로만 묶이므로 벗긴다.
-  if (request.villageContract) request = { ...request, villageContract: undefined };
   const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
   const assertModernProposal = (before: Project, after: Project) => {
     const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
@@ -287,7 +285,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   }
 
   // Only accepted child writes enter the shared team project. Serialize publication across members.
-  const villageMapIds = new Set<string>();
   let openingReport: { fingerprint: string; issues: readonly string[] } | undefined;
   const openingFingerprint = (project: Project) => JSON.stringify([project.system.opening,
     (project.system.opening?.scenes ?? []).map(s => s.resourceId ? project.assets.uploaded[s.resourceId] ?? s.resourceId : null)]);
@@ -386,10 +383,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
-        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
         trackOpening(done);
-        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         ledger = settleAssignment(ledger, agentId, complete);
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         const summary = complete ? summaryOf(done) : completionFailure(done);
@@ -477,10 +473,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
         if (mode === "project") { assertModernProposal(working, done.project); working = cloneProjectSharingSharedDictionaries(done.project); }
-        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
         trackOpening(done);
-        const complete = !done.openingProduction?.issues.length && !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
+        const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         if (!complete) report += "\n" + completionFailure(done);
         const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: complete, summary: report, changedKeys: changes, spills: [], conflicts: [] };
         outcomes.set(agentId, outcome);
@@ -1074,15 +1069,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
     emit({ type: "team_report", text: finished });
   }
-  for (const id of orchDone.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
   // The coordinator's snapshot is not a new per-map repair receipt. Preserve child failures.
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
   const interiorCompletion = [...interiorReports.values()];
-  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
   const openingProduction = requestsOpeningProduction(request.task) && !request.readOnly
     ? { issues: openingReport ? (openingReport.fingerprint === openingFingerprint(working) ? openingReport.issues : ['검토 뒤 오프닝/그림이 변경됐습니다. 새 검토가 필요합니다.']) : ['제작 팀원의 오프닝 구성·실제 이미지 전달 검토가 없습니다.'], playbackVerified: false as const } : undefined;
-  emit({ type: "agent_done", agentId: orchestratorId, ok: !openingProduction?.issues.length && !villageCompletion?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
-    summary: openingProduction?.issues.length ? '오프닝 제작 미완료: ' + openingProduction.issues.join('; ') : interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
+  emit({ type: "agent_done", agentId: orchestratorId, ok: !openingProduction?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
+    summary: openingProduction?.issues.length ? '오프닝 제작 미완료: ' + openingProduction.issues.join('; ') : interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
@@ -1091,7 +1084,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const done: PiAgentDoneEvent = {
     ...(openingProduction ? { openingProduction } : {}),
     interiorCompletion,
-    ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: working,
     stats: { ms: Date.now() - started, turns: orchDone.stats.turns + subTurns, toolCalls: toolCalls + orchDone.stats.toolCalls, toolErrors: toolErrors + orchDone.stats.toolErrors, usage: addPiAgentUsage(subUsage, orchDone.stats.usage) },
@@ -1127,5 +1119,5 @@ function summaryOf(done: PiAgentDoneEvent): string {
 }
 
 function completionFailure(done: PiAgentDoneEvent): string {
-  return [done.openingProduction?.issues.length ? '오프닝 제작 미완료: ' + done.openingProduction.issues.join('; ') : '', done.villageCompletion?.issues.length ? '마을 미완료: ' + done.villageCompletion.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
+  return [done.openingProduction?.issues.length ? '오프닝 제작 미완료: ' + done.openingProduction.issues.join('; ') : '', done.interiorCompletion?.length ? '실내 미완료: ' + JSON.stringify(done.interiorCompletion) : ''].filter(Boolean).join('\n');
 }

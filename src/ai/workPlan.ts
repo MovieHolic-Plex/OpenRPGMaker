@@ -148,11 +148,11 @@ Harness contract:
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
 6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. Use direct only for genuinely atomic work, and do not invent extra scope or filler tasks merely to make the list longer.
-   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_village / author_house / import_region_reference 는 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 인자는 전부 **선택**이라 비우면 법적 최소치만 나온다 — 주민은 대사 없이 놓이고(residents.lines), 집은 주인·용도가 없고(housePlans.ownerName/program), 인구(npcCount)·실내(interior)·배치(settlementLayout)·테마(theme)·숲(forestDensity)은 기본값이 된다. 사후 검사는 **집 수와 NPC 수만** 센다 — 대사·상점·실내·연결은 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
+   **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_beodeul_town / import_region_reference 는 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 주민·대사·상점·실내·연결은 그 호출이 대신 만들어 주지 않는다 — 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
    그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내 가구·연결(furnish_interior_space, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
 7. Every item needs:
    - title (identifies the independent result)
-   - instruction (concrete tools/numbers: 신축=author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space, author_village(target:{kind:"existing",mapId,bounds})** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
+   - instruction (concrete tools/numbers: 신축=author_beodeul_town, place_terrain_house, build_hand_interior_room, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)
    - doneWhen (acceptance: what must be true when this item is complete)
    - successTools (tool names that must ALL succeed before the item auto-completes; they must cover **every clause of doneWhen**, not just the first one. If doneWhen also requires painting/decorating/placing after a map is created, list those tools too — e.g. doneWhen "맵이 생성되고 지형이 칠해짐" → ["create_map","fill_region"]. Modify items list modify tools, never creation tools — e.g. doneWhen "기존 광장 타일이 석재로 교체됨" → ["paint_tiles"], doneWhen "집 2채가 새 위치로 이동됨" → ["move_event"], doneWhen "잘못 깔린 담장이 정리되고 다시 깔림" → ["tile_erase","build_wall"]. Listing only the creation tool for such an item is a contract violation: the harness completes the item the moment those tools succeed, so the rest of doneWhen never runs. Never list alternatives.)
 8. Typical **greenfield** RPG content layers (신규 프로젝트/신규 맵을 만드는 요청에만 해당): meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
@@ -189,7 +189,7 @@ JSON schema:
           "title": "todo",
           "instruction": "tools + numbers + placement",
           "doneWhen": "observable acceptance criteria",
-          "successTools": ["create_map", "author_village"],
+          "successTools": ["create_map", "author_beodeul_town"],
           "mapTargets": ["map_hub"]
         },
         {
@@ -248,7 +248,7 @@ export const MAX_WORK_PLAN_ITEMS_PER_BURST = 256;
  *
  * 2026-09-09 진단: "마을을 만들어" 가 1항목 계획으로 끝났다. 플래너 프롬프트는 마을이면
  * new_plan 을 쓰라고 말하지만, 페이로드에는 이것이 **신축 다단계** 라는 사실이 한 글자도 없었고
- * `author_village` 는 대상 전체를 한 호출로 짓는 파사드라 rule 2 의 "single tool turn" 에 맞아
+ * `author_beodeul_town` 은 대상 전체를 한 호출로 짓는 파사드라 rule 2 의 "single tool turn" 에 맞아
  * 보였다. 반대로 `mode=modify` 를 분해로 밀면 「이 마을에 상인 하나 추가」가 다시 마을을 통째로
  * 짓는다 — 그래서 수정은 명시적으로 보존 자세를 받는다.
  */
@@ -270,7 +270,7 @@ export function plannerScopePosture(intent: PlannerScopeIntent | null | undefine
 const PLANNER_SCOPE_GUIDANCE: Record<Exclude<PlannerScopePosture, "none">, string> = {
   "decompose-greenfield": [
     "- 선언 계층이 이 요청을 **신축(create) + 다단계(needsPlan)** 로 확정했다. action=direct 는 여기서 오답이다.",
-    "- 대상 전체를 한 호출로 짓는 파사드(author_village 등)가 있어도 그것은 항목 1개가 아니다. 그 호출의"
+    "- 대상 전체를 한 호출로 짓는 파사드(author_beodeul_town 등)가 있어도 그것은 항목 1개가 아니다. 그 호출의"
       + " **선택 인자를 비우면 최소치만 나온다** — 주민 대사(residents.lines), 집주인·용도(housePlans.ownerName/program),"
       + " 인구(npcCount), 실내(interior), 배치·테마(settlementLayout/theme/forestDensity) 는 각각 채워야 생긴다.",
     "- 그 호출 **밖에 남는 것**도 항목으로 세워라: 실내 가구·연결, 상점 재고, 퀘스트, 맵 간 이동, 시작 위치,"
@@ -309,7 +309,7 @@ export function buildOrchestratorUserPayload(input: {
   }
   // 대상 선택 규칙(2026-08-29 modify 진단 근본원인 5). 플래너 프롬프트에는 "무엇을 대상으로
   // 삼아라"는 문장이 0건이었고 예시 툴 어휘가 전부 생성계였다. 그래서 "이 마을 담장 고쳐줘"가
-  // create_map/author_village 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
+  // create_map/author_beodeul_town 항목으로 분해되고, successTools 에 생성툴이 박히면 그 툴이 성공할
   // 때까지 항목이 완료되지 않아 신축이 강제됐다.
   parts.push(TARGET_SELECTION_RULE);
   parts.push(`## Canonical tool names\n${activeTools().map((tool) => tool.name).join(", ")}\nUse exact names in successTools; unknown requirements block completion and require correcting the plan.`);
@@ -1097,7 +1097,7 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
 
 /**
  * Emergency fallback only when planner API/parse fails — single sprint wrapping the raw goal.
- * 시공 생성기(author_village/author_house)를 문장 정규식으로 강제하지 않는다 — 「담장만 손봐줘」 폴백이
+ * 시공 생성기(author_beodeul_town 등)를 문장 정규식으로 강제하지 않는다 — 「담장만 손봐줘」 폴백이
  * 「집 최소 1채 신축」을 완료 조건으로 갖던 경로다. 수정 여부는 의도 선언이 알려 준다(opts.modifies).
  */
 export function buildDefaultWorkPlan(goal: string, now = new Date(), opts: { readonly modifies?: boolean } = {}): WorkPlan {
@@ -1108,7 +1108,7 @@ export function buildDefaultWorkPlan(goal: string, now = new Date(), opts: { rea
   // 대상 규칙이 붙을 자리가 여기밖에 없다.
   const modifyGuard = opts.modifies === true
     ? "\n\n[대상 규칙] 기존 맵 수정 요청이다. 컨텍스트의 현재 맵을 대상으로 편집하고 "
-      + "create_map / author_house / author_village(kind:\"new\") / 방 세션 시작을 쓰지 말 것."
+      + "create_map / author_beodeul_town(새 맵) / 방 세션 시작을 쓰지 말 것."
     : "";
   const instruction =
     (genre != null

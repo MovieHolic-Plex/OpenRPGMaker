@@ -5,7 +5,7 @@ import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
 import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
-import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";

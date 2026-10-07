@@ -1,5 +1,5 @@
 import { buildGroupSample, type GroupSample, type GroupSampleInput } from "@/ai/groupSampleBuilder";
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import type { Project, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 

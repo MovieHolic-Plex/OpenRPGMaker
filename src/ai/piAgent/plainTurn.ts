@@ -13,7 +13,7 @@ import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclarat
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
-import { isLivedMap } from "@/editor/tools/authorVillageScope";
+import { isLivedMap } from "@/editor/tools/livedMap";
 import type { Project } from "@/project/types";
 import type { PiApplyMode } from "./applyMode";
 import { buildPiIntentNote, resolvePiRunPlan, type PiRunPlan } from "./executionRoute";
@@ -24,7 +24,6 @@ import type { PiTeamSpec } from "./teamSpec";
 // 기존 호출자·테스트가 이 모듈에서 쓰던 이름을 그대로 쓰도록 다시 내보낸다.
 export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
-import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
@@ -86,7 +85,6 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   let intentNote: string | null = null;
   // 장르 프리셋 첫 요청(「장르 프리셋: …」)은 답이 정해져 있다: 게임 전체를 새로 만드는 다단계 작업이다.
   // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
-  // 마을 계약도 이미 이 머리글을 보고 빠진다(villageContract.ts) — 선언이 바꿀 수 있는 판정이 남지 않았다.
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
   if (!plan.readOnly && requestsEmeraldMonsterGame(input.text)) {
     const routingAudit = "intent:emerald-monster-game → 전체72맵/60종 제작";
@@ -144,15 +142,9 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
-    // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
-    // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
-    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown || !!jpCity;
-    plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
-    // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
-    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : jpCity ? "일본 도시 맵" : "판정";
+    // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
+      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : modernMap ? " → 현대 맵" : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -180,24 +172,14 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit };
 }
 
-/** 계약이 얼린 대상 — 로그에서 「어디에 짓기로 했나」가 보여야 한다. */
-function villageContractAudit(contract: VillageContract): string {
-  const target = contract.args.target as { kind?: string; mapId?: string; bounds?: { x: number; y: number; w: number; h: number } } | undefined;
-  const where = target?.kind === "new" ? `새 맵 ${target.mapId}`
-    : `기존 맵 ${target?.mapId ?? contract.mapId}${target?.bounds ? ` 범위 (${target.bounds.x},${target.bounds.y}) ${target.bounds.w}×${target.bounds.h}` : " 전체"}`;
-  const link = contract.connection ? ` · ${contract.connection.fromMapId} ${contract.connection.side}쪽 연결` : "";
-  return `마을 계약: ${where} · 집 ${contract.houseCount}채 · 주민 ${contract.npcCount}명${link}`;
-}
-
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */
 export function needsUltrabrainPlanTurn(input: {
-  readonly villageContract?: VillageContract;
   readonly readOnly: boolean;
   readonly team: boolean;
   readonly routineEdit: boolean;
   readonly applyMode: PiApplyMode;
 }): boolean {
-  return !input.villageContract && !input.readOnly && !input.team && !input.routineEdit && input.applyMode !== "yolo";
+  return !input.readOnly && !input.team && !input.routineEdit && input.applyMode !== "yolo";
 }
 
 export interface UltrabrainModel {
@@ -256,7 +238,6 @@ export function buildPiRunRequest(input: {
   readonly planOnly?: boolean;
   readonly readOnly: boolean;
   readonly applyMode: PiApplyMode;
-  readonly villageContract?: VillageContract;
   readonly brain: UltrabrainModel;
   readonly deep: RoleModel;
   readonly writer: RoleModel;
@@ -290,7 +271,6 @@ export function buildPiRunRequest(input: {
     mode: input.team ? "team" : "single",
     projectKey: input.projectKey,
     applyMode: input.applyMode,
-    villageContract: input.villageContract,
     provider: brainRun ? input.brain.providerId! : input.deep.provider,
     model: brainRun ? input.brain.model : input.deep.model,
     ...(!input.planOnly ? { roleModels: { deep: input.deep, writer: input.writer } } : {}),

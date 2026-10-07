@@ -15,7 +15,6 @@ import { catalogRegionDesign, catalogWorldDesign } from "@/editor/content/spatia
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
   blankRegionDesign,
-  blankSettlementRegionDesign,
   blankWorldDesign,
   commitGeographyEdit,
   editGeography,
@@ -231,24 +230,6 @@ export function activateSpatialDocument(rerender: () => void): void {
       geographyChromeState.activating = false;
       rerender();
     });
-}
-
-/** 마을 설계서 카드 → 정주지 지역 설계 생성. */
-export function createSettlementRegion(card: SpatialGalleryCard, rerender: () => void): void {
-  if (!card.localId) return;
-  if (!spatialDocumentPresent(rerender)) return;
-  let createdId: SpatialId | undefined;
-  const result = editAuthoringDraft((project) => {
-    const created = blankSettlementRegionDesign(project, card.localId!, card.name);
-    createdId = created.id;
-    return upsertGeography(project, "region", created);
-  });
-  if (result.kind === "ok" && createdId) {
-    geographyChromeState.createdDesignId = createdId;
-    selectSpatialDesign(libraryGeographyCardId("region", createdId));
-  }
-  note(spatialAuthoringErrorText(result), result.kind === "ok" ? "초안" : geographyChromeState.saveState);
-  rerender();
 }
 
 function cloneGeography(target: GeographyDraftTarget, rerender: () => void): void {
