@@ -50,12 +50,12 @@ def _getabako(c, w):
     c.HL(1, 30, pw - 2, W_(-2)); c.HL(0, 31, pw, W_(-3))
 
 
-@R.obj('getabako', '신발장(下駄箱)', kind='wall', w=2, h=1, up=16, surface=True, tags=('현관', '신발장', '수납'), place='현관 북쪽 벽 바로 아래', pair=('shoes-pair', 'slippers', 'umbrella-stand'),
+@R.obj('getabako', '신발장(下駄箱)', kind='floor', w=2, h=1, up=16, surface=True, tags=('현관', '신발장', '수납'), place='현관 타타키 한쪽(옆벽 곁) — 북쪽 벽이 없어도 선다', pair=('shoes-pair', 'slippers', 'umbrella-stand'),
         desc='루버 문 두 짝 신발장(下駄箱). 윗면에 열쇠·꽃병 같은 탁상 물건을 올릴 수 있다. 2×1.')
 def _gb2(c): _getabako(c, 2)
 
 
-@R.obj('getabako-narrow', '좁은 신발장', kind='wall', w=1, h=1, up=16, surface=True, tags=('현관', '신발장', '수납'), place='현관 북쪽 벽 바로 아래', pair=('umbrella-stand',),
+@R.obj('getabako-narrow', '좁은 신발장', kind='floor', w=1, h=1, up=16, surface=True, tags=('현관', '신발장', '수납'), place='현관 타타키 한쪽(옆벽 곁)', pair=('umbrella-stand',),
         desc='한 칸 폭 신발장. 윗면에 물건을 올릴 수 있다.')
 def _gb1(c): _getabako(c, 1)
 

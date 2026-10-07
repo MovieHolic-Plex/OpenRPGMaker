@@ -167,13 +167,13 @@ def _tataki(c):
 
 @R.floor('carpet', '카펫', cols=4, rows=4, tags=('침실', '아이방', '원룸'), desc='털 짧은 카펫 — 양실 침실.')
 def _carpet(c):
-    base = kc('kon', 0); lo = kc('kon', -1)
+    base = kc('kinari', -1); lo = kc('kinari', -2)                # 베이지 카펫(남색은 방을 덮어 가구가 묻혔다)
     for y in range(c.h):
         for x in range(c.w):
             col = base
             n = hs(x, y, 31) % 100
-            if n < 6: col = lo                                    # 짧은 털 결(드물게)
-            elif hs(x // 4, y // 4, 32) % 100 < 14 and (x + y) % 2 == 0: col = lo   # 옅은 얼룩
+            if n < 3: col = lo                                    # 짧은 털 결(드물게)
+            elif hs(x // 4, y // 4, 32) % 100 < 5 and (x + y) % 2 == 0: col = lo   # 옅은 얼룩
             c.P(x, y, col)
 
 

@@ -1,0 +1,154 @@
+{
+ "name": "2층 단독주택 2층",
+ "plan": [
+  "######################",
+  "#.......#....#.......#",
+  "#.......#....#.......#",
+  "#.......#....#.......#",
+  "#.......#....#.......#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "######################"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 9,
+   "floor": "flooring",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 14,
+   "y0": 0,
+   "x1": 21,
+   "y1": 9,
+   "floor": "carpet",
+   "wall": "cloth-beige"
+  }
+ ],
+ "objects": [
+  {
+   "id": "bed-side-table",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "bed-double",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "bed-side-table",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "wardrobe",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "curtain-window",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "ac-unit",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "mirror-stand",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "stairwell-down-wood",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "window-sash",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "light-switch",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "bunk-bed",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "desk-study",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 16,
+   "y": 4
+  },
+  {
+   "id": "bed-single",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "window-sash",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "laundry-rack",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "cushion-floor",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "cushion-floor",
+   "x": 3,
+   "y": 6
+  }
+ ],
+ "goods": [
+  {
+   "id": "alarm-clock",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "desk-lamp",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "books-stack",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "stuffed-toy",
+   "x": 4,
+   "y": 3
+  }
+ ],
+ "start": [
+  {
+   "x": 9,
+   "y": 5
+  }
+ ]
+}

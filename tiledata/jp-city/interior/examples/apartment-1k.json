@@ -1,0 +1,190 @@
+{
+ "name": "원룸 아파트(1K)",
+ "plan": [
+  "###########",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "######.####",
+  "#...#.....#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#...#.....#",
+  "#######.###"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 8,
+   "x1": 3,
+   "y1": 13,
+   "floor": "bathtile",
+   "wall": "bathwall"
+  },
+  {
+   "x0": 5,
+   "y0": 8,
+   "x1": 9,
+   "y1": 11,
+   "floor": "cushion",
+   "wall": "kitchen-panel"
+  },
+  {
+   "x0": 5,
+   "y0": 12,
+   "x1": 9,
+   "y1": 13,
+   "floor": "tataki"
+  }
+ ],
+ "objects": [
+  {
+   "id": "bed-single",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "curtain-window",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "ac-unit",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "tv-board",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "bookshelf",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "low-table",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "cushion-floor",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "cushion-floor",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "floor-lamp",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "houseplant",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "bathtub",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "toilet",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "shower-faucet",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "towel-rack",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "washing-machine",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "fridge",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "agarikamachi",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 8,
+   "y": 11
+  },
+  {
+   "id": "getabako-narrow",
+   "x": 5,
+   "y": 12
+  },
+  {
+   "id": "shoes-pair",
+   "x": 8,
+   "y": 12
+  },
+  {
+   "id": "intercom",
+   "x": 7,
+   "y": 8
+  }
+ ],
+ "goods": [
+  {
+   "id": "kettle",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "remote",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "mug",
+   "x": 5,
+   "y": 5
+  }
+ ]
+}
