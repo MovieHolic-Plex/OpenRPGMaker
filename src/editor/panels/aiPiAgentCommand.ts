@@ -227,6 +227,8 @@ export interface PiCommandSurface {
   readonly appendReviewPrompt?: (element: HTMLElement) => void;
   readonly onReviewResolved?: (applied: boolean) => void;
   readonly setStatus: (text: string) => void;
+  /** 화면 없이 도는 실행(qa-game gen 등)의 확인 답. 없으면 패널 카드로 사용자에게 묻는다. */
+  readonly decide?: (request: { readonly title: string; readonly message: string; readonly lostMapIds: readonly string[] }) => Promise<boolean>;
   readonly getCurrentMapId: () => string | null;
   /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
   readonly getApprovedTilesetFamilies?: () => readonly string[];

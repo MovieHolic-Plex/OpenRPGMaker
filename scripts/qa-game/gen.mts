@@ -158,6 +158,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     "의도 선언은 브라우저 chatCompletion 대신 같은 몸통을 워커 completeProvider 로 직접 보낸다(제공자 max_tokens 클램프 표는 생략).",
     "실행은 동반 서비스·워커 HTTP 를 거치지 않고 같은 프로세스에서 runPiAgent 를 부른다(체크포인트는 JSON 대신 structuredClone).",
     "show_map_region 이미지는 캔버스 대신 render 와 같은 pngjs 타일 렌더러로 그린다(이벤트는 스프라이트 대신 색 표식).",
+    "오프닝 그림 도구 이미지는 합성 대신 쓰인 그림 리소스를 이어 붙인 것이다(애니메틱 시간 표본 합성 아님).",
+    "맵 소실 확인은 사람 대신 규칙으로 답한다 — 이 실행에서 만든 맵만 허용, 씨앗 맵은 거절.",
   ];
   const subject = creationSubject(instruction);
   if (subject) differences.push(`지시문이 그래픽 선택(${subject})을 띄우는 문장이다 — 헤드리스는 선택 없이 진행했다.`);
@@ -228,6 +230,13 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       appendCard: () => undefined,
       setStatus: () => undefined,
       getCurrentMapId: () => currentMapId,
+      // 맵 소실 확인: 화면이 없어 카드를 띄우면 document 없음으로 실행 전체가 죽었다(2026-10-07 장르 시험, gemini JRPG remove_map).
+      // 사람 대신 정해진 규칙으로 답한다 — 이 실행에서 새로 만든 맵만 지우게 두고, 씨앗에 있던 맵은 거절한다.
+      decide: async ({ title, lostMapIds }) => {
+        const accepted = lostMapIds.length > 0 && lostMapIds.every((id) => !seed.maps[id]);
+        console.log(`[decide] ${title} — ${lostMapIds.join(", ") || "(대상 없음)"} → ${accepted ? "허용(이 실행에서 만든 맵)" : "거절"}`);
+        return accepted;
+      },
     });
     const phase = recorder.phase("build");
     const t2 = Date.now();
