@@ -5,6 +5,7 @@ import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContrac
 import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
 import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
 import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
+import { runtimeLicenseBannerPlugin } from "./scripts/lib/runtimeLicenseBanner.mjs";
 
 /**
  * 스탠드얼론(단일 HTML) 플레이어 빌드.
@@ -32,7 +33,7 @@ export default defineConfig({
       await writeReleaseCollector(thisRoot, outputDirectory);
       await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
     },
-  }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin()],
+  }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
