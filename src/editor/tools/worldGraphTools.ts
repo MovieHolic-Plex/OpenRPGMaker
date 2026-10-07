@@ -185,7 +185,7 @@ const linkMaps: ToolDefinition = {
     return {
       summary: `맵 연결 생성/갱신: ${result.gateA.x},${result.gateA.y} -> ${result.landingB.x},${result.landingB.y}${result.eventIdB ? " (양방향)" : " (단방향)"}`,
       data: result,
-      ...(result.warnings.length ? { warnings: result.warnings } : {}),
+      ...(result.warnings.length ? { warnings: [...result.warnings] } : {}),
     };
   },
 };

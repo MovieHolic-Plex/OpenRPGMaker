@@ -4,7 +4,7 @@ import { backup, DatabaseSync } from 'node:sqlite';
 import { isDeepStrictEqual } from 'node:util';
 import { execFileSync } from 'node:child_process';
 import { firefox } from 'playwright';
-import { createBlankProject, TILE, COMBINED_TOWN_TILESET_ID } from '../../../project/defaults';
+import { createBlankProject } from '../../../project/defaults';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { canMove } from '../../../project/collision';
 import { layerTileAt } from '../../../project/mapLayers';
@@ -15,7 +15,7 @@ import { handInteriorMapExits } from '../../../editor/handInterior/exits';
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from '../../../project/defaults/atlasBiomeInterior';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
-import { execute, digest } from './editorDriver.mjs';
+import { execute, digest, stored, writeRuntimeProject } from './editorDriver.mjs';
 import { startPlayerQaServer, runRuntimeQa } from '../../../../scripts/lib/runtimeQaRun.mjs';
 import type { Command, GameMap, Project } from '../../../project/types';
 
@@ -43,15 +43,18 @@ export async function runPortalControls(root: string): Promise<number> {
   }
   const fixture = () => {
     const p = createBlankProject();
-    const a = createBlankMap('A', 12, 10, COMBINED_TOWN_TILESET_ID), b = createBlankMap('B', 12, 10, COMBINED_TOWN_TILESET_ID);
+    // 폐기된 combined_town 대신 현재 버들항 번들의 바닥·막힌 칸을 명시한다.
+    const a = createBlankMap('A', 12, 10, 'beodeul_city'), b = createBlankMap('B', 12, 10, 'beodeul_city');
+    a.lowerTiles.fill(737); b.lowerTiles.fill(737);
     a.id = 'map_control_a'; b.id = 'map_control_b';
     p.maps = { [a.id]: a, [b.id]: b }; p.startMapId = a.id; p.startPos = { x: 2, y: 5 };
     p.mapTree = { mapId: a.id, children: [{ mapId: b.id, children: [] }] };
     return { p, a, b };
   };
+  const wall = (p: Project) => p.tilesets.beodeul_city!.passability.findIndex(f => !f.up && !f.down && !f.left && !f.right);
   for (const name of ['create_transfer_pair', 'link_maps']) {
     const { p, a, b } = fixture();
-    for (let y = 0; y < a.height; y++) a.lowerTiles[y * a.width + 8] = TILE.WALL;
+    for (let y = 0; y < a.height; y++) a.lowerTiles[y * a.width + 8] = wall(p);
     const before = JSON.stringify(p.maps);
     const from = { mapId: a.id, x: 11, y: 5 }, to = { mapId: b.id, x: 0, y: 5 };
     const result = runTool({ project: p }, name, name === 'link_maps' ? { from, to } : { a: from, b: to });
@@ -60,8 +63,8 @@ export async function runPortalControls(root: string): Promise<number> {
   }
   {
     const { p, a, b } = fixture();
-    for (let y = 0; y < a.height; y++) a.lowerTiles[y * a.width + 4] = TILE.WALL;
-    a.lowerTiles[1 * a.width + 6] = TILE.WALL;
+    for (let y = 0; y < a.height; y++) a.lowerTiles[y * a.width + 4] = wall(p);
+    a.lowerTiles[1 * a.width + 6] = wall(p);
     const before = JSON.stringify(p.maps);
     const result = runTool({ project: p }, 'create_transfer_pair', { a: { mapId: a.id, x: 6, y: 2, doorAt: { x: 6, y: 1 } }, b: { mapId: b.id, x: 0, y: 5 } });
     rows.push(check('door-front-fixed', !result.ok && before === JSON.stringify(p.maps), '막힌 문앞을 옆 빈칸으로 바꾸지 않고 원자적으로 거절'));
@@ -88,8 +91,12 @@ export async function runPortalControls(root: string): Promise<number> {
       rows.push(check(`${name}:door-width-mismatch`, !pair.ok && pair.summary.includes('가로 폭') && maps === JSON.stringify(ctx.project.maps), pair.summary));
     }
     const narrow = runTool(ctx, 'build_hand_interior_room', { ...wide, replace: true, plan: [...wide.plan.slice(0, -1), '####.#####'] });
-    const linked = runTool(ctx, 'create_transfer_pair', { a: { mapId: 'map_control_a', x: 3, y: 3, doorAt: { x: 3, y: 2 } }, b: { mapId: wide.mapId, x: 4, y: 6 } });
+    const exit = (narrow.data as { exits: Point[] } | undefined)?.exits[0];
+    rows.push(check('reported-exit-is-actual-opening', narrow.ok && exit?.x === 4 && exit?.y === 6, '생성 결과 exits는 실제 한 칸 남쪽 출구 좌표를 반환'));
+    const linked = runTool(ctx, 'create_transfer_pair', { a: { mapId: 'map_control_a', x: 3, y: 3, doorAt: { x: 3, y: 2 } }, b: { mapId: wide.mapId, ...exit } });
     rows.push(check('single-door-single-exit-linked', narrow.ok && linked.ok && handInteriorMapExits(ctx.project, ctx.project.maps[wide.mapId]!).every(e => e.width === 1), linked.summary));
+    const back = transfers(ctx.project, ctx.project.maps[wide.mapId]!).find(t => t.event.x === exit?.x && t.event.y === exit?.y);
+    rows.push(check('exit-cell-has-touch-transfer', linked.ok && back?.page.trigger.kind === 'playerTouch' && back.page.priority === 'below' && back.command.mapId === 'map_control_a', '반환된 출구 좌표와 동일한 칸에 playerTouch 이동을 설치'));
   }
   save(resolve(root, 'controls.json'), { kind: 'tool-controls', modelCalls: 0, pass: rows.every(row => row.ok), checks: rows });
   console.log(JSON.stringify(rows));
@@ -197,7 +204,7 @@ export async function runPortalProof(root: string): Promise<number> {
   writeFileSync(lock, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() })); closeSync(lock);
   const result: any = { inputMode: 'natural', gates: { visual: { status: 'pending' } } };
   try {
-    const run = await execute(config, dir, config.timeoutMs, {});
+    const run = await execute(config, dir, config.timeoutMs, {}, { retainAppliedSnapshot: true });
     const full = JSON.parse(readFileSync(resolve(dir, 'live.json'), 'utf8')) as Project;
     const village = full.maps[MAP]!;
     const links = transfers(full, village).filter(t => t.command.mapId !== MAP);
@@ -264,10 +271,18 @@ export async function recheckPortalRuntime(root: string, args: string[] = []): P
   const observation = attempt ? `runtime-${attempt}` : 'runtime';
   const dir = resolve(root, 'map-portals'), receiptFile = resolve(dir, `runtime-recheck${attempt ? `-${attempt}` : ''}.json`);
   if (existsSync(receiptFile) || existsSync(resolve(dir, observation))) throw Error('기존 플레이 관측 덮어쓰기 거부');
+  let checkpoint: Record<string, unknown> | undefined;
+  if (!existsSync(resolve(dir, 'live.json'))) {
+    if (!args.includes('--checkpoint')) throw Error('완료된 저장 결과가 없다. 중단된 SQLite 체크포인트 관측은 --checkpoint를 명시한다.');
+    const snapshot = stored(resolve(dir, 'project'));
+    writeRuntimeProject(resolve(dir, 'project'), resolve(dir, 'live.json'), snapshot.project);
+    checkpoint = { projectId: snapshot.projectId, revision: snapshot.revision, storedSha256: snapshot.sha256, completedTurn: false };
+    save(resolve(dir, 'checkpoint-snapshot.json'), checkpoint);
+  }
   const source = readFileSync(resolve(dir, 'live.json'));
   const project = JSON.parse(source.toString()) as Project;
   const links = transfers(project, project.maps[MAP]!).filter(t => ['atlas_biome_interior', 'beodeul_city'].includes(project.maps[t.command.mapId]?.tilesetId ?? ''));
   const result = await runtime(project, dir, links, observation);
-  save(receiptFile, { kind: 'saved-output-runtime-recheck', modelCalls: 0, observation, observerDigest: digest(readFileSync(resolve('src/harnesses/assistant-capability/node/portalProof.ts'))), originalResultDigest: digest(readFileSync(resolve(dir, 'result.json'))), sourceDigest: digest(source), ...result });
+  save(receiptFile, { kind: checkpoint ? 'sqlite-checkpoint-runtime-observation' : 'saved-output-runtime-recheck', modelCalls: 0, mutations: 0, ...(checkpoint ? { checkpoint } : {}), observation, observerDigest: digest(readFileSync(resolve('src/harnesses/assistant-capability/node/portalProof.ts'))), originalResultDigest: digest(readFileSync(resolve(dir, 'result.json'))), sourceDigest: digest(source), ...result });
   return result.pass ? 0 : 1;
 }
