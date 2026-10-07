@@ -18,7 +18,7 @@ def files_profile():
     paths=[RULES,SOURCE/'negative/user-rejected-style.png',ROOT/'public/assets/beodeul-warm-trees/tree-03a8f7.png',ROOT/'public/assets/beodeul-warm-trees/tree-03a8f7-shadow.png',SOURCE/'deleted-round-1.json',ROOT/'public/assets/beodeul-city/beodeul-city-chipset.png',ROOT/'src/assets/beodeulCityTileset.json',*ANCHORS,Path(__file__),Path(__file__).with_name('queue.py'),Path(__file__).with_name('native_author.py')]
     return profile_cached(tuple((str(p),p.stat().st_mtime_ns,p.stat().st_size) for p in paths))
 @lru_cache(maxsize=8)
-def profile_cached(files):return digest(canonical([(p,digest(Path(p).read_bytes())) for p,_,_ in files]))
+def profile_cached(files):return digest(canonical([(os.path.relpath(p,ROOT),digest(Path(p).read_bytes())) for p,_,_ in files]))  # checkout-independent: relative to ROOT
 def key(data):
     path=data/'gate-secret'
     if not path.exists():
