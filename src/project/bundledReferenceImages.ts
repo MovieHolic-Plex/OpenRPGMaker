@@ -36,6 +36,16 @@ export function externalizeBundledReferenceImages(project: Project): boolean {
 
 const resolved = new Map<string, Promise<string>>();
 
+/**
+ * 공용 DB 참고 이미지(`/__oprn/shared-content/image/…`)를 주소 없이 바로 읽는 쪽. 조수 워커(Bun)는 상대 주소를 fetch 하지 못해
+ * 「fetch() URL is invalid」로 공용 손 도트 기물 참고문서를 매번 못 읽었다(2026-10-07 space-craft 무림·여관). 워커가 공용 SQLite 를 연 뒤 등록한다.
+ */
+type SharedReferenceImageReader = (src: string) => { readonly mime: string; readonly bytes: Uint8Array } | null;
+let sharedReferenceImageReader: SharedReferenceImageReader | null = null;
+export function setSharedReferenceImageReader(reader: SharedReferenceImageReader | null): void {
+  sharedReferenceImageReader = reader;
+}
+
 /** Bytes for model input: providers need inline data, not a path on this host. */
 export function resolveReferenceImageDataUrl(src: string): Promise<string> {
   if (!isBundledReferenceImage(src) && !isSharedReferenceImage(src)) return Promise.resolve(src);
@@ -64,6 +74,8 @@ async function loadBundledImage(src: string): Promise<string> {
     const file = packaged.find(candidate => fs.existsSync(candidate)) ?? new URL(`../../public${src}`, import.meta.url);
     return `data:${mime};base64,${bytesToBase64(fs.readFileSync(file))}`;
   }
+  const local = shared ? sharedReferenceImageReader?.(src) : null;
+  if (local) return `data:${local.mime};base64,${bytesToBase64(local.bytes)}`;
   const response = await fetch(src);
   if (!response.ok) throw new Error(`참고 이미지를 불러오지 못했습니다: ${src} (HTTP ${response.status})`);
   return `data:${mime};base64,${bytesToBase64(new Uint8Array(await response.arrayBuffer()))}`;
