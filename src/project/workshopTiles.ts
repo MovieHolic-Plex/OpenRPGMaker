@@ -129,6 +129,7 @@ export function bakeWorkshopObject(project: ProjectLike, tilesetId: string, inpu
       id: input.asset.id,
       name: `공방 · ${input.title}`,
       kind: "tileset",
+      generatedBy: "workshop",
       dataUrl: input.asset.dataUrl,
       meta: { tileSize: tileset.tileSize, width: input.asset.width, height: input.asset.height },
     };

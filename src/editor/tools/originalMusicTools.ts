@@ -28,7 +28,7 @@ export const ORIGINAL_MUSIC_TOOLS: readonly ToolDefinition[] = [{
     try {
       if (typeof args.name !== 'string' || !args.name.trim() || args.name.length > 80 || typeof args.brief !== 'string' || args.brief.trim().length < 10 || args.brief.length > 1200) throw new TypeError('곡 제목과 작곡 의도가 필요합니다.');
       const score = parseMusicScore(args.score), rendered = renderOriginalMusic(score), id = genId('original_bgm');
-      draft.assets.uploaded[id] = { id, kind: 'music', name: args.name.trim(), dataUrl: musicWavDataUrl(rendered.bytes), meta: {} };
+      draft.assets.uploaded[id] = { id, kind: 'music', name: args.name.trim(), dataUrl: musicWavDataUrl(rendered.bytes), meta: {}, generatedBy: 'original-music' };
       draft.audioDescriptions = setAudioDescriptionOverride(draft.audioDescriptions, { kind: 'music', resourceId: id }, `${args.brief.trim()}\n조수 악보 작곡·내장 합성. ${score.tempo} BPM, 4/4 ${score.bars}마디, ${rendered.durationSeconds.toFixed(1)}초. 악기: ${score.tracks.map(t => t.instrument).join(', ')}. ${score.loop ? '순환 잔향 포함 반복용 OST. 반복 경계에 강제 무음 없음.' : '곡 시작/끝 페이드가 있어 반복 경계는 무음이다.'}`);
       return { summary: `원곡 「${args.name.trim()}」을 실제 WAV로 생성·등록했습니다.`, data: { resourceId: id, durationSeconds: rendered.durationSeconds, tempo: score.tempo, instruments: score.tracks.map(t => t.instrument), bytes: rendered.bytes.length, peak: rendered.peak, rms: rendered.rms, source: 'model-authored score / built-in synthesis', playbackVerified: false } };
     } catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: 'invalid-args' }); }
@@ -54,7 +54,7 @@ export const ORIGINAL_MUSIC_TOOLS: readonly ToolDefinition[] = [{
     try {
       if (typeof args.name !== 'string' || !args.name.trim() || args.name.length > 80 || typeof args.brief !== 'string' || args.brief.trim().length < 10 || args.brief.length > 1200) throw new TypeError('효과음 이름과 의도가 필요합니다.');
       const patch = parseSoundPatch(args.patch), rendered = renderOriginalSound(patch), id = genId('original_se');
-      draft.assets.uploaded[id] = { id, kind: 'sound', name: args.name.trim(), dataUrl: musicWavDataUrl(rendered.bytes), meta: {} };
+      draft.assets.uploaded[id] = { id, kind: 'sound', name: args.name.trim(), dataUrl: musicWavDataUrl(rendered.bytes), meta: {}, generatedBy: 'original-sound' };
       draft.audioDescriptions = setAudioDescriptionOverride(draft.audioDescriptions, { kind: 'sound', resourceId: id }, `${args.brief.trim()}\n조수 음향 설계·내장 합성. ${rendered.durationSeconds.toFixed(3)}초. ${patch.layers.map(l => l.wave).join(', ')}.`);
       return { summary: `효과음 「${args.name.trim()}」을 WAV로 생성했습니다.`, data: { resourceId: id, ...rendered, bytes: rendered.bytes.length, source: 'model-authored patch / built-in synthesis', playbackVerified: false } };
     } catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: 'invalid-args' }); }

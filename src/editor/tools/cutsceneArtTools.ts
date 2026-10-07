@@ -174,6 +174,7 @@ const generateCutsceneArt: ToolDefinition = {
       id,
       name: parsed.name,
       kind: "picture",
+      generatedBy: "cutscene-art",
       dataUrl: entry.art.dataUrl,
       meta: { width: entry.art.width, height: entry.art.height },
     };

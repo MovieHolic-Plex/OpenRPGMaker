@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { STORE_BLOB_PREFIX, slugify, storeProjectId, validateManifest, packGrade } from "@/assetStore/format";
-import { applyPackToProject, basicTilesetFor, buildPack, closeSelection, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
+import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
 import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
 import type { Project, TilesetDef, UploadedAsset } from "@/project/types";
@@ -128,5 +128,25 @@ describe("asset store pack", () => {
     expect(uploadBlockReason("t1", "Rasak Fantasy 마을", undefined)).toContain("제3자");
     expect(uploadBlockReason("t2", "RPG Maker MV 실내", undefined)).toContain("제3자");
     expect(uploadBlockReason("pawn_shop", "전당포 pawnshop", undefined)).toBeNull();
+  });
+});
+
+describe("AI 생성 표시 강제", () => {
+  const asset = (over: Partial<UploadedAsset>): UploadedAsset => ({ id: "a", name: "a", kind: "picture", dataUrl: "", meta: {}, ...over });
+  it("만든 경로 표식·공방 시트 id·스토어의 AI 생성품을 AI 가 만든 것으로 본다", () => {
+    expect(aiMaker(asset({ generatedBy: "original-music" }))).toBe("original-music");
+    expect(aiMaker(asset({ id: "workshop_1a2b_3c" }))).toBe("workshop");
+    expect(aiMaker(asset({ origin: { aiGenerated: true } as UploadedAsset["origin"] }))).toBe("store");
+    expect(aiMaker(asset({}))).toBeNull();
+  });
+  it("타일셋을 고르면 이식 시트까지 보고, 하나라도 있으면 meta 가 false 여도 매니페스트는 AI 생성", async () => {
+    const p = project();
+    p.assets.uploaded.extra!.generatedBy = "workshop";
+    expect(aiMadeAssets(p, { tilesetIds: ["forest"], assetIds: [] })).toEqual([{ id: "extra", name: "이식 원본", by: "workshop" }]);
+    expect(aiMadeAssets(p, { tilesetIds: ["other"], assetIds: [] })).toEqual([]);
+    const forced = await buildPack(p, { tilesetIds: ["forest"], assetIds: [] }, { ...META, aiGenerated: false }, { readAsset, sha256 });
+    expect(forced.manifest.aiGenerated).toBe(true);
+    const own = await buildPack(p, { tilesetIds: ["other"], assetIds: [] }, { ...META, aiGenerated: false }, { readAsset, sha256 });
+    expect(own.manifest.aiGenerated).toBe(false);
   });
 });

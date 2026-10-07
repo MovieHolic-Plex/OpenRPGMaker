@@ -22,11 +22,23 @@ describe("조수 스토어 도구", () => {
   it("store_publish 는 프로젝트에 있는 것만 제안하고, 올리지 않는다", () => {
     const p = project();
     const tilesetId = Object.keys(p.tilesets)[0]!;
-    const r = tool("store_publish").run(p, { tilesetIds: [tilesetId], title: "숲", summary: "숲 타일", kind: "tileset", aiGenerated: true, license: "없는 라이선스" });
-    expect(r.data).toMatchObject({ kind: "store-publish-proposal", tilesetIds: [tilesetId], license: "OPRN-GAME", aiGenerated: true, targetSlug: null });
+    const r = tool("store_publish").run(p, { tilesetIds: [tilesetId], title: "숲", summary: "숲 타일", kind: "tileset", license: "없는 라이선스" });
+    expect(r.data).toMatchObject({ kind: "store-publish-proposal", tilesetIds: [tilesetId], license: "OPRN-GAME", aiGenerated: true, aiMade: [], targetSlug: null });
     expect(() => tool("store_publish").run(p, { tilesetIds: ["nope"], title: "x", summary: "x", kind: "tileset", aiGenerated: false })).toThrow(/nope/);
     expect(() => tool("store_publish").run(p, { title: "x", summary: "x", kind: "tileset", aiGenerated: false })).toThrow();
     expect(tool("store_publish").mode).toBe("read");
+  });
+
+  it("store_publish 의 「AI 생성」은 조수가 끄지 못하고, AI 가 만든 그림이 들면 잠글 목록을 붙인다", () => {
+    const p = project();
+    p.assets.uploaded.drawn = { id: "drawn", name: "조수 그림", kind: "picture", dataUrl: "data:image/png;base64,AA==", meta: {}, generatedBy: "image-generation" };
+    p.assets.uploaded.mine = { id: "mine", name: "내 그림", kind: "picture", dataUrl: "data:image/png;base64,AA==", meta: {} };
+    expect((tool("store_publish").parameters as { properties: object }).properties).not.toHaveProperty("aiGenerated");
+    const plain = tool("store_publish").run(p, { assetIds: ["mine"], title: "그림", summary: "x", kind: "picture", aiGenerated: false });
+    expect(plain.data).toMatchObject({ aiGenerated: true, aiMade: [] });
+    const made = tool("store_publish").run(p, { assetIds: ["mine", "drawn"], title: "그림", summary: "x", kind: "picture" });
+    expect((made.data as { aiMade: unknown }).aiMade).toEqual([{ id: "drawn", name: "조수 그림", by: "image-generation" }]);
+    expect(made.summary).toContain("AI 생성");
   });
 
   it("store_set_visibility 는 slug 를 검사하고 확인 카드만 낸다", () => {
