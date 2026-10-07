@@ -16,53 +16,73 @@ let open: Promise<ConceptFeedOverlayResult> | null = null;
 
 export function openConceptFeedOverlay(mode: "menu" | "welcome"): Promise<ConceptFeedOverlayResult> {
   if (open) return open;
-  open = new Promise<ConceptFeedOverlayResult>((resolve) => {
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const source = createConceptSource();
-    let settled = false;
-    const finish = (result: ConceptFeedOverlayResult): void => {
-      if (settled) return;
-      settled = true;
-      unregisterModal(feed.element);
-      feed.dispose();
-      feed.element.remove();
+  let failed = false;
+  const pending = new Promise<ConceptFeedOverlayResult>((resolve, reject) => {
+    try {
+      mountOverlay(mode, resolve);
+    } catch (error) {
+      failed = true;
       document.documentElement.classList.remove("cf-overlay-open");
-      open = null;
-      if (result === "closed") opener?.focus();
-      resolve(result);
-    };
-    const made = (slug: string): void => source.made(slug);
-    const handler = mode === "menu"
-      ? menuMakeHandler({ ensureAiConnected, made, reload: () => window.location.reload() })
-      : welcomeMakeHandler({ ensureAiConnected, made });
-    const feed = createConceptFeed({
-      mode: "overlay",
-      source,
-      onMake: async (concept, tweak) => {
-        const started = await handler(concept, tweak);
-        // 메뉴는 곧 새로 읽으므로 창을 그대로 둔다(만드는 중… 표시). 환영은 창을 닫고 생성 전달로 넘어간다.
-        if (started && mode === "welcome") finish("made");
-        else if (started) settled = true;
-        return started;
-      },
-      beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
-      onBlank: mode === "menu" ? () => void createBlankFromMenu().then((ok) => { if (ok) settled = true; }) : () => finish("blank"),
-      onClose: () => finish("closed"),
-    });
-    document.documentElement.classList.add("cf-overlay-open");
-    document.body.append(feed.element);
-    // Escape 층: 상세면 피드로(층을 다시 건다), 피드면 창을 닫는다. 메뉴로 만드는 중(새로 읽기 대기)이면 무시한다.
-    const register = (): void => {
-      registerModal(feed.element, () => {
-        if (settled) return;
-        if (feed.escape()) register();
-        else finish("closed");
-      });
-    };
-    register();
-    feed.element.querySelector<HTMLInputElement>("input[type=search]")?.focus();
+      reject(error);
+    }
   });
-  return open;
+  // 창을 못 띄웠으면 다음 클릭이 같은 실패 약속을 돌려받지 않게 남기지 않는다.
+  open = failed ? null : pending;
+  return pending;
+}
+
+function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOverlayResult) => void): void {
+  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  const source = createConceptSource();
+  let settled = false;
+  let blankBusy = false;
+  const finish = (result: ConceptFeedOverlayResult): void => {
+    if (settled) return;
+    settled = true;
+    unregisterModal(feed.element);
+    feed.dispose();
+    feed.element.remove();
+    document.documentElement.classList.remove("cf-overlay-open");
+    open = null;
+    if (result === "closed") opener?.focus();
+    resolve(result);
+  };
+  const made = (slug: string): void => source.made(slug);
+  const handler = mode === "menu"
+    ? menuMakeHandler({ ensureAiConnected, made, reload: () => window.location.reload() })
+    : welcomeMakeHandler({ ensureAiConnected, made });
+  const feed = createConceptFeed({
+    mode: "overlay",
+    source,
+    onMake: async (concept, tweak) => {
+      const started = await handler(concept, tweak);
+      // 메뉴는 곧 새로 읽으므로 창을 그대로 둔다(만드는 중… 표시). 환영은 창을 닫고 생성 전달로 넘어간다.
+      if (started && mode === "welcome") finish("made");
+      else if (started) settled = true;
+      return started;
+    },
+    beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
+    onBlank: mode === "menu"
+      ? () => {
+        if (blankBusy || feed.busy()) return;
+        blankBusy = true;
+        void createBlankFromMenu().then((ok) => { if (ok) settled = true; }).finally(() => { blankBusy = false; });
+      }
+      : () => { if (!feed.busy()) finish("blank"); },
+    onClose: () => finish("closed"),
+  });
+  document.documentElement.classList.add("cf-overlay-open");
+  document.body.append(feed.element);
+  // Escape 층: 상세면 피드로(층을 다시 건다), 피드면 창을 닫는다. 메뉴로 만드는 중(새로 읽기 대기)이면 무시한다.
+  const register = (): void => {
+    registerModal(feed.element, () => {
+      if (settled) return;
+      if (feed.escape()) register();
+      else finish("closed");
+    });
+  };
+  register();
+  feed.element.querySelector<HTMLInputElement>("input[type=search]")?.focus();
 }
 
 /** 메뉴의 「빈 프로젝트로 시작」 — 장르 없이 새 폴더. 예전 다이얼로그의 빈 프로젝트와 같다. */

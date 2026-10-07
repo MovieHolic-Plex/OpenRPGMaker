@@ -49,7 +49,7 @@ describe("launcher make", () => {
 describe("editor make", () => {
   beforeEach(() => { vi.resetModules(); });
 
-  it("welcome seeds the open project with the preset system and a pending brief", async () => {
+  it("welcome adopts the same full genre seed as the menu, with a pending brief", async () => {
     const { store } = await import("@/project/store");
     const { createBlankProject } = await import("@/project/defaults");
     const blank = createBlankProject();
@@ -57,7 +57,9 @@ describe("editor make", () => {
     const playResolution = store.getCurrent().system.playResolution;
     const { welcomeMakeHandler } = await import("@/editor/conceptMake");
     const made = vi.fn();
-    expect(await welcomeMakeHandler({ ensureAiConnected: async () => true, made })(concept, "")).toBe(true);
+    const adopt = vi.fn(async (project: import("@/project/types").Project) => { store.replaceProject(project, { label: "test" }); });
+    expect(await welcomeMakeHandler({ ensureAiConnected: async () => true, made, adopt })(concept, "")).toBe(true);
+    expect(adopt).toHaveBeenCalledOnce();
     const project = store.getCurrent();
     expect(project.meta.title).toBe(concept.title);
     expect(project.gameDesignBrief?.generationPending).toBe(true);

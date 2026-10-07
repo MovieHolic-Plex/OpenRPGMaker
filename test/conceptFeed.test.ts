@@ -132,6 +132,28 @@ describe("concept feed", () => {
     expect(make.disabled).toBe(false);
   });
 
+  it("a late similar list keeps the typed tweak and the locked make button", async () => {
+    let answer: (value: { concept: GameConcept; similar: GameConcept[] }) => void = () => {};
+    const source = { ...fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), detail: () => new Promise<{ concept: GameConcept; similar: GameConcept[] }>((resolve) => { answer = resolve; }) };
+    const onMake = vi.fn((_concept: GameConcept, _tweak: string) => new Promise<boolean>(() => {}));
+    const { feed, root } = mount({ source, onMake });
+    await flush();
+    q(root, CONCEPT_FEED_TESTIDS.card)!.click();
+    const tweak = q(root, CONCEPT_FEED_TESTIDS.tweak) as HTMLTextAreaElement;
+    tweak.value = "겨울로";
+    const make = q(root, CONCEPT_FEED_TESTIDS.make) as HTMLButtonElement;
+    make.click();
+    answer({ concept: concept(1), similar: [concept(2, { title: "늦게 온 것" })] });
+    await flush();
+    expect(q(root, CONCEPT_FEED_TESTIDS.tweak)).toBe(tweak);
+    expect(tweak.value).toBe("겨울로");
+    expect(q(root, CONCEPT_FEED_TESTIDS.make)).toBe(make);
+    expect(q(root, CONCEPT_FEED_TESTIDS.similar)!.textContent).toContain("늦게 온 것");
+    expect(feed.busy()).toBe(true);
+    expect(feed.escape()).toBe(true);
+    expect(q(root, CONCEPT_FEED_TESTIDS.detail)!.hidden).toBe(false);
+  });
+
   it("escape() goes back from detail first and reports false on the feed", async () => {
     const { feed, root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }) });
     await flush();

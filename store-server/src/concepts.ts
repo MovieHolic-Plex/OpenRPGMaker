@@ -38,7 +38,8 @@ export async function listConcepts(db: Db, query: ConceptQuery): Promise<{ items
   if (query.preset) { args.push(query.preset); where.push(`c.preset_id = $${args.length}`); }
   const q = query.q?.trim().slice(0, 80);
   if (q) { args.push(`%${q.replace(/[\\%_]/g, (ch) => `\\${ch}`)}%`); where.push(`c.body::text ilike $${args.length}`); }
-  const cursor = /^(-?\d+):(\d+)$/.exec(query.cursor ?? "");
+  // 자릿수를 묶는다 — int·bigint 범위를 넘는 숫자는 Postgres 가 500 으로 터진다. 이상한 커서는 첫 쪽으로 본다.
+  const cursor = /^(-?\d{1,9}):(\d{1,18})$/.exec(query.cursor ?? "");
   if (cursor) { args.push(Number(cursor[1]), cursor[2]); where.push(`(c.rank, c.id) > ($${args.length - 1}::int, $${args.length}::bigint)`); }
   const { rows } = await db.query(`${SELECT} where ${where.join(" and ")} order by c.rank, c.id limit ${CONCEPT_PAGE + 1}`, args);
   const page = rows.slice(0, CONCEPT_PAGE);

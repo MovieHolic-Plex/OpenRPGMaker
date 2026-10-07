@@ -159,7 +159,7 @@ export const storeConceptsSchema = z.object({
   tag: z.string().max(40).optional(),
   q: z.string().max(80).optional(),
   preset: z.string().max(40).optional(),
-  cursor: z.string().max(40).regex(/^-?\d+:\d+$/).optional(),
+  cursor: z.string().max(40).regex(/^-?\d{1,9}:\d{1,18}$/).optional(),
   lang: storeLang.optional(),
 }).strict();
 export const storeConceptSlugSchema = z.object({ slug: conceptSlug, lang: storeLang.optional() }).strict();

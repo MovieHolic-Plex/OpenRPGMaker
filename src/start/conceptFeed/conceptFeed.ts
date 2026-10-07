@@ -52,6 +52,8 @@ export type ConceptFeed = {
   readonly element: HTMLElement;
   /** Escape 한 번. 상세면 피드로 돌아가고 true. 피드면 false(닫기는 호출부 몫). 편집기 창은 modalStack 이 이걸 부른다. */
   escape(): boolean;
+  /** 만들기가 진행 중이면 true — 덮는 창은 이동안 닫지 않는다. */
+  busy(): boolean;
   dispose(): void;
 };
 
@@ -116,7 +118,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       ...(options.topActions ?? []),
       ...(options.mode === "overlay" && options.onClose ? [el("button", {
         class: "cf-close", attrs: { type: "button", "aria-label": "닫기" }, text: "✕", dataset: { testid: CONCEPT_FEED_TESTIDS.close },
-        on: { click: () => options.onClose?.() },
+        on: { click: () => { if (!making) options.onClose?.(); } },
       })] : []),
     ] }),
   ] });
@@ -272,6 +274,8 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
 
   // ── 상세 ──────────────────────────────────────────────────────────────
   let detailSeq = 0;
+  /** 만들기 진행 중 — 피드 전체에 하나. 상세를 옮겨 다녀도 두 번째 만들기·닫기를 막는다. */
+  let making = false;
   const showFeed = (): void => {
     detailSeq += 1;
     detail.hidden = true;
@@ -289,7 +293,6 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       dataset: { testid: CONCEPT_FEED_TESTIDS.tweak },
     });
     const make = el("button", { class: "cf-make", attrs: { type: "button" }, text: "▶ 이 게임 만들기", dataset: { testid: CONCEPT_FEED_TESTIDS.make } });
-    let making = false;
     make.addEventListener("click", () => {
       if (making) return;
       making = true;
@@ -331,19 +334,27 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
           tweak,
         ] }),
       ] }),
-      el("aside", { class: "cf-similar", dataset: { testid: CONCEPT_FEED_TESTIDS.similar }, children: [
-        el("h3", { text: "비슷한 컨셉" }),
-        ...similar.map((other) => el("button", {
-          class: "cf-mini", attrs: { type: "button" },
-          on: { click: () => openDetail(other) },
-          children: [thumbImage(other, "card", "cf-mini-img"), el("span", { class: "cf-mini-meta", children: [
-            el("strong", { text: localizedConcept(other, locale).title, attrs: { translate: "no" } }),
-            el("span", { class: "cf-tags", text: other.tags.map((tag) => `#${tag}`).join(" ") }),
-          ] })],
-        })),
-      ] }),
+      similarAside,
     );
+    setSimilar(similar);
   };
+
+  // 비슷한 컨셉은 늦게 온다(스토어 최대 3초). 상세 전체를 다시 그리면 적던 「살짝 바꾸기」와 잠긴 만들기 단추가 새것으로
+  // 바뀌어 두 번 만들 수 있었다 — 늦은 결과는 이 칸만 바꾼다.
+  const similarAside = el("aside", { class: "cf-similar", dataset: { testid: CONCEPT_FEED_TESTIDS.similar } });
+  function setSimilar(similar: readonly GameConcept[]): void {
+    similarAside.replaceChildren(
+      el("h3", { text: "비슷한 컨셉" }),
+      ...similar.map((other) => el("button", {
+        class: "cf-mini", attrs: { type: "button" },
+        on: { click: () => openDetail(other) },
+        children: [thumbImage(other, "card", "cf-mini-img"), el("span", { class: "cf-mini-meta", children: [
+          el("strong", { text: localizedConcept(other, locale).title, attrs: { translate: "no" } }),
+          el("span", { class: "cf-tags", text: other.tags.map((tag) => `#${tag}`).join(" ") }),
+        ] })],
+      })),
+    );
+  }
 
   const enterDetail = (): void => {
     if (!detail.hidden) return;
@@ -359,7 +370,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     setError("");
     renderDetail(concept, []);
     void source.detail(concept).then((result) => {
-      if (mine === detailSeq && !detail.hidden) renderDetail(result.concept, result.similar);
+      if (mine === detailSeq && !detail.hidden) setSimilar(result.similar);
     }, () => undefined);
   }
 
@@ -390,9 +401,9 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       const drafted = await draft(text);
       if (mine !== detailSeq || detail.hidden) return;
       renderDetail(drafted.concept, items.filter((other) => other.presetId === drafted.concept.presetId).slice(0, 6), drafted.thumb);
-      // 피드가 검색어로 걸러져 있으면 위 목록이 비기 쉽다 — 출처의 비슷한 컨셉(태그·장르 틀)으로 채운다. 썸네일 약속은 그대로 넘긴다.
+      // 피드가 검색어로 걸러져 있으면 위 목록이 비기 쉽다 — 출처의 비슷한 컨셉(태그·장르 틀)으로 채운다.
       void source.detail(drafted.concept).then((result) => {
-        if (mine === detailSeq && !detail.hidden && result.similar.length > 0) renderDetail(drafted.concept, result.similar, drafted.thumb);
+        if (mine === detailSeq && !detail.hidden && result.similar.length > 0) setSimilar(result.similar);
       }, () => undefined);
     } catch (error) {
       if (mine !== detailSeq) return;
@@ -401,6 +412,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   }
 
   const escape = (): boolean => {
+    if (making) return true;
     if (detail.hidden) return false;
     showFeed();
     return true;
@@ -418,6 +430,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   return {
     element: root,
     escape,
+    busy: () => making,
     dispose() {
       disposed = true;
       seq += 1;

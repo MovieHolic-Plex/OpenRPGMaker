@@ -1,6 +1,7 @@
 // publish — 사람이 받은 컨셉(판정 해시 == 현재 그림)만 스토어에 올린다.
 // --target staging(기본, 테일스케일 스테이징) | prod(운영, 명시해야 한다) | http://… (임시 로컬 서버).
 // 토큰: OPRN_STORE_TOKEN, 없으면 storeCli 로그인 파일(~/.config/oprn-store/cli.json)의 그 주소 항목. 운영자 계정이어야 한다.
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -41,16 +42,18 @@ export async function publish(argv: string[]): Promise<number> {
     const full = imagePath(concept.slug, "full");
     const card = imagePath(concept.slug, "card");
     const fullSha = sha256File(full);
-    if (done[concept.slug] === fullSha && !argv.includes("--force")) continue;
     const cardSha = sha256File(card);
+    const body: GameConcept = { ...concept, thumb: { full: fullSha, card: cardSha } };
+    // 그림·글·순서 어느 것이 바뀌어도 다시 올린다(전엔 큰 그림 해시만 봐서 글 수정이 조용히 빠졌다).
+    const fingerprint = createHash("sha256").update(JSON.stringify({ body, rank: index })).digest("hex");
+    if (done[concept.slug] === fingerprint && !argv.includes("--force")) continue;
     const { missing } = await api(base, token, "/api/v1/blobs/check", { method: "POST", json: { sha256s: [fullSha, cardSha] } }) as { missing: string[] };
     for (const [sha, path] of [[fullSha, full], [cardSha, card]] as const) {
       if (!missing.includes(sha)) continue;
       await api(base, token, "/api/v1/blobs", { method: "POST", body: readFileSync(path), headers: { "x-sha256": sha, "content-type": "application/octet-stream" } });
     }
-    const body: GameConcept = { ...concept, thumb: { full: fullSha, card: cardSha } };
     await api(base, token, "/api/v1/admin/concepts", { method: "POST", json: { concept: body, rank: index } });
-    done[concept.slug] = fullSha;
+    done[concept.slug] = fingerprint;
     published[base] = done;
     writeJsonAtomic(paths.published, published);
     count += 1;

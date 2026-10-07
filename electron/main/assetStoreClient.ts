@@ -110,7 +110,7 @@ export class AssetStoreClient {
     for (const [key, value] of Object.entries(query)) if (typeof value === "string" && value !== "") params.set(key, value);
     const body = await this.json<{ items?: unknown; nextCursor?: unknown }>(`/api/v1/concepts?${params}`);
     if (!Array.isArray(body.items)) throw new StoreError("스토어가 보낸 컨셉 목록 형식이 올바르지 않습니다.");
-    return { items: body.items.map(conceptFromStore), nextCursor: typeof body.nextCursor === "string" && /^-?\d+:\d+$/.test(body.nextCursor) ? body.nextCursor : null };
+    return { items: body.items.map(conceptFromStore), nextCursor: typeof body.nextCursor === "string" && /^-?\d{1,9}:\d{1,18}$/.test(body.nextCursor) ? body.nextCursor : null };
   }
 
   async concept(input: { slug: string; lang?: string }): Promise<{ concept: GameConcept; similar: GameConcept[] }> {
