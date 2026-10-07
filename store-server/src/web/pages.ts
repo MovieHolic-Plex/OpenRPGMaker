@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import {
-  STORE_ITEM_KINDS, STORE_LICENSES,
+  STORE_FIXED_SHEETS, STORE_ITEM_KINDS, STORE_LICENSES, STORE_TILE_SIZE,
   type StoreItemDetail, type StoreItemKind, type StoreItemStatus, type StoreItemSummary, type StoreLicense,
 } from "../../../src/assetStore/format";
 import type { Auth } from "../auth";
@@ -250,17 +250,29 @@ ${extras.related.length > 0 ? `<section class="block shelf"><div class="block-he
   return layout(view, detail.title, body, { active: detail.kind });
 }
 
+const sheetSize = (kind: "charset" | "battleCharset"): { width: number; height: number } => ({ width: STORE_FIXED_SHEETS[kind]!.width, height: STORE_FIXED_SHEETS[kind]!.height });
+
 export function upload(view: View): string {
   const { t, lang } = view;
   const kinds = STORE_ITEM_KINDS.filter((kind) => kind !== "pack").map((kind) => `<option value="${kind}">${esc(kindLabel(lang, kind))}</option>`).join("");
   const licenses = STORE_LICENSES.map((license, index) => `<label class="radio"><input type="radio" name="license" value="${license}" ${index === 3 ? "checked" : ""}> ${esc(licenseLabel(lang, license))}</label>`).join("");
-  const msgs: Record<string, string> = { choose: t("upChoose"), hashing: t("upHashing"), sending: t("upSending"), creating: t("upCreating"), done: t("upDone"), pending: t("upPending"), view: t("upView") };
+  const msgs: Record<string, string> = { choose: t("upChoose"), hashing: t("upHashing"), sending: t("upSending"), creating: t("upCreating"), done: t("upDone"), pending: t("upPending"), view: t("upView"), badsize: t("upBadSize", "{0}", "{1}"), padded: t("upPadded", "{0}") };
+  // 종류별 규격. 크기 판정은 서버(storeImageSizeProblem)가 하고, 화면은 올리기 전에 같은 규칙으로 먼저 알려 준다.
+  const specs: Record<string, { text: string; width?: number; height?: number; tile?: number }> = {
+    tileset: { text: t("specTileset"), tile: STORE_TILE_SIZE },
+    character: { text: t("specCharacter"), ...sheetSize("charset") },
+    battler: { text: t("specBattler"), ...sheetSize("battleCharset") },
+    face: { text: t("specFace") },
+    picture: { text: t("specPicture") },
+    music: { text: t("specAudio") },
+    sound: { text: t("specAudio") },
+  };
   const body = `<section class="narrow panel"><h1>${t("uploadTitle")}</h1>
 <p class="lead">${t("uploadLead")}</p>
-<form id="upload-form" class="stack" data-testid="upload-form" ${Object.entries(msgs).map(([key, value]) => `data-msg-${key}="${esc(value)}"`).join(" ")}>
+<form id="upload-form" class="stack" data-testid="upload-form" data-specs="${esc(JSON.stringify(specs))}" ${Object.entries(msgs).map(([key, value]) => `data-msg-${key}="${esc(value)}"`).join(" ")}>
 <label>${t("fieldFile")} <input type="file" name="file" accept=".png,.ogg,.mp3,.wav,.m4a" required data-testid="upload-file"></label>
 <label>${t("fieldKind")} <select name="kind" required data-testid="upload-kind">${kinds}</select></label>
-<label class="tile-size">${t("fieldTileSize")} <select name="tileSize"><option value="16">16px</option><option value="32">32px</option><option value="48">48px</option></select></label>
+<p class="field-hint" id="upload-spec" data-testid="upload-spec"></p>
 <label>${t("fieldTitle")} <input name="title" required minlength="2" maxlength="80" data-testid="upload-title"></label>
 <label>${t("fieldSummary")} <input name="summary" maxlength="160"></label>
 <label>${t("fieldDescription")} <textarea name="description" rows="4" maxlength="8000"></textarea></label>

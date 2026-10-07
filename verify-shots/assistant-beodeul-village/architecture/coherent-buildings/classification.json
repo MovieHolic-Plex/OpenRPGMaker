@@ -1,0 +1,47 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=modify space=outdoor target=map_beodeul_rest plan construction=houses:5 tools=read_project_wiki,read_spatial_reference,get_map_region,look_at_houses,refine_beodeul_village,show_map_region,check_reachability 8462ms → 마을 계약 없음(판정)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "read_spatial_reference",
+    "look_at_houses",
+    "refine_beodeul_village",
+    "show_map_region",
+    "check_reachability",
+    "author_beodeul_town",
+    "edit_world_terrain",
+    "tile_erase",
+    "author_house",
+    "author_village",
+    "arrange_tall_grass"
+  ],
+  "intentNote": "[의도] 있는 것을 고치는 요청이다. 대상 맵은 `map_beodeul_rest` 이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 같은 mapId 로 build_hand_interior_room(replace:true).\n[시공 규모] 선언된 수량: 집 5채. 코드가 환산한 권장 맵 크기는 44×28(집 5채 기준)이다. 대상 맵 'map_beodeul_rest' 은 40×30 로 부족하다. resize_map({mapId:\"map_beodeul_rest\", width:44, height:30}) 를 먼저 호출해 키운 뒤 시공하라 — 좌상단 기준 확장이라 기존 타일·이벤트는 그대로고 늘어난 칸만 잔디가 된다. 요청한 수량을 줄여 기존 크기에 우겨넣지 말 것.",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city",
+      "map_beodeul_small_home": "atlas_biome_interior",
+      "map_beodeul_rest": "beodeul_city"
+    },
+    "currentMapId": "map_beodeul_rest"
+  }
+}

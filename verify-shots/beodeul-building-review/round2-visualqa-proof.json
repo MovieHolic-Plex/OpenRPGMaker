@@ -1,0 +1,758 @@
+{
+  "profile": "6667c924011b6c14b37b60913ce8091c6d4099d2d0caf28319380a08e736fa04",
+  "calibrationPassed": true,
+  "calibration": {
+    "rejectedStyle": {
+      "id": "sample-11",
+      "sha": "d231b18832e383d2c1a343348e25f85d018b8e7cf039bf8cd53927c2d12c437f",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 38
+        },
+        {
+          "axis": "wall_grain",
+          "score": 30
+        },
+        {
+          "axis": "palette",
+          "score": 74
+        },
+        {
+          "axis": "light_consistency",
+          "score": 63
+        }
+      ],
+      "issues": [
+        {
+          "code": "ROOF_SPARSE_FLAT_GRID",
+          "x": 48,
+          "y": 38,
+          "reason": "Broad ochre fills contain widely spaced repeated dashes and horizontal bands. They lack the originals' dense individual shingles, rounded highlighted shoulders, and small dark relief pockets."
+        },
+        {
+          "code": "WALL_FINE_GRAIN_MISSING",
+          "x": 65,
+          "y": 79,
+          "reason": "The beige infill is essentially smooth, with broad boxed borders and sills. The original plaster's fine scattered dots and subtle surface variation are absent; the door also has largely flat wood fill."
+        },
+        {
+          "code": "PALETTE_CONTRAST_COMPRESSION",
+          "x": 48,
+          "y": 39,
+          "reason": "Roof recesses and framing remain predominantly middle-value brown and ochre. The reduced dark-to-light separation loses the reference's deep tile shadows and crisp timber contrast."
+        },
+        {
+          "code": "LIGHT_RELIEF_MISMATCH",
+          "x": 48,
+          "y": 51,
+          "reason": "The continuous pale lower roof rim and evenly repeated highlight bars emphasize a flat outlined surface. Plane shading and individual tile highlights do not establish the reference's directional, rounded roof relief."
+        }
+      ],
+      "observations": "The roof reads as a sparse manufactured grid over flat brown fill. Walls and door are smooth boxed shapes with little fine grain. Muted contrast and continuous rim lighting produce a graphic, toy-like rendering that does not fit the originals."
+    },
+    "floatingRoof": {
+      "id": "sample-12",
+      "sha": "3a3363ca91133a914896f2df2daf4f1cb32f635af8b557fc152b1824ac1620ed",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "projection",
+          "score": 97
+        },
+        {
+          "axis": "roof_joints",
+          "score": 20
+        },
+        {
+          "axis": "single_door",
+          "score": 100
+        },
+        {
+          "axis": "wall_consistency",
+          "score": 99
+        },
+        {
+          "axis": "ground_contact",
+          "score": 99
+        },
+        {
+          "axis": "complete_silhouette",
+          "score": 50
+        }
+      ],
+      "issues": [
+        {
+          "code": "FLOATING_ROOF",
+          "x": 56,
+          "y": 72,
+          "reason": "An approximately 16-native-pixel band of background separates the roof underside near y=64 from the wall top near y=80 across the building. No wall or support bridges it, leaving the roof detached and the building silhouette disconnected."
+        }
+      ],
+      "observations": "The roof retains granular orange shingles and small curved highlights, while the separate facade retains fine plaster dots, timber braces, and one grounded door. The visible background gap beneath the entire roof is a material assembly defect."
+    },
+    "duplicateDoor": {
+      "id": "sample-13",
+      "sha": "685845c25d5add926509871eb970c9734a1fd835fb7c2062df36531c74346e74",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "projection",
+          "score": 96
+        },
+        {
+          "axis": "roof_joints",
+          "score": 95
+        },
+        {
+          "axis": "single_door",
+          "score": 40
+        },
+        {
+          "axis": "wall_consistency",
+          "score": 99
+        },
+        {
+          "axis": "ground_contact",
+          "score": 98
+        },
+        {
+          "axis": "complete_silhouette",
+          "score": 99
+        }
+      ],
+      "issues": [
+        {
+          "code": "MULTIPLE_DOOR_OPENINGS",
+          "x": 73,
+          "y": 81,
+          "reason": "The recessed right wing contains a second full-height brown planked door with a visible handle. The projecting left wing already has a separate handled door near (24,113), so two door openings are visibly present."
+        }
+      ],
+      "observations": "The joined projecting gable and rear roof retain dense orange shingles and directional highlights; finely dotted plaster and timber remain coherent. Both roof and stepped outline are attached, but two distinct wooden door openings appear at different facade depths."
+    }
+  },
+  "results": [
+    {
+      "id": "r2-building-01",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-01",
+        "sha": "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 99
+          },
+          {
+            "axis": "wall_grain",
+            "score": 99
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 99
+          }
+        ],
+        "issues": [],
+        "observations": "The rectangular roof retains the brick original's dense orange and violet tile relief, small bright shoulders, and dark recesses. Plaster has fine individual speckles; timber edges, eave shadows, and window contrast remain compatible with the originals."
+      },
+      "structure": {
+        "id": "r2-building-01",
+        "sha": "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 98
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The broad visible roof plane has dense orange shingles with small curved highlights, compatible with the original rectangular roofs. Fine plaster dots and timber braces form a coherent facade. One handled door reaches the base; the eave meets the wall continuously and the outline is intact."
+      }
+    },
+    {
+      "id": "r2-building-02",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-02",
+        "sha": "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 98
+          },
+          {
+            "axis": "wall_grain",
+            "score": 98
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The steep roof preserves small rounded tile highlights, a brighter gold left plane, and darker orange-violet right shingles. The plaster gable and both wall levels retain fine dot grain, narrow framing, and consistent shadows beneath horizontal beams."
+      },
+      "structure": {
+        "id": "r2-building-02",
+        "sha": "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 97
+          },
+          {
+            "axis": "roof_joints",
+            "score": 98
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The tall gabled building shows distinct light and dark tiled roof planes, dense shingle relief, and finely dotted plaster with continuous timber framing. The upper blue window and small attic window are visibly windows. There is one ground-level door, attached roofing, and a complete base and silhouette."
+      }
+    },
+    {
+      "id": "r2-building-03",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-03",
+        "sha": "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 97
+          },
+          {
+            "axis": "wall_grain",
+            "score": 99
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 97
+          }
+        ],
+        "issues": [],
+        "observations": "Both roof sections carry dense, small orange-violet shingles rather than broad flat fills. The projecting roof's gold facet and shaded tiles remain compatible with the main roof. Plaster speckles and timber outlines maintain the reference's native detail scale across both wings."
+      },
+      "structure": {
+        "id": "r2-building-03",
+        "sha": "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 96
+          },
+          {
+            "axis": "roof_joints",
+            "score": 95
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 98
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 99
+          }
+        ],
+        "issues": [],
+        "observations": "A projecting left gable joins the broader rear roof, with a continuous visible intersection and no background crack. Dense orange tiles retain plane-dependent highlights; dotted plaster and timber remain coherent across both wings. The recessed facade and forward entrance have consistent depth offsets, with one door and an intact stepped footprint."
+      }
+    },
+    {
+      "id": "r2-building-04",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-04",
+        "sha": "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 98
+          },
+          {
+            "axis": "wall_grain",
+            "score": 99
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The wider hip roof retains granular tile relief, bright small tile shoulders, and darker side-plane shading. Both facade levels preserve fine cream plaster dots, original-scale timber strokes, and dark teal windows. The repeated facade bays retain detailed surface texture."
+      },
+      "structure": {
+        "id": "r2-building-04",
+        "sha": "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 98
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The wide two-story facade supports a continuous hipped roof with granular orange shingles and a brighter left facet. Fine plaster grain and timber braces remain consistent across both floors. Multiple blue windows are distinct from the single lower handled door; roof attachment, foundation, and outer edges are complete."
+      }
+    },
+    {
+      "id": "r2-building-05",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-05",
+        "sha": "f0658ae5f4ecab3608ee4983ae73fc9dfd9def33ff41d67806ae184cb4b09b98",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 98
+          },
+          {
+            "axis": "wall_grain",
+            "score": 98
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The roof has dense orange-violet shingles with gold highlights on the left facet. The facade uses small pink-gray stones, irregular dark mortar, and fine internal color variation comparable to the stone original. Door, window, and eave contrast fit that material treatment."
+      },
+      "structure": {
+        "id": "r2-building-05",
+        "sha": "f0658ae5f4ecab3608ee4983ae73fc9dfd9def33ff41d67806ae184cb4b09b98",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 98
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The compact stone house has a visible hipped roof plane with dense orange tile relief and directional highlights. Irregular masonry outlines and small stone flecks cover the facade consistently. One blue window and one grounded wooden door are visible, with continuous eaves and no cut silhouette."
+      }
+    },
+    {
+      "id": "r2-building-06",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-06",
+        "sha": "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 99
+          },
+          {
+            "axis": "wall_grain",
+            "score": 96
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The roof preserves the original dense tile grain and highlight rhythm. Surrounding plaster retains fine speckles and narrow timber edges. The broad wooden opening has visible plank streaks, stepped brace highlights, and dark joints at a compatible pixel scale."
+      },
+      "structure": {
+        "id": "r2-building-06",
+        "sha": "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 98
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 99
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "Dense highlighted orange shingles sit directly above finely dotted plaster and timber bays. The broad central planked entrance has paired braced leaves within one continuous opening. It reaches the base, its jambs connect to the surrounding wall, and the roof and building outline remain attached and complete."
+      }
+    },
+    {
+      "id": "r2-building-07",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-07",
+        "sha": "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 98
+          },
+          {
+            "axis": "wall_grain",
+            "score": 98
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The gabled roof retains closely spaced rounded gold tile highlights and darker granular shingles on the opposite plane. Fine plaster speckles continue through the triangular gable and lower panels. Timber widths, window darkness, and roof-to-wall shading match the established rendering."
+      },
+      "structure": {
+        "id": "r2-building-07",
+        "sha": "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 98
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The gabled cottage exposes two densely tiled roof facets, with brighter rounded highlights on the left. Fine plaster dots continue through the triangular gable and framed lower facade. The attic opening and blue facade window read as windows; one handled door reaches the continuous base."
+      }
+    },
+    {
+      "id": "r2-building-08",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-08",
+        "sha": "360ea659cb47f719b6ed89a67d72eeffe435c616123209c2babd0a7a4f94bebf",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 98
+          },
+          {
+            "axis": "wall_grain",
+            "score": 98
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 98
+          }
+        ],
+        "issues": [],
+        "observations": "The roof preserves fine orange-violet shingles and the gold-lit left plane. The gable and both stone wall levels retain dense small masonry, irregular mortar lines, and mottled pink-gray interiors. Horizontal shadow bands and the cool oculus remain compatible with the stone reference."
+      },
+      "structure": {
+        "id": "r2-building-08",
+        "sha": "360ea659cb47f719b6ed89a67d72eeffe435c616123209c2babd0a7a4f94bebf",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 97
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The tall stone building has connected gabled roof facets with granular orange shingles and directional highlights. Fine mottled masonry continues across the gable and both wall stories, separated by continuous ledges. The round attic window is distinct from the sole lower wooden door; all exterior edges and ground contact are intact."
+      }
+    },
+    {
+      "id": "r2-building-09",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-09",
+        "sha": "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 100
+          },
+          {
+            "axis": "wall_grain",
+            "score": 100
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The church preserves the reference sheet's fine blue roofing: small shaded spire tiles, bright upper roof courses, and granular lower shingles. Dense pink-gray masonry, dark narrow windows, thin trim, and directional roof highlights show no material texture or lighting violation."
+      },
+      "structure": {
+        "id": "r2-building-09",
+        "sha": "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 99
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The church retains dense blue shingle highlights, fine mottled stonework, and connected spire, tower, main roof, and triangular roof feature. The golden bell recess and narrow blue windows are distinct from the single ground-level wooden door. Its larger footprint remains structurally coherent, grounded, and fully outlined."
+      }
+    },
+    {
+      "id": "r2-building-10",
+      "passed": true,
+      "texture": {
+        "id": "r2-building-10",
+        "sha": "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "roof_grain",
+            "score": 100
+          },
+          {
+            "axis": "wall_grain",
+            "score": 100
+          },
+          {
+            "axis": "palette",
+            "score": 100
+          },
+          {
+            "axis": "light_consistency",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The stone building preserves the reference sheet's small rounded roof highlights, dense shaded shingles, mottled stone gable, and finely grouted facade. The cool circular window, wood grain, outline scale, and left-lit roof treatment remain intact."
+      },
+      "structure": {
+        "id": "r2-building-10",
+        "sha": "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816",
+        "verdict": "PASS",
+        "scores": [
+          {
+            "axis": "projection",
+            "score": 99
+          },
+          {
+            "axis": "roof_joints",
+            "score": 99
+          },
+          {
+            "axis": "single_door",
+            "score": 100
+          },
+          {
+            "axis": "wall_consistency",
+            "score": 99
+          },
+          {
+            "axis": "ground_contact",
+            "score": 99
+          },
+          {
+            "axis": "complete_silhouette",
+            "score": 100
+          }
+        ],
+        "issues": [],
+        "observations": "The narrow stone cottage has joined gabled roof planes with dense orange shingles and brighter left-plane highlights. Fine masonry grain continues through the triangular front and lower wall. A round attic window sits above one grounded wooden door; roof attachment and the complete silhouette are visibly intact."
+      }
+    }
+  ]
+}

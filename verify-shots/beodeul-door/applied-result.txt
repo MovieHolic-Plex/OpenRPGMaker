@@ -1,0 +1,90 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "revision": 4,
+  "sha256": "3624eb288dbc1ff938c9c35e3674c71bb45b2e6fb8c91cc5b52d2b10a7e489fd",
+  "reloadedMapsEqual": true,
+  "repeatAppliedWithoutDuplication": true,
+  "result": {
+    "ok": true,
+    "summary": "공용 문 8단계 적용: 빈 맵 (10,5) · 입장 열림 · 귀환 닫힘",
+    "diff": {
+      "tilesChanged": 0,
+      "mapPropertiesChanged": 0,
+      "audioDescriptionsChanged": 0,
+      "monsterMetadataChanged": 0,
+      "eventsAdded": 2,
+      "eventsModified": 2,
+      "eventsRemoved": 0,
+      "mapsAdded": 0,
+      "mapsRemoved": 0,
+      "dbRecordsChanged": 0,
+      "tilesetsChanged": 0,
+      "switchesAdded": 2,
+      "variablesAdded": 0,
+      "worldEntitiesAdded": 0,
+      "worldEntitiesModified": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "endingsChanged": 0,
+      "sessionChanged": false,
+      "systemChanged": false,
+      "warnings": []
+    },
+    "data": {
+      "mapId": "map_blank_start",
+      "eventId": "ev_gate_bae695ea-4cbc-4aea-a7e3-de95642a529a",
+      "returnEventId": "ev_gate_c390a39c-aefa-4f41-8482-77351be64531",
+      "door": {
+        "x": 10,
+        "y": 5,
+        "width": 1,
+        "height": 2
+      },
+      "frameMs": 100,
+      "slotsAdded": 0,
+      "states": [
+        {
+          "stage": 0,
+          "top": 27648,
+          "bottom": 27656
+        },
+        {
+          "stage": 1,
+          "top": 27649,
+          "bottom": 27657
+        },
+        {
+          "stage": 2,
+          "top": 27650,
+          "bottom": 27658
+        },
+        {
+          "stage": 3,
+          "top": 27651,
+          "bottom": 27659
+        },
+        {
+          "stage": 4,
+          "top": 27652,
+          "bottom": 27660
+        },
+        {
+          "stage": 5,
+          "top": 27653,
+          "bottom": 27661
+        },
+        {
+          "stage": 6,
+          "top": 27654,
+          "bottom": 27662
+        },
+        {
+          "stage": 7,
+          "top": 27655,
+          "bottom": 27663
+        }
+      ]
+    }
+  }
+}

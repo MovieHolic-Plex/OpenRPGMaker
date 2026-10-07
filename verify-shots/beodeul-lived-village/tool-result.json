@@ -1,0 +1,84 @@
+{
+  "summary": "원본 집을 유지하고 큰길·우물/교회 광장, 흙 샛길·집 앞 마당·텃밭·빨래 마당과 나무 곁 군락으로 작은 마을을 정리했습니다.",
+  "data": {
+    "mapId": "map_beodeul_rest",
+    "removedRoadCells": 176,
+    "soilCells": 137,
+    "stoneCells": 152,
+    "meadowCells": 242,
+    "clearedDecor": 67,
+    "clusterCells": 15,
+    "vegetableBedCells": 6,
+    "additions": [
+      {
+        "kit": "bd-tree-37f48b",
+        "x": 19,
+        "y": 28
+      },
+      {
+        "kit": "bd-tree-37f48b",
+        "x": 39,
+        "y": 8
+      },
+      {
+        "kit": "bd-tree-f4f319",
+        "x": 41,
+        "y": 26
+      },
+      {
+        "kit": "bd-tree-37f48b",
+        "x": 48,
+        "y": 26
+      },
+      {
+        "kit": "bd-tree-f4f319",
+        "x": 51,
+        "y": 27
+      },
+      {
+        "kit": "bd-out-fence-run",
+        "x": 6,
+        "y": 29
+      },
+      {
+        "kit": "bd-prop-laundry_rack",
+        "x": 22,
+        "y": 11
+      }
+    ],
+    "fronts": [
+      {
+        "kit": "bd-house-village-cream",
+        "x": 6,
+        "y": 9
+      },
+      {
+        "kit": "bd-house-village-brick",
+        "x": 19,
+        "y": 10
+      },
+      {
+        "kit": "bd-house-village-stone",
+        "x": 32,
+        "y": 11
+      },
+      {
+        "kit": "bd-house-village-sage",
+        "x": 6,
+        "y": 26
+      },
+      {
+        "kit": "bd-house-village-ochre",
+        "x": 30,
+        "y": 26
+      },
+      {
+        "kit": "bd-house-village-church",
+        "x": 48,
+        "y": 16
+      }
+    ],
+    "housePositionsPreserved": true,
+    "doorsReachable": true
+  }
+}

@@ -1,0 +1,322 @@
+[
+  {
+    "id": "r8-building-01",
+    "name": "박공 앞면 이층집",
+    "role": "주택",
+    "width": 64,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-01",
+        "rect": [
+          0,
+          0,
+          64,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "박공 앞면 이층집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "박공 앞면 이층집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-01": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f"
+    }
+  },
+  {
+    "id": "r8-building-02",
+    "name": "금빛 기와 사각 지붕집",
+    "role": "주택",
+    "width": 128,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-02",
+        "rect": [
+          0,
+          0,
+          128,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "금빛 기와 사각 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "금빛 기와 사각 지붕집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-02": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f"
+    }
+  },
+  {
+    "id": "r8-building-03",
+    "name": "좁고 높은 청회색 삼층집",
+    "role": "주택",
+    "width": 80,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-03",
+        "rect": [
+          0,
+          0,
+          80,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "좁고 높은 청회색 삼층집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "좁고 높은 청회색 삼층집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-03": "ab259e0900fb30da9d22046ff017be82ba5c6686049013fb8bce0e9c0113d7e5"
+    }
+  },
+  {
+    "id": "r8-building-04",
+    "name": "높이가 다른 연립 두 채",
+    "role": "주택",
+    "width": 144,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-04",
+        "rect": [
+          0,
+          0,
+          144,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높이가 다른 연립 두 채 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "높이가 다른 연립 두 채",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-04": "f0eb854cee2fd757f3f483356f8adcebee9da4d63bfacbf2db2b2685de27479c"
+    }
+  },
+  {
+    "id": "r8-building-05",
+    "name": "청회색 본채와 낮은 곁채",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-05",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "청회색 본채와 낮은 곁채 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "청회색 본채와 낮은 곁채",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-05": "94e01cbc061df7baaf925cde37f72a442cb0a73bf868fc8dac55e6563b0a3e3a"
+    }
+  },
+  {
+    "id": "r8-building-06",
+    "name": "돌 기단 위 박공집",
+    "role": "주택",
+    "width": 64,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-06",
+        "rect": [
+          0,
+          0,
+          64,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "돌 기단 위 박공집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "돌 기단 위 박공집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-06": "d0d77315a26af5dc78cb858cd06931a733a6b6747c71d52f414596db2b511beb"
+    }
+  },
+  {
+    "id": "r8-building-07",
+    "name": "돌 기단 올리브 지붕집",
+    "role": "주택",
+    "width": 96,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-07",
+        "rect": [
+          0,
+          0,
+          96,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "돌 기단 올리브 지붕집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "돌 기단 올리브 지붕집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-07": "5c02c0834fccd4108bd047b08a375434bde3c2627262b11da583a18ab67d83e7"
+    }
+  },
+  {
+    "id": "r8-building-08",
+    "name": "왼쪽 곁채가 붙은 집",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r8-building-08",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "왼쪽 곁채가 붙은 집 · 지붕 하나가 분명히 읽히는 단순한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-8",
+    "silhouette": "왼쪽 곁채가 붙은 집",
+    "round": 8,
+    "nativeAssetHashes": {
+      "review-r8-building-08": "e1f8046f10d5be8259522e844211a5dc79e1c36e961c5cd52b14adaa4b8442fd"
+    }
+  }
+]

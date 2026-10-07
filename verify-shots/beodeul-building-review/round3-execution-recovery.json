@@ -1,0 +1,13 @@
+{
+  "singleStructureRunTimedOutSeconds": 600,
+  "initialBatchSize": 10,
+  "finalBatchSize": 5,
+  "finalModelTimeoutSeconds": 1200,
+  "qualityThresholdsUnchanged": true,
+  "blindControlsRepeatedPerBatch": true,
+  "allBatchesMustCalibrate": true,
+  "signedCompletedModelResultsResumeOnExactInputs": true,
+  "unsignedHistoricalResultsNotReused": true,
+  "batchReportsAndLogsReceiptBound": true,
+  "humanDecisionsPreserved": true
+}

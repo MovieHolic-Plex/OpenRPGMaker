@@ -1,0 +1,32 @@
+[
+  {
+    "concept": "cream",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 2789
+  },
+  {
+    "concept": "brick",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 4185
+  },
+  {
+    "concept": "stone",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 1909
+  },
+  {
+    "concept": "sage",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 5429
+  },
+  {
+    "concept": "ochre",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 3860
+  },
+  {
+    "concept": "church",
+    "roofOnlyChanged": true,
+    "changedVisiblePixels": 8978
+  }
+]

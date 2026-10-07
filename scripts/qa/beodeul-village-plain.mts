@@ -95,7 +95,7 @@ fs.writeFileSync(`${OUT}/classification.json`, JSON.stringify({ intent: (classif
 const request = buildPiRunRequest({
   team: false, planOnly: plan.planOnly, readOnly, applyMode, villageContract: plan.villageContract,
   brain, deep: modelForRole(config, "deep"), writer: modelForRole(config, "writer"), modelTask, executionTask: modelTask,
-  mapIds: command.mapIds, ...here, project, scopedByUser: false, mapBundleMerge: false, maxTurns: Math.max(plan.maxTurns ?? 0, 100),
+  mapIds: command.mapIds, ...here, project, scopedByUser: false, mapBundleMerge: false, maxTurns: Number(arg("max-turns", String(Math.max(plan.maxTurns ?? 0, 100)))),
   ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
 });
 const trace: { i: number; name: string; ok: boolean; summary: string; args: string }[] = [];
@@ -104,15 +104,17 @@ const started = Date.now();
 const done = await runPiAgent(request, {
   model: model as never, apiKey, ...(readOnly ? { readOnlyTools: true } : {}),
   renderToolImage: async (p: Project, _n: string, data: unknown) => renderToolRegionPngBase64(p, data),
-  onToolCall: (r) => { trace.push({ i: trace.length + 1, name: r.name, ok: r.result.ok, summary: String(r.result.summary ?? "").slice(0, 400), args: JSON.stringify(r.args).slice(0, 600) }); },
+  onToolCall: (r) => { trace.push({ i: trace.length + 1, name: r.name, ok: r.result.ok, summary: String(r.result.summary ?? "").slice(0, 400), args: JSON.stringify(r.args).slice(0, 600) }); fs.writeFileSync(`${OUT}/trace.json`, JSON.stringify(trace, null, 1)); },
   onEvent: (e) => {
     const line = e.type === "tool_end" ? `${e.ok ? "OK  " : "FAIL"} ${e.name} — ${String(e.summary).slice(0, 200)}`
       : e.type === "assistant" ? `assistant: ${e.text.replace(/\n/g, " ").slice(0, 400)}` : e.type === "error" ? `ERROR ${e.message.slice(0, 300)}` : "";
-    if (line) { log.push(line); console.log(`[${label}] ${line}`); }
+    if (line) { log.push(line); fs.writeFileSync(`${OUT}/log.txt`, log.join("\n") + "\n"); console.log(`[${label}] ${line}`); }
   },
 });
 const ms = Date.now() - started;
 const result = done.project as Project;
+// Keep the actual model-authored draft if canonical schema validation rejects a save.
+fs.writeFileSync(`${OUT}/draft-project.json`,JSON.stringify(result));
 // 저장 → 다시 읽기(같은 저장소)
 store = await openLocalProjectStore({ projectDir });
 let reloaded: Project;

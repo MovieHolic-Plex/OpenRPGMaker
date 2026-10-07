@@ -7,6 +7,19 @@ import { referenceOwner } from "@/project/tilesetReferences";
 import type { ToolContext } from "@/editor/tools/types";
 
 describe("read_tileset_reference unknown ids", () => {
+  it("accepts a zero image offset and rejects pagination into an image", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const entry = Object.values(ctx.project.tilesets)
+      .map(tileset => ({ tileset, group: referenceOwner(ctx.project, tileset).referenceDocuments?.find(g => g.images.length > 0) }))
+      .find(candidate => candidate.group)!;
+    const args = { tilesetId: entry.tileset.id, categoryId: entry.group!.id, imageId: entry.group!.images[0]!.id };
+    const omitted = runTool(ctx, "read_tileset_reference", args);
+    const zero = runTool(ctx, "read_tileset_reference", { ...args, offset: 0 });
+    expect(omitted.ok).toBe(true);
+    expect(zero).toEqual(omitted);
+    expect(runTool(ctx, "read_tileset_reference", { ...args, offset: 1 }).ok).toBe(false);
+  });
+
   it("lists valid document ids when the documentId is unknown", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const withDocs = Object.values(ctx.project.tilesets)

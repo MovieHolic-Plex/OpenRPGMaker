@@ -16,6 +16,8 @@ import { cloneTerrainDesign, remapTerrainDesign } from "./terrainDesign";
  * - `compactMapLayers` 호출 — 붙여넣기·영역 지우기(editor/mapClipboard), 조수 쓰기 도구(paint_tiles·fill_region·tile_erase·
  *   clear_region·clear_map·mirror_region·copy_map_region·stamp_layer_block·paint_shadow), 그리고 모든 쓰기 도구 끝의
  *   toolRunner.runToolDefinition(공유 헬퍼 mapHelpers.setLower 가 2·4층·그림자를 비우므로)
+ * - 버들항 공동마당 재배치(composeBeodeulCourtyard)도 크기 보정 후 전체 층 초기화와 compactMapLayers를 수행한다.
+ * - 버들항 식생/울타리 보정(refineBeodeulVegetation)은 기존 나무/그늘을 비운 뒤 compactMapLayers를 수행한다.
  * 새로 칸을 지우는 변형기(지우개·조수 도구 등)를 만들면 끝에서 `compactMapLayers` 를 부르고 이 목록에 더한다.
  * 크기를 바꾸거나 잘라내는 코드는 1층·3층을 새로 만들기 전에 반드시 `cropExtraLayers`/`remapExtraLayers` 를 부른다.
  */

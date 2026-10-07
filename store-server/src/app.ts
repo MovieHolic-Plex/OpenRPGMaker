@@ -170,7 +170,7 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const input: SingleInput = {
       blob: String(body.blob ?? ""), title: String(body.title ?? ""), summary: String(body.summary ?? ""), description: String(body.description ?? ""),
       kind: String(body.kind ?? ""), license: String(body.license ?? ""), aiGenerated: body.aiGenerated === true, credits: String(body.credits ?? ""),
-      tags: Array.isArray(body.tags) ? body.tags.map(String) : [], tileSize: Number(body.tileSize ?? 0), fileName: String(body.fileName ?? ""),
+      tags: Array.isArray(body.tags) ? body.tags.map(String) : [], fileName: String(body.fileName ?? ""),
     };
     if (typeof body.aiGenerated !== "boolean") throw new HttpError(400, "AI 생성 여부를 골라 주세요.", "ai_required");
     if (!isSha256(input.blob)) throw new HttpError(400, "파일을 먼저 올려야 합니다.", "missing_blob");

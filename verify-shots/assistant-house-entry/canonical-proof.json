@@ -1,0 +1,115 @@
+{
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "revision": 1,
+  "sha256": "ae47b01f490596b37862d480e23cc7fcfa5c1c549b92a0f3a59135230f331c2d",
+  "reopenedIdentically": true,
+  "start": {
+    "mapId": "map_blank_start",
+    "x": 10,
+    "y": 10
+  },
+  "enter": {
+    "from": {
+      "mapId": "map_blank_start",
+      "x": 10,
+      "y": 7
+    },
+    "to": {
+      "mapId": "map_beodeul_small_home",
+      "x": 4,
+      "y": 7
+    },
+    "eventId": "ev_gate_bae695ea-4cbc-4aea-a7e3-de95642a529a"
+  },
+  "exit": {
+    "from": {
+      "mapId": "map_beodeul_small_home",
+      "x": 4,
+      "y": 8
+    },
+    "to": {
+      "mapId": "map_blank_start",
+      "x": 10,
+      "y": 8
+    },
+    "eventId": "ev_gate_c390a39c-aefa-4f41-8482-77351be64531"
+  },
+  "entryWalk": [
+    {
+      "kind": "move",
+      "dir": "up"
+    },
+    {
+      "kind": "move",
+      "dir": "up"
+    },
+    {
+      "kind": "move",
+      "dir": "up"
+    }
+  ],
+  "roam": {
+    "to": {
+      "mapId": "map_beodeul_small_home",
+      "x": 4,
+      "y": 3
+    },
+    "moves": [
+      {
+        "kind": "move",
+        "dir": "up"
+      },
+      {
+        "kind": "move",
+        "dir": "up"
+      },
+      {
+        "kind": "move",
+        "dir": "right"
+      },
+      {
+        "kind": "move",
+        "dir": "up"
+      },
+      {
+        "kind": "move",
+        "dir": "up"
+      },
+      {
+        "kind": "move",
+        "dir": "left"
+      }
+    ]
+  },
+  "exitWalk": [
+    {
+      "kind": "move",
+      "dir": "right"
+    },
+    {
+      "kind": "move",
+      "dir": "down"
+    },
+    {
+      "kind": "move",
+      "dir": "down"
+    },
+    {
+      "kind": "move",
+      "dir": "left"
+    },
+    {
+      "kind": "move",
+      "dir": "down"
+    },
+    {
+      "kind": "move",
+      "dir": "down"
+    },
+    {
+      "kind": "move",
+      "dir": "down"
+    }
+  ]
+}

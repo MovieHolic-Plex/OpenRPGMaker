@@ -50,6 +50,7 @@ export function formatBeodeulTownNote(target: BeodeulTownTarget, targetMap: { id
     "[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. "
       + "author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — "
       + "paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.",
+    "소규모 3~5채를 요청하면 author_beodeul_town({houseCount:요청한수,name,seed})을 사용한다. 서로 다른 실루엣의 집·굽은 길·우물 마당을 갖춘 40×30 잔디 마을이며 기후 theme은 생략한다. 색만 다른 같은 집을 반복하지 않는다.",
     where,
     "theme 은 말에서 고른다: 강·물레방아·시골 마을 = river(기본), 항구·포구·어촌·바닷가 = coast, 사막·오아시스 = desert, 눈·설원·겨울 = snow, 늪·습지 = swamp. "
       + "「도시·로마풍·블록」을 말할 때만 city(블록 격자 도시, 기본 60×60, 항구 호수는 harbour:true·가로 83 이상). 마을 크기는 생략하면 56×44 안팎(36×30~96×80). "

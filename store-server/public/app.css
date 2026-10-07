@@ -268,6 +268,7 @@ fieldset { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 1
 legend { padding: 0 6px; font-size: 14px; font-weight: 600; color: var(--text-2); }
 label.radio, label.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; }
 label.radio input, label.check input { margin-top: 4px; accent-color: var(--gold); }
+.field-hint { margin: -6px 0 0; color: var(--text-2); font-size: 14px; }
 .upload-status { margin: 0; min-height: 1.6em; white-space: pre-wrap; color: var(--text-2); }
 .upload-status.error { color: var(--red); }
 .upload-status.ok { color: var(--teal); }

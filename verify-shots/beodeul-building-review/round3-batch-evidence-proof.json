@@ -1,0 +1,8 @@
+{
+  "actualGatedCandidate": "r2-building-01",
+  "validCopiedReceiptAccepted": true,
+  "batchReportTamperBlocked": true,
+  "batchLogTamperBlocked": true,
+  "restoredEvidenceAccepted": true,
+  "allWritesIsolated": true
+}

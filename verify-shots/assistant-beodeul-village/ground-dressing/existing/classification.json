@@ -1,0 +1,45 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": true,
+    "routingAudit": "intent:llm mode=modify space=outdoor target=map_blank_start single tools=get_map_region,dress_beodeul_ground,place_props,paint_tiles,show_map_region 10460ms → 마을 계약 없음(판정)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "dress_beodeul_ground",
+    "place_props",
+    "paint_tiles",
+    "show_map_region",
+    "tile_erase",
+    "author_village",
+    "edit_world_terrain",
+    "build_hand_interior_room",
+    "author_beodeul_town",
+    "author_house"
+  ],
+  "intentNote": "[의도] 있는 것을 고치는 요청이다. 대상 맵은 `map_blank_start` 이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 같은 mapId 로 build_hand_interior_room(replace:true).",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city",
+      "map_beodeul_small_home": "atlas_biome_interior"
+    },
+    "currentMapId": "map_blank_start"
+  }
+}

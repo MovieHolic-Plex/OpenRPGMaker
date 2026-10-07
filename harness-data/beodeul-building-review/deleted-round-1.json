@@ -1,0 +1,45 @@
+{
+  "reason": "2026-10-05 사용자: 지붕/벽 질감이 원본과 너무 다름. 10개 모두 삭제 후 재제작.",
+  "removed": [
+    {
+      "id": "building-01",
+      "sha": "d231b18832e383d2c1a343348e25f85d018b8e7cf039bf8cd53927c2d12c437f"
+    },
+    {
+      "id": "building-02",
+      "sha": "fdcc9257b9c823fe49562afd96e902c88158b09b78b0674efa508def23ff6c71"
+    },
+    {
+      "id": "building-03",
+      "sha": "89f211347702c17d0def98b9c8f7d69079ad1d71d359e479d77929054ae84991"
+    },
+    {
+      "id": "building-04",
+      "sha": "d4581554e8eda93a044406261c38740a7c364972f5b018cc70fbfb2c24cf5646"
+    },
+    {
+      "id": "building-05",
+      "sha": "dfd02b11d9e98110c12b0c404775fa60665e3f2e1c7d367cb80a030e783a7bb3"
+    },
+    {
+      "id": "building-06",
+      "sha": "45627eacc3c7738fbb8afc9ba1962da2f0e0f9965fb2cff4bc006e2e534495ee"
+    },
+    {
+      "id": "building-07",
+      "sha": "f9197b0386c2a47cf76ac647cb32651a821a8435a1e0ad05641c96df3b251997"
+    },
+    {
+      "id": "building-08",
+      "sha": "e2eb35737d9543b68dc5faef93745e2efc19bf32626b04466c8d676b4791f445"
+    },
+    {
+      "id": "building-09",
+      "sha": "79f9a76f35ab126d09cb68956ef0b71de6ec6c5232e21eed13db0bea1097d418"
+    },
+    {
+      "id": "building-10",
+      "sha": "862f09416cb8c2043d5aa9363601b72952e60b6f2a1d6263641f2afd32da6d04"
+    }
+  ]
+}

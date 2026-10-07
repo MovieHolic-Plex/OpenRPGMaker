@@ -1,0 +1,7 @@
+{
+  "freshDefaultsHave32FacilityKits": true,
+  "existingProjectHas32FacilityKits": true,
+  "commonReferencesMatch": true,
+  "idempotent": true,
+  "oldTilePassageAndPriorityPreserved": true
+}

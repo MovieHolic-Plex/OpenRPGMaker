@@ -1,0 +1,49 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=modify space=outdoor plan construction=small/houses:5/name:버들쉼터 tools=get_map_region,paint_tiles,create_map,author_beodeul_town,paint_road,dress_beodeul_ground,set_start_position,check_town_map 15706ms → 마을 계약 없음(버들항 마을)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "paint_tiles",
+    "author_beodeul_town",
+    "paint_road",
+    "dress_beodeul_ground",
+    "set_start_position",
+    "check_town_map",
+    "check_city_form",
+    "check_reachability",
+    "author_village",
+    "edit_world_terrain",
+    "tile_erase",
+    "author_house",
+    "build_hand_interior_room",
+    "arrange_tall_grass"
+  ],
+  "intentNote": "[의도] 있는 것을 고치는 요청이다. 대상은 지금 열린 맵의 기존 산출물이다. get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. create_map·duplicate_map·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 같은 mapId 로 build_hand_interior_room(replace:true).\n[시공 규모] 선언된 수량: 테마 버들항 작은 잔디 마을 · 규모 small · 집 5채. 코드가 환산한 권장 맵 크기는 44×28(집 5채 기준)이다. 대상 맵 'map_blank_start' 은 20×15 로 부족하다. resize_map({mapId:\"map_blank_start\", width:44, height:28}) 를 먼저 호출해 키운 뒤 시공하라 — 좌상단 기준 확장이라 기존 타일·이벤트는 그대로고 늘어난 칸만 잔디가 된다. 요청한 수량을 줄여 기존 크기에 우겨넣지 말 것.\n[먼저 보이게] 사용자는 맵 위에서 마을이 지어지는 모습을 기다리고 있다. 프로젝트 요약·위키·DB·참고문서 조회로 시간을 쓰지 말고 곧바로 author_beodeul_town 을 부른다(이 도구는 타일을 코드가 고르므로 참고문서를 먼저 읽지 않아도 된다). 확인·보충은 시공 뒤에 한다.\n[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.\n소규모 3~5채를 요청하면 author_beodeul_town({houseCount:요청한수,name,seed})을 사용한다. 서로 다른 실루엣의 집·굽은 길·우물 마당을 갖춘 40×30 잔디 마을이며 기후 theme은 생략한다. 색만 다른 같은 집을 반복하지 않는다.\n지금 맵 'map_blank_start' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.\ntheme 은 말에서 고른다: 강·물레방아·시골 마을 = river(기본), 항구·포구·어촌·바닷가 = coast, 사막·오아시스 = desert, 눈·설원·겨울 = snow, 늪·습지 = swamp. 「도시·로마풍·블록」을 말할 때만 city(블록 격자 도시, 기본 60×60, 항구 호수는 harbour:true·가로 83 이상). 마을 크기는 생략하면 56×44 안팎(36×30~96×80). 같은 seed 는 같은 마을이니 다른 배치를 원하면 seed 를 바꾼다.\n시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다(결과 data.doors·data.entrance). NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다.",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city",
+      "map_beodeul_small_home": "atlas_biome_interior"
+    },
+    "currentMapId": "map_blank_start"
+  }
+}

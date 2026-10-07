@@ -1,0 +1,49 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=create space=both target=map_blank_start plan construction=small/houses:1 tools=list_structure_kits,stamp_object,read_tileset_reference,list_hand_interior_parts,build_hand_interior_room,create_transfer_pair,set_start_position,show_map_region 18738ms → 마을 계약 없음(판정)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "list_structure_kits",
+    "stamp_object",
+    "read_tileset_reference",
+    "list_hand_interior_parts",
+    "build_hand_interior_room",
+    "create_transfer_pair",
+    "set_start_position",
+    "show_map_region",
+    "author_house",
+    "edit_world_terrain",
+    "author_beodeul_town",
+    "script_cutscene_staged",
+    "tile_erase",
+    "script_cutscene",
+    "author_village"
+  ],
+  "intentNote": "[Functional acceptance contract] [{\"kind\":\"functionalUnresolved\",\"reason\":\"야외에서 실내로 걸어 들어갔다가 다시 나오는 왕복 이동이 필요하다. 새 실내 맵의 이름 또는 실제 ID와 양방향 출입 이벤트 식별자는 아직 정해지지 않았다. 제공된 현재 프로젝트 시작점은 (10, 8)이며, 요청한 최종 시작점은 시공 후 야외 문 앞 길에서 두세 칸 떨어진 위치로 확정해야 한다.\",\"expectations\":{\"kind\":\"mapRoundTrip\",\"target\":{\"mapId\":\"map_blank_start\"},\"start\":{\"x\":10,\"y\":8}}}]. Immutable request expectations; real engine behavior on applied content decides completion, not images or success prose.\n[의도] 야외 외장과 실내 둘 다이다. 들어가서 걷는 집이면 author_house(interior:\"linked-interior\") 한 번으로 외장+실내+양방향 전이를 짓는다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.\n[시공 규모] 선언된 수량: 규모 small · 집 1채. 코드가 환산한 권장 맵 크기는 34×20(집 1채 기준)이다. 새 맵이면 이 크기를 그대로 써라 — author_village(target:{kind:\"new\", width:34, height:20}) 또는 create_map 에 같은 값을 넣는다.",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city"
+    },
+    "currentMapId": "map_blank_start"
+  }
+}

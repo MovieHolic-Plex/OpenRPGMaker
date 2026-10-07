@@ -1,0 +1,191 @@
+[
+ {
+  "i": 1,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "버들쉼터(map_beodeul_rest) 영역 (0,0)~(24,24) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":0,\"y\":0,\"w\":24,\"h\":24}"
+ },
+ {
+  "i": 2,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"offset\":0}"
+ },
+ {
+  "i": 3,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"버들쉼터 제작 규칙\",\"mapId\":\"map_beodeul_rest\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 4,
+  "name": "find_layout_regions",
+  "ok": true,
+  "summary": "버들쉼터 맵에 layoutPlan이 없어 검색 영역이 없습니다.",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"query\":\"집\"}"
+ },
+ {
+  "i": 5,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (0–4803, 1/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 민가 5종과 교회 — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"\",\"imageId\":\"bd-ground-architecture-image\",\"offset\":0}"
+ },
+ {
+  "i": 7,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 접지·군락·출입 보호 지침 (0–2934, 1/1쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-guide\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 8,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 40×30 (버들쉼터)",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":0,\"y\":0,\"w\":40,\"h\":30}"
+ },
+ {
+  "i": 9,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (4803–6336, 2/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":4803}"
+ },
+ {
+  "i": 10,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (6336–12336, 3/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":6336}"
+ },
+ {
+  "i": 11,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (12336–18336, 4/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":12336}"
+ },
+ {
+  "i": 12,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (18336–24336, 5/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":18336}"
+ },
+ {
+  "i": 13,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 3/4 탑뷰 민가·교회·개별 창문·기초 사전 (24336–25742, 6/6쪽)",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"bd-ground-architecture\",\"imageId\":\"\",\"offset\":24336}"
+ },
+ {
+  "i": 14,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 밝은 잔디 접지·꾸미기 / 정상/옆벽 누락 오류 — 실제 이미지를 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-ground-dressing\",\"documentId\":\"\",\"imageId\":\"bd-ground-architecture-error\",\"offset\":0}"
+ },
+ {
+  "i": 15,
+  "name": "resize_map",
+  "ok": true,
+  "summary": "버들쉼터 크기 변경 40×30 → 44×30",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"width\":44,\"height\":30,\"referencePurpose\":\"beodeul-ground-dressing\"}"
+ },
+ {
+  "i": 16,
+  "name": "refine_beodeul_village",
+  "ok": false,
+  "summary": "'refine_beodeul_village' 실행 실패: 교회 예정지 오른쪽 띠에 기존 콘텐츠가 있습니다. 새 배치 또는 빈 14칸 띠가 필요합니다.",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"church\":true,\"referencePurpose\":\"beodeul-ground-dressing\"}"
+ },
+ {
+  "i": 17,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "버들쉼터(map_beodeul_rest) 영역 (40,0)~(44,30) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":40,\"y\":0,\"w\":4,\"h\":30}"
+ },
+ {
+  "i": 18,
+  "name": "tile_erase",
+  "ok": true,
+  "summary": "버들쉼터 (40,0) 4×30 정리(both) — 120/120칸, 하위는 기본 바닥 737 복원.",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"rect\":{\"x\":40,\"y\":0,\"w\":4,\"h\":30},\"layer\":\"both\",\"kind\":\"all\",\"referencePurpose\":\"beodeul-ground-dressing\"}"
+ },
+ {
+  "i": 19,
+  "name": "refine_beodeul_village",
+  "ok": true,
+  "summary": "버들항 집 5채를 3/4 탑뷰·문 1개·개별 창문/벽 콘셉트·기초로 보정하고 석조 교회를 연결했습니다.",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"church\":true,\"referencePurpose\":\"beodeul-ground-dressing\"}"
+ },
+ {
+  "i": 20,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 54×30 (버들쉼터)",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":0,\"y\":0,\"w\":54,\"h\":30}"
+ },
+ {
+  "i": 21,
+  "name": "look_at_houses",
+  "ok": true,
+  "summary": "버들쉼터 집 관찰: 집 0채 · 모양 0종 · 킷 0종 · 지붕색 0종 → diverse",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":0,\"y\":0,\"w\":54,\"h\":30}"
+ },
+ {
+  "i": 22,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 전부 도달 가능",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"from\":{\"x\":18,\"y\":18},\"targets\":[{\"x\":6,\"y\":9},{\"x\":19,\"y\":10},{\"x\":32,\"y\":11},{\"x\":6,\"y\":26},{\"x\":30,\"y\":26},{\"x\":48,\"y\":16}]}"
+ },
+ {
+  "i": 23,
+  "name": "find_events",
+  "ok": true,
+  "summary": "이벤트 0개 검색됨",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"nameContains\":\"\",\"commandKind\":\"\",\"referencesSwitch\":\"\"}"
+ },
+ {
+  "i": 24,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (40,0) 14×24 (버들쉼터)",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":40,\"y\":0,\"w\":14,\"h\":24}"
+ },
+ {
+  "i": 25,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (2,10) 12×12 (버들쉼터)",
+  "args": "{\"mapId\":\"map_beodeul_rest\",\"x\":2,\"y\":10,\"w\":12,\"h\":12}"
+ },
+ {
+  "i": 26,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 2개 발견: list_spatial_designs, stamp_object",
+  "args": "{\"query\":\"list_spatial_designs stamp_object\",\"domain\":\"map\",\"limit\":2}"
+ },
+ {
+  "i": 27,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 22건",
+  "args": "{\"kind\":\"object\",\"query\":\"bd-tree\",\"limit\":40,\"offset\":0}"
+ }
+]

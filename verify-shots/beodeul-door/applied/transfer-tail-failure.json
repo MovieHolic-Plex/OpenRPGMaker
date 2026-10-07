@@ -1,0 +1,47 @@
+{
+  "observed": [
+    {
+      "stage": 0,
+      "frame": 10,
+      "at": 38866
+    },
+    {
+      "stage": 1,
+      "frame": 48,
+      "at": 39524
+    },
+    {
+      "stage": 2,
+      "frame": 55,
+      "at": 39648
+    },
+    {
+      "stage": 3,
+      "frame": 62,
+      "at": 39769
+    },
+    {
+      "stage": 4,
+      "frame": 69,
+      "at": 39887
+    },
+    {
+      "stage": 5,
+      "frame": 76,
+      "at": 40004
+    },
+    {
+      "stage": 6,
+      "frame": 83,
+      "at": 40119
+    },
+    {
+      "stage": 7,
+      "frame": 90,
+      "at": 40242
+    }
+  ],
+  "mapId": "map_blank_start",
+  "top": 27655,
+  "hook": true
+}

@@ -1,0 +1,26 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "storeFile": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite",
+  "revision": 10,
+  "sha256": "784893697bb40a72e63ce53b3ec5906c12961670c62a3f42074887749d241f4f",
+  "savedAndReopened": true,
+  "originalArtRestoredByCommonTool": true,
+  "sideFacesRequired": false,
+  "nativeSilhouettesPreserved": true,
+  "mapId": "map_beodeul_rest",
+  "size": [
+    54,
+    30
+  ],
+  "houses": 5,
+  "churches": 1,
+  "distinctWindows": 5,
+  "doorsPerBuilding": 1,
+  "originalDoorTestAndInteriorPreserved": true,
+  "originalMapEventsPreserved": true,
+  "preservedUpperCells": 1242,
+  "preservedGroundCells": 1620,
+  "allSixDoorFrontsConnectedByRoads": true,
+  "observedBuildings": 6
+}
