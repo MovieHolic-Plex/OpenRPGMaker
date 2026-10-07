@@ -2457,12 +2457,18 @@ def _in_pack(items, side=800, gap=6, bg=(46, 46, 54, 255)):
 
 def _in_item(oid):
     o = JPI['objects'][oid]; kid = f'jp-in-{oid}'
-    it = {'id': oid, 'ko': o['ko'], 'block': _IN_BLOCK[kid], 'kind': o['kind'], 'w': o['w'], 'h': o['h'], 'up': o.get('up', 0)}
+    it = {'id': oid, 'ko': o['ko'], 'category': o['category'], 'categoryKo': o['category_ko'], 'block': _IN_BLOCK[kid], 'kind': o['kind'], 'w': o['w'], 'h': o['h'], 'up': o.get('up', 0)}
     for key in ('use', 'facing', 'surface', 'stairs', 'tags', 'place', 'pair', 'desc'):
         if o.get(key) not in (None, [], '', False): it[key] = o[key]
     it['cells'] = [[dx, dy, tnum(t), l] for dx, dy, t, l in o['cells']]
     it.update(shop_item(kid))
     return it
+
+
+_IN_CATS = []
+for _o in JPI['objects'].values():
+    if not any(c == _o['category'] for c, _, _ in _IN_CATS): _IN_CATS.append((_o['category'], _o['category_ko'], 0))
+_IN_CATS = [(c, ko, sum(1 for o in JPI['objects'].values() if o['category'] == c)) for c, ko, _ in _IN_CATS]
 
 
 def doc_in_rules():
@@ -2496,7 +2502,7 @@ def doc_in_rules():
 
 ## 읽는 순서 · 실행 순서
 1. 이 문서(규칙) → 가까운 예제 하나(`jp-interior-ex-house-1f` 단독주택 1층 · `jp-interior-ex-house-2f` 2층 · `jp-interior-ex-apartment-1k` 원룸)와 그 그림 `jp-img-interior-*`.
-2. `list_hand_interior_parts({{tileset:"jp_city", room:"화실"}})` — 방 종류(현관·복도·화실·LDK·부엌·욕실·탈의실·화장실·침실·아이방·원룸·유닛 배스) 또는 건물(`jp_house`·`jp_apartment`)의 예제 가구. 낱말은 `query`. 행마다 desc·놓는 곳·짝 소품·use·facing 이 있다. 칸 번호까지 보려면 사전 `jp-interior-dict-*`.
+2. `list_hand_interior_parts({{tileset:"jp_city", room:"화실"}})` — 방 종류(현관·복도·화실·LDK·부엌·욕실·탈의실·화장실·침실·아이방·원룸·유닛 배스) 또는 건물(`jp_house`·`jp_apartment`)의 예제 가구. 낱말은 `query`. 행마다 desc·놓는 곳·짝 소품·use·facing 이 있다. 칸 번호까지 보려면 사전 `jp-interior-dict-*`. 분류로 좁히려면 `category`: {' · '.join(f"`{c}` {ko} {n}" for c, ko, n in _IN_CATS)}.
 3. 평면(plan)을 정한다 → `build_hand_interior_room({{tileset:"jp_city", mapId, name, plan, floor, wall, zones, objects, tables, goods, start, links}})` **한 번**. 오류가 있으면 맵을 만들지 않고 코드·좌표로 거부한다 — 고쳐서 다시 부른다. 경고(닿지 못한 바닥·쓸 수 없는 가구)도 0 이 될 때까지 고친다.
 4. 층이 여럿이면 층마다 한 맵(계단 x 를 위아래 층에서 맞춘다), 계단 칸에 `links`. **짓는 순서**: 아직 없는 맵을 가리키는 links 는 거부된다(`link-target-missing`) — ① 1층을 links 없이 짓고 ② 2층을 1층으로 가는 links 와 함께 짓고 ③ 1층을 같은 mapId·`replace:true` 로 2층 links 를 넣어 다시 짓는다. 도착 칸(toX,toY)은 그 맵의 걸을 수 있는 바닥(계단 발칸·계단통 아랫줄 바로 옆)이어야 한다. 거리 맵의 집 문에 들어가는 실내면 현관 아래 틈 칸에 거리로 나가는 `links` 를 단다.
 5. `show_map_region`·`check_reachability` 로 확인. 낱칸 번호로 칠하지 않는다(`paint_tiles` 로 가구 칸을 찍으면 통행·그림 순서가 어긋난다).
@@ -2564,7 +2570,7 @@ for _i, _chunk in enumerate(_chunks):
 
 {HEAD}
 
-항목: `id`(도구 objects[].id 에 그대로) · `ko` · `block`(그림 원본 blocks/<block>.py) · `kind`(floor 바닥 가구 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬) · `w`×`h`(발자국 칸) · `up`(위로 솟은 px) ·
+항목: `id`(도구 objects[].id 에 그대로) · `ko` · `category`·`categoryKo`(방 분류 — `list_hand_interior_parts` 의 category 인자, 정본 `interior/categories.py`) · `block`(그림 원본 blocks/<block>.py) · `kind`(floor 바닥 가구 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬) · `w`×`h`(발자국 칸) · `up`(위로 솟은 px) ·
 `use`·`facing`·`surface`(윗면 → 탁상 물건)·`stairs`·`tags`(방)·`place`(놓는 곳)·`pair`(짝 가구)·`desc` · `cells`([dx, dy, 칸 번호, 층] — dy<0 은 발자국 위로 솟은 칸, 층 2 = 밟는 무늬·3 = 가구) ·
 같은 그림의 키트 `kit`(`stamp_object` 용 — 실내는 도구로 짓고 키트는 낱개 확인용) · `upperTiles`(키트 칸 전체) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸). 짓는 법은 `jp-interior-rules`, 그림 `jp-img-interior-dict-*`.
 
