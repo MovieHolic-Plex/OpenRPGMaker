@@ -1,25 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { seedHomeDungeonComplexTroops } from "@/project/defaults/complexMonsterAuthoring";
 
 describe("database image matching", () => {
-  it("loads dedicated starter and crowned-slime art through the shipped sample entry", () => {
-    // Given / When: the shipped demo loads its authored fixture, not the blank database.
-    const project = createSampleAdventureProject();
-    // Then: its independent graphics must not reintroduce the old substitutes.
-    for (const [id, resourceId] of [
-      ["species_leafling", "generated-enemy-leafling-01"],
-      ["species_sparkit", "generated-enemy-sparkit-fire"],
-      ["species_aqualing", "generated-enemy-aqualing-01"],
-      ["species_king_slime", "generated-enemy-king-slime-01"],
-    ]) {
-      expect(project.database.monsterSpecies?.find((species) => species.id === id)?.graphic)
-        .toMatchObject({ monsterResourceId: resourceId, graphicHue: 0 });
-    }
-  });
-
   it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
     // Only these two role-identical pairs may share art; unrelated duplicates fail.

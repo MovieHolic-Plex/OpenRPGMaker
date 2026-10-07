@@ -43,13 +43,29 @@
   `configureEmeraldMonsterCast` 는 빈 함수다(캠페인 기본 걷기 칩 유지). 교수 초상은 정지 그림.
   픽셀 글꼴 이름은 스택에 남아 사용자 컴퓨터에 깔린 경우만 쓰인다.
 
-### 남은 일 (코드는 남았지만 그림이 없는 것)
+## 3단계 — 지운 칩셋에 묶인 코드·문서 (2026-10-07)
 
-- 숲마을·기후·합본 마을·Tibo 실내를 대상으로 하는 시공기·도구·데모 코드(`forestHarmony*`·`climateVillages`·마을 시공기·
-  `tiboInterior`·`createSampleAdventureProject` 이슬 마을 데모·Scarloxy 데모·눈산·얼음 평원·녹턴 데모 등)는 남아 있다.
-  새 프로젝트에는 그 타일셋이 생기지 않지만, 메뉴의 옛 데모를 열면 빈 칸으로 그려진다.
-- 지운 칩셋을 쓰던 테스트 다수는 아직 그대로다(실패 예상). 재생성 스크립트 일부도 지운 모듈을 가리킨다.
-- 손 도트 실내 v5 일부 바닥·벽 질감은 지운 `atlas-biomes/jungle-chipset.png`(숲마을 재칠)에서 샘플링했다고 기록돼 있다.
+- 데모·쇼케이스 프로젝트: 지운 칩셋 위에 그린 것은 전부 지웠다(이슬 마을 예제, 농장·상점·Ember·녹턴·하늘계단·눈산·얼음 평원·
+  시장 마을·집 쇼케이스 등). 남은 예제는 Scarloxy 데모 하나다.
+- 시공기·도구: 숲마을·합본 마을의 마을·집·울타리·성 시공기, 팩 마을(Rasak·REFMAP·PAW) 도구, EasyRPG 던전·실내 세션,
+  숲 레시피, 키큰 풀, Tibo 실내, 기후·바이옴 기본값을 지웠다. 조수 도구 목록·지시문에서도 그 이름을 뺐다.
+- 스크립트: 지운 그림·모듈을 읽던 재생성·렌더·등록 스크립트(`scripts/content/paw-maps`·rasak·refmap·숲마을 건물·기후·
+  RPG 던전/실내/장소 등), 벤치마크(`src/benchmark`, `benchmark.html`, agent-bench), `fixture:sync`.
+- `tiledata/`: rasak-fantasy·rasak-modern·refmap·climate-villages·forest-harmony-buildings·forest-stone-well·
+  atlas-dungeons·atlas-towns·rpg-dungeons.
+- 증거: Slates·성채·숲마을·기후·마을 시공기 화면(`verify-shots/`·`.omo/evidence/`·`docs/experiments/slates-astra*`).
+- 위키: Slates 8쪽, 성채 2쪽, 큰/작은 마을 생성, 마을 배치 연구, 연결 던전, REFMAP 거리, 타일 벤치마크 3쪽.
+- 테스트: 지운 데모·모듈이 주제인 테스트는 지웠다. 저장·로컬 스토어·팀 서비스 테스트처럼 아무 프로젝트나 쓰던 것은
+  Scarloxy 데모로 바꿨다. 남은 기능(농사 런타임 등) 중 지운 농장 데모를 고정물로 쓰던 테스트는 같이 빠졌다 —
+  남는 칩셋으로 새 고정물을 만들면 다시 덮을 수 있다.
+
+### 남은 일
+
+- 남긴 그림의 출처 중 지운 시트에서 색·질감을 표본으로 딴 것이 있다(손 도트 실내 v5 일부 바닥·벽은 지운
+  `atlas-biomes/jungle-chipset.png`, 탈것 `atlas-scenes/vehicles.png` 는 EasyRPG 배 시트). 다시 그릴지는 따로 정한다.
+  그 재생성 스크립트(`scripts/content/atlas-scenes/vehicle_art.py`, `atlas-pick/worldmap_check.py`)는 입력 시트가 없어 지금은 돌지 않는다.
+- 남은 증거 화면 중 지운 칩셋이 우연히 찍힌 것(편집기 UI 캡처 등)은 일일이 보지 않았다.
+- 위키 본문 곳곳에 지운 기능을 가리키는 문장이 남아 있다(지운 쪽으로 가는 링크 포함). 해당 쪽을 고칠 때 같이 정리한다.
 
 ## 주의
 

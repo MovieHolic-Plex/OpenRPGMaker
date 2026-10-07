@@ -1,8 +1,0 @@
-# nomen.png 5x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  
-   0 +l +l +o +g +o 
-   1 +r +b +G ~g ~o 
-   2 .  ~g ~g ~g ~g 
-   3 .  +r +r ~r ~r 
-   4 .  ~g ~g ~g ~g 
-   5 .  +o +o ~o ~o 

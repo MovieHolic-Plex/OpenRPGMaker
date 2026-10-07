@@ -2,7 +2,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createHouseTemplateGalleryProject } from '@/project/defaults/defaultProject';
+import { createScarloxyDemoProject } from '@/project/defaults/defaultProject';
 import { projectWithoutEventDrafts } from '@/project/eventDrafts';
 import { serialize } from '@/project/io';
 import { mergeTeamProject } from '@/project/persistence/core/teamMerge';
@@ -18,7 +18,7 @@ async function setup() {
   const sessions = createProjectSessionRegistry();
   const a = await sessions.open('a', dir);
   await sessions.open('b', dir);
-  const base = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+  const base = projectWithoutEventDrafts(createScarloxyDemoProject());
   await a.store.saveProject(base);
   const invoke = createStoreHandlers(sessions);
   cleanups.push(async () => { sessions.close('a'); sessions.close('b'); await rm(dir, { recursive: true, force: true }); });
@@ -118,7 +118,7 @@ describe('shared project service', () => {
 
 describe('record merge policy', () => {
   it('merges independent DB records but rejects concurrent edits to the same record', () => {
-    const base = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const base = projectWithoutEventDrafts(createScarloxyDemoProject());
     base.database.actors = [base.database.actors[0]!, { ...structuredClone(base.database.actors[0]!), id: 'team-second-actor' }];
     const a = structuredClone(base), b = structuredClone(base);
     a.database.actors[0]!.name = 'Alice'; b.database.actors[1]!.name = 'Bob';

@@ -9,8 +9,6 @@ import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReference
 import { getTool } from "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
 import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT } from "@/editor/tools/mapHelpers";
-import { paintRoadRect } from "@/project/defaults/roadAutotile";
-import { paintTownPathNetwork } from "@/project/defaults/townPathAutotile";
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
 import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -378,20 +376,6 @@ describe("고침 1차(리뷰)", () => {
       expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE_SHORT);
       expect(getTool(name)!.description, name).not.toContain(FOUR_LAYER_GUIDANCE);
     }
-  });
-
-  it("흙길·마을 길의 1층 쓰기도 그 칸 2층을 지우고, 옛 맵에는 키를 만들지 않는다", () => {
-    const ctx = context();
-    const map = mapOf(ctx);
-    paintRoadRect(map, { x: 1, y: 1, width: 2, height: 1 });
-    paintTownPathNetwork(map, [{ x: 1, y: 3, width: 2, height: 1 }]);
-    expectNoExtraKeys(map);
-    setLayerTileAt(map, 2, idx(map, 5, 1), 20);
-    setLayerTileAt(map, 2, idx(map, 5, 3), 21);
-    paintRoadRect(map, { x: 5, y: 1, width: 1, height: 1 });
-    paintTownPathNetwork(map, [{ x: 5, y: 3, width: 1, height: 1 }]);
-    expect(layerTileAt(map, 2, idx(map, 5, 1))).toBe(TILE.EMPTY);
-    expect(layerTileAt(map, 2, idx(map, 5, 3))).toBe(TILE.EMPTY);
   });
 });
 

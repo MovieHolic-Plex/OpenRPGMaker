@@ -4,8 +4,6 @@ import { runTool, runToolDefinition } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { own, spatialId } from "@/project/spatial/domain";
-// 정주지 스탬프는 등록 훅 경유 — builder 모듈 로드가 bindSettlementVillageBuild를 실행한다.
-import "@/editor/tools/village/builder";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { fixtureDocument, spaceCompilerFixture, spaceDesign } from "./support/spatialSpaceCompilerFixture";
 import { geographyRoot } from "./support/spatialGeographyFixture";

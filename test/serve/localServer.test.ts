@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { initLocalProjectStore } from "../../electron/local-store/store";
 import { OPRN_CHANNELS } from "../../electron/shared/channels";
@@ -25,7 +25,7 @@ beforeEach(async () => {
   );
   await writeFile(join(distDir, "asset.txt"), "hello asset");
   const store = await initLocalProjectStore({ projectDir });
-  await store.saveProject(projectWithoutEventDrafts(createHouseTemplateGalleryProject()));
+  await store.saveProject(projectWithoutEventDrafts(createScarloxyDemoProject()));
   store.close();
   server = await startLocalProjectServer({ projectDir, distDir, browserBridgeSource: BRIDGE_SOURCE });
 });
@@ -114,7 +114,7 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
 
     const loaded = await (await bridge(OPRN_CHANNELS.projectLoad, { projectDir })).json();
     expect(loaded.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(JSON.parse(loaded.serialized).meta.title).toBe(createHouseTemplateGalleryProject().meta.title);
+    expect(JSON.parse(loaded.serialized).meta.title).toBe(createScarloxyDemoProject().meta.title);
   });
 
   it("저장이 폴더의 SQLite 정본에 그대로 반영된다 — 별도 커넥션으로 확인", async () => {

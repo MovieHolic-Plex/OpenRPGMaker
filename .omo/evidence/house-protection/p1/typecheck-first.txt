@@ -1,6 +1,0 @@
-
-> rpg-zzu@0.1.0 typecheck:app
-> tsc --noEmit -p tsconfig.app.json
-
-
-EXIT_CODE=0

@@ -1,7 +1,7 @@
 // test/parity/playerBootValidation.test.ts
 import { describe, expect, it } from "vitest";
 import { createBlankProject, DEFAULT_SKILL_ID } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import { validateProjectForPlay } from "@/project/playBootValidation";
 import invalidReferenceProject from "../fixtures/projects/invalid-db-reference-v3.json";
@@ -10,7 +10,7 @@ import { createGoldenParityProject } from "./goldenProject";
 describe("player-boot validation", () => {
   it("reports zero issues for every shipped project (no false positives)", () => {
     expect(validateProjectForPlay(createBlankProject())).toEqual([]);
-    expect(validateProjectForPlay(createSampleAdventureProject())).toEqual([]);
+    expect(validateProjectForPlay(createScarloxyDemoProject())).toEqual([]);
   });
 
   it("flags an injected dangling skill animation reference", () => {
@@ -29,7 +29,7 @@ describe("player-boot validation", () => {
 
   it("boot-validation gate: every shipped + golden project is reference-clean (CI gate)", () => {
     expect(validateProjectForPlay(createBlankProject())).toEqual([]);
-    expect(validateProjectForPlay(createSampleAdventureProject())).toEqual([]);
+    expect(validateProjectForPlay(createScarloxyDemoProject())).toEqual([]);
     expect(validateProjectForPlay(createGoldenParityProject())).toEqual([]);
   });
 });

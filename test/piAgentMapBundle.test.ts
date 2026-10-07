@@ -4,7 +4,6 @@ import { changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent } from
 import { commitChangeset } from "@/editor/tools";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
 import type { Project } from "@/project/types";
 
 function clone<T>(value: T): T {
@@ -425,24 +424,6 @@ describe("piAgent mapBundle", () => {
     ]);
     expect(agreed.conflicts).toEqual([]);
     expect(agreed.spills).toEqual([]);
-  });
-
-  // 실측(2026-09-23 같은 실행): author_village 의 나무 시공이 굽이숲 이식 47칸과 오토타일 그룹
-  // `forest_harmony_grove_47` 을 기존 타일셋에 덧댔는데, 병합은 이식·꼬리만 옮기고 그룹을 버렸다.
-  // 병합본의 맵은 그 칸을 12곳 깔았고, 그룹이 없으니 다음 나무 시공의 ensureForestGroveTileset 이
-  // 같은 수관을 끝에 **또** 이식한다.
-  it("묶음이 기존 타일셋에 새로 단 오토타일 그룹은 함께 옮긴다", () => {
-    const base = seed();
-    const tilesetId = base.maps.map_east!.tilesetId;
-    const a = clone(base);
-    ensureForestGroveTileset(a.tilesets[tilesetId]!);
-    expect(a.tilesets[tilesetId]!.autotileGroups?.some((group) => group.id === FOREST_GROVE_GROUP)).toBe(true);
-
-    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
-
-    expect(merged.project.tilesets[tilesetId]).toEqual(a.tilesets[tilesetId]);
-    expect(merged.spills).toEqual([]);
-    expect(commitChangeset(merged.project, base).ok).toBe(true);
   });
 
   it("기존 오토타일 그룹의 수정은 옮기지 않고 spill 로 보고한다", () => {

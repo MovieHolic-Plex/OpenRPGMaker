@@ -98,7 +98,6 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
    - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
-   - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
    - **조수에게 타일셋 까는 법 가르치기** (조수가 실제로 보는 것·업로드 타일셋에서 비는 것·참고문서/이름표/조립법 순서·재배포 금지 팩): `openwiki/teaching-assistant-tilesets.md`
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
@@ -108,7 +107,6 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - **캐릭터 칩(RM2000 CharSet)은 하네스로 만든다:** `src/harnesses/charset-actor/README.md` — GPT 6.1 sol high가 원본 격자를 직접 자유 저작 → 결손 검사 → GIF 대기열. 사용자가 http://mdc-server:18314/ 에서 남기기/폐기만 결정한다. `npm run harness -- charset-actor produce --count 100` 또는 화면에서 시작한다. 사람 선택은 현재 그림 해시에 묶으며 실제 남긴 캐릭터만 다운로드한다. 데이터는 저장소 밖 `CHR_HARNESS_DATA`에 보존하고 프로젝트 설치는 별도다.
    - **실내는 손 도트 v5 하나 (hard rule, 2026-09-29):** 공용 실내 `atlas_biome_interior` = 손 도트 실내 v5 전용 시트(옛 Tibo·EasyRPG 실내·LPC 가구 칩셋은 폐기, 조수에게 안 보이고 거부된다). 던전·동굴은 등록 장소를 `import_region_reference` 로 가져온다 — `atlas_biome_dungeon` 을 포함한 EasyRPG 계열로 조수가 새 맵을 만드는 것은 막혀 있다(2026-10-06, `openwiki/editor-ai-tools.md` 「EasyRPG 계열 칩셋 차단」). 도구 `build_hand_interior_room`, 스킬 원본 `assistant-skills/interior-room-authoring/SKILL.md`, 편집기 「새 맵 → 실내」 기본도 이 칩셋: `openwiki/atlas-biome-interior.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
-   - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
    - 세계 지도 지형 편집 (조수가 대륙·해협·섬·산맥·강·숲·바닥을 ops 로 다시 그림, 월드맵 키트 빌드 경로·저장 형태): `openwiki/worldmap-terrain-editing.md`
@@ -125,9 +123,6 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
    - 릴리스·버전 (네 축 구분, 빌드 라벨, `npm run release` 절차): `openwiki/release-and-version.md`
-   - LLM tile-placement benchmark (interior chipset as ground truth, reproducibility spine, 6 scoring schemes): `openwiki/interior-tile-benchmark.md`
-   - LLM tile-placement benchmark on the DEFAULT chipset (combined_town, 9 axes matching the art director's questions, engine-derived ground truth, PNG evidence sheet): `openwiki/town-tile-benchmark.md`
-   - Coding-agent benchmark (throw the repo + chipset at `claude -p` and score what it actually builds; fixture-independent village detection, quality + scale): `openwiki/agent-tile-benchmark.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
 
 

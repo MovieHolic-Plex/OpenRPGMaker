@@ -1,9 +1,0 @@
-# Eu-GlandPiano.png 7x7 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  6  
-   0 .  ~g ~l .  ~l ~w #l 
-   1 +g #g ~g +l #l ~l +k 
-   2 +g #g #g +l #l #g #g 
-   3 +k #r +k +k #r +k +k 
-   4 +g +g ~g +w +w ~l .  
-   5 +g #o #g +g #o #l .  
-   6 ~k +k +k ~k +g +g .  

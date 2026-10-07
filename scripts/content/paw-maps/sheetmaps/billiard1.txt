@@ -1,7 +1,0 @@
-# billiard1.png 8x5 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  6  7  
-   0 ~g ~o ~o ~k ~o ~o .  .  
-   1 ~o ~o ~g ~o ~o ~k .  .  
-   2 +G +G +G +G ~k ~o ~g ~g 
-   3 #G #G #G #G ~b ~g ~o ~g 
-   4 #o #k #k #o ~g ~g ~g ~g 

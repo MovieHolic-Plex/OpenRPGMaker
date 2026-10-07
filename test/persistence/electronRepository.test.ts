@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import { createElectronRepository, hasElectronBridge, type OprnBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject, projectRepository } from "@/project/persistence/repository";
 import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 
-const PROJECT = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+const PROJECT = projectWithoutEventDrafts(createScarloxyDemoProject());
 const SERIALIZED = serialize(PROJECT);
 const SHA = "a".repeat(64);
 const DIR = "/projects/demo";

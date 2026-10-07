@@ -315,13 +315,11 @@ export default defineConfig(({ mode }) => {
     proxy: Object.keys(proxy).length > 0 ? proxy : undefined,
   },
   build: {
-    // MPA: 루트 index.html(에디터)과 benchmark.html(벤치마크 사이트)을 각각 엔트리로
-    // 빌드한다. dev 서버에서는 /benchmark.html 이 그대로 서빙된다.
-    // `main` 을 명시해야 기본 엔트리(index.html)가 benchmark 추가 시 사라지지 않는다.
+    // MPA: 루트 index.html(에디터)과 시작 화면을 각각 엔트리로 빌드한다(타일 배치 벤치마크 사이트는 2026-10-07 저작권 정리로 지웠다).
+    // `main` 을 명시해야 기본 엔트리(index.html)가 엔트리 추가 시 사라지지 않는다.
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL("./index.html", import.meta.url)),
-        benchmark: fileURLToPath(new URL("./benchmark.html", import.meta.url)),
         // 데스크톱 앱 첫 화면(app://oprn/start-screen.html). 편집기 번들을 싣지 않는 별도 엔트리다.
         startScreen: fileURLToPath(new URL("./start-screen.html", import.meta.url)),
       },

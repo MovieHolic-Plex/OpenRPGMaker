@@ -7,8 +7,6 @@ import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { applyGenrePreset } from "@/project/genrePresets";
-import { requestsModernMap } from "@/ai/modernTilesetPolicy";
-import { EMERALD_MONSTER_AUTHORING_GUIDE } from "@/project/emeraldMonsterStyle";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { removedMapIds } from "@/ai/approvalPolicy";
@@ -53,13 +51,6 @@ describe("몬스터 칩셋 계열", () => {
       expect(result.ok, tilesetId).toBe(false);
       expect(ctx.project.maps[id], tilesetId).toBeUndefined();
     }
-  });
-
-  it("포켓몬풍 지침과 몬스터 맵은 PAW 전용 현대 맵 게이트를 켜지 않는다", () => {
-    const project = monsterProject();
-    expect(requestsModernMap(project, EMERALD_MONSTER_AUTHORING_GUIDE, ["map_blank_start"])).toBe(false);
-    expect(requestsModernMap(project, "현대식 상점 거리를 만들어", ["map_blank_start"])).toBe(false);
-    expect(requestsModernMap(createBlankProject(), "현대 도시 마을 만들어", ["map_blank_start"])).toBe(true);
   });
 
   it("폐기 EasyRPG 칩셋 거부는 같은 계열 몬스터 시트를 대안으로 알려 준다", () => {

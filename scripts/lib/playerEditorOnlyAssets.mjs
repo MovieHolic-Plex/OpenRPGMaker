@@ -12,14 +12,7 @@ import path from "node:path";
 // "field": a bundled tileset/library whose referenceDocuments field is dropped; the rest (tileMeta, passability,
 //          kits) stays because runtime normalisation may still create or backfill the bundled tileset.
 export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
-  "src/assets/sharedCastleReferences.json": "whole",
-  "src/assets/sharedDiverseVillageReferences.json": "whole",
-  "src/assets/sharedClimateVillageReferences.json": "whole",
-  "src/assets/sharedFieldRouteReferences.json": "whole",
-  "src/assets/sharedRpgPlaceReferences.json": "whole",
   "src/assets/worldmapSelectedReferences.json": "whole",
-  "src/assets/forestHarmonyTileset.json": "field",
-  "src/assets/sharedVillageObjects.json": "field",
 });
 
 export function stripEditorOnlyJson(mode, text) {

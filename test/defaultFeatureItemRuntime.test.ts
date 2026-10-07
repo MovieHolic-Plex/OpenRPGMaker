@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { createBlankProject } from "@/project/defaults";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { giveMonster } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
 import { useItemFromMenu } from "@/player/playerItemUse";
@@ -83,18 +82,6 @@ describe("확장 기본 아이템 실행 경로", () => {
     expect(useItemFromMenu(project, session, "item_gen2_might_seed", actorId).kind).toBe("used");
     expect(session.actorParamBonuses?.[actorId]?.attack).toBe(2);
     expect(session.inventory.item_gen2_might_seed ?? 0).toBe(0);
-  });
-
-  it("카탈로그의 작물 씨앗은 농사 데모의 밭에 실제로 심어진다", () => {
-    // 심기를 약속하는 설명을 달았으니 출하되는 농사 프로젝트에 대응 밭이 있어야 한다.
-    const project = createFarmingDemoProject();
-    const cropSeedIds = project.database.items
-      .filter((item) => item.type === "seed" && Object.values(item.seedParameterBonuses).every((value) => value === 0))
-      .map((item) => item.id);
-    const plantable = project.database.crops.map((crop) => crop.seedItemId);
-
-    expect(cropSeedIds.length).toBeGreaterThan(0);
-    expect(cropSeedIds.filter((id) => !plantable.includes(id))).toEqual([]);
   });
 
   it("스위치 아이템은 서로 겹치지 않는 전용 스위치를 켜고 재사용을 거부한다", () => {

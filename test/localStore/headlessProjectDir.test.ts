@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { initLocalProjectStore } from "../../electron/local-store/store";
 
@@ -24,7 +24,7 @@ function runTool(args: readonly string[]): unknown {
 describe("headless tools open a project folder", () => {
   it("--project-dir 로 폴더 프로젝트를 열어 도구를 돌린다", async () => {
     const store = await initLocalProjectStore({ projectDir });
-    await store.saveProject(projectWithoutEventDrafts(createHouseTemplateGalleryProject()));
+    await store.saveProject(projectWithoutEventDrafts(createScarloxyDemoProject()));
     store.close();
 
     const result = runTool([

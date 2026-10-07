@@ -11,11 +11,10 @@
 
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { projectLint } from "@/project/lint/projectLint";
 
 /** store.normalizeCurrentProject 가 부팅마다 도는 두 DB 정규화기(선언 순서 그대로). */
 function runBootDatabaseNormalizers(project: ReturnType<typeof createBlankProject>): void {
@@ -23,20 +22,7 @@ function runBootDatabaseNormalizers(project: ReturnType<typeof createBlankProjec
   ensureBundledBattleAnimations(project);
 }
 
-const lintErrors = (project: ReturnType<typeof createBlankProject>): string[] =>
-  projectLint(project).filter((issue) => issue.severity === "error").map((issue) => issue.message);
-
 describe("boot normalizers keep reference integrity", () => {
-  it("예제 어드벤처: 정규화 전 0건 → 정규화 후에도 참조 위반 0건", () => {
-    const project = createSampleAdventureProject();
-    expect(collectProjectReferenceIssues(project)).toEqual([]);
-
-    runBootDatabaseNormalizers(project);
-
-    expect(collectProjectReferenceIssues(project)).toEqual([]);
-    expect(lintErrors(project)).toEqual([]);
-  });
-
   it("빈 프로젝트도 정규화 후 참조 위반 0건 (기본 세트 자체는 자기충족적이다)", () => {
     const project = createBlankProject();
     runBootDatabaseNormalizers(project);
@@ -59,7 +45,7 @@ describe("boot normalizers keep reference integrity", () => {
   });
 
   it("기존 아이템의 스킬·상태 참조를 유지한다", () => {
-    const project = createSampleAdventureProject();
+    const project = createScarloxyDemoProject();
     // 아이콘 연결만 보정한 뒤에도 모든 기존 효과 참조가 유효하다.
     ensureDefaultDatabaseIconResources(project);
     const skillIds = new Set(project.database.skills.map((skill) => skill.id));

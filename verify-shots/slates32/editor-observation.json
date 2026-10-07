@@ -1,8 +1,0 @@
-{
-  "source": "verify-shots/slates32/reloaded-project.json",
-  "geometry": {
-    "tileSize": 32,
-    "tilesetSize": 32
-  },
-  "errors": []
-}

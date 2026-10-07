@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
 describe("upsert_item/upsert_equipment iconResourceId", () => {
   it("아이템 id 를 그림 id 로 보내면 그 아이템의 그림으로 바꿔 저장한다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const potionIcon = ctx.project.database.items.find((item) => item.id === "item_potion")?.iconResourceId;
     expect(potionIcon).toBeTruthy();
     const result = runTool(ctx, "upsert_item", { item: { id: "item_dream_drop", name: "꿈 방울", iconResourceId: "item_potion" } }, { dryRun: false });
@@ -15,7 +15,7 @@ describe("upsert_item/upsert_equipment iconResourceId", () => {
   });
 
   it("없는 그림 id 는 비우고 레코드는 저장한다", () => {
-    const ctx: ToolContext = { project: createSampleAdventureProject() };
+    const ctx: ToolContext = { project: createBlankProject() };
     const item = runTool(ctx, "upsert_item", { item: { id: "item_dream_bell", name: "꿈 종", iconResourceId: "nope_bell_icon" } }, { dryRun: false });
     expect(item.ok, item.summary).toBe(true);
     expect(ctx.project.database.items.find((entry) => entry.id === "item_dream_bell")?.iconResourceId).toBeUndefined();

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { createMemoryRepository, type MemoryRepository } from "@/project/persistence/memoryRepository";
 import type { ProjectTarget } from "@/project/persistence/target";
 
@@ -44,7 +44,7 @@ describe("store 는 저장소 포트로 저장·읽기·상태를 얻는다", ()
 
   it("flush 는 주입한 저장소에 쓰고 그 sha256 을 돌려준다", async () => {
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
-    store.replaceProject(createHouseTemplateGalleryProject());
+    store.replaceProject(createScarloxyDemoProject());
 
     const result = await store.flush();
 
@@ -54,7 +54,7 @@ describe("store 는 저장소 포트로 저장·읽기·상태를 얻는다", ()
   });
 
   it("reloadFromRemote 는 주입한 저장소에서 읽는다", async () => {
-    const project = createHouseTemplateGalleryProject();
+    const project = createScarloxyDemoProject();
     await memory.save(project, target);
     store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
 

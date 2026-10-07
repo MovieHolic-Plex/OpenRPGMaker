@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
 import {
   applyMapDeletion,
@@ -78,7 +78,7 @@ describe("applyMapDeletion — 재배선 후 shape 검증 통과", () => {
   });
 
   it("transfer/연결/생활 이동이 참조하는 맵 삭제: 참조가 정리되고 재로드를 통과한다", () => {
-    const project = createSampleAdventureProject();
+    const project = createScarloxyDemoProject();
     // 예제 어드벤처는 마을→다른 맵 transfer/connection이 실제로 존재한다.
     const startId = project.startMapId;
     const otherId = Object.keys(project.maps).find((id) => id !== startId);
@@ -94,7 +94,7 @@ describe("applyMapDeletion — 재배선 후 shape 검증 통과", () => {
   });
 
   it("예제 어드벤처의 시작 맵(트리 루트)을 삭제해도 재로드를 통과한다 — P2~P3 벽돌 재현 방지", () => {
-    const project = createSampleAdventureProject();
+    const project = createScarloxyDemoProject();
     const startId = project.startMapId;
     expect(project.mapTree.mapId).toBe(startId); // 벽돌 조건: 루트=시작 맵.
     const plan = planMapDeletion(project, startId);
@@ -177,7 +177,7 @@ describe("remove_map 툴 — 무결성 가드 공유", () => {
 
 describe("mapDeletionConfirmMessage — 임팩트 요약(⑦)", () => {
   it("이벤트 수/시작 맵/참조 정리를 요약에 담는다", () => {
-    const project = createSampleAdventureProject();
+    const project = createScarloxyDemoProject();
     const impact = collectMapDeletionImpact(project, project.startMapId);
     expect(impact).toBeTruthy();
     const message = mapDeletionConfirmMessage(impact!);

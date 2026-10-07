@@ -8,7 +8,6 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { runTool } from "@/editor/tools/toolRunner";
-import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 
@@ -17,7 +16,6 @@ describe("resolveMapCreateDefaults", () => {
     const project = createBlankProject();
     expect(project.maps[project.startMapId]?.tilesetId).toBe(DEFAULT_TILESET_ID);
     expect(tilesetFamily(project, DEFAULT_TILESET_ID)).toBe("oprn-atlas");
-    expect(tilesetFamily(project, DEFAULT_TILESET_ID)).not.toBe(tilesetFamily(project, FOREST_HARMONY_ID));
     const spec = resolveMapCreateDefaults(project, { parentId: project.startMapId });
     expect(spec.preset).toBe("blank");
     expect(spec.tilesetId).toBe(DEFAULT_TILESET_ID);
@@ -107,7 +105,6 @@ describe("parent-child transfer pair", () => {
     expect(addParentChildTransfers(parentId, childId)).toBe(true);
     const project = store.getCurrent();
     const parent = project.maps[parentId]!;
-    const child = project.maps[childId]!;
     expect(firstFreeCell(parent)).not.toEqual({ x: parent.events[parent.events.length - 1]!.x, y: parent.events[parent.events.length - 1]!.y });
     expect(collectMapLinkStats(project, parentId).outgoingTransfers).toBe(beforeParentOut + 1);
     expect(collectMapLinkStats(project, childId).outgoingTransfers).toBe(1);
