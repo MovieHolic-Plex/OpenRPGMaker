@@ -52,7 +52,7 @@ def author():
     SOURCE.joinpath('round10-detail-sources.json').write_text(json.dumps(records,ensure_ascii=False,indent=2,default=str)+'\n')
     cands=[]
     for r in records:
-        asset='review-'+r['id'];cands.append({'id':r['id'],'name':r['name'],'role':'주택','width':r['width'],'height':r['height'],'authoring':'native-parts','reference':'arch:cream','components':[{'source':'arch:'+asset,'rect':[0,0,r['width'],r['height']],'at':[0,0],'replace':False}],'entrance':r['entrance'],'description':r['name']+' · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.','lighting':'원본 왼쪽 위 광원','perspective':'3/4 탑뷰 · 지붕 윗면과 남쪽 정면','source':'authored-native-grid/round-10','silhouette':r['name'],'round':10,'nativeAssetHashes':{asset:r['sourcePngHash']}})
+        asset='review-'+r['id'];cands.append({'id':r['id'],'name':r['name'],'role':'주택','width':r['width'],'height':r['height'],'authoring':'native-parts','reference':'arch:cream','components':[{'source':'arch:'+asset,'rect':[0,0,r['width'],r['height']],'at':[0,0],'replace':False}],'entrance':r['entrance'],'description':r['name']+' · 버들항 통나무 키트(bd-out-cabin·bd-out-log-*) 칸만 사용. 문은 한 곳, 창은 모서리·문 옆 없음.','lighting':'원본 왼쪽 위 광원','perspective':'3/4 탑뷰 · 지붕 윗면과 남쪽 정면','source':'authored-native-grid/round-10','silhouette':r['name'],'round':10,'material':'log','nativeAssetHashes':{asset:r['sourcePngHash']}})
     SOURCE.joinpath('round10-candidates.json').write_text(json.dumps(cands,ensure_ascii=False,indent=2)+'\n')
     print('Authored',len(records),'round-10 candidates; seed unchanged')
 if __name__=='__main__':author()

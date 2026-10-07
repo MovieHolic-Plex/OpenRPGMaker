@@ -37,7 +37,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-01": "bc55279e984f4383893fa5537f6a5dbf556dd1f93ef6c54a969bb3076ea31863"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-02",
@@ -77,7 +78,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-02": "e0d0e9fd0242d695f6a93e21a1910de36ac79db8154326c8df49bdb41530d882"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-03",
@@ -117,7 +119,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-03": "c18dbd51781236383486d434df084697b1f55d18dd7b2d2093461261606e1a1a"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-04",
@@ -157,7 +160,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-04": "ed3875f61af8e52c49efdb0d2d1c2ee39e24c8fb0245d5e4fc9e79b51f2dacfe"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-05",
@@ -197,7 +201,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-05": "2157f4de22275ee619adeeb9207a99e5e68690899883c03be85f4fb835017774"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-06",
@@ -237,7 +242,8 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-06": "8b8562099c7b07c47b13873d44bd9ce637c09ae328f350c406acce771c7802c6"
-    }
+    },
+    "material": "log"
   },
   {
     "id": "r10-building-07",
@@ -277,6 +283,7 @@
     "round": 10,
     "nativeAssetHashes": {
       "review-r10-building-07": "0ee4d10fdf56c3dcf3bcc211be7111885930c9548f006ca4cbc393ee0dfbcffd"
-    }
+    },
+    "material": "log"
   }
 ]
