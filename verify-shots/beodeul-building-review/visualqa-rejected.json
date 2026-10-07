@@ -1,11 +1,9 @@
 {
-  "profile": "4d86e474f13e18adbe1c73c81e1181c082a899a823b90db191df073f32ced86f",
+  "profile": "c3de3ef037efe92e337807c7e1d32ff82e71ee9dea403be3d04c1c60ebaaac5a",
   "stage": "texture",
   "failed": [
-    "r7-building-16",
-    "r7-building-18",
-    "r7-building-19",
-    "r7-building-20"
+    "r8-building-06",
+    "r8-building-07"
   ],
   "reviews": {
     "r2-building-01": {
@@ -23,15 +21,15 @@
         },
         {
           "axis": "palette",
-          "score": 99
+          "score": 98
         },
         {
           "axis": "light_consistency",
-          "score": 98
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Roof shingles retain fine orange highlights, dark recessed grooves and rounded relief at the reference's dot scale. Plaster has dense small flecks, with compatible brown framing, shaded wooden entry and dark window. Ridge highlights and eave shadows fit the original lighting."
+      "observations": "Roof shingles retain dense granular highlights and dark rounded relief, matching the rectangular roof on the reference sheet. Plaster retains fine irregular dots and original-sized timber outlines. Contrast and eave shading fit the references. One visible wooden door."
     },
     "r2-building-02": {
       "id": "r2-building-02",
@@ -44,11 +42,11 @@
         },
         {
           "axis": "wall_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "palette",
-          "score": 99
+          "score": 98
         },
         {
           "axis": "light_consistency",
@@ -56,7 +54,7 @@
         }
       ],
       "issues": [],
-      "observations": "The steep roof preserves granular tiles, bright amber relief on its left plane and darker orange-purple recesses on its right. Gable and both facade levels retain fine plaster speckling and original-scale framing. Window, wooden entry and eave shading remain compatible with the reference."
+      "observations": "The steep roof preserves fine red shingle relief and the reference's bright stepped treatment on the left plane. Gable and both plaster stories retain small irregular grain, thin framing, and shaded upper edges. The upper openings are windows; one wooden door is visible downstairs."
     },
     "r2-building-03": {
       "id": "r2-building-03",
@@ -65,7 +63,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 97
+          "score": 96
         },
         {
           "axis": "wall_grain",
@@ -73,15 +71,15 @@
         },
         {
           "axis": "palette",
-          "score": 99
+          "score": 98
         },
         {
           "axis": "light_consistency",
-          "score": 97
+          "score": 96
         }
       ],
       "issues": [],
-      "observations": "Main and projecting roofs retain detailed orange shingles with small highlights and deep tile grooves. The cream walls and triangular gable keep the reference's plaster flecks and brown timber scale. Brighter left roof faces, darker right faces and eave shadows remain coherent through the roof junction."
+      "observations": "Intersecting roof sections retain granular shingles, bright left-facing tile edges, and darker right-facing roofing. Plaster dots and timber thickness remain compatible with the originals. The foreground wing has one wooden entry; the exposed background below the rear wing does not show another enclosed-room entrance."
     },
     "r2-building-04": {
       "id": "r2-building-04",
@@ -98,15 +96,15 @@
         },
         {
           "axis": "palette",
-          "score": 99
+          "score": 98
         },
         {
           "axis": "light_consistency",
-          "score": 98
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "The broad hipped roof maintains dense, relieved shingles rather than coarse flat cells. Both wall levels preserve fine plaster grain, narrow brown framing and detailed dark windows. Warm ridge and left-plane highlights, darker right roofing and shaded eaves match the established rendering."
+      "observations": "The wider roof maintains small highlighted shingles and a darker hip plane without coarse replacement marks. Both plaster stories preserve fine stippling, narrow timber braces, and reference-compatible contrast. Five windows and one ground-floor wooden door are visible."
     },
     "r2-building-05": {
       "id": "r2-building-05",
@@ -123,7 +121,7 @@
         },
         {
           "axis": "palette",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "light_consistency",
@@ -131,7 +129,7 @@
         }
       ],
       "issues": [],
-      "observations": "Roof tiles preserve fine orange relief and dark grooves. The facade uses irregular pink-mauve stones with small highlights, chips and dark mortar compatible with the original sheet's masonry. Stone remains consistent around the window and wooden entry; roof-plane and eave shading fit the reference."
+      "observations": "Roof tiles preserve the original fine warm highlights and dark relief. Stone walls use small irregular pale stones, purple mortar, and granular variation consistent with the stone and church references. Eave shading and outlines remain compatible. One window and one wooden door are visible."
     },
     "sample-11": {
       "id": "sample-11",
@@ -140,48 +138,48 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 43
+          "score": 45
         },
         {
           "axis": "wall_grain",
-          "score": 40
+          "score": 43
         },
         {
           "axis": "palette",
-          "score": 76
+          "score": 78
         },
         {
           "axis": "light_consistency",
-          "score": 84
+          "score": 66
         }
       ],
       "issues": [
         {
           "code": "ROOF_COARSE_GRID",
-          "x": 46,
-          "y": 31,
-          "reason": "Large repeated cells and sparse tan dashes replace the reference's dense small shingles, curved highlights and recessed tile relief."
+          "x": 48,
+          "y": 37,
+          "reason": "Large repeated angular tan marks and broad horizontal brown bands replace the reference's dense, individually shaded shingles. Rounded tile relief and fine texture density are missing."
         },
         {
           "code": "WALL_FLAT_BOXED",
-          "x": 29,
-          "y": 70,
-          "reason": "Broad smooth cream panels and heavy rectangular framing lack the original's fine plaster flecks and nuanced timber texture."
+          "x": 28,
+          "y": 76,
+          "reason": "Plaster infill is almost solid, without the original fine irregular grain. Heavy boxed framing and the coarse rectangular plinth create a substantially different rendering style."
         },
         {
           "code": "PALETTE_CONTRAST_MISMATCH",
-          "x": 47,
-          "y": 63,
-          "reason": "Muted tan, brown and gray-green ramps flatten internal material contrast, especially in the wood and openings, compared with the reference's richer shadow and highlight separation."
+          "x": 40,
+          "y": 60,
+          "reason": "Muted tan and olive outlines give framing, infill, and opening surrounds much weaker value separation than the reference's dark contours and crisp small highlights."
         },
         {
-          "code": "LIGHT_UNIFORM_RIM",
-          "x": 78,
-          "y": 29,
-          "reason": "The shaded roof edge retains a conspicuous pale contour highlight. This perimeter treatment substitutes graphic outlining for the reference's localized, plane-following tile highlights."
+          "code": "LIGHT_RELIEF_MISMATCH",
+          "x": 49,
+          "y": 54,
+          "reason": "Broad flat roof shading and straight rim highlights provide little tile or plane relief. The wall beneath the overhang lacks the reference's pronounced shaded upper plaster band."
         }
       ],
-      "observations": "The roof has a coarse repetitive dash grid inside a thick rim. Walls are mostly smooth beige areas with boxed windows, flat wood and a blocky base strip. Some right-plane darkening is visible, but the simplified relief, muted contrast and bright perimeter produce a graphic toy appearance."
+      "observations": "The roof has sparse manufactured-looking marks; walls have flat cream panels, thick rectangular surrounds, and a coarse block base. Contrast and surface lighting differ materially from the originals. One central wooden door and two windows are visible."
     },
     "r2-building-06": {
       "id": "r2-building-06",
@@ -194,7 +192,7 @@
         },
         {
           "axis": "wall_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "palette",
@@ -206,7 +204,7 @@
         }
       ],
       "issues": [],
-      "observations": "The broad roof preserves dense orange tile highlights, dark recessed seams, and the reference's native grain scale. Plaster retains fine mottling within narrow timber framing. Chimney shading and eave shadow remain compatible; one wooden entry is visible."
+      "observations": "Dense orange shingles retain small rounded highlights and dark recesses. Cream plaster preserves fine speckling, with timber and wooden entry rendered at compatible pixel scale. Roof, chimney, and facade contrast fit the references."
     },
     "r2-building-07": {
       "id": "r2-building-07",
@@ -219,7 +217,7 @@
         },
         {
           "axis": "wall_grain",
-          "score": 97
+          "score": 98
         },
         {
           "axis": "palette",
@@ -231,7 +229,7 @@
         }
       ],
       "issues": [],
-      "observations": "Small highlighted tile crowns distinguish the bright left roof plane from the darker orange plane. Both the plaster gable and lower facade retain fine stippling and appropriately sized framing. The square gable opening is a window; one ground-level wooden door is visible."
+      "observations": "The roof has granular tile relief, with brighter shingles on the left plane and darker orange-purple shingles on the right. Both gable and lower plaster retain fine dots. Timber thickness, warm palette, and shading match the established style."
     },
     "r2-building-08": {
       "id": "r2-building-08",
@@ -240,11 +238,11 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 99
+          "score": 98
         },
         {
           "axis": "wall_grain",
-          "score": 97
+          "score": 98
         },
         {
           "axis": "palette",
@@ -256,7 +254,7 @@
         }
       ],
       "issues": [],
-      "observations": "Roof tiles retain the original stone building's granular relief and differentiated plane lighting. The taller masonry body uses small irregular stone marks, mottled interiors, and fine mortar at the established scale. The horizontal floor division does not enlarge the grain; one lower wooden door is visible."
+      "observations": "Orange roof tiles preserve the original highlight size and plane shading. Both stone wall levels contain small mottled stones, irregular highlights, and dark joints rather than plain grid cells. The gable stonework and teal opening remain compatible with the original stone building."
     },
     "r2-building-09": {
       "id": "r2-building-09",
@@ -265,23 +263,23 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "wall_grain",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "palette",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "light_consistency",
-          "score": 100
+          "score": 99
         }
       ],
       "issues": [],
-      "observations": "The church matches the original sheet's bright upper blue tile courses, darker granular lower roof, and finely textured spire. Masonry preserves the original small stone clusters and cream-purple contrast. The yellow tower feature is glazing, and the sole wooden door is at ground level."
+      "observations": "Blue roofing preserves the reference church's bright raised rows and darker granular shingles across the lower roof and spire. Pink-gray masonry retains fine mottling and pale structural bands. Roof highlights, recessed windows, and wall contrast agree with the original church."
     },
     "r2-building-10": {
       "id": "r2-building-10",
@@ -290,23 +288,23 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "wall_grain",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "palette",
-          "score": 100
+          "score": 99
         },
         {
           "axis": "light_consistency",
-          "score": 100
+          "score": 99
         }
       ],
       "issues": [],
-      "observations": "The candidate preserves the original stone house's rounded yellow-orange tile relief, darker right roof plane, speckled stone gable, and finely mottled masonry. Outline scale, palette, and shadows match the original sheet. One wooden entry is visible."
+      "observations": "The roof and stone facade closely match the original stone anchor: rounded bright tiles on the left, dense darker shingles on the right, and finely mottled masonry around the entry and gable. Outlines, palette, and directional contrast are compatible."
     },
     "r3-building-01": {
       "id": "r3-building-01",
@@ -315,7 +313,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "wall_grain",
@@ -331,7 +329,7 @@
         }
       ],
       "issues": [],
-      "observations": "The main roof and projecting gable retain dense shingles with small rounded highlights and dark grooves. Plaster has fine irregular speckles and thin timber framing. Warm colors, brighter left roof faces, and eave shadows fit the references."
+      "observations": "Intersecting roofs retain dense, rounded shingle relief, fine highlights and darker opposing planes. Plaster stippling and timber outlines match the reference scale. One front wooden entry is visible; the right facade object is a pictorial sign."
     },
     "r3-building-02": {
       "id": "r3-building-02",
@@ -340,7 +338,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "wall_grain",
@@ -348,28 +346,28 @@
         },
         {
           "axis": "palette",
-          "score": 97
+          "score": 96
         },
         {
           "axis": "light_consistency",
-          "score": 96
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Both ochre gables have tightly packed tile courses, small highlights, and shaded grooves; the rear red roofing retains comparable grain. Plaster speckles and timber outlines remain at reference scale. Roof highlights consistently favor the left-facing planes."
+      "observations": "Golden gables preserve granular tile relief and plane-dependent highlights; connecting orange roofing retains the reference texture density. Walls use fine plaster dots and compatible timber framing. One lower-left wooden door is visible. Ground between the wings is outdoor space; the other framed openings are windows."
     },
     "r3-building-03": {
       "id": "r3-building-03",
       "sha": "31a3cdd2a1a84e731d995692593f9a8038b643f4e685c589b0b3e897f9f21906",
-      "verdict": "PASS",
+      "verdict": "FAIL",
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 98
+          "score": 93
         },
         {
           "axis": "wall_grain",
-          "score": 96
+          "score": 98
         },
         {
           "axis": "palette",
@@ -377,11 +375,18 @@
         },
         {
           "axis": "light_consistency",
-          "score": 97
+          "score": 96
         }
       ],
-      "issues": [],
-      "observations": "The main roof and awning preserve dense red-and-ochre shingle relief. Exposed plaster retains fine dots and thin timber seams; the wooden counter has restrained horizontal shading. Colors and roof/eave lighting remain compatible with the original."
+      "issues": [
+        {
+          "code": "ROOF_EDGE_CUT",
+          "x": 56,
+          "y": 82,
+          "reason": "A rectangular cream notch interrupts the canopy's tiled front lip. Shingle rows end abruptly around it without a framed roof opening or a continuous finished eave."
+        }
+      ],
+      "observations": "Main roofing and canopy retain fine orange-purple shingle texture, and the plaster retains reference-sized stippling. The canopy's central lower edge visibly breaks that otherwise coherent finish. The left wooden entry remains exposed; the counter does not conceal it."
     },
     "r3-building-04": {
       "id": "r3-building-04",
@@ -398,7 +403,7 @@
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -406,7 +411,7 @@
         }
       ],
       "issues": [],
-      "observations": "The olive roof retains granular shingles, pale highlights, and a darker right slope. Plaster speckles and fine brown framing match the reference scale. The changed roof color preserves sufficient relief and compatible lighting."
+      "observations": "Olive roofing preserves small rounded tile clusters, dense shadow pixels and directional highlights across the main and annex planes. Cream plaster grain and narrow timber outlines remain compatible. The changed roof color maintains readable contrast. One wooden entry is visible."
     },
     "r3-building-05": {
       "id": "r3-building-05",
@@ -431,7 +436,7 @@
         }
       ],
       "issues": [],
-      "observations": "The blue tower roof has fine clustered shingles and bright left-edge accents; the orange chapel roof retains dense tile relief. Both wall sections use small irregular pink-gray stones and dark mortar. These materials and their directional shading match the reference sheet."
+      "observations": "Blue tower shingles and orange gable tiles retain the original sheet's fine relief and left-lit highlights. Masonry has dense small mortar marks and stone grain rather than broad flat blocks. One wooden entry is visible in the lower right body; tower glazing and the circular gable window are not entries."
     },
     "r3-building-06": {
       "id": "r3-building-06",
@@ -452,11 +457,11 @@
         },
         {
           "axis": "light_consistency",
-          "score": 98
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Both roof sections retain dense, small shingles with rounded relief and highlights following their slopes. Plaster has fine scattered grain; timber edges, warm colors, and shading match the originals."
+      "observations": "Orange roofs retain dense shingles with small highlights, dark tile relief, and shaded adjoining planes. Plaster retains fine mottled flecks and compatible timber line weight. One visible ground-floor door; the framed emblem is a sign."
     },
     "r3-building-07": {
       "id": "r3-building-07",
@@ -465,11 +470,11 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 97
+          "score": 98
         },
         {
           "axis": "wall_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "palette",
@@ -481,7 +486,7 @@
         }
       ],
       "issues": [],
-      "observations": "The tall gables and connecting roof preserve granular shingles, bright tile lips, and darker opposing planes. Walls retain original-scale plaster flecks and timber contrast. The ground between wings visibly remains outdoors; only one wooden entry is visible."
+      "observations": "Gabled roofs preserve granular orange shingles, bright left-facing courses, and darker right-facing tiles. Walls retain fine plaster speckling and original-sized framing. One wooden door is visible; the central gap is outdoor space and the upper framed object is a sign."
     },
     "r3-building-08": {
       "id": "r3-building-08",
@@ -498,15 +503,15 @@
         },
         {
           "axis": "palette",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "light_consistency",
-          "score": 96
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Orange and slate-blue roofs both have dense individual shingle facets and directional highlights. The blue recoloring preserves texture relief. Fine plaster speckling, narrow framing, and window shading remain compatible with the reference."
+      "observations": "Orange and slate-blue roofs both retain small shingle highlights and dark granular relief. The blue gable distinguishes its bright and shaded planes. Plaster flecks and timber thickness remain compatible with the reference. The ground-floor door remains visible beside the signs."
     },
     "r3-building-09": {
       "id": "r3-building-09",
@@ -515,7 +520,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 96
+          "score": 95
         },
         {
           "axis": "wall_grain",
@@ -523,15 +528,15 @@
         },
         {
           "axis": "palette",
-          "score": 96
+          "score": 95
         },
         {
           "axis": "light_consistency",
-          "score": 95
+          "score": 94
         }
       ],
       "issues": [],
-      "observations": "The rounded cap contains tightly packed shingle grain with lighter upper-left areas and darker lower edges. Tapered plaster retains small irregular flecks, and the stone footing has fine masonry detail. Muted roof colors retain sufficient relief and compatible lighting."
+      "observations": "The taupe roof cap retains dense highlighted and shadowed shingle marks with a dark underside. Tapered plaster walls preserve fine speckling, edge shading, and a granular stone foundation. Contrast is quieter than the orange reference but texture remains legible. One arched wooden entry is visible."
     },
     "r3-building-10": {
       "id": "r3-building-10",
@@ -540,7 +545,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 97
+          "score": 96
         },
         {
           "axis": "wall_grain",
@@ -548,15 +553,15 @@
         },
         {
           "axis": "palette",
-          "score": 97
+          "score": 96
         },
         {
           "axis": "light_consistency",
-          "score": 97
+          "score": 96
         }
       ],
       "issues": [],
-      "observations": "The tan main roof retains dense rounded shingle marks, bright upper lips, and dark recesses; the orange entry roof uses compatible grain. Plaster flecks and timber outlines remain at the original dot scale. Both roof palettes preserve coherent highlight direction."
+      "observations": "The tan main roof retains tightly packed tile relief and bright ridge highlights; the orange gable preserves the reference's shingle granularity. Plaster panels retain fine flecks and compatible timber outlines. One door is visible in the smaller wing; the lower-right framed object is a sign."
     },
     "r6-building-01": {
       "id": "r6-building-01",
@@ -565,7 +570,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "wall_grain",
@@ -573,7 +578,7 @@
         },
         {
           "axis": "palette",
-          "score": 96
+          "score": 95
         },
         {
           "axis": "light_consistency",
@@ -581,7 +586,7 @@
         }
       ],
       "issues": [],
-      "observations": "Brown shingles retain dense staggered light and dark clusters with visible tile relief. Plaster panels and the gable retain fine multitone specks; timber outlines match the reference scale. Roof shading darkens toward the right. One central wooden entry is visible."
+      "observations": "Brown roofing retains dense staggered shingles, small highlight rims, and recessed dark joints. The right roof area is darker. Cream plaster preserves fine speckles beneath narrow timber framing. Warm browns and teal glazing fit the reference contrast. One wooden entry is visible."
     },
     "r6-building-02": {
       "id": "r6-building-02",
@@ -590,7 +595,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "wall_grain",
@@ -602,11 +607,11 @@
         },
         {
           "axis": "light_consistency",
-          "score": 95
+          "score": 96
         }
       ],
       "issues": [],
-      "observations": "The slate blue roof has tightly staggered shingles with small highlights and dark overlapping edges. Both facade levels preserve fine plaster grain and reference-sized timber framing. Roof shading is compatible with the upper-left light. The ground-floor wooden door is the only visible entry."
+      "observations": "Slate-blue shingles have closely packed highlights and dark relief at compatible native pixel scale. Both facade levels retain fine plaster grain and narrow timber seams. Roof shading, cream walls, and warm wood accents remain compatible with the references. One ground-floor door is visible."
     },
     "r6-building-03": {
       "id": "r6-building-03",
@@ -615,7 +620,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "wall_grain",
@@ -631,7 +636,7 @@
         }
       ],
       "issues": [],
-      "observations": "Ochre shingles have granular highlights, staggered dark edges, and a bright upper course. Stone walls retain small irregular blocks, fine internal variation, and narrow mortar comparable to the original masonry. Warm colors and lighting remain compatible. One wooden entry is visible."
+      "observations": "Ochre roofing shows dense staggered tile relief and small bright caps along the upper edge. Pink-gray masonry preserves irregular stone mottling and fine dark mortar comparable to the original stone buildings. Chimney and facade shading are coherent. One wooden entry is visible."
     },
     "r6-building-04": {
       "id": "r6-building-04",
@@ -656,7 +661,7 @@
         }
       ],
       "issues": [],
-      "observations": "The rounded olive roof retains dense overlapping tile marks and small relief highlights, with darker shading toward the right. Plaster speckling and dark timber framing match the original texture scale. The muted roof color fits the warm facade. One wooden entry remains unobstructed."
+      "observations": "The curved olive roof retains small, densely packed shingle highlights and shadows, with darker rendering toward the right edge. Plaster speckles and thin timber framing match the reference grain scale. Earthy colors and directional shading remain compatible. One wooden entry is visible."
     },
     "r6-building-05": {
       "id": "r6-building-05",
@@ -681,7 +686,7 @@
         }
       ],
       "issues": [],
-      "observations": "The blue conical roof shows dense staggered shingles with bright edges and dark tile feet. Tower plaster retains small multitone flecks, and the stone foundation has fine masonry grain. Right-side shading gives the tower volume without losing texture. One arched wooden entry is visible at the base."
+      "observations": "The blue conical roof has dense shingle relief with small highlights and a darker right side. Tower plaster carries fine scattered flecks and stepped side shading; the stone plinth retains granular masonry detail. Blue, cream, and brown values fit the reference style. One arched wooden entry is visible."
     },
     "r6-building-06": {
       "id": "r6-building-06",
@@ -698,7 +703,7 @@
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -706,7 +711,7 @@
         }
       ],
       "issues": [],
-      "observations": "The taupe roof retains dense staggered shingles with small highlights and dark overlaps at the reference's pixel scale. Plaster panels retain fine irregular speckles and narrow timber framing. Muted roof colors preserve relief, with compatible upper-left lighting and eave shadows."
+      "observations": "Taupe roofing retains dense staggered shingles, small raised highlights and dark tile recesses. Plaster preserves fine pixel speckling and reference-sized timber edges. Ridge, chimney and eave shading remain compatible with the originals."
     },
     "r6-building-07": {
       "id": "r6-building-07",
@@ -727,11 +732,11 @@
         },
         {
           "axis": "light_consistency",
-          "score": 96
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "The orange gable and olive wing show dense individual tile highlights, shaded overlaps and brighter left-facing surfaces. Walls retain fine pink-beige plaster grain. Timber, openings and roof shadows maintain contrast compatible with the originals."
+      "observations": "Orange and olive roofs retain granular tile relief, bright left facets and darker right facets. Fine plaster dots, narrow timber framing and small window accents match the reference texture scale. Both roof sections use compatible lighting."
     },
     "r6-building-08": {
       "id": "r6-building-08",
@@ -756,7 +761,7 @@
         }
       ],
       "issues": [],
-      "observations": "The slate roof has granular shingle relief, a darker right hip and highlights that follow the roof planes. The orange annex retains multitone tile texture. Fine plaster speckles, timber shadows and dark accents remain consistent with the reference rendering."
+      "observations": "Slate roofing has dense shingle marks and clearly differentiated hip-plane shading; the orange wing retains rounded tile highlights and dark creases. Dotted plaster and thin timber edges preserve the original grain. Roof, chimney and facade shadows agree."
     },
     "r6-building-09": {
       "id": "r6-building-09",
@@ -765,7 +770,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 94
+          "score": 95
         },
         {
           "axis": "wall_grain",
@@ -773,7 +778,7 @@
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -781,7 +786,7 @@
         }
       ],
       "issues": [],
-      "observations": "The ochre bulb roof remains densely textured with small light caps and dark shingle recesses; courses change around the curved profile. Left-facing portions are brighter. The facade retains fine plaster mottling and reference-compatible brown framing and deep opening shadows."
+      "observations": "The bulbous tan roof carries dense granular shingles with curved, compressed rows around its crown and shoulders. Brighter left surfaces and darker right edges describe its volume. Plaster speckling and timber outlines retain reference-scale detail and contrast."
     },
     "r6-building-10": {
       "id": "r6-building-10",
@@ -790,7 +795,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 94
+          "score": 95
         },
         {
           "axis": "wall_grain",
@@ -798,7 +803,7 @@
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -806,7 +811,7 @@
         }
       ],
       "issues": [],
-      "observations": "Both rounded roofs retain dense small shingle marks, highlights and shaded overlaps. The tower has fine plaster flecks and a mottled stone footing; the house retains dotted plaster panels. Darker right edges and eaves provide compatible directional shading."
+      "observations": "Both rounded roofs retain dense shingle relief with curved rows and darker right surfaces. Tower plaster preserves fine dots and cylindrical shading; house plaster and foundation stone retain granular detail. Outlines, warm material colors and lighting fit the references."
     },
     "r7-building-01": {
       "id": "r7-building-01",
@@ -819,19 +824,19 @@
         },
         {
           "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
           "score": 97
         },
         {
-          "axis": "light_consistency",
+          "axis": "palette",
           "score": 98
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Orange shingles retain dense dark grooves and rounded yellow highlights consistent with the original stone house. Irregular stone courses preserve fine grain; window trim, outlines, and lighting remain compatible with the reference sheet."
+      "observations": "Orange shingles retain dense, rounded highlights and dark tile recesses. Gable and lower walls preserve irregular pink-gray stone and mortar grain matching the original stone anchor. Outline weight, palette and directional lighting fit."
     },
     "r7-building-02": {
       "id": "r7-building-02",
@@ -856,7 +861,7 @@
         }
       ],
       "issues": [],
-      "observations": "The olive roof preserves small shingle highlights, granular shading, and dark tile separations at the original dot scale. Plaster panels retain fine scattered speckles and reference-sized timber framing. Ridge and left-plane highlights follow the roof geometry."
+      "observations": "Olive roofing retains tightly packed shingle relief, small highlights and shaded roof slopes. Cream plaster has fine speckling with reference-sized timber framing. The changed roof color preserves compatible contrast and warm lighting."
     },
     "r7-building-03": {
       "id": "r7-building-03",
@@ -865,23 +870,23 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "wall_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "palette",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "light_consistency",
-          "score": 97
+          "score": 96
         }
       ],
       "issues": [],
-      "observations": "Both roof sections show dense orange shingles with pale raised edges and deep reddish shadow channels. The gable and timber facade retain fine plaster dots and narrow outlines. Highlight direction remains consistent across the upper and lower roofs."
+      "observations": "Both roof levels show granular orange tiles with rounded highlights and maroon recesses. Plaster gable and facade panels retain fine grain; timber and window trim fit the reference scale and contrast. Lighting remains coherent across the joined volumes."
     },
     "r7-building-04": {
       "id": "r7-building-04",
@@ -894,7 +899,7 @@
         },
         {
           "axis": "wall_grain",
-          "score": 98
+          "score": 97
         },
         {
           "axis": "palette",
@@ -902,36 +907,11 @@
         },
         {
           "axis": "light_consistency",
-          "score": 97
+          "score": 96
         }
       ],
       "issues": [],
-      "observations": "Blue-gray wing roofs retain granular shingle relief and small directional highlights; the orange central roof uses compatible texture density. Fine plaster speckling continues across both stories. Timber and window outlines remain consistent with the originals, with coherent light across the roof planes."
-    },
-    "r7-building-05": {
-      "id": "r7-building-05",
-      "sha": "902b352fc97dd4c1fed71eb899d65283b5fcd0370958d74ce4e71e4ab5bcb352",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 98
-        },
-        {
-          "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
-          "score": 98
-        },
-        {
-          "axis": "light_consistency",
-          "score": 97
-        }
-      ],
-      "issues": [],
-      "observations": "The tall roof and descending wing preserve closely spaced orange tiles, rounded bright edges, and dark granular recesses. Plaster remains finely stippled throughout the framed facade. Warm roof colors, teal glazing, and directional shading fit the original rendering."
+      "observations": "Orange central roofing and slate-blue wings retain fine individual shingle relief and dark grooves. Cream plaster carries small, dense flecks with compatible timber outlines. Both roofing colors maintain consistent highlights and shaded planes."
     },
     "r7-building-06": {
       "id": "r7-building-06",
@@ -940,7 +920,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "wall_grain",
@@ -948,7 +928,7 @@
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -956,7 +936,7 @@
         }
       ],
       "issues": [],
-      "observations": "Slate roofing retains dense, small highlighted shingles and distinct hip-plane shading. Plaster has fine irregular stippling with reference-sized timber edges. Cool roofing, teal glass and warm wood remain compatible. One ground-level wooden door is visible."
+      "observations": "Slate shingles retain small bright edges, granular relief and recessed shadows. All three plaster floors preserve reference-scale speckling and timber contrast. Balcony wood and blue window glass remain compatible with the established palette and lighting."
     },
     "r7-building-07": {
       "id": "r7-building-07",
@@ -965,15 +945,15 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "wall_grain",
-          "score": 96
+          "score": 97
         },
         {
           "axis": "palette",
-          "score": 95
+          "score": 96
         },
         {
           "axis": "light_consistency",
@@ -981,7 +961,7 @@
         }
       ],
       "issues": [],
-      "observations": "Orange tower shingles and slate wing shingles retain granular relief with brighter left-facing roof planes. Masonry contains dense small stone faces, irregular joints and fine highlights comparable to the original stone buildings. Upper openings are glazed windows; one wooden entry is visible below."
+      "observations": "The slate wing roof and orange tower roof have dense, shaded shingle marks at the reference scale. Stone walls retain fine chips, flecks and mortar detail. Dark outlines and brighter left-facing roof highlights fit the original sheet."
     },
     "r7-building-08": {
       "id": "r7-building-08",
@@ -998,15 +978,15 @@
         },
         {
           "axis": "palette",
-          "score": 97
+          "score": 98
         },
         {
           "axis": "light_consistency",
-          "score": 96
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "Both gable roofs and the connecting roof show dense orange shingle grain, small yellow highlights and darker tile recesses. Plaster preserves fine dot texture and narrow timber detailing. Roof-plane lighting and facade contrast fit the references. One lower wooden door is visible."
+      "observations": "Orange roofs retain small highlighted shingles and darker tile recesses. Cream plaster carries fine scattered grain; timber divisions and window surrounds use compatible outline thickness and contrast. The different roof planes have coherent lighting."
     },
     "r7-building-09": {
       "id": "r7-building-09",
@@ -1023,181 +1003,6 @@
         },
         {
           "axis": "palette",
-          "score": 95
-        },
-        {
-          "axis": "light_consistency",
-          "score": 95
-        }
-      ],
-      "issues": [],
-      "observations": "The broad slate roof retains small alternating shingle highlights and dark joints throughout, with shading separating its roof planes. Wall panels retain the original fine plaster stipple and timber scale. Cool roof colors and warm facade contrast remain compatible. One ground-level entry is visible."
-    },
-    "r7-building-10": {
-      "id": "r7-building-10",
-      "sha": "460a4cb95f0473700d72baafffa27b938c251bd81b02b8694207da51e64a62e9",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 96
-        },
-        {
-          "axis": "wall_grain",
-          "score": 97
-        },
-        {
-          "axis": "palette",
-          "score": 95
-        },
-        {
-          "axis": "light_consistency",
-          "score": 96
-        }
-      ],
-      "issues": [],
-      "observations": "The ochre main roof and orange foreground gables retain dense granular shingles, discrete highlights and shaded recesses. Fine plaster dots and timber edges match the reference scale. Roof highlights consistently favor the upper-left and left-facing planes. One lower wooden door is visible."
-    },
-    "r7-building-11": {
-      "id": "r7-building-11",
-      "sha": "3a37d11db8ab4fd6393b264fbc4b7d4198f73a4b90b451d5810bf656cd4c19ef",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 96
-        },
-        {
-          "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 96
-        }
-      ],
-      "issues": [],
-      "observations": "The slate-blue roof retains dense staggered shingles with small highlights and dark recesses; the orange gable preserves rounded tile relief. Plaster has fine speckles and narrow timber boundaries. Contrast and roof-plane lighting fit the references."
-    },
-    "r7-building-12": {
-      "id": "r7-building-12",
-      "sha": "7dfc47f5fd0aa0b63b991147429bf3836907b0f80cfcab1c025b5079916c79a1",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 95
-        },
-        {
-          "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
-          "score": 95
-        },
-        {
-          "axis": "light_consistency",
-          "score": 96
-        }
-      ],
-      "issues": [],
-      "observations": "Olive roofing remains granular, with individual shingle highlights and a darker right slope. The orange gable retains warm tile relief. Plaster speckling and timber contrast preserve the original dot scale and texture density."
-    },
-    "r7-building-13": {
-      "id": "r7-building-13",
-      "sha": "ca6b2b70c4d458922cf19ce6715e5c4a6e90f7688ca13ea4fe9eb958d9f62b05",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 96
-        },
-        {
-          "axis": "wall_grain",
-          "score": 97
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 96
-        }
-      ],
-      "issues": [],
-      "observations": "Both orange gables and the blue-gray connecting roof retain dense small tile highlights and recesses. Stone walls show fine irregular masonry and mottled grain at the reference scale. Material contrast and directional lighting remain compatible."
-    },
-    "r7-building-14": {
-      "id": "r7-building-14",
-      "sha": "ec4b0d9ba2b678f4d6f9f15444e4017406bd12ff6b20ff92f8293fe4a523dd63",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 98
-        },
-        {
-          "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
-          "score": 98
-        },
-        {
-          "axis": "light_consistency",
-          "score": 98
-        }
-      ],
-      "issues": [],
-      "observations": "Main and projecting roofs preserve dense orange-red shingle grain, golden highlights, and darker right-facing planes. Cream plaster retains small scattered dots and narrow dark timber boundaries. Texture scale, palette contrast, and lighting closely match the anchors."
-    },
-    "r7-building-15": {
-      "id": "r7-building-15",
-      "sha": "fd954f5a63b97c2333bf13a45b2e7d150351c8f44791588c1bd7593d969f7c13",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 96
-        },
-        {
-          "axis": "wall_grain",
-          "score": 98
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 96
-        }
-      ],
-      "issues": [],
-      "observations": "The three orange gables carry dense rounded shingle relief; visible blue-gray roofing also retains fine grain. Plaster dots, timber edges, and teal glazing maintain reference-sized detail. Highlights and shadows agree across the roof planes."
-    },
-    "r7-building-16": {
-      "id": "r7-building-16",
-      "sha": "cac21c3361a2f040056bd0d8b5510351807b2b0ed909a74a89c0d381e35f9b2b",
-      "verdict": "FAIL",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 89
-        },
-        {
-          "axis": "wall_grain",
-          "score": 96
-        },
-        {
-          "axis": "palette",
           "score": 96
         },
         {
@@ -1205,15 +1010,8 @@
           "score": 95
         }
       ],
-      "issues": [
-        {
-          "code": "ROOF_LINEAR_GRAIN",
-          "x": 31,
-          "y": 45,
-          "reason": "The brown tower cap has extended parallel diagonal highlight chains with insufficient separation into rounded shingles. Its central and lower surface reads as striated weave rather than the reference's individually shaded tiles."
-        }
-      ],
-      "observations": "The olive house roof retains dense highlighted tile marks. Plaster has fine beige speckling, and the foundation has granular masonry. The brown cap's diagonal streaks are the material texture mismatch; its overall left-to-right shading is coherent."
+      "issues": [],
+      "observations": "The broad slate roof maintains compact shingle relief and dense broken highlights, with darker shading toward the right. Plaster flecks and dark timber divisions retain the reference's pixel scale. The large roof remains textured throughout."
     },
     "r7-building-17": {
       "id": "r7-building-17",
@@ -1230,7 +1028,7 @@
         },
         {
           "axis": "palette",
-          "score": 96
+          "score": 95
         },
         {
           "axis": "light_consistency",
@@ -1238,128 +1036,7 @@
         }
       ],
       "issues": [],
-      "observations": "The slate-blue cone has small staggered tile highlights and dark separations compatible with the original church roofing. Its right side is darker. The olive house roof preserves dense shingle relief; plaster speckles and granular stone footing remain at compatible pixel scale. One wooden entry is visible."
-    },
-    "r7-building-18": {
-      "id": "r7-building-18",
-      "sha": "7c828b7182241c24e3d65fe7222119674caf2f88a68f1b81e9f7267a729fe26a",
-      "verdict": "FAIL",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 89
-        },
-        {
-          "axis": "wall_grain",
-          "score": 96
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 95
-        }
-      ],
-      "issues": [
-        {
-          "code": "ROOF_LINEAR_GRAIN",
-          "x": 31,
-          "y": 45,
-          "reason": "Both brown tower caps use parallel diagonal streaks that merge across multiple tile positions. The lower cap surfaces lack the distinct rounded shingle relief visible in the originals."
-        }
-      ],
-      "observations": "Both caps show the same striated brown texture. The central olive roof has finer separated tile marks. Cream plaster retains small mottled dots, and the stone bases retain fine masonry grain. Palette and broad lighting remain compatible."
-    },
-    "r7-building-19": {
-      "id": "r7-building-19",
-      "sha": "7b5b23b2de7fc36c668720f530c7ca636071203621440501264c012ae361d6e9",
-      "verdict": "FAIL",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 86
-        },
-        {
-          "axis": "wall_grain",
-          "score": 97
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 95
-        }
-      ],
-      "issues": [
-        {
-          "code": "ROOF_STREAKED_RELIEF",
-          "x": 84,
-          "y": 51,
-          "reason": "The gold bulb roof's lower face is dominated by long diagonal light bands and zigzag weave. These bands suppress individual rounded tile faces and continue with nearly the same direction across the curved surface."
-        }
-      ],
-      "observations": "The orange wing roofs preserve granular original-looking shingles. Timber and plaster retain fine speckling and narrow dark joints. The gold upper roof has denser diagonal streaks than discrete shingle relief. Its broad left-side illumination is consistent with the surrounding roofs."
-    },
-    "r7-building-20": {
-      "id": "r7-building-20",
-      "sha": "a1d86e3f26838a72bcbeb84f140eb4e30f850feb208eef68ec1f0960bbbe940e",
-      "verdict": "FAIL",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 86
-        },
-        {
-          "axis": "wall_grain",
-          "score": 97
-        },
-        {
-          "axis": "palette",
-          "score": 96
-        },
-        {
-          "axis": "light_consistency",
-          "score": 95
-        }
-      ],
-      "issues": [
-        {
-          "code": "ROOF_STREAKED_RELIEF",
-          "x": 36,
-          "y": 67,
-          "reason": "The gold cap's lower surface forms extended parallel diagonal highlights rather than individually shaded rounded shingles. The texture reads as striped weave across the bulb."
-        }
-      ],
-      "observations": "The orange foreground roof has fine bright tile tips and dark joints compatible with the reference. Plaster and timber retain original-scale grain. The gold cap's continuous diagonal bands are the material mismatch. The visible upper blue openings read as windows."
-    },
-    "r7-building-21": {
-      "id": "r7-building-21",
-      "sha": "e5fd9cb047dd8585337f98b0c800b1d61360580156cb8a98740b65fb2934cfff",
-      "verdict": "PASS",
-      "scores": [
-        {
-          "axis": "roof_grain",
-          "score": 95
-        },
-        {
-          "axis": "wall_grain",
-          "score": 97
-        },
-        {
-          "axis": "palette",
-          "score": 95
-        },
-        {
-          "axis": "light_consistency",
-          "score": 94
-        }
-      ],
-      "issues": [],
-      "observations": "Slate, orange, and olive roofing retain dense small tile highlights and dark underlaps. Plaster preserves fine scattered flecks, with timber widths comparable to the reference. Bright left-facing orange tiles and shaded roof joins give compatible lighting."
+      "observations": "Ochre house shingles and blue tower shingles retain fine highlight and shadow marks. The tapered plaster tower has small irregular flecks, darker side shading and a granular stone footing. Material contrast and light direction remain compatible with the references."
     },
     "r7-building-22": {
       "id": "r7-building-22",
@@ -1384,7 +1061,7 @@
         }
       ],
       "issues": [],
-      "observations": "Brown upper roofing and ochre lower roofing show closely spaced staggered tile relief rather than sparse bands. Fine plaster dots and timber detail match the reference scale. The upper roof darkens toward its right face, and the earthy colors remain compatible."
+      "observations": "Brown and ochre roofs show compact diagonal shingle relief with fine tonal variation. Cream plaster retains scattered small flecks, and timber borders match the reference scale. Roof shading and facade contrast remain coherent despite the changed colours."
     },
     "r7-building-23": {
       "id": "r7-building-23",
@@ -1393,7 +1070,7 @@
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 94
+          "score": 95
         },
         {
           "axis": "wall_grain",
@@ -1409,7 +1086,7 @@
         }
       ],
       "issues": [],
-      "observations": "The broad olive roof retains dense shingle cells with small highlights and recessed dark marks, shading darker toward the right. All three facade levels retain fine plaster flecks and reference-scale timber lines. Window and balcony colors fit the warm plaster and wood."
+      "observations": "Dense olive shingles retain small raised highlights and dark recesses, with shading toward the roof's right edge. Plaster has fine irregular flecks; timber outlines, window trim, and facade contrast remain compatible with the originals."
     },
     "r7-building-24": {
       "id": "r7-building-24",
@@ -1426,7 +1103,7 @@
         },
         {
           "axis": "palette",
-          "score": 96
+          "score": 95
         },
         {
           "axis": "light_consistency",
@@ -1434,16 +1111,41 @@
         }
       ],
       "issues": [],
-      "observations": "The pointed slate roof and olive lower roof both have granular highlighted shingles and dark tile seams. Bright stepped tiles on the lower left slope and a darker right slope distinguish the roof planes. Plaster stippling and timber detail remain consistent across the facade."
+      "observations": "The olive main roof and blue turret retain densely packed tile relief at the original dot scale. Brighter left slopes and darker right slopes establish consistent light. Both facade sections have fine cream plaster grain and narrow dark timber framing."
     },
-    "r7-building-25": {
-      "id": "r7-building-25",
-      "sha": "5e4c5bb725b5bda2ae316304b69d8594edf7c0aaa421fdd374b0db169e1c71f0",
+    "r8-building-01": {
+      "id": "r8-building-01",
+      "sha": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f",
       "verdict": "PASS",
       "scores": [
         {
           "axis": "roof_grain",
-          "score": 95
+          "score": 98
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 98
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "Orange/red roofing shows granular tile highlights, dark rounded recesses, and a convincingly shaded right plane. The triangular gable and lower plaster retain small irregular speckles. Warm roofing, teal glazing, and dark timber fit the reference contrast and lighting."
+    },
+    "r8-building-02": {
+      "id": "r8-building-02",
+      "sha": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 97
         },
         {
           "axis": "wall_grain",
@@ -1455,11 +1157,175 @@
         },
         {
           "axis": "light_consistency",
-          "score": 95
+          "score": 97
         }
       ],
       "issues": [],
-      "observations": "The slate main roof has dense small shingle highlights and shadows; all three orange gables retain bright left-plane tile relief and darker right planes. Fine plaster flecks continue through the gables and lower walls. Timber outlines and warm facade contrast remain compatible with the originals."
+      "observations": "The broad ochre roof has closely spaced shingle ridges and recesses, bright left-facing courses, and a darker receding right plane. Plaster maintains the reference's fine scattered grain and timber outline scale. Colors preserve compatible warm/cool and light/dark relationships."
+    },
+    "r8-building-03": {
+      "id": "r8-building-03",
+      "sha": "ab259e0900fb30da9d22046ff017be82ba5c6686049013fb8bce0e9c0113d7e5",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 97
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 96
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "Blue roofing retains small staggered highlight/shadow clusters and a darker right slope rather than becoming a flat fill. Cream walls carry fine plaster speckles throughout the three floors. Dark framing, warm trim, and teal windows remain compatible with the reference rendering."
+    },
+    "r8-building-04": {
+      "id": "r8-building-04",
+      "sha": "f0eb854cee2fd757f3f483356f8adcebee9da4d63bfacbf2db2b2685de27479c",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 98
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 98
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "Orange roofs retain granular shingles, bright tile lips, dark recesses, and shading following their planes. Plaster preserves fine scattered stippling and original-sized timber outlines. Warm trim, teal glazing, and contact shadows fit the references. One ground-floor wooden door is visible."
+    },
+    "r8-building-05": {
+      "id": "r8-building-05",
+      "sha": "94e01cbc061df7baaf925cde37f72a442cb0a73bf868fc8dac55e6563b0a3e3a",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 97
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 96
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "Blue-gray and orange roofing preserve dense, staggered shingle relief at the reference pixel scale. Both wings use finely stippled plaster and narrow dark timber framing. Roof highlights and eave shadows remain compatible despite the color change. One lower-storey wooden door is visible."
+    },
+    "r8-building-06": {
+      "id": "r8-building-06",
+      "sha": "d0d77315a26af5dc78cb858cd06931a733a6b6747c71d52f414596db2b511beb",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 98
+        },
+        {
+          "axis": "wall_grain",
+          "score": 90
+        },
+        {
+          "axis": "palette",
+          "score": 98
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [
+        {
+          "code": "WALL_MATERIAL_INCONSISTENT",
+          "x": 24,
+          "y": 115,
+          "reason": "The enclosed building switches from stippled plaster above to cobblestone across the entire lower storey. These are distinct wall material treatments, violating the required consistent wall material per building."
+        }
+      ],
+      "observations": "The orange roof has granular tiles with rounded highlight relief and darker opposing-plane shading. Upper plaster stippling and lower stone grain each match the reference scale individually, but the full-storey material switch fails the consistency requirement. One wooden door is visible in the stone storey."
+    },
+    "r8-building-07": {
+      "id": "r8-building-07",
+      "sha": "5c02c0834fccd4108bd047b08a375434bde3c2627262b11da583a18ab67d83e7",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 97
+        },
+        {
+          "axis": "wall_grain",
+          "score": 90
+        },
+        {
+          "axis": "palette",
+          "score": 96
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [
+        {
+          "code": "WALL_MATERIAL_INCONSISTENT",
+          "x": 72,
+          "y": 115,
+          "reason": "Fine plaster and timber cover the upper storey, while the complete lower storey uses pink cobblestone. The facade changes wall material across the same enclosed building, violating the stated consistency requirement."
+        }
+      ],
+      "observations": "Olive shingles retain dense individual highlights, dark seams, and roof-plane shading. Plaster dots and cobblestone mortar remain fine rather than coarse, but the two full-storey wall treatments fail material consistency. The earthy recoloring and lighting fit the references. One ground-floor wooden door is visible."
+    },
+    "r8-building-08": {
+      "id": "r8-building-08",
+      "sha": "e1f8046f10d5be8259522e844211a5dc79e1c36e961c5cd52b14adaa4b8442fd",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 97
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 96
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "Orange and olive roofs retain granular staggered tiles, small highlight lips, and shaded recesses following the roof planes. Both wings share finely stippled plaster with original-sized timber framing. Earth colors, glazing, and eave contrast are compatible. One wooden entry door is visible in the lower left wing."
     }
   },
   "published": false

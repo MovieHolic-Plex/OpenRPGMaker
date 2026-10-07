@@ -99,8 +99,8 @@ def snapshot():
         items=[]
         for row in c.execute('select * from candidates order by position'):
             if row['id'] not in active_ids:continue
-            from visual_gate import verify_receipt
-            if not verify_receipt(DATA,row['id'],row['sha']):continue
+            from visual_gate import admitted
+            if not admitted(DATA,row['id'],row['sha']):continue
             item=json.loads(row['meta']);last=c.execute('select * from decisions where item=? and sha=? order by seq desc limit 1',(row['id'],row['sha'])).fetchone()
             item.update(sha=row['sha'],decision=last['decision'] if last else 'pending',note=last['note'] if last else '',decidedAt=last['at'] if last else None)
             items.append(item)
