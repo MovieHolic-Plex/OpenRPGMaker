@@ -4,7 +4,7 @@
 // 출력: 예제마다 OK(경고 없음) · WARN(경고 전부) · FAIL(오류 전부). 종료 코드 = WARN+FAIL 수.
 // 빈 바닥 수치(엔진 통행 판정): sq = 걸을 수 있는 칸만으로 된 가장 큰 정사각형 변(2 = 통로 폭, 4 이상 = 빈 마당),
 //   e3 = 3×3 이 전부 걸음 칸인 창이 덮는 칸 수(빈 바닥 넓이), walk = 걸음 칸 수. 가게 목표 sq ≤ 2.
-// SAME = 두 예제의 가구 자리가 절반 넘게 겹친다(같은 틀 반복).
+// SAME = 같은 틀 반복(아래 ①②).
 import { readFileSync } from "node:fs";
 import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -39,17 +39,22 @@ for (const p of places) {
     console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%)`, w.join("\n      "));
   } catch (e) { bad++; console.log("FAIL", p.file, String((e as Error).message)); }
 }
-// 같은 틀 반복: 크기가 같은 두 예제(같은 평면 틀)의 가구·탁자 자리(x,y) 겹침 / 적은 쪽 수 > 50% 면 그림만 바꾼 것.
-const seats = new Map<string, Set<string>>();
+// 같은 틀 반복 두 가지:
+//   ① 크기가 같은 두 예제(같은 평면 틀)의 가구·탁자 자리(x,y) 겹침 / 적은 쪽 수 > 50% — 그림만 바꾼 평면.
+//   ② 크기와 무관하게 같은 가구를 같은 자리에 둔 것(id,x,y) 겹침 / 적은 쪽 수 > 35% — 같은 뼈대(주방 줄·카운터·스툴 줄) 복사.
+type Seat = { size: string; pos: Set<string>; trip: Set<string> };
+const seats = new Map<string, Seat>();
 for (const p of places) {
   const ex = JSON.parse(readFileSync(`${EX}/${p.file}.json`, "utf8"));
-  seats.set(`${p.file}@${ex.plan[0].length}x${ex.plan.length}`, new Set([...(ex.objects ?? []), ...(ex.tables ?? [])].map((o: { x: number; y: number }) => `${o.x},${o.y}`)));
+  const items = [...(ex.objects ?? []), ...(ex.tables ?? [])] as { id: string; x: number; y: number }[];
+  seats.set(p.file, { size: `${ex.plan[0].length}x${ex.plan.length}`, pos: new Set(items.map((o) => `${o.x},${o.y}`)), trip: new Set(items.map((o) => `${o.id}@${o.x},${o.y}`)) });
 }
 const names = [...seats.keys()];
+const overlap = (a: Set<string>, b: Set<string>) => { const s = [...a].filter((k) => b.has(k)).length, base = Math.min(a.size, b.size); return { s, base, r: base ? s / base : 0 }; };
 for (let i = 0; i < names.length; i++) for (let j = i + 1; j < names.length; j++) {
-  if (names[i]!.split("@")[1] !== names[j]!.split("@")[1]) continue;
-  const a = seats.get(names[i]!)!, b = seats.get(names[j]!)!;
-  const shared = [...a].filter((k) => b.has(k)).length, base = Math.min(a.size, b.size);
-  if (base && shared / base > 0.5) { bad++; console.log("SAME", `${names[i]} ↔ ${names[j]}: 가구 자리 ${shared}/${base} 겹침 — 업종별로 계산대·진열·문 틈 자리를 바꾼다`); }
+  const A = seats.get(names[i]!)!, B = seats.get(names[j]!)!;
+  const pos = overlap(A.pos, B.pos), trip = overlap(A.trip, B.trip);
+  if (A.size === B.size && pos.r > 0.5) { bad++; console.log("SAME", `${names[i]} ↔ ${names[j]} (${A.size}): 가구 자리 ${pos.s}/${pos.base} 겹침 — 업종별로 계산대·진열·문 틈 자리를 바꾼다`); }
+  else if (trip.r > 0.35) { bad++; console.log("SAME", `${names[i]} ↔ ${names[j]}: 같은 가구·같은 자리 ${trip.s}/${trip.base} — 업종별 뼈대(주방·카운터·좌석 자리)를 바꾼다`); }
 }
 process.exit(bad);

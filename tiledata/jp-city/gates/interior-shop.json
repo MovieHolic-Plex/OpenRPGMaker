@@ -3,88 +3,88 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model sonnet[1m] --effort high",
- "rounds": 5,
- "seconds": 1072,
- "focus": "일본 가게·공공 실내 19곳(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·센토·코인세탁·파출소·의원)과 집 보강(맨션 2LDK+베란다·목조 아파트·단층 옛집), 그리고 거리 건물 문 ↔ 실내 잇기 도구 link_jp_city_interior. sheet1~4 = 예제 맵(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일 이름), _all-x3 = 블록별 새 가구 도감. 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 가게처럼 보이는가(편의점 음료 냉장 벽·섬 진열·계산대+핫스낵, 라멘 L자 카운터·식권기, 이자카야 다다미 좌석, 센토 반다이·탈의실·욕장·후지산 벽화, 코인세탁 세탁기 줄, 交番, 의원 접수·대기·진찰실) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색 뭉침, modern3 팔레트·윤곽·명암, 승인된 street_hand 그림과 같은 게임으로 보이는가) ⑤ 동선(손님: 입구→진열→출구 가까운 계산대, 직원: 카운터 안쪽↔주방·뒷방) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 글자·로고·사람이 그려져 있지 않은가 ⑧ 같은 틀 반복(뒷방 여섯이 다 같은 싱크·그릇장 등) ⑨ 문 잇기: door-link/SUMMARY.md 와 01a~01d(거리 문 앞→실내 도착→거리 복귀, 출하 player.html 실측), 도구 코드(발판 위치·착지 칸이 발판을 다시 밟지 않는가, 여러 칸 문, 실내 출구 탐색이 맨 아래 3줄인 것의 위험) ⑩ 참고문서(interior-shop-index.md·interior-rules.md 「없는 것」)가 조수가 따라 할 수 있게 정확한가. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 【빈 바닥 판정】 interior2/space.txt = 도구 그대로 지은 맵의 엔진 통행 수치(sq = 걸음 칸만으로 된 가장 큰 정사각형 변, 2 = 통로 폭; e3 = 3×3 이 다 걸음 칸인 창이 덮는 칸 수). 3/4 시점이라 키 큰 가구는 발밑 한 줄만 막고 그림은 위로 솟는다 — 그림에서 바닥이 보여도 걸음 칸이 통로 폭이면 빈 바닥이 아니다. 빈 바닥 지적은 sq ≥ 3 인 곳의 좌표로 한다. 【읽기 제한 — 지난 실행이 컨텍스트 폭주로 죽었다】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 기준 그림은 street_hand/_all-x2.png 한 장만, buildings/*.png 는 읽지 마라. 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로. 가구 도감(_all-x3)은 앞 회차에서 봤으니 이번엔 예제 시트만 본다. 지난 지적 확인도 위 파일 목록 안에서만 한다(door-link 는 SUMMARY.md 텍스트로 — 21곳 86/86, 계단 왕복 08s, 되튕김 d 줄).",
+ "rounds": 6,
+ "seconds": 436,
+ "focus": "일본 가게·공공 실내 19곳(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·센토·코인세탁·파출소·의원)과 집 보강(맨션 2LDK+베란다·목조 아파트·단층 옛집), 그리고 거리 건물 문 ↔ 실내 잇기 도구 link_jp_city_interior. sheet1~4 = 예제 맵(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일 이름), _all-x3 = 블록별 새 가구 도감. 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 가게처럼 보이는가(편의점 음료 냉장 벽·섬 진열·계산대+핫스낵, 라멘 L자 카운터·식권기, 이자카야 다다미 좌석, 센토 반다이·탈의실·욕장·후지산 벽화, 코인세탁 세탁기 줄, 交番, 의원 접수·대기·진찰실) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색 뭉침, modern3 팔레트·윤곽·명암, 승인된 street_hand 그림과 같은 게임으로 보이는가) ⑤ 동선(손님: 입구→진열→출구 가까운 계산대, 직원: 카운터 안쪽↔주방·뒷방) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 글자·로고·사람이 그려져 있지 않은가 ⑧ 같은 틀 반복(뒷방 여섯이 다 같은 싱크·그릇장 등) ⑨ 문 잇기: door-link/SUMMARY.md 와 01a~01d(거리 문 앞→실내 도착→거리 복귀, 출하 player.html 실측), 도구 코드(발판 위치·착지 칸이 발판을 다시 밟지 않는가, 여러 칸 문, 실내 출구 탐색이 맨 아래 3줄인 것의 위험) ⑩ 참고문서(interior-shop-index.md·interior-rules.md 「없는 것」)가 조수가 따라 할 수 있게 정확한가. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 【게시 순서】 장소 19곳 게시(interior.mjs --publish)는 이 관문 pass 가 조건이라 지금은 게시 전이다 — 게시 안 된 것 자체는 결함이 아니다. door-link QA 는 게시 전 예제를 도구(build_hand_interior_room→interiorMapId)로 지어 잇는다(SUMMARY 머리에 커밋·방식). 【같은 틀 반복】 space.txt 의 SAME 줄 = 같은 크기 예제끼리 가구 자리 50% 넘게 겹침. 【빈 바닥 판정】 interior2/space.txt = 도구 그대로 지은 맵의 엔진 통행 수치(sq = 걸음 칸만으로 된 가장 큰 정사각형 변, 2 = 통로 폭; e3 = 3×3 이 다 걸음 칸인 창이 덮는 칸 수). 3/4 시점이라 키 큰 가구는 발밑 한 줄만 막고 그림은 위로 솟는다 — 그림에서 바닥이 보여도 걸음 칸이 통로 폭이면 빈 바닥이 아니다. 빈 바닥 지적은 sq ≥ 3 인 곳의 좌표로 한다. 【읽기 제한 — 지난 실행이 컨텍스트 폭주로 죽었다】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 기준 그림은 street_hand/_all-x2.png 한 장만, buildings/*.png 는 읽지 마라. 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로. 가구 도감(_all-x3)은 앞 회차에서 봤으니 이번엔 예제 시트만 본다. 지난 지적 확인도 위 파일 목록 안에서만 한다(door-link 는 SUMMARY.md 텍스트로 — 21곳 86/86, 계단 왕복 08s, 되튕김 d 줄).",
  "files": {
-  "verify-shots/jp-city/interior2/sheet1.png": "32dede9210d2bbdb73b01c272f7b1c91e30037be16e8ec078c6396265c986bd9",
-  "verify-shots/jp-city/interior2/sheet2.png": "8f48693f07534853f8fe18dd19bc7c65c8843752f8386ec39a35fd54477977a9",
-  "verify-shots/jp-city/interior2/sheet3.png": "d8ce4b06e7072b3d82daa8b81266cc5a09a1ec84b8fa2bc30b53b7b6ce97e8ff",
+  "verify-shots/jp-city/interior2/sheet1.png": "1afdc2bc709fe83959e4731e5505cdcf2c2e0efcd36dc35a0d54eb2128073b3d",
+  "verify-shots/jp-city/interior2/sheet2.png": "63aa7ccd67d7e5131761eda8247eb636a98ca6d7f1a2f07c1a6252582c50769e",
+  "verify-shots/jp-city/interior2/sheet3.png": "7c965bf0fa80fd90402f4abe2bb2f4f11ebab17fe53b4112dbe1573be502ec19",
   "verify-shots/jp-city/interior2/sheet4.png": "28b3419a42d3b574a6c7bf45ce10ab48d3693d6feff57ddcc960ed20856e777f",
-  "verify-shots/jp-city/interior2/space.txt": "f7a3986cdafd3ac8aa2c9cf49db93e6ad84a65647503f013ce02a917ca0c80cd",
-  "tiledata/jp-city/interior/examples/places2.json": "0b3917763ce049a4f5e39c14a4240d8b8f5225e00038901cde3448f5d2199906",
+  "verify-shots/jp-city/interior2/space.txt": "d303bfc38766b7323d054a94737062ad4090a2ce72a7bf7b2b942dec0515d294",
+  "tiledata/jp-city/interior/examples/places2.json": "1fe79507de292f57c29ef1f82dd4683d36c608bdae4503030f5285d0bfdc8fc5",
   "tiledata/jp-city/interior/examples/konbini.json": "1f2cfff660e94eb224ee09ee823fc2241d20d0d0837285b64bcea39c4a1df9e6",
-  "tiledata/jp-city/interior/examples/ramen.json": "12cd0d7e439853443dc8fcfadfb48537eeb60a1a4dae0b372a5877cc9ec25686",
-  "tiledata/jp-city/interior/examples/sento.json": "f1fe19577167477fe71e59e59b52d0920aa349c7a592409e5215c51171b7cdf1",
+  "tiledata/jp-city/interior/examples/ramen.json": "c58a3d19e92cbfe3206843e8e463ec460bc95ba95bdd5914d1ef32cbbd835c47",
+  "tiledata/jp-city/interior/examples/sento.json": "8d4f4b9fc5b8dc8ff79eca37d3d3c151842fe953a06ae7f85a60585d8f95701f",
   "tiledata/jp-city/interior/examples/mansion-2ldk.json": "3388d0c4b41cecfa1af7c1923914bcbdf8f07b0b7176179053427a26a35e2470",
-  "tiledata/jp-city/refs/interior-shop-index.md": "e6711b9eae3fcfc3e8e677dc9ba3a43ddc8fa899a67207253feedd447ba51a51",
-  "tiledata/jp-city/refs/interior-rules.md": "3788772f6b08649206d5ac05b19f976acfc67df335c68c30a8fcd9e821dfc392",
-  "verify-shots/jp-city/door-link/SUMMARY.md": "a0c3af4af2a249e25ddde67ec09d671f299b8c6f75971273667b0f2ad3f39ef3",
+  "tiledata/jp-city/refs/interior-shop-index.md": "ffb04f8ae831064f6da1391da9f98166084c331805e21d41f14a535a4f8094df",
+  "tiledata/jp-city/refs/interior-rules.md": "6e63bea96163d9a9569ca7cfac87acadd8b855373f71021010aa2228513ba227",
+  "verify-shots/jp-city/door-link/SUMMARY.md": "b8a70744e2c6ac8e1a5e6b74ff77e8b60c724220dcad43d012e75cf0030fdb4d",
   "verify-shots/jp-city/door-link/01a-street.png": "545645d942fa74ec3c983fd5ae5d5438fcc6fb78501aa264d417b64b6104458f",
   "verify-shots/jp-city/door-link/01b-inside.png": "b585d4b1832c17ef00e3a3c62da2b406c353b1f7e0e364ca0c93f10c17b45531",
   "verify-shots/jp-city/door-link/18c-far.png": "9228619b796cd35078ab8ce794dba742623002b488294d1580eb0ff986fe8b13",
   "verify-shots/jp-city/door-link/19c-far.png": "3388b16e82d41d41c490566a2c832d9f0f4b581b1de03c43196ec022e420f836",
   "tiledata/jp-city/interior/examples/izakaya.json": "69fad0a0bb5fe9f3284b2181fd63cd15edafc9bf16ea626c5360c59319a78de3",
   "tiledata/jp-city/interior/examples/koban.json": "8defdd61a4c6929a783427c39c72d30530bc9fd039844b72cb670c19070757f5",
-  "src/editor/tools/jpCityInteriorLink.ts": "6d632b1ffcf28571beed963ddece3e732424e2f4e5e5a3efce62bafd3c5ef62a"
+  "src/editor/tools/jpCityInteriorLink.ts": "a2154bf61728733c30e186ab06bece81dfdae6f2ee9dd82479ed9021137faf0b"
  },
  "findings": [
   {
    "severity": "major",
-   "file": "src/project/jpCityPlaceReferences.ts · src/project/regionReferences/ · public/assets/region-references/ · verify-shots/jp-city/door-link/SUMMARY.md",
-   "where": "가게·공공 실내 19곳의 장소 게시물 전체 (jp-city-konbini-14x11 … jp-city-hiraya-15x14). jp-city 장소 파일은 6곳뿐이고 19곳 파일이 없다",
-   "problem": "19곳이 장소 등록부·스냅샷·region-references 어디에도 없다. 이 체크아웃에서 link_jp_city_interior place:id 는 장소를 못 찾는다. SUMMARY 86/86 은 게시되지 않은 커밋에서 재현할 수 없고 커밋 해시·게시 여부도 없다. 그런데 jpCityReferences.json 번들·interior-shop-index.md 는 import/link 를 이미 안내한다.",
-   "fix": "interior.mjs --publish 후 커밋하고 깨끗한 체크아웃에서 door-link QA 를 다시 돌린다. SUMMARY 머리에 해시와 게시 후 실행을 적는다. 게시 전에는 색인에 게시 후 가능 단서를 단다."
+   "file": "tiledata/jp-city/interior/examples/{ramen,izakaya,sushi,kissaten}.json",
+   "where": "주방 줄 y=3 의 fd-prep(3,3)·fd-sink(4,3)(라멘·이자카야·초밥집 동일), fd-fridge(1,3)(이자카야·초밥집), fd-counter y=5, fd-stool 줄 y=6. 가구 자리 겹침 라멘↔초밥집 14/18, 라멘↔이자카야 15/20, 이자카야↔초밥집 13/18, 라멘↔킷사텐 9/15. 라멘·킷사텐은 plan 문자열도 동일. sheet1 도 같은 뼈대로 읽힘",
+   "problem": "음식점 넷이 주방 윗줄 + 카운터 + 스툴 한 줄 + 문 틈 두 칸의 같은 틀이다. 작은 가게 여섯은 갈렸지만 같은 문제가 음식점으로 옮겨갔다. space.txt 의 SAME 은 같은 크기끼리만 비교해서 이를 못 잡는다.",
+   "fix": "업종별 뼈대를 다르게 한다(초밥집: 방 가운데 가로 카운터+동쪽 벽 주방, 라멘집: ㄱ자 카운터 안쪽 주방+문 옆 식권기, 이자카야: 북서 구석 주방+다다미 중심, 킷사텐: 벽에 붙은 카운터+탁자 둘 이상). check-interior-examples 의 겹침 검사는 크기와 무관하게 모든 쌍을 비교하게 바꾼다."
   },
   {
    "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/places2.json",
-   "where": "34행(슈퍼 rules 2번)·311행(맨션 rules 2번)",
-   "problem": "link 안내 문장의 place 가 jp-city-supermarket-16x14 / jp-city-mansion-2ldk-15x20 인데 실제 placeId 는 -16x12 / -15x18. interior.mjs:103 이 rules 를 등록부에 그대로 넣으므로 게시하면 조수가 존재하지 않는 id 로 호출해 invalid-args 가 난다. check-interior-examples 는 못 잡는다.",
-   "fix": "두 문장을 고치고 rules 의 id 를 placeId 에서 생성하거나, check-interior-examples 에 rules 안 place id == placeId 검사를 넣는다."
+   "file": "tiledata/jp-city/refs/interior-shop-index.md",
+   "where": "8행 「link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 no-interior-exit, …)」",
+   "problem": "src/editor/tools/jpCityInteriorLink.ts:51-52·169-170 과 interior-rules.md:91 은 덩이가 둘 이상이면 interior-exit-ambiguous 로 거절한다. 색인만 옛 규칙이라 조수가 맨 아래 줄에 걸음 칸을 둘 이상 남겨도 된다고 믿고 거절당한다.",
+   "fix": "8행을 '여러 덩이면 interior-exit-ambiguous 거절 — 맨 아래 줄의 다른 걸음 칸은 모두 막는다' 로 고친다."
   },
   {
-   "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/{bakery,bookstore,pharmacy,florist,yaoya,barber}.json",
-   "where": "objects·tables 좌표: bookstore↔pharmacy 17/18, bakery↔pharmacy 16/18, bakery↔bookstore 15/18, florist↔yaoya 15/16, barber↔florist 12/16. 계산대 (5,7)(6,7)(7,7) 와 문 틈 x=3,4 가 6곳 공통. sheet2 에서도 같은 계산대가 같은 자리에 반복",
-   "problem": "작은 가게 6곳이 템플릿 둘에 스프라이트만 바꾼 구조라 같은 틀 반복이다. 뒷방만 갈랐고 앞방이 같다.",
-   "fix": "업종별 구조를 바꾼다: 계산대 위치·문 틈 x·진열 구조(이발소 문 옆 벽 계산대, 꽃집 포장대 중심, 채소가게 가운데 평대, 서점 가운데 책장 섬). check-interior-examples 에 다른 장소와 가구 좌표 겹침 50% 이하 검사를 추가한다."
+   "severity": "minor",
+   "file": "tiledata/jp-city/refs/interior-shop-index.md · tiledata/jp-city/interior/examples/konbini.json",
+   "where": "편의점 행 「창가 잡지대」「계산대 + 뒤 담배 선반」「북쪽 벽 음료 냉장고」; cv-magazine(1,3), cv-back-shelf(9,3)(11,3), cv-cooler(5,3)(6,3), cv-register(9,8)",
+   "problem": "창이 없고 잡지대는 북쪽 벽 왼쪽 끝이다. cv-back-shelf 는 계산대 뒤가 아니라 뒷방 안에 있고, 계산대(y=8) 뒤 y=7 은 열린 매장 바닥이다. 음료 냉장 cv-cooler 는 두 칸뿐이다.",
+   "fix": "문구를 예제에 맞추거나 예제를 문구에 맞춘다(계산대를 북쪽 벽 아래로 옮겨 뒤 선반을 두고, 냉장 줄을 넓힌다)."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/hiraya.json · tiledata/jp-city/refs/interior-shop-index.md",
+   "where": "zone h2-engawa (6,8)-(10,12), plan 맨 아래 줄 y=13 이 출구(x=2) 외 전부 벽, chabudai(7,11)·zabuton ×4, h2-garden-step(10,12)",
+   "problem": "색인은 남쪽 엔가와 툇마루·디딤돌이라 하지만 남쪽이 벽으로 막힌 마루방이다. sheet4 에서 마루 식당방으로 읽고, 디딤돌은 방 구석의 돌로 보인다.",
+   "fix": "문구를 '마루방'으로 바꾸거나, 남쪽을 난간·유리 미닫이로 열되 맨 아래 줄 출구 덩이가 하나로 유지되게 한다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/kissaten.json",
+   "where": "fd-lantern(7,1), fd-beer-mug(2,6), fd-table(1,6) 한 개",
+   "problem": "킷사텐에 이자카야 표지인 붉은 초롱이 있고, 탁자 위 노란 잔이 맥주로 읽힌다. 탁자가 하나뿐이다.",
+   "fix": "초롱을 빼고 잔을 커피잔 굿즈로 바꾸고 탁자를 하나 더 둔다."
   },
   {
    "severity": "minor",
    "file": "tiledata/jp-city/refs/interior-rules.md · interior-shop-index.md",
-   "where": "「가게·공공 실내」 출입구 줄: 틈 바로 위 1~2줄은 비운다",
-   "problem": "라멘 (4,6), 킷사텐 (4,6)(5,6), 이자카야 (5,6), 초밥집 스툴이 틈 2줄 위에 있어 비어 있는 것은 1줄뿐이다. 문구와 예제가 어긋난다.",
-   "fix": "1줄은 반드시 비우고 2줄째는 가능하면, 로 정확히 쓴다."
+   "where": "interior-rules.md:95 「의원 진찰실 문」 vs 색인 의원 행 「두 칸 폭 통로(문 없음)」",
+   "problem": "의원 진찰실 연결이 문인지 열린 통로인지 두 문서가 다르다.",
+   "fix": "하나로 통일한다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/ramen.json",
-   "where": "fd-ticket-machine (6,7), sheet1 라멘",
-   "problem": "식권기가 상품 줄 있는 빨간 음료 자판기로 읽힌다. 벽에 붙지 않고 동쪽 벽에서 1칸 떨어져 있어 뒤에 막다른 1칸 통로가 생긴다. 문서의 입구 옆 벽에 식권기와 어긋난다.",
-   "fix": "식권기를 버튼 상자형 그림으로 바꾸거나 (7,7) 로 벽에 붙인다. 문서 표현도 맞춘다."
+   "file": "tiledata/jp-city/refs/interior-rules.md",
+   "where": "99–102행 「없는 것」",
+   "problem": "도구 안내가 섞여 있고, 글자·상표 없음, 가게 이벤트 없음, 학교·사무실 실내 없음이 이 절에 없다(색인에만 있다).",
+   "fix": "「없는 것」에 실제로 없는 것을 모아 적고 도구 안내는 별도 절로 옮긴다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/sento.json",
-   "where": "pb-noren-m (2,7)(5,7)·pb-noren-f (9,7)(12,7) / pb-wash-stool row 5 vs pb-wash-station row 3 / bath-bucket (11,5) / pb-scale (12,11)",
-   "problem": "노렌이 통로 칸(3,4)(10,11) 위가 아니라 양옆 벽에 걸려 있다. 씻는 의자가 수도에서 2칸 떨어져 있다. 큰 대야가 여탕에만 있다. 체중계가 붉은 십자 달린 구급함처럼 읽힌다.",
-   "fix": "노렌을 통로 위 한 칸으로 옮긴다. stool 을 row 4 로 올린다. 대야를 양쪽에 둔다. 체중계의 십자를 지운다."
-  },
-  {
-   "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/laundry.json",
-   "where": "objects: 세탁기 줄 row 3 한 줄, row 4~5 가 7칸 폭으로 비어 있음, pb-bench (5,6)",
-   "problem": "sq 2 라 규칙상은 통과지만 sheet3 에서 휑하다. 문서의 입구 곁 벤치는 출입구 (7,7) 에서 2칸 떨어져 있어 맞지 않는다.",
-   "fix": "마주 보는 건조기 줄이나 가운데 접이 탁자를 추가한다. 벤치를 (6,6)~(7,6) 으로 옮기거나 문서를 고친다."
-  },
-  {
-   "severity": "minor",
-   "file": "src/editor/tools/jpCityInteriorLink.ts",
-   "where": "interiorExitCells(42~56행)",
-   "problem": "맨 아래 줄에서 가장 넓은 걸음 덩이가 정문이 되고, 길이가 같으면 가운데에 가까운 쪽이 이긴다. 맨션 베란다처럼 맨 아래 줄에 걸음 칸이 있는 방은 난간이 한 칸만 비어도 정문을 가로챌 수 있다. 현재 예제는 복도 2칸이 이겨서 통과할 뿐이다.",
-   "fix": "덩이가 둘 이상이면 거부하거나 exitX 인자를 받는다. 최소한 색인에 맨 아래 줄의 다른 걸음 칸은 모두 막는다를 적는다."
+   "file": "src/editor/tools/jpCityInteriorLink.ts · verify-shots/jp-city/door-link/SUMMARY.md",
+   "where": "gateEvent(20-32행), fronts 전체에 playerTouch 발판(188-192행)",
+   "problem": "문 앞 줄을 옆으로 걷기만 해도 실내로 들어간다. 01a 의 보도는 두 줄이라 아래 줄로 피할 수 있지만, 한 줄 보도 맵에서는 피할 곳이 없고 door-link QA 도 옆으로 지나가는 경우를 보지 않는다.",
+   "fix": "옆으로 지나가는 걸음 시험을 한 곳 추가하거나, 안내에 보도 두 줄 이상 조건을 적는다."
   }
  ],
- "report": "**반려.** 지난 판정의 지적은 고쳐졌습니다. 다만 그 증거가 이 커밋에서는 재현되지 않고, 새 결함이 3건 있습니다.\n\n## 지난 지적 확인\n- **코인세탁 줄**: SUMMARY 가 이제 실내 (7,6) · 출입구 (7,7) 이고, 현재 `laundry.json`(9×8, 맨 아래 줄 `#######.#`)과 맞습니다. 수정된 것으로 봅니다.\n- **새 규칙 동작**: 도착 칸 = 틈 가운데 위(예: 콘비니 (7,9), 맨션 (2,16))라는 점이 `jpCityInteriorLink.ts` 와 21곳 모두 일치합니다. 링크 도구는 `12df44d853` 이후 바뀐 곳이 없고, SUMMARY(02:41)는 그 뒤에 만들어졌습니다. PASS 줄은 86개가 맞습니다.\n- **미해결**: 이 증거는 이 체크아웃에서 재현되지 않습니다. 아래 major 1번입니다.\n\n## 결함\n\n**major 1 — 가게 19곳이 게시되어 있지 않은데, 문 잇기 QA 증거와 참고문서는 게시된 것처럼 쓰여 있다**\n- 위치:\n  - `src/project/jpCityPlaceReferences.ts`: shop 장소 항목이 0건입니다.\n  - `src/project/regionReferenceSnapshots.ts`: shop 장소 항목이 0건입니다.\n  - `src/project/regionReferences/`: `jp-city-konbini.json` 등이 없습니다. jp-city 파일은 apartment-1k·house·school·shopstreet·town·tramstreet 6개뿐입니다.\n  - `public/assets/region-references/`: `jp-city-konbini.oprn.json` 등이 없습니다. jp-city 파일은 12개이며 같은 6곳입니다.\n  - `door-link-fixture.mts` 는 `public${url}` 에서 파일을 읽습니다.\n- 문제:\n  - `jp-city-konbini-14x11` 같은 id 는 `src/assets/jpCityReferences.json` 의 문서 글에만 있습니다.\n  - 이 체크아웃에서 `link_jp_city_interior({place:\"jp-city-konbini-14x11\"})` 와 `import_region_reference` 는 장소를 찾지 못합니다.\n  - SUMMARY 의 86/86 은 장소를 임시로 게시한 상태에서 돌린 결과로 보이며, 그 상태는 커밋에 없습니다.\n  - SUMMARY 에는 커밋 해시나 게시 여부도 적혀 있지 않습니다.\n- 고침:\n  - 게시 단계(`interior.mjs --publish`)를 먼저 실행하고 커밋합니다.\n  - 그다음 깨끗한 체크아웃에서 QA 를 다시 돌립니다.\n  - SUMMARY 머리에 커밋 해시와 \"게시 후 실행\"을 적습니다.\n  - 게시 전에는 `interior-shop-index.md` 의 import/link 문장에 \"게시 후\"라고 단서를 답니다.\n\n**major 2 — `places2.json` 의 link 안내 문장에 존재하지 않는 장소 id**\n- 위치:\n  - `places2.json:34` (슈퍼): `place:\"jp-city-supermarket-16x14\"`, 실제 `placeId` 는 `jp-city-supermarket-16x12`(21행).\n  - `places2.json:311` (맨션): `place:\"jp-city-mansion-2ldk-15x20\"`, 실제 `placeId` 는 `jp-city-mansion-2ldk-15x18`(297행).\n- 문제:\n  - `interior.mjs:103` 가 `rules: p.rules` 를 그대로 장소 등록부에 넣습니다. `--publish` 하면 이 틀린 id 가 조수가 읽는 규칙 문장으로 나갑니다.\n  - 조수가 그 문장을 따르면 `invalid-args` 로 거부됩니다.\n  - `check-interior-examples.mts` 는 이 불일치를 잡지 못합니다.\n- 고침:\n  - 두 문장을 고칩니다.\n  - 가능하면 규칙 문장의 id 를 `placeId` 에서 만들어 넣습니다.\n  - `check-interior-examples` 에 \"rules 안의 `place:\"…\"` == `placeId`\" 검사를 추가합니다.\n\n**major 3 — 작은 가게의 같은 틀 반복(⑧)**\n- 위치(`examples/*.json` 의 `objects`·`tables` 좌표를 비교):\n  - `bookstore` ↔ `pharmacy`: 18개 중 17개 좌표가 같습니다.\n  - `bakery` ↔ `pharmacy`: 16개가 같습니다.\n  - `bakery` ↔ `bookstore`: 15개가 같습니다.\n  - `florist` ↔ `yaoya`: 16개 중 15개가 같습니다. 북쪽 벽 6칸 줄과 가운데 틈, 왼쪽 단 (1,5)·(1,7), 포장대/저울대 (5,5), 오른쪽 (7,5), 계산대 (5,7)(6,7)(7,7), (7,8) 이 모두 같은 자리입니다. 그림만 바뀌었습니다.\n  - `barber` 도 `florist` 와 12개, `yaoya` 와 11개 좌표가 같습니다.\n- 그림에서도 같습니다. `sheet2` 에서 계산대(오른쪽 아래의 흰 판+초록 몸통+계산기)가 6곳 모두 같은 크기·같은 자리에 있고, 문 틈은 전부 `###..####`(x=3,4)입니다.\n- 지난 회차에서 뒷방은 갈랐지만 앞방은 템플릿 둘에 스프라이트만 바꾼 상태입니다.\n- 고침(업종마다 하나 이상 달라야 합니다):\n  - 계산대 위치를 바꿉니다. 이발소는 문 옆 벽, 꽃집은 포장대와 붙여 왼쪽 등.\n  - 문 틈 x 를 업종별로 바꿉니다.\n  - 채소가게는 가운데 평대+양옆 통로 구조로, 서점은 가운데 책장 섬 구조로 틀을 바꿉니다.\n  - `check-interior-examples` 에 \"다른 장소와 가구 좌표 겹침 ≤ 50%\" 검사를 추가합니다.\n\n**minor 4 — `interior-rules.md`·`interior-shop-index.md` 의 \"틈 바로 위 1~2줄은 비운다\"가 예제와 어긋난다**\n- 라멘 스툴 (4,6), 킷사텐 (4,6)(5,6), 이자카야 (5,6), 초밥집 스툴이 틈에서 정확히 2줄 위에 있습니다. 비어 있는 것은 1줄(row 7)뿐입니다.\n- \"1줄은 반드시, 2줄은 가능하면\"처럼 문구를 정확하게 고칩니다.\n\n**minor 5 — 라멘 식권기 (6,7) 가 읽히지 않고 자리가 어색하다**\n- `fd-ticket-machine` 이 `sheet1` 에서 음료 자판기(빨간 몸통에 상품 줄)로 보입니다.\n- 문서는 \"입구 옆 벽에 식권기\"라고 하지만, 실제로는 동쪽 벽에서 1칸 띄운 바닥에 서 있어 뒤에 1칸 막다른 통로가 생깁니다.\n- 식권기를 버튼 상자형 그림으로 바꾸거나 (7,7) 로 벽에 붙입니다. 문서 표현도 맞춥니다.\n\n**minor 6 — 센토 세부**\n- **노렌 위치**: `pb-noren-m/f` 가 통로 칸(3,4)·(10,11) 위가 아니라 양옆 벽(x=2,5 / 9,12)에 걸려 있습니다. \"노렌 한 쌍씩, 문 없음\"은 통로 위를 가린다고 읽히는데 실제 그림은 통로 옆 장식입니다. 통로 위 한 칸으로 옮깁니다.\n- **씻는 자리**: `pb-wash-station` (row 3) 과 `pb-wash-stool` (row 5) 사이가 한 줄 비어, 의자가 수도에서 2칸 떨어집니다. stool 을 row 4 로 올립니다.\n- **대야**: 여탕에만 큰 대야(11,5)가 있고 남탕에는 없습니다. 대칭으로 하나씩 둡니다.\n- **체중계**: `pb-scale` 이 붉은 십자가 있는 흰 상자로 보여 구급함처럼 읽습니다. 십자를 지웁니다.\n\n**minor 7 — 코인세탁이 비어 보이고 벤치 설명이 어긋난다**\n- 세탁기 줄이 북쪽 벽 한 줄(row 3)뿐이고, row 4~5 가 7칸 폭으로 통째로 비어 있습니다. sq 2 라서 규칙상은 통과지만 `sheet3` 에서 휑합니다.\n- 한 줄을 더 놓는 쪽을 권합니다. 마주 보는 건조기 줄이나 가운데 접이 탁자(현재 (2,6) 한 곳뿐)가 후보입니다.\n- 문서는 \"입구 곁 벤치\"라고 하지만 벤치 (5,6) 은 출입구 (7,7) 에서 2칸 떨어져 있습니다.\n\n**minor 8 — `interiorExitCells` 가 \"맨 아래 줄에서 가장 넓은 걸음 덩이\"를 출구로 고르는 방식이 약하다**\n- 맨션 베란다처럼 맨 아래 줄이 걸을 수 있는 칸을 품은 방은, 난간이 한 칸이라도 비면 출구 후보가 둘이 됩니다.\n- 덩이 길이가 같으면 가운데에 가까운 쪽이 정문이 되므로 베란다가 정문을 가로챌 수 있습니다. 현재 예제는 복도 2칸이 이겨서 통과할 뿐입니다.\n- 후보가 둘 이상이면 거부하거나 `exitX` 인자로 지정하게 하는 것을 권합니다. 최소한 `interior-shop-index.md` 에 \"맨 아래 줄 다른 걸음 칸은 모두 막는다\"를 적습니다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"src/project/jpCityPlaceReferences.ts · src/project/regionReferences/ · public/assets/region-references/ · verify-shots/jp-city/door-link/SUMMARY.md\", \"where\": \"가게·공공 실내 19곳의 장소 게시물 전체 (jp-city-konbini-14x11 … jp-city-hiraya-15x14). jp-city 장소 파일은 6곳뿐이고 19곳 파일이 없다\", \"problem\": \"19곳이 장소 등록부·스냅샷·region-references 어디에도 없다. 이 체크아웃에서 link_jp_city_interior place:id 는 장소를 못 찾는다. SUMMARY 86/86 은 게시되지 않은 커밋에서 재현할 수 없고 커밋 해시·게시 여부도 없다. 그런데 jpCityReferences.json 번들·interior-shop-index.md 는 import/link 를 이미 안내한다.\", \"fix\": \"interior.mjs --publish 후 커밋하고 깨끗한 체크아웃에서 door-link QA 를 다시 돌린다. SUMMARY 머리에 해시와 게시 후 실행을 적는다. 게시 전에는 색인에 게시 후 가능 단서를 단다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/places2.json\", \"where\": \"34행(슈퍼 rules 2번)·311행(맨션 rules 2번)\", \"problem\": \"link 안내 문장의 place 가 jp-city-supermarket-16x14 / jp-city-mansion-2ldk-15x20 인데 실제 placeId 는 -16x12 / -15x18. interior.mjs:103 이 rules 를 등록부에 그대로 넣으므로 게시하면 조수가 존재하지 않는 id 로 호출해 invalid-args 가 난다. check-interior-examples 는 못 잡는다.\", \"fix\": \"두 문장을 고치고 rules 의 id 를 placeId 에서 생성하거나, check-interior-examples 에 rules 안 place id == placeId 검사를 넣는다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/{bakery,bookstore,pharmacy,florist,yaoya,barber}.json\", \"where\": \"objects·tables 좌표: bookstore↔pharmacy 17/18, bakery↔pharmacy 16/18, bakery↔bookstore 15/18, florist↔yaoya 15/16, barber↔florist 12/16. 계산대 (5,7)(6,7)(7,7) 와 문 틈 x=3,4 가 6곳 공통. sheet2 에서도 같은 계산대가 같은 자리에 반복\", \"problem\": \"작은 가게 6곳이 템플릿 둘에 스프라이트만 바꾼 구조라 같은 틀 반복이다. 뒷방만 갈랐고 앞방이 같다.\", \"fix\": \"업종별 구조를 바꾼다: 계산대 위치·문 틈 x·진열 구조(이발소 문 옆 벽 계산대, 꽃집 포장대 중심, 채소가게 가운데 평대, 서점 가운데 책장 섬). check-interior-examples 에 다른 장소와 가구 좌표 겹침 50% 이하 검사를 추가한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md · interior-shop-index.md\", \"where\": \"「가게·공공 실내」 출입구 줄: 틈 바로 위 1~2줄은 비운다\", \"problem\": \"라멘 (4,6), 킷사텐 (4,6)(5,6), 이자카야 (5,6), 초밥집 스툴이 틈 2줄 위에 있어 비어 있는 것은 1줄뿐이다. 문구와 예제가 어긋난다.\", \"fix\": \"1줄은 반드시 비우고 2줄째는 가능하면, 로 정확히 쓴다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/ramen.json\", \"where\": \"fd-ticket-machine (6,7), sheet1 라멘\", \"problem\": \"식권기가 상품 줄 있는 빨간 음료 자판기로 읽힌다. 벽에 붙지 않고 동쪽 벽에서 1칸 떨어져 있어 뒤에 막다른 1칸 통로가 생긴다. 문서의 입구 옆 벽에 식권기와 어긋난다.\", \"fix\": \"식권기를 버튼 상자형 그림으로 바꾸거나 (7,7) 로 벽에 붙인다. 문서 표현도 맞춘다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/sento.json\", \"where\": \"pb-noren-m (2,7)(5,7)·pb-noren-f (9,7)(12,7) / pb-wash-stool row 5 vs pb-wash-station row 3 / bath-bucket (11,5) / pb-scale (12,11)\", \"problem\": \"노렌이 통로 칸(3,4)(10,11) 위가 아니라 양옆 벽에 걸려 있다. 씻는 의자가 수도에서 2칸 떨어져 있다. 큰 대야가 여탕에만 있다. 체중계가 붉은 십자 달린 구급함처럼 읽힌다.\", \"fix\": \"노렌을 통로 위 한 칸으로 옮긴다. stool 을 row 4 로 올린다. 대야를 양쪽에 둔다. 체중계의 십자를 지운다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/laundry.json\", \"where\": \"objects: 세탁기 줄 row 3 한 줄, row 4~5 가 7칸 폭으로 비어 있음, pb-bench (5,6)\", \"problem\": \"sq 2 라 규칙상은 통과지만 sheet3 에서 휑하다. 문서의 입구 곁 벤치는 출입구 (7,7) 에서 2칸 떨어져 있어 맞지 않는다.\", \"fix\": \"마주 보는 건조기 줄이나 가운데 접이 탁자를 추가한다. 벤치를 (6,6)~(7,6) 으로 옮기거나 문서를 고친다.\"},\n{\"severity\": \"minor\", \"file\": \"src/editor/tools/jpCityInteriorLink.ts\", \"where\": \"interiorExitCells(42~56행)\", \"problem\": \"맨 아래 줄에서 가장 넓은 걸음 덩이가 정문이 되고, 길이가 같으면 가운데에 가까운 쪽이 이긴다. 맨션 베란다처럼 맨 아래 줄에 걸음 칸이 있는 방은 난간이 한 칸만 비어도 정문을 가로챌 수 있다. 현재 예제는 복도 2칸이 이겨서 통과할 뿐이다.\", \"fix\": \"덩이가 둘 이상이면 거부하거나 exitX 인자를 받는다. 최소한 색인에 맨 아래 줄의 다른 걸음 칸은 모두 막는다를 적는다.\"}\n]}\n```"
+ "report": "**지난 지적 확인**\n- 슈퍼·맨션 안내 문장의 장소 id: 고쳐졌다. `places2.json:34`·`:311` 이 `-16x12`·`-15x18` 로 `placeId` 와 맞다.\n- 작은 가게 여섯의 같은 틀: 작은 가게 여섯끼리의 가구 자리 겹침은 최대 0.62 로, 여섯은 갈라졌다. 다만 같은 문제가 음식점 넷에 남아 있다(아래 major 1).\n- 장소 19곳 미게시: 지시대로 결함으로 세지 않는다.\n- door-link: SUMMARY 의 PASS 줄 수와 커밋 `a4184375dc` 가 맞고, 이 커밋 이후 `tiledata/jp-city/interior/examples`·`src/editor/tools/jpCityInteriorLink.ts` 변경은 없다.\n\n**major 1 — 음식점 넷이 같은 뼈대다 (⑧)**\n- 대상은 `ramen.json`·`izakaya.json`·`sushi.json`·`kissaten.json` 이다.\n- 주방 줄 y=3 에서 `fd-prep (3,3)` 과 `fd-sink (4,3)` 이 라멘·이자카야·초밥집에서 같은 칸이다. `fd-fridge (1,3)` 은 이자카야·초밥집이 같다.\n- `fd-counter` 는 모두 y=5 이고, `fd-stool` 줄은 모두 y=6 이다(x 범위 1–5 / 2–6 / 2–4 / 4–6).\n- 가구 자리 겹침은 라멘↔초밥집 14/18, 라멘↔이자카야 15/20, 이자카야↔초밥집 13/18, 라멘↔킷사텐 9/15 다.\n- 라멘·킷사텐은 평면 문자열도 `#########/#.......#…####..###` 로 완전히 같다.\n- sheet1 에서도 윗줄 주방 타일, 카운터, 붉은 스툴 한 줄, 문 틈 두 칸이 거의 같은 그림이다.\n- `space.txt` 에 SAME 줄이 없는 것은 같은 크기끼리만 비교하기 때문이다. 크기가 다르면 이 검사를 피한다.\n- **고침:** 업종마다 뼈대를 다르게 한다.\n  - 초밥집: 카운터를 방 한가운데 가로로 두고 주방은 동쪽 벽.\n  - 라멘집: ㄱ자 카운터 안쪽에 주방을 두고 식권기는 문 바로 옆.\n  - 이자카야: 주방을 북서 구석으로 몰고 다다미를 중심으로.\n  - 킷사텐: 카운터를 벽에 붙이고 탁자 둘 이상.\n  - `check-interior-examples` 의 겹침 검사는 크기와 무관하게 모든 쌍을 비교하게 바꾼다.\n\n**major 2 — 색인이 도구와 반대로 안내한다 (⑩)**\n- `interior-shop-index.md:8` 은 \"여러 덩이면 가장 넓은 것\"이 출구라고 쓴다.\n- 실제 `jpCityInteriorLink.ts:51-52`·`:169-170` 은 덩이가 둘 이상이면 `interior-exit-ambiguous` 로 거절한다.\n- `interior-rules.md:91` 도 거절이라고 쓰고 있어, 색인만 옛 규칙이다.\n- 조수가 색인을 믿고 맨 아래 줄에 걸음 칸을 둘 이상 남기면 거절당한다.\n- **고침:** 색인 8행을 \"여러 덩이면 `interior-exit-ambiguous` 거절 — 맨 아래 줄의 다른 걸음 칸은 모두 막는다\"로 고친다.\n\n**minor**\n- 편의점 안내문이 예제와 다르다 (`interior-shop-index.md` 편의점 행, `konbini.json`).\n  - \"뒤 담배 선반\"이라 했지만 `cv-back-shelf (9,3)(11,3)` 는 뒷방 안 재고 선반이다. 계산대는 y=8 에 있고 그 뒤 y=7 은 열린 매장 바닥이라 벽 선반이 없다.\n  - \"창가 잡지대\"라 했지만 창이 없고 `cv-magazine (1,3)` 은 북쪽 벽 왼쪽 끝이다.\n  - 음료 냉장 `cv-cooler` 는 (5,3)(6,3) 두 칸뿐이다.\n- 단층 옛집 안내문이 예제와 다르다 (`hiraya.json`).\n  - 색인은 \"남쪽 엔가와 툇마루·디딤돌\"이라 쓴다. 그러나 구역 `h2-engawa (6..10, 8..12)` 는 남쪽 벽(y=13)이 막힌 방이고 안에 `chabudai`·`zabuton` ×4 가 있다.\n  - sheet4 에서 정원 쪽 열린 면이 없어 마루 식당방으로 읽는다. `h2-garden-step (10,12)` 는 방 구석의 돌로 보인다.\n  - **고침:** 문구를 \"마루방\"으로 바꾸거나, 남쪽을 난간·유리 미닫이로 열고 출구 덩이 규칙에 맞춘다.\n- 킷사텐 `kissaten.json`: `fd-lantern (7,1)` 붉은 초롱은 이자카야 표지다. `fd-beer-mug (2,6)` 이 탁자 위에서 노란 맥주잔으로 읽힌다. 초롱은 빼고 컵을 커피잔 굿즈로 바꾼다. 탁자는 한 개(2석)뿐이다.\n- `interior-rules.md:95` 는 \"의원 진찰실 문\"을 문 예로 들지만, `interior-shop-index.md` 와 `clinic.json` 은 \"두 칸 폭 통로(문 없음)\"다. 한쪽으로 통일한다.\n- `interior-rules.md` 「없는 것」(99–102행)이 도구 안내와 섞여 있다. 글자·상표 없음, 가게 이벤트 없음, 학교·사무실 실내 없음은 색인에만 있다.\n- `jpCityInteriorLink.ts:20-32,188-192`: 문 앞 발판 `playerTouch` 가 문 앞 줄 전체에 걸려, 그 줄을 옆으로 지나가는 것만으로 실내로 들어간다. 01a 의 보도는 두 줄이라 아래 줄로 피할 수 있지만, door-link QA 는 옆으로 지나가는 경우를 보지 않는다. 한 줄 보도 맵이면 피할 곳이 없다. 옆으로 지나가는 걸음 시험을 하나 넣거나 안내에 \"보도 두 줄 이상\"을 적는다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/{ramen,izakaya,sushi,kissaten}.json\", \"where\": \"주방 줄 y=3 의 fd-prep(3,3)·fd-sink(4,3)(라멘·이자카야·초밥집 동일), fd-fridge(1,3)(이자카야·초밥집), fd-counter y=5, fd-stool 줄 y=6. 가구 자리 겹침 라멘↔초밥집 14/18, 라멘↔이자카야 15/20, 이자카야↔초밥집 13/18, 라멘↔킷사텐 9/15. 라멘·킷사텐은 plan 문자열도 동일. sheet1 도 같은 뼈대로 읽힘\", \"problem\": \"음식점 넷이 주방 윗줄 + 카운터 + 스툴 한 줄 + 문 틈 두 칸의 같은 틀이다. 작은 가게 여섯은 갈렸지만 같은 문제가 음식점으로 옮겨갔다. space.txt 의 SAME 은 같은 크기끼리만 비교해서 이를 못 잡는다.\", \"fix\": \"업종별 뼈대를 다르게 한다(초밥집: 방 가운데 가로 카운터+동쪽 벽 주방, 라멘집: ㄱ자 카운터 안쪽 주방+문 옆 식권기, 이자카야: 북서 구석 주방+다다미 중심, 킷사텐: 벽에 붙은 카운터+탁자 둘 이상). check-interior-examples 의 겹침 검사는 크기와 무관하게 모든 쌍을 비교하게 바꾼다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/refs/interior-shop-index.md\", \"where\": \"8행 「link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 no-interior-exit, …)」\", \"problem\": \"src/editor/tools/jpCityInteriorLink.ts:51-52·169-170 과 interior-rules.md:91 은 덩이가 둘 이상이면 interior-exit-ambiguous 로 거절한다. 색인만 옛 규칙이라 조수가 맨 아래 줄에 걸음 칸을 둘 이상 남겨도 된다고 믿고 거절당한다.\", \"fix\": \"8행을 '여러 덩이면 interior-exit-ambiguous 거절 — 맨 아래 줄의 다른 걸음 칸은 모두 막는다' 로 고친다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-shop-index.md · tiledata/jp-city/interior/examples/konbini.json\", \"where\": \"편의점 행 「창가 잡지대」「계산대 + 뒤 담배 선반」「북쪽 벽 음료 냉장고」; cv-magazine(1,3), cv-back-shelf(9,3)(11,3), cv-cooler(5,3)(6,3), cv-register(9,8)\", \"problem\": \"창이 없고 잡지대는 북쪽 벽 왼쪽 끝이다. cv-back-shelf 는 계산대 뒤가 아니라 뒷방 안에 있고, 계산대(y=8) 뒤 y=7 은 열린 매장 바닥이다. 음료 냉장 cv-cooler 는 두 칸뿐이다.\", \"fix\": \"문구를 예제에 맞추거나 예제를 문구에 맞춘다(계산대를 북쪽 벽 아래로 옮겨 뒤 선반을 두고, 냉장 줄을 넓힌다).\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/hiraya.json · tiledata/jp-city/refs/interior-shop-index.md\", \"where\": \"zone h2-engawa (6,8)-(10,12), plan 맨 아래 줄 y=13 이 출구(x=2) 외 전부 벽, chabudai(7,11)·zabuton ×4, h2-garden-step(10,12)\", \"problem\": \"색인은 남쪽 엔가와 툇마루·디딤돌이라 하지만 남쪽이 벽으로 막힌 마루방이다. sheet4 에서 마루 식당방으로 읽고, 디딤돌은 방 구석의 돌로 보인다.\", \"fix\": \"문구를 '마루방'으로 바꾸거나, 남쪽을 난간·유리 미닫이로 열되 맨 아래 줄 출구 덩이가 하나로 유지되게 한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/kissaten.json\", \"where\": \"fd-lantern(7,1), fd-beer-mug(2,6), fd-table(1,6) 한 개\", \"problem\": \"킷사텐에 이자카야 표지인 붉은 초롱이 있고, 탁자 위 노란 잔이 맥주로 읽힌다. 탁자가 하나뿐이다.\", \"fix\": \"초롱을 빼고 잔을 커피잔 굿즈로 바꾸고 탁자를 하나 더 둔다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md · interior-shop-index.md\", \"where\": \"interior-rules.md:95 「의원 진찰실 문」 vs 색인 의원 행 「두 칸 폭 통로(문 없음)」\", \"problem\": \"의원 진찰실 연결이 문인지 열린 통로인지 두 문서가 다르다.\", \"fix\": \"하나로 통일한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md\", \"where\": \"99–102행 「없는 것」\", \"problem\": \"도구 안내가 섞여 있고, 글자·상표 없음, 가게 이벤트 없음, 학교·사무실 실내 없음이 이 절에 없다(색인에만 있다).\", \"fix\": \"「없는 것」에 실제로 없는 것을 모아 적고 도구 안내는 별도 절로 옮긴다.\"},\n{\"severity\": \"minor\", \"file\": \"src/editor/tools/jpCityInteriorLink.ts · verify-shots/jp-city/door-link/SUMMARY.md\", \"where\": \"gateEvent(20-32행), fronts 전체에 playerTouch 발판(188-192행)\", \"problem\": \"문 앞 줄을 옆으로 걷기만 해도 실내로 들어간다. 01a 의 보도는 두 줄이라 아래 줄로 피할 수 있지만, 한 줄 보도 맵에서는 피할 곳이 없고 door-link QA 도 옆으로 지나가는 경우를 보지 않는다.\", \"fix\": \"옆으로 지나가는 걸음 시험을 한 곳 추가하거나, 안내에 보도 두 줄 이상 조건을 적는다.\"}\n]}\n```"
 }
