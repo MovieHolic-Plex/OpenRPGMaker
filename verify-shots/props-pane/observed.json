@@ -1,0 +1,226 @@
+{
+  "aiRecords": [
+    {
+      "name": "oprn-ai-records",
+      "version": 4
+    }
+  ],
+  "initial": "기물\n빈 맵\n현재 맵의 칩셋\n버들항 v6 · 로마풍 항구 도시 (손 도트)\n기물 검색\n종류별로 보기\n맵 추천\n전체 종류\n의자·좌석\n탁자·책상\n침대\n수납·상자\n조명\n나무·식물\n부엌·먹거리\n장치\n장식·소품\n건물·시설\n기타\n이 맵에 어울리는 기물\n(922)\n버들항 소품 과일 상자 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 생선 통 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 계선주 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 입간판 (분필) 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 생선 상자 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 문간 화분 둘 1×1\n1×1\n이 칩셋에서 사용\n다른 기물 더 보기\n기물을 고른 뒤 맵을 클릭해 놓으세요.",
+  "stamp": {
+    "cells": [
+      {
+        "dx": 0,
+        "dy": 0,
+        "layer": "upper",
+        "tile": 9215
+      }
+    ],
+    "height": 1,
+    "width": 1,
+    "kitId": "bd-prop-crate_apple",
+    "source": {
+      "endTile": 9215,
+      "startTile": 9215,
+      "tilesetId": "beodeul_city",
+      "tileSize": 16
+    },
+    "label": "버들항 소품 과일 상자 1×1"
+  },
+  "selectionDoesNotPaint": true,
+  "firstPlacement": {
+    "cells": [
+      {
+        "expected": 9215,
+        "actual": 9215
+      }
+    ],
+    "selected": true
+  },
+  "repeatedSelection": true,
+  "secondPlacementChanged": true,
+  "undoSecond": true,
+  "undoFirst": true,
+  "moreCount": 12,
+  "switch": {
+    "cleared": true
+  },
+  "indoor": "기물\n가구 실내\n현재 맵의 칩셋\n실내 · 손 도트 v5 (아틀라스)\n기물 검색\n종류별로 보기\n맵 추천\n전체 종류\n의자·좌석\n탁자·책상\n침대\n수납·상자\n조명\n나무·식물\n부엌·먹거리\n장치\n장식·소품\n건물·시설\n기타\n이 맵에 어울리는 기물\n(527)\n안락의자\n1×1\n맵의 장소에 어울림\n천 덮인 가구\n2×2\n맵의 장소에 어울림\n태피스트리(2줄)\n1×2\n맵의 장소에 어울림\n양배추 궤짝\n1×1\n맵의 장소에 어울림\n생선 궤짝\n1×1\n맵의 장소에 어울림\n식빵 궤짝\n1×1\n맵의 장소에 어울림\n다른 기물 더 보기\n기물을 고른 뒤 맵을 클릭해 놓으세요.",
+  "compoundStamp": {
+    "stamp": {
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 6318
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 6319
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 6320
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 6321
+        }
+      ],
+      "height": 2,
+      "width": 2,
+      "kitId": "hand-interior:covered furniture",
+      "source": {
+        "endTile": 6318,
+        "startTile": 6318,
+        "tilesetId": "atlas_biome_interior",
+        "tileSize": 16
+      },
+      "label": "천 덮인 가구"
+    },
+    "layer": "upper"
+  },
+  "compoundPlacement": [
+    {
+      "expected": 6318,
+      "actual": 6318
+    },
+    {
+      "expected": 6319,
+      "actual": 6319
+    },
+    {
+      "expected": 6320,
+      "actual": 6320
+    },
+    {
+      "expected": 6321,
+      "actual": 6321
+    }
+  ],
+  "compoundUndo": true,
+  "categories": [
+    {
+      "id": "recommended",
+      "label": "맵 추천"
+    },
+    {
+      "id": "all",
+      "label": "전체 종류"
+    },
+    {
+      "id": "seating",
+      "label": "의자·좌석"
+    },
+    {
+      "id": "tables",
+      "label": "탁자·책상"
+    },
+    {
+      "id": "beds",
+      "label": "침대"
+    },
+    {
+      "id": "storage",
+      "label": "수납·상자"
+    },
+    {
+      "id": "lighting",
+      "label": "조명"
+    },
+    {
+      "id": "plants",
+      "label": "나무·식물"
+    },
+    {
+      "id": "kitchen",
+      "label": "부엌·먹거리"
+    },
+    {
+      "id": "devices",
+      "label": "장치"
+    },
+    {
+      "id": "decor",
+      "label": "장식·소품"
+    },
+    {
+      "id": "structures",
+      "label": "건물·시설"
+    },
+    {
+      "id": "other",
+      "label": "기타"
+    }
+  ],
+  "beds": [
+    "엘프 침대1×3맵의 장소에 어울림",
+    "감방 침상1×3맵의 장소에 어울림",
+    "2층 침대2×3맵의 장소에 어울림",
+    "환자 침대1×3맵의 장소에 어울림",
+    "짚 침대1×2맵의 장소에 어울림",
+    "아이 침대1×2맵의 장소에 어울림"
+  ],
+  "categoryState": "beds",
+  "search": {
+    "category": "all",
+    "cards": [
+      "2인 침대 파랑2×3맵의 장소에 어울림"
+    ],
+    "ids": [
+      "hand-interior:double bed blue"
+    ],
+    "hiddenBefore": true,
+    "keptFocus": true,
+    "selected": "2인 침대 파랑"
+  },
+  "emptySearch": {
+    "cards": 0,
+    "message": true,
+    "moreHidden": true
+  },
+  "seating": [
+    "안락의자1×1맵의 장소에 어울림",
+    "바 의자1×1맵의 장소에 어울림",
+    "극장 좌석1×1맵의 장소에 어울림",
+    "의자 S1×1맵의 장소에 어울림",
+    "의자 N1×1맵의 장소에 어울림",
+    "돌 왕좌1×2맵의 장소에 어울림"
+  ],
+  "english": "Props\n가구 실내\nCurrent map chipset\n실내 · 손 도트 v5 (아틀라스)\nSearch props\nBrowse by type\nMap suggestions\nAll types\nChairs & seating\nTables & desks\nBed\nStorage & crates\nLighting\nTrees & plants\nKitchen & food\nDevices\nDecor & props\nBuildings and facilities\nOther\nChairs & seating\n(16)\n안락의자\n1×1\nMatches this map’s places\n바 의자\n1×1\nMatches this map’s places\n극장 좌석\n1×1\nMatches this map’s places\n의자 S\n1×1\nMatches this map’s places\n의자 N\n1×1\nMatches this map’s places\n돌 왕좌\n1×2\nMatches this map’s places\nShow more props\n2인 침대 파랑\nPlace the selected prop on the map.",
+  "englishLabel": "Props",
+  "englishTypes": [
+    "Map suggestions",
+    "All types",
+    "Chairs & seating",
+    "Tables & desks",
+    "Bed",
+    "Storage & crates",
+    "Lighting",
+    "Trees & plants",
+    "Kitchen & food",
+    "Devices",
+    "Decor & props",
+    "Buildings and facilities",
+    "Other"
+  ],
+  "englishPlaceholder": "Chair, bed, tree…",
+  "compact": {
+    "viewport": 1024,
+    "width": 291,
+    "overflow": false,
+    "documentOverflow": false
+  },
+  "sticky": {
+    "paneTop": 49,
+    "searchTop": 83.5,
+    "visible": true
+  },
+  "errors": []
+}

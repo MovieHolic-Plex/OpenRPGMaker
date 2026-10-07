@@ -780,23 +780,14 @@ html[data-ai-render="off"] {
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
 
 
-/* ── 왼쪽 활동 막대 패널: 즐겨찾기 · 진행 · 연결 (2026-09-27) ───────────────────── */
-.left-favorites-pane, .left-progress-pane, .left-links-pane {
+/* ── 왼쪽 활동 막대 패널: 진행 · 연결 (2026-09-27) ─────────────────────────────── */
+.left-progress-pane, .left-links-pane {
   flex: 1; min-width: 0; min-height: 0; overflow-y: auto; padding: 12px 14px 16px;
   display: flex; flex-direction: column; gap: 14px; font: 400 12px/1.5 var(--font-ui); color: var(--text-1);
 }
-.left-favorites-pane[hidden], .left-progress-pane[hidden], .left-links-pane[hidden] { display: none; }
-.left-favorites-title { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px; font: 600 12px var(--font-ui); color: var(--text-2); }
-.left-favorites-count, .left-progress-count { font: 600 11px var(--font-ui); color: var(--text-3); }
-.left-favorites-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-.left-favorites-cell {
-  position: relative; flex: none; padding: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-s);
-  background-color: var(--bg-inset); background-repeat: no-repeat; image-rendering: pixelated; cursor: pointer;
-}
-.left-favorites-cell:hover { border-color: var(--border-default); }
-.left-favorites-cell.is-selected { outline: 2px solid var(--accent); outline-offset: 1px; }
-.left-favorites-star { position: absolute; top: -5px; right: -5px; font-size: 11px; line-height: 1; color: var(--warning, var(--accent)); text-shadow: 0 0 2px var(--bg-raised); }
-.left-favorites-empty, .left-links-hint { margin: 0; color: var(--text-3); font-size: 11.5px; line-height: 1.6; }
+.left-progress-pane[hidden], .left-links-pane[hidden] { display: none; }
+.left-progress-count { font: 600 11px var(--font-ui); color: var(--text-3); }
+.left-links-hint { margin: 0; color: var(--text-3); font-size: 11.5px; line-height: 1.6; }
 
 .left-progress-head, .left-links-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .left-progress-head strong, .left-links-head strong { font: 600 13px var(--font-ui); }
