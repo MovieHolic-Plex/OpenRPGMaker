@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+    "--all-published",
+    "--paths",
+    "adventure--unknown--battle--bright,adventure--unknown--battle--bright--quests,adventure--unknown--battle--bright--journey--short,adventure--unknown--battle--bright--quests--short,adventure--unknown--battle--bright--chapters--scene,adventure--unknown--explore--warm--quests--scene"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "interviewSceneBank.json": "27a9dc2b8f97a3661b127678cd3b93584bb137e0df8f0cae3fb0d19f8d1dfe72",
+    "ledger.json": "0161a932b7ee74d9438ead7d1e77e331e506c9b4bc322e87761d95a244716c23"
+  },
+  "published": 992,
+  "finishedAt": "2026-10-07T20:34:05.304607+00:00",
+  "scope": "Scoped current published hash/request-contract integrity and six explicit production click paths; not fresh full-native visual audit/full app boot/AIhandoff"
+}

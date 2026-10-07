@@ -1,0 +1,69 @@
+{
+  "scope": "Only obsolete original public copies 140-144 and146, after current passing replacement, native/exact OWN archives and immutable998 production QA verified. Original145 retained while replacement remains rejected.",
+  "publishedSnapshot": 998,
+  "removedThisInterval": 6,
+  "resolvedCumulative": 272,
+  "priorActualProof": "obsolete-public-cleanup-246-proof.json",
+  "removed": [
+    {
+      "number": 140,
+      "key": "adventure--unknown--battle--bright--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright--journey-cbaeb5379a95.png",
+      "nativeSha256": "cbaeb5379a9563e839a00ab55d563a90611d62639ca577b7757d229632eb5d64",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source140-adventure--unknown--battle--bright--journey-cbaeb5379a95.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source140-cc2b0980b4059f0238317563a2cb936b232346314c9f66def35e16a449da5de2.txt",
+      "replacementSha256": "fa814760e60e1f29c85e7f5fe6d98270a86196c32718f6500802a376187476c5",
+      "replacementOwnSha256": "b48058a51c8990995a671009eceaa1ca863c2b846a13f2c868108a7298f2d8fb"
+    },
+    {
+      "number": 141,
+      "key": "adventure--unknown--battle--bright--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright--quests-f7f79b8feb70.png",
+      "nativeSha256": "f7f79b8feb70d7538b6df409eb36fdf2d6cc1d3435bc1f7eabc0ff7af17e162f",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source141-adventure--unknown--battle--bright--quests-f7f79b8feb70.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source141-d884e07498b572f0d940478592b22e6e0eb2aed68a1d7fa6db487606db4206b4.txt",
+      "replacementSha256": "44c7638ff30f49aa5f680126d35e326961d2d7db2d2eacfec9681f90d899a2b3",
+      "replacementOwnSha256": "fa22d6163d007f629eefc2c73056a4d9441ba8d6f47215ffcc6dc95520156084"
+    },
+    {
+      "number": 142,
+      "key": "adventure--unknown--battle--bright",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright-a15444979998.png",
+      "nativeSha256": "a154449799980f76d83d9cbad4a36d159224f7fd3bc1be1d432cdf7e4e4a078d",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source142-adventure--unknown--battle--bright-a15444979998.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source142-2e1dbf40d5fab9882517449ccea547049cdcd148fe204c0c60ce3923894be844.txt",
+      "replacementSha256": "4224dd029660b7dabd96f374592d328de23265d29a50e19d01969cad7d7c06bf",
+      "replacementOwnSha256": "4f0d206e1abafad30627bf5490bcf35e82c3b0af83a9aa86ac41061dda2eab07"
+    },
+    {
+      "number": 143,
+      "key": "adventure--unknown--battle--mystic",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-2856b9707b57.png",
+      "nativeSha256": "2856b9707b57b8729d22d219fd59a137e0657201d953136061dad040c15f5ddf",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source143-adventure--unknown--battle--mystic-2856b9707b57.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source143-662b92ab73ebf0e7f2da3eeb46c6d5a282e534fd0250ab1d567545e348032e81.txt",
+      "replacementSha256": "53106b12feda4a560eaca1c7dbea4477186ee58e0dde9b7751ef73e91d38e010",
+      "replacementOwnSha256": "0cbf1b5233bb310bb00bde8e6954ef937af9edcecdab72f1cafbb4985058b75f"
+    },
+    {
+      "number": 144,
+      "key": "adventure--unknown--battle--mystic--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--journey-a81cd4559c56.png",
+      "nativeSha256": "a81cd4559c5627604ac4788ebc08e23e7f8959bceb46c3d0734d4ce3d7e8aeed",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source144-adventure--unknown--battle--mystic--journey-a81cd4559c56.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source144-8e945337ccf4cb50232e114aab882beaf9ea18192515847c087753ce13fbf1b8.txt",
+      "replacementSha256": "7e9ba271bc8a35eec32bceb9b3997581039e1d93517533bb0a4eeef7a4cd18b9",
+      "replacementOwnSha256": "49ca5606577d15146eb5cebad19223c78566bde44ead75e5da3cdd63ae1aa916"
+    },
+    {
+      "number": 146,
+      "key": "adventure--unknown--battle--mystic--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--chapters-9d3ef3b6e378.png",
+      "nativeSha256": "9d3ef3b6e3787381eabe339d1c9acdba550a91fe09d88af70e1af2f005463180",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source146-adventure--unknown--battle--mystic--chapters-9d3ef3b6e378.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source146-8e79cfa229bffcb019d597d11035848f30a45fb6b570b4101c92b96a70d5174f.txt",
+      "replacementSha256": "7e452e4e64a30fd02793443091b2058093153bbc921b09e84004563be957e407",
+      "replacementOwnSha256": "18e5aa90cc03cd042c5ec3dc98d675b46b3df7282615ab2e77d60337e1fb32ec"
+    }
+  ]
+}

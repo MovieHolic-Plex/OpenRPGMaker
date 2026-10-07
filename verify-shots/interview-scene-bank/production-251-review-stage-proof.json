@@ -1,0 +1,359 @@
+{
+  "batch": "v2-production-251",
+  "passedAttempts": 6,
+  "rejectedAttempts": 4,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-251",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/v2-production-251-import.json"
+      ],
+      "returncode": 0,
+      "log": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/v2-production-251-import-batch.log",
+      "finishedAt": "2026-10-07T20:44:13.102946+00:00",
+      "recoveryReplay": false,
+      "historicalReceiptReconstructed": false
+    },
+    "review-batch": {
+      "batch": "v2-production-251",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/v2-production-251-reviews.json"
+      ],
+      "returncode": 0,
+      "log": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/v2-production-251-review-batch.log",
+      "finishedAt": "2026-10-07T20:45:44.045071+00:00",
+      "recoveryReplay": false,
+      "historicalReceiptReconstructed": false
+    },
+    "wrapper": {
+      "command": [
+        "python3",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-251",
+        "--defer"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T20:45:44.081757+00:00",
+      "detachedActualCompletion": true
+    }
+  },
+  "priorFailedAttempts": {
+    "firstWrapper": {
+      "command": [
+        "python3",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-251",
+        "--defer"
+      ],
+      "returncode": 1,
+      "finishedAt": "2026-10-07T20:44:13.325741+00:00",
+      "detachedActualCompletion": true
+    },
+    "firstProof": {
+      "command": [
+        "python3",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/preserve-review-stage-recovery.py",
+        "251",
+        "--defer"
+      ],
+      "returncode": 1,
+      "finishedAt": "2026-10-07T20:45:44.274512+00:00"
+    },
+    "proofRetry1": {
+      "command": [
+        "python3",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/preserve-review-stage251-retry.py",
+        "251",
+        "--defer"
+      ],
+      "returncode": 1,
+      "finishedAt": "2026-10-07T20:47:42.127060+00:00",
+      "firstActualFailurePreserved": true
+    }
+  },
+  "retryAfterInspectionSchemaFixOnly": true,
+  "records": [
+    {
+      "key": "adventure--unknown--explore--bright--quests--short",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--explore--bright--quests--short.png",
+      "nativeSha256": "4165456909ee54449bf2b9daa7fc09b1e96421446a61aca928dc7481690837d9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "f7bb6bcb0a385a268cab29b6b190137b704759bf590a0d0cbb5f50b8df2a22b5",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: EraseONLYactualnarrowcream/gold diagonalLINE onHOME BLUEreturncloth approxx786..811,y402..414. ReplaceEVERYcreamgoldgraylinepixel with DEEP BLUEfoldshade, ONLYBLUEshades onentirecloth. No pale highlight/edge/seam. KeepTHREEBASEparcels/TWOemptyplots/wholeHOME/ruin/returnroads/boat/pier/passage/stairs/allworldcameraunchanged.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\n5. 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nLATEST CHOICE: 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nSCENE ID: adventure--unknown--explore--bright--quests--short. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILED rope beside full stone pier, unfamiliar islands beyond. EXPLORATION: actual LEFT half-concealed stone side opening with FULL weathered descending stairs/hidden passage. BRIGHT: clear inviting energetic daylight, no character/crew. No REDkeepsake/searchSTOP/threePACKS/battle props or protagonist identity. All actual selected boat/mast/rigging/sail/rope/pier/passage/walls/stairs/place floors completely INSIDE ALLnativeedges and BEFORE x1008. Selected places SMALL with ordinary terrain/sea buffers. Quiet continuous SEA/islands beyondRIGHT. QUESTS: actual whole UNROOFED FOUR-legged WOOD base table with THREE plain SEALED parcels. Actual LEFT Y-fork roads to TWO different EMPTY nearby travel clearings. BASE is not return table. RESOLVED FIRST CRISIS / RETURN: whole SMALL harbor HOME with full roof/chimney/OPEN black walking entry/bare threshold; separate bare UNROOFED FOUR-legged WOOD return table besideHOME, ONE plain BLUE cloth with ONLY three BLUE fold shades and NO objects/paper/ornaments/border/motifs. Separate SMALL cleared UNROOFED ruin with EMPTY floor. Continuous LEFT returnroad joins HOME/clearedruin/actual boatdeparture. NO REDSTOP/searchkeepsake/threepacks/firstfork/BATTLE/BASE unless QUESTselected. Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. \nTarget SHA256=8b9d55a7b0b63162dc299698b9318761dad5883cb4e3ec5679d5973c88aaf569. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=8b9d55a7b0b63162dc299698b9318761dad5883cb4e3ec5679d5973c88aaf569"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual cream/gray diagonal line remains across expressly ONLY BLUE bare HOME return cloth; readonly native-linked NEAREST crop personally confirms. Not writing/paper."
+      ],
+      "note": "ROOT FULL exact251 OWN/WHOLE personally inspected; actual BrightExploreQparent c9a5 FULL own/whole compared this turn. Whole HOME roof/chimney/OPENentry/table, THIRD cleared empty small ruin/continuous LEFT return road, hidden passage/full weatheredstairs, fullboat/furledcanvas/actualcoil/fullSTONEpier/physical shore stairs and BASE THREE sealedparcels/two EMPTY Yfork plots all inside native before1008. Actual new sea/lowquay/HOMEmid world vsparent distinct. But actual narrow cream/gray diagonal mark remains on ONLYBLUE cloth; readonly exactnative crop seen; all/latestF, fiveothersP."
+    },
+    {
+      "key": "adventure--unknown--explore--warm--journey--short",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--explore--warm--journey--short.png",
+      "nativeSha256": "36e17f755f94c9c57246d750918fcb4c2377af1467f54242bc2d454277552077",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "0342789941ce3d808eb3e66483b35851a8e0c9a7219b69a9bcf95f2161089e17",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: RepaintONLYactualcream/gold/gray warmreflection onHOME BLUEreturncloth approxx338..389,y541..566 intoFLAT DEEPBLUEfoldshades. HOMEcloth ENTIRELYBLUEandBARE, no warmreflection/palehighlight/motif/seam/objects. Keep actualsharednook separateWALLlantern/OPENcup/supplies untouched; keepHOMEwalllamp/worldlighting exceptONLYclothpixels. PreserveALLwholeHOME/ruin/returnroads/boat/pier/passage/stairs/continuouscauseway/EMPTYMID/EMPTYDEST andallworldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\n5. 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nLATEST CHOICE: 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nSCENE ID: adventure--unknown--explore--warm--journey--short. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILED rope beside full stone pier, unfamiliar islands beyond. EXPLORATION: actual LEFT half-concealed stone side opening with FULL weathered descending stairs/hidden passage. WARM: a whole SMALL protected welcoming shared stone resting nook, UNUSED supplies, ONE warm metal WALL lantern projecting via bracket, ONE plain OPEN CUP. Actual cozy hard-pixel lanternlight and bare walking floor. No freestanding lamp or personal REDkeepsake/PACKS. No REDkeepsake/searchSTOP/threePACKS/battle props or protagonist identity. All actual selected boat/mast/rigging/sail/rope/pier/passage/walls/stairs/place floors completely INSIDE ALLnativeedges and BEFORE x1008. Selected places SMALL with ordinary terrain/sea buffers. Quiet continuous SEA/islands beyondRIGHT. JOURNEY: actual PHYSICALLY CONTINUOUS walking stone causeway, NO water gap, from departure pier through actual MIDPOINT island landing to different EMPTY island ruined stone destination with FULL stairs. ALL actual connected platforms/stairs/entire bridge spans/destination before right controls and inside native. RESOLVED FIRST CRISIS / RETURN: whole SMALL harbor HOME with full roof/chimney/OPEN black walking entry/bare threshold; separate bare UNROOFED FOUR-legged WOOD return table besideHOME, ONE plain BLUE cloth with ONLY three BLUE fold shades and NO objects/paper/ornaments/border/motifs. Separate SMALL cleared UNROOFED ruin with EMPTY floor. Continuous LEFT returnroad joins HOME/clearedruin/actual boatdeparture. NO REDSTOP/searchkeepsake/threepacks/firstfork/BATTLE/BASE unless QUESTselected. Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. \nTarget SHA256=fc89fe2d4dc9e0c6a2e708cd37959d3d08de11d2bdde30d0dd410bde9636fedd. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=fc89fe2d4dc9e0c6a2e708cd37959d3d08de11d2bdde30d0dd410bde9636fedd"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOTFULLexact251OWN/WHOLE unchangednative andactualWarmJ2683 FULLown/WHOLE comparedthisturn. BAREHOME BLUEcloth nowONLYflatBLUEfoldshade/colors, contrastingwarmreflection removed. WholeHOME/roof/chimney/OPENentry/fourlegWOODtable, separateprotectedsharednook/realWALLbracketlantern/ONEactualOPENcup/unusedsupplies, fullboat/FURLEDroll/actualcoil/wholeSTONEquay/allstairs/LEFTweatheredpassage fullstairs, continuouscauseway viaSEPARATEEMPTYMID towholeEMPTYDEST/allstairs before1008, separateTHIRDclearedSMALLUNROOFEDEMPTYruin/continuousHOMEruinboatreturnroad. Allactualselectedplaces inside native/controls. Worldcamera differscurrentWarmJparentcloseupboatLOW/DESTUP/nookMID vsnewHOMEUP/pierLOW/causewayMIDsmallworld, hardpixels/noidentity/text. AllsevenP, no inheritedpass."
+    },
+    {
+      "key": "adventure--unknown--battle--bright--journey--scene",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--bright--journey--scene.png",
+      "nativeSha256": "05bf77199d84e5e1ecc1c35aeb4a6b756a14c8c14a844e9b0fc78f8f852b44e0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "802e5824c5d10c0e9993c93bd3ea9e360a55589450975ae891b2bfdfedda16e4",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: ShortenONLYactualLEFTarmofSTONEpier andmoveactualLEFTouterwall RIGHT soselectedPIERfloor/wall startsinsideLEFTnative aroundx100 withORDINARYSEA/terrainbuffer. Currentpierleftx0 clipped; removeonlyleftarmextension outsideoldbounds andreshapeclosedleftwallinside; maintainactualshoreentry/stairs nearx250,y605. Preservefullboat/FURLEDcoil/wholePIER/firstmainSIDEfork/plainshields2/crossedspikes/cover/EMPTYlanes/continuouscauseway/EMPTYMID/wholeEMPTYDEST/allstairs/worldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\n5. 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nLATEST CHOICE: 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nSCENE ID: adventure--unknown--battle--bright--journey--scene. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. BRIGHT clearinviting energeticDAYLIGHT; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. JOURNEY: actual PHYSICALLY CONTINUOUS walking stone causeway, NO water gap, from departure pier through actual MIDPOINT island landing to different EMPTY island ruined stone destination with FULL stairs. ALL actual connected platforms/stairs/entire bridge spans/destination before right controls and inside native. FIRST DEPARTURE: actual TWO-way FIRST walking fork near departure pier/supplies, clearly distinct from questBASE Yfork when QUESTselected; one branch begins mainselectedroad, another explores visible SIDEpassage/unfinished trace. No HOME/returntable/clearedSMALLruin/restpair. Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. \nTarget SHA256=f6f95ba8c870735c82dc62da185d87c4b4f7db88a78b889b1c674b3dbf84d494. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=f6f95ba8c870735c82dc62da185d87c4b4f7db88a78b889b1c674b3dbf84d494"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULLexact251OWN/WHOLE unchangednative andactual247Jparent FULLOWN/WHOLE comparedthisturn. STONEpier wholeLEFTarm/floor/wall nowinsideLEFTnative withsea buffer andrealshorestairs, fullboat/FURLEDroll/actualcoil; tacticalTWOplainshields rack/atleastTWOactual crossedspikeTIMBER barriers inoverlappingcluster/plainstonecover/multipleEMPTYlanes. Fullcontinuouscauseway viaSEPARATEEMPTYMID towholeEMPTYDEST/allstairs before1008. Separate FIRSTfork neartraining maincausewayroad versusLEFTunfinishedtrace towardunclearedbrokenrubble, not forbiddenclearedSMALLruin/RESTpair. Allactualselectedfloor/wall/props nativeinside/beforecontrols. Parent247J separateLOWtacticalisland/UPLEFTdestination vsnewwholeLEFTcoast/highMIDlanding/destinationUP differentcamera/world. Coarsehardpixels/noidentity/text; allsevenP, no inputF inheritance."
+    },
+    {
+      "key": "adventure--unknown--battle--bright--quests--scene",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--bright--quests--scene.png",
+      "nativeSha256": "c3c05785a27152521fb01888807fe60986fcc6c768a6c1753d00fc8670c357c8",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "25d8a980c995ced87ad0bba89b736e5dba79168c901d3ef5f66cd41bc20fe4b9",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: ShortenONLYUPLEFTSTONEpierouterleftarm/floor/wall soENTIREselectedpierendsINSIDELEFTnative withordinarywater/terrainbuffer. Keeprealwalkingconnector/stairs toshore. Compress/moveONLYLOWEREMPTYquestclearing innerfloor/fenceLEFT soentireclearingBEFORE1008, approximatelyx730..940guidance, reconnectsameYroadbranch. PreserveTWOemptyclearings/BASETHREEparcels/firstmainSIDEfork/plainshields2/twoactualcrossedspikes/cover/lanes/fullboat/FURLEDcoil/worldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\n5. 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nLATEST CHOICE: 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nSCENE ID: adventure--unknown--battle--bright--quests--scene. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. BRIGHT clearinviting energeticDAYLIGHT; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. QUESTS: actual whole UNROOFED FOUR-legged WOOD base table with THREE plain SEALED parcels. Actual LEFT Y-fork roads to TWO different EMPTY nearby travel clearings. BASE is not return table. FIRST DEPARTURE: actual TWO-way FIRST walking fork near departure pier/supplies, clearly distinct from questBASE Yfork when QUESTselected; one branch begins mainselectedroad, another explores visible SIDEpassage/unfinished trace. No HOME/returntable/clearedSMALLruin/restpair. NEW reverseEAST coastal bay geometry and highoblique camera; boat/pier/coil UPPERLEFT, trainingplainshields2/twoactualcrossedspikes/isolatedcover/EMPTYlanes LOWERLEFT, FOURlegWOODBASE/THREESEALEDparcels MIDDLELEFT; actualYforktoTWOgenuinelyEMPTYSMALLtravelclearings LOWERMIDDLELEFT/UPPERMIDDLELEFT. NearUPLEFTpier actualFIRSTtwo-wayfork/mainshorewalkingroad towardBASE plusunfinishedSIDEtrace. BoatUP/trainingLOW/cameraandcoastallandplacement physicallyOPPOSITEprevious249Qparent boatLOW/trainingMID/BASEUP world. Notjustpropshift. NoHOME/RESTruin/regionalarch/EXPLORATIONdoor/JOURNEY.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. WholeSMALLSTONEquayfullyINSIDEedges/realshorewalkingconnection; no floatingpier ornativecut. FullROOT currentparentcomparison/sevenchecks, independent no refs.\nTarget SHA256=026194a4b2bebc43e09022e9943afc3e0bfb541844ee3403eea923ce64b449d9. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=026194a4b2bebc43e09022e9943afc3e0bfb541844ee3403eea923ce64b449d9"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULL exact251 OWN/WHOLE personally inspected, actualcurrent250BQparent FULL own/whole compared this turn. UpperLEFT shortened fullSTONEpier now inside native with water/grassbuffer and realwalkingstairs/shore connector; allboat/FURLED/actualspiralcoil inside. LOWEREMPTYplot nowwholebefore1008; uppersecondEMPTYplot/BASE FOURlegWOODtable THREE SEALEDparcels/actualYfork. FIRSTdeparturefork mainroadtowardBASE plus unfinishedSIDEtrace nearpier distinctfromquestfork. Plainshields2/two freestandingcrossedspike timbers/plainstonecover/EMPTYlanes fullLEFT; readonlynative LEFTdiagnostic confirmsgrassbeforeedge, ordinaryterrain/roadcontinuation not clippedchosenfloor. ActualreverseboatUP/trainingLOW/BASEMID coastal geometry differsactualparentboatLOW/trainingMID/BASEUP. No identity/text/unselectedHOME/REST; allsevenP."
+    },
+    {
+      "key": "adventure--unknown--battle--bright--quests--episode",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--bright--quests--episode.png",
+      "nativeSha256": "3e7e9409b05b9ca68cfadf75e8c76ac62e94c6e0d5150ed98758800c08802c93",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "a335824d613082487f91b30d5974f8cb8511a361cb8950a92f2cf6cd111e7f77",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: Compress/moveONLYLOWEREMPTYquestclearing innerfloor LEFT before1008 withordinaryterrainbuffer,reconnectsameYroadbranch,keepTWOseparateEMPTYclearings. AddONLYONE visiblydistinct actualSPIRALCOILEDrope onunusedUPLEFTSTONEpierfloor nearshorestairs, notpostwrap/riggingline. Preservefullboat/FURLEDroll/wholePIER/stairs/BASETHREESEALEDparcels/Yfork/plainshields2/crossedspikes/cover/lanes/THIRDclearedEMPTYruin/exactTWOEMPTYRESTseats/SIDEroad/worldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\n5. 첫 제작 범위: 첫 동료와 작은 유적 — 동료를 만나 탐험 하나를 해결해요.\nLATEST CHOICE: 첫 제작 범위: 첫 동료와 작은 유적 — 동료를 만나 탐험 하나를 해결해요.\nSCENE ID: adventure--unknown--battle--bright--quests--episode. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. BRIGHT clearinviting energeticDAYLIGHT; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. QUESTS: actual whole UNROOFED FOUR-legged WOOD base table with THREE plain SEALED parcels. Actual LEFT Y-fork roads to TWO different EMPTY nearby travel clearings. BASE is not return table. FIRST COMPANION / SMALL RUIN: a SEPARATE SMALL cleared UNROOFED ruin with EMPTY floor and TWO distinct EMPTY stone rest seats, neither is a travelPACK nor main-destination. Actual LEFT walkable side route connects departure to this cleared ruin. No HOME/returntable/firstfork/BASE unless QUESTselected. NEW north-facing crescentSHORE highobliqueview, boat/wholepier/coil UPPERLEFT, tacticalplainshields2/twoactualcrossedspikes/isolatedcover/EMPTYlanes MIDDLELEFT. BASE FOURlegWOODtable/THREESEALEDparcels LOWERLEFT, actualYforktoTWOdifferentgenuinelyEMPTYSMALLtravelclearings UPMIDDLELEFT/LOWMIDDLELEFT. SEPARATETHIRDSMALLclearedUNROOFEDEMPTYruin with exactlyTWOEMPTYstoneRESTseats VERYLEFTMIDDLEshore, SIDEwalkingroad toUPLEFTpier. Newcrescentworld withboatUP/BASELOW/camera/coast/roads opposite249QparentboatLOW/BASEUP/tacticalMID world. NoHOME/FIRSTfork/EXPLORATIONdoor/JOURNEY/regionalarch. NoWatermark/logo/ghoststamp inanysky/waterpixel; wholeedge-to-edgecoherenthardpixelartonly.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. WholeSMALLSTONEquayfullyINSIDEedges/realshorewalkingconnection; no floatingpier ornativecut. FullROOT currentparentcomparison/sevenchecks, independent no refs.\nTarget SHA256=4565127393621da4e458e66c420d1fcf865fce1cb7c80ea32cb0811ae8a418b8. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=4565127393621da4e458e66c420d1fcf865fce1cb7c80ea32cb0811ae8a418b8"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULL exact251 OWN/WHOLE personally inspected, actualcurrent250BQparent FULL own/whole compared this turn. ActualNEW spiralcoiledrope visible besideUPpier stairs, wholeboat/FURLED/fullSTONEquay physicallyshoreconnected. Actualtwo genuinelyEMPTYtravelclearings/Yroads fullybefore1008, BASE FOURlegWOODtable THREE distinctSEALEDparcels. Separate LEFT smallclearedunroofed EMPTY ruin exactly TWOstoneREST seats and actualSIDEroadtopier. Plainshields2/twofreestandingcrossedspikes/plainstonecover/multipleEMPTYlanes fullinside; allchosenroof/wall/floor/stairs/props insideallnativeedges/right1008. Bright hardpixelclusters/nounsetidentity/text/watermark. CrescentboatUP/BASELOW vsactualparentboatLOW/BASEUP distinctworldcamera. AllsevenP, no inheritedpass."
+    },
+    {
+      "key": "adventure--unknown--battle--bright--chapters--episode",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--bright--chapters--episode.png",
+      "nativeSha256": "90ed923508770042623d4b729c172a650e3cc2a3b8d9f3ec298c882b911ab1ae",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4db315841fbf6023c46c572da90e007be111510b2e00310bd0888e91248d9815",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: ReshapeONLYactualLEFTboundaryofEMPTYtacticalground soitsENTIREbarewalkingfloorendsinsideLEFTnative withordinarygrass/terrainbuffer beforeedge. Actualbattlefloorcurrentlytouchesx0; fillONLYnarrowLEFTedgefloorstrip withordinarygrass andcloseinnerfloorboundaryaroundinsidebarrier; DO NOTcover/move/deleteanyactualshield/spikebarrier/cover. Allselectedtacticalfloor andprops completelyvisible; preservefullboat/FURLEDcoil/pier/wholeOPENregionalarch/allstairs/OCHREaridUPGREENLOW/THIRDclearedsmallEMPTYruin/exactTWORESTseats/SIDEroute/worldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\n5. 첫 제작 범위: 첫 동료와 작은 유적 — 동료를 만나 탐험 하나를 해결해요.\nLATEST CHOICE: 첫 제작 범위: 첫 동료와 작은 유적 — 동료를 만나 탐험 하나를 해결해요.\nSCENE ID: adventure--unknown--battle--bright--chapters--episode. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. BRIGHT clearinviting energeticDAYLIGHT; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. CHAPTERS: whole OPEN stone regional arch with ALL stairs actually connecting a substantial treeless OCHRE arid UPPER LEFT region to GREEN LOWER LEFT woods. BOTH actual walking entry floors left of controls. FIRST COMPANION / SMALL RUIN: a SEPARATE SMALL cleared UNROOFED ruin with EMPTY floor and TWO distinct EMPTY stone rest seats, neither is a travelPACK nor main-destination. Actual LEFT walkable side route connects departure to this cleared ruin. No HOME/returntable/firstfork/BASE unless QUESTselected. NEW farhighEAST shoreworld: fullsmallboat/FURLEDcoil/wholeSTONEpier UPLEFT; tacticaltwoPLAINshields/twoactualcrossedspikes/plaincover/EMPTYlanes LOWLEFT. WholeOPENregionalarch/allstairs MIDMIDDLELEFT connecting substantialOCHREaridUPLEFT toGREENLOWLEFT walkingentries. SEPARATETHIRDSMALLclearedUNROOFEDEMPTYruin with exactlyTWOEMPTYstoneRESTseats LOWERMIDDLELEFT andrealSIDEwalkingroad frompier. Actualdistinctworld/camera/coastgeometry vsoriginalclosegiantCHparentd907/LOWboat/CENTERarch. NoHOME/BASE/FIRSTfork/JOURNEY/EXPLORATIONdoor.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. WholeSMALLSTONEquayfullyINSIDEedges/realshorewalkingconnection; no floatingpier/nativecut. FullROOT exactOWN/WHOLE currentparentcomparison/sevenchecks, independent no refs.\nTarget SHA256=08e5bee6475192db3d9e86d43b49442673c21fd714cada60d1f0c1209714551b. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=08e5bee6475192db3d9e86d43b49442673c21fd714cada60d1f0c1209714551b"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULL exact251 OWN/WHOLE unchanged native personally inspected; actual original BrightCHd907 FULL own/whole parent compared this turn. Actual LEFT battle barefloor ends inside grass buffer, readonly LEFT diagnostic confirms ordinary terrain continues native edge, not cropped chosen floor. All two plain shields/two freestanding crossed-spike timbers/plainstonecover/approachlanes whole. Actual coiledrope beside pier confirmed readonly native crop, furledcanvas/boat/fullquay/shore stairs whole. Full openarch/all stairs connects OCHRE UP to GREEN LOW; separate THIRD cleared unroofed EMPTY ruin has exactly TWO stone REST seats, connected actual SIDE road. All selected props/floors/stairs inside native before controls1008. Actual farhigh boatUP/tacticsLOW/archMID differs original closegiantCENTERarch/LOWboat. Strong hard pixels/no identity/text. All seven P, no inherited pass; no new ordinaryterrain-clipping rule."
+    },
+    {
+      "key": "adventure--unknown--battle--bright--chapters--short",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--bright--chapters--short.png",
+      "nativeSha256": "7010402b903d58db9d73e0724b3ad6ce65968196ab25f599696136821c908ac0",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "bfb213270d9098ec72d8add755f4ca44ccb53de6f290ed2c5ecd6aa115c48254",
+      "exactOwn": "Use case: precise-object-edit. Image 1 is the EXACT SAME KEY pixel-art scene to EDIT, never a style reference. Preserveactualcamera/world/coarsepixelcraft/allcorrectfacts. RepairONLYnameddefects. ONEcompleteOPAQUE16:9native.\nREPAIR: AddONLYONE unmistakeable actualSPIRALCOILEDrope tobareSTONEpierfloor nexttoEMPTYboat nearx640,y230guidance. Actualstraighttethers/postwraps areNOTaspiralcoil. Preservewholeboat/FURLEDroll/fullPIER/wholeOPENregionalarch/allstairs/aridOCHREUPGREENLOW/plainshields2/crossedspikes/cover/EMPTYlanes/fullHOME/roof/chimney/OPENentry/fourlegWOODBAREBLUEreturntable/THIRDclearedEMPTYruin/returnroads/worldcamera.\nPRESERVE ALL SELECTED FACTS:\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 힘차고 유쾌하게 — 낯선 도전도 동료와 함께 넘어가요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\n5. 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nLATEST CHOICE: 첫 제작 범위: 첫 위기 해결과 귀환 — 작은 전투나 사건을 해결하고 결과를 확인해요.\nSCENE ID: adventure--unknown--battle--bright--chapters--short. This identifier is metadata; never draw it.\nCOMPLETE CURRENT VISUAL INVENTORY: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. BRIGHT clearinviting energeticDAYLIGHT; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. CHAPTERS: whole OPEN stone regional arch with ALL stairs actually connecting a substantial treeless OCHRE arid UPPER LEFT region to GREEN LOWER LEFT woods. BOTH actual walking entry floors left of controls. RESOLVED FIRST CRISIS / RETURN: whole SMALL harbor HOME with full roof/chimney/OPEN black walking entry/bare threshold; separate bare UNROOFED FOUR-legged WOOD return table besideHOME, ONE plain BLUE cloth with ONLY three BLUE fold shades and NO objects/paper/ornaments/border/motifs. Separate SMALL cleared UNROOFED ruin with EMPTY floor. Continuous LEFT returnroad joins HOME/clearedruin/actual boatdeparture. NO REDSTOP/searchkeepsake/threepacks/firstfork/BASE unless QUESTselected. NEW farhighNORTH curvedharborworld: fullsmallboat/FURLEDcoil/wholeSTONEpier UPLEFT; wholeSMALLHOME/fullroof/chimney/OPENentry/fourlegWOODreturntable BAREBLUEONLYfoldshades LOWLEFT. TacticaltwoPLAINshields/twoactualcrossedspikes/plaincover/EMPTYlanes MIDLEFT. WholeOPENregionalarch/allstairs UPMIDDLELEFT connecting substantialOCHREaridUPLEFT toGREENLOWLEFT walkingentries. SEPARATETHIRDSMALLclearedUNROOFEDEMPTYruin LOWERMIDDLELEFT withcontinuousLEFTreturnroad HOME→ruin→boat. Actualdistinctworld/camera/coastgeometry vsoriginalclosegiantCHparentd907/LOWboat/CENTERarch. NoBASE/FIRSTfork/RESTpair/JOURNEY/EXPLORATIONdoor. HOMEclothBAREONLYBLUEfoldshades zeroWHITEcreamgoldgraycontrast/objects/grid/border/motif.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. WholeSMALLSTONEquayfullyINSIDEedges/realshorewalkingconnection; no floatingpier/nativecut. FullROOT exactOWN/WHOLE currentparentcomparison/sevenchecks, independent no refs.\nTarget SHA256=ef918c5b5e8e853a4fceba8817dde504976a4da1946d77d3568a6c76c3005847. ExactnativeROOTFULLown/WHOLEseen; fullnewsevenchecks/actualcurrentparentcomparison mandatory, no inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [
+        "EXACT SAME KEY nativeEDIT target ROOT FULL OWN/WHOLEseen SHA256=ef918c5b5e8e853a4fceba8817dde504976a4da1946d77d3568a6c76c3005847"
+      ],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT FULL exact251 OWN/WHOLE unchangednative personally inspected; actual originalBrightCHd907 FULL own/whole compared this turn. New actualspiralCOILEDrope onbarepierbesideemptyboat, nottether/postwrap. Entireboat/FURLEDroll/pier/shorestairs wholebefore1008. WholeOPENregionalarch/allstairs connects substantialOCHRE aridUP toGREENLOW; plainshields2/crossedspikes2/plainstonecover/EMPTYlanes full; entireSMALLHOME roof/chimney/OPENentry/table ONLYBAREBLUEfoldshades no cream/gray/motif, separateTHIRD clearedSMALLunroofedEMPTYruin, continuous LEFT returnroad boat/HOME/ruin. All floor/wall/props/stairs insideedges/beforecontrols. FarhighNORTH boatUP/HOMELOW/tacticsMID vsactualparentcloseCENTERgiantarch/boatLOW differentworldcamera. Strongpixels/noidentity/text. AllsevenP."
+    },
+    {
+      "key": "adventure--unknown--battle--mystic",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--mystic.png",
+      "nativeSha256": "0e9848c46fe7948f1061eae8d0539d4c7ed41f73c931c32ebdfe6aa2ce55f893",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "0d3b951b4d83a06c49dd63af3d45940ab340475ae00c3acca41501a870889655",
+      "exactOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nLATEST CHOICE: 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\nSCENE ID: adventure--unknown--battle--mystic. This identifier is metadata; never draw it.\nFINAL SELECTED SCENE BRIEF: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. MYSTIC monumentalancientruins andcoherentdiscreteBLUE/VIOLETmysteriousspatialdepth; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. NEW farhighSOUTHcoastalworld: wholeSMALLboat/FURLEDcoil/wholeSTONEquay LOWLEFT withrealshorewalkingconnector, EMPTYtacticalground/twoPLAINshields/twoactualcrossedspikes/isolatedstonecover/multipleEMPTYlanes MIDLEFT; wholeancientMONUMENTALruins UPLEFT anddistantislanddepth. Allactualselectedtacticalfloor/props insideedgegrassbuffer. NoJOURNEY/QUESTBASE/CHAPTERregionalarch/FIRSTfork/HOME/RESTpair.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. Independentcomplete redraw no refs. ROOTfullseven/currentactualparentcomparison, no oldP inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual fullSTONEpier selected walkingfloor/outerwall is cropped native LEFT edge; current exact OWN requires whole inside native. Selected main monumental ruin top also cropped native TOP despite current whole-monument brief."
+      ],
+      "note": "ROOT FULL exact251 OWN/WHOLE personally inspected; actual Bdepth2 original347a FULL OWN/WHOLE compared this turn. Strong hardpixelcraft/coherent BLUEVIOLET monumental mystery/actualplainshields2/three actualcrossedspikes/plainstonecover/EMPTYlanes inside before1008; fullEMPTYboat/FURLEDroll/actualrope loops besideSTONEpier. But actualLEFTpier walkingfloor/outerwall cuts x0; currentwholemonument UPLEFT extendsbeyondnativeTOP. CurrentnewOWN explicitlywhole, comp/allF only. Latestmystery/identityUnset/noText/distinctactualworldcamera vsoriginal347 closeboat field P. No retro originalwholegate; no cup/LEFT55 newgate."
+    },
+    {
+      "key": "adventure--unknown--battle--mystic--journey",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--mystic--journey.png",
+      "nativeSha256": "14bd1664a76f6644fabdf5a03574f1de622434d814550be2384e26301d18c5da",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "66727123e9a52207ebaf75c62dab6e0a50a50afda0565eaf2f517f82383ca578",
+      "exactOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--unknown--battle--mystic--journey. This identifier is metadata; never draw it.\nFINAL SELECTED SCENE BRIEF: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. MYSTIC monumentalancientruins andcoherentdiscreteBLUE/VIOLETmysteriousspatialdepth; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. JOURNEY: actual PHYSICALLY CONTINUOUS walking stone causeway, NO water gap, from departure pier through actual MIDPOINT island landing to different EMPTY island ruined stone destination with FULL stairs. ALL actual connected platforms/stairs/entire bridge spans/destination before right controls and inside native. NEW farhighNORTHcoastalworld: wholeSMALLboat/FURLEDcoil/wholeSTONEquay UPLEFT withrealshorewalkingconnector, EMPTYtacticalground/twoPLAINshields/twoactualcrossedspikes/isolatedstonecover/multipleEMPTYlanes LOWLEFT. Actualcontinuousstonewalkingcauseway fromPIER viaSEPARATEBAREMIDlanding MIDLEFT toDIFFERENTwholeEMPTYislandMONUMENTALruinedDEST/FULLstairs UPMIDDLELEFT. Actualnewshorecamera/world/islandgeometry vscurrentoriginalMYSTICBclosegiantboatLEFT/allbattlegearRIGHT andnewMYSTICBboatLOW/tacticsMID. NoQUESTBASE/CHAPTERregionalarch/FIRSTfork/HOME/RESTpair.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. Independentcomplete redraw no refs. ROOTfullseven/currentactualparentcomparison, no oldP inheritance.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": false,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual first causeway span has visible water gap from departure pier, violating physically continuous walking route in exact OWN.",
+        "Actual farLEFT plainstone tacticalcover/wall is cropped at native LEFT edge; current OWN requires all chosen props whole."
+      ],
+      "note": "ROOT FULL exact251 OWN/WHOLE native personally inspected; actual new251MYSTICB7 FULL own/whole compared plusoriginal2856 originalscope seen this turn. Boat/FURLEDcoil/fullPIER/shorestairs/twoPLAINshields/two actualcrossedspikes/plaincover/lanes/MIDEMPTYlanding/wholeEMPTYislandMONUMENTALDEST/fullstairs present before1008. But pierendsnearx410 with waterbreak tofirstbridge atx442; no physicalwalkingconnection, all/latestF. ActualLEFTstonecoverwall cutx0 compF. Exactcurrentnewwholecontract only; latestJOURNEYnotcomplete, mysterybluevioletpixels/noidentity/text good. ActualboatUP/tacticsLOW/destUPMID world unlike251BboatLOW/tacticsMID/giantUPtower independentdistinctP despiteparentF."
+    },
+    {
+      "key": "adventure--unknown--battle--mystic--journey--scene",
+      "nativeFile": "qa-runs/harnesses/interview-scene-bank/v2-production-251-adventure--unknown--battle--mystic--journey--scene.png",
+      "nativeSha256": "4fcc542f9e7555373a9f0cc0e9505e84ab4701330a4721d67199c1f35ed5799d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "23c6b63015dab2fd0ac88a64b8af4a914e4b513c927a53e66b466029bee9d682",
+      "exactOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\n5. 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nLATEST CHOICE: 첫 제작 범위: 출발과 첫 선택 — 목표를 알고 모험에 나서는 프롤로그.\nSCENE ID: adventure--unknown--battle--mystic--journey--scene. This identifier is metadata; never draw it.\nFINAL SELECTED SCENE BRIEF: ONE opaque continuous 16:9 interview background. Authentic 1990s 16-bit RPG pixel scenery, deliberately coarse square clusters, hard staircase contours, flat 2-4 shade ramps in EVERY plane, sparse dithering. No smooth gradients/painting/antialiasing/blur/bloom/3D. Distant high oblique view over an expansive world; selected places are SMALL and completely visible in the left portion. ALL actual chosen roof/wall/inner floor/stairs/platform/props fully inside native edges and BEFORE right controls x60.3% (x1008 on 1672-wide native). Ordinary terrain and sky buffers. Quiet continuous landscape on right. No bodies, protagonist identity, species, text, signs, arrowboards, directionposts, paper, books, symbols, emblems, runes, clocks, notices, framed decorative panels or UI. Functional joints/straps/fences/cup rims allowed. UNKNOWN DEPARTURE: whole EMPTY SMALL sailing boat with plain FURLED canvas, actual COILEDrope beside fullSTONEpier, unfamiliarislands beyond. STRATEGIC BATTLE: actual separateEMPTYnear tacticalground with TWO plain UNPAINTED BARE BROWN WOOD orGRAYMETALshields onrack, functionalboss/rivets/straps ONLY. AtleastTWO actual freestanding crossed-spikeTIMBERbarricades, PLAINstonecover and multiplewalkableapproachlanes. Rack is notbarricade; no paintquarters/stripes/emblems/flags/heraldry. MYSTIC monumentalancientruins andcoherentdiscreteBLUE/VIOLETmysteriousspatialdepth; no body/identity/species/crew. Entireboat/mast/rigging/FURLEDroll/coil/fullSTONEpier/rack/ALLshields/ALLbarricades/cover/lanefloors insideallnativeedges/beforex1008. No EXPLORATIONconcealeddoor/weatheredpassage, REDSTOP/keepsake/searchtrail/threepersonalPACKS/RESTpair/HOME/BASE/regionalarch unless selected below. JOURNEY: actual PHYSICALLY CONTINUOUS walking stone causeway, NO water gap, from departure pier through actual MIDPOINT island landing to different EMPTY island ruined stone destination with FULL stairs. ALL actual connected platforms/stairs/entire bridge spans/destination before right controls and inside native. FIRST DEPARTURE: actual TWO-way FIRST walking fork near departure pier/supplies, clearly distinct from questBASE Yfork when QUESTselected; one branch begins mainselectedroad, another explores visible SIDEpassage/unfinished trace. No HOME/returntable/clearedSMALLruin/restpair. NEW farhighEASTcurvedshore world: wholeSMALLboat/FURLEDcoil/wholeSTONEquay LOWLEFT, EMPTYtacticalground/twoPLAINshields/twoactualcrossedspikes/isolatedstonecover/multipleEMPTYlanes UPLEFT. NearLOWLEFTpier separateFIRSTtwo-waywalkingfork/maincausewayroad/unfinishedSIDEtrace; continuousstonecauseway viaSEPARATEEMPTYMIDlanding MIDMIDDLELEFT toDIFFERENTwholeEMPTYMONUMENTALruinDEST/FULLstairs UPMIDDLELEFT. Independentcoast/island/roadcamera oppositecurrentnewMYSTICJparent boatUP/tacticsLOW. Bareordinarysea/landbuffers aroundentireSTONEpier/tacticalfloor/destination. NoBASE/HOME/RESTpair/CHAPTERregionalarch/EXPLORATIONdoor.Composition safety guidance only: SMALL entireselectedplaces withinLEFT55% (aboutx920native) amongordinaryterrain/sea buffers. Actualmandatorybounds nativeedges andRIGHTcontrolsx60.3% (x1008 on1672). Quietcontinuousrightlandscape. Everyactualchosenroof/wall/innerfloor/ALLstairs/columns/posts/platform/props insideedges/beforecontrols. Functionaljoints/straps/fences/cuprims allowed; no writing/signs/boards/arrows/papers/books/symbols/emblems/body/identity. Canvas ONLYcompacthorizontalFURLEDroll. WhenHOMEreturnclothselected, actualBAREBLUEcloth ONLYbluefoldshades, zeroothercolors/objects/grid/border/ornament. Independentfreshscope no refs. ROOTFULLactualparentcomparison/allseven; parentF noinherit.",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Actual chosen upperLEFT tactical barefloor extends through native LEFT edge without the ordinary grass/terrain buffer required by this current whole-floor brief."
+      ],
+      "note": "ROOT FULL exact251 OWN/WHOLE native personally inspected; actualcurrent251MYSTICJ8 FULL own/whole compared this turn despiteparentF, noinheritance. Actualwholeboat/FURLEDcanvas/rope coiled aroundpierpost (functional, notwriting; currentOWNdoesnotforbidpostwrap)/fullquay/shoreconnector, physicallycontinuous firstcauseway viaEMPTYMIDlanding towholeEMPTYmonumentalDEST/allstairs before1008. Firstnear-departuretwo-waywalkingfork maincausewayroad plusSIDEtrace towardupperLEFTbareground. Actualplainshields2/two actualcrossedspikes/plaincover/EMPTYlanes present; mysteryBLUEVIOLETdepth hardpixelplanes/identityunset/noText. But chosenUPLEFTtacticalbarewalkingfloor continuesnativeLEFTcut contrarycurrent explicitwholefloor/terrainbuffer brief, comp/allF; no invented originalscope microgate. ActualboatLOW/tacticsUP vscurrentparentboatUP/tacticsLOW distinctworldcamera, latestFIRSTfork P."
+    }
+  ],
+  "whole1457Complete": false,
+  "publication": "official import/review only; gate/build deferred; no new count claimed"
+}

@@ -1,0 +1,24 @@
+{
+  "published": 986,
+  "remaining": 471,
+  "snapshot": {
+    "interviewSceneBank.json": "8c37873e8d6ad4d6eadf8957a180a04a2e3778e5dd7940ec4e8cee646907565d",
+    "ledger.json": "224835fa5ff1a3cf41e951d02b96834a4ffd5084e0c5a6db39f316c4652226a6"
+  },
+  "rootWholeScreenshotsSeen": [
+    "adventure--unknown--explore--mystic--quests--scene",
+    "adventure--unknown--explore--warm--journey--scene",
+    "adventure--unknown--explore--warm--quests",
+    "adventure--unknown--explore--warm--quests--short",
+    "adventure--unknown--explore--warm--chapters--scene",
+    "adventure--unknown--explore--warm--chapters--episode"
+  ],
+  "actualClickCount": 35,
+  "actualRuntimeErrors": [],
+  "actualGeneratedRequests": 0,
+  "scopedVisualPass": true,
+  "observation": "ROOT personally opened allsix WHOLE unchanged productiondialog screenshots. Selectedboat/pier/structures/floors/causeways/nooks/props readableLEFT, motion/redraw available, rightchoices/footer fit. Removedlargecaption doesnotcoverart. ParentWarmQ fifthquestion latestscopeunset disablesconfirmcorrectly. Standalone800pxdialog in900pxQAviewport shows100pxwhitebottom; notfullappboot orAIhandoff. Redrawprovider notinvoked.",
+  "notFreshAll986NativeVisualAudit": true,
+  "notFullAppBootOrAIHandoff": true,
+  "originalCorrection139ActualExit": 0
+}

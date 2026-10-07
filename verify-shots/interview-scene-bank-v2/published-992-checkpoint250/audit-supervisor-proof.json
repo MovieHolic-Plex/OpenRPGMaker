@@ -1,0 +1,26 @@
+{
+  "published": 992,
+  "remaining": 465,
+  "snapshot": {
+    "interviewSceneBank.json": "27a9dc2b8f97a3661b127678cd3b93584bb137e0df8f0cae3fb0d19f8d1dfe72",
+    "ledger.json": "0161a932b7ee74d9438ead7d1e77e331e506c9b4bc322e87761d95a244716c23"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--battle--bright",
+    "adventure--unknown--battle--bright--quests",
+    "adventure--unknown--battle--bright--journey--short",
+    "adventure--unknown--battle--bright--quests--short",
+    "adventure--unknown--battle--bright--chapters--scene",
+    "adventure--unknown--explore--warm--quests--scene"
+  ],
+  "clicks": 33,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 142
+}

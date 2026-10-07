@@ -1,0 +1,19 @@
+{
+  "scope": "Only obsolete originalsource139 publiccopy after actual246FULL replacementnative/exactOWN/ROOTchecks/gate and immutable986snapshot verified. Sources140-142 stillpreserved pending currentpassingreplacement.",
+  "publishedSnapshot": 986,
+  "removedThisInterval": 1,
+  "resolvedCumulative": 266,
+  "priorActualProof": "obsolete-public-cleanup-244-proof.json",
+  "removed": [
+    {
+      "number": 139,
+      "key": "adventure--unknown--explore--warm--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm--quests-08af238ec676.png",
+      "nativeSha256": "08af238ec676d5cff8b8be0bc196e963e4d5a34caadde94fb800fb4a0d745484",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source139-adventure--unknown--explore--warm--quests-08af238ec676.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source139-3f46c9d07a46a9ef71ee0ab9fba88ffea3764c5a5d3bf3c406a03dc3d9574351.txt",
+      "replacementSha256": "2b8fb8728742f8c0daf8c1a8d4ee406929da37e460db1bd88b8164da908f71be",
+      "replacementOwnSha256": "73df5c3ca852373e7e8206a7128daf205f257eda3ee70664f6695c80074db87f"
+    }
+  ]
+}

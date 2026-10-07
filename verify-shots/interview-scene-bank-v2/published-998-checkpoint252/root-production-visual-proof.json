@@ -1,0 +1,21 @@
+{
+  "published": 998,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "targets": [
+    "adventure--unknown--battle--mystic",
+    "adventure--unknown--battle--mystic--journey",
+    "adventure--unknown--battle--mystic--journey--scene",
+    "adventure--unknown--battle--mystic--chapters",
+    "adventure--unknown--explore--warm--journey--short",
+    "adventure--unknown--battle--bright--quests--scene"
+  ],
+  "snapshot": {
+    "interviewSceneBank.json": "83f5f5bcb58aa2b659efe75168abdfd61dff56a3c509569d78b184215ee229a6",
+    "ledger.json": "d0c7a81306efccac3efa67f5f902496bb6b5adf50f92cf570f1485334a3edd00"
+  },
+  "checks": "All six full production screenshots opened personally by ROOT, including Mystic battle/Journey/Journey departure/Chapters, Warm exploration Journey return, Bright battle Quests departure. Selected props and interview controls visible; bottom motion/redraw controls clear. Native PNG and exact OWN unchanged.",
+  "knownLimitation": "100px white space below standalone 800px QA container; not app boot or full screen test.",
+  "notFreshAll998NativeVisualAudit": true,
+  "notAIHandoffProof": true,
+  "finishedAt": "2026-10-07T21:22:38.719676+00:00"
+}

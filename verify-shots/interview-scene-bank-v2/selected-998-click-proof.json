@@ -1,0 +1,221 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 998,
+  "targets": [
+    "adventure--unknown--explore--warm--journey--short",
+    "adventure--unknown--battle--bright--quests--scene",
+    "adventure--unknown--battle--mystic",
+    "adventure--unknown--battle--mystic--journey",
+    "adventure--unknown--battle--mystic--journey--scene",
+    "adventure--unknown--battle--mystic--chapters"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--unknown--explore--warm--journey--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 13.599999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--explore",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore-3e70fbc532f2.png"
+        },
+        {
+          "key": "adventure--unknown--explore--warm",
+          "ms": 7.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm-9f6d73219394.png"
+        },
+        {
+          "key": "adventure--unknown--explore--warm--journey",
+          "ms": 5.099999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm--journey-26830f93fea1.png"
+        },
+        {
+          "key": "adventure--unknown--explore--warm--journey--short",
+          "ms": 6.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm--journey--short-36e17f755f94.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--battle--bright--quests--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 5.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--battle",
+          "ms": 5.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png"
+        },
+        {
+          "key": "adventure--unknown--battle--bright",
+          "ms": 4.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright-4224dd029660.png"
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright--quests-44c7638ff30f.png"
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests--scene",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright--quests--scene-c3c05785a271.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--battle--mystic",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--battle",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "ms": 4.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-53106b12feda.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--battle--mystic--journey",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 3.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--battle",
+          "ms": 5.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-53106b12feda.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey",
+          "ms": 4.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--journey-7e9ba271bc8a.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--battle--mystic--journey--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 6.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--battle",
+          "ms": 3.9000000953674316,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "ms": 4.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-53106b12feda.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey",
+          "ms": 4.099999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--journey-7e9ba271bc8a.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey--scene",
+          "ms": 3.9000000953674316,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--journey--scene-4db1a9695a1f.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--battle--mystic--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--battle",
+          "ms": 3.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "ms": 3.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-53106b12feda.png"
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--chapters",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic--chapters-7e452e4e64a3.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

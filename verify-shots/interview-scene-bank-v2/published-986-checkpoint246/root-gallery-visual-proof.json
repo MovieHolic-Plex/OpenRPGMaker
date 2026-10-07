@@ -1,0 +1,17 @@
+{
+  "publishedSnapshot": 986,
+  "rootWholeScreenshotsSeen": [
+    "verify-shots/interview-scene-bank-v2/gallery-986-stage246-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-986-stage246-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-986-stage246-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-986-stage246-736-last.png"
+  ],
+  "actualGalleryClicks": 16,
+  "widths": [
+    320,
+    736
+  ],
+  "runtimeErrors": [],
+  "scopedVisualPass": true,
+  "observation": "ROOT personally opened allfour WHOLE first/last galleryscreenshots at320/736. Image/caption/aria selection changed, choiceswrapandfit withoutclipping/overflow. PreviewWEBP only; productionnativePNG unchanged. This is8samples, notfreshall986nativeaudit/fullboot/AIhandoff. Snapshotprecedesactualoriginalcorrections140-142."
+}

@@ -1,0 +1,123 @@
+{
+  "snapshotPublished": 986,
+  "sourceManifestSha256": "8c37873e8d6ad4d6eadf8957a180a04a2e3778e5dd7940ec4e8cee646907565d",
+  "sources": [
+    {
+      "key": "adventure--unknown--explore--mystic--quests--scene",
+      "sha256": "ab85c3403ce9967fed34887f29459531b699c9a9e9318515acd4c0a8f3d8420f",
+      "generationPromptSha256": "f4ff9009b7954d07acfa5480d290cb8b2d1e2b20fd3df9f3ab548fd28c8d705d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--journey--scene",
+      "sha256": "153525e042743008b339fd6a9acc6a28bd92367388e6262af52d2498f8a83a7f",
+      "generationPromptSha256": "92fc90fc493185daca9d80f05e5738cba3acd2fde7fac384f6029fb9f7c26850",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--quests",
+      "sha256": "2b8fb8728742f8c0daf8c1a8d4ee406929da37e460db1bd88b8164da908f71be",
+      "generationPromptSha256": "73df5c3ca852373e7e8206a7128daf205f257eda3ee70664f6695c80074db87f",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--quests--episode",
+      "sha256": "53591bece7434981ff638b3446c470643437497c669926c1f8320d0c1555c3c8",
+      "generationPromptSha256": "2b4087fd34f073330a91da70b28858bdafe2b7cfb73169203e32827ae7980034",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--quests--short",
+      "sha256": "d5352221c8f9ff77cf8d52fe141b6fa4209cb7c3806b81622da8040845a08574",
+      "generationPromptSha256": "d6f5f33feac550bf950c9121a0de1de11061cb4e29a50baec84932485eb9c9f3",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--chapters--scene",
+      "sha256": "405365a7c0a8af75123fbb05e2e0fe53ec245fb4d8f6447a03ca7f3578bbe0e7",
+      "generationPromptSha256": "e7dfe8b6645857e8edc2f2b4900587264dca8c58ec3e12b3aa84b1acd4b5eb53",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--chapters--episode",
+      "sha256": "2d336c9e5b179c7bede6a82ec7ec4f01e86745d62d3b80a526710635915e4983",
+      "generationPromptSha256": "c82ccac97784a97780d7eef55ff7527b822f487930a1135dd9fe5f5fa15589c1",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--explore--warm--journey--episode",
+      "sha256": "8dccb0b0d13c4665b02125616efdb94a37a5d875c5e957bc983b0c4f70ec4258",
+      "generationPromptSha256": "ee2e374295c3b19e9973c5445b73143673f18ccf8a325437d8a0709704672a24",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 716792,
+  "notFreshAll986NativeVisualAudit": true,
+  "originalCorrection139BeforeSnapshot": true,
+  "snapshotPrecedesCorrections140Through142": true
+}

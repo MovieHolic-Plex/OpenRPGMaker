@@ -1,0 +1,119 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 998,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--warm--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--battle--mystic",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--mystic--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--explore--warm--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 탐험과 발견 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-998-stage252-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-998-stage252-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-998-stage252-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-998-stage252-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all998 fresh native visual audit.",
+  "rootPersonallySawFourWholeScreenshots": true,
+  "rootWholeScreenshotNotes": "ROOT opened all four 320/736 first/last screenshots after actual browser checks. Full image, labels and all eight selectable controls fit and update; no horizontal clipping. Preview only, native production unchanged.",
+  "rootViewedAt": "2026-10-07T21:24:52.942126+00:00"
+}

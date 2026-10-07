@@ -1,0 +1,23 @@
+{
+  "rootPersonallySawSixWholeScreenshots": true,
+  "published": 992,
+  "snapshotHashes": {
+    "interviewSceneBank.json": "27a9dc2b8f97a3661b127678cd3b93584bb137e0df8f0cae3fb0d19f8d1dfe72",
+    "ledger.json": "0161a932b7ee74d9438ead7d1e77e331e506c9b4bc322e87761d95a244716c23"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--battle--bright",
+    "adventure--unknown--battle--bright--quests",
+    "adventure--unknown--battle--bright--journey--short",
+    "adventure--unknown--battle--bright--quests--short",
+    "adventure--unknown--battle--bright--chapters--scene",
+    "adventure--unknown--explore--warm--quests--scene"
+  ],
+  "clicks": 33,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "findings": "ROOT personally inspected ALL six WHOLE screenshot files. Actual selected places remain exposed LEFT of right panel; motion/redraw buttons clear and directly clickable, interview choices and final summary/footer fit. Native pixel scenery preserved. Known white strip below standalone 800px QA container is not full-app boot evidence. No claim fresh visual audit of all 992 natives, AI handoff or provider generation.",
+  "inspectedAt": "2026-10-07T20:36:14.998748+00:00"
+}
