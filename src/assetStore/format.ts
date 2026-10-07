@@ -85,6 +85,31 @@ export const STORE_ASSET_KINDS = [
 ] as const;
 export type StoreAssetKind = (typeof STORE_ASSET_KINDS)[number];
 
+/**
+ * 스토어가 받는 그림 규격 — 에디터가 그대로 쓰는 크기만 받는다(src/assets/resourceSlicing.ts 와 같은 값).
+ * 에디터는 규격이 다른 캐릭터 시트를 말없이 건너뛰므로(bundled.ts registerUploadedCharsetTextures), 올릴 때 막는다.
+ */
+export const STORE_TILE_SIZE = 16;
+export const STORE_FIXED_SHEETS: Readonly<Partial<Record<StoreAssetKind, { width: number; height: number; label: string }>>> = {
+  charset: { width: 288, height: 256, label: "캐릭터 시트는 24×32 칸 12×8 = 288×256" },
+  battleCharset: { width: 144, height: 384, label: "전투 그림은 48×48 칸 3×8 = 144×384" },
+  battleWeapon: { width: 192, height: 512, label: "전투 무기는 64×64 칸 3×8 = 192×512" },
+};
+
+/** 크기 규격이 있는 종류인가. 얼굴·그림·배경은 크기가 자유다. */
+export const storeImageHasSpec = (kind: StoreAssetKind): boolean => Object.hasOwn(STORE_FIXED_SHEETS, kind) || kind === "chipset" || kind === "tileset";
+
+/** 그림 에셋 크기가 규격에 맞지 않으면 사유를, 맞거나 규격이 없는 종류(얼굴·그림 등)면 null 을 돌려준다. */
+export function storeImageSizeProblem(kind: StoreAssetKind, width: number, height: number): string | null {
+  const fixed = STORE_FIXED_SHEETS[kind];
+  if (fixed) return width === fixed.width && height === fixed.height ? null : `${fixed.label} 이어야 합니다(지금 ${width}×${height}).`;
+  if (kind === "chipset" || kind === "tileset") {
+    return width > 0 && height > 0 && width % STORE_TILE_SIZE === 0 && height % STORE_TILE_SIZE === 0
+      ? null : `타일셋은 ${STORE_TILE_SIZE}×${STORE_TILE_SIZE} 칸이라 가로·세로가 ${STORE_TILE_SIZE}의 배수여야 합니다(지금 ${width}×${height}).`;
+  }
+  return null;
+}
+
 export interface StoreBlobRef { readonly sha256: string; readonly mime: StoreBlobMime; readonly bytes: number }
 
 export interface StorePackAsset {
@@ -316,7 +341,8 @@ export function validateManifest(input: unknown): Validation<StorePackManifest> 
         errors.push(`타일셋 ${id} 의 그림(${tileset.image.id})이 팩에 없습니다.`);
       }
       // 칸 수에 상한을 둔다 — 편집기가 칸마다 도는 곳이 많아 터무니없는 값은 편집기를 멈춘다.
-      if (![16, 24, 32, 48].includes(tileset.tileSize) || !Number.isSafeInteger(tileset.count) || tileset.count <= 0 || tileset.count > STORE_LIMITS.tilesetCells
+      if (tileset.tileSize !== STORE_TILE_SIZE) errors.push(`타일셋 ${id} 의 칸 크기는 ${STORE_TILE_SIZE}px 이어야 합니다(지금 ${String(tileset.tileSize).slice(0, 8)}).`);
+      else if (!Number.isSafeInteger(tileset.count) || tileset.count <= 0 || tileset.count > STORE_LIMITS.tilesetCells
         || !Number.isSafeInteger(tileset.tilesPerRow) || tileset.tilesPerRow <= 0 || tileset.tilesPerRow > 4096) {
         errors.push(`타일셋 ${id} 의 칸 크기·칸 수가 올바르지 않습니다.`);
       }
