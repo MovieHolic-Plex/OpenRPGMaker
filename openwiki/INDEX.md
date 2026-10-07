@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **166쪽 / 5564KB / 약 1,620,439 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **166쪽 / 5567KB / 약 1,621,221 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -86,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
-| `openwiki/harnesses/beodeul-building-review.md` | 2 | `.pixels.json`, `output/beodeul-building-review/round7-v3-gate-status.json` |
+| `openwiki/harnesses/beodeul-building-review.md` | 3 | `.pixels.json`, `node/mount.py`, `output/beodeul-building-review/round7-v3-gate-status.json` |
 | `openwiki/harnesses/charset-actor.md` | 6 | `actions.px.json`, `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 2 | `.check.json`, `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
@@ -96,6 +96,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
 | `openwiki/harnesses/native-space-installation.md` | 7 | `art-supplementary-evidence.json`, `authoring-input.json`, `draft-project-proof.json`, `library.json`, `preparation-proof.json`, `project.oprn.json`, `stair-binding.json` |
 | `openwiki/harnesses/pokemon-character-casting.md` | 3 | `data/waves/full-cast-v1.json`, `waves/theme-cast-v1.json`, `world-manifest.json` |
+| `openwiki/harnesses/super-harness-integration.md` | 1 | `beodeul-building-review/node/mount.py` |
 | `openwiki/harnesses/super-harness.md` | 34 | `.aN.png`, `B.json`, `DATA/reference-catalog.json`, `art-actor-actions-next.json`, `art-actor-actions.json`, `art-actors-status.json`, `art-actors.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-pending-materials.json`, `art-prepare-result.json`, `art-result.json`, `art-result.previous.json`, `art-supplementary-evidence.json`, `card.json`, `concept-request.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `reference-source.json`, `result-review.json`, `runtime-assets.json`, `supervisor-authorization.json`, `theme-material-progress.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/harnesses/wand-runtime-preparation.md` | 2 | `project.oprn.json`, `shelf-binding.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
@@ -247,23 +248,24 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/asset-store.md` — 19KB · 216줄 · ~5,858 토큰
+### `openwiki/asset-store.md` — 21KB · 224줄 · ~6,217 토큰
 
 - `L6` 결정 (사용자, 2026-10-06)
-- `L26` 구성 요소
-  - `L37` 렌더러는 스토어 서버와 직접 통신하지 않는다
-- `L48` 팩 형식과 프로젝트에 넣기
-- `L63` 올리기 가드
-  - `L73` 그림 규격 (2026-10-07)
-- `L91` 서버
-  - `L107` 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
-  - `L120` 앞단은 Cloudflare (2026-10-06)
-- `L127` 보안 검토 반영 (2026-10-06)
-- `L149` 실행·시험
-- `L174` 화면 디자인
-- `L184` 다국어 (2026-10-06)
-- `L196` 공용 캐릭터 그림 진열 (2026-10-06)
-- `L207` 함정
+- `L27` 구성 요소
+  - `L38` 렌더러는 스토어 서버와 직접 통신하지 않는다
+- `L49` 팩 형식과 프로젝트에 넣기
+- `L64` 올리기 가드
+  - `L74` 그림 규격 (2026-10-07)
+- `L92` 서버
+  - `L108` 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
+  - `L121` 앞단은 Cloudflare (2026-10-06)
+- `L128` 보안 검토 반영 (2026-10-06)
+- `L150` 실행·시험
+- `L175` 화면 디자인
+- `L185` 다국어 (2026-10-06)
+- `L197` 공용 캐릭터 그림 진열 (2026-10-06)
+- `L208` 공식 팩 하나 더 올리기 (2026-10-07)
+- `L215` 함정
 
 ### `openwiki/atlas-biome-interior.md` — 26KB · 163줄 · ~7,814 토큰
 
@@ -1283,7 +1285,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L38` 나무/풀 깊이·연결 울타리·돌벽 통일 (2026-10-04)
 - `L42` 박공 벽 정리와 기와 복원 (2026-10-04 사용자 정정)
 
-### `openwiki/harnesses/beodeul-building-review.md` — 40KB · 183줄 · ~12,601 토큰
+### `openwiki/harnesses/beodeul-building-review.md` — 41KB · 185줄 · ~12,675 토큰
 
 - `L5` 실행
 - `L31` 원본 도트와 초안
@@ -1462,7 +1464,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Maker-owned repair loop (2026-10-04)
 - `L45` Reproduction
 
-### `openwiki/harnesses/super-harness-integration.md` — 17KB · 196줄 · ~5,160 토큰
+### `openwiki/harnesses/super-harness-integration.md` — 18KB · 208줄 · ~5,509 토큰
 
 - `L6` 운영 계약
 - `L19` 실행과 경로
@@ -1474,6 +1476,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L129` 공간 예시 평가 (2026-10-05, 부품 선택 화면 개선)
 - `L151` 검수 응답 형식 오류의 복구 (2026-10-05)
 - `L176` 전체 제작 통합 방향 (2026-10-05)
+- `L197` 버들항 건물 검수 탭 (2026-10-07)
 
 ### `openwiki/harnesses/super-harness.md` — 102KB · 1055줄 · ~31,954 토큰 · 통째읽기 잘림
 

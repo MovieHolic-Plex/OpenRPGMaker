@@ -37,6 +37,7 @@ header{padding:4px 12px;gap:14px;flex-wrap:nowrap;min-height:36px}h1{font-size:1
     <button role="tab" data-pane="props" aria-selected="true">기물 고르기·파생</button>
     <button role="tab" data-pane="spaces" aria-selected="false">공간·개념</button>
     <button role="tab" data-pane="orders" aria-selected="false">재료 주문서</button>
+    <button role="tab" data-pane="buildings" aria-selected="false">버들항 건물 검수</button>
     <button role="tab" data-pane="materials" aria-selected="false">공용 반영 확인</button>
   </nav>
   <div id="status" role="status">연결 확인 중…</div>
@@ -51,6 +52,7 @@ header{padding:4px 12px;gap:14px;flex-wrap:nowrap;min-height:36px}h1{font-size:1
   <div class="offline" hidden><h2>재료 주문서 연결 대기</h2><p>재료 주문서를 불러오고 있어.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
   <iframe title="공간별 부족한 재료 주문서" hidden></iframe>
 </section>
+<section class="pane" id="buildings" role="tabpanel" hidden><iframe title="버들항 건물 허용/거절 검수" data-src="/harness/beodeul/"></iframe></section>
 <section class="pane" id="materials" role="tabpanel" hidden>
   <h2>선택한 기물이 공용에 반영됐는지 확인</h2><div id="storageStatus" aria-live="polite">공용 DB를 확인하는 중…</div>
   <p class="muted">확정한 선택은 먼저 저장되고 공용 칩셋에 자동으로 반영돼요. 아래 목록은 실제 공용 DB에 등록된 자료입니다.</p>
@@ -71,10 +73,11 @@ function syncSpace(pane){
   if(online&&!f.hasAttribute('src'))f.src=spaceURL(pane);
 }
 function show(pane){
-  if(!['props','spaces','orders','materials'].includes(pane))pane='props';
+  if(!['props','spaces','orders','buildings','materials'].includes(pane))pane='props';
   current=pane;for(const p of document.querySelectorAll('.pane'))p.hidden=p.id!==pane;
   for(const b of document.querySelectorAll('[data-pane]'))b.setAttribute('aria-selected',String(b.dataset.pane===pane));
   if(pane==='spaces'||pane==='orders'){syncSpace(pane);refreshStatus()}
+  if(pane==='buildings'){const f=$('#buildings iframe');if(!f.getAttribute('src'))f.src=f.dataset.src}
   if(pane==='materials'){loadMaterials();refreshStatus();}
   history.replaceState(null,'','#'+pane);
 }
