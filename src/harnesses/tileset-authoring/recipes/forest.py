@@ -20,7 +20,60 @@ STEP = 32            # 나무 격자 간격(px)
 LIFT = 9             # 수관이 자기 칸 위로 솟는 높이 — 위 나무 밑동을 덮는다
 
 
+# GBA 2세대 수관(2026-10-07 「포켓몬풍인데 왜 기본 칩셋이냐」 → 다시 그림): 큰 잎 덩이 일곱 개를 뒤(위)→앞(아래)으로 얹는다.
+# 덩이마다 왼쪽 위가 밝고(가장 밝은 단은 위쪽 덩이에만), 오른쪽 아래 테 1px 은 짙은 틈 — 앞 덩이와 갈린다. 둘레는 사방 1px 짙은 윤곽.
+GBA_CLUMPS = (
+    (16.0, 11.0, 8.2, +1), (9.0, 17.0, 7.6, +1), (23.0, 17.0, 7.6, 0),
+    (16.0, 22.0, 8.0, 0), (7.6, 27.0, 7.2, 0), (24.4, 27.0, 7.2, -1), (16.0, 30.0, 7.4, -1),
+)
+
+
 def crown(P, seed: str = "forest-crown"):
+    ramp = px.ramp(P["_leaf_hex"])
+    r = random.Random(seed)
+    W, H = STEP, STEP + LIFT
+    cl = [(cx + r.uniform(-.6, .6), cy + r.uniform(-.5, .5), rad + r.uniform(-.3, .3), b) for cx, cy, rad, b in GBA_CLUMPS]
+    tone = [[None] * W for _ in range(H)]
+    for cx, cy, rad, bias in cl:
+        wob = [r.uniform(-.12, .12) for _ in range(10)]
+        for y in range(H):
+            for x in range(W):
+                dx, dy = x + .5 - cx, y + .5 - cy
+                d = math.hypot(dx, dy)
+                a = (math.atan2(dy, dx) + math.pi) / (2 * math.pi) * 10
+                rr = rad * (1 + wob[int(a) % 10])
+                if d > rr:
+                    continue
+                lt = -(dx * .62 + dy * .78) / rr + .05
+                n = ((x * 7 + y * 13 + (x * y) % 5) % 9 - 4) * .045          # 단 경계를 잎결로 흐트린다(줄무늬 방지)
+                lt += n
+                t = 4 if lt > .66 else 3 if lt > .2 else 2 if lt > -.38 else 1
+                t = max(1, min(4, t + bias))
+                if d > rr - 1.3 and (dx * .6 + dy * .8) > .1 * rr:
+                    t = 1
+                tone[y][x] = t
+    mask = [[tone[y][x] is not None for x in range(W)] for y in range(H)]
+    out = px.new(W, H)
+    for y in range(H):
+        for x in range(W):
+            if not mask[y][x]:
+                continue
+            t = tone[y][x]
+            if any(not (0 <= X < W and 0 <= Y < H) or not mask[Y][X] for X, Y in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))):
+                out.putpixel((x, y), ramp[0])
+                continue
+            h = (x * 37 + y * 61 + 7) % 23                       # 잎 점 — 넓은 면이 판판하지 않게
+            if t == 3 and h == 0:
+                t = 4
+            elif t == 2 and h == 1:
+                t = 1
+            elif t == 2 and h == 2:
+                t = 3
+            out.putpixel((x, y), ramp[t])
+    return out, mask
+
+
+def crown_scarloxy(P, seed: str = "forest-crown"):
     """수관 하나(32×(32+LIFT)): 가로로 꽉 차는 둥근 돔. 위쪽 끝은 살짝 뾰족, 아래는 평평하게 넓다."""
     r = random.Random(seed)
     H = STEP + LIFT

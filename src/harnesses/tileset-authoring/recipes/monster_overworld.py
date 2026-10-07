@@ -46,9 +46,22 @@ ROCK_SEEDS = px.torus_seeds("rock-boulders-5", 5)
 
 # ---- 질감 ----------------------------------------------------------------------------------
 def grass_tex(P, v: int):
+    """GBA 2세대 풀(2026-10-07 「포켓몬풍인데 왜 기본 칩셋이냐」 → 다시 그림): 민트 바탕에 1px 점만 고르게 흩뿌린다.
+    밝은 점이 많고 어두운 점은 그 절반 — 가로 줄무늬·덩이가 없어야 넓게 깔아도 조용하다. 점끼리 2px 이상 떨어뜨린다(칸 주기로 감아서)."""
     g = P["grass"]
-    # 기준 풀(Scarloxy) 은 바탕보다 밝은 두 톤만 쓴다 — 어두운 점(g0·g1)을 빼야 원작처럼 조용하다(적대 검수 2026-10-02 「바닥이 시끄럽다」)
-    return px.clumps(f"grass{v}", g[2], [(g[3], 17 + v, 3), (g[4], 6, 2), (g[1], 1 if v == 3 else 0, 2)])
+    im = px.new()
+    px.fill(im, g[2])
+    r = px.rng(f"grass-dots{v}")
+    taken: list[tuple[int, int]] = []
+    def free(x, y):
+        return all(min(abs(x - a), T - abs(x - a)) + min(abs(y - b), T - abs(y - b)) > 2 for a, b in taken)
+    for color, count in ((g[3], 14 + v), (g[1], 7)):
+        n = 0
+        while n < count:
+            x, y = r.randrange(T), r.randrange(T)
+            if free(x, y):
+                taken.append((x, y)); im.putpixel((x, y), color); n += 1
+    return im
 
 
 def sand_tex(P, v: int):
@@ -756,7 +769,11 @@ def pick_by_gate(seed: dict, P, make, prefix: str, want: int, tries: int = 40, s
     ramp = [tuple(c[:3]) for c in px.ramp(seed["palette"]["leaf"])]
     g = seed["gates"]["tree"]
     regs = {n: sc.crop((x, y, x + w, y + h)) for n, (sheet, x, y, w, h) in seed["reference"]["regions"].items()}
-    spec = gates.derive_object_spec([gates.object_metrics(regs[r], ramp) for r in g["positives"]])
+    try:
+        spec = gates.derive_object_spec([gates.object_metrics(regs[r], ramp) for r in g["positives"]])
+    except KeyError:
+        # 기준(Scarloxy 풀밭) 잎 램프와 지금 팔레트가 갈라지면(GBA 2세대 다시 그림, 2026-10-07) 기준 지표를 못 잰다 — 관문 없이 대체 씨앗으로.
+        return [], 0
     got, tried = [], 0
     for i in range(tries):
         sd = f"{prefix}-{i}"

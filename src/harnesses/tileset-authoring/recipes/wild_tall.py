@@ -46,8 +46,15 @@ def _rad(ang: float) -> float:
     return R + _JAG[min(i, len(_JAG) - 1)] * 0.8
 
 
+# GBA 포기 풀숲(2026-10-07): 포기가 칸 안에서 끝나 귀를 깎을 필요가 없다 — 둥근 귀 칸·잎끝 변형은 이름·칸 번호만 남기고
+# 귀 칸은 정본 풀숲 칸 그대로, 잎끝은 빈 칸으로 굽는다(맵 배치 규칙 roundTall 은 그대로 써도 같은 그림이 된다).
+GBA_TUFTS = True
+
+
 def tall_round(ramp, base, ground_px, bits: int):
     """키 큰 풀 칸 base 의 바깥 귀(bits)를 깎는다. ramp = 풀숲 램프([0] 최암), ground_px(x, y) = 그 칸이 놓인 바닥."""
+    if GBA_TUFTS:
+        return base.copy()
     t = ramp
     im = base.copy()
     keep = [[True] * T for _ in range(T)]
@@ -100,6 +107,12 @@ SIDE_VARS = len(SIDE_FRINGE)
 
 
 def side_fringe(ramp, side: str, var: int):
+    if GBA_TUFTS:
+        return new()
+    return _side_fringe(ramp, side, var)
+
+
+def _side_fringe(ramp, side: str, var: int):
     """풀숲 동·서 이웃 칸 위층 잎끝(side e = 풀숲 동쪽 이웃 칸, 잎끝은 그 칸 왼쪽 변 · w = 서쪽 이웃 칸, 오른쪽 변). var 0..SIDE_VARS-1.
     w 는 같은 벌을 위아래로 뒤집어 읽는다 — 덩이 양옆 술이 거울처럼 같은 높이에 서지 않게."""
     seq = SIDE_FRINGE[var]

@@ -166,24 +166,30 @@ TUFT_B = [                                                                   # �
 ]
 
 
+# GBA 2세대 키 큰 풀: 칸마다 포기 하나가 사방으로 잎을 뻗는다. 바탕 풀이 귀퉁이에 비치고, 모아 깔면 포기들이 맞닿아 풀숲이 된다.
+# o = 짙은 올리브 윤곽, D = 짙은 잎, M = 잎, L = 빛 받은 잎끝(빛은 위). v=1 은 좌우를 뒤집고 1px 내려 같은 포기의 격자를 깬다.
+TUFT_GBA = [                                                                 # 작은 포기(8×8) — 칸에 넷을 벽돌처럼 엇갈려 감아 찍는다
+    "..o...o.",
+    ".oLo.oLo",
+    "oLMooLMo",
+    "oMMLLMMo",
+    ".oMMMMo.",
+    "oDoMMoDo",
+    ".oDDDDo.",
+    "..oooo..",
+]
+
+
 def tall_grass(P, v: int):
-    """키 큰 풀(조우 칸): 포기 넷(2×2)이 칸을 거의 채우고, 포기 사이 틈과 밑동 아래로만 바탕 풀이 비친다 — 모으면 한 덩어리 풀숲.
-    포기는 외곽선 + 3톤, 빛은 왼쪽 위. v 는 아랫줄 포기를 1px 옮겨 반복 무늬를 깬다."""
     t = P["tall"]
     im = _base()
-    for y in range(T):                                                          # 포기 사이 틈은 바탕 풀이 아니라 짙은 풀 그늘 — 모아 깔면 빽빽한 풀숲(L1 N16)
-        for x in range(T):
-            im.putpixel((x, y), t[1] if (x * 3 + y * 5) % 7 else t[0])
     key = {"o": t[0], "D": t[1], "M": t[2], "L": t[3]}
-    # v=1 은 포기를 2~3px 옮기고 잎끝 높이를 바꾼다 — 같은 덩이가 칸마다 서는 상추밭 격자를 깬다(적대 검수 L1 N16). 칸 밖으로 넘친 잎은 맞은편으로 감아 이음매가 이어진다.
-    spots = ((3, 1), (11, 2), (0, 9), (7, 8)) if v else ((0, 1), (8, 0), (3, 8), (11, 9))   # 아래 두 포기는 2~3px 어긋나게(L4 N56 — 8px 주기 격자)
-    tips = (TUFT_B, TUFT, TUFT, TUFT_B) if v else (TUFT, TUFT, TUFT, TUFT)
-    for (ox, oy), shape in zip(spots, tips):
-        for dy, row in enumerate(shape):
-            for dx, ch in enumerate(row):
+    spots = ((0, 0), (8, 0), (4, 8), (12, 8)) if not v else ((1, 1), (9, 0), (5, 8), (13, 9))
+    for ox, oy in spots:
+        for y, row in enumerate(TUFT_GBA):
+            for x, ch in enumerate(row):
                 if ch in key:
-                    im.putpixel(((ox + dx) % T, (oy + dy) % T), key[ch])
-
+                    im.putpixel(((ox + x) % T, (oy + y) % T), key[ch])
     return im
 
 
@@ -191,19 +197,8 @@ _FRINGE = (1, 2, 1, 0, 2, 3, 1, 0, 1, 2, 2, 0, 1, 3, 1, 0)           # 칸 변�
 
 
 def tall_fringe(P, side: str):
-    """키 큰 풀밭 가장자리 잎끝(위층·투명, L2 N35 — 풀밭이 칸 변에서 칼로 자른 카펫처럼 끝났다): 풀밭 바로 남·동·서 이웃 풀 칸에 얹는다.
-    잎끝은 칸 변에서 0~3px 바깥 풀 위로 흔들려 나오고(끝은 짙은 톤), 남쪽 잎끝 밑에는 1px 그늘."""
-    t = P["tall"]
-    im = px.new()
-    for i in range(T):
-        h = _FRINGE[(i + {"s": 0, "e": 5, "w": 9}[side]) % T]
-        for d in range(h):
-            c = t[1] if d < h - 1 else t[0]
-            x, y = {"s": (i, d), "e": (d, i), "w": (T - 1 - d, i)}[side]     # e = 풀밭 동쪽 이웃 칸(잎끝은 그 칸 왼쪽 변)
-            px.put(im, x, y, c)
-        if side == "s" and h:
-            px.put(im, i, h, SHADOW)
-    return im
+    """GBA 풀숲은 포기 하나가 칸 안에서 끝난다 — 이웃 칸으로 넘어가는 잎끝이 없다(빈 위층 칸, 이름·칸 번호는 그대로 둔다)."""
+    return px.new()
 
 
 # ---- 꽃 -------------------------------------------------------------------------------------
