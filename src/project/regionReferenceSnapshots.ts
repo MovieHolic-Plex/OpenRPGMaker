@@ -43,7 +43,6 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "wz-space-wandshop-20x15": () => import("./regionReferences/wz-space-wandshop.json"),
   "wz-nat-example-forest-edge-16x12": () => import("./regionReferences/wz-nat-example-forest-edge.json"),
   "wz-post-example-street-18x14": () => import("./regionReferences/wz-post-example-street.json"),
-||||||| parent of 71236cc4d8 (feat(jp-city): 일본 집 실내 장소 게시 — 2층 단독주택(1·2층) jp-city-house-interior-21x15 · 원룸 jp-city-apartment-1k-12x13 (관문 interior pass))
   "jp-city-apartment-1k-12x13": () => import("./regionReferences/jp-city-apartment-1k.json"),
   "jp-city-house-interior-21x15": () => import("./regionReferences/jp-city-house.json"),
   "jp-city-tram-street-48x30": () => import("./regionReferences/jp-city-tramstreet.json"),
