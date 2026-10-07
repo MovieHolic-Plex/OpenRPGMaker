@@ -24,8 +24,8 @@
    "y0": 0,
    "x1": 8,
    "y1": 5,
-   "floor": "sh-concrete",
-   "wall": "sh-white"
+   "floor": "fd-wood-dark",
+   "wall": "fd-wood-wall"
   },
   {
    "x0": 0,
@@ -66,16 +66,6 @@
    "id": "sh-book-crates",
    "x": 7,
    "y": 3
-  },
-  {
-   "id": "window-sash",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 6
   },
   {
    "id": "sh-bookshelf",

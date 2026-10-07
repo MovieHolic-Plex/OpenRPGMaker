@@ -5,11 +5,6 @@
   "#.......#",
   "#.......#",
   "#.......#",
-  "####.####",
-  "#.......#",
-  "#.......#",
-  "#.......#",
-  "#.......#",
   "#.......#",
   "#.......#",
   "#.......#",
@@ -18,42 +13,35 @@
  "floor": "sh-wood",
  "wall": "cloth-beige",
  "ceiling": "default",
- "zones": [
-  {
-   "x0": 0,
-   "y0": 0,
-   "x1": 8,
-   "y1": 5,
-   "floor": "sh-concrete",
-   "wall": "sh-white"
-  },
-  {
-   "x0": 0,
-   "y0": 6,
-   "x1": 8,
-   "y1": 13,
-   "floor": "sh-wood",
-   "wall": "cloth-beige"
-  }
- ],
+ "zones": [],
  "objects": [
   {
-   "id": "sh-noren",
+   "id": "sh-barber-mirror",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "washbasin",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
    "x": 4,
-   "y": 5
-  },
-  {
-   "id": "sh-towel-rack",
-   "x": 1,
    "y": 3
   },
   {
-   "id": "sh-towel-rack",
-   "x": 2,
+   "id": "sh-barber-mirror",
+   "x": 5,
    "y": 3
   },
   {
-   "id": "sh-washer",
+   "id": "washbasin",
    "x": 6,
    "y": 3
   },
@@ -63,108 +51,78 @@
    "y": 3
   },
   {
-   "id": "window-sash",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 6
-  },
-  {
-   "id": "sh-barber-mirror",
-   "x": 1,
-   "y": 8
-  },
-  {
-   "id": "sh-barber-mirror",
-   "x": 3,
-   "y": 8
-  },
-  {
-   "id": "sh-barber-mirror",
-   "x": 5,
-   "y": 8
-  },
-  {
-   "id": "sh-wall-shelf",
-   "x": 2,
-   "y": 8
-  },
-  {
-   "id": "sh-wall-shelf",
-   "x": 6,
-   "y": 8
-  },
-  {
-   "id": "sh-shampoo",
-   "x": 7,
-   "y": 8
-  },
-  {
    "id": "sh-barber-chair-n",
    "x": 1,
-   "y": 9
+   "y": 4
   },
   {
    "id": "sh-barber-chair-n",
    "x": 3,
-   "y": 9
+   "y": 4
   },
   {
    "id": "sh-barber-chair-n",
    "x": 5,
-   "y": 9
+   "y": 4
   },
   {
    "id": "sh-waiting-bench",
    "x": 1,
-   "y": 11
+   "y": 6
+  },
+  {
+   "id": "sh-towel-rack",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sh-washer",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "sh-counter",
+   "x": 4,
+   "y": 7
   },
   {
    "id": "sh-counter",
    "x": 5,
-   "y": 11
-  },
-  {
-   "id": "sh-counter",
-   "x": 6,
-   "y": 11
+   "y": 7
   },
   {
    "id": "sh-register",
-   "x": 7,
-   "y": 11
+   "x": 6,
+   "y": 7
   },
   {
    "id": "sh-barber-pole",
-   "x": 7,
-   "y": 12
+   "x": 1,
+   "y": 7
   },
   {
    "id": "sh-shutter-2",
    "x": 3,
-   "y": 13
+   "y": 8
   }
  ],
  "tables": [],
  "goods": [
   {
    "id": "sh-scissors",
-   "x": 5,
-   "y": 11
+   "x": 4,
+   "y": 7
   },
   {
    "id": "sh-price-dots",
-   "x": 6,
-   "y": 11
+   "x": 5,
+   "y": 7
   }
  ],
  "name": "일본 동네 이발소 실내",
  "start": [
   3,
-  12
+  7
  ],
  "links": [],
  "rooms": [
@@ -173,7 +131,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 8,
-   "y1": 13
+   "y1": 8
   }
  ]
 }

@@ -24,8 +24,8 @@
    "y0": 0,
    "x1": 8,
    "y1": 5,
-   "floor": "sh-concrete",
-   "wall": "sh-white"
+   "floor": "fd-kitchen-tile",
+   "wall": "kitchen-panel"
   },
   {
    "x0": 0,
@@ -63,13 +63,13 @@
    "y": 3
   },
   {
-   "id": "window-sash",
-   "x": 6,
-   "y": 6
+   "id": "kitchen-sink",
+   "x": 3,
+   "y": 3
   },
   {
-   "id": "wall-clock",
-   "x": 2,
+   "id": "sh-pass-window",
+   "x": 7,
    "y": 6
   },
   {
@@ -83,17 +83,12 @@
    "y": 8
   },
   {
-   "id": "sh-wall-shelf",
+   "id": "sh-bread-shelf",
    "x": 5,
    "y": 8
   },
   {
-   "id": "sh-oven",
-   "x": 6,
-   "y": 8
-  },
-  {
-   "id": "sh-wall-shelf",
+   "id": "sh-counter",
    "x": 7,
    "y": 8
   },
@@ -161,14 +156,14 @@
    "y": 11
   },
   {
-   "id": "sh-price-dots",
-   "x": 7,
-   "y": 11
-  },
-  {
    "id": "sh-bread",
    "x": 7,
    "y": 12
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 7,
+   "y": 11
   }
  ],
  "name": "일본 동네 빵집 실내",

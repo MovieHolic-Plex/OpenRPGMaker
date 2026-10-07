@@ -24,7 +24,7 @@
    "y0": 0,
    "x1": 8,
    "y1": 5,
-   "floor": "sh-concrete",
+   "floor": "pb-linoleum",
    "wall": "sh-white"
   },
   {
@@ -43,13 +43,18 @@
    "y": 5
   },
   {
-   "id": "sh-stock-shelf",
+   "id": "pb-med-cabinet",
    "x": 1,
    "y": 3
   },
   {
-   "id": "sh-stock-shelf",
+   "id": "pb-med-cabinet",
    "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 3,
    "y": 3
   },
   {
@@ -58,19 +63,9 @@
    "y": 3
   },
   {
-   "id": "sh-stock-shelf",
+   "id": "washbasin",
    "x": 7,
    "y": 3
-  },
-  {
-   "id": "window-sash",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "wall-clock",
-   "x": 2,
-   "y": 6
   },
   {
    "id": "sh-drug-shelf",

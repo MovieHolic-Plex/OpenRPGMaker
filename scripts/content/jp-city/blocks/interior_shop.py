@@ -796,6 +796,40 @@ def g_price_dots(c):
         c.R(x, 2, 4, 5, K('shiro', 2)); c.HL(x, 2, 4, K('shiro', 3)); c.HL(x, 6, 4, K('shiro', -1)); c.VL(x + 3, 3, 3, K('shiro', 0))
         c.P(x + 1, 4, K(r, 0)); c.P(x + 2, 4, K(r, 1)); c.P(x + 1, 3, K('conc', 0))
 
+# ─────────────────────────── 3차: 가게마다 다른 벽·뒷방 ───────────────────────────
+@R.obj('sh-pass-window', '타일 공방 창구(판유리)', w=1, kind='hang', hrows=2, tags=('빵집', '창구', '공방'),
+       place='빵집 칸막이 매장 쪽 벽면, 아래에 카운터 한 칸', pair=('sh-counter', 'sh-oven'),
+       desc='나무 틀에 판유리를 끼운 작은 창구. 유리 너머로 흰 타일 벽과 오븐 불빛이 보인다. 아래 카운터에 빵을 내준다.')
+def sh_pass_window(c):
+    c.R(0, 2, 16, 26, K('ki', -3)); c.R(1, 3, 14, 24, K('ki', 0)); c.HL(1, 3, 14, K('ki', 3))
+    c.R(2, 5, 12, 18, K('shiro', 2))                                           # 유리 너머 흰 타일 벽
+    for y in (8, 12, 16, 20): c.HL(2, y, 12, K('shiro', 0))
+    for x in (6, 10): c.VL(x, 5, 18, K('shiro', 0))
+    c.R(3, 13, 10, 10, K('conc', -2)); box(c, 3, 13, 10, 10, K('tekko', -2))   # 공방 오븐 문
+    c.R(5, 15, 6, 5, K('daidai', 1)); c.HL(5, 15, 6, K('kii', 1)); c.HL(5, 19, 6, K('daidai', -1))
+    c.HL(2, 5, 12, K('shiro', -1)); c.VL(2, 5, 18, K('shiro', 0))
+    for i in range(5): c.P(3 + i * 2, 6 + i // 2, K('garasu', 3))              # 유리 반사
+    c.P(11, 7, K('garasu', 3)); c.P(12, 8, K('garasu', 3))
+    c.R(0, 26, 16, 4, K('ki', 2)); c.HL(0, 26, 16, K('ki', 3)); c.HL(0, 29, 16, K('ki', -2)); c.HL(0, 28, 16, K('ki', -1))
+
+
+def f_baskets(c, x0, y0, w, h, lvl, seed):
+    x = x0
+    while x + 4 <= x0 + w:
+        bw = min(5, x0 + w - x)
+        veg = ('midori', 'aka', 'daidai', 'kii', 'murasaki')[hs(x, lvl, seed) % 5]
+        top = y0 + h - 6
+        c.R(x + 1, top, bw - 2, 2, K(veg, 1)); c.HL(x + 1, top, bw - 2, K(veg, 2)); c.P(x, top + 1, K(veg, 0)); c.P(x + bw - 1, top + 1, K(veg, -1))
+        c.R(x, top + 2, bw, 4, K('kinari', 0)); c.HL(x, top + 2, bw, K('kinari', 2)); c.HL(x, top + 5, bw, K('kinari', -2))
+        for i in range(1, bw, 2): c.P(x + i, top + 3, K('kinari', -1)); c.P(x + i - 1 if i > 1 else x + 1, top + 4, K('kinari', 1))
+        x += bw + 1
+
+
+@R.obj('sh-basket-shelf', '바구니 선반', 1, 1, up=16, kind='wall', use=('search',),
+       desc='나무 벽 선반 3단. 단마다 엮은 바구니에 채소·과일이 담겨 있다. 채소가게 북쪽 벽면.',
+       tags=('채소가게', '선반', '바구니'), place='북쪽 벽면 아래, 앞에 경사 진열대', pair=('sh-veg-stand', 'sh-fruit-box'))
+def sh_basket_shelf(c): shelf(c, 0, 3, 16, 29, 'ki', 3, f_baskets, seed=5)
+
 
 def build(): return R.build()
 def selftest(): return R.selftest()
