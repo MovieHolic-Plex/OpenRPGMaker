@@ -5,7 +5,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 **가져오기**: `import_region_reference({id:"<장소 id>"})` → 새 맵. **거리 건물 문과 바로 잇기**: `link_jp_city_interior({door:{x,y}, width, place:"<장소 id>"})` 한 번 —
 door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 첫 칸, 같은 줄 문 칸 수 = width). 장소를 새 맵으로 가져와 문 앞 접근칸(문 바로 아래)에 들어가는 발판, 실내 맨 아래 출입구 틈에 나오는 발판(나오면 문 앞 한 줄 아래)을 만든다.
 직접 짓거나 고쳐 지으려면 `build_hand_interior_room({tileset:"jp_city", …})` — 각 예제 문서의 「입력」이 그대로 인자다(가구 id 는 `list_hand_interior_parts({tileset:"jp_city", category})`: 분류 store·food·shop·sento·laundry·koban·clinic·veranda·apartment·oldhouse).
-출입구는 언제나 **맨 아래 줄(맵 끝)의 이어진 틈 한 덩이**(자동문 cv-autodoor·셔터 sh-shutter·현관 문턱 genkan-door·철문 h2-genkan-door-steel) — link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 `no-interior-exit`). 실내 도착 칸 = 틈 바로 위(다른 이벤트·출구 칸은 피한다). 손님이 드나드는 매장은 틈 2칸 이상, 파출소·의원·코인세탁·집 현관은 1칸 문도 된다. 손님 동선은 입구 → 진열 → 출구 가까운 계산대, 직원 동선은 카운터 줄 끝 틈 → 주방·뒷방. 짓는 규칙은 `jp-interior-rules` 「가게·공공 실내」 절.
+출입구는 언제나 **맨 아래 줄(맵 끝)의 이어진 틈 한 덩이**(자동문 cv-autodoor·셔터 sh-shutter·현관 문턱 genkan-door·철문 h2-genkan-door-steel) — link 도구는 그 줄만 출구로 본다(여러 덩이면 가장 넓은 것, 없으면 `no-interior-exit`, 5칸 이상이면 `interior-exit-too-wide`). 실내 도착 칸 = 틈 가운데 위 → 각 틈 칸 위 → 두 칸 위 순으로, 다른 이벤트·출구 칸이 아니고 실내 걸음 칸 절반 이상에 닿는 첫 칸. 거리 문 폭(width)과 실내 틈 폭은 따로 센다 — 실내 틈이 1칸인 장소(파출소·의원·코인세탁·목조 아파트·옛집)는 문 1~2칸 건물에 잇는 것이 자연스럽다. 손님이 드나드는 매장은 틈 2칸 이상, 파출소·의원·코인세탁·집 현관은 1칸 문도 된다. 손님 동선은 입구 → 진열 → 출구 가까운 계산대, 직원 동선은 카운터 줄 끝 틈 → 주방·뒷방. 짓는 규칙은 `jp-interior-rules` 「가게·공공 실내」 절.
 여러 층 장소(예: `jp-city-house-interior-21x15`)는 **1층에만** 거리 문을 잇는다 — 층 사이 계단 이동은 장소에 이미 들어 있다(런타임 QA 가 거리 → 1층 → 계단 → 위층 → 1층 → 거리 왕복을 본다).
 
 | 장소 id | 이름 | 종류 | 예제 문서 | 짜임 |
@@ -23,7 +23,7 @@ door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 �
 | `jp-city-yaoya-9x10` | 일본 채소가게(八百屋) 실내 | 채소가게 | `jp-interior-ex-yaoya` | 뒷방 없는 한 칸 가게. 북쪽 벽 바구니 선반 줄 · 경사 채소 진열대 둘·과일 상자 · 오른쪽 구석에 저울대·상자 더미 · 그 아래 계산대와 곁 과일 상자. |
 | `jp-city-barber-9x9` | 일본 동네 이발소 실내 | 이발소 | `jp-interior-ex-barber` | 뒷방 없는 한 칸 가게. 북쪽 벽 거울 셋·세면대 둘·샴푸대 · 거울 앞 이발 의자 셋 · 대기 벤치 · 이발소 기둥 · 계산대(가운데 아래) · 오른쪽 구석 수건 선반·세탁기. |
 | `jp-city-sento-15x13` | 일본 공중목욕탕(센토) 실내 | 목욕탕(센토) | `jp-interior-ex-sento` | 현관·신발장 → 반다이(높은 계산대) → 탈의실(바구니 선반·로커·체중계·안마의자·병우유 냉장고; 출입구는 두 칸 폭이라 반다이가 안쪽에서 양쪽을 본다) → 남탕·여탕 각자의 두 칸 통로(노렌 한 쌍씩, 문 없음) → 가운데 칸막이로 나뉜 욕장(씻는 자리 줄·의자, 북쪽 욕조 둘, 뒤 벽 후지산 그림). |
-| `jp-city-laundry-9x7` | 일본 코인세탁(コインランドリー) 실내 | 코인세탁 | `jp-interior-ex-laundry` | 벽 세탁기·건조기 줄 · 가운데 개는 탁자 · 입구 옆 벤치·세제 자판기·동전 교환기. |
+| `jp-city-laundry-9x8` | 일본 코인세탁(コインランドリー) 실내 | 코인세탁 | `jp-interior-ex-laundry` | 벽 세탁기·건조기 줄 · 가운데 개는 탁자 · 입구 옆 벤치·세제 자판기·동전 교환기. |
 | `jp-city-koban-14x9` | 일본 파출소(交番) 실내 | 파출소(交番) | `jp-interior-ex-koban` | 앞방(접수 책상 둘·의자·동네 지도판·분실물 선반·경찰 자전거) → 옆문 → 뒷방 휴게실(다다미 바닥·낮은 탁자·방석·전기포트·철제 로커·냉장고·간이침대). |
 | `jp-city-clinic-14x9` | 일본 동네 의원(내과) 실내 | 동네 의원 | `jp-interior-ex-clinic` | 입구 → 접수 카운터 → 대기 소파 둘·잡지 진열대·냉온수기 → 두 칸 폭 통로(문 없음) → 진찰실(의사 책상·진찰대·커튼·약품장·신장계). |
 | `jp-city-mansion-2ldk-15x18` | 일본 맨션 2LDK 실내(베란다) | 맨션 2LDK | `jp-interior-ex-mansion-2ldk` | 공용 복도(2칸 폭) → 철문 현관·신발장·우산꽂이 → 복도(화장실·욕실) → LDK(대면 키친·식탁·소파·TV) + 방 2(침실·아이방) → 유리 미닫이 → 남쪽 베란다(빨래 장대·실외기·화분·난간 한 줄, 폭 8×4칸). |

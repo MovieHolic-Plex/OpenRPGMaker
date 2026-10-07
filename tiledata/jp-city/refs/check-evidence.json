@@ -75,7 +75,7 @@
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 86529
+   "chars": 86885
   },
   {
    "id": "jp-errors",
@@ -89,7 +89,7 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 915229,
+  "chars": 915585,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
@@ -130,7 +130,7 @@
   "jp-interior-shop-index:jp-city-kissaten-9x9",
   "jp-interior-shop-index:jp-city-koban-14x9",
   "jp-interior-shop-index:jp-city-konbini-14x11",
-  "jp-interior-shop-index:jp-city-laundry-9x7",
+  "jp-interior-shop-index:jp-city-laundry-9x8",
   "jp-interior-shop-index:jp-city-mansion-2ldk-15x18",
   "jp-interior-shop-index:jp-city-mokuchin-8x9",
   "jp-interior-shop-index:jp-city-pharmacy-9x14",
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "60076521fed97efdf8642d42429172b23de2451ce0ddbc8be7137a6fe34bb501",
-  "images": "e4c9cb62f2e91141ec431ac420b418e5c64278d02190ab9feab229be5a1ce14a"
+  "json": "2fcd24e1497818ece729820ef2a2b1aac694fa0a64e009d9a7e8cc31f2450386",
+  "images": "5579c68ab7c695378678b71c2143a8f1cf76e27efc8a8e246912854ada36f6a5"
  }
 }

@@ -10,13 +10,13 @@
   4,
   7
  ],
- "summary": "손 도트 실내 '일본 라멘집 실내' 9×9 (jp-city-ramen, jp_city) — 출입구에서 닿는 칸 20, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 라멘집 실내' 9×9 (jp-city-ramen, jp_city) — 출입구에서 닿는 칸 19, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-ramen",
   "tilesetId": "jp_city",
   "width": 9,
   "height": 9,
-  "reachable": 20,
+  "reachable": 19,
   "floorCells": 37,
   "unreachedFloor": [],
   "entrance": [
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 20,
+ "reach": 19,
  "ok": true
 }

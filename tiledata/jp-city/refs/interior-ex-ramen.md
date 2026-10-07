@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10182칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-ramen`. 도구 결과: 손 도트 실내 '일본 라멘집 실내' 9×9 (jp-city-ramen, jp_city) — 출입구에서 닿는 칸 20, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-ramen`. 도구 결과: 손 도트 실내 '일본 라멘집 실내' 9×9 (jp-city-ramen, jp_city) — 출입구에서 닿는 칸 19, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-ramen", "name": "일본 라멘집 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "fd-tile-red", "wall": "fd-plaster", "zones": [{"x0": 1, "x1": 5, "y0": 1, "y1": 4, "floor": "fd-kitchen-tile"}], "objects": [{"id": "fd-stockpot", "x": 1, "y": 3}, {"id": "fd-noodle-boiler", "x": 2, "y": 3}, {"id": "fd-prep", "x": 3, "y": 3}, {"id": "fd-sink", "x": 4, "y": 3}, {"id": "fd-fridge", "x": 5, "y": 3}, {"id": "fd-menu-board", "x": 1, "y": 1}, {"id": "fd-lantern", "x": 3, "y": 1}, {"id": "fd-menu-board", "x": 6, "y": 1}, {"id": "fd-ticket-machine", "x": 6, "y": 7}, {"id": "fd-stool", "x": 2, "y": 6}, {"id": "fd-stool", "x": 3, "y": 6}, {"id": "fd-stool", "x": 7, "y": 3}], "tables": [{"style": "fd-counter", "x": 2, "y": 5, "w": 5, "h": 1}, {"style": "fd-counter", "x": 6, "y": 3, "w": 1, "h": 1}, {"style": "fd-counter", "x": 6, "y": 4, "w": 1, "h": 1}], "goods": [{"id": "fd-ramen-bowl", "x": 3, "y": 5}, {"id": "fd-condiments", "x": 4, "y": 5}, {"id": "fd-ramen-bowl", "x": 5, "y": 5}, {"id": "fd-water-set", "x": 6, "y": 3}, {"id": "fd-ramen-bowl", "x": 6, "y": 4}], "start": [{"x": 4, "y": 7}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-ramen", "name": "일본 라멘집 실내", "plan": ["#########", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "fd-tile-red", "wall": "fd-plaster", "zones": [{"x0": 1, "x1": 5, "y0": 1, "y1": 4, "floor": "fd-kitchen-tile"}], "objects": [{"id": "fd-stockpot", "x": 1, "y": 3}, {"id": "fd-noodle-boiler", "x": 2, "y": 3}, {"id": "fd-prep", "x": 3, "y": 3}, {"id": "fd-sink", "x": 4, "y": 3}, {"id": "fd-fridge", "x": 5, "y": 3}, {"id": "fd-menu-board", "x": 1, "y": 1}, {"id": "fd-lantern", "x": 3, "y": 1}, {"id": "fd-menu-board", "x": 6, "y": 1}, {"id": "fd-ticket-machine", "x": 6, "y": 7}, {"id": "fd-stool", "x": 2, "y": 6}, {"id": "fd-stool", "x": 4, "y": 6}, {"id": "fd-stool", "x": 3, "y": 6}, {"id": "fd-stool", "x": 7, "y": 3}], "tables": [{"style": "fd-counter", "x": 2, "y": 5, "w": 5, "h": 1}, {"style": "fd-counter", "x": 6, "y": 3, "w": 1, "h": 1}, {"style": "fd-counter", "x": 6, "y": 4, "w": 1, "h": 1}], "goods": [{"id": "fd-ramen-bowl", "x": 3, "y": 5}, {"id": "fd-condiments", "x": 4, "y": 5}, {"id": "fd-ramen-bowl", "x": 5, "y": 5}, {"id": "fd-water-set", "x": 6, "y": 3}, {"id": "fd-ramen-bowl", "x": 6, "y": 4}], "start": [{"x": 4, "y": 7}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -25,7 +25,7 @@ XXXXXXXXX
 XXXXXXXXX
 X....XX.X
 X.XXXXX.X
-X.XX....X
+X.XXX...X
 X.....X.X
 XXXX..XXX
 ```
@@ -65,7 +65,7 @@ y=02: . 9451 9452 9421 9423 . 9451 9452 .
 y=03: . 9426 9428 9422 9424 9431 9456 9412 .
 y=04: . . . . . 9432 9456 . .
 y=05: . . 9453 9454 9454 9454 9455 . .
-y=06: . . 9412 9412 . . 9437 . .
+y=06: . . 9412 9412 9412 . 9437 . .
 y=07: . . . . . . 9438 . .
 y=08: . . . . . . . . .
 ```
