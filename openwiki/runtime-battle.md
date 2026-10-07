@@ -1768,7 +1768,9 @@ outside on-field battles, using the existing audio context's live play session.
 is selected with live session conditions and battle switches/variables/self
 switches, rather than assuming page zero or reading the editor start session.
 
-Only uploaded `oprn_emerald_field_cast_1` / `_2` graphics are supported. For a
+Uploaded `oprn_emerald_field_cast_1` / `_2` graphics are supported, plus the start-theme
+sheets `oprn_emerald_field_cast_<desert|snow|coast>` (slots 0·1 residents → `resident` pose,
+slot 2 trainer → `explorer` pose; 2026-10-07 — themed walkers have no battle picture of their own yet). For a
 finite integer pattern in 0..95, character index is
 `floor(floor(pattern/12)/4)*4 + floor((pattern%12)/3)`. Slots map to hero, rival,
 professor, nurse, merchant, mother, resident, gym_leader, company_agent, captain,
