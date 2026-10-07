@@ -1,6 +1,6 @@
 # 일본 도시 — 일본 집 실내 가구 사전 1/2 (93종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9007칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9017칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 항목: `id`(도구 objects[].id 에 그대로) · `ko` · `block`(그림 원본 blocks/<block>.py) · `kind`(floor 바닥 가구 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬) · `w`×`h`(발자국 칸) · `up`(위로 솟은 px) ·
 `use`·`facing`·`surface`(윗면 → 탁상 물건)·`stairs`·`tags`(방)·`place`(놓는 곳)·`pair`(짝 가구)·`desc` · `cells`([dx, dy, 칸 번호, 층] — dy<0 은 발자국 위로 솟은 칸, 층 2 = 밟는 무늬·3 = 가구) ·
@@ -76,7 +76,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 {"id":"houseplant","ko":"화분","block":"interior_ldk","kind":"floor","w":1,"h":2,"up":16,"tags":["거실","다이닝"],"place":"구석이나 소파 옆","desc":"잎 큰 관엽 화분. 갈색 화분에 초록 잎 덩이.","cells":[[0,-1,8904,3],[0,0,8905,3]],"kit":"jp-in-houseplant","name":"화분","anchor":{"dx":0,"dy":1},"upperTiles":[[8904],[8905]],"codes":["*","X"]},
 {"id":"bookshelf","ko":"책장","block":"interior_ldk","kind":"wall","w":1,"h":2,"up":0,"use":["read"],"tags":["거실","서재"],"place":"북쪽 벽면 아래","desc":"나무 책장. 위 윗면 4px, 앞면은 안으로 들어가고 선반 4칸에 색색 책등이 꽂혀 있다.","cells":[[0,0,8906,3],[0,1,8907,3]],"kit":"jp-in-bookshelf","name":"책장","anchor":{"dx":0,"dy":1},"upperTiles":[[8906],[8907]],"codes":["X","X"]},
 {"id":"floor-lamp","ko":"스탠드 조명","block":"interior_ldk","kind":"floor","w":1,"h":2,"up":16,"use":["light"],"tags":["거실"],"place":"소파 옆 구석","desc":"갓이 달린 플로어 스탠드. 따뜻한 갓과 가는 기둥, 둥근 받침.","cells":[[0,-1,8908,3],[0,0,8909,3]],"kit":"jp-in-floor-lamp","name":"스탠드 조명","anchor":{"dx":0,"dy":1},"upperTiles":[[8908],[8909]],"codes":["*","X"]},
-{"id":"cushion-floor","ko":"방석","block":"interior_ldk","kind":"flat","w":1,"h":1,"up":0,"tags":["거실","다다미"],"place":"좌탁 둘레 바닥","desc":"바닥 방석(자부통). 푸른 천에 단추 점.","cells":[[0,0,8910,2]],"kit":"jp-in-cushion-floor","name":"방석","anchor":{"dx":0,"dy":0},"upperTiles":[[8910]],"codes":["."]},
+{"id":"cushion-floor","ko":"방석","block":"interior_ldk","kind":"flat","w":1,"h":1,"up":0,"tags":["거실","다다미"],"place":"좌탁 둘레 바닥","desc":"바닥 방석(자부통). 팥빛 갈색 천에 가운데 술 한 점, 꿰맨 테두리. 좌탁 둘레에 놓는다 — 감색 방석(zabuton)의 짝 색.","cells":[[0,0,8910,2]],"kit":"jp-in-cushion-floor","name":"방석","anchor":{"dx":0,"dy":0},"upperTiles":[[8910]],"codes":["."]},
 {"id":"bathtub","ko":"욕조","block":"interior_wet","kind":"wall","w":2,"h":2,"up":8,"use":["heal"],"tags":["욕실","탈의실","화장실"],"place":"욕실 안쪽 벽","pair":["bathtub-lid","shower-faucet"],"desc":"유닛바스 욕조(2×1칸). 물이 담긴 수면과 안벽이 보이고 앞쪽 에이프런에 점검구가 있다. 욕실 북쪽 벽 바로 아래에 둔다.","cells":[[0,-1,8940,3],[1,-1,8941,3],[0,0,8942,3],[1,0,8943,3]],"kit":"jp-in-bathtub","name":"욕조","anchor":{"dx":0,"dy":1},"upperTiles":[[8940,8941],[8942,8943]],"codes":["**","XX"]}
 ]
 ```

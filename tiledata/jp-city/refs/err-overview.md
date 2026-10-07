@@ -1,6 +1,6 @@
 # 일본 도시 — 정상/오류 · 자동 좌표 검증 · 층 정정 (총괄)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9007칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9017칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 이 용도는 다른 용도(오토타일·건물 조립 도구·도로 키트·상가 키트)에 흩어진 **정상/오류 나란한 그림과 맵 좌표 검증**을 한곳에서 찾는 지도다.
 각 용도 문서에 정상 그림·오류 그림·변조 좌표가 이미 들어 있다 — 아래 표의 문서·그림 이름으로 찾아 읽는다. 이 용도 자체에는 변조 좌표 전체표(`jp-err-scenarios`)와 층 설명 정정(`jp-err-layer-correction`)이 있다.

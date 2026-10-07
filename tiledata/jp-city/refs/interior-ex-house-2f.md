@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 집 실내 예제: 2층 단독주택 2층 (`jp-city-house-2f`, 22×12)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9007칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9017칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-house-2f`. 도구 결과: 손 도트 실내 '2층 단독주택 2층' 22×12 (jp-city-house-2f, jp_city) — 출입구에서 닿는 칸 76, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-house-2f`. 도구 결과: 손 도트 실내 '2층 단독주택 2층' 22×12 (jp-city-house-2f, jp_city) — 출입구에서 닿는 칸 75, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-house-2f", "name": "2층 단독주택 2층", "plan": ["######################", "#........#..#........#", "#........#..#........#", "#........#..#........#", "#........#..#........#", "#........#..#........#", "####.######.####.#####", "####.................#", "####.................#", "####.................#", "####.................#", "######################"], "floor": "flooring", "wall": "cloth-beige", "zones": [{"x0": 0, "y0": 6, "x1": 21, "y1": 11, "floor": "flooring-dark"}, {"x0": 9, "y0": 0, "x1": 12, "y1": 5, "floor": "cushion", "wall": "cloth"}, {"x0": 13, "y0": 0, "x1": 21, "y1": 5, "floor": "carpet"}], "objects": [{"id": "bed-double", "x": 1, "y": 3}, {"id": "bed-side-table", "x": 3, "y": 3}, {"id": "dresser-low", "x": 5, "y": 3}, {"id": "wardrobe", "x": 7, "y": 3}, {"id": "mirror-stand", "x": 8, "y": 5}, {"id": "curtain-window", "x": 3, "y": 1}, {"id": "ac-unit", "x": 5, "y": 1}, {"id": "toilet", "x": 10, "y": 3}, {"id": "toilet-mat", "x": 10, "y": 4}, {"id": "toilet-slippers", "x": 11, "y": 4}, {"id": "toilet-paper", "x": 10, "y": 1}, {"id": "toilet-handwash", "x": 11, "y": 1}, {"id": "bunk-bed", "x": 13, "y": 3}, {"id": "desk-study", "x": 14, "y": 3}, {"id": "desk-chair-n", "x": 14, "y": 4}, {"id": "bookshelf", "x": 20, "y": 3}, {"id": "window-sash", "x": 16, "y": 1}, {"id": "closet-doors", "x": 18, "y": 1}, {"id": "window-sash-small", "x": 13, "y": 7}, {"id": "light-switch", "x": 17, "y": 7}, {"id": "stairwell-down-wood", "x": 19, "y": 9}, {"id": "window-sash", "x": 5, "y": 7}, {"id": "houseplant", "x": 17, "y": 9}, {"id": "cushion-floor", "x": 18, "y": 5}], "tables": [], "goods": [{"id": "alarm-clock", "x": 3, "y": 3}, {"id": "desk-lamp", "x": 15, "y": 3}, {"id": "books-stack", "x": 14, "y": 3}], "start": [{"x": 18, "y": 10}], "links": [{"x": 19, "y": 10, "toMapId": "jp-city-house-1f", "toX": 9, "toY": 10, "direction": "down"}, {"x": 20, "y": 10, "toMapId": "jp-city-house-1f", "toX": 9, "toY": 10, "direction": "down"}]}
+{"tileset": "jp_city", "mapId": "jp-city-house-2f", "name": "2층 단독주택 2층", "plan": ["######################", "#........#..#........#", "#........#..#........#", "#........#..#........#", "#........#..#........#", "#........#..#........#", "####.######.####.#####", "####.................#", "####.................#", "####.................#", "####.................#", "######################"], "floor": "flooring", "wall": "cloth-beige", "zones": [{"x0": 0, "y0": 6, "x1": 21, "y1": 11, "floor": "flooring-dark"}, {"x0": 9, "y0": 0, "x1": 12, "y1": 5, "floor": "cushion", "wall": "cloth"}, {"x0": 13, "y0": 0, "x1": 21, "y1": 5, "floor": "carpet"}], "objects": [{"id": "bed-double", "x": 1, "y": 3}, {"id": "bed-side-table", "x": 3, "y": 3}, {"id": "dresser-low", "x": 5, "y": 3}, {"id": "wardrobe", "x": 7, "y": 3}, {"id": "mirror-stand", "x": 8, "y": 5}, {"id": "curtain-window", "x": 3, "y": 1}, {"id": "ac-unit", "x": 5, "y": 1}, {"id": "toilet", "x": 10, "y": 3}, {"id": "toilet-mat", "x": 10, "y": 4}, {"id": "toilet-slippers", "x": 11, "y": 4}, {"id": "toilet-paper", "x": 10, "y": 1}, {"id": "toilet-handwash", "x": 11, "y": 1}, {"id": "bunk-bed", "x": 13, "y": 3}, {"id": "desk-study", "x": 14, "y": 3}, {"id": "desk-chair-n", "x": 14, "y": 4}, {"id": "bookshelf", "x": 20, "y": 3}, {"id": "window-sash", "x": 16, "y": 1}, {"id": "closet-doors", "x": 18, "y": 1}, {"id": "window-sash-small", "x": 13, "y": 7}, {"id": "light-switch", "x": 17, "y": 7}, {"id": "stairwell-down-wood", "x": 19, "y": 9}, {"id": "window-sash", "x": 5, "y": 7}, {"id": "houseplant", "x": 17, "y": 9}, {"id": "cushion-floor", "x": 18, "y": 5}, {"id": "door-open-western", "x": 4, "y": 6}, {"id": "door-open-toilet", "x": 11, "y": 6}, {"id": "door-open-western", "x": 16, "y": 6}, {"id": "door-western", "x": 8, "y": 7}, {"id": "tansu", "x": 9, "y": 9}], "tables": [], "goods": [{"id": "alarm-clock", "x": 3, "y": 3}, {"id": "desk-lamp", "x": 15, "y": 3}, {"id": "books-stack", "x": 14, "y": 3}], "start": [{"x": 18, "y": 10}], "links": [{"x": 19, "y": 10, "toMapId": "jp-city-house-1f", "toX": 11, "toY": 10, "direction": "down"}, {"x": 20, "y": 10, "toMapId": "jp-city-house-1f", "toX": 11, "toY": 10, "direction": "down"}], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -20,8 +20,8 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 ## 이동
 | 이벤트 | 칸 | 이동 |
 |---|---|---|
-| jp-city-house-2f-link-0 | (19,10) | jp-city-house-1f (9,10) |
-| jp-city-house-2f-link-1 | (20,10) | jp-city-house-1f (9,10) |
+| jp-city-house-2f-link-0 | (19,10) | jp-city-house-1f (11,10) |
+| jp-city-house-2f-link-1 | (20,10) | jp-city-house-1f (11,10) |
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```
@@ -34,7 +34,7 @@ X.......XX..X........X
 XXXX.XXXXXX.XXXX.XXXXX
 XXXX.XXXXXX.XXXX.XXXXX
 XXXX.XXXXXX.XXXX.XXXXX
-XXXX.............X.XXX
+XXXX.....X.......X.XXX
 XXXX.................X
 XXXXXXXXXXXXXXXXXXXXXX
 ```
@@ -66,7 +66,7 @@ y=04: . . . . . . . . . . 8960 8961 . . . . . . . . . .
 y=05: . . . . . . . . . . . . . . . . . . 8910 . . .
 y=06: . . . . . . . . . . . . . . . . . . . . . .
 y=07: . . . . . . . . . . . . . . . . . . . . . .
-y=08: . . . . . . . . . . . . . . . . . . . . . .
+y=08: . . . . 9009 . . . . . . 9011 . . . . 9009 . . . . .
 y=09: . . . . . . . . . . . . . . . . . . . . . .
 y=10: . . . . . . . . . . . . . . . . . . . 8780 8781 .
 y=11: . . . . . . . . . . . . . . . . . . . . . .
@@ -80,10 +80,10 @@ y=02: . 8967 8968 8809 8810 . . 8985 8986 . 8956 . . 8974 8977 8978 8800 8801 89
 y=03: . 8969 8970 8997 . 8993 8994 8987 8988 . 8957 . . 8975 8979 8980 . . . . 8906 .
 y=04: . 8971 8972 . . . . . 8995 . . . . 8976 8982 . . . . . 8907 .
 y=05: . . . . . . . . 8996 . . . . . . . . . . . . .
-y=06: . . . . . . . . . . . . . . . . . . . . . .
-y=07: . . . . . 8798 8799 . . . . . . 8802 . . . . . . . .
-y=08: . . . . . 8800 8801 . . . . . . . . . . 8818 . 8776 8777 .
-y=09: . . . . . . . . . . . . . . . . . 8905 . 8778 8779 .
+y=06: . . . . 9007 . . . . . . 9007 . . . . 9007 . . . . .
+y=07: . . . . 9008 8798 8799 . 8782 . . 9010 . 8802 . . 9008 . . . . .
+y=08: . . . . . 8800 8801 . 8783 8832 . . . . . . . 8818 . 8776 8777 .
+y=09: . . . . . . . . . 8833 . . . . . . . 8905 . 8778 8779 .
 y=10: . . . . . . . . . . . . . . . . . . . . . .
 y=11: . . . . . . . . . . . . . . . . . . . . . .
 ```

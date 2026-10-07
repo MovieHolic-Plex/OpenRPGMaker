@@ -1,6 +1,6 @@
 # 일본 도시 — 탈것·노면전차·지하철 쓰는 법 (노선·차선 칸·정류장·역 맵)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9007칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9017칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **무엇인가.** 맵의 `transit` 설정(노선 목록)이 게임에서 실제로 탈것을 움직인다. 탈것은 주인공 앞에서 서고(주인공을 밀거나 덮지 않는다), 정류장에서 문을 열고(`*_open` 그림),
 `board` 가 있는 정류장에서는 탈것 옆에서 「조사」하면 그 맵·칸으로 옮겨 간다. 상태는 저장하지 않는다(맵에 들어올 때마다 90초 미리 돌린 상태로 시작).

@@ -65,10 +65,10 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5)",
+   "name": "일본 도시 · 일본 집 실내 (가구 99종 · 바닥 7 · 벽면 5)",
    "documents": 7,
-   "images": 14,
-   "chars": 74644
+   "images": 15,
+   "chars": 78549
   },
   {
    "id": "jp-errors",
@@ -81,14 +81,14 @@
  "totals": {
   "categories": 11,
   "documents": 68,
-  "images": 182,
-  "chars": 738893,
+  "images": 183,
+  "chars": 742798,
   "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 8411,
- "kitsEmitted": 534,
- "kitArrayItemsRoundtrip": 534,
+ "tilesEmitted": 8421,
+ "kitsEmitted": 539,
+ "kitArrayItemsRoundtrip": 539,
  "unknownTokens": [
   "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
   "jp-interior-ex-house-1f:jp-city-house-1f",
@@ -110,7 +110,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "4b920be4dbfe9938d673571094bb9f5b1f7aa284c3ab913071bdcad0519338dc",
-  "images": "cc766307ac47303bd38f313e9fcff5beab0264cce11cf8920e9f36227efa0262"
+  "json": "2db97b078c43bad2eea1a5bae6eeb1054688e542decbd16ffee22748310e3538",
+  "images": "110365e543c210ed18347b0dcc2384a1e0ae38cfdf9cf31392c5d84ffd32995f"
  }
 }
