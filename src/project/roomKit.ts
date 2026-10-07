@@ -17,13 +17,18 @@ export function roomKitAssetId(tileSize: number, dataUrl: string): string {
 }
 
 /**
- * 고른 칸(칩셋 칸 번호). 시트마다 칸을 늘어놓는 방식이 달라(벽 4줄을 한 줄에 이어 둔 시트도 있다) 사각형이 아니라 번호 격자로 받는다.
+ * 고른 칸 하나 = 칩셋 칸 번호, 또는 시트의 픽셀 창(왼쪽 위 px·py, 크기는 칸 크기).
+ * 픽셀 창은 RPG Maker 오토타일 블록처럼 「반 칸 어긋난 자리」가 이음매 없는 가운데인 시트에서 쓴다(rpgMakerBlockPicks).
+ */
+export type RoomKitCell = number | { readonly px: number; readonly py: number };
+/**
+ * 고른 칸. 시트마다 칸을 늘어놓는 방식이 달라(벽 4줄을 한 줄에 이어 둔 시트도 있다) 사각형이 아니라 칸 격자로 받는다.
  * floor = 반복 무늬 판(줄마다 같은 길이, 8×8 이하), wall = 벽면 두 줄 [위 줄, 아래 줄](같은 길이), ceiling = 천장 칸 하나.
  */
 export interface RoomKitPicks {
-  readonly floor: readonly (readonly number[])[];
-  readonly wall: readonly [readonly number[], readonly number[]];
-  readonly ceiling: number;
+  readonly floor: readonly (readonly RoomKitCell[])[];
+  readonly wall: readonly [readonly RoomKitCell[], readonly RoomKitCell[]];
+  readonly ceiling: RoomKitCell;
 }
 export interface RgbaImage { readonly width: number; readonly height: number; readonly data: Uint8Array | Uint8ClampedArray }
 
@@ -46,9 +51,15 @@ const FOOT_SHADE = [2, 1, 1];
 const WEST_SHADE = [2, 2, 1, 1, 1, 0];
 const TOP_SHADE = [2, 2, 1, 1];
 
-/** 고른 칸이 모양에 맞는지. 문제가 있으면 사람이 읽을 문장, 없으면 null. tileCount = 칩셋 칸 수. */
-export function roomKitPicksProblem(picks: RoomKitPicks, tileCount: number): string | null {
-  const ok = (id: unknown) => Number.isInteger(id) && (id as number) >= 0 && (id as number) < tileCount;
+/**
+ * 고른 칸이 모양에 맞는지. 문제가 있으면 사람이 읽을 문장, 없으면 null. tileCount = 칩셋 칸 수.
+ * sheet(픽셀 크기·칸 크기)를 주면 픽셀 창이 시트 안인지도 본다.
+ */
+export function roomKitPicksProblem(picks: RoomKitPicks, tileCount: number, sheet?: { width: number; height: number; tileSize: number }): string | null {
+  const ok = (c: unknown) => typeof c === "object" && c !== null
+    ? Number.isInteger((c as { px: number }).px) && Number.isInteger((c as { py: number }).py) && (c as { px: number }).px >= 0 && (c as { py: number }).py >= 0
+      && (!sheet || ((c as { px: number }).px + sheet.tileSize <= sheet.width && (c as { py: number }).py + sheet.tileSize <= sheet.height))
+    : Number.isInteger(c) && (c as number) >= 0 && (c as number) < tileCount;
   const { floor, wall } = picks;
   if (!Array.isArray(floor) || !floor.length || floor.length > 8) return "바닥 무늬는 1~8줄로 고릅니다.";
   const fw = floor[0]?.length ?? 0;
@@ -66,17 +77,17 @@ export function roomKitPicksProblem(picks: RoomKitPicks, tileCount: number): str
  */
 export function compileRoomKit(image: RgbaImage, tileSize: number, picks: RoomKitPicks): CompiledRoomKit {
   const T = tileSize, cols = Math.floor(image.width / T), rows = Math.floor(image.height / T);
-  const problem = roomKitPicksProblem(picks, cols * rows);
+  const problem = roomKitPicksProblem(picks, cols * rows, { width: image.width, height: image.height, tileSize: T });
   if (problem) throw new Error(problem);
   const { floor, wall } = picks;
   const k = T / 16;
   const tiles: Uint8ClampedArray[] = [];
   const roles: Role[] = [];
-  const read = (id: number): Uint8ClampedArray => {
-    const cx = id % cols, cy = Math.floor(id / cols);
+  const read = (cell: RoomKitCell): Uint8ClampedArray => {
+    const [ox, oy] = typeof cell === "number" ? [(cell % cols) * T, Math.floor(cell / cols) * T] : [cell.px, cell.py];
     const out = new Uint8ClampedArray(T * T * 4);
     for (let y = 0; y < T; y++) for (let x = 0; x < T; x++) {
-      const s = ((cy * T + y) * image.width + cx * T + x) * 4, d = (y * T + x) * 4;
+      const s = ((oy + y) * image.width + ox + x) * 4, d = (y * T + x) * 4;
       out[d] = image.data[s]!; out[d + 1] = image.data[s + 1]!; out[d + 2] = image.data[s + 2]!; out[d + 3] = image.data[s + 3]!;
     }
     return out;
@@ -204,4 +215,156 @@ export function roomKitSpec(compiled: CompiledRoomKit, base: number, picks?: Roo
 export function savedRoomKitPicks(tileset: Pick<TilesetDef, "roomKit"> | undefined): RoomKitPicks | undefined {
   const picks = (tileset?.roomKit?.spec as { picks?: RoomKitPicks } | undefined)?.picks;
   return picks && Array.isArray(picks.floor) && Array.isArray(picks.wall) ? picks : undefined;
+}
+
+/** 손 도트 사양 가구 꼴(builder.ts SpecObject 와 같은 모양). */
+export interface KitHandObject {
+  readonly ko: string; readonly category: string; readonly category_ko: string; readonly kind: "floor" | "wall" | "hang" | "flat";
+  readonly w: number; readonly h: number; readonly up: number; readonly cells: readonly (readonly [number, number, number, number])[];
+  readonly desc: string; readonly tags: readonly string[]; readonly place: string; readonly pair: readonly string[]; readonly use: readonly string[];
+}
+/** 가구가 아닌 조립 부품(벽·바닥·지붕·울타리·건물·물) — 방 짓기 가구 목록에서 뺀다. */
+const NOT_FURNITURE = new Set(["wall", "terrain", "fence", "roof", "building", "water", "floor", "path", "cliff"]);
+const WALL_PLACE = /벽 앞|벽에 붙|북쪽 벽에|북벽 앞|north-wall/u;
+const HANG_PLACE = /벽에 건|벽면에 건|걸이|걸어 둔/u;
+
+/**
+ * 칩셋의 조립 부품(structureKits) → 방 짓기 가구. 역할표에 가구 표가 없는 칩셋(마법 학교·사용자가 「방 짓기」 탭에서 만든 역할표)이
+ * build_hand_interior_room 의 objects 로 가구를 놓게 한다. 공방 부품(workshop:)은 workshopHandObjects 가 따로 맡는다.
+ * 발밑 줄 = 막힌 칸(네 방향 모두 막힘)이 처음 나오는 줄부터 맨 아래까지. 막힌 칸이 없으면 위층 칸이 없을 때 밟는 무늬(flat), 있으면 밟고 지나가는 소품(h 0).
+ * 종류: 놓는 곳 설명에 「벽 앞·벽에 붙」 = wall(북쪽 벽 바로 아래 첫 줄), 「벽에 건·걸이」 = hang(벽면 윗줄), 나머지 = floor.
+ */
+export function kitHandObjects(tileset: TilesetDef | undefined): Record<string, KitHandObject> {
+  const out: Record<string, KitHandObject> = {};
+  if (!tileset) return out;
+  const blocked = (tile: number) => {
+    const p = tileset.passability[tile];
+    return !!p && !p.up && !p.down && !p.left && !p.right;
+  };
+  for (const kit of tileset.structureKits ?? []) {
+    if (kit.kind !== "section" || kit.learnedFrom === "workshop" || !kit.rows?.length) continue;
+    const role = kit.ai?.role ?? "";
+    if (NOT_FURNITURE.has(role)) continue;
+    const H = kit.rows.length, W = kit.width;
+    const firstBlocked = kit.rows.findIndex((row) => [...(row.tiles ?? []), ...(row.upperTiles ?? [])].some((t) => t >= 0 && blocked(t)));
+    const hasUpper = kit.rows.some((row) => (row.upperTiles ?? []).some((t) => t >= 0));
+    const place = `${kit.ai?.placementRules ?? ""} ${kit.ai?.description ?? ""}`;
+    const kind: KitHandObject["kind"] = firstBlocked < 0
+      ? (hasUpper ? (HANG_PLACE.test(place) ? "hang" : "floor") : "flat")
+      : WALL_PLACE.test(kit.ai?.placementRules ?? "") ? "wall" : "floor";
+    const foot = firstBlocked < 0 ? 0 : H - firstBlocked;
+    // 칸 좌표: floor·wall 은 발밑 첫 줄이 dy 0(솟은 칸은 음수), hang·flat 은 맨 윗줄이 dy 0 — 발밑 없는 floor 는 맨 아랫줄이 dy 0.
+    const top = kind === "hang" || kind === "flat" ? 0 : foot ? H - foot : H - 1;
+    const cells: [number, number, number, number][] = [];
+    kit.rows.forEach((row, y) => {
+      (row.tiles ?? []).forEach((t, x) => { if (t >= 0) cells.push([x, y - top, t, 2]); });
+      (row.upperTiles ?? []).forEach((t, x) => { if (t >= 0) cells.push([x, y - top, t, kind === "flat" ? 2 : 3]); });
+    });
+    if (!cells.length) continue;
+    const tags = (kit.ai?.tags ?? []).filter((t) => !t.startsWith("use:"));
+    out[kit.id] = {
+      ko: kit.name ?? kit.id, category: role || "prop", category_ko: tags[2] ?? tags[1] ?? "가구", kind,
+      w: W, h: kind === "hang" ? 0 : kind === "flat" ? H : foot, up: 0, cells,
+      desc: (kit.ai?.description ?? "").slice(0, 60), tags, place: kit.ai?.placementRules ?? "", pair: [],
+      use: (kit.ai?.tags ?? []).filter((t) => t.startsWith("use:")).map((t) => t.slice(4)),
+    };
+  }
+  return out;
+}
+
+/**
+ * RPG Maker MV/MZ 오토타일 시트(A2 바닥 16×12칸 · A4 벽 16×15칸)인가. 칸 수로 본다(칸 크기는 상관없다).
+ * 이런 시트의 칸 하나를 그대로 고르면 오토타일 테두리가 칸마다 남아 바닥·벽에 격자가 생긴다.
+ */
+export function rpgMakerAutotileSheet(cols: number, rows: number): "A2" | "A4" | null {
+  if (cols === 16 && rows === 12) return "A2";
+  if (cols === 16 && rows === 15) return "A4";
+  return null;
+}
+
+/** A4 블록 줄: 윗면(2×3칸) 3줄 → 벽면(2×2칸) 2줄을 세 번. 반환 = [블록 첫 줄, 줄 수, 종류]. */
+function a4Band(row: number): [number, number, "top" | "side"] | null {
+  const bands: [number, number, "top" | "side"][] = [[0, 3, "top"], [3, 2, "side"], [5, 3, "top"], [8, 2, "side"], [10, 3, "top"], [13, 2, "side"]];
+  return bands.find(([y, h]) => row >= y && row < y + h) ?? null;
+}
+
+/**
+ * 오토타일 블록 안 칸 (col,row) 를 눌렀을 때 그 블록에서 뗄 이음매 없는 픽셀 창.
+ * - 윗면·바닥 블록(2×3): 아래 2×2 칸의 4×4 쿼터 중 가운데 2×2 쿼터 → surface(바닥·천장으로 쓴다).
+ * - A4 벽면 블록(2×2): 가운데 열(반 칸 오른쪽)의 위 줄·아래 줄 → wallTop·wallBottom.
+ */
+export function rpgMakerBlockPicks(kind: "A2" | "A4", col: number, row: number, T: number): { surface?: RoomKitCell; wallTop?: RoomKitCell; wallBottom?: RoomKitCell } | null {
+  const bx = Math.floor(col / 2) * 2 * T, h = T / 2;
+  if (kind === "A2") {
+    const by = Math.floor(row / 3) * 3 * T;
+    return { surface: { px: bx + h, py: by + T + h } };
+  }
+  const band = a4Band(row);
+  if (!band) return null;
+  const by = band[0] * T;
+  if (band[2] === "top") return { surface: { px: bx + h, py: by + T + h } };
+  return { wallTop: { px: bx + h, py: by }, wallBottom: { px: bx + h, py: by + T } };
+}
+
+/**
+ * AI 초안 — 시트 그림(가장자리에 열·줄 번호를 단 것)을 보여 주고 바닥·벽면·천장 자리를 묻는다. 답은 열·줄 좌표 JSON.
+ * 사람은 견본 방을 보고 고친다(초안을 그대로 저장하지 않는다).
+ */
+export function roomKitDraftPrompt(cols: number, rows: number): string {
+  return [
+    `This is an RPG tileset sheet, ${cols} columns × ${rows} rows of tiles. Column numbers are printed along the top edge and row numbers along the left edge (both start at 0).`,
+    "I will build top-down 3/4-view interior rooms from it. Find these four things:",
+    "1. floor: an indoor floor surface that repeats seamlessly (wood planks, stone flags, tiles, carpet). A rectangle of 1-4 columns × 1-4 rows that tiles without visible seams.",
+    "2. wallTop and wallBottom: the FRONT FACE of an interior wall as seen from the room (bricks/plaster/wood panels standing vertically, usually with a baseboard at the bottom). wallTop is the upper row and wallBottom the row just below it; both are the same horizontal run of 1-4 columns. If the sheet stores the face rows side by side instead of stacked, give each row's own position.",
+    "3. ceiling: one tile for the solid area outside/above rooms — a dark plain fill, wall-top or roof surface with little pattern.",
+    "Prefer the plainest, most repeatable tiles. Never pick furniture, characters, doors, windows or transparent tiles.",
+    'Answer with JSON only: {"floor":{"col":0,"row":0,"w":1,"h":1},"wallTop":{"col":0,"row":0,"w":1},"wallBottom":{"col":0,"row":0,"w":1},"ceiling":{"col":0,"row":0},"reason":"one short sentence"}',
+  ].join("\n");
+}
+
+/** 글 속 첫 JSON 객체(코드 울타리·앞뒤 말 무시, 문자열 안 괄호는 센다). */
+function firstJsonObject(text: string): Record<string, unknown> | null {
+  for (let start = text.indexOf("{"); start >= 0; start = text.indexOf("{", start + 1)) {
+    let depth = 0, inStr = false, esc = false;
+    for (let i = start; i < text.length; i++) {
+      const ch = text[i]!;
+      if (inStr) { if (esc) esc = false; else if (ch === "\\") esc = true; else if (ch === '"') inStr = false; continue; }
+      if (ch === '"') inStr = true;
+      else if (ch === "{") depth++;
+      else if (ch === "}" && --depth === 0) {
+        try { const v = JSON.parse(text.slice(start, i + 1)) as unknown; if (v && typeof v === "object" && !Array.isArray(v)) return v as Record<string, unknown>; } catch { /* 다음 후보 */ }
+        break;
+      }
+    }
+  }
+  return null;
+}
+
+/** AI 초안 답 → 고른 칸. 모양이 틀리면 문장(사람에게 보인다). */
+export function parseRoomKitDraft(text: string, cols: number, rows: number): { picks: RoomKitPicks; reason: string } | string {
+  let raw: Record<string, { col?: unknown; row?: unknown; w?: unknown; h?: unknown } | string | undefined>;
+  const found = firstJsonObject(text);
+  if (!found) return `AI 답을 읽지 못했습니다: ${text.slice(0, 160)}`;
+  raw = found as typeof raw;
+  const num = (v: unknown, lo: number, hi: number) => (Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi ? (v as number) : null);
+  const box = (key: string, needH: boolean) => {
+    const v = raw[key];
+    if (!v || typeof v !== "object") return null;
+    const col = num(v.col, 0, cols - 1), row = num(v.row, 0, rows - 1);
+    const w = v.w === undefined ? 1 : num(v.w, 1, 8), h = !needH || v.h === undefined ? 1 : num(v.h, 1, 8);
+    if (col === null || row === null || w === null || h === null || col + w > cols || row + h > rows) return null;
+    return { col, row, w, h };
+  };
+  const f = box("floor", true), wt = box("wallTop", false), wb = box("wallBottom", false), c = box("ceiling", false);
+  if (!f || !wt || !wb || !c) return "AI 초안의 좌표가 시트 밖이거나 빠졌습니다 — 직접 골라 주세요.";
+  const runOf = (b: { col: number; row: number; w: number }, w: number) => Array.from({ length: w }, (_, i) => b.row * cols + b.col + i);
+  const ww = Math.min(wt.w, wb.w);
+  return {
+    picks: {
+      floor: Array.from({ length: f.h }, (_, y) => Array.from({ length: f.w }, (_, x) => (f.row + y) * cols + f.col + x)),
+      wall: [runOf(wt, ww), runOf(wb, ww)],
+      ceiling: c.row * cols + c.col,
+    },
+    reason: typeof raw.reason === "string" ? raw.reason.slice(0, 200) : "",
+  };
 }

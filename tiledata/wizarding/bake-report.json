@@ -3,7 +3,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 2508,
+  "tiles_checked": 2669,
   "kits_checked": 636,
   "groups_checked": 158,
   "autotiles_checked": 6
@@ -17,11 +17,11 @@
   "cells_off_palette": 0
  },
  "tiles": {
-  "count": 2508,
-  "rows": 53,
+  "count": 2669,
+  "rows": 56,
   "sheetPx": [
    768,
-   848
+   896
   ],
   "strips": 101,
   "kits": 636,
@@ -231,5 +231,9 @@
    "skipped": []
   }
  ],
+ "roomkit": {
+  "floors": 13,
+  "walls": 8
+ },
  "reassembly_from_files": 0
 }

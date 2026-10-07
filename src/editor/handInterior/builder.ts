@@ -11,6 +11,7 @@
 //  옆문(sidedoor): 세로 칸막이 3줄 틈의 통로 칸 (x,y) 에 단다 — 위 두 칸(칸막이 끝 벽면) ★ + 통로 칸 2층.
 import spec from "@/assets/handInteriorSpec.json";
 import jpSpec from "@/assets/jpInteriorSpec.json";
+import wizardingSpec from "@/assets/wizardingRoomSpec.json";
 import { passabilityOf } from "@/project/collision";
 import type { TilesetDef } from "@/project/types";
 
@@ -58,8 +59,13 @@ export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
 /** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */
 export const JP_INTERIOR_TILESET_ID = "jp_city";
 export const JP_INTERIOR_SPEC = jpSpec as unknown as HandInteriorSpec;
+/** 마법 학교(wizarding_world) — 바닥·벽면·천장 변형 칸만 scripts/content/wizarding/roomkit_wz.py 가 굽는다. 가구는 칩셋 조립 부품에서(kitHandObjects). */
+export const WIZARDING_INTERIOR_TILESET_ID = "wizarding_world";
+export const WIZARDING_INTERIOR_SPEC = wizardingSpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
-export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = { [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC };
+export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = {
+  [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC, [WIZARDING_INTERIOR_TILESET_ID]: WIZARDING_INTERIOR_SPEC,
+};
 
 /**
  * 타일셋의 방 짓기 역할표(roomKit). 칩셋 id 가 아니라 타일셋 정의를 보므로 스토어 사본(id 가 store_… 로 바뀐 것)도 짓는다.
