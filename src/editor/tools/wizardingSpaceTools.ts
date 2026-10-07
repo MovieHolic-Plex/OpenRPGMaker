@@ -47,7 +47,7 @@ export const LIST_WIZARDING_SPACES_TOOL: ToolDefinition = {
     type: "object",
     properties: {
       space: { type: "string", enum: [...WIZARDING_SPACE_KEYS], description: "공간 키" },
-      variant: { type: "string", description: "변형(shared 만: corridor·common). 생략하면 기본" },
+      variant: { type: "string", description: "변형(shared 만: corridor·common·dorm). 생략하면 기본" },
     },
     additionalProperties: false,
   },
@@ -118,7 +118,7 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
   mode: "write",
   domains: ["tile", "map"],
   description: "해리포터풍·마법 학교(호그와트풍) 맵을 짓는 길 — 번들 칩셋 wizarding_world 로 방·야외 한 장을 한 번에 짓는다(벽 고리·문·바닥·러너·가구·덧그림 자동, 결정론 seed). "
-    + `space: ${spacesLine()}. shared 는 variant corridor(복도 10×22)·common(기숙사 휴게실). `
+    + `space: ${spacesLine()}. shared 는 variant corridor(복도 10×22)·common(기숙사 휴게실)·dorm(기숙사 침실 — 사주식 침대 줄·트렁크·옷장·거울). `
     + "mapId 가 비어 있는 맵이면 칩셋을 wizarding_world 로 바꿔 그 맵에 짓고, 이미 그린 맵이면 overwrite:true 가 있어야 다시 짓는다. mapId 없이 name 을 주면 새 맵을 만든다. "
     + "doors=[{side:n|s|e|w, offset?, kind?:single|double}](생략하면 공간 기본 출입구), furnitureMode auto(레시피 가구, furniture 를 먼저 놓는다)·list(furniture 만)·none, density sparse|normal|full. "
     + "가구는 놓을 때마다 엔진 통행으로 검사해 바닥이 갈리거나 문 앞을 막거나 앞 가구에 못 가게 하면 버린다. 결과의 doorCells 에 이동 이벤트(transfer)를, spawn 에 도착 지점을 쓴다. "
@@ -130,7 +130,7 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
       name: { type: "string", description: "새 맵 이름(생략하면 공간 이름)" },
       overwrite: { type: "boolean", description: "이미 그린 맵을 통째로 다시 짓기(이벤트는 맵 안에 남는 것만 둔다)" },
       space: { type: "string", enum: [...WIZARDING_SPACE_KEYS], description: "공간 키" },
-      variant: { type: "string", description: "변형(shared: corridor·common). 생략하면 기본" },
+      variant: { type: "string", description: "변형(shared: corridor·common·dorm). 생략하면 기본" },
       width: { type: "integer", minimum: 8, maximum: 64, description: "맵 폭(생략하면 공간 기본)" },
       height: { type: "integer", minimum: 12, maximum: 48, description: "맵 높이(생략하면 공간 기본 크기로 짓고, 실내는 가구가 끝나는 줄 아래 통로 3줄만 남기고 줄인다 — 빈 바닥을 남기지 않는다)" },
       doors: { type: "array", items: DOOR_ITEM, description: "출입구. 첫 문이 주 출입구(시작 칸·러너 기준)" },
