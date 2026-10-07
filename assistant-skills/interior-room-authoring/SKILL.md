@@ -73,3 +73,4 @@ description: Use when building or reviewing a 16px RPG interior (house, shop, in
 6. 여러 층: 층마다 맵. 아래층 `stairs up wood|stone` 발밑 칸들에 `links:[{x,y,toMapId,toX,toY}]`(도착 = 위층 계단 구멍 바로 아래 바닥), 위층 `stairwell down` 칸에 아래층 도착 칸.
 7. `show_map_region` 으로 그림을 보고 확인한다. 참고문서에 없는 가구는 만들지 않는다 — 없다고 말하고 가장 가까운 id 를 쓴다.
 8. 다른 실내 칩셋(Tibo·EasyRPG 실내)을 쓰라는 요청은 거절된다. 그 이유(폐기)를 사용자에게 말하고 손 도트 실내로 짓는다.
+9. 해리포터풍·마법 학교(번들 칩셋 wizarding_world) 방·야외는 이 스킬이 아니다 — `list_wizarding_spaces({space})` → `build_wizarding_space({space, name|mapId, doors, density, seed})` 한 번으로 짓는다(13공간 레시피, 통행 한 덩이 보장). 결과 `doorCells` 에 이동 이벤트를 단다.

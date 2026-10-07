@@ -51,29 +51,49 @@ def is_flat(t):
     return t >= 0 and TS['priority'][t] == 'lower' and TS['tileMeta'][t].get('locked') and TS['tileMeta'][t].get('defaultLayer') == 'upper'
 
 
+SPDIR = os.path.join(wzlib.TD, 'spaces')
+
+
+def sources():
+    """게시 대상: 빌더가 지은 공간(tiledata/wizarding/spaces, 4층, export_spaces.ts 가 통행 검증) + 빌더가 없는 장면의 모듈 예제(통행 한 덩이일 때만)."""
+    out = []
+    for f in sorted(os.listdir(SPDIR)) if os.path.isdir(SPDIR) else []:
+        if not f.endswith('.json'): continue
+        sp = json.load(open(os.path.join(SPDIR, f), encoding='utf-8'))
+        out.append(dict(id=sp['id'], name=sp['name'], space=sp['space'], w=sp['w'], h=sp['h'], layers=(sp['lowerTiles'], sp['lowerOverlayTiles'], sp['upperTiles'], sp['upperOverlayTiles']),
+                        png=os.path.join(SPDIR, sp['id'] + '.png'), start=sp['spawn'], kits=sorted({p['kit'] for p in sp['placed']}),
+                        desc=f"build_wizarding_space({{space:'{sp['space']}'" + (f", variant:'{sp['variant']}'" if sp.get('variant') else '') + f", seed:{sp['seed']}}}) 결과. 문 칸 " + ' '.join(f"{d['side']}({d['x']},{d['y']})" for d in sp['doorCells'])))
+    covered = {o['space'] for o in out}
+    for f in sorted(os.listdir(EXDIR)):
+        if not f.endswith('.json'): continue
+        ex = json.load(open(os.path.join(EXDIR, f), encoding='utf-8'))
+        if ex.get('skipped'): print('건너뜀(빠진 조각)', ex['id']); continue
+        if ex['space'] in covered and ex['id'] not in KEEP_EXAMPLES: continue
+        W, H = ex['w'], ex['h']
+        if islands(W, H, ex['lower'], ex['upper']): print('건너뜀(갇힌 통행 주머니)', ex['id']); continue
+        L2 = [t if is_flat(t) else -1 for t in ex['upper']]; L3 = [-1 if is_flat(t) else t for t in ex['upper']]
+        out.append(dict(id=ex['id'], name=ex['name'], space=ex['space'], w=W, h=H, layers=(list(ex['lower']), L2, L3, [-1] * (W * H)),
+                        png=os.path.join(EXDIR, ex['id'] + '.png'), start=None, kits=sorted({p[0] for p in ex['place']}), desc=ex.get('desc') or ''))
+    return out
+
+
+KEEP_EXAMPLES = {'wz-post-example-street', 'wz-nat-example-forest-edge'}   # 빌더 공간에 없는 장면(눈 마을 거리·숲 가장자리)
+
+
 entries = []
-for f in sorted(os.listdir(EXDIR)):
-    if not f.endswith('.json'): continue
-    ex = json.load(open(os.path.join(EXDIR, f), encoding='utf-8'))
-    if ex.get('skipped'):
-        print('건너뜀(빠진 조각)', ex['id'], ex['skipped'][:5]); continue
-    W, H = ex['w'], ex['h']
-    isl = islands(W, H, ex['lower'], ex['upper'])
-    if isl:
-        print('건너뜀(갇힌 통행 주머니)', ex['id'], len(isl), '칸'); continue
-    L1 = list(ex['lower']); L2 = [-1] * (W * H); L3 = []
-    for t in ex['upper']:
-        L3.append(-1 if is_flat(t) else t)
-    for i, t in enumerate(ex['upper']):
-        if is_flat(t): L2[i] = t
-    walk = [i for i in range(W * H) if (L1[i] < 0 or TS['passability'][L1[i]]['up']) and (L3[i] < 0 or TS['passability'][L3[i]]['up']) and L1[i] >= 0]
-    cx, cy = W // 2, H - 3
-    sx, sy = min(((i % W, i // W) for i in walk), key=lambda p: abs(p[0] - cx) + abs(p[1] - cy)) if walk else (0, 0)
-    slug = ex['id'].replace('wz-', '')
+for src in sources():
+    W, H = src['w'], src['h']
+    L1, L2, L3, L4 = (list(a) for a in src['layers'])
+    if src['start']: sx, sy = src['start']['x'], src['start']['y']
+    else:
+        walk = [i for i in range(W * H) if L1[i] >= 0 and all(_pass(a[i]) for a in (L1, L2, L3, L4))]
+        cx, cy = W // 2, H - 3
+        sx, sy = min(((i % W, i // W) for i in walk), key=lambda p: abs(p[0] - cx) + abs(p[1] - cy)) if walk else (0, 0)
+    slug = src['id'].replace('wz-', '')
     mid = f'wz-place-{slug}'
-    name = f"마법 학교 · {ex['name']}"
+    name = f"마법 학교 · {src['name'] if not src['name'].startswith('wz-') else wzlib.SPACES[src['space']]}"
     MAP = dict(id=mid, name=name, width=W, height=H, tilesetId='wizarding_world', tileSize=16, lowerTiles=L1, lowerOverlayTiles=L2, upperTiles=L3,
-               upperOverlayTiles=[-1] * (W * H), events=[], climate=dict(mode='inherit'))
+               upperOverlayTiles=L4, events=[], climate=dict(mode='inherit'))
     proj = copy.deepcopy(TPL)
     proj['meta']['title'] = name
     proj['tilesets'] = {'wizarding_world': tileset_full}
@@ -81,19 +101,26 @@ for f in sorted(os.listdir(EXDIR)):
     proj['startMapId'] = mid; proj['startPos'] = dict(x=sx, y=sy); proj['mapConnections'] = []
     json.dump(proj, open(os.path.join(REGION, f'wz-{slug}.oprn.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     from PIL import Image
-    Image.open(os.path.join(EXDIR, ex['id'] + '.png')).save(os.path.join(REGION, f'wz-{slug}.png'), optimize=True)
+    Image.open(src['png']).save(os.path.join(REGION, f'wz-{slug}.png'), optimize=True)
     json.dump(dict(map=MAP, tileset=slim), open(os.path.join(ROOT, f'src/project/regionReferences/wz-{slug}.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     pid = f'wz-{slug}-{W}x{H}'
-    kits = sorted({p[0] for p in ex['place']})
-    entries.append(dict(id=pid, name=name, kind='completed-place', placeKind='facility' if ex['space'] in INDOOR else ('settlement' if ex['space'] == 'postoffice' else 'natural'), revision=1, x=0, y=0, width=W, height=H,
+    kits = src['kits']
+    entries.append(dict(id=pid, name=name, kind='completed-place', placeKind='facility' if src['space'] in INDOOR else ('settlement' if src['space'] == 'postoffice' else 'natural'), revision=2, x=0, y=0, width=W, height=H,
                         tilesetId='wizarding_world', preview=f'/assets/region-references/wz-{slug}.png', tilesetPreview='/assets/wizarding-world/wizarding-world-chipset.png',
                         projectDownload=f'/assets/region-references/wz-{slug}.oprn.json', sourceProjectId=f'oprn-bundled-wz-{slug}', sourceMapId=mid,
-                        snapshotProjectId=f'oprn-place-wz-{slug}-v1',
-                        rules=[f"{W}×{H}칸 {wzlib.SPACES[ex['space']]} 완성 예제(마법 학교·해리포터풍 번들 wizarding_world). {ex.get('desc') or ''}".strip(),
-                               f"바닥 `{ex['floor']}` 위에 키트 {len(ex['place'])}개를 뒤(북)에서 앞(남) 순서로 찍었다: " + ', '.join(f'`{k}`' for k in kits[:30]) + ('…' if len(kits) > 30 else ''),
-                               "키트 사전·전체 배열·정상/오류는 타일셋 참고문서 용도 `wz-space-" + ex['space'] + "` 에 있다."],
-                        limitations='조각 배치 참고 사례. 사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다.'))
+                        snapshotProjectId=f'oprn-place-wz-{slug}-v2',
+                        rules=[f"{W}×{H}칸 {wzlib.SPACES[src['space']]} 완성 맵(마법 학교·해리포터풍 번들 wizarding_world). 걸을 수 있는 칸은 한 덩이로 이어져 있다(통행 검사). {src['desc']}".strip(),
+                               "쓴 키트: " + ', '.join(f'`{k}`' for k in kits[:30]) + ('…' if len(kits) > 30 else ''),
+                               "다른 크기·문 위치로 새로 지으려면 build_wizarding_space, 키트 사전·정상/오류는 타일셋 참고문서 용도 `wz-space-" + src['space'] + "`."],
+                        limitations='사람·생물은 이벤트 캐릭터(Wizarding 시트)로 따로 둔다 — 이 맵에는 이벤트가 없다. 움직이는 칸은 baseTile 만 칠해져 있다.'))
     print('게시', pid, f'시작 ({sx},{sy})')
+
+# 옛 판 게시물 지우기(이번에 안 나온 wz- 장소 파일)
+keep = {e['sourceMapId'].replace('wz-place-', 'wz-') for e in entries}
+for d, exts in ((REGION, ('.oprn.json', '.png')), (os.path.join(ROOT, 'src/project/regionReferences'), ('.json',))):
+    for f in os.listdir(d):
+        if f.startswith('wz-') and f.endswith(exts) and f[:-len(next(e for e in exts if f.endswith(e)))] not in keep:
+            os.remove(os.path.join(d, f)); print('지움', f)
 
 ts_path = os.path.join(ROOT, 'src/project/wizardingPlaceReferences.ts')
 open(ts_path, 'w', encoding='utf-8').write('// Generated by scripts/content/wizarding/publish_places_wz.py. 마법 학교(wizarding_world) 공간 예제 under 장소; snapshots in regionReferences/wz-*.json.\n'

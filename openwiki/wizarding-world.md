@@ -64,6 +64,43 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
    (2026-10-07 사용자: 검수가 너무 무거워 토큰이 바닥 — 한 바퀴 이후로는 이 얇은 확인만, 그래도 FAIL 이면 그 조각은 빠진다).
 5. 사용자는 `http://mdc-server:18301/wizarding-world.html` 한 장에서 싫은 것을 짚는다. 고친 조각은 다시 판정·봉인 후 굽는다.
 
+## 조수 공간 빌더
+
+조수가 이 칩셋으로 **실제 게임 맵**(방·야외 한 장)을 만드는 길은 `build_wizarding_space` 한 번이다. 키트를 하나씩 찍는 것(`stamp_object`)이나
+공간 예제(12×9 안팎, 걸을 수 있는 칸이 갈린 것이 있다)를 가져오는 것은 이 길을 대신하지 않는다.
+
+| 경로 | 역할 |
+|---|---|
+| `scripts/content/wizarding/space_recipes.py` → `src/assets/wizardingSpaceSpec.json` | 13공간(`wzlib.SPACES`) 레시피: 크기(최소·기본·최대), 바닥(1×1 조각 또는 오토타일 + 섞기), 러너, 벽 묶음, 문 조각, 가구 목록, 덧그림, NPC 걷기 칩 추천. 굽기 정의에 없는 id 는 경고하고 뺀다(굽고 다시 돌린다) |
+| `src/editor/wizarding/builder.ts` | 순수 조립기 `buildWizardingSpace(input, tileset, spec)` |
+| `src/editor/tools/wizardingSpaceTools.ts` | `list_wizarding_spaces`(읽기) · `build_wizarding_space`(쓰기) |
+
+- **레이아웃 세 가지.** `room`(실내 + 퀴디치 경기장): 벽 묶음 고리(북 1×4 리듬·서/동 세로 반복·남 1×2, 모서리 없으면 n/s), 북쪽 문 = 묶음의 열린 문 키트(2칸이 없으면 1칸 둘),
+  남쪽 문 = `doorS`(성채 `wz-castle-door-s`) 또는 벽 틈, 동·서 문 = 벽 틈. `forest`(마차 승차장): 숲 바닥 + 가운데 흙 공터(`wz-nat-dirt` 오토타일) + 문마다 길, 테두리 나무.
+  `lake`(보트 창고): 위 자갈 땅 · 물가 한 줄 · 얕은 물 두 줄 · 깊은 물, 보트 창고 + 진수대, 부두(남쪽 문은 맵 끝까지 이어지는 부두).
+- **층.** 1층 바닥·물·F/X 조각, 2층 밟는 덧그림(러너·깔개·얼룩), 3층 벽·가구, 4층 벽에 건 물건(`wallTop` 0~3)·탁상 소품(`with` 짝).
+  벽에 거는 가구는 벽 칸 위 4층에 그려 통행은 벽이 정한다. 아래층만 있는 칸(계단 등)을 벽 줄에 찍으면 그 칸의 벽을 걷어낸다.
+- **통행.** 가구 후보마다 엔진 규칙 `passabilityOf`(위층부터 ★ 건너뛰기)로 주 출입구 안쪽 칸에서 BFS 한다. 조각이 덮지 않은 걸을 칸이 갈리거나,
+  출입구 접근칸(문 칸 + 안쪽 두 줄)·러너를 덮거나, 앞서 놓은 가구의 앞 칸(벽 쪽 가구는 옆 칸)이 끊기면 그 후보를 버린다.
+  마지막 불변식: 걸을 칸 한 덩이, 모든 `doorCells`·`spawn` 이 그 안. 조각 안에만 갇힌 ★ 칸(벽에 건 서가 윗줄)은 `pockets` 로만 센다.
+- **바닥·벽 밝기 관문.** `space_recipes.py` 는 실내 공간(변형 포함)마다 바닥(1×1 조각·오토타일 255 칸·섞는 타일)과 북벽 벽면(n 키트 둘째 줄부터)의
+  평균 밝기를 표로 찍고, 차가 35 미만이면 사양을 쓰지 않고 멈춘다. 사용자 지적 「벽과 바닥이 구분 안 된다」의 대응이다.
+  그래서 휴게실·마법약·도서관·온실·부엉이 탑은 어두운 슬레이트 `wz-castle-floor-flag`, 병동은 `wz-castle-floor-oak` 를 쓰고,
+  부엉이 탑은 밝은 부엉이 벽 대신 성채 석벽 + 부엉이 창 리듬(벽 묶음 `owlcastle`)이다. 공간 고유 바닥은 관문을 넘을 때만 쓴다.
+- **흩뿌리기 금지 · 배치 방식.** `grid` = 큰 가구(연회 탁자·병상·서가·약 솥·온실 작업대·횃대)를 가운데 통로(러너)를 두고 좌우 대칭 열로,
+  위에서부터 줄 단위로 채운다(쌍은 좌우가 같이 들어가야 하고 `alt` 로 일부를 다른 그림으로, `rowsFrom:"north"` 는 벽에 붙여 시작).
+  `beside` = `near` 키트 옆에 2~4개 덩이(화분은 작업대 옆, 물그릇은 횃대 옆, 자루는 우편함 옆). `edge` = 벽에 붙은 2~4개 덩이.
+  덧그림도 `near` 가 있으면 그 키트 곁에만 덩이로(배설물·깃털은 횃대, 얼룩은 솥, 고사리는 숲 나무, 노는 보트 창고).
+  홀로 선 1×1(`free`/`center`)은 방마다 2개까지. grid 는 자리가 모자라도 한 줄이라도 들어가면 경고하지 않는다.
+- **결정론.** 같은 `seed`·인자 = 같은 맵. `density` sparse/normal/full 이 레시피 `count` 사이 값을 고르고 넓이로 늘린다. 레시피 최소에 못 미치면 경고 `FURNITURE_SHORT`.
+- **맵 대상.** `mapId` 가 빈 맵이면 칩셋을 바꿔 그 맵에, 그린 맵이면 `overwrite:true` 필요. `mapId` 없으면 `create_map` 도구 경로로 새 맵(맵 트리·BGM·시작 맵).
+  오류(`WIZARDING_ISSUE_CODES`)가 하나라도 있으면 맵을 만들거나 바꾸지 않는다. 칩셋 계열 검사는 실행기(`toolRunner`)가 한다.
+- **배선.** `toolRegistry.ts`(tile) · `capabilityEscalation.ts`(짝 승격) · `toolCapabilityIndex.ts`(레시피 `wizarding`) · `workItemOutcome.ts`(맵 만드는 도구) ·
+  `proposalCompleteness.ts`(실내 도구) · `intentDeclaration.ts`(의도 도구) · `scripts/lib/piTeamRuntime.ts`(첫 장소 도구) · `docs/tool-catalog.md` · 스킬 `interior-room-authoring` 9번.
+- **확인(2026-10-07).** 13공간 + shared 변형 2(corridor·common) × 시드 1~3, 기본 크기·auto 가구: 전부 한 덩이·출입구 도달·오류 0(엔진 `passabilityOf` 로 따로 BFS).
+  밝기 관문 최소 차 37.7(성채 슬레이트 바닥 68.5 대 성채 벽 106.3).
+  레시피를 고치면 `space_recipes.py` 를 다시 돌리고 같은 검사를 한다.
+
 ## 한계
 
 - 탈것(마차·보트·세스트랄)은 프로젝트 데이터로 갈아탈 수 없어 정적 키트다. 큰 생물은 캐릭터 시트(24×32 고정)로 못 넣는다.
