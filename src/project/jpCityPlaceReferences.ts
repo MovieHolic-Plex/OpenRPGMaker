@@ -106,5 +106,56 @@ export const JP_CITY_PLACE_REFERENCES = [
       "탈것은 set_map_transit auto { traffic:true, tram:true, tramStops:[{x: 섬 가운데, y: 그 궤도 윗행, at:\"center\", board}] } — 차도 띠는 북 차로 동쪽행·남 차로 서쪽행 일방 둘, 복선 전차 두 방향, 각 전차가 자기 섬 옆에 서서 「조사」로 탄다(서쪽행 → 駅前, 동쪽행 → 学校前). 지하철 출입구 계단 두 칸 → 콘코스."
     ],
     "limitations": "건물은 북쪽 한 줄(남쪽은 보도 끝에서 맵이 끝난다, 건물 사이 틈·뒤는 자갈 뒷마당). 교차로·신호 주기·우회전 차 없음 — 보행 신호는 빨강 고정 그림이고 차·전차는 주인공 앞에서만 선다. 자동 생성 프리셋이 아니다."
+  },
+  {
+    "id": "jp-city-house-interior-21x15",
+    "name": "일본 2층 단독주택 실내(1층·2층)",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 1,
+    "x": 0,
+    "y": 0,
+    "width": 21,
+    "height": 15,
+    "tilesetId": "jp_city",
+    "preview": "/assets/region-references/jp-city-house.png",
+    "tilesetPreview": "/assets/jp-city/jp-city-chipset.png",
+    "projectDownload": "/assets/region-references/jp-city-house.oprn.json",
+    "sourceProjectId": "oprn-bundled-jp-city-house",
+    "sourceMapId": "jp-city-house-1f",
+    "snapshotProjectId": "oprn-place-jp-city-house-v1",
+    "rules": [
+      "1층: 현관(타타키+아가리카마치 띠·신발장) → 복도 북쪽 벽 계단, 서쪽 화실(도코노마·불단·좌탁), 동쪽 LDK(대면 부엌 카운터·식탁·TV), 북쪽 물 쓰는 곳(욕실·탈의실·화장실).",
+      "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 문.",
+      "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."
+    ],
+    "limitations": [
+      "현관 밖 이동은 비어 있다 — 거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다."
+    ]
+  },
+  {
+    "id": "jp-city-apartment-1k-12x13",
+    "name": "일본 원룸 아파트(1K) 실내",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 1,
+    "x": 0,
+    "y": 0,
+    "width": 12,
+    "height": 13,
+    "tilesetId": "jp_city",
+    "preview": "/assets/region-references/jp-city-apartment-1k.png",
+    "tilesetPreview": "/assets/jp-city/jp-city-chipset.png",
+    "projectDownload": "/assets/region-references/jp-city-apartment-1k.oprn.json",
+    "sourceProjectId": "oprn-bundled-jp-city-apartment-1k",
+    "sourceMapId": "jp-city-apartment-1k",
+    "snapshotProjectId": "oprn-place-jp-city-apartment-1k-v1",
+    "rules": [
+      "현관 타타키(좁은 신발장) → 부엌 복도(싱크·가스대·냉장고·세탁기) · 서쪽 유닛 배스(욕조+변기) · 북쪽 방(침대·TV·좌탁).",
+      "평면·가구는 tiledata/jp-city/interior/examples/apartment-1k.json."
+    ],
+    "limitations": [
+      "현관 밖 이동은 비어 있다."
+    ]
   }
 ] as const;

@@ -85,12 +85,12 @@ if (process.argv.includes("--publish")) {
   let snap = fs.readFileSync(snapPath, "utf8");
   // 집은 1층·2층을 한 다운로드에(계단 이동이 이어지게), 원룸은 혼자.
   const groups = [
-    { file: "house", placeId: "jp-city-house-interior-22x15", name: "일본 2층 단독주택 실내(1층·2층)", maps: [HOUSE_1F, HOUSE_2F], main: HOUSE_1F,
+    { file: "house", placeId: "jp-city-house-interior-21x15", name: "일본 2층 단독주택 실내(1층·2층)", maps: [HOUSE_1F, HOUSE_2F], main: HOUSE_1F,
       rules: ["1층: 현관(타타키+아가리카마치 띠·신발장) → 복도 북쪽 벽 계단, 서쪽 화실(도코노마·불단·좌탁), 동쪽 LDK(대면 부엌 카운터·식탁·TV), 북쪽 물 쓰는 곳(욕실·탈의실·화장실).",
         "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 문.",
         "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."],
       limitations: ["현관 밖 이동은 비어 있다 — 거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다."] },
-    { file: "apartment-1k", placeId: "jp-city-apartment-1k-11x14", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT,
+    { file: "apartment-1k", placeId: "jp-city-apartment-1k-12x13", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT,
       rules: ["현관 타타키(좁은 신발장) → 부엌 복도(싱크·가스대·냉장고·세탁기) · 서쪽 유닛 배스(욕조+변기) · 북쪽 방(침대·TV·좌탁).",
         "평면·가구는 tiledata/jp-city/interior/examples/apartment-1k.json."],
       limitations: ["현관 밖 이동은 비어 있다."] },
