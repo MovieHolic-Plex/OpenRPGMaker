@@ -38,14 +38,21 @@ function uniqueEventId(project: Project, base: string): string {
   return id;
 }
 
-/** 실내 맵의 출입구 틈: 맨 아래 줄(맵 끝)에서 걸을 수 있는 칸들. 없으면 아래에서부터 처음 걸을 수 있는 줄. */
+/** 실내 맵의 출입구 틈: 맨 아래 줄(맵 끝)에서 걸을 수 있는 칸 중 이어진 첫 덩이(현관 문턱 한 군데). 맨 아래 줄에 틈이 없으면 빈 배열. */
 export function interiorExitCells(project: Project, map: GameMap): Cell[] {
-  for (let y = map.height - 1; y >= Math.max(0, map.height - 3); y--) {
-    const row: Cell[] = [];
-    for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, y)) row.push({ x, y });
-    if (row.length) return row.slice(0, 3);
+  const y = map.height - 1;
+  const runs: Cell[][] = [];
+  for (let x = 0; x < map.width; x++) {
+    if (!isPassable(project, map, x, y)) continue;
+    const last = runs[runs.length - 1];
+    if (last && last[last.length - 1]!.x === x - 1) last.push({ x, y });
+    else runs.push([{ x, y }]);
   }
-  return [];
+  // 틈이 여러 군데면 가장 넓은 것(같으면 가운데에 가까운 것)이 정문이다.
+  const cx = (map.width - 1) / 2;
+  const mid = (r: Cell[]) => Math.abs((r[0]!.x + r[r.length - 1]!.x) / 2 - cx);
+  runs.sort((a, b) => b.length - a.length || mid(a) - mid(b));
+  return runs[0] ?? [];
 }
 
 /** 거리 쪽 문 칸·문 앞 접근칸을 정한다. door 가 막힌 문 칸이면 바로 아래가 접근칸, 통행 칸이면 그 칸이 접근칸. */
@@ -81,7 +88,8 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     + "door = 건물 문 칸(build_jp_city_building 의 data.doors, 또는 stamp_object 로 찍은 jp-bldg 키트면 키트 왼쪽 위 + entrance 부품 dx,dy). 문 바로 아래 접근칸을 줘도 된다. "
     + "실내는 place(등록 장소 id — 예 jp-city-apartment-1k-12x13·jp-city-house-interior-21x15·jp-city-konbini-…; read_region_reference 목록에서 jp-city-…-interior/가게 장소) 를 주면 새 맵으로 가져와 잇고(여러 층이면 층마다 맵, 1층에 잇는다), "
     + "이미 가져온·지은 실내 맵이면 interiorMapId(build_hand_interior_room 으로 지은 jp_city 방 포함). 실내 맵은 맵 목록에서 거리 맵 아래로 옮긴다. "
-    + "create_transfer_pair 를 따로 부르지 않는다(그 도구는 막힌 문 칸을 옮겨 버린다). 문 앞에 다른 이벤트가 있으면 거부한다(replace:true 면 바꾼다).",
+    + "create_transfer_pair 를 따로 부르지 않는다(그 도구는 막힌 문 칸을 옮겨 버린다). 문 앞에 다른 이벤트가 있으면 거부한다(replace:true 면 바꾼다). "
+    + "실내 출구 = 실내 맵 맨 아래 줄(맵 끝)의 이어진 통행 칸 한 덩이 — 없으면 no-interior-exit. 여러 층 장소는 1층에만 잇는다(층 사이 계단은 장소에 이미 이어져 있다; 2층 이상에 바깥 문을 따로 달지 않는다).",
   parameters: {
     type: "object",
     properties: {
@@ -137,13 +145,15 @@ export const LINK_JP_CITY_INTERIOR_TOOL: ToolDefinition = {
     const interior = requireMap(draft, interiorId);
     if (interior.id === street.id) throw new ToolError("실내 맵이 거리 맵과 같다", { code: "invalid-args" });
     const exits = interiorExitCells(draft, interior);
-    if (!exits.length) throw new ToolError(`실내 맵 ${interiorId} 맨 아래 세 줄에 걸을 수 있는 출입구 틈이 없다 — 평면 맨 아래 줄에 틈(현관 문턱)을 둔다`, { code: "no-interior-exit", mapId: interiorId });
+    if (!exits.length) throw new ToolError(`실내 맵 ${interiorId} 맨 아래 줄에 걸을 수 있는 출입구 틈이 없다 — 평면 맨 아래 줄(맵 끝)에 틈(현관 문턱)을 둔다`, { code: "no-interior-exit", mapId: interiorId });
     const taken = exits.map((c) => eventAt(interior, c)).filter((e): e is GameEvent => !!e);
     if (taken.length && !replace) throw new ToolError(`실내 출입구 틈 ${taken.map((e) => `(${e.x},${e.y})`).join(" ")} 에 이미 이벤트가 있다 — 다른 문과 이미 이어졌다. replace:true 면 바꾼다`, { code: "exit-event-exists", mapId: interiorId });
-    // 도착: 틈 가운데 칸의 바로 위(발판을 다시 밟지 않게).
+    // 도착: 틈 가운데 칸의 바로 위(발판을 다시 밟지 않게) — 다른 이벤트·출입구 칸은 피한다.
     const mid = exits[Math.floor(exits.length / 2)]!;
-    const inLanding = [{ x: mid.x, y: mid.y - 1 }, ...exits.map((c) => ({ x: c.x, y: c.y - 1 }))].find((c) => inside(interior, c) && isPassable(draft, interior, c.x, c.y));
-    if (!inLanding) throw new ToolError(`실내 출입구 틈 바로 위가 막혀 있다 — 현관 안쪽 칸을 비운다`, { code: "no-interior-landing", mapId: interiorId });
+    const exitSet = new Set(exits.map((c) => `${c.x},${c.y}`));
+    const inLanding = [{ x: mid.x, y: mid.y - 1 }, ...exits.map((c) => ({ x: c.x, y: c.y - 1 })), ...exits.map((c) => ({ x: c.x, y: c.y - 2 }))]
+      .find((c) => inside(interior, c) && isPassable(draft, interior, c.x, c.y) && !exitSet.has(`${c.x},${c.y}`) && !eventAt(interior, c));
+    if (!inLanding) throw new ToolError(`실내 출입구 틈 바로 위(두 칸까지)가 막혔거나 다른 이벤트가 있다 — 현관 안쪽 칸을 비운다`, { code: "no-interior-landing", mapId: interiorId });
 
     if (olds.length) street.events = (street.events ?? []).filter((e) => !olds.includes(e));
     if (taken.length) interior.events = (interior.events ?? []).filter((e) => !taken.includes(e));
