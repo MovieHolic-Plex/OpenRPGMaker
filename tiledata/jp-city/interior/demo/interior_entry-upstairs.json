@@ -20,11 +20,6 @@
    "y": 0
   },
   {
-   "id": "fusuma",
-   "x": 4,
-   "y": 0
-  },
-  {
    "id": "light-switch",
    "x": 6,
    "y": 0
@@ -32,11 +27,6 @@
   {
    "id": "window-sash-small",
    "x": 7,
-   "y": 0
-  },
-  {
-   "id": "toilet-door",
-   "x": 8,
    "y": 0
   }
  ]

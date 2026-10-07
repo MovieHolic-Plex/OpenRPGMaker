@@ -109,7 +109,8 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         attrs: { type: "button", "aria-pressed": String(selected?.id === card.id) },
         dataset: { cardId: card.id, testid: `spatial-card-${card.id}`, source: card.source },
         children: [art, el("strong", { text: card.name }), el("span", {
-          text: card.source === "default" ? "공용 오브젝트" : card.compatibility ? "방 템플릿" : "내가 만든 항목",
+          // 분류가 있으면(공용 카탈로그 분류·일본 실내 방 분류) 그걸 보인다 — 출처는 위 출처 칩이 이미 거른다.
+          text: card.subtitle ?? (card.source === "default" ? "공용 오브젝트" : card.compatibility ? "방 템플릿" : "내가 만든 항목"),
         })],
         on: { click: () => {
           state.railScrollTop = rail.scrollTop;

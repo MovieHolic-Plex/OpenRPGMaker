@@ -34,6 +34,7 @@ def build_spec(pins=None, regs=None):
             spec['tables'][k] = dict(t, pieces={p: [[dx, dy, n(loc), layer] for dx, dy, loc, layer in cells] for p, cells in t['pieces'].items()})
         for k, g in it['goods'].items(): spec['goods'][k] = n(g)
     assert spec['void'] is not None, 'interior_shell 의 공허 칸이 없다'
+    import categories; categories.check(spec['objects'], complete=True)   # 분류표 = 가구 전부, 남는 id 없음
     if os.path.exists(ROOMS): spec['rooms'] = json.load(open(ROOMS, encoding='utf-8'))
     return spec
 

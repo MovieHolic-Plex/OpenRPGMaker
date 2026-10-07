@@ -22,6 +22,11 @@ export interface RegionReferenceScene {
   /** Uploaded images the tileset (or its grafts) draws from, keyed by asset id. */
   readonly assets: Project["assets"]["uploaded"];
   readonly source: "download" | "snapshot" | "reviewed";
+  /**
+   * 같은 건물의 다른 층 — 내려받기 안에서 `map` 의 이동 이벤트로 (건너건너) 이어지고 타일셋이 같은 맵들.
+   * 새 맵으로 가져오면 함께 새 맵이 되고, 층 사이 이동 이벤트도 새 id 로 고쳐 실린다.
+   */
+  readonly floors?: readonly GameMap[];
 }
 
 type DownloadProject = {
@@ -63,7 +68,30 @@ function sceneFromDownload(id: string, data: DownloadProject): RegionReferenceSc
   if (tileset.image.type === "uploaded") assetIds.add(tileset.image.id);
   for (const graft of tileset.tileGrafts ?? []) if (uploaded[graft.sourceChipset]) assetIds.add(graft.sourceChipset);
   const assets = Object.fromEntries([...assetIds].filter(assetId => uploaded[assetId]).map(assetId => [assetId, uploaded[assetId]!]));
-  return { referenceId: id, name: reference.name, map, tileset, assets, source: "download" };
+  const floors = linkedFloors(map, data.maps);
+  return { referenceId: id, name: reference.name, map, tileset, assets, source: "download", ...(floors.length ? { floors } : {}) };
+}
+
+/** Map ids an event list points at (transfer and any other command carrying a mapId). */
+function eventMapIds(events: readonly GameEvent[] | undefined): string[] {
+  return [...JSON.stringify(events ?? []).matchAll(/"mapId":"([^"]+)"/g)].map(match => match[1]!);
+}
+
+/** Maps reachable from `start` through events, on the same tileset — the other floors of one building. */
+function linkedFloors(start: GameMap, maps: Readonly<Record<string, GameMap>>): GameMap[] {
+  const seen = new Set([start.id as string]);
+  const queue: GameMap[] = [start];
+  const floors: GameMap[] = [];
+  while (queue.length) {
+    for (const mapId of eventMapIds(queue.shift()!.events)) {
+      const next = maps[mapId];
+      if (!next || seen.has(mapId) || next.tilesetId !== start.tilesetId) continue;
+      seen.add(mapId);
+      floors.push(next);
+      queue.push(next);
+    }
+  }
+  return floors;
 }
 
 async function loadScene(id: string): Promise<RegionReferenceScene> {
@@ -318,6 +346,8 @@ export interface ReferenceImportResult {
   readonly eventsCopied: number;
   readonly eventsSkipped: number;
   readonly extraLayers: string[];
+  /** New maps made for the scene's other floors (new-map mode), in scene order. */
+  readonly floorMapIds: string[];
 }
 
 function freshMapId(project: Project, base: string): string {
@@ -341,6 +371,15 @@ function appendToMapTree(project: Project, mapId: string): void {
   }
 }
 
+/** Floors hang under the building's first map in the map tree. */
+function appendFloorToMapTree(project: Project, parentId: string, mapId: string): void {
+  const find = (node: Project["mapTree"]): Project["mapTree"] | undefined =>
+    node.mapId === parentId ? node : node.children.map(find).find(Boolean);
+  const parent = find(project.mapTree);
+  if (parent) parent.children.push({ mapId: mapId as MapId, children: [] });
+  else appendToMapTree(project, mapId);
+}
+
 /** Install the tileset, then create a map from the scene or paste it into `target.mapId` at (x, y). */
 export function importReferenceScene(project: Project, scene: RegionReferenceScene, target: ReferenceImportTarget = {}): ReferenceImportResult {
   const source = scene.map;
@@ -358,34 +397,62 @@ export function importReferenceScene(project: Project, scene: RegionReferenceSce
   if (target.mapId === undefined) {
     const mapId = target.newMapId ?? freshMapId(project, `map_ref_${scene.referenceId.replace(/[^a-z0-9]+/gi, "_")}`);
     if (project.maps[mapId]) throw new Error(`이미 있는 맵 id 입니다: ${mapId}`);
-    const events = target.includeEvents ? source.events ?? [] : [];
-    const kept = events.filter(event => !referencesMissingMap(event, project, new Set([source.id])))
-      .map(event => JSON.parse(JSON.stringify(event).replaceAll(`"mapId":"${source.id}"`, `"mapId":"${mapId}"`)) as GameEvent);
-    const map: GameMap = {
-      id: mapId as MapId,
-      name: target.name ?? scene.name,
-      width: source.width,
-      height: source.height,
-      tilesetId: tileset.tilesetId as TilesetId,
-      tileSize: project.tilesets[tileset.tilesetId]!.tileSize,
-      lowerTiles: [...source.lowerTiles],
-      upperTiles: [...source.upperTiles],
-      events: kept,
+    // 층이 있는 장소는 층마다 새 맵 — 원본 id → 새 id 표로 층 사이 이동 이벤트를 고쳐 싣는다.
+    const floors = source.worldmapSource ? [] : scene.floors ?? [];
+    const renamed = new Map<string, string>([[source.id, mapId]]);
+    for (const floor of floors) {
+      let floorId = `${mapId}:${floor.id}`, suffix = 2;
+      while (project.maps[floorId] || [...renamed.values()].includes(floorId)) floorId = `${mapId}:${floor.id}_${suffix++}`;
+      renamed.set(floor.id, floorId);
+    }
+    const floorIds = new Set(floors.map(floor => floor.id as string));
+    const rename = (event: GameEvent): GameEvent => {
+      let json = JSON.stringify(event);
+      for (const [from, to] of renamed) json = json.replaceAll(`"mapId":"${from}"`, `"mapId":${JSON.stringify(to)}`);
+      return JSON.parse(json) as GameEvent;
     };
-    const extras = map as GameMap & ExtraLayerFields;
-    for (const key of extraLayers) (extras as unknown as Record<string, unknown>)[key] = structuredClone(sourceExtras[key]);
+    // includeEvents 가 없어도 층 사이 이동(다른 층만 가리키는 이벤트)은 싣는다 — 그게 없으면 층이 이어지지 않는다.
+    const carry = (events: readonly GameEvent[] | undefined) => (events ?? []).filter(event => {
+      const refs = eventMapIds([event]);
+      const linksFloors = refs.length > 0 && refs.every(ref => floorIds.has(ref) || ref === source.id);
+      return (target.includeEvents || linksFloors) && !referencesMissingMap(event, project, new Set(renamed.keys()));
+    }).map(rename);
+    const layersOf = (from: GameMap, toId: string, tilesetId: string, name: string): GameMap => {
+      const fromExtras = from as GameMap & ExtraLayerFields;
+      const made: GameMap = {
+        id: toId as MapId, name, width: from.width, height: from.height,
+        tilesetId: tilesetId as TilesetId, tileSize: project.tilesets[tilesetId]!.tileSize,
+        lowerTiles: [...from.lowerTiles], upperTiles: [...from.upperTiles], events: carry(from.events),
+      };
+      for (const key of EXTRA_LAYER_KEYS.filter(k => Array.isArray(fromExtras[k]))) {
+        ((made as GameMap & ExtraLayerFields) as unknown as Record<string, unknown>)[key] = structuredClone(fromExtras[key]);
+      }
+      if (from.characterScale !== undefined) made.characterScale = from.characterScale;
+      if (from.locations) made.locations = structuredClone(from.locations);
+      return made;
+    };
+    const baseName = target.name ?? scene.name;
+    const map = layersOf(source, mapId, tileset.tilesetId, floors.length ? `${baseName} · ${source.name}` : baseName);
     // A whole world map remains editable with its original geography and character size.
     if (source.worldmapSource) map.worldmapSource = structuredClone(source.worldmapSource);
-    if (source.characterScale !== undefined) map.characterScale = source.characterScale;
-    if (source.locations) map.locations = structuredClone(source.locations);
     project.maps[mapId] = map;
     appendToMapTree(project, mapId);
+    const floorMapIds: string[] = [];
+    for (const floor of floors) {
+      const floorTileset = installReferenceTileset(project, { ...scene, map: floor });
+      const floorId = renamed.get(floor.id)!;
+      project.maps[floorId] = layersOf(floor, floorId, floorTileset.tilesetId, `${baseName} · ${floor.name}`);
+      appendFloorToMapTree(project, mapId, floorId);
+      floorMapIds.push(floorId);
+    }
     if (!project.maps[project.startMapId]) {
       project.startMapId = mapId as MapId;
       project.startPos = { x: Math.floor(map.width / 2), y: Math.floor(map.height / 2) };
     }
+    const all = [source, ...floors];
+    const copied = [map, ...floorMapIds.map(id => project.maps[id]!)].reduce((sum, made) => sum + (made.events?.length ?? 0), 0);
     return { mapId, created: true, rect: { x: 0, y: 0, width: map.width, height: map.height }, clipped: false, tileset,
-      eventsCopied: kept.length, eventsSkipped: (source.events ?? []).length - kept.length, extraLayers };
+      eventsCopied: copied, eventsSkipped: all.reduce((sum, from) => sum + (from.events?.length ?? 0), 0) - copied, extraLayers, floorMapIds };
   }
   const map = project.maps[target.mapId];
   if (!map) throw new Error(`맵을 찾을 수 없습니다: ${target.mapId}`);
@@ -416,5 +483,5 @@ export function importReferenceScene(project: Project, scene: RegionReferenceSce
   }
   const x = Math.max(0, x0), y = Math.max(0, y0);
   const rect = { x, y, width: Math.min(map.width, x0 + source.width) - x, height: Math.min(map.height, y0 + source.height) - y };
-  return { mapId: map.id, created: false, rect, clipped, tileset, eventsCopied: 0, eventsSkipped: (source.events ?? []).length, extraLayers };
+  return { mapId: map.id, created: false, rect, clipped, tileset, eventsCopied: 0, eventsSkipped: (source.events ?? []).length, extraLayers, floorMapIds: [] };
 }
