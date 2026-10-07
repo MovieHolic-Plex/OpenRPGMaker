@@ -3,26 +3,34 @@
   "id": "jp-city-supermarket",
   "size": [
    16,
-   12
+   17
   ]
  },
  "start": [
   8,
-  10
+  15
  ],
- "summary": "손 도트 실내 '일본 동네 슈퍼 실내' 16×12 (jp-city-supermarket, jp_city) — 출입구에서 닿는 칸 62, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 슈퍼 실내' 16×17 (jp-city-supermarket, jp_city) — 출입구에서 닿는 칸 83, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-supermarket",
   "tilesetId": "jp_city",
   "width": 16,
-  "height": 12,
-  "reachable": 62,
-  "floorCells": 114,
+  "height": 17,
+  "reachable": 83,
+  "floorCells": 145,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 8,
-    "y": 10
+    "y": 15
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 7,
+    "y": 16,
+    "width": 2
    }
   ],
   "links": 0,
@@ -30,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 62,
+ "reach": 83,
  "ok": true
 }

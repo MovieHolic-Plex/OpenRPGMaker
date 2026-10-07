@@ -25,6 +25,14 @@
     "y": 6
    }
   ],
+  "exitWidth": 1,
+  "exits": [
+   {
+    "x": 7,
+    "y": 7,
+    "width": 1
+   }
+  ],
   "links": 0,
   "warnings": []
  },

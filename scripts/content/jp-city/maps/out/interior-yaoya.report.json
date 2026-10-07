@@ -3,26 +3,34 @@
   "id": "jp-city-yaoya",
   "size": [
    10,
-   11
+   16
   ]
  },
  "start": [
   6,
-  9
+  14
  ],
- "summary": "손 도트 실내 '일본 동네 채소가게 실내' 10×11 (jp-city-yaoya, jp_city) — 출입구에서 닿는 칸 38, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 채소가게 실내' 10×16 (jp-city-yaoya, jp_city) — 출입구에서 닿는 칸 52, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-yaoya",
   "tilesetId": "jp_city",
   "width": 10,
-  "height": 11,
-  "reachable": 38,
-  "floorCells": 59,
+  "height": 16,
+  "reachable": 52,
+  "floorCells": 78,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 6,
-    "y": 9
+    "y": 14
+   }
+  ],
+  "exitWidth": 3,
+  "exits": [
+   {
+    "x": 6,
+    "y": 15,
+    "width": 3
    }
   ],
   "links": 0,
@@ -30,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 38,
+ "reach": 52,
  "ok": true
 }

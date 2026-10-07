@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 10185,
+  "count": 10217,
   "tilesPerRow": 48,
   "rows": 213,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 6698,
+  "block_cells": 6730,
   "legacy": 350,
   "legacy_ids": [
    5137,
@@ -45,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 6698
+   "block": 6730
   }
  },
  "pc_counts": {
-  "star": 5058,
-  "solid": 2005,
-  "floor": 1634,
+  "star": 5062,
+  "solid": 2008,
+  "floor": 1659,
   "solidfloor": 480,
   "flat": 503,
   "blank": 155
  },
  "kits": {
-  "total": 686,
+  "total": 689,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 510
+   "block-kit": 513
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 510
+  "block_kit": 513
  },
  "groups": {
   "total": 248,
@@ -217,7 +217,7 @@
    },
    {
     "name": "interior_shell",
-    "cells": 568,
+    "cells": 593,
     "autotiles": 0,
     "groups": 13,
     "kits": 0,
@@ -281,11 +281,11 @@
    },
    {
     "name": "interior_food",
-    "cells": 347,
+    "cells": 354,
     "autotiles": 0,
     "groups": 5,
-    "kits": 26,
-    "notes": "음식점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 26 · 탁자 2 · 탁상 7"
+    "kits": 29,
+    "notes": "음식점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 29 · 탁자 2 · 탁상 8"
    },
    {
     "name": "interior_shop",
@@ -314,7 +314,7 @@
   ]
  },
  "reassembly": {
-  "kits_checked": 686,
+  "kits_checked": 689,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -371,7 +371,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 246
+   "in": 249
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -381,8 +381,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10185,
-  "kits_checked": 686,
+  "tiles_checked": 10217,
+  "kits_checked": 689,
   "groups_checked": 248,
   "autotiles_checked": 17
  },
@@ -398,10 +398,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "c84ae9ac8082cccc617270493f4703c96628fac7",
+ "sheet_hash": "2034a28b6cf418e114df79043f049132402e98e6",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 686,
+  "kits_checked": 689,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -458,7 +458,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 246
+   "in": 249
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -468,8 +468,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10185,
-  "kits_checked": 686,
+  "tiles_checked": 10217,
+  "kits_checked": 689,
   "groups_checked": 248,
   "autotiles_checked": 17
  },

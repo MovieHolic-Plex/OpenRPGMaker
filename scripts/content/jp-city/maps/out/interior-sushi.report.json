@@ -2,27 +2,35 @@
  "map": {
   "id": "jp-city-sushi",
   "size": [
-   10,
-   9
+   11,
+   11
   ]
  },
  "start": [
-  4,
-  7
+  3,
+  8
  ],
- "summary": "손 도트 실내 '일본 초밥집 실내' 10×9 (jp-city-sushi, jp_city) — 출입구에서 닿는 칸 26, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 초밥집 실내' 11×11 (jp-city-sushi, jp_city) — 출입구에서 닿는 칸 31, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-sushi",
   "tilesetId": "jp_city",
-  "width": 10,
-  "height": 9,
-  "reachable": 26,
-  "floorCells": 42,
+  "width": 11,
+  "height": 11,
+  "reachable": 31,
+  "floorCells": 45,
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 4,
-    "y": 7
+    "x": 3,
+    "y": 8
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 2,
+    "y": 10,
+    "width": 2
    }
   ],
   "links": 0,
@@ -30,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 26,
+ "reach": 31,
  "ok": true
 }

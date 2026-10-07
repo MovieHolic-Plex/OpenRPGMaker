@@ -25,6 +25,8 @@
     "y": 10
    }
   ],
+  "exitWidth": 1,
+  "exits": [],
   "links": 2,
   "warnings": []
  },

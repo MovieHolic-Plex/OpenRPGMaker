@@ -967,8 +967,24 @@
    "supermarket",
    [
     [
+     "cv-back-shelf",
+     5
+    ],
+    [
+     "kitchen-sink",
+     1
+    ],
+    [
+     "cv-trash",
+     2
+    ],
+    [
+     "sh-noren",
+     1
+    ],
+    [
      "cv-cooler",
-     8
+     7
     ],
     [
      "cv-open-case",
@@ -1011,10 +1027,6 @@
      1
     ],
     [
-     "cv-trash",
-     1
-    ],
-    [
      "cv-autodoor",
      1
     ]
@@ -1042,10 +1054,6 @@
      1
     ],
     [
-     "fd-fridge",
-     1
-    ],
-    [
      "fd-menu-board",
      2
     ],
@@ -1059,11 +1067,11 @@
     ],
     [
      "fd-stool",
-     4
+     5
     ],
     [
      "fd-counter",
-     3
+     2
     ]
    ]
   ],
@@ -1078,38 +1086,54 @@
     ],
     [
      "fd-fryer",
-     1
+     2
     ],
     [
      "fd-prep",
-     1
-    ],
-    [
-     "fd-sink",
-     1
-    ],
-    [
-     "fd-stockpot",
-     1
+     2
     ],
     [
      "fd-sake-shelf",
      1
     ],
     [
-     "fd-beer-crates",
-     1
-    ],
-    [
-     "fd-noren",
-     1
-    ],
-    [
      "fd-lantern",
-     2
+     3
+    ],
+    [
+     "sh-noren",
+     1
+    ],
+    [
+     "toilet",
+     1
+    ],
+    [
+     "toilet-mat",
+     1
+    ],
+    [
+     "toilet-slippers",
+     1
+    ],
+    [
+     "toilet-paper",
+     1
+    ],
+    [
+     "toilet-handwash",
+     1
+    ],
+    [
+     "door-open-toilet",
+     1
     ],
     [
      "fd-menu-board",
+     1
+    ],
+    [
+     "window-sash",
      1
     ],
     [
@@ -1129,16 +1153,16 @@
      1
     ],
     [
-     "fd-chair-e",
-     1
+     "fd-chair-w",
+     2
     ],
     [
-     "fd-chair-w",
-     1
+     "fd-chair-e",
+     2
     ],
     [
      "fd-counter",
-     1
+     4
     ],
     [
      "fd-table",
@@ -1156,28 +1180,28 @@
      1
     ],
     [
-     "fd-prep",
+     "fd-rice-tub",
      1
     ],
     [
-     "fd-sink",
+     "fd-grill-range",
      1
     ],
     [
-     "fd-stockpot",
+     "fd-cutting-block",
      1
-    ],
-    [
-     "fd-menu-board",
-     2
     ],
     [
      "fd-noren",
      1
     ],
     [
-     "fd-neta-case",
+     "fd-menu-board",
      3
+    ],
+    [
+     "fd-lantern",
+     1
     ],
     [
      "fd-register",
@@ -1185,7 +1209,15 @@
     ],
     [
      "fd-stool",
-     5
+     3
+    ],
+    [
+     "fd-zashiki",
+     1
+    ],
+    [
+     "zataku",
+     1
     ],
     [
      "fd-counter",
@@ -1199,15 +1231,11 @@
    "kissaten",
    [
     [
-     "fd-menu-board",
-     1
-    ],
-    [
      "window-sash",
-     1
+     2
     ],
     [
-     "fd-lantern",
+     "fd-menu-board",
      1
     ],
     [
@@ -1227,20 +1255,20 @@
      1
     ],
     [
-     "fd-register",
-     1
-    ],
-    [
-     "fd-stool",
-     3
-    ],
-    [
      "fd-chair-s",
      2
     ],
     [
-     "fd-table",
+     "fd-chair-w",
+     3
+    ],
+    [
+     "fd-chair-e",
      1
+    ],
+    [
+     "fd-table",
+     3
     ]
    ]
   ],
@@ -1412,7 +1440,15 @@
    [
     [
      "sh-flower-cooler",
-     3
+     6
+    ],
+    [
+     "sh-stock-shelf",
+     2
+    ],
+    [
+     "sh-noren",
+     1
     ],
     [
      "sh-wall-shelf",
@@ -1450,6 +1486,22 @@
    "yaoya",
    [
     [
+     "sh-basket-shelf",
+     7
+    ],
+    [
+     "sh-stock-shelf",
+     1
+    ],
+    [
+     "sh-crate-stack",
+     7
+    ],
+    [
+     "sh-noren",
+     1
+    ],
+    [
      "sh-counter",
      2
     ],
@@ -1458,16 +1510,8 @@
      1
     ],
     [
-     "sh-basket-shelf",
-     5
-    ],
-    [
      "sh-veg-stand",
      3
-    ],
-    [
-     "sh-crate-stack",
-     5
     ],
     [
      "sh-fruit-box",
