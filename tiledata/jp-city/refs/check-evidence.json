@@ -68,7 +68,7 @@
    "name": "일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5)",
    "documents": 7,
    "images": 16,
-   "chars": 83954
+   "chars": 84085
   },
   {
    "id": "jp-errors",
@@ -82,7 +82,7 @@
   "categories": 11,
   "documents": 68,
   "images": 184,
-  "chars": 748203,
+  "chars": 748334,
   "maxDocChars": 52855,
   "maxImagePx": 820
  },
@@ -110,7 +110,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "848910f3ec8f2a794d6e0047f2239313359d46ed2c2a4a2885c484d0c39184c5",
-  "images": "0d0d69bc4720218b40704a01227a18cfb27a18e86b51b58e004602906cdd5513"
+  "json": "40003e137ff14f61ca666f207b49b6a6fd031db49fe8807b767af938770ac9f4",
+  "images": "f304f9e0898d52fec9b3fe910e3820d3f398c01f4925d8b3fd7efe71222b7089"
  }
 }

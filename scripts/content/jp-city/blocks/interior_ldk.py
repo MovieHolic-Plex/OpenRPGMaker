@@ -292,7 +292,7 @@ def tv_board(c):
 
 
 @R.obj('rug', '러그', 3, 2, kind='flat', desc='거실 카펫. 차분한 회청색 테두리와 연한 크림 안쪽에 회청 마름모 줄무늬, 크림 술. 걸어 지나간다.',
-       tags=('거실',), place='소파·좌탁 밑에 깔기', pair=('sofa-s', 'low-table'))
+       tags=('거실',), place='거실·아이방의 빈 바닥에 따로(3칸 폭이라 2칸 좌탁·소파와 가운데가 안 맞는다 — 밑에 깔지 않는다)', pair=('sofa-s', 'low-table'))
 def rug(c):
     W, H = 48, 32
     c.R(1, 1, W - 2, H - 2, K('hodo', 0)); box(c, 1, 1, W - 2, H - 2, K('hodo', -2))
