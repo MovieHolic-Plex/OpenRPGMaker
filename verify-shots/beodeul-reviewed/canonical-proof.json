@@ -1,17 +1,17 @@
 {
   "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
-  "projectDir": "/tmp/rv-proof(assistant-house-entry-e7d2-20261004 사본)",
+  "projectDir": "/tmp/rv-proof",
   "revisionBefore": 25,
   "revision": 26,
-  "sha256": "3488bddfe9eba1a144529230397e322bc9cbaee7d75f7c614e192a41cbbbc3aa",
+  "sha256": "ae7c56771815df0e63cff71867f3d916ff5f6d625c06d2dcd79ac739f292cd36",
   "savedAndReopened": true,
   "freshHasKits": true,
   "blankHasKits": true,
-  "existingGainedKits": 126,
+  "existingGainedKits": 174,
   "mapsAndStartUnchanged": true,
   "oldTilePassabilityUnchanged": true,
   "idempotent": true,
   "referencesIdentical": true,
   "noDataUrls": true,
-  "buildings": 42
+  "buildings": 58
 }

@@ -540,5 +540,213 @@
    "h": 32
   },
   "round": 8
+ },
+ "r9-building-01": {
+  "id": "r9-building-01",
+  "name": "작은 돌집",
+  "width": 64,
+  "height": 112,
+  "entrance": {
+   "x": 32,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-02": {
+  "id": "r9-building-02",
+  "name": "길게 누운 지붕의 농가",
+  "width": 128,
+  "height": 112,
+  "entrance": {
+   "x": 64,
+   "y": 80,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-03": {
+  "id": "r9-building-03",
+  "name": "높은 본채와 낮은 부엌집",
+  "width": 144,
+  "height": 144,
+  "entrance": {
+   "x": 32,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-05": {
+  "id": "r9-building-05",
+  "name": "삼층 주택",
+  "width": 96,
+  "height": 176,
+  "entrance": {
+   "x": 48,
+   "y": 144,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-06": {
+  "id": "r9-building-06",
+  "name": "높은 돌집과 낮은 살림채",
+  "width": 160,
+  "height": 192,
+  "entrance": {
+   "x": 64,
+   "y": 160,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-07": {
+  "id": "r9-building-07",
+  "name": "두 박공 사이의 넓은 집",
+  "width": 160,
+  "height": 160,
+  "entrance": {
+   "x": 80,
+   "y": 128,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-08": {
+  "id": "r9-building-08",
+  "name": "긴 맨사드 지붕의 연립집",
+  "width": 176,
+  "height": 160,
+  "entrance": {
+   "x": 96,
+   "y": 128,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-10": {
+  "id": "r9-building-10",
+  "name": "꺾인 너와와 낮은 기와채",
+  "width": 176,
+  "height": 144,
+  "entrance": {
+   "x": 48,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-12": {
+  "id": "r9-building-12",
+  "name": "박공 앞면 이층집",
+  "width": 64,
+  "height": 144,
+  "entrance": {
+   "x": 32,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-13": {
+  "id": "r9-building-13",
+  "name": "금빛 기와 사각 지붕집",
+  "width": 128,
+  "height": 144,
+  "entrance": {
+   "x": 64,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-14": {
+  "id": "r9-building-14",
+  "name": "좁고 높은 청회색 삼층집",
+  "width": 80,
+  "height": 176,
+  "entrance": {
+   "x": 32,
+   "y": 144,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-15": {
+  "id": "r9-building-15",
+  "name": "높이가 다른 연립 두 채",
+  "width": 144,
+  "height": 160,
+  "entrance": {
+   "x": 32,
+   "y": 128,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-16": {
+  "id": "r9-building-16",
+  "name": "청회색 본채와 낮은 곁채",
+  "width": 160,
+  "height": 144,
+  "entrance": {
+   "x": 48,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-17": {
+  "id": "r9-building-17",
+  "name": "돌벽 박공 이층집",
+  "width": 64,
+  "height": 144,
+  "entrance": {
+   "x": 32,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-18": {
+  "id": "r9-building-18",
+  "name": "돌벽 올리브 지붕집",
+  "width": 96,
+  "height": 144,
+  "entrance": {
+   "x": 48,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
+ },
+ "r9-building-19": {
+  "id": "r9-building-19",
+  "name": "왼쪽 곁채가 붙은 집",
+  "width": 160,
+  "height": 144,
+  "entrance": {
+   "x": 32,
+   "y": 112,
+   "w": 16,
+   "h": 32
+  },
+  "round": 9
  }
 }

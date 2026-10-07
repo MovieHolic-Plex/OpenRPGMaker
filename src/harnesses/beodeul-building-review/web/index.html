@@ -77,10 +77,12 @@ details.details{font-size:11px;color:var(--dim)}details.details p{margin:4px 0;f
 .workspace{display:block}.rail{border:0;min-height:calc(100dvh - 100px)}.list-wrap{overflow:visible}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.main{display:none}
 .mobile-open{overflow:hidden}.head{flex-wrap:wrap;gap:6px}.nav{order:-1;width:100%}.nav #close{margin-right:auto}.nav #focus{display:none}.mobile-open .main{display:flex;position:fixed;inset:0;z-index:20;background:var(--bg)}.close-mobile{display:inline-flex}.head{padding:10px 12px 6px}.head h1{font-size:18px}.desc{font-size:12px;max-height:36px;overflow:auto}.stage{margin:0 10px;min-height:120px}.tools{padding:7px 10px;gap:7px}.tools .dims,.tools .hint{display:none}
 .dock{grid-template-columns:1fr;gap:8px;padding:8px 10px max(10px,env(safe-area-inset-bottom))}.actions{width:auto}.decide button{min-height:48px}.note textarea{height:42px}.fullscreen .main{display:flex}}
+.store-box{width:min(600px,94vw);max-height:92vh;overflow:auto}.store-note{color:var(--dim);font-size:13px;margin:0 0 12px}.store-step{border:1px solid var(--line2);border-radius:10px;padding:11px 13px;margin:0 0 10px}.store-step b{display:block;margin-bottom:4px}.store-step small{color:var(--dim)}.store-step .row{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.store-step input{flex:1;min-width:180px;padding:7px 9px;border-radius:7px;border:1px solid var(--line2);background:#0b0e0c;color:var(--ink)}.store-state{font-size:12px;margin-left:6px}.store-state.ok{color:#8fdc9a}.store-state.warn{color:#f2c14e}.store-log{font:12px/1.5 ui-monospace,monospace;color:var(--dim);white-space:pre-wrap;margin:8px 0 0;max-height:110px;overflow:auto}.store-box .row{margin-top:10px;display:flex;gap:8px;justify-content:flex-end}
+.top select{padding:6px 9px;border-radius:8px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);margin-left:10px}
 </style></head><body>
-<header class="top"><div class="brand"><b>버들항 건물 검수</b><span>검사 통과 후보만</span></div>
+<header class="top"><div class="brand"><b>버들항 건물 검수</b><span>검사 통과 후보만</span></div><select id="profile" aria-label="타일셋" hidden></select>
 <div class="progress" aria-label="검수 진행"><div class="bar"><i class="a" id="bar-a"></i><i class="d" id="bar-d"></i></div><div class="txt"><span id="counts"></span><span id="remain"></span></div></div>
-<div class="grow"></div><a class="download" id="download" href="api/export" aria-disabled="true">허용분 ZIP ↓</a><button class="icon" id="help-open" aria-label="단축키 도움말" title="단축키 (?)">?</button></header>
+<div class="grow"></div><button class="download" id="store-open" title="허용한 건물을 스토어에 올립니다">스토어에 올리기</button><button class="icon" id="help-open" aria-label="단축키 도움말" title="단축키 (?)">?</button></header>
 <div class="workspace">
 <aside class="rail">
 <nav class="tabs" role="tablist" aria-label="건물 검수 목록"><button id="tab-pending" role="tab" aria-selected="true" aria-controls="list" data-tab="pending"><span id="count-pending">0</span>대기</button><button id="tab-allowed" role="tab" aria-selected="false" aria-controls="list" data-tab="allowed"><span id="count-allowed">0</span>허용</button><button id="tab-denied" role="tab" aria-selected="false" aria-controls="list" data-tab="denied"><span id="count-denied">0</span>거절</button><button id="tab-all" role="tab" aria-selected="false" aria-controls="list" data-tab="all"><span id="count-all">0</span>전체</button></nav>
@@ -104,6 +106,8 @@ details.details{font-size:11px;color:var(--dim)}details.details p{margin:4px 0;f
 <section class="done" id="done" hidden><div><h2 id="done-title">검수 대기 건물이 없습니다</h2><p id="done-copy"></p><div class="row" id="done-actions"></div></div></section>
 </main></div>
 <div class="toast" id="toast" role="status"><i id="toast-dot"></i><span id="toast-text"></span><button id="undo">되돌리기 <kbd>Z</kbd></button></div>
+<div class="help" id="store" hidden><div class="box store-box" role="dialog" aria-modal="true" aria-labelledby="store-title"><h2 id="store-title">허용한 건물을 스토어에 올리기</h2>
+<p class="store-note">사람이 허용한 건물만 한 상품으로 올립니다. 그림이 바뀌면 판본이 하나 더해지고, 같은 내용이면 건너뜁니다.</p><div id="store-body">불러오는 중…</div><div class="row"><button id="store-close">닫기</button></div></div></div>
 <div class="help" id="help" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="help-title"><h2 id="help-title">단축키</h2><dl><dt><kbd>A</kbd> / <kbd>D</kbd></dt><dd>허용 / 거절 (메모 함께 저장)</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>이전 / 다음 건물</dd><dt><kbd>R</kbd></dt><dd>메모대로 고쳐 다시 올리기 (거절로 기록 후 수정 작업 시작)</dd><dt><kbd>Z</kbd></dt><dd>방금 결정 되돌리기</dd><dt><kbd>N</kbd></dt><dd>메모 입력 · <kbd>Esc</kbd> 로 빠져나오기</dd><dt><kbd>Ctrl</kbd>+<kbd>Enter</kbd></dt><dd>메모만 저장</dd><dt><kbd>C</kbd></dt><dd>건물만 ↔ 원본과 비교</dd><dt><kbd>0</kbd>–<kbd>6</kbd></dt><dd>맞춤 / 배율</dd><dt><kbd>G</kbd></dt><dd>픽셀 격자</dd><dt><kbd>F</kbd></dt><dd>목록 숨기고 크게 보기</dd><dt><kbd>?</kbd></dt><dd>이 도움말</dd></dl><p style="margin:14px 0 0;color:var(--mute);font-size:12px">결정은 그림 SHA에 묶입니다. 다시 그린 그림은 새로 검수해야 합니다.</p></div></div>
 <script>
 const BASE=location.pathname.replace(/\/+$/,''),$=s=>document.getElementById(s),names={pending:'미선택',allow:'허용됨',deny:'거절됨'},qs=new URLSearchParams(location.search);
@@ -127,7 +131,7 @@ function disabled(){['allow','deny','reset','save-note'].forEach(id=>$(id).disab
 function summary(){const c=state.counts,total=state.items.length,checking=Math.max(0,state.draftCount-total),done=c.allow+c.deny;
  text('counts',total?`결정 ${done} / ${total}`+(checking?` · 검증 중 ${checking}`:''):'');text('remain',total?(c.pending?`남은 ${c.pending}개`:'모두 결정함'):'');
  $('bar-a').style.width=(total?c.allow/total*100:0)+'%';$('bar-d').style.width=(total?c.deny/total*100:0)+'%';
- $('download').setAttribute('aria-disabled',String(!c.allow));$('download').textContent=c.allow?`허용 ${c.allow}개 ZIP ↓`:'허용분 ZIP ↓';
+ $('store-open').textContent=c.allow?`스토어에 올리기 · 허용 ${c.allow}`:'스토어에 올리기';
  for(const t of Object.keys(tabDecision)){text('count-'+t,t==='all'?total:c[tabDecision[t]]);$('tab-'+t).setAttribute('aria-selected',String(t===tab));$('tab-'+t).tabIndex=t===tab?0:-1}}
 /* ---- cards ---- */
 const cardCache=new Map();
@@ -148,7 +152,7 @@ function listing(){summary();const q=$('search').value.trim().toLowerCase(),f=$(
 function showDone(){const c=state.counts;$('done').hidden=false;
  if(tab==='pending'&&!$('search').value&&$('filter').value==='all'){text('done-title',c.pending?'조건에 맞는 건물이 없습니다':'모든 건물을 검수했습니다');text('done-copy',`허용 ${c.allow} · 거절 ${c.deny}`+(c.allow?' — 허용한 건물을 ZIP으로 받을 수 있습니다.':''))}
  else{text('done-title',$('search').value||$('filter').value!=='all'?'조건에 맞는 건물이 없습니다':tabLabels[tab]+' 건물이 없습니다');text('done-copy','다른 탭이나 필터를 골라 보세요.')}
- const acts=[];if(c.allow){const a=document.createElement('a');a.className='download';a.href=BASE+'/api/export';a.textContent=`허용 ${c.allow}개 ZIP ↓`;acts.push(a)}
+ const acts=[];if(c.allow){const a=document.createElement('button');a.className='download';a.textContent=`스토어에 올리기 · 허용 ${c.allow}`;a.onclick=openStore;acts.push(a)}
  for(const t of ['pending','allowed','denied'])if(t!==tab&&state.counts[tabDecision[t]]){const b=document.createElement('button');b.textContent=tabLabels[t]+' 보기';b.onclick=()=>switchTab(t);acts.push(b)}$('done-actions').replaceChildren(...acts)}
 /* ---- selection ---- */
 function select(n,mobile=false){if(busy||!state?.items.length||!order.includes(n))return;retain();$('review').hidden=false;$('done').hidden=true;index=Math.max(0,Math.min(state.items.length-1,n));const i=current(),at=order.indexOf(index);
@@ -227,11 +231,46 @@ $('prev').onclick=()=>navigate(-1);$('next').onclick=()=>navigate(1);$('close').
 $('search').oninput=()=>reconcile();$('filter').onchange=()=>{tabFilters[tab]=$('filter').value;syncTabUrl();reconcile()};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setView('mode',b.dataset.mode));document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>setView('zoom',b.dataset.zoom));document.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>setView('bg',b.dataset.bg));$('grid').onchange=draw;
 function toggleFocus(){if(!current())return;document.body.classList.toggle('fullscreen');text('focus',document.body.classList.contains('fullscreen')?'목록 보기':'크게 보기');requestAnimationFrame(draw)}$('focus').onclick=toggleFocus;
+if(BASE==='')$('store-open').hidden=true;  // 독립 18317 화면에는 스토어 API 가 없다(슈퍼하네싱 탭에서만)
+let storeTimer=null,storeInfo=null;
+function openStore(){$('store').hidden=false;$('store-body').textContent='불러오는 중…';storeRefresh()}
+function closeStore(){$('store').hidden=true;clearTimeout(storeTimer)}
+async function storeRefresh(){
+ try{const r=await fetch(BASE+'/api/store/status',{cache:'no-store'});storeInfo=await r.json();if(!r.ok)throw Error(storeInfo.error||r.status);renderStore()}
+ catch(e){$('store-body').textContent='상태를 읽지 못했습니다: '+e.message}
+ clearTimeout(storeTimer);if(!$('store').hidden&&(storeInfo?.job?.state==='running'||storeInfo?.planPending))storeTimer=setTimeout(storeRefresh,storeInfo.planPending?2500:3000)
+}
+function renderStore(){
+ const i=storeInfo,j=i.job,run=j.state==='running',box=$('store-body');if(!i.plan){box.textContent='스토어 상태를 확인하는 중… (최대 1분)';return}const p=i.plan;box.replaceChildren();
+ const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+ const step=(title,...kids)=>{const d=el('div','store-step');d.append(el('b',null,title),...kids);box.append(d);return d};
+ const state=(txt,cls)=>el('span','store-state '+(cls||''),txt);
+ const hint=i.bakeNeeded?`허용 ${i.allowed}채 중 ${i.installed}채만 설치돼 있어요 — 먼저 ①을 눌러 주세요.`:`허용 ${i.allowed}채 = 설치 ${i.installed}채.`;
+ const a=step('① 허용한 건물 반영',el('small',null,'허용 결정을 로그에 저장하고 시트·참고문서·예제 그림을 다시 굽습니다(몇 분).'));
+ const row1=el('div','row');const bake=el('button',null,'다시 굽기');bake.disabled=run;bake.onclick=()=>storeDo('bake',{});row1.append(bake,state(hint,i.bakeNeeded?'warn':'ok'));a.append(row1);
+ const info=p.ok?`${p.buildings}채 · 타일 ${p.tiles}칸 · ${p.megabytes}MB`:'내용을 확인하지 못했습니다: '+p.error;
+ const where=t=>{const x=p.targets?.[t];if(!x)return state('확인 불가','warn');if(!x.reachable)return state('서버에 닿지 않음','warn');return x.upToDate?state('올라가 있음 · 최신','ok'):x.exists?state('올라가 있음 · 내용이 바뀜 → 판본 추가','warn'):state('아직 없음','warn')};
+ const b=step('② 스테이징에 올리기 (mdc-server:18320, 시험용)',el('small',null,info));
+ const row2=el('div','row');const st=el('button',null,'스테이징에 올리기');st.disabled=run||!p.ok||p.targets?.staging?.upToDate;st.onclick=()=>storeDo('publish',{target:'staging'});row2.append(st,where('staging'));b.append(row2);
+ const c=step('③ 운영에 올리기 (store.openrpgmaker.com, 공개)',el('small',null,'올리면 사용자에게 바로 보이고 되돌리기 어렵습니다. 일회용 토큰은 저장하지 않습니다.'));
+ const row3=el('div','row');const tok=el('input');tok.type='password';tok.placeholder='admin-link 일회용 토큰(15분·한 번)';tok.autocomplete='off';
+ const ok=document.createElement('label');const chk=document.createElement('input');chk.type='checkbox';ok.append(chk,` 위 내용(${p.ok?p.buildings+'채':'-'})을 확인했고 공개해도 됩니다`);
+ const go=el('button','deny','운영에 올리기');go.disabled=true;const upd=()=>{go.disabled=run||!p.ok||!chk.checked||tok.value.length<8||p.targets?.production?.upToDate};chk.onchange=upd;tok.oninput=upd;upd();
+ go.onclick=()=>{go.disabled=true;storeDo('publish',{target:'production',confirm:p.contentHash,linkToken:tok.value});tok.value=''};
+ row3.append(tok,where('production'));c.append(row3,el('div','row'));c.lastChild.append(ok,go);
+ if(j.state!=='idle'){const d=step(`작업: ${j.step} — ${{running:'진행 중…',done:'끝났어요',failed:'실패'}[j.state]||j.state}`);if(j.result?.error)d.append(el('small',null,j.result.error));if(j.result?.slug)d.append(el('small',null,`상품 ${j.result.slug} (${j.result.action})`));if(j.log.length)d.append(el('div','store-log',j.log.join('\n')))}
+}
+async function storeDo(kind,body){
+ try{const r=await fetch(BASE+'/api/store/'+kind,{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':state.token},body:JSON.stringify(body)}),d=await r.json();if(!r.ok)throw Error(d.error||r.status);storeRefresh()}
+ catch(e){$('store-body').prepend(Object.assign(document.createElement('p'),{textContent:'시작하지 못했습니다: '+e.message,className:'store-note'}))}
+}
+if(BASE!==''){fetch(BASE+'/api/profiles').then(r=>r.json()).then(d=>{if(d.profiles.length<2)return;const sel=$('profile');for(const p of d.profiles){const o=document.createElement('option');o.value=p.id;o.textContent=p.label;sel.append(o)}sel.value=d.current;sel.hidden=false;sel.onchange=()=>{location.href=(sel.value==='beodeul'?'/harness/beodeul/':'/harness/buildings/'+sel.value+'/')}}).catch(()=>{})}
+$('store-open').onclick=openStore;$('store-close').onclick=closeStore;$('store').onclick=e=>{if(e.target===$('store'))closeStore()};
 $('help-open').onclick=()=>{$('help').hidden=false};$('help').onclick=e=>{if(e.target===$('help'))$('help').hidden=true};
 new ResizeObserver(()=>requestAnimationFrame(draw)).observe($('stage'));window.addEventListener('beforeunload',retain);
 document.querySelector('.tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();e.stopPropagation();const tabs=Object.keys(tabDecision),at=tabs.indexOf(tab),n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(at+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;switchTab(tabs[n]);$('tab-'+tab).focus()});
 $('note').addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();$('note').blur()}if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('save-note').click()}});
-document.addEventListener('keydown',e=>{if(!$('help').hidden){if(e.key==='Escape'||e.key==='?'){e.preventDefault();$('help').hidden=true}return}
+document.addEventListener('keydown',e=>{if(!$('store').hidden){if(e.key==='Escape')closeStore();return}if(!$('help').hidden){if(e.key==='Escape'||e.key==='?'){e.preventDefault();$('help').hidden=true}return}
  if(e.ctrlKey||e.altKey||e.metaKey||['TEXTAREA','INPUT','SELECT'].includes(e.target.tagName))return;
  if(e.key==='?'){e.preventDefault();$('help').hidden=false;return}if(e.key.toLowerCase()==='z'&&lastUndo){e.preventDefault();undo();return}if(!current())return;const k=e.key.toLowerCase();
  if(e.key==='ArrowLeft'){e.preventDefault();navigate(-1)}else if(e.key==='ArrowRight'){e.preventDefault();navigate(1)}else if(k==='a')decide('allow');else if(k==='r')requestRepair();else if(k==='d')decide('deny');

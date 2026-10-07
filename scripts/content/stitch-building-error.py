@@ -1,9 +1,11 @@
 """normal-error.png: left = normal street, right = the mutated street, cropped around the blocked entrance."""
 import json,sys
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'src/harnesses/beodeul-building-review/node'))
+from profiles import load_profile
 from PIL import Image,ImageDraw,ImageFont
-root=Path(__file__).resolve().parents[2];pub=root/'public/assets/beodeul-reviewed'
-err=json.loads((root/'tiledata/beodeul-reviewed/errors.json').read_text())
+root=Path(__file__).resolve().parents[2];B=load_profile(sys.argv[1] if len(sys.argv)>1 else None)['bundle'];pub=root/B['publicDir']
+err=json.loads((root/B['tiledata']/'errors.json').read_text())
 a=Image.open(pub/'street.png').convert('RGB');b=Image.open(pub/'error-street.png').convert('RGB')
 cx=err['x']*16+8;box=(max(0,cx-120),max(0,err['y']*16-120),min(a.width,cx+120),min(a.height,err['y']*16+60))
 S=3;ca=a.crop(box).resize(((box[2]-box[0])*S,(box[3]-box[1])*S),Image.NEAREST);cb=b.crop(box).resize(ca.size,Image.NEAREST)

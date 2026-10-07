@@ -874,7 +874,12 @@
         {
           "id": "export",
           "title": "허용한 것만 내보내기",
-          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다. 공용 설치·정본 지도 적용은 별도 단계다."
+          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts."
+        },
+        {
+          "id": "install",
+          "title": "허용한 건물 공용 번들 설치",
+          "summary": "결정 로그에서 현재 그림 해시에 허용된 후보만 시트·카탈로그·참고문서로 굽는다(--profile <id>, 프로필은 profiles.json)."
         }
       ],
       "entrypoints": {

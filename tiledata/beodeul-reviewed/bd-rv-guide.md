@@ -1,6 +1,6 @@
-# 버들항 · 사람이 허용한 건물 42채
+# 버들항 · 사람이 허용한 건물 58채
 
-beodeul-building-review 검수 화면에서 **사람이 현재 그림 해시에 허용**한 건물만 들어 있다(결정 로그 harness-data/beodeul-building-review/decisions.json). 거절·미선택 그림은 없다. 시트 beodeul_reviewed(tex_beodeul_reviewed, 16px, 16열, 768칸), 모든 프로젝트의 beodeul_city 에는 `ensureBeodeulReviewed`(translateTiles)로 이식되어 있다. 칸 번호를 다른 시트와 섞지 않는다 — 현재 프로젝트의 키트 id(bd-house-rv-*)로 놓는다.
+건물 검수 화면에서 **사람이 현재 그림 해시에 허용**한 건물만 들어 있다(결정 로그 harness-data/beodeul-building-review/decisions.json, 프로필 beodeul). 거절·미선택 그림은 없다. 시트 beodeul_reviewed(tex_beodeul_reviewed, 16px, 16열, 816칸), 모든 프로젝트의 beodeul_city 에는 `ensureBeodeulReviewed`(translateTiles)로 이식되어 있다. 칸 번호를 다른 시트와 섞지 않는다 — 현재 프로젝트의 키트 id(bd-house-rv-*)로 놓는다.
 
 ## 조립 순서(건물 한 채)
 1. 본체 width×height 와 **문 아래 한 칸**(접근칸)을 평지에 예약한다. 잘라서 줄이거나 반복하지 않는 고정 키트.
@@ -62,5 +62,21 @@ blocked-rv-entrance: bd-house-rv-r2-04 문 앞 (11,18)에 실제 anvil 소품을
 - bd-house-rv-r8-02 · 금빛 기와 사각 지붕집 · 8×9 · 문 (4,7) · 목골·돌 · 원본 r8-building-02
 - bd-house-rv-r8-06 · 돌벽 박공 이층집 · 4×9 · 문 (2,7) · 목골·돌 · 원본 r8-building-06
 - bd-house-rv-r8-07 · 돌벽 올리브 지붕집 · 6×9 · 문 (2,7) · 목골·돌 · 원본 r8-building-07
+- bd-house-rv-r9-01 · 작은 돌집 · 4×7 · 문 (2,5) · 목골·돌 · 원본 r9-building-01
+- bd-house-rv-r9-02 · 길게 누운 지붕의 농가 · 8×7 · 문 (4,5) · 목골·돌 · 원본 r9-building-02
+- bd-house-rv-r9-03 · 높은 본채와 낮은 부엌집 · 9×9 · 문 (2,7) · 목골·돌 · 원본 r9-building-03
+- bd-house-rv-r9-05 · 삼층 주택 · 6×11 · 문 (3,9) · 목골·돌 · 원본 r9-building-05
+- bd-house-rv-r9-06 · 높은 돌집과 낮은 살림채 · 10×12 · 문 (4,10) · 목골·돌 · 원본 r9-building-06
+- bd-house-rv-r9-07 · 두 박공 사이의 넓은 집 · 10×10 · 문 (5,8) · 목골·돌 · 원본 r9-building-07
+- bd-house-rv-r9-08 · 긴 맨사드 지붕의 연립집 · 11×10 · 문 (6,8) · 목골·돌 · 원본 r9-building-08
+- bd-house-rv-r9-10 · 꺾인 너와와 낮은 기와채 · 11×9 · 문 (3,7) · 목골·돌 · 원본 r9-building-10
+- bd-house-rv-r9-12 · 박공 앞면 이층집 · 4×9 · 문 (2,7) · 목골·돌 · 원본 r9-building-12
+- bd-house-rv-r9-13 · 금빛 기와 사각 지붕집 · 8×9 · 문 (4,7) · 목골·돌 · 원본 r9-building-13
+- bd-house-rv-r9-14 · 좁고 높은 청회색 삼층집 · 5×11 · 문 (2,9) · 목골·돌 · 원본 r9-building-14
+- bd-house-rv-r9-15 · 높이가 다른 연립 두 채 · 9×10 · 문 (2,8) · 목골·돌 · 원본 r9-building-15
+- bd-house-rv-r9-16 · 청회색 본채와 낮은 곁채 · 10×9 · 문 (3,7) · 목골·돌 · 원본 r9-building-16
+- bd-house-rv-r9-17 · 돌벽 박공 이층집 · 4×9 · 문 (2,7) · 목골·돌 · 원본 r9-building-17
+- bd-house-rv-r9-18 · 돌벽 올리브 지붕집 · 6×9 · 문 (3,7) · 목골·돌 · 원본 r9-building-18
+- bd-house-rv-r9-19 · 왼쪽 곁채가 붙은 집 · 10×9 · 문 (2,7) · 목골·돌 · 원본 r9-building-19
 
-원본 그림은 tiledata/beodeul-reviewed/sources/, 설치는 `npm run harness -- beodeul-building-review install`, 이 자료는 scripts/content/rebuild-beodeul-reviewed.sh.
+원본 그림은 tiledata/beodeul-reviewed/sources/, 설치는 `npm run harness -- beodeul-building-review install --profile beodeul`, 이 자료는 scripts/content/rebuild-building-bundle.sh beodeul.

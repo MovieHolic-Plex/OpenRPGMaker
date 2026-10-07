@@ -113,6 +113,23 @@ PEOPLE_26 = {
 }
 
 FIXED: dict[str, dict[str, dict]] = {
+    "버들항 — 사람이 허용한 건물": {
+            "en": {
+                    "title": "Beodeul Port — Human-Approved Buildings",
+                    "summary": "Beodeul Port 16px hand-pixel buildings, each one reviewed and allowed by a person. Body, ground shadow and foundation are placed as one set.",
+                    "description": "Only Beodeul Port 16px hand-pixel buildings that a person explicitly allowed are included. Each building has a body, ground-shadow and foundation kit, with walls blocking movement and roof eaves walkable.\nReference docs (build order, a 64x22 street example, and correct/incorrect pictures) are included so the editor assistant can build streets with these buildings right away."
+            },
+            "ja": {
+                    "title": "バドゥル港 — 人が許可した建物",
+                    "summary": "人が一つずつ確認して許可したバドゥル港の16pxドット建物。本体・地面の影・基礎を一組で置きます。",
+                    "description": "人が明示的に許可したバドゥル港の16px手打ちドット建物だけを集めました。建物ごとに本体・地面の影・基礎のキットがあり、壁は通行不可、屋根の軒は歩けるように通行設定が入っています。\n参考文書(配置手順・64×22の通りの例・正しい例/誤った例の図)が入っているので、エディターのアシスタントがこの建物ですぐに通りを作れます。"
+            },
+            "zh": {
+                    "title": "柳港 — 人工确认的建筑",
+                    "summary": "经人工逐一确认的柳港 16px 手绘像素建筑。主体、地面阴影与地基作为一套放置。",
+                    "description": "仅收录经人工明确允许的柳港 16px 手绘像素建筑。每栋建筑都有主体、地面阴影和地基套件,墙体不可通行,屋檐可通行。\n附有参考文档(摆放顺序、64×22 街道示例、正确与错误示例图),编辑器助手可直接用这些建筑搭建街道。"
+            }
+    },
     "걷기 칩 — 새 마을 사람·모험가 26명": {
         "en": {
             "title": "Walking Sprites — 26 New Villagers & Adventurers",

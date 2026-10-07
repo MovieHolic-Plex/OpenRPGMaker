@@ -16,7 +16,7 @@ import { createJpCityTileset } from "../../src/project/defaults/jpCity";
 import { createWizardingWorldTileset } from "../../src/project/defaults/wizardingWorld";
 import type { TilesetDef } from "../../src/project/types";
 
-interface BundleSeed {
+export interface BundleSeed {
   create: () => TilesetDef;
   sheet: string;
   title: string;
@@ -191,4 +191,31 @@ export async function seedBundles(base: string, adminEmail: string, publicDir: s
     slugs.push(created.slug);
   }
   return slugs;
+}
+
+/** admin-link 일회용 토큰(15분·한 번)으로 운영 세션을 만든다. 토큰은 저장하지 않는다. */
+export async function linkSession(base: string, token: string): Promise<Session> {
+  const login = await fetch(`${base}/auth/link`, { method: "POST", redirect: "manual", headers: { "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ token }) });
+  const cookie = login.headers.getSetCookie().map((line) => line.split(";")[0]).join("; ");
+  if (!cookie) throw new Error(`링크 로그인 실패 (${login.status}). 토큰은 15분·한 번만 쓸 수 있다.`);
+  const page = await (await fetch(`${base}/`, { headers: { cookie } })).text();
+  const csrf = /<meta name="csrf" content="([^"]+)"/.exec(page)?.[1];
+  if (!csrf) throw new Error("로그인하지 못했습니다(csrf 없음).");
+  return { base, headers: { cookie, "x-csrf-token": csrf } };
+}
+
+/** 쓰고 난 운영자 세션을 남기지 않는다. */
+export async function closeSession(session: Session): Promise<void> {
+  await fetch(`${session.base}/logout`, { method: "POST", redirect: "manual", headers: { cookie: session.headers.cookie, "content-type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ csrf: session.headers["x-csrf-token"] }) });
+}
+
+/** 이미 있는 상품에 판본을 더한다(blob 은 없는 것만 올린다). 프로젝트에 넣은 id 는 그대로 이어진다. */
+export async function addVersion(session: Session, slug: string, pack: { manifest: StorePackManifest; blobs: Map<string, Uint8Array> }): Promise<{ status: number; body: string }> {
+  const check = await fetch(`${session.base}/api/v1/blobs/check`, { method: "POST", headers: { ...session.headers, "content-type": "application/json" }, body: JSON.stringify({ sha256s: [...pack.blobs.keys()] }) });
+  for (const key of (await check.json() as { missing: string[] }).missing) {
+    const sent = await fetch(`${session.base}/api/v1/blobs`, { method: "POST", headers: { ...session.headers, "x-sha256": key, "content-type": "application/octet-stream" }, body: Buffer.from(pack.blobs.get(key)!) });
+    if (!sent.ok) throw new Error(`blob 올리기 실패 ${sent.status}`);
+  }
+  const added = await fetch(`${session.base}/api/v1/items/${slug}/versions`, { method: "POST", headers: { ...session.headers, "content-type": "application/json" }, body: JSON.stringify({ manifest: pack.manifest }) });
+  return { status: added.status, body: (await added.text()).slice(0, 300) };
 }

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **166쪽 / 5567KB / 약 1,621,221 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **166쪽 / 5571KB / 약 1,622,429 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -86,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
 | `openwiki/harnesses/beodeul-architecture.md` | 1 | `qa-runs/harnesses/beodeul-architecture/structural-families-review.png` |
-| `openwiki/harnesses/beodeul-building-review.md` | 3 | `.pixels.json`, `node/mount.py`, `output/beodeul-building-review/round7-v3-gate-status.json` |
+| `openwiki/harnesses/beodeul-building-review.md` | 9 | `.pixels.json`, `DATA/store-uploads.json`, `buildingBundle.ts`, `import_candidates.py`, `node/profiles.py`, `output/beodeul-building-review/round7-v3-gate-status.json`, `profiles.json`, `publishBuildings.ts`, `scripts/content/prepare-beodeul-reviewed-references.mts` |
 | `openwiki/harnesses/charset-actor.md` | 6 | `actions.px.json`, `delivery.json`, `model-frames.json`, `novelty-transfers.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 2 | `.check.json`, `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 2 | `.png`, `seed.png` |
@@ -96,7 +96,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
 | `openwiki/harnesses/native-space-installation.md` | 7 | `art-supplementary-evidence.json`, `authoring-input.json`, `draft-project-proof.json`, `library.json`, `preparation-proof.json`, `project.oprn.json`, `stair-binding.json` |
 | `openwiki/harnesses/pokemon-character-casting.md` | 3 | `data/waves/full-cast-v1.json`, `waves/theme-cast-v1.json`, `world-manifest.json` |
-| `openwiki/harnesses/super-harness-integration.md` | 1 | `beodeul-building-review/node/mount.py` |
 | `openwiki/harnesses/super-harness.md` | 34 | `.aN.png`, `B.json`, `DATA/reference-catalog.json`, `art-actor-actions-next.json`, `art-actor-actions.json`, `art-actors-status.json`, `art-actors.json`, `art-context-review.json`, `art-feedback.json`, `art-installation.json`, `art-output/acceptance-contract.json`, `art-pending-materials.json`, `art-prepare-result.json`, `art-result.json`, `art-result.previous.json`, `art-supplementary-evidence.json`, `card.json`, `concept-request.json`, `ctx-cand.png`, `gaps.json`, `ground-context-x1.png`, `material-review.json`, `materials.json`, `monitoring/space-progress/latest.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `reference-source.json`, `result-review.json`, `runtime-assets.json`, `supervisor-authorization.json`, `theme-material-progress.json`, `verdict.json`, `visual-input.json` |
 | `openwiki/harnesses/wand-runtime-preparation.md` | 2 | `project.oprn.json`, `shelf-binding.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
@@ -1285,7 +1284,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L38` 나무/풀 깊이·연결 울타리·돌벽 통일 (2026-10-04)
 - `L42` 박공 벽 정리와 기와 복원 (2026-10-04 사용자 정정)
 
-### `openwiki/harnesses/beodeul-building-review.md` — 41KB · 185줄 · ~12,675 토큰
+### `openwiki/harnesses/beodeul-building-review.md` — 44KB · 203줄 · ~13,883 토큰
 
 - `L5` 실행
 - `L31` 원본 도트와 초안
@@ -1303,6 +1302,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L153` round 9 — 창문 파사드 재저작 (2026-10-07)
   - `L161` round 10 — 통나무집 · 탑 접지 · 바닥 그림자 (2026-10-07)
   - `L173` 저장 · 설치 · 서비스 (2026-10-07)
+  - `L186` 여러 타일셋 · 스토어 올리기 (2026-10-07)
 
 ### `openwiki/harnesses/charset-actor.md` — 12KB · 90줄 · ~3,838 토큰
 
