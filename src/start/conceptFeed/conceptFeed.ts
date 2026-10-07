@@ -389,8 +389,11 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     try {
       const drafted = await draft(text);
       if (mine !== detailSeq || detail.hidden) return;
-      const similar = items.filter((other) => other.presetId === drafted.concept.presetId).slice(0, 6);
-      renderDetail(drafted.concept, similar, drafted.thumb);
+      renderDetail(drafted.concept, items.filter((other) => other.presetId === drafted.concept.presetId).slice(0, 6), drafted.thumb);
+      // 피드가 검색어로 걸러져 있으면 위 목록이 비기 쉽다 — 출처의 비슷한 컨셉(태그·장르 틀)으로 채운다. 썸네일 약속은 그대로 넘긴다.
+      void source.detail(drafted.concept).then((result) => {
+        if (mine === detailSeq && !detail.hidden && result.similar.length > 0) renderDetail(drafted.concept, result.similar, drafted.thumb);
+      }, () => undefined);
     } catch (error) {
       if (mine !== detailSeq) return;
       setError(error instanceof Error ? error.message : String(error));
