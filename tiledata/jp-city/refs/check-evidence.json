@@ -5,94 +5,139 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 37748
+   "chars": 39946
   },
   {
    "id": "jp-autotile",
    "name": "일본 도시 · 오토타일 17세트",
    "documents": 18,
    "images": 51,
-   "chars": 94472
+   "chars": 94490
   },
   {
    "id": "jp-building",
    "name": "일본 도시 · 건물 조립 도구",
    "documents": 11,
    "images": 42,
-   "chars": 102805
+   "chars": 102816
   },
   {
    "id": "jp-road",
    "name": "일본 도시 · 도로·교차로 키트",
    "documents": 7,
    "images": 13,
-   "chars": 72078
+   "chars": 72085
   },
   {
    "id": "jp-shop",
    "name": "일본 도시 · 상가 키트·문·소품",
    "documents": 5,
    "images": 15,
-   "chars": 68713
+   "chars": 68718
   },
   {
    "id": "jp-buildings-hand",
    "name": "일본 도시 · 손 도트 건물 77종",
    "documents": 5,
    "images": 13,
-   "chars": 87474
+   "chars": 87479
   },
   {
    "id": "jp-street-hand",
    "name": "일본 도시 · 손 도트 거리 시설 62종",
    "documents": 3,
    "images": 9,
-   "chars": 34794
+   "chars": 34797
   },
   {
    "id": "jp-school",
    "name": "일본 도시 · 손 도트 小学校 33종",
    "documents": 3,
    "images": 10,
-   "chars": 73630
+   "chars": 73633
   },
   {
    "id": "jp-transit",
    "name": "일본 도시 · 탈것·노면전차·지하철 (키트 53종 · 탈것 14종)",
    "documents": 3,
    "images": 11,
-   "chars": 77053
+   "chars": 77056
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 97종 · 바닥 7 · 벽면 5)",
-   "documents": 7,
-   "images": 16,
-   "chars": 84251
+   "name": "일본 도시 · 일본 집 실내 (가구 220종 · 바닥 18 · 벽면 11)",
+   "documents": 8,
+   "images": 17,
+   "chars": 146882
+  },
+  {
+   "id": "jp-interior-shop",
+   "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
+   "documents": 20,
+   "images": 19,
+   "chars": 93019
   },
   {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15482
+   "chars": 15485
   }
  ],
  "totals": {
-  "categories": 11,
-  "documents": 68,
-  "images": 184,
-  "chars": 748500,
-  "maxDocChars": 52855,
+  "categories": 12,
+  "documents": 89,
+  "images": 204,
+  "chars": 906406,
+  "maxDocChars": 52856,
   "maxImagePx": 820
  },
- "tilesEmitted": 8414,
- "kitsEmitted": 537,
- "kitArrayItemsRoundtrip": 537,
+ "tilesEmitted": 9432,
+ "kitsEmitted": 660,
+ "kitArrayItemsRoundtrip": 660,
  "unknownTokens": [
   "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
+  "jp-interior-ex-bakery:jp-city-bakery",
+  "jp-interior-ex-barber:jp-city-barber",
+  "jp-interior-ex-bookstore:jp-city-bookstore",
+  "jp-interior-ex-clinic:jp-city-clinic",
+  "jp-interior-ex-florist:jp-city-florist",
+  "jp-interior-ex-hiraya:jp-city-hiraya",
   "jp-interior-ex-house-1f:jp-city-house-1f",
   "jp-interior-ex-house-2f:jp-city-house-2f",
+  "jp-interior-ex-izakaya:jp-city-izakaya",
+  "jp-interior-ex-kissaten:jp-city-kissaten",
+  "jp-interior-ex-koban:jp-city-koban",
+  "jp-interior-ex-konbini:jp-city-konbini",
+  "jp-interior-ex-laundry:jp-city-laundry",
+  "jp-interior-ex-mansion-2ldk:jp-city-mansion-2ldk",
+  "jp-interior-ex-mokuchin:jp-city-mokuchin",
+  "jp-interior-ex-pharmacy:jp-city-pharmacy",
+  "jp-interior-ex-ramen:jp-city-ramen",
+  "jp-interior-ex-sento:jp-city-sento",
+  "jp-interior-ex-supermarket:jp-city-supermarket",
+  "jp-interior-ex-sushi:jp-city-sushi",
+  "jp-interior-ex-yaoya:jp-city-yaoya",
+  "jp-interior-shop-index:jp-city-bakery-9x14",
+  "jp-interior-shop-index:jp-city-barber-9x14",
+  "jp-interior-shop-index:jp-city-bookstore-9x14",
+  "jp-interior-shop-index:jp-city-clinic-14x8",
+  "jp-interior-shop-index:jp-city-florist-9x14",
+  "jp-interior-shop-index:jp-city-hiraya-15x14",
+  "jp-interior-shop-index:jp-city-izakaya-13x12",
+  "jp-interior-shop-index:jp-city-kissaten-10x10",
+  "jp-interior-shop-index:jp-city-koban-11x8",
+  "jp-interior-shop-index:jp-city-konbini-14x13",
+  "jp-interior-shop-index:jp-city-laundry-9x8",
+  "jp-interior-shop-index:jp-city-mansion-2ldk-15x20",
+  "jp-interior-shop-index:jp-city-mokuchin-8x8",
+  "jp-interior-shop-index:jp-city-pharmacy-9x14",
+  "jp-interior-shop-index:jp-city-ramen-10x10",
+  "jp-interior-shop-index:jp-city-sento-14x13",
+  "jp-interior-shop-index:jp-city-supermarket-16x14",
+  "jp-interior-shop-index:jp-city-sushi-10x12",
+  "jp-interior-shop-index:jp-city-yaoya-9x14",
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
   "jp-transit-rules:jp-car-black",
@@ -110,7 +155,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "6766be4807529a3a29795a1da5910852478c98f693cd28c0e380832a8b858fdc",
-  "images": "05a78a71b8547d4b5339183166fb22668c0037f70967064682d4739bb8f0d4fb"
+  "json": "430a2703db8f2fed828dce0828681ed7362e69a5b0aabd5617b4ea4494ab07aa",
+  "images": "338709a98c4ab786740ea3224651003de626fa792c731777cae3056b1bdc1797"
  }
 }

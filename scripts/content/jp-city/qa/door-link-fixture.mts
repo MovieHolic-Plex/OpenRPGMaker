@@ -20,7 +20,8 @@ for (let i = 2; i < process.argv.length; i += 1) {
   else if (process.argv[i] === "--links") linksPath = process.argv[++i] ?? null;
 }
 if (!out || !pathsOut) throw new Error("사용법: --out <경로.json> --paths <길.json> [--links <links.json>]");
-type Link = { building: string; place: string; name?: string };
+// place = 게시된 장소 id(가져오기까지 도구가 한다) · example = tiledata/jp-city/interior/examples/<이름>.json 을 build_hand_interior_room 으로 먼저 짓고 interiorMapId 로 잇는다(게시 전 시험).
+type Link = { building: string; place?: string; example?: string; name?: string };
 const LINKS: Link[] = linksPath ? JSON.parse(readFileSync(linksPath, "utf8")) : [
   { building: "E1", place: "jp-city-apartment-1k-12x13", name: "맨션 1K" },
   { building: "A1a", place: "jp-city-house-interior-21x15", name: "가게 딸린 집" },
@@ -86,13 +87,25 @@ const report: string[] = [];
 for (const link of LINKS) {
   const doors = plan.doors.filter((d) => d.b === link.building).sort((a, b) => a.x - b.x);
   if (!doors.length) throw new Error(`건물 ${link.building} 의 문이 plan 에 없다`);
-  await preloadRegionReferenceScene(link.place);
-  const res = runTool(ctx, "link_jp_city_interior", { mapId: street.id, door: { x: doors[0]!.x, y: doors[0]!.y }, width: doors.length, place: link.place, ...(link.name ? { name: link.name } : {}) });
+  let target: Record<string, unknown>;
+  if (link.example) {
+    const ex = JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${link.example}.json`, "utf8"));
+    const id = `jp-city-${link.example}`;
+    const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: id, name: link.name ?? ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
+    if (!built.ok) throw new Error(`${link.example}: ${JSON.stringify(built.issues)}`);
+    target = { interiorMapId: id };
+  } else {
+    await preloadRegionReferenceScene(link.place!);
+    target = { place: link.place, ...(link.name ? { name: link.name } : {}) };
+  }
+  const res = runTool(ctx, "link_jp_city_interior", { mapId: street.id, door: { x: doors[0]!.x, y: doors[0]!.y }, width: doors.length, ...target });
   if (!res.ok) throw new Error(`${link.building} → ${link.place}: ${JSON.stringify(res.issues)}`);
   report.push(res.summary ?? "");
   const data = res.data as { fronts: { x: number; y: number }[]; interiorMapId: string; entryLanding: { x: number; y: number }; exitCells: { x: number; y: number }[]; exitLanding: { x: number; y: number } };
   const interior = ctx.project.maps[data.interiorMapId]!;
-  const front = data.fronts[Math.floor((data.fronts.length - 1) / 2)]!;
+  // 들어가기 시험: 발판 바로 아래 칸에서 위로 한 걸음 — 그 칸이 걸을 수 있는 발판을 고른다(나온 칸이 발판 옆줄일 수 있다).
+  const sm = ctx.project.maps[street.id]!;
+  const front = data.fronts.find((c) => canMove(ctx.project, sm, c.x, c.y + 1, c.x, c.y)) ?? data.fronts[0]!;
   // 실내를 실제로 돌아다닌다: 도착 칸에서 가장 먼 칸까지 갔다가 출입구로 나온다.
   const far = farthest(interior, data.entryLanding);
   const tour = route(interior, data.entryLanding, [far]) ?? [];
@@ -100,7 +113,7 @@ for (const link of LINKS) {
   if (!inside) throw new Error(`${data.interiorMapId}: (${far.x},${far.y}) → 출입구 길이 없다`);
   legs.push({
     label: `${link.building} → ${interior.name}`, street: street.id, interior: data.interiorMapId,
-    startAt: [data.exitLanding.x, data.exitLanding.y], enter: ["up", front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y],
+    startAt: [front.x, front.y + 1], enter: ["up", front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y],
     tourSteps: tour, exitSteps: inside, exitAt: [data.exitLanding.x, data.exitLanding.y],
   });
 }

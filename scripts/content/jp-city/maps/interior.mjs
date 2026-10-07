@@ -75,9 +75,12 @@ if (results.some((r) => !r.report.ok)) process.exitCode = 2;
 
 if (process.argv.includes("--publish")) {
   if (process.exitCode) { console.error("검사 실패 — 게시하지 않았다"); process.exit(2); }
-  const gate = spawnSync("python3", ["scripts/content/jp-city/gate/adversarial_gate.py", "check", "--stage", "interior"], { cwd: ROOT, encoding: "utf8" });
-  process.stdout.write(gate.stdout);
-  if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error("적대적 검증 관문 interior 미통과 — 게시하지 않았다"); process.exit(3); }
+  // 집 실내(1묶음)는 관문 interior, 가게·공공·집 보강(2묶음 places2)은 관문 interior-shop — 둘 다 통과해야 게시한다.
+  for (const stage of ["interior", "interior-shop"]) {
+    const gate = spawnSync("python3", ["scripts/content/jp-city/gate/adversarial_gate.py", "check", "--stage", stage], { cwd: ROOT, encoding: "utf8" });
+    process.stdout.write(gate.stdout);
+    if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error(`적대적 검증 관문 ${stage} 미통과 — 게시하지 않았다`); process.exit(3); }
+  }
   const TS = project.tilesets.jp_city;
   const REGION_DIR = join(ROOT, "public/assets/region-references");
   const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "interior-inn-tavern-1f.oprn.json"), "utf8"));
