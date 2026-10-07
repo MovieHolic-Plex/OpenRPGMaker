@@ -10,7 +10,7 @@ import type { GameMap, TilesetDef } from "@/project/types";
 export const PROP_CATEGORIES = [
   { id: "seating", label: "의자·좌석", pattern: /의자|좌석|소파|걸상|스툴|벤치|왕좌|chair|seat|sofa|\bbench|stool|throne/i },
   { id: "tables", label: "탁자·책상", pattern: /탁자|식탁|책상|테이블|찻상|제단|작업대|조리대|진열대|카운터|계산대|접수대|table|desk|counter|altar|workbench/i },
-  { id: "beds", label: "침대", pattern: /침대|침상|bed/i },
+  { id: "beds", label: "침대", pattern: /(?<!받)침대|침상|(?:^|[\s:_-])bed(?:$|[\s:_-])/i },
   { id: "storage", label: "수납·상자", pattern: /책장|장롱|장식장|진열장|수납|찬장|서랍|궤짝|상자|금고|선반|보관함|걸이|통(?:$|\s)|chest|crate|cabinet|shelf|rack|bookcase|wardrobe|barrel/i },
   { id: "lighting", label: "조명", pattern: /촛|등불|가로등|램프|샹들리에|횃불|candle|lamp|torch|light|lantern/i },
   { id: "plants", label: "나무·식물", pattern: /나무|화분|꽃|수풀|식물|묘목|tree|plant|flower|bush|hedge/i },
@@ -25,7 +25,8 @@ export type PropCategoryId = (typeof PROP_CATEGORIES)[number]["id"];
 function propCategory(name: string, id: string, tags: readonly string[], role?: string, fallback: PropCategoryId = "other"): PropCategoryId {
   if (role && ["building", "castle", "fence", "roof", "terrain", "water", "wall"].includes(role)) return "structures";
   // Names identify the object; a shop/theme tag must not turn its chair into food or a building.
-  return PROP_CATEGORIES.find(category => category.pattern?.test(`${name} ${id}`))?.id
+  return PROP_CATEGORIES.find(category => category.pattern?.test(name))?.id
+    ?? PROP_CATEGORIES.find(category => category.pattern?.test(id))?.id
     ?? PROP_CATEGORIES.find(category => category.pattern?.test(tags.join(" ")))?.id ?? fallback;
 }
 

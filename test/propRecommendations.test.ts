@@ -48,4 +48,14 @@ describe("map prop recommendations", () => {
     expect(filterProps(entries, undefined, "작업대 7").map(entry => entry.choice.id)).toEqual(["workbench-7"]);
     expect(filterProps(entries, "beds", "의자")).toEqual([]);
   });
+  it("keeps pedestals out of beds and uses the object name before ambiguous ids", () => {
+    const { tileset } = fixture();
+    tileset.structureKits!.push(
+      { id: "key-pedestal", kind: "section", name: "열쇠 받침대", width: 1, height: 1, rows: [{ tiles: [5] }], ai: { description: "", placementRules: "", tags: ["JRPG 장치"] } },
+      { id: "flower-bed", kind: "section", name: "꽃 화분", width: 1, height: 1, rows: [{ tiles: [6] }] },
+    );
+    const choices = propsForTileset(tileset);
+    expect(choices.find(choice => choice.id === "key-pedestal")?.category).toBe("devices");
+    expect(choices.find(choice => choice.id === "flower-bed")?.category).toBe("plants");
+  });
 });
