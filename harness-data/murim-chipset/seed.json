@@ -30,7 +30,12 @@
   "dojo": "도장(목인장·병기 거치대·과녁·모래주머니·방석·돌사자)",
   "outdoor": "바깥(산문·대숲·연무장 가장자리·석등·비석)"
  },
- "rounds": {},
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "module": "src/harnesses/murim-chipset/rounds/style_r1.py"
+  }
+ },
  "kinds": {
   "tile": "바닥 반복 타일(꽉 찬 불투명)",
   "wall": "벽 조각(꽉 찬 불투명, 윗면 행 필수)",
