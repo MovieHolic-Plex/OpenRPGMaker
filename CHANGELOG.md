@@ -5,6 +5,71 @@
 
 <!-- releases -->
 
+## 0.165.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 일본 집 실내 장소 게시 — 2층 단독주택(1·2층) jp-city-house-interior-21x15 · 원룸 jp-city-apartment-1k-12x13 (관문 interior pass) (`11edda6`)
+- **jp-city** — 원룸 부엌↔방 문(1K), 아이방 좌탁, 문서 정정(장식 광 문·shoji-open 제거), 조수 시험 3·4회 증거(4회: 호출 24·실패 0·269초, 문 직접 배치) (`cabf53a`)
+- **jp-city** — 옆문 2종 그림(작업자), 참고문서·변조 10종 재굽기, 런타임 QA 15/15 (`b2d8601`)
+- **jp-city** — 옆문 2종 그림 (`ce8a5c9`)
+- **jp-city** — 예제에 옆문 4곳(욕실·탈의실·LDK·유닛 배스), 2층 복도 줄임·방문 x7·광 문·건조대·깔개, 변조 sidedoorNotInGap, 규칙 문서·probe 줄 번호 (`82a8af0`)
+- **jp-city** — 옆문 종류 sidedoor — 세로 칸막이 3줄 틈 통로 칸에, 조립기 sidedoor-not-in-gap, 자리표시 2종 · 안 쓰는 문 부품 4종 뺌(닫힌 후스마·쇼지 문·화장실 문, 열린 쇼지) (`c7c092f`)
+- **jp-city** — 실내 참고문서·변조 9종 재굽기(새 1층·방문), 렌더·런타임 QA 15/15 증거 (`79e88c6`)
+- **jp-city** — 1층 다시 짜기 — 복도 동서·화실/화장실을 복도 북쪽에 열린 방문으로, 2층 방문 3·광 문, 원룸 통로 2칸·현관 문턱, 변조 door-not-in-gap, 참고문서 규칙 갱신, 열린 문·카펫·방석·욕조·다다미 그림(작업자 2), read_tileset_reference 한꺼번에 읽기 offset 0 허용 (`cdc70e2`)
+- **jp-city** — 열린 방문 4종·현관문 문턱 그림 (`e524c16`)
+- **jp-city** — 실내 문 종류 door — 가로 칸막이 1칸 틈에 인방+열린 문틀(통로 유지), 조립기 door-not-in-gap 검사, 자리표시 블록 interior_doors (`0a6c743`)
+- **jp-city** — 참고문서 용도 jp-interior — 짓는 법·가구 사전 94종·바닥/벽면 칸·예제 3맵 4층 배열·정상/오류 변조 8종(엔진 실측), 실내 런타임 probe, 위키 (`4e2e4de`)
+- **jp-city** — 일본 실내 방 표(rooms.json) — 방 종류 12·건물 2, list_hand_interior_parts({tileset:"jp_city", room}) 가 예제 방 가구를 준다 (`3ef360e`)
+- **jp-city** — 일본 집 예제 실내 — 2층 단독주택(1층·2층 계단 이어짐)·원룸 1K 를 조수 도구 그대로 짓는 interior.mjs, 베이지 카펫·신발장은 옆벽 가구 (`172154c`)
+- **jp-city** — 일본 실내 LDK interior_ldk — 부엌·식탁·소파·TV·책장 22종, 탁자 2(dining·kcounter), 탁상 9 · 계단통은 아랫줄을 밟는다 (`2085233`)
+- **jp-city** — 일본 실내 현관·계단·문·창·벽걸이 interior_entry — 25종, 데모 방 2개 (`0e586b8`)
+- **jp-city** — 일본 실내 욕실·화장실(interior_wet)·침실·아이방(interior_bed) 블록 + 방 예제 3종 (`79a640a`)
+- **jp-city** — 화실 interior_washitsu — 좌탁·고타쓰·장롱·불단·도코노마·지가이다나·이불·안돈·꽃꽂이·브라운관 TV 와 탁상 물건 4종 (`0a343c6`)
+- **jp-city** — interior_shell 구조 표면 — 바닥 7·벽면 5 손 도트, 집 데모 방 (`0fd687d`)
+- **jp-city** — 실내 조립기·도구가 jp_city 사양도 짓는다 — build_hand_interior_room·list_hand_interior_parts 에 tileset:"jp_city", 조수 정책 줄 (`9a07801`)
+- **jp-city** — 일본 실내 키트 틀 — 바닥·벽면·천장·가구·탁자·탁상 등록기(ikit), 방 미리보기, 사양 굽기(jpInteriorSpec), 구조 자리표 (`97926e1`)
+- **monster** — route 1 takes the start theme's name (`953130f`)
+- **monster** — pack delegated-approval theme cast (desert man/trainer, coast x3) (`4436af0`)
+- **monster** — snow start gets a snow route 1, swapped towns keep their walkers, gyms and badges (`e7dde08`)
+- **monster** — chapter-1 townsfolk and route trainers wear the start theme's approved walkers (`f95f854`)
+- **harness** — theme-cast-v1 — desert/snow/coast townsfolk and route trainer walking candidates (`e1b8731`)
+- **monster** — start theme carries into chapter 1 — gym board by leader type, native route species, themed second town (`8fc159a`)
+- **battle** — emerald-style monster battles — terrain backgrounds, Gen3 narration, one foe at a time (`6d12396`)
+
+### 수정
+
+- **jp-city** — 재배치 충돌 표시 한 줄 지움(regionReferenceSnapshots) (`af37e31`)
+- **jp-city** — 실내 장소 limitations 는 문자열, 규칙 문장을 새 평면대로 (`0ada44d`)
+- **jp-city** — 열린 문짝이 보이게(반쯤 열린 후스마·젖혀진 문)·러그 채도(작업자), 재굽기·런타임 QA 15/15 (`2e12610`)
+- **jp-city** — 열린 문짝이 보이게·러그 채도 (`7cd93d8`)
+- **jp-city** — 관문 3차 — 카펫 채도·방석·욕조·다다미 짜임 (`d575298`)
+- **jp-city** — 실내 층 이동 순서 — 없는 맵으로 가는 links 사전 거절·정책·참고문서 4단계, 조수 시험 하네스 --start-tileset·ctx, 그림 2차 반영 재굽기, probe 길은 canMove BFS (`bb8d560`)
+- **jp-city** — 실내 관문 지적 그림 7건 — 카펫 팥색 단색 짜임·다다미 헤리 어두운 띠·창/커튼 세로 주름·신발 한 켤레·욕조 桶·변기 탱크/뚜껑/몸 단계·방석 감색+붉은 술 (`14fba2a`)
+- **jp-city** — 실내 관문 1회차 지적 — 2층 복도+방문 칸막이·원룸 부엌 조리대·LDK 한 줄 정렬·화실 벽장, 예제 JSON 이 start·links 를 들고 있게, 조수 시험 --start-tileset (`25caab4`)
+- **jp-city** — 실내 가구 쓰임(use)·바라보는 쪽(facing)을 조수 도구의 id 로 — ikit selftest 가 막는다 (`69be9af`)
+- **qa** — headless monster tactics heal before a lethal hit (`4707e5a`)
+- **battle** — command line keeps its own result after the foe switches (`ed06adc`)
+- **battle** — frozen turns read as frozen, emerald ice thaws, swapped gyms swap leaders (`13cc0e1`)
+- **battle** — forced switch opens the party list, fainted ally gets its line, themed trainers keep the intro (`934f848`)
+- **qa** — monster autoplay keeps move coverage when learning new moves (`5192c32`)
+- **battle** — emerald status badge sits in the HP box, Lv labels match, prize lines without broken josa (`1fd577d`)
+- **monster** — emerald games skip party followers without field art instead of green slimes (`6093245`)
+
+### 문서
+
+- **openwiki** — frozen turns, thaw, command result lookup, route names, delegated cast (`dd2ecc8`)
+- **openwiki** — snow route 1, gym personas, resident remap (`d3aa092`)
+- **openwiki** — emerald battle overhaul, chapter-1 theme, theme cast wiring (`250e872`)
+
+### 테스트
+
+- **jp-city** — 실내 런타임 probe 15/15 — 방마다·계단 왕복·원룸, 조수 시험 하네스는 고쳐 지은 맵과 들어오는 착지 칸도 센다 (`5938de0`)
+
+### 잡무
+
+- **jp-city** — 굽기 — 일본 실내 6블록 881칸 덧붙임(핀 9007), jpInteriorSpec 가구 94·탁자 2·탁상 20 (`849d451`)
+
 ## 0.164.0 — 2026-10-07
 
 ### 기능
