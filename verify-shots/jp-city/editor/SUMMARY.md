@@ -1,4 +1,4 @@
-# 편집기에서 일본 실내 깔기 (2026-10-07T06:09:29.803Z)
+# 편집기에서 일본 실내 깔기 (2026-10-07T08:22:56.699Z)
 
 - 집 가져오기 → 맵 2장: preset:jp-city-house-interior-21x15(21×15, 칠한 칸 315, 이벤트 이동@11,9, 이동 "mapId":"preset:jp-city-house-interior-21x15:jp-city-house-2f") / preset:jp-city-house-interior-21x15:jp-city-house-2f(22×12, 칠한 칸 264, 이벤트 이동@19,10 이동@20,10, 이동 "mapId":"preset:jp-city-house-interior-21x15" "mapId":"preset:jp-city-house-interior-21x15")
 - 원룸 가져오기 → 맵 1장: preset:jp-city-apartment-1k-12x13(12×13)
