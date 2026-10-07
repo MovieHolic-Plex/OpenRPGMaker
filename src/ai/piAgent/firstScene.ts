@@ -7,6 +7,7 @@ import { CC0_ICON_ASSETS } from '../../assets/cc0IconAssets';
 import { presentationArtIds } from '../../editor/tools/presentationTools';
 import { handInteriorShapeFromMap, PLAIN_BOX_MIN_CELLS } from '../../editor/handInterior/shape';
 import { playableSegmentGenre, SEGMENT_ROUTE_MAP_ID } from '../../project/playableSegmentContract';
+import { isPassable } from '../../project/collision';
 
 /** A finite, real catalog lets entry authoring write instead of searching forever. */
 export function firstSceneObjectCatalog(): unknown {
@@ -133,6 +134,10 @@ export function inspectFirstScene(base: Project, project: Project, receipt: Firs
     const index = event.y * map.width + event.x;
     const tileObject = [map.upperTiles, map.lowerOverlayTiles, map.upperOverlayTiles].some(layer => (layer?.[index] ?? -1) >= 0);
     if (!sprite && !tileObject) issues.push(`첫 상호작용/마무리 대상의 그림이 없습니다: ${ref.mapId}/${ref.eventId}`);
+    // 2026-10-07 적대적 검토: 모델이 마무리 대상(친구)을 벤치 위로 옮겨 사람이 가구 위에 서 있었다. 인물 그림 대상은 밟을 수 있는 칸에 선다.
+    if (sprite && !isPassable(project, map, event.x, event.y)) {
+      issues.push(`첫 상호작용/마무리 대상이 막힌 칸(가구·벽·나무) 위에 서 있습니다: ${ref.mapId}/${ref.eventId}(${event.x},${event.y}). 그 물체 앞 빈 바닥 칸으로 옮기세요.`);
+    }
   }
   const opening = project.system.opening;
   if (!openingPending && opening?.enabled && opening.scenes.length) {
@@ -166,7 +171,7 @@ export const FIRST_SCENE_INSTRUCTIONS = [
   '핵심 행동이 구현되어도 빈 풀밭·안 보이는 조사물·검은 화면의 긴 독백은 완성이 아니다.',
   '기획의 실제 첫 장소와 마무리 장소를 구성한다. 첫 조사/대화 대상과 출구가 그림으로 보이고 정상 이동으로 접근 가능해야 한다. 실내를 잔디 맵으로 부르지 않는다.',
   '실내는 list_tileset_references → read_tileset_reference(조립법과 가까운 예제 그림) → list_hand_interior_parts → build_hand_interior_room을 사용한다. 기존 빈 맵은 set_map_properties로 tilesetId를 atlas_biome_interior로 바꾼 뒤 replace:true로 지을 수 있다. 맵/핵심 이벤트/출입구 ID와 두 선택 결과를 보존하고 필요한 좌표·통행을 함께 맞춘다.',
-  '실내 평면 문법: 바깥으로 나가는 문은 plan 맨 아래 줄의 \'.\' 틈이다(3/4 시점 실내의 정석 출입구). 틈을 내면 기존 출구 이벤트와 맞은편 도착 칸은 도구가 틈으로 자동으로 옮기고 안쪽에 발깔개를 깐다. 틈 없이 start 로 방 안 바닥을 출입구로 삼거나 출구 이벤트를 방 안 바닥에 두지 않는다. 60칸 넘는 방을 칸막이 없는 직사각형 하나(ㅁ자)로 짓지 않는다 — ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이로 쓰임이 다른 구역(예: 서가 구역·모임 탁자·창가 자리)을 나누고, 빈 바닥이 남으면 평면을 줄인다.',
+  '실내 평면 문법: 바깥으로 나가는 문은 plan 맨 아래 줄의 \'.\' 틈이다(3/4 시점 실내의 정석 출입구). 틈은 1~2칸 폭으로 낸다 — 더 넓으면 문이 아니라 막다른 홈으로 읽힌다. 틈을 내면 기존 출구 이벤트와 맞은편 도착 칸은 도구가 틈으로 자동으로 옮기고 안쪽에 발깔개를 깐다. 틈 없이 start 로 방 안 바닥을 출입구로 삼거나 출구 이벤트를 방 안 바닥에 두지 않는다. 60칸 넘는 방을 칸막이 없는 직사각형 하나(ㅁ자)로 짓지 않는다 — ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이로 쓰임이 다른 구역(예: 서가 구역·모임 탁자·창가 자리)을 나누고, 빈 바닥이 남으면 평면을 줄인다.',
   '회중시계/책/인물 같은 핵심 대상은 실제 그림이 있어야 한다. 정적 타일 물체에 이벤트를 붙일 때는 물체가 보이는 칸에 붙이고 옆에서 조사할 수 있게 한다. 가구 그림이 막는 칸 위로 플레이어를 걷게 하지 않는다.',
   '그림의 실제 리소스 의미를 확인한다. 보석을 시계라고 부르거나 투명 대상을 보인다고 주장하지 않는다. 제공된 실제 자산 목록의 nativeGraphic을 이벤트 pages[].graphic으로 쓴다. 예: cc0-jetrel-clock은 회중시계 그림이며 16px 크기로 표시된다. 사용자가 확정한 물체는 보존한다. 조수가 임의로 추가한 마무리 소품의 정확한 그림이 없으면 목록의 실제 물체를 고르고 그 물체에 맞게 이름·묘사를 정정한다. 요청한 선택·각기 다른 반응·진행·엔딩 연결은 유지한다.',
   '스토리의 첫 조작 안내는 실제 시작 장소가 보이는 상태에서 한두 개의 짧은 대사로 작성한다. 시작 맵에 auto 페이지 + 마지막 setSelfSwitch + 같은 스위치 조건의 빈 action 페이지로 한 번만 실행한다. 방향키 이동과 Z/Enter 조사, 실제 첫 대상의 위치를 짧게 안내한다. 작품 타이틀과 저작된 오프닝은 별도 필수 제작 단계이며 끄거나 이 맵 안내로 대체하지 않는다.',

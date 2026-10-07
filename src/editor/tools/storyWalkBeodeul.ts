@@ -73,14 +73,18 @@ export function paintBeodeulStoryWalk(project: Project, map: GameMap, tileset: T
       return false;
     }
   };
-  // 광장 북쪽: 가운데 석상(교정·광장의 표지)과 양옆 산울타리 — 광장이 「막힌 곳」이 아니라 「들어앉은 자리」로 읽힌다.
+  // 광장 북쪽: 가운데 기념 원주와 양옆 산울타리 — 광장이 「막힌 곳」이 아니라 「들어앉은 자리」로 읽힌다.
+  // 처음엔 현자 석상(지팡이 든 마법사)이었는데 적대적 검토에서 「대학보다 판타지로 읽힌다」 — 시대·장르를 타지 않는 원주로 바꿨다.
   const mid = px0 + Math.floor((px1 - px0 + 1) / 2) - 1;
-  const statue = stamp("bd-prop-statue_sage", mid, py0 - 2);
+  const monument = stamp("bd-prop-column_monument", mid, py0 - 3);
   for (let x = mid - 3; x >= px0 - 1; x -= 3) stamp("bd-prop-hedge", x, py0 - 2);
-  for (let x = mid + (statue ? 2 : 0); x + 2 <= px1 + 1; x += 3) stamp("bd-prop-hedge", x, py0 - 2);
+  for (let x = mid + (monument ? 1 : 0); x + 2 <= px1 + 1; x += 3) stamp("bd-prop-hedge", x, py0 - 2);
   // 벤치 둘 — 하나는 마무리 대상 바로 뒤, 하나는 광장 서쪽.
   stamp("bd-prop-bench_wood", meet.x - 1, meet.y - 1);
   stamp("bd-prop-bench_wood", px0 + 1, meet.y - 1);
+  // 광장 가운데 아래 — 파라솔 탁자. 비어 있던 광장 복판이 「앉아서 이야기하던 자리」가 된다(검토: 중앙·하단 6×4칸이 비었다).
+  // 산책길이 들어오는 줄(pathY)과 마무리 칸 줄은 비워 둔다.
+  if (py1 - (meet.y + 1) >= 2) stamp("bd-prop-parasol_table", mid, meet.y + 1);
   // 광장 입구와 동쪽 끝 가로등(1×3, 받침 칸만 막힘).
   stamp("bd-mpart-lamp-post", px0, py0);
   stamp("bd-mpart-lamp-post", px0, py1 - 2);
@@ -107,7 +111,7 @@ export function paintBeodeulStoryWalk(project: Project, map: GameMap, tileset: T
     }
   };
   for (let x = 0; x < px0; x++) { reserve(x, pathY, 1); reserve(x, pathY + 1, 1); }
-  for (let y = py0 - 2; y <= py1; y++) for (let x = px0; x <= Math.min(w - 1, px1 + 1); x++) reserve(x, y, 1);
+  for (let y = Math.max(0, py0 - 3); y <= py1; y++) for (let x = px0; x <= Math.min(w - 1, px1 + 1); x++) reserve(x, y, 1);
   reserve(exit.x, exit.y, 2);
   for (const event of map.events) reserve(event.x, event.y, 1);
   for (let i = 0; i < map.lowerTiles.length; i++) if (map.lowerTiles[i] !== BEODEUL_PLAIN_GRASS) reserved.add(i);

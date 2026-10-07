@@ -79,5 +79,15 @@ export function nearestOpening(shape: HandInteriorShape, from: HandInteriorPoint
     const score = Math.abs(o.x - from.x) + Math.abs(o.y - from.y) + (o.y === shape.height - 1 ? 0 : 1000);
     if (score < bestScore) { best = o; bestScore = score; }
   }
-  return best;
+  if (!best) return null;
+  // 같은 가장자리에 이어진 틈이 여러 칸이면 그 가운데로 — 4칸 홈의 맨 끝 칸에 문이 서면 나머지가 막다른 바닥으로 읽힌다.
+  const onEdge = (o: HandInteriorPoint) => best!.y === shape.height - 1 ? o.y === best!.y : o.x === best!.x;
+  const run = shape.openings.filter(onEdge);
+  const key = (o: HandInteriorPoint) => best!.y === shape.height - 1 ? o.x : o.y;
+  const at = new Set(run.map(key));
+  let lo = key(best), hi = key(best);
+  while (at.has(lo - 1)) lo -= 1;
+  while (at.has(hi + 1)) hi += 1;
+  const mid = Math.floor((lo + hi) / 2);
+  return run.find(o => key(o) === mid) ?? best;
 }

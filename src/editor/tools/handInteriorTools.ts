@@ -174,7 +174,9 @@ function fitDoorsToPlan(draft: Project, mapId: string, events: GameEvent[], shap
 /** 맨 아래 출입구 틈 안쪽에 발깔개를 깐다 — 모델이 출구를 표시하지 않았을 때 「여기가 문」이 보이게. */
 function withDoormat(input: HandInteriorInput, shape: HandInteriorShape): HandInteriorInput {
   if ((input.objects ?? []).some((o) => o.id === "doormat") || !HAND_INTERIOR_SPEC.objects.doormat) return input;
-  const gap = shape.openings.find((o) => o.y === shape.height - 1);
+  const first = shape.openings.find((o) => o.y === shape.height - 1);
+  const gap = first && nearestOpening(shape, first);   // 이어진 틈의 가운데 — 문 이벤트가 서는 칸과 같다.
+  // 2칸 틈이면 깔개(2칸)가 틈과 딱 맞는다. 1칸 틈은 반 칸 어긋날 수밖에 없다.
   const inward = gap && shape.inwardOf(gap);
   if (!inward) return input;
   const taken = (x: number, y: number) => (input.objects ?? []).some((o) => o.x === x && o.y === y)
