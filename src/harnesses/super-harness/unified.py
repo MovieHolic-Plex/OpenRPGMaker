@@ -17,6 +17,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.append(str(ROOT / 'src/harnesses/beodeul-building-review/node'))
+import mount as beodeul_review  # noqa: E402  버들항 건물 검수 화면(/harness/beodeul)
 
 
 def load(name, path):
@@ -53,6 +55,8 @@ def handler(sh, pick):
 
         def do_GET(self):
             path = urlsplit(self.path).path
+            if beodeul_review.owns(path):
+                return beodeul_review.dispatch(self, 'GET')
             if path in ('/', '/index.html'):
                 return self.file(str(ROOT / 'src/harnesses/interior-props/web/super.html'), 'text/html; charset=utf-8')
             if path == '/spaces':
@@ -67,6 +71,8 @@ def handler(sh, pick):
             return sh.Handler.do_GET(self)
 
         def do_POST(self):
+            if beodeul_review.owns(urlsplit(self.path).path):
+                return beodeul_review.dispatch(self, 'POST')
             if urlsplit(self.path).path == '/api/action':
                 return sh.Handler.do_POST(self)
             return pick.H.do_POST(self)

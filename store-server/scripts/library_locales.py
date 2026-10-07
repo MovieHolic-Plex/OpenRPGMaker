@@ -207,6 +207,23 @@ FIXED: dict[str, dict[str, dict]] = {
             "description": "把用代码绘制的朝鲜风 16px 部件烘焙成一张的图块集。每格都已设定通行与图层，并附有村庄、国内城和室内的拼装参考文档。",
         },
     },
+    "마법 학교 — 고딕 성채·교실·숲·호수": {
+        "en": {
+            "title": "Magic School — Gothic Castle, Classrooms, Forest & Lake",
+            "summary": "Hand-pixeled chipset for castle halls, classrooms, forest, lake and village, plus 35 walking sprites of students, teachers and creatures.",
+            "description": "Gothic castle walls, floors and doors, with furniture for a great hall, potions classroom, library, greenhouse, owl tower, infirmary, clock tower, wand shop, sweet-shop cellar, snowy village post office, forest carriage stop, lake boathouse and broom-sport stadium — all 16px hand pixel art.\nReference docs (per-space build order with correct and incorrect examples) are included, so the editor assistant can build rooms with this chipset right away. 35 walking sprites (5 sheets) of students, teachers, caretakers and owls are included."
+        },
+        "ja": {
+            "title": "魔法学校 — ゴシック城・教室・森・湖",
+            "summary": "城の廊下・大広間・教室など12の空間と森・湖・村を描けるドットチップセット + 生徒・教師・生き物の歩行キャラ35体。",
+            "description": "ゴシック城の壁・床・扉と、大広間・魔法薬教室・図書館・温室・ふくろう塔・医務室・時計塔・杖の店・菓子店の地下・雪の村の郵便局・森の馬車乗り場・湖のボート小屋・箒競技場の家具を16pxの手打ちドットで描きました。\n空間ごとの配置手順(正しい例・誤った例の図)の参考文書が入っているので、エディターのアシスタントがこのチップセットですぐに部屋を作れます。生徒・教師・管理人・ふくろうなどの歩行キャラ35体(シート5枚)も入っています。"
+        },
+        "zh": {
+            "title": "魔法学校 — 哥特城堡·教室·森林·湖泊",
+            "summary": "可铺设城堡走廊、大礼堂、12 个教室与房间以及森林、湖泊、村庄的手绘像素图块集,另附学生、教师、生物行走角色 35 个。",
+            "description": "以 16px 手绘像素绘制哥特城堡的墙壁、地板、门,以及大礼堂、魔药教室、图书馆、温室、猫头鹰塔、医务室、钟楼、魔杖店、糖果店地窖、雪村邮局、森林马车站、湖边船屋、扫帚竞技场的家具。\n附有按空间划分的布置顺序参考文档(含正确与错误示例图),编辑器助手可直接用此图块集搭建房间。另含学生、教师、管理员、猫头鹰等行走角色 35 个(5 张图)。"
+        }
+    },
     "버들항 — 로마풍 항구 도시": {
         "en": {
             "title": "Beodeul Harbor — Roman-Style Port City",

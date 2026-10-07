@@ -193,3 +193,15 @@ SQLite 사본에 저장→재조회와 낡은 해시 거부를 확인했다. 서
 못해 BrokenProcessPool에 머무는 오류를 수정했다. 통합 로더는 실제 파일에서 import 가능한
 `pick_server` 이름으로 로드한다. 해당 모듈이 자신의 폴더를 sys.path에 넣으므로 자식도 같은
 파일을 읽으며, 공간/기물 store 분리는 기존 패키지 로딩을 유지한다.
+
+## 버들항 건물 검수 탭 (2026-10-07)
+
+탭 「버들항 건물 검수」는 같은 18315 origin 의 `/harness/beodeul/` 을 연다. 별도 서버 iframe 이 아니라
+`unified.py` 가 `beodeul-building-review/node/mount.py` 로 요청을 접두사 제거 후 `queue.Handler` 에 넘긴다
+(`/harness/beodeul/api/state|decision|export`, `/images/*`, `/grass.png`). 검수 코드·서명 영수증·결정 표
+(`~/.local/share/oprn/beodeul-building-review/review.sqlite`)는 독립 18317 서비스와 **같은 것**이다 —
+같은 DB 를 둘 다 읽어도 무방하지만 결정은 한 화면에서만 하는 것이 좋으니 통합 반영 후 18317 은 내린다.
+index.html 은 `BASE=location.pathname` 기준 상대 경로라 독립 실행(`/`)과 통합(`/harness/beodeul`) 모두 동작한다.
+접두사 밖 요청, 토큰 없는 POST(403), 그림 해시 불일치(404) 계약은 그대로다. 통합 서비스는 자기 체크아웃의
+`beodeul-building-review/node/` 코드를 쓰므로 서명 대상 파일이 그 체크아웃 안에서도 일치해야 영수증이 유효하다.
+자동 반복 작업(gate/produce)과 18322 수리 서비스는 통합하지 않았다.
