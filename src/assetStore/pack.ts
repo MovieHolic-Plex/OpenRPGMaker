@@ -22,6 +22,7 @@ import {
   type StorePackManifest,
 } from "./format";
 import { base64ToBytes, bytesToBase64, dataUrlParts, sniffMime } from "./sniff";
+import { WORKSHOP_ASSET_PREFIX } from "../project/workshopTiles";
 
 export interface PackBlob { readonly bytes: Uint8Array; readonly mime: StoreBlobMime }
 export interface BuiltPack { readonly manifest: StorePackManifest; readonly blobs: ReadonlyMap<string, PackBlob> }
@@ -68,8 +69,29 @@ export function closeSelection(project: Project, selection: PackSelection): { ti
   return { tilesetIds: [...tilesetIds], assetIds: [...assetIds].filter((id) => uploaded.has(id)), missing };
 }
 
+/** 이 자산을 AI 가 만들었으면 만든 경로, 아니면 null. 표식(generatedBy)이 생기기 전 공방 시트는 id 로 안다. */
+export function aiMaker(asset: UploadedAsset): string | null {
+  if (asset.generatedBy) return asset.generatedBy;
+  if (asset.id.startsWith(WORKSHOP_ASSET_PREFIX)) return "workshop";
+  if (asset.origin?.aiGenerated) return "store";
+  return null;
+}
+
+/**
+ * 팩에 실제로 들어갈 자산(타일셋 그림·이식 시트 포함) 중 AI 가 만든 것.
+ * 하나라도 있으면 「AI 생성」을 끌 수 없다 — 조수 제안·스토어 창·buildPack 이 같은 판정을 쓴다.
+ */
+export function aiMadeAssets(project: Project, selection: PackSelection): { id: string; name: string; by: string }[] {
+  return closeSelection(project, selection).assetIds.flatMap((id) => {
+    const asset = project.assets.uploaded[id]!;
+    const by = aiMaker(asset);
+    return by ? [{ id, name: asset.name, by }] : [];
+  });
+}
+
 /**
  * 프로젝트의 타일셋·에셋을 스토어 팩으로 묶는다. 매니페스트 안의 data URL 은 전부 blob 자리표시로 뺀다.
+ * AI 가 만든 자산이 들어 있으면 meta.aiGenerated 가 false 여도 true 로 올린다.
  * previews 가 비면 첫 그림 에셋을 표지로 쓴다.
  */
 export async function buildPack(project: Project, selection: PackSelection, meta: PackMeta, io: PackBuildIo, previews: readonly Uint8Array[] = []): Promise<BuiltPack> {
@@ -122,7 +144,7 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     tags: meta.tags.map((tag) => tag.trim()).filter(Boolean),
     kind: meta.kind,
     license: meta.license,
-    aiGenerated: meta.aiGenerated,
+    aiGenerated: meta.aiGenerated || closed.assetIds.some((id) => aiMaker(project.assets.uploaded[id]!) !== null),
     credits: meta.credits.trim(),
     content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}) },
     previews: previewShas.slice(0, 6),

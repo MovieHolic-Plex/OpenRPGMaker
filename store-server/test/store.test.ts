@@ -14,6 +14,7 @@ import { createLoginLink, upsertUser } from "../src/auth";
 import { BlobStore } from "../src/blobStore";
 import { sweepOrphanBlobs } from "../src/items";
 import { loadConfig } from "../src/config";
+import { DEFAULT_HOLD_WORDS, holdMatcher, parseHoldWords } from "../src/moderation";
 import { createDb, migrate, type Db } from "../src/db";
 import { Client, freePort, startPostgres, type TempPostgres } from "./harness";
 
@@ -66,6 +67,16 @@ async function uploadPack(client: Client, title: string, salt: number): Promise<
   assert.equal(response.status, 201, JSON.stringify(body));
   return { ...body, manifest: pack.manifest };
 }
+
+async function uploadVersion(client: Client, slug: string, title: string, salt: number): Promise<{ version: number; status: string }> {
+  const pack = await makePack(title, salt);
+  const check = await (await client.api("/api/v1/blobs/check", { sha256s: [...pack.blobs.keys()] })).json() as { missing: string[] };
+  for (const key of check.missing) await client.fetch("/api/v1/blobs", { method: "POST", body: Buffer.from(pack.blobs.get(key)!), headers: { "x-sha256": key, "x-csrf-token": client.csrf } });
+  const response = await client.api(`/api/v1/items/${slug}/versions`, { manifest: pack.manifest });
+  assert.equal(response.status, 201);
+  return await response.json() as { version: number; status: string };
+}
+type Queue = { pending: { slug: string; heldReason: string | null }[]; unreviewed: { slug: string; status: string; reviewedVersion: number; latestVersion: number }[] };
 
 async function deviceLogin(app: Client, browser: Client): Promise<void> {
   const start = await (await app.api("/api/v1/device/code", { client: "OPRN 에디터 테스트" })).json() as { device_code: string; user_code: string; verification_uri_complete: string };
@@ -122,6 +133,8 @@ describe("OPRN asset store server", () => {
     const config = loadConfig({
       STORE_PORT: String(port), STORE_PUBLIC_URL: base, STORE_DATABASE_URL: pg.url, STORE_BLOB_DIR: blobDir,
       STORE_ADMIN_EMAILS: "boss@openrpgmaker.com", STORE_DEV_LOGIN: "1",
+      // 시험 손님은 모두 127.0.0.1 이다 — 상품 만들기 한도(IP 마다 1분 20건)를 시험 전체가 넘는다
+      STORE_CREATE_PER_MINUTE: "200",
       STORE_GOOGLE_CLIENT_ID: "cid", STORE_GOOGLE_CLIENT_SECRET: "secret",
       STORE_GOOGLE_AUTH_URL: `http://127.0.0.1:${googlePort}/auth`, STORE_GOOGLE_TOKEN_URL: `http://127.0.0.1:${googlePort}/token`, STORE_GOOGLE_USERINFO_URL: `http://127.0.0.1:${googlePort}/userinfo`,
     });
@@ -337,6 +350,59 @@ describe("OPRN asset store server", () => {
     assert.equal((await new Client(base).fetch(`/api/v1/items/${item.slug}`)).status, 404, "hidden from guests until re-approved");
   });
 
+  it("holds items with hold words for review, and lists instantly published items for after-the-fact review", async () => {
+    // 운영은 신뢰 기준 0(누구나 바로 공개). 이 시험 동안만 같은 조건으로 둔다.
+    const config = storeConfig as { trustThreshold: number };
+    const saved = config.trustThreshold;
+    config.trustThreshold = 0;
+    try {
+      const author = new Client(base);
+      await author.devLogin("open-author@example.com", "열린 작가");
+      const admin = new Client(base);
+      await admin.devLogin("boss@openrpgmaker.com", "운영자");
+      const queue = async () => await (await admin.api("/api/v1/admin/queue")).json() as Queue;
+
+      const clean = await uploadPack(author, "깨끗한 들판 타일", 70);
+      assert.equal(clean.status, "visible", "trusted authors still publish instantly");
+      const held = await uploadPack(author, "포 켓 몬 풀숲 타일", 71);
+      assert.equal(held.status, "pending", "a hold word sends even a trusted author to review");
+      assert.equal((await new Client(base).fetch(`/api/v1/items/${held.slug}`)).status, 404, "held items are invisible to guests");
+      const ownByAdmin = await uploadPack(admin, "운영자 포켓몬 시험 팩", 72);
+      assert.equal(ownByAdmin.status, "visible", "admins are the reviewers — no hold, no after-the-fact entry");
+
+      let q = await queue();
+      assert.match(q.pending.find((entry) => entry.slug === held.slug)?.heldReason ?? "", /포켓몬/);
+      assert.deepEqual(q.unreviewed.filter((entry) => [clean.slug, ownByAdmin.slug].includes(entry.slug)).map((entry) => entry.slug), [clean.slug]);
+      const page = await admin.page("/admin");
+      assert.match(page.html, /data-testid="admin-unreviewed"/);
+      assert.match(page.html, new RegExp(`admin-reviewed-${clean.slug}`));
+      assert.match(page.html, new RegExp(`admin-held-${held.slug}`));
+
+      assert.equal((await author.api(`/api/v1/admin/items/${clean.slug}/reviewed`, {})).status, 403, "only admins review");
+      assert.equal((await admin.api(`/api/v1/admin/items/${held.slug}/reviewed`, {})).status, 409, "pending items are approved or removed, not just marked");
+      assert.equal((await admin.form(`/admin/items/${clean.slug}/reviewed`, { csrf: admin.csrf })).status, 303);
+      q = await queue();
+      assert.ok(!q.unreviewed.some((entry) => entry.slug === clean.slug), "reviewed items leave the list");
+      assert.equal((await (await author.api(`/api/v1/items/${clean.slug}`)).json() as { status: string }).status, "visible", "marking reviewed keeps the status");
+
+      assert.deepEqual(await uploadVersion(author, clean.slug, "깨끗한 들판 타일 v2", 73), { slug: clean.slug, version: 2, status: "visible" });
+      q = await queue();
+      assert.deepEqual(q.unreviewed.filter((entry) => entry.slug === clean.slug).map((entry) => [entry.reviewedVersion, entry.latestVersion]), [[1, 2]], "a new version comes back for review");
+      assert.equal((await uploadVersion(author, clean.slug, "NSFW 들판 타일", 74)).status, "pending", "a new version with a hold word goes back to review");
+      assert.match((await queue()).pending.find((entry) => entry.slug === clean.slug)?.heldReason ?? "", /nsfw/);
+
+      assert.equal((await admin.api(`/api/v1/admin/items/${held.slug}/status`, { status: "visible", note: "원작 아님" })).status, 200);
+      q = await queue();
+      assert.ok(!q.pending.some((entry) => entry.slug === held.slug));
+      assert.ok(!q.unreviewed.some((entry) => entry.slug === held.slug), "approving counts as reviewing");
+      const audit = await db.query("select action, detail from store_audit where item_id = (select id from store_items where slug = $1) order by id", [clean.slug]);
+      assert.deepEqual(audit.rows.map((row) => row.action), ["create", "admin_reviewed", "version", "version"]);
+      assert.deepEqual(audit.rows[3].detail.held, ["nsfw"]);
+    } finally {
+      config.trustThreshold = saved;
+    }
+  });
+
   it("only redirects to same-site paths after login", async () => {
     for (const next of ["//evil.example", "/\\evil.example", "/\tevil", "https://evil.example/"]) {
       const client = new Client(base);
@@ -372,5 +438,28 @@ describe("OPRN asset store server", () => {
     assert.equal(used.headers.get("location"), "/admin");
     assert.equal((await client.fetch("/admin")).status, 200);
     assert.equal((await new Client(base).form("/auth/link", { token })).status, 410, "single use");
+  });
+});
+
+describe("hold words", () => {
+  const matcher = holdMatcher(DEFAULT_HOLD_WORDS);
+  it("matches English words only on word boundaries, ignoring case, accents and separators", () => {
+    assert.deepEqual(matcher.hits("Pokémon fan tiles"), ["pokemon"]);
+    assert.deepEqual(matcher.hits("made for RPG-Maker MZ"), ["rpg maker"]);
+    assert.deepEqual(matcher.hits("RTP 그대로"), ["rtp"]);
+    assert.deepEqual(matcher.hits("art pack, startpoint, pornography"), [], "rtp/porn inside other words do not count");
+  });
+  it("matches Korean, Japanese and Chinese inside text, through spaces and symbols", () => {
+    assert.deepEqual(matcher.hits("포 켓 몬 풀숲"), ["포켓몬"]);
+    assert.deepEqual(matcher.hits("야.짤 모음"), ["야짤"]);
+    assert.deepEqual(matcher.hits("ポケモン風"), ["ポケモン"]);
+    assert.deepEqual(matcher.hits("ホケモン"), [], "kana voicing marks are not folded away");
+    assert.deepEqual(matcher.hits("숲 마을 타일, 성인 남녀 캐릭터"), []);
+  });
+  it("reads extra words from config and can turn the defaults off", () => {
+    assert.deepEqual(parseHoldWords("a, b\n# 주석\nc # 꼬리 주석"), ["a", "b", "c"]);
+    const config = (extra: Record<string, string>) => loadConfig({ STORE_DATABASE_URL: "postgresql://x", STORE_BLOB_DIR: "/tmp/x", ...extra });
+    assert.ok(config({ STORE_HOLD_WORDS: "금지어" }).holdWords.includes("pokemon"));
+    assert.deepEqual(config({ STORE_HOLD_WORDS: "금지어", STORE_HOLD_WORDS_DEFAULTS: "0" }).holdWords, ["금지어"]);
   });
 });

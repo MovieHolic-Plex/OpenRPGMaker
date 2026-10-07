@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **166쪽 / 5595KB / 약 1,629,820 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **166쪽 / 5602KB / 약 1,631,934 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -32,7 +32,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-pre-edit-routing.md` | 115KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 851 | ~34,565 |
 | `openwiki/runtime-project-schema.md` | 220KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1611 | ~61,645 |
 | `openwiki/runtime-sessions.md` | 137KB | 50KB | 834 | ~36,898 |
-| `openwiki/testing.md` | 220KB | 48KB | 2099 | ~61,347 |
+| `openwiki/testing.md` | 221KB | 48KB | 2103 | ~61,473 |
 | `openwiki/tileset-reference-documents.md` | 59KB | 4KB | 602 | ~18,202 |
 
 ## 한국어 산문이 깨진 페이지
@@ -1192,9 +1192,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L17` Quick routing
 - `L25` For AI agents
 
-### `openwiki/editor-workshop.md` — 5KB · 23줄 · ~1,547 토큰
+### `openwiki/editor-workshop.md` — 7KB · 27줄 · ~1,959 토큰
 
-- `L13` 칩셋에 굽기 (2단계, 2026-10-07)
+- `L17` 칩셋에 굽기 (2단계, 2026-10-07)
 
 ### `openwiki/emerald-fields.md` — 23KB · 208줄 · ~7,314 토큰
 
@@ -1754,7 +1754,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L130` 실제 Pi 조수 제작 오프닝 · revision11 (2026-10-03)
 - `L159` Native creature refinement · 2026-10-04
 
-### `openwiki/monster-kit-origin.md` — 39KB · 276줄 · ~11,814 토큰
+### `openwiki/monster-kit-origin.md` — 41KB · 290줄 · ~12,518 토큰
 
 - `L6` 위치
 - `L17` 단계
@@ -1780,6 +1780,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L237` 통합 I6 이어 작업 (2026-10-03)
 - `L251` Emerald native variants 7종 (2026-10-04)
 - `L260` GBA 2세대 결로 다시 그리기 (2026-10-07)
+- `L277` 실내 GBA 다시 그리기 · 걸어 오르는 계단 · 2층 (2026-10-07)
 
 ### `openwiki/monster-resource-editor.md` — 4KB · 75줄 · ~1,199 토큰
 
@@ -2004,21 +2005,22 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L190` 검증
 - `L201` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 32KB · 255줄 · ~9,850 토큰
+### `openwiki/relief-terrain.md` — 35KB · 277줄 · ~10,722 토큰
 
 - `L14` 파일 지도
 - `L33` depth 규칙(런타임, `playSceneRelief.ts` 머리말)
 - `L48` 편집기 성능 계약 (2026-10-03 부분 굽기)
 - `L65` UX2 높이·컬링 수정 (2026-10-04, 소스 변경 · 브라우저 QA 대기)
   - `L122` 통합 후 브라우저 QA 레시피 (실행 담당자용)
-- `L152` 지형 설치 확장 (2026-10-03)
-- `L158` 러프 붓·지형지물 막대 (2026-10-03)
-- `L168` 기본 계단의 돌 디딤판 (2026-10-03 수정)
-- `L180` 연속 경사로 — 계단과 구분 (2026-10-03 사용자 정정)
-- `L199` 발 접지·클릭·바닥 접합 수정 (2026-10-04)
-- `L219` 알려진 한계 · 결정이 필요한 것
-- `L228` 검증 도구 (이 브랜치에 들어온 것)
-- `L250` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
+- `L152` 페이지 굽기 회귀 수정 (2026-10-07)
+- `L174` 지형 설치 확장 (2026-10-03)
+- `L180` 러프 붓·지형지물 막대 (2026-10-03)
+- `L190` 기본 계단의 돌 디딤판 (2026-10-03 수정)
+- `L202` 연속 경사로 — 계단과 구분 (2026-10-03 사용자 정정)
+- `L221` 발 접지·클릭·바닥 접합 수정 (2026-10-04)
+- `L241` 알려진 한계 · 결정이 필요한 것
+- `L250` 검증 도구 (이 브랜치에 들어온 것)
+- `L272` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
 ### `openwiki/rpg-opening-research.md` — 5KB · 27줄 · ~1,404 토큰
 
@@ -2744,106 +2746,106 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` 저장·크기 변경
 - `L77` 확인
 
-### `openwiki/testing.md` — 220KB · 2099줄 · ~61,347 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 221KB · 2103줄 · ~61,473 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
 - `L53` main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
 - `L60` parity 스위트 CI OOM (2026-09-19)
-- `L68` ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
-- `L77` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
-  - `L104` vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
-  - `L133` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
-- `L142` 격리 원장 `test/QUARANTINE.md` (2026-09-13)
-- `L160` 브라우저 테스트는 별도 스테이지다 (2026-09-13)
-- `L174` P5 delivery gates and the P4 regressions they caught (2026-09-09)
-  - `L176` Open: checkpoint writes still slow the authoring loop
-- `L228` P4 checkpoint storage and boot admission (2026-09-09)
-- `L282` P3 request-bound fixture alignment (2026-09-08)
-- `L307` Issue 693 verification contracts (2026-09-08)
-- `L331` Request-coverage gate follow-up (2026-09-08)
-- `L374` Native event battle reliability QA (2026-09-08)
-- `L410` Real large-world player QA (2026-09-07)
-- `L419` CSS budget: file count is informational
-- `L431` Selection and composer surface contracts (2026-09-06)
-- `L450` P3/current-main composition fixtures (2026-09-08)
-  - `L477` Cooperative Node scheduling in long session fixtures (2026-09-08)
-- `L493` AI turn observation contracts (2026-09-06)
-  - `L514` P2 R1 retained-draft Ask (2026-09-07)
-  - `L552` P2 R3 wiki delivery (2026-09-07)
-- `L581` P3 ownership and stale-base verification (2026-09-07)
-  - `L656` Autosave status fixture ownership (2026-09-08)
-  - `L670` Project history transport isolation
-- `L702` Canonical project storage versus AI history (2026-09-06)
-  - `L704` 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
-- `L726` Action RPG authoring and runtime proof (2026-09-07)
-- `L747` Database CSS ownership contracts (2026-09-06)
-- `L768` Audio description verification
-  - `L792` Real editor surfaces
-  - `L819` Exported-player playback and dependency evidence
-- `L868` Mac onboarding Phase 1 contracts (2026-09-06)
-- `L896` Task10 field-input verification and limits (2026-09-06)
-- `L912` Life QA observation and action receipts (2026-09-06)
-  - `L920` Task5 validation correction (2026-09-06)
-  - `L928` Task5 Q1 audio boundary correction (2026-09-06)
-- `L936` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
-- `L953` Esc 메뉴 동작·시각 검증 (2026-09-05)
-- `L969` Completed-house Phase 2 verification (2026-09-06)
-- `L1000` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
-- `L1007` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
-- `L1016` Editor e2e boot-overlay determinism (2026-08-31)
-- `L1021` 영역 다듬기 focused gate (2026-08-31)
-- `L1028` AI 이벤트 배치 통행성 focused gate (2026-08-30)
-- `L1036` 체공(점프·낙하) focused gate (2026-08-29)
-  - `L1045` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
-  - `L1062` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
-  - `L1071` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
-  - `L1101` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
-- `L1164` Roguelike run Phase 0–3 coverage (2026-08-24)
-  - `L1175` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
-- `L1184` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
-  - `L1208` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
-  - `L1229` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
-  - `L1235` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
-  - `L1258` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
-- `L1266` Agent validation rule
-- `L1376` Event-editor trust-loop validation (2026-07-30)
-- `L1381` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
-- `L1400` Tile-to-world persistence concurrency (task20)
-- `L1406` P2 spatial focused gate (2026-08-25)
-- `L1415` 대화창 연출 focused gate (2026-08-30)
-- `L1490` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
-  - `L1509` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
-  - `L1521` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
-  - `L1529` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
-  - `L1536` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
-- `L1558` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
-  - `L1560` 메뉴 적대적 플레이 회귀 (2026-09-05)
-- `L1701` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
-- `L1708` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
-- `L1722` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
-  - `L1743` Shared fake DOM enhancement contracts (2026-09-08)
-- `L1775` bugfix-sweep 실제 표면 하네스 (2026-08-29)
-- `L1788` 마을 설계서 (2026-09-05)
-- `L1793` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
-- `L1803` 상점 진열 중심 편집 검증 (2026-09-05)
-- `L1811` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
-- `L1817` Request-bound functional acceptance verification (2026-09-07)
-- `L1885` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
-- `L1895` 실내 조립·형상 검증 (2026-09-05)
-- `L1899` Feature16 player preferences / inventory / shop (2026-09-21)
-- `L1911` Feature16 통합 검증 (2026-09-21)
-  - `L1919` 필드 HUD 브라우저 증거 (2026-09-21)
-  - `L1925` 장르 HUD 시각 확인 (2026-09-21)
-- `L1933` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
-- `L1958` 맵 크기 성능 실측 (2026-10-01)
-  - `L1979` 화면 주변 타일 유지 검증
-  - `L2002` 공식 512×512 저작 상한 검증
-  - `L2030` 공식 1024×1024 저작 상한과 성능 검증
-- `L2048` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
-  - `L2064` Maker repair and click-first startup (2026-10-04)
-- `L2089` 조수 기능별 실제 수행 점검 (2026-10-05)
-- `L2093` 몬스터 여정 영상 (2026-10-07)
+- `L72` ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
+- `L81` 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
+  - `L108` vitest 는 왜 28분이고, 무엇을 만져도 안 줄어드는가 (2026-09-14 실측)
+  - `L137` AI 조수 가족이 왜 이렇게 잘 뒤집히나 (실측)
+- `L146` 격리 원장 `test/QUARANTINE.md` (2026-09-13)
+- `L164` 브라우저 테스트는 별도 스테이지다 (2026-09-13)
+- `L178` P5 delivery gates and the P4 regressions they caught (2026-09-09)
+  - `L180` Open: checkpoint writes still slow the authoring loop
+- `L232` P4 checkpoint storage and boot admission (2026-09-09)
+- `L286` P3 request-bound fixture alignment (2026-09-08)
+- `L311` Issue 693 verification contracts (2026-09-08)
+- `L335` Request-coverage gate follow-up (2026-09-08)
+- `L378` Native event battle reliability QA (2026-09-08)
+- `L414` Real large-world player QA (2026-09-07)
+- `L423` CSS budget: file count is informational
+- `L435` Selection and composer surface contracts (2026-09-06)
+- `L454` P3/current-main composition fixtures (2026-09-08)
+  - `L481` Cooperative Node scheduling in long session fixtures (2026-09-08)
+- `L497` AI turn observation contracts (2026-09-06)
+  - `L518` P2 R1 retained-draft Ask (2026-09-07)
+  - `L556` P2 R3 wiki delivery (2026-09-07)
+- `L585` P3 ownership and stale-base verification (2026-09-07)
+  - `L660` Autosave status fixture ownership (2026-09-08)
+  - `L674` Project history transport isolation
+- `L706` Canonical project storage versus AI history (2026-09-06)
+  - `L708` 데스크톱(Electron) 스모크는 이렇게 돈다 (2026-09-16)
+- `L730` Action RPG authoring and runtime proof (2026-09-07)
+- `L751` Database CSS ownership contracts (2026-09-06)
+- `L772` Audio description verification
+  - `L796` Real editor surfaces
+  - `L823` Exported-player playback and dependency evidence
+- `L872` Mac onboarding Phase 1 contracts (2026-09-06)
+- `L900` Task10 field-input verification and limits (2026-09-06)
+- `L916` Life QA observation and action receipts (2026-09-06)
+  - `L924` Task5 validation correction (2026-09-06)
+  - `L932` Task5 Q1 audio boundary correction (2026-09-06)
+- `L940` 기존 실패 비교는 진단 내용까지 확인한다 (2026-09-05)
+- `L957` Esc 메뉴 동작·시각 검증 (2026-09-05)
+- `L973` Completed-house Phase 2 verification (2026-09-06)
+- `L1004` P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+- `L1011` Map-owned overlays: actual AI-turn browser regression (2026-09-05)
+- `L1020` Editor e2e boot-overlay determinism (2026-08-31)
+- `L1025` 영역 다듬기 focused gate (2026-08-31)
+- `L1032` AI 이벤트 배치 통행성 focused gate (2026-08-30)
+- `L1040` 체공(점프·낙하) focused gate (2026-08-29)
+  - `L1049` 좌표 목적지 이동 QA — `node scripts/qa-coordinate-move.mjs` (OPRN-OUT-013, 2026-09-10)
+  - `L1066` 좌표 이동 저작 폼 QA — `node scripts/capture-coordinate-move-form.mjs`
+  - `L1075` 체공 런타임 QA — `npm run qa:runtime -- --scenario hop`
+  - `L1105` 워크트리에 `node_modules` 가 없을 때 (2026-08-29 실측)
+- `L1168` Roguelike run Phase 0–3 coverage (2026-08-24)
+  - `L1179` 조건 게이트를 부하 중에 재지 마라 (실측 2026-08-29)
+- `L1188` 데이터베이스 UI/UX 계측 하네스 (2026-08-30)
+  - `L1212` 가상 요소 텍스트를 안 재면 `tinyFont 0` 은 "안 봤다" 는 뜻이다 (실측)
+  - `L1233` 0px 이미지는 "깨진 것" 과 "접힌 것" 을 갈라야 한다 (실측)
+  - `L1239` 타이밍에 취약한 e2e 가 빨간불이면 그 스펙이 단정하는 속성을 직접 재라 (실측 2026-08-30)
+  - `L1262` 소스를 grep 하는 테스트는 이름만 봐서는 회귀를 못 가른다 (실측)
+- `L1270` Agent validation rule
+- `L1380` Event-editor trust-loop validation (2026-07-30)
+- `L1385` 얼굴 바꾸기(changeFace) 폼 시각 계약 (2026-08-28 실측)
+- `L1404` Tile-to-world persistence concurrency (task20)
+- `L1410` P2 spatial focused gate (2026-08-25)
+- `L1419` 대화창 연출 focused gate (2026-08-30)
+- `L1494` 워크트리 e2e 는 dev 서버가 조용히 안 뜬다 (2026-08-27 실측)
+  - `L1513` `locator.click()` 은 잘림 버그를 구조적으로 못 잡는다 (2026-08-29 실측)
+  - `L1525` 스크롤이 생겼다고 다 닿는 건 아니다 — 가운데 정렬 넘침 (2026-08-30 실측)
+  - `L1533` 미정의 커스텀 프로퍼티는 콘솔에 아무 말도 남기지 않는다 (2026-08-30 실측)
+  - `L1540` `ERR_NETWORK_CHANGED` 는 HMR 말고 호스트 인터페이스 때문에도 터진다 (2026-08-28 실측)
+- `L1562` 런타임(게임) 전용 비전 QA 하네스 (2026-08-28)
+  - `L1564` 메뉴 적대적 플레이 회귀 (2026-09-05)
+- `L1705` sceneTestRunner 의 자율 이동 관측 공백 (2026-08-27)
+- `L1712` NPC 배회 런타임 QA — `npm run qa:runtime -- --scenario npc-movement` (2026-09-17)
+- `L1726` fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
+  - `L1747` Shared fake DOM enhancement contracts (2026-09-08)
+- `L1779` bugfix-sweep 실제 표면 하네스 (2026-08-29)
+- `L1792` 마을 설계서 (2026-09-05)
+- `L1797` 공포 제작 개정 QA와 개발 서버 전송 (2026-09-05)
+- `L1807` 상점 진열 중심 편집 검증 (2026-09-05)
+- `L1815` 실제 DB로 나가는 전체 검사 요청 (2026-09-05 실측)
+- `L1821` Request-bound functional acceptance verification (2026-09-07)
+- `L1889` 조수 보상 저작과 출하 플레이어 검증 (2026-09-06)
+- `L1899` 실내 조립·형상 검증 (2026-09-05)
+- `L1903` Feature16 player preferences / inventory / shop (2026-09-21)
+- `L1915` Feature16 통합 검증 (2026-09-21)
+  - `L1923` 필드 HUD 브라우저 증거 (2026-09-21)
+  - `L1929` 장르 HUD 시각 확인 (2026-09-21)
+- `L1937` 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+- `L1962` 맵 크기 성능 실측 (2026-10-01)
+  - `L1983` 화면 주변 타일 유지 검증
+  - `L2006` 공식 512×512 저작 상한 검증
+  - `L2034` 공식 1024×1024 저작 상한과 성능 검증
+- `L2052` 첫 자동 게임의 실제 대사 대기 (2026-10-04)
+  - `L2068` Maker repair and click-first startup (2026-10-04)
+- `L2093` 조수 기능별 실제 수행 점검 (2026-10-05)
+- `L2097` 몬스터 여정 영상 (2026-10-07)
 
 ### `openwiki/tile-geometry.md` — 12KB · 145줄 · ~3,629 토큰
 

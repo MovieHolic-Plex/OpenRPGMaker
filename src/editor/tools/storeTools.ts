@@ -12,7 +12,7 @@ import { STORE_ITEM_KINDS, STORE_LICENSES, type StoreItemSummary, type StoreLice
 import type { MyStoreItem } from "@/assetStore/bridgeTypes";
 import type { PreparedStoreItem } from "@/editor/assetStore/storeApply";
 import { addStoreProfiles } from "@/editor/assetStore/storeProfiles";
-import { applyPackToProject } from "@/assetStore/pack";
+import { aiMadeAssets, applyPackToProject } from "@/assetStore/pack";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 /** 스토어에서 온 글을 모델에 넘길 때 붙이는 경고. */
@@ -167,7 +167,10 @@ export interface StorePublishProposal {
   readonly tags: readonly string[];
   readonly itemKind: string;
   readonly license: StoreLicense;
+  /** 카드의 「AI 생성」 기본값. 조수가 정하지 않는다 — 늘 true 로 시작하고 사용자만 끈다. */
   readonly aiGenerated: boolean;
+  /** 팩에 들어갈 AI 가 만든 자산. 하나라도 있으면 카드가 「AI 생성」을 잠근다(buildPack 도 다시 강제한다). */
+  readonly aiMade: readonly { readonly id: string; readonly name: string; readonly by: string }[];
   readonly credits: string;
   readonly targetSlug: string | null;
 }
@@ -190,7 +193,7 @@ export function isStoreCardRequest(value: unknown): value is StoreCardRequest {
 const askMissingTiles: ToolDefinition = {
   name: "ask_missing_tiles",
   description: "요청을 만들 타일·그림이 프로젝트에 없을 때 사용자에게 묻는다. 화면에 질문 카드가 뜨고, 카드가 스토어를 검색해 결과를 보여 준다 — "
-    + "사용자는 스토어 것을 넣거나, 직접 그리기나 있는 타일로 대신하기를 고른다. 손 도트 실내 맵이면 직접 그리기가 공방(실내 기물)을 열고, 사용자가 칩셋에 넣으면 물체 id(workshop:…)가 후속 요청으로 온다. "
+    + "사용자는 스토어 것을 넣거나, 직접 그리기나 있는 타일로 대신하기를 고른다. 직접 그리기는 공방을 연다(손 도트 실내 맵은 실내 기물, 그 밖의 16px 맵은 그 맵 칩셋의 맵 기물) — 사용자가 칩셋에 넣으면 물체 id(workshop:…)가 후속 요청으로 온다. "
     + "부른 뒤에는 더 칠하지 말고 이 턴을 끝내라 — 사용자의 답이 다음 요청으로 온다. "
     + "프로젝트의 타일셋·참고문서·공용 장소로 만들 수 있으면 부르지 말고 그걸 써라.",
   mode: "read",
@@ -224,7 +227,7 @@ const stringList = (value: unknown): string[] => (Array.isArray(value) ? value.f
 const storePublish: ToolDefinition = {
   name: "store_publish",
   description: "프로젝트의 타일셋·그림을 스토어에 올리는 **제안 카드**를 띄운다. 실제로 올리는 것은 사용자가 카드에서 권리 동의를 하고 버튼을 눌렀을 때다 — 이 도구는 아무것도 올리지 않는다. "
-    + "사용자가 올려 달라고 직접 말했을 때만 쓴다. 제목·소개·설명·태그를 채우고, 조수가 그리거나 만든 그림이 들어 있으면 aiGenerated:true. 부른 뒤 이 턴을 끝내라.",
+    + "사용자가 올려 달라고 직접 말했을 때만 쓴다. 제목·소개·설명·태그를 채운다. 「AI 생성」 표시는 조수가 정하지 않는다 — 카드에서 켜진 채로 시작하고 사용자만 끌 수 있으며, AI 가 만든 그림이 들어 있으면 끌 수 없다. 부른 뒤 이 턴을 끝내라.",
   mode: "read",
   domains: ["system"],
   parameters: {
@@ -238,14 +241,13 @@ const storePublish: ToolDefinition = {
       tags: { type: "array", items: { type: "string" }, description: "태그 3~8개" },
       kind: { type: "string", enum: STORE_ITEM_KINDS, description: "상품 종류. 여러 종류가 섞이면 pack" },
       license: { type: "string", enum: STORE_LICENSES, description: "기본 OPRN-GAME(게임 안에서 자유, 원본 재배포 금지). 사용자가 말한 게 있으면 그것" },
-      aiGenerated: { type: "boolean", description: "AI 도구로 만든 부분이 있으면 true" },
       credits: { type: "string", description: "크레딧 표기(작가 이름 등)" },
       targetSlug: { type: "string", description: "이미 올린 내 상품에 새 판본으로 올릴 때 그 slug" },
     },
-    required: ["title", "summary", "kind", "aiGenerated"],
+    required: ["title", "summary", "kind"],
     additionalProperties: false,
   },
-  invalidArgsExample: { tilesetIds: ["my_forest"], title: "숲 마을 타일", summary: "16px 숲 마을 칩셋과 깔기 참고문서", kind: "tileset", aiGenerated: true },
+  invalidArgsExample: { tilesetIds: ["my_forest"], title: "숲 마을 타일", summary: "16px 숲 마을 칩셋과 깔기 참고문서", kind: "tileset" },
   run(project, args): ToolExecResult {
     const tilesetIds = stringList(args.tilesetIds);
     const assetIds = stringList(args.assetIds);
@@ -256,10 +258,12 @@ const storePublish: ToolDefinition = {
     const proposal: StorePublishProposal = {
       kind: "store-publish-proposal", tilesetIds, assetIds,
       title: String(args.title ?? "").trim(), summary: String(args.summary ?? "").trim(), description: String(args.description ?? "").trim(),
-      tags: stringList(args.tags).slice(0, 12), itemKind: kindOf(args.kind) || "pack", license, aiGenerated: args.aiGenerated === true,
+      tags: stringList(args.tags).slice(0, 12), itemKind: kindOf(args.kind) || "pack", license,
+      aiGenerated: true, aiMade: aiMadeAssets(project, { tilesetIds, assetIds }),
       credits: String(args.credits ?? "").trim(), targetSlug: typeof args.targetSlug === "string" && args.targetSlug.trim() ? args.targetSlug.trim() : null,
     };
-    return { summary: "올리기 제안 카드를 띄운다. 사용자가 동의하고 눌러야 올라간다 — 올렸다고 말하지 말고 이 턴을 끝내라.", data: proposal };
+    const aiNote = proposal.aiMade.length ? ` AI 가 만든 그림(${proposal.aiMade.map((item) => item.name).slice(0, 3).join(", ")})이 들어 있어 「AI 생성」으로 올라간다.` : "";
+    return { summary: `올리기 제안 카드를 띄운다. 사용자가 동의하고 눌러야 올라간다 — 올렸다고 말하지 말고 이 턴을 끝내라.${aiNote}`, data: proposal };
   },
 };
 

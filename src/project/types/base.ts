@@ -645,6 +645,11 @@ export interface UploadedAsset {
   };
   /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
   origin?: import("../../assetStore/format").StoreAssetOrigin;
+  /**
+   * AI 가 만든 자산이면 만든 경로(예: "workshop", "image-generation", "original-music").
+   * 스토어에 올릴 때 「AI 생성」 표시를 끌 수 없게 한다(src/assetStore/pack.ts aiMadeAssets).
+   */
+  generatedBy?: string;
 }
 
 export interface AssetSet {

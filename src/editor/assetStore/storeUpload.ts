@@ -93,6 +93,17 @@ async function previewBytes(project: Project, selection: PackSelection): Promise
   return out.slice(0, 6);
 }
 
+const AI_MAKER_LABELS: Record<string, string> = {
+  workshop: "공방", "image-generation": "그림 생성", "character-appearance": "캐릭터 외형 생성", "cutscene-art": "컷신 그림 생성",
+  "original-music": "조수 작곡", "original-sound": "조수 효과음", "generated-buildings": "생성 건물", store: "스토어의 AI 생성품",
+};
+
+/** 「AI 생성」을 끌 수 없는 이유 한 줄. 스토어 창과 조수 올리기 카드가 같이 쓴다. */
+export function aiMadeNote(list: readonly { name: string; by: string }[]): string {
+  const shown = list.slice(0, 4).map((item) => `${item.name}(${AI_MAKER_LABELS[item.by] ?? item.by})`).join(", ");
+  return `AI 가 만든 것이 들어 있어 「AI 생성」으로 올라가요: ${shown}${list.length > 4 ? ` 외 ${list.length - 4}개` : ""}`;
+}
+
 export async function buildUploadPack(project: Project, selection: PackSelection, meta: PackMeta): Promise<BuiltPack> {
   const previews = await previewBytes(project, selection);
   return buildPack(project, selection, meta, { readAsset: uploadedAssetBytes, sha256 }, previews);
