@@ -48,7 +48,7 @@
   ],
   "building": "jp_ramen",
   "rules": [
-   "입구 안쪽 동쪽 벽 곁에 상자형 식권기(은회색 몸통에 작은 색 버튼 격자·지폐 투입구·식권 출구, 글자 없음) → ㄱ자 카운터(가로 5칸+동쪽 2칸, 위에 라멘 그릇·조미료·물병과 컵) + 스툴 → 카운터 안쪽 주방 줄(육수 솥·면 삶는 칸·조리대·개수대·냉장고) 바닥은 주방 타일.",
+   "입구 서쪽 바로 옆에 상자형 식권기(은회색 몸통에 작은 색 버튼 격자·지폐 투입구·식권 출구, 글자 없음) → ㄱ자 카운터(가로 5칸 + 동쪽 끝에서 위로 꺾인 1칸, 위에 라멘 그릇·조미료·물병과 컵) + 스툴, 카운터 안쪽 북서 모서리가 주방 타일 구역(육수 솥·면 삶는 칸·조리대·개수대 한 줄). 주방 출입구는 카운터 서쪽 끝 한 칸.",
    "평면·가구는 tiledata/jp-city/interior/examples/ramen.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-ramen-9x9\"})."
   ]
  },
@@ -66,13 +66,13 @@
   ],
   "building": "jp_izakaya",
   "rules": [
-   "카운터 + 스툴 · 다다미 좌석 단(좌탁, 신발 벗는 곳) · 동쪽 테이블석(의자 둘) · 술병 선반 · 붉은 초롱 · 노렌 옆 주방 줄.",
+   "북서 모서리가 주방 구역(냉장고·튀김기·조리대, 안쪽 벽에 술병 선반)이고 그 앞에 짧은 카운터와 스툴 한 줄 · 중앙에서 동쪽은 다다미 좌석 단(좌탁·신발 벗는 디딤돌)과 동쪽 테이블석 둘(의자 마주 보기) · 붉은 초롱 둘과 노렌, 문은 남쪽 동쪽으로 치우친 곳.",
    "평면·가구는 tiledata/jp-city/interior/examples/izakaya.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-izakaya-12x9\"})."
   ]
  },
  {
   "file": "sushi",
-  "placeId": "jp-city-sushi-10x9",
+  "placeId": "jp-city-sushi-11x10",
   "name": "일본 초밥집 실내",
   "kind": "sushi",
   "kindKo": "초밥집",
@@ -84,13 +84,13 @@
   ],
   "building": "jp_sushi",
   "rules": [
-   "카운터 위 유리 생선 진열 케이스 · 카운터 의자 · 작은 테이블석 · 계산대.",
-   "평면·가구는 tiledata/jp-city/interior/examples/sushi.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sushi-10x9\"})."
+   "주방은 동쪽 벽을 따라 세로 한 줄(냉장고·초밥 밥통·그릴·도마, 주방 타일) · 방 가운데를 가로지르는 카운터 앞에 유리 생선 진열 케이스 셋 · 손님 의자는 카운터 서쪽과 남쪽 · 문 동쪽 옆에 계산대와 대기 의자 한 줄, 문은 남쪽 서쪽 끝.",
+   "평면·가구는 tiledata/jp-city/interior/examples/sushi.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-sushi-11x10\"})."
   ]
  },
  {
   "file": "kissaten",
-  "placeId": "jp-city-kissaten-9x9",
+  "placeId": "jp-city-kissaten-10x9",
   "name": "일본 킷사텐(찻집) 실내",
   "kind": "kissaten",
   "kindKo": "킷사텐(찻집)",
@@ -104,8 +104,8 @@
   ],
   "building": "jp_kissaten",
   "rules": [
-   "짙은 나무 바닥 · 2인 탁자와 의자 · 카운터 + 계산대 · 화분.",
-   "평면·가구는 tiledata/jp-city/interior/examples/kissaten.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-kissaten-9x9\"})."
+   "짙은 나무 바닥에 북동쪽 벽에 붙은 작은 카운터(사이펀·커피 기구·케이크 유리 케이스)와 원두 선반 · 창가 쪽 북·서쪽에 2인 탁자와 의자, 가운데 동쪽에 탁자 하나 · 탁자마다 받침 접시 위 흰 커피잔(갈색 커피) · 초롱·맥주잔 없음, 문은 남쪽 가운데.",
+   "평면·가구는 tiledata/jp-city/interior/examples/kissaten.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-kissaten-10x9\"})."
   ]
  },
  {

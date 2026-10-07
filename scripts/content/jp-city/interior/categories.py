@@ -32,7 +32,7 @@ CATEGORIES = [
                              'cv-baskets', 'cv-autodoor', 'cv-trash', 'cv-checkout', 'cv-produce', 'cv-cart', 'cv-cart-rack', 'cv-basket-stack']),
     ('food', '음식점', ['fd-stool', 'fd-chair-s', 'fd-chair-n', 'fd-chair-e', 'fd-chair-w', 'fd-prep', 'fd-sink', 'fd-stockpot',
                        'fd-noodle-boiler', 'fd-fryer', 'fd-fridge', 'fd-sake-shelf', 'fd-ticket-machine', 'fd-water-jug', 'fd-register',
-                       'fd-neta-case', 'fd-beer-crates', 'fd-zashiki', 'fd-kutsunugi', 'fd-siphon', 'fd-coffee-machine', 'fd-cake-case', 'fd-bean-shelf', 'fd-noren', 'fd-lantern', 'fd-menu-board']),
+                       'fd-neta-case', 'fd-beer-crates', 'fd-zashiki', 'fd-kutsunugi', 'fd-siphon', 'fd-coffee-machine', 'fd-cake-case', 'fd-bean-shelf', 'fd-rice-tub', 'fd-grill-range', 'fd-cutting-block', 'fd-noren', 'fd-lantern', 'fd-menu-board']),
     ('shop', '상점(빵·책·약·꽃·채소·이발)', ['sh-counter', 'sh-register', 'sh-shutter', 'sh-shutter-2', 'sh-wall-shelf', 'sh-bread-shelf',
                                          'sh-bread-table', 'sh-tray-stand', 'sh-oven', 'sh-bookshelf', 'sh-book-table', 'sh-book-island',
                                          'sh-drug-shelf', 'sh-drug-island', 'sh-consult', 'sh-flower-buckets', 'sh-flower-cooler',

@@ -1,156 +1,144 @@
 {
-  "plan": [
-    "#########",
-    "#.......#",
-    "#.......#",
-    "#.......#",
-    "#.......#",
-    "#.......#",
-    "#.......#",
-    "#.......#",
-    "####..###"
-  ],
-  "floor": "fd-tile-red",
-  "wall": "fd-plaster",
-  "zones": [
-    {
-      "x0": 1,
-      "x1": 5,
-      "y0": 1,
-      "y1": 4,
-      "floor": "fd-kitchen-tile"
-    }
-  ],
-  "objects": [
-    {
-      "id": "fd-stockpot",
-      "x": 1,
-      "y": 3
-    },
-    {
-      "id": "fd-noodle-boiler",
-      "x": 2,
-      "y": 3
-    },
-    {
-      "id": "fd-prep",
-      "x": 3,
-      "y": 3
-    },
-    {
-      "id": "fd-sink",
-      "x": 4,
-      "y": 3
-    },
-    {
-      "id": "fd-fridge",
-      "x": 5,
-      "y": 3
-    },
-    {
-      "id": "fd-menu-board",
-      "x": 1,
-      "y": 1
-    },
-    {
-      "id": "fd-lantern",
-      "x": 3,
-      "y": 1
-    },
-    {
-      "id": "fd-menu-board",
-      "x": 6,
-      "y": 1
-    },
-    {
-      "id": "fd-ticket-machine",
-      "x": 7,
-      "y": 7
-    },
-    {
-      "id": "fd-stool",
-      "x": 2,
-      "y": 6
-    },
-    {
-      "id": "fd-stool",
-      "x": 4,
-      "y": 6
-    },
-    {
-      "id": "fd-stool",
-      "x": 3,
-      "y": 6
-    },
-    {
-      "id": "fd-stool",
-      "x": 7,
-      "y": 3
-    }
-  ],
-  "tables": [
-    {
-      "style": "fd-counter",
-      "x": 2,
-      "y": 5,
-      "w": 5,
-      "h": 1
-    },
-    {
-      "style": "fd-counter",
-      "x": 6,
-      "y": 3,
-      "w": 1,
-      "h": 1
-    },
-    {
-      "style": "fd-counter",
-      "x": 6,
-      "y": 4,
-      "w": 1,
-      "h": 1
-    }
-  ],
-  "goods": [
-    {
-      "id": "fd-ramen-bowl",
-      "x": 3,
-      "y": 5
-    },
-    {
-      "id": "fd-condiments",
-      "x": 4,
-      "y": 5
-    },
-    {
-      "id": "fd-ramen-bowl",
-      "x": 5,
-      "y": 5
-    },
-    {
-      "id": "fd-water-set",
-      "x": 6,
-      "y": 3
-    },
-    {
-      "id": "fd-ramen-bowl",
-      "x": 6,
-      "y": 4
-    }
-  ],
-  "name": "일본 라멘집 실내",
-  "start": [
-    4,
-    7
-  ],
-  "links": [],
-  "rooms": [
-    {
-      "room": "ramen",
-      "x0": 0,
-      "y0": 0,
-      "x1": 8,
-      "y1": 8
-    }
-  ]
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "######..#"
+ ],
+ "floor": "fd-tile-red",
+ "wall": "fd-plaster",
+ "zones": [
+  {
+   "x0": 1,
+   "x1": 5,
+   "y0": 1,
+   "y1": 4,
+   "floor": "fd-kitchen-tile"
+  }
+ ],
+ "objects": [
+  {
+   "id": "fd-stockpot",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fd-noodle-boiler",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fd-prep",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "fd-sink",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "fd-lantern",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "fd-ticket-machine",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "fd-stool",
+   "x": 7,
+   "y": 5
+  }
+ ],
+ "tables": [
+  {
+   "style": "fd-counter",
+   "x": 2,
+   "y": 5,
+   "w": 5,
+   "h": 1
+  },
+  {
+   "style": "fd-counter",
+   "x": 6,
+   "y": 4,
+   "w": 1,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fd-ramen-bowl",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "fd-condiments",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "fd-ramen-bowl",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "fd-ramen-bowl",
+   "x": 6,
+   "y": 4
+  }
+ ],
+ "name": "일본 라멘집 실내",
+ "start": [
+  6,
+  7
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "ramen",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 8
+  }
+ ]
 }
