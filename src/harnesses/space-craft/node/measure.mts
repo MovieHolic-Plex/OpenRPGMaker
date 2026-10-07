@@ -6,7 +6,7 @@ import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { PNG } from 'pngjs';
 import { loadHeadlessProject } from '../../../headless/index';
-import { renderMapPng } from '../../../../scripts/qa-game/render.mts';
+import { addRenderAssetRoot, renderMapPng } from '../../../../scripts/qa-game/render.mts';
 import { store } from '../../../project/store';
 import { measureLayoutQuality } from '../../../ai/piAgent/layoutQuality';
 import { computeReachableCells } from '../../../project/lint/reachability';
@@ -96,6 +96,8 @@ for (const attempt of attempts) {
     console.log(`${attempt}: 측정 안 함(실행 오류)`); continue;
   }
   const before = readJson(resolve(dir, 'before.json')) as Project;
+  // 공용 DB 기물 아틀라스처럼 ref 로만 저장된 그림판은 실행 프로젝트 폴더의 assets/ 에서 읽는다.
+  addRenderAssetRoot(resolve(dir, 'project', 'assets'));
   const after = readProject(resolve(dir, 'live.json'));
   store.replaceProject(after);
   const current = store.getCurrent();

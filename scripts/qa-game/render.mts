@@ -22,8 +22,7 @@ import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
 import { uploadedAssetUrl } from "../../src/project/persistence/assetAccessors.ts";
 import { isColorKeyedChipsetTextureKey, resolveTransparentColorKeys } from "../../src/assets/chipsetTransparency.ts";
 import { applyTransparentColorKey, applyTransparentColorKeys } from "../../src/assets/transparentColorKey.ts";
-import { activeTileGrafts, tileCountWithGrafts } from "../../src/assets/tileGrafts.ts";
-import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "../../src/assets/bundledChipsetGeometry.ts";
+import { activeTileGrafts, graftSourceGeometry, tileCountWithGrafts, uploadedGraftGeometryIn } from "../../src/assets/tileGrafts.ts";
 import { store } from "../../src/project/store.ts";
 import { whereText, type GameCheckReport } from "../../src/qa/gameCheck/index.ts";
 import type { GameMap, Project, TilesetDef } from "../../src/project/types.ts";
@@ -101,7 +100,9 @@ function loadTilesetRaster(project: Project, tileset: TilesetDef): Raster | null
     const sourceType = project.assets.uploaded[graft.sourceChipset] ? "uploaded" : "bundled";
     const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: sourceType, id: graft.sourceChipset } } as TilesetDef);
     if (!source) continue;
-    const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
+    const geometry = graft.sourceTilesPerRow ? graftSourceGeometry(graft)
+      : { ...graftSourceGeometry(graft), ...(uploadedGraftGeometryIn(project.tilesets, graft.sourceChipset) ?? {}) };
+    const ss = geometry.tileSize, sc = geometry.tilesPerRow;
     const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;
     const dx = (graft.targetTile % columns) * size, dy = Math.floor(graft.targetTile / columns) * size;
     for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) {
@@ -128,8 +129,28 @@ function tilesetSourceUrl(project: Project, tileset: TilesetDef): string | null 
   return (asset ? uploadedAssetUrl(asset) : "") || null;
 }
 
+/**
+ * 참조(ref)로 저장된 업로드 자산의 바이트를 찾을 폴더들 — 프로젝트 폴더의 `assets/`(파일 이름 = sha256.확장자).
+ * 헤드리스에는 편집기의 자산 해석기가 없어서, 공용 DB 손 도트 기물 아틀라스처럼 ref 만 있는 그림판이 통째로 빠졌다
+ * (2026-10-08 space-craft: 찍은 냉장고·진열대·목인장이 판정 그림에 없어 두 판정자 모두 「가구 없음」).
+ */
+const refAssetRoots: string[] = [];
+export function addRenderAssetRoot(dir: string): void {
+  if (!refAssetRoots.includes(dir)) refAssetRoots.push(dir);
+}
+function refAssetDataUrl(project: Project, tileset: TilesetDef): string | null {
+  if (tileset.image.type !== "uploaded") return null;
+  const ref = project.assets.uploaded[tileset.image.id]?.ref;
+  if (!ref) return null;
+  for (const root of refAssetRoots) {
+    const file = path.join(root, `${ref.sha256}.${ref.extension.replace(/^\./u, "") || "png"}`);
+    if (fs.existsSync(file)) return `data:${ref.mime};base64,${fs.readFileSync(file).toString("base64")}`;
+  }
+  return null;
+}
+
 function loadBaseTilesetRaster(project: Project, tileset: TilesetDef): Raster | null {
-  const url = tilesetSourceUrl(project, tileset);
+  const url = tilesetSourceUrl(project, tileset) ?? refAssetDataUrl(project, tileset);
   if (!url) return null;
   const key = `${url}|${tileset.transparentColor ?? ""}`;
   if (imageCache.has(key)) return imageCache.get(key)!;

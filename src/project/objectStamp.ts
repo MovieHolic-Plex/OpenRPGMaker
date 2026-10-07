@@ -4,7 +4,7 @@
 // 아니면 그 그림(시트 칸 또는 이식 원본)을 대상 타일셋 뒤에 이식(tileGrafts)으로 붙여 새 번호로 옮긴다. 같은 그림이
 // 이미 이식돼 있으면 그 칸을 다시 쓴다. 그래서 생성 건물(fft-*)·성채 항구 나룻배 같은 장소 안 킷도 숲마을 맵에 찍힌다.
 import { bundledChipsetFrameCount } from "@/assets/bundled";
-import type { GameMap, Project, TilesetDef } from "./types";
+import type { GameMap, Project, TileGraft, TilesetDef } from "./types";
 
 export interface StampPattern {
   readonly width: number;
@@ -24,18 +24,23 @@ export interface StampResult {
   readonly coveredUpper: readonly { x: number; y: number }[];
 }
 
-type Picture = { chip: string; tile: number } | null;
+type Picture = { chip: string; tile: number; tileSize?: number; tilesPerRow?: number } | null;
 
 function frames(tileset: TilesetDef): number {
   return tileset.image.type === "bundled" ? bundledChipsetFrameCount(tileset.image.id) : tileset.count;
 }
 
 /** The picture slot `tile` shows as a graftable (sheet, cell) pair; null for blank or out of range. */
-function pictureOf(tileset: TilesetDef, grafts: ReadonlyMap<number, { sourceChipset: string; sourceTile: number }>, tile: number): Picture {
+function pictureOf(tileset: TilesetDef, grafts: ReadonlyMap<number, TileGraft>, tile: number): Picture {
   if (tile < 0 || tile >= tileset.count) return null;
   const graft = grafts.get(tile);
-  if (graft) return { chip: graft.sourceChipset, tile: graft.sourceTile };
-  return tile < frames(tileset) ? { chip: tileset.image.id, tile } : null;
+  if (graft) return { chip: graft.sourceChipset, tile: graft.sourceTile,
+    ...(graft.sourceTileSize ? { tileSize: graft.sourceTileSize } : {}), ...(graft.sourceTilesPerRow ? { tilesPerRow: graft.sourceTilesPerRow } : {}) };
+  if (tile >= frames(tileset)) return null;
+  // 업로드 그림판은 칸 배치를 키로 알 수 없다 — 이식이 그 타일셋의 칸 크기·줄 칸 수를 들고 간다.
+  return tileset.image.type === "uploaded"
+    ? { chip: tileset.image.id, tile, tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow }
+    : { chip: tileset.image.id, tile };
 }
 
 const graftMap = (tileset: TilesetDef) => new Map((tileset.tileGrafts ?? []).map(graft => [graft.targetTile, graft]));
@@ -70,8 +75,10 @@ export function translateTiles(source: TilesetDef, target: TilesetDef, tiles: It
     target.priority[slot] = source.priority[tile] ?? "lower";
     target.terrain[slot] = source.terrain[tile] ?? 0;
     (target.tileMeta ??= [])[slot] = structuredClone(source.tileMeta?.[tile] ?? { label: "", description: "" });
-    target.tileGrafts = [...(target.tileGrafts ?? []), { targetTile: slot, sourceChipset: picture.chip, sourceTile: picture.tile }];
-    targetGrafts.set(slot, { targetTile: slot, sourceChipset: picture.chip, sourceTile: picture.tile });
+    const graft: TileGraft = { targetTile: slot, sourceChipset: picture.chip, sourceTile: picture.tile,
+      ...(picture.tileSize ? { sourceTileSize: picture.tileSize } : {}), ...(picture.tilesPerRow ? { sourceTilesPerRow: picture.tilesPerRow } : {}) };
+    target.tileGrafts = [...(target.tileGrafts ?? []), graft];
+    targetGrafts.set(slot, graft);
     byPicture.set(key, slot);
     result.set(tile, slot);
     slotsAdded += 1;

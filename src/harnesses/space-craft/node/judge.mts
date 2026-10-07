@@ -9,7 +9,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { loadHeadlessProject } from '../../../headless/index';
-import { renderMapPng } from '../../../../scripts/qa-game/render.mts';
+import { addRenderAssetRoot, renderMapPng } from '../../../../scripts/qa-game/render.mts';
 import { store } from '../../../project/store';
 import { completeProvider } from '../../../../scripts/lib/ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from '../../../../scripts/lib/aiAuthRuntime.ts';
@@ -124,6 +124,7 @@ for (const attempt of attempts) {
   const measure = JSON.parse(readFileSync(resolve(dir, 'measure.json'), 'utf8'));
   if (!measure.maps?.length) { console.log(`${attempt}: 맵 없음 — 판정 안 함`); continue; }
   const caseDef = seed.cases.find((c: { id: string }) => c.id === measure.caseId);
+  addRenderAssetRoot(resolve(dir, 'project', 'assets'));
   const project = readProject(resolve(dir, 'live.json'));
   store.replaceProject(project);
   const current = store.getCurrent();
