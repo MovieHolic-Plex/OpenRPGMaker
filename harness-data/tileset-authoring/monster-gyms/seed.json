@@ -1,0 +1,496 @@
+{
+  "extends": "monster-overworld",
+  "id": "monster-gyms",
+  "title": "몬스터 수집 체육관 (본 시트 3관 + 물·불·얼음·유령·에스퍼·풀벌레·격투·드래곤)",
+  "tilesetId": "monster_gyms",
+  "tilesetName": "몬스터 수집 체육관 · OPRN 손 도트",
+  "textureKey": "tex_monster_gyms",
+  "sections": [
+    "gym"
+  ],
+  "gates": {
+    "tree": null,
+    "grass": null,
+    "sand": null,
+    "water": null,
+    "house": null,
+    "center": null,
+    "cave_floor": null,
+    "gym": null,
+    "gable": null
+  },
+  "building_gates": null,
+  "roles": [],
+  "limits": {
+    "max_colors": 320,
+    "note": "본 시트 체육관 절(70색) + 8관. 관마다 바닥·벽·장치 램프 3~4톤."
+  },
+  "palette": {
+    "gy_deck": [
+      "#90b0d0",
+      "#b8d4ec",
+      "#d8ecfa",
+      "#f4fbff"
+    ],
+    "gy_pool": [
+      "#3a78c8",
+      "#5a9ce4",
+      "#7cbaf2",
+      "#a8d6fa",
+      "#e0f4ff"
+    ],
+    "gy_rim": [
+      "#b8a070",
+      "#d8c898",
+      "#e8dcb4",
+      "#f6eed6"
+    ],
+    "gy_wpool": [
+      "#d8c080",
+      "#ecdcaa",
+      "#fbf2d4"
+    ],
+    "gy_hot": [
+      "#c06c44",
+      "#d88a5c",
+      "#e8a274",
+      "#f2bc90"
+    ],
+    "gy_vent": [
+      "#3a2018",
+      "#6a3824"
+    ],
+    "gy_cream": [
+      "#a89060",
+      "#d0b880",
+      "#e8d8a8",
+      "#f8f0d0"
+    ],
+    "gy_brick": [
+      "#7a2418",
+      "#a83a28",
+      "#d06048"
+    ],
+    "gy_ist": [
+      "#9890c0",
+      "#b8b0dc",
+      "#d8d4f0",
+      "#f4f2fc"
+    ],
+    "gy_ice": [
+      "#5aa0d0",
+      "#88c4ec",
+      "#b8e0f8",
+      "#e8f8ff"
+    ],
+    "gy_irock": [
+      "#28406c",
+      "#3c6098",
+      "#6890c4",
+      "#a8c8ec"
+    ],
+    "gy_gst": [
+      "#2e2440",
+      "#4a3c62",
+      "#5e4f7c",
+      "#76689a"
+    ],
+    "gy_abyss": [
+      "#0c0a14",
+      "#181426",
+      "#2a2340",
+      "#6a5c90"
+    ],
+    "gy_gwall": [
+      "#2a2040",
+      "#3e3058",
+      "#584878",
+      "#7a68a0"
+    ],
+    "gy_sigil": [
+      "#7838c0",
+      "#b070f0",
+      "#e8c8ff"
+    ],
+    "gy_psy": [
+      "#4c5498",
+      "#5e68b4",
+      "#7684cc",
+      "#9aa8e4"
+    ],
+    "gy_psyface": [
+      "#7a2868",
+      "#a8448c",
+      "#d070b4"
+    ],
+    "gy_turf": [
+      "#2a8a78",
+      "#3aa490",
+      "#5cc0a8",
+      "#8ad8c0"
+    ],
+    "gy_hedge": [
+      "#164a30",
+      "#226a40",
+      "#348a50",
+      "#58aa68",
+      "#88cc88"
+    ],
+    "gy_tatami": [
+      "#5a7a38",
+      "#7a9a48",
+      "#98b860",
+      "#b8d080"
+    ],
+    "gy_wood": [
+      "#9a7840",
+      "#bc9858",
+      "#d8b878",
+      "#ecd4a0"
+    ],
+    "gy_plaster": [
+      "#6a8a58",
+      "#88a870",
+      "#a8c490"
+    ],
+    "gy_bas": [
+      "#2a2630",
+      "#3a3442",
+      "#4c4558",
+      "#625a70"
+    ],
+    "gy_dragon": [
+      "#1a3a40",
+      "#2a5a60",
+      "#3e7c80",
+      "#64a4a0"
+    ],
+    "gy_dwall": [
+      "#3a1820",
+      "#5a2830",
+      "#7a3a40"
+    ],
+    "gy_slab": [
+      "#4a4252",
+      "#5a5264",
+      "#6a6276",
+      "#7c7488"
+    ],
+    "gy_psynavy": [
+      "#1e2050",
+      "#2e3270",
+      "#40468c"
+    ],
+    "gy_dkwood": [
+      "#4a2a18",
+      "#6e4028",
+      "#8c5634"
+    ]
+  },
+  "bake": {
+    "backing": "gy_fl_deck0",
+    "autotile": [
+      [
+        "pb_teal",
+        "g2_pb_teal_at",
+        "block"
+      ],
+      [
+        "pb_elec",
+        "g2_pb_elec_at",
+        "block"
+      ],
+      [
+        "gy_pool",
+        "gy_pool_at",
+        "water",
+        {
+          "label": "수영장 물(통행 불가 — 물 위 길·떠오른 징검돌로 건넌다)"
+        }
+      ],
+      [
+        "gy_lava",
+        "gy_lava_at",
+        "water",
+        {
+          "terrain": "none",
+          "label": "용암(통행 불가 — 돌다리·메운 바위로 건넌다)",
+          "connectTiles": "gy_lava_crust\\d+_f\\d|gy_lava_ate\\d+_\\d+_f\\d"
+        }
+      ],
+      [
+        "gy_abyss",
+        "gy_abyss_at",
+        "water",
+        {
+          "terrain": "none",
+          "label": "어둠 낭떠러지(통행 불가 — 숨은 다리가 나타나야 건넌다)"
+        }
+      ],
+      [
+        "gy_ice",
+        "gy_ice_at",
+        "path",
+        {
+          "slide": "ice",
+          "label": "얼음판 — 들어온 방향으로 막힐 때까지 미끄러진다"
+        }
+      ],
+      [
+        "gy_hedge",
+        "gy_hedge_at",
+        "block",
+        {
+          "label": "생울타리(둥근 나무 줄, 통행 불가 — 자르기 나무 틈으로만 지난다)"
+        }
+      ],
+      [
+        "gy_pb_fire",
+        "gy_pb_fire_at",
+        "block",
+        {
+          "label": "불관 벽돌 칸막이(통행 불가 — 퀴즈 문으로 지난다)"
+        }
+      ],
+      [
+        "gy_pb_ice",
+        "gy_pb_ice_at",
+        "block",
+        {
+          "label": "얼음관 고드름 칸막이(통행 불가)"
+        }
+      ],
+      [
+        "gy_pb_dojo",
+        "gy_pb_dojo_at",
+        "block",
+        {
+          "label": "도장 나무 칸막이(통행 불가)"
+        }
+      ]
+    ],
+    "autotile_names": {
+      "gy_pool": "수영장 물(흰 테 · 물속 벽 띠)",
+      "gy_lava": "용암(현무암 둑)",
+      "gy_abyss": "어둠 낭떠러지(판석 앞 두께 + 검은 속)",
+      "gy_ice": "얼음판(던전 얼음 판 · 미끄럼)",
+      "gy_hedge": "생울타리 나무 줄",
+      "gy_pb_fire": "불관 벽돌 칸막이",
+      "gy_pb_ice": "얼음관 고드름 칸막이",
+      "gy_pb_dojo": "도장 나무 칸막이"
+    },
+    "object_kinds": {
+      "decor": [
+        "rug",
+        "h_rug",
+        "h_mat",
+        "c_emblem",
+        "g_leader_mat",
+        "g_dais",
+        "g_edais",
+        "gyd_"
+      ]
+    },
+    "rules": [
+      {
+        "re": "gy_fl_deck.*",
+        "label": "수영장 바닥 타일"
+      },
+      {
+        "re": "gy_fl_rim.*",
+        "label": "크림 판(수영장 둘레·물 위 길)"
+      },
+      {
+        "re": "gy_fl_hot.*",
+        "label": "불관 벽돌 포장 바닥"
+      },
+      {
+        "re": "gy_fl_ist.*",
+        "label": "얼음관 돌 바닥(미끄러지지 않는다)"
+      },
+      {
+        "re": "gy_fl_gst.*",
+        "label": "유령관 판석"
+      },
+      {
+        "re": "gy_fl_psy.*",
+        "label": "에스퍼관 바닥"
+      },
+      {
+        "re": "gy_fl_turf.*",
+        "label": "정원 풀(본 시트 풀과 같은 그림)"
+      },
+      {
+        "re": "gy_fl_wood.*",
+        "label": "도장 마루"
+      },
+      {
+        "re": "gy_fl_tatami.*",
+        "label": "다다미"
+      },
+      {
+        "re": "gy_fl_bas.*",
+        "label": "용관 판석 바닥",
+        "terrain": "stone"
+      },
+      {
+        "re": "gy_mat_\\w+",
+        "label": "체육관 입구 매트 — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "gy_wall_\\w+",
+        "label": "체육관 뒷벽(통행 불가)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_psyv\\w*",
+        "label": "에스퍼관 방 사이 얇은 벽(통행 불가 — 워프 판으로만 옮겨 간다)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_valve",
+        "label": "밸브(바닥 판) — 밟으면 가라앉은 징검돌이 떠오르는 이벤트 자리"
+      },
+      {
+        "re": "gy_valve_on",
+        "label": "눌린 밸브(징검돌이 떠오른 뒤)"
+      },
+      {
+        "re": "gy_stone_sunk(_lane)?",
+        "label": "가라앉은 징검돌(막힘) — 밸브 이벤트가 떠오른 징검돌로 바꾼다",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_stone_up",
+        "label": "떠오른 징검돌(물 위를 걷는다)"
+      },
+      {
+        "re": "gy_ladder_[nwe]",
+        "label": "수영장 사다리(둘레에 걸친 것, 막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_dive_[tb]",
+        "label": "다이빙대(막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_lane(_end_[ew])?",
+        "label": "경영 레인 줄(막힘) — _end_e/_w 는 떠오른 징검돌 옆에서 줄을 매는 끝 부표 칸",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_vent\\w*",
+        "label": "김 나는 구멍(바닥과 같은 높이) — 떨어지는 이벤트(입구로 되돌림)를 올릴 자리"
+      },
+      {
+        "re": "gy_qdoor_[tf]",
+        "label": "퀴즈 문(닫힌 셔터, 막힘) — 옆 퀴즈 기계 이벤트로 열린다",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_qdoor_open_[tf]",
+        "label": "열린 퀴즈 문(문틀만, 걷는다)"
+      },
+      {
+        "re": "gy_crack",
+        "label": "금 간 얼음(얼음판 위층) — 밟고 지나면 깨져 떨어지는 이벤트 자리"
+      },
+      {
+        "re": "gy_ice_hole",
+        "label": "깨진 얼음 구멍(떨어진 뒤 상태, 막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_icerock\\d",
+        "label": "얼음 바위(막힘 — 미끄럼을 멈춰 세운다)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_ibridge_hid",
+        "label": "숨은 다리 자리(막힘) — 혼불 문양 이벤트로 나타난 다리로 바뀐다",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_ibridge_[hv]",
+        "label": "나타난 다리(낭떠러지 위를 걷는다)"
+      },
+      {
+        "re": "gy_sigil",
+        "label": "혼불 문양(꺼짐) — 밟으면 숨은 다리가 나타나는 이벤트 자리"
+      },
+      {
+        "re": "gy_sigil_on",
+        "label": "혼불 문양(켜짐 — 다리가 나타난 뒤)"
+      },
+      {
+        "re": "gy_candle",
+        "label": "세 갈래 촛대(막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_warp",
+        "label": "워프 판 — 짝 판으로 옮기는 이동 이벤트 자리"
+      },
+      {
+        "re": "gy_flowers\\d",
+        "label": "꽃밭(걷는다)"
+      },
+      {
+        "re": "gy_cuttree",
+        "label": "자르기 나무(막힘) — 자르기 이벤트로 없어진다",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_turn_(pivot|pivot_v|h|h_w|v|v_n)",
+        "label": "회전문(막힘) — 팔 칸에 직각으로 걸어 들어가면 90도 도는 이벤트",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_pot",
+        "label": "꽃 화분(막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_boards",
+        "label": "격파 판(막힘) — 격파 이벤트로 부순다",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_boards_broken",
+        "label": "부서진 격파 판(걷는다)"
+      },
+      {
+        "re": "gy_dark(_l\\d+(s\\d)?)?",
+        "label": "어둠(바닥 위층, 걷는다) — 밝은 이웃 쪽에서 빛이 번진다. 빛 이벤트로 지운다"
+      },
+      {
+        "re": "gy_dark(_l\\d+(s\\d)?)?_w",
+        "label": "어둠(벽 위층, 막힘)",
+        "pass": "shut"
+      },
+      {
+        "re": "gy_lava_ate\\d+_\\d+_f\\d",
+        "pass": "shut",
+        "terrain": "none",
+        "label": "용암 가장자리 자국 변형(막힘·던전 정본)"
+      },
+      {
+        "re": "gy_lava_crust\\d+_f\\d",
+        "pass": "shut",
+        "terrain": "none",
+        "label": "용암 위 굳은 껍질 판(막힘 — 용암과 같다, 던전과 같은 흩뿌리기)"
+      },
+      {
+        "re": "gy_lava_fill",
+        "label": "용암에 빠진 바위(걷는다)",
+        "terrain": "stone"
+      },
+      {
+        "re": "gy_lbridge_[hv]",
+        "label": "용암 위 돌다리(걷는다)",
+        "terrain": "stone"
+      }
+    ]
+  }
+}

@@ -1,0 +1,862 @@
+{
+ "extends": "monster-overworld",
+ "id": "monster-climate",
+ "title": "몬스터 수집 기후 (눈 마을·얼음 눈길·사막·화산재 지역)",
+ "tilesetId": "monster_climate",
+ "tilesetName": "몬스터 수집 기후 · OPRN 손 도트",
+ "textureKey": "tex_monster_climate",
+ "sections": [
+  "fence",
+  "houses",
+  "landmarks"
+ ],
+ "houses": {
+  "house_a": null,
+  "house_b": null,
+  "house_c": null,
+  "house_d": null,
+  "house_e": null,
+  "house_f": null,
+  "house_g": null,
+  "house_h": null,
+  "house_i": null,
+  "house_j": null,
+  "two_a": null,
+  "two_b": null,
+  "two_c": null,
+  "two_d": null,
+  "shop_a": null,
+  "shop_b": null,
+  "shop_c": null,
+  "cabin_a": null,
+  "cabin_b": null,
+  "cabin_c": null,
+  "house_snow_a": {
+   "roof": "roof_blue",
+   "snow": true,
+   "n": 4,
+   "plan": [
+    [
+     "D",
+     9
+    ],
+    [
+     "W",
+     33
+    ]
+   ],
+   "accent": "roof_snow"
+  },
+  "house_snow_b": {
+   "roof": "roof_slate",
+   "snow": true,
+   "n": 4,
+   "plan": [
+    [
+     "W",
+     9
+    ],
+    [
+     "D",
+     31
+    ]
+   ],
+   "accent": "roof_snow"
+  },
+  "cabin_snow": {
+   "kind": "cabin",
+   "roof": "roof_teal",
+   "snow": true,
+   "n": 4,
+   "plan": [
+    [
+     "D",
+     9
+    ],
+    [
+     "W",
+     35
+    ]
+   ],
+   "accent": "roof_snow"
+  },
+  "house_ash_a": {
+   "roof": "roof_ash_orange",
+   "n": 4,
+   "plan": [
+    [
+     "D",
+     9
+    ],
+    [
+     "W",
+     33
+    ]
+   ],
+   "accent": "ash_pile",
+   "ash": true
+  },
+  "house_ash_b": {
+   "roof": "roof_ash_red",
+   "n": 4,
+   "plan": [
+    [
+     "W",
+     9
+    ],
+    [
+     "D",
+     31
+    ]
+   ],
+   "accent": "ash_pile",
+   "ash": true
+  }
+ },
+ "gates": {
+  "tree": null,
+  "grass": null,
+  "water": null,
+  "cave_floor": null,
+  "sand": {
+   "candidates": {
+    "sand0": null,
+    "sand1": null,
+    "dsand0": [
+     "dsand0"
+    ],
+    "dsand1": [
+     "dsand1"
+    ],
+    "dsand2": [
+     "dsand2"
+    ],
+    "dsand3": [
+     "dsand3"
+    ]
+   }
+  },
+  "house": {
+   "candidates": {
+    "house_a": null,
+    "house_b": null
+   }
+  }
+ },
+ "palette": {
+  "snow": [
+   "#6a78aa",
+   "#8e9ecc",
+   "#b4c2e0",
+   "#cbd5ea",
+   "#dde6f4",
+   "#eef2fa",
+   "#fbfcff"
+  ],
+  "tall_snow": [
+   "#2c4a58",
+   "#3f6670",
+   "#5a8a8a",
+   "#eef2fa"
+  ],
+  "pine_snow": [
+   "#15343c",
+   "#22504e",
+   "#357066",
+   "#b4c2e0",
+   "#fbfcff"
+  ],
+  "pine_snow_body": [
+   "#15343c",
+   "#22504e",
+   "#357066",
+   "#4a8a78",
+   "#64a48c"
+  ],
+  "roof_snow": [
+   "#6a78aa",
+   "#8e9ecc",
+   "#cbd5ea",
+   "#eef2fa",
+   "#fbfcff"
+  ],
+  "ice": [
+   "#5f9cd0",
+   "#86c0e8",
+   "#a8d8f4",
+   "#c8ecfc",
+   "#eefcff"
+  ],
+  "pond": [
+   "#3c5ea4",
+   "#5f86c8",
+   "#86b2e2",
+   "#b8dcf6"
+  ],
+  "stone": [
+   "#4a5070",
+   "#6a7292",
+   "#8e96b2",
+   "#b6bdd0"
+  ],
+  "deep_sand": [
+   "#d8943a",
+   "#e8a848",
+   "#f4bc5a"
+  ],
+  "dune": [
+   "#a8641c",
+   "#cc8430",
+   "#eaa848",
+   "#fec868",
+   "#ffe490"
+  ],
+  "cactus": [
+   "#1c5236",
+   "#2a7044",
+   "#43904e",
+   "#6cb05a",
+   "#a0d070"
+  ],
+  "ruin": [
+   "#6e3e22",
+   "#9a6234",
+   "#c48a52",
+   "#e2b478",
+   "#f6d8a4"
+  ],
+  "ash": [
+   "#6c6858",
+   "#8a8676",
+   "#a8a492",
+   "#b8b4a1",
+   "#c8c4b2"
+  ],
+  "tall_ash": [
+   "#4e5242",
+   "#6a705a",
+   "#8c927a",
+   "#c4c6b0"
+  ],
+  "leaf_ash": [
+   "#3a5238",
+   "#52704a",
+   "#73905c",
+   "#9cad7c",
+   "#c2c8a6"
+  ],
+  "ash_rock": [
+   "#4c4238",
+   "#6c5e50",
+   "#8c7c6a",
+   "#aa9a88",
+   "#c8bca8"
+  ],
+  "ash_path": [
+   "#9c8668",
+   "#b49c7c",
+   "#c8b292",
+   "#d8c6a8"
+  ],
+  "ash_pile": [
+   "#5a5650",
+   "#7a766c",
+   "#9a968a",
+   "#bcb8ac",
+   "#dcd8cc"
+  ],
+  "lava": [
+   "#241c22",
+   "#3a2e34",
+   "#54464a",
+   "#70605e"
+  ],
+  "lava_glow": [
+   "#c8481c",
+   "#f08a28",
+   "#ffd060"
+  ],
+  "spring": [
+   "#5aa8d8",
+   "#7cc4ec",
+   "#a4dcf6",
+   "#d8f4fc"
+  ],
+  "cliff_desert": [
+   "#5a2a12",
+   "#8a4418",
+   "#b06428",
+   "#cc8a48",
+   "#e0a868"
+  ],
+  "cliff_volcanic": [
+   "#2e2228",
+   "#5c4a4a",
+   "#7e6860",
+   "#8a7468",
+   "#a8927e"
+  ],
+  "ice_rock": [
+   "#2e4a8c",
+   "#4a6eb4",
+   "#7096d0",
+   "#a8c8ea",
+   "#e4f0fa"
+  ],
+  "trunk_snow": [
+   "#3e2a26",
+   "#5a3e32",
+   "#76574a",
+   "#93745f"
+  ],
+  "sandbath": [
+   "#8c7a5a",
+   "#b09c78",
+   "#c8b48c",
+   "#dccaa0",
+   "#ece0bc"
+  ],
+  "bather": [
+   "#2e2024",
+   "#4e3630",
+   "#76503e",
+   "#b4745a",
+   "#e2a684",
+   "#f4ceae"
+  ],
+  "roof_ash_orange": [
+   "#5c3418",
+   "#84522a",
+   "#a8703c",
+   "#c48c58",
+   "#d2a676"
+  ],
+  "roof_ash_red": [
+   "#562220",
+   "#7e3a32",
+   "#9e5446",
+   "#ba7262",
+   "#c88c7c"
+  ],
+  "trunk_ash": [
+   "#3c3430",
+   "#584c44",
+   "#746658",
+   "#8e806e"
+  ],
+  "dg_ice": [
+   "#78b2de",
+   "#9ccff0",
+   "#c4e6fa",
+   "#f0faff"
+  ],
+  "dg_icerock": [
+   "#34588a",
+   "#6890c0",
+   "#9cc2e4",
+   "#d4e8f6",
+   "#ffffff"
+  ]
+ },
+ "bake": {
+  "backing": "snow0",
+  "autotile": [
+   [
+    "snowpath",
+    "snowpath_at",
+    "path",
+    {
+     "terrain": "snow",
+     "label": "다져진 눈길"
+    }
+   ],
+   [
+    "ice",
+    "ice_at",
+    "path",
+    {
+     "slide": "ice",
+     "label": "얼음 바닥(밟으면 들어온 방향으로 미끄러진다)"
+    }
+   ],
+   [
+    "pond",
+    "pond_at",
+    "edge",
+    {
+     "label": "얼어붙은 연못(돌 고리 — 들어갈 수 없다)"
+    }
+   ],
+   [
+    "deepsand",
+    "dsdeep_at",
+    "path",
+    {
+     "terrain": "sand",
+     "label": "깊은 모래"
+    }
+   ],
+   [
+    "dgrass",
+    "dgrass_at",
+    "path",
+    {
+     "label": "오아시스 풀 띠(걷는 땅)",
+     "connectGroups": [
+      "oasis"
+     ]
+    }
+   ],
+   [
+    "oasis",
+    "oasis_at",
+    "water",
+    {
+     "label": "오아시스 물"
+    }
+   ],
+   [
+    "dcliff",
+    "dcliff_at",
+    "edge",
+    {
+     "terrain": "stone",
+     "label": "사암 벼랑 윗면 — 북·동·서 테로는 못 나간다, 남쪽은 앞면(dface), 돌계단으로만 오른다",
+     "connectGroups": [
+      "dface",
+      "dcliff2",
+      "dface2"
+     ],
+     "edgeConnects": true,
+     "connectTiles": "dface2?_rnd\\d+"
+    }
+   ],
+   [
+    "dface",
+    "dface_at",
+    "block",
+    {
+     "terrain": "stone",
+     "label": "사암 벼랑 앞면(바위 덩이, 통행 불가 — 돌계단만 통로)",
+     "connectTiles": "dface_rnd\\d+"
+    }
+   ],
+   [
+    "vcliff",
+    "vcliff_at",
+    "edge",
+    {
+     "terrain": "stone",
+     "label": "화산 바위 벼랑 윗면 — 북·동·서 테로는 못 나간다, 남쪽은 앞면(vface), 돌계단으로만 오른다",
+     "connectGroups": [
+      "vface",
+      "vcliff2",
+      "vface2"
+     ],
+     "edgeConnects": true,
+     "connectTiles": "vface2?_rnd\\d+"
+    }
+   ],
+   [
+    "vface",
+    "vface_at",
+    "block",
+    {
+     "terrain": "stone",
+     "label": "화산 바위 벼랑 앞면(바위 덩이, 통행 불가 — 돌계단만 통로)",
+     "connectTiles": "vface_rnd\\d+"
+    }
+   ],
+   [
+    "ashpath",
+    "ashpath_at",
+    "path",
+    {
+     "label": "다져진 흙길"
+    }
+   ],
+   [
+    "sandbath",
+    "sandbath_at",
+    "path",
+    {
+     "terrain": "sand",
+     "label": "모래찜질 터(검은 모래, 걷는 땅)"
+    }
+   ],
+   [
+    "spring",
+    "spring_at",
+    "water",
+    {
+     "label": "온천(돌 고리)"
+    }
+   ],
+   [
+    "dcliff2",
+    "dcliff2_at",
+    "edge",
+    {
+     "terrain": "stone",
+     "label": "사암 벼랑 둘째 층 윗면(아래층 윗면에서 돌계단으로 오른다)",
+     "connectGroups": [
+      "dface2"
+     ],
+     "edgeConnects": true,
+     "connectTiles": "dface2_rnd\\d+"
+    }
+   ],
+   [
+    "dface2",
+    "dface2_at",
+    "block",
+    {
+     "terrain": "stone",
+     "label": "사암 벼랑 둘째 층 앞면(통행 불가)",
+     "connectTiles": "dface2_rnd\\d+"
+    }
+   ],
+   [
+    "vcliff2",
+    "vcliff2_at",
+    "edge",
+    {
+     "terrain": "stone",
+     "label": "화산 바위 벼랑 둘째 층 윗면(아래층 윗면에서 돌계단으로 오른다)",
+     "connectGroups": [
+      "vface2"
+     ],
+     "edgeConnects": true,
+     "connectTiles": "vface2_rnd\\d+"
+    }
+   ],
+   [
+    "vface2",
+    "vface2_at",
+    "block",
+    {
+     "terrain": "stone",
+     "label": "화산 바위 벼랑 둘째 층 앞면(통행 불가)",
+     "connectTiles": "vface2_rnd\\d+"
+    }
+   ],
+   [
+    "icecliff",
+    "icecliff_at",
+    "edge",
+    {
+     "terrain": "stone",
+     "label": "눈 벼랑 윗면 — 테로는 못 나간다, 남쪽은 앞면(iceface), 오르는 길 없음",
+     "connectGroups": [
+      "iceface"
+     ],
+     "edgeConnects": true,
+     "connectTiles": "iceface_rnd\\d+"
+    }
+   ],
+   [
+    "iceface",
+    "iceface_at",
+    "block",
+    {
+     "terrain": "stone",
+     "label": "눈 벼랑 앞면(바위 덩이 + 고드름, 통행 불가)",
+     "connectTiles": "iceface_rnd\\d+"
+    }
+   ]
+  ],
+  "autotile_names": {
+   "snowpath": "다져진 눈길",
+   "ice": "얼음 바닥",
+   "pond": "얼어붙은 연못",
+   "deepsand": "깊은 모래",
+   "oasis": "오아시스 물",
+   "dcliff": "사암 벼랑",
+   "ashpath": "다져진 흙길",
+   "spring": "온천",
+   "vcliff": "화산 바위 벼랑",
+   "dcliff2": "사암 벼랑 둘째 층",
+   "vcliff2": "화산 바위 벼랑 둘째 층",
+   "dface": "사암 벼랑 앞면",
+   "vface": "화산 바위 벼랑 앞면",
+   "dface2": "사암 벼랑 둘째 층 앞면",
+   "vface2": "화산 바위 벼랑 둘째 층 앞면",
+   "dgrass": "오아시스 풀 띠",
+   "icecliff": "눈 벼랑 윗면",
+   "iceface": "눈 벼랑 앞면",
+   "sandbath": "모래찜질 터"
+  },
+  "rules": [
+   {
+    "re": "(dface2?|vface2?|iceface)_rnd\\d+",
+    "pass": "shut",
+    "terrain": "stone",
+    "label": "벼랑 앞면 띠 끝 둥근 어깨·발끝(정본 wild_mountain.round_face_set, 앞면 그룹 이웃 — 통행 불가)"
+   },
+   {
+    "re": "[sa]tall\\dr[sa]\\d+",
+    "pass": "open",
+    "terrain": "tall_grass",
+    "label": "키 큰 풀 덩이 바깥 귀(정본 wild_tall 둥근 귀 — 조우)"
+   },
+   {
+    "re": "[dv]stairs2?_\\d_\\d",
+    "pass": "open",
+    "terrain": "stone",
+    "label": "벼랑 돌계단(앞면 두 줄을 끊고 들어선 2×2 — 벼랑 위로 오르는 유일한 길)"
+   },
+   {
+    "re": "dspatch_[ab]_\\d+_\\d+",
+    "pass": "open",
+    "terrain": "sand",
+    "label": "깊은 모래 얼룩(여러 칸 한 장 — 칸 안 곡선 경계)"
+   },
+   {
+    "re": "dgpatch_\\d+_\\d+",
+    "pass": "open",
+    "terrain": "none",
+    "label": "오아시스 풀 띠(여러 칸 한 장 — 칸 안 곡선 경계)"
+   },
+   {
+    "re": "snow\\d",
+    "pass": "open",
+    "terrain": "snow",
+    "label": "눈밭"
+   },
+   {
+    "re": "[sa]tall_fringe_[sew](_v\\d)?(_(a|b|ab))?",
+    "pass": "open",
+    "layer": "upper",
+    "label": "키 큰 풀 가장자리 잎끝(장식, 위층 — 풀밭 남·동·서 이웃 바닥 칸에 얹는다, 조우 없음. 옆 잎끝 두 벌 _v<n>, 둥근 귀 쪽 끝을 자른 _a·_b·_ab)"
+   },
+   {
+    "re": "stall\\d",
+    "pass": "open",
+    "terrain": "tall_grass",
+    "label": "눈 덮인 키 큰 풀(야생 조우)"
+   },
+   {
+    "re": "sledge_s_.*",
+    "pass": "open",
+    "terrain": "snow",
+    "label": "눈 턱(남쪽으로만 뛰어내림)",
+    "ledge": "down"
+   },
+   {
+    "re": "sledge_e",
+    "pass": "open",
+    "terrain": "snow",
+    "label": "눈 턱(동쪽으로만)",
+    "ledge": "right"
+   },
+   {
+    "re": "sledge_w",
+    "pass": "open",
+    "terrain": "snow",
+    "label": "눈 턱(서쪽으로만)",
+    "ledge": "left"
+   },
+   {
+    "re": "snow_pile\\d",
+    "pass": "shut",
+    "label": "눈더미(통행 불가)"
+   },
+   {
+    "re": "ice_rock\\d",
+    "pass": "shut",
+    "label": "얼음 바위(얼음 위 멈춤 칸)"
+   },
+   {
+    "re": "frost_bush",
+    "pass": "shut",
+    "label": "얼어붙은 덤불(통행 불가)"
+   },
+   {
+    "re": "sign_snow",
+    "pass": "shut",
+    "label": "눈 덮인 표지판(조사 이벤트를 올릴 자리)"
+   },
+   {
+    "re": "dsand\\d",
+    "pass": "open",
+    "terrain": "sand",
+    "label": "사막 모래"
+   },
+   {
+    "re": "dledge_s_.*",
+    "pass": "open",
+    "terrain": "sand",
+    "label": "모래 언덕 턱(남쪽으로만 뛰어내림)",
+    "ledge": "down"
+   },
+   {
+    "re": "dledge_e",
+    "pass": "open",
+    "terrain": "sand",
+    "label": "모래 언덕 턱(동쪽으로만)",
+    "ledge": "right"
+   },
+   {
+    "re": "dledge_w",
+    "pass": "open",
+    "terrain": "sand",
+    "label": "모래 언덕 턱(서쪽으로만)",
+    "ledge": "left"
+   },
+   {
+    "re": "cactus",
+    "pass": "shut",
+    "label": "선인장(통행 불가)"
+   },
+   {
+    "re": "drock\\d",
+    "pass": "shut",
+    "label": "마른 바위(부수기 이벤트를 올릴 자리)"
+   },
+   {
+    "re": "ruin_stub",
+    "pass": "shut",
+    "label": "부러진 유적 기둥(통행 불가)"
+   },
+   {
+    "re": "dbush",
+    "pass": "shut",
+    "label": "마른 덤불(통행 불가)"
+   },
+   {
+    "re": "dbones",
+    "pass": "open",
+    "label": "마른 뼈(장식, 걸을 수 있다)"
+   },
+   {
+    "re": "ash\\d",
+    "pass": "open",
+    "label": "재 덮인 풀"
+   },
+   {
+    "re": "atall\\d",
+    "pass": "open",
+    "terrain": "tall_grass",
+    "label": "재 덮인 키 큰 풀(야생 조우)"
+   },
+   {
+    "re": "aledge_s_.*",
+    "pass": "open",
+    "label": "재 덮인 턱(남쪽으로만 뛰어내림)",
+    "ledge": "down"
+   },
+   {
+    "re": "aledge_e",
+    "pass": "open",
+    "label": "재 덮인 턱(동쪽으로만)",
+    "ledge": "right"
+   },
+   {
+    "re": "aledge_w",
+    "pass": "open",
+    "label": "재 덮인 턱(서쪽으로만)",
+    "ledge": "left"
+   },
+   {
+    "re": "ash_pile\\d",
+    "pass": "shut",
+    "label": "재 무더기(통행 불가)"
+   },
+   {
+    "re": "lava_rock\\d",
+    "pass": "shut",
+    "label": "용암석(통행 불가)"
+   },
+   {
+    "re": "sand_mound",
+    "pass": "shut",
+    "label": "모래찜질 하는 사람(말 걸기 이벤트 자리)"
+   },
+   {
+    "re": "steam\\d",
+    "pass": "open",
+    "layer": "upper",
+    "label": "온천 김(위층 장식 — 물 칸 위에 얹는다)"
+   }
+  ],
+  "object_kinds": {
+   "decor": [
+    "rug",
+    "h_rug",
+    "h_mat",
+    "c_emblem",
+    "g_leader_mat",
+    "g_dais",
+    "g_edais",
+    "sandpit"
+   ],
+   "prop": [
+    "sign",
+    "counter",
+    "shelf",
+    "table",
+    "chair",
+    "bed",
+    "plant",
+    "tv",
+    "pc",
+    "machine",
+    "statue",
+    "stairs_up",
+    "window_pair",
+    "snowman",
+    "cactus_tall",
+    "ruin_pillar",
+    "ruin_wall",
+    "dcone",
+    "vcone",
+    "steam_vent"
+   ],
+   "building": [
+    "house_",
+    "two_",
+    "shop_",
+    "cabin_",
+    "center",
+    "mart",
+    "gym_",
+    "gable_",
+    "cave_mouth",
+    "ruin_gate"
+   ],
+   "tree": [
+    "tree_",
+    "pine_",
+    "forest_",
+    "sforest_",
+    "aforest_",
+    "atree_",
+    "palm_",
+    "spine_"
+   ]
+  },
+  "entrances": {
+   "center_snow": [
+    1,
+    3
+   ],
+   "ruin_gate": [
+    1,
+    2
+   ],
+   "center_ash": [
+    1,
+    3
+   ]
+  }
+ },
+ "roles": [
+  "snow",
+  "ice",
+  "sand",
+  "ash",
+  "tall_grass",
+  "fence",
+  "sign"
+ ]
+}

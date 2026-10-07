@@ -1,0 +1,506 @@
+{
+ "pack": "Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01), CC BY 4.0",
+ "regions": {
+  "grass": {
+   "pixels": 288,
+   "colors": 3,
+   "ramp": [
+    {
+     "hex": "#bfc50f",
+     "share": 0.559
+    },
+    {
+     "hex": "#d0cc2c",
+     "share": 0.3646
+    },
+    {
+     "hex": "#dcd82e",
+     "share": 0.0764
+    }
+   ],
+   "outline": "#bfc50f",
+   "luma_min": 174.5,
+   "luma_max": 197.8,
+   "saturation": 0.864,
+   "hue": 0.168,
+   "isolated": 0.0208,
+   "boundary": 0.6944,
+   "clump": 13.09,
+   "light_dx": -0.01,
+   "light_dy": -0.02
+  },
+  "sand": {
+   "pixels": 256,
+   "colors": 3,
+   "ramp": [
+    {
+     "hex": "#fed56f",
+     "share": 0.332
+    },
+    {
+     "hex": "#fed976",
+     "share": 0.3242
+    },
+    {
+     "hex": "#ffdf7d",
+     "share": 0.3438
+    }
+   ],
+   "outline": "#fed56f",
+   "luma_min": 213.6,
+   "luma_max": 221.4,
+   "saturation": 0.536,
+   "hue": 0.122,
+   "isolated": 0.0234,
+   "boundary": 0.8164,
+   "clump": 10.24,
+   "light_dx": 0.0,
+   "light_dy": 0.01
+  },
+  "sand_edge": {
+   "pixels": 2304,
+   "colors": 9,
+   "ramp": [
+    {
+     "hex": "#80af23",
+     "share": 0.0178
+    },
+    {
+     "hex": "#a8c628",
+     "share": 0.0447
+    },
+    {
+     "hex": "#bfc50f",
+     "share": 0.1367
+    },
+    {
+     "hex": "#f4b24b",
+     "share": 0.043
+    },
+    {
+     "hex": "#d0cc2c",
+     "share": 0.0938
+    },
+    {
+     "hex": "#dcd82e",
+     "share": 0.0851
+    },
+    {
+     "hex": "#fed56f",
+     "share": 0.1888
+    },
+    {
+     "hex": "#fed976",
+     "share": 0.194
+    },
+    {
+     "hex": "#ffdf7d",
+     "share": 0.1962
+    }
+   ],
+   "outline": "#80af23",
+   "luma_min": 145.0,
+   "luma_max": 221.4,
+   "saturation": 0.657,
+   "hue": 0.14,
+   "isolated": 0.0694,
+   "boundary": 0.8199,
+   "clump": 6.35,
+   "light_dx": 0.02,
+   "light_dy": 0.07
+  },
+  "rock_ring": {
+   "pixels": 2304,
+   "colors": 9,
+   "ramp": [
+    {
+     "hex": "#a84e1a",
+     "share": 0.125
+    },
+    {
+     "hex": "#bf6c27",
+     "share": 0.253
+    },
+    {
+     "hex": "#80af23",
+     "share": 0.0256
+    },
+    {
+     "hex": "#db9138",
+     "share": 0.2365
+    },
+    {
+     "hex": "#bfc50f",
+     "share": 0.178
+    },
+    {
+     "hex": "#d0cc2c",
+     "share": 0.112
+    },
+    {
+     "hex": "#f9bc4c",
+     "share": 0.0247
+    },
+    {
+     "hex": "#dcd82e",
+     "share": 0.0347
+    }
+   ],
+   "outline": "#a84e1a",
+   "luma_min": 99.0,
+   "luma_max": 197.8,
+   "saturation": 0.808,
+   "hue": 0.113,
+   "isolated": 0.0734,
+   "boundary": 0.8134,
+   "clump": 6.76,
+   "light_dx": -0.12,
+   "light_dy": -0.72
+  },
+  "water": {
+   "pixels": 576,
+   "colors": 4,
+   "ramp": [
+    {
+     "hex": "#0182e0",
+     "share": 0.4149
+    },
+    {
+     "hex": "#0388e5",
+     "share": 0.2205
+    },
+    {
+     "hex": "#179aeb",
+     "share": 0.2378
+    },
+    {
+     "hex": "#2ab5f2",
+     "share": 0.1267
+    }
+   ],
+   "outline": "#0182e0",
+   "luma_min": 102.1,
+   "luma_max": 146.4,
+   "saturation": 0.95,
+   "hue": 0.566,
+   "isolated": 0.0868,
+   "boundary": 0.9462,
+   "clump": 4.54,
+   "light_dx": -0.04,
+   "light_dy": 0.05
+  },
+  "water_bank": {
+   "pixels": 2304,
+   "colors": 8,
+   "ramp": [
+    {
+     "hex": "#a84e1a",
+     "share": 0.0855
+    },
+    {
+     "hex": "#0182e0",
+     "share": 0.2878
+    },
+    {
+     "hex": "#0388e5",
+     "share": 0.148
+    },
+    {
+     "hex": "#179aeb",
+     "share": 0.171
+    },
+    {
+     "hex": "#bf6c27",
+     "share": 0.1042
+    },
+    {
+     "hex": "#2ab5f2",
+     "share": 0.1016
+    },
+    {
+     "hex": "#db9138",
+     "share": 0.0829
+    },
+    {
+     "hex": "#f9bc4c",
+     "share": 0.0191
+    }
+   ],
+   "outline": "#a84e1a",
+   "luma_min": 99.0,
+   "luma_max": 193.5,
+   "saturation": 0.901,
+   "hue": 0.557,
+   "isolated": 0.0977,
+   "boundary": 0.9501,
+   "clump": 3.92,
+   "light_dx": 0.07,
+   "light_dy": -0.1
+  },
+  "tree": {
+   "pixels": 999,
+   "colors": 9,
+   "ramp": [
+    {
+     "hex": "#1a5d26",
+     "share": 0.1001
+    },
+    {
+     "hex": "#7d370f",
+     "share": 0.015
+    },
+    {
+     "hex": "#287a37",
+     "share": 0.1992
+    },
+    {
+     "hex": "#50982d",
+     "share": 0.2963
+    },
+    {
+     "hex": "#bf6c27",
+     "share": 0.019
+    },
+    {
+     "hex": "#80af23",
+     "share": 0.2232
+    },
+    {
+     "hex": "#a8c628",
+     "share": 0.1321
+    }
+   ],
+   "outline": "#1a5d26",
+   "luma_min": 66.7,
+   "luma_max": 171.0,
+   "saturation": 0.739,
+   "hue": 0.272,
+   "isolated": 0.0581,
+   "boundary": 0.8188,
+   "clump": 6.8,
+   "light_dx": -0.1,
+   "light_dy": -1.13
+  },
+  "tree_round": {
+   "pixels": 1061,
+   "colors": 10,
+   "ramp": [
+    {
+     "hex": "#1a5d26",
+     "share": 0.082
+    },
+    {
+     "hex": "#7d370f",
+     "share": 0.0273
+    },
+    {
+     "hex": "#287a37",
+     "share": 0.2083
+    },
+    {
+     "hex": "#a84e1a",
+     "share": 0.0123
+    },
+    {
+     "hex": "#50982d",
+     "share": 0.3261
+    },
+    {
+     "hex": "#bf6c27",
+     "share": 0.0292
+    },
+    {
+     "hex": "#80af23",
+     "share": 0.2158
+    },
+    {
+     "hex": "#db9138",
+     "share": 0.0302
+    },
+    {
+     "hex": "#a8c628",
+     "share": 0.0631
+    }
+   ],
+   "outline": "#1a5d26",
+   "luma_min": 66.7,
+   "luma_max": 193.5,
+   "saturation": 0.736,
+   "hue": 0.268,
+   "isolated": 0.0594,
+   "boundary": 0.7879,
+   "clump": 7.03,
+   "light_dx": -0.03,
+   "light_dy": -0.57
+  },
+  "roof": {
+   "pixels": 4844,
+   "colors": 14,
+   "ramp": [
+    {
+     "hex": "#104826",
+     "share": 0.0252
+    },
+    {
+     "hex": "#247144",
+     "share": 0.0791
+    },
+    {
+     "hex": "#348457",
+     "share": 0.2539
+    },
+    {
+     "hex": "#6c5aa7",
+     "share": 0.0295
+    },
+    {
+     "hex": "#4da276",
+     "share": 0.4015
+    },
+    {
+     "hex": "#70b376",
+     "share": 0.1515
+    },
+    {
+     "hex": "#f2d05c",
+     "share": 0.0186
+    }
+   ],
+   "outline": "#104826",
+   "luma_min": 51.4,
+   "luma_max": 244.8,
+   "saturation": 0.542,
+   "hue": 0.401,
+   "isolated": 0.0062,
+   "boundary": 0.5681,
+   "clump": 21.34,
+   "light_dx": -2.86,
+   "light_dy": -0.07
+  },
+  "house_wall": {
+   "pixels": 2205,
+   "colors": 10,
+   "ramp": [
+    {
+     "hex": "#104826",
+     "share": 0.0345
+    },
+    {
+     "hex": "#7d370f",
+     "share": 0.195
+    },
+    {
+     "hex": "#a84e1a",
+     "share": 0.1805
+    },
+    {
+     "hex": "#bf6c27",
+     "share": 0.2689
+    },
+    {
+     "hex": "#2ab5f2",
+     "share": 0.0181
+    },
+    {
+     "hex": "#db9138",
+     "share": 0.0531
+    },
+    {
+     "hex": "#c4b487",
+     "share": 0.058
+    },
+    {
+     "hex": "#fff5d9",
+     "share": 0.1819
+    }
+   ],
+   "outline": "#104826",
+   "luma_min": 51.4,
+   "luma_max": 244.8,
+   "saturation": 0.67,
+   "hue": 0.09,
+   "isolated": 0.0163,
+   "boundary": 0.8667,
+   "clump": 16.96,
+   "light_dx": 1.13,
+   "light_dy": 0.23
+  },
+  "center": {
+   "pixels": 8008,
+   "colors": 17,
+   "ramp": [
+    {
+     "hex": "#640100",
+     "share": 0.0224
+    },
+    {
+     "hex": "#9a0200",
+     "share": 0.0646
+    },
+    {
+     "hex": "#004d85",
+     "share": 0.013
+    },
+    {
+     "hex": "#006ab5",
+     "share": 0.023
+    },
+    {
+     "hex": "#c72e25",
+     "share": 0.1782
+    },
+    {
+     "hex": "#555f64",
+     "share": 0.0155
+    },
+    {
+     "hex": "#179aeb",
+     "share": 0.0507
+    },
+    {
+     "hex": "#f05545",
+     "share": 0.2361
+    },
+    {
+     "hex": "#7a878d",
+     "share": 0.022
+    },
+    {
+     "hex": "#fb7466",
+     "share": 0.0822
+    },
+    {
+     "hex": "#e98593",
+     "share": 0.0204
+    },
+    {
+     "hex": "#b1bcc0",
+     "share": 0.0532
+    },
+    {
+     "hex": "#f3a5a6",
+     "share": 0.0157
+    },
+    {
+     "hex": "#fac7c2",
+     "share": 0.102
+    },
+    {
+     "hex": "#f4fefa",
+     "share": 0.0844
+    }
+   ],
+   "outline": "#640100",
+   "luma_min": 30.5,
+   "luma_max": 250.6,
+   "saturation": 0.592,
+   "hue": 0.007,
+   "isolated": 0.0246,
+   "boundary": 0.6752,
+   "clump": 20.27,
+   "light_dx": -1.88,
+   "light_dy": 4.87
+  }
+ },
+ "palette_colors": 78
+}

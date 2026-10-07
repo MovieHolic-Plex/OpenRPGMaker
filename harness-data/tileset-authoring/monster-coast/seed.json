@@ -1,0 +1,300 @@
+{
+  "extends": "monster-overworld",
+  "id": "monster-coast",
+  "title": "몬스터 수집 해안 (항구·해변·바닷길)",
+  "tilesetId": "monster_coast",
+  "tilesetName": "몬스터 수집 해안 · OPRN 손 도트",
+  "textureKey": "tex_monster_coast",
+  "sections": [
+    "ground",
+    "ledges",
+    "clearing",
+    "sandpath",
+    "fence",
+    "trees",
+    "forest",
+    "outdoor_props",
+    "houses",
+    "landmarks"
+  ],
+  "gates": {
+    "water": null,
+    "cave_floor": null
+  },
+  "palette": {
+    "sea": [
+      "#0a5fc2",
+      "#0b70d6",
+      "#1286e4",
+      "#3aa8f0",
+      "#8fd2fa"
+    ],
+    "sea_deep": [
+      "#073f8e",
+      "#0a4ea6",
+      "#0d5fbc",
+      "#2a86d8",
+      "#6cb6f0"
+    ],
+    "foam": [
+      "#c4ecfc",
+      "#ffffff"
+    ],
+    "wet": [
+      "#d8973c",
+      "#e8aa50"
+    ],
+    "shallow": [
+      "#4ab4ec",
+      "#7ccbf2",
+      "#b4e4f8"
+    ],
+    "pave": [
+      "#8a8478",
+      "#b0aa9c",
+      "#c8c2b4",
+      "#dcd7cb"
+    ],
+    "quay": [
+      "#5a6078",
+      "#888ea6",
+      "#b6bacb",
+      "#dfe2ec",
+      "#ffffff"
+    ],
+    "dock": [
+      "#6a3818",
+      "#905226",
+      "#b2723a",
+      "#cf9452"
+    ],
+    "brick": [
+      "#6e2a22",
+      "#94402e",
+      "#b45a40",
+      "#cc7656"
+    ],
+    "concrete": [
+      "#5e6070",
+      "#8a8c9a",
+      "#b4b6c0",
+      "#d6d8de"
+    ],
+    "roof_olive": [
+      "#55553a",
+      "#77764c",
+      "#96945f",
+      "#b3b07a"
+    ],
+    "roof_tar": [
+      "#57322e",
+      "#77473e",
+      "#935c4f",
+      "#ad7866"
+    ]
+  },
+  "bake": {
+    "autotile": [
+      [
+        "clearing",
+        "clear_at",
+        "path"
+      ],
+      [
+        "path",
+        "sand_at",
+        "path",
+        {
+          "connectGroups": [
+            "pave",
+            "shore",
+            "quay",
+            "bsand"
+          ],
+          "connectTiles": "seawall_(steps|stepfoot)_[lmr]"
+        }
+      ],
+      [
+        "shore",
+        "shore_at",
+        "water",
+        {
+          "label": "바다(해변 물가) — 파도타기",
+          "edgeConnects": true,
+          "connectGroups": [
+            "quay",
+            "deep"
+          ]
+        }
+      ],
+      [
+        "quay",
+        "quay_at",
+        "water",
+        {
+          "label": "항구 물(부두 벽) — 파도타기",
+          "edgeConnects": true,
+          "connectGroups": [
+            "shore",
+            "bsand"
+          ]
+        }
+      ],
+      [
+        "pave",
+        "pave_at",
+        "path",
+        {
+          "label": "포장길",
+          "connectGroups": [
+            "quay",
+            "bsand",
+            "shore"
+          ],
+          "connectTiles": "seawall_(steps|stepfoot)_[lmr]|(dept|apart|office|hall|shop_s|mart|center|shop_[a-c]|house_[a-z]+)\\.\\d+\\.\\d+",
+          "edgeConnects": true
+        }
+      ],
+      [
+        "bsand",
+        "bsand_at",
+        "edge",
+        {
+          "terrain": "sand",
+          "label": "모래 둔치 — 높은 마을 테두리(갓돌) 쪽은 막힌다",
+          "edgeConnects": true,
+          "connectGroups": [
+            "shore",
+            "quay"
+          ],
+          "connectTiles": "seawall_(steps|stepfoot)_[lmr]"
+        }
+      ],
+      [
+        "deep",
+        "deep_at",
+        "water",
+        {
+          "label": "깊은 바다(잠수 자리) — 짙은 둥근 덩이",
+          "edgeConnects": true
+        }
+      ]
+    ],
+    "autotile_names": {
+      "shore": "해변 물가(바다)",
+      "quay": "부두 벽(항구 물)",
+      "pave": "포장길",
+      "bsand": "모래 둔치(높은 마을 아래 모래)",
+      "deep": "깊은 바다(잠수 자리)"
+    },
+    "rules": [
+      {
+        "re": "tall\\dr[g]\\d+",
+        "terrain": "tall_grass",
+        "label": "키 큰 풀 덩이 바깥 귀(정본 wild_tall 둥글게 깎은 풀숲 칸 — 조우)"
+      },
+      {
+        "re": "tall_fringe_[sew](_v\\d)?(_(a|b|ab))?",
+        "pass": "open",
+        "layer": "upper",
+        "label": "키 큰 풀 가장자리 잎끝(정본, 위층 장식 — 풀숲 남·동·서 이웃 칸에 얹는다, 조우 없음)"
+      },
+      {
+        "re": "dock_[vh]",
+        "pass": "open",
+        "label": "나무 잔교"
+      },
+      {
+        "re": "dock_post",
+        "pass": "shut",
+        "label": "잔교 끝 기둥(물 위 위층)",
+        "layer": "upper"
+      },
+      {
+        "re": "seawall_steps_[lmr]",
+        "pass": "open",
+        "label": "둔치 돌계단(높은 마을 ↔ 모래)"
+      },
+      {
+        "re": "seawall_stepfoot_[lmr]",
+        "pass": "open",
+        "label": "둔치 돌계단 맨 아래 단(모래 위)"
+      }
+    ],
+    "object_kinds": {
+      "decor": [
+        "rug",
+        "h_rug",
+        "h_mat",
+        "c_emblem",
+        "g_leader_mat",
+        "g_dais",
+        "g_edais",
+        "towel_",
+        "airmat_"
+      ],
+      "tree": [
+        "tree_",
+        "pine_",
+        "forest_",
+        "palm"
+      ],
+      "building": [
+        "house_",
+        "two_",
+        "shop_",
+        "cabin_",
+        "center",
+        "mart",
+        "gym_",
+        "gable_",
+        "cave_mouth",
+        "lighthouse",
+        "dept",
+        "apart",
+        "office",
+        "hall",
+        "shop_s"
+      ]
+    },
+    "entrances": {
+      "cave_mouth": [
+        1,
+        2
+      ],
+      "lighthouse": [
+        1,
+        4
+      ],
+      "dept": [
+        4,
+        6
+      ],
+      "apart": [
+        2,
+        6
+      ],
+      "office": [
+        3,
+        6
+      ],
+      "hall": [
+        2,
+        5
+      ],
+      "shop_s": [
+        2,
+        2
+      ]
+    },
+    "backing": "sand0"
+  },
+  "roles": [
+    "grass",
+    "tall_grass",
+    "sand",
+    "tree_big",
+    "fence",
+    "sign"
+  ]
+}
