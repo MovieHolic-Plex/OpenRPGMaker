@@ -1,0 +1,117 @@
+{
+  "aiRecords": [
+    {
+      "name": "oprn-ai-records",
+      "version": 4
+    }
+  ],
+  "initial": "기물\n빈 맵\n현재 맵의 칩셋\n버들항 v6 · 로마풍 항구 도시 (손 도트)\n이 맵에 어울리는 기물\n버들항 소품 과일 상자 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 생선 통 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 계선주 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 입간판 (분필) 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 생선 상자 1×1\n1×1\n이 칩셋에서 사용\n버들항 소품 문간 화분 둘 1×1\n1×1\n이 칩셋에서 사용\n다른 기물 더 보기\n기물을 고른 뒤 맵을 클릭해 놓으세요.",
+  "stamp": {
+    "cells": [
+      {
+        "dx": 0,
+        "dy": 0,
+        "layer": "upper",
+        "tile": 9215
+      }
+    ],
+    "height": 1,
+    "width": 1,
+    "kitId": "bd-prop-crate_apple",
+    "source": {
+      "endTile": 9215,
+      "startTile": 9215,
+      "tilesetId": "beodeul_city",
+      "tileSize": 16
+    },
+    "label": "버들항 소품 과일 상자 1×1"
+  },
+  "selectionDoesNotPaint": true,
+  "firstPlacement": {
+    "cells": [
+      {
+        "expected": 9215,
+        "actual": 9215
+      }
+    ],
+    "selected": true
+  },
+  "repeatedSelection": true,
+  "secondPlacementChanged": true,
+  "undoSecond": true,
+  "undoFirst": true,
+  "moreCount": 12,
+  "switch": {
+    "cleared": true
+  },
+  "indoor": "기물\n가구 실내\n현재 맵의 칩셋\n실내 · 손 도트 v5 (아틀라스)\n이 맵에 어울리는 기물\n안락의자\n1×1\n맵의 장소에 어울림\n천 덮인 가구\n2×2\n맵의 장소에 어울림\n태피스트리(2줄)\n1×2\n맵의 장소에 어울림\n양배추 궤짝\n1×1\n맵의 장소에 어울림\n생선 궤짝\n1×1\n맵의 장소에 어울림\n식빵 궤짝\n1×1\n맵의 장소에 어울림\n다른 기물 더 보기\n기물을 고른 뒤 맵을 클릭해 놓으세요.",
+  "compoundStamp": {
+    "stamp": {
+      "cells": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 6318
+        },
+        {
+          "dx": 1,
+          "dy": 0,
+          "layer": "upper",
+          "tile": 6319
+        },
+        {
+          "dx": 0,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 6320
+        },
+        {
+          "dx": 1,
+          "dy": 1,
+          "layer": "upper",
+          "tile": 6321
+        }
+      ],
+      "height": 2,
+      "width": 2,
+      "kitId": "hand-interior:covered furniture",
+      "source": {
+        "endTile": 6318,
+        "startTile": 6318,
+        "tilesetId": "atlas_biome_interior",
+        "tileSize": 16
+      },
+      "label": "천 덮인 가구"
+    },
+    "layer": "upper"
+  },
+  "compoundPlacement": [
+    {
+      "expected": 6318,
+      "actual": 6318
+    },
+    {
+      "expected": 6319,
+      "actual": 6319
+    },
+    {
+      "expected": 6320,
+      "actual": 6320
+    },
+    {
+      "expected": 6321,
+      "actual": 6321
+    }
+  ],
+  "compoundUndo": true,
+  "english": "Props\n가구 실내\nCurrent map chipset\n실내 · 손 도트 v5 (아틀라스)\nProps for this map\n안락의자\n1×1\nMatches this map’s places\n천 덮인 가구\n2×2\nMatches this map’s places\n태피스트리(2줄)\n1×2\nMatches this map’s places\n양배추 궤짝\n1×1\nMatches this map’s places\n생선 궤짝\n1×1\nMatches this map’s places\n식빵 궤짝\n1×1\nMatches this map’s places\nShow more props\n천 덮인 가구\nPlace the selected prop on the map.",
+  "englishLabel": "Props",
+  "compact": {
+    "viewport": 1024,
+    "width": 291,
+    "overflow": false,
+    "documentOverflow": false
+  },
+  "errors": []
+}

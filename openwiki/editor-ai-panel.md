@@ -615,10 +615,11 @@ AI 를 여는 순간 팔레트가 사라져 "시키고 바로 손보기"가 한 
   `ruleAuditViolationCountCached()` (도구줄 ⋯ 배지와 같은 수)이며 `RULE_AUDIT_UPDATED_EVENT` 로 갱신한다.
   `oprn:ai-sidebar-tools` 는 그리기 패널을 연다. `oprn:ai-sidebar-show` 는 더 듣는 곳이 없다(도크는 항상 보인다).
   회귀: `test/leftActivityBar.test.ts`.
-- 막대 항목(2026-09-27): 그리기 · 맵 · **즐겨찾기**(`leftFavoritesPane.ts`) · **진행**(`leftProgressPane.ts`) · **연결**(`leftLinksPane.ts`) … 검사.
+- 막대 항목(2026-10-07): 그리기 · 맵 · **기물**(`src/editor/panels/leftPropsPane.ts`) · **진행**(`leftProgressPane.ts`) · **연결**(`leftLinksPane.ts`) · 공방 · 스토어 … 검사.
   패널은 펼쳐질 때만 그린다(`show()`), 숨은 패널은 `root.hidden` 에서 돌아선다. 마지막 패널은 `oprn:left-activity-pane` 에 저장.
-  - 즐겨찾기: 별표한 타일과 최근 고른 타일 18개. 최근 목록은 `tileBrushTools.recordRecentTile` 로 옮겼다(팔레트 「최근」 분류와 공유).
-    칸 클릭 = `selectPaletteTile`(팔레트와 같은 경로), 우클릭 = 즐겨찾기 토글. 변경 알림 `TILE_SHORTCUTS_CHANGED_EVENT`.
+  - 기물: 현재 맵의 칩셋에서 완성된 조합·구조물·실내 가구를 6개씩 추천한다. 카드 선택 → 기존 스탬프 페인트로 반복 배치.
+    종류 선택과 이름·태그 검색으로 전체 카탈로그를 찾는다. 검색은 아직 펼치지 않은 카드도 포함한다.
+    옛 즐찾 패널 설정은 기물로 이관한다. 추천·출처 검사·표시 비용은 [기물 바로 고르기](editor-workflows-misc.md#왼쪽-기물--바로-고르기-2026-10-07).
   - 진행: 캔버스 여정 띠와 같은 `evaluateAuthoringJourney`·진행 저장소. 첫 미완료 단계가 「다음」, 「시작/열기」는 `runAuthoringTask`.
   - 연결: `mapLinkStats.collectMapLinkGraph`(같은 명령 순회) — 시작 맵에서 너비 우선으로 닿는지 판정해 「고립/도달 불가」를 위에 모은다.
     양방향 이동은 ↔ 한 줄로 합친다(마을 하나에 집 15채 = 15줄). 이동 행 클릭 = 그 이벤트로 카메라.
