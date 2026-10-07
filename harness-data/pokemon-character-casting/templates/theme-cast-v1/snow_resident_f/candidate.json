@@ -1,0 +1,22 @@
+{
+  "role": "snow_resident_f",
+  "label": "설원 주민 여",
+  "variant": "니나 · 설원 판형 수정",
+  "description": "흰 털 테두리가 얼굴을 감싸는 보랏빛 후드, 같은 색 긴 코트와 갈색 허리띠·털장화",
+  "identity": "흰 털 테두리가 얼굴을 감싸는 보랏빛 후드, 같은 색 긴 코트와 갈색 허리띠·털장화 · 원작 체형과 발 교대 유지",
+  "collection": "theme-cast-v1",
+  "base": "woman_5-snow_resident_f-theme-cast-v1",
+  "templateId": "woman_5",
+  "theme": "snow",
+  "themeGround": [
+    {
+      "sheet": "public/assets/emerald-monster/tiles/climate.png",
+      "tile": [
+        0,
+        28
+      ],
+      "sheetSha256": "1bec5f8f137081211f7ba22b696c620df1461ec894cf3ddff6bfbd51ec0f0d57"
+    }
+  ],
+  "sourceNote": "에메랄드 woman_5 원작을 판형으로 삼아 Claude가 설원 테마에 맞게 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

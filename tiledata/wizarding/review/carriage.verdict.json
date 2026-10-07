@@ -1,0 +1,104 @@
+{
+ "module": "carriage",
+ "sealed": "2026-10-07T09:44:31.576014+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-car-carriage-down": {
+   "verdict": "PASS",
+   "hash": "89cda42435e209dc037e1c6efe6fe38df697d33dab95edb3179fec5761b5b879",
+   "reason": "recheck: rounded lacquered roof with lamps, windows and side wheels now reads as a coach"
+  },
+  "wz-car-carriage-door-closed": {
+   "verdict": "PASS",
+   "hash": "89cda42435e209dc037e1c6efe6fe38df697d33dab95edb3179fec5761b5b879",
+   "reason": "recheck: same corrected body as down; closed door with handle reads"
+  },
+  "wz-car-carriage-door-open": {
+   "verdict": "PASS",
+   "hash": "1b4d34c52be5c15a875ee56b6dae969159dc96794a03f9accaa3887335aeb87f",
+   "reason": "recheck: corrected body; open door with red seat reads"
+  },
+  "wz-car-carriage-up": {
+   "verdict": "PASS",
+   "hash": "9ce399a6a729c1855f8f08813be18e4256c3ac07ef9f0452ae75f35202cf5263",
+   "reason": "recheck: corrected body with rear shaft and back window reads as coach rear"
+  },
+  "wz-car-carriage-left": {
+   "verdict": "PASS",
+   "hash": "9ac2c0af41f1aecbef75759598f28abdc02aa3a66441ef09c717c5a18cd15c57",
+   "reason": "1배·예제에서 바로 마차로 읽힌다: 살 8개·놋쇠 허브·쇠테 바퀴 둘(지름 약 17px, 사람 허리 높이), 가운데 등불 창, 왼쪽 견인봉. 지붕 윗면 띠가 보이는 3/4(윗면 약 35%), 검은 칠 차체에 유색 윤곽·면별 명암, 빛 왼쪽 위. walk .CCCC/SSSSS/.SSSS 로 지붕 C·차체 S 맞음."
+  },
+  "wz-car-carriage-right": {
+   "verdict": "PASS",
+   "hash": "b52af4165bb1b977ab4200b50ed3152607ccc028a91bef49427f5f22ed5ce3af",
+   "reason": "left 의 좌우 반전, 견인봉이 오른쪽으로 나와 방향이 맞고 창·바퀴 위치 이상 없음. 같은 화풍·축척, walk CCCC./SSSSS/SSSS. 대칭 반전 일치."
+  },
+  "wz-car-harness-s": {
+   "verdict": "PASS",
+   "hash": "97a2b4b7873735d40953555c3c1136152efa33ed3b603105d01f5f511987e9c3",
+   "reason": "recheck: two parallel curved shafts now read as harness shafts, not a sword"
+  },
+  "wz-car-rut-h": {
+   "verdict": "PASS",
+   "hash": "e03e38b6ae7b9f9de845b4536cc5d3156b5b3753dd4c10e48c5608257e7952a5",
+   "reason": "recheck: ruts now dark recessed grooves, no longer raised rails"
+  },
+  "wz-car-rut-v": {
+   "verdict": "PASS",
+   "hash": "d5769159ca725ef5364f120be7f0f2a4991cc67077ca7bcd3905ca5e69c7beb9",
+   "reason": "recheck: ruts now dark recessed grooves, no longer raised rails"
+  },
+  "wz-car-canopy": {
+   "verdict": "PASS",
+   "hash": "c4d1c478ee3282533f15fad0918cc91ef22e59bff0d99fa38606579f6329aa91",
+   "reason": "판재 지붕 윗면이 넓게 보이고 앞 처마 띠·기둥 둘·돌 받침·가운데 걸린 등불로 승차 차양으로 읽힌다. 실루엣 좌우 대칭, 나무 결·둥근 모서리·유색 윤곽, 빛 왼쪽 위. 기둥 높이가 사람 머리 위를 지나고 walk CCC/SCS/SCS 맞음."
+  },
+  "wz-car-fence-h": {
+   "verdict": "PASS",
+   "hash": "b44f0b8bf596687ea02000595701f01c39bc95432a6c54dcfbb8d76872645bbf",
+   "reason": "말뚝+가로대 두 줄의 나무 울타리로 읽히고 허리 높이, 말뚝 윗면 보임. repeat 16 주기 이음새가 예제 아래 긴 줄에서 끊김 없이 이어진다. 갈색 유색 윤곽+바닥 그림자."
+  },
+  "wz-car-fence-v": {
+   "verdict": "PASS",
+   "hash": "ad2464ae5816016af39e8ab9ba3e037a165069541b7b9439afce03a579bf7775",
+   "reason": "세로 말뚝과 위아래로 이어지는 가로대 끝이 보여 예제 왼쪽 아래 세로 줄에서 울타리 열로 읽힌다. 윗면 보임, 같은 나무 재질·명암, 허리 높이."
+  },
+  "wz-car-fence-end": {
+   "verdict": "PASS",
+   "hash": "9a404c97c0f7314914a39ddd50f4fe49c5fc317c21ff610dc11c9d9d5b9f2390",
+   "reason": "왼쪽에서 온 가로대 두 줄이 끝 말뚝에서 멈춘다. 울타리 끝으로 읽히고 fence-h 와 같은 높이·색·윤곽."
+  },
+  "wz-car-fence-corner": {
+   "verdict": "PASS",
+   "hash": "1a06f051f9aefb804b2461b0c6b408599adf9b02a5964d7576b5aae85f16efe7",
+   "reason": "가로대가 모서리 말뚝에서 아래로 꺾이는 모양이 읽히고 fence-h·fence-v 와 높이·색이 맞아 예제 왼쪽 아래 모서리에서 자연스럽게 이어진다."
+  },
+  "wz-car-step": {
+   "verdict": "PASS",
+   "hash": "2d6b3259d903d818122afd72bf522a198e6c940d3c537818cf9c09953270d566",
+   "reason": "recheck: two-tier step silhouette now reads as a boarding step"
+  },
+  "wz-car-noticeboard": {
+   "verdict": "PASS",
+   "hash": "f8d650cf28175ffa8d0ffb3097f753d64ec715d061908cd62d73ee418873f233",
+   "reason": "양피지 쪽지 세 장이 붙은 나무 틀 판이 다리 위에 서 있어 게시판으로 읽힌다. 판 윗면 얇게 보임, 사람 가슴 높이, 좌우 대칭, 나무 결·유색 윤곽."
+  },
+  "wz-car-harness-hook": {
+   "verdict": "PASS",
+   "hash": "b4624b110728dc3bbaf629b9d2501fb7b18a29bee5c77a1ff7c22589b9e74bea",
+   "reason": "가로대가 달린 나무 기둥에 가죽끈과 놋쇠 버클이 걸려 마구 걸이로 읽힌다. 비대칭은 걸린 끈 때문으로 기물이라 허용. 가로대 윗면 보임, 사람보다 약간 큼, 같은 화풍."
+  },
+  "wz-car-lantern-post": {
+   "verdict": "PASS",
+   "hash": "bf1c8a6ffd242bd810d1821ff7ac37364aca8f497cb372dea1acb231c9b13eb9",
+   "reason": "돌 받침의 기둥 위 쇠 팔에 따뜻한 등불이 걸려 걸이 등불 기둥으로 읽힌다. 사람 두 배 높이, 윗칸 C·아래 S. 기둥이 주문의 '철'이 아니라 나무색이지만 읽힘·화풍엔 문제 없음."
+  },
+  "wz-car-trunk": {
+   "verdict": "PASS",
+   "hash": "2fc38a82c885c3566dfe37155e3a1d4d5e1c24f1b1614b2df4604089fce49a31",
+   "reason": "놋쇠 띠 두 줄·자물쇠·둥근 뚜껑 윗면(약 30%)으로 짐 트렁크로 읽힌다. 허리 이하, 좌우 대칭, 가죽·금속 재질 구분."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}

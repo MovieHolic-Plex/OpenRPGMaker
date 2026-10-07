@@ -10,18 +10,18 @@ export const beodeulGroundReferences=()=>structuredClone(references);
 export function createBeodeulGroundTileset():TilesetDef {
   const passability=Array.from({length:catalog.count},()=>({up:true,down:true,left:true,right:true}));
   for(const r of catalog.recipes) if(r.blocked) for(const n of r.rows.at(-1)??[])
-    if(n>=0) passability[n]={up:false,down:false,left:false,right:false};
+    if(n!=null&&n>=0) passability[n]={up:false,down:false,left:false,right:false};
   // The wall-facing row is ★: its transparent foundation must inherit the wall's passage.
   const priority=Array.from({length:catalog.count},()=>'lower' as 'lower'|'upper');
   for(const r of catalog.recipes){
-    if('upperCells' in r)for(const [x,y] of r.upperCells){const n=r.rows[y!]![x!]!;if(n>=0)priority[n]='upper';}
-    if('blockingCells' in r)for(const [x,y] of r.blockingCells){const n=r.rows[y!]![x!]!;if(n>=0){priority[n]='lower';passability[n]={up:false,down:false,left:false,right:false};}}
+    if(r.upperCells)for(const [x,y] of r.upperCells){const n=r.rows[y!]?.[x!];if(n!=null&&n>=0)priority[n]='upper';}
+    if(r.blockingCells)for(const [x,y] of r.blockingCells){const n=r.rows[y!]?.[x!];if(n!=null&&n>=0){priority[n]='lower';passability[n]={up:false,down:false,left:false,right:false};}}
   }
   for(const n of catalog.recipes.find(r=>r.id==='bdg-foundation')!.rows[0]!)
-    if(n>=0) priority[n]='upper';
-  for(const n of catalog.recipes.find(r=>r.id==='bdg-tree-neck')!.rows.flat()) if(n>=0) priority[n]='upper';
+    if(n!=null&&n>=0) priority[n]='upper';
+  for(const n of catalog.recipes.find(r=>r.id==='bdg-tree-neck')!.rows.flat()) if(n!=null&&n>=0) priority[n]='upper';
   for(const r of catalog.recipes.filter(r=>r.id.startsWith('bdg-foundation-')))
-    for(const n of r.rows.flat()) if(n>=0) priority[n]='upper';
+    for(const n of r.rows.flat()) if(n!=null&&n>=0) priority[n]='upper';
   return {id:BEODEUL_GROUND_ID,name:'버들항 · 기초·밑동·잔디 꾸미기',
     image:{type:'bundled',id:BEODEUL_GROUND_TEXTURE},kind:'custom',family:'oprn-atlas',
     tileSize:16,tilesPerRow:8,count:catalog.count,passability,

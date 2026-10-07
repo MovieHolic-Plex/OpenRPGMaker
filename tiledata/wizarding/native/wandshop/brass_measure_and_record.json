@@ -1,0 +1,120 @@
+{
+ "name": "brass_measure_and_record",
+ "item": "brass_measure_and_record",
+ "candidate": "h2-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/brass_measure_and_record/h2-A.png",
+ "sha256": "4480547f862c04de034cd876eb6c9145b55cf0375bb69a2117fb622e49a8437d",
+ "set": {
+  "id": "brass-measure-and-record",
+  "name_ko": "brass-measure-and-record",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "surface",
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "description": "카운터(4,3), surfaceOffset(0,-7), screen(64,73), 원점(0,0). 펼침/감김 두 상태 각각 local x2..13/y0..2 안에 황동줄자·양피지 기록·깃펜을 식별. 두 상태는 동시 설치하지 않는다. 실 PNG 밝은 상면마스크 포함과 원배율 구별을 검사한다.",
+  "parent": "brass-measure-and-record",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "measure-extended",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "topMin": 0,
+    "mount": "surface",
+    "layer": 4,
+    "see": "카운터(4,3), surfaceOffset(0,-7), screen(64,73), 원점(0,0). 펼침/감김 두 상태 각각 local x2..13/y0..2 안에 황동줄자·양피지 기록·깃펜을 식별. 두 상태는 동시 설치하지 않는다. 실 PNG 밝은 상면마스크 포함과 원배율 구별을 검사한다. 줄자 펼침; 황동 본체/늘어난 줄 또는 감긴 고리, 밝은 양피지, 가는 깃펜을 서로 구분.",
+    "origin": [
+     0,
+     0
+    ],
+    "localAlphaBounds": [
+     2,
+     0,
+     14,
+     3
+    ],
+    "x": 0,
+    "y": 0,
+    "label": "measure-extended",
+    "locked": false,
+    "child": "brass-measure-and-record measure-extended"
+   },
+   {
+    "key": "measure-coiled",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "topMin": 0,
+    "mount": "surface",
+    "layer": 4,
+    "see": "카운터(4,3), surfaceOffset(0,-7), screen(64,73), 원점(0,0). 펼침/감김 두 상태 각각 local x2..13/y0..2 안에 황동줄자·양피지 기록·깃펜을 식별. 두 상태는 동시 설치하지 않는다. 실 PNG 밝은 상면마스크 포함과 원배율 구별을 검사한다. 줄자 감김; 황동 본체/늘어난 줄 또는 감긴 고리, 밝은 양피지, 가는 깃펜을 서로 구분.",
+    "origin": [
+     0,
+     0
+    ],
+    "localAlphaBounds": [
+     2,
+     0,
+     14,
+     3
+    ],
+    "x": 16,
+    "y": 0,
+    "label": "measure-coiled",
+    "locked": false,
+    "child": "brass-measure-and-record measure-coiled"
+   }
+  ],
+  "contract": {
+   "camera": "남쪽 위 직교3/4, 좌상단 광원; actual bbox 기반 윗면25~35%; 내부 판/광택선 제외",
+   "palette": "전용42색 only",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "선택·설치 금지; 아래 설치 좌표와 레이어를 제작 후 독립 검수",
+   "reuse": "빈 seed에서 전용 신규 픽셀 제작; stock 참고는 구조 비교만",
+   "stateOrigin": [
+    0,
+    0
+   ],
+   "states": [
+    "measure-extended",
+    "measure-coiled"
+   ],
+   "surfaceCell": [
+    4,
+    3
+   ],
+   "surfaceOffset": [
+    0,
+    -7
+   ],
+   "surfaceOriginScreen": [
+    64,
+    73
+   ],
+   "localAlphaBounds": [
+    2,
+    0,
+    14,
+    3
+   ],
+   "mutuallyExclusive": true
+  }
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "width": 48,
+ "height": 40,
+ "frames": [
+  {
+   "id": "measure-up-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-up-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-up-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-down-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-down-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-down-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "measure-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "shelf-lift-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  },
+  {
+   "id": "shelf-lift-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  },
+  {
+   "id": "shelf-lift-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  },
+  {
+   "id": "shelf-lift-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  },
+  {
+   "id": "shelf-lift-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  },
+  {
+   "id": "shelf-lift-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 200
+  }
+ ],
+ "source": "art-output/native-actors/actions/elder-wandmaker/production-shelf-lift-r2/views/sheet.png",
+ "sha256": "8555ba19c839648f2da5f053b68c64192399f07f5af2552b262cc7a88fa88201"
+}

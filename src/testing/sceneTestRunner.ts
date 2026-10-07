@@ -2671,8 +2671,19 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
     .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
     .map((skill) => predictSkillDamageFor(project, target, skill, active).amount)) : 0;
   const run: ActorCommand[] = tactics?.catchable && active && target && threat >= active.hp && bestDamage(active) < target.hp ? [{ kind: "escape" }] : [];
+  // 다음 한 방에 쓰러지고 먼저 눕히지도 못하면 자기 회복 기술(햇살쉼 등)을 쓴다 — 챔피언 앞에서 리더가 화상·약점 한 방에
+  // 체력 반을 남기고 쓰러져 Lv2 동료들만 남았다(2026-10-07 사막 기획서, 회복약이 바닥난 뒤). 플레이어도 그때 회복한다.
+  // 예상 피해는 난수·급소를 빼고 잰다 — 1.5배 여유에 화상·독 한 틱을 더한다(예상 107 에 실제 145, 화상 18 로 쓰러졌다).
+  const upkeep = active && active.stateIds.some((stateId) => /^(burn|poison)$/u.test(project.database.states.find((state) => state.id === stateId)?.gen1MajorStatus ?? ""))
+    ? Math.max(1, Math.floor(active.maxHp / 16)) : 0;
+  const healMove = project.system.battleModel === "gen1" && active && target && active.hp > 0 && active.hp < active.maxHp * 0.6
+    // 먼저 눕힐 수 있어 보여도 명중 90% 기술이 빗나가면 그 한 방을 맞는다(빗나간 뒤 쓰러졌다) — 신중한 플레이어처럼 회복한다.
+    && threat * 1.5 + upkeep >= active.hp
+    ? (active.skillIds ?? []).map((skillId) => skills.get(skillId)).find((skill) => !!skill && skill.scope === "self" && skill.effect.kind === "healing")
+    : undefined;
+  const healWithMove: ActorCommand[] = healMove ? [{ kind: "skill", skillId: healMove.id, targetEnemyId }] : [];
   const attempts: ActorCommand[] = project.system.battleModel === "gen1"
-    ? [...run, ...healSelf, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    ? [...run, ...healSelf, ...healWithMove, ...throwBall, ...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
     : [{ kind: "attack", targetEnemyId }];
   for (const command of attempts) {
     runtime.performActorCommand(command);

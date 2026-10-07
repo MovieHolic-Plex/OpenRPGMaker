@@ -1,0 +1,445 @@
+{
+ "name": "theme_potions_repair_r9_arched_prep_door",
+ "item": "theme_potions_repair_r9_arched_prep_door",
+ "candidate": "h2-A",
+ "source": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+ "sha256": "9fbfd7ff4b45259b8dc77b5ee26c454bac94d7c0b6e7e3b216df9051e5150855",
+ "set": {
+  "id": "theme potions repair-r9 arched-prep-door",
+  "name_ko": "arched-prep-door",
+  "name_en": "theme potions repair-r9 arched-prep-door",
+  "parent": "theme potions repair-r9 arched-prep-door",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "반려 항목 전용 변형",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   64
+  ],
+  "description": "E/W opening d16,7 clear ground y112..128, effective width16px,height32px. Shared hinge264,112,0 and top264,80. Rigid L16/T2/H32 closed free bottom264,128/top264,96; open free bottom280,112/top280,80. Door source crop32x60 TL256,72 origin0,40, no scale change. Arch top72, south cut top16px, minimum edge shading3px only and dark south thickness; north jamb W y6, south jamb W y8, both W-side x256..264. Open thickness y110..112 along north jamb, opens into preparation north wall, never y113..127. South jamb visual cutaway removes its upper foreground only by a real short cut-cap at Z12 (top at128-12=116); opaque cap+south face x256..263 may obscure west half but must leave threshold x264..271 visibly continuous. Ground opening remains width16. Native reviewer observes full floor, human, threshold and shared hinge in all states. South W jamb groundRect(256,128,264,144), constant Z12: top vertices(256,116),(264,116),(264,132),(256,132); full16px horizontal depth. South vertical face x256..264,y132..144 is12px high. Door crop TL256,72 ends132: local top44..60; dedicated8x12 join at256,132 continues below. Common west8 mask and seam for open/closed/locked; visible threshold x264..272,y112..128 remains clear in open state. North profile Z36 unchanged.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "open",
+    "label": "open",
+    "see": "open",
+    "w": 32,
+    "h": 60,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     40
+    ],
+    "layer": 3,
+    "passage": "o",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "hingePixel": [
+     264,
+     112
+    ],
+    "x": 0,
+    "y": 0,
+    "rigidLeaf": {
+     "angleDegreesFromSouth": -90,
+     "bottomWorld": [
+      [
+       264,
+       112,
+       0
+      ],
+      [
+       280,
+       112,
+       0
+      ]
+     ],
+     "topWorld": [
+      [
+       264,
+       112,
+       32
+      ],
+      [
+       280,
+       112,
+       32
+      ]
+     ],
+     "bottomScreen": [
+      [
+       264,
+       112
+      ],
+      [
+       280,
+       112
+      ]
+     ],
+     "topScreen": [
+      [
+       264,
+       80
+      ],
+      [
+       280,
+       80
+      ]
+     ],
+     "actualLength": 16,
+     "thickness": 2,
+     "height": 32,
+     "groundCollisionCells": [],
+     "upperLeafDoesNotAddFloorCollision": true
+    },
+    "heightProjection": "screen(X,Y,Z)=(X,Y-Z); X/Y are ground coordinates in original 16px ground-grid units, Z physical height in the same pixel units. All offsets use heightScale=1. No perspective size scaling.",
+    "jambProjection": {
+     "groundRect": [
+      256,
+      128,
+      264,
+      144
+     ],
+     "height": 12,
+     "topScreenY": 116,
+     "topRows": 16,
+     "southFaceScreenY": [
+      132,
+      144
+     ],
+     "sourceCropBottom": 132,
+     "bottomContinuation": "Dedicated south-jamb-join slot at screen256,132 size8x12 supplies full Z12 south face to144; existing row8 western8px is removed in code. Same material/outline and shade at crop132 in every state; eastern8px original wall remains.",
+     "topScreenPolygon": [
+      [
+       256,
+       116
+      ],
+      [
+       264,
+       116
+      ],
+      [
+       264,
+       132
+      ],
+      [
+       256,
+       132
+      ]
+     ],
+     "topScreenRange": [
+      116,
+      132
+     ],
+     "topEdgeShadingMinRows": 3
+    },
+    "topFaceDepthPx": 16,
+    "edgeShadingMinRows": 3
+   },
+   {
+    "key": "closed",
+    "label": "closed",
+    "see": "closed",
+    "w": 32,
+    "h": 60,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     40
+    ],
+    "layer": 3,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "hingePixel": [
+     264,
+     112
+    ],
+    "x": 32,
+    "y": 0,
+    "rigidLeaf": {
+     "angleDegreesFromSouth": 0,
+     "bottomWorld": [
+      [
+       264,
+       112,
+       0
+      ],
+      [
+       264,
+       128,
+       0
+      ]
+     ],
+     "topWorld": [
+      [
+       264,
+       112,
+       32
+      ],
+      [
+       264,
+       128,
+       32
+      ]
+     ],
+     "bottomScreen": [
+      [
+       264,
+       112
+      ],
+      [
+       264,
+       128
+      ]
+     ],
+     "topScreen": [
+      [
+       264,
+       80
+      ],
+      [
+       264,
+       96
+      ]
+     ],
+     "actualLength": 16,
+     "thickness": 2,
+     "height": 32,
+     "groundCollisionCells": [
+      [
+       16,
+       7
+      ]
+     ],
+     "upperLeafDoesNotAddFloorCollision": true
+    },
+    "heightProjection": "screen(X,Y,Z)=(X,Y-Z); X/Y are ground coordinates in original 16px ground-grid units, Z physical height in the same pixel units. All offsets use heightScale=1. No perspective size scaling.",
+    "jambProjection": {
+     "groundRect": [
+      256,
+      128,
+      264,
+      144
+     ],
+     "height": 12,
+     "topScreenY": 116,
+     "topRows": 16,
+     "southFaceScreenY": [
+      132,
+      144
+     ],
+     "sourceCropBottom": 132,
+     "bottomContinuation": "Dedicated south-jamb-join slot at screen256,132 size8x12 supplies full Z12 south face to144; existing row8 western8px is removed in code. Same material/outline and shade at crop132 in every state; eastern8px original wall remains.",
+     "topScreenPolygon": [
+      [
+       256,
+       116
+      ],
+      [
+       264,
+       116
+      ],
+      [
+       264,
+       132
+      ],
+      [
+       256,
+       132
+      ]
+     ],
+     "topScreenRange": [
+      116,
+      132
+     ],
+     "topEdgeShadingMinRows": 3
+    },
+    "topFaceDepthPx": 16,
+    "edgeShadingMinRows": 3
+   },
+   {
+    "key": "locked",
+    "label": "locked",
+    "see": "locked",
+    "w": 32,
+    "h": 60,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     40
+    ],
+    "layer": 3,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "hingePixel": [
+     264,
+     112
+    ],
+    "x": 64,
+    "y": 0,
+    "rigidLeaf": {
+     "angleDegreesFromSouth": 0,
+     "bottomWorld": [
+      [
+       264,
+       112,
+       0
+      ],
+      [
+       264,
+       128,
+       0
+      ]
+     ],
+     "topWorld": [
+      [
+       264,
+       112,
+       32
+      ],
+      [
+       264,
+       128,
+       32
+      ]
+     ],
+     "bottomScreen": [
+      [
+       264,
+       112
+      ],
+      [
+       264,
+       128
+      ]
+     ],
+     "topScreen": [
+      [
+       264,
+       80
+      ],
+      [
+       264,
+       96
+      ]
+     ],
+     "actualLength": 16,
+     "thickness": 2,
+     "height": 32,
+     "groundCollisionCells": [
+      [
+       16,
+       7
+      ]
+     ],
+     "upperLeafDoesNotAddFloorCollision": true
+    },
+    "heightProjection": "screen(X,Y,Z)=(X,Y-Z); X/Y are ground coordinates in original 16px ground-grid units, Z physical height in the same pixel units. All offsets use heightScale=1. No perspective size scaling.",
+    "jambProjection": {
+     "groundRect": [
+      256,
+      128,
+      264,
+      144
+     ],
+     "height": 12,
+     "topScreenY": 116,
+     "topRows": 16,
+     "southFaceScreenY": [
+      132,
+      144
+     ],
+     "sourceCropBottom": 132,
+     "bottomContinuation": "Dedicated south-jamb-join slot at screen256,132 size8x12 supplies full Z12 south face to144; existing row8 western8px is removed in code. Same material/outline and shade at crop132 in every state; eastern8px original wall remains.",
+     "topScreenPolygon": [
+      [
+       256,
+       116
+      ],
+      [
+       264,
+       116
+      ],
+      [
+       264,
+       132
+      ],
+      [
+       256,
+       132
+      ]
+     ],
+     "topScreenRange": [
+      116,
+      132
+     ],
+     "topEdgeShadingMinRows": 3
+    },
+    "topFaceDepthPx": 16,
+    "edgeShadingMinRows": 3
+   },
+   {
+    "key": "south-jamb-join",
+    "label": "Shared Z12 south vertical wall face continuation",
+    "see": "south",
+    "w": 8,
+    "h": 12,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     -4
+    ],
+    "layer": 3,
+    "passage": "X",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0,
+    "installationPlane": "vertical south face only; top is in three door states, not a standalone furniture cap",
+    "screenRect": [
+     256,
+     132,
+     264,
+     144
+    ]
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r9-jamb-projection-prep/scene-contract.json",
+   "instructions": "E/W opening d16,7 clear ground y112..128, effective width16px,height32px. Shared hinge264,112,0 and top264,80. Rigid L16/T2/H32 closed free bottom264,128/top264,96; open free bottom280,112/top280,80. Door source crop32x60 TL256,72 origin0,40, no scale change. Arch top72, south cut top16px, minimum edge shading3px only and dark south thickness; north jamb W y6, south jamb W y8, both W-side x256..264. Open thickness y110..112 along north jamb, opens into preparation north wall, never y113..127. South jamb visual cutaway removes its upper foreground only by a real short cut-cap at Z12 (top at128-12=116); opaque cap+south face x256..263 may obscure west half but must leave threshold x264..271 visibly continuous. Ground opening remains width16. Native reviewer observes full floor, human, threshold and shared hinge in all states. South W jamb groundRect(256,128,264,144), constant Z12: top vertices(256,116),(264,116),(264,132),(256,132); full16px horizontal depth. South vertical face x256..264,y132..144 is12px high. Door crop TL256,72 ends132: local top44..60; dedicated8x12 join at256,132 continues below. Common west8 mask and seam for open/closed/locked; visible threshold x264..272,y112..128 remains clear in open state. North profile Z36 unchanged.\nSouth jamb source crop: each state local x0..8,y44..60 is the entire16px-deep horizontal top, not a3px stripe. Shared join local x96..104,y0..12 is vertical face only, projects to screen256..264,132..144. At seam132 match material, outline, height and stone joints exactly across all states. Join has no separate top or new ground footprint; topMin0 does not exempt the full door top16px. Preserve threshold eastern8px; no blue marks, alpha holes or rotations. Reviewer opens actual original row8 PNGs, new candidate, same human threshold sample and four real scenes at1x/x8, writes designated verdict.json PASS/FAIL with slotResults evidence, physical top polygon and12px south face, all three seam comparisons and concrete pixel repairs. Empty contexts only test files and fields.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "arched-prep-door",
+   "repairOfCollected": true
+  }
+ }
+}

@@ -1,0 +1,1968 @@
+{
+ "name": "timber_ceiling_cutaway",
+ "item": "timber_ceiling_cutaway",
+ "candidate": "h3-A",
+ "source": "art-output/scene-spec-repair-r4-prep-rev3/content/tiledata/hand-interior/pick/candidates/timber_ceiling_cutaway/h3-A.png",
+ "sha256": "ff37dccba36e3a24e8c9345c16c5e420e2d5250c00d7ca8a8d9beed2c4b294e7",
+ "set": {
+  "id": "timber-ceiling-cutaway",
+  "name_ko": "timber-ceiling-cutaway",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "wall",
+  "canvas": [
+   256,
+   16
+  ],
+  "footprint": {
+   "w": 16,
+   "h": 0
+  },
+  "description": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지.",
+  "parent": "timber-ceiling-cutaway",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "mask-0",
+    "label": "mask-0",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-0",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-0",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-1",
+    "label": "mask-1",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-1",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-1",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-2",
+    "label": "mask-2",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-2",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 32,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-2",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-3",
+    "label": "mask-3",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-3",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 48,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-3",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-4",
+    "label": "mask-4",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-4",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 64,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-4",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-5",
+    "label": "mask-5",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-5",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 80,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-5",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-6",
+    "label": "mask-6",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-6",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 96,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-6",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-7",
+    "label": "mask-7",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-7",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 112,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-7",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-8",
+    "label": "mask-8",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-8",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 128,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-8",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-9",
+    "label": "mask-9",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-9",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 144,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-9",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-10",
+    "label": "mask-10",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-10",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 160,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-10",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-11",
+    "label": "mask-11",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-11",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 176,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-11",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-12",
+    "label": "mask-12",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-12",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 192,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-12",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-13",
+    "label": "mask-13",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-13",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 208,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-13",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-14",
+    "label": "mask-14",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-14",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 224,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-14",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   },
+   {
+    "key": "mask-15",
+    "label": "mask-15",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지. 当前槽=mask-15",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 240,
+    "y": 0,
+    "locked": false,
+    "child": "timber-ceiling-cutaway mask-15",
+    "surfaceRegions": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   }
+  ],
+  "contract": {
+   "palette": "dedicated42 only",
+   "lighting": "upper left",
+   "camera": "approved orthogonal south-above 3/4; axes screen parallel",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "assemblyAllowed": false,
+   "candidateCount": 1,
+   "nativeAttempts": 1,
+   "requirement": "timber-ceiling-cutaway",
+   "joinDarkMaxPx": 2,
+   "continuousEdges": true,
+   "forbidBlackTileGaps": true,
+   "directionMask": {
+    "S": 1,
+    "N": 2,
+    "W": 4,
+    "E": 8
+   },
+   "repair": "mask bits는 같은 # 구조 이웃 연결 S=1,N=2,W=4,E=8이다. 모든 rect는 local XYXY 우측/하단 exclusive다. 윗면은 중심[5,5,11,8), N 연결[5,0,11,5), S 연결[5,8,11,16), W 연결[0,5,5,8), E 연결[11,5,16,8)의 합집합이다. 남쪽 정면은 S 미연결일 때만 중심[5,8,11,10), W 연결의 노출[0,8,5,10), E 연결의 노출[11,8,16,10)이다. S 연결 중심 x5..10,y8..9는 윗면만 존재한다. 상면과 정면은 서로 겹치지 않으며 N/S 연결 끝과 T/십자 중심에 끝선이 없다. mask-3은 top[5,0,11,16), front 없음; mask-12는 top[0,5,16,8), front[0,8,16,10). 모서리/T/십자도 같은 합집합 규칙으로 정의한다. 노출 정면만 최대2px, 연결 끝선 없음, 외곽 면 자동 반전 금지.",
+   "maskSurfaceContract": {
+    "mask-0": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-1": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-2": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-3": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ]
+     ],
+     "frontRects": [],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-4": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-5": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-6": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-7": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-8": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-9": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-10": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-11": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-12": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-13": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-14": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       5,
+       8,
+       11,
+       10
+      ],
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    },
+    "mask-15": {
+     "topRects": [
+      [
+       5,
+       5,
+       11,
+       8
+      ],
+      [
+       5,
+       0,
+       11,
+       5
+      ],
+      [
+       5,
+       8,
+       11,
+       16
+      ],
+      [
+       0,
+       5,
+       5,
+       8
+      ],
+      [
+       11,
+       5,
+       16,
+       8
+      ]
+     ],
+     "frontRects": [
+      [
+       0,
+       8,
+       5,
+       10
+      ],
+      [
+       11,
+       8,
+       16,
+       10
+      ]
+     ],
+     "rectConvention": "XYXY-exclusive"
+    }
+   }
+  },
+  "maskSurfaceContract": {
+   "mask-0": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-1": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ]
+    ],
+    "frontRects": [],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-2": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-3": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ]
+    ],
+    "frontRects": [],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-4": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      0,
+      8,
+      5,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-5": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      0,
+      8,
+      5,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-6": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      0,
+      8,
+      5,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-7": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      0,
+      8,
+      5,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-8": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-9": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-10": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-11": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-12": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      0,
+      8,
+      5,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-13": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      0,
+      8,
+      5,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-14": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      5,
+      8,
+      11,
+      10
+     ],
+     [
+      0,
+      8,
+      5,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   },
+   "mask-15": {
+    "topRects": [
+     [
+      5,
+      5,
+      11,
+      8
+     ],
+     [
+      5,
+      0,
+      11,
+      5
+     ],
+     [
+      5,
+      8,
+      11,
+      16
+     ],
+     [
+      0,
+      5,
+      5,
+      8
+     ],
+     [
+      11,
+      5,
+      16,
+      8
+     ]
+    ],
+    "frontRects": [
+     [
+      0,
+      8,
+      5,
+      10
+     ],
+     [
+      11,
+      8,
+      16,
+      10
+     ]
+    ],
+    "rectConvention": "XYXY-exclusive"
+   }
+  }
+ }
+}

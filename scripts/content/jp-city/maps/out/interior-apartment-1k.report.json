@@ -1,0 +1,35 @@
+{
+ "map": {
+  "id": "jp-city-apartment-1k",
+  "size": [
+   12,
+   13
+  ]
+ },
+ "start": [
+  8,
+  11
+ ],
+ "summary": "손 도트 실내 '원룸 아파트(1K)' 12×13 (jp-city-apartment-1k, jp_city) — 출입구에서 닿는 칸 36, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-apartment-1k",
+  "tilesetId": "jp_city",
+  "width": 12,
+  "height": 13,
+  "reachable": 36,
+  "floorCells": 59,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 8,
+    "y": 11
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 36,
+ "ok": true
+}

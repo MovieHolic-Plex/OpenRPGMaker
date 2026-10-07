@@ -1,0 +1,1622 @@
+{
+ "name": "dark_timber_wall",
+ "item": "dark_timber_wall",
+ "candidate": "h1-A",
+ "source": "art-output/scene-boundary-repair-rev6-north/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h1-A.png",
+ "sha256": "28b538043b8f1d8e00447c95c745c3574e8e77bb5349b2aad05af7ecdf58d3b8",
+ "set": {
+  "id": "dark-timber-wall",
+  "name_ko": "dark-timber-wall",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "wall",
+  "canvas": [
+   400,
+   32
+  ],
+  "footprint": {
+   "w": 25,
+   "h": 0
+  },
+  "description": "연속 오크 절단 경계. 북입면32px와 전 방향6px 상면/2px 남전면, 계단형 남쪽 경계와 문 접합을 별도 소유자로 제작. 기존 N-face 및 팔레트 보존. 북입면32px 아래 전용N-base/NW-base/NE-base16px를 더해y48 마루와 연속접합; N-face 원본 보존. 새 세 슬롯은 기존400×32 시트의 하단 빈칸 x16/32/48,y16에 배치.",
+  "parent": "dark-timber-wall",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "N-face",
+    "label": "N-face",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "연속 오크 구조면: 검은 빈 띠나 밝은 큰 패널을16px마다 반복하지 않는다. 접합 어둠 최대2px. 각 방향·내외모서리·끝·T접합은 실제 이웃과 연결. 북입면screen y0..31, 낮춘W/E/S/칸막이는각#셀 내부. N 윗면/남쪽면과 낮춘 벽 윗면/남쪽면/접합그림자를 구별; 창과등 보존. slot N-face; opposite sides separate offsets/clips, not shared tall mask.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall N-face"
+   },
+   {
+    "key": "W-cap",
+    "label": "W-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall W-cap"
+   },
+   {
+    "key": "E-cap",
+    "label": "E-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 32,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall E-cap"
+   },
+   {
+    "key": "S-cap",
+    "label": "S-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 48,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall S-cap"
+   },
+   {
+    "key": "partition",
+    "label": "partition",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 64,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall partition"
+   },
+   {
+    "key": "N-end",
+    "label": "N-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 80,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall N-end"
+   },
+   {
+    "key": "W-end",
+    "label": "W-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 96,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall W-end"
+   },
+   {
+    "key": "E-end",
+    "label": "E-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 112,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall E-end"
+   },
+   {
+    "key": "S-end",
+    "label": "S-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 128,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall S-end"
+   },
+   {
+    "key": "partition-end",
+    "label": "partition-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 144,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall partition-end"
+   },
+   {
+    "key": "outer-N",
+    "label": "outer-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 160,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-N"
+   },
+   {
+    "key": "outer-W",
+    "label": "outer-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 176,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-W"
+   },
+   {
+    "key": "outer-E",
+    "label": "outer-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 192,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-E"
+   },
+   {
+    "key": "outer-S",
+    "label": "outer-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 208,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-S"
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 224,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-NE"
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 240,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-NW"
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 256,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-SE"
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 272,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall inner-SW"
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 288,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-NE"
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 304,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-NW"
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 320,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SE"
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 336,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SW"
+   },
+   {
+    "key": "T-join",
+    "label": "T-join",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "単一T접합: 상면[5,0,11,16)∪[0,0,16,6), 횡노출남변전면2px. 외벽과칸막이 사이 빈띠없이연속. 동일offset의W/E-cap대신소유자한번만배치.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 352,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall T-join"
+   },
+   {
+    "key": "entry-jamb",
+    "label": "entry-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 368,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall entry-jamb"
+   },
+   {
+    "key": "staff-jamb",
+    "label": "staff-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev6 단일 경계: 종상면 폭6px(local x5..10); 횡상면 깊이6px(local y0..5)와 남전면2px(y6..7). 코너는 두 면의 연속 합집합이며 공유 화소의 소유자는 하나다. 나머지는 투명, 검은 사각 내부를 감싼 폐쇄 틀 금지. 방향별 형상은 boundary-contract.json의 실제 offset/clip과 일치. 가구3행 고정 규칙 대신 이 설치면 계약을 측정한다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 384,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall staff-jamb"
+   },
+   {
+    "key": "N-base",
+    "label": "N-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37; local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot; N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 16,
+    "y": 16,
+    "locked": false,
+    "child": "dark-timber-wall N-base"
+   },
+   {
+    "key": "NW-base",
+    "label": "NW-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37; local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot; N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 32,
+    "y": 16,
+    "locked": false,
+    "child": "dark-timber-wall NW-base"
+   },
+   {
+    "key": "NE-base",
+    "label": "NE-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37; local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot; N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 48,
+    "y": 16,
+    "locked": false,
+    "child": "dark-timber-wall NE-base"
+   }
+  ],
+  "contract": {
+   "palette": "dedicated42 only",
+   "lighting": "upper left",
+   "camera": "approved orthogonal south-above 3/4; axes screen parallel",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "assemblyAllowed": false,
+   "candidateCount": 1,
+   "nativeAttempts": 1,
+   "requirement": "dark-timber-wall",
+   "joinDarkMaxPx": 2,
+   "continuousEdges": true,
+   "forbidBlackTileGaps": true,
+   "repair": "남쪽 사다리형 폐쇄 틀과 wall/cutaway 중복을 폐기; 지정6px/2px 방향별 실제 연결 슬롯만 수정. 北쪽구조행N-base16px를전용슬롯으로추가하여입면32+기단16=48px와y48마루를연결한다.",
+   "sourcePNG": {
+    "path": "art-output/scene-spec-repair-r4-prep-rev4/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h1-A.png",
+    "sha256": "9255c56f740a883ce0cccd87b7337a5f47588c7b3c2cdf888287a57f1135197c"
+   },
+   "sourceVerdict": "existing independent local PASS; whole-scene review pending; historical FAIL preserved",
+   "maskSurfaceContract": {
+    "northBase": {
+     "bounds": [
+      0,
+      32,
+      176,
+      48
+     ],
+     "exposedBounds": [
+      112,
+      32,
+      160,
+      48
+     ],
+     "topFace": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37",
+     "verticalFace": "local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot",
+     "contact": [
+      0,
+      48,
+      176,
+      48
+     ],
+     "heightComparison": "N-face32px + architectural base16px =48px; adult29px/student24px; stock48px tall at y16..64 and ladder48px at y16..64 remain foreground with ground64. Base is a reserved structure row, not extra furniture height.",
+     "ownership": "N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+     "opacityRequirement": "All alpha=255 in[0,32,176,48), explicitly[112,32,160,48); N-face bottom y31 contiguous with base y32; base y47 adjacent staff floor y48. Future actual PNG measurement required."
+    },
+    "boundaryContract": "art-output/scene-boundary-repair-rev6-north/boundary-contract.json",
+    "supersedes": "old all-neighbour mask graphs; active installation uses only explicit operations"
+   },
+   "geometry": {
+    "version": 3,
+    "topWidthPx": 6,
+    "southFrontHeightPx": 2,
+    "gridRule": "# is collision/structure reservation only; never infer a wall graph from every # neighbour",
+    "operations": [
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       0,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       16,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       32,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       48,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       64,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       80,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       96,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       112,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       128,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       144,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-face",
+      "offset": [
+       160,
+       0
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       32
+      ],
+      "layer": 1,
+      "direction": "N",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       48
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       48
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       64
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       64
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       96
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       112
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       128
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       128
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       144
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       144
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       160
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       160
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "W-cap",
+      "offset": [
+       0,
+       176
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "W",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "E-cap",
+      "offset": [
+       160,
+       176
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "E",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       0,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       16,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       144,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       160,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "inner-SW",
+      "offset": [
+       32,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "SW",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "inner-SE",
+      "offset": [
+       128,
+       192
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "SE",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       48,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       64,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       96,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "S-cap",
+      "offset": [
+       112,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "S",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "outer-SW",
+      "offset": [
+       32,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "SW",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "outer-SE",
+      "offset": [
+       128,
+       208
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "SE",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "partition",
+      "offset": [
+       16,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "partition",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "partition",
+      "offset": [
+       32,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "partition",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "partition",
+      "offset": [
+       48,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "partition",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "staff-jamb",
+      "offset": [
+       112,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "partition",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "staff-jamb",
+      "offset": [
+       144,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       8
+      ],
+      "layer": 1,
+      "direction": "partition",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "T-join",
+      "offset": [
+       0,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "partition-T",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "T-join",
+      "offset": [
+       160,
+       80
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "partition-T",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "NW-base",
+      "offset": [
+       0,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       16,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       32,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       48,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       64,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       80,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       96,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       112,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       128,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "N-base",
+      "offset": [
+       144,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     },
+     {
+      "group": "dark-timber-wall",
+      "slot": "NE-base",
+      "offset": [
+       160,
+       32
+      ],
+      "clip": [
+       0,
+       0,
+       16,
+       16
+      ],
+      "layer": 1,
+      "direction": "N-base",
+      "owner": "single-wall-surface"
+     }
+    ],
+    "apertures": [
+     [
+      80,
+      208,
+      96,
+      224
+     ],
+     [
+      128,
+      80,
+      144,
+      96
+     ]
+    ],
+    "outsideSouth": [
+     [
+      0,
+      208,
+      32,
+      224
+     ],
+     [
+      144,
+      208,
+      176,
+      224
+     ]
+    ],
+    "ownership": "dark-timber-wall owns both top and exposed south front; cutaway is preserved native source but never a second overlay on this boundary",
+    "junctions": "inner-SW/SE and outer-SW/SE own the complete16px junction; incoming runs stop before it; no duplicate surface owner",
+    "samples": [
+     "NW",
+     "NE",
+     "SW",
+     "SE",
+     "entry-jamb",
+     "staff-jamb",
+     "partition",
+     "north-base-exposed",
+     "north-base-NW",
+     "north-base-NE"
+    ],
+    "northBase": {
+     "bounds": [
+      0,
+      32,
+      176,
+      48
+     ],
+     "exposedBounds": [
+      112,
+      32,
+      160,
+      48
+     ],
+     "topFace": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37",
+     "verticalFace": "local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot",
+     "contact": [
+      0,
+      48,
+      176,
+      48
+     ],
+     "heightComparison": "N-face32px + architectural base16px =48px; adult29px/student24px; stock48px tall at y16..64 and ladder48px at y16..64 remain foreground with ground64. Base is a reserved structure row, not extra furniture height.",
+     "ownership": "N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+     "opacityRequirement": "All alpha=255 in[0,32,176,48), explicitly[112,32,160,48); N-face bottom y31 contiguous with base y32; base y47 adjacent staff floor y48. Future actual PNG measurement required."
+    }
+   },
+   "immutableSlots": [
+    "N-face"
+   ]
+  },
+  "production": {
+   "northBase": {
+    "bounds": [
+     0,
+     32,
+     176,
+     48
+    ],
+    "exposedBounds": [
+     112,
+     32,
+     160,
+     48
+    ],
+    "topFace": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37",
+    "verticalFace": "local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot",
+    "contact": [
+     0,
+     48,
+     176,
+     48
+    ],
+    "heightComparison": "N-face32px + architectural base16px =48px; adult29px/student24px; stock48px tall at y16..64 and ladder48px at y16..64 remain foreground with ground64. Base is a reserved structure row, not extra furniture height.",
+    "ownership": "N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+    "opacityRequirement": "All alpha=255 in[0,32,176,48), explicitly[112,32,160,48); N-face bottom y31 contiguous with base y32; base y47 adjacent staff floor y48. Future actual PNG measurement required."
+   }
+  }
+ }
+}

@@ -1,0 +1,683 @@
+{
+ "name": "theme_potions_repair_v2_scene_stone_wall",
+ "item": "theme_potions_repair_v2_scene_stone_wall",
+ "candidate": "h1-A",
+ "source": "art-output/repair-v2-wall-scene-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_scene_stone_wall/h1-A.png",
+ "sha256": "8edeae8ab5540a02a4808fa97f3ff1b1fcedd9f9aa3004b19120cc5a95b5f7da",
+ "set": {
+  "id": "theme potions repair-v2 scene stone-wall",
+  "name_ko": "수정2 전체교실 석벽 개구부 보완",
+  "name_en": "theme potions repair-v2 scene stone-wall",
+  "parent": "theme potions repair-v2 stone-wall",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "반려 항목 전용 변형",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   80
+  ],
+  "description": "Only four unlocked door-N/E/S/W slots may change. Preserve all22 locked slots byte-for-byte from actual h3-A.png, including irregular block joints and measured3+row north tops. Remove opaque bottom obstruction at local x4..11,y15 in each doorway. N retains3+row head/south face; S is a low Z12 cut cap, not a tall frontal N arch. E/W use native directional jamb silhouettes and the approved dedicated E/W door source/west8 masks; never repeat a frontal arch four times. Existing rigid H32/L16/T2 door states/hinge264,112 and open passage y112..128 remain unchanged. Review actual candidate and local doorway samples at1x/3x; report every unlocked slot with top_rows/top_y/side_elevation and concrete alpha/passability evidence in designated {PACK}/verdict.json. If local context is inadequate generate the sample through the existing assembly adapter; do not demand unmade full-scene artwork as a prerequisite. Blackboard and windows are foreground attachments AFTER structural masonry. Native PASS is only this component; whole four-state scene independently reviewed after collection.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "N",
+    "label": "N",
+    "see": "N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 0,
+    "y": 0
+   },
+   {
+    "key": "E",
+    "label": "E",
+    "see": "E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 16,
+    "y": 0
+   },
+   {
+    "key": "S",
+    "label": "S",
+    "see": "S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 32,
+    "y": 0
+   },
+   {
+    "key": "W",
+    "label": "W",
+    "see": "W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 48,
+    "y": 0
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "see": "outer-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 64,
+    "y": 0
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "see": "outer-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 80,
+    "y": 0
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "see": "outer-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 96,
+    "y": 0
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "see": "outer-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 112,
+    "y": 0
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "see": "inner-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 128,
+    "y": 0
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "see": "inner-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 144,
+    "y": 0
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "see": "inner-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 160,
+    "y": 0
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "see": "inner-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 176,
+    "y": 0
+   },
+   {
+    "key": "end-N",
+    "label": "end-N",
+    "see": "end-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 192,
+    "y": 0
+   },
+   {
+    "key": "end-E",
+    "label": "end-E",
+    "see": "end-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 208,
+    "y": 0
+   },
+   {
+    "key": "end-S",
+    "label": "end-S",
+    "see": "end-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 224,
+    "y": 0
+   },
+   {
+    "key": "end-W",
+    "label": "end-W",
+    "see": "end-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 240,
+    "y": 0
+   },
+   {
+    "key": "junction-T",
+    "label": "junction-T",
+    "see": "junction-T",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 0,
+    "y": 16
+   },
+   {
+    "key": "junction-cross",
+    "label": "junction-cross",
+    "see": "junction-cross",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 16,
+    "y": 16
+   },
+   {
+    "key": "door-N",
+    "label": "door-N",
+    "see": "door-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "N",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-E",
+    "label": "door-E",
+    "see": "door-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "E",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-S",
+    "label": "door-S",
+    "see": "door-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "S",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "door-W",
+    "label": "door-W",
+    "see": "door-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 16,
+    "openingContract": {
+     "transparentThresholdLocal": [
+      4,
+      15,
+      12,
+      16
+     ],
+     "preserveDoorStateSource": "art-output/repair-r9-jamb-projection-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r9_arched_prep_door/h2-A.png",
+     "direction": "W",
+     "southCutZ": 12,
+     "preserveSharedHinge": [
+      264,
+      112
+     ],
+     "review": "local crop alpha + directional seam; threshold pixels must be transparent, not black"
+    }
+   },
+   {
+    "key": "north32",
+    "label": "north32",
+    "see": "north32",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     32
+    ],
+    "layer": 1,
+    "passage": "X",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 96,
+    "y": 16
+   },
+   {
+    "key": "north-large-0",
+    "label": "north-large-0",
+    "see": "north-large-0",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 0,
+    "y": 48
+   },
+   {
+    "key": "north-large-1",
+    "label": "north-large-1",
+    "see": "north-large-1",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 48,
+    "y": 48
+   },
+   {
+    "key": "north-large-2",
+    "label": "north-large-2",
+    "see": "north-large-2",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": true,
+    "child": null,
+    "x": 96,
+    "y": 48
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-v2-wall-scene-prep/scene-contract.json",
+   "instructions": "Only four unlocked door-N/E/S/W slots may change. Preserve all22 locked slots byte-for-byte from actual h3-A.png, including irregular block joints and measured3+row north tops. Remove opaque bottom obstruction at local x4..11,y15 in each doorway. N retains3+row head/south face; S is a low Z12 cut cap, not a tall frontal N arch. E/W use native directional jamb silhouettes and the approved dedicated E/W door source/west8 masks; never repeat a frontal arch four times. Existing rigid H32/L16/T2 door states/hinge264,112 and open passage y112..128 remain unchanged. Review actual candidate and local doorway samples at1x/3x; report every unlocked slot with top_rows/top_y/side_elevation and concrete alpha/passability evidence in designated {PACK}/verdict.json. If local context is inadequate generate the sample through the existing assembly adapter; do not demand unmade full-scene artwork as a prerequisite. Blackboard and windows are foreground attachments AFTER structural masonry. Native PASS is only this component; whole four-state scene independently reviewed after collection.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "stone-wall",
+   "repairOfCollected": true,
+   "preserveSource": {
+    "path": "art-output/repair-v2-order-socket-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_stone_wall/h3-A.png",
+    "sha256": "0f995cdfe8a50d8a5f80cf353cbcabe7873192dabdb999271862b45b9caa8c31"
+   }
+  }
+ }
+}

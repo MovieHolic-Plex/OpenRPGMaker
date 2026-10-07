@@ -29,6 +29,13 @@ export function configureEmeraldMonsterStyle(project: Project): void {
     ...project.system.fieldHud, theme: 'collector', font: 'pixel', menuStyle: 'project',
     vitals: false, clock: false, tools: false, objective: false, hideEmpty: true,
   };
+  // 3세대 얼음은 행동 전 20% 로 녹는다. 1세대처럼 치료 전까지 못 움직이면 55% 얼리기 기술 하나에 1관에서 전멸했다(2026-10-07 눈 관장전).
+  for (const state of project.database.states) {
+    if (state.gen1MajorStatus === 'freeze' && !state.recoverNaturallyChance) {
+      state.recoverNaturallyChance = 20;
+      state.removalCondition = '행동 전 20% 로 녹는다';
+    }
+  }
 }
 
 export const EMERALD_MONSTER_AUTHORING_GUIDE = [

@@ -1,0 +1,295 @@
+{
+ "name": "wood_shop_doors_r2",
+ "item": "wood_shop_doors_r2",
+ "candidate": "h1-A",
+ "source": "art-output/scene-spec-repair-r4-prep-rev3/content/tiledata/hand-interior/pick/candidates/wood_shop_doors_r2/h1-A.png",
+ "sha256": "0321509b9d243651eb2e36ed850ed5bb35d5a52469864cc5dacc9b545c91dc3e",
+ "set": {
+  "id": "wood-shop-doors-r2",
+  "name_ko": "wood-shop-doors-r2",
+  "category": "shop",
+  "category_ko": "지팡이 상점",
+  "kind": "floor",
+  "canvas": [
+   192,
+   48
+  ],
+  "footprint": {
+   "w": 12,
+   "h": 1
+  },
+  "description": "외부 E(5,11)/직원 +(8,3) 여섯 상태. 32×48 슬롯, 실제24px 문틀·16px 빈개구·32px 문판 정면. 문턱 접지 screen(88,216)/(136,88) 유지. 열린 개구 투명으로 기존 마루를 보존한다. entry_open/staff_open만 수정: local x4..7 각 열의 위 경계 y7..9에 대해 아래 경계를 정확히 +32px인 y39..41로 평행 투영. 열린 문짝 하단 bbox y42 exclusive까지 허용; 나머지 네 슬롯 PNG 동일 보존. 개구 x8..23 폭16px, 문판32px, 문턱 origin(16,40)은 유지한다.",
+  "parent": "wood-shop-doors-r2",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "entry_open",
+    "label": "entry_open",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "entry_open/staff_open만 수정: local x4..7 각 열의 위 경계 y7..9에 대해 아래 경계를 정확히 +32px인 y39..41로 평행 투영. 열린 문짝 하단 bbox y42 exclusive까지 허용; 나머지 네 슬롯 PNG 동일 보존. 개구 x8..23 폭16px, 문판32px, 문턱 origin(16,40)은 유지한다.",
+    "locked": false,
+    "x": 0,
+    "y": 0,
+    "child": "wood-shop-doors-r2 entry_open"
+   },
+   {
+    "key": "entry_closed",
+    "label": "entry_closed",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "24px frame / 4px posts / actual16px aperture / panel32px y7..38. closed: leaf fills local[8,7,24,39), same fixed hinge/frame/threshold; handle local(21,24). closed panel blocks passage, no open-fold instruction.",
+    "locked": false,
+    "x": 32,
+    "y": 0,
+    "child": "wood-shop-doors-r2 entry_closed"
+   },
+   {
+    "key": "entry_locked",
+    "label": "entry_locked",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "24px frame / 4px posts / actual16px aperture / panel32px y7..38. locked: leaf fills local[8,7,24,39), same fixed hinge/frame/threshold; handle local(21,24). visible brass lock blocks passage.",
+    "locked": false,
+    "x": 64,
+    "y": 0,
+    "child": "wood-shop-doors-r2 entry_locked"
+   },
+   {
+    "key": "staff_open",
+    "label": "staff_open",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "entry_open/staff_open만 수정: local x4..7 각 열의 위 경계 y7..9에 대해 아래 경계를 정확히 +32px인 y39..41로 평행 투영. 열린 문짝 하단 bbox y42 exclusive까지 허용; 나머지 네 슬롯 PNG 동일 보존. 개구 x8..23 폭16px, 문판32px, 문턱 origin(16,40)은 유지한다.",
+    "locked": false,
+    "x": 96,
+    "y": 0,
+    "child": "wood-shop-doors-r2 staff_open"
+   },
+   {
+    "key": "staff_closed",
+    "label": "staff_closed",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "24px frame / 4px posts / actual16px aperture / panel32px y7..38. closed: leaf fills local[8,7,24,39), same fixed hinge/frame/threshold; handle local(21,24). closed panel blocks passage, no open-fold instruction.",
+    "locked": false,
+    "x": 128,
+    "y": 0,
+    "child": "wood-shop-doors-r2 staff_closed"
+   },
+   {
+    "key": "staff_locked",
+    "label": "staff_locked",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     1,
+     1
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     16,
+     40
+    ],
+    "topMin": 3,
+    "see": "24px frame / 4px posts / actual16px aperture / panel32px y7..38. locked: leaf fills local[8,7,24,39), same fixed hinge/frame/threshold; handle local(21,24). visible brass lock blocks passage.",
+    "locked": false,
+    "x": 160,
+    "y": 0,
+    "child": "wood-shop-doors-r2 staff_locked"
+   }
+  ],
+  "contract": {
+   "palette": "dedicated42 only",
+   "lighting": "upper left",
+   "camera": "approved orthogonal south-above 3/4; axes screen parallel",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "assemblyAllowed": false,
+   "candidateCount": 1,
+   "nativeAttempts": 1,
+   "requirement": "wood-shop-doors",
+   "geometry": {
+    "frame": [
+     32,
+     48
+    ],
+    "localOrigin": [
+     16,
+     40
+    ],
+    "alphaBounds": [
+     4,
+     3,
+     28,
+     44
+    ],
+    "frameWidthPx": 24,
+    "postWidthPx": 4,
+    "actualOpenWidthPx": 16,
+    "panelFrontHeightPx": 32,
+    "panelFrontBounds": [
+     8,
+     7,
+     24,
+     39
+    ],
+    "topRegion": [
+     4,
+     3,
+     28,
+     7
+    ],
+    "threshold": [
+     4,
+     39,
+     28,
+     44
+    ],
+    "contactRow": 40,
+    "hinge": [
+     8,
+     7
+    ],
+    "handleClosed": [
+     21,
+     24
+    ],
+    "openLeafBounds": [
+     4,
+     7,
+     8,
+     39
+    ],
+    "openTransparentAperture": [
+     8,
+     7,
+     24,
+     39
+    ],
+    "openFloorPassage": [
+     8,
+     38,
+     24,
+     41
+    ],
+    "states": [
+     "open",
+     "closed",
+     "locked"
+    ],
+    "entry": {
+     "cell": [
+      5,
+      11
+     ],
+     "origin": [
+      88,
+      216
+     ],
+     "sheetTopLeft": [
+      72,
+      176
+     ],
+     "bounds": [
+      76,
+      179,
+      100,
+      220
+     ]
+    },
+    "staff": {
+     "cell": [
+      8,
+      3
+     ],
+     "origin": [
+      136,
+      88
+     ],
+     "sheetTopLeft": [
+      120,
+      48
+     ],
+     "bounds": [
+      124,
+      51,
+      148,
+      92
+     ]
+    },
+    "occlusion": "posts extend4px into adjacent # cells; height projects upward over floor, never counted as blocked floor. staff head occludes H above but passage remains at floor cell (8,3). entry head overlaps entry approach visually; body comparison sampled alongside, never painted into aperture.",
+    "openRule": "fold leaf into left4px post strip, outside16px passage; show same hinges/handle rotated with leaf. Parallel stepped top/bottom offset exactly32px at each leaf column; no lower canvas clipping."
+   },
+   "repair": "entry_open/staff_open만 수정: local x4..7 각 열의 위 경계 y7..9에 대해 아래 경계를 정확히 +32px인 y39..41로 평행 투영. 열린 문짝 하단 bbox y42 exclusive까지 허용; 나머지 네 슬롯 PNG 동일 보존. 개구 x8..23 폭16px, 문판32px, 문턱 origin(16,40)은 유지한다.",
+   "immutableSlots": [
+    "entry_closed",
+    "entry_locked",
+    "staff_closed",
+    "staff_locked"
+   ],
+   "sourcePNG": {
+    "path": "art-output/scene-spec-repair-r3/content/tiledata/hand-interior/pick/candidates/wood_shop_doors_r2/h1-A.png",
+    "sha256": "974adf98a51f9ad094437d311c92e11998464219831fa8dc883b08b4f250b49b"
+   }
+  }
+ }
+}

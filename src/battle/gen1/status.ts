@@ -8,6 +8,8 @@ export type { Gen1MajorStatus } from "@/battle/gen1/capture";
 export interface Gen1StateRecordRef {
   readonly id: string;
   readonly gen1MajorStatus?: Gen1MajorStatus;
+  /** 얼음만: 행동 전 녹을 확률(%). 0·없음이면 1세대처럼 치료할 때까지 못 움직인다. 3세대는 20. */
+  readonly thawChance?: number;
 }
 
 export interface Gen1StatusState {
@@ -39,7 +41,7 @@ export interface Gen1ApplyStatusResult {
 
 export interface Gen1PreActionResult {
   readonly canAct: boolean;
-  readonly reason?: "asleep" | "wokeUp" | "frozen" | "fullyParalyzed";
+  readonly reason?: "asleep" | "wokeUp" | "frozen" | "thawed" | "fullyParalyzed";
   readonly stateIds: readonly string[];
   readonly stateTurns: Readonly<Record<string, number>>;
   readonly trace: { readonly paralysisByte?: number };
@@ -152,6 +154,13 @@ export function stepGen1MajorStatus(input: Gen1StatusState, nextByte: Gen1NextBy
     return { canAct: false, reason: "asleep", stateIds, stateTurns, trace: {} };
   }
   if (current.kind === "freeze") {
+    const thawChance = input.stateRecords.find((record) => record.id === current.stateId)?.thawChance ?? 0;
+    if (thawChance > 0 && normalizeByte(nextByte()) < Math.round(thawChance * 256 / 100)) {
+      const index = stateIds.indexOf(current.stateId);
+      if (index >= 0) stateIds.splice(index, 1);
+      delete stateTurns[current.stateId];
+      return { canAct: true, reason: "thawed", stateIds, stateTurns, trace: {} };
+    }
     return { canAct: false, reason: "frozen", stateIds, stateTurns, trace: {} };
   }
   if (current.kind === "paralysis") {

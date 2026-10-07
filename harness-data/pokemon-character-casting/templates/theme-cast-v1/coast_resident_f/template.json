@@ -1,0 +1,692 @@
+{
+  "version": 1,
+  "templateId": "woman_1",
+  "templateSourceSha256": "b8953e355faa1ede48ee7c57e432b73fb792fbdbfb2900e5b21d8452023ebdf7",
+  "paletteOverrides": {
+    "E": "#fcf8ee",
+    "8": "#e4d6b8",
+    "A": "#6a3a2c",
+    "9": "#ec7060",
+    "5": "#fff0c0",
+    "6": "#f0b050",
+    "7": "#a06830",
+    "B": "#e0b070",
+    "C": "#a87040",
+    "D": "#4a2a18"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        "..4A9888889AA..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 26,
+      "rows": [
+        "..A99955554224.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 11,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 14,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 15,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 25,
+      "rows": [
+        ".43499555599434."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "...AA9888889A4.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 26,
+      "rows": [
+        "..42245555999A.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "......A88959...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 25,
+      "rows": [
+        "......A9AA99...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 26,
+      "rows": [
+        ".....A94229....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 11,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 14,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 15,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "......A88959...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 24,
+      "rows": [
+        "......AAA999...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 25,
+      "rows": [
+        ".....A42249....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "......A88959...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 25,
+      "rows": [
+        ".....AAA9899...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 26,
+      "rows": [
+        "....AA224A9....."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 17,
+      "rows": [
+        ".A888888888888A."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 23,
+      "rows": [
+        ".42A95944959A..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        ".43999988998A..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 26,
+      "rows": [
+        "..AA9955554224.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 11,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 14,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 15,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 16,
+      "rows": [
+        ".A888888888888A."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 22,
+      "rows": [
+        "..AA95944959AA.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        "..A9999889999A.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 25,
+      "rows": [
+        ".43499555599434."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 17,
+      "rows": [
+        ".A888888888888A."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 23,
+      "rows": [
+        "...A95944959A24."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        "...A89988999934."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 26,
+      "rows": [
+        "..4224555599AA.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        "....95988A......"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 25,
+      "rows": [
+        "....99AA9A......"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 26,
+      "rows": [
+        ".....92249A....."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 11,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 14,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 15,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        "....95988A......"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 24,
+      "rows": [
+        "....999AAA......"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 25,
+      "rows": [
+        ".....94224A....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 12,
+      "rows": [
+        ".....AAAAAA....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....AEEEEEEA...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "...AE8EEEE8EA..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 15,
+      "rows": [
+        "..A9999999999A.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 16,
+      "rows": [
+        "AEEEEEEEEEEEEEEA"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        "....95988A......"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 25,
+      "rows": [
+        "....9989AAA....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 26,
+      "rows": [
+        ".....9A422AA...."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "산호색 리본을 두른 넓은 챙 흰 햇빛모자, 노란 허리끈의 산호색 민소매 원피스",
+  "editSource": "author-theme-cast.py rules from templates/theme-cast-v1/cast.json (literal substrings and explicit index remaps at original pose rows); source right view mirrors left."
+}

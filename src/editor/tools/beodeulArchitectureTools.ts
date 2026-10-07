@@ -16,7 +16,7 @@ export function addBeodeulVillageChurch(project:Project,mapId:string){
   const target=project.tilesets.beodeul_city!;
   const kit=target.structureKits!.find(k=>k.id==='bd-house-village-church')!;
   const x=41,y=3,front={x:48,y:16};
-  const already=map.width>=53&&kit.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(map,3,(y+dy)*map.width+x+dx)===n));
+  const already=map.width>=53&&kit.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(map,3,(y+dy)*map.width+x+dx)===n));
   if(already)return{front,alreadyPresent:true};
   if(map.width>40)for(let ty=1;ty<30;ty++)for(let tx=40;tx<Math.min(map.width,54);tx++){
     const i=ty*map.width+tx;
@@ -56,17 +56,17 @@ export const BEODEUL_ARCHITECTURE_TOOLS:readonly ToolDefinition[]=[{
       const candidates=[previousKits.get(b.id),ts.structureKits!.find(k=>k.id===b.sourceKit)].filter((k):k is StructureKitDef=>!!k);
       for(const old of candidates){
       const normalized=old.id===b.sourceKit?native:(n:number)=>n;
-      const first=old.rows.flatMap((r,y)=>r.upperTiles.map((n,x)=>({n,x,y}))).find(p=>p.n>=0)!;
+      const first=old.rows.flatMap((r,y)=>(r.upperTiles ?? []).map((n,x)=>({n,x,y}))).find(p=>p.n>=0)!;
       for(let i=0;i<map.width*map.height;i++)if(normalized(layerTileAt(map,3,i))===first.n){
         const x=i%map.width-first.x,y=Math.floor(i/map.width)-first.y;
         if(x<0||y<0||x+old.width>map.width||y+old.height>map.height)continue;
-        if(!old.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||normalized(layerTileAt(map,3,(y+dy)*map.width+x+dx))===n)))continue;
-        if(next.rows.some((r,dy)=>r.upperTiles.some((n,dx)=>n>=0&&old.rows[dy]!.upperTiles[dx]!<0&&layerTileAt(map,3,(y+dy)*map.width+x+dx)>=0)))
+        if(!old.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||normalized(layerTileAt(map,3,(y+dy)*map.width+x+dx))===n)))continue;
+        if(next.rows.some((r,dy)=>(r.upperTiles ?? []).some((n,dx)=>n>=0&&(old.rows[dy]!.upperTiles ?? [])[dx]!<0&&layerTileAt(map,3,(y+dy)*map.width+x+dx)>=0)))
           throw new ToolError('새 지붕 면이 들어갈 칸에 기존 그림이 있습니다. 기존 그림을 보존하기 위해 보정을 취소합니다.');
         if(map.events.some(e=>e.x>=x&&e.x<x+old.width&&e.y>=y&&e.y<=y+old.height))throw new ToolError('출입 이벤트가 있는 집은 이 외장 보정에서 제외합니다.');
         for(let dy=0;dy<old.height;dy++)for(let dx=0;dx<old.width;dx++){
           const at=(y+dy)*map.width+x+dx;
-          if(old.rows[dy]!.upperTiles[dx]!>=0||next.rows[dy]!.upperTiles[dx]!>=0)setLayerTileAt(map,3,at,next.rows[dy]!.upperTiles[dx]!);
+          if((old.rows[dy]!.upperTiles ?? [])[dx]!>=0||(next.rows[dy]!.upperTiles ?? [])[dx]!>=0)setLayerTileAt(map,3,at,(next.rows[dy]!.upperTiles ?? [])[dx]!);
         }
         // Remove only the older, flat foundation underneath this house, including its grass row.
         for(let dy=0;dy<=old.height;dy++)for(let dx=0;dx<old.width;dx++){

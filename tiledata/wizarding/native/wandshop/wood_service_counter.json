@@ -1,0 +1,62 @@
+{
+ "name": "wood_service_counter",
+ "item": "wood_service_counter",
+ "candidate": "h8-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/wood_service_counter/h8-A.png",
+ "sha256": "e59a0dd07de36acf03b3ad7d44bf1be12dbc8c3d82276462ec6c6af197914cf4",
+ "set": {
+  "id": "wood-service-counter",
+  "name_ko": "wood-service-counter",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "floor",
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 1
+  },
+  "description": "카운터foot(4..6,3), 3×1. 그림원점floor(64,32)→screen(64,64), bbox48×32. 상면slot-local y9..16(8px/32=25%), 남쪽전면y17..31. surfaceOffset(0,-7)→screen(64,73), 열린상자(5,3) screen[82,73,94,76). 높이/발밑 분리.",
+  "parent": "wood-service-counter",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "counter",
+    "label": "counter",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     3,
+     1
+    ],
+    "see": "카운터foot(4..6,3), 3×1. 그림원점floor(64,32)→screen(64,64), bbox48×32. 상면slot-local y9..16(8px/32=25%), 남쪽전면y17..31. surfaceOffset(0,-7)→screen(64,73), 열린상자(5,3) screen[82,73,94,76). 높이/발밑 분리. 슬롯 counter을 방향·상태별로 독립 저작한다. 좌상단광원/전용42색. 내부선반판·테두리·광택선을 꼭대기면으로 세지 않는다.",
+    "layer": 2,
+    "topMin": 8,
+    "mount": "floor",
+    "topMax": 11,
+    "topRatio": [
+     0.25,
+     0.35
+    ],
+    "topBasis": "actual opaque object bbox height",
+    "topContinuous": true,
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wood-service-counter counter"
+   }
+  ],
+  "contract": {
+   "camera": "남쪽 위 직교3/4, 좌상단 광원; actual bbox 기반 윗면25~35%; 내부 판/광택선 제외",
+   "palette": "전용42색 only",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "선택·설치 금지; 아래 설치 좌표와 레이어를 제작 후 독립 검수",
+   "reuse": "빈 seed에서 전용 신규 픽셀 제작; stock 참고는 구조 비교만"
+  }
+ }
+}

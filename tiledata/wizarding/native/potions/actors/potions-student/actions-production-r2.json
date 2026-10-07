@@ -1,0 +1,392 @@
+{
+ "width": 48,
+ "height": 40,
+ "frames": [
+  {
+   "id": "stir-up-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-up-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-up-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-down-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-down-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-down-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "stir-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-up-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-up-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-up-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-down-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-down-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-down-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "weigh-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-up-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-up-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-up-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-down-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-down-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-down-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "carry-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-up-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-up-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-up-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-right-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-right-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-right-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-down-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-down-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-down-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-left-0",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-left-1",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  },
+  {
+   "id": "rinse-left-2",
+   "anchor": [
+    24,
+    31
+   ],
+   "durationMs": 180
+  }
+ ],
+ "source": "art-output/native-actors/actions/potions-student/production-r2/views/sheet.png",
+ "sha256": "2880dc48afaa067aaf326fd1fa7a0668d438203da62d03615a38728ed39435f5"
+}

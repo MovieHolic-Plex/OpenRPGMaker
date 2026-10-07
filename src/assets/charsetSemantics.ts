@@ -8,6 +8,7 @@
 
 import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
 import { sharedCharacterSemantics } from '@/project/sharedCharacters';
+import { WIZARDING_CHARSET_SEMANTICS } from "@/assets/wizardingCharsets";
 
 export type CharsetGender = "male" | "female" | "none";
 export type CharsetAge = "child" | "youth" | "middle" | "elder";
@@ -284,6 +285,7 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
 ];
 
 function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
+  if (entry.appearance) return entry;   // 외형 문장을 명단에 들고 오는 번들(마법 학교 Wizarding*)
   const appearance = CHARSET_APPEARANCE[`${entry.textureKey}#${entry.characterIndex}`];
   if (!appearance) {
     throw new Error(`charset appearance missing: ${entry.textureKey}#${entry.characterIndex}`);
@@ -291,7 +293,7 @@ function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
   return { ...entry, appearance };
 }
 
-export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS_RAW.map(withAppearance);
+export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [...CHARSET_SEMANTICS_RAW, ...WIZARDING_CHARSET_SEMANTICS].map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
   return [...CHARSET_SEMANTICS, ...sharedCharacterSemantics()].find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);

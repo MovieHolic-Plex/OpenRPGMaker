@@ -1,0 +1,42 @@
+{
+ "map": {
+  "id": "jp-city-house-1f",
+  "size": [
+   21,
+   15
+  ]
+ },
+ "start": [
+  9,
+  13
+ ],
+ "summary": "손 도트 실내 '2층 단독주택 1층' 21×15 (jp-city-house-1f, jp_city) — 출입구에서 닿는 칸 99, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-house-1f",
+  "tilesetId": "jp_city",
+  "width": 21,
+  "height": 15,
+  "reachable": 99,
+  "floorCells": 145,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 9,
+    "y": 13
+   }
+  ],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 11,
+   "y": 9,
+   "to": "jp-city-house-2f",
+   "reached": true
+  }
+ ],
+ "reach": 99,
+ "ok": true
+}

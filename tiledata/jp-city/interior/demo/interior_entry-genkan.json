@@ -1,0 +1,104 @@
+{
+ "plan": [
+  "..........",
+  "..........",
+  "..........",
+  "..........",
+  "..........",
+  "......####",
+  "......####"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 2,
+   "x1": 4,
+   "y1": 3,
+   "floor": "tataki"
+  }
+ ],
+ "objects": [
+  {
+   "id": "getabako",
+   "x": 0,
+   "y": 2
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 2,
+   "y": 2
+  },
+  {
+   "id": "window-sash",
+   "x": 2,
+   "y": 0
+  },
+  {
+   "id": "intercom",
+   "x": 4,
+   "y": 0
+  },
+  {
+   "id": "shoes-pair",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "genkan-mat",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "slippers",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "stairs-up-wood-wide",
+   "x": 5,
+   "y": 2
+  },
+  {
+   "id": "light-switch",
+   "x": 7,
+   "y": 0
+  },
+  {
+   "id": "door-western",
+   "x": 8,
+   "y": 0
+  },
+  {
+   "id": "toilet-door",
+   "x": 9,
+   "y": 0
+  },
+  {
+   "id": "agarikamachi",
+   "x": 0,
+   "y": 4
+  },
+  {
+   "id": "agarikamachi",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "agarikamachi",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "agarikamachi",
+   "x": 4,
+   "y": 4
+  }
+ ]
+}

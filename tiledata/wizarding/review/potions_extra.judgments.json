@@ -1,0 +1,119 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-pot-vault-arch-2x4": {
+  "verdict": "PASS",
+  "reason": "뾰족 아치 석조 틀, 위쪽은 막힌 돌 아치, 아래 2행은 통로(C). 대칭, 3/4 정면, 화풍 일치."
+ },
+ "wz-pot-vault-arch-pillar": {
+  "verdict": "PASS",
+  "reason": "기둥형 아치 1x4, 윗면+정면 명암, 몸체 S, 대칭."
+ },
+ "wz-pot-window-low": {
+  "verdict": "PASS",
+  "reason": "납창살 뾰족창 1x2, 대각 반사, 돌 턱, 읽힘 OK."
+ },
+ "wz-pot-door-closed": {
+  "verdict": "PASS",
+  "reason": "Redrawn: 32x64, pivot None, same footprint across closed/locked/open; opening x3..28 = 26px wide, lintel y22-23, interior y24..59 = ~36px tall (in 32-40 / 16-32), stone sill y60-62 + outline y63 reaches piece bottom. Reads as a plank door with iron bands and keyhole plate, orthographic front view, wall stone cols 0-1/30-31 matches style-ref. walk SS,SS,SS,SS blocked as a closed door should be."
+ },
+ "wz-pot-door-open": {
+  "verdict": "PASS",
+  "reason": "Redrawn: 32x64, pivot None, same footprint across closed/locked/open; opening x3..28 = 26px wide, lintel y22-23, interior y24..59 = ~36px tall (in 32-40 / 16-32), stone sill y60-62 + outline y63 reaches piece bottom. Door leaf swung edge-on at left (x~25 vertical plank edge with iron strap y24..48), dark stone room beyond with floor; reads as open doorway. walk SS,SS,CC,FF: y32-47 overhead passable, y48-63 floor walkable, lintel stays S; passable, same pivot as closed."
+ },
+ "wz-pot-door-locked": {
+  "verdict": "PASS",
+  "reason": "Redrawn: 32x64, pivot None, same footprint across closed/locked/open; opening x3..28 = 26px wide, lintel y22-23, interior y24..59 = ~36px tall (in 32-40 / 16-32), stone sill y60-62 + outline y63 reaches piece bottom. Closed door plus a hasp bar and lock plate at y40-49; the bar deliberately overruns the frame posts at x2/x29 (gap in post outline y41-43 is the bar crossing, not a defect) and reads as barred/locked. walk SS,SS,SS,SS blocked."
+ },
+ "wz-pot-hood": {
+  "verdict": "PASS",
+  "reason": "구리·황동 후드(굴뚝), 리벳과 상단 반사, C 층, 읽힘 OK."
+ },
+ "wz-pot-floor-wet-a": {
+  "verdict": "PASS",
+  "reason": "젖은 돌 바닥, 푸른 물기 점, 무작위 맵에서 이음새 없음."
+ },
+ "wz-pot-floor-wet-b": {
+  "verdict": "PASS",
+  "reason": "a와 섞어도 이음새·반복 튐 없음."
+ },
+ "wz-pot-drain-h": {
+  "verdict": "PASS",
+  "reason": "가로 배수로, 맵에서 바닥과 이어짐."
+ },
+ "wz-pot-drain-v": {
+  "verdict": "PASS",
+  "reason": "세로 배수로, 이음 자연스러움."
+ },
+ "wz-pot-drain-x": {
+  "verdict": "PASS",
+  "reason": "십자 교차 배수구 격자, h/v와 연결됨."
+ },
+ "wz-pot-stain-violet": {
+  "verdict": "PASS",
+  "reason": "보라 얼룩 f, 바닥 위 윤곽 읽힘."
+ },
+ "wz-pot-stain-green": {
+  "verdict": "PASS",
+  "reason": "초록 얼룩 f, 읽힘 OK."
+ },
+ "wz-pot-stain-teal": {
+  "verdict": "PASS",
+  "reason": "청록 얼룩 f, 읽힘 OK."
+ },
+ "wz-pot-cauldron-bench-violet": {
+  "verdict": "PASS",
+  "reason": "작업대 위 보라 물약 솥, 윗면+정면, 상판 높이 적정, S."
+ },
+ "wz-pot-cauldron-bench-green": {
+  "verdict": "PASS",
+  "reason": "녹색 변형, 같은 구조, 읽힘 OK."
+ },
+ "wz-pot-burner": {
+  "verdict": "PASS",
+  "reason": "화로 받침 위 불꽃, 읽힘 OK."
+ },
+ "wz-pot-cauldron-rod": {
+  "verdict": "PASS",
+  "reason": "솥과 젓는 막대, 읽힘 OK."
+ },
+ "wz-pot-scale": {
+  "verdict": "PASS",
+  "reason": "저울, 바닥 f 소품, 읽힘 OK."
+ },
+ "wz-pot-mortar": {
+  "verdict": "PASS",
+  "reason": "절구와 공이, 읽힘 OK."
+ },
+ "wz-pot-knife-board": {
+  "verdict": "PASS",
+  "reason": "도마와 칼, 읽힘 OK."
+ },
+ "wz-pot-basin": {
+  "verdict": "PASS",
+  "reason": "돌 수조 2x2, 수도꼭지·물면, 읽힘 OK."
+ },
+ "wz-pot-shelf": {
+  "verdict": "PASS",
+  "reason": "병 선반 2x3, 윗줄 C·아래 S, 병 색상 다양."
+ },
+ "wz-pot-bottles": {
+  "verdict": "PASS",
+  "reason": "병 3개, 읽힘 OK."
+ },
+ "wz-pot-herb-hanger": {
+  "verdict": "PASS",
+  "reason": "매달린 약초 묶음 1x2 벽걸이, C, 읽힘 OK."
+ },
+ "wz-pot-root-basket": {
+  "verdict": "PASS",
+  "reason": "뿌리 바구니, 읽힘 OK."
+ },
+ "wz-pot-wall-lamp": {
+  "verdict": "PASS",
+  "reason": "벽등 횃불, C, 읽힘 OK."
+ },
+ "wz-pot-prep-bench": {
+  "verdict": "PASS",
+  "reason": "준비 작업대 2x2, 상판 3/4 윗면, S."
+ }
+}

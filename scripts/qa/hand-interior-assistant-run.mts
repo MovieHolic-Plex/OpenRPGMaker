@@ -2,7 +2,7 @@
 // 실내를 짓는다. 칩셋은 조수가 고른다(맵을 미리 만들지 않는다). 기록: 고른 칩셋, 옛 실내 칩셋 시도·거부, 도구 호출,
 // 결과 그림(편집기 렌더러), 통행 BFS(엔진 canMove), 저장 → 재로드. 첫 실행이면 노출 도구 목록·참고문서 목록도 덤프한다.
 //
-//   bun scripts/qa/hand-interior-assistant-run.mts --label bakery --task "빵집 실내를 만들어줘" [--model klb/claude-opus-5.5] [--max-turns 80]
+//   bun scripts/qa/hand-interior-assistant-run.mts --label bakery --task "빵집 실내를 만들어줘" [--model klb/claude-opus-5.5] [--max-turns 80] [--start-tileset jp_city]
 //
 // 모델 설정은 ~/.omp/agent/models.yml(키는 증거에 쓰지 않는다). 프로젝트 .oprn-projects/hand-interior-trial-<label>(git 밖),
 // 증거 verify-shots/hand-interior-assistant/<label>/.
@@ -44,7 +44,18 @@ const projectId = store.info().projectId;
 { const r = await store.saveSerialized(JSON.stringify(createBlankProject()), store.loadSnapshot()?.sha256 ?? null); if (r.kind !== "saved") throw new Error(r.kind); }
 let project = store.loadSnapshot()!.project as Project;
 store.close();
+// --start-tileset <id>: 사용자가 그 칩셋 맵을 보고 있는 상태에서 시작(예: jp_city 거리 맵을 보다가 「집 실내」 요청). 없으면 새 프로젝트 기본 맵을 본다.
+const startTileset = arg("start-tileset");
+let currentMapId: string | undefined;
+if (startTileset) {
+  const ctx = { project };                         // 쓰기 도구는 ctx.project 를 새 사본으로 바꾼다
+  const r = runTool(ctx, "create_map", { name: "보고 있는 맵", width: 24, height: 18, tilesetId: startTileset });
+  if (!r.ok) throw new Error(`시작 맵 실패: ${r.summary}`);
+  project = ctx.project;
+  currentMapId = Object.keys(project.maps).find((id) => project.maps[id]!.tilesetId === startTileset);
+}
 const before = new Set(Object.keys(project.maps));
+const beforeJson = new Map(Object.entries(project.maps).map(([id, m]) => [id, JSON.stringify(m)]));
 
 // ---- what the assistant can see ----
 const intent = { mode: "create", space: "interior", facility: null, targetMapId: null, useSelection: false, clarify: null, clarifyOptions: [],
@@ -97,7 +108,7 @@ const trace: { i: number; name: string; ok: boolean; summary: string; args: stri
 const log: string[] = [];
 const started = Date.now();
 const done = await runPiAgent(
-  { provider, model: modelId, task, mapIds: [], currentMapId: undefined as never, project, maxTurns, thinkingLevel: "high" as never, initialToolNames: exposed },
+  { provider, model: modelId, task, mapIds: currentMapId ? [currentMapId] : [], currentMapId: currentMapId as never, project, maxTurns, thinkingLevel: "high" as never, initialToolNames: exposed },
   {
     model: model as never, apiKey: prov.apiKey,
     renderToolImage: async (p: Project, _n: string, data: unknown) => renderToolRegionPngBase64(p, data),
@@ -123,13 +134,32 @@ try {
   reloaded = store.loadSnapshot()!.project as Project;
 } finally { store.close(); }
 const reloadEqual = JSON.stringify(reloaded) === JSON.stringify(JSON.parse(JSON.stringify(result)));
-const newMaps = Object.values(reloaded.maps).filter((m) => !before.has(m.id));
+// 새 맵 + 조수가 고쳐 지은 원래 맵(보고 있던 맵을 replace 로 1층으로 바꾼 경우 등).
+const newMaps = Object.values(reloaded.maps).filter((m) => !before.has(m.id) || beforeJson.get(m.id) !== JSON.stringify(m));
+/** 이벤트 명령에서 다른 맵으로 가는 이동(mapId·x·y) — 들어오는 착지 칸과 나가는 칸을 찾는다. */
+function transfers(): { from: string; fx: number; fy: number; to: string; x: number; y: number }[] {
+  const out: { from: string; fx: number; fy: number; to: string; x: number; y: number }[] = [];
+  for (const m of Object.values(reloaded.maps)) for (const ev of m.events as { x: number; y: number }[]) {
+    const walk = (v: unknown): void => {
+      if (!v || typeof v !== "object") return;
+      if (Array.isArray(v)) { v.forEach(walk); return; }
+      const o = v as Record<string, unknown>;
+      if (typeof o.mapId === "string" && reloaded.maps[o.mapId] && typeof o.x === "number" && typeof o.y === "number" && o !== (ev as unknown)) out.push({ from: m.id, fx: ev.x, fy: ev.y, to: o.mapId, x: o.x, y: o.y });
+      for (const k of Object.keys(o)) walk(o[k]);
+    };
+    walk(ev);
+  }
+  return out;
+}
+const TRANSFERS = transfers();
 const mapsOut = newMaps.map((m) => {
   const { png, note } = renderMapPng(reloaded, m, 2);
   fs.writeFileSync(`${OUT}/map-${m.id}.png`, png);
-  // BFS from the bottom-row walkable cells with the runtime move rule
+  // BFS from the bottom-row walkable cells (현관 틈), 시작 위치, 다른 맵에서 들어오는 착지 칸 — runtime move rule
   const start: [number, number][] = [];
   for (let x = 0; x < m.width; x++) if (canMove(reloaded, m, x, m.height - 1, x, m.height - 2) || canMove(reloaded, m, x, m.height - 2, x, m.height - 1)) start.push([x, m.height - 1]);
+  if (reloaded.startMapId === m.id && reloaded.startPos) start.push([reloaded.startPos.x, reloaded.startPos.y]);
+  for (const t of TRANSFERS) if (t.to === m.id && t.from !== m.id) start.push([t.x, t.y]);
   const seen = new Set(start.map(([x, y]) => `${x},${y}`)); const q = [...start];
   while (q.length) { const [x, y] = q.pop()!; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const X = x + dx!, Y = y + dy!; if (!seen.has(`${X},${Y}`) && canMove(reloaded, m, x, y, X, Y)) { seen.add(`${X},${Y}`); q.push([X, Y]); } } }
   let walkable = 0;
@@ -137,6 +167,7 @@ const mapsOut = newMaps.map((m) => {
     if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => canMove(reloaded, m, x, y, x + dx!, y + dy!))) walkable++;
   }
   return { id: m.id, name: m.name, tilesetId: m.tilesetId, family: reloaded.tilesets[m.tilesetId]?.family, size: [m.width, m.height], events: m.events.length,
+    entrances: start.length, exits: TRANSFERS.filter((t) => t.from === m.id && t.to !== m.id).map((t) => ({ at: [t.fx, t.fy], to: t.to, toAt: [t.x, t.y], reached: seen.has(`${t.fx},${t.fy}`) })),
     reachableFromEntrance: start.length ? seen.size : 0, walkableCells: walkable, unreachedWalkable: start.length ? walkable - seen.size : walkable, renderNote: note ?? null,
     upperFilled: m.upperTiles.filter((t) => t >= 0).length + (m.upperOverlayTiles ?? []).filter((t) => t >= 0).length };
 });

@@ -42,6 +42,7 @@ import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSh
 import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFieldAnchors } from "@/player/battleOnField";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
 import { applyBattleBackdropMotion, clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
@@ -105,7 +106,8 @@ function activeSkin(): BattleSkin {
 function partyStatusRowsCarryIcons(): boolean {
   // retro2003 은 필드에 아군을 그리지만 배지는 파티 창 이름 옆에 단다(FF6·크로노 트리거 관례).
   // 필드 노드 머리 위 배지는 이웃 배우 사이에 떠서 누구 것인지 읽히지 않았다(2026-09-29 실측).
-  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().motionStyle === "retro";
+  // 에메랄드는 배지가 HP 상자 안(이름 아래 HP 바 왼쪽)이다 — 몬스터 머리 위 허공에 「PSN」이 떠 있었다(2026-10-07).
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().motionStyle === "retro" || isEmeraldMonsterStyle(store.getCurrent());
 }
 
 /** retro2003 은 적 chrome(이름·HUD)을 대상 선택 때만 펼친다 — 그 안의 배지도 함께 숨었다.
@@ -1526,7 +1528,8 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
     lv.className = "battle-actor-level";
     // 라벨/값을 나눠 담는다 — 얼굴 카드 HUD 가 "라벨 배지 + 큰 숫자" 로 그리려면
     // 두 조각의 서식이 달라야 한다. 합친 textContent 는 "Lv 1" 로 한 노드일 때와 같다.
-    lv.append(vitalLabel(activeSkin().id === "pokemon" ? "레벨" : "Lv"), vitalValue(` ${actor.level}`));
+    const emeraldBox = isEmeraldMonsterStyle(store.getCurrent());
+    lv.append(vitalLabel(emeraldBox ? "Lv" : activeSkin().id === "pokemon" ? "레벨" : "Lv"), vitalValue(emeraldBox ? `${actor.level}` : ` ${actor.level}`));
     name.append(lv);
   }
 
@@ -1878,7 +1881,7 @@ function syncChargeMark(node: HTMLElement, charging: BattleBattlerSnapshot["char
   node.append(mark);
 }
 
-function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapshot): void {
+export function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapshot): void {
   const existing = node.querySelector(".battle-status-icons");
   const next = statusIconCluster(battler);
   if (existing) existing.replaceWith(next);

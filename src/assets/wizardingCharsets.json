@@ -1,0 +1,356 @@
+{
+ "version": 1,
+ "sheets": 5,
+ "characters": [
+  {
+   "id": "wz-chr-elder-wandmaker",
+   "name": "노년 지팡이 장인",
+   "space": "wandshop",
+   "spaceName": "다이애건 앨리 지팡이 가게",
+   "desc": "노년 지팡이 장인 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 0,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-trial-student",
+   "name": "지팡이 시험 학생",
+   "space": "wandshop",
+   "spaceName": "다이애건 앨리 지팡이 가게",
+   "desc": "지팡이 시험 학생 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 1,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-master",
+   "name": "마법약 교사",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 교사 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 2,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-student",
+   "name": "마법약 학생",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 학생 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 3,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-potions-assistant",
+   "name": "마법약 조교",
+   "space": "potions",
+   "spaceName": "지하 마법약 교실",
+   "desc": "마법약 조교 — 데모에서 승인된 native 걷기 시트.",
+   "sheet": 1,
+   "index": 4,
+   "source": "native"
+  },
+  {
+   "id": "wz-chr-student-gryffindor",
+   "name": "그리핀도르 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "그리핀도르 학생 — 검은 로브·붉은+금 넥타이·로브 안감",
+   "sheet": 1,
+   "index": 5,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-student-slytherin",
+   "name": "슬리데린 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "슬리데린 학생 — 검은 로브·녹+은 넥타이·로브 안감",
+   "sheet": 1,
+   "index": 6,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-student-ravenclaw",
+   "name": "래번클로 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "래번클로 학생 — 검은 로브·청+청동 넥타이·로브 안감",
+   "sheet": 1,
+   "index": 7,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-student-hufflepuff",
+   "name": "후플푸프 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "후플푸프 학생 — 검은 로브·황+흑 넥타이·로브 안감",
+   "sheet": 2,
+   "index": 0,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-professor",
+   "name": "교수",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "긴 보라 로브·뾰족 모자·흰 수염, 금 단추 줄.",
+   "sheet": 2,
+   "index": 1,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-caretaker",
+   "name": "성 관리인",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "누더기 갈색 코트·낡은 모자·등불을 든 관리인.",
+   "sheet": 2,
+   "index": 2,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-librarian",
+   "name": "사서",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "머리를 높이 묶은 회색 로브·안경·책.",
+   "sheet": 2,
+   "index": 3,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-owlpost-student",
+   "name": "부엉이 우편 담당 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "검은 로브·편지 묶음을 안은 학생.",
+   "sheet": 2,
+   "index": 4,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-winter-postman",
+   "name": "겨울 마법 우편 배달원",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "두꺼운 푸른 망토·붉은 목도리·털모자·우편 가방.",
+   "sheet": 2,
+   "index": 5,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-potions-apron",
+   "name": "마법약 앞치마 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "로브 위 가죽 앞치마·걷어붙인 소매.",
+   "sheet": 2,
+   "index": 6,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-gear-mechanic",
+   "name": "기어 정비사",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "푸른 작업복·이마 위 고글·렌치.",
+   "sheet": 2,
+   "index": 7,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-carriage-guide",
+   "name": "마차 승차 안내인",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "제모·검은 코트·붉은 허리띠·등불.",
+   "sheet": 3,
+   "index": 0,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-travel-student",
+   "name": "여행 망토 학생",
+   "space": "shared",
+   "spaceName": "공용(성채·공통 가구)",
+   "desc": "후드 달린 녹색 여행 망토·트렁크 손잡이.",
+   "sheet": 3,
+   "index": 1,
+   "source": "characters_a"
+  },
+  {
+   "id": "wz-chr-earmuff-student",
+   "name": "귀마개 약초학 학생",
+   "space": "greenhouse",
+   "spaceName": "온실(맨드레이크)",
+   "desc": "큰 털 귀마개·목도리·가죽 장갑을 낀 약초학 학생",
+   "sheet": 3,
+   "index": 2,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-greenhouse-professor",
+   "name": "온실 담당 교수",
+   "space": "greenhouse",
+   "spaceName": "온실(맨드레이크)",
+   "desc": "흙 묻은 초록 망토와 챙 처진 낡은 모자의 약초학 교수",
+   "sheet": 3,
+   "index": 3,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-night-healer",
+   "name": "야간 치료사",
+   "space": "infirmary",
+   "spaceName": "병동",
+   "desc": "흰 앞치마·간호 모자에 등불을 든 병동 야간 치료사",
+   "sheet": 3,
+   "index": 4,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-bandaged-patient",
+   "name": "붕대 환자",
+   "space": "infirmary",
+   "spaceName": "병동",
+   "desc": "머리와 팔에 붕대를 감은 줄무늬 잠옷 환자(빨간 슬리퍼)",
+   "sheet": 3,
+   "index": 5,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-quidditch-gryffindor",
+   "name": "퀴디치 선수 (그리핀도르)",
+   "space": "quidditch",
+   "spaceName": "퀴디치 선수 터널·경기장",
+   "desc": "진홍 경기복에 금띠, 팔·무릎 보호대, 등에 빗자루",
+   "sheet": 3,
+   "index": 6,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-quidditch-slytherin",
+   "name": "퀴디치 선수 (슬리데린)",
+   "space": "quidditch",
+   "spaceName": "퀴디치 선수 터널·경기장",
+   "desc": "녹색 경기복에 은띠, 이마 위 고글, 보호대, 등에 빗자루",
+   "sheet": 3,
+   "index": 7,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-quidditch-ravenclaw",
+   "name": "퀴디치 선수 (래번클로)",
+   "space": "quidditch",
+   "spaceName": "퀴디치 선수 터널·경기장",
+   "desc": "청색 경기복에 청동띠, 가죽 모자, 보호대, 등에 빗자루",
+   "sheet": 4,
+   "index": 0,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-quidditch-hufflepuff",
+   "name": "퀴디치 선수 (후플푸프)",
+   "space": "quidditch",
+   "spaceName": "퀴디치 선수 터널·경기장",
+   "desc": "노랑 경기복에 검은 띠, 보호대, 등에 빗자루",
+   "sheet": 4,
+   "index": 1,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-boat-guide",
+   "name": "보트 안내인",
+   "space": "boathouse",
+   "spaceName": "검은 호수 보트 창고",
+   "desc": "덩치 큰 털 코트에 수염, 등불을 든 사냥터지기풍 보트 안내인",
+   "sheet": 4,
+   "index": 2,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-rowing-student",
+   "name": "노 젓는 학생",
+   "space": "boathouse",
+   "spaceName": "검은 호수 보트 창고",
+   "desc": "소매를 걷은 셔츠에 조끼, 노를 든 학생",
+   "sheet": 4,
+   "index": 3,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-honeydukes-packer",
+   "name": "허니듀크 포장 작업자",
+   "space": "honeydukes",
+   "spaceName": "허니듀크 지하 창고",
+   "desc": "분홍 줄무늬 앞치마와 매듭 두건의 사탕 가게 포장 작업자",
+   "sheet": 4,
+   "index": 4,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-chr-wand-clerk",
+   "name": "마법 상점 직원",
+   "space": "wandshop",
+   "spaceName": "다이애건 앨리 지팡이 가게",
+   "desc": "보라 조끼에 놋 소매 고정 밴드를 찬 지팡이 가게 직원(귀 뒤에 지팡이)",
+   "sheet": 4,
+   "index": 5,
+   "source": "characters_b"
+  },
+  {
+   "id": "wz-cre-owl-barn",
+   "name": "헛간부엉이 (걷기 시트)",
+   "space": "owlery",
+   "spaceName": "부엉이 탑",
+   "desc": "헛간부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음).",
+   "sheet": 4,
+   "index": 6,
+   "source": "creatures"
+  },
+  {
+   "id": "wz-cre-owl-eagle",
+   "name": "수리부엉이 (걷기 시트)",
+   "space": "owlery",
+   "spaceName": "부엉이 탑",
+   "desc": "수리부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음).",
+   "sheet": 4,
+   "index": 7,
+   "source": "creatures"
+  },
+  {
+   "id": "wz-cre-owl-snowy",
+   "name": "흰부엉이 (걷기 시트)",
+   "space": "owlery",
+   "spaceName": "부엉이 탑",
+   "desc": "흰부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음).",
+   "sheet": 5,
+   "index": 0,
+   "source": "creatures"
+  },
+  {
+   "id": "wz-cre-mandrake",
+   "name": "맨드레이크",
+   "space": "greenhouse",
+   "spaceName": "온실(맨드레이크)",
+   "desc": "작은 뿌리 몸에 머리 위 잎다발을 인 맨드레이크. 주름진 얼굴로 비명을 지르며 걷는 대신 꿈틀거린다(3프레임).",
+   "sheet": 5,
+   "index": 1,
+   "source": "creatures"
+  },
+  {
+   "id": "wz-cre-frog",
+   "name": "초콜릿 개구리",
+   "space": "honeydukes",
+   "spaceName": "허니듀크 지하 창고",
+   "desc": "반질한 갈색 초콜릿 개구리. 프레임 0·2 는 도약, 1 은 웅크림.",
+   "sheet": 5,
+   "index": 2,
+   "source": "creatures"
+  }
+ ]
+}

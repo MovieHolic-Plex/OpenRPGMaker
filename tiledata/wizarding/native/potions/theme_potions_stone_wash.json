@@ -1,0 +1,176 @@
+{
+ "name": "theme_potions_stone_wash",
+ "item": "theme_potions_stone_wash",
+ "candidate": "h10-A",
+ "source": "art-output/repair-r4-actors-vault/content/tiledata/hand-interior/pick/candidates/theme_potions_stone_wash/h10-A.png",
+ "sha256": "ccff33cf6c040378d6d0f306085ace69cef5ec75a6915918b54bc91922ee1ca0",
+ "set": {
+  "id": "theme potions stone-wash",
+  "name_ko": "stone-wash",
+  "name_en": "theme potions stone-wash",
+  "parent": "theme potions stone-wash",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   32
+  ],
+  "description": "전용 석재 세척 수조1×1, 펌프 손잡이·배수 연결·벽 건조걸이. 남쪽 사용면과 유리병 헹굼 상태. 현대 주방 싱크로 대체 금지.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "idle",
+    "label": "idle",
+    "see": "idle",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0
+   },
+   {
+    "key": "rinse0",
+    "label": "rinse0",
+    "see": "rinse0",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 0
+   },
+   {
+    "key": "rinse1",
+    "label": "rinse1",
+    "see": "rinse1",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 0
+   },
+   {
+    "key": "rinse2",
+    "label": "rinse2",
+    "see": "rinse2",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 0
+   },
+   {
+    "key": "rinse3",
+    "label": "rinse3",
+    "see": "rinse3",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0
+   },
+   {
+    "key": "drying-hanger",
+    "label": "drying-hanger",
+    "see": "drying-hanger",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 0
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r4-actors-vault/scene-contract.json",
+   "instructions": "전용 석재 세척 수조1×1, 펌프 손잡이·배수 연결·벽 건조걸이. 남쪽 사용면과 유리병 헹굼 상태. 현대 주방 싱크로 대체 금지.\nRead current sceneContract, theme-brief.json and concept-art.png. Use only the dedicated 42 colours. No stock artwork or palette. Logical ground cells remain fixed; rendered pixels are the resolved ground/support/hood anchors in scene-contract.json. Use the approved 23x14 coordinates. Read approved planning and compare each required attachment, footprint and actor scale; no room PASS before complete native coverage.\nRead scene-contract and attachment-contract: teacher sole(136,47)/hand(150,42), assistant sole(328,127)/hand(328,123), same sole in walking/action. North bodies behind tables, hand/tool separate above top. Board pixel(96,0), readable rect(98,2,126,14). Five named new cut-vault rib parents are ordered, with in-range source sockets. Lower exhaust endpoints(40,102)/(152,102) on ribs in y98..105 gap; continuous duct-return alpha behind upper bench fascia, not terminating at table front. Each slot contact/inlet/exhaust is an actual in-range pixel; boundary endpoints separately declared. Use only42 theme colours. Verify real native PNG alpha and all three comparison regions before verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "stone-wash",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r4-actors-vault/attachment-contract.json"
+  }
+ }
+}

@@ -1,0 +1,742 @@
+{
+ "name": "wandtrial_shelves__scene-spec-repair-r3",
+ "item": "wandtrial_shelves",
+ "candidate": "h2-A",
+ "source": "art-output/scene-spec-repair-r3/content/tiledata/hand-interior/pick/candidates/wandtrial_shelves/h2-A.png",
+ "sha256": "a87dc7dff18736836eaa256e5b9e873939dec4cf2a49ebc74356438821b5bd16",
+ "set": {
+  "id": "wandtrial shelves",
+  "name_ko": "wandtrial shelves",
+  "category": "shop",
+  "category_ko": "지팡이 상점",
+  "kind": "floor",
+  "canvas": [
+   32,
+   112
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "description": "양옆1×6 발밑의 높이8px 연결 상부 개방 수납. 윗면에서 실제8상자와 잡는 부분을 보고 통로에서 위로 들어 꺼낸다. 북쪽 높은 선반은 기존 원본을 분리 보존한다.",
+  "parent": "wandtrial shelves",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "west-run",
+    "label": "west-run",
+    "w": 16,
+    "h": 112,
+    "foot": [
+     1,
+     6
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     0,
+     8
+    ],
+    "topMin": 3,
+    "see": "양옆1×6 발밑의 높이8px 연결 상부 개방 수납. 윗면에서 실제8상자와 잡는 부분을 보고 통로에서 위로 들어 꺼낸다. 북쪽 높은 선반은 기존 원본을 분리 보존한다. 바닥 깊이96px를 화면 위로8px 올린 상부 개방 수납. local y0..95는 실제 상자 윗면과 낮은 테두리; 남쪽 끝 수직면은 y96..103의8px. 슬롯112px의 끝8px는 투명 꼬리이며 높이에 합산하지 않는다. 각 띠 전체에서 윗면에 놓인 실제 긴 종이상자8개를 센다. y4/5 두개씩, y6..9 한개씩. 남쪽 끝면의 가짜 상자 정면은 없다. 상자 잡는 부분은 상자 윗면 통로측 끝에 표시한다.",
+    "locked": false,
+    "x": 0,
+    "y": 0,
+    "child": "wandtrial shelves west-run"
+   },
+   {
+    "key": "east-run",
+    "label": "east-run",
+    "w": 16,
+    "h": 112,
+    "foot": [
+     1,
+     6
+    ],
+    "layer": 2,
+    "mount": "floor",
+    "origin": [
+     0,
+     8
+    ],
+    "topMin": 3,
+    "see": "양옆1×6 발밑의 높이8px 연결 상부 개방 수납. 윗면에서 실제8상자와 잡는 부분을 보고 통로에서 위로 들어 꺼낸다. 북쪽 높은 선반은 기존 원본을 분리 보존한다. 바닥 깊이96px를 화면 위로8px 올린 상부 개방 수납. local y0..95는 실제 상자 윗면과 낮은 테두리; 남쪽 끝 수직면은 y96..103의8px. 슬롯112px의 끝8px는 투명 꼬리이며 높이에 합산하지 않는다. 각 띠 전체에서 윗면에 놓인 실제 긴 종이상자8개를 센다. y4/5 두개씩, y6..9 한개씩. 남쪽 끝면의 가짜 상자 정면은 없다. 상자 잡는 부분은 상자 윗면 통로측 끝에 표시한다.",
+    "locked": false,
+    "x": 16,
+    "y": 0,
+    "child": "wandtrial shelves east-run"
+   }
+  ],
+  "contract": {
+   "palette": "dedicated42 only",
+   "lighting": "upper left",
+   "camera": "approved orthogonal south-above 3/4; axes screen parallel",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "assemblyAllowed": false,
+   "candidateCount": 1,
+   "nativeAttempts": 1,
+   "requirement": "wand-box-shelving",
+   "geometry": {
+    "footprints": {
+     "west": [
+      [
+       1,
+       4
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       1,
+       6
+      ],
+      [
+       1,
+       7
+      ],
+      [
+       1,
+       8
+      ],
+      [
+       1,
+       9
+      ]
+     ],
+     "east": [
+      [
+       9,
+       4
+      ],
+      [
+       9,
+       5
+      ],
+      [
+       9,
+       6
+      ],
+      [
+       9,
+       7
+      ],
+      [
+       9,
+       8
+      ],
+      [
+       9,
+       9
+      ]
+     ]
+    },
+    "screenBounds": {
+     "west": [
+      16,
+      88,
+      32,
+      192
+     ],
+     "east": [
+      144,
+      88,
+      160,
+      192
+     ]
+    },
+    "frame": [
+     16,
+     112
+    ],
+    "depthPx": 96,
+    "verticalHeightPx": 8,
+    "topProjection": "바닥 깊이96px를 화면 위로8px 올린 상부 개방 수납. local y0..95는 실제 상자 윗면과 낮은 테두리; 남쪽 끝 수직면은 y96..103의8px. 슬롯112px의 끝8px는 투명 꼬리이며 높이에 합산하지 않는다.",
+    "visibleFaces": {
+     "openTop": [
+      0,
+      0,
+      16,
+      96
+     ],
+     "southEnd": [
+      0,
+      96,
+      16,
+      104
+     ],
+     "westRimTop": [
+      14,
+      0,
+      16,
+      96
+     ],
+     "eastRimTop": [
+      0,
+      0,
+      2,
+      96
+     ]
+    },
+    "joins": [
+     16,
+     32,
+     48,
+     64,
+     80
+    ],
+    "joinMaxDarkPx": 2,
+    "useCells": {
+     "west": [
+      [
+       2,
+       4
+      ],
+      [
+       2,
+       5
+      ],
+      [
+       2,
+       6
+      ],
+      [
+       2,
+       7
+      ],
+      [
+       2,
+       8
+      ],
+      [
+       2,
+       9
+      ]
+     ],
+     "east": [
+      [
+       8,
+       4
+      ],
+      [
+       8,
+       5
+      ],
+      [
+       8,
+       6
+      ],
+      [
+       8,
+       7
+      ],
+      [
+       8,
+       8
+      ],
+      [
+       8,
+       9
+      ]
+     ]
+    },
+    "boxVisibility": "각 띠 전체에서 윗면에 놓인 실제 긴 종이상자8개를 센다. y4/5 두개씩, y6..9 한개씩. 남쪽 끝면의 가짜 상자 정면은 없다. 상자 잡는 부분은 상자 윗면 통로측 끝에 표시한다.",
+    "northPreserved": [
+     {
+      "path": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_shelves/h1-A.png",
+      "sha256": "8a6a2b16132392ee8efa3240f3cd65b8ee9f76b540719d246f8193b80fca3da2"
+     }
+    ],
+    "northRole": "original north crop80×48 only screen[16,16,96,64); no old west/east64px module instances",
+    "alphaBoundsLocal": [
+     0,
+     0,
+     16,
+     104
+    ],
+    "localOrigin": [
+     0,
+     8
+    ],
+    "useAction": "통로 (2,y)/(8,y)에서 낮은 테두리 너머 상자 윗면의 잡는 부분에 손을 내리고 위로 들어 꺼낸다. 동서 서랍 인출은 사용하지 않는다.",
+    "heightOffsets": {
+     "bed": 6,
+     "rim": 8,
+     "boxTop": 8,
+     "handContact": 8,
+     "liftedBoxTop": 12
+    },
+    "depthRule": "각 y4..9 구간의 실제 바닥 남단 접지112,128,144,160,176,192로 상부/남쪽끝면과 인물을 정렬한다. 띠 마지막191 하나로 모든 캐릭터 가림을 결정하지 않는다.",
+    "boxContacts": [
+     {
+      "id": "west-box-1",
+      "floorCell": [
+       1,
+       4
+      ],
+      "useCell": [
+       2,
+       4
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       2,
+       14,
+       7
+      ],
+      "grabLocal": [
+       13,
+       4
+      ],
+      "handContactScreen": [
+       29,
+       92
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-2",
+      "floorCell": [
+       1,
+       4
+      ],
+      "useCell": [
+       2,
+       4
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       9,
+       14,
+       14
+      ],
+      "grabLocal": [
+       13,
+       11
+      ],
+      "handContactScreen": [
+       29,
+       99
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-3",
+      "floorCell": [
+       1,
+       5
+      ],
+      "useCell": [
+       2,
+       5
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       18,
+       14,
+       23
+      ],
+      "grabLocal": [
+       13,
+       20
+      ],
+      "handContactScreen": [
+       29,
+       108
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-4",
+      "floorCell": [
+       1,
+       5
+      ],
+      "useCell": [
+       2,
+       5
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       25,
+       14,
+       30
+      ],
+      "grabLocal": [
+       13,
+       27
+      ],
+      "handContactScreen": [
+       29,
+       115
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-5",
+      "floorCell": [
+       1,
+       6
+      ],
+      "useCell": [
+       2,
+       6
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       34,
+       14,
+       39
+      ],
+      "grabLocal": [
+       13,
+       36
+      ],
+      "handContactScreen": [
+       29,
+       124
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-6",
+      "floorCell": [
+       1,
+       7
+      ],
+      "useCell": [
+       2,
+       7
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       50,
+       14,
+       55
+      ],
+      "grabLocal": [
+       13,
+       52
+      ],
+      "handContactScreen": [
+       29,
+       140
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-7",
+      "floorCell": [
+       1,
+       8
+      ],
+      "useCell": [
+       2,
+       8
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       66,
+       14,
+       71
+      ],
+      "grabLocal": [
+       13,
+       68
+      ],
+      "handContactScreen": [
+       29,
+       156
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "west-box-8",
+      "floorCell": [
+       1,
+       9
+      ],
+      "useCell": [
+       2,
+       9
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       82,
+       14,
+       87
+      ],
+      "grabLocal": [
+       13,
+       84
+      ],
+      "handContactScreen": [
+       29,
+       172
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-1",
+      "floorCell": [
+       9,
+       4
+      ],
+      "useCell": [
+       8,
+       4
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       2,
+       14,
+       7
+      ],
+      "grabLocal": [
+       2,
+       4
+      ],
+      "handContactScreen": [
+       146,
+       92
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-2",
+      "floorCell": [
+       9,
+       4
+      ],
+      "useCell": [
+       8,
+       4
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       9,
+       14,
+       14
+      ],
+      "grabLocal": [
+       2,
+       11
+      ],
+      "handContactScreen": [
+       146,
+       99
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-3",
+      "floorCell": [
+       9,
+       5
+      ],
+      "useCell": [
+       8,
+       5
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       18,
+       14,
+       23
+      ],
+      "grabLocal": [
+       2,
+       20
+      ],
+      "handContactScreen": [
+       146,
+       108
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-4",
+      "floorCell": [
+       9,
+       5
+      ],
+      "useCell": [
+       8,
+       5
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       25,
+       14,
+       30
+      ],
+      "grabLocal": [
+       2,
+       27
+      ],
+      "handContactScreen": [
+       146,
+       115
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-5",
+      "floorCell": [
+       9,
+       6
+      ],
+      "useCell": [
+       8,
+       6
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       34,
+       14,
+       39
+      ],
+      "grabLocal": [
+       2,
+       36
+      ],
+      "handContactScreen": [
+       146,
+       124
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-6",
+      "floorCell": [
+       9,
+       7
+      ],
+      "useCell": [
+       8,
+       7
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       50,
+       14,
+       55
+      ],
+      "grabLocal": [
+       2,
+       52
+      ],
+      "handContactScreen": [
+       146,
+       140
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-7",
+      "floorCell": [
+       9,
+       8
+      ],
+      "useCell": [
+       8,
+       8
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       66,
+       14,
+       71
+      ],
+      "grabLocal": [
+       2,
+       68
+      ],
+      "handContactScreen": [
+       146,
+       156
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     },
+     {
+      "id": "east-box-8",
+      "floorCell": [
+       9,
+       9
+      ],
+      "useCell": [
+       8,
+       9
+      ],
+      "supportHeightPx": 6,
+      "boxTopHeightPx": 8,
+      "topRectLocal": [
+       2,
+       82,
+       14,
+       87
+      ],
+      "grabLocal": [
+       2,
+       84
+      ],
+      "handContactScreen": [
+       146,
+       172
+      ],
+      "handHeightOffsetPx": 8,
+      "liftOffsetPx": 12
+     }
+    ]
+   }
+  }
+ }
+}

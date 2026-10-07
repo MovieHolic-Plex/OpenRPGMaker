@@ -204,6 +204,114 @@
       ],
       "originalArtwork": "Nintendo / Game Freak / Creatures",
       "sourceUse": "Pinned original body/gait reference for explicitly edited derivatives."
+    },
+    {
+      "id": "pokefan_m",
+      "file": "pokefan_m.png",
+      "sha256": "1442e2fcbc158b2dc1ca96b5a35629453b9eefad566569dbda1f2b6391b65676",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/pokefan_m.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "woman_2",
+      "file": "woman_2.png",
+      "sha256": "1cf6185c19588ca6f40fe94db1f222a44071664bef3cebad976b9e725855e020",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/woman_2.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "man_4",
+      "file": "man_4.png",
+      "sha256": "264a7e6d2916f397c592aed0f663350612908b0da2bc8fe3e77410a6c525ab32",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/man_4.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "fat_man",
+      "file": "fat_man.png",
+      "sha256": "95b3b7e29575fd14c1736db07a59dec588768f05057ba6b7cbe0b7454afdc735",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/fat_man.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "woman_5",
+      "file": "woman_5.png",
+      "sha256": "7d9c42c8d818485bc86244e7eff67d0c9a0c6b889bc71440f9be0f0eadafd1ad",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/woman_5.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "boy_1",
+      "file": "boy_1.png",
+      "sha256": "19e85b98bcb7845ef88f19428db1053cffc3c2b9f57a53378d073369d109d049",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/boy_1.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "fisherman",
+      "file": "fisherman.png",
+      "sha256": "60c91d3f454902a328f358cbb91d9bf0b412f85e3cb41542f90093cf27771ef8",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/fisherman.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "woman_1",
+      "file": "woman_1.png",
+      "sha256": "b8953e355faa1ede48ee7c57e432b73fb792fbdbfb2900e5b21d8452023ebdf7",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/woman_1.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    {
+      "id": "youngster",
+      "file": "youngster.png",
+      "sha256": "02bda8a5ca205a262621b24d3fbd7d93900e256de41dad4af93a6e2a995993fd",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/youngster.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
     }
   ]
 }

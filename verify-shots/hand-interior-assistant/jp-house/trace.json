@@ -1,0 +1,86 @@
+[
+ {
+  "i": 1,
+  "name": "get_project_summary",
+  "ok": true,
+  "summary": "프로젝트 '새 프로젝트' — 맵 1개, 아이템 1000, 트룹 7",
+  "args": "{}"
+ },
+ {
+  "i": 2,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"제작 규칙 일본 주택 실내\",\"mapId\":\"\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 3,
+  "name": "list_authoring_presets",
+  "ok": true,
+  "summary": "플레이 프리셋 8종 조회 — 일치 8종. 상세는 read_authoring_preset(presetId).",
+  "args": "{\"category\":\"exploration\",\"query\":\"\",\"offset\":0,\"limit\":12}"
+ },
+ {
+  "i": 4,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 5,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 534건",
+  "args": "{\"kind\":\"object\",\"query\":\"일본\",\"limit\":40,\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "get_database_records",
+  "ok": true,
+  "summary": "maps 1건 / 1건",
+  "args": "{\"collection\":\"maps\",\"include\":\"full\",\"ids\":[\"map_blank_start\"],\"limit\":1,\"offset\":0}"
+ },
+ {
+  "i": 7,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_blank_start\",\"x\":0,\"y\":0,\"w\":20,\"h\":15}"
+ },
+ {
+  "i": 8,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 1개 발견: inspect_terrain",
+  "args": "{\"query\":\"inspect_terrain\",\"domain\":\"map\",\"limit\":1}"
+ },
+ {
+  "i": 9,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"mapId\":\"map_blank_start\",\"tilesetId\":\"\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 10,
+  "name": "inspect_terrain",
+  "ok": true,
+  "summary": "고지 0단 · 경사로 0칸 · 집 0채(평탄 0) · 시야 차단 끔",
+  "args": "{\"mapId\":\"map_blank_start\",\"includeCatalog\":false,\"catalogOffset\":0,\"catalogLimit\":1}"
+ },
+ {
+  "i": 11,
+  "name": "read_authoring_preset",
+  "ok": true,
+  "summary": "「귀환 지름길」 작성 지침 — 3단계·검사 3항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.",
+  "args": "{\"presetId\":\"return-shortcut\"}"
+ },
+ {
+  "i": 12,
+  "name": "ask_tileset_change",
+  "ok": true,
+  "summary": "사용자에게 칩셋 계열 변경을 물었다. 답을 기다리며 이 턴을 끝내라(더 칠하지 마라).",
+  "args": "{\"toTilesetId\":\"jp_city\",\"reason\":\"요청하신 다다미 화실과 일본식 현관·욕실을 만들려면 현재 맵과 다른 일본 주택용 그림체가 필요합니다. 기존 맵은 그대로 두고, 이 그림체로 1·2층을 새로 만들어 계단으로 연결해도 될까요?\",\"purpose\":\"jp-interior\",\"mapId\":\"map_blank_start\"}"
+ }
+]

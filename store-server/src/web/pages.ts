@@ -256,7 +256,7 @@ export function upload(view: View): string {
   const { t, lang } = view;
   const kinds = STORE_ITEM_KINDS.filter((kind) => kind !== "pack").map((kind) => `<option value="${kind}">${esc(kindLabel(lang, kind))}</option>`).join("");
   const licenses = STORE_LICENSES.map((license, index) => `<label class="radio"><input type="radio" name="license" value="${license}" ${index === 3 ? "checked" : ""}> ${esc(licenseLabel(lang, license))}</label>`).join("");
-  const msgs: Record<string, string> = { choose: t("upChoose"), hashing: t("upHashing"), sending: t("upSending"), creating: t("upCreating"), done: t("upDone"), pending: t("upPending"), view: t("upView"), badsize: t("upBadSize", "{0}", "{1}") };
+  const msgs: Record<string, string> = { choose: t("upChoose"), hashing: t("upHashing"), sending: t("upSending"), creating: t("upCreating"), done: t("upDone"), pending: t("upPending"), view: t("upView"), badsize: t("upBadSize", "{0}", "{1}"), padded: t("upPadded", "{0}") };
   // 종류별 규격. 크기 판정은 서버(storeImageSizeProblem)가 하고, 화면은 올리기 전에 같은 규칙으로 먼저 알려 준다.
   const specs: Record<string, { text: string; width?: number; height?: number; tile?: number }> = {
     tileset: { text: t("specTileset"), tile: STORE_TILE_SIZE },

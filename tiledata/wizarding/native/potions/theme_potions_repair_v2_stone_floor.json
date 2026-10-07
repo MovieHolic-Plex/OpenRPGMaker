@@ -1,0 +1,483 @@
+{
+ "name": "theme_potions_repair_v2_stone_floor",
+ "item": "theme_potions_repair_v2_stone_floor",
+ "candidate": "h2-A",
+ "source": "art-output/repair-v2-order-socket-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_stone_floor/h2-A.png",
+ "sha256": "c3592af6a47437d39214b35cf076b96808dcc8a5e27ddc22c22a7b30d227c0ca",
+ "set": {
+  "id": "theme potions repair-v2 stone-floor",
+  "name_ko": "수정2 stone-floor",
+  "name_en": "theme potions repair-v2 stone-floor",
+  "parent": "theme potions repair-r9 stone-floor",
+  "derive": "production",
+  "kind": "flat",
+  "category": "castle",
+  "category_ko": "반려 항목 전용 변형",
+  "footprint": {
+   "w": 16,
+   "h": 4
+  },
+  "canvas": [
+   256,
+   64
+  ],
+  "description": "Complete opaque ground terrain replacement: all19 original functional slots plus quiet48x32. kind=flat, every layer0/topMin0. Preserve wet/drain/threshold/reagent functions. Entire42-color theme palette; quiet uses broad #77716B fields, restrained #555154 joint interiors and #A49A87 only small edge planes. Wet only17,6; stains only named approved work sockets. No transparent holes. Native independent review writes all slotResults; opaque terrain corners are valid.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "center",
+    "label": "center",
+    "see": "center",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0
+   },
+   {
+    "key": "wet",
+    "label": "wet",
+    "see": "wet",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 0
+   },
+   {
+    "key": "worn",
+    "label": "worn",
+    "see": "worn",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 0
+   },
+   {
+    "key": "N",
+    "label": "N",
+    "see": "N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 0
+   },
+   {
+    "key": "E",
+    "label": "E",
+    "see": "E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0
+   },
+   {
+    "key": "S",
+    "label": "S",
+    "see": "S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 0
+   },
+   {
+    "key": "W",
+    "label": "W",
+    "see": "W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "see": "outer-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 112,
+    "y": 0
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "see": "outer-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 128,
+    "y": 0
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "see": "outer-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 144,
+    "y": 0
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "see": "outer-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 160,
+    "y": 0
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "see": "inner-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 176,
+    "y": 0
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "see": "inner-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 192,
+    "y": 0
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "see": "inner-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 208,
+    "y": 0
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "see": "inner-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 224,
+    "y": 0
+   },
+   {
+    "key": "threshold",
+    "label": "threshold",
+    "see": "threshold",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 240,
+    "y": 0
+   },
+   {
+    "key": "drain-groove",
+    "label": "drain-groove",
+    "see": "drain-groove",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 16
+   },
+   {
+    "key": "drain",
+    "label": "drain",
+    "see": "drain",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 16
+   },
+   {
+    "key": "reagent-stain",
+    "label": "reagent-stain",
+    "see": "reagent-stain",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     1
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 16
+   },
+   {
+    "key": "quiet-48x32",
+    "label": "quiet irregular stone macro slab",
+    "see": "Low contrast large irregular joints at2..3 tile intervals; no uniform grey field and no bright dots. Seam endpoints repeat exactly at opposite edges.",
+    "x": 0,
+    "y": 32,
+    "w": 48,
+    "h": 32,
+    "foot": [
+     3,
+     2
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 0,
+    "passage": "o",
+    "topMin": 0,
+    "locked": false,
+    "child": null
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-v2-order-socket-sync-prep/scene-contract.json",
+   "instructions": "Complete opaque ground terrain replacement: all19 original functional slots plus quiet48x32. kind=flat, every layer0/topMin0. Preserve wet/drain/threshold/reagent functions. Entire42-color theme palette; quiet uses broad #77716B fields, restrained #555154 joint interiors and #A49A87 only small edge planes. Wet only17,6; stains only named approved work sockets. No transparent holes. Native independent review writes all slotResults; opaque terrain corners are valid.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "stone-floor",
+   "repairOfCollected": true
+  }
+ }
+}
