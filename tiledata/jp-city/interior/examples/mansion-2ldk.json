@@ -59,7 +59,7 @@
   },
   {
    "x0": 1,
-   "y0": 10,
+   "y0": 11,
    "x1": 2,
    "y1": 13,
    "floor": "tataki"
@@ -148,8 +148,8 @@
   },
   {
    "id": "bath-stool",
-   "x": 12,
-   "y": 5
+   "x": 13,
+   "y": 4
   },
   {
    "id": "bath-bucket",
@@ -184,16 +184,11 @@
   {
    "id": "door-side-western",
    "x": 3,
-   "y": 9
-  },
-  {
-   "id": "agarikamachi",
-   "x": 1,
    "y": 11
   },
   {
    "id": "agarikamachi",
-   "x": 2,
+   "x": 1,
    "y": 11
   },
   {
@@ -212,14 +207,9 @@
    "y": 9
   },
   {
-   "id": "rug",
-   "x": 4,
-   "y": 11
-  },
-  {
    "id": "low-table",
    "x": 4,
-   "y": 11
+   "y": 10
   },
   {
    "id": "sofa-n",
@@ -228,7 +218,7 @@
   },
   {
    "id": "fridge",
-   "x": 7,
+   "x": 13,
    "y": 9
   },
   {
@@ -247,29 +237,19 @@
    "y": 9
   },
   {
-   "id": "cupboard",
-   "x": 13,
+   "id": "kitchen-worktop",
+   "x": 7,
    "y": 9
   },
   {
    "id": "chair-dining-s",
-   "x": 11,
-   "y": 10
+   "x": 10,
+   "y": 11
   },
   {
    "id": "chair-dining-s",
-   "x": 12,
-   "y": 10
-  },
-  {
-   "id": "chair-dining-n",
    "x": 11,
-   "y": 12
-  },
-  {
-   "id": "chair-dining-n",
-   "x": 12,
-   "y": 12
+   "y": 11
   },
   {
    "id": "washing-machine",
@@ -284,32 +264,22 @@
   {
    "id": "h2-laundry-pole",
    "x": 4,
-   "y": 16
+   "y": 17
   },
   {
    "id": "h2-ac-outdoor",
    "x": 12,
-   "y": 16
+   "y": 17
   },
   {
    "id": "h2-planter",
    "x": 13,
-   "y": 16
+   "y": 17
   },
   {
    "id": "h2-sandals",
    "x": 8,
    "y": 16
-  },
-  {
-   "id": "h2-railing",
-   "x": 4,
-   "y": 17
-  },
-  {
-   "id": "h2-railing",
-   "x": 5,
-   "y": 17
   },
   {
    "id": "h2-railing",
@@ -340,16 +310,6 @@
    "id": "h2-railing",
    "x": 11,
    "y": 17
-  },
-  {
-   "id": "h2-railing",
-   "x": 12,
-   "y": 17
-  },
-  {
-   "id": "h2-railing",
-   "x": 13,
-   "y": 17
   }
  ],
  "tables": [
@@ -362,8 +322,8 @@
   },
   {
    "style": "dining",
-   "x": 11,
-   "y": 11,
+   "x": 10,
+   "y": 12,
    "w": 2,
    "h": 1
   }
@@ -386,13 +346,13 @@
   },
   {
    "id": "plates",
-   "x": 11,
-   "y": 11
+   "x": 10,
+   "y": 12
   },
   {
    "id": "remote",
-   "x": 5,
-   "y": 11
+   "x": 4,
+   "y": 10
   }
  ],
  "start": [
