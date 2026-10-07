@@ -1437,10 +1437,14 @@
     ],
     [
      "sh-plant-pot",
-     2
+     1
     ],
     [
      "sh-shutter-2",
+     1
+    ],
+    [
+     "pb-scale",
      1
     ]
    ]
@@ -1816,6 +1820,58 @@
    "mansion",
    [
     [
+     "toilet-paper",
+     1
+    ],
+    [
+     "toilet",
+     1
+    ],
+    [
+     "door-open-toilet",
+     1
+    ],
+    [
+     "bath-mirror",
+     1
+    ],
+    [
+     "washbasin",
+     1
+    ],
+    [
+     "washing-machine",
+     1
+    ],
+    [
+     "door-open-western",
+     3
+    ],
+    [
+     "door-side-sliding",
+     1
+    ],
+    [
+     "shower-faucet",
+     1
+    ],
+    [
+     "bathtub",
+     1
+    ],
+    [
+     "bath-stool",
+     1
+    ],
+    [
+     "bath-bucket",
+     1
+    ],
+    [
+     "curtain-window",
+     1
+    ],
+    [
      "bed-single",
      2
     ],
@@ -1828,15 +1884,7 @@
      1
     ],
     [
-     "curtain-window",
-     1
-    ],
-    [
-     "toilet",
-     1
-    ],
-    [
-     "toilet-paper",
+     "window-sash-small",
      1
     ],
     [
@@ -1848,43 +1896,15 @@
      1
     ],
     [
-     "window-sash-small",
-     1
-    ],
-    [
-     "bathtub",
-     1
-    ],
-    [
-     "shower-faucet",
-     1
-    ],
-    [
-     "bath-mirror",
-     1
-    ],
-    [
-     "bath-stool",
-     1
-    ],
-    [
-     "bath-bucket",
-     1
-    ],
-    [
-     "door-open-western",
-     3
-    ],
-    [
-     "door-open-toilet",
-     1
-    ],
-    [
      "h2-shoe-closet",
      1
     ],
     [
-     "door-side-western",
+     "genkan-mat",
+     1
+    ],
+    [
+     "slippers",
      1
     ],
     [
@@ -1892,15 +1912,19 @@
      2
     ],
     [
+     "door-side-western",
+     1
+    ],
+    [
      "shoes-pair",
      1
     ],
     [
-     "h2-genkan-door-steel",
+     "umbrella-stand",
      1
     ],
     [
-     "umbrella-stand",
+     "h2-genkan-door-steel",
      1
     ],
     [
@@ -1916,10 +1940,6 @@
      1
     ],
     [
-     "fridge",
-     1
-    ],
-    [
      "kitchen-worktop",
      2
     ],
@@ -1932,11 +1952,15 @@
      1
     ],
     [
+     "fridge",
+     1
+    ],
+    [
      "chair-dining-s",
      2
     ],
     [
-     "washing-machine",
+     "houseplant",
      1
     ],
     [
@@ -1961,14 +1985,6 @@
     ],
     [
      "h2-planter",
-     1
-    ],
-    [
-     "genkan-mat",
-     1
-    ],
-    [
-     "slippers",
      1
     ],
     [
