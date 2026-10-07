@@ -6,22 +6,9 @@ const DEV_PROJECT_STORAGE_PREFIX = "oprn:dev-project:";
 
 const DEV_PROJECT_PARAMS = [
   "blankProject",
-  "dbExtractedHouseTemplate",
-  "defaultAdventure",
-  "defaultAdventureVisual",
   "devProject",
   "freshProject",
-  "houseTemplateGallery",
-  "logCabinShowcase",
-  "retroHouseShowcase",
-  "sampleAdventure",
-  "modernNocturne",
-  "shopShowcase",
-  "smallHouseVariant",
-  "townArchitectureCity",
-  "townArchitectureTest",
-  "townCityShowcase",
-  "townHouseShowcase",
+  "scarloxyDemo",
 ] as const;
 
 export function loadDevProjectOverride(): Project | null {

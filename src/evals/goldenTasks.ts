@@ -3,7 +3,6 @@
 // 실제 LLM 러너는 동일 태스크의 prompt만 사용하고 시퀀스는 스스로 생성한다.
 // 쓰기/읽기/에러복구를 골고루 포함한다.
 
-import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
 import { createBlankProject } from "@/project/defaults";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -14,8 +13,6 @@ import {
   itemExists,
   mapCountAtLeast,
   mapCountAtMost,
-  mapCountExactly,
-  mapIdsUnchanged,
   questExists,
   switchNamed,
   troopExists,
@@ -25,122 +22,8 @@ import type { ToolCall } from "./runner";
 
 const TOWN = "m_town";
 
-// ── 수정 과제 공통(2026-08-29 modify 진단 P4) ──────────────────────────────────
-// 종전 골든 11종은 전부 신규 생성 과제였고 매처는 전부 단조 증가형("N개 이상", "존재")이라
-// **맵을 하나 더 만들어도 만점**이 나왔다. 사용자가 실제로 겪은 결함(수정 요청 → 새 맵 생성)은
-// 이 스위트로 절대 잡히지 않는다. 아래 두 과제는 기존 산출물을 그 자리에서 고치는 과제이고,
-// 매처에 "맵 집합 불변"을 넣어 신규 생성으로는 통과할 수 없게 한다.
-
-const EMBER_VILLAGE = "map_ember_village";
-const EMBER_MAP_IDS = ["map_ember_village", "map_mist_forest", "map_dry_mine", "map_ash_pass", "map_flame_sanctum"];
-
-/** 잿불 마을 서쪽 길(y=12·13, x=1~11)에서 잘라낼 구간 — 여기가 "끊긴 길"이 된다. */
-const ROAD_GAP_XS = [5, 6, 7, 8];
-const ROAD_ROWS = [12, 13];
-
-/** 맵에서 가장 흔한 비-도로 하단 타일 — 길을 지운 자리를 주변 지면으로 되메운다(타일 id 하드코딩 회피). */
-function commonGroundTile(lowerTiles: readonly number[]): number {
-  const counts = new Map<number, number>();
-  for (const tile of lowerTiles) {
-    if (isRoadTile(tile)) continue;
-    counts.set(tile, (counts.get(tile) ?? 0) + 1);
-  }
-  let best = 0;
-  let bestCount = -1;
-  for (const [tile, count] of counts) {
-    if (count > bestCount) {
-      best = tile;
-      bestCount = count;
-    }
-  }
-  return best;
-}
-
-function emberWithBrokenRoad(): Project {
-  const project = createEmberQuestProject();
-  const map = project.maps[EMBER_VILLAGE]!;
-  const ground = commonGroundTile(map.lowerTiles);
-  for (const y of ROAD_ROWS) {
-    for (const x of ROAD_GAP_XS) map.lowerTiles[y * map.width + x] = ground;
-  }
-  return project;
-}
-
-// A) 끊긴 길 잇기 — 맵을 새로 만들지 않고 이 맵의 길만 복구해야 한다.
-export const GOLDEN_ROAD_FIX: GoldenTask = {
-  id: "road-fix",
-  prompt: "지금 열린 마을 맵 서쪽 흙길이 중간에 끊겨 있어. 새 맵 만들지 말고 이 맵에서 그 길을 이어줘.",
-  initialProject: emberWithBrokenRoad,
-  contextOptions: { currentMapId: EMBER_VILLAGE },
-  matchers: [
-    mapIdsUnchanged(EMBER_MAP_IDS),
-    mapCountExactly(EMBER_MAP_IDS.length),
-    custom("끊긴 구간이 흙길로 이어짐", (project) => {
-      const map = project.maps[EMBER_VILLAGE];
-      if (!map) return false;
-      return ROAD_ROWS.every((y) => ROAD_GAP_XS.every((x) => isRoadTile(map.lowerTiles[y * map.width + x]!)));
-    }),
-    custom("이벤트가 사라지지 않음", (project) => (project.maps[EMBER_VILLAGE]?.events.length ?? 0) >= 8),
-  ],
-};
-const GOLDEN_ROAD_FIX_SOLUTION: readonly ToolCall[] = ROAD_ROWS.map((y) => ({
-  name: "paint_road",
-  args: { mapId: EMBER_VILLAGE, style: "dirt", points: [{ x: 1, y }, { x: 11, y }] },
-}));
-
-// B) 기존 NPC 대사 고치기 — NPC를 새로 놓지 않고 그 이벤트의 대사만 바꿔야 한다.
-const CHILD_EVENT_ID = "ev_ember_child";
-const CHILD_OLD_LINE = "숲의 약초꾼 세라 누나가 반짝이는 풀을 찾고 있대! 나도 보고 싶다~";
-const CHILD_NEW_LINE = "동문은 파수꾼 아저씨가 지키고 있어. 혼자 나가면 안 된다고 했어.";
-
-function eventTextBodies(project: Project, mapId: string, eventId: string): string[] {
-  const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
-  if (!event) return [];
-  const bodies: string[] = [];
-  for (const commands of [event.commands, ...(event.pages ?? []).map((page) => page.commands)]) {
-    for (const command of commands ?? []) {
-      if (command.kind === "text") bodies.push(command.body);
-    }
-  }
-  return bodies;
-}
-
-export const GOLDEN_NPC_LINE_FIX: GoldenTask = {
-  id: "npc-line-fix",
-  prompt: `잿불 마을 '꼬마 미루' 첫 대사를 "${CHILD_NEW_LINE}" 로 바꿔줘. NPC를 새로 만들거나 맵을 새로 만들지 말고 그 이벤트만 고쳐.`,
-  initialProject: createEmberQuestProject,
-  contextOptions: { currentMapId: EMBER_VILLAGE },
-  matchers: [
-    mapIdsUnchanged(EMBER_MAP_IDS),
-    custom("이벤트 수 불변(NPC 중복 배치 없음)", (project) => project.maps[EMBER_VILLAGE]?.events.length === 8),
-    custom("새 대사가 들어감", (project) =>
-      eventTextBodies(project, EMBER_VILLAGE, CHILD_EVENT_ID).some((body) => body.includes(CHILD_NEW_LINE))),
-    custom("옛 대사가 남지 않음", (project) =>
-      eventTextBodies(project, EMBER_VILLAGE, CHILD_EVENT_ID).every((body) => !body.includes(CHILD_OLD_LINE))),
-  ],
-};
-const GOLDEN_NPC_LINE_FIX_SOLUTION: readonly ToolCall[] = [
-  {
-    name: "upsert_event",
-    args: {
-      mapId: EMBER_VILLAGE,
-      event: { id: CHILD_EVENT_ID, pages: emberChildPagesWithFixedFirstLine() },
-    },
-  },
-];
-
-/** 정답 시퀀스용 — 첫 페이지 첫 대사만 교체하고 나머지 페이지·조건은 원본 그대로 보존한다. */
-function emberChildPagesWithFixedFirstLine(): unknown[] {
-  const village = createEmberQuestProject().maps[EMBER_VILLAGE]!;
-  const child = village.events.find((event) => event.id === CHILD_EVENT_ID)!;
-  const pages = structuredClone(child.pages ?? []);
-  const first = pages[0];
-  if (first) {
-    first.commands = first.commands.map((command) =>
-      command.kind === "text" && command.body === CHILD_OLD_LINE ? { ...command, body: CHILD_NEW_LINE } : command);
-  }
-  return pages;
-}
+// 2026-10-07 저작권 정리: 《잿불의 유산》(합본 마을 칩셋) 위에서 고치던 과제(road-fix·npc-line-fix·
+// error-recovery·summary)는 데모와 함께 지웠다.
 
 function emptyStart(): Project {
   return createEmptyToolProject("골든 태스크");
@@ -151,15 +34,6 @@ function baseTown(): readonly ToolCall[] {
     { name: "create_map", args: { name: "마을", width: 18, height: 14, id: TOWN } },
     { name: "set_start_position", args: { mapId: TOWN, x: 9, y: 7 } },
   ];
-}
-
-// 각 맵에 이름으로 이벤트가 있는지 확인하는 매처.
-function hasNpcNamed(namePart: string) {
-  return custom(`'${namePart}' NPC 존재`, (project) =>
-    Object.values(project.maps).some((map) =>
-      map.events.some((event) => (event.pages ?? []).some((page) => page.name.includes(namePart)))
-    )
-  );
 }
 
 // 1) 여관 짓기(쓰기: 맵+NPC+inn).
@@ -310,31 +184,6 @@ const GOLDEN_LAYOUT_SOLUTION: readonly ToolCall[] = [
   { name: "paint_road", args: { mapId: TOWN, points: [{ x: 2, y: 12 }, { x: 15, y: 12 }], style: "dirt" } },
 ];
 
-// 9) 에러 복구: 물 위 NPC(거부 후 통행 가능 칸으로 재배치).
-export const GOLDEN_ERROR_RECOVERY: GoldenTask = {
-  id: "error-recovery",
-  prompt: "잿불 마을 연못(물) 위에 NPC를 놓아줘. 물 위가 안 되면 근처 통행 가능한 곳에 놔줘.",
-  initialProject: createEmberQuestProject,
-  matchers: [hasNpcNamed("낚시꾼")],
-};
-// 정답 시퀀스는 물 위 실패를 겪지 않고 바로 통행 가능한 칸에 배치(오프라인 채점 기준).
-const GOLDEN_ERROR_SOLUTION: readonly ToolCall[] = [
-  { name: "place_npc", args: { mapId: "map_ember_village", x: 24, y: 20, name: "낚시꾼", graphic: { query: "상인" }, pages: [{ lines: ["오늘은 잘 잡히는군."] }] } },
-];
-
-// 10) 읽기: 프로젝트 요약(읽기 툴은 프로젝트를 바꾸지 않으므로, 요약이 스펙과 맞는지 확인).
-export const GOLDEN_SUMMARY: GoldenTask = {
-  id: "summary",
-  prompt: "이 프로젝트에 맵이 몇 개인지, 어떤 트룹이 있는지 알려줘.",
-  initialProject: createEmberQuestProject,
-  // 읽기 태스크: 프로젝트가 잿불의 유산 스펙(맵5) 그대로 유지되는지 확인(파괴하지 않음).
-  // mapCountAtLeast(5) 만 있으면 **맵을 더 만들어도 통과**했다 — 읽기 과제에서 그건 실패다.
-  matchers: [mapIdsUnchanged(EMBER_MAP_IDS), troopExists("troop_slime_pair")],
-};
-const GOLDEN_SUMMARY_SOLUTION: readonly ToolCall[] = [
-  // 읽기만 하므로 프로젝트를 변경하지 않는다(정답 시퀀스는 비어 있음).
-];
-
 // 11) 몬스터 수집(포켓몬 코어): 수집 ON + 전투 파티 모드 ON + 스타터 지급 이벤트.
 // 저작 시점 session.monsterParty는 빈 채로 남는다(give_starter_monsters는 런타임 이벤트만 만든다).
 // 따라서 스타터 매처는 session.monsterParty가 아니라 system 플래그 + 스타터 지급 이벤트로 판정한다.
@@ -359,10 +208,7 @@ const GOLDEN_MONSTER_SOLUTION: readonly ToolCall[] = [
   { name: "give_starter_monsters", args: { speciesIds: ["species_wild_slime", "species_cave_bat", "species_stone_golem"] } },
 ];
 
-// 수정 과제를 맨 앞에 둔다 — EVAL_TASKS(기본 4)로 앞쪽만 돌리는 야간 배치에서도 항상 포함된다.
 export const GOLDEN_TASKS: readonly GoldenTask[] = [
-  GOLDEN_ROAD_FIX,
-  GOLDEN_NPC_LINE_FIX,
   GOLDEN_INN,
   GOLDEN_SHOP,
   GOLDEN_BATTLE,
@@ -371,15 +217,11 @@ export const GOLDEN_TASKS: readonly GoldenTask[] = [
   GOLDEN_TOUGH_ENEMY,
   GOLDEN_SESSION,
   GOLDEN_LAYOUT,
-  GOLDEN_ERROR_RECOVERY,
-  GOLDEN_SUMMARY,
   GOLDEN_MONSTER,
 ];
 
 // 태스크 id → 정답 시퀀스(오프라인 채점).
 export const GOLDEN_SOLUTIONS: Record<string, readonly ToolCall[]> = {
-  "road-fix": GOLDEN_ROAD_FIX_SOLUTION,
-  "npc-line-fix": GOLDEN_NPC_LINE_FIX_SOLUTION,
   inn: GOLDEN_INN_SOLUTION,
   shop: GOLDEN_SHOP_SOLUTION,
   "battle-blocker": GOLDEN_BATTLE_SOLUTION,
@@ -388,8 +230,6 @@ export const GOLDEN_SOLUTIONS: Record<string, readonly ToolCall[]> = {
   "tough-enemy": GOLDEN_TOUGH_SOLUTION,
   "session-start": GOLDEN_SESSION_SOLUTION,
   "town-layout": GOLDEN_LAYOUT_SOLUTION,
-  "error-recovery": GOLDEN_ERROR_SOLUTION,
-  summary: GOLDEN_SUMMARY_SOLUTION,
   "monster-collection": GOLDEN_MONSTER_SOLUTION,
 };
 
