@@ -1,0 +1,321 @@
+{
+  "batch": "v2-production-206",
+  "passedAttempts": 3,
+  "rejectedAttempts": 7,
+  "nativeUnmodified": true,
+  "stages": {
+    "import-batch": {
+      "batch": "v2-production-206",
+      "stage": "import-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "import-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-import.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T00:02:02.825516+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-import-batch.log"
+    },
+    "review-batch": {
+      "batch": "v2-production-206",
+      "stage": "review-batch",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T00:02:23.486981+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-review-batch.log"
+    },
+    "gate": {
+      "batch": "v2-production-206",
+      "stage": "gate",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "gate"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T00:07:43.259666+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-gate.log"
+    },
+    "build": {
+      "batch": "v2-production-206",
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "build"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T00:13:02.419120+00:00",
+      "log": "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/v2-production-206-build.log"
+    },
+    "wrapper": {
+      "batch": "v2-production-206",
+      "command": [
+        "/home/main/saza-backend/venv/bin/python3",
+        "/home/main/.codex/worktrees/08da/rpg-zzu/qa-runs/harnesses/interview-scene-bank/complete-reviewed-batch.py",
+        "v2-production-206"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-07T00:13:02.884104+00:00"
+    }
+  },
+  "records": [
+    {
+      "key": "monster--hatch--team--secret--case--short",
+      "nativeSha256": "7e4e858a8b4586a2ad1e79e79ff9be71893eeb1d81849aa97cb7949b648d8158",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "950dfff6fc693631de7082b3cf84c0b4fe540561bc2722b17c4f09a7eee705c3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": false,
+        "distinctShot": true
+      },
+      "findings": [
+        "WholeOPENreturnhome/outwarddoors/visibleemptyfloor/tidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater, threeactualdistinct EMPTYtacticalstations, actualGROUNDbook/2soilprints LOWOPENrefuge EMPTYpail/earthtrace MOONreturn. Actualmaneuverposts x62-67 hidden behindactual60.3 controls AND selectedLOWrefuge leftroof/eave cut bynativeedge: composition F. Isolatedcentral GOLD PAW-shaped printed coveremblem, separatefrombinding, on requestedBLANKbook: noText F. PhysicalGROUNDpawprints not print. OtherfiveP. DiffNEW200SECRETCASE byreturnhome/table."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. WholeOPENreturnhome/outwarddoors/visibleemptyfloor/tidyTABLE FIRSTcrackegg/PALEdrapedcloth/BLUEwater, threeactualdistinct EMPTYtacticalstations, actualGROUNDbook/2soilprints LOWOPENrefuge EMPTYpail/earthtrace MOONreturn. Actualmaneuverposts x62-67 hidden behindactual60.3 controls AND selectedLOWrefuge leftroof/eave cut bynativeedge: composition F. Isolatedcentral GOLD PAW-shaped printed coveremblem, separatefrombinding, on requestedBLANKbook: noText F. PhysicalGROUNDpawprints not print. OtherfiveP. DiffNEW200SECRETCASE byreturnhome/table. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--team--warm--habitat--short",
+      "nativeSha256": "7e0f04bee82a548cce6cc1e83822c58d2b6bdf6fd94b0ce12dc9a1b14ffa8774",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "c5e85c7b30bbf17ec56f63895b7ffff920d1da66f1b4e153ed11ac779cf854d6",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "WholeOPENhome/outwarddoors/visibleemptyfloor/tidytablecare FIRSTcrackegg/PALEdrapedcloth/BLUEwater plus actualwhole3EMPTYtacticalstations and3actualINNERhabitats SUNSETreturn. RUINleftmost/bothactualINNERcols/ALLactualstairs visibleleft. ActualrequiredWETLAND INNER bridgeend/water/reeds extendx64-69 behindactual60.3 controls: composition ONLY F. Comfortable6-55 target not arbitrary hardgate in206. Other6P. DiffNEW202WARMHAB returnhome/table."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. WholeOPENhome/outwarddoors/visibleemptyfloor/tidytablecare FIRSTcrackegg/PALEdrapedcloth/BLUEwater plus actualwhole3EMPTYtacticalstations and3actualINNERhabitats SUNSETreturn. RUINleftmost/bothactualINNERcols/ALLactualstairs visibleleft. ActualrequiredWETLAND INNER bridgeend/water/reeds extendx64-69 behindactual60.3 controls: composition ONLY F. Comfortable6-55 target not arbitrary hardgate in206. Other6P. DiffNEW202WARMHAB returnhome/table. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat--episode",
+      "nativeSha256": "1cc404a0a605edfe0260a1958af599c38053089dfcb624f4e5ad90b2bb41704c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "5bcf0a9b4a0cff43c49004cd1f362ff88fd327a21ace03ab9a41566520624548",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UP3actualINNERhabitats RUINleftmost/bothactualINNERcols/ALLactualstairs MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater plus real largerEMPTYGROUND wovenrestmat SUNgrowth. ActualwetlandINNERwater/reeds extend x64-68 behindactual60.3 controls: composition ONLY F. Physicalmatweave/clothhem no print. DistinctactualNEW206BRIGHTHAB reversehabUP/careLOW plusmat; parentF held."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. UP3actualINNERhabitats RUINleftmost/bothactualINNERcols/ALLactualstairs MIDwholeemptylowstonebench/plainwoodcarebox LOWwholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater plus real largerEMPTYGROUND wovenrestmat SUNgrowth. ActualwetlandINNERwater/reeds extend x64-68 behindactual60.3 controls: composition ONLY F. Physicalmatweave/clothhem no print. DistinctactualNEW206BRIGHTHAB reversehabUP/careLOW plusmat; parentF held. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--bright--habitat",
+      "nativeSha256": "47206ba720c2b979f44ec0296fa131abb309ffee7a09e68b4efa0a1264c329dc",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "86b2f2c4df4cb8023a81ec6063c84d150c27a68737cd30cd7913491b3bcf14a9",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Wholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater with wholeemptylowstonebench/plaincarebox and3actualINNERhabitats SUN/noscope. RUINleftmost/bothactualINNERcols/ALLactualstairs leftcomplete, but actualwetlandINNERwater/reeds extendbeyondactual60.3 controls towardx65: composition ONLY F. No false innercolumn accusation, outerposts notinner. DiffNEW204BRIGHT by actual3habitatclearings."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. Wholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater with wholeemptylowstonebench/plaincarebox and3actualINNERhabitats SUN/noscope. RUINleftmost/bothactualINNERcols/ALLactualstairs leftcomplete, but actualwetlandINNERwater/reeds extendbeyondactual60.3 controls towardx65: composition ONLY F. No false innercolumn accusation, outerposts notinner. DiffNEW204BRIGHT by actual3habitatclearings. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--route--episode",
+      "nativeSha256": "3d7d048dfdee7b391eed3b037e6363a32edf3def5828f42a671e0e155a525161",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "c9df0aaa089717f39e873b46822714aa49396d32711a347aa83a895c514bf82e",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPtwoWHOLEdifferenthouses/continuousLEFTtrail MIDwholeemptylowstonebench/plaincarebox LOWwholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater CLOSEDplainGROUNDbook and real separatelywoven largerEMPTYGROUNDrestMAT MOONgrowth. Mat now repaired, but only ONE actualGROUNDmudpawprint visible despite exactTWO requirement: allChoices ONLY F. latestChoice P actualwovenmat not bareearth. Other6P incl wholeformsbeforeactual60.3controls and plain materialbookbinding. DistinctNEW206SECRETROUTE housesUP/careLOW plusmat."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. UPtwoWHOLEdifferenthouses/continuousLEFTtrail MIDwholeemptylowstonebench/plaincarebox LOWwholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater CLOSEDplainGROUNDbook and real separatelywoven largerEMPTYGROUNDrestMAT MOONgrowth. Mat now repaired, but only ONE actualGROUNDmudpawprint visible despite exactTWO requirement: allChoices ONLY F. latestChoice P actualwovenmat not bareearth. Other6P incl wholeformsbeforeactual60.3controls and plain materialbookbinding. DistinctNEW206SECRETROUTE housesUP/careLOW plusmat. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret",
+      "nativeSha256": "7f02fc03bc8e7471171bb083e1bf79e0d86801cc6dff54b832e5e4990b29b596",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e0bfcf534e2def1a518049be274780fac9adfba6f5b22496edfdc24706ebd5c3",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. UPwholeprotectedtimberstone FIRSTcrackegg/PALEdrapedcloth/BLUEwater LOWwholeemptylowstonebench/plainwoodcarebox CLOSEDplainGROUNDbook and2actualphysicalGROUNDmudpawprints MOON/noprogression/noscope. Wholeallselectedbeforecontrols, roofs/eaves/bases surroundedwoods. Functionalbindingstrap/pageedges not printedemblem. ActualGROUNDdepressions not printedpawlogos. DiffNEW204PARTNER benchUP/careLOWday to careUP/benchLOW/bookground/nearwaterfallnight, beyondrecolor. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--route",
+      "nativeSha256": "b76b8b99fb5453a65e6f489a444134baf3e011784b90fe246d2a1e6d674f52ef",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "e26408ed0762bf857ffea328a4ce737941df4dd90e7b8dbf690af57acd7de099",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. Wholeemptylowstonebench/plaincarebox, WHOLEprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater andCLOSEDplainGROUNDbook/2actualGROUNDmudpawprints plusLOWtwoWHOLEdifferenthouses/continuousLEFTtrail MOON/noscope. Allselectedformscompletebeforeactual60.3, genuineleftmargins. Plainbookbinding functionalnotlogo. DiffNEW206SECRET via elevatedquietcareand actualLOWtwohouses/travelpath; no TEAMcourse/lab/body. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--habitat",
+      "nativeSha256": "1ebb5f2068cc5b9232fcf61212306df89dcadaeaf7bb920a770019a6f01a6664",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "3b137dcfa15b8fd01cc77b73f2f6945a17c3ffc9d1df8e5c0cc05a7bcbaf4093",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": false,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "Wholeemptylowstonebench/plaincarebox andprotectedtimberstone FIRSTcrackegg/PALEdrapedcloth/BLUEwater/2actualGROUNDmudprints MOON plus3actualINNERhabitats RUINleftmost/bothINNERcols/ALLstairs completeleft. RequiredCLOSEDplainnotebook ABSENT; cloth oncarebox not book: allChoices F. ActualINNERwetlandwater/reeds extendbeyondactual60.3: composition F. latestChoice P actual3walkablehabitats present. Plaincanopyshelter/materialcloth not printedbanner; other5P. DiffNEW206SECRET actual3habitatviews."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. Wholeemptylowstonebench/plaincarebox andprotectedtimberstone FIRSTcrackegg/PALEdrapedcloth/BLUEwater/2actualGROUNDmudprints MOON plus3actualINNERhabitats RUINleftmost/bothINNERcols/ALLstairs completeleft. RequiredCLOSEDplainnotebook ABSENT; cloth oncarebox not book: allChoices F. ActualINNERwetlandwater/reeds extendbeyondactual60.3: composition F. latestChoice P actual3walkablehabitats present. Plaincanopyshelter/materialcloth not printedbanner; other5P. DiffNEW206SECRET actual3habitatviews. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--case",
+      "nativeSha256": "fc080f4ba3c0666a87d1f6184cad103fa02764c405564d2f5fec86d2bfb57748",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "797374109e5fb1393aa427caf198613491452419c88b8d42f8375ee5929def31",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. UPwholeemptylowstonebench/plainwoodcarebox MIDwholeprotected FIRSTcrackegg/PALEdrapedcloth/BLUEwater CLOSEDplainGROUNDbook/2actualGROUNDmudprints LOWwholeOPENlocalrefuge fullroof/emptyinnerfloor/threshold plus tippedEMPTYhollowpail/physicalirregularearthtrace MOON/noscope. Wholeselectedbeforeactual60.3/nativeedges; actualboxclasp/bookbinding not textlogo. DistinctNEW206SECRET by3leftlayers/actualLOWrefuge/trace. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    },
+    {
+      "key": "monster--hatch--partner--secret--route--short",
+      "nativeSha256": "9968fee204946af9cad1d25fd2ffba37cea11f7aba8c19781079d6c59be4558d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "requestSha256": "4e5fc97cf4cfc03c78d0e7b66698bd0446b9cb61e75113e03e7daf57602a942c",
+      "rootViewedNativeAndOwnFullRequest": true,
+      "referenceReceipts": [],
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": false,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "findings": [
+        "UPwholeOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor MIDwholetidyTABLE supporting FIRSTcrackegg/cradle/PALEdrapedcloth/BLUEwater adjacentwholeemptylowstonebench LOWtwoWHOLEdifferenthouses/continuousLEFTtrail MOONreturn plus2GROUNDmuddepressions. Plaincarebox REGRESSED to GROUND besideTABLE, and CLOSEDplainnotebook absent: allChoices ONLY F. latestChoice P actualopenhome/table/return; composition P selectedhouses/bridge completebeforeactualcontrols, ordinarybackgroundriver not selectedHABwater. No grownbody/TEAMcourse/lab/print. DiffNEW206SECRETROUTE by returnhome/table."
+      ],
+      "note": "ROOT personally FULLexactOWN/WHOLEactualnative and FULLexactactualparentOWN/WHOLEnative; actualnew206SECRET/ROUTE and actualnew206BRIGHTHAB directlycompared, new204BRIGHT/PARTNER directlyseenpreviousrootcontext. UPwholeOPENreturnhome/outwarddoors/visibleEMPTYinnerfloor MIDwholetidyTABLE supporting FIRSTcrackegg/cradle/PALEdrapedcloth/BLUEwater adjacentwholeemptylowstonebench LOWtwoWHOLEdifferenthouses/continuousLEFTtrail MOONreturn plus2GROUNDmuddepressions. Plaincarebox REGRESSED to GROUND besideTABLE, and CLOSEDplainnotebook absent: allChoices ONLY F. latestChoice P actualopenhome/table/return; composition P selectedhouses/bridge completebeforeactualcontrols, ordinarybackgroundriver not selectedHABwater. No grownbody/TEAMcourse/lab/print. DiffNEW206SECRETROUTE by returnhome/table. Coherent coarsepixelgrid/stairsteps/flatshade allplanes; no inventedidentity/species/body/writing except explicitcoverfailure. Only OWN applied;2066-55 is target, requiredboundaryactual60.3;205 stricterownchecks remain unchanged. Native unchanged. Builtin206 tenfulfilled0failed explicitly closed."
+    }
+  ],
+  "whole1457Complete": false,
+  "publishedAtBuild": 858,
+  "publication": "Full official stages actually completed; attempt passes not unique additions"
+}

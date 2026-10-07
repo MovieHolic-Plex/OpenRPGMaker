@@ -1,0 +1,97 @@
+{
+  "publishedSnapshot": 858,
+  "remainingAtSnapshot": 599,
+  "whole1457Complete": false,
+  "qaSupervisor": {
+    "stages": [
+      {
+        "kind": "integrity",
+        "returncode": 0
+      },
+      {
+        "kind": "selected",
+        "returncode": 0
+      }
+    ],
+    "allCompleted": true,
+    "returncode": 0,
+    "finishedAt": "2026-10-07T00:14:27.252820+00:00"
+  },
+  "qa": {
+    "integrity": {
+      "command": [
+        "python3",
+        "scripts/qa/interview-scene-bank-integrity.py"
+      ],
+      "kind": "integrity",
+      "returncode": 0,
+      "published": 858,
+      "manifestSha256": "98b23432b51efac10d4609aec73e01322a683d35911ddea6bbf3154367ccda8a",
+      "finishedAt": "2026-10-07T00:14:05.449654+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/published-858-integrity-proof.json",
+      "completeWholePlan": false
+    },
+    "selected": {
+      "command": [
+        "node",
+        "verify-shots/interview-scene-bank-v2/reviewed-structures-bank-browser.mjs",
+        "--all-published",
+        "--paths",
+        "monster--hatch--partner--bright--route--scene,monster--hatch--partner--bright--route--short,monster--hatch--partner--bright--case--scene,monster--hatch--partner--bright--case--episode,monster--hatch--partner--bright--case--short,monster--hatch--partner--secret--route--scene"
+      ],
+      "kind": "selected",
+      "returncode": 0,
+      "published": 858,
+      "manifestSha256": "98b23432b51efac10d4609aec73e01322a683d35911ddea6bbf3154367ccda8a",
+      "finishedAt": "2026-10-07T00:14:25.488834+00:00",
+      "snapshotUnchanged": true,
+      "proof": "/home/main/.codex/worktrees/08da/rpg-zzu/verify-shots/interview-scene-bank-v2/selected-858-click-proof.json",
+      "completeWholePlan": false
+    }
+  },
+  "screens": [
+    {
+      "key": "monster--hatch--partner--bright--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--bright--route--scene.png",
+      "sha256": "c223f3d4a0e2e9f70273a92a15846503c483b1cfafd166b0a75cd2c7bd02b358",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--bright--route--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--bright--route--short.png",
+      "sha256": "78733f70e52c76b30807eb8b6c7c78b9708d0f532e52cd9dc96ce67d0b452687",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--bright--case--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--bright--case--scene.png",
+      "sha256": "5d23dac93a884a0ba641fe479e7938579f9a3b13dac0a8008afb1076c1737684",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--bright--case--episode",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--bright--case--episode.png",
+      "sha256": "a04dc7a8bff78ddf74a2fad0b31916772c381dacfa44026e3f7eca6caa797016",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--bright--case--short",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--bright--case--short.png",
+      "sha256": "16a2150a6de8967fd62baef5bf6be279503a82938abb37bcaf56e5af23472da5",
+      "rootViewed": true
+    },
+    {
+      "key": "monster--hatch--partner--secret--route--scene",
+      "path": "verify-shots/interview-scene-bank-v2/checkpoint-858-stage206-selected-monster--hatch--partner--secret--route--scene.png",
+      "sha256": "56a595b10530dc03b0e0cdaad07108240ca6cfb0e6acbfd591c9508bd4195f3a",
+      "rootViewed": true
+    }
+  ],
+  "clicks": 36,
+  "scope": "858 file/record integrity and six production-dialog paths, six settled screens actually viewed by root. Left-caption overlap remains. New207 remains private and excluded from this frozen206 snapshot; no all858 fresh visual audit claim. Not all-published visual rescan/fullappboot/AIhandoff.",
+  "preservedSnapshotProofs": {
+    "integrity": "verify-shots/interview-scene-bank-v2/published-858-stage206-integrity-proof.json",
+    "selected": "verify-shots/interview-scene-bank-v2/selected-858-stage206-click-proof.json"
+  }
+}

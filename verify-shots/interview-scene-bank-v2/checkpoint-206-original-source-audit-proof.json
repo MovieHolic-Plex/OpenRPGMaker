@@ -1,0 +1,631 @@
+{
+  "groups": [
+    {
+      "batch": 204,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-204-five-original-hatch-partner-bright-parents-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 5,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through204": 87,
+        "finishedAt": "2026-10-06T23:17:37.966500+00:00"
+      },
+      "history": [
+        {
+          "key": "monster--hatch--partner",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner-2-ea4062e65f5b.png",
+          "nativeSha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\nLATEST CHOICE: 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\nSCENE ID: monster--hatch--partner. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSETTING ANCHOR: Intimate timber-and-stone egg nursery, ONE speckled egg with its first crack in straw, folded cloth and water bowl. No visible hatchling/species. Not a habitat/capture setting.\nSHOT: near eye-level sheltered viewpoint framed by appropriate architecture, not generic foliage. Make a fresh shot, never copy the reference composition.\nPLAY MOTIF: Care equipment and companion-sized empty resting place evoke trust and shared experiences; no actual body/appearance.\nMANDATORY REDRAW CORRECTION: 왼쪽 전경 식물이 흐려져 피사계심도 블러가 생겼다. 전경까지 단단한 사각 도트로 그린다. 발바닥 문양 로고와 깃발을 없애고 알·돌봄 침상·물그릇·놀이 물건만으로 교감을 표현한다.\nNo flags or emblem logos. Every foreground edge crisp pixels. All latest and earlier choices prominent as actual objects.\nFINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.",
+          "exactOriginalOwnSha256": "2901dae9947243e70ef6f2ce07cede0e02c33042c82f5f74028e5e09e60c9e11",
+          "preservedOriginalReview": {
+            "sourceSha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+            "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+            "reviewer": "Codex direct original visual inspection: v2-production-004",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Cracked egg, cloth care bed, water bowl, wooden toy and woven play objects; foreground is crisp and logos removed."
+          },
+          "corrective": {
+            "sourceSha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+            "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN careequipment/emptyrestplace/toys present, but required BLUEwaterx60–75 and playitems/restplacex61–86 hidden behind actualcontrols60.3. CompositionONLYF; actualFIRSTcrackedegg/straw/plaincloth/no body/warmunsetmood preserved. DiffactualoriginalHATCH nearcornercradle/cloth/water to neareyelevel care/toys/restplace. OriginalOWN did not forbidforeplants or requirewholeexterior/wholeallroof/alpha255. Physicalclothtrim not printedlogo. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN careequipment/emptyrestplace/toys present, but required BLUEwaterx60–75 and playitems/restplacex61–86 hidden behind actualcontrols60.3. CompositionONLYF; actualFIRSTcrackedegg/straw/plaincloth/no body/warmunsetmood preserved. DiffactualoriginalHATCH nearcornercradle/cloth/water to neareyelevel care/toys/restplace. OriginalOWN did not forbidforeplants or requirewholeexterior/wholeallroof/alpha255. Physicalclothtrim not printedlogo. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--bright",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright-1-2dae2b5a5e8b.png",
+          "nativeSha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\nLATEST CHOICE: 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\nSCENE ID: monster--hatch--partner--bright. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nONE cracked speckled egg in straw inside a timber-and-stone nursery, no visible hatchling. EMPTY soft companion resting bed and food/water bowls, fresh folded care cloth, no training stations or collecting laboratory. Mood: bright welcoming sunlit discovery. NEW low diagonal nursery corner viewpoint. Only the selected play appears; no other branch motifs. No visible creatures, silhouettes, people, flags, banners, heraldry, open books, writing, collage or blurred foreground. Square pixel clusters and hard discrete shade steps throughout. Focal left, quiet detailed right. Not a generic huge river/mountain panorama.",
+          "exactOriginalOwnSha256": "a44eab8bd050493dee82dabd1d68e43b41178218dcc8ca9a0a00f633fa4686d5",
+          "preservedOriginalReview": {
+            "sourceSha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+            "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e",
+            "reviewer": "Codex direct original visual inspection: v2-production-012",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Cracked egg, empty soft partner bed, food/water bowls and folded cloth show hatch and deep care in bright new habitat; no unselected tactical course or collection gear."
+          },
+          "corrective": {
+            "sourceSha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+            "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN EMPTYsoftrestbed extendsx44–68 and BLUEwaterx62–71 behind actualcontrols60.3. CompositionONLYF. Actualcrackedegg/straw/freshcloth/emptybed/foodwater/sunlitdiscovery present. DiffactualoriginalPARTNER eyecare/toys to lowdiagonalcorner/sunlitcarebed; no TEAMcourse/collectionlab/body. No retro wholeexteriorroof/BLUEwater-specificshade/alpha255. Clothtrim/materialshading not printedemblem. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN EMPTYsoftrestbed extendsx44–68 and BLUEwaterx62–71 behind actualcontrols60.3. CompositionONLYF. Actualcrackedegg/straw/freshcloth/emptybed/foodwater/sunlitdiscovery present. DiffactualoriginalPARTNER eyecare/toys to lowdiagonalcorner/sunlitcarebed; no TEAMcourse/collectionlab/body. No retro wholeexteriorroof/BLUEwater-specificshade/alpha255. Clothtrim/materialshading not printedemblem. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--bright--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--route-1-f979156edafc.png",
+          "nativeSha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--hatch--partner--bright--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.",
+          "exactOriginalOwnSha256": "6ca268223fecfedd0e5af684edeaa45639b5b29d2c86a05a681c1798013013cf",
+          "preservedOriginalReview": {
+            "sourceSha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+            "promptSha256": "5685dc496f55be973e8ce53fed9a395c7e9b3a6de296691fd863461344efe23a",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright care nursery departure: ONE visibly cracked egg in straw, EMPTY padded companion bed/folded plain cloth/TWO separate filled food-water bowls near LEFT. Actual continuous route to different EMPTY settlement; fresh departure camera versus parent window-care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+            "promptSha256": "5685dc496f55be973e8ce53fed9a395c7e9b3a6de296691fd863461344efe23a",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN actualcontinuous traversabletrail/differentdistantsettlement/habitat x65–97 are hidden behind actualcontrols60.3. CompositionONLYF. BoldBLACKcrackegg/straw/EMPTYsoftbed/TWO separateactualfoodpellet and BLUEwater bowls/foldedplaincloth/daylight all present, no body/TEAMcourse/lab. Barearchitecturalforeground; actualjourney present not scenicwindowsubstitute. DiffactualoriginalBRIGHT nearcornercare to wide shelteredthreshold/travelvista. No retro twowholehouses/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN actualcontinuous traversabletrail/differentdistantsettlement/habitat x65–97 are hidden behind actualcontrols60.3. CompositionONLYF. BoldBLACKcrackegg/straw/EMPTYsoftbed/TWO separateactualfoodpellet and BLUEwater bowls/foldedplaincloth/daylight all present, no body/TEAMcourse/lab. Barearchitecturalforeground; actualjourney present not scenicwindowsubstitute. DiffactualoriginalBRIGHT nearcornercare to wide shelteredthreshold/travelvista. No retro twowholehouses/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--bright--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-1-3c965907cc81.png",
+          "nativeSha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--hatch--partner--bright--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "14730d7f027bef459a5c4950dd6d9e126001cf280d773cd07b9f58d764e634b8",
+          "preservedOriginalReview": {
+            "sourceSha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+            "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright vaulted continuous care nursery: ONE visibly cracked egg in straw, EMPTY padded bed/folded plain cloth/TWO separate filled food-water bowls near LEFT and THREE actual openings wetland/forest/ruins. New vaulted outpost camera versus parent window-care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+            "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN FORESTactualINNERextendsx49–70 and RUINactualINNERx72–97 behind actualcontrols60.3. CompositionONLYF. Threeactualopenings wetlandforestRUIN with boldBLACKcrackegg/emptysoftbed/TWOfoodBLUEwaterbowls/plainfoldedcloth/daylight present. DiffactualoriginalBRIGHT cornernursery to nearoverheadworkbench/threevaultactualviews. No foreplants/TEAMcourse/lab/body/writing, no retro wholeexterior/wholeallinnerstairs/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN FORESTactualINNERextendsx49–70 and RUINactualINNERx72–97 behind actualcontrols60.3. CompositionONLYF. Threeactualopenings wetlandforestRUIN with boldBLACKcrackegg/emptysoftbed/TWOfoodBLUEwaterbowls/plainfoldedcloth/daylight present. DiffactualoriginalBRIGHT cornernursery to nearoverheadworkbench/threevaultactualviews. No foreplants/TEAMcourse/lab/body/writing, no retro wholeexterior/wholeallinnerstairs/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--bright--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--bright--case-1-243eb528d984.png",
+          "nativeSha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 밝고 설레는 발견 — 낯선 생물과 새로운 지역이 기다려요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--hatch--partner--bright--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: Clear welcoming daylight and fresh discovery, not gloomy threat.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.",
+          "exactOriginalOwnSha256": "7a9e433c28e94d81fb43492e61e392f1a6e2f8c1f71432425dbab044f269b91e",
+          "preservedOriginalReview": {
+            "sourceSha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+            "promptSha256": "8cfdd9702fdf84e76c0e90e7954d0dd61af82ede6f59a789e6d06a0394e31d49",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Bright local interrupted EMPTY care nursery: ONE cracked egg in straw, EMPTY padded bed/folded plain cloth/TWO separate filled food-water bowls. Overturned bag/spilled rope/vacated bedroll and muddy trace to broken local doorway. New interrupted-refuge camera versus parent neat care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+            "promptSha256": "8cfdd9702fdf84e76c0e90e7954d0dd61af82ede6f59a789e6d06a0394e31d49",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN BLUEwaterbowlx56–73/EMPTYrestbedx71–99 and actualmidgroundmudtrail/damagedrefugedoorx61–93 behind actualcontrols60.3. CompositionONLYF. Original actualboldBLACKcrackegg/straw/foodpellets/BLUEwater/plainfoldedcloth/EMPTYsoftbed and overturnedplainbag/spilledrope/vacatedbedroll/actualsoiltrace/damagedrefuge/daylight present; localcase not village substitute. DiffactualoriginalBRIGHT nearcarecorner to disruptedMIDbelongings/mudtrail/damageddoor; no TEAMcourse/lab/body or writing. No retro EMPTYpail/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN BLUEwaterbowlx56–73/EMPTYrestbedx71–99 and actualmidgroundmudtrail/damagedrefugedoorx61–93 behind actualcontrols60.3. CompositionONLYF. Original actualboldBLACKcrackegg/straw/foodpellets/BLUEwater/plainfoldedcloth/EMPTYsoftbed and overturnedplainbag/spilledrope/vacatedbedroll/actualsoiltrace/damagedrefuge/daylight present; localcase not village substitute. DiffactualoriginalBRIGHT nearcarecorner to disruptedMIDbelongings/mudtrail/damageddoor; no TEAMcourse/lab/body or writing. No retro EMPTYpail/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "monster--hatch--partner",
+          "sha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+          "review": {
+            "sourceSha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+            "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN careequipment/emptyrestplace/toys present, but required BLUEwaterx60–75 and playitems/restplacex61–86 hidden behind actualcontrols60.3. CompositionONLYF; actualFIRSTcrackedegg/straw/plaincloth/no body/warmunsetmood preserved. DiffactualoriginalHATCH nearcornercradle/cloth/water to neareyelevel care/toys/restplace. OriginalOWN did not forbidforeplants or requirewholeexterior/wholeallroof/alpha255. Physicalclothtrim not printedlogo. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN careequipment/emptyrestplace/toys present, but required BLUEwaterx60–75 and playitems/restplacex61–86 hidden behind actualcontrols60.3. CompositionONLYF; actualFIRSTcrackedegg/straw/plaincloth/no body/warmunsetmood preserved. DiffactualoriginalHATCH nearcornercradle/cloth/water to neareyelevel care/toys/restplace. OriginalOWN did not forbidforeplants or requirewholeexterior/wholeallroof/alpha255. Physicalclothtrim not printedlogo. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--bright",
+          "sha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+          "review": {
+            "sourceSha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+            "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN EMPTYsoftrestbed extendsx44–68 and BLUEwaterx62–71 behind actualcontrols60.3. CompositionONLYF. Actualcrackedegg/straw/freshcloth/emptybed/foodwater/sunlitdiscovery present. DiffactualoriginalPARTNER eyecare/toys to lowdiagonalcorner/sunlitcarebed; no TEAMcourse/collectionlab/body. No retro wholeexteriorroof/BLUEwater-specificshade/alpha255. Clothtrim/materialshading not printedemblem. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN EMPTYsoftrestbed extendsx44–68 and BLUEwaterx62–71 behind actualcontrols60.3. CompositionONLYF. Actualcrackedegg/straw/freshcloth/emptybed/foodwater/sunlitdiscovery present. DiffactualoriginalPARTNER eyecare/toys to lowdiagonalcorner/sunlitcarebed; no TEAMcourse/collectionlab/body. No retro wholeexteriorroof/BLUEwater-specificshade/alpha255. Clothtrim/materialshading not printedemblem. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--bright--route",
+          "sha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+          "review": {
+            "sourceSha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+            "promptSha256": "5685dc496f55be973e8ce53fed9a395c7e9b3a6de296691fd863461344efe23a",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN actualcontinuous traversabletrail/differentdistantsettlement/habitat x65–97 are hidden behind actualcontrols60.3. CompositionONLYF. BoldBLACKcrackegg/straw/EMPTYsoftbed/TWO separateactualfoodpellet and BLUEwater bowls/foldedplaincloth/daylight all present, no body/TEAMcourse/lab. Barearchitecturalforeground; actualjourney present not scenicwindowsubstitute. DiffactualoriginalBRIGHT nearcornercare to wide shelteredthreshold/travelvista. No retro twowholehouses/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN actualcontinuous traversabletrail/differentdistantsettlement/habitat x65–97 are hidden behind actualcontrols60.3. CompositionONLYF. BoldBLACKcrackegg/straw/EMPTYsoftbed/TWO separateactualfoodpellet and BLUEwater bowls/foldedplaincloth/daylight all present, no body/TEAMcourse/lab. Barearchitecturalforeground; actualjourney present not scenicwindowsubstitute. DiffactualoriginalBRIGHT nearcornercare to wide shelteredthreshold/travelvista. No retro twowholehouses/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--bright--habitat",
+          "sha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+          "review": {
+            "sourceSha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
+            "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN FORESTactualINNERextendsx49–70 and RUINactualINNERx72–97 behind actualcontrols60.3. CompositionONLYF. Threeactualopenings wetlandforestRUIN with boldBLACKcrackegg/emptysoftbed/TWOfoodBLUEwaterbowls/plainfoldedcloth/daylight present. DiffactualoriginalBRIGHT cornernursery to nearoverheadworkbench/threevaultactualviews. No foreplants/TEAMcourse/lab/body/writing, no retro wholeexterior/wholeallinnerstairs/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN FORESTactualINNERextendsx49–70 and RUINactualINNERx72–97 behind actualcontrols60.3. CompositionONLYF. Threeactualopenings wetlandforestRUIN with boldBLACKcrackegg/emptysoftbed/TWOfoodBLUEwaterbowls/plainfoldedcloth/daylight present. DiffactualoriginalBRIGHT cornernursery to nearoverheadworkbench/threevaultactualviews. No foreplants/TEAMcourse/lab/body/writing, no retro wholeexterior/wholeallinnerstairs/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--bright--case",
+          "sha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+          "review": {
+            "sourceSha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+            "promptSha256": "8cfdd9702fdf84e76c0e90e7954d0dd61af82ede6f59a789e6d06a0394e31d49",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN BLUEwaterbowlx56–73/EMPTYrestbedx71–99 and actualmidgroundmudtrail/damagedrefugedoorx61–93 behind actualcontrols60.3. CompositionONLYF. Original actualboldBLACKcrackegg/straw/foodpellets/BLUEwater/plainfoldedcloth/EMPTYsoftbed and overturnedplainbag/spilledrope/vacatedbedroll/actualsoiltrace/damagedrefuge/daylight present; localcase not village substitute. DiffactualoriginalBRIGHT nearcarecorner to disruptedMIDbelongings/mudtrail/damageddoor; no TEAMcourse/lab/body or writing. No retro EMPTYpail/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original HATCH/PARTNER/BRIGHT parents. OriginalOWN BLUEwaterbowlx56–73/EMPTYrestbedx71–99 and actualmidgroundmudtrail/damagedrefugedoorx61–93 behind actualcontrols60.3. CompositionONLYF. Original actualboldBLACKcrackegg/straw/foodpellets/BLUEwater/plainfoldedcloth/EMPTYsoftbed and overturnedplainbag/spilledrope/vacatedbedroll/actualsoiltrace/damagedrefuge/daylight present; localcase not village substitute. DiffactualoriginalBRIGHT nearcarecorner to disruptedMIDbelongings/mudtrail/damageddoor; no TEAMcourse/lab/body or writing. No retro EMPTYpail/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual203 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        }
+      ]
+    },
+    {
+      "batch": 206,
+      "actual": {
+        "command": [
+          "npm",
+          "run",
+          "harness",
+          "--",
+          "interview-scene-bank",
+          "review-batch",
+          "--records",
+          "qa-runs/harnesses/interview-scene-bank/source-rejections-206-four-original-hatch-partner-secret-parents-pending.json"
+        ],
+        "returncode": 0,
+        "reviewed": 4,
+        "ledgerAllExact": true,
+        "cumulativeCorrectives164Through206": 91,
+        "finishedAt": "2026-10-06T23:48:18.490590+00:00"
+      },
+      "history": [
+        {
+          "key": "monster--hatch--partner--secret",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret-1-41665576165e.png",
+          "nativeSha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nLATEST CHOICE: 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\nSCENE ID: monster--hatch--partner--secret. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE cracked speckled egg in straw INSIDE a timber-and-stone nursery, no visible hatchling.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and food/water bowls, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed moonlit scene and hidden habitat entrance with CLOSED blank research notebook. No daylight section, split screen or collage.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, logos, flag emblems, blur or collage.\n",
+          "exactOriginalOwnSha256": "2adffc3e485b2f7bf106992349bf881f267f91c144da1ca9643302833bf40e78",
+          "preservedOriginalReview": {
+            "sourceSha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+            "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c",
+            "reviewer": "Codex direct original visual inspection: v2-production-013",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Cracked egg, empty soft partner bed, food/water bowls and closed plain notebook beside hidden moonlit cave preserve hatch, deep care and species mystery."
+          },
+          "corrective": {
+            "sourceSha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+            "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN BLUEwaterx58-66, CLOSEDplainnotebookx43-68 and actualhiddenhabitatentrancex86-99 hidden behindactualcontrols60.3. CompositionONLYF. Originalcrackedegg/straw/EMPTYsoftbed/foodwater/foldcloth/MOONcontinuousscene present; no inventedbody/TEAMcourse/lab. Physicalbookbinding/functionalclasp andclothhem are not printedemblem. DiffactualoriginalPARTNER eyecare/toys/day to side-on nearbook/hiddenentrance/night, beyond recolor. No retro wholeexterior/benchbox/2GROUNDprints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN BLUEwaterx58-66, CLOSEDplainnotebookx43-68 and actualhiddenhabitatentrancex86-99 hidden behindactualcontrols60.3. CompositionONLYF. Originalcrackedegg/straw/EMPTYsoftbed/foodwater/foldcloth/MOONcontinuousscene present; no inventedbody/TEAMcourse/lab. Physicalbookbinding/functionalclasp andclothhem are not printedemblem. DiffactualoriginalPARTNER eyecare/toys/day to side-on nearbook/hiddenentrance/night, beyond recolor. No retro wholeexterior/benchbox/2GROUNDprints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--secret--route",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--route-1-212498d9dbcd.png",
+          "nativeSha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nLATEST CHOICE: 진행 방식: 마을과 도전을 잇는 여행 — 새 지역에 가며 조우와 도전이 열려요.\nSCENE ID: monster--hatch--partner--secret--route. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Travel linking settlements and new challenges: one clearly traversable continuous path from near selected encounter/care props toward a different distant empty settlement and habitat. No arena unless TEAM play selected.",
+          "exactOriginalOwnSha256": "add5f7151c9da94c51507e6e8f7ba22f42a9316c847ff27b6ad5856ea4d065aa",
+          "preservedOriginalReview": {
+            "sourceSha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+            "promptSha256": "d3b8cd75983bf0b1e6fdae2e5c1b9a1bf709cb003c3a7ca270367b69cdc555e1",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Moonlit continuous nursery departure: ONE cracked egg in straw, EMPTY padded bed/folded plain cloth/TWO separate filled food-water bowls/CLOSED plain notebook near LEFT. Continuous actual traversable route to different EMPTY settlement and concealed habitat entrance; fresh departure shot versus parent hidden-cave care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+            "promptSha256": "d3b8cd75983bf0b1e6fdae2e5c1b9a1bf709cb003c3a7ca270367b69cdc555e1",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualcontinuous traversabletrail/differentsettlement/habitat x64-99, requiredEMPTYbedx37-64 andfoldclothx55-72 behindactualcontrols60.3. CompositionONLYF. ActualboldBLACKcrackegg/straw/TWO separatefoodpelletsBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOONhiddenentrance/continuousjourney present. Barearchitecturalforeground; nurserywallbeam atback is not foregrounddoorjamb/railing framing. DiffactualoriginalSECRET closeforebook/sidecare to widernearcare/continuousjourney. No retro twowholehouses/2prints/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualcontinuous traversabletrail/differentsettlement/habitat x64-99, requiredEMPTYbedx37-64 andfoldclothx55-72 behindactualcontrols60.3. CompositionONLYF. ActualboldBLACKcrackegg/straw/TWO separatefoodpelletsBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOONhiddenentrance/continuousjourney present. Barearchitecturalforeground; nurserywallbeam atback is not foregrounddoorjamb/railing framing. DiffactualoriginalSECRET closeforebook/sidecare to widernearcare/continuousjourney. No retro twowholehouses/2prints/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--secret--habitat",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-1-cd5f3e7da472.png",
+          "nativeSha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nLATEST CHOICE: 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.\nSCENE ID: monster--hatch--partner--secret--habitat. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: near-overhead oblique workbench composition. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose habitat from a home base: an EMPTY physical research/care outpost has three actual openings onto visibly different wetland, forest and ruin terrain in one continuous world. No invented species, habitat labels or map UI.",
+          "exactOriginalOwnSha256": "9a767c9ab9201658bdc2538c79f3d3575ae4dfc2319c503e26b27125e9223208",
+          "preservedOriginalReview": {
+            "sourceSha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+            "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Moonlit continuous vaulted care nursery: ONE cracked egg in straw, EMPTY padded bed/folded plain cloth/TWO separate filled food-water bowls/CLOSED plain notebook near LEFT. THREE actual wetland/forest/ruins openings; fresh vaulted habitat shot versus parent cave-care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+            "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualINNERFORESTx56-75 and RUINx79-99 behindactualcontrols60.3. CompositionONLYF. Actual3openings wetlandforestRUIN, boldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodpelletBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON present; no TEAMcourse/lab/body/text. Barearchitecturalforeground. DiffactualoriginalSECRET nearbook/sidecare to overheadworkbench/3realvaultopenings. No retro wholeexterior/allINNERstairs/leftmostRUIN/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualINNERFORESTx56-75 and RUINx79-99 behindactualcontrols60.3. CompositionONLYF. Actual3openings wetlandforestRUIN, boldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodpelletBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON present; no TEAMcourse/lab/body/text. Barearchitecturalforeground. DiffactualoriginalSECRET nearbook/sidecare to overheadworkbench/3realvaultopenings. No retro wholeexterior/allINNERstairs/leftmostRUIN/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        },
+        {
+          "key": "monster--hatch--partner--secret--case",
+          "nativeFile": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret--case-1-c4721bdb89dd.png",
+          "nativeSha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+          "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.\nSELECTED FACTS:\n1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.\n2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.\n3. 분위기: 숨겨진 종의 미스터리 — 기록과 실제 생태의 차이를 조사해요.\n4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nLATEST CHOICE: 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.\nSCENE ID: monster--hatch--partner--secret--case. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nSelected first companion from egg: ONE speckled egg in straw INSIDE a timber-and-stone nursery MUST have ONE unmistakable thick jagged BLACK CRACK on its fully visible front. Speckles do NOT substitute for this obvious crack. No hole revealing a body, visible hatchling or creature silhouette.\nSelected DEEP PARTNER BOND: care workbench beside EMPTY soft resting bed and TWO separate fully visible bowls, one filled with brown food pellets and one with blue water, fresh folded cloth. No training apparatus, arena, collection laboratory or invented creature body.\nMOOD: One continuous concealed MOONLIT scene and hidden habitat entrance. ONE CLOSED PLAIN undecorated research notebook MUST be clearly visible beside the near LEFT chosen encounter supplies; do not omit it for tracks or challenge stations. No daylight section, split screen or collage.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Follow one local event in ONE SMALL EMPTY refuge: an overturned plain travel bag, spilled ordinary rope and vacated bedroll clearly interrupt the belongings; a visible muddy environmental trail links those clues to a nearby damaged refuge doorway and the selected encounter supplies. These physical local case clues MUST be clearly visible in midground LEFT, not substituted by a scenic window, distant village or long journey. Same small region, no unselected archive or battle apparatus.",
+          "exactOriginalOwnSha256": "465f3510d28b88572e49541214d29cbc6a410e797fec7f3b5f84644f042a5878",
+          "preservedOriginalReview": {
+            "sourceSha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+            "promptSha256": "bff5c1b5e3e0173ef0979489de2ad328d41bc43d5f4ce62f8c3c2e6b1e8d5052",
+            "reviewer": "Codex direct original visual inspection: v2-production-046",
+            "checks": {
+              "pixelArt": true,
+              "composition": true,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [],
+            "notes": "Root directly opened native original and parent: Moonlit local interrupted EMPTY nursery: ONE cracked egg in straw, EMPTY padded bed/folded plain cloth/TWO separate filled food-water bowls/CLOSED plain notebook near LEFT. Overturned travel bag/spilled rope/vacated bedroll and muddy trace to damaged nearby doorway. Fresh local-case composition versus parent neat hidden-cave care room. Every plane preserves sharp square clusters and stepped shade ramps. No invented people/hatchling/creature body, text-like marks, open books/paper sheets/posters/clocks, flags/banners/heraldry/paw logos, foreground blur or unselected capture equipment/collection laboratory."
+          },
+          "corrective": {
+            "sourceSha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+            "promptSha256": "bff5c1b5e3e0173ef0979489de2ad328d41bc43d5f4ce62f8c3c2e6b1e8d5052",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN requiredfoldclothx52-72 and physicalmudtrail/damagedrefugedoor x64-92 behindactualcontrols60.3. CompositionONLYF. ActualoriginalboldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON and disruptedplainbag/spilledrope/vacatedbedroll/muddytrace/damageddoor present MIDLEFT; not replacedbyvillage/scenicwindow. No TEAMcourse/lab/body/writing. DiffactualoriginalSECRET sidecarebook/hiddenentrance to foregroundcarewithrecedingMIDlocalcasebelongings/trace. No retro EMPTYpail/wholeexterior/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN requiredfoldclothx52-72 and physicalmudtrail/damagedrefugedoor x64-92 behindactualcontrols60.3. CompositionONLYF. ActualoriginalboldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON and disruptedplainbag/spilledrope/vacatedbedroll/muddytrace/damageddoor present MIDLEFT; not replacedbyvillage/scenicwindow. No TEAMcourse/lab/body/writing. DiffactualoriginalSECRET sidecarebook/hiddenentrance to foregroundcarewithrecedingMIDlocalcasebelongings/trace. No retro EMPTYpail/wholeexterior/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          },
+          "rootViewedActualWholeNativeAndOwnFull": true
+        }
+      ],
+      "correctiveReviews": [
+        {
+          "key": "monster--hatch--partner--secret",
+          "sha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+          "review": {
+            "sourceSha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+            "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN BLUEwaterx58-66, CLOSEDplainnotebookx43-68 and actualhiddenhabitatentrancex86-99 hidden behindactualcontrols60.3. CompositionONLYF. Originalcrackedegg/straw/EMPTYsoftbed/foodwater/foldcloth/MOONcontinuousscene present; no inventedbody/TEAMcourse/lab. Physicalbookbinding/functionalclasp andclothhem are not printedemblem. DiffactualoriginalPARTNER eyecare/toys/day to side-on nearbook/hiddenentrance/night, beyond recolor. No retro wholeexterior/benchbox/2GROUNDprints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN BLUEwaterx58-66, CLOSEDplainnotebookx43-68 and actualhiddenhabitatentrancex86-99 hidden behindactualcontrols60.3. CompositionONLYF. Originalcrackedegg/straw/EMPTYsoftbed/foodwater/foldcloth/MOONcontinuousscene present; no inventedbody/TEAMcourse/lab. Physicalbookbinding/functionalclasp andclothhem are not printedemblem. DiffactualoriginalPARTNER eyecare/toys/day to side-on nearbook/hiddenentrance/night, beyond recolor. No retro wholeexterior/benchbox/2GROUNDprints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--secret--route",
+          "sha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+          "review": {
+            "sourceSha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+            "promptSha256": "d3b8cd75983bf0b1e6fdae2e5c1b9a1bf709cb003c3a7ca270367b69cdc555e1",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualcontinuous traversabletrail/differentsettlement/habitat x64-99, requiredEMPTYbedx37-64 andfoldclothx55-72 behindactualcontrols60.3. CompositionONLYF. ActualboldBLACKcrackegg/straw/TWO separatefoodpelletsBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOONhiddenentrance/continuousjourney present. Barearchitecturalforeground; nurserywallbeam atback is not foregrounddoorjamb/railing framing. DiffactualoriginalSECRET closeforebook/sidecare to widernearcare/continuousjourney. No retro twowholehouses/2prints/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualcontinuous traversabletrail/differentsettlement/habitat x64-99, requiredEMPTYbedx37-64 andfoldclothx55-72 behindactualcontrols60.3. CompositionONLYF. ActualboldBLACKcrackegg/straw/TWO separatefoodpelletsBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOONhiddenentrance/continuousjourney present. Barearchitecturalforeground; nurserywallbeam atback is not foregrounddoorjamb/railing framing. DiffactualoriginalSECRET closeforebook/sidecare to widernearcare/continuousjourney. No retro twowholehouses/2prints/wholeexterior/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--secret--habitat",
+          "sha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+          "review": {
+            "sourceSha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
+            "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualINNERFORESTx56-75 and RUINx79-99 behindactualcontrols60.3. CompositionONLYF. Actual3openings wetlandforestRUIN, boldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodpelletBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON present; no TEAMcourse/lab/body/text. Barearchitecturalforeground. DiffactualoriginalSECRET nearbook/sidecare to overheadworkbench/3realvaultopenings. No retro wholeexterior/allINNERstairs/leftmostRUIN/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN actualINNERFORESTx56-75 and RUINx79-99 behindactualcontrols60.3. CompositionONLYF. Actual3openings wetlandforestRUIN, boldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodpelletBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON present; no TEAMcourse/lab/body/text. Barearchitecturalforeground. DiffactualoriginalSECRET nearbook/sidecare to overheadworkbench/3realvaultopenings. No retro wholeexterior/allINNERstairs/leftmostRUIN/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        },
+        {
+          "key": "monster--hatch--partner--secret--case",
+          "sha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+          "review": {
+            "sourceSha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+            "promptSha256": "bff5c1b5e3e0173ef0979489de2ad328d41bc43d5f4ce62f8c3c2e6b1e8d5052",
+            "reviewer": "Codex root original own/native corrective after203 original-stage proof",
+            "checks": {
+              "pixelArt": true,
+              "composition": false,
+              "allChoices": true,
+              "latestChoice": true,
+              "identityUnset": true,
+              "noText": true,
+              "distinctShot": true
+            },
+            "findings": [
+              "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN requiredfoldclothx52-72 and physicalmudtrail/damagedrefugedoor x64-92 behindactualcontrols60.3. CompositionONLYF. ActualoriginalboldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON and disruptedplainbag/spilledrope/vacatedbedroll/muddytrace/damageddoor present MIDLEFT; not replacedbyvillage/scenicwindow. No TEAMcourse/lab/body/writing. DiffactualoriginalSECRET sidecarebook/hiddenentrance to foregroundcarewithrecedingMIDlocalcasebelongings/trace. No retro EMPTYpail/wholeexterior/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+            ],
+            "notes": "ROOT personally FULL exact OWN/WHOLE actual original native and FULL exact OWN/WHOLE actual original PARTNER/SECRET parents. OriginalOWN requiredfoldclothx52-72 and physicalmudtrail/damagedrefugedoor x64-92 behindactualcontrols60.3. CompositionONLYF. ActualoriginalboldBLACKcrackegg/straw/EMPTYsoftbed/TWO separatefoodBLUEwater bowls/plainfoldcloth/CLOSEDplainnearLEFTnotebook/MOON and disruptedplainbag/spilledrope/vacatedbedroll/muddytrace/damageddoor present MIDLEFT; not replacedbyvillage/scenicwindow. No TEAMcourse/lab/body/writing. DiffactualoriginalSECRET sidecarebook/hiddenentrance to foregroundcarewithrecedingMIDlocalcasebelongings/trace. No retro EMPTYpail/wholeexterior/2prints/alpha255. All other six checks directlyROOT P: coherent coarsegrid/stairsteps/flatshade on every plane, no inventedidentity/body/species/writing/signs/emblems; materialclothtrim/pawshapedphysicalearthtrace not automatically print. Original officialreview retained. Actual205 immediate stage proof completed before this corrective. Native unchanged."
+          }
+        }
+      ]
+    }
+  ],
+  "correctivesInThisInterval": 9,
+  "cumulativeActualCorrectiveSources164To206": 91,
+  "scope": "ROOT whole original native/full exact OWN, original review retained. Original requirements only; new cloth/BLUEwater/alpha/whole-exterior not retroapplied."
+}

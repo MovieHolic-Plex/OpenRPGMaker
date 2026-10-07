@@ -2984,49 +2984,84 @@
       "sha256": "e5f3f83cf8d4063d7b399fbb2ab571de6237c0cf0e2fd281504ef43bd506a9fb",
       "promptSha256": "be199f7076f5705079bb3b16f7882c03cf3ad4db9714076ad7d0eaae167c00f8"
     },
+    "monster--hatch--team--warm--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--case--episode-a2fd7030a0fd.png",
+      "sha256": "a2fd7030a0fd350f9e6e8c322febbc5c15dec3f9f781327cd12f240422f55b5a",
+      "promptSha256": "f1ff3e64a7053a9cd73d5ef89375a41652f5ad509da248c85fc24fbcfc356775"
+    },
+    "monster--hatch--team--warm--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--warm--case--short-482b966b1e48.png",
+      "sha256": "482b966b1e48915d6d7e1bb9144070cf4ec8bc661ca7192ccd7038a1fea25357",
+      "promptSha256": "b587f7584c80058e882a11afeb3ff21605bdd557a312661283828e91cca2f3c8"
+    },
     "monster--hatch--partner": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner-ea4062e65f5b.png",
-      "sha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner-fd878ddf09ac.png",
+      "sha256": "fd878ddf09ac09952daf360687f43bc8325337684e352786d049d7178edda52a",
       "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4"
     },
     "monster--hatch--partner--bright": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright-2dae2b5a5e8b.png",
-      "sha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright-fe234dcb1e59.png",
+      "sha256": "fe234dcb1e598a7b0e9579f9a31a34fef05ccef7729b3cb9114b6a7f251c7cc5",
       "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e"
     },
     "monster--hatch--partner--bright--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--route-f979156edafc.png",
-      "sha256": "f979156edafc8a579f46302abb80217b13e91d15d331c8e1973dbf4c07482629",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--route-edb66ecdcf64.png",
+      "sha256": "edb66ecdcf645e5845fa2c9012b3000b61985a13dc10076de7ad3a0da2579c1b",
       "promptSha256": "5685dc496f55be973e8ce53fed9a395c7e9b3a6de296691fd863461344efe23a"
     },
-    "monster--hatch--partner--bright--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--habitat-3c965907cc81.png",
-      "sha256": "3c965907cc81e768352977dc31b2701b5afc1adaac89a3a0534075a2cb274c52",
-      "promptSha256": "34808419bbfe9269c211a439a6223e7600a698f6405d103047c3860815087c5b"
+    "monster--hatch--partner--bright--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--route--scene-2ff4067d0075.png",
+      "sha256": "2ff4067d0075027ff23da104a1599765cef2de9da542c7b69e4b7874110e6aca",
+      "promptSha256": "fa8a9a5eb54a27d6012c15040309806f79d8e4ef796f74380972fcd8078844a9"
+    },
+    "monster--hatch--partner--bright--route--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--route--episode-4ca0e141ec97.png",
+      "sha256": "4ca0e141ec972e9c1ed0535847687f38b726704c11c3e2f0acc1f3f36da65be6",
+      "promptSha256": "52997aa9826ebf5c7cfa3c2e6a4d6682be1683c02260e8874d41b8e2f75bd6e2"
+    },
+    "monster--hatch--partner--bright--route--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--route--short-f296f0b06323.png",
+      "sha256": "f296f0b063230d80da9b9e4be88ac23bf43e1ae405cffd5f5b3190a53e0259bd",
+      "promptSha256": "1af841c97585eae34cf6cfd3d9522fda8425e33c43a2094c403cbb4b090c2dc7"
     },
     "monster--hatch--partner--bright--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--case-243eb528d984.png",
-      "sha256": "243eb528d984fba31decfc393b4faf49a1c4919d521ccff630d0228dd99513b9",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--case-b606c5915857.png",
+      "sha256": "b606c5915857f4bc6dd245d8d55db1c069bb43417e6540d88ed95f3608521628",
       "promptSha256": "8cfdd9702fdf84e76c0e90e7954d0dd61af82ede6f59a789e6d06a0394e31d49"
     },
+    "monster--hatch--partner--bright--case--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--case--scene-11ac1739335c.png",
+      "sha256": "11ac1739335cf002ee95d0e4dc55e4412731047df29bbeac061e4bbc9503a638",
+      "promptSha256": "daa4cc7fd29cd57dc80a051acdc281a15f78de9121f99f735033788c650f87af"
+    },
+    "monster--hatch--partner--bright--case--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--case--episode-856f8f3983a1.png",
+      "sha256": "856f8f3983a12d6042e542fc98e98b45663aaca17eec2c1a71ae646da02cd7bc",
+      "promptSha256": "46f835686fc537bcaf3aaf38b891e4f2e7a42f1db44976a5418fee375a0d09ab"
+    },
+    "monster--hatch--partner--bright--case--short": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright--case--short-07b40e22ab32.png",
+      "sha256": "07b40e22ab32a6827df9385cd118aea3e6ab6b65e8508d7b26a3a1061475b956",
+      "promptSha256": "f9f4c159e78eb01b6c82496c14d4afa7f11fd82a74c5aeef96cc620a7295f88e"
+    },
     "monster--hatch--partner--secret": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret-41665576165e.png",
-      "sha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret-7f02fc03bc8e.png",
+      "sha256": "7f02fc03bc8e7471171bb083e1bf79e0d86801cc6dff54b832e5e4990b29b596",
       "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c"
     },
     "monster--hatch--partner--secret--route": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--route-212498d9dbcd.png",
-      "sha256": "212498d9dbcd19d722da0bdc1147ecbfc53edf49624cb527926d470ae1e6a8e9",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--route-b76b8b99fb54.png",
+      "sha256": "b76b8b99fb5453a65e6f489a444134baf3e011784b90fe246d2a1e6d674f52ef",
       "promptSha256": "d3b8cd75983bf0b1e6fdae2e5c1b9a1bf709cb003c3a7ca270367b69cdc555e1"
     },
-    "monster--hatch--partner--secret--habitat": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--habitat-cd5f3e7da472.png",
-      "sha256": "cd5f3e7da472847c6663f802d941bbb302bbbf9a6bed78696e30408a24a997ea",
-      "promptSha256": "b7952302a42d797d0aef3f6cfa9ae3838e09f633e43c4a971bcd512723e32e3a"
+    "monster--hatch--partner--secret--route--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--route--scene-51656945c7fa.png",
+      "sha256": "51656945c7fa786343526095e89b2e8a6466f7818cb1a373196c21dbbd63c04e",
+      "promptSha256": "ed6725e6d11270fc095fa222b50c8342357f19b8c23f527281a0cb72ea9048e8"
     },
     "monster--hatch--partner--secret--case": {
-      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--case-c4721bdb89dd.png",
-      "sha256": "c4721bdb89dd1945422634b05514496e0b462f7792819659ae3ed44e4c4e3d94",
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret--case-fc080f4ba3c0.png",
+      "sha256": "fc080f4ba3c0666a87d1f6184cad103fa02764c405564d2f5fec86d2bfb57748",
       "promptSha256": "bff5c1b5e3e0173ef0979489de2ad328d41bc43d5f4ce62f8c3c2e6b1e8d5052"
     },
     "monster--hatch--partner--warm": {
