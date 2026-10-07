@@ -75,7 +75,7 @@
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 86885
+   "chars": 86961
   },
   {
    "id": "jp-errors",
@@ -89,7 +89,7 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 915585,
+  "chars": 915661,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "2fcd24e1497818ece729820ef2a2b1aac694fa0a64e009d9a7e8cc31f2450386",
-  "images": "5579c68ab7c695378678b71c2143a8f1cf76e27efc8a8e246912854ada36f6a5"
+  "json": "b14af00904cba657588e445fd673ac140d06ef0353d6bbb3b12ae9177308ec52",
+  "images": "d9037f0c0eedfa49781bb59adb3e78fcdaaa771814f7ae70ad0fdeb3b38ded93"
  }
 }
