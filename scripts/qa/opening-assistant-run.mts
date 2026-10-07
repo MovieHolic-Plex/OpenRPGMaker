@@ -2,6 +2,7 @@
 // never writes canonical storage. Save/reload and exported-player QA are separate gates.
 // bun scripts/qa/opening-assistant-run.mts --project-json <file> --media-json <portable-file>
 //   --browser-url http://127.0.0.1:9853 --model opencodex/gpt-6-astra --task "..."
+//   models.yml 에 없는 모델: --model opencodex/gpt-6.1-sol --model-like gpt-6-astra
 // Whole-game: --mode monster-game --fresh-project 1 --task "포켓몬 같은 게임 만들어"
 // Offline route inspection only: --mode monster-game --fresh-project 1 --route-only 1
 import fs from 'node:fs';
@@ -55,7 +56,8 @@ if(routeOnly){
  console.log('Routing evidence: '+out);process.exit(0);
 }
 const cfg=Bun.YAML.parse(fs.readFileSync(path.join(os.homedir(),'.omp/agent/models.yml'),'utf8')) as any;
-const prov=(cfg.providers??cfg)[provider],md=prov?.models?.find((m:any)=>m.id===modelId),apiKey=prov?.apiKey;
+// --model-like <listed id>: 로컬 프록시가 받지만 models.yml 에 아직 없는 모델(gpt-6.1-sol 등)을 형제 모델의 메타데이터로 부른다(id 만 바꾼다).
+const like=arg('model-like'),prov=(cfg.providers??cfg)[provider],listed=prov?.models?.find((m:any)=>m.id===(prov?.models?.some((m:any)=>m.id===modelId)?modelId:like)),md=listed&&{...listed,id:modelId,name:listed.id===modelId?listed.name:modelId},apiKey=prov?.apiKey;
 if(!md||typeof apiKey!=='string'||!apiKey)throw Error('Local OMP model/credential unavailable');
 const model=buildModel({id:md.id,name:md.name,api:prov.api,provider,baseUrl:prov.baseUrl,reasoning:md.reasoning,thinking:md.thinking,input:md.input,cost:{input:0,output:0,cacheRead:0,cacheWrite:0},contextWindow:md.contextWindow,maxTokens:md.maxTokens,compat:{...prov.compat,...md.compat}} as never);
 const redact=(v:any):any=>typeof v==='string'?v.split(apiKey).join('[redacted]').replace(/data:[^;\s]+;base64,[A-Za-z0-9+/=]+/g,'[media-redacted]'):Array.isArray(v)?v.map(redact):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,/^(dataUrl|apiKey|accessToken|refreshToken|authorization|token|png|base64)$/i.test(k)?'[redacted]':redact(x)])):v;
@@ -67,7 +69,7 @@ const port=await new Promise<number>((resolve,reject)=>{
  bridge.stdout.on('data',chunk=>{lines+=chunk;const line=lines.split('\n').find(s=>s.startsWith('{"ready":'));if(line){clearTimeout(timer);resolve(JSON.parse(line).port);}});
  bridge.on('exit',code=>{clearTimeout(timer);reject(Error('Browser bridge exited: '+code));});
 });
-const events:unknown[]=[],calls:unknown[]=[],brokerCalls:unknown[]=[];
+const events:unknown[]=[],calls:unknown[]=[],brokerCalls:unknown[]=[],brokerResults:unknown[]=[];
 const emitQA=(e:PiAgentEvent)=>{if(e.type!=='render_request')return;
  brokerCalls.push({toolName:e.toolName,data:e.data});write('broker.json',brokerCalls);
  void(async()=>{try{
