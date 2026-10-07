@@ -16,15 +16,15 @@ export function naturalizeBeodeulHamlet(project:Project,mapId:string){
  const kits=new Map(ts.structureKits?.map(k=>[k.id,k]));
  // The core keeps its positions when a church is appended to the east. Infer its offset from the first complete house.
  const cream=kits.get(SMALL_BEODEUL_HOUSES[0].kit);if(!cream)throw new ToolError('공용 작은 마을 건물 키트가 필요합니다.');
- const first=cream.rows.flatMap((r,y)=>r.upperTiles.map((n,x)=>({n,x,y}))).find(p=>p.n>=0)!;
+ const first=cream.rows.flatMap((r,y)=>(r.upperTiles ?? []).map((n,x)=>({n,x,y}))).find(p=>p.n>=0)!;
  const matches=[];
  for(let i=0;i<m.width*m.height;i++)if(layerTileAt(m,3,i)===first.n){
   const x=i%m.width-first.x,y=Math.floor(i/m.width)-first.y;
-  if(x>=0&&y>=0&&x+cream.width<=m.width&&y+cream.height<=m.height&&cream.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n)))matches.push({x,y});
+  if(x>=0&&y>=0&&x+cream.width<=m.width&&y+cream.height<=m.height&&cream.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,(y+dy)*m.width+x+dx)===n)))matches.push({x,y});
  }
  if(matches.length!==1)throw new ToolError('작은 마을의 원본 집 원점을 하나로 확인할 수 없습니다.');
  const ox=matches[0]!.x-4,oy=matches[0]!.y-3;
- const houses=SMALL_BEODEUL_HOUSES.filter(h=>{const k=kits.get(h.kit);return k&&k.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,(h.y+oy+dy)*m.width+h.x+ox+dx)===n));});
+ const houses=SMALL_BEODEUL_HOUSES.filter(h=>{const k=kits.get(h.kit);return k&&k.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,(h.y+oy+dy)*m.width+h.x+ox+dx)===n));});
  if(houses.length<3)throw new ToolError('지원하는 작은 마을 집 3채 이상의 전체 배열과 배치가 일치해야 합니다.');
  if(m.relief?.levels.some(n=>n>0))throw new ToolError('높이가 있는 마을은 이 평지 배치 도구로 바꾸지 않습니다.');
  const oldGrafts=new Map(ts.tileGrafts?.map(g=>[g.targetTile,g]));
@@ -64,7 +64,7 @@ export function naturalizeBeodeulHamlet(project:Project,mapId:string){
  const approaches=[[[6,9],[6,11],[9,13],[10,14]],[[19,10],[19,12],[20,14],[20,16]],[[32,11],[32,13],[31,15],[30,16]],[[6,26],[11,27],[14,25],[14,20],[16,17]],[[30,26],[32,27],[34,26],[34,22],[34,19],[32,17]]];
  const yards=[[7,10,3.8,1.8],[21,11,3.8,1.7],[32,12,2.5,1.6],[8,27,4.5,1.35],[30.5,27,3.8,1.6]];
  for(const h of houses){const hi=SMALL_BEODEUL_HOUSES.indexOf(h);path(soil,approaches[hi]!);oval(soil,...yards[hi] as [number,number,number,number]);}
- const hasChurch=m.width>=54&&kits.get('bd-house-village-church')?.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,index(41+dx,3+dy))===n));
+ const hasChurch=m.width>=54&&kits.get('bd-house-village-church')?.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,index(41+dx,3+dy))===n));
  if(hasChurch){path(stone,[[38,17],[42,17],[48,17]],2);oval(stone,47,17.5,6.1,2.4);}
  for(const zone of [[2,20,4,4],[29,2,5,2.6],[18,27,5,3],[46,25,6,3.5],[37,7,3.5,5]])oval(meadow,...zone as [number,number,number,number]);
  const paint=(set:Set<number>,kind:string)=>{
@@ -87,8 +87,8 @@ export function naturalizeBeodeulHamlet(project:Project,mapId:string){
  const additions:Array<{kit:string;x:number;y:number}>=[];
  const stampKit=(id:string,x:number,y:number)=>{
   const k=kits.get(id);if(!k||!inside(x,y)||!inside(x+k.width-1,y+k.height-1))return;
-  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++)if(k.rows[dy]!.upperTiles[dx]!>=0){const i=index(x+dx,y+dy);if(layerTileAt(m,3,i)>=0||layerTileAt(m,4,i)>=0||stone.has(i)||soil.has(i)||m.events.some(e=>e.x===x+ox+dx&&e.y===y+oy+dy))return;}
-  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=k.rows[dy]!.upperTiles[dx]!;if(n>=0)setLayerTileAt(m,3,index(x+dx,y+dy),n);}
+  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++)if((k.rows[dy]!.upperTiles ?? [])[dx]!>=0){const i=index(x+dx,y+dy);if(layerTileAt(m,3,i)>=0||layerTileAt(m,4,i)>=0||stone.has(i)||soil.has(i)||m.events.some(e=>e.x===x+ox+dx&&e.y===y+oy+dy))return;}
+  for(let dy=0;dy<k.height;dy++)for(let dx=0;dx<k.width;dx++){const n=(k.rows[dy]!.upperTiles ?? [])[dx]!;if(n>=0)setLayerTileAt(m,3,index(x+dx,y+dy),n);}
   additions.push({kit:id,x:x+ox,y:y+oy});
  };
  // Group shrubs at the feet/outer edges of existing trees; leave the center open.
@@ -96,8 +96,8 @@ export function naturalizeBeodeulHamlet(project:Project,mapId:string){
  stampKit('bd-out-fence-run',2,12);stampKit('bd-out-fence-run',6,29);
  // Laundry belongs in the courtyard beside the two-story house. Move only the complete matching native rack.
  const rack=kits.get('bd-prop-laundry_rack');
- if(rack&&rack.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,index(24+dx,7+dy))===n))&&rack.rows.every((r,dy)=>r.upperTiles.every((n,dx)=>n<0||layerTileAt(m,3,index(22+dx,11+dy))<0&&layerTileAt(m,4,index(22+dx,11+dy))<0))){
-  for(let dy=0;dy<rack.height;dy++)for(let dx=0;dx<rack.width;dx++){const n=rack.rows[dy]!.upperTiles[dx]!;if(n>=0){setLayerTileAt(m,3,index(24+dx,7+dy),-1);setLayerTileAt(m,3,index(22+dx,11+dy),n);}}
+ if(rack&&rack.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,index(24+dx,7+dy))===n))&&rack.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||layerTileAt(m,3,index(22+dx,11+dy))<0&&layerTileAt(m,4,index(22+dx,11+dy))<0))){
+  for(let dy=0;dy<rack.height;dy++)for(let dx=0;dx<rack.width;dx++){const n=(rack.rows[dy]!.upperTiles ?? [])[dx]!;if(n>=0){setLayerTileAt(m,3,index(24+dx,7+dy),-1);setLayerTileAt(m,3,index(22+dx,11+dy),n);}}
   additions.push({kit:'bd-prop-laundry_rack',x:22+ox,y:11+oy});
  }
  // A small vegetable bed beside the cream house, off the approach.

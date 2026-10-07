@@ -36,14 +36,14 @@ export function installBeodeulArchitecture(project:Project):void {
   ensureBeodeulArchitectureTileset(source);
   const target=project.tilesets.beodeul_city;
   if(!target)throw new Error('버들항 타일셋이 없습니다.');
-  const translated=translateTiles(source,target,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles)));
+  const translated=translateTiles(source,target,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles ?? [])));
   for(const [sourceTile,targetTile] of translated.map){
     target.priority[targetTile]=source.priority[sourceTile]!;target.passability[targetTile]=structuredClone(source.passability[sourceTile]!);
   }
   const kits=target.structureKits??=[];
   for(const sourceKit of source.structureKits!){
     const kit=structuredClone(sourceKit);
-    kit.rows=kit.rows.map(r=>({...r,upperTiles:r.upperTiles.map(n=>n<0?-1:translated.map.get(n)!)}));
+    kit.rows=kit.rows.map(r=>({...r,upperTiles:(r.upperTiles ?? []).map(n=>n<0?-1:translated.map.get(n)!)}));
     const at=kits.findIndex(k=>k.id===kit.id);
     if(at<0)kits.push(kit);else kits[at]=kit;
   }

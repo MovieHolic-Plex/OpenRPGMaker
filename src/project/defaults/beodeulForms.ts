@@ -43,14 +43,14 @@ export function ensureBeodeulFormsTileset(ts:TilesetDef):boolean{
 /** Approved legacy forms only. New review candidates are not installed here. */
 export function ensureBeodeulForms(ts:TilesetDef):boolean{
  if(ts.id!=='beodeul_city'||ts.image.id!=='tex_beodeul_city')return false;
- const source=createBeodeulFormsTileset(),graft=translateTiles(source,ts,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles)));
+ const source=createBeodeulFormsTileset(),graft=translateTiles(source,ts,source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles ?? [])));
  let changed=removeRejectedKits(ts)||graft.slotsAdded>0;
  for(const [n,target] of graft.map){
   if(ts.priority[target]!==source.priority[n]){ts.priority[target]=source.priority[n]!;changed=true;}
   if(JSON.stringify(ts.passability[target])!==JSON.stringify(source.passability[n])){ts.passability[target]=structuredClone(source.passability[n]!);changed=true;}
  }
  const kits=ts.structureKits??=[];
- for(const sourceKit of source.structureKits!){const k=structuredClone(sourceKit);k.rows=k.rows.map(r=>({...r,upperTiles:r.upperTiles.map(n=>n<0?-1:graft.map.get(n)!)}));
+ for(const sourceKit of source.structureKits!){const k=structuredClone(sourceKit);k.rows=k.rows.map(r=>({...r,upperTiles:(r.upperTiles ?? []).map(n=>n<0?-1:graft.map.get(n)!)}));
   const at=kits.findIndex(old=>old.id===k.id);if(at<0){kits.push(k);changed=true;}else if(JSON.stringify(kits[at])!==JSON.stringify(k)){kits[at]=k;changed=true;}}
  const cats=ts.referenceDocuments??=[];
  for(const r of references as unknown as TilesetReferenceCategory[]){const at=cats.findIndex(c=>c.id===r.id);

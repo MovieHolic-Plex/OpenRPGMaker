@@ -14,7 +14,7 @@ export function ensureBeodeulFacilityKits(ts:TilesetDef):boolean{
  if(ts.id!=='beodeul_city'||ts.image.id!=='tex_beodeul_city')return false;
  const source=createBeodeulArchitectureTileset(),native=new Map(ts.structureKits?.map(k=>[k.id,k]));
  const repaired=new Map(source.structureKits!.map(k=>[k.id,k]));
- const needed=source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles));
+ const needed=source.structureKits!.flatMap(k=>k.rows.flatMap(r=>r.upperTiles ?? []));
  const translated=translateTiles(source,ts,needed);let changed=translated.slotsAdded>0;
  const kits=ts.structureKits??=[];
  for(const [id,name,body,group,a,b] of beodeulFacilityPlans){
@@ -37,7 +37,7 @@ export function ensureBeodeulFacilityKits(ts:TilesetDef):boolean{
   if(entrances.length!==1)throw new Error('Facility must have one entrance: '+id);
   const front=entrances[0]!;
   for(let y=front.dy+front.h;y<height;y++){
-   const n=rows[y]!.upperTiles[front.dx],pass=ts.passability[n];
+   const n=(rows[y]!.upperTiles ?? [])[front.dx],pass=ts.passability[n];
    if(n>=0&&ts.priority[n]!=='upper'&&pass&&(!pass.up||!pass.down||!pass.left||!pass.right))throw new Error('Facility approach blocked: '+id);
   }
   const kit:StructureKitDef={id:'bd-facility-'+id,name:'버들항 '+name+' · 건물과 작업 마당',kind:'section',learnedFrom:'pack-preset',tileSize:16,width,height,rows,parts,
