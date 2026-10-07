@@ -62,6 +62,10 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
 
+- **지금 맵 칩셋에 없는 물건을 공방에서 그려 그 칩셋에 넣을 때(조수 「없는 타일」 카드의 「직접 그려 줘」, 손 도트 실내 밖 16px 맵)**
+  → `map-objects` · 문서 `openwiki/harnesses/map-objects.md` · 에디터 왼쪽 막대 「공방」 → 「맵 기물」.
+  → 팔레트는 그 칩셋에서 뽑아 정의에 넣고, 사람이 고른 것만 굽는다. 번들 칩셋의 공방 칸은 `ensureBundledTilesets` 가 떼었다 다시 붙인다.
+
 - **조수가 특정 공간 낱말(미궁·감옥·하수도…)을 잘못 깔 때 / 개념 카드(`src/assets/conceptCards.json`)를 고칠 때**
   → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
   → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.

@@ -100,11 +100,15 @@ function truncateTo(tileset: TilesetDef, length: number): void {
   tileset.count = length;
 }
 
-/** 공방 칸이 들어갈 첫 번호 — 번들 끝과 다른 이식 끝 뒤, 행 맞춤. */
+/**
+ * 공방 칸이 들어갈 첫 번호. 첫 공방 칸은 번들 끝·다른 이식 끝 뒤 새 줄에서 시작하고(번들과 섞이지 않게),
+ * 그다음 공방 칸은 앞 공방 칸 바로 뒤에 잇는다 — 굽기마다 줄을 맞추면 4칸 기물 하나에 빈 칸이 44개 생긴다.
+ */
 function appendBase(tileset: TilesetDef): number {
   const others = (tileset.tileGrafts ?? []).filter((g) => !isWorkshopGraft(g)).reduce((max, g) => Math.max(max, g.targetTile + 1), 0);
   const workshop = (tileset.tileGrafts ?? []).filter(isWorkshopGraft).reduce((max, g) => Math.max(max, g.targetTile + 1), 0);
-  return rowAlignedTileCount(Math.max(tileset.count, others, workshop), tileset.tilesPerRow);
+  const start = rowAlignedTileCount(Math.max(others, workshop > 0 ? 0 : tileset.count), tileset.tilesPerRow);
+  return Math.max(start, workshop);
 }
 
 /**
@@ -125,6 +129,7 @@ export function bakeWorkshopObject(project: ProjectLike, tilesetId: string, inpu
       id: input.asset.id,
       name: `공방 · ${input.title}`,
       kind: "tileset",
+      generatedBy: "workshop",
       dataUrl: input.asset.dataUrl,
       meta: { tileSize: tileset.tileSize, width: input.asset.width, height: input.asset.height },
     };

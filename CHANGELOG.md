@@ -5,6 +5,111 @@
 
 <!-- releases -->
 
+## 0.173.0 — 2026-10-07
+
+### 기능
+
+- **store** — 「AI 생성」 표시를 코드로 강제 — AI 자산 표식(generatedBy)·buildPack 최종 관문·조수 제안은 늘 켬 (`c1fca61`)
+- **store** — 검열 1단계 — 보류 낱말은 확인 대기로, 바로 공개된 상품은 운영 「사후 확인」 목록에 (`7d92281`)
+
+## 0.172.0 — 2026-10-07
+
+### 기능
+
+- **workshop** — 「직접 그려 줘」를 실내 밖 맵으로 — 공방 「맵 기물」이 그 맵 칩셋 색·화풍으로 그려 그 칩셋에 굽는다 (`75780c4`)
+
+### 수정
+
+- **relief** — 높이 붓 표본마다 페이지 통째 굽기를 계획 창 덮어쓰기로 되돌린다 (`7393f26`)
+
+### 테스트
+
+- **workshop** — 맵 기물 공방 가짜 모델 캡처(정의→후보→굽기) (`49a19be`)
+
+## 0.171.1 — 2026-10-07
+
+### 수정
+
+- ci-fast parity를 타입체크와 같은 메모리 락으로 직렬화한다 (`ffe04ff`)
+- **workshop** — 맞게 그린 기물을 되돌리던 귀퉁이 검사와 줄 폭 실수에 전체 다시 그리기 (`de23b9c`)
+
+### 성능
+
+- **workshop** — 실내 기물 한 판을 5장→3장, 자기 점검 호출을 뺀다 (`95eb37a`)
+
+### 문서
+
+- **workshop** — 실제 모델로 잰 한 판 시간과 헛걸음 셋 (`feeab06`)
+
+### 테스트
+
+- **workshop** — 칩셋 굽기·번호 이주·모델 답 수선·조수 스토어 도구 테스트, 공방 굽기마다 생기던 빈 칸 44개 제거 (`6a8fbea`)
+
+## 0.171.0 — 2026-10-07
+
+### 기능
+
+- **tiles** — bake the redrawn interiors into monster-overworld and monster-rooms (`32dff05`)
+- **tiles** — monster interiors redrawn in the GBA style (`012763f`)
+- **monster** — houses and centers get a working second floor (`ead3e1b`)
+- **tiles** — walkable stair feet and an appended interior section (`5cb5eb9`)
+- **editor** — add categorized prop picker with full catalog search (`0e76cc1`)
+
+### 수정
+
+- **tiles** — keep the monster overworld sheet under its 320-color cap (`474623b`)
+- **editor** — refine prop categories and record browser proof (`714f31c`)
+
+### 문서
+
+- **openwiki** — interior redraw, walkable stairs and second floors; stairs runtime QA (`d4d305f`)
+
+## 0.170.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 일본 집 실내 장소 다시 게시(관문 interior pass 10회차) (`3859e5b`)
+- **jp-city** — 실내 가구 방별 분류 14종 · 계단 난간 · 여러 층 장소 가져오기 · 오브젝트 갤러리 공용+분류 부제 (`f97ce14`)
+- **tiles** — bake the GBA-style monster overworld, wild, coast and climate sheets (`9884b8f`)
+- **tiles** — town paths in earth tone; drop the original-map renderer (`70c750d`)
+- **tiles** — monster town buildings and bridges in the GBA style (`df80428`)
+- **tiles** — monster overworld ground and trees redrawn in a GBA 2nd-gen style (`285523f`)
+
+### 수정
+
+- **jp-city** — 짓는 법 문서에서 뺀 2층 장식 문 구절 삭제, 2층 복도 벽면에 벽시계·달력 (`7102ee5`)
+- **jp-city** — 매트 술 두 칸 폭으로 보이게, 인터폰 = 벽걸이 분류, 이불 짝에서 자기 자신 뺌, 러그 문구 통일, 블록 자체검사·현관 데모 그림 다시 굽기 (`73a50fb`)
+- **jp-city** — 러그는 2칸 가구 밑이 아니라 따로(사전·예제·규칙 일치, 거실 러그 남동으로 되돌림), 매트 설명 붉은 갈색 테두리, 2층 복도 장식 닫힌 문 뺌, 사전 w×h 뜻 명시 (`4fbdee1`)
+- **jp-city** — 원룸에 공부 책상·의자·스탠드, 1층 거실 러그를 좌탁·소파 밑으로, 욕실 매트는 탈의실·세탁 분류, 참고문서 분류 순서 = categories.py (`b9eaef6`)
+- **jp-city** — 현관 매트(베이지·주황 테두리·술)·슬리퍼(발등 띠+깔창)·아가리카마치 단 앞면 다시 찍음, 매트·슬리퍼는 마루 줄 규칙, 편집기 probe 상세 칸 확인 (`1fd6894`)
+- **harness** — GBA redraw passes the overworld checks honestly (`76e153b`)
+
+### 문서
+
+- **jp-city** — 참고문서·런타임 화면 다시 굽기(새 현관 매트·슬리퍼, 매트 자리 규칙) (`85c45fe`)
+- **jp-city** — 실내 참고문서 다시 굽기 — 가구 사전에 category·categoryKo, 짓는 법에 분류 14종, 새 계단 그림(엔진 실측) (`9832e08`)
+- **jp-city** — 실내 분류·계단 난간·여러 층 가져오기 위키, 런타임 QA 다시 찍음(15/15), 편집기 probe netns 실행기 (`a17d8cb`)
+
+### 잡무
+
+- **jp-city** — 편집기 probe 증거 다시 찍음 (`6c8adef`)
+- **jp-city** — interior_entry 자체검사 그림(새 계단) (`ac2c6f3`)
+- **harness** — keep the monster sheet redeploy script in the harness (`affe07a`)
+- **harness** — bring tileset-authoring sources and seeds onto main (`daf89e1`)
+
+## 0.169.0 — 2026-10-07
+
+### 기능
+
+- **store** — 팩에 캐릭터 칸 설명(content.characters)을 싣고 넣을 때 조수가 생김새로 찾게 한다 (`ab80156`)
+- **ai-ui** — 지도 이름표 · 상태 줄 · 받은함으로 AI 작업을 한눈에 (`fa46c58`)
+- **workshop** — 고른 기물을 손 도트 실내 칩셋에 굽기(공방 2단계)와 조수 「직접 그려 줘」 연결 (`06c0d70`)
+
+### 수정
+
+- 마법 학교 캐릭터 공급자를 하네스 카탈로그 계약에 연결한다 (`9631af0`)
+- **ai-ui** — 상태 줄의 안 쓰는 needsUser import를 뺀다 (`9333181`)
+
 ## 0.168.0 — 2026-10-07
 
 ### 기능

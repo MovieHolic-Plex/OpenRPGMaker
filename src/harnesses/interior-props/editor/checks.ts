@@ -23,8 +23,14 @@ export function interiorHardCheck(item: WorkshopItem, grid: Grid, current: Grid 
   const problems: string[] = [];
   const bottom = bottomRow(grid);
   if (bottom < 0) return ["그림이 비었다(칠한 화소가 없다)"];
-  const corners = [at(0, 0), at(grid.width - 1, 0), at(0, grid.height - 1), at(grid.width - 1, grid.height - 1)].filter((c) => c !== null).length;
-  if (corners >= 2) problems.push("배경: 귀퉁이 둘 이상이 칠해졌다(배경은 투명이어야 한다)");
+  // 배경 칠 검사. 물건이 캔버스 끝까지 닿으면 귀퉁이가 칠해지는 게 정상이다 — 번들 527종 중 91종(옷장 밑변 등)이 귀퉁이 둘 이상을 칠한다.
+  // 그래서 지금 그림이 있으면 「지금 그림에서 비어 있던 귀퉁이」가 둘 이상 칠해졌을 때만, 없으면(새 기물) 네 귀퉁이가 다 칠해졌을 때만 배경으로 본다.
+  // 2026-10-07 실측: 옛 규칙(칠한 귀퉁이 ≥2)이 맞게 그린 옷장을 되돌려 후보 셋 중 둘이 고치기 호출을 한 번 더 썼다.
+  const cornerXY: readonly (readonly [number, number])[] = [[0, 0], [grid.width - 1, 0], [0, grid.height - 1], [grid.width - 1, grid.height - 1]];
+  const painted = cornerXY.filter(([x, y]) => at(x, y) !== null);
+  const sameCanvas = current !== null && current.width === grid.width && current.height === grid.height;
+  const newlyPainted = sameCanvas ? painted.filter(([x, y]) => current!.cells[y * current!.width + x] === null).length : painted.length;
+  if (sameCanvas ? newlyPainted >= 2 : painted.length === 4) problems.push("배경: 귀퉁이가 칠해졌다(물건 밖 배경은 투명이어야 한다)");
   for (let y = 0; y < item.padTop; y++) {
     if (Array.from({ length: grid.width }, (_, x) => at(x, y)).some((c) => c !== null)) {
       problems.push(`위 패딩: 맨 위 ${item.padTop}줄은 비워 둔다(y=${y} 에 그림이 있다)`);

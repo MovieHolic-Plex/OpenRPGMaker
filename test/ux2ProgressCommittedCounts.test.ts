@@ -11,7 +11,7 @@ vi.mock("@/editor/authoringTasks", () => ({ runAuthoringTask: vi.fn() }));
 vi.mock("@/editor/projectReferenceIssues", () => ({ collectEditorProjectReferenceIssues: () => [] }));
 vi.mock("@/editor/panels/ruleAuditPanel", () => ({ ruleAuditViolationCountCached: () => 0, RULE_AUDIT_UPDATED_EVENT: "ux2-audit-update" }));
 vi.mock("@/editor/panels/tileToolbarMenus", () => ({ openSidebarInspection: vi.fn() }));
-vi.mock("@/editor/panels/leftFavoritesPane", () => ({ createLeftFavoritesPane: () => ({ root: document.createElement("section"), show() {}, dispose() {} }) }));
+vi.mock("@/editor/panels/leftPropsPane", () => ({ createLeftPropsPane: () => ({ root: document.createElement("section"), show() {}, dispose() {} }) }));
 vi.mock("@/editor/panels/leftLinksPane", () => ({ createLeftLinksPane: () => ({ root: document.createElement("section"), show() {}, dispose() {} }) }));
 vi.mock("@/editor/panels/leftWorkshopPane", () => ({ createLeftWorkshopPane: () => ({ root: document.createElement("section"), show() {}, dispose() {} }) }));
 vi.mock("@/editor/panels/mapSidebarSection", () => ({ createMapSidebarSection: () => ({ root: document.createElement("section"), show() {}, dispose() {} }) }));

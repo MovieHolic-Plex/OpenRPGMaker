@@ -1,6 +1,6 @@
 // src/editor/workshop/workshopBake.ts
 /**
- * 공방 2단계 — 고른 후보를 지금 프로젝트의 손 도트 실내 칩셋(atlas_biome_interior)에 굽는다.
+ * 공방 2단계 — 고른 후보를 칩셋에 굽는다: 실내 기물은 손 도트 실내(atlas_biome_interior), 맵 기물은 정의할 때 적은 그 맵 칩셋.
  * 격자를 16px 칸으로 잘라(빈 칸은 뺀다) 30칸 폭 시트 PNG 한 장을 만들고, 굽기 자체는 project/workshopTiles.ts 가 한다.
  * 다 구우면 window 에 WORKSHOP_BAKED_EVENT 를 낸다 — 조수의 「없는 타일」 카드(aiStoreCard.ts)가 듣고 후속 요청을 보낸다.
  */
@@ -24,9 +24,14 @@ export function workshopGridHash(grid: Grid): string {
   return (h >>> 0).toString(16).padStart(8, "0");
 }
 
+/** 구워 넣을 칩셋: 맵 기물은 정의할 때 적은 칩셋, 실내 기물은 손 도트 실내. */
+export function workshopTargetTileset(item: WorkshopItem): string {
+  return item.tilesetId ?? ATLAS_BIOME_INTERIOR_ID;
+}
+
 /** 이 후보 그림이 지금 프로젝트 칩셋에 이미 들어갔는가. */
 export function isWorkshopPickBaked(item: WorkshopItem, grid: Grid): boolean {
-  return bakedWorkshopKit(store.getCurrent().tilesets[ATLAS_BIOME_INTERIOR_ID], workshopObjectId(item.key), workshopGridHash(grid)) !== undefined;
+  return bakedWorkshopKit(store.getCurrent().tilesets[workshopTargetTileset(item)], workshopObjectId(item.key), workshopGridHash(grid)) !== undefined;
 }
 
 /** 그림을 16px 칸으로 자른다. 완전히 투명한 칸은 뺀다. */
@@ -71,11 +76,19 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
   });
   const dataUrl = env.encodePng(sheet);
   const objectId = workshopObjectId(item.key);
+  const tilesetId = workshopTargetTileset(item);
+  if (tilesetId !== ATLAS_BIOME_INTERIOR_ID) {
+    const target = store.getCurrent().tilesets[tilesetId];
+    if (!target) throw new Error(`이 기물을 넣을 칩셋이 프로젝트에 없습니다: ${tilesetId}`);
+    if (target.tileSize !== TILE) throw new Error(`공방 그림은 16px 칸이라 ${target.tileSize}px 칩셋에는 넣을 수 없습니다.`);
+  }
   recordProjectSnapshot("공방 기물 칩셋에 넣기");
   store.update((draft) => {
-    if (!draft.tilesets[ATLAS_BIOME_INTERIOR_ID]) draft.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
-    else ensureAtlasBiomeInteriorCurrent(draft, ATLAS_BIOME_INTERIOR_ID);
-    bakeWorkshopObject(draft, ATLAS_BIOME_INTERIOR_ID, {
+    if (tilesetId === ATLAS_BIOME_INTERIOR_ID) {
+      if (!draft.tilesets[ATLAS_BIOME_INTERIOR_ID]) draft.tilesets[ATLAS_BIOME_INTERIOR_ID] = createAtlasBiomeInteriorTileset();
+      else ensureAtlasBiomeInteriorCurrent(draft, ATLAS_BIOME_INTERIOR_ID);
+    }
+    bakeWorkshopObject(draft, tilesetId, {
       objectId,
       title: item.title,
       description: item.description,
@@ -90,7 +103,7 @@ export function bakeWorkshopPick(item: WorkshopItem, grid: Grid, palette: Palett
       cells: tiles.map((tile, k) => ({ sourceTile: k, dx: tile.dx, dy: tile.dy })),
     });
   }, { scope: "project", origin: "human", label: `공방 기물 칩셋에 넣기: ${item.title}` });
-  const detail: WorkshopBakedDetail = { objectId, title: item.title, tilesetId: ATLAS_BIOME_INTERIOR_ID, kind: item.kind, columns, rows };
+  const detail: WorkshopBakedDetail = { objectId, title: item.title, tilesetId, kind: item.kind, columns, rows };
   window.dispatchEvent(new CustomEvent<WorkshopBakedDetail>(WORKSHOP_BAKED_EVENT, { detail }));
   return detail;
 }

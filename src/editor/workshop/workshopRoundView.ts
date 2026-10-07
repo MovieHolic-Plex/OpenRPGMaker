@@ -11,7 +11,8 @@ import { el } from "@/util/dom";
 import { workshopObjectId } from "@/project/workshopTiles";
 import { WORKSHOP_MODEL_ADVICE } from "./chat";
 import { gridDataUrl } from "./pixels";
-import { bakeWorkshopPick, isWorkshopPickBaked } from "./workshopBake";
+import { bakeWorkshopPick, isWorkshopPickBaked, workshopTargetTileset } from "./workshopBake";
+import { store as projectStore } from "@/project/store";
 import type { WorkshopSession } from "./workshopSession";
 import { latestRound, roundProgress } from "./workshopStatus";
 
@@ -100,6 +101,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
     if (!grid) return [];
     const baked = isWorkshopPickBaked(item, grid);
     const objectId = workshopObjectId(item.key);
+    const sheetName = item.tilesetId ? `「${projectStore.getCurrent().tilesets[workshopTargetTileset(item)]?.name ?? item.tilesetId}」 칩셋` : "손 도트 실내 칩셋";
     return [el("div", {
       class: "workshop-bake",
       children: [
@@ -112,8 +114,8 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
         el("span", {
           class: "workshop-item-meta",
           text: baked
-            ? `실내 칩셋에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
-            : "넣으면 이 프로젝트의 손 도트 실내 칩셋 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.",
+            ? `${sheetName}에 ${objectId} 로 들어갔어요. 조수에게 「${item.title} 놓아 줘」라고 하면 맵에 놓아요.`
+            : `넣으면 이 프로젝트의 ${sheetName} 끝에 칸이 붙고, 조수와 스탬프가 이 기물을 쓸 수 있어요. 되돌리기로 뺄 수 있어요.`,
         }),
       ],
     })];
@@ -201,7 +203,7 @@ export function renderRoundView(session: WorkshopSession, item: WorkshopItem, st
       ...errorLine(),
       head,
       ...bakeRow(),
-      el("p", { class: "workshop-item-meta", text: "1~5 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요." }),
+      el("p", { class: "workshop-item-meta", text: `1~${runs.length} 카드 · Enter 고르기 · X 버리기 · 0 지금 것이 낫다 · R 이 장 다시 · F 확대 · ↑↓ 기물. 「검수 통과」는 AI 판정일 뿐입니다 — 직접 보고 고르세요.` }),
       el("div", { class: "workshop-cards" + (state.zoom === "big" ? " is-big" : ""), children: runs.map(card) }),
       compare(selectedRun ?? null),
       pending

@@ -2,7 +2,7 @@
  * 팩 만들기(프로젝트 → 매니페스트 + blob)와 넣기(매니페스트 + blob → 프로젝트), 크레딧.
  * 순수 함수다. 바이트 읽기·해시는 호출하는 쪽이 넘긴다(렌더러는 crypto.subtle, 서버는 node:crypto).
  */
-import type { PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
+import type { CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset } from "../project/types";
 import {
   STORE_ASSET_KINDS,
   STORE_BLOB_MIMES,
@@ -18,9 +18,11 @@ import {
   type StoreItemKind,
   type StoreLicense,
   type StorePackAsset,
+  type StorePackCharacter,
   type StorePackManifest,
 } from "./format";
 import { base64ToBytes, bytesToBase64, dataUrlParts, sniffMime } from "./sniff";
+import { WORKSHOP_ASSET_PREFIX } from "../project/workshopTiles";
 
 export interface PackBlob { readonly bytes: Uint8Array; readonly mime: StoreBlobMime }
 export interface BuiltPack { readonly manifest: StorePackManifest; readonly blobs: ReadonlyMap<string, PackBlob> }
@@ -67,8 +69,29 @@ export function closeSelection(project: Project, selection: PackSelection): { ti
   return { tilesetIds: [...tilesetIds], assetIds: [...assetIds].filter((id) => uploaded.has(id)), missing };
 }
 
+/** 이 자산을 AI 가 만들었으면 만든 경로, 아니면 null. 표식(generatedBy)이 생기기 전 공방 시트는 id 로 안다. */
+export function aiMaker(asset: UploadedAsset): string | null {
+  if (asset.generatedBy) return asset.generatedBy;
+  if (asset.id.startsWith(WORKSHOP_ASSET_PREFIX)) return "workshop";
+  if (asset.origin?.aiGenerated) return "store";
+  return null;
+}
+
+/**
+ * 팩에 실제로 들어갈 자산(타일셋 그림·이식 시트 포함) 중 AI 가 만든 것.
+ * 하나라도 있으면 「AI 생성」을 끌 수 없다 — 조수 제안·스토어 창·buildPack 이 같은 판정을 쓴다.
+ */
+export function aiMadeAssets(project: Project, selection: PackSelection): { id: string; name: string; by: string }[] {
+  return closeSelection(project, selection).assetIds.flatMap((id) => {
+    const asset = project.assets.uploaded[id]!;
+    const by = aiMaker(asset);
+    return by ? [{ id, name: asset.name, by }] : [];
+  });
+}
+
 /**
  * 프로젝트의 타일셋·에셋을 스토어 팩으로 묶는다. 매니페스트 안의 data URL 은 전부 blob 자리표시로 뺀다.
+ * AI 가 만든 자산이 들어 있으면 meta.aiGenerated 가 false 여도 true 로 올린다.
  * previews 가 비면 첫 그림 에셋을 표지로 쓴다.
  */
 export async function buildPack(project: Project, selection: PackSelection, meta: PackMeta, io: PackBuildIo, previews: readonly Uint8Array[] = []): Promise<BuiltPack> {
@@ -106,6 +129,7 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     await Promise.all(pending);
     tilesets[id] = mapStrings(tileset, (text) => replacements.get(text) ?? text) as TilesetDef;
   }
+  const characters = packCharacters(project, assets);
   const previewShas: string[] = [];
   for (const bytes of previews) previewShas.push((await addBlob(bytes, "미리보기")).sha);
   if (previewShas.length === 0) {
@@ -120,13 +144,33 @@ export async function buildPack(project: Project, selection: PackSelection, meta
     tags: meta.tags.map((tag) => tag.trim()).filter(Boolean),
     kind: meta.kind,
     license: meta.license,
-    aiGenerated: meta.aiGenerated,
+    aiGenerated: meta.aiGenerated || closed.assetIds.some((id) => aiMaker(project.assets.uploaded[id]!) !== null),
     credits: meta.credits.trim(),
-    content: { assets, tilesets },
+    content: { assets, tilesets, ...(characters.length > 0 ? { characters } : {}) },
     previews: previewShas.slice(0, 6),
     blobs: [...blobs].map(([sha256, blob]) => ({ sha256, mime: blob.mime, bytes: blob.bytes.byteLength })),
   };
   return { manifest, blobs };
+}
+
+/** 팩에 넣는 캐릭터 시트의 칸 설명(프로젝트 charsetLabels 중 그 시트 것). */
+export function packCharacters(project: Project, assets: Readonly<Record<string, StorePackAsset>>): StorePackCharacter[] {
+  const out: StorePackCharacter[] = [];
+  for (const entry of project.charsetLabels ?? []) {
+    const asset = assets[entry.textureKey];
+    const label = entry.label.trim();
+    if (!asset || asset.kind !== "charset" || !label || entry.characterIndex < 0 || entry.characterIndex > 7) continue;
+    out.push({
+      asset: entry.textureKey,
+      characterIndex: entry.characterIndex,
+      label,
+      ...(entry.tags?.length ? { tags: [...entry.tags] } : {}),
+      ...(entry.gender ? { gender: entry.gender } : {}),
+      ...(entry.age ? { age: entry.age } : {}),
+      ...(entry.appearance ? { appearance: entry.appearance } : {}),
+    });
+  }
+  return out;
 }
 
 /** 낱장 그림 하나로 만드는 기본 타일셋(에디터 「타일셋 추가」와 같은 모양: 전부 통행·아래층). */
@@ -215,6 +259,20 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
       meta: { ...packAsset.meta },
       origin: { ...origin },
     };
+  }
+  // 캐릭터 칸 설명 → charsetLabels(업로드 시트). 저자가 그 칸에 붙인 이름은 덮지 않는다.
+  for (const c of manifest.content.characters ?? []) {
+    const textureKey = assetIdMap.get(c.asset);
+    if (!textureKey) continue;
+    const labels = project.charsetLabels ?? [];
+    const at = labels.findIndex((entry) => entry.textureKey === textureKey && entry.characterIndex === c.characterIndex);
+    if (at >= 0 && labels[at]!.origin === "user") continue;
+    const entry: CharsetLabelOverride = {
+      textureKey, characterIndex: c.characterIndex, label: c.label, origin: "ai", spriteType: "uploaded",
+      ...(c.tags ? { tags: [...c.tags] } : {}), ...(c.gender ? { gender: c.gender } : {}), ...(c.age ? { age: c.age } : {}),
+      ...(c.appearance ? { appearance: c.appearance } : {}),
+    };
+    project.charsetLabels = at >= 0 ? labels.map((old, i) => (i === at ? entry : old)) : [...labels, entry];
   }
   for (const [id, source] of Object.entries(manifest.content.tilesets)) {
     const tileset = mapStrings(source, restore) as TilesetDef;

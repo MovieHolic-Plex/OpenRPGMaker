@@ -343,6 +343,38 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     portal(room, town, exit, { x: doorway.x, y: doorway.y + 1 });
   }
 
+  // 층계로 위아래 층을 잇는다 — 아래층 올라가는 계단(h_stairs·c_escalator) 발치를 밟으면 위층 내려가는 계단(_dn) 바로 앞에,
+  // 위층 _dn 발치를 밟으면 아래층 계단 바로 앞에 선다. 발치 칸은 칩셋이 통행으로 둔다(bake 의 stairs 종류).
+  // 그 전에는 계단이 막힌 소품이라 1층 계단을 밟을 수도 2층에 갈 수도 없었다(2026-10-07 사용자 지적).
+  function stairFeet(map: GameMap, down: boolean): Point[] {
+    const t = sources.get(map.id)!;
+    const stair = (n: string) => { const m = /^(h_stairs|c_escalator)(_dn)?\.\d+\.(\d+)$/.exec(n); return m && !!m[2] === down ? { base: m[1]! + (m[2] ?? ""), dy: Number(m[3]) } : undefined; };
+    const bottom = new Map<string, number>();
+    for (const n of Object.keys(t.names)) { const s = stair(n); if (s) bottom.set(s.base, Math.max(bottom.get(s.base) ?? 0, s.dy)); }
+    const feet = new Set(Object.entries(t.names).filter(([n]) => { const s = stair(n); return s !== undefined && s.dy === bottom.get(s.base); }).map(([, v]) => v));
+    const found: Point[] = [];
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+      const cell = y * map.width + x;
+      if (feet.has(map.upperTiles[cell]!) || feet.has(map.lowerTiles[cell]!)) found.push({ x, y });
+    }
+    return found;
+  }
+
+  function attachStairs(lower: GameMap, upper: GameMap): void {
+    const up = stairFeet(lower, false), down = stairFeet(upper, true);
+    if (!up.length || up.length !== down.length) throw Error(`Stairs do not pair ${lower.id} (${up.length}) ↔ ${upper.id} (${down.length})`);
+    up.forEach((foot, k) => {
+      const back = down[k]!;
+      const landUp = { x: back.x, y: back.y + 1 }, landDown = { x: foot.x, y: foot.y + 1 };
+      for (const [map, at, target, land] of [[lower, foot, upper, landUp], [upper, back, lower, landDown]] as const) {
+        if (!isPassableLanding(project, map, at.x, at.y) || !isPassableLanding(project, target, land.x, land.y)) throw Error(`Blocked stairs ${map.id} → ${target.id}`);
+        reserve(target, land);
+        const e = event(map, `stairs_${target.id}_${k}`, at, [transfer(target, land)], { trigger: "playerTouch", below: true, graphic: invisible });
+        manifest.links.push({ from: map.id, to: target.id, eventId: e.id, source: at, destination: land });
+      }
+    });
+  }
+
   function troop(name: string, key: string, speciesIds: readonly string[], level: number, trainer: boolean): string {
     const enemyIds = speciesIds.map((speciesId, i) => {
       const sid = `${key}_${i}`;
@@ -468,7 +500,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const map = townMaps.get(t.key)!;
     const center = make(`${t.key}_center`, `${lookTown(t).name} · 회복 센터`, "overworld/room-center", "town", "interior");
     const mart = make(`${t.key}_mart`, `${lookTown(t).name} · 도구점`, "overworld/room-mart", "town", "interior");
-    const home = make(`${t.key}_house`, `${lookTown(t).name} · 주민의 집`, "overworld/room-house", "town", "interior");
+    // 집은 마을마다 다른 방(부엌·거실·서재)이고 모두 2층이 있다 — 여덟 마을 집이 한 장 그림이었다(2026-10-07 사용자 「실내 많이 다듬어야」).
+    const home = make(`${t.key}_house`, `${lookTown(t).name} · 주민의 집`, ["overworld/room-house", "overworld/room-house-b", "overworld/room-house-c"][i % 3]!, "town", "interior");
+    const upstairs = make(`${t.key}_house_2f`, i === 0 ? "내 방" : `${lookTown(t).name} · 주민의 집 2층`, i % 2 ? "overworld/room-house-2f-b" : "overworld/room-house-2f", "town", "interior");
+    const lounge = make(`${t.key}_center_2f`, `${lookTown(t).name} · 회복 센터 2층`, "overworld/room-center-2f", "town", "interior");
+    attachStairs(home, upstairs); attachStairs(center, lounge);
     const doors = doorways(map);
     const centerDoor = doors.find(d => /center|centre/.test(d.name));
     const martDoor = doors.find(d => /mart|shop/.test(d.name));
@@ -485,6 +521,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       [{ kind: "shop", itemIds: ["item_capture_orb", "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
+    if (i === 0) event(upstairs, "console", { x: 8, y: 3 }, [text("게임기다. 모험에서 돌아오면 또 하자.")], { graphic: invisible });
+    else npc(upstairs, "kid", "아이", ["우와, 진짜 몬스터다! 나도 크면 조련사가 될 거야.", "2층 창문으로 보면 길 건너 풀숲이 다 보여.", "밤에는 풀숲에서 다른 몬스터가 나온대. 진짜일까?"][i % 3]!, { x: 6, y: 6 }, [], 1);
+    npc(lounge, "traveler", "라운지 손님", ["상대 타입에 강한 기술을 고르면 두 배로 들어가요. 불은 풀에, 물은 불에, 풀은 물에.", "체력이 노란색이 되면 포획구슬이 잘 듣는대요.", "기술 횟수가 떨어지면 1층 직원에게 맡기세요. 모두 채워 줘요."][i % 3]!, { x: 7, y: 6 }, [], 3);
     npc(map, "guide", "여행 안내원", `${lookTown(t).name}에 온 걸 환영해요. ${i === 0 ? "북동쪽 집이 천문박사의 연구소예요." : "북동쪽 건물에서 지역의 관장에게 도전할 수 있어요."} 북쪽의 안내원이 다음 길을 알려 줍니다.`, mid(map), [], 4);
     npc(map, "local", "마을 주민", lookTown(t).flavor, { x: 3, y: 10 }, [], i % 8);
     // Return travel is earned by reaching a town, with no permanent progress rollback.

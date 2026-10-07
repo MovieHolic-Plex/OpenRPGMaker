@@ -533,10 +533,6 @@
     [
      "laundry-rack",
      1
-    ],
-    [
-     "door-western",
-     1
     ]
    ]
   ],
@@ -591,6 +587,14 @@
     ],
     [
      "door-open-western",
+     1
+    ],
+    [
+     "desk-study",
+     1
+    ],
+    [
+     "desk-chair-n",
      1
     ]
    ]

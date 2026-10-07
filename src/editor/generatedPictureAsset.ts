@@ -34,6 +34,7 @@ export function insertGeneratedPictureAsset(project: Project, input: InsertGener
     id,
     name,
     kind,
+    generatedBy: "image-generation",
     dataUrl,
     meta: {
       ...(input.width !== undefined ? { width: input.width } : {}),

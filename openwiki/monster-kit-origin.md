@@ -131,7 +131,7 @@
 
 앞선 6차까지는 원작 동굴을 기억에 의존해 「어두운 허공 + 밝은 돌띠」로 만들었고, 실제와 반대였다. pret 디컴파일 저장소
 (`pokefirered`·`pokeemerald` 의 `data/layouts/*/map.bin` + `tilesets/*/{tiles.png,metatiles.bin,palettes}`)를 직접 조립해(Mt. Moon 1F 768×640 = Bulbapedia 공식 크기와 일치)
-측정했다. 학습용이며 저장소에 넣지 않는다. 원작 문법:
+측정했다. 학습용이며 저장소에 넣지 않는다(그 조립 도구와 받은 원작 파일은 2026-10-07 저작권 정리로 모두 지웠다 — 아래는 그때 적은 문법 메모만 남는다). 원작 문법:
 - 걸을 수 없는 암반은 **바닥보다 밝은 고원 윗면**(한 톤 면 + 물결 두 줄)이고 어두운 건 테두리 띠뿐이다.
 - 테두리는 **물결치는 둥근 3톤 띠**(옆 약 12px, 윗변 약 5px, 남쪽 앞면 한 칸). 돌 한 개마다 윤곽선을 두르지 않는다.
 - 덩어리는 폭 2칸 이상의 알약형 섬·벽에서 뻗은 능선. 바닥은 조용한 가로 결. 채도는 낮다(우리는 Scarloxy 주황 계열로 옮김 — 마을과 한 게임으로 보이게).
@@ -144,7 +144,7 @@
 - 외곽은 어둠 1칸 + 벽 2칸. 야외 입구 `cave_mouth` 는 같은 문법(고원 윗면·3톤 띠·톱니 앞면·검은 문).
 
 ## 실내·체육관·퍼즐 (9차, 2026-10-02) — 10~12차에서 전부 교체됨
-(옛) `recipes/interior.py`(그림, 12차에서 삭제) + `node/showcase_interior.mts`(방 6개) + bake 규칙. 원작 센터·상점·집·체육관·퍼즐 방은 pret 디컴파일(`/tmp/viz/orig/g/rg.py` 로 조립, 저장소에 안 넣음)에서 눈으로 읽었다.
+(옛) `recipes/interior.py`(그림, 12차에서 삭제) + `node/showcase_interior.mts`(방 6개) + bake 규칙. 원작 센터·상점·집·체육관·퍼즐 방은 당시 원작 조립본에서 눈으로 읽은 문법 메모만 남았다(조립 도구·원작 파일은 2026-10-07 저작권 정리로 삭제).
 - 실내: 바닥 3종(마루·센터 크림 타일·상점 파랑)+벽 아래 그늘판, 뒷벽 두 칸(`int_wall_up/dn` + 좌우 모서리판), 옆벽 띠(투명), 검은 여백 `int_void`, 문 매트 `int_mat`, 계단 아래 `int_stairs_down`. 가구 14종은 물체(`counter` 3×2 `shelf` `shelf_wide` `table` `chair` `bed` `plant` `tv` `pc` `machine` `stairs_up` `rug` `window_pair` `statue`) — 가구·계단·창은 막힘(prop), 깔개 `rug` 는 걸을 수 있다(`decor`).
 - 체육관 바닥 4종(`gym_teal/diamond/dirt/brick`), 퍼즐 칸: `spin_{u,d,l,r}` `spin_stop` `warp_pad0/1` `gym_switch` `gym_pit`(밟을 수 있고 이벤트 자리), `elec_h/v`(막힘), 올린 칸막이 오토타일 `puzzle_block_at{47}`(kind `block`, 막힘).
 - 시트 색 한도는 seed.limits.max_colors(이 테마 200). 통행 시험 280건.
@@ -152,7 +152,7 @@
 
 ## 10~12차 — 「맵 퀄리티가 너무 낮다」 재작업 (2026-10-02)
 
-원작 조립본(`lib/pret_ref.py` — pret 디컴파일 `layouts.json`·`map.bin`·`metatiles.bin`·`tiles.png`·JASC 팔레트를 받아 맵 한 장으로 조립, `~/.cache/oprn-pret-ref/` 캐시,
+원작 조립본(옛 `lib/pret_ref.py` — **2026-10-07 저작권 정리로 도구·캐시·렌더 전부 삭제**. pret 디컴파일 `layouts.json`·`map.bin`·`metatiles.bin`·`tiles.png`·JASC 팔레트를 받아 맵 한 장으로 조립, `~/.cache/oprn-pret-ref/` 캐시,
 **학습용이며 결과 그림은 저장소에 넣지 않는다**)과 우리 렌더를 나란히 놓고 독립 적대 검수 세 건(마을·실내·체육관)을 받은 뒤 다시 그렸다.
 판단 기준: 낱장 그림(벽돌 지붕·둥근 센터 지붕·외톨이 나무·바위 고리 둑·그물 물)은 기준 팩 Scarloxy 화풍을 유지하고, **맵 문법과 빠진 타일 종류**는 원작을 따른다.
 
@@ -256,3 +256,34 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
 - `emeraldMonsterKitAssets.ts` → `bundled.ts`/`bundledChipsetGeometry.ts`, `defaults/emeraldMonsterKit.ts` → `defaultAssets.ts` 새/기존 경로에 배선한다. 파생 시트가 참조 포인터를 가지면 새 문서가 가려지므로, 한 홉 `referenceSourceTilesetId` 대신 각 변형이 정본에서 읽은 원본 전체 배열+새 스타일 안내와 표본을 직접 소유한다. 의도적으로 비운 `[]`와 저자 용도는 보충 때 보존한다.
 - 공용 자료 정본은 `tiledata/emerald-monster/`: 현재 정본에서 읽은 75 MD/92 이미지 포인터의 source JSON, 7 MD 안내, prepare source와 README. 배포 JSON은 82 MD/92 이미지 포인터(바이트 내장 없음). 원본색 오류 그림 38장은 동일 구조의 진단 자료이며 새 스타일 그림이라고 주장하지 않는다.
 - 허용된 집중 검증 `npx tsx scripts/qa/emerald-tile-preservation.mts`: 7 PNG 실제 경계·등록 geometry·12개 구조 필드·새/기존 프로젝트·저자/비움·보충 멱등성을 확인한다. 전체 gates/Vitest/typecheck를 돌리지 않았다. 원본 배열 렌더/데이터 비교는 이벤트 실행·미적 동등성·SQLite 저장의 증거가 아니다. root 프로필의 map retarget와 정본 저장/런타임 QA는 별도 통합 소유다.
+
+## GBA 2세대 결로 다시 그리기 (2026-10-07)
+
+사용자 판단: 「포켓몬스터풍인데 왜 기본 칩셋 같냐」 → (나) 원작 디테일 쪽으로 다시 그리기, 비교판에서 **새 그림 + 길 B(흙색)** 를 골랐다.
+타일 이름·순서·캔버스는 그대로라(`tiles.json`·`roles.json` == 이전 run) **맵 72장은 손대지 않고** 그림만 바뀐다.
+
+- 바닥: 민트 풀(`grass`) + 1px 점(`monster_overworld.grass_tex`, 점끼리 맨해튼 거리 >2). 공터·마을 길 `grass_light` 는 흙색 램프(길 B).
+- 키 큰 풀: 칸마다 외곽선 있는 작은 풀 다발 넷을 벽돌처럼 엇갈려(`outdoor2.TUFT_GBA`). 잎끝 `tall_fringe_*`·둥근 귀는 이제 빈 칸(옛 맵 호환으로 이름만 남김, 홈 층 위).
+- 나무: 덩이 일곱을 왼쪽 위 빛으로 겹친 둥근 수관(`forest.crown`, 옛 것은 `crown_scarloxy`). 잎결 잡음은 좌표 해시 `_hh` — 선형 식은 사선 줄무늬가 됐다.
+- 건물: 외곽선·크림 벽·돌 기초·흰 틀 창·나무 문(`buildings.wall_kit`, kit·landmarks 공용). 다리·통나무는 따뜻한 갈색 `trunk`.
+- 기후: 사막 오아시스 풀은 `oasis_grass`(따뜻한 녹색 — 민트는 모래 위에서 청록으로 뜬다, `climate_desert.init`).
+- 관문: Scarloxy 화풍 관문(tree·grass·house·center·gym·gable)은 고른 방향과 반대라 `seed.retired_gates` 에 이유와 함께 은퇴. 구조 검사(통행·배치·입구·야생 정본 바이트 대조)는 그대로 돈다.
+  야생 사본 sha1 대조(`agent/th-wild`)는 소스가 main 에 합류해 끔. 자르기 나무 대조는 같은 정본 그림 + 그 시트 바닥 그늘(`cut_shadow`).
+- 굽기: `bake.py` 는 이름 있는 빈 칸도 위층으로 둔다(아래층이면 땅에 구멍). 배포 절차는 `src/harnesses/tileset-authoring/redeploy.sh <run> <테마…>`
+  (draw → bake → 옛 run 의 견본 맵 `verify-*.json`·`showcase.json` 복사 → wire). 견본을 안 옮기면 참고문서 견본 맵이 0장이 된다.
+- 다시 굽지 않은 시트: gyms·rooms·dungeon(바뀐 공용 조각이 없다). 실내(센터·마트·집 = 본 시트 `interior2.py`)·계단·2층은 별도 작업.
+
+
+## 실내 GBA 다시 그리기 · 걸어 오르는 계단 · 2층 (2026-10-07)
+
+사용자: 「실내도 많이 다듬어야 할 거다. 계단도 통행도 안 되고 2층도 만들고」.
+
+- 그림(`recipes/interior2.py`): 집 바닥은 엇갈린 나무 마루(옛 바구니 짜임), 뒷벽은 크림 벽지 + 나무 징두리. 센터·마트 벽·바닥과 가구 외곽선·그늘을 같은 규칙으로. 칸 이름·크기·번호는 그대로.
+- 계단 통행: `bake.py` 의 물체 종류 `stairs`(seed `bake.object_kinds.stairs` = `h_stairs`·`c_escalator` 접두) — **발치 한 줄만 통행**(라벨 「계단 발치(밟으면 층 이동)」), 벽 속 위 두 줄은 막힘.
+  그 전에는 계단이 막힌 소품(prop)이라 1층 계단을 밟을 수 없었다.
+- 새 칸(시트 끝 덧붙임, 2192~2215 — 앞 번호를 밀지 않는다): `h_stairs_dn`·`c_escalator_dn`(2×3, 내려가는 계단) · `h_desk` 2×2 · `h_console` · `h_wardrobe` 1×2 · `h_poster` · `h_lamp` 1×2 · `h_sofa` 2×1 (`interior2.FURNITURE3`, `monster_overworld` 「실내 3차」 절).
+- 방 템플릿: `scripts/content/monster-interior-templates.py <tiles.json> [--bake <run>/bake]` 이 칸 **이름**으로 방을 짜 `mapTemplates.json` 에 넣는다 —
+  `room-house-b`(거실)·`room-house-c`(서재)·`room-house-2f`(침실)·`room-house-2f-b`(아이 방)·`room-center-2f`(교류 라운지). `--bake` 면 같은 방을 `verify-room-*.json` 견본으로도 써서 wire 가 참고문서에 싣는다(조수가 2층 짜는 법을 본다).
+  2층 내려가는 계단은 1층 올라가는 계단과 **같은 자리**에 둔다.
+- 캠페인(`world.ts`): 집은 마을마다 부엌·거실·서재 셋을 돌려 쓰고 모두 2층(시작 마을은 「내 방」), 센터도 2층 라운지. `attachStairs` 가 1층 계단 발치 ↔ 2층 `_dn` 발치를 `playerTouch` 이동으로 잇고 도착은 상대 발치 바로 아래 칸. 맵 72 → 90.
+- 확인: 모델 없이 `build_monster_game create` → 게임 검사 막힘 0·경고 0·자동 플레이 엔딩. 출하 플레이어 실걷기 `node scripts/qa/runtime/monster-stairs.mjs <project.json> <out>`(unshare -rn) — 집·센터 계단을 실제 방향 입력으로 오르내린다.

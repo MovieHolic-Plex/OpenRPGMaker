@@ -113,7 +113,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "import_region_reference", mode: "write", domains: ["map", "world"],
-    description: "Import a registered place (read_region_reference ids, or a list_spatial_designs kind:place row — reviewed:<id> places bring every floor/room map as new maps; ids: forest/concept/climate villages, fields and outdoor places, fantasy places, interiors, dungeons, ships) into the project in one call — its tiles, all layers, and the tileset it needs (tile grafts, per-tile rules, groups and reference documents come along; a missing tileset such as oprn_dungeon_* is installed, a bundled one like forest_harmony only grows its missing tail slots 2550~). Omit mapId to create a new map (default; optional newMapId/name, includeEvents copies events whose transfers stay inside known maps). Give mapId (+x,y top-left, default 0,0) to paste into an existing map on the same tileset; overflow is clipped. Use this instead of re-painting read_region_reference rows. If the project's tileset already shows other pictures in those slots, a separate copy tileset is installed and data.tileset.mode is 'copied'.",
+    description: "Import a registered place (read_region_reference ids, or a list_spatial_designs kind:place row — reviewed:<id> places bring every floor/room map as new maps; ids: forest/concept/climate villages, fields and outdoor places, fantasy places, interiors, dungeons, ships) into the project in one call — its tiles, all layers, and the tileset it needs (tile grafts, per-tile rules, groups and reference documents come along; a missing tileset such as oprn_dungeon_* is installed, a bundled one like forest_harmony only grows its missing tail slots 2550~). Omit mapId to create a new map (default; optional newMapId/name, includeEvents copies events whose transfers stay inside known maps). A place with several floors on one tileset (e.g. jp-city-house-interior-21x15, 1F+2F) brings every floor as its own new map (data.floorMapIds) with the stair transfers between floors rewired. Give mapId (+x,y top-left, default 0,0) to paste into an existing map on the same tileset; overflow is clipped. Use this instead of re-painting read_region_reference rows. If the project's tileset already shows other pictures in those slots, a separate copy tileset is installed and data.tileset.mode is 'copied'.",
     parameters: { type: "object", properties: {
       id: { type: "string", description: "등록 장소 id (read_region_reference 를 id 없이 불러 목록)" },
       mapId: { type: "string", description: "붙일 기존 맵. 생략하면 새 맵" },
@@ -157,7 +157,8 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         ...(result.eventsSkipped > 0 ? [`장소 이벤트 ${result.eventsSkipped}개는 가져오지 않았다${args.includeEvents === true ? "(없는 맵으로 이동)" : " — includeEvents:true 로 새 맵에 복사"}`] : []),
         ...(ts.mode === "copied" ? [`프로젝트의 ${scene.tileset.id} 는 같은 칸에 다른 그림이 있어(${ts.conflict}) 사본 ${ts.tilesetId} 를 만들었다 — 이 맵은 사본 타일셋을 쓴다`] : []),
       ];
-      return { summary: `「${scene.name}」 ${result.created ? "새 맵" : "붙이기"} ${result.mapId} ${result.rect.width}×${result.rect.height} · ${tilesetNote}`,
+      const floorNote = result.floorMapIds.length ? ` · 다른 층 ${result.floorMapIds.join(", ")}(층 사이 이동 연결)` : "";
+      return { summary: `「${scene.name}」 ${result.created ? "새 맵" : "붙이기"} ${result.mapId} ${result.rect.width}×${result.rect.height}${floorNote} · ${tilesetNote}`,
         data: { ...result, referenceId: scene.referenceId, source: scene.source }, ...(warnings.length ? { warnings } : {}) };
     },
   },

@@ -129,7 +129,7 @@ export const JP_CITY_PLACE_REFERENCES = [
       "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층·실내 건조대) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 틈에 열린 문.",
       "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."
     ],
-    "limitations": "실내만이다 — 현관 밖 이동은 비어 있다(거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다). 가족 NPC·이벤트 없음. 장식 광 문(2층 복도)은 통로가 아니다."
+    "limitations": "실내만이다 — 현관 밖 이동은 비어 있다(거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다). 가족 NPC·이벤트 없음."
   },
   {
     "id": "jp-city-apartment-1k-12x13",

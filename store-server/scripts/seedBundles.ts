@@ -7,13 +7,14 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { STORE_PACK_SCHEMA, blobPlaceholder, mapStrings, type StoreAssetKind, type StoreBlobMime, type StoreLocalizedTexts, type StorePackManifest } from "../../src/assetStore/format";
+import { STORE_LIMITS, STORE_PACK_SCHEMA, blobPlaceholder, mapStrings, type StoreAssetKind, type StoreBlobMime, type StoreLocalizedTexts, type StorePackCharacter, type StorePackManifest } from "../../src/assetStore/format";
 import { pngSize, sniffMime } from "../../src/assetStore/sniff";
 import { createAtlasBiomeInteriorTileset } from "../../src/project/defaults/atlasBiomeInterior";
 import { createBeodeulCityTileset } from "../../src/project/defaults/beodeulCity";
 import { createJoseonBaramTileset } from "../../src/project/defaults/joseonBaram";
 import { createJpCityTileset } from "../../src/project/defaults/jpCity";
 import { createWizardingWorldTileset } from "../../src/project/defaults/wizardingWorld";
+import { WIZARDING_CHARSET_SEMANTICS } from "../../src/assets/wizardingCharsets";
 import type { TilesetDef } from "../../src/project/types";
 
 export interface BundleSeed {
@@ -29,8 +30,55 @@ export interface BundleSeed {
   extraAssets?: { id: string; name: string; kind: StoreAssetKind; path: string }[];
   /** 팩 안 타일셋·시트 그림 이름(없으면 번들 이름). 번들 이름에 원작 이름이 든 경우 바꾼다. */
   displayName?: string;
+  /** 캐릭터 시트 칸 설명(조수가 외형으로 고른다). asset 은 extraAssets 의 id. */
+  characters?: () => StorePackCharacter[];
+  /**
+   * 공개 팩에서 바꿔 쓸 낱말 [원래, 바꿀 말] — 원작 고유명(상표)을 일반 낱말로. 타일셋 글(이름·설명·참고문서)·캐릭터 설명에 적용한다.
+   * id(영문)는 건드리지 않으므로 한글 낱말만 넣는다. 긴 말을 먼저 적는다.
+   */
+  scrub?: readonly (readonly [string, string])[];
   /** 다른 언어 상품 글(ko 는 title·summary·description). library_locales.py 의 같은 제목 항목과 맞춘다. */
   locales?: StoreLocalizedTexts;
+}
+
+/** 공개 팩용 일반 낱말(원작 고유명 → 일반 말). 에디터 번들 안의 글은 그대로 둔다. */
+const WIZARDING_SCRUB: readonly (readonly [string, string])[] = [
+  ["해리포터풍", "마법 학교풍"], ["해리포터", "마법 학교"], ["호그와트풍", "마법 학교풍"], ["호그와트", "마법 학교"],
+  ["그리핀도르", "붉은 사자 기숙사"], ["슬리데린", "초록 뱀 기숙사"], ["래번클로", "푸른 독수리 기숙사"], ["후플푸프", "노란 오소리 기숙사"],
+  ["퀴디치", "빗자루 공놀이"], ["허니듀크", "마법 과자점"], ["호그스미드", "마법 마을"], ["다이애건 앨리", "마법 상점가"], ["다이애건", "마법 상점가"],
+  ["올리밴더", "지팡이 장인"], ["HP 테마", "마법 학교 테마"], ["세스트랄", "해골 날개말"], ["스니치", "금빛 날개공"], ["블러저", "쇠공"], ["쿼플", "붉은 공"],
+];
+const scrubText = (text: string, pairs: readonly (readonly [string, string])[] | undefined): string =>
+  (pairs ?? []).reduce((out, [from, to]) => out.split(from).join(to), text);
+
+const GENERIC_TAGS = new Set(["마법 학교", "해리포터풍", "호그와트", "마법사", "마녀", "wizard", "witch"]);
+
+/** 마법 학교 인물 35명 → 스토어 캐릭터 설명(시트 n 칸 i = 팩 에셋 wizarding<n>_charset). */
+function wizardingCharacters(): StorePackCharacter[] {
+  return WIZARDING_CHARSET_SEMANTICS.map((entry) => {
+    const sheet = Number(/wizarding(\d+)$/.exec(entry.textureKey)?.[1]);
+    // 옛 native 9명의 설명은 「… — 데모에서 승인된 native 걷기 시트.」 뿐이라 외형이 아니다 — 빼고 이름·태그로 찾게 한다.
+    const appearance = entry.appearance && !entry.appearance.includes("native 걷기 시트") ? entry.appearance : undefined;
+    return {
+      asset: `wizarding${sheet}_charset`, characterIndex: entry.characterIndex, label: entry.label,
+      // 이름·역할 낱말을 앞에, 세계관 공통 낱말을 뒤에 — 태그 12개 상한에서 역할 동의어가 잘리지 않게.
+      tags: [...entry.tags.filter((tag) => !GENERIC_TAGS.has(tag)), ...entry.tags.filter((tag) => GENERIC_TAGS.has(tag))]
+        .filter((tag) => !/^wz-/.test(tag) && tag !== "앨리"),
+      ...(appearance ? { appearance } : {}),
+    };
+  });
+}
+
+/** 캐릭터 설명을 스토어 규격에 맞춘다(낱말 바꾸기 → 태그 중복·길이·개수, 외형 길이). */
+function fitCharacter(c: StorePackCharacter, pairs: BundleSeed["scrub"]): StorePackCharacter {
+  const label = scrubText(c.label, pairs).slice(0, STORE_LIMITS.characterLabel);
+  const tags = [...new Set((c.tags ?? []).map((tag) => scrubText(tag, pairs).trim()).filter((tag) => tag && tag !== label && tag.length <= STORE_LIMITS.tagLength))]
+    .slice(0, STORE_LIMITS.tags);
+  const appearance = c.appearance ? scrubText(c.appearance, pairs).slice(0, STORE_LIMITS.characterAppearance) : undefined;
+  return {
+    asset: c.asset, characterIndex: c.characterIndex, label,
+    ...(tags.length ? { tags } : {}), ...(c.gender ? { gender: c.gender } : {}), ...(c.age ? { age: c.age } : {}), ...(appearance ? { appearance } : {}),
+  };
 }
 
 export const SEED_BUNDLES: readonly BundleSeed[] = [
@@ -70,6 +118,8 @@ export const SEED_BUNDLES: readonly BundleSeed[] = [
       + "참고문서(공간별 배치 순서·정상/오류 그림)가 들어 있어 에디터 조수가 이 칩셋으로 방을 바로 짓습니다. 학생·교수·관리인·부엉이 등 걷기 칩 35명(시트 5장)이 함께 들어 있습니다.",
     tags: ["마법", "학교", "성", "16px", "판타지"],
     displayName: "마법 학교 성채",
+    scrub: WIZARDING_SCRUB,
+    characters: wizardingCharacters,
     previews: ["assets/store-covers/wizarding-hall.png", "assets/store-covers/wizarding-cast.png", "assets/store-covers/wizarding-library.png", "assets/store-covers/wizarding-potions.png"],
     extraAssets: [1, 2, 3, 4, 5].map((n) => ({ id: `wizarding${n}_charset`, name: `마법 학교 인물 ${n}`, kind: "charset" as const, path: `assets/generated/charsets/Wizarding${n}.png` })),
     locales: {
@@ -123,6 +173,7 @@ export function bundlePack(seed: BundleSeed, publicDir: string): { manifest: Sto
   const previews = seed.previews.filter((path) => existsSync(join(publicDir, path))).map((path) => add(new Uint8Array(readFileSync(join(publicDir, path)))));
   tileset.image = { type: "uploaded", id: assetId };
   if (seed.displayName) tileset.name = seed.displayName;
+  const published = (seed.scrub ? mapStrings(tileset, (text) => scrubText(text, seed.scrub)) : tileset) as TilesetDef;
   const extra: StorePackManifest["content"]["assets"] = {};
   for (const item of seed.extraAssets ?? []) {
     const bytes = new Uint8Array(readFileSync(join(publicDir, item.path)));
@@ -130,6 +181,7 @@ export function bundlePack(seed: BundleSeed, publicDir: string): { manifest: Sto
     if (!dim) throw new Error(`${item.path}: PNG 가 아닙니다`);
     extra[item.id] = { id: item.id, name: item.name, kind: item.kind, blob: add(bytes), mime: "image/png", meta: { width: dim.width, height: dim.height } };
   }
+  const characters = (seed.characters?.() ?? []).filter((c) => extra[c.asset]?.kind === "charset").map((c) => fitCharacter(c, seed.scrub));
   const manifest: StorePackManifest = {
     schema: STORE_PACK_SCHEMA,
     title: seed.title,
@@ -143,8 +195,9 @@ export function bundlePack(seed: BundleSeed, publicDir: string): { manifest: Sto
     aiGenerated: true,
     credits: `${seed.title} — OPRN 공식 팩 (openrpgmaker.com)`,
     content: {
-      assets: { [assetId]: { id: assetId, name: tileset.name, kind: "chipset", blob: sheetSha, mime: "image/png", meta: { width: size.width, height: size.height, tileSize: source.tileSize } }, ...extra },
-      tilesets: { [tileset.id]: tileset },
+      assets: { [assetId]: { id: assetId, name: published.name, kind: "chipset", blob: sheetSha, mime: "image/png", meta: { width: size.width, height: size.height, tileSize: source.tileSize } }, ...extra },
+      tilesets: { [published.id]: published },
+      ...(characters.length ? { characters } : {}),
     },
     previews: [...previews, sheetSha].slice(0, 6),
     blobs: [...blobs].map(([key, blob]) => ({ sha256: key, mime: blob.mime, bytes: blob.bytes.byteLength })),

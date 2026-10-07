@@ -1,0 +1,37 @@
+{
+  "id": "pokemon-overworld",
+  "title": "포켓몬풍 야외 (젠3 느낌, 원본 도트)",
+  "tilesetId": "pkmn_overworld",
+  "tilesetName": "포켓몬풍 야외 · OPRN 손 도트",
+  "textureKey": "tex_pkmn_overworld",
+  "family": "oprn-atlas",
+  "tileSize": 16,
+  "tilesPerRow": 16,
+  "view": "정면 위 3/4. 빛은 왼쪽 위. 건물·나무는 앞면이 보이고 윗면은 납작하다. 캐릭터는 16×24.",
+  "originality": "포켓몬 게임에서 뜯은 그림·팔레트 샘플링 금지. 장르 문법(잔디 벌판·키큰 풀·흙길·점프 턱·물가·울타리·둥근 나무·붉은 지붕 집)만 빌려 모든 픽셀을 직접 찍는다.",
+  "palette": {
+    "grass":   ["#388038", "#50a840", "#70c850", "#88e068", "#b0f088"],
+    "tall":    ["#205830", "#2e7a3c", "#409a48", "#68c060"],
+    "dirt":    ["#9c7448", "#c49c60", "#e0c080", "#f0d8a0"],
+    "sand":    ["#c0a068", "#dcc088", "#f0dca8", "#fff0c8"],
+    "water":   ["#2a5aa8", "#3a78c8", "#5898e8", "#90c8f8", "#d8f0ff"],
+    "rock":    ["#58483c", "#80684c", "#a88c68", "#c8b088"],
+    "wood":    ["#583820", "#80582c", "#a87c44", "#d0a468"],
+    "roof_red":["#702028", "#a03038", "#d04848", "#f07868"],
+    "roof_blue":["#203870", "#305098", "#4878c8", "#78a8f0"],
+    "plaster": ["#a8a098", "#d0c8b8", "#f0e8d8", "#fffaf0"],
+    "trunk":   ["#403020", "#684c30", "#8c6840"],
+    "leaf":    ["#1c5028", "#2c7838", "#40a048", "#68c868", "#98e888"],
+    "flower_w":["#ffffff", "#e8e8f8"],
+    "flower_r":["#e84048", "#ffa0a0"],
+    "flower_y":["#f8d030", "#fff098"],
+    "outline": "#283818"
+  },
+  "roles": [
+    "grass", "tall_grass", "dirt", "sand",
+    "path_autotile", "sand_autotile", "water_autotile",
+    "ledge_south", "ledge_west", "ledge_east",
+    "fence_autotile", "tree_big", "tree_pine", "bush", "rock", "sign", "house_kit"
+  ],
+  "ledger": "ledger.json"
+}

@@ -108,6 +108,15 @@ export interface CharsetLabelOverride {
   readonly label: string;
   readonly tags?: readonly string[];
   readonly origin?: "user" | "ai";
+  /**
+   * "uploaded" = 업로드 캐릭터 시트(textureKey 가 에셋 id) 칸의 설명. 기본 목록에 없는 칸이면 NPC 그림 목록에 새 항목으로 더한다 —
+   * 에셋 스토어 팩의 캐릭터(StorePackCharacter)가 이 길로 들어와 조수가 외형으로 고른다.
+   */
+  readonly spriteType?: "uploaded";
+  readonly gender?: "male" | "female" | "none";
+  readonly age?: "child" | "youth" | "middle" | "elder";
+  /** 외형 한두 문장(검색 결과 description). */
+  readonly appearance?: string;
 }
 
 export type TileGroupRole = "building" | "castle" | "fence" | "roof" | "terrain" | "water" | "wall" | "prop";
@@ -636,6 +645,11 @@ export interface UploadedAsset {
   };
   /** 에셋 스토어에서 넣은 에셋의 출처. 게임 크레딧이 여기서 만들어진다(src/assetStore/pack.ts storeCredits). */
   origin?: import("../../assetStore/format").StoreAssetOrigin;
+  /**
+   * AI 가 만든 자산이면 만든 경로(예: "workshop", "image-generation", "original-music").
+   * 스토어에 올릴 때 「AI 생성」 표시를 끌 수 없게 한다(src/assetStore/pack.ts aiMadeAssets).
+   */
+  generatedBy?: string;
 }
 
 export interface AssetSet {

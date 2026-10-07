@@ -6,7 +6,7 @@ import {
 import type { Auth } from "../auth";
 import type { StoreConfig } from "../config";
 import { esc } from "../http";
-import type { CatalogQuery } from "../items";
+import type { AdminQueue, CatalogQuery } from "../items";
 import {
   DOCS, HTML_LANG, LANG_NAMES, LANGS, docTitle, formatDate, kindLabel, licenseLabel, licenseShort, translator,
   type Lang, type MessageKey, type T,
@@ -296,15 +296,19 @@ ${it.status === "visible" || (it.status === "hidden" && it.hiddenBy === "author"
   return layout(view, t("meTitle"), body);
 }
 
-export function admin(view: View, queue: { pending: StoreItemSummary[]; reported: (StoreItemSummary & { status: string; reports: { reason: string; detail: string; createdAt: string }[] })[] }): string {
+export function admin(view: View, queue: AdminQueue): string {
   const { t, auth, lang } = view;
   const action = (slug: string, status: string, label: string, cls = "") => `<form method="post" action="/admin/items/${esc(slug)}/status" class="inline"><input type="hidden" name="csrf" value="${esc(auth?.csrf ?? "")}"><input type="hidden" name="status" value="${status}"><button class="button small ${cls}" data-testid="admin-${status}-${esc(slug)}">${esc(label)}</button></form>`;
-  const pending = queue.pending.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a><p>${esc(it.author)} · ${esc(kindLabel(lang, it.kind))} ${marks(view, it)}</p></div><div class="actions">${action(it.slug, "visible", t("approve"))}${action(it.slug, "removed", t("remove"), "danger")}</div></li>`).join("");
+  const reviewed = (slug: string) => `<form method="post" action="/admin/items/${esc(slug)}/reviewed" class="inline"><input type="hidden" name="csrf" value="${esc(auth?.csrf ?? "")}"><button class="button small" data-testid="admin-reviewed-${esc(slug)}">${esc(t("markReviewed"))}</button></form>`;
+  const pending = queue.pending.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a><p>${esc(it.author)} · ${esc(kindLabel(lang, it.kind))} ${marks(view, it)}</p>${it.heldReason ? `<p class="held" data-testid="admin-held-${esc(it.slug)}">${esc(t("heldFor", it.heldReason))}</p>` : ""}</div><div class="actions">${action(it.slug, "visible", t("approve"))}${action(it.slug, "removed", t("remove"), "danger")}</div></li>`).join("");
   const reported = queue.reported.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a> <span class="status ${esc(it.status)}">${esc(statusLabel(view, it.status as StoreItemStatus))}</span>
 <ul class="reports">${it.reports.map((r) => `<li><b>${esc(r.reason)}</b> ${esc(r.detail)} <small>${esc(formatDate(lang, r.createdAt))}</small></li>`).join("")}</ul></div>
 <div class="actions">${action(it.slug, "visible", t("keepPublic"))}${action(it.slug, "hidden", t("keepHidden"))}${action(it.slug, "removed", t("remove"), "danger")}</div></li>`).join("");
+  const unreviewed = queue.unreviewed.map((it) => `<li class="queue-item"><div class="cover small">${cover(it)}</div><div><a href="/items/${esc(it.slug)}">${esc(it.title)}</a> <span class="status ${esc(it.status)}">${esc(statusLabel(view, it.status as StoreItemStatus))}</span><p>${esc(it.author)} · ${esc(kindLabel(lang, it.kind))} · v${it.latestVersion} ${marks(view, it)}</p></div>
+<div class="actions">${reviewed(it.slug)}${it.status === "visible" ? action(it.slug, "hidden", t("hide")) : ""}${action(it.slug, "removed", t("remove"), "danger")}</div></li>`).join("");
   const body = `<section class="page"><h1>${t("adminTitle")}</h1><h2>${esc(t("adminPending", queue.pending.length))}</h2><ul class="queue" data-testid="admin-pending">${pending || `<li class="empty">${t("none")}</li>`}</ul>
-<h2>${esc(t("adminReported", queue.reported.length))}</h2><ul class="queue" data-testid="admin-reported">${reported || `<li class="empty">${t("none")}</li>`}</ul></section>`;
+<h2>${esc(t("adminReported", queue.reported.length))}</h2><ul class="queue" data-testid="admin-reported">${reported || `<li class="empty">${t("none")}</li>`}</ul>
+<h2>${esc(t("adminUnreviewed", queue.unreviewed.length))}</h2><p class="queue-hint">${esc(t("adminUnreviewedHint"))}</p><ul class="queue" data-testid="admin-unreviewed">${unreviewed || `<li class="empty">${t("none")}</li>`}</ul></section>`;
   return layout(view, t("adminTitle"), body);
 }
 

@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9023칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-apartment-1k`. 도구 결과: 손 도트 실내 '원룸 아파트(1K)' 12×13 (jp-city-apartment-1k, jp_city) — 출입구에서 닿는 칸 36, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-apartment-1k`. 도구 결과: 손 도트 실내 '원룸 아파트(1K)' 12×13 (jp-city-apartment-1k, jp_city) — 출입구에서 닿는 칸 33, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-apartment-1k", "name": "원룸 아파트(1K)", "plan": ["############", "#..........#", "#..........#", "#..........#", "#..........#", "#..........#", "######.#####", "#...#......#", "#..........#", "#..........#", "#..........#", "#####......#", "########.###"], "floor": "flooring", "wall": "cloth", "zones": [{"x0": 0, "y0": 7, "x1": 3, "y1": 11, "floor": "bathtile", "wall": "bathwall"}, {"x0": 5, "y0": 7, "x1": 10, "y1": 9, "floor": "cushion", "wall": "kitchen-panel"}, {"x0": 5, "y0": 11, "x1": 10, "y1": 12, "floor": "tataki"}], "objects": [{"id": "bed-single", "x": 1, "y": 3}, {"id": "bed-side-table", "x": 2, "y": 3}, {"id": "curtain-window", "x": 2, "y": 1}, {"id": "tv-board", "x": 4, "y": 3}, {"id": "low-table", "x": 4, "y": 4}, {"id": "cushion-floor", "x": 4, "y": 5}, {"id": "cushion-floor", "x": 5, "y": 5}, {"id": "dresser-low", "x": 8, "y": 3}, {"id": "ac-unit", "x": 7, "y": 1}, {"id": "bookshelf", "x": 10, "y": 3}, {"id": "floor-lamp", "x": 8, "y": 5}, {"id": "houseplant", "x": 10, "y": 5}, {"id": "bathtub", "x": 1, "y": 9}, {"id": "toilet", "x": 3, "y": 9}, {"id": "shower-faucet", "x": 1, "y": 7}, {"id": "towel-rack", "x": 2, "y": 7}, {"id": "washing-machine", "x": 5, "y": 9}, {"id": "kitchen-sink", "x": 7, "y": 9}, {"id": "kitchen-worktop", "x": 8, "y": 9}, {"id": "kitchen-stove", "x": 9, "y": 9}, {"id": "fridge", "x": 10, "y": 9}, {"id": "intercom", "x": 7, "y": 7}, {"id": "agarikamachi", "x": 5, "y": 10}, {"id": "agarikamachi", "x": 6, "y": 10}, {"id": "agarikamachi", "x": 7, "y": 10}, {"id": "agarikamachi", "x": 8, "y": 10}, {"id": "agarikamachi", "x": 9, "y": 10}, {"id": "getabako-narrow", "x": 5, "y": 11}, {"id": "shoes-pair", "x": 7, "y": 11}, {"id": "genkan-door", "x": 8, "y": 12}, {"id": "door-side-sliding", "x": 4, "y": 10}, {"id": "door-open-western", "x": 6, "y": 6}], "tables": [], "goods": [{"id": "kettle", "x": 9, "y": 9}, {"id": "remote", "x": 5, "y": 4}, {"id": "mug", "x": 4, "y": 4}, {"id": "alarm-clock", "x": 2, "y": 3}], "start": [{"x": 8, "y": 11}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-apartment-1k", "name": "원룸 아파트(1K)", "plan": ["############", "#..........#", "#..........#", "#..........#", "#..........#", "#..........#", "######.#####", "#...#......#", "#..........#", "#..........#", "#..........#", "#####......#", "########.###"], "floor": "flooring", "wall": "cloth", "zones": [{"x0": 0, "y0": 7, "x1": 3, "y1": 11, "floor": "bathtile", "wall": "bathwall"}, {"x0": 5, "y0": 7, "x1": 10, "y1": 9, "floor": "cushion", "wall": "kitchen-panel"}, {"x0": 5, "y0": 11, "x1": 10, "y1": 12, "floor": "tataki"}], "objects": [{"id": "bed-single", "x": 1, "y": 3}, {"id": "bed-side-table", "x": 2, "y": 3}, {"id": "curtain-window", "x": 2, "y": 1}, {"id": "tv-board", "x": 4, "y": 3}, {"id": "low-table", "x": 4, "y": 4}, {"id": "cushion-floor", "x": 4, "y": 5}, {"id": "cushion-floor", "x": 5, "y": 5}, {"id": "dresser-low", "x": 8, "y": 3}, {"id": "ac-unit", "x": 7, "y": 1}, {"id": "bookshelf", "x": 10, "y": 3}, {"id": "floor-lamp", "x": 8, "y": 5}, {"id": "houseplant", "x": 10, "y": 5}, {"id": "bathtub", "x": 1, "y": 9}, {"id": "toilet", "x": 3, "y": 9}, {"id": "shower-faucet", "x": 1, "y": 7}, {"id": "towel-rack", "x": 2, "y": 7}, {"id": "washing-machine", "x": 5, "y": 9}, {"id": "kitchen-sink", "x": 7, "y": 9}, {"id": "kitchen-worktop", "x": 8, "y": 9}, {"id": "kitchen-stove", "x": 9, "y": 9}, {"id": "fridge", "x": 10, "y": 9}, {"id": "intercom", "x": 7, "y": 7}, {"id": "agarikamachi", "x": 5, "y": 10}, {"id": "agarikamachi", "x": 6, "y": 10}, {"id": "agarikamachi", "x": 7, "y": 10}, {"id": "agarikamachi", "x": 8, "y": 10}, {"id": "agarikamachi", "x": 9, "y": 10}, {"id": "getabako-narrow", "x": 5, "y": 11}, {"id": "shoes-pair", "x": 7, "y": 11}, {"id": "genkan-door", "x": 8, "y": 12}, {"id": "door-side-sliding", "x": 4, "y": 10}, {"id": "door-open-western", "x": 6, "y": 6}, {"id": "desk-study", "x": 6, "y": 3}, {"id": "desk-chair-n", "x": 6, "y": 4}], "tables": [], "goods": [{"id": "kettle", "x": 9, "y": 9}, {"id": "remote", "x": 5, "y": 4}, {"id": "mug", "x": 4, "y": 4}, {"id": "alarm-clock", "x": 2, "y": 3}, {"id": "desk-lamp", "x": 7, "y": 3}], "start": [{"x": 8, "y": 11}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -25,8 +25,8 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 XXXXXXXXXXXX
 XXXXXXXXXXXX
 XXXXXXXXXXXX
-XXX.XX..XXXX
-XX..XX....XX
+XXX.XXXXXXXX
+XX..XXX...XX
 X.......X.XX
 XXXXXX.XXXXX
 XXXXXX.XXXXX
@@ -76,9 +76,9 @@ y=12: . . . . . . . . 9016 . . .
 ```
 y=00: . . . . . . . . . . . .
 y=01: . . 8807 8808 . . . 8811 8812 . . .
-y=02: . 8964 8809 8810 8894 8895 . . . . . .
-y=03: . 8965 8997 . 8896 8897 . . 8993 8994 8906 .
-y=04: . 8966 . . 8892 8893 . . 8908 . 8907 .
+y=02: . 8964 8809 8810 8894 8895 8977 8978 . . . .
+y=03: . 8965 8997 . 8896 8897 8979 8980 8993 8994 8906 .
+y=04: . 8966 . . 8892 8893 8982 . 8908 . 8907 .
 y=05: . . . . . . . . 8909 . 8905 .
 y=06: . . . . . . 9007 . . . . .
 y=07: . 8946 8948 . . . 9008 8816 . 8859 . .
@@ -94,7 +94,7 @@ y=12: . . . . . . . . . . . .
 y=00: . . . . . . . . . . . .
 y=01: . . . . . . . . . . . .
 y=02: . . . . . . . . . . . .
-y=03: . . 9003 . . . . . . . . .
+y=03: . . 9003 . . . . 9002 . . . .
 y=04: . . . . 8939 8936 . . . . 8904 .
 y=05: . . . . . . . . . . . .
 y=06: . . . . . . . . . . . .
