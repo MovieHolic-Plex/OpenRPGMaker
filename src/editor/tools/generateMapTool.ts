@@ -177,7 +177,7 @@ const generateMap: ToolDefinition = {
     const generationProfile = requireMapGenerationProfile(draft, tilesetId);
     if (generationProfile.layout === "rooms") {
       throw new ToolError(
-        "실내는 개념 꾸러미로 시공합니다. get_concept_facility로 장소·물건을 읽고 place_concept(plan, 새 mapId)을 사용하세요. 현재 개념 시공은 실내 칩셋을 지원합니다.",
+        "실내는 build_hand_interior_room 으로 시공합니다.",
         { code: "concept-interior-required" },
       );
     }

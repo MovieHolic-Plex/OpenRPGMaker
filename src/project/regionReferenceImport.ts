@@ -11,7 +11,6 @@ import { regionReference } from "./regionReferences";
 import { preloadRegionReference, regionReferenceSnapshotScene } from "./regionReferenceSnapshots";
 import { EXTRA_LAYER_KEYS, type ExtraLayerFields } from "./mapLayers";
 import { bundledChipsetFrameCount } from "@/assets/bundled";
-import { ensureDocumentedTileset } from "./defaults/dungeonSheetTilesets";
 import type { GameEvent, GameMap, MapId, Project, TileGraft, TilesetDef, TilesetId } from "./types";
 
 export interface RegionReferenceScene {
@@ -269,8 +268,6 @@ export function installReferenceTileset(project: Project, scene: Pick<RegionRefe
   const source = scene.tileset;
   installAssets(project, scene.assets);
   const used = sceneTilesUsed(scene.map);
-  // Documented sheets (oprn_dungeon_*) are built the same way create_map builds them, sharing the stock documents.
-  const built = !project.tilesets[source.id] && ensureDocumentedTileset(project, source.id);
   const existing = project.tilesets[source.id];
   if (!existing) {
     project.tilesets[source.id] = completeTileset(source);
@@ -280,7 +277,6 @@ export function installReferenceTileset(project: Project, scene: Pick<RegionRefe
   const conflict = plan.conflict;
   if (!conflict) {
     const grown = extendTileset(existing, source, plan);
-    if (built) return { tilesetId: source.id, mode: "installed", tilesAdded: existing.count, graftsAdded: (existing.tileGrafts ?? []).length };
     return { tilesetId: source.id, mode: grown.tilesAdded || grown.graftsAdded ? "extended" : "same", ...grown };
   }
   // A copy made by an earlier import of the same reference is reused when it still matches.

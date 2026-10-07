@@ -9,7 +9,6 @@ import catalog from "@/assets/sharedObjectCatalog.json";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { sharedRegionReferences } from "@/project/sharedSpatialReferences";
 import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
-import { TRUNK_ONLY_FOREST_GROUPS } from "@/project/defaults/forestTrunkOnlyParts";
 import type { Project, TilesetDef } from "@/project/types";
 
 export type SharedPlaceEntry = {
@@ -81,9 +80,7 @@ export function sharedPlaces(): SharedPlaceEntry[] {
 
 // Bundled pieces the catalog already carries — not repeated as raw kit:/group: rows.
 const coveredKit = (kitId: string) => kitId.startsWith("dewbank:");
-// 잎 없는 숲 벽·숲 기둥도 목록에서 뺀다 — 낱개로 찍는 물체가 아니다(forestTrunkOnlyParts.ts).
-const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:") || groupId.startsWith("atlas-vehicles:")
-  || TRUNK_ONLY_FOREST_GROUPS.has(groupId);
+const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:") || groupId.startsWith("atlas-vehicles:");
 
 function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
   return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => ({

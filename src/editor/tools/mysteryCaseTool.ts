@@ -1328,7 +1328,7 @@ function barrenStageWarnings(draft: Project, spec: MysteryCase): string[] {
     const ratio = blocked / Math.max(1, map.width * map.height);
     if (ratio >= BARREN_STAGE_BLOCKED_RATIO) continue;
     out.push(`사건 무대 '${map.name ?? map.id}'(${map.id}) 에 벽·가구가 거의 없습니다(통행 불가 ${(ratio * 100).toFixed(1)}%) — 방·건물 없이 맨땅 위에 인물과 조사 지점만 서 있습니다. `
-      + `저택·여관 같은 실내 장면이면 place_concept(plan, 새 mapId) 로 방을 나눈 실내를, 외장과 함께면 author_house(interior:"linked-interior") 로 짓고, `
+      + `저택·여관 같은 실내 장면이면 build_hand_interior_room 으로 방을 나눈 실내를 짓고(외장과 잇는 문은 create_transfer_pair), `
       + `그 맵 좌표로 author_mystery_case 를 다시 불러 사건을 옮기세요(같은 caseId 면 이벤트를 갈아 끼웁니다). 바닥 타일 fill_region 으로 방을 흉내 내지 마세요.`);
   }
   return out;
@@ -1361,9 +1361,9 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
     }
   }
   const next = allBarren
-    ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 전부 맨땅(벽·가구 없음)이다. 지금은 run_scene_test 를 호출하지 마라. 먼저 place_concept(plan, 새 mapId) 나 author_house(interior:"linked-interior") 로 벽·가구가 있는 방을 짓고, 그 좌표로 author_mystery_case 를 같은 caseId 로 다시 불러라. 바닥 fill_region 으로 방을 흉내 내지 마라. data.verificationScene 은 방이 생긴 뒤에만 준다. `
+    ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 전부 맨땅(벽·가구 없음)이다. 지금은 run_scene_test 를 호출하지 마라. 먼저 build_hand_interior_room 으로 벽·가구가 있는 방을 짓고, 그 좌표로 author_mystery_case 를 같은 caseId 로 다시 불러라. 바닥 fill_region 으로 방을 흉내 내지 마라. data.verificationScene 은 방이 생긴 뒤에만 준다. `
     : barren.length > 0
-      ? `다음 할 일: 맨땅 무대 ${barren.length}곳은 place_concept 로 방을 보강한 뒤 같은 caseId 로 다시 저작하라. `
+      ? `다음 할 일: 맨땅 무대 ${barren.length}곳은 build_hand_interior_room 으로 방을 보강한 뒤 같은 caseId 로 다시 저작하라. `
       : "";
   const verify = verificationScene
     ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
@@ -1529,7 +1529,7 @@ const authorMysteryCase: ToolDefinition = {
   name: "author_mystery_case",
   description:
     "추리/살인사건/탐정 게임은 author_mystery_case 로 만든다(place_examine_hotspots·place_npc·define_ending 을 따로 조립하지 말 것). " +
-    "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 place_concept·author_house 로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
+    "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 build_hand_interior_room 으로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
     "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. " +

@@ -526,7 +526,7 @@ export const REPLACE_EXISTING_SCHEMA: JsonSchema = {
   type: "boolean",
   description:
     "기존 맵 id 를 대상으로 삼을 때만 true. 그 맵의 타일·이벤트가 전부 삭제되고 빈 방으로 교체된다. "
-    + "기존 맵을 고치려는 요청이면 이 플래그를 쓰지 말고 furnish_interior_space/fill_region/tile_erase 를 써라.",
+    + "기존 맵을 고치려는 요청이면 이 플래그를 쓰지 말고 fill_region/tile_erase 를 써라.",
 };
 
 /** 마을 NPC 계획 — `{name, lines?}`. */

@@ -3,13 +3,6 @@
 // exact policy surface that is injected into the system prompt.
 
 /**
- * 집 다양성 규칙 — 채팅 세션(contextBuilder)과 Pi 시공 에이전트(piAgent/systemPrompt)가 같은 문장을 받는다.
- * 2026-09-17: Pi 프롬프트에는 이 줄이 없어서 author_house 가 templateId 없는 사각형만 깔았다.
- */
-export const HOUSE_VARIETY_POLICY_LINE =
-  "- 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/tier-front/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라.";
-
-/**
  * 칩셋 계열 규칙(2026-09-25 사용자 결정) — 채팅 세션과 Pi 시공 에이전트가 같은 문장을 받는다.
  * 실행기가 다른 계열을 거부하므로(`tileset-family-change`) 여기서는 짧게 방향만 준다.
  */
@@ -25,7 +18,7 @@ export const AGENT_UX_POLICY_LINES = [
   "- 전투 방식: 이번 요청과 프로젝트 위키의 제작 방향·현재 맵의 예외를 먼저 읽으세요. JRPG 기본은 보이는 몬스터에 닿으면 별도 전투 화면에서 명령을 고르는 방식입니다. 액션 RPG는 set_action_combat으로 시스템과 대상 맵을 켜고 make_action_enemy로 맵 위에서 직접 싸우는 적을 만드세요. 랜덤 인카운터는 사용자가 원할 때만 선택하세요. 던전이라는 말만으로 전투 방식을 바꾸지 마세요. 기존 결정에도 답이 없으면 '몬스터에 닿으면 전투 화면에서 싸울까요, 돌아다니는 화면에서 직접 공격할까요?'처럼 플레이 모습을 물으세요.",
   "- 허위 완료 금지: 존재하지 않는 결과를 했다고 서술하지 마세요. 캔버스에 없는 지형·숲·길·건물·NPC·3D 시점·전투 방식을 마무리 서술에 언급하지 말고, 실제로 조회하거나 변경한 내용만 말하세요.",
   "- 모호한 요청: '좀 멋지게 해줘'처럼 대상·스타일·규모를 특정할 수 없는 저정보 요청이면 도구 호출 전에 1문장으로 되물으세요. 단, 요청문에서 추출 가능한 파라미터(예: 집 두어 채, 길, 나무 군락, 작은 마을)는 되묻지 말고 그대로 사용하세요.",
-  "- 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. '실내'·'인테리어'·'실내 맵'이 있으면 외장 없는 독립 실내 방은 실내 세션 경로, 들어가서 걷는 집(외장과 함께)은 author_house(interior:\"linked-interior\") 경로, '야외'·'외장'·마을 위 집이 있으면 author_house(interior:\"linked-interior\" 기본) 경로. 모호한 집 요청은 author_house를 호출하지 말고 먼저 되물으세요. 슬래시 스킬(집 짓기/실내 방 시공)로 고른 경우, 또는 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요 — 영역 선택은 현재 맵 위 야외 시공 의도이므로 author_house로 바로 시공. 매칭 스킬이 없거나 집·실내 스킬이 동시에 걸리면 반드시 되묻세요.",
+  "- 집 vs 실내(필수): '집/건물 만들어줘'만 있고 야외 외장·실내 맵 표지가 없으면 추측 실행 금지. 도구 호출 전에 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 한 문장+선택지로 되물으세요. 실내 방은 build_hand_interior_room, 버들항 맵 위 집 한 채는 inspect_terrain·place_terrain_house, 집과 실내를 잇는 문은 create_transfer_pair 로 짓습니다. 슬래시 스킬로 고른 경우나 영역 작업(사용자가 현재 맵 위에 선택 영역을 준 경우)에는 되묻지 마세요.",
   "- 원큐 진행: 사용자가 진행/계속/진행해/진행하라고 지시하면 추가 확인 질문 없이 끝까지 실행하세요. 실행 중 장애(맵 크기 부족 등)는 리사이즈 같은 비파괴 조치로 스스로 해결하고 결과에 보고하세요. 확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만 허용됩니다.",
   "- 시간 반응 분위기: 낮/밤/시간대에 따라 자동으로 분위기가 바뀌는 요청은 configure_time_system으로 시간 시스템을 opt-in 하세요. 활성화하면 런타임이 자동 주야간 색조를 적용합니다. set_scene_mood는 현재 장면의 정적 분위기 설정이며 시간 경과에 따라 자동 전환되지 않습니다.",
   "- 준비 작업만 한 턴: 리사이즈, 맵 이름 변경, 타일 그룹/메타데이터 등록, 밑그림 확정처럼 준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면 마무리 서술에 '아직 배치 자체는 하지 않았다'는 사실을 명확히 쓰세요.",
@@ -35,8 +28,6 @@ export const AGENT_UX_POLICY_LINES = [
   // 2026-08-29 modify 진단: "고쳐줘"가 신규 시공으로 튀는 인과사슬의 프롬프트 쪽 결손.
   // 정책 표면 어디에도 "무엇을 대상으로 삼아라"는 문장이 0건이었다.
   "- 수정 vs 신규(필수): '수정/고쳐/바꿔/변경/개선/정리/넓혀/좁혀/옮겨/지워' 요청은 **기존 산출물을 그 자리에서 고치라는 뜻**입니다. get_map_region/get_event로 현재 상태를 먼저 읽고, 사용자가 지목한 mapId(컨텍스트의 현재 맵)를 대상으로 편집하세요. 새 맵·새 방·새 마을을 만들어 거기에 결과물을 짓지 마세요 — 지목된 맵이 그대로 남으면 요청은 실패입니다. 사용자가 '새로 만들지 마'라고 명시했으면 create_map/duplicate_map/방 세션 시작을 아예 호출하지 마세요.",
-  "- 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.",
-  HOUSE_VARIETY_POLICY_LINE,
   TILESET_FAMILY_POLICY_LINE,
   // 답변 속 이름은 패널이 클릭 가능한 이동 링킬로 바꾼다(src/editor/aiAnswerLinks.ts) — 모델이 이름을 바꿔 부르면 링킬가 사라진다.
   "- 위치 안내: 사용자가 특정 맵·NPC·장소의 위치를 찾아 보여달라고 요청한 경우에만 focus_editor_view를 한 번 호출하세요. 시공·검수·진행 보고 때문에 사용자 화면을 이동하지 마세요. 답변에서 대상을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 사용자가 이름을 눌러 이동할 수 있습니다.",

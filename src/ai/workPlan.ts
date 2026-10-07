@@ -149,7 +149,7 @@ Harness contract:
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
 6. Plan at the scale the requested work requires. There is no layer or todo-count quota. Separate work that can be executed, retried or verified independently: individual regions, landmarks, connections, authoring passes and verification steps. Use direct only for genuinely atomic work, and do not invent extra scope or filler tasks merely to make the list longer.
    **대상 전체를 짓는 파사드는 항목 1개가 아니다.** author_beodeul_town / import_region_reference 는 한 호출로 대상을 세우지만, 결과를 살아있게 만드는 주민·대사·상점·실내·연결은 그 호출이 대신 만들어 주지 않는다 — 아무도 대신 확인해 주지 않는다. 그러니 채울 인자와 채울 대상을 항목으로 나눠라.
-   그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내 가구·연결(furnish_interior_space, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
+   그 호출 **밖에 남는 것**은 반드시 별도 항목이다: 실내·연결(build_hand_interior_room, create_transfer_pair), 상점 재고(set_shop_stock), 퀘스트, 시작 위치(set_start_position), 인카운터·적, 보물·아이템, 그리고 마지막 show_map_region 전수 점검.
 7. Every item needs:
    - title (identifies the independent result)
    - instruction (concrete tools/numbers: 신축=author_beodeul_town, place_terrain_house, build_hand_interior_room, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room / **수정=paint_tiles, tile_erase, fill_region, move_event, remove_event, set_map_properties, resize_map, furnish_interior_space** … — 건설 지시는 목표 맵과 정확한 수량을, **수정 지시는 대상 맵 id 와 바꿀 대상을 반드시 명시**)

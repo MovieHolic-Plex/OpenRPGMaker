@@ -1,8 +1,6 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { sharedContentTileset } from '@/project/sharedContent';
 import { sharedObjectKit } from '@/project/sharedSpatialReferences';
-import { CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
-import { SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "@/project/defaults/sharedVillageObjects";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { placeCards, placedCards, regionCards, worldCards } from "@/editor/panels/spatialCatalogHierarchy";
@@ -160,25 +158,9 @@ function objectCards(): SpatialGalleryCard[] {
  * Tibo 는 복원 시절의 `tibo-` 접두사를 유지해 기존 판정과 결과가 같다.
  */
 function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, kitId: string): boolean {
-  // LPC 나무 가구는 32px 판과 16px 판이 같은 킷 id 를 공유한다 — 둘 다 공용이다.
-  if (tileset.id === LPC_WOODEN_FURNITURE_TILESET_ID || tileset.id === LPC_WOODEN_FURNITURE_16_ID) {
-    return kitId.startsWith("lpc_");
-  }
-  if (tileset.id === "tibo_interior_expanded") return kitId.startsWith("tibo-");
-  // Castle2 실측 부품(잔디 중심·분수 전체 등 14종)은 castleStructureKits 가 번들 시트에 시드한다.
-  if (tileset.id === CASTLE_TILESET_ID
-    && tileset.image.type === "bundled"
-    && tileset.image.id === CASTLE_TILESET_TEXTURE_KEY) {
-    return kitId.startsWith("castle-measured-");
-  }
   // 손 도트 실내 v5(atlas_biome_interior): 가구 381종 킷은 번들 시드 — 공용 오브젝트.
-  if (tileset.id === "atlas_biome_interior") return kitId.startsWith("hand-interior:");
-  if (tileset.id === SHARED_VILLAGE_OBJECT_ID
-    && tileset.image.type === "bundled"
-    && tileset.image.id === SHARED_VILLAGE_OBJECT_TEXTURE) {
-    return kitId.startsWith("shared-village:");
-  }
-  return false;
+  // LPC·Tibo·성채·선별 소품 시트의 시드 킷 판정은 2026-10-07 저작권 정리로 그 시트와 함께 지웠다.
+  return tileset.id === "atlas_biome_interior" && kitId.startsWith("hand-interior:");
 }
 
 function spaceCards(): SpatialGalleryCard[] {

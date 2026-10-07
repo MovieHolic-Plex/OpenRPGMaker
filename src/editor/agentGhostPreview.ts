@@ -104,7 +104,6 @@ export interface ThrottledAgentGhostPreviewUpdater {
   readonly cancel: () => void;
 }
 
-const STRUCTURE_FOOTPRINT = { width: 18, height: 16 } as const;
 export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 
 const listeners = new Set<Listener>();
@@ -307,28 +306,6 @@ export function summarizeAgentGhostPreviewForToolCall(
       break;
     case "build_house":
       pushArea(rectArea(project, mapId, rectFromOriginSize(args), "build_house", "집 건설"));
-      break;
-    case "author_house": {
-      const houseMapId = stringValue(args.mapId) ?? nestedTargetMapId(args.target);
-      if (args.kind === "lots" && Array.isArray(args.houses)) {
-        for (const house of args.houses) {
-          if (!house || typeof house !== "object") continue;
-          const wings = (house as { wings?: unknown }).wings;
-          pushArea(rectArea(project, houseMapId, rectFromWings(wings), "author_house", "집 부지"));
-        }
-      } else {
-        pushArea(rectArea(project, houseMapId, rectFromWings(args.wings), "author_house", "집 시공"));
-      }
-      break;
-    }
-    case "author_village": {
-      const villageMapId = nestedTargetMapId(args.target);
-      const bounds = nestedTargetGhostBounds(args.target);
-      pushArea(rectArea(project, villageMapId, bounds, "author_village", "마을 시공"));
-      break;
-    }
-    case "stamp_structure":
-      pushArea(rectArea(project, mapId, rectFromOriginFixed(args, STRUCTURE_FOOTPRINT), "stamp_structure", "구조물 스탬프"));
       break;
     case "scatter_object":
       pushArea(rectArea(project, mapId, rectValue(args.area), "scatter_object", "오브젝트 배치"));
@@ -772,37 +749,6 @@ function rectFromOriginSize(args: Record<string, unknown>): AgentGhostBounds | n
   return { x: origin.x, y: origin.y, width, height };
 }
 
-function rectFromWings(value: unknown): AgentGhostBounds | null {
-  if (!Array.isArray(value) || value.length === 0) return null;
-  let x0 = Number.POSITIVE_INFINITY;
-  let y0 = Number.POSITIVE_INFINITY;
-  let x1 = Number.NEGATIVE_INFINITY;
-  let y1 = Number.NEGATIVE_INFINITY;
-  for (const wing of value) {
-    const record = recordValue(wing);
-    if (!record) return null;
-    const x = numberValue(record.x);
-    const y = numberValue(record.y);
-    const w = numberValue(record.w);
-    const h = numberValue(record.h);
-    if (x === null || y === null || w === null || h === null) return null;
-    x0 = Math.min(x0, x);
-    y0 = Math.min(y0, y);
-    x1 = Math.max(x1, x + w);
-    y1 = Math.max(y1, y + h);
-  }
-  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
-}
-
-function rectFromOriginFixed(
-  args: Record<string, unknown>,
-  size: { readonly width: number; readonly height: number }
-): AgentGhostBounds | null {
-  const origin = pointValue(args.origin);
-  if (!origin) return null;
-  return { x: origin.x, y: origin.y, width: size.width, height: size.height };
-}
-
 function rectFromXYWH(args: Record<string, unknown>): AgentGhostBounds | null {
   const x = numberValue(args.x);
   const y = numberValue(args.y);
@@ -844,29 +790,6 @@ function nestedTargetMapId(target: unknown): string | null {
   const record = recordValue(target);
   if (!record) return null;
   return stringValue(record.mapId);
-}
-
-function nestedTargetGhostBounds(target: unknown): AgentGhostBounds | null {
-  const record = recordValue(target);
-  if (!record) return null;
-  const bounds = recordValue(record.bounds);
-  if (bounds) {
-    const x = numberValue(bounds.x);
-    const y = numberValue(bounds.y);
-    const w = numberValue(bounds.w);
-    const h = numberValue(bounds.h);
-    if (x !== null && y !== null && w !== null && h !== null) return { x, y, width: w, height: h };
-  }
-  const plannedMap = recordValue(record.plannedMap);
-  if (plannedMap) {
-    const w = numberValue(plannedMap.width);
-    const h = numberValue(plannedMap.height);
-    if (w !== null && h !== null) return { x: 0, y: 0, width: w, height: h };
-  }
-  const w = numberValue(record.width);
-  const h = numberValue(record.height);
-  if (w !== null && h !== null) return { x: 0, y: 0, width: w, height: h };
-  return null;
 }
 
 function stringValue(value: unknown): string | null {

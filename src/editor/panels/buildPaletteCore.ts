@@ -1,8 +1,6 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import type { FootprintWing, HouseKitId, HouseKitWindowsOption } from "@/editor/houseKit";
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
-import { houseFootprintCells } from "@/editor/tools/houseProtection";
-import { canMove } from "@/project/collision";
 import { derivePatternGrammar } from "@/editor/tools/v3/rmTypeExpander";
 import { buildEdgeCornerInnerVariantMap } from "@/project/defaults/autotileEngine";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
@@ -115,24 +113,24 @@ export function applyBuildPalettePrimitiveToProject(
   project: Project,
   selection: BuildPaletteSelection,
   primitive: BuildPalettePrimitive,
-  options: BuildPaletteApplyOptions = {}
+  _options: BuildPaletteApplyOptions = {}
 ): BuildPaletteResult & { readonly project: Project } {
   const map = project.maps[selection.mapId];
   if (!map) return { ok: false, summary: "선택한 맵을 찾을 수 없습니다.", toolResults: [], project };
+  // 집·마을 직접 시공(author_house·build_village — 숲마을·합본 마을 집 키트)은 2026-10-07 저작권 정리로 지웠다.
+  // 팔레트 단추는 AI 작업 경로로 보낸다(buildPalette.openBuildPaletteAiConstruction).
+  if (primitive === "house" || primitive === "village") {
+    return { ok: false, summary: "집·마을 직접 시공은 지원하지 않습니다 — AI 작업으로 보내세요.", toolResults: [], project };
+  }
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) return { ok: false, summary: "타일셋을 찾을 수 없습니다.", toolResults: [], project };
   const rect = clampSelection(selection, map.width, map.height);
   if (rect.width < 1 || rect.height < 1) return { ok: false, summary: "선택 영역이 맵 밖입니다.", toolResults: [], project };
-  const houseShape = resolveHouseShapeId(options.houseShapeId);
-  const houseKit = resolveHouseKitId(options.houseKitId);
-  const validationFailure = validateBuildPalettePrimitive(rect, primitive, houseShape);
+  const validationFailure = validateBuildPalettePrimitive(rect, primitive);
   if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
-  const startPos = primitive === "house" ? startOutsideManualHouse(project, rect) : project.startPos;
-  if (!startPos) return { ok: false, summary: "집 밖에 안전한 시작 위치가 없습니다. 다른 영역을 선택하세요.", toolResults: [], project };
   ensureBuildPaletteTileGroups(tileset);
 
-  // Reserve a safe manual start before author_house seals its tiles, never carve the sealed house.
-  const ctx: ToolContext = { project: startPos === project.startPos ? project : { ...project, startPos } };
+  const ctx: ToolContext = { project };
   const toolResults: ToolResult[] = [];
   const run = (name: string, args: Record<string, unknown>): boolean => {
     const result = runTool(ctx, name, args);
@@ -141,45 +139,18 @@ export function applyBuildPalettePrimitiveToProject(
   };
 
   let ok = true;
-  if (primitive === "house") ok = stampHouse(rect, houseShape, houseKit, options, run);
-  else if (primitive === "village") ok = stampVillage(rect, options, run);
-  else if (primitive === "path") ok = stampPath(rect, run);
+  if (primitive === "path") ok = stampPath(rect, run);
   else if (primitive === "river") ok = fillRoleTile(ctx.project, rect, "water");
   else if (primitive === "roof") ok = fillRoof(ctx.project, rect);
   else if (primitive === "tree") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "침엽수", count: countForArea(rect, 6), naturalness: 0.55, seed: seedFor(rect, "tree") });
   else if (primitive === "prop") ok = run("place_props", { mapId: rect.mapId, area: toToolRect(rect), material: "꽃", count: countForArea(rect, 10), naturalness: 0.45, seed: seedFor(rect, "prop") });
   else if (primitive === "npc") ok = run("place_npc", { mapId: rect.mapId, x: rect.x + Math.floor(rect.width / 2), y: rect.y + Math.floor(rect.height / 2), name: "주민", pages: [{ lines: ["안녕하세요."] }] });
 
-  if (!ok && primitive === "house") ctx.project = project;
   const failed = toolResults.find((result) => !result.ok);
-  let summary = failed
+  const summary = failed
     ? summarizeToolFailure(failed)
     : ok ? summarizeBuildPaletteSuccess(primitive, toolResults) : `${primitive} 시공에 실패했습니다.`;
-  if (ok && !failed && startPos !== project.startPos) summary += ` · 시작 위치 (${startPos.x},${startPos.y})로 이동`;
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
-}
-
-function startOutsideManualHouse(project: Project, rect: BuildPaletteSelection): Project["startPos"] | undefined {
-  if (rect.mapId !== project.startMapId) return project.startPos;
-  const map = project.maps[rect.mapId];
-  const footprint = new Set(houseFootprintCells(toToolRect(rect), map).map(({ x, y }) => `${x},${y}`));
-  if (!footprint.has(`${project.startPos.x},${project.startPos.y}`)) return project.startPos;
-  const unavailable = new Set([...footprint, ...map.events.map(({ x, y }) => `${x},${y}`)]);
-  let nearest: Project["startPos"] | undefined;
-  let distance = Infinity;
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
-      const candidateDistance = Math.abs(x - project.startPos.x) + Math.abs(y - project.startPos.y);
-      if (candidateDistance >= distance || unavailable.has(`${x},${y}`)) continue;
-      // Keep an actual exit outside the future house, not just a passable but trapped cell.
-      const hasExit = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) =>
-        !unavailable.has(`${x + dx},${y + dy}`) && canMove(project, map, x, y, x + dx, y + dy));
-      if (!hasExit) continue;
-      nearest = { x, y };
-      distance = candidateDistance;
-    }
-  }
-  return nearest;
 }
 
 export function ensureBuildPaletteTileGroups(tileset: TilesetDef): void {
@@ -246,47 +217,6 @@ function paintRoofRows(map: Project["maps"][string], x0: number, y0: number, w: 
   }
 }
 
-function stampHouse(
-  rect: BuildPaletteSelection,
-  shapeId: BuildHouseShapeId,
-  kitId: HouseKitId,
-  options: BuildPaletteApplyOptions,
-  run: (name: string, args: Record<string, unknown>) => boolean
-): boolean {
-  const wings = houseKitWingsFromSelection(rect, shapeId);
-  const windows = options.windows === undefined ? {} : normalizeWindowsArg(options.windows);
-  // author_house single에는 doorEvent 키가 없다 — 문 이벤트는 interior 모드에서 파생된다.
-  // 두 토글이 모두 켜져 있을 때만 linked-interior, 하나라도 꺼지면 exterior-only.
-  const withDoorEvent = options.interior !== false && options.doorEvent !== false;
-  const args: Record<string, unknown> = {
-    kind: "single",
-    mapId: rect.mapId,
-    kitId,
-    wings,
-    interior: withDoorEvent ? "linked-interior" : "exterior-only",
-    door: true,
-    windows,
-    yard: [],
-  };
-  return run("author_house", args);
-}
-
-function stampVillage(
-  rect: BuildPaletteSelection,
-  options: BuildPaletteApplyOptions,
-  run: (name: string, args: Record<string, unknown>) => boolean
-): boolean {
-  const args: Record<string, unknown> = {
-    mapId: rect.mapId,
-    bounds: toToolRect(rect),
-    seed: seedFor(rect, "village"),
-  };
-  if (options.doorEvent !== undefined) args.doorEvent = options.doorEvent;
-  if (options.interior !== undefined) args.interior = options.interior;
-  if (options.windows !== undefined) args.windows = normalizeWindowsArg(options.windows);
-  return run("build_village", args);
-}
-
 export function houseKitWingsFromSelection(rect: BuildPaletteSelection, shapeId: BuildHouseShapeId): FootprintWing[] {
   if (shapeId === "rect") return [{ x: rect.x, y: rect.y, w: rect.width, h: rect.height }];
   const topHeight = Math.min(rect.height, Math.max(5, Math.floor(rect.height * 0.62)));
@@ -305,13 +235,7 @@ export function houseKitWingsFromSelection(rect: BuildPaletteSelection, shapeId:
   ];
 }
 
-function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive, houseShape: BuildHouseShapeId): string | null {
-  if (primitive === "house") {
-    return validateHouseKitSelection(rect, houseShape);
-  }
-  if (primitive === "village" && (rect.width < 36 || rect.height < 36)) {
-    return "마을은 최소 36×36 영역이 필요합니다.";
-  }
+function validateBuildPalettePrimitive(rect: BuildPaletteSelection, primitive: BuildPalettePrimitive): string | null {
   if (primitive === "roof" && rect.width < 2) {
     return "지붕은 최소 2×1 영역이 필요합니다.";
   }
@@ -347,21 +271,6 @@ function validateWingColumnIntervals(wings: readonly FootprintWing[]): string | 
     if (current && current.bottom - current.top + 1 < 5) return "집은 각 열 구간 높이 5 이상이 필요합니다.";
   }
   return null;
-}
-
-// 툴 스키마는 Gemini 호환을 위해 object 단일 타입 — 토글 boolean 을 {enabled} 로 변환한다.
-function normalizeWindowsArg(value: HouseKitWindowsOption | boolean): Record<string, unknown> {
-  if (value === true) return {};
-  if (value === false) return { enabled: false };
-  return { ...value };
-}
-
-function resolveHouseShapeId(id: BuildHouseShapeId | undefined): BuildHouseShapeId {
-  return HOUSE_SHAPE_PRESETS.some((preset) => preset.id === id) ? id as BuildHouseShapeId : DEFAULT_HOUSE_SHAPE_ID;
-}
-
-function resolveHouseKitId(id: HouseKitId | undefined): HouseKitId {
-  return HOUSE_KIT_CARDS.some((kit) => kit.id === id) ? id as HouseKitId : DEFAULT_HOUSE_KIT_ID;
 }
 
 function summarizeBuildPaletteSuccess(primitive: BuildPalettePrimitive, toolResults: readonly ToolResult[]): string {

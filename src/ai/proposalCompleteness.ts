@@ -201,12 +201,6 @@ function heuristicCompletenessWarnings(
 const INTERIOR_ROOM_TOOL_NAMES = new Set([
   "build_hand_interior_room",
   "build_wizarding_space",
-  "place_concept",
-  "start_interior_room_session",
-  "run_interior_room_pipeline",
-  "advance_interior_room_build",
-  "evaluate_interior_room",
-  "furnish_interior_space",
 ]);
 
 function interiorCompletenessWarnings(
@@ -303,7 +297,6 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
     if (kind === "house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
     return originRect(mapId, call.args, 1, 1);
   }
-  if (call.name === "stamp_structure") return originRect(mapId, call.args, 1, 1);
   if (call.name === "scatter_object" || call.name === "tile_scatter") return scatterRegions(mapId, call.args, call.result.data);
   if (call.name === "place_npc" || call.name === "make_villager") return [actualPointRegion(mapId, call)];
   if (call.name === "place_battle_blocker") return pointRegion(mapId, call.args.x, call.args.y);
@@ -460,7 +453,7 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
   if (call.name === "place_npc" || call.name === "make_villager" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
-  if (call.name === "build_house" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
+  if (call.name === "build_house" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
 }

@@ -93,7 +93,7 @@ interface CheckedAsset {
 // 단, fill_region은 넓은 지형 쓰기라 스펙 자동 확장 관례를 탄다. 레지스트리에 없는 이름은 두지 않는다 —
 // 옛 tile_* v2 4종이 여기 남아 있어 목록이 살아 있는 것처럼 보였다.
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house",
   "clear_region", "place_npc", "place_battle_blocker",
   // 타일 v3 영역 채우기
   "fill_region",
@@ -121,7 +121,7 @@ export function toolWritesTiles(toolName: string): boolean {
 }
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
-  "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure",
+  "paint_tiles", "paint_road", "build_house",
   "place_npc", "place_battle_blocker",
   "fill_region",
 ]);
