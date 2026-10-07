@@ -3807,7 +3807,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mountResizeHandle();
   };
   applyAssistantViewPolicy();
-  commandMenu.replaceChildren(secondaryActions, ...composerMenu.items);
+  // 자주 쓰는 것만 펴 두고, 진단·저작 모달·유지보수는 「고급·진단」 한 칸으로 접는다(2026-10-08 옵션 정리).
+  const advancedMenu = el("details", { class: "ai-command-menu-advanced", dataset: { testid: "ai-command-menu-advanced" } });
+  advancedMenu.append(el("summary", { class: "ai-command-menu-advanced-summary", children: [el("span", { text: "고급·진단" }), el("span", { class: "ai-command-menu-meta", text: ` ${composerMenu.advanced.length}` })] }), ...composerMenu.advanced);
+  commandMenu.replaceChildren(secondaryActions, ...composerMenu.primary, advancedMenu);
   syncGlassIdle();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.

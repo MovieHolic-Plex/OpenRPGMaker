@@ -60,6 +60,11 @@
   대화 새로 시작·이전 대화 불러오기로 지워지지 않는다. 받은함 「검토하기」는 `sideThreads()?.reveal(ticketId)` 로 트레이를 펴서 그 카드로 간다.
   카드가 사람의 선택을 받는 중이면 `data-review="1"`(트레이 테두리 앰버). 영역(드래그) 작업은 여전히 표시만 분리 — 실행 격리는 맵당 조수 하나 규칙과 부딪쳐 설계가 필요하다.
   증거: `scripts/qa/ai-side-threads.mjs` → `verify-shots/ai-presence/09·10*.png`(로그 안 카드 0 · 트레이 3).
+- **옵션 정리 1차 (2026-10-08)**: 전수 조사(조작 약 235개·중복 묶음 11)에서 가장 가벼운 것부터. 「⋯」 메뉴(컴포저)는 자주 쓰는 `감독 지침 · 설정 · 완료 기준 다시 보기`만 펴 두고
+  나머지(맥락 압축·저작 모달 5·설정집 정리·진단 보고서·사용 로그·전체 기록·도구 목록)는 「고급·진단」 `<details>` 한 칸으로 접는다(`createAiActionMenuItems` 가 `primary`/`advanced` 를 따로 돌려준다.
+  숨은 헤더 메뉴는 옛 순서 `items` 유지). 저작 모달 5줄에 똑같이 붙던 「도구 350」 메타를 뺐다. 컴포저 「작업 설정」의 행 제목 「빠른 배치」를 「바로 깔기」로 통일.
+  **코드와 위키가 다르던 곳(조사 결과)**: 모델 칩은 만들기만 하고 어디에도 붙지 않는다(`aiComposer.ts` 401-415), 「추천」 팝오버는 여는 곳이 없다, `aiStartScreenCards.ts` 카드 빌더 4종은 소비처가 없다,
+  헤더 `moreWrap` 메뉴는 `hidden`+`inert` 툴바 안이라 안 보인다. 이 죽은 것들은 아직 지우지 않았다(다음 단계). 증거 `scripts/qa/ai-options-menu.mjs` → `verify-shots/ai-presence/11·12*.png`.
 - 걷어낸 것: 조수 상세 안의 두 번째 「작업 표시」 컨트롤(위쪽 것과 같은 개인 설정이라 중복).
 - 스타일 `tabs-b-assistant-panel/34-ai-presence.css`, 번역 `catalogs/{en,ja,zh}.json`(새 문구만).
 - 증거: `scripts/qa/ai-presence-states.mjs` → `verify-shots/ai-presence/`. 실제 편집기에 **실제 팀 보드 상태·고스트 diff 를 먹이는 재생**이며
