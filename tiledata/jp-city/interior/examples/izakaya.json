@@ -118,33 +118,13 @@
    "y": 5
   },
   {
-   "id": "fd-zashiki",
-   "x": 8,
-   "y": 5
-  },
-  {
-   "id": "fd-zashiki",
-   "x": 9,
-   "y": 5
-  },
-  {
-   "id": "fd-zashiki",
-   "x": 10,
-   "y": 5
-  },
-  {
    "id": "zataku",
    "x": 8,
-   "y": 6
+   "y": 5
   },
   {
    "id": "fd-kutsunugi",
    "x": 8,
-   "y": 7
-  },
-  {
-   "id": "fd-kutsunugi",
-   "x": 9,
    "y": 7
   },
   {
@@ -208,7 +188,7 @@
   {
    "id": "fd-tokkuri",
    "x": 8,
-   "y": 6
+   "y": 5
   }
  ],
  "name": "일본 이자카야 실내",

@@ -59,34 +59,26 @@ def _(c):
             if rnd(tx, ty, 2, 180): c.P(tx + 2 + hs(tx, ty, 3) % 4, ty + 2 + hs(tx, ty, 4) % 4, K('renga', -1))
 
 
-@R.floor('fd-wood-dark', '이자카야 짙은 마루', cols=6, rows=6, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 갈색 나무 널 바닥. 널이 세로로 길게 놓이고(폭 12px) 가로 맞댐 이음매가 32~48px 간격으로 널마다 엇갈려 있다(96px 주기, 이웃 널과 이음매 위치가 8px 이상 어긋남). 널마다 톤이 조금 다르고 세로 결.')
+@R.floor('fd-wood-dark', '이자카야 짙은 마루', cols=6, rows=6, tags=('이자카야', '킷사텐', '음식점'), desc='조용한 짙은 갈색 마루. 폭 4px 세로 널(널마다 톤은 인접 한 단계 차이뿐), 널 사이는 한 단계 어두운 1px 세로 틈, 널 끝 이음은 1px 어두운 가로선이 48px 간격(세 칸)으로 이웃 널과 16px 이상 엇갈린다(96px 주기라 16px 칸 경계가 보이지 않는다).')
 def _(c):
-    # (이음매 간격, 시작 오프셋) — 96px 안에서 32×3 또는 48×2 로 정확히 닫힌다. 이웃 널과 이음매가 겹치지 않는다.
-    PLAN = ((32, 0), (48, 20), (32, 11), (48, 44), (32, 24), (48, 8), (32, 5), (48, 31))
-    BW = 12
+    # (이음 간격, 시작 오프셋): 96px 안에서 48×2 로 정확히 닫힌다.
+    PLAN = ((48, 38), (48, 20), (48, 44), (48, 20), (48, 40), (48, 15), (48, 36), (48, 20))   # 이웃 널과 이음 위치 16px 이상 어긋남
+    BW = 4
     for bi in range(c.w // BW):
         x0 = bi * BW
         ln, off = PLAN[bi % len(PLAN)]
+        tone = (0, 0, 1, 0, 1, 0, 0)[hs(bi, 0, 6) % 7]                  # 널마다 한 가지 톤(0 또는 +1, 두 단계 차이 없음)
+        for y in range(c.h):
+            for dx in range(BW):
+                c.P(x0 + dx, y, K('ita', -1) if dx == 0 else K('ita', tone))   # 왼쪽 1px = 널 사이 틈
         for seg in range(c.h // ln):
             ys = (off + seg * ln) % c.h
-            tone = (0, 1, -1, 0, 1)[hs(bi, seg, 6) % 5]
-            for dy in range(ln):
-                y = (ys + dy) % c.h
-                for dx in range(BW):
-                    x = x0 + dx
-                    if dx == 0: col = K('ita', -3)                       # 널 사이 세로 틈
-                    elif dx == 1: col = K('ita', tone + 1)               # 왼쪽 모따기(빛 왼쪽 위)
-                    elif dx == BW - 1: col = K('ita', tone - 1)
-                    else: col = K('ita', tone)
-                    c.P(x, y, col)
-                if dy == 0:                                              # 가로 맞댐 이음매
-                    for dx in range(1, BW): c.P(x0 + dx, y, K('ita', -3))
-                elif dy == 1:
-                    for dx in range(2, BW - 1): c.P(x0 + dx, y, K('ita', tone + 1))
-            for k in range(3):                                           # 세로 결(낮은 대비)
-                gx = x0 + 3 + hs(bi, seg * 3 + k, 7) % 7
-                gy = ys + 4 + hs(bi, seg * 3 + k, 9) % max(1, ln - 12)
-                for d in range(3 + hs(bi, seg * 3 + k, 8) % 5): c.P(gx, (gy + d) % c.h, K('ita', tone - 1))
+            for dx in range(BW): c.P(x0 + dx, ys, K('ita', -2))             # 널 끝 이음(1px)
+        for k in range(2):                                               # 아주 드문 세로 결(한 단계 아래)
+            gx = x0 + 1 + hs(bi, k, 7) % 3
+            gy = hs(bi, k, 9) % c.h
+            for d in range(2 + hs(bi, k, 8) % 3):
+                if (gy + d) % ln != off % ln: c.P(gx, (gy + d) % c.h, K('ita', tone - 1) if tone else K('ita', -1))
 
 
 @R.floor('fd-kitchen-tile', '주방 회색 타일', cols=4, rows=4, tags=('주방', '음식점'), desc='8px 회색 타일 + 짙은 줄눈. 왼쪽 위 모서리 하이라이트, 아주 드문 얼룩.')
@@ -117,16 +109,14 @@ def _(c):
     c.R(0, 29, W, 3, K('ita', -2)); c.HL(0, 29, W, K('ita', -1))                                 # 굽도리
 
 
-@R.wall('fd-wood-wall', '짙은 널벽', cols=4, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 나무 세로 널벽. 8px 널 이음매, 가운데 가로 레일, 굽도리.')
+@R.wall('fd-wood-wall', '짙은 널벽', cols=4, tags=('이자카야', '킷사텐', '음식점'), desc='조용한 짙은 나무 세로 널벽. 널은 한 톤, 8px 간격 1px 어두운 틈 + 옆 한 줄 밝은 결, 가운데 가로 레일, 굽도리.')
 def _(c):
     W = c.w
+    c.R(0, 0, W, 29, K('ita', -1))
     for x in range(0, W, 8):
-        t = hs(x // 8, 0, 31) % 3
-        c.R(x, 0, 8, 29, K('ita', (-1, -1, 0)[t]))
-        c.VL(x, 0, 29, K('ita', -2)); c.VL(x + 1, 0, 29, K('ita', 0 if t != 2 else 1))
-        for k in range(3):
-            gy = hs(x, k, 32) % 24
-            c.VL(x + 3 + hs(x, k, 33) % 3, gy, 3 + hs(x, k, 34) % 3, K('ita', -2))
+        c.VL(x, 0, 29, K('ita', -2)); c.VL(x + 1, 0, 29, K('ita', 0))
+        if rnd(x, 0, 32, 600):
+            c.VL(x + 4 + hs(x, 1, 33) % 3, hs(x, 2, 34) % 18, 4, K('ita', -2))
     c.HL(0, 17, W, K('ita', 1)); c.HL(0, 18, W, K('ita', 0)); c.HL(0, 19, W, K('ita', -2))
     c.R(0, 29, W, 3, K('ita', -3)); c.HL(0, 29, W, K('ita', -2))
 
@@ -384,40 +374,51 @@ def _(c):
     c.HL(1, 14, 14, K('aka', -3)); c.P(14, 2, None)
 
 
-@O('fd-zashiki', '자시키 단', w=1, h=2, up=0, kind='flat', walk=((0, 0), (0, 1)), use=(), desc='바닥보다 한 단 높은 다다미 단(1×2, 가로로 이어 붙인다). 위는 다다미 두 장(가로 골 결) + 짙은 초록 헤리 테두리, 남쪽 앞면은 두꺼운 나무 받침띠.', tags=('이자카야', '다다미', '좌식'))
+def _zabu(c, ox, oy):
+    """다다미 위에 놓인 감색 방석 한 장(10×9). 좌표는 단 그림 안 (ox,oy) = 왼쪽 위."""
+    col = lambda t: K('kon', t)
+    c.HL(ox + 1, oy, 8, OL); c.HL(ox + 1, oy + 8, 8, OL); c.VL(ox, oy + 1, 7, OL); c.VL(ox + 9, oy + 1, 7, OL)
+    c.R(ox + 1, oy + 1, 8, 5, col(0)); c.HL(ox + 1, oy + 1, 8, col(1)); c.VL(ox + 1, oy + 1, 5, col(1))
+    c.R(ox + 1, oy + 6, 8, 2, col(-2)); c.HL(ox + 1, oy + 6, 8, col(-1))
+    c.R(ox + 4, oy + 3, 2, 2, K('aka', 0))
+
+
+@O('fd-zashiki', '자시키 단(4×2)', w=4, h=2, up=0, kind='flat', walk=tuple((x, y) for y in range(2) for x in range(4)), use=(), desc='바닥보다 한 단 높은 다다미 단(4×2칸). 위는 다다미 네 장(가로로 긴 모양, 반 장 어긋난 깔기, 결은 가로줄, 장 둘레는 짙은 가장자리 띠), 좌탁(zataku)을 놓을 자리 둘레에 감색 방석 네 장이 그려져 있다. 남쪽 앞면은 나무 단 두께 띠 한 줄.', tags=('이자카야', '다다미', '좌식'))
 def _(c):
-    W = 16
+    W = c.w
     c.HL(0, 0, W, OL)
-    c.R(0, 1, W, 2, K('midori', -2)); c.HL(0, 1, W, K('midori', -1))                      # 북쪽 헤리(짙은 가장자리띠)
-    for (y0, y1) in ((3, 14), (16, 25)):                                                  # 다다미 두 장
-        c.R(0, y0, W, y1 - y0, K('kinari', 0)); c.HL(0, y0, W, K('kinari', 1))
-        for y in range(y0 + 1, y1):
-            if (y - y0) % 2 == 0:
-                for x in range(W):
-                    if rnd(x, y, 91, 420): c.P(x, y, K('kinari', -1))
-            elif rnd(y, y0, 93, 500):
-                x = hs(y, y0, 94) % 10
-                c.HL(x, y, 4, K('kinari', 1))
-    c.R(0, 14, W, 2, K('midori', -2)); c.HL(0, 14, W, K('midori', -1))                   # 두 장 사이 헤리
-    c.R(0, 25, W, 2, K('midori', -2)); c.HL(0, 25, W, K('midori', -1))                   # 남쪽 헤리
+    for (y0, seams) in ((1, (32,)), (14, (16, 48))):                                  # 다다미 두 줄(13px 높이)
+        c.R(0, y0, W, 13, K('kinari', 0))
+        c.HL(0, y0, W, K('kinari', -2)); c.HL(0, y0 + 12, W, K('kinari', -2))         # 긴 변 가장자리 띠(짙게)
+        for y in (y0 + 3, y0 + 6, y0 + 9):                                                  # 결: 가로 가는 줄
+            c.HL(1, y, W - 2, K('kinari', -1))
+        for x in seams:
+            c.VL(x, y0, 13, K('kinari', -2)); c.VL(x + 1, y0 + 1, 11, K('kinari', 1))
+    c.VL(0, 0, 28, OL); c.VL(W - 1, 0, 28, OL)
+    # 방석 네 장: 좌탁 둘레(왼끝·오른끝·남쪽 둘)
+    _zabu(c, 3, 3); _zabu(c, W - 13, 3)
+    _zabu(c, 19, 16); _zabu(c, 35, 16)
     c.HL(0, 27, W, OL)
-    c.HL(0, 28, W, K('ki', 3)); c.R(0, 29, W, 1, K('ki', 2)); c.R(0, 30, W, 1, K('ki', 0))
-    c.HL(0, 31, W, K('ki', -3))                                                           # 앞면 밝은 나무 받침띠(두께 4px)
-    for x in (4, 12): c.VL(x, 29, 3, K('ki', -2))                                         # 널 이음
-    c.HL(0, 31, W, OL); c.P(0, 28, OL); c.P(15, 28, OL)
+    c.HL(0, 28, W, K('ita', 3)); c.R(0, 29, W, 1, K('ita', 1)); c.HL(0, 30, W, K('ita', -1))   # 나무 단 두께 띠(한 줄)
+    c.HL(0, 31, W, OL)
+    for x in (21, 43): c.VL(x, 28, 3, K('ita', -2))
 
 
-@O('fd-kutsunugi', '신발 벗는 돌단', w=1, h=1, up=0, kind='flat', walk=((0, 0),), use=(), desc='자시키 단 앞 구츠누기 돌(회색 판석, 앞면 두께) 위에 벗어 둔 갈색 구두 한 켤레(코가 단 쪽, 위쪽).', tags=('이자카야', '신발', '현관'))
+@O('fd-kutsunugi', '신발 벗는 디딤돌(2×1)', w=2, h=1, up=0, kind='flat', walk=((0, 0), (1, 0)), use=(), desc='자시키 단 앞 바닥에 깔린 납작한 회색 디딤돌(구츠누기 이시, 앞쪽 가장자리 두께만 보인다). 위에 벗어 둔 구두 한 켤레(코가 오른쪽).', tags=('이자카야', '신발', '현관'))
 def _(c):
-    c.R(1, 1, 14, 11, K('conc', 1)); box(c, 1, 1, 14, 11, OL)
-    c.HL(2, 2, 12, K('conc', 3)); c.VL(2, 2, 9, K('conc', 2))
-    for x, y in ((12, 10), (5, 10), (13, 4)):
-        c.P(x, y, K('conc', 0))
-    c.R(1, 12, 14, 3, K('conc', -1)); c.HL(1, 12, 14, K('conc', 0)); c.HL(1, 15, 14, OL); c.VL(1, 12, 3, OL); c.VL(14, 12, 3, OL)
-    for sx, dy in ((4, 0), (9, 1)):                                                          # 구두 한 켤레(위에서 본 모습, 코 위쪽)
-        c.R(sx, 3 + dy, 4, 7, K('soil', -1)); box(c, sx, 3 + dy, 4, 7, OL)
-        c.R(sx + 1, 4 + dy, 2, 3, K('soil', 1)); c.P(sx + 1, 4 + dy, K('soil', 2))     # 코 윤기
-        c.R(sx + 1, 8 + dy, 2, 1, K('soil', -2))                                          # 뒤꿈치 안쪽 그늘
+    W = c.w
+    c.HL(1, 1, W - 2, OL); c.VL(0, 2, 12, OL); c.VL(W - 1, 2, 12, OL)
+    c.R(1, 2, W - 2, 10, K('conc', 1)); c.HL(1, 2, W - 2, K('conc', 2)); c.VL(1, 2, 10, K('conc', 2))
+    for x, y in ((9, 10), (24, 4), (14, 11), (27, 9)): c.P(x, y, K('conc', 0))
+    c.R(1, 12, W - 2, 3, K('conc', -1)); c.HL(1, 12, W - 2, K('conc', 0))                   # 앞쪽 가장자리 두께
+    c.HL(0, 15, W, OL); c.P(0, 12, OL); c.P(0, 13, OL); c.P(0, 14, OL)
+    G = ('.oooooo......', 'ohhhhhho.....', 'ohddddhtto...', 'obbbbbbtbbbo.', 'obbbbbbbsbccb', 'ollllllllllll', '.mmmmmmmmmmm.')
+    COL = {'o': K('yoru', -3), 'b': K('yoru', 1), 'h': K('yoru', 3), 'd': K('yoru', -3), 't': K('yoru', 2),
+           's': K('yoru', -1), 'c': K('yoru', 3), 'l': K('ita', 2), 'm': K('ita', -2)}
+    for x0 in (3, 17):                                                                       # 구두 두 짝(옆면이 보이게 비스듬히)
+        for r, row in enumerate(G):
+            for i, ch in enumerate(row):
+                if ch in COL: c.P(x0 + i, 3 + r, COL[ch])
 
 
 @O('fd-noren', '노렌', w=1, h=1, up=0, kind='hang', hrows=2, use=(), desc='문 위에 걸린 천 가림막. 남색 천 셋 갈래 + 흰 가장자리 띠(글자 없음).', tags=('노렌', '입구'))
@@ -620,7 +621,7 @@ PLACE = {
     'fd-ticket-machine': '라멘집 입구 바로 안쪽, 입구 옆 바닥에 세운다(앞 칸을 비운다) — 손님이 들어와 먼저 식권을 산다.',
     'fd-water-jug': '카운터 끝 칸이나 입구 옆(셀프 물 서버).', 'fd-register': '출입구 가까이(나가며 계산) — 카운터 끝이나 입구 옆.',
     'fd-neta-case': '초밥집 카운터 칸 위치에 카운터 대신 한 줄로(생선 진열 케이스가 올라간 카운터 칸).',
-    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(1×2) — 가로로 여러 개 이어 깔고 위에 zataku·zabuton, 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞칸(신발 벗는 돌단) — 단 폭만큼 한두 칸.',
+    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(4×2, 방석 네 장 포함) — 북쪽 줄 가운데 두 칸 위에 zataku 를 놓는다. 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞 바닥의 디딤돌(2×1, 신발 한 켤레 포함) — 좌탁 앞 두 칸에.',
     'fd-siphon': '킷사텐 카운터 위 한 칸(사이펀 커피) — 계산대·머신과 한 줄로 카운터 뒤.', 'fd-coffee-machine': '킷사텐 카운터 칸 하나(에스프레소 머신).',
     'fd-cake-case': '킷사텐 카운터 칸 하나, 입구에서 보이는 쪽(케이크 쇼케이스).', 'fd-bean-shelf': '킷사텐 카운터 뒤 북쪽 벽 첫 줄(원두 병 선반, 2칸).',
     'fd-noren': '주방 입구(칸막이 틈) 위 벽면에 건다.', 'fd-lantern': '이자카야 벽면 윗줄에 건다(붉은 초롱).',
