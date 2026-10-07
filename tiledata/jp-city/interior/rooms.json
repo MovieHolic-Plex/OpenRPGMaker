@@ -928,10 +928,6 @@
      1
     ],
     [
-     "cv-coffee",
-     1
-    ],
-    [
      "cv-hotcase",
      1
     ],
@@ -940,11 +936,11 @@
      1
     ],
     [
-     "cv-autodoor",
+     "cv-counter",
      1
     ],
     [
-     "door-open-western",
+     "cv-coffee",
      1
     ],
     [
@@ -952,7 +948,11 @@
      1
     ],
     [
-     "cv-counter",
+     "door-open-western",
+     1
+    ],
+    [
+     "cv-autodoor",
      1
     ]
    ]
@@ -980,7 +980,7 @@
     ],
     [
      "cv-gondola",
-     6
+     5
     ],
     [
      "cv-freezer",
@@ -991,19 +991,27 @@
      2
     ],
     [
-     "cv-cart",
-     2
+     "cv-cart-rack",
+     1
+    ],
+    [
+     "cv-basket-stack",
+     1
     ],
     [
      "cv-baskets",
-     2
+     1
     ],
     [
-     "cv-autodoor",
+     "cv-cart",
      1
     ],
     [
      "cv-trash",
+     1
+    ],
+    [
+     "cv-autodoor",
      1
     ]
    ]
@@ -1022,19 +1030,7 @@
      1
     ],
     [
-     "fd-prep",
-     1
-    ],
-    [
      "fd-sink",
-     1
-    ],
-    [
-     "fd-fridge",
-     1
-    ],
-    [
-     "fd-ticket-machine",
      1
     ],
     [
@@ -1046,20 +1042,16 @@
      1
     ],
     [
+     "fd-ticket-machine",
+     1
+    ],
+    [
      "fd-stool",
-     6
-    ],
-    [
-     "fd-water-jug",
-     1
-    ],
-    [
-     "genkan-door",
-     1
+     5
     ],
     [
      "fd-counter",
-     1
+     3
     ]
    ]
   ],
@@ -1102,7 +1094,7 @@
     ],
     [
      "fd-lantern",
-     3
+     2
     ],
     [
      "fd-menu-board",
@@ -1114,27 +1106,23 @@
     ],
     [
      "fd-zashiki",
-     4
+     1
     ],
     [
      "zataku",
      1
     ],
     [
-     "zabuton",
-     2
-    ],
-    [
-     "fd-chair-s",
-     2
+     "fd-kutsunugi",
+     1
     ],
     [
      "fd-chair-e",
-     2
+     1
     ],
     [
      "fd-chair-w",
-     2
+     1
     ],
     [
      "fd-counter",
@@ -1142,7 +1130,7 @@
     ],
     [
      "fd-table",
-     2
+     1
     ]
    ]
   ],
@@ -1188,24 +1176,8 @@
      5
     ],
     [
-     "fd-chair-s",
-     4
-    ],
-    [
-     "fd-chair-e",
-     1
-    ],
-    [
-     "fd-chair-w",
-     1
-    ],
-    [
      "fd-counter",
      1
-    ],
-    [
-     "fd-table",
-     2
     ]
    ]
   ],
@@ -1219,15 +1191,27 @@
      1
     ],
     [
-     "fd-lantern",
-     1
-    ],
-    [
      "window-sash",
      1
     ],
     [
-     "fd-water-jug",
+     "fd-lantern",
+     1
+    ],
+    [
+     "fd-bean-shelf",
+     1
+    ],
+    [
+     "fd-cake-case",
+     1
+    ],
+    [
+     "fd-siphon",
+     1
+    ],
+    [
+     "fd-coffee-machine",
      1
     ],
     [
@@ -1235,28 +1219,16 @@
      1
     ],
     [
-     "houseplant",
-     1
+     "fd-stool",
+     3
     ],
     [
      "fd-chair-s",
-     4
-    ],
-    [
-     "sh-wall-shelf",
      2
-    ],
-    [
-     "fd-chair-e",
-     1
-    ],
-    [
-     "fd-chair-w",
-     1
     ],
     [
      "fd-table",
-     2
+     1
     ]
    ]
   ],
@@ -1266,19 +1238,7 @@
    "bakery",
    [
     [
-     "door-open-western",
-     1
-    ],
-    [
-     "window-sash",
-     2
-    ],
-    [
-     "wall-clock",
-     2
-    ],
-    [
-     "sh-shutter",
+     "sh-noren",
      1
     ],
     [
@@ -1286,23 +1246,19 @@
      3
     ],
     [
-     "kitchen-sink",
+     "sh-dough-bench",
      1
     ],
     [
-     "sh-bread-table",
-     2
-    ],
-    [
-     "cupboard",
+     "sh-proof-rack",
      1
     ],
     [
-     "fridge",
+     "window-sash",
      1
     ],
     [
-     "trash-bins",
+     "wall-clock",
      1
     ],
     [
@@ -1312,6 +1268,10 @@
     [
      "sh-wall-shelf",
      3
+    ],
+    [
+     "sh-bread-table",
+     1
     ],
     [
      "sh-tray-stand",
@@ -1328,6 +1288,10 @@
     [
      "sh-plant-pot",
      1
+    ],
+    [
+     "sh-shutter-2",
+     1
     ]
    ]
   ],
@@ -1337,36 +1301,24 @@
    "bookstore",
    [
     [
-     "door-open-western",
+     "sh-noren",
      1
     ],
     [
-     "window-sash",
-     2
-    ],
-    [
-     "wall-clock",
-     2
-    ],
-    [
-     "genkan-door",
-     1
-    ],
-    [
-     "kitchen-sink",
-     1
-    ],
-    [
-     "cupboard",
-     1
-    ],
-    [
-     "h2-cardboard",
+     "sh-returns-shelf",
      3
     ],
     [
-     "bookshelf",
+     "sh-book-crates",
      2
+    ],
+    [
+     "window-sash",
+     1
+    ],
+    [
+     "wall-clock",
+     1
     ],
     [
      "sh-bookshelf",
@@ -1387,6 +1339,14 @@
     [
      "sh-register",
      1
+    ],
+    [
+     "h2-cardboard",
+     1
+    ],
+    [
+     "sh-shutter-2",
+     1
     ]
    ]
   ],
@@ -1396,48 +1356,28 @@
    "pharmacy",
    [
     [
-     "door-open-western",
+     "sh-noren",
+     1
+    ],
+    [
+     "sh-stock-shelf",
+     3
+    ],
+    [
+     "sh-dispense-counter",
      1
     ],
     [
      "window-sash",
-     2
+     1
     ],
     [
      "wall-clock",
-     2
-    ],
-    [
-     "genkan-door",
      1
-    ],
-    [
-     "sh-wall-shelf",
-     2
     ],
     [
      "sh-drug-shelf",
-     7
-    ],
-    [
-     "kitchen-worktop",
-     1
-    ],
-    [
-     "kitchen-sink",
-     1
-    ],
-    [
-     "cupboard",
-     1
-    ],
-    [
-     "fridge",
-     1
-    ],
-    [
-     "h2-cardboard",
-     1
+     6
     ],
     [
      "sh-drug-island",
@@ -1458,6 +1398,10 @@
     [
      "sh-register",
      1
+    ],
+    [
+     "sh-shutter-2",
+     1
     ]
    ]
   ],
@@ -1467,48 +1411,40 @@
    "florist",
    [
     [
-     "door-open-western",
+     "sh-noren",
      1
     ],
     [
-     "window-sash",
-     2
-    ],
-    [
-     "wall-clock",
-     2
-    ],
-    [
-     "sh-shutter",
+     "sh-bucket-row",
      1
     ],
     [
-     "kitchen-sink",
+     "sh-paper-table",
      1
-    ],
-    [
-     "cupboard",
-     1
-    ],
-    [
-     "sh-wrap-table",
-     2
     ],
     [
      "sh-flower-cooler",
      4
     ],
     [
-     "sh-plant-pot",
-     2
+     "window-sash",
+     1
+    ],
+    [
+     "wall-clock",
+     1
     ],
     [
      "sh-wall-shelf",
-     4
+     3
     ],
     [
      "sh-flower-buckets",
-     3
+     2
+    ],
+    [
+     "sh-wrap-table",
+     1
     ],
     [
      "sh-counter",
@@ -1516,6 +1452,14 @@
     ],
     [
      "sh-register",
+     1
+    ],
+    [
+     "sh-plant-pot",
+     1
+    ],
+    [
+     "sh-shutter-2",
      1
     ]
    ]
@@ -1526,43 +1470,27 @@
    "yaoya",
    [
     [
-     "door-open-western",
+     "sh-noren",
      1
+    ],
+    [
+     "sh-crate-stack",
+     2
+    ],
+    [
+     "sh-scale-table",
+     1
+    ],
+    [
+     "sh-fruit-box",
+     3
     ],
     [
      "window-sash",
-     2
+     1
     ],
     [
      "wall-clock",
-     2
-    ],
-    [
-     "sh-shutter",
-     1
-    ],
-    [
-     "fridge",
-     1
-    ],
-    [
-     "kitchen-sink",
-     1
-    ],
-    [
-     "kitchen-worktop",
-     1
-    ],
-    [
-     "sh-fish-ice",
-     2
-    ],
-    [
-     "cupboard",
-     1
-    ],
-    [
-     "h2-cardboard",
      1
     ],
     [
@@ -1574,8 +1502,8 @@
      2
     ],
     [
-     "sh-fruit-box",
-     2
+     "sh-fish-ice",
+     1
     ],
     [
      "sh-counter",
@@ -1583,6 +1511,10 @@
     ],
     [
      "sh-register",
+     1
+    ],
+    [
+     "sh-shutter-2",
      1
     ]
    ]
@@ -1593,48 +1525,36 @@
    "barber",
    [
     [
-     "door-open-western",
+     "sh-noren",
      1
     ],
     [
-     "window-sash",
+     "sh-towel-rack",
      2
     ],
     [
-     "wall-clock",
-     2
-    ],
-    [
-     "genkan-door",
+     "sh-washer",
      1
-    ],
-    [
-     "kitchen-sink",
-     1
-    ],
-    [
-     "cupboard",
-     1
-    ],
-    [
-     "sh-wall-shelf",
-     3
     ],
     [
      "sh-shampoo",
-     3
+     2
     ],
     [
-     "kitchen-worktop",
+     "window-sash",
      1
     ],
     [
-     "trash-bins",
+     "wall-clock",
      1
     ],
     [
      "sh-barber-mirror",
      3
+    ],
+    [
+     "sh-wall-shelf",
+     2
     ],
     [
      "sh-barber-chair-n",
@@ -1654,6 +1574,10 @@
     ],
     [
      "sh-barber-pole",
+     1
+    ],
+    [
+     "sh-shutter-2",
      1
     ]
    ]
@@ -1681,10 +1605,6 @@
     ],
     [
      "pb-noren-f",
-     1
-    ],
-    [
-     "door-open-western",
      1
     ],
     [
@@ -1770,8 +1690,20 @@
      1
     ],
     [
-     "pb-file-cabinet",
-     3
+     "wall-clock",
+     1
+    ],
+    [
+     "calendar",
+     2
+    ],
+    [
+     "pb-bicycle",
+     1
+    ],
+    [
+     "pb-lost-found-shelf",
+     1
     ],
     [
      "pb-police-desk",
@@ -1782,11 +1714,7 @@
      2
     ],
     [
-     "pb-office-chair-n",
-     1
-    ],
-    [
-     "pb-bicycle",
+     "genkan-mat",
      1
     ],
     [
@@ -1795,6 +1723,30 @@
     ],
     [
      "genkan-door",
+     1
+    ],
+    [
+     "pb-steel-locker",
+     2
+    ],
+    [
+     "fridge",
+     1
+    ],
+    [
+     "bed-single",
+     1
+    ],
+    [
+     "low-table",
+     1
+    ],
+    [
+     "zabuton",
+     2
+    ],
+    [
+     "houseplant",
      1
     ]
    ]
@@ -1810,26 +1762,26 @@
     ],
     [
      "pb-office-chair-s",
-     2
+     1
     ],
     [
      "pb-reception",
      2
     ],
     [
-     "pb-waiting-sofa-s",
+     "pb-magazine-rack",
+     1
+    ],
+    [
+     "pb-water-dispenser",
      1
     ],
     [
      "pb-waiting-sofa-n",
-     1
+     2
     ],
     [
-     "pb-scale-height",
-     1
-    ],
-    [
-     "door-side-western",
+     "houseplant",
      1
     ],
     [
@@ -1846,6 +1798,10 @@
     ],
     [
      "pb-curtain",
+     1
+    ],
+    [
+     "pb-scale-height",
      1
     ],
     [
@@ -1944,6 +1900,10 @@
      1
     ],
     [
+     "umbrella-stand",
+     1
+    ],
+    [
      "tv-board",
      1
     ],
@@ -1984,8 +1944,16 @@
      1
     ],
     [
+     "h2-sandals",
+     1
+    ],
+    [
      "h2-laundry-pole",
      1
+    ],
+    [
+     "h2-railing",
+     4
     ],
     [
      "h2-ac-outdoor",
@@ -1994,14 +1962,6 @@
     [
      "h2-planter",
      1
-    ],
-    [
-     "h2-sandals",
-     1
-    ],
-    [
-     "h2-railing",
-     6
     ],
     [
      "kcounter",
@@ -2051,6 +2011,14 @@
      2
     ],
     [
+     "h2-genkan-door-steel",
+     1
+    ],
+    [
+     "h2-cardboard",
+     1
+    ],
+    [
      "shoes-pair",
      1
     ],
@@ -2059,11 +2027,7 @@
      1
     ],
     [
-     "h2-genkan-door-steel",
-     1
-    ],
-    [
-     "h2-cardboard",
+     "getabako-narrow",
      1
     ]
    ]
@@ -2150,12 +2114,16 @@
      1
     ],
     [
-     "h2-planter",
-     4
+     "h2-shoji-door",
+     2
     ],
     [
-     "h2-shoji-door",
-     3
+     "h2-planter",
+     1
+    ],
+    [
+     "chabudai",
+     1
     ],
     [
      "dining",

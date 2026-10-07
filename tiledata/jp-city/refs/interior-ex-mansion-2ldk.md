@@ -1,18 +1,18 @@
-# 일본 도시 — 일본 실내 예제: 일본 맨션 2LDK 실내(베란다) (`jp-city-mansion-2ldk`, 15×20)
+# 일본 도시 — 일본 실내 예제: 일본 맨션 2LDK 실내(베란다) (`jp-city-mansion-2ldk`, 15×18)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10041칸**, 16px 칸, 시트 768×3360px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mansion-2ldk`. 도구 결과: 손 도트 실내 '일본 맨션 2LDK 실내(베란다)' 15×20 (jp-city-mansion-2ldk, jp_city) — 출입구에서 닿는 칸 86, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mansion-2ldk`. 도구 결과: 손 도트 실내 '일본 맨션 2LDK 실내(베란다)' 15×18 (jp-city-mansion-2ldk, jp_city) — 출입구에서 닿는 칸 80, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-mansion-2ldk", "name": "일본 맨션 2LDK 실내(베란다)", "plan": ["###############", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "##.###.##.##.##", "#..#..........#", "#..#..........#", "#.............#", "#.............#", "#.............#", "#..#..........#", "#..#####..#####", "#..#..........#", "#..#..........#", "#..#..........#", "#..#..........#", "#..############", "##.############"], "floor": "flooring", "wall": "cloth", "zones": [{"x0": 1, "y0": 0, "x1": 4, "y1": 5, "floor": "carpet", "wall": "cloth-beige"}, {"x0": 6, "y0": 0, "x1": 6, "y1": 5, "floor": "cushion", "wall": "cloth"}, {"x0": 12, "y0": 0, "x1": 13, "y1": 5, "floor": "bathtile", "wall": "bathwall"}, {"x0": 7, "y0": 6, "x1": 13, "y1": 8, "floor": "flooring", "wall": "kitchen-panel"}, {"x0": 1, "y0": 11, "x1": 2, "y1": 13, "floor": "tataki"}, {"x0": 4, "y0": 14, "x1": 13, "y1": 17, "floor": "h2-veranda-floor", "wall": "cloth-beige"}, {"x0": 1, "y0": 13, "x1": 2, "y1": 19, "floor": "h2-veranda-floor"}], "objects": [{"id": "bed-single", "x": 1, "y": 3}, {"id": "h2-bed-side", "x": 2, "y": 3}, {"id": "wardrobe", "x": 3, "y": 3}, {"id": "curtain-window", "x": 2, "y": 1}, {"id": "toilet", "x": 6, "y": 3}, {"id": "toilet-paper", "x": 6, "y": 1}, {"id": "bed-single", "x": 8, "y": 3}, {"id": "desk-study", "x": 9, "y": 3}, {"id": "desk-chair-n", "x": 9, "y": 4}, {"id": "window-sash-small", "x": 9, "y": 1}, {"id": "bathtub", "x": 12, "y": 3}, {"id": "shower-faucet", "x": 12, "y": 1}, {"id": "bath-mirror", "x": 13, "y": 1}, {"id": "bath-stool", "x": 13, "y": 4}, {"id": "bath-bucket", "x": 13, "y": 5}, {"id": "door-open-western", "x": 2, "y": 6}, {"id": "door-open-toilet", "x": 6, "y": 6}, {"id": "door-open-western", "x": 9, "y": 6}, {"id": "door-open-western", "x": 12, "y": 6}, {"id": "h2-shoe-closet", "x": 1, "y": 9}, {"id": "door-side-western", "x": 3, "y": 11}, {"id": "agarikamachi", "x": 1, "y": 11}, {"id": "shoes-pair", "x": 1, "y": 12}, {"id": "h2-genkan-door-steel", "x": 2, "y": 13}, {"id": "tv-board", "x": 4, "y": 9}, {"id": "low-table", "x": 4, "y": 10}, {"id": "sofa-n", "x": 4, "y": 12}, {"id": "fridge", "x": 13, "y": 9}, {"id": "kitchen-worktop", "x": 8, "y": 9}, {"id": "kitchen-sink", "x": 10, "y": 9}, {"id": "kitchen-stove", "x": 11, "y": 9}, {"id": "kitchen-worktop", "x": 7, "y": 9}, {"id": "chair-dining-s", "x": 10, "y": 11}, {"id": "chair-dining-s", "x": 11, "y": 11}, {"id": "washing-machine", "x": 13, "y": 12}, {"id": "h2-sash-door", "x": 8, "y": 13}, {"id": "h2-laundry-pole", "x": 4, "y": 17}, {"id": "h2-ac-outdoor", "x": 12, "y": 17}, {"id": "h2-planter", "x": 13, "y": 17}, {"id": "h2-sandals", "x": 8, "y": 16}, {"id": "h2-railing", "x": 6, "y": 17}, {"id": "h2-railing", "x": 7, "y": 17}, {"id": "h2-railing", "x": 8, "y": 17}, {"id": "h2-railing", "x": 9, "y": 17}, {"id": "h2-railing", "x": 10, "y": 17}, {"id": "h2-railing", "x": 11, "y": 17}], "tables": [{"style": "kcounter", "x": 8, "y": 11, "w": 2, "h": 1}, {"style": "dining", "x": 10, "y": 12, "w": 2, "h": 1}], "goods": [{"id": "rice-cooker", "x": 8, "y": 9}, {"id": "kettle", "x": 11, "y": 9}, {"id": "fruit-bowl", "x": 8, "y": 11}, {"id": "plates", "x": 10, "y": 12}, {"id": "remote", "x": 4, "y": 10}], "start": [{"x": 2, "y": 18}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-mansion-2ldk", "name": "일본 맨션 2LDK 실내(베란다)", "plan": ["###############", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "#....#.#...#..#", "##.###.##.##.##", "#..#..........#", "#..#..........#", "#.............#", "#.............#", "#.............#", "#..#..........#", "#..#####..#####", "#..##........##", "#..##........##", "#..##........##", "#..##........##"], "floor": "flooring", "wall": "cloth", "zones": [{"x0": 1, "y0": 0, "x1": 4, "y1": 5, "floor": "carpet", "wall": "cloth-beige"}, {"x0": 6, "y0": 0, "x1": 6, "y1": 5, "floor": "cushion", "wall": "cloth"}, {"x0": 12, "y0": 0, "x1": 13, "y1": 5, "floor": "bathtile", "wall": "bathwall"}, {"x0": 7, "y0": 6, "x1": 13, "y1": 8, "floor": "flooring", "wall": "kitchen-panel"}, {"x0": 1, "y0": 11, "x1": 2, "y1": 13, "floor": "tataki"}, {"x0": 5, "y0": 14, "x1": 12, "y1": 17, "floor": "h2-veranda-floor", "wall": "cloth-beige"}, {"x0": 1, "y0": 13, "x1": 2, "y1": 17, "floor": "h2-veranda-floor"}], "objects": [{"id": "bed-single", "x": 1, "y": 3}, {"id": "h2-bed-side", "x": 2, "y": 3}, {"id": "wardrobe", "x": 3, "y": 3}, {"id": "curtain-window", "x": 2, "y": 1}, {"id": "toilet", "x": 6, "y": 3}, {"id": "toilet-paper", "x": 6, "y": 1}, {"id": "bed-single", "x": 8, "y": 3}, {"id": "desk-study", "x": 9, "y": 3}, {"id": "desk-chair-n", "x": 9, "y": 4}, {"id": "window-sash-small", "x": 9, "y": 1}, {"id": "bathtub", "x": 12, "y": 3}, {"id": "shower-faucet", "x": 12, "y": 1}, {"id": "bath-mirror", "x": 13, "y": 1}, {"id": "bath-stool", "x": 13, "y": 4}, {"id": "bath-bucket", "x": 13, "y": 5}, {"id": "door-open-western", "x": 2, "y": 6}, {"id": "door-open-toilet", "x": 6, "y": 6}, {"id": "door-open-western", "x": 9, "y": 6}, {"id": "door-open-western", "x": 12, "y": 6}, {"id": "h2-shoe-closet", "x": 1, "y": 9}, {"id": "door-side-western", "x": 3, "y": 11}, {"id": "agarikamachi", "x": 1, "y": 11}, {"id": "shoes-pair", "x": 1, "y": 12}, {"id": "h2-genkan-door-steel", "x": 2, "y": 13}, {"id": "umbrella-stand", "x": 1, "y": 13}, {"id": "tv-board", "x": 4, "y": 9}, {"id": "low-table", "x": 4, "y": 10}, {"id": "sofa-n", "x": 4, "y": 12}, {"id": "fridge", "x": 13, "y": 9}, {"id": "kitchen-worktop", "x": 8, "y": 9}, {"id": "kitchen-sink", "x": 10, "y": 9}, {"id": "kitchen-stove", "x": 11, "y": 9}, {"id": "kitchen-worktop", "x": 7, "y": 9}, {"id": "chair-dining-s", "x": 10, "y": 11}, {"id": "chair-dining-s", "x": 11, "y": 11}, {"id": "washing-machine", "x": 13, "y": 12}, {"id": "h2-sash-door", "x": 8, "y": 13}, {"id": "h2-sandals", "x": 8, "y": 16}, {"id": "h2-laundry-pole", "x": 5, "y": 17}, {"id": "h2-railing", "x": 7, "y": 17}, {"id": "h2-railing", "x": 8, "y": 17}, {"id": "h2-railing", "x": 9, "y": 17}, {"id": "h2-railing", "x": 10, "y": 17}, {"id": "h2-ac-outdoor", "x": 11, "y": 17}, {"id": "h2-planter", "x": 12, "y": 17}], "tables": [{"style": "kcounter", "x": 8, "y": 11, "w": 2, "h": 1}, {"style": "dining", "x": 10, "y": 12, "w": 2, "h": 1}], "goods": [{"id": "rice-cooker", "x": 8, "y": 9}, {"id": "kettle", "x": 11, "y": 9}, {"id": "fruit-bowl", "x": 8, "y": 11}, {"id": "plates", "x": 10, "y": 12}, {"id": "remote", "x": 4, "y": 10}], "start": [{"x": 1, "y": 16}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
 | 방 | 사각형(x0,y0)-(x1,y1) |
 |---|---|
-| mansion | (0,0)-(14,19) |
+| mansion | (0,0)-(14,17) |
 
 ## 이동
 (이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
@@ -32,13 +32,11 @@ XX.XXX.XX.XX.XX
 X..XXX.......XX
 X.......XXXX..X
 X..XXX....XX.XX
+XX.XXXXX..XXXXX
 X..XXXXX..XXXXX
 X..XXXXX..XXXXX
-X..XXXXX..XXXXX
-X..X..........X
+X..XX........XX
 X..XXXXXXXXXXXX
-X..XXXXXXXXXXXX
-XX.XXXXXXXXXXXX
 ```
 
 ## 4층 정답 배열 (칸 번호, `.` = 빈 칸)
@@ -57,13 +55,11 @@ y=09: 8732 8166 8167 8674 8174 8178 8181 8186 8160 8163 8168 8172 8173 8178 8728
 y=10: 8732 8189 8191 8682 8199 8201 8205 8209 8185 8187 8191 8195 8199 8201 8728
 y=11: 8732 8594 8596 8226 8229 8233 8237 8143 8213 8217 8221 8225 8229 8233 8728
 y=12: 8732 8546 8548 8738 8145 8147 8151 8155 8127 8131 8135 8139 8143 8147 8728
-y=13: 8732 9839 9841 8728 8727 8727 8727 8735 8161 8163 8731 8727 8727 8727 8724
-y=14: 8732 9855 9857 8736 8685 8686 8688 8690 9849 9853 8688 8690 8684 8686 8728
-y=15: 8732 9871 9873 8736 8693 8694 8696 8698 9865 9869 8696 8698 8692 8694 8728
-y=16: 8732 9823 9825 8736 9820 9822 9826 9830 9817 9821 9826 9830 9818 9822 8728
-y=17: 8732 9839 9841 8736 9835 9837 9841 9845 9833 9837 9841 9845 9833 9837 8728
-y=18: 8732 9855 9857 8728 8726 8726 8726 8726 8726 8726 8726 8726 8726 8726 8724
-y=19: 8724 8734 9875 8728 8126 8126 8126 8126 8126 8126 8126 8126 8126 8126 8126
+y=13: 8732 9839 9841 8728 8726 8727 8727 8735 8161 8163 8731 8727 8727 8726 8724
+y=14: 8732 9855 9857 8728 8732 8687 8688 8690 9849 9853 8688 8690 8684 8728 8126
+y=15: 8732 9871 9873 8728 8732 8695 8696 8698 9865 9869 8696 8698 8692 8728 8126
+y=16: 8732 9823 9825 8728 8732 9824 9826 9830 9817 9821 9826 9830 9818 8728 8126
+y=17: 8732 9839 9841 8728 8732 9839 9841 9845 9833 9837 9841 9845 9833 8728 8126
 ```
 
 ### 2층
@@ -86,8 +82,6 @@ y=14: . . . . . . . . . . . . . . .
 y=15: . . . . . . . . . . . . . . .
 y=16: . . . . . . . . 10011 . . . . . .
 y=17: . . . . . . . . . . . . . . .
-y=18: . . . . . . . . . . . . . . .
-y=19: . . . . . . . . . . . . . . .
 ```
 
 ### 3층
@@ -104,14 +98,12 @@ y=08: . 10015 . . 8894 8895 . 8857 8857 . 8855 8860 . . .
 y=09: . 10016 . 9017 8896 8897 . 8858 8858 . 8856 8861 . 8862 .
 y=10: . . . 9018 8892 8893 . . . . 8870 8870 . 8863 .
 y=11: . . . . 8882 8883 . . 8927 8929 8871 8871 . . .
-y=12: . . . . 8884 8885 . . . . 8923 8925 . 8954 .
-y=13: . . . . . . . . . . . . . . .
+y=12: . 8765 . . 8884 8885 . . . . 8923 8925 . 8954 .
+y=13: . 8766 . . . . . . . . . . . . .
 y=14: . . . . . . . . . . . . . . .
 y=15: . . . . . . . . . . . . . . .
 y=16: . . . . . . . . . . . . . . .
-y=17: . . . . 10007 10008 10005 10005 10005 10005 10005 10005 10009 10010 .
-y=18: . . . . . . . . . . . . . . .
-y=19: . . . . . . . . . . . . . . .
+y=17: . . . . . 10007 10008 10005 10005 10005 10005 10009 10010 . .
 ```
 
 ### 4층
@@ -134,6 +126,4 @@ y=14: . . . . . . . . . . . . . . .
 y=15: . . . . . . . . . . . . . . .
 y=16: . . . . . . . . . . . . . . .
 y=17: . . . . . . . . . . . . . . .
-y=18: . . . . . . . . . . . . . . .
-y=19: . . . . . . . . . . . . . . .
 ```

@@ -1,6 +1,6 @@
 # 일본 도시 — 타일 그룹 사전 (248개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10041칸**, 16px 칸, 시트 768×3360px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
 역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 47, wall 54, water 3.
@@ -254,10 +254,10 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-floor-cv-backroom","name":"실내 바닥 · 창고 콘크리트 바닥","role":"terrain","layer":"lower","n":64,"from":9087,"to":9150},
 {"id":"jp:interior-wall-cv-panel","name":"실내 벽면 · 매장 흰 패널 벽","role":"wall","layer":"lower","n":8,"from":9151,"to":9158},
 {"id":"jp:interior-floor-fd-tile-red","name":"실내 바닥 · 라멘집 붉은 타일 바닥","role":"terrain","layer":"lower","n":60,"from":9216,"to":9275},
-{"id":"jp:interior-floor-fd-wood-dark","name":"실내 바닥 · 이자카야 짙은 마루","role":"terrain","layer":"lower","n":64,"from":9276,"to":9339},
+{"id":"jp:interior-floor-fd-wood-dark","name":"실내 바닥 · 이자카야 짙은 마루","role":"terrain","layer":"lower","n":136,"from":9276,"to":10130},
 {"id":"jp:interior-floor-fd-kitchen-tile","name":"실내 바닥 · 주방 회색 타일","role":"terrain","layer":"lower","n":40,"from":9340,"to":9379},
 {"id":"jp:interior-wall-fd-plaster","name":"실내 벽면 · 회벽 + 나무 허리벽","role":"wall","layer":"lower","n":16,"from":9380,"to":9395},
-{"id":"jp:interior-wall-fd-wood-wall","name":"실내 벽면 · 짙은 널벽","role":"wall","layer":"lower","n":16,"from":9396,"to":9411},
+{"id":"jp:interior-wall-fd-wood-wall","name":"실내 벽면 · 짙은 널벽","role":"wall","layer":"lower","n":10,"from":9396,"to":9409},
 {"id":"jp:interior-floor-sh-concrete","name":"실내 바닥 · 가게 콘크리트 바닥","role":"terrain","layer":"lower","n":64,"from":9479,"to":9542},
 {"id":"jp:interior-floor-sh-wood","name":"실내 바닥 · 가게 밝은 나무 바닥","role":"terrain","layer":"lower","n":64,"from":9543,"to":9606},
 {"id":"jp:interior-wall-sh-white","name":"실내 벽면 · 가게 흰 벽(나무 걸레받이)","role":"wall","layer":"lower","n":16,"from":9607,"to":9622},

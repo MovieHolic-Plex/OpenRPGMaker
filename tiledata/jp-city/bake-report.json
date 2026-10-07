@@ -1,18 +1,18 @@
 {
  "tiles": {
-  "count": 10041,
+  "count": 10177,
   "tilesPerRow": 48,
-  "rows": 210,
+  "rows": 213,
   "sheetPx": [
    768,
-   3360
+   3408
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 6560,
-  "legacy": 344,
+  "block_cells": 6690,
+  "legacy": 350,
   "legacy_ids": [
    5137,
    5275,
@@ -45,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 6560
+   "block": 6690
   }
  },
  "pc_counts": {
-  "star": 5028,
-  "solid": 1975,
-  "floor": 1562,
-  "solidfloor": 486,
-  "flat": 491,
+  "star": 5053,
+  "solid": 2004,
+  "floor": 1634,
+  "solidfloor": 480,
+  "flat": 501,
   "blank": 155
  },
  "kits": {
-  "total": 660,
+  "total": 684,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 484
+   "block-kit": 508
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 484
+  "block_kit": 508
  },
  "groups": {
   "total": 248,
@@ -273,35 +273,35 @@
    },
    {
     "name": "interior_konbini",
-    "cells": 193,
+    "cells": 199,
     "autotiles": 0,
     "groups": 3,
-    "kits": 21,
-    "notes": "편의점·슈퍼 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 21 · 탁자 0 · 탁상 4"
+    "kits": 23,
+    "notes": "편의점·슈퍼 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 23 · 탁자 0 · 탁상 4"
    },
    {
     "name": "interior_food",
-    "cells": 263,
+    "cells": 346,
     "autotiles": 0,
     "groups": 5,
-    "kits": 21,
-    "notes": "음식점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 21 · 탁자 2 · 탁상 6"
+    "kits": 26,
+    "notes": "음식점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 26 · 탁자 2 · 탁상 6"
    },
    {
     "name": "interior_shop",
-    "cells": 216,
+    "cells": 245,
     "autotiles": 0,
     "groups": 3,
-    "kits": 30,
-    "notes": "상점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 30 · 탁자 0 · 탁상 6"
+    "kits": 43,
+    "notes": "상점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 43 · 탁자 0 · 탁상 6"
    },
    {
     "name": "interior_public",
-    "cells": 122,
+    "cells": 134,
     "autotiles": 0,
     "groups": 4,
-    "kits": 31,
-    "notes": "공공·목욕탕 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 2 · 천장 0 · 가구 31 · 탁자 1 · 탁상 4"
+    "kits": 35,
+    "notes": "공공·목욕탕 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 2 · 천장 0 · 가구 35 · 탁자 1 · 탁상 4"
    },
    {
     "name": "interior_home2",
@@ -314,7 +314,7 @@
   ]
  },
  "reassembly": {
-  "kits_checked": 660,
+  "kits_checked": 684,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -371,7 +371,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 220
+   "in": 244
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -381,8 +381,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10041,
-  "kits_checked": 660,
+  "tiles_checked": 10177,
+  "kits_checked": 684,
   "groups_checked": 248,
   "autotiles_checked": 17
  },
@@ -398,10 +398,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "c8db1b29072d4b3c379fe31bbde8c76ae1ca6331",
+ "sheet_hash": "54c3a2c3cf55a808200166548407b729846a65d0",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 660,
+  "kits_checked": 684,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -458,7 +458,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 220
+   "in": 244
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -468,8 +468,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 10041,
-  "kits_checked": 660,
+  "tiles_checked": 10177,
+  "kits_checked": 684,
   "groups_checked": 248,
   "autotiles_checked": 17
  },

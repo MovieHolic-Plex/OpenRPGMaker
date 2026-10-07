@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 39946
+   "chars": 39948
   },
   {
    "id": "jp-autotile",
@@ -65,17 +65,17 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 220종 · 바닥 18 · 벽면 11)",
+   "name": "일본 도시 · 일본 집 실내 (가구 244종 · 바닥 18 · 벽면 11)",
    "documents": 8,
-   "images": 17,
-   "chars": 146882
+   "images": 18,
+   "chars": 159908
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 93019
+   "chars": 88526
   },
   {
    "id": "jp-errors",
@@ -88,14 +88,14 @@
  "totals": {
   "categories": 12,
   "documents": 89,
-  "images": 204,
-  "chars": 906406,
+  "images": 205,
+  "chars": 914941,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
- "tilesEmitted": 9432,
- "kitsEmitted": 660,
- "kitArrayItemsRoundtrip": 660,
+ "tilesEmitted": 9562,
+ "kitsEmitted": 684,
+ "kitArrayItemsRoundtrip": 684,
  "unknownTokens": [
   "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
   "jp-interior-ex-bakery:jp-city-bakery",
@@ -122,21 +122,22 @@
   "jp-interior-shop-index:jp-city-bakery-9x14",
   "jp-interior-shop-index:jp-city-barber-9x14",
   "jp-interior-shop-index:jp-city-bookstore-9x14",
-  "jp-interior-shop-index:jp-city-clinic-14x8",
+  "jp-interior-shop-index:jp-city-clinic-14x9",
   "jp-interior-shop-index:jp-city-florist-9x14",
   "jp-interior-shop-index:jp-city-hiraya-15x14",
-  "jp-interior-shop-index:jp-city-izakaya-13x12",
-  "jp-interior-shop-index:jp-city-kissaten-10x10",
-  "jp-interior-shop-index:jp-city-koban-11x8",
-  "jp-interior-shop-index:jp-city-konbini-14x13",
-  "jp-interior-shop-index:jp-city-laundry-9x8",
-  "jp-interior-shop-index:jp-city-mansion-2ldk-15x20",
-  "jp-interior-shop-index:jp-city-mokuchin-8x8",
+  "jp-interior-shop-index:jp-city-house-interior-21x15",
+  "jp-interior-shop-index:jp-city-izakaya-12x10",
+  "jp-interior-shop-index:jp-city-kissaten-9x9",
+  "jp-interior-shop-index:jp-city-koban-14x9",
+  "jp-interior-shop-index:jp-city-konbini-14x11",
+  "jp-interior-shop-index:jp-city-laundry-9x7",
+  "jp-interior-shop-index:jp-city-mansion-2ldk-15x18",
+  "jp-interior-shop-index:jp-city-mokuchin-8x9",
   "jp-interior-shop-index:jp-city-pharmacy-9x14",
-  "jp-interior-shop-index:jp-city-ramen-10x10",
+  "jp-interior-shop-index:jp-city-ramen-8x9",
   "jp-interior-shop-index:jp-city-sento-14x13",
-  "jp-interior-shop-index:jp-city-supermarket-16x14",
-  "jp-interior-shop-index:jp-city-sushi-10x12",
+  "jp-interior-shop-index:jp-city-supermarket-16x12",
+  "jp-interior-shop-index:jp-city-sushi-10x9",
   "jp-interior-shop-index:jp-city-yaoya-9x14",
   "jp-school-ex:jp-city-school-68x48",
   "jp-transit-rules:jp-bus-city",
@@ -155,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "430a2703db8f2fed828dce0828681ed7362e69a5b0aabd5617b4ea4494ab07aa",
-  "images": "338709a98c4ab786740ea3224651003de626fa792c731777cae3056b1bdc1797"
+  "json": "f36bbb5e2ae2b063e73b83ab1781923fe976ca70846fdd8498357d9acfed2e4d",
+  "images": "e56cfb3c1d94355333dace6dffec72743d7f08b9a8e32c7dec9d22b83006d083"
  }
 }

@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 목조 아파트(木造アパート) 6조 한 칸 (`jp-city-mokuchin`, 8×9)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10041칸**, 16px 칸, 시트 768×3360px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mokuchin`. 도구 결과: 손 도트 실내 '일본 목조 아파트(木造アパート) 6조 한 칸' 8×9 (jp-city-mokuchin, jp_city) — 출입구에서 닿는 칸 18, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-mokuchin`. 도구 결과: 손 도트 실내 '일본 목조 아파트(木造アパート) 6조 한 칸' 8×9 (jp-city-mokuchin, jp_city) — 출입구에서 닿는 칸 19, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-mokuchin", "name": "일본 목조 아파트(木造アパート) 6조 한 칸", "plan": ["########", "#......#", "#......#", "#......#", "#......#", "#......#", "#......#", "#..#####", "##.#####"], "floor": "tatami", "wall": "juraku", "zones": [{"x0": 0, "y0": 0, "x1": 3, "y1": 6, "floor": "cushion", "wall": "kitchen-panel"}, {"x0": 0, "y0": 7, "x1": 7, "y1": 8, "floor": "tataki"}], "objects": [{"id": "h2-old-fridge", "x": 1, "y": 3}, {"id": "h2-old-sink", "x": 2, "y": 3}, {"id": "h2-futon-dry", "x": 4, "y": 1}, {"id": "h2-old-tansu", "x": 4, "y": 3}, {"id": "h2-hanger-rail", "x": 6, "y": 3}, {"id": "kotatsu", "x": 4, "y": 5}, {"id": "zabuton", "x": 6, "y": 5}, {"id": "agarikamachi", "x": 1, "y": 6}, {"id": "agarikamachi", "x": 2, "y": 6}, {"id": "shoes-pair", "x": 1, "y": 7}, {"id": "h2-sandals", "x": 2, "y": 7}, {"id": "h2-genkan-door-steel", "x": 2, "y": 8}, {"id": "h2-cardboard", "x": 6, "y": 6}, {"id": "zabuton", "x": 4, "y": 6}], "tables": [], "goods": [{"id": "h2-teapot-iron", "x": 4, "y": 5}, {"id": "h2-instant-noodle", "x": 5, "y": 5}], "start": [{"x": 2, "y": 7}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-mokuchin", "name": "일본 목조 아파트(木造アパート) 6조 한 칸", "plan": ["########", "#......#", "#......#", "#......#", "#......#", "#......#", "#......#", "#....###", "##.#####"], "floor": "tatami", "wall": "juraku", "zones": [{"x0": 0, "y0": 0, "x1": 3, "y1": 6, "floor": "cushion", "wall": "kitchen-panel"}, {"x0": 0, "y0": 7, "x1": 4, "y1": 8, "floor": "tataki"}], "objects": [{"id": "h2-old-fridge", "x": 1, "y": 3}, {"id": "h2-old-sink", "x": 2, "y": 3}, {"id": "h2-futon-dry", "x": 4, "y": 1}, {"id": "h2-old-tansu", "x": 4, "y": 3}, {"id": "h2-hanger-rail", "x": 6, "y": 3}, {"id": "kotatsu", "x": 4, "y": 5}, {"id": "zabuton", "x": 6, "y": 5}, {"id": "agarikamachi", "x": 1, "y": 6}, {"id": "agarikamachi", "x": 2, "y": 6}, {"id": "h2-genkan-door-steel", "x": 2, "y": 8}, {"id": "h2-cardboard", "x": 6, "y": 6}, {"id": "zabuton", "x": 4, "y": 6}, {"id": "shoes-pair", "x": 1, "y": 7}, {"id": "h2-sandals", "x": 3, "y": 7}, {"id": "getabako-narrow", "x": 4, "y": 7}], "tables": [], "goods": [{"id": "h2-teapot-iron", "x": 4, "y": 5}, {"id": "h2-instant-noodle", "x": 5, "y": 5}], "start": [{"x": 2, "y": 7}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -26,7 +26,7 @@ XXXXXXXX
 X......X
 X...XX.X
 X.....XX
-X..XXXXX
+X...XXXX
 XX.XXXXX
 ```
 
@@ -40,8 +40,8 @@ y=03: 8732 8467 8469 8473 8397 8401 8405 8728
 y=04: 8732 8418 8420 8424 8348 8352 8356 8728
 y=05: 8732 8434 8436 8440 8364 8368 8372 8728
 y=06: 8732 8450 8452 8456 8380 8384 8388 8728
-y=07: 8732 8594 8596 8730 8726 8726 8726 8724
-y=08: 8724 8734 8550 8728 8126 8126 8126 8126
+y=07: 8732 8594 8596 8600 8588 8730 8726 8724
+y=08: 8724 8734 8550 8730 8726 8724 8126 8126
 ```
 
 ### 2층
@@ -53,7 +53,7 @@ y=03: . . . . . . . .
 y=04: . . . . . . . .
 y=05: . . . . . . 8825 .
 y=06: . 8754 8754 . 8825 . . .
-y=07: . 8764 10011 . . . . .
+y=07: . 8764 . 10011 . . . .
 y=08: . . 10014 . . . . .
 ```
 
@@ -65,8 +65,8 @@ y=02: . 10020 . . 10027 10028 10023 .
 y=03: . 10021 10018 10019 10035 10036 10024 .
 y=04: . . . . . . . .
 y=05: . . . . 8830 8831 . .
-y=06: . . . . . . 10022 .
-y=07: . . . . . . . .
+y=06: . . . . 8759 . 10022 .
+y=07: . . . . 8760 . . .
 y=08: . . . . . . . .
 ```
 

@@ -2,27 +2,27 @@
  "map": {
   "id": "jp-city-kissaten",
   "size": [
-   10,
-   10
+   9,
+   9
   ]
  },
  "start": [
   4,
-  8
+  7
  ],
- "summary": "손 도트 실내 '일본 킷사텐(찻집) 실내' 10×10 (jp-city-kissaten, jp_city) — 출입구에서 닿는 칸 34, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 킷사텐(찻집) 실내' 9×9 (jp-city-kissaten, jp_city) — 출입구에서 닿는 칸 24, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-kissaten",
   "tilesetId": "jp_city",
-  "width": 10,
-  "height": 10,
-  "reachable": 34,
-  "floorCells": 49,
+  "width": 9,
+  "height": 9,
+  "reachable": 24,
+  "floorCells": 37,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 4,
-    "y": 8
+    "y": 7
    }
   ],
   "links": 0,
@@ -30,6 +30,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 34,
+ "reach": 24,
  "ok": true
 }

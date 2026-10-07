@@ -1,14 +1,14 @@
 # 일본 도시 — 일본 집 실내 짓는 법 (build_hand_interior_room · tileset "jp_city")
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10041칸**, 16px 칸, 시트 768×3360px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10177칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-**무엇인가.** 일본 거리(`jp_city`)와 같은 칩셋·같은 손 도트 화풍의 **일본 현대 집 실내** 재료다. 구조(바닥 18·벽면 11·천장 띠)와 가구 220종·탁자 5종·탁상 물건 44종.
+**무엇인가.** 일본 거리(`jp_city`)와 같은 칩셋·같은 손 도트 화풍의 **일본 현대 집 실내** 재료다. 구조(바닥 18·벽면 11·천장 띠)와 가구 244종·탁자 5종·탁상 물건 44종.
 판타지 손 도트 실내(`atlas_biome_interior`)와 **같은 조립기**(`src/editor/handInterior/builder.ts`)가 사양만 바꿔(`src/assets/jpInteriorSpec.json`) 짓는다 — 규칙은 같고, id·칸 번호는 다르다(섞지 않는다).
 정본: 그림 `scripts/content/jp-city/blocks/interior_*.py`(+ 틀 `interior/ikit.py`) → `bake_jp.py` → 사양 `bake_interior_spec.py`. 예제 `tiledata/jp-city/interior/examples/*.json`, 짓는 스크립트 `scripts/content/jp-city/maps/interior.mjs`.
 
 ## 읽는 순서 · 실행 순서
 1. 이 문서(규칙) → 가까운 예제 하나(`jp-interior-ex-house-1f` 단독주택 1층 · `jp-interior-ex-house-2f` 2층 · `jp-interior-ex-apartment-1k` 원룸)와 그 그림 `jp-img-interior-*`.
-2. `list_hand_interior_parts({tileset:"jp_city", room:"화실"})` — 방 종류(현관·복도·화실·LDK·부엌·욕실·탈의실·화장실·침실·아이방·원룸·유닛 배스) 또는 건물(`jp_house`·`jp_apartment`)의 예제 가구. 낱말은 `query`. 행마다 desc·놓는 곳·짝 소품·use·facing 이 있다. 칸 번호까지 보려면 사전 `jp-interior-dict-*`. 분류로 좁히려면 `category`: `entry` 현관 8 · `stairs` 계단 3 · `door` 문 6 · `window` 창 4 · `wallhang` 벽걸이 6 · `kitchen` 부엌 7 · `dining` 다이닝 4 · `living` 거실 11 · `washitsu` 화실 18 · `bedroom` 침실 7 · `kids` 아이방·서재 6 · `bath` 욕실 6 · `dressing` 탈의실·세탁 6 · `toilet` 화장실 5 · `veranda` 베란다 7 · `apartment` 맨션·목조 아파트 8 · `oldhouse` 옛집(단층) 5 · `store` 편의점·슈퍼 21 · `food` 음식점 21 · `shop` 상점(빵·책·약·꽃·채소·이발) 30 · `sento` 목욕탕 11 · `laundry` 코인세탁 6 · `koban` 파출소 6 · `clinic` 의원 8.
+2. `list_hand_interior_parts({tileset:"jp_city", room:"화실"})` — 방 종류(현관·복도·화실·LDK·부엌·욕실·탈의실·화장실·침실·아이방·원룸·유닛 배스) 또는 건물(`jp_house`·`jp_apartment`)의 예제 가구. 낱말은 `query`. 행마다 desc·놓는 곳·짝 소품·use·facing 이 있다. 칸 번호까지 보려면 사전 `jp-interior-dict-*`. 분류로 좁히려면 `category`: `entry` 현관 8 · `stairs` 계단 3 · `door` 문 6 · `window` 창 4 · `wallhang` 벽걸이 6 · `kitchen` 부엌 7 · `dining` 다이닝 4 · `living` 거실 11 · `washitsu` 화실 18 · `bedroom` 침실 7 · `kids` 아이방·서재 6 · `bath` 욕실 6 · `dressing` 탈의실·세탁 6 · `toilet` 화장실 5 · `veranda` 베란다 7 · `apartment` 맨션·목조 아파트 8 · `oldhouse` 옛집(단층) 5 · `store` 편의점·슈퍼 23 · `food` 음식점 26 · `shop` 상점(빵·책·약·꽃·채소·이발) 43 · `sento` 목욕탕 11 · `laundry` 코인세탁 6 · `koban` 파출소 8 · `clinic` 의원 10.
 3. 평면(plan)을 정한다 → `build_hand_interior_room({tileset:"jp_city", mapId, name, plan, floor, wall, zones, objects, tables, goods, start, links})` **한 번**. 오류가 있으면 맵을 만들지 않고 코드·좌표로 거부한다 — 고쳐서 다시 부른다. 경고(닿지 못한 바닥·쓸 수 없는 가구)도 0 이 될 때까지 고친다.
 4. 층이 여럿이면 층마다 한 맵(계단 x 를 위아래 층에서 맞춘다), 계단 칸에 `links`. **짓는 순서**: 아직 없는 맵을 가리키는 links 는 거부된다(`link-target-missing`) — ① 1층을 links 없이 짓고 ② 2층을 1층으로 가는 links 와 함께 짓고 ③ 1층을 같은 mapId·`replace:true` 로 2층 links 를 넣어 다시 짓는다. 도착 칸(toX,toY)은 그 맵의 걸을 수 있는 바닥(계단 발칸·계단통 아랫줄 바로 옆)이어야 한다. 거리 맵의 집 문에 들어가는 실내면 현관 아래 틈 칸에 거리로 나가는 `links` 를 단다.
 5. `show_map_region`·`check_reachability` 로 확인. 낱칸 번호로 칠하지 않는다(`paint_tiles` 로 가구 칸을 찍으면 통행·그림 순서가 어긋난다).
@@ -87,7 +87,16 @@ XXXXXXXXX.XXXXXXXXXXX
 - **레이어 정정 조건**: 가구 조각은 3층(앞뒤 둘이면 4층까지), 밟는 무늬는 2층, 탁상 물건은 4층. 4층이 이미 찼다는 `goods-no-layer` 는 물건이 아니라 이웃 가구 자리를 옮겨 고친다(위 표). `paint_tiles` 로 가구 칸을 1층에 칠하면 바닥이 사라지고 통행이 바뀐다 — 지우고 도구로 다시 짓는다.
 - **검사 범위**: 칸 번호·층·발자국 겹침·놓는 곳(벽·벽면·윗면·문 틈)·출입구에서의 도달(BFS, 엔진 `passabilityOf`)만. 이벤트 실행(계단 이동이 실제로 일어나는지)과 「집처럼 보이는가」(미감)는 도구가 보지 않는다 — 미감은 적대적 검증 관문(`adversarial_gate.py --stage interior`, 판정과 그림·문서 해시가 `tiledata/jp-city/gates/interior.json` 에 남는다. 통과 여부는 그 파일의 verdict 를 본다), 계단 이동은 런타임 QA(`scripts/content/jp-city/qa/interior.probe.mjs` — 출하 플레이어에서 방향 입력으로 방마다·계단 왕복)가 본다.
 
+## 가게·공공 실내 (용도 「일본 가게·공공 실내」 예제가 따르는 규칙 — 짓는 도구·평면 규칙은 위와 같다)
+- **출입구**: 맨 아래 줄(맵 끝)에 이어진 틈 — 손님이 드나드는 매장(편의점·슈퍼·음식점·골목 가게)은 2칸 이상 가운데 쪽, 파출소·의원·센토·코인세탁·집 현관은 1칸 문도 된다. 틈 바로 위 1~2줄은 비운다(들어오자마자 진열대 앞에 서지 않게). 출구 = 맨 아래 줄의 이어진 통행 칸 한 덩이 — 맨 아래 줄에 틈이 없으면 `link_jp_city_interior` 가 `no-interior-exit` 로 거부한다(위 줄 틈은 출구로 치지 않는다).
+- **손님 동선**: 입구 → 진열(통로 폭 2칸) → 출구 가까운 계산대. 라멘집은 입구 바로 옆 식권기 → 카운터 의자. 의자는 카운터·탁자를 본다.
+- **직원 동선**: 카운터 줄 **끝 한 칸을 틈**으로 남겨 카운터 안쪽 ↔ 주방·뒷방이 이어지게(막으면 카운터 안쪽 바닥이 「닿지 못한 바닥」 경고). 뒷방 문은 칸막이 틈과 같은 칸, 계산대 안쪽 쪽에.
+- **뒷방은 업종 것**: 빵집 반죽대·발효 선반, 서점 책 상자·반품 선반, 약국 조제대, 꽃집 물통·포장대, 채소가게 상자·저울, 이발소 수건 건조대. 다른 가게 뒷방을 그대로 베끼지 않는다.
+- **핵심 통로 폭 2칸**(탈의실↔욕장, 대기실↔진찰실). 직원 전용 뒷길만 1칸.
+- **빈 바닥 = 맵이 큰 것**: 먼저 맵을 줄이고, 그다음 용도 가구. 의자·화분으로 메우지 않는다.
+- 오류 사례(도구 검사로 잡힌 것): 카운터를 벽까지 붙여 안쪽이 닿지 않음(경고 닿지 못한 바닥) · 탁상 물건을 남쪽 키 큰 진열대 바로 위 칸에(`goods-no-layer`) · 한 줄 탁자를 h=2 로 · 옆문을 2줄 틈에.
+
 ## 없는 것
-세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 예제는 **실내만** — 현관 틈(`genkan-door`) 칸의 거리로 나가는 이동은 비어 있다.
+세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 예제 JSON 의 links 에는 거리로 나가는 이동이 없다(실내만 담는다) — 거리 건물과는 아래 도구로 잇는다.
 **거리 건물 문과 잇기는 `link_jp_city_interior({door:{x,y}=건물 문 칸, width=문 칸 수, place:<실내 장소 id> 또는 interiorMapId})` 한 번** — 장소를 새 맵으로 가져오고(여러 층이면 층마다), 거리 문 앞 접근칸에 들어가는 발판·실내 맨 아래 틈에 나오는 발판을 만들고, 맵 목록에서 실내를 거리 맵 아래로 옮긴다. `create_transfer_pair` 는 막힌 문 칸을 옮겨 버리므로 쓰지 않는다.
-가게·공공 실내(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·목욕탕·코인세탁·파출소·의원)와 집 보강(맨션 2LDK·베란다·목조 아파트·단층 옛집)은 용도 「일본 가게·공공 실내」(`jp-interior-shop-*`). 학교·사무실 실내는 아직 없다. 사람(가족·점원 NPC)은 Actor1 캐릭터를 이벤트로 놓는다.
+가게·공공 실내(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·목욕탕·코인세탁·파출소·의원)와 집 보강(맨션 2LDK·베란다·목조 아파트·단층 옛집)은 용도 「일본 가게·공공 실내」(`jp-interior-shop-*`). 사람(가족·점원 NPC)은 Actor1 캐릭터를 이벤트로 놓는다.
