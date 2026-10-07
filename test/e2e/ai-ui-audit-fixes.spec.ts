@@ -254,6 +254,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
 
     test("F9 empty export gives visible feedback", async ({ page }) => {
       await page.getByTestId("ai-command-menu-toggle").click();
+      await page.getByTestId("ai-command-menu-advanced").evaluate((node) => { (node as HTMLDetailsElement).open = true; });
       await page.getByTestId("ai-command-menu-export").click();
       await expect(page.locator(".toast")).toBeVisible();
     });
@@ -290,6 +291,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       const box = await geometry(page.getByTestId("ai-command-menu"));
       expect(box.y).toBeGreaterThanOrEqual(0);
       expect(box.bottom).toBeLessThanOrEqual(viewport.height);
+      await page.getByTestId("ai-command-menu-advanced").evaluate((node) => { (node as HTMLDetailsElement).open = true; });
       const [download] = await Promise.all([
         page.waitForEvent("download"),
         page.getByTestId("ai-command-menu-export").click(),

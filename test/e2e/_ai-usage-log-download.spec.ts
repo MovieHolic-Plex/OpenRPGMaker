@@ -110,6 +110,7 @@ test("☰ 사용 로그 내려받기 — 메뉴 항목과 받은 txt", async ({ 
   let extraDownloads = 0;
   page.on("download", () => { extraDownloads += 1; });
   await page.getByTestId("ai-command-menu-toggle").click();
+  await page.getByTestId("ai-command-menu-advanced").evaluate((node) => { (node as HTMLDetailsElement).open = true; });
   await page.getByTestId("ai-command-menu-usage-log").click();
   await expect(page.locator(".toast-message").filter({ hasText: "아직 저장된 조수 사용 기록이 없습니다" }).first()).toBeVisible({ timeout: 5_000 });
   await page.screenshot({ path: `${OUT}/empty-log-toast.png` });

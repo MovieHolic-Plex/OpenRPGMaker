@@ -240,3 +240,10 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
     width: calc(100vw - 20px);
   }
 }
+
+/* 「고급·진단」 접힘 — 자주 안 쓰는 메뉴 줄을 한 칸으로. */
+.ai-command-menu-advanced { display: grid; gap: 2px; border-top: 1px solid var(--border-default); margin-top: 4px; padding-top: 4px; }
+.ai-command-menu-advanced-summary { cursor: pointer; padding: 6px 9px; font-size: 11px; color: var(--text-3); list-style: none; }
+.ai-command-menu-advanced-summary::-webkit-details-marker { display: none; }
+.ai-command-menu-advanced-summary::before { content: "▸ "; }
+.ai-command-menu-advanced[open] > .ai-command-menu-advanced-summary::before { content: "▾ "; }

@@ -6,6 +6,7 @@
 
 import { currentTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { el } from "@/util/dom";
+import { sideThreads } from "./aiSideThreads";
 import { dismissPresence, needsUser, subscribeAiPresence, type Presence } from "./aiPresence";
 
 export function createAiInbox(options: { readonly openLogs: () => void }): { root: HTMLElement; dispose(): void } {
@@ -18,17 +19,17 @@ export function createAiInbox(options: { readonly openLogs: () => void }): { roo
 
   const card = (presence: Presence): HTMLElement => {
     const where = presence.mapName && presence.source === "background" ? ` · ${presence.mapName}` : "";
-    // 다른 맵에서 돈 실행의 검토는 그 실행 카드(대화 로그)가 쥐고 있다 — 거기로 데려간다.
+    // 다른 맵에서 돈 실행의 검토는 그 실행 카드(다른 스레드 트레이)가 쥐고 있다 — 거기로 데려간다.
     if (presence.state === "review" && presence.source === "background") {
       return el("article", {
         class: "ai-inbox-card is-review", dataset: { testid: "ai-inbox-card", state: "review", tone: String(presence.tone), source: "background" },
         children: [
           el("h4", { text: `변경 검토 — ${presence.name}${where}` }),
-          el("p", { text: "초안이에요, 아직 적용 전 · 해당 작업 카드에서 적용하거나 버릴 수 있어요." }),
+          el("p", { text: "초안이에요, 아직 적용 전 · 「다른 스레드」의 작업 카드에서 적용하거나 버릴 수 있어요." }),
           el("div", { class: "ai-inbox-actions", children: [
             el("button", { class: "ai-inbox-btn is-primary", text: "검토하기", attrs: { type: "button" }, dataset: { testid: "ai-inbox-open-run" }, on: { click: () => {
               window.dispatchEvent(new Event("oprn:ai-open-chat"));
-              requestAnimationFrame(() => document.querySelector<HTMLElement>(`.ai-map-run-card[data-ticket-id="${presence.ticketId}"]`)?.scrollIntoView({ block: "center", behavior: "smooth" }));
+              if (presence.ticketId !== undefined) sideThreads()?.reveal(presence.ticketId);
             } } }),
           ] }),
         ],
