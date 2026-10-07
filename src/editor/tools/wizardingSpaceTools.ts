@@ -118,6 +118,7 @@ export const BUILD_WIZARDING_SPACE_TOOL: ToolDefinition = {
   mode: "write",
   domains: ["tile", "map"],
   description: "해리포터풍·마법 학교(호그와트풍) 맵을 짓는 길 — 번들 칩셋 wizarding_world 로 방·야외 한 장을 한 번에 짓는다(벽 고리·문·바닥·러너·가구·덧그림 자동, 결정론 seed). "
+    + "이 도구는 바깥 모양이 네모인 공간만 짓는다 — ㄱ·ㄷ·T자·알코브처럼 모양 있는 방은 build_hand_interior_room({tileset:\"wizarding_world\", floor:\"castle-floor-flag\", wall:\"castle\"}) 로 평면을 그리고 가구는 같은 wz-… 부품 id 를 쓴다. "
     + `space: ${spacesLine()}. shared 는 variant corridor(복도 10×22)·common(기숙사 휴게실)·dorm(기숙사 침실 — 사주식 침대 줄·트렁크·옷장·거울). `
     + "mapId 가 비어 있는 맵이면 칩셋을 wizarding_world 로 바꿔 그 맵에 짓고, 이미 그린 맵이면 overwrite:true 가 있어야 다시 짓는다. mapId 없이 name 을 주면 새 맵을 만든다. "
     + "doors=[{side:n|s|e|w, offset?, kind?:single|double}](생략하면 공간 기본 출입구), furnitureMode auto(레시피 가구, furniture 를 먼저 놓는다)·list(furniture 만)·none, density sparse|normal|full. "

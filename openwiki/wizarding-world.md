@@ -74,6 +74,8 @@ python3 scripts/content/wizarding/viz_wz.py             # ~/claude-viz/wizarding
 
 조수가 이 칩셋으로 **실제 게임 맵**(방·야외 한 장)을 만드는 길은 `build_wizarding_space` 한 번이다. 키트를 하나씩 찍는 것(`stamp_object`)이나
 공간 예제(12×9 안팎, 걸을 수 있는 칸이 갈린 것이 있다)를 가져오는 것은 이 길을 대신하지 않는다.
+단 `build_wizarding_space` 는 바깥 모양이 네모인 공간만 짓는다 — **ㄱ·ㄷ·T자 방은 `build_hand_interior_room({tileset:"wizarding_world"})`**
+(번들 역할표 `src/assets/wizardingRoomSpec.json` · 굽기 `roomkit_wz.py`, 가구는 같은 `wz-…` 조립 부품. `openwiki/atlas-biome-interior.md` 「마법 학교 번들 역할표」).
 
 | 경로 | 역할 |
 |---|---|
