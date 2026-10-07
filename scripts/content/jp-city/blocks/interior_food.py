@@ -59,20 +59,34 @@ def _(c):
             if rnd(tx, ty, 2, 180): c.P(tx + 2 + hs(tx, ty, 3) % 4, ty + 2 + hs(tx, ty, 4) % 4, K('renga', -1))
 
 
-@R.floor('fd-wood-dark', '이자카야 짙은 마루', cols=4, rows=4, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 갈색 나무 널 바닥. 4px 널, 엇갈린 이음매, 낮은 대비 결.')
+@R.floor('fd-wood-dark', '이자카야 짙은 마루', cols=6, rows=6, tags=('이자카야', '킷사텐', '음식점'), desc='짙은 갈색 나무 널 바닥. 널이 세로로 길게 놓이고(폭 12px) 가로 맞댐 이음매가 32~48px 간격으로 널마다 엇갈려 있다(96px 주기, 이웃 널과 이음매 위치가 8px 이상 어긋남). 널마다 톤이 조금 다르고 세로 결.')
 def _(c):
-    for row in range(c.h // 4):
-        y = row * 4
-        off = (hs(row, 0, 5) % 7) * 9
-        for x in range(c.w):
-            v = (x + off) % 64
-            tone = (hs((x + off) // 20, row, 6) % 3)
-            c.P(x, y, K('ita', 0 if tone != 2 else 1)); c.P(x, y + 1, K('ita', 0 if tone != 1 else -1))
-            c.P(x, y + 2, K('ita', -1)); c.P(x, y + 3, K('ita', -2))
-        for k in range(2): c.VL((off + k * 32) % c.w, y, 3, K('ita', -2))
-        for k in range(3):
-            gx = (hs(row, k, 7) % (c.w - 6))
-            c.HL(gx, y + 1, 3 + hs(row, k, 8) % 3, K('ita', -1))
+    # (이음매 간격, 시작 오프셋) — 96px 안에서 32×3 또는 48×2 로 정확히 닫힌다. 이웃 널과 이음매가 겹치지 않는다.
+    PLAN = ((32, 0), (48, 20), (32, 11), (48, 44), (32, 24), (48, 8), (32, 5), (48, 31))
+    BW = 12
+    for bi in range(c.w // BW):
+        x0 = bi * BW
+        ln, off = PLAN[bi % len(PLAN)]
+        for seg in range(c.h // ln):
+            ys = (off + seg * ln) % c.h
+            tone = (0, 1, -1, 0, 1)[hs(bi, seg, 6) % 5]
+            for dy in range(ln):
+                y = (ys + dy) % c.h
+                for dx in range(BW):
+                    x = x0 + dx
+                    if dx == 0: col = K('ita', -3)                       # 널 사이 세로 틈
+                    elif dx == 1: col = K('ita', tone + 1)               # 왼쪽 모따기(빛 왼쪽 위)
+                    elif dx == BW - 1: col = K('ita', tone - 1)
+                    else: col = K('ita', tone)
+                    c.P(x, y, col)
+                if dy == 0:                                              # 가로 맞댐 이음매
+                    for dx in range(1, BW): c.P(x0 + dx, y, K('ita', -3))
+                elif dy == 1:
+                    for dx in range(2, BW - 1): c.P(x0 + dx, y, K('ita', tone + 1))
+            for k in range(3):                                           # 세로 결(낮은 대비)
+                gx = x0 + 3 + hs(bi, seg * 3 + k, 7) % 7
+                gy = ys + 4 + hs(bi, seg * 3 + k, 9) % max(1, ln - 12)
+                for d in range(3 + hs(bi, seg * 3 + k, 8) % 5): c.P(gx, (gy + d) % c.h, K('ita', tone - 1))
 
 
 @R.floor('fd-kitchen-tile', '주방 회색 타일', cols=4, rows=4, tags=('주방', '음식점'), desc='8px 회색 타일 + 짙은 줄눈. 왼쪽 위 모서리 하이라이트, 아주 드문 얼룩.')
@@ -301,7 +315,7 @@ def _(c):
 
 
 # ───────────────────────── 손님 쪽 소품 ─────────────────────────
-@O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='wall', use=('counter',), desc='라멘집 식권기. 붉은 몸통, 초록 지폐 투입구, 3×4 색 버튼(글자 없음), 거스름 트레이.', tags=('라멘', '식권'))
+@O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='라멘집 식권기(바닥에 서는 기둥형). 붉은 몸통, 초록 지폐 투입구, 3×4 색 버튼(글자 없음), 거스름 트레이.', tags=('라멘', '식권'))
 def _(c):
     c.R(2, 3, 12, 28, K('aka', 0)); box(c, 2, 3, 12, 28, K('aka', -3)); c.HL(3, 4, 10, K('aka', 2)); c.VL(3, 4, 26, K('aka', 1))
     c.R(4, 6, 8, 3, K('sumi', 0)); c.HL(4, 6, 8, K('sumi', 1)); c.P(5, 7, K('midori', 2)); c.P(6, 7, K('midori', 2))
@@ -370,16 +384,40 @@ def _(c):
     c.HL(1, 14, 14, K('aka', -3)); c.P(14, 2, None)
 
 
-@O('fd-zashiki', '자시키 단', w=1, h=1, up=0, kind='flat', walk=((0, 0),), use=(), desc='바닥보다 한 단 높은 다다미 단. 위는 다다미 + 헤리, 앞은 나무 받침. 가로로 이어 붙인다.', tags=('이자카야', '다다미', '좌식'))
+@O('fd-zashiki', '자시키 단', w=1, h=2, up=0, kind='flat', walk=((0, 0), (0, 1)), use=(), desc='바닥보다 한 단 높은 다다미 단(1×2, 가로로 이어 붙인다). 위는 다다미 두 장(가로 골 결) + 짙은 초록 헤리 테두리, 남쪽 앞면은 두꺼운 나무 받침띠.', tags=('이자카야', '다다미', '좌식'))
 def _(c):
-    c.R(0, 0, 16, 11, K('kinari', 1)); c.HL(0, 0, 16, K('kinari', 2))
-    for x in range(16):
-        for y in range(1, 11):
-            if rnd(x, y, 91, 70): c.P(x, y, K('kinari', 0))
-    for y in (2, 4, 6, 8): c.HL(0, y, 16, K('kinari', 1))
-    c.R(0, 0, 16, 1, K('midori', -2)); c.HL(0, 10, 16, K('midori', -2)); c.HL(0, 11, 16, K('kinari', -1))
-    c.R(0, 12, 16, 4, K('ita', 0)); c.HL(0, 12, 16, K('ita', 2)); c.HL(0, 13, 16, K('ita', 1))
-    c.HL(0, 15, 16, K('ita', -3)); c.HL(0, 14, 16, K('ita', -1))
+    W = 16
+    c.HL(0, 0, W, OL)
+    c.R(0, 1, W, 2, K('midori', -2)); c.HL(0, 1, W, K('midori', -1))                      # 북쪽 헤리(짙은 가장자리띠)
+    for (y0, y1) in ((3, 14), (16, 25)):                                                  # 다다미 두 장
+        c.R(0, y0, W, y1 - y0, K('kinari', 0)); c.HL(0, y0, W, K('kinari', 1))
+        for y in range(y0 + 1, y1):
+            if (y - y0) % 2 == 0:
+                for x in range(W):
+                    if rnd(x, y, 91, 420): c.P(x, y, K('kinari', -1))
+            elif rnd(y, y0, 93, 500):
+                x = hs(y, y0, 94) % 10
+                c.HL(x, y, 4, K('kinari', 1))
+    c.R(0, 14, W, 2, K('midori', -2)); c.HL(0, 14, W, K('midori', -1))                   # 두 장 사이 헤리
+    c.R(0, 25, W, 2, K('midori', -2)); c.HL(0, 25, W, K('midori', -1))                   # 남쪽 헤리
+    c.HL(0, 27, W, OL)
+    c.HL(0, 28, W, K('ki', 3)); c.R(0, 29, W, 1, K('ki', 2)); c.R(0, 30, W, 1, K('ki', 0))
+    c.HL(0, 31, W, K('ki', -3))                                                           # 앞면 밝은 나무 받침띠(두께 4px)
+    for x in (4, 12): c.VL(x, 29, 3, K('ki', -2))                                         # 널 이음
+    c.HL(0, 31, W, OL); c.P(0, 28, OL); c.P(15, 28, OL)
+
+
+@O('fd-kutsunugi', '신발 벗는 돌단', w=1, h=1, up=0, kind='flat', walk=((0, 0),), use=(), desc='자시키 단 앞 구츠누기 돌(회색 판석, 앞면 두께) 위에 벗어 둔 갈색 구두 한 켤레(코가 단 쪽, 위쪽).', tags=('이자카야', '신발', '현관'))
+def _(c):
+    c.R(1, 1, 14, 11, K('conc', 1)); box(c, 1, 1, 14, 11, OL)
+    c.HL(2, 2, 12, K('conc', 3)); c.VL(2, 2, 9, K('conc', 2))
+    for x, y in ((12, 10), (5, 10), (13, 4)):
+        c.P(x, y, K('conc', 0))
+    c.R(1, 12, 14, 3, K('conc', -1)); c.HL(1, 12, 14, K('conc', 0)); c.HL(1, 15, 14, OL); c.VL(1, 12, 3, OL); c.VL(14, 12, 3, OL)
+    for sx, dy in ((4, 0), (9, 1)):                                                          # 구두 한 켤레(위에서 본 모습, 코 위쪽)
+        c.R(sx, 3 + dy, 4, 7, K('soil', -1)); box(c, sx, 3 + dy, 4, 7, OL)
+        c.R(sx + 1, 4 + dy, 2, 3, K('soil', 1)); c.P(sx + 1, 4 + dy, K('soil', 2))     # 코 윤기
+        c.R(sx + 1, 8 + dy, 2, 1, K('soil', -2))                                          # 뒤꿈치 안쪽 그늘
 
 
 @O('fd-noren', '노렌', w=1, h=1, up=0, kind='hang', hrows=2, use=(), desc='문 위에 걸린 천 가림막. 남색 천 셋 갈래 + 흰 가장자리 띠(글자 없음).', tags=('노렌', '입구'))
@@ -470,6 +508,106 @@ def _(c):
     c.R(13, 6, 2, 2, K('shiro', 1)); c.P(13, 6, K('aka', 0)); c.P(14, 7, K('kii', 0))
 
 
+# ───────────────────────── 킷사텐 카운터 쪽 ─────────────────────────
+def counter_base(c, doors=True):
+    """카운터 칸 아래 16행(yb=16): 상판 + 앞 널판 두 칸. 윗면 하이라이트는 왼쪽 위."""
+    yb = 16
+    c.R(0, yb, 16, 5, K('yuka', 1)); c.HL(0, yb, 16, K('yuka', 2)); c.HL(0, yb + 4, 16, K('yuka', -2))
+    c.R(0, yb + 5, 16, 10, K('ita', -1)); c.HL(0, yb + 5, 16, K('ita', 0)); c.VL(0, yb + 5, 10, K('ita', 1)); c.VL(15, yb + 5, 10, K('ita', -3))
+    if doors:
+        c.R(2, yb + 7, 5, 6, K('ita', 0)); box(c, 2, yb + 7, 5, 6, K('ita', -3)); c.R(9, yb + 7, 5, 6, K('ita', 0)); box(c, 9, yb + 7, 5, 6, K('ita', -3))
+        c.P(6, yb + 9, K('tekko', 1)); c.P(9, yb + 9, K('tekko', 1))
+    c.HL(0, yb + 15, 16, K('ita', -3))
+
+
+@O('fd-siphon', '사이펀 커피 기구', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='카운터 위 사이펀 두 대 — 철 기둥에 유리 위·아래 플라스크, 알코올 램프 불꽃. 한쪽은 끓어 오른 커피, 한쪽은 내려온 커피.', tags=('킷사텐', '커피', '사이펀'))
+def _(c):
+    # 철 기둥(두 사이펀 사이): 왼쪽이 밝고 오른쪽이 어둡다
+    c.VL(7, 2, 12, K('tekko', 2)); c.VL(8, 2, 12, K('tekko', -2)); c.HL(7, 1, 2, K('tekko', 1))
+    def siphon(x0, brewing):
+        # 위 플라스크 (rows 1~6)
+        c.R(x0, 2, 5, 5, K('garasu', 2)); box(c, x0, 2, 5, 5, K('garasu', -2)); c.P(x0, 2, None); c.P(x0 + 4, 2, None)
+        c.P(x0 + 1, 3, K('shiro', 2)); c.P(x0 + 1, 4, K('shiro', 2))
+        if brewing:
+            c.R(x0 + 1, 4, 3, 2, K('ita', -2)); c.HL(x0 + 1, 4, 3, K('ita', 0)); c.P(x0 + 1, 4, K('ita', 1))
+        c.HL(x0 + 1, 1, 3, K('tekko', 0))
+        # 관
+        c.VL(x0 + 2, 7, 2, K('garasu', -1))
+        # 아래 플라스크 (rows 8~12)
+        c.R(x0, 8, 5, 5, K('garasu', 2)); box(c, x0, 8, 5, 5, K('garasu', -2)); c.P(x0, 12, None); c.P(x0 + 4, 12, None)
+        c.P(x0 + 1, 9, K('shiro', 2))
+        if brewing:
+            c.R(x0 + 1, 11, 3, 1, K('sora', 0)); c.P(x0 + 1, 11, K('sora', 2))
+        else:
+            c.R(x0 + 1, 10, 3, 2, K('ita', -2)); c.HL(x0 + 1, 10, 3, K('ita', 0)); c.P(x0 + 1, 10, K('ita', 1))
+        # 알코올 램프 + 불꽃
+        c.HL(x0 + 1, 13, 3, K('daidai', 0)); c.P(x0 + 2, 13, K('kii', 2))
+        c.R(x0, 14, 5, 2, K('tekko', 0)); c.HL(x0, 14, 5, K('tekko', 2)); c.HL(x0, 15, 5, K('tekko', -3))
+    siphon(2, True); siphon(9, False)
+    counter_base(c)
+
+
+@O('fd-coffee-machine', '에스프레소 머신', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='카운터 위 스테인리스 에스프레소 머신 — 붉은 띠, 압력계, 추출구 아래 잔 두 개, 위에 포개 둔 잔.', tags=('킷사텐', '커피', '카페'))
+def _(c):
+    # 위에 포개 둔 잔
+    for x in (3, 8):
+        c.R(x, 1, 4, 2, K('shiro', 1)); box(c, x, 1, 4, 2, K('conc', -2)); c.HL(x + 1, 1, 2, K('shiro', 3))
+    # 몸통
+    c.R(1, 3, 14, 11, st(0)); box(c, 1, 3, 14, 11, st(-3)); c.HL(2, 4, 12, st(3)); c.VL(2, 4, 9, st(2)); c.VL(13, 4, 9, st(-2))
+    c.R(3, 5, 10, 2, K('aka', 0)); c.HL(3, 5, 10, K('aka', 2)); c.HL(3, 6, 10, K('aka', -2))
+    # 압력계 + 버튼
+    c.R(7, 7, 2, 2, K('shiro', 1)); box(c, 7, 7, 2, 2, K('sumi', -1)); c.P(8, 8, K('aka', 0))
+    c.P(4, 8, K('midori', 1)); c.P(11, 8, K('kii', 1))
+    # 추출구 홈 + 잔
+    c.R(3, 9, 10, 4, K('sumi', 0)); c.HL(3, 9, 10, K('sumi', -1))
+    for x in (4, 9):
+        c.R(x + 1, 9, 2, 2, K('tekko', 1)); c.P(x + 1, 11, K('ita', 0))
+        c.R(x, 11, 4, 2, K('shiro', 0)); c.HL(x, 11, 4, K('ita', -2)); c.HL(x, 12, 4, K('conc', -1)); c.P(x, 11, K('ita', 0))
+    # 스팀 완드
+    c.VL(14, 7, 6, K('tekko', 1)); c.P(14, 13, K('tekko', 3))
+    counter_base(c)
+
+
+@O('fd-cake-case', '케이크 쇼케이스', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='카운터 위 유리 케이크 진열장 — 나무 뚜껑, 위 칸 조각 케이크(딸기·초콜릿), 아래 칸 통 케이크와 푸딩.', tags=('킷사텐', '케이크', '진열'))
+def _(c):
+    c.R(0, 1, 16, 2, K('ita', 0)); c.HL(0, 1, 16, K('ita', 2)); c.HL(0, 2, 16, K('ita', -2)); c.P(0, 1, K('ita', 3))
+    c.R(1, 3, 14, 11, K('garasu', 1)); box(c, 1, 3, 14, 11, K('ita', -3))
+    c.R(2, 4, 12, 9, K('garasu', 2))
+    c.VL(2, 4, 8, K('shiro', 2)); c.P(3, 4, K('shiro', 2))
+    # 위 칸: 조각 케이크 둘
+    c.R(4, 6, 4, 2, K('pinku', 0)); c.HL(4, 6, 4, K('shiro', 1)); c.HL(4, 7, 4, K('pinku', -2)); c.P(5, 5, K('aka', 1))
+    c.R(9, 6, 4, 2, K('soil', -1)); c.HL(9, 6, 4, K('shiro', 1)); c.HL(9, 7, 4, K('soil', -2)); c.P(10, 5, K('kii', 1))
+    c.HL(2, 8, 12, K('garasu', -1))
+    # 아래 칸: 통 케이크 + 푸딩
+    c.HL(3, 9, 6, K('shiro', 2)); c.P(4, 9, K('aka', 1)); c.P(6, 9, K('aka', 1)); c.P(8, 9, K('aka', 1))
+    c.R(3, 10, 6, 2, K('kinari', 0)); c.HL(3, 10, 6, K('shiro', 1)); c.HL(3, 11, 6, K('kinari', -2))
+    c.R(11, 10, 3, 2, K('kii', 0)); c.HL(11, 10, 3, K('soil', -1)); c.HL(11, 11, 3, K('kii', -2))
+    c.HL(2, 12, 12, K('shiro', 0)); c.P(2, 12, K('shiro', 2))
+    counter_base(c)
+
+
+@O('fd-bean-shelf', '원두 병 선반', w=2, h=1, up=16, kind='wall', use=('search',), desc='나무 선반장 — 유리 원두 병 열 개(갈색 원두, 검은 뚜껑, 흰 이름표 점) 두 단, 아래는 서랍 수납.', tags=('킷사텐', '커피', '원두'))
+def _(c):
+    W = 32; yb = 16
+    c.R(0, 2, W, 30, K('ita', -1)); c.VL(0, 2, 30, K('ita', 1)); c.VL(W - 1, 2, 30, K('ita', -3)); c.HL(0, 2, W, K('ita', 1))
+    c.R(2, 4, W - 4, 22, K('ita', -3))
+    beans = [('soil', -1), ('soil', 0), ('ita', -2), ('kinari', -2), ('soil', -2)]
+    for sy in (4, 15):
+        for i in range(5):
+            bx = 3 + i * 5
+            b, t = beans[(i + sy) % 5]
+            c.R(bx, sy + 1, 4, 2, K('tekko', 0)); c.HL(bx, sy + 1, 4, K('tekko', 2))                                  # 뚜껑
+            c.R(bx, sy + 3, 4, 7, K('garasu', 1)); c.VL(bx, sy + 3, 7, K('shiro', 2)); c.VL(bx + 3, sy + 3, 7, K('garasu', -2))
+            c.R(bx + 1, sy + 4, 2, 6, K(b, t)); c.HL(bx + 1, sy + 4, 2, K(b, min(t + 1, 2)))                       # 원두
+            c.P(bx + 1, sy + 6, K('shiro', 2)); c.P(bx + 2, sy + 6, K('shiro', 1))                                    # 이름표 점
+        c.R(2, sy + 10, W - 4, 2, K('ita', 0)); c.HL(2, sy + 10, W - 4, K('ita', 2)); c.HL(2, sy + 11, W - 4, K('ita', -2))
+    c.R(0, yb + 10, W, 6, K('ita', 0)); c.HL(0, yb + 10, W, K('ita', 2)); c.HL(0, yb + 11, W, K('ita', -2))
+    c.VL(0, yb + 10, 6, K('ita', 2)); c.VL(W - 1, yb + 10, 6, K('ita', -3))
+    for x in (1, 17):
+        c.R(x + 1, yb + 12, 12, 3, K('ita', 1)); box(c, x + 1, yb + 12, 12, 3, K('ita', -3)); c.P(x + 6, yb + 13, K('tekko', 1)); c.P(x + 7, yb + 13, K('tekko', 1))
+    c.HL(0, yb + 15, W, K('ita', -3))
+
+
 # 놓는 법(조수가 읽는 placementRules) — 가구마다 어디에·무엇 옆에.
 PLACE = {
     'fd-stool': '카운터 앞(손님 쪽, 카운터 바로 남쪽 줄)에 1칸 간격 없이 한 줄로. 라멘집·이자카야·초밥집 카운터석.',
@@ -479,10 +617,12 @@ PLACE = {
     'fd-sink': '주방 북쪽 벽 첫 바닥 줄, 조리대 옆.', 'fd-stockpot': '라멘집 주방 북쪽 벽 줄, 면 삶는 칸 옆(육수 솥).',
     'fd-noodle-boiler': '라멘집 주방 북쪽 벽 줄, 육수 솥과 조리대 사이.', 'fd-fryer': '주방 북쪽 벽 줄, 조리대 옆(튀김).',
     'fd-fridge': '주방 북쪽 벽 줄 끝(업소용 냉장고, 1×2 — 발밑 두 칸).', 'fd-sake-shelf': '이자카야·초밥집 카운터 뒤 북쪽 벽(술병 선반).',
-    'fd-ticket-machine': '라멘집 입구 바로 안쪽 북쪽 벽 줄 또는 입구 옆 — 손님이 들어와 먼저 식권을 산다.',
+    'fd-ticket-machine': '라멘집 입구 바로 안쪽, 입구 옆 바닥에 세운다(앞 칸을 비운다) — 손님이 들어와 먼저 식권을 산다.',
     'fd-water-jug': '카운터 끝 칸이나 입구 옆(셀프 물 서버).', 'fd-register': '출입구 가까이(나가며 계산) — 카운터 끝이나 입구 옆.',
     'fd-neta-case': '초밥집 카운터 칸 위치에 카운터 대신 한 줄로(생선 진열 케이스가 올라간 카운터 칸).',
-    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단 — 여러 칸을 사각으로 깔고 위에 zataku·zabuton.',
+    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(1×2) — 가로로 여러 개 이어 깔고 위에 zataku·zabuton, 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞칸(신발 벗는 돌단) — 단 폭만큼 한두 칸.',
+    'fd-siphon': '킷사텐 카운터 위 한 칸(사이펀 커피) — 계산대·머신과 한 줄로 카운터 뒤.', 'fd-coffee-machine': '킷사텐 카운터 칸 하나(에스프레소 머신).',
+    'fd-cake-case': '킷사텐 카운터 칸 하나, 입구에서 보이는 쪽(케이크 쇼케이스).', 'fd-bean-shelf': '킷사텐 카운터 뒤 북쪽 벽 첫 줄(원두 병 선반, 2칸).',
     'fd-noren': '주방 입구(칸막이 틈) 위 벽면에 건다.', 'fd-lantern': '이자카야 벽면 윗줄에 건다(붉은 초롱).',
     'fd-menu-board': '카운터 뒤·주방 위 북쪽 벽면 윗줄(메뉴판, 글자 없이 색 띠).',
 }

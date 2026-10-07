@@ -1,15 +1,14 @@
 {
  "plan": [
-  "##########",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "#........#",
-  "####.#####"
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####..###"
  ],
  "floor": "fd-wood-dark",
  "wall": "fd-wood-wall",
@@ -17,86 +16,74 @@
  "objects": [
   {
    "id": "fd-menu-board",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "fd-lantern",
-   "x": 6,
+   "x": 3,
    "y": 1
   },
   {
    "id": "window-sash",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "fd-lantern",
    "x": 7,
    "y": 1
   },
   {
-   "id": "fd-water-jug",
+   "id": "fd-bean-shelf",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "fd-cake-case",
    "x": 4,
-   "y": 3
+   "y": 5
   },
   {
-   "id": "fd-register",
-   "x": 8,
-   "y": 3
+   "id": "fd-siphon",
+   "x": 5,
+   "y": 5
   },
   {
-   "id": "houseplant",
-   "x": 8,
-   "y": 8
-  },
-  {
-   "id": "fd-chair-s",
+   "id": "fd-coffee-machine",
    "x": 6,
    "y": 5
   },
   {
-   "id": "fd-chair-s",
+   "id": "fd-register",
    "x": 7,
    "y": 5
   },
   {
-   "id": "sh-wall-shelf",
-   "x": 1,
-   "y": 3
-  },
-  {
-   "id": "sh-wall-shelf",
-   "x": 2,
-   "y": 3
-  },
-  {
-   "id": "fd-chair-e",
-   "x": 1,
+   "id": "fd-stool",
+   "x": 4,
    "y": 6
   },
   {
-   "id": "fd-chair-w",
-   "x": 8,
+   "id": "fd-stool",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 6,
    "y": 6
   },
   {
    "id": "fd-chair-s",
-   "x": 2,
+   "x": 1,
    "y": 5
   },
   {
    "id": "fd-chair-s",
-   "x": 3,
+   "x": 2,
    "y": 5
   }
  ],
  "tables": [
   {
    "style": "fd-table",
-   "x": 2,
-   "y": 6,
-   "w": 2,
-   "h": 1
-  },
-  {
-   "style": "fd-table",
-   "x": 6,
+   "x": 1,
    "y": 6,
    "w": 2,
    "h": 1
@@ -105,29 +92,19 @@
  "goods": [
   {
    "id": "fd-teishoku",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fd-beer-mug",
    "x": 2,
-   "y": 6
-  },
-  {
-   "id": "fd-beer-mug",
-   "x": 3,
-   "y": 6
-  },
-  {
-   "id": "fd-condiments",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "fd-beer-mug",
-   "x": 7,
    "y": 6
   }
  ],
  "name": "일본 킷사텐(찻집) 실내",
  "start": [
   4,
-  8
+  7
  ],
  "links": [],
  "rooms": [
@@ -135,8 +112,8 @@
    "room": "kissaten",
    "x0": 0,
    "y0": 0,
-   "x1": 9,
-   "y1": 9
+   "x1": 8,
+   "y1": 8
   }
  ]
 }

@@ -11,10 +11,10 @@ door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 �
 |---|---|---|---|---|
 | `jp-city-konbini-14x13` | 일본 편의점(コンビニ) 실내 | 편의점 | `jp-interior-ex-konbini` | 자동문 입구 → 창가 잡지대 · 가운데 섬 진열대 줄 · 북쪽 벽 음료 냉장고 · 개방형 도시락 냉장 · 입구 옆 계산대(계산기·핫스낵·커피) + 뒤 담배 선반 · 칸막이 너머 뒷방. |
 | `jp-city-supermarket-16x14` | 일본 동네 슈퍼 실내 | 동네 슈퍼 | `jp-interior-ex-supermarket` | 입구 옆 계산대 레인·카트·바구니 → 채소 경사 진열대 · 벽 냉장 진열(정육·생선) · 가운데 섬 진열대·냉동고. |
-| `jp-city-ramen-10x10` | 일본 라멘집 실내 | 라멘집 | `jp-interior-ex-ramen` | 입구 옆 식권기·물 서버 → L자 카운터 + 스툴 → 카운터 안쪽 주방 줄(육수 솥·면 삶는 칸·조리대·개수대·냉장고). |
-| `jp-city-izakaya-13x12` | 일본 이자카야 실내 | 이자카야 | `jp-interior-ex-izakaya` | 카운터 + 스툴 · 다다미 좌석 단(좌탁·방석) · 테이블석 · 술병 선반 · 붉은 초롱 · 노렌 너머 주방. |
-| `jp-city-sushi-10x12` | 일본 초밥집 실내 | 초밥집 | `jp-interior-ex-sushi` | 카운터 위 유리 생선 진열 케이스 · 카운터 의자 · 작은 테이블석 · 계산대. |
-| `jp-city-kissaten-10x10` | 일본 킷사텐(찻집) 실내 | 킷사텐(찻집) | `jp-interior-ex-kissaten` | 짙은 나무 바닥 · 2인 탁자와 의자 · 카운터 + 계산대 · 화분. |
+| `jp-city-ramen-8x9` | 일본 라멘집 실내 | 라멘집 | `jp-interior-ex-ramen` | 입구 옆 식권기·물 서버 → L자 카운터 + 스툴 → 카운터 안쪽 주방 줄(육수 솥·면 삶는 칸·조리대·개수대·냉장고). |
+| `jp-city-izakaya-12x10` | 일본 이자카야 실내 | 이자카야 | `jp-interior-ex-izakaya` | 카운터 + 스툴 · 다다미 좌석 단(좌탁·신발 벗는 단) · 테이블석 · 술병 선반 · 붉은 초롱 · 노렌 너머 주방. |
+| `jp-city-sushi-10x9` | 일본 초밥집 실내 | 초밥집 | `jp-interior-ex-sushi` | 카운터 위 유리 생선 진열 케이스 · 카운터 의자 · 계산대. |
+| `jp-city-kissaten-9x9` | 일본 킷사텐(찻집) 실내 | 킷사텐(찻집) | `jp-interior-ex-kissaten` | 짙은 나무 바닥 · 2인 탁자와 의자 · 카운터(케이크 유리장·사이펀·커피 머신·계산대) + 스툴 · 원두 병 선반. |
 | `jp-city-bakery-9x14` | 일본 동네 빵집 실내 | 빵집 | `jp-interior-ex-bakery` | 셔터 걷은 입구 → 쟁반·집게 대 → 빵 진열대·벽 빵 선반 → 입구 가까운 계산대 · 칸막이 너머 오븐 있는 뒷방. |
 | `jp-city-bookstore-9x14` | 일본 동네 서점 실내 | 서점 | `jp-interior-ex-bookstore` | 벽 책장 · 가운데 평대·양면 책장 · 계산대 · 뒷방. |
 | `jp-city-pharmacy-9x14` | 일본 동네 약국 실내 | 약국 | `jp-interior-ex-pharmacy` | 벽 약 선반·가운데 양면 선반 · 상담 카운터·계산대 · 뒷방. |
