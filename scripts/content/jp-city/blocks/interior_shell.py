@@ -65,7 +65,8 @@ def _planks(ramp, hi, mid, lo, seed):
                 if a < b: bid = 0 if a <= x < b else 1
                 else: bid = 0 if (x >= a or x < b) else 1
                 tone = hs(r, bid, seed + 5) % 5            # 널마다 살짝 다른 톤 — 0 이면 한 단 밝은 널
-                col = hi if tone == 0 and rnd(r, bid, seed + 6, 450) else mid
+                # 밝은 널은 윗줄 1px 광택만 — 널 전체를 밝히면 넓은 빈 바닥에서 같은 자리에 띠로 줄 서 보였다(2026-10-07)
+                col = hi if tone == 0 and rnd(r, bid, seed + 6, 450) and yy == 0 else mid
                 if yy == 3: col = lo                          # 널 사이 홈
                 if x == a or x == b:                          # 이음새(머리 맞댐)
                     col = lo
