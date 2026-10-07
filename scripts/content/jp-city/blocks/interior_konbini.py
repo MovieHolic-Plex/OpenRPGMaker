@@ -99,9 +99,8 @@ def _backroom(c):
     for y in range(c.h):
         for x in range(c.w):
             col = k('conc', 0)
-            if rnd(x, y, 5, 90): col = k('conc', 1)
-            elif rnd(x, y, 6, 70): col = k('conc', -1)
-            if x == 0 or y == 0: col = k('conc', -2)
+            if (x % 64 == 0 or y % 64 == 0): col = k('conc', -1)
+            elif rnd(x, y, 5, 14): col = k('conc', 1)
             c.P(x, y, col)
 
 
@@ -266,9 +265,12 @@ def cv_counter(c): _counter_body(c, 0)
        tags=('편의점', '계산대', '레지'), place='카운터 줄 가운데, 출입구에서 보이는 위치', pair=('cv-counter', 'cv-back-shelf'))
 def cv_register(c):
     o = k('conc', -3)
-    c.R(3, 6, 10, 9, k('conc', 0)); c.HL(3, 6, 10, k('conc', 2)); c.R(4, 8, 8, 5, k('sora', 1)); c.HL(4, 8, 8, k('garasu', 3)); c.HL(4, 12, 8, k('sora', -2))   # 화면
-    c.R(4, 14, 3, 2, k('shiro', 1)); c.R(8, 14, 4, 2, k('daidai', 0))                                                       # 단말 키·카드 단말
-    c.R(13, 10, 2, 5, k('conc', -1)); c.P(13, 10, k('conc', 2))                                                            # 영수증 프린터
+    c.R(2, 9, 12, 7, k('tekko', 0)); c.HL(2, 9, 12, k('tekko', 2)); c.VL(2, 9, 7, k('tekko', 2))                         # 단말 받침(어두운 본체)
+    c.R(3, 1, 10, 8, k('tekko', -2)); c.HL(3, 1, 10, k('conc', 2)); c.R(4, 2, 8, 6, k('sora', 2)); c.HL(4, 2, 8, k('garasu', 3))   # 세운 POS 화면(밝은 파랑)
+    c.HL(5, 4, 5, k('shiro', 3)); c.HL(5, 6, 4, k('shiro', 2)); c.P(10, 4, k('midori', 2))
+    for i in range(3):
+        for j in range(2): c.R(4 + i * 3, 11 + j * 2, 2, 1, k('shiro', 2))                                               # 키패드
+    c.R(11, 11, 3, 4, k('daidai', 0)); c.P(12, 12, k('shiro', 3))                                                          # 카드 단말
     ol_in(c, o)
     c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 16, 16, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
     c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
@@ -281,11 +283,10 @@ def cv_register(c):
        tags=('편의점', '카운터', '튀김'), place='계산대 옆 카운터 줄', pair=('cv-register', 'cv-counter'))
 def cv_hotcase(c):
     o = k('conc', -3)
-    c.R(1, 3, 14, 3, k('conc', 2)); c.HL(1, 3, 14, k('conc', 3)); c.HL(1, 5, 14, k('conc', -1))
-    c.R(1, 6, 14, 10, k('daidai', 1)); c.HL(1, 6, 14, k('daidai', 2))
-    for x0 in (3, 7, 11): c.R(x0, 10, 3, 3, k('ki', 0)); c.HL(x0, 10, 3, k('ki', 2)); c.HL(x0, 12, 3, k('ki', -2))
-    c.HL(2, 14, 12, k('tekko', 0)); c.VL(1, 6, 10, k('conc', 2)); c.VL(14, 6, 10, k('conc', -1))
-    for p in ((3, 7), (4, 8)): c.P(p[0], p[1], k('garasu', 3))
+    c.R(0, 2, 16, 14, k('daidai', 2)); c.HL(0, 2, 16, k('shiro', 3))                                                       # 유리 상자(따뜻한 주황 조명)
+    c.R(1, 3, 14, 3, k('garasu', 3)); c.HL(1, 3, 14, k('shiro', 3)); c.VL(1, 3, 3, k('shiro', 3))                          # 윗 유리 반사
+    for x0 in (2, 6, 10): c.R(x0, 8, 4, 4, k('ki', 0)); c.HL(x0, 8, 4, k('ki', 2)); c.HL(x0, 11, 4, k('daidai', -2)); c.P(x0 + 1, 9, k('shiro', 3))   # 튀김 더미
+    c.HL(1, 13, 14, k('tekko', 0)); c.HL(1, 14, 14, k('daidai', -1)); c.VL(0, 3, 13, k('shiro', 2)); c.VL(15, 3, 13, k('conc', 0))
     ol_in(c, o)
     c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
     c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
@@ -297,9 +298,10 @@ def cv_hotcase(c):
        tags=('편의점', '카운터', '커피'), place='계산대 줄 끝, 출입구에서 안쪽', pair=('cv-register',))
 def cv_coffee(c):
     o = k('conc', -3)
-    c.R(2, 1, 12, 15, k('tekko', 0)); c.HL(2, 1, 12, k('tekko', 2)); c.VL(2, 1, 15, k('tekko', 2)); c.VL(13, 1, 15, k('tekko', -2))
-    c.R(4, 3, 8, 3, k('yoru', 0)); c.P(5, 4, k('midori', 1)); c.P(7, 4, k('aka', 1)); c.P(9, 4, k('sora', 2))
-    c.R(5, 8, 6, 5, k('conc', -2)); c.HL(7, 8, 2, k('conc', 1)); c.R(6, 11, 4, 4, k('shiro', 2)); c.HL(6, 11, 4, k('shiro', 2)); c.VL(6, 12, 3, k('shiro', 1)); c.HL(6, 14, 4, k('conc', 0))
+    c.R(3, 0, 10, 16, k('yoru', 0)); c.HL(3, 0, 10, k('tekko', 2)); c.VL(3, 0, 16, k('tekko', 1)); c.VL(12, 0, 16, k('yoru', -2))   # 검은 머신 몸통
+    c.R(4, 2, 8, 3, k('conc', -2)); c.P(5, 3, k('midori', 2)); c.P(7, 3, k('aka', 2)); c.P(9, 3, k('sora', 2)); c.P(10, 3, k('ki', 2))   # 버튼줄
+    c.R(5, 6, 6, 2, k('conc', -3)); c.R(7, 8, 2, 2, k('daidai', 1))                                                         # 추출구·떨어지는 커피
+    c.R(5, 11, 6, 4, k('conc', -2)); c.R(6, 11, 4, 4, k('shiro', 3)); c.HL(6, 11, 4, k('conc', 1)); c.HL(6, 12, 4, k('daidai', -2))   # 컵과 받침
     ol_in(c, o)
     c.R(0, 16, 16, 5, k('shiro', 2)); c.HL(0, 20, 16, k('conc', 1))
     c.R(0, 21, 16, 7, k('shiro', 1)); c.HL(0, 21, 16, k('conc', -1)); c.R(0, 28, 16, 3, k('tekko', -2)); c.HL(0, 28, 16, k('tekko', 0)); c.HL(0, 31, 16, o)
