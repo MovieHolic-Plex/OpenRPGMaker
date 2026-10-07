@@ -770,7 +770,7 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   for (const p2 of JSON.parse(fs.readFileSync(path.join(EXD, "places2.json"), "utf8")) as { file: string }[]) LINKS[p2.file] = true;
   const argsOf = (f: string) => {
     const ex = exRead(f);
-    return { tileset: "jp_city", mapId: `jp-city-${f}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
+    return { tileset: "jp_city", mapId: `jp-city-${f}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}),
       start: [{ x: ex.start[0], y: ex.start[1] }], links: ex.links ?? [] };
   };
   const p = createEmptyToolProject("jp-interior-refs");

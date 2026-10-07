@@ -36,7 +36,7 @@ const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT,
 
 const project = createEmptyToolProject("jp-interior");
 const results = [];
-const argsOf = (m, links) => { const ex = read(m.file); return { tileset: "jp_city", mapId: m.id, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [],
+const argsOf = (m, links) => { const ex = read(m.file); return { tileset: "jp_city", mapId: m.id, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}),
   start: [{ x: m.start[0], y: m.start[1] }], links }; };
 // 조수에게 가르치는 층 순서 그대로: ① 모든 층을 links 없이 짓고 ② 같은 mapId·replace:true 로 links 를 넣어 다시 짓는다(없는 맵으로 가는 links 는 도구가 거부한다).
 const run = (args) => BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, args);   // run(draft) 은 draft 를 고친다

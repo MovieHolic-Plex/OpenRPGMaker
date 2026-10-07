@@ -11,6 +11,7 @@
   "#.........#",
   "##..#######"
  ],
+ "exitWidth": 2,
  "floor": "fd-wood-dark",
  "wall": "fd-plaster",
  "zones": [

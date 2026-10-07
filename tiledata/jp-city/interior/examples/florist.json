@@ -12,6 +12,7 @@
   "#.......#",
   "####..###"
  ],
+ "exitWidth": 2,
  "floor": "sh-concrete",
  "wall": "sh-white",
  "ceiling": "default",

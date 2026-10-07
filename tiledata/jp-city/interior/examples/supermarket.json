@@ -13,6 +13,7 @@
   "#..............#",
   "#######..#######"
  ],
+ "exitWidth": 2,
  "floor": "cv-vinyl",
  "wall": "cv-panel",
  "zones": [],

@@ -15,6 +15,7 @@
   "#.............#",
   "#######..######"
  ],
+ "exitWidth": 2,
  "floor": "flooring",
  "wall": "juraku",
  "ceiling": "default",

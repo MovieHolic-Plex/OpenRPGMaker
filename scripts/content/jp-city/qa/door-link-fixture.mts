@@ -91,7 +91,7 @@ for (const link of LINKS) {
   if (link.example) {
     const ex = JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${link.example}.json`, "utf8"));
     const id = `jp-city-${link.example}`;
-    const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: id, name: link.name ?? ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
+    const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: id, name: link.name ?? ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
     if (!built.ok) throw new Error(`${link.example}: ${JSON.stringify(built.issues)}`);
     target = { interiorMapId: id };
   } else {

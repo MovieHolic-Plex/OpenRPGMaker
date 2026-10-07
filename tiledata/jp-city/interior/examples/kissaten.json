@@ -10,6 +10,7 @@
   "#........#",
   "####..####"
  ],
+ "exitWidth": 2,
  "floor": "fd-wood-dark",
  "wall": "fd-wood-wall",
  "zones": [],

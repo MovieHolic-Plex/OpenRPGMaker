@@ -294,7 +294,7 @@
  },
  {
   "file": "mansion-2ldk",
-  "placeId": "jp-city-mansion-2ldk-15x18",
+  "placeId": "jp-city-mansion-2ldk-15x19",
   "name": "일본 맨션 2LDK 실내(베란다)",
   "kind": "mansion",
   "kindKo": "맨션 2LDK",
@@ -308,7 +308,7 @@
   "building": "jp_mansion",
   "rules": [
    "공용 복도(2칸 폭) → 철문 현관·신발장·우산꽂이 → 복도(화장실·욕실) → LDK(대면 키친·식탁·소파·TV) + 방 2(침실·아이방) → 유리 미닫이 → 남쪽 베란다(빨래 장대·실외기·화분·난간 한 줄, 폭 8×4칸).",
-   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-15x18\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-15x19\"})."
   ]
  },
  {
