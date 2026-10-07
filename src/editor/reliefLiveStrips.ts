@@ -55,6 +55,9 @@ export class ReliefLiveStrips {
   private tileSize = 0;
   private revision = "";
   private groundSignature: number | undefined;
+  /** 지난 굽기 때의 바닥 지문 사본 — 바닥 표면은 제자리에서 고쳐지므로 바뀐 칸을 찾으려면 따로 들고 있어야 한다. */
+  private groundSurface: ReliefGroundSurface | undefined;
+  private groundCells: Int32Array | undefined;
   private viewKey = "";
   private readonly strips = new Map<number, Strip>();
   private serial = 0;
@@ -62,6 +65,8 @@ export class ReliefLiveStrips {
   private groundTint: number | null = null;
   /** 굽기 방식별 횟수(진단·회귀 e2e 용, EditScene 이 window.__oprnEditReliefStats 로 내보낸다). */
   readonly counts = { full: 0, window: 0, same: 0, clear: 0 };
+  /** 전체 굽기로 간 까닭(진단): 첫 굽기·바닥 표면 교체·계획 불가(창이 너무 큼 등)·강제. */
+  readonly fullReasons = { first: 0, ground: 0, plan: 0, forced: 0 };
 
   constructor(private readonly host: ReliefLiveStripsHost) {}
 
@@ -95,7 +100,14 @@ export class ReliefLiveStrips {
     this.image ??= new ReliefPagedImage(relief.width, relief.height);
     this.tileSize = tileSize;
     const revision = `${reliefSignature(relief)}:${ground?.signature ?? "none"}`;
-    const plan = forceFull || this.groundSignature !== ground?.signature ? null : planReliefPatch(this.scene, scene, this.image);
+    // 같은 바닥 표면이 제자리에서 바뀌었으면(하층 칸 칠하기, 높이 붓이 윗면 풀을 덮음) 지난 지문 사본과 견줘 바뀐 칸 둘레만 굽는다.
+    // 표면이 새로 만들어졌으면(맵·타일셋·칩셋 그림 교체) 지문이 같아도 화소가 다를 수 있어 전체를 굽는다.
+    let previous = this.scene;
+    const groundChanged = this.groundSignature !== ground?.signature;
+    const groundPatchable = groundChanged && !!previous && !!ground && ground === this.groundSurface && this.groundCells?.length === ground.cells.length;
+    if (groundPatchable) previous = { ...previous!, opts: { ...previous!.opts, ground: { cells: this.groundCells!, signature: -1, sample: () => false } } };
+    const plan = forceFull || (groundChanged && !groundPatchable) ? null : planReliefPatch(previous, scene, this.image);
+    if (!plan) this.fullReasons[forceFull ? "forced" : !this.scene ? "first" : groundChanged && !groundPatchable ? "ground" : "plan"]++;
     // The full raster remains an independent reference for small parity fixtures.
     // Production fallbacks bake every resident page, never a map-wide pixel image.
     if (forceFull && (relief.width > 96 || relief.height > 96)) throw new RangeError("Full relief reference is limited to 96×96 QA fixtures");
@@ -104,6 +116,8 @@ export class ReliefLiveStrips {
     const patch = this.image.sync(scene, revision, view, reference, plan === "same" ? [] : plan?.windows);
     this.viewKey = this.pageViewKey(view);
     this.scene = scene; this.revision = revision; this.groundSignature = ground?.signature;
+    if (ground !== this.groundSurface || groundChanged || !this.groundCells) this.groundCells = ground?.cells.slice();
+    this.groundSurface = ground;
     if (patch.shift) for (const strip of this.strips.values()) { strip.y0 += patch.shift; strip.y1 += patch.shift; }
     const updated = forceFull ? this.rebuildAll() : this.redrawRects(patch.rows, patch.rects);
     return { mode: !patch.rects.length ? "same" : forceFull || !plan ? "full" : "window", strips: updated };
@@ -123,7 +137,7 @@ export class ReliefLiveStrips {
     return view ? `${Math.floor(view.x / RELIEF_PAGE)},${Math.floor(view.y / RELIEF_PAGE)},${Math.ceil((view.x + view.width) / RELIEF_PAGE)},${Math.ceil((view.y + view.height) / RELIEF_PAGE)}` : "all";
   }
 
-  get backingStats(): { pages: number; bytes: number; pad: number; originY: number; strips: number } {
+  get backingStats(): { pages: number; bytes: number; pad: number; originY: number; bakes?: { pages: number; patches: number }; strips: number } {
     return { ...(this.image?.stats ?? { pages: 0, bytes: 0, pad: 0, originY: 0 }), strips: this.strips.size };
   }
 
@@ -140,7 +154,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
-    this.revision = ""; this.groundSignature = undefined; this.viewKey = "";
+    this.revision = ""; this.groundSignature = undefined; this.groundSurface = undefined; this.groundCells = undefined; this.viewKey = "";
   }
 
   /** 씬이 내려가 이미지가 이미 파괴됐을 때 — 참조만 버리고 텍스처를 지운다. */
@@ -149,7 +163,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
-    this.revision = ""; this.groundSignature = undefined; this.viewKey = "";
+    this.revision = ""; this.groundSignature = undefined; this.groundSurface = undefined; this.groundCells = undefined; this.viewKey = "";
   }
 
   private columns(): number {

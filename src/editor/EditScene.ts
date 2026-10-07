@@ -661,7 +661,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
       editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
       // 높이 붓 굽기 방식별 횟수 — 붓질이 전체 굽기로 떨어지지 않는지 e2e 가 본다(reliefLiveStrips.ts).
-      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
+      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, fullReasons: this.reliefStrips?.fullReasons, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
       editWindow.__oprnEditSunlightStats = () => this.sunlightLayer?.diagnostics();
       // 띠를 버리고 전체를 다시 굽는다 — e2e 가 창 굽기 결과와 전체 굽기 결과의 화면이 같은지 비교한다.
       editWindow.__oprnEditReliefRebuild = () => {
