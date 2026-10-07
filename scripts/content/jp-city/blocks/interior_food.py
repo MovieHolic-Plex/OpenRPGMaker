@@ -305,20 +305,21 @@ def _(c):
 
 
 # ───────────────────────── 손님 쪽 소품 ─────────────────────────
-@O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='라멘집 식권기(바닥에 서는 기둥형). 붉은 몸통, 초록 지폐 투입구, 3×4 색 버튼(글자 없음), 거스름 트레이.', tags=('라멘', '식권'))
+@O('fd-ticket-machine', '식권 자판기', w=1, h=1, up=16, kind='floor', surface=False, use=('counter',), desc='라멘집 식권기(벽에 붙여 세우는 상자형). 은회색 몸통, 위쪽에 작은 색 버튼이 촘촘한 격자(글자 없음), 중간에 지폐 투입 슬롯, 아래에 식권이 나오는 어두운 출구.', tags=('라멘', '식권'))
 def _(c):
-    c.R(2, 3, 12, 28, K('aka', 0)); box(c, 2, 3, 12, 28, K('aka', -3)); c.HL(3, 4, 10, K('aka', 2)); c.VL(3, 4, 26, K('aka', 1))
-    c.R(4, 6, 8, 3, K('sumi', 0)); c.HL(4, 6, 8, K('sumi', 1)); c.P(5, 7, K('midori', 2)); c.P(6, 7, K('midori', 2))
-    c.R(4, 10, 8, 14, K('shiro', 0)); box(c, 4, 10, 8, 14, K('conc', -1))
-    for r in range(4):
-        for q in range(3):
-            col = ('aka', 'kii', 'midori', 'sora', 'daidai', 'pinku')[(r * 3 + q) % 6]
-            x, y = 5 + q * 2, 11 + r * 3
-            c.R(x, y, 2, 2, K(col, 0)); c.P(x, y, K(col, 2))
-    c.R(5, 24, 6, 1, K('conc', 0))
-    c.R(6, 25, 4, 2, K('sumi', 1)); c.HL(6, 25, 4, K('sumi', -1))                                      # 지폐구
-    c.R(4, 28, 8, 3, K('tekko', -1)); c.HL(4, 28, 8, K('tekko', 1)); c.HL(5, 29, 6, K('sumi', -2))      # 트레이
-    c.R(3, 31, 10, 1, K('tekko', -3))
+    c.R(1, 2, 14, 29, K('conc', 1)); box(c, 1, 2, 14, 29, K('conc', -3)); c.HL(2, 3, 12, K('conc', 3)); c.VL(2, 3, 27, K('conc', 2)); c.VL(13, 4, 26, K('conc', -1))
+    c.R(3, 5, 10, 14, K('conc', -2)); box(c, 3, 5, 10, 14, K('sumi', 1))                                # 버튼 패널(어두운 판)
+    cols = ('shiro', 'kii', 'midori', 'sora', 'daidai', 'pinku', 'aka')
+    for r in range(6):
+        for q in range(4):
+            col = cols[(r * 2 + q * 3 + (r // 2)) % len(cols)]
+            x, y = 4 + q * 2 + (0 if q < 4 else 0), 6 + r * 2
+            c.R(x, y, 1, 1, K(col, 1)); c.P(x + 1, y, K('sumi', 2))
+    c.R(4, 20, 8, 3, K('conc', 0)); box(c, 4, 20, 8, 3, K('conc', -3))                                  # 지폐 투입구 둘레
+    c.R(5, 21, 6, 1, K('sumi', -2)); c.HL(5, 21, 6, K('sumi', -2))
+    c.R(4, 24, 8, 5, K('tekko', -2)); box(c, 4, 24, 8, 5, K('sumi', -2)); c.HL(5, 25, 6, K('sumi', -3))   # 식권 출구
+    c.R(6, 27, 4, 2, K('shiro', 1)); c.HL(6, 27, 4, K('shiro', 3))                                       # 나오는 식권
+    c.R(2, 31, 12, 1, K('conc', -3))
 
 
 @O('fd-water-jug', '물병 스탠드', w=1, h=1, up=16, kind='floor', surface=True, use=(), desc='입구 옆 셀프 물 — 스탠드 위 물 주전자와 컵.', tags=('라멘', '물'))
@@ -618,7 +619,7 @@ PLACE = {
     'fd-sink': '주방 북쪽 벽 첫 바닥 줄, 조리대 옆.', 'fd-stockpot': '라멘집 주방 북쪽 벽 줄, 면 삶는 칸 옆(육수 솥).',
     'fd-noodle-boiler': '라멘집 주방 북쪽 벽 줄, 육수 솥과 조리대 사이.', 'fd-fryer': '주방 북쪽 벽 줄, 조리대 옆(튀김).',
     'fd-fridge': '주방 북쪽 벽 줄 끝(업소용 냉장고, 1×2 — 발밑 두 칸).', 'fd-sake-shelf': '이자카야·초밥집 카운터 뒤 북쪽 벽(술병 선반).',
-    'fd-ticket-machine': '라멘집 입구 바로 안쪽, 입구 옆 바닥에 세운다(앞 칸을 비운다) — 손님이 들어와 먼저 식권을 산다.',
+    'fd-ticket-machine': '라멘집 입구 바로 안쪽 동쪽 벽 곁 바닥에 세운다(앞 칸을 비운다, 뒤에 막다른 틈을 만들지 않는다) — 손님이 들어와 먼저 식권을 산다.',
     'fd-water-jug': '카운터 끝 칸이나 입구 옆(셀프 물 서버).', 'fd-register': '출입구 가까이(나가며 계산) — 카운터 끝이나 입구 옆.',
     'fd-neta-case': '초밥집 카운터 칸 위치에 카운터 대신 한 줄로(생선 진열 케이스가 올라간 카운터 칸).',
     'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(4×2, 방석·좌탁 없음) — 북쪽 줄 가운데 두 칸 위에 zataku 를 따로 놓는다(방석은 바닥 무늬끼리 겹쳐 단을 지우므로 단 위에 두지 않는다). 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞 바닥의 디딤돌(2×1, 신발 한 켤레 포함) — 좌탁 앞 두 칸에.',

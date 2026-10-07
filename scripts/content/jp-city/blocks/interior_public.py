@@ -182,14 +182,30 @@ def _noren(c, ramp):
     px(c, 4, 8, kc(ramp, 0)); px(c, 11, 8, kc(ramp, 0))
 
 
-@R.obj('pb-noren-m', '노렌(남탕·파랑)', w=1, kind='hang', hrows=1, cat='sento', cat_ko='목욕탕', tags=('목욕탕', '센토'), place='남탕 입구 위',
-       desc='파란 천 노렌. 두 폭으로 갈라지고 가운데 흰 점 무늬만 있다(글자 없음). 남탕 문 위에 건다.')
-def _noren_m(c): _noren(c, 'kon')
+def _noren_door(c, ramp):
+    for x0, f in ((0, 1), (13, -1)):                                                                    # 문틀 기둥
+        rc(c, x0, 0, 3, 32, kc('ki', 0)); vl(c, x0 + (0 if f > 0 else 2), 0, 32, kc('ki', 2 if f > 0 else -3)); vl(c, x0 + (2 if f > 0 else 0), 5, 27, kc('ki', -3 if f > 0 else 1))
+    rc(c, 0, 0, 16, 5, kc('ki', 1)); hl(c, 0, 0, 16, kc('ki', -3)); hl(c, 0, 1, 16, kc('ki', 3)); hl(c, 0, 4, 16, kc('ki', -3))   # 위 들보
+    hl(c, 3, 5, 10, kc('tekko', 1)); hl(c, 3, 6, 10, kc('yoru', 0))                                    # 가로대
+    for xa, xb in ((3, 6), (9, 12)):                                                                    # 두 폭
+        w = xb - xa + 1
+        rc(c, xa, 7, w, 13, kc(ramp, 0)); vl(c, xa, 7, 13, kc(ramp, 1)); vl(c, xb, 7, 13, kc(ramp, -2)); hl(c, xa, 7, w, kc(ramp, 2))
+        hl(c, xa, 19, w, kc(ramp, -2)); hl(c, xa, 20, w, kc(ramp, -3))
+        rc(c, xa + 1, 12, 2, 2, kc('shiro', 1)); px(c, xa + 1, 12, kc('shiro', 3))                      # 흰 점 무늬(글자 아님)
+    vl(c, 6, 8, 12, kc(ramp, -3)); vl(c, 9, 8, 12, kc(ramp, -3))                                        # 갈라진 가장자리
+    rc(c, 3, 29, 10, 3, kc('ki', 0)); hl(c, 3, 29, 10, kc('ki', 3)); hl(c, 3, 31, 10, kc('ki', -3))      # 문턱 널
 
 
-@R.obj('pb-noren-f', '노렌(여탕·빨강)', w=1, kind='hang', hrows=1, cat='sento', cat_ko='목욕탕', tags=('목욕탕', '센토'), place='여탕 입구 위',
-       desc='붉은 천 노렌. 두 폭으로 갈라지고 가운데 흰 점 무늬만 있다(글자 없음). 여탕 문 위에 건다.')
-def _noren_f(c): _noren(c, 'aka')
+@R.obj('pb-noren-m', '노렌 통로(남탕·파랑)', kind='door', cat='sento', cat_ko='목욕탕', use=('travel',), tags=('목욕탕', '센토', '노렌'),
+       place='탈의실과 남탕 사이 가로 칸막이의 1칸 틈 칸',
+       desc='남탕으로 드는 통로. 나무 문틀 위 가로대에 파란 천 노렌이 두 폭으로 갈라져 걸리고(가운데 흰 점 무늬뿐, 글자 없음) 아래로 바닥이 보인다. 문 없음.')
+def _noren_m(c): _noren_door(c, 'kon')
+
+
+@R.obj('pb-noren-f', '노렌 통로(여탕·빨강)', kind='door', cat='sento', cat_ko='목욕탕', use=('travel',), tags=('목욕탕', '센토', '노렌'),
+       place='탈의실과 여탕 사이 가로 칸막이의 1칸 틈 칸',
+       desc='여탕으로 드는 통로. 나무 문틀 위 가로대에 붉은 천 노렌이 두 폭으로 갈라져 걸리고(가운데 흰 점 무늬뿐, 글자 없음) 아래로 바닥이 보인다. 문 없음.')
+def _noren_f(c): _noren_door(c, 'aka')
 
 
 @R.obj('pb-map-board', '동네 지도판', w=2, kind='hang', hrows=2, cat='koban', cat_ko='파출소', tags=('파출소',), place='파출소 벽',
@@ -264,15 +280,16 @@ def _basket_shelf(c):
 
 
 @R.obj('pb-scale', '체중계(옛 다이얼식)', w=1, h=1, up=16, kind='floor', cat='sento', cat_ko='목욕탕', tags=('목욕탕', '센토'),
-       place='탈의실 구석', desc='옛 다이얼식 체중계 — 흰 발판 뒤쪽에 낮은 어두운 계기 하우징과 작은 눈금판. 붉은 바늘.')
+       place='탈의실 구석', desc='옛 다이얼식 체중계 — 흰 발판 위로 어두운 기둥 몸통이 서고 큰 둥근 눈금판(둘레 눈금, 검은 바늘, 바늘 끝만 붉은 점). 십자 표시 없음.')
 def _scale(c):
     import math
-    rc(c, 1, 17, 14, 5, kc('tekko', 1)); hl(c, 1, 17, 14, kc('tekko', 3)); vl(c, 1, 17, 5, kc('tekko', 3)); vl(c, 14, 17, 5, kc('tekko', -1))   # 지붕 모양 계기 하우징
-    rc(c, 4, 9, 8, 8, kc('tekko', 1)); hl(c, 4, 9, 8, kc('tekko', 3)); vl(c, 4, 9, 8, kc('tekko', 3)); vl(c, 11, 9, 8, kc('tekko', -1))
-    disc(c, 8, 13, 3, 3, kc('shiro', 3)); ring(c, 8, 13, 3, kc('conc', -1))                                  # 눈금판(작게)
-    for (x, y) in ((8, 11), (10, 13), (8, 15), (6, 13)): px(c, x, y, kc('conc', -1))
-    px(c, 9, 12, kc('aka', 1)); px(c, 8, 13, kc('aka', 1)); px(c, 10, 11, kc('aka', 1))                       # 바늘
-    outline(c, 3, 8, 10, 10, kc('tekko', -3))
+    rc(c, 2, 5, 12, 17, kc('tekko', 1)); hl(c, 2, 5, 12, kc('tekko', 3)); vl(c, 2, 5, 17, kc('tekko', 3)); vl(c, 13, 5, 17, kc('tekko', -1))   # 계기 하우징(몸통)
+    outline(c, 2, 5, 12, 17, kc('tekko', -3))
+    disc(c, 8, 12, 5, 5, kc('tekko', -3)); disc(c, 8, 12, 4, 4, kc('shiro', 3))                                # 큰 둥근 눈금판(테두리 + 흰 판면)
+    for (x, y) in ((8, 8), (5, 9), (11, 9), (4, 12), (12, 12), (5, 15), (11, 15)): px(c, x, y, kc('sumi', 0))   # 둘레 눈금(호)
+    for (x, y) in ((9, 11), (10, 10)): px(c, x, y, kc('sumi', -1))                                           # 어두운 바늘
+    px(c, 8, 12, kc('sumi', -1)); px(c, 11, 9, kc('aka', 1))                                                 # 중심축 · 바늘 끝
+    hl(c, 5, 19, 6, kc('tekko', -2)); hl(c, 5, 20, 6, kc('tekko', 3))                                         # 하우징 아래 홈
     rc(c, 0, 22, 16, 5, kc('shiro', 1)); hl(c, 0, 22, 16, kc('shiro', 4)); vl(c, 0, 22, 5, kc('shiro', 4)); hl(c, 0, 26, 16, kc('conc', 0))   # 발판 윗면
     for x in (3, 6, 9, 12): vl(c, x, 23, 3, kc('conc', 2))
     rc(c, 0, 27, 16, 3, kc('conc', 0)); hl(c, 0, 27, 16, kc('conc', 3)); hl(c, 0, 29, 16, kc('conc', -2))
