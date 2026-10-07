@@ -40,6 +40,7 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
   옛 정의(칸 수·가로 칸 수·`hand-interior:` 킷이 아님)는 **통째로 교체**하고 그 칩셋 맵은 그대로 둔 채 `atlasBiomeInteriorReplacementWarnings` + 콘솔 경고. 같은 시트의 새 빌드면(통행·층·잠금 요약이 다르면) 번들 소유 필드만 갱신. 저자가 쓴 참고문서 분류는 옮긴다.
 - 조립기 `src/editor/handInterior/builder.ts` — room2.render 와 같은 구조 규칙(예제 1층 칸 번호 일치), 가구·탁자·줄·단·탁상 물건, 오류(겹침·바닥 밖(밟는 깔개 포함)·벽 가구 자리·걸이 줄·계단 자리·윗면 없는 탁상 물건) + BFS 경고(닿지 못한 바닥·쓸 수 없는 가구, 앉는 가구는 옆 가구의 사용 칸).
 - 도구 `src/editor/tools/handInteriorTools.ts`: `list_hand_interior_parts`, `build_hand_interior_room`(error 면 맵을 만들지 않는다, `links` 로 층 이동). 사양 `src/assets/handInteriorSpec.json`.
+- 두 도구는 `tileset:"jp_city"` 로 **일본 집 실내**(사양 `src/assets/jpInteriorSpec.json`, 그림은 jp_city 번들)도 짓는다 — 조립기·규칙은 같고 사양만 다르다. `builder.ts` 의 `HAND_INTERIOR_SPECS`. 상세는 `openwiki/jp-city.md` 「일본 집 실내」.
   부품 찾기는 `src/editor/handInterior/parts.ts`(아래 「가구 메모·방 표」).
 - 폐기된 실내 칩셋 `src/project/retiredInteriorTilesets.ts`: `easyrpg_chipset_interior`·`tibo_interior_expanded`·LPC 가구(32·16). 조수 목록(참고문서·공용 장소/오브젝트·킷)에서 빼고,
   `create_map`·`import_region_reference`·`stamp_object`·참고문서 읽기에서 `retired-interior-tileset` 으로 거부. 공용 장소 중 실내 태그(`공간형태:건물 내부`)인데 v5 칩셋이 아닌 것도 숨긴다.

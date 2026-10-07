@@ -1,0 +1,181 @@
+{
+ "plan": [
+  "############",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "############"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 1,
+   "x1": 5,
+   "y0": 1,
+   "y1": 4,
+   "floor": "cushion",
+   "wall": "kitchen-panel"
+  }
+ ],
+ "objects": [
+  {
+   "id": "fridge",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "cupboard",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "microwave-rack",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "tv-board",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "floor-lamp",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "bookshelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "trash-bins",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "chair-dining-e",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "chair-dining-w",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "chair-dining-s",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "chair-dining-n",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "rug",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "low-table",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sofa-n",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "sofa-s",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "sofa-w",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "houseplant",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "cushion-floor",
+   "x": 6,
+   "y": 8
+  }
+ ],
+ "tables": [
+  {
+   "style": "dining",
+   "x": 3,
+   "y": 6,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "rice-cooker",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "kettle",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "plates",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fruit-bowl",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "laptop",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "remote",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "mug",
+   "x": 8,
+   "y": 5
+  }
+ ]
+}

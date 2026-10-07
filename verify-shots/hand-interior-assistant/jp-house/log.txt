@@ -1,0 +1,13 @@
+OK   get_project_summary — 프로젝트 '새 프로젝트' — 맵 1개, 아이템 1000, 트룹 7
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   list_authoring_presets — 플레이 프리셋 8종 조회 — 일치 8종. 상세는 read_authoring_preset(presetId).
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 534건
+OK   get_database_records — maps 1건 / 1건
+OK   get_map_region — 빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸
+OK   find_tools — 편집기 툴 1개 발견: inspect_terrain
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   inspect_terrain — 고지 0단 · 경사로 0칸 · 집 0채(평탄 0) · 시야 차단 끔
+OK   read_authoring_preset — 「귀환 지름길」 작성 지침 — 3단계·검사 3항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.
+OK   ask_tileset_change — 사용자에게 칩셋 계열 변경을 물었다. 답을 기다리며 이 턴을 끝내라(더 칠하지 마라).
+assistant: 일본식 현관과 다다미·욕실을 표현할 수 있는 **일본 주택용 그림체**로 만들어도 될까요? 화면에 비교 견본을 띄웠으며, 아직 맵은 변경하지 않았습니다.  승인하시면 기존 맵은 그대로 두고, 요청하신 1층 생활 공간과 2층 부부 침실·아이방을 새로 만들어 계단으로 연결하겠습니다.

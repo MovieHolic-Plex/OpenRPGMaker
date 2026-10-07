@@ -1,0 +1,56 @@
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   get_map_region — 보고 있는 맵(map_bf42a581-31b4-40a1-854e-b987cd557f73) 영역 (0,0)~(24,18) — 이벤트 0개, 물 0칸
+OK   list_tileset_references — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_hand_interior_parts — 일본 집 실내(jp_city) 부품: 가구 94종(분류 3) · 바닥 7 · 벽면 5 · 천장 1 · 탁상 물건 20. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 534건
+OK   list_authoring_presets — 플레이 프리셋 8종 조회 — 일치 8종. 상세는 read_authoring_preset(presetId).
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+OK   list_hand_interior_parts — 건물 일본 2층 단독주택: 예제 2맵 12방에서 쓰인 가구 57종(종류별). 예제 참고문서 documentId: jp-interior-ex-house-1f, jp-interior-ex-house-2f.
+OK   find_tools — 편집기 툴 3개 발견: run_scene_test, inspect_interior_layout, run_lint
+OK   read_authoring_preset — 「귀환 지름길」 작성 지침 — 3단계·검사 3항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 1건
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 · 짓는 법·평면 규칙·가구 종류·정상/오류 (0–5819, 1/2쪽)
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+OK   find_tools — 편집기 툴 1개 발견: build_hand_interior_room
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요(둘 다 빼면 용도를 한꺼번에 읽는다).
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요(둘 다 빼면 용도를 한꺼번에 읽는다).
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 · 짓는 법·평면 규칙·가구 종류·정상/오류 (5819–8645, 2/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 1층 (0–5047, 1/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층 (0–5331, 1/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-house-1f.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-house-2f.png — 실제 이미지를 확인하세요.
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 1층 (5047–9426, 2/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층 (5331–6732, 2/2쪽)
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+FAIL read_tileset_reference — 'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.
+OK   find_tools — 편집기 툴 1개 발견: read_tileset_reference
+assistant: 1층은 현관에서 화실과 LDK로 갈라지고, 안쪽에 욕실·화장실을 두겠습니다. 2층은 부부 침실과 아이방을 나누고, 계단 왕복 이동까지 확인하겠습니다.
+OK   set_build_spec — 
+OK   list_hand_interior_parts — 방 현관: 예제 2맵 2방에서 쓰인 가구 5종(종류별) + 태그가 맞는 2종. 예제 참고문서 documentId: jp-interior-ex-house-1f, jp-interior-ex-apartment-1k.
+OK   list_hand_interior_parts — 방 부부 침실: 예제 1맵 1방에서 쓰인 가구 7종(종류별) + 태그가 맞는 11종. 예제 참고문서 documentId: jp-interior-ex-house-2f.
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 바닥·벽면·천장·탁자·탁상 물건 칸 번호 (0–5570, 1/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 바닥·벽면·천장·탁자·탁상 물건 칸 번호 (5570–6218, 2/2쪽)
+OK   read_tileset_reference — 일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-surfaces-1.png — 실제 이미지를 확인하세요.
+OK   build_hand_interior_room — 손 도트 실내 '일본 단독주택 · 1층' 24×18 (map_bf42a581-31b4-40a1-854e-b987cd557f73, jp_city) — 출입구에서 닿는 칸 193, 닿지 못한 빈 바닥 0, 경고 0
+OK   set_build_spec — 
+OK   build_hand_interior_room — 손 도트 실내 '일본 단독주택 · 2층' 24×14 (map_bf42a581-31b4-40a1-854e-b987cd557f73_2f, jp_city) — 출입구에서 닿는 칸 105, 닿지 못한 빈 바닥 0, 경고 0
+OK   find_tools — 편집기 툴 2개 발견: create_transfer_pair, manage_map_tree
+OK   manage_map_tree — 맵/분류 map_bf42a581-31b4-40a1-854e-b987cd557f73_2f 이동 → map_bf42a581-31b4-40a1-854e-b987cd557f73
+OK   build_hand_interior_room — 손 도트 실내 '일본 단독주택 · 1층' 24×18 (map_bf42a581-31b4-40a1-854e-b987cd557f73, jp_city) — 출입구에서 닿는 칸 193, 닿지 못한 빈 바닥 0, 경고 0
+OK   run_scene_test — scene test 성공 (13/13 스텝)
+OK   run_lint — lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.
+OK   show_map_region — 맵 미리보기: (0,0) 24×18 (일본 단독주택 · 1층)
+OK   show_map_region — 맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)
+assistant: 1층에 현관·다다미 화실·LDK·욕실·별도 화장실을, 2층에 부부 침실과 아이방을 가구까지 갖춰 만들었습니다. 각 공간의 통행과 계단 왕복 이동을 확인했으며, 외부 맵 연결과 게임 시작 위치는 변경하지 않았습니다.
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 1건
+OK   list_hand_interior_parts — 방 아이방: 예제 1맵 1방에서 쓰인 가구 7종(종류별) + 태그가 맞는 8종. 예제 참고문서 documentId: jp-interior-ex-house-2f.
+OK   show_map_region — 맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)
+assistant: 2층 아이방의 폭을 줄여 두 방의 크기를 다르게 하고, 침실에는 침대 앞 러그를, 계단 옆에는 책장·좌탁·방석을 묶은 작은 독서 공간을 만들겠습니다. 방문과 계단 앞 통로는 비워 두겠습니다.
+OK   set_build_spec — 
+OK   build_hand_interior_room — 손 도트 실내 '일본 단독주택 · 2층' 24×14 (map_bf42a581-31b4-40a1-854e-b987cd557f73_2f, jp_city) — 출입구에서 닿는 칸 91, 닿지 못한 빈 바닥 0, 경고 0
+OK   run_scene_test — scene test 성공 (12/12 스텝)
+OK   run_lint — lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.
+OK   show_map_region — 맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)
+assistant: 2층 아이방의 폭을 줄여 좌우 구성을 다르게 하고, 침실의 러그와 계단 옆 독서 공간을 추가해 빈 공간을 정리했습니다. 1층은 그대로 유지했으며, 수정 후 두 방 출입과 계단 왕복 이동을 다시 확인했습니다.

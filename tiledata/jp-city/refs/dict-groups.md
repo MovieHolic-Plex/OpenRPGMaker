@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (218개)
+# 일본 도시 — 타일 그룹 사전 (231개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8126칸**, 16px 칸, 시트 768×2720px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9023칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 29, wall 42, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 36, wall 48, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -236,6 +236,19 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:subway-station-sign-hang","name":"천장 매단 역명판 「さくら町」","role":"prop","layer":"upper","n":12,"from":7997,"to":8008},
 {"id":"jp:subway-recycle","name":"승강장 분별 쓰레기통 3칸(병·캔/페트/종이)","role":"prop","layer":"upper","n":4,"from":8063,"to":8066},
 {"id":"jp:subway-extinguisher","name":"벽 소화기 상자(빨강)","role":"prop","layer":"upper","n":2,"from":8067,"to":8068},
-{"id":"jp:subway-vending","name":"승강장 음료 자판기","role":"prop","layer":"upper","n":6,"from":8069,"to":8074}
+{"id":"jp:subway-vending","name":"승강장 음료 자판기","role":"prop","layer":"upper","n":6,"from":8069,"to":8074},
+{"id":"jp:interior-floor-flooring","name":"실내 바닥 · 플로어링(나무 마루)","role":"terrain","layer":"lower","n":114,"from":8127,"to":8240},
+{"id":"jp:interior-floor-flooring-dark","name":"실내 바닥 · 짙은 플로어링","role":"terrain","layer":"lower","n":107,"from":8241,"to":8347},
+{"id":"jp:interior-floor-tatami","name":"실내 바닥 · 다다미","role":"terrain","layer":"lower","n":64,"from":8348,"to":8411},
+{"id":"jp:interior-floor-cushion","name":"실내 바닥 · 쿠션 플로어","role":"terrain","layer":"lower","n":64,"from":8412,"to":8475},
+{"id":"jp:interior-floor-bathtile","name":"실내 바닥 · 욕실 바닥 타일","role":"terrain","layer":"lower","n":64,"from":8476,"to":8539},
+{"id":"jp:interior-floor-tataki","name":"실내 바닥 · 현관 타타키","role":"terrain","layer":"lower","n":64,"from":8540,"to":8603},
+{"id":"jp:interior-floor-carpet","name":"실내 바닥 · 카펫","role":"terrain","layer":"lower","n":4,"from":8604,"to":8607},
+{"id":"jp:interior-wall-cloth","name":"실내 벽면 · 흰 벽지(クロス)","role":"wall","layer":"lower","n":16,"from":8668,"to":8683},
+{"id":"jp:interior-wall-cloth-beige","name":"실내 벽면 · 베이지 벽지","role":"wall","layer":"lower","n":16,"from":8684,"to":8699},
+{"id":"jp:interior-wall-juraku","name":"실내 벽면 · 화실 흙벽(聚楽)","role":"wall","layer":"lower","n":16,"from":8700,"to":8715},
+{"id":"jp:interior-wall-bathwall","name":"실내 벽면 · 욕실 벽 패널","role":"wall","layer":"lower","n":4,"from":8716,"to":8719},
+{"id":"jp:interior-wall-kitchen-panel","name":"실내 벽면 · 부엌 벽 패널","role":"wall","layer":"lower","n":4,"from":8720,"to":8723},
+{"id":"jp:interior-ceiling-default","name":"실내 천장 띠 · 기본 천장 띠","role":"wall","layer":"lower","n":30,"from":8724,"to":8753}
 ]
 ```

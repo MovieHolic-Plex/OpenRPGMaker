@@ -1,0 +1,265 @@
+{
+ "name": "원룸 아파트(1K)",
+ "plan": [
+  "############",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "######.#####",
+  "#...#......#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#####......#",
+  "########.###"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 7,
+   "x1": 3,
+   "y1": 11,
+   "floor": "bathtile",
+   "wall": "bathwall"
+  },
+  {
+   "x0": 5,
+   "y0": 7,
+   "x1": 10,
+   "y1": 9,
+   "floor": "cushion",
+   "wall": "kitchen-panel"
+  },
+  {
+   "x0": 5,
+   "y0": 11,
+   "x1": 10,
+   "y1": 12,
+   "floor": "tataki"
+  }
+ ],
+ "objects": [
+  {
+   "id": "bed-single",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "bed-side-table",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "curtain-window",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "tv-board",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "low-table",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "cushion-floor",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "cushion-floor",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "dresser-low",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "ac-unit",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "bookshelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "floor-lamp",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "houseplant",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "bathtub",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "toilet",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "shower-faucet",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "towel-rack",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "washing-machine",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "fridge",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "intercom",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "agarikamachi",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "agarikamachi",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "agarikamachi",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "agarikamachi",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "agarikamachi",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "getabako-narrow",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "shoes-pair",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "genkan-door",
+   "x": 8,
+   "y": 12
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "door-open-western",
+   "x": 6,
+   "y": 6
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "kettle",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "remote",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "mug",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "alarm-clock",
+   "x": 2,
+   "y": 3
+  }
+ ],
+ "start": [
+  8,
+  11
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "oneroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 11,
+   "y1": 6
+  },
+  {
+   "room": "unitbath",
+   "x0": 0,
+   "y0": 7,
+   "x1": 4,
+   "y1": 12
+  },
+  {
+   "room": "genkan",
+   "x0": 5,
+   "y0": 10,
+   "x1": 10,
+   "y1": 12
+  },
+  {
+   "room": "kitchen",
+   "x0": 5,
+   "y0": 7,
+   "x1": 10,
+   "y1": 9
+  }
+ ]
+}

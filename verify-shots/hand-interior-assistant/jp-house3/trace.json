@@ -1,0 +1,353 @@
+[
+ {
+  "i": 1,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"일본 주택 실내 제작 규칙\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 2,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "보고 있는 맵(map_bf42a581-31b4-40a1-854e-b987cd557f73) 영역 (0,0)~(24,18) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"x\":0,\"y\":0,\"w\":24,\"h\":18}"
+ },
+ {
+  "i": 3,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"offset\":0}"
+ },
+ {
+  "i": 4,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "일본 집 실내(jp_city) 부품: 가구 94종(분류 3) · 바닥 7 · 벽면 5 · 천장 1 · 탁상 물건 20. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.",
+  "args": "{\"room\":\"\",\"query\":\"\",\"category\":\"\",\"limit\":100,\"tileset\":\"jp_city\"}"
+ },
+ {
+  "i": 5,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 534건",
+  "args": "{\"kind\":\"object\",\"query\":\"일본\",\"limit\":50,\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "list_authoring_presets",
+  "ok": true,
+  "summary": "플레이 프리셋 8종 조회 — 일치 8종. 상세는 read_authoring_preset(presetId).",
+  "args": "{\"category\":\"exploration\",\"query\":\"\",\"offset\":0,\"limit\":12}"
+ },
+ {
+  "i": 7,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 8,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "건물 일본 2층 단독주택: 예제 2맵 12방에서 쓰인 가구 57종(종류별). 예제 참고문서 documentId: jp-interior-ex-house-1f, jp-interior-ex-house-2f.",
+  "args": "{\"room\":\"jp_house\",\"query\":\"\",\"category\":\"\",\"limit\":100,\"tileset\":\"jp_city\"}"
+ },
+ {
+  "i": 9,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 3개 발견: run_scene_test, inspect_interior_layout, run_lint",
+  "args": "{\"query\":\"inspect_interior_layout run_lint run_scene_test\",\"domain\":\"map\",\"limit\":3}"
+ },
+ {
+  "i": 10,
+  "name": "read_authoring_preset",
+  "ok": true,
+  "summary": "「귀환 지름길」 작성 지침 — 3단계·검사 3항목. 실제 작성과 플레이 검사는 아직 수행하지 않았습니다.",
+  "args": "{\"presetId\":\"return-shortcut\"}"
+ },
+ {
+  "i": 11,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 1건",
+  "args": "{\"kind\":\"object\",\"query\":\"다다미\",\"limit\":20,\"offset\":0}"
+ },
+ {
+  "i": 12,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 · 짓는 법·평면 규칙·가구 종류·정상/오류 (0–5819, 1/2쪽)",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-rules\",\"imageId\":\"\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 13,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":5819,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 14,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 1개 발견: build_hand_interior_room",
+  "args": "{\"query\":\"build_hand_interior_room\",\"domain\":\"tile\",\"limit\":1}"
+ },
+ {
+  "i": 15,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 · 짓는 법·평면 규칙·가구 종류·정상/오류 (5819–8645, 2/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-rules\",\"imageId\":\"\",\"offset\":5819,\"after\":[]}"
+ },
+ {
+  "i": 16,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요(둘 다 빼면 용도를 한꺼번에 읽는다).",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-1f\",\"imageId\":\"jp-img-interior-house-1f\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 17,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요(둘 다 빼면 용도를 한꺼번에 읽는다).",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-2f\",\"imageId\":\"jp-img-interior-house-2f\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 18,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 1층 (0–5047, 1/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-1f\",\"imageId\":\"\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 19,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층 (0–5331, 1/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-2f\",\"imageId\":\"\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 20,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-house-1f.png — 실제 이미지를 확인하세요.",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"jp-img-interior-house-1f\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 21,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-house-2f.png — 실제 이미지를 확인하세요.",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"jp-img-interior-house-2f\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 22,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":0,\"after\":[\"jp-interior-rules:0\",\"jp-interior-rules:5819\",\"jp-interior-ex-house-1f:0\",\"jp-interior-ex-house-2f:0\",\"jp-img-interior-house-1f\",\"jp-img-interior-house-2f\"]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 23,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 1층 (5047–9426, 2/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-1f\",\"imageId\":\"\",\"offset\":5047,\"after\":[]}"
+ },
+ {
+  "i": 24,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층 (5331–6732, 2/2쪽)",
+  "args": "{\"mapId\":\"\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-ex-house-2f\",\"imageId\":\"\",\"offset\":5331,\"after\":[]}"
+ },
+ {
+  "i": 25,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 26,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 27,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: 한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"\",\"offset\":0,\"after\":[]}",
+  "code": "tool-error"
+ },
+ {
+  "i": 28,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 1개 발견: read_tileset_reference",
+  "args": "{\"query\":\"read_tileset_reference\",\"domain\":\"tile\",\"limit\":1}"
+ },
+ {
+  "i": 29,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 바닥·벽면·천장·탁자·탁상 물건 칸 번호 (0–5570, 1/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-surfaces\",\"imageId\":\"\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 30,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "방 현관: 예제 2맵 2방에서 쓰인 가구 5종(종류별) + 태그가 맞는 2종. 예제 참고문서 documentId: jp-interior-ex-house-1f, jp-interior-ex-apartment-1k.",
+  "args": "{\"room\":\"현관\",\"query\":\"\",\"category\":\"\",\"limit\":20,\"tileset\":\"jp_city\"}"
+ },
+ {
+  "i": 31,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "방 부부 침실: 예제 1맵 1방에서 쓰인 가구 7종(종류별) + 태그가 맞는 11종. 예제 참고문서 documentId: jp-interior-ex-house-2f.",
+  "args": "{\"room\":\"부부 침실\",\"query\":\"\",\"category\":\"\",\"limit\":20,\"tileset\":\"jp_city\"}"
+ },
+ {
+  "i": 32,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / 일본 도시 · 일본 집 실내 바닥·벽면·천장·탁자·탁상 물건 칸 번호 (5570–6218, 2/2쪽)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"jp-interior-surfaces\",\"imageId\":\"\",\"offset\":5570,\"after\":[]}"
+ },
+ {
+  "i": 33,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "일본 도시 · 일본 집 실내 (가구 94종 · 바닥 7 · 벽면 5) / interior-surfaces-1.png — 실제 이미지를 확인하세요.",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"tilesetId\":\"jp_city\",\"categoryId\":\"jp-interior\",\"documentId\":\"\",\"imageId\":\"jp-img-interior-surfaces-1\",\"offset\":0,\"after\":[]}"
+ },
+ {
+  "i": 34,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '일본 단독주택 · 1층' 24×18 (map_bf42a581-31b4-40a1-854e-b987cd557f73, jp_city) — 출입구에서 닿는 칸 193, 닿지 못한 빈 바닥 0, 경고 0",
+  "args": "{\"tileset\":\"jp_city\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"name\":\"일본 단독주택 · 1층\",\"replace\":true,\"plan\":[\"########################\",\"#....#....#..#.........#\",\"#....#....#..#.........#\",\"#.........#..#.........#\",\"#.........#..#.........#\",\"#.........#..#.........#\",\"#....#....#..#.........#\",\"########.##.######....##\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#......................#\",\"#......................#\",\"#......................#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#########.##############\"],\"floor\":\"flooring\",\"wall\":\"cloth\",\"ceiling\":\"default\",\"zones\":[{\"x0\":1,\"y0\":1,\"x1\":5,\"y1\":6,\"floor\":\"bathtile\",\"wall\":\"bathwall\"},{\"x0\":6,\"y0\":1,\"x1\":12,\"y1\":6,\"floor\":\"cushion\",\"wall\":\"cloth\"},{\"x0\":14,\"y0\":1,\"x1\":22,\"y1\":6,\"floor\":\"cushion\",\"wall\":\"kitchen-panel\"},{\"x0\":1,\"y0\":8,\"x1\":5,\"y1\":16,\"floor\":\"tatami\",\"wall\":\"juraku\"},{\"x0\":7,\"y0\":15,\"x1\":11,\"y1\":17,\"floor\":\"tataki\",\"wall\":\"cloth\"}],\"objects\":[{\"id\":\"bathtub\",\"x\":1,\"y\":3},{\"id\":\"shower-faucet\",\"x\":3,\"y\":1},{\"id\":\"bath-mirror\",\"x\":4,\"y\":1},{\"id\":\"bath-stool\",\"x\":3,\"y\":4},{\"id\":\"bath-bucket\",\"x\":4,\"y\":4},{\"id\":\"washbasin\",\"x\":6,\"y\":3},{\"id\":\"towel-rack\",\"x\":7,\"y\":1},{\"id\":\"washing-machine\",\"x\":9,\"y\":3},{\"id\":\"laundry-basket\",\"x\":9,\"y\":5},{\"id\":\"bath-mat\",\"x\":6,\"y\":5},{\"id\":\"toilet\",\"x\":12,\"y\":3},{\"id\":\"toilet-handwash\",\"x\":11,\"y\":1},{\"id\":\"toilet-paper\",\"x\":12,\"y\":1},{\"id\":\"toilet-mat\",\"x\":12,\"y\":4},{\"id\":\"toilet-slippers\",\"x\":11,\"y\":5},{\"id\":\"fridge\",\"x\":14,\"y\":3},{\"id\":\"kitchen-worktop\",\"x\":15,\"y\":3},{\"id\":\"kitchen-sink\",\"x\":16,\"y\":3},{\"id\":\"kitchen-worktop\",\"x\":17,\"y\":3},{\"id\":\"kitchen-stove\",\"x\":18,\"y\":3},{\"id\":\"microwave-rack\",\"x\":22,\"y\":3},{\"id\":\"trash-bins\",\"x\":22,\"y\":6},{\"id\":\"window-sash\",\"x\":20,\"y\":1},{\"id\":\"stairs-up-wood\",\"x\":9,\"y\":10},{\"id\":\"wall-clock\",\"x\":7,\"y\":8},{\"id\":\"agarikamachi\",\"x\":7,\"y\":14},{\"id\":\"agarikamachi\",\"x\":8,\"y\":14},{\"id\":\"agarikamachi\",\"x\":9,\"y\":14},{\"id\":\"agarikamachi\",\"x\":10,\"y\":14},{\"id\":\"agarikamachi\",\"x\":11,\"y\":14},{\"id\":\"getabako\",\"x\":10,\"y\":15},{\"id\":\"umbrella-stand\",\"x\":7,\"y\":15},{\"id\":\"shoes-pair\",\"x\":8,\"y\":16},{\"id\":\"genkan-mat\",\"x\":8,\"y\":15},{\"id\":\"slippers\",\"x\":10,\"y\":13},{\"id\":\"tokonoma\",\"x\":1,\"y\":10},{\"id\":\"oshiire\",\"x\":4,\"y\":8},{\"id\":\"chabudai\",\"x\":2,\"y\":13},{\"id\":\"zabuton\",\"x\":1,\"y\":13},{\"id\":\"zabuton\",\"x\":4,\"y\":13},{\"id\":\"zabuton\",\"x\":2,\"y\":14},{\"id\":\"zabuton\",\"x\":3,\"y\":14},{\"id\":\"andon\",\"x\":1,\"y\":16},{\"id\":\"tv-board\",\"x\":14,\"y\":10},{\"id\":\"low-table\",\"x\":14,\"y\":13},{\"id\":\"sofa-n\",\"x\":14,\"y\":15},{\"id\":\"floor-lamp\",\"x\":16,\"y\":15},{\"id\":\"chair-dining-s\",\"x\":18,\"y\":9},{\"id\":\"chair-dining-s\",\"x\":20,\"y\":9},{\"id\":\"chair-dining-n\",\"x\":18,\"y\":11},{\"id\":\"chair-dining-n\",\"x\":20,\"y\":11},{\"id\":\"bookshelf\",\"x\":22,\"y\":10},{\"id\":\"houseplant\",\"x\":22,\"y\":16}],\"tables\":[{\"style\":\"kcounter\",\"x\":17,\"y\":5,\"w\":4,\"h\":1},{\"style\":\"dining\",\"x\":18,\"y\":10,\"w\":3,\"h\":1}],\"lines\":[],\"daises\":[],\"goods\":[{\"id\":\"tea-set\",\"x\":2,\"y\":13},{\"id\":\"mikan-basket\",\"x\":3,\"y\":13},{\"id\":\"rice-cooker\",\"x\":15,\"y\":3},{\"id\":\"toothbrush-cup\",\"x\":6,\"y\":3},{\"id\":\"fruit-bowl\",\"x\":19,\"y\":5},{\"id\":\"plates\",\"x\":19,\"y\":10},{\"id\":\"remote\",\"x\":15,\"y\":13}],\"start\":[{\"x\":9,\"y\":16}],\"links\":[]}"
+ },
+ {
+  "i": 35,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '일본 단독주택 · 2층' 24×14 (map_bf42a581-31b4-40a1-854e-b987cd557f73_2f, jp_city) — 출입구에서 닿는 칸 105, 닿지 못한 빈 바닥 0, 경고 0",
+  "args": "{\"tileset\":\"jp_city\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"name\":\"일본 단독주택 · 2층\",\"replace\":false,\"plan\":[\"########################\",\"#..........#...........#\",\"#..........#...........#\",\"#..........#...........#\",\"#..........#...........#\",\"#..........#...........#\",\"#..........#...........#\",\"######.##########.######\",\"######............######\",\"######............######\",\"######............######\",\"######............######\",\"######............######\",\"########################\"],\"floor\":\"flooring\",\"wall\":\"cloth-beige\",\"ceiling\":\"default\",\"zones\":[{\"x0\":12,\"y0\":1,\"x1\":22,\"y1\":6,\"floor\":\"carpet\",\"wall\":\"cloth\"},{\"x0\":6,\"y0\":7,\"x1\":17,\"y1\":12,\"floor\":\"flooring-dark\",\"wall\":\"cloth-beige\"}],\"objects\":[{\"id\":\"bed-double\",\"x\":3,\"y\":3},{\"id\":\"bed-side-table\",\"x\":2,\"y\":3},{\"id\":\"bed-side-table\",\"x\":5,\"y\":3},{\"id\":\"dresser-low\",\"x\":7,\"y\":3},{\"id\":\"wardrobe\",\"x\":9,\"y\":3},{\"id\":\"mirror-stand\",\"x\":10,\"y\":5},{\"id\":\"curtain-window\",\"x\":6,\"y\":1},{\"id\":\"ac-unit\",\"x\":1,\"y\":1},{\"id\":\"houseplant\",\"x\":1,\"y\":6},{\"id\":\"bed-single\",\"x\":13,\"y\":3},{\"id\":\"desk-study\",\"x\":16,\"y\":3},{\"id\":\"desk-chair-n\",\"x\":16,\"y\":4},{\"id\":\"bookshelf\",\"x\":22,\"y\":3},{\"id\":\"closet-doors\",\"x\":20,\"y\":1},{\"id\":\"window-sash\",\"x\":18,\"y\":1},{\"id\":\"rug\",\"x\":18,\"y\":5},{\"id\":\"stairwell-down-wood\",\"x\":9,\"y\":10},{\"id\":\"window-sash\",\"x\":13,\"y\":8},{\"id\":\"light-switch\",\"x\":16,\"y\":8}],\"tables\":[],\"lines\":[],\"daises\":[],\"goods\":[{\"id\":\"alarm-clock\",\"x\":5,\"y\":3},{\"id\":\"desk-lamp\",\"x\":17,\"y\":3},{\"id\":\"books-stack\",\"x\":16,\"y\":3},{\"id\":\"stuffed-toy\",\"x\":7,\"y\":3}],\"start\":[{\"x\":9,\"y\":12}],\"links\":[{\"x\":9,\"y\":11,\"toMapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"toX\":9,\"toY\":11,\"direction\":\"down\"},{\"x\":10,\"y\":11,\"toMapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"toX\":9,\"toY\":11,\"direction\":\"down\"}]}"
+ },
+ {
+  "i": 36,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 2개 발견: create_transfer_pair, manage_map_tree",
+  "args": "{\"query\":\"manage_map_tree create_transfer_pair\",\"domain\":\"map\",\"limit\":2}"
+ },
+ {
+  "i": 37,
+  "name": "manage_map_tree",
+  "ok": true,
+  "summary": "맵/분류 map_bf42a581-31b4-40a1-854e-b987cd557f73_2f 이동 → map_bf42a581-31b4-40a1-854e-b987cd557f73",
+  "args": "{\"operation\":\"move\",\"folderId\":\"\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"parentId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"index\":0,\"name\":\"\"}"
+ },
+ {
+  "i": 38,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '일본 단독주택 · 1층' 24×18 (map_bf42a581-31b4-40a1-854e-b987cd557f73, jp_city) — 출입구에서 닿는 칸 193, 닿지 못한 빈 바닥 0, 경고 0",
+  "args": "{\"tileset\":\"jp_city\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"name\":\"일본 단독주택 · 1층\",\"replace\":true,\"plan\":[\"########################\",\"#....#....#..#.........#\",\"#....#....#..#.........#\",\"#.........#..#.........#\",\"#.........#..#.........#\",\"#.........#..#.........#\",\"#....#....#..#.........#\",\"########.##.######....##\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#......................#\",\"#......................#\",\"#......................#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#.....#.....#..........#\",\"#########.##############\"],\"floor\":\"flooring\",\"wall\":\"cloth\",\"ceiling\":\"default\",\"zones\":[{\"x0\":1,\"y0\":1,\"x1\":5,\"y1\":6,\"floor\":\"bathtile\",\"wall\":\"bathwall\"},{\"x0\":6,\"y0\":1,\"x1\":12,\"y1\":6,\"floor\":\"cushion\",\"wall\":\"cloth\"},{\"x0\":14,\"y0\":1,\"x1\":22,\"y1\":6,\"floor\":\"cushion\",\"wall\":\"kitchen-panel\"},{\"x0\":1,\"y0\":8,\"x1\":5,\"y1\":16,\"floor\":\"tatami\",\"wall\":\"juraku\"},{\"x0\":7,\"y0\":15,\"x1\":11,\"y1\":17,\"floor\":\"tataki\",\"wall\":\"cloth\"}],\"objects\":[{\"id\":\"bathtub\",\"x\":1,\"y\":3},{\"id\":\"shower-faucet\",\"x\":3,\"y\":1},{\"id\":\"bath-mirror\",\"x\":4,\"y\":1},{\"id\":\"bath-stool\",\"x\":3,\"y\":4},{\"id\":\"bath-bucket\",\"x\":4,\"y\":4},{\"id\":\"washbasin\",\"x\":6,\"y\":3},{\"id\":\"towel-rack\",\"x\":7,\"y\":1},{\"id\":\"washing-machine\",\"x\":9,\"y\":3},{\"id\":\"laundry-basket\",\"x\":9,\"y\":5},{\"id\":\"bath-mat\",\"x\":6,\"y\":5},{\"id\":\"toilet\",\"x\":12,\"y\":3},{\"id\":\"toilet-handwash\",\"x\":11,\"y\":1},{\"id\":\"toilet-paper\",\"x\":12,\"y\":1},{\"id\":\"toilet-mat\",\"x\":12,\"y\":4},{\"id\":\"toilet-slippers\",\"x\":11,\"y\":5},{\"id\":\"fridge\",\"x\":14,\"y\":3},{\"id\":\"kitchen-worktop\",\"x\":15,\"y\":3},{\"id\":\"kitchen-sink\",\"x\":16,\"y\":3},{\"id\":\"kitchen-worktop\",\"x\":17,\"y\":3},{\"id\":\"kitchen-stove\",\"x\":18,\"y\":3},{\"id\":\"microwave-rack\",\"x\":22,\"y\":3},{\"id\":\"trash-bins\",\"x\":22,\"y\":6},{\"id\":\"window-sash\",\"x\":20,\"y\":1},{\"id\":\"stairs-up-wood\",\"x\":9,\"y\":10},{\"id\":\"wall-clock\",\"x\":7,\"y\":8},{\"id\":\"agarikamachi\",\"x\":7,\"y\":14},{\"id\":\"agarikamachi\",\"x\":8,\"y\":14},{\"id\":\"agarikamachi\",\"x\":9,\"y\":14},{\"id\":\"agarikamachi\",\"x\":10,\"y\":14},{\"id\":\"agarikamachi\",\"x\":11,\"y\":14},{\"id\":\"getabako\",\"x\":10,\"y\":15},{\"id\":\"umbrella-stand\",\"x\":7,\"y\":15},{\"id\":\"shoes-pair\",\"x\":8,\"y\":16},{\"id\":\"genkan-mat\",\"x\":8,\"y\":15},{\"id\":\"slippers\",\"x\":10,\"y\":13},{\"id\":\"tokonoma\",\"x\":1,\"y\":10},{\"id\":\"oshiire\",\"x\":4,\"y\":8},{\"id\":\"chabudai\",\"x\":2,\"y\":13},{\"id\":\"zabuton\",\"x\":1,\"y\":13},{\"id\":\"zabuton\",\"x\":4,\"y\":13},{\"id\":\"zabuton\",\"x\":2,\"y\":14},{\"id\":\"zabuton\",\"x\":3,\"y\":14},{\"id\":\"andon\",\"x\":1,\"y\":16},{\"id\":\"tv-board\",\"x\":14,\"y\":10},{\"id\":\"low-table\",\"x\":14,\"y\":13},{\"id\":\"sofa-n\",\"x\":14,\"y\":15},{\"id\":\"floor-lamp\",\"x\":16,\"y\":15},{\"id\":\"chair-dining-s\",\"x\":18,\"y\":9},{\"id\":\"chair-dining-s\",\"x\":20,\"y\":9},{\"id\":\"chair-dining-n\",\"x\":18,\"y\":11},{\"id\":\"chair-dining-n\",\"x\":20,\"y\":11},{\"id\":\"bookshelf\",\"x\":22,\"y\":10},{\"id\":\"houseplant\",\"x\":22,\"y\":16}],\"tables\":[{\"style\":\"kcounter\",\"x\":17,\"y\":5,\"w\":4,\"h\":1},{\"style\":\"dining\",\"x\":18,\"y\":10,\"w\":3,\"h\":1}],\"lines\":[],\"daises\":[],\"goods\":[{\"id\":\"tea-set\",\"x\":2,\"y\":13},{\"id\":\"mikan-basket\",\"x\":3,\"y\":13},{\"id\":\"rice-cooker\",\"x\":15,\"y\":3},{\"id\":\"toothbrush-cup\",\"x\":6,\"y\":3},{\"id\":\"fruit-bowl\",\"x\":19,\"y\":5},{\"id\":\"plates\",\"x\":19,\"y\":10},{\"id\":\"remote\",\"x\":15,\"y\":13}],\"start\":[{\"x\":9,\"y\":16}],\"links\":[{\"x\":9,\"y\":10,\"toMapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"toX\":9,\"toY\":12,\"direction\":\"up\"}]}"
+ },
+ {
+  "i": 39,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 24×18 (일본 단독주택 · 1층)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"x\":0,\"y\":0,\"w\":24,\"h\":18}"
+ },
+ {
+  "i": 40,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"x\":0,\"y\":0,\"w\":24,\"h\":14}"
+ },
+ {
+  "i": 41,
+  "name": "run_scene_test",
+  "ok": true,
+  "summary": "scene test 성공 (13/13 스텝)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"start\":{\"x\":9,\"y\":16},\"steps\":[{\"kind\":\"move\",\"to\":{\"x\":9,\"y\":10}},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\"},{\"kind\":\"move\",\"to\":{\"x\":10,\"y\":12}},{\"kind\":\"move\",\"dir\":\"up\"},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\"},{\"kind\":\"move\",\"to\":{\"x\":9,\"y\":10}},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\"},{\"kind\":\"move\",\"dir\":\"up\"},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\"}]}"
+ },
+ {
+  "i": 42,
+  "name": "run_lint",
+  "ok": true,
+  "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.",
+  "args": "{\"reachability\":[{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"from\":{\"x\":9,\"y\":16},\"targets\":[{\"x\":3,\"y\":15},{\"x\":8,\"y\":5},{\"x\":3,\"y\":5},{\"x\":11,\"y\":6},{\"x\":19,\"y\":4},{\"x\":20,\"y\":14},{\"x\":9,\"y\":10}]},{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"from\":{\"x\":9,\"y\":12},\"targets\":[{\"x\":6,\"y\":5},{\"x\":18,\"y\":4}]}]}"
+ },
+ {
+  "i": 43,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"x\":0,\"y\":0,\"w\":24,\"h\":14}"
+ },
+ {
+  "i": 44,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 1건",
+  "args": "{\"kind\":\"object\",\"query\":\"좌탁\",\"limit\":10,\"offset\":0}"
+ },
+ {
+  "i": 45,
+  "name": "list_hand_interior_parts",
+  "ok": true,
+  "summary": "방 아이방: 예제 1맵 1방에서 쓰인 가구 7종(종류별) + 태그가 맞는 8종. 예제 참고문서 documentId: jp-interior-ex-house-2f.",
+  "args": "{\"room\":\"아이방\",\"query\":\"\",\"category\":\"\",\"limit\":30,\"tileset\":\"jp_city\"}"
+ },
+ {
+  "i": 46,
+  "name": "build_hand_interior_room",
+  "ok": true,
+  "summary": "손 도트 실내 '일본 단독주택 · 2층' 24×14 (map_bf42a581-31b4-40a1-854e-b987cd557f73_2f, jp_city) — 출입구에서 닿는 칸 91, 닿지 못한 빈 바닥 0, 경고 0",
+  "args": "{\"tileset\":\"jp_city\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"name\":\"일본 단독주택 · 2층\",\"replace\":true,\"plan\":[\"########################\",\"#..........#.........###\",\"#..........#.........###\",\"#..........#.........###\",\"#..........#.........###\",\"#..........#.........###\",\"#..........#.........###\",\"######.##########.######\",\"######............######\",\"######............######\",\"######............######\",\"######............######\",\"######............######\",\"########################\"],\"floor\":\"flooring\",\"wall\":\"cloth-beige\",\"ceiling\":\"default\",\"zones\":[{\"x0\":12,\"y0\":1,\"x1\":20,\"y1\":6,\"floor\":\"carpet\",\"wall\":\"cloth\"},{\"x0\":6,\"y0\":7,\"x1\":17,\"y1\":12,\"floor\":\"flooring-dark\",\"wall\":\"cloth-beige\"}],\"objects\":[{\"id\":\"bed-double\",\"x\":3,\"y\":3},{\"id\":\"bed-side-table\",\"x\":2,\"y\":3},{\"id\":\"bed-side-table\",\"x\":5,\"y\":3},{\"id\":\"dresser-low\",\"x\":7,\"y\":3},{\"id\":\"wardrobe\",\"x\":9,\"y\":3},{\"id\":\"mirror-stand\",\"x\":10,\"y\":5},{\"id\":\"curtain-window\",\"x\":6,\"y\":1},{\"id\":\"ac-unit\",\"x\":1,\"y\":1},{\"id\":\"houseplant\",\"x\":1,\"y\":6},{\"id\":\"rug\",\"x\":4,\"y\":5},{\"id\":\"bed-single\",\"x\":13,\"y\":3},{\"id\":\"bed-side-table\",\"x\":14,\"y\":3},{\"id\":\"desk-study\",\"x\":16,\"y\":3},{\"id\":\"desk-chair-n\",\"x\":16,\"y\":4},{\"id\":\"bookshelf\",\"x\":20,\"y\":3},{\"id\":\"closet-doors\",\"x\":18,\"y\":1},{\"id\":\"window-sash\",\"x\":14,\"y\":1},{\"id\":\"rug\",\"x\":17,\"y\":5},{\"id\":\"stairwell-down-wood\",\"x\":9,\"y\":10},{\"id\":\"window-sash\",\"x\":13,\"y\":8},{\"id\":\"light-switch\",\"x\":16,\"y\":8},{\"id\":\"bookshelf\",\"x\":12,\"y\":10},{\"id\":\"low-table\",\"x\":14,\"y\":11},{\"id\":\"zabuton\",\"x\":14,\"y\":12},{\"id\":\"zabuton\",\"x\":15,\"y\":12},{\"id\":\"floor-lamp\",\"x\":16,\"y\":11}],\"tables\":[],\"lines\":[],\"daises\":[],\"goods\":[{\"id\":\"alarm-clock\",\"x\":5,\"y\":3},{\"id\":\"desk-lamp\",\"x\":17,\"y\":3},{\"id\":\"books-stack\",\"x\":16,\"y\":3},{\"id\":\"stuffed-toy\",\"x\":14,\"y\":3},{\"id\":\"books-stack\",\"x\":14,\"y\":11},{\"id\":\"mug\",\"x\":15,\"y\":11}],\"start\":[{\"x\":9,\"y\":12}],\"links\":[{\"x\":9,\"y\":11,\"toMapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"toX\":9,\"toY\":11,\"direction\":\"down\"},{\"x\":10,\"y\":11,\"toMapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"toX\":9,\"toY\":11,\"direction\":\"down\"}]}"
+ },
+ {
+  "i": 47,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 24×14 (일본 단독주택 · 2층)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"x\":0,\"y\":0,\"w\":24,\"h\":14}"
+ },
+ {
+  "i": 48,
+  "name": "run_scene_test",
+  "ok": true,
+  "summary": "scene test 성공 (12/12 스텝)",
+  "args": "{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\",\"start\":{\"x\":9,\"y\":11},\"steps\":[{\"kind\":\"move\",\"dir\":\"up\"},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\"},{\"kind\":\"move\",\"to\":{\"x\":6,\"y\":5}},{\"kind\":\"expect\",\"playerAt\":{\"x\":6,\"y\":5}},{\"kind\":\"move\",\"to\":{\"x\":17,\"y\":6}},{\"kind\":\"expect\",\"playerAt\":{\"x\":17,\"y\":6}},{\"kind\":\"move\",\"to\":{\"x\":15,\"y\":12}},{\"kind\":\"move\",\"to\":{\"x\":9,\"y\":12}},{\"kind\":\"move\",\"dir\":\"up\"},{\"kind\":\"wait\",\"ticks\":20},{\"kind\":\"expect\",\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73\"}]}"
+ },
+ {
+  "i": 49,
+  "name": "run_lint",
+  "ok": true,
+  "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.",
+  "args": "{\"reachability\":[{\"mapId\":\"map_bf42a581-31b4-40a1-854e-b987cd557f73_2f\",\"from\":{\"x\":9,\"y\":12},\"targets\":[{\"x\":6,\"y\":5},{\"x\":17,\"y\":6},{\"x\":15,\"y\":12}]}]}"
+ }
+]
