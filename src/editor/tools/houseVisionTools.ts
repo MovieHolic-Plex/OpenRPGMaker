@@ -95,7 +95,7 @@ function observeBeodeulBuildings(project:Project,map:GameMap,bounds:HouseRect|un
       if(bounds&&(x+kit.width<=bounds.x||x>=bounds.x+bounds.w||y+kit.height<=bounds.y||y>=bounds.y+bounds.h))continue;
       if(!kit.rows.every((r,dy)=>(r.upperTiles ?? []).every((n,dx)=>n<0||same(layerTileAt(map,3,(y+dy)*map.width+x+dx),n))))continue;
       const info=beodeulArchitecture.buildings.find(b=>b.id===kit.id);
-      detected.push({kitId:kit.id,name:kit.name,bbox:{x,y,w:kit.width,h:kit.height},doorAt:{x:x+door.dx,y:y+door.dy+door.h},
+      detected.push({kitId:kit.id,name:kit.name??kit.id,bbox:{x,y,w:kit.width,h:kit.height},doorAt:{x:x+door.dx,y:y+door.dy+door.h},
         church:info?.concept==='church'||kit.id==='bd-house-cathedral',...(info?.windowStyle?{windowStyle:info.windowStyle}:{})});
     }
   }
