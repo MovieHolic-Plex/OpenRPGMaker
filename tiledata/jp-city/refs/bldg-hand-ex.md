@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 건물 정답 조립(상점가·주택가, 전체 배열)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9023칸**, 16px 칸, 시트 768×3008px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9054칸**, 16px 칸, 시트 768×3024px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 입력(배치 목록) → 엔진이 `stamp_object` 로 찍은 **전체 1층·3층 배열** → 원본 해상도 그림(`jp-img-bldg-shop-row`, `jp-img-bldg-house-row`, `jp-img-bldg-street-row`).
 단품 사이는 1칸 골목이 남는다. 벽을 맞댄 상점가는 줄 키트 `jp-bldg-row-*` 로 찍는다.

@@ -44,6 +44,8 @@ export function createWizardingWorldTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     referenceDocuments: structuredClone(REFERENCES),
+    // 방 짓기 역할표 — 사양은 편집기(src/assets/wizardingRoomSpec.json, HAND_INTERIOR_SPECS)가 들고 있다.
+    roomKit: { builtin: WIZARDING_WORLD_ID },
   };
 }
 
@@ -121,6 +123,7 @@ export function ensureWizardingWorldTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== WIZARDING_WORLD_ID || !isWizardingWorldTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== WIZARDING_WORLD_FAMILY) { tileset.family = WIZARDING_WORLD_FAMILY; changed = true; }
+  if (!tileset.roomKit) { tileset.roomKit = { builtin: WIZARDING_WORLD_ID }; changed = true; }
   if (tileset.tilesPerRow === data.tilesPerRow) {
     if (tileset.count > data.count) return changed;
     if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;

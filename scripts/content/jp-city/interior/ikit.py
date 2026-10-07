@@ -173,7 +173,10 @@ class Registry:
     def lay_x(self, id_, x, y):
         """맵 칸 (x,y) 가 쓸 무늬 열 — lay='rowShift' 면 줄마다 밀린다. builder.ts floorLayX 와 같은 식이어야 한다."""
         f = self.floors[id_]
-        return x + ((y + 1) * 40503 % 65521) % f['cols'] if f.get('lay') == 'rowShift' else x
+        if f.get('lay') != 'rowShift': return x
+        h = (y + 1) & 0xFFFFFFFF                     # murmur3 fmix32 — builder.ts floorLayX 와 같은 식
+        h ^= h >> 16; h = (h * 0x85ebca6b) & 0xFFFFFFFF; h ^= h >> 13; h = (h * 0xc2b2ae35) & 0xFFFFFFFF; h ^= h >> 16
+        return x + h % f['cols']
 
     def wall_cell(self, id_, x, row, west):
         wd = self.walls[id_]

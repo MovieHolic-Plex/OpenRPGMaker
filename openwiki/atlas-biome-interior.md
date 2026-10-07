@@ -55,8 +55,19 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
   - 변형 시트 에셋 id = `roomkit_<칸 크기>_<해시>`(스토어 사본은 `store_<slug>__` 앞붙음). `bundledChipsetGeometry` 가 이 id 로 칸 크기·줄 16칸을 안다 —
     업로드 이식 원본은 기본이 16px·30칸이라 32·48px 칩셋 변형 칸이 깨진다. AI 생성이 아니므로 `generatedBy` 를 달지 않는다.
   - 다시 저장하면 새 칸을 덧붙이고 사양만 바꾼다(이미 지은 맵은 옛 칸 그대로). 번들 역할표(builtin) 칩셋은 탭이 「이미 있음」만 보인다.
+  - **직접 올린 칩셋(image.type uploaded)만** 만든다. 번들 칩셋에 칸을 덧붙이면 `count > 번들 count` 가 되어 번들 갱신(ensure…)이 멈춘다 — 번들은 굽기 스크립트로 넣는다(아래 마법 학교).
+  - **RPG Maker A2(16×12칸)·A4(16×15칸) 시트**를 칸 수로 알아보고(`rpgMakerAutotileSheet`) 블록을 한 번 누르면 이음매 없는 가운데를 뗀다(`rpgMakerBlockPicks`):
+    윗면 블록(2×3) = 아래 2×2 칸의 가운데 쿼터 창 → 바닥·천장, A4 벽 블록(2×2) = 반 칸 오른쪽 창의 위·아래 줄 → 벽면 두 줄. 고른 칸은 칸 번호 대신 픽셀 창 `{px,py}` 로 남는다.
+    칸을 그대로 고르면 오토타일 테두리가 칸마다 남아 바닥·벽에 격자가 생긴다(2026-10-08 합성 A4 시트로 비교).
+  - **AI 초안**: 열·줄 번호를 단 시트(`labeledSheet`)를 `requestTilesetMapping` 으로 보내 `{floor,wallTop,wallBottom,ceiling,reason}` 을 받는다(`roomKitDraftPrompt`·`parseRoomKitDraft` — 코드 울타리·뒷말이 붙어도 첫 JSON 객체를 찾는다).
+    오토타일 시트면 AI 가 짚은 칸의 블록 가운데로 바꾼다. 초안은 저장하지 않는다 — 사람이 견본 방을 보고 고친 뒤 저장.
+- **가구 = 칩셋 조립 부품 (`kitHandObjects`, 2026-10-08):** 역할표에 가구 표(objects)가 없으면 칩셋의 section 조립 부품을 가구로 쓴다(공방 부품은 따로).
+  역할 wall·terrain·fence·roof·building·water 는 뺀다. 발밑 줄 = 네 방향 다 막힌 칸이 처음 나오는 줄부터 아래 끝, 놓는 곳 설명에 「벽에 붙·벽 앞·north-wall」 = 벽 가구, 「벽에 건·걸이」 = 걸이, 막힌 칸이 없고 위층 칸도 없으면 밟는 무늬.
+  업로드 칩셋은 자료집 → 오브젝트에서 부품을 등록하면 늘어난다.
+- **마법 학교 번들 역할표 (2026-10-08):** `scripts/content/wizarding/roomkit_wz.py` 를 `bake_wz.py` 가 부른다 — 바닥(A·B·C 변형을 한 판으로 묶고 rowShift) 13 · 벽 세트 북벽 아래 두 줄 8 · 어두운 천장 32 + 바깥.
+  변형 색은 마법 학교 팔레트 최근접으로 붙인다. 번호는 pins `roomkit/…` 키(기존 칸·예제 불변, 2508 → 2669칸). 사양 `src/assets/wizardingRoomSpec.json`, `roomKit {builtin:"wizarding_world"}`.
+  가구는 조립 부품 320종(벽난로 = 벽 가구, 침대 = 바닥 가구). `build_wizarding_space` 는 그대로 네모 공간 생성기다 — 모양 있는 방은 `build_hand_interior_room({tileset:"wizarding_world"})`.
   - 확인(2026-10-07): 역할표 없던 마법 학교 칩셋에 성채 포석·석벽·어두운 천장을 골라 저장 → `__oprnEditorTool("build_hand_interior_room")` ㄱ자 방이 실제 편집기(Phaser)에서 이식 칸으로 그려짐.
-  - 아직 없음: RPG Maker MZ A4/A5 시트 위치 자동 채우기, AI 초안, 가구(objects) 표.
 - **바닥 깔기 규칙 `floors[].lay` (2026-10-07):** `"rowShift"` 면 줄마다 무늬를 가로로 밀어 깐다(`floorLayX`, jp `ikit.lay_x` 와 같은 식).
   한 판을 바둑판처럼 반복하면 넓은 빈 바닥에서 밝은 널이 같은 자리에 줄 섰다(일본 마루). 가로로만 이어지는 무늬에만 쓴다.
 - 도구 설명은 「네모 하나로만 그리지 말 것(ㄱ·ㄷ·T·알코브)」과 ㄱ자 평면 예시를 싣는다 — 조수 호출 114번 중 99번이 바깥 모양 네모였다(2026-10-07 qa-runs 집계).

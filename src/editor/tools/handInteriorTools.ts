@@ -3,11 +3,13 @@
 //   build_hand_interior_room : 평면 문자열 → 벽·천장 자동, 가구는 v5 물건 id → atlas_biome_interior 새 맵(또는 같은 칩셋 맵 다시 짓기)
 //   두 도구 모두 tileset:"jp_city" 이면 일본 실내(jp_city 번들 안, 화실·LDK·욕실·현관)를 같은 규칙으로 짓는다.
 // 조립 규칙은 src/editor/handInterior/builder.ts, 칸 사전은 src/assets/handInteriorSpec.json · jpInteriorSpec.json.
-import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
+import { buildHandInteriorLayers, roomSpecOf, HAND_INTERIOR_SPEC, HAND_INTERIOR_SPECS, HAND_INTERIOR_TILESET_ID, JP_INTERIOR_SPEC, JP_INTERIOR_TILESET_ID, WIZARDING_INTERIOR_SPEC, WIZARDING_INTERIOR_TILESET_ID, HandInteriorError, type HandInteriorInput, type HandInteriorSpec } from "@/editor/handInterior/builder";
 import { roomIndex, roomParts, searchParts, fullRow, shortRow } from "@/editor/handInterior/parts";
 import { handInteriorShapeFromPlan, nearestOpening, PLAIN_BOX_MIN_CELLS, type HandInteriorShape } from "@/editor/handInterior/shape";
 import { createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { createJpCityTileset, ensureJpCityTileset } from "@/project/defaults/jpCity";
+import { createWizardingWorldTileset, ensureWizardingWorldTileset } from "@/project/defaults/wizardingWorld";
+import { kitHandObjects } from "@/project/roomKit";
 import type { Command, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { workshopHandObjects } from "@/project/workshopTiles";
 import { genId } from "@/util/id";
@@ -16,13 +18,13 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 // 바닥·벽면·천장 id 를 enum 으로 연다 — 자유 문자열이면 모델이 wood·stone·brick 처럼 그럴듯한 이름을 지어
 // 「바닥 "wood" 이 없다」로 거부된 뒤 다시 부른다(2026-10-05 헤드리스 스트레스 13판 중 4판).
 // 두 칩셋 id 를 합친 enum 이다 — 고른 칩셋에 없는 id 는 조립기가 그 칩셋의 목록과 함께 거부한다.
-const uniq = (pick: (s: HandInteriorSpec) => object) => [...new Set([HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC].flatMap((s) => Object.keys(pick(s))))];
+const uniq = (pick: (s: HandInteriorSpec) => object) => [...new Set([HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC, WIZARDING_INTERIOR_SPEC].flatMap((s) => Object.keys(pick(s))))];
 // 타일셋 「방 짓기」 탭에서 사용자가 만든 역할표(src/project/roomKit.ts)는 바닥 floor · 벽면 wall · 천장 default 하나씩이다.
 const FLOOR_IDS = [...uniq((s) => s.floors), "floor"];
 const WALL_IDS = [...uniq((s) => s.walls), "wall"];
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
-const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
   return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];
@@ -41,15 +43,25 @@ function ensureInteriorTileset(draft: Project, id: string): TilesetDef | undefin
   if (id === JP_INTERIOR_TILESET_ID) {
     if (!draft.tilesets[id]) draft.tilesets[id] = createJpCityTileset();
     else ensureJpCityTileset(draft.tilesets[id]!);
+  } else if (id === WIZARDING_INTERIOR_TILESET_ID) {
+    if (!draft.tilesets[id]) draft.tilesets[id] = createWizardingWorldTileset();
+    else ensureWizardingWorldTileset(draft.tilesets[id]!);
   } else if (!draft.tilesets[id]) draft.tilesets[id] = createAtlasBiomeInteriorTileset();
   else ensureAtlasBiomeInteriorCurrent(draft, id);
   return draft.tilesets[id];
 }
-/** 칩셋 역할표 + 사용자가 공방에서 그려 이 칩셋에 구운 기물(id workshop:…). */
+/**
+ * 칩셋 역할표 + 사용자가 공방에서 그려 이 칩셋에 구운 기물(id workshop:…).
+ * 역할표에 가구 표가 없으면(마법 학교·「방 짓기」 탭에서 만든 역할표) 칩셋의 조립 부품을 가구로 쓴다(kitHandObjects).
+ */
+let bundledWizarding: TilesetDef | undefined;
 function specFor(project: Project, tilesetId: string): HandInteriorSpec {
-  const base = roomSpecOf(project.tilesets[tilesetId]) ?? HAND_INTERIOR_SPECS[tilesetId]!;
-  const workshop = workshopHandObjects(project.tilesets[tilesetId]);
-  return Object.keys(workshop).length ? { ...base, objects: { ...base.objects, ...workshop } as HandInteriorSpec["objects"] } : base;
+  // 프로젝트에 아직 마법 학교 칩셋이 없으면(짓기 전 목록 보기) 번들 정의의 조립 부품을 읽는다.
+  const tileset = project.tilesets[tilesetId] ?? (tilesetId === WIZARDING_INTERIOR_TILESET_ID ? (bundledWizarding ??= createWizardingWorldTileset()) : undefined);
+  const base = roomSpecOf(tileset) ?? HAND_INTERIOR_SPECS[tilesetId]!;
+  const kits = Object.keys(base.objects).length ? {} : kitHandObjects(tileset);
+  const workshop = workshopHandObjects(tileset);
+  return Object.keys(kits).length || Object.keys(workshop).length ? { ...base, objects: { ...base.objects, ...kits, ...workshop } as HandInteriorSpec["objects"] } : base;
 }
 const XY = { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], additionalProperties: false } as const;
 
@@ -99,7 +111,7 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     }
     if (!q && !cat) {
       const idx = roomIndex(S);
-      return { summary: `${tilesetId === JP_INTERIOR_TILESET_ID ? "일본 집 실내(jp_city)" : "손 도트 실내"} 부품: 가구 ${Object.keys(S.objects).length}종(분류 ${categories.size}) · 바닥 ${Object.keys(S.floors).length} · 벽면 ${Object.keys(S.walls).length} · 천장 ${Object.keys(S.ceilings).length} · 탁상 물건 ${Object.keys(S.goods).length}. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.`,
+      return { summary: `${tilesetId === JP_INTERIOR_TILESET_ID ? "일본 집 실내(jp_city)" : tilesetId === WIZARDING_INTERIOR_TILESET_ID ? "마법 학교 실내(wizarding_world)" : HAND_INTERIOR_SPECS[tilesetId] ? "손 도트 실내" : `${project.tilesets[tilesetId]?.name ?? tilesetId} 실내`} 부품: 가구 ${Object.keys(S.objects).length}종(분류 ${categories.size}) · 바닥 ${Object.keys(S.floors).length} · 벽면 ${Object.keys(S.walls).length} · 천장 ${Object.keys(S.ceilings).length} · 탁상 물건 ${Object.keys(S.goods).length}. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.`,
         data: { tilesetId, roomTilesets: roomTilesetIds(project),
           floors: Object.entries(S.floors).map(([id, f]) => ({ id, ko: f.ko })),
           walls: Object.entries(S.walls).map(([id, w]) => ({ id, ko: w.ko })),
