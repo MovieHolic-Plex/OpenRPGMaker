@@ -5,6 +5,25 @@
 
 <!-- releases -->
 
+## 0.171.0 — 2026-10-07
+
+### 기능
+
+- **tiles** — bake the redrawn interiors into monster-overworld and monster-rooms (`32dff05`)
+- **tiles** — monster interiors redrawn in the GBA style (`012763f`)
+- **monster** — houses and centers get a working second floor (`ead3e1b`)
+- **tiles** — walkable stair feet and an appended interior section (`5cb5eb9`)
+- **editor** — add categorized prop picker with full catalog search (`0e76cc1`)
+
+### 수정
+
+- **tiles** — keep the monster overworld sheet under its 320-color cap (`474623b`)
+- **editor** — refine prop categories and record browser proof (`714f31c`)
+
+### 문서
+
+- **openwiki** — interior redraw, walkable stairs and second floors; stairs runtime QA (`d4d305f`)
+
 ## 0.170.0 — 2026-10-07
 
 ### 기능
