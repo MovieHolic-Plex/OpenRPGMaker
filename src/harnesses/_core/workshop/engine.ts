@@ -5,7 +5,7 @@
  * 사람만 고른다 — 엔진은 고르지 않는다. 판은 바뀔 때마다 통째로 저장해, 탭을 닫아도 resume() 로 잇는다.
  */
 import type { ChatMessage } from "@/ai/llmClient";
-import { parseDrawAnswer } from "./grid";
+import { applyRowFix, parseDrawAnswer, rowsNeedingFix } from "./grid";
 import type { WorkshopStore } from "./store";
 import type {
   AnchorSample, ChatFn, DrawContext, Grid, RejectedSample, Verdict, WorkshopEnv, WorkshopItem, WorkshopRound, WorkshopRun,
@@ -14,6 +14,8 @@ import type {
 
 export const MAX_ATTEMPTS = 3;
 export const MAX_FIXES = 2;
+/** 폭이 틀린 줄이 이 수 이하면 그 줄만 다시 받는다 */
+const ROW_FIX_LIMIT = 8;
 export const DEFAULT_CONCURRENCY = 3;
 /** 판을 열 때 보여 주는 「호출 약 N번」 계산용(그리기·검수 + 가끔 고치기·다시) */
 export const CALLS_PER_CANDIDATE_ESTIMATE = 3;
@@ -137,8 +139,28 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
   async function drawOnce(ctx: DrawContext, run: WorkshopRun, round: WorkshopRound, signal: AbortSignal): Promise<{ grid: Grid; note: string; topRows: number | null } | { error: string }> {
     const messages = await runner.drawMessages(ctx, env);
     let lastError = "";
+    let text = await call("workshop-draw", messages, run, round, signal);
     for (let fix = 0; fix <= MAX_FIXES; fix++) {
-      const text = await call("workshop-draw", messages, run, round, signal);
+      if (fix > 0) {
+        // 폭이 틀린 줄이 몇 개뿐이면 그 줄만 다시 받는다(짧은 답이라 빠르다). 아니면 전체 격자를 다시 받는다.
+        const rows = rowsNeedingFix(text, ctx.item.width, ctx.item.height);
+        if (rows && rows.bad.length > 0 && rows.bad.length <= ROW_FIX_LIMIT) {
+          messages.push(
+            { role: "assistant", content: text },
+            { role: "user", content: `줄 ${rows.bad.map((i) => `${i}(${[...rows.rows[i]!].length}글자)`).join(", ")} 의 길이가 캔버스 폭 ${ctx.item.width} 와 다르다. `
+              + `나머지 줄은 그대로 두고, 고친 줄만 정확히 ${ctx.item.width}글자로 {"rows":{"${rows.bad[0]}":"…"}} 형식 JSON 하나로 내라.` },
+          );
+          const fixText = await call("workshop-draw", messages, run, round, signal);
+          messages.push({ role: "assistant", content: fixText });
+          text = applyRowFix(text, fixText) ?? text;
+        } else {
+          messages.push(
+            { role: "assistant", content: text },
+            { role: "user", content: `답을 쓸 수 없다: ${lastError}\n같은 JSON 형식으로 전체 격자를 다시 내라. 캔버스는 ${ctx.item.width}×${ctx.item.height}px 이다.` },
+          );
+          text = await call("workshop-draw", messages, run, round, signal);
+        }
+      }
       const parsed = parseDrawAnswer(text, ctx.palette);
       const problems = parsed.ok ? runner.hardCheck(ctx.item, parsed.grid) : [parsed.error];
       if (parsed.ok && problems.length === 0) {
@@ -152,10 +174,6 @@ export function createWorkshopEngine(options: WorkshopEngineOptions): WorkshopEn
         return { grid: parsed.grid, note: parsed.note, topRows: parsed.topRows };
       }
       lastError = problems.join(" / ");
-      messages.push(
-        { role: "assistant", content: text },
-        { role: "user", content: `답을 쓸 수 없다: ${lastError}\n같은 JSON 형식으로 전체 격자를 다시 내라. 캔버스는 ${ctx.item.width}×${ctx.item.height}px 이다.` },
-      );
     }
     return { error: lastError };
   }
