@@ -374,16 +374,7 @@ def _(c):
     c.HL(1, 14, 14, K('aka', -3)); c.P(14, 2, None)
 
 
-def _zabu(c, ox, oy):
-    """다다미 위에 놓인 감색 방석 한 장(10×9). 좌표는 단 그림 안 (ox,oy) = 왼쪽 위."""
-    col = lambda t: K('kon', t)
-    c.HL(ox + 1, oy, 8, OL); c.HL(ox + 1, oy + 8, 8, OL); c.VL(ox, oy + 1, 7, OL); c.VL(ox + 9, oy + 1, 7, OL)
-    c.R(ox + 1, oy + 1, 8, 5, col(0)); c.HL(ox + 1, oy + 1, 8, col(1)); c.VL(ox + 1, oy + 1, 5, col(1))
-    c.R(ox + 1, oy + 6, 8, 2, col(-2)); c.HL(ox + 1, oy + 6, 8, col(-1))
-    c.R(ox + 4, oy + 3, 2, 2, K('aka', 0))
-
-
-@O('fd-zashiki', '자시키 단(4×2)', w=4, h=2, up=0, kind='flat', walk=tuple((x, y) for y in range(2) for x in range(4)), use=(), desc='바닥보다 한 단 높은 다다미 단(4×2칸). 위는 다다미 네 장(가로로 긴 모양, 반 장 어긋난 깔기, 결은 가로줄, 장 둘레는 짙은 가장자리 띠), 좌탁(zataku)을 놓을 자리 둘레에 감색 방석 네 장이 그려져 있다. 남쪽 앞면은 나무 단 두께 띠 한 줄.', tags=('이자카야', '다다미', '좌식'))
+@O('fd-zashiki', '자시키 단(4×2)', w=4, h=2, up=0, kind='flat', walk=tuple((x, y) for y in range(2) for x in range(4)), use=(), desc='바닥보다 한 단 높은 다다미 단(4×2칸). 위는 다다미 네 장(가로로 긴 모양, 반 장 어긋난 깔기, 결은 가로줄, 장 둘레는 짙은 가장자리 띠). 방석·좌탁은 그려져 있지 않다(zataku 를 따로 놓는다). 서쪽·동쪽 가장자리에 나무 테두리 1px, 남쪽 앞면은 나무 단 두께 띠 한 줄.', tags=('이자카야', '다다미', '좌식'))
 def _(c):
     W = c.w
     c.HL(0, 0, W, OL)
@@ -395,9 +386,8 @@ def _(c):
         for x in seams:
             c.VL(x, y0, 13, K('kinari', -2)); c.VL(x + 1, y0 + 1, 11, K('kinari', 1))
     c.VL(0, 0, 28, OL); c.VL(W - 1, 0, 28, OL)
-    # 방석 네 장: 좌탁 둘레(왼끝·오른끝·남쪽 둘)
-    _zabu(c, 3, 3); _zabu(c, W - 13, 3)
-    _zabu(c, 19, 16); _zabu(c, 35, 16)
+    # 서쪽·동쪽 단 가장자리: 나무 테두리 1px(바깥 외곽선 안쪽)
+    c.VL(1, 1, 26, K('ita', 1)); c.VL(W - 2, 1, 26, K('ita', -2))
     c.HL(0, 27, W, OL)
     c.HL(0, 28, W, K('ita', 3)); c.R(0, 29, W, 1, K('ita', 1)); c.HL(0, 30, W, K('ita', -1))   # 나무 단 두께 띠(한 줄)
     c.HL(0, 31, W, OL)
@@ -491,6 +481,16 @@ def _(c):
     c.R(4, 2, 4, 7, K('sora', 0)); c.VL(4, 2, 7, K('sora', 2)); c.VL(7, 2, 7, K('sora', -2)); c.HL(4, 8, 4, K('sora', -3)); c.HL(4, 5, 4, K('shiro', 1))
     c.P(4, 2, None); c.P(7, 2, None)
     c.R(10, 6, 4, 3, K('shiro', 1)); c.HL(10, 6, 4, K('shiro', 3)); c.VL(13, 6, 3, K('shiro', -1)); c.HL(11, 8, 2, K('conc', 0)); c.HL(10, 9, 4, K('conc', -2))
+
+
+@R.good('fd-water-set', '물 주전자와 컵', desc='투명 물 주전자(손잡이·하늘색 물) + 유리컵 둘.')
+def _(c):
+    c.R(2, 2, 6, 7, K('garasu', 1)); box(c, 2, 2, 6, 7, K('garasu', -2)); c.R(3, 4, 4, 4, K('sora', 0)); c.HL(3, 4, 4, K('sora', 2))
+    c.HL(3, 1, 4, K('tekko', 0)); c.P(2, 2, None); c.P(7, 2, None)
+    c.VL(8, 3, 4, K('garasu', 0)); c.VL(9, 3, 4, K('garasu', 0)); c.P(9, 3, K('garasu', 2)); c.P(9, 6, K('garasu', -1))
+    c.HL(2, 9, 6, K('garasu', -3))
+    for x in (11, 13):
+        c.R(x, 5, 2, 4, K('garasu', 2)); box(c, x, 5, 2, 4, K('garasu', -1)); c.P(x, 6, K('sora', 1)); c.P(x + 1, 7, K('sora', 0))
 
 
 @R.good('fd-condiments', '조미료 세 가지', desc='간장병(검정 뚜껑)·후추 통·소금 통(투명 + 흰 뚜껑).')
@@ -621,7 +621,7 @@ PLACE = {
     'fd-ticket-machine': '라멘집 입구 바로 안쪽, 입구 옆 바닥에 세운다(앞 칸을 비운다) — 손님이 들어와 먼저 식권을 산다.',
     'fd-water-jug': '카운터 끝 칸이나 입구 옆(셀프 물 서버).', 'fd-register': '출입구 가까이(나가며 계산) — 카운터 끝이나 입구 옆.',
     'fd-neta-case': '초밥집 카운터 칸 위치에 카운터 대신 한 줄로(생선 진열 케이스가 올라간 카운터 칸).',
-    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(4×2, 방석 네 장 포함) — 북쪽 줄 가운데 두 칸 위에 zataku 를 놓는다. 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞 바닥의 디딤돌(2×1, 신발 한 켤레 포함) — 좌탁 앞 두 칸에.',
+    'fd-beer-crates': '주방·뒷문 쪽 구석(맥주 상자).', 'fd-zashiki': '이자카야 한쪽 벽 쪽 다다미 좌석 단(4×2, 방석·좌탁 없음) — 북쪽 줄 가운데 두 칸 위에 zataku 를 따로 놓는다(방석은 바닥 무늬끼리 겹쳐 단을 지우므로 단 위에 두지 않는다). 앞(남쪽)에 fd-kutsunugi.', 'fd-kutsunugi': '자시키 단 바로 남쪽 앞 바닥의 디딤돌(2×1, 신발 한 켤레 포함) — 좌탁 앞 두 칸에.',
     'fd-siphon': '킷사텐 카운터 위 한 칸(사이펀 커피) — 계산대·머신과 한 줄로 카운터 뒤.', 'fd-coffee-machine': '킷사텐 카운터 칸 하나(에스프레소 머신).',
     'fd-cake-case': '킷사텐 카운터 칸 하나, 입구에서 보이는 쪽(케이크 쇼케이스).', 'fd-bean-shelf': '킷사텐 카운터 뒤 북쪽 벽 첫 줄(원두 병 선반, 2칸).',
     'fd-noren': '주방 입구(칸막이 틈) 위 벽면에 건다.', 'fd-lantern': '이자카야 벽면 윗줄에 건다(붉은 초롱).',

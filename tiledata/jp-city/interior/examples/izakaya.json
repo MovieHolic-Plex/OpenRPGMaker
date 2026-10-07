@@ -1,209 +1,208 @@
 {
- "plan": [
-  "############",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#..........#",
-  "#####..#####"
- ],
- "floor": "fd-wood-dark",
- "wall": "fd-wood-wall",
- "zones": [
-  {
-   "x0": 1,
-   "x1": 5,
-   "y0": 1,
-   "y1": 4,
-   "floor": "fd-kitchen-tile",
-   "wall": "fd-plaster"
-  },
-  {
-   "x0": 6,
-   "x1": 10,
-   "y0": 1,
-   "y1": 2,
-   "floor": "fd-wood-dark",
-   "wall": "fd-wood-wall"
-  }
- ],
- "objects": [
-  {
-   "id": "fd-fridge",
-   "x": 1,
-   "y": 3
-  },
-  {
-   "id": "fd-fryer",
-   "x": 2,
-   "y": 3
-  },
-  {
-   "id": "fd-prep",
-   "x": 3,
-   "y": 3
-  },
-  {
-   "id": "fd-sink",
-   "x": 4,
-   "y": 3
-  },
-  {
-   "id": "fd-stockpot",
-   "x": 5,
-   "y": 3
-  },
-  {
-   "id": "fd-sake-shelf",
-   "x": 7,
-   "y": 3
-  },
-  {
-   "id": "fd-beer-crates",
-   "x": 10,
-   "y": 3
-  },
-  {
-   "id": "fd-noren",
-   "x": 6,
-   "y": 1
-  },
-  {
-   "id": "fd-lantern",
-   "x": 2,
-   "y": 1
-  },
-  {
-   "id": "fd-lantern",
-   "x": 9,
-   "y": 1
-  },
-  {
-   "id": "fd-menu-board",
-   "x": 8,
-   "y": 1
-  },
-  {
-   "id": "fd-stool",
-   "x": 1,
-   "y": 6
-  },
-  {
-   "id": "fd-stool",
-   "x": 2,
-   "y": 6
-  },
-  {
-   "id": "fd-stool",
-   "x": 3,
-   "y": 6
-  },
-  {
-   "id": "fd-stool",
-   "x": 4,
-   "y": 6
-  },
-  {
-   "id": "fd-stool",
-   "x": 5,
-   "y": 6
-  },
-  {
-   "id": "fd-zashiki",
-   "x": 7,
-   "y": 5
-  },
-  {
-   "id": "zataku",
-   "x": 8,
-   "y": 5
-  },
-  {
-   "id": "fd-kutsunugi",
-   "x": 8,
-   "y": 7
-  },
-  {
-   "id": "fd-chair-e",
-   "x": 1,
-   "y": 8
-  },
-  {
-   "id": "fd-chair-w",
-   "x": 4,
-   "y": 8
-  }
- ],
- "tables": [
-  {
-   "style": "fd-counter",
-   "x": 1,
-   "y": 5,
-   "w": 5,
-   "h": 1
-  },
-  {
-   "style": "fd-table",
-   "x": 2,
-   "y": 8,
-   "w": 2,
-   "h": 1
-  }
- ],
- "goods": [
-  {
-   "id": "fd-tokkuri",
-   "x": 2,
-   "y": 5
-  },
-  {
-   "id": "fd-beer-mug",
-   "x": 3,
-   "y": 5
-  },
-  {
-   "id": "fd-sushi-geta",
-   "x": 4,
-   "y": 5
-  },
-  {
-   "id": "fd-beer-mug",
-   "x": 5,
-   "y": 5
-  },
-  {
-   "id": "fd-tokkuri",
-   "x": 2,
-   "y": 8
-  },
-  {
-   "id": "fd-condiments",
-   "x": 3,
-   "y": 8
-  },
-  {
-   "id": "fd-tokkuri",
-   "x": 8,
-   "y": 5
-  }
- ],
- "name": "일본 이자카야 실내",
- "start": [
-  5,
-  8
- ],
- "links": [],
- "rooms": [
-  {
-   "room": "izakaya",
-   "x0": 0,
-   "y0": 0,
-   "x1": 11,
-   "y1": 9
-  }
- ]
+  "plan": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#####..#####"
+  ],
+  "floor": "fd-wood-dark",
+  "wall": "fd-wood-wall",
+  "zones": [
+    {
+      "x0": 1,
+      "x1": 5,
+      "y0": 1,
+      "y1": 4,
+      "floor": "fd-kitchen-tile",
+      "wall": "fd-plaster"
+    },
+    {
+      "x0": 6,
+      "x1": 10,
+      "y0": 1,
+      "y1": 2,
+      "floor": "fd-wood-dark",
+      "wall": "fd-wood-wall"
+    }
+  ],
+  "objects": [
+    {
+      "id": "fd-fridge",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "id": "fd-fryer",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "fd-prep",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "fd-sink",
+      "x": 4,
+      "y": 3
+    },
+    {
+      "id": "fd-stockpot",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "id": "fd-sake-shelf",
+      "x": 7,
+      "y": 3
+    },
+    {
+      "id": "fd-beer-crates",
+      "x": 9,
+      "y": 3
+    },
+    {
+      "id": "fd-noren",
+      "x": 6,
+      "y": 1
+    },
+    {
+      "id": "fd-lantern",
+      "x": 2,
+      "y": 1
+    },
+    {
+      "id": "fd-lantern",
+      "x": 9,
+      "y": 1
+    },
+    {
+      "id": "fd-menu-board",
+      "x": 8,
+      "y": 1
+    },
+    {
+      "id": "fd-stool",
+      "x": 1,
+      "y": 6
+    },
+    {
+      "id": "fd-stool",
+      "x": 2,
+      "y": 6
+    },
+    {
+      "id": "fd-stool",
+      "x": 3,
+      "y": 6
+    },
+    {
+      "id": "fd-stool",
+      "x": 4,
+      "y": 6
+    },
+    {
+      "id": "fd-stool",
+      "x": 5,
+      "y": 6
+    },
+    {
+      "id": "fd-zashiki",
+      "x": 7,
+      "y": 4
+    },
+    {
+      "id": "zataku",
+      "x": 8,
+      "y": 4
+    },
+    {
+      "id": "fd-kutsunugi",
+      "x": 8,
+      "y": 6
+    },
+    {
+      "id": "fd-chair-e",
+      "x": 7,
+      "y": 7
+    },
+    {
+      "id": "fd-chair-w",
+      "x": 10,
+      "y": 7
+    }
+  ],
+  "tables": [
+    {
+      "style": "fd-counter",
+      "x": 1,
+      "y": 5,
+      "w": 5,
+      "h": 1
+    },
+    {
+      "style": "fd-table",
+      "x": 8,
+      "y": 7,
+      "w": 2,
+      "h": 1
+    }
+  ],
+  "goods": [
+    {
+      "id": "fd-tokkuri",
+      "x": 2,
+      "y": 5
+    },
+    {
+      "id": "fd-beer-mug",
+      "x": 3,
+      "y": 5
+    },
+    {
+      "id": "fd-sushi-geta",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "id": "fd-beer-mug",
+      "x": 5,
+      "y": 5
+    },
+    {
+      "id": "fd-tokkuri",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "id": "fd-condiments",
+      "x": 9,
+      "y": 7
+    },
+    {
+      "id": "fd-tokkuri",
+      "x": 8,
+      "y": 4
+    }
+  ],
+  "name": "일본 이자카야 실내",
+  "start": [
+    5,
+    7
+  ],
+  "links": [],
+  "rooms": [
+    {
+      "room": "izakaya",
+      "x0": 0,
+      "y0": 0,
+      "x1": 11,
+      "y1": 8
+    }
+  ]
 }
