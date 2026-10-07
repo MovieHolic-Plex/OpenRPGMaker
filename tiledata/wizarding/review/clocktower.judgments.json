@@ -1,0 +1,115 @@
+{
+  "_reviewer": "sonnet adversarial",
+  "wz-clock-gear-l": {
+    "verdict": "PASS",
+    "reason": "1배·5배 모두 황동 톱니로 읽힘. 굵은 이빨 열여섯 개, 4살, 허브 구멍, 위쪽 이빨에 밝은 두께 면. 벽에 선 정면 원판이라 시점이 맞고 대칭. 테두리는 유색 윤곽이고 명암은 3~4단. 4×4 크기에 사람 표본보다 커서 큰 톱니 축척으로 맞다."
+  },
+  "wz-clock-gear-m": {
+    "verdict": "PASS",
+    "reason": "중간 톱니로 분명히 읽힘. 이빨·살·허브가 있고 빛은 왼쪽 위다. 3×3 축척과 화풍이 큰 톱니와 일관된다."
+  },
+  "wz-clock-gear-s": {
+    "verdict": "PASS",
+    "reason": "2×2 작은 톱니. 이빨이 1배에서도 톱니 실루엣으로 읽힌다. 살·허브가 보이고 명암이 일관된다."
+  },
+  "wz-clock-gear-l-spin": {
+    "verdict": "PASS",
+    "reason": "8프레임이 실제로 회전한다. 4살이 0→~78°로 돌고 이빨 실루엣도 프레임마다 바뀐다(알파 차 454px/프레임, 단순 이동 아님). 4중 대칭 살이 90° 돌아 f7→f0 간격이 같아 루프가 튀지 않는다. 정적판과 같은 크기."
+  },
+  "wz-clock-gear-m-spin": {
+    "verdict": "PASS",
+    "reason": "8프레임 동안 살과 이빨 위치가 실제로 회전한다(알파 차 268~292px). 간격이 대칭이라 루프가 매끄럽다. 화풍은 정적판과 같다."
+  },
+  "wz-clock-gear-s-spin": {
+    "verdict": "PASS",
+    "reason": "32px라 이빨에 계단 현상이 조금 있지만 살·이빨이 프레임마다 실제로 돈다(알파 차 108~120px, 단순 이동 아님). 루프 간격이 같고 톱니로 읽힌다."
+  },
+  "wz-clock-axle-h": {
+    "verdict": "PASS",
+    "reason": "가로 황동 축에 쇠 고리. 윗면이 밝고 아랫면이 어둡다. 1×1 축으로 읽히고 톱니 사이 연결재로 쓸 만하다."
+  },
+  "wz-clock-axle-v": {
+    "verdict": "PASS",
+    "reason": "세로 황동 축에 가로 쇠 고리. 축/파이프로 읽히고 왼쪽 밝은 명암이 맞다."
+  },
+  "wz-clock-crank": {
+    "verdict": "PASS",
+    "reason": "황동 원판(사각 축구멍)+팔+쇠 고리+오크 손잡이. 크랭크로 읽힌다. 2×1 축척이 적당하고 재질 구분(금속/나무)이 된다."
+  },
+  "wz-clock-wall": {
+    "verdict": "PASS",
+    "reason": "윗단 돌갓과 비정형 회색 돌 블록. style-ref 석벽과 같은 돌·색이고 3/4 윗면+정면이 보인다. 1×4 S 이고 반복 이음새가 없다."
+  },
+  "wz-clock-wall-gear": {
+    "verdict": "PASS",
+    "reason": "recheck: toothed gear with hub on dark recess; reads as gear opening."
+  },
+  "wz-clock-beam": {
+    "verdict": "PASS",
+    "reason": "머리 위 오크 들보로 읽힘. 윗면은 밝은 띠, 앞면은 중간, 아래는 어둠(4단). 결 틈·쇠 못이 있다. C 이고 가로 반복 이음새가 없다."
+  },
+  "wz-clock-balcony": {
+    "verdict": "PASS",
+    "reason": "위 칸은 판재 바닥(F)이다. 아래 칸은 기둥 셋·가로대 둘의 오크 난간(S)이고, 판재가 뒤로 이어지며 아래 받침보에 쇠 볼트가 있다. 정비 발코니로 읽히고 사람 축척에 맞다."
+  },
+  "wz-clock-grate": {
+    "verdict": "PASS",
+    "reason": "쇠 격자 사이로 어두운 틈이 보이는 철판 발판이다. 예제에서 이어 칠해도 이음새가 없고 격자 바닥으로 읽힌다. F 통행이다."
+  },
+  "wz-clock-walkway": {
+    "verdict": "PASS",
+    "reason": "가로 오크 판재. 판마다 명암이 다르고 이음 위치가 다르며 못 자국이 있다. 통로 바닥으로 읽히고 F 통행이다."
+  },
+  "wz-clock-rail": {
+    "verdict": "PASS",
+    "reason": "기둥과 가로대 둘, 쇠 고정쇠. 난간으로 읽히고 1×1 S 다."
+  },
+  "wz-clock-rail-end": {
+    "verdict": "PASS",
+    "reason": "오른쪽 끝 기둥에 윗머리가 있는 난간 끝. 가로 난간과 이어진다."
+  },
+  "wz-clock-stair": {
+    "verdict": "PASS",
+    "reason": "칸당 8px 디딤판 2단(밝은 디딤면+어두운 챌면에 볼트). 좌우 옆판이 있다. 북쪽으로 오르는 3/4 계단으로 읽히고 FF/FF 로 통행된다."
+  },
+  "wz-clock-door-closed": {
+    "verdict": "PASS",
+    "reason": "recheck: emblem now a clear brass cog; door reads correctly."
+  },
+  "wz-clock-door-open": {
+    "verdict": "PASS",
+    "reason": "recheck: redrawn with set; open door into dark stairwell reads well."
+  },
+  "wz-clock-door-locked": {
+    "verdict": "PASS",
+    "reason": "recheck: cog emblem fixed, bars and lock read as locked."
+  },
+  "wz-clock-oil-a": {
+    "verdict": "PASS",
+    "reason": "recheck: flat near-black puddle with small reflection; reads as oil spill."
+  },
+  "wz-clock-oil-b": {
+    "verdict": "PASS",
+    "reason": "recheck: flat dark tapering streak with sheen; reads as oil drip."
+  },
+  "wz-clock-oilcan": {
+    "verdict": "PASS",
+    "reason": "recheck: round can with long spout reads as oilcan."
+  },
+  "wz-clock-toolchest": {
+    "verdict": "PASS",
+    "reason": "recheck: keyhole gone, top handle and drawers read as tool chest."
+  },
+  "wz-clock-stool": {
+    "verdict": "PASS",
+    "reason": "둥근 좌판 윗면(결 있음)과 세 다리·가로대. 작업 발판/스툴로 읽히고 3/4 윗면이 보인다. 1×1 축척이 맞다."
+  },
+  "wz-clock-toolrack": {
+    "verdict": "PASS",
+    "reason": "recheck: wrench/hammer shapes distinguishable; reads as tool rack (gear minor)."
+  },
+  "wz-clock-dial-back": {
+    "verdict": "PASS",
+    "reason": "recheck: glass reflection streaks added; reads as clock face behind glass."
+  }
+}

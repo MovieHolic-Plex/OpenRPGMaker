@@ -1,0 +1,199 @@
+{
+ "module": "owlery",
+ "sealed": "2026-10-07T09:28:06.793029+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-owl-wall-n": {
+   "verdict": "PASS",
+   "hash": "a1b6d012b6e320a78d7cb8f5f8052306861d86b6ebac29d603c08aa27e591025",
+   "reason": "탑 북벽으로 읽힘. 0행 베이지 윗면 25%+회색 석재 블록 정면, 유색 윤곽·3~4단 명암. castle_kit wz-castle-wall-n 과 같은 석재·색으로 성 돌과 일관. 4칸 높이로 사람 대비 적절."
+  },
+  "wz-owl-wall-n-stained": {
+   "verdict": "PASS",
+   "hash": "d46e7461c25b8d133fc22dea5b8ca0147c014f642e715b1983bb59589eda2eb6",
+   "reason": "recheck: irregular white splats with grey shade replace the hooked lines; reads as droppings stain."
+  },
+  "wz-owl-wall-n-beam": {
+   "verdict": "PASS",
+   "hash": "d514450ce39b25767c452e1351907bdf4753a0abb5d06f1660e8a38430cb0fd6",
+   "reason": "벽에 박힌 오크 보+쇠 걸쇠로 읽힘. 보 3단 명암·결, 석재는 wall-n 과 동일. 3/4 정면 유지."
+  },
+  "wz-owl-wall-nw": {
+   "verdict": "PASS",
+   "hash": "1495ed9bce91298f4ce6a77e23c964ee406ee5c505b59356c87e54d76e807b48",
+   "reason": "계단식 곡선 벽 조각. 베이지 윗면 띠가 대각으로 이어지고 안쪽 정면은 어두운 회색. 예제에서 원형 탑 테두리로 매끄럽게 조립됨. 석재 색 성 벽과 일치."
+  },
+  "wz-owl-wall-ne": {
+   "verdict": "PASS",
+   "hash": "df87a70fb16c6292d081d5ad03b3de1af8892978b5c01ab81b11f3d6c54008b8",
+   "reason": "nw 의 좌우 대칭. 예제에서 이음새 없이 조립됨. 윗면·정면 명암 일관."
+  },
+  "wz-owl-wall-w": {
+   "verdict": "PASS",
+   "hash": "a2faeef444380bebda776e75da5d85a5ff86e48ac8ef586102d0293d2a0f29bf",
+   "reason": "서벽 1칸: 윗면 띠+안쪽 그늘 면. 예제에서 nw·sw 사이를 잘 잇는다."
+  },
+  "wz-owl-wall-e": {
+   "verdict": "PASS",
+   "hash": "add3014c59b301b32eaee172826ba1fafd698ac21d04639dcba066274886f2f1",
+   "reason": "w 의 대칭. 이음새 문제 없음."
+  },
+  "wz-owl-wall-sw": {
+   "verdict": "PASS",
+   "hash": "9e9c2fd170599be590184db5aa60fa20bca4ed9183a50a552bd6c00c92a5f308",
+   "reason": "남쪽으로 꺾이는 곡선, 아래 계단형 절단면. 예제 남쪽 곡선이 낮춘 벽으로 읽힘."
+  },
+  "wz-owl-wall-se": {
+   "verdict": "PASS",
+   "hash": "15411d4aaf79d8943635e4cda748833c5df23e334d7506d89e9be531e54c237a",
+   "reason": "sw 의 대칭. 조립 일관."
+  },
+  "wz-owl-wall-s": {
+   "verdict": "PASS",
+   "hash": "9c6eb68f4edfad596f92c929e77c6ed77ffa0cab23cbc5b1c88733fc3046e0ae",
+   "reason": "낮게 자른 남쪽 벽 2행(윗면+정면). 예제에서 앞쪽 절단 벽으로 읽힘, 석재 일관."
+  },
+  "wz-owl-floor": {
+   "verdict": "PASS",
+   "hash": "03fb59d4573f512e6be379a8a96faf0f32a296ff5c1d043e6a7369e79d3f2510",
+   "reason": "회색 포석 바닥, 성긴 줄눈·3단 명암, 16 주기 반복 이음새 없음."
+  },
+  "wz-owl-floor-band": {
+   "verdict": "PASS",
+   "hash": "0b0395321c4bdf66e1947bbbd464eef646f02f0827af434e1695d03bb8c921e6",
+   "reason": "포석 위 2px 황동 띠. 난간 둘레 띠로 읽히고 반복 이음새 없음."
+  },
+  "wz-owl-floor-band-v": {
+   "verdict": "PASS",
+   "hash": "4814582a2dc2c81a79b1d23dec6e7b393893ebbb57405825db226fd90c4ca931",
+   "reason": "band 의 세로판. 이음새 없음."
+  },
+  "wz-owl-void": {
+   "verdict": "PASS",
+   "hash": "682809d3ae3b6bbf18b7fe78b0acfa43214ff4e08027b9b180e4e329f80369cb",
+   "reason": "탑 바깥 어둠, 드문 점. 반복 무늬 튀지 않음."
+  },
+  "wz-owl-pit": {
+   "verdict": "PASS",
+   "hash": "49733f37a90fb8a4ebfe4e0ba059094198f83d9ad950689d23b44f380d0c3daa",
+   "reason": "중앙 빈 구멍(아래층 어둠). 난간 안쪽에 깔면 수직 공동으로 읽힘. X 통행 맞음."
+  },
+  "wz-owl-feathers": {
+   "verdict": "PASS",
+   "hash": "6fdbe86837301fd822261db908806d057900213aba353ee9608f8919bd1fc09d",
+   "reason": "작은 흰·회 2단 깃털 3개, 깃대 끝 어두운 점. 1배에서 흩어진 깃털로 읽힘. f 덧그림 투명."
+  },
+  "wz-owl-droppings": {
+   "verdict": "PASS",
+   "hash": "7b7def15e46652dbefa565717ea370f6e943d01eda4002196cd5b9dd0956a8b5",
+   "reason": "recheck: cross removed; irregular shaded white splats read as droppings."
+  },
+  "wz-owl-pellets": {
+   "verdict": "PASS",
+   "hash": "69150b0b831729a1feb92f6d426fefa362714751896d631e8606b28d4039f19c",
+   "reason": "회갈색 펠릿 덩이+깃털. 윤곽·2단 명암, 1배에서 바닥 잔해로 읽힘."
+  },
+  "wz-owl-window": {
+   "verdict": "PASS",
+   "hash": "c1fe86f0ff56361b9069ba99a96b17c337f815959c9150ec338e0c352bd855b3",
+   "reason": "recheck: stars now irregular, no dotted column; straw on sill reads fine."
+  },
+  "wz-owl-window-bare": {
+   "verdict": "PASS",
+   "hash": "c7efc5b8df589f4b7d6c381b7b6612f1f47964d548dab4498c6f057627a158b6",
+   "reason": "recheck: irregular stars and lit sky band; reads as bare arched window."
+  },
+  "wz-owl-rail-h": {
+   "verdict": "PASS",
+   "hash": "8722b41b30f5b6c6a92b285c5af86e4208e105671b7974dbb8c7bfce14e1d942",
+   "reason": "둥근 돌 난간 가로: 윗면 갓돌+남쪽 정면 난간동자 열, 3/4 시점. 4×4 고리로 조립 시 이음새 없음."
+  },
+  "wz-owl-rail-v": {
+   "verdict": "PASS",
+   "hash": "5956d1376b65d64b06bc1b91b8cab750cb27dbb32624d4d97dec19b9c62750c6",
+   "reason": "세로 난간: 갓돌 윗면+칸마다 기둥 띠. 고리 조립 시 모서리와 정확히 이어짐."
+  },
+  "wz-owl-rail-corner-nw": {
+   "verdict": "PASS",
+   "hash": "f1e5bf039e330c36558cbf5d6366d57c50e9dd32b2d80d04d40eb89d423415c5",
+   "reason": "모서리 기둥 머리+가로·세로 연결. 4×4 고리 조립 검사에서 빈틈·튀어나옴 없음."
+  },
+  "wz-owl-rail-corner-ne": {
+   "verdict": "PASS",
+   "hash": "7ae9067a6c2763805cd1618ce849a1ad27c7e5fbbf4419efb1ee8271c39b5741",
+   "reason": "nw 대칭, 고리 조립 정상."
+  },
+  "wz-owl-rail-corner-sw": {
+   "verdict": "PASS",
+   "hash": "83c4d75152061daa58c5febe124af4deec6f72ac34868c548ef4d85c6a203e92",
+   "reason": "남쪽 모서리, 정면 난간동자 열이 rail-h 와 이어짐. 조립 정상."
+  },
+  "wz-owl-rail-corner-se": {
+   "verdict": "PASS",
+   "hash": "0fafa8c83c26d8ff41bce5a71c5ad5ee9827d11f2142af95c47512cff7860335",
+   "reason": "sw 대칭, 조립 정상."
+  },
+  "wz-owl-perch-1x3": {
+   "verdict": "PASS",
+   "hash": "ba508b2607f6dcc83b9ec64ae50bd64c82ad965b5ca36e90872a17d9fc31973d",
+   "reason": "나무 기둥+가로대 3단+받침, 가로대 끝 흰 배설물로 부엉이 횃대로 읽힘(옷걸이·표지판과 구별됨). 받침 윗면/정면 3/4, 나무 결·3단 명암 native 작업대와 같은 화풍. 48px 로 사람 1.5배, C/C/S 맞음."
+  },
+  "wz-owl-perch-2x3": {
+   "verdict": "PASS",
+   "hash": "31f29fe5c5b4fb659e4b406affea305008d1cff856d59c75b6a16fc4624ecf75",
+   "reason": "두 기둥 폭 다단 횃대+받침, 가로대 사이 끈. 1x3 과 같은 재질·명암, 3/4 받침. CC/CC/SS 맞음."
+  },
+  "wz-owl-water-dish": {
+   "verdict": "PASS",
+   "hash": "0610b81914e7e0ae02d2e18edee2806e7f60942da2fd6741d5ab3e97dbbb654e",
+   "reason": "돌 그릇: 윗면 타원 테두리+파란 물+하이라이트, 앞면 한 단 어둡게. 3/4 로 읽힘."
+  },
+  "wz-owl-letters": {
+   "verdict": "PASS",
+   "hash": "9127a00002831bb9809c01c943a88cb2e21195fc659ce5d1c8b0aea071b1b1f4",
+   "reason": "빨간 봉랍 찍힌 흰 봉투 더미, 연청 그늘. 1배에서 편지 더미로 읽힘. f 덧그림."
+  },
+  "wz-owl-mail-sack": {
+   "verdict": "PASS",
+   "hash": "f2c5f440a4e75338ed36f9325887b4c992b45b2cc34da2dfb5bfaec1a510740a",
+   "reason": "묶은 목+꼬리표가 있는 갈색 천 자루, 천 주름 2단. 무릎 높이 축척 적절."
+  },
+  "wz-owl-straw": {
+   "verdict": "PASS",
+   "hash": "e733b18e2464857ef6f3a191321cfd193f240cc62b411da27751ce8e4921845e",
+   "reason": "recheck: broken silhouette with stray strands and top highlight; reads as straw pile."
+  },
+  "wz-owl-mailbox": {
+   "verdict": "PASS",
+   "hash": "0d957d124096ea8db5637ad3a3229d11e4d66384133f11422c425e84bfceccb7",
+   "reason": "칸칸이 봉인 편지가 든 2×2 분류함. 윗면 25%·앞면 칸막이, 나무 3단 명암이 native 카운터와 같은 화풍. 허리 높이."
+  },
+  "wz-owl-stair-up": {
+   "verdict": "PASS",
+   "hash": "83a029762d9abba9b4aced9e1b2e9da65a8d3d0b5d64b61e9ea3ce74bd38ff58",
+   "reason": "recheck: treads, nosing shadows and risers now read as ascending stairs."
+  },
+  "wz-owl-stair-down": {
+   "verdict": "PASS",
+   "hash": "a16fc998cfa4ad8fb0f9ecf23ae116e4d960d4c877f33b996bfd7a8849ca7786",
+   "reason": "recheck: floor-rim frame and darkening steps read as stairwell going down."
+  },
+  "wz-owl-door-closed": {
+   "verdict": "PASS",
+   "hash": "f2e582393d0e8dc43277f00e22a80ccee98bf5842c8d8380f06161444331ec09",
+   "reason": "아치 문틀 속 세로 판자 참나무 문+쇠띠, 판자 결·3단 명암이 native 문과 같은 화풍. 문 높이 약 40px. 석재 상단은 탑 벽과 동일."
+  },
+  "wz-owl-door-open": {
+   "verdict": "PASS",
+   "hash": "14f23544f6f71d20fca5b60ee06ccd9b5696fe3744dfd20a3bcdeb3bb3c1dd0e",
+   "reason": "같은 크기·피벗에서 문짝이 왼쪽으로 접혀 어두운 통로+문지방 계단. S/C/C/C 로 통행 가능."
+  },
+  "wz-owl-door-locked": {
+   "verdict": "PASS",
+   "hash": "c7620e9025611a1408e9aa500b63af6bb387e2b24dc47c50772ee5a79b074309",
+   "reason": "closed 와 같은 문+가로 쇠빗장+금 자물쇠로 잠김이 구별됨. 같은 크기·피벗, owl-door 묶음."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}
