@@ -4,7 +4,7 @@
 // 출력: project.json · preview-truck.png · preview-field.png · tool-results.json
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { createScarloxyPokemonDemoProject } from "../../src/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "../../test/support/scarloxyPokemonProject";
 import { serialize } from "../../src/project/io";
 import { runTool } from "../../src/editor/tools/toolRunner";
 import { prepareTool } from "../../src/editor/tools/asyncToolRunner";

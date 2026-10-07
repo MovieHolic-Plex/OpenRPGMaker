@@ -1,8 +1,0 @@
-# road.png 5x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  
-   0 #o #o #o #o #o 
-   1 #o #o #o #o #o 
-   2 #o #o #o .  #o 
-   3 #o #o #o #l #o 
-   4 #l #o #l #l #o 
-   5 #l #o #l #o #o 

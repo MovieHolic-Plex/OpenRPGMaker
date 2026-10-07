@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "suite": "core",
-  "fixtureVersion": 1,
+  "fixtureVersion": 2,
   "description": "같은 초기 상태의 별도 정본에서 기능을 하나씩 시험한다. 현재 묶음은 골렘·왕 외형 선택을 포함한 12개이며 타일 저작·전투·중단 복구 등은 아직 측정 범위 밖이다.",
   "mapId": "map_ember_village",
   "eventId": "ev_ember_child",

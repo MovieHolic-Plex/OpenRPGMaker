@@ -5,14 +5,6 @@
   },
   "assets": [
     {
-      "category": "battleWeapon",
-      "id": "easyrpg-battle-weapon-weapon",
-      "name": "Weapon · 전투 무기 · EasyRPG",
-      "sourcePath": "BattleWeapon/Weapon.png",
-      "path": "assets/easyrpg/battle-weapon/Weapon.png",
-      "fileName": "Weapon.png"
-    },
-    {
       "category": "charset",
       "id": "easyrpg-charset-actor1",
       "name": "Actor1 · 캐릭터 그림 · EasyRPG",
@@ -183,70 +175,6 @@
       "group": "Vehicles"
     },
     {
-      "category": "chipset",
-      "id": "easyrpg-chipset-dungeon",
-      "name": "Dungeon · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/Dungeon.png",
-      "path": "assets/easyrpg/chipset/Dungeon.png",
-      "fileName": "Dungeon.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-exterior",
-      "name": "Exterior · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/Exterior.png",
-      "path": "assets/easyrpg/chipset/Exterior.png",
-      "fileName": "Exterior.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-interior",
-      "name": "Interior · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/Interior.png",
-      "path": "assets/easyrpg/chipset/Interior.png",
-      "fileName": "Interior.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-retro-dungeon",
-      "name": "retro_Dungeon · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/retro_Dungeon.png",
-      "path": "assets/easyrpg/chipset/retro_Dungeon.png",
-      "fileName": "retro_Dungeon.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-retro-exterior",
-      "name": "retro_Exterior · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/retro_Exterior.png",
-      "path": "assets/easyrpg/chipset/retro_Exterior.png",
-      "fileName": "retro_Exterior.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-retro-world",
-      "name": "retro_World · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/retro_World.png",
-      "path": "assets/easyrpg/chipset/retro_World.png",
-      "fileName": "retro_World.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-ship",
-      "name": "Ship · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/Ship.png",
-      "path": "assets/easyrpg/chipset/Ship.png",
-      "fileName": "Ship.png"
-    },
-    {
-      "category": "chipset",
-      "id": "easyrpg-chipset-world",
-      "name": "World · 타일 그림판 · EasyRPG",
-      "sourcePath": "ChipSet/World.png",
-      "path": "assets/easyrpg/chipset/World.png",
-      "fileName": "World.png"
-    },
-    {
       "category": "faceset",
       "id": "easyrpg-faceset-actor1",
       "name": "Actor1 · 얼굴 그림 · EasyRPG",
@@ -285,14 +213,6 @@
       "sourcePath": "FaceSet/People2.png",
       "path": "assets/easyrpg/faceset/People2.png",
       "fileName": "People2.png"
-    },
-    {
-      "category": "gameOver",
-      "id": "easyrpg-game-over-game-over",
-      "name": "Game Over · 게임오버 화면 · EasyRPG",
-      "sourcePath": "GameOver/Game Over.png",
-      "path": "assets/easyrpg/game-over/Game Over.png",
-      "fileName": "Game Over.png"
     },
     {
       "category": "music",
@@ -533,118 +453,6 @@
       "sourcePath": "Music/Vehicle 1.mid",
       "path": "assets/easyrpg/music/Vehicle 1.mid",
       "fileName": "Vehicle 1.mid"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-cosmos1",
-      "name": "Cosmos1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Cosmos1.png",
-      "path": "assets/easyrpg/backdrop/Cosmos1.png",
-      "fileName": "Cosmos1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-dawn1",
-      "name": "Dawn1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Dawn1.png",
-      "path": "assets/easyrpg/backdrop/Dawn1.png",
-      "fileName": "Dawn1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-dawn2",
-      "name": "Dawn2 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Dawn2.png",
-      "path": "assets/easyrpg/backdrop/Dawn2.png",
-      "fileName": "Dawn2.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-dimension-rift",
-      "name": "Dimension Rift · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Dimension Rift.png",
-      "path": "assets/easyrpg/backdrop/Dimension Rift.png",
-      "fileName": "Dimension Rift.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-night-sky1",
-      "name": "Night Sky1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Night Sky1.png",
-      "path": "assets/easyrpg/backdrop/Night Sky1.png",
-      "fileName": "Night Sky1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-night-sky2",
-      "name": "Night Sky2 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Night Sky2.png",
-      "path": "assets/easyrpg/backdrop/Night Sky2.png",
-      "fileName": "Night Sky2.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-planet1",
-      "name": "Planet1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Planet1.png",
-      "path": "assets/easyrpg/backdrop/Planet1.png",
-      "fileName": "Planet1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-planet2",
-      "name": "Planet2 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Planet2.png",
-      "path": "assets/easyrpg/backdrop/Planet2.png",
-      "fileName": "Planet2.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-planet3",
-      "name": "Planet3 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Planet3.png",
-      "path": "assets/easyrpg/backdrop/Planet3.png",
-      "fileName": "Planet3.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-sky1",
-      "name": "Sky1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Sky1.png",
-      "path": "assets/easyrpg/backdrop/Sky1.png",
-      "fileName": "Sky1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-sky2",
-      "name": "Sky2 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Sky2.png",
-      "path": "assets/easyrpg/backdrop/Sky2.png",
-      "fileName": "Sky2.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-sunset1",
-      "name": "Sunset1 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Sunset1.png",
-      "path": "assets/easyrpg/backdrop/Sunset1.png",
-      "fileName": "Sunset1.png"
-    },
-    {
-      "category": "backdrop",
-      "id": "easyrpg-backdrop-sunset2",
-      "name": "Sunset2 · 배경 그림 · EasyRPG",
-      "sourcePath": "Panorama/Sunset2.png",
-      "path": "assets/easyrpg/backdrop/Sunset2.png",
-      "fileName": "Sunset2.png"
-    },
-    {
-      "category": "picture",
-      "id": "easyrpg-picture-cloud",
-      "name": "Cloud · 그림 · EasyRPG",
-      "sourcePath": "Picture/Cloud.png",
-      "path": "assets/easyrpg/picture/Cloud.png",
-      "fileName": "Cloud.png"
     },
     {
       "category": "sound",
@@ -1413,102 +1221,6 @@
       "sourcePath": "Sound/Wind8.wav",
       "path": "assets/easyrpg/sound/Wind8.wav",
       "fileName": "Wind8.wav"
-    },
-    {
-      "category": "system",
-      "id": "easyrpg-system-royal",
-      "name": "Royal · 시스템 그림 · EasyRPG",
-      "sourcePath": "System/Royal.png",
-      "path": "assets/easyrpg/system/Royal.png",
-      "fileName": "Royal.png"
-    },
-    {
-      "category": "system",
-      "id": "easyrpg-system-system",
-      "name": "System · 시스템 그림 · EasyRPG",
-      "sourcePath": "System/System.png",
-      "path": "assets/easyrpg/system/System.png",
-      "fileName": "System.png"
-    },
-    {
-      "category": "system",
-      "id": "easyrpg-system-system-a",
-      "name": "SystemA · 시스템 그림 · EasyRPG",
-      "sourcePath": "System/SystemA.png",
-      "path": "assets/easyrpg/system/SystemA.png",
-      "fileName": "SystemA.png"
-    },
-    {
-      "category": "system",
-      "id": "easyrpg-system-system-b",
-      "name": "SystemB · 시스템 그림 · EasyRPG",
-      "sourcePath": "System/SystemB.png",
-      "path": "assets/easyrpg/system/SystemB.png",
-      "fileName": "SystemB.png"
-    },
-    {
-      "category": "system",
-      "id": "easyrpg-system-system-c",
-      "name": "SystemC · 시스템 그림 · EasyRPG",
-      "sourcePath": "System/SystemC.png",
-      "path": "assets/easyrpg/system/SystemC.png",
-      "fileName": "SystemC.png"
-    },
-    {
-      "category": "system2",
-      "id": "easyrpg-system2-system2-a",
-      "name": "System2A · 시스템 그림 2 · EasyRPG",
-      "sourcePath": "System2/System2A.png",
-      "path": "assets/easyrpg/system2/System2A.png",
-      "fileName": "System2A.png"
-    },
-    {
-      "category": "system2",
-      "id": "easyrpg-system2-system2-b",
-      "name": "System2B · 시스템 그림 2 · EasyRPG",
-      "sourcePath": "System2/System2B.png",
-      "path": "assets/easyrpg/system2/System2B.png",
-      "fileName": "System2B.png"
-    },
-    {
-      "category": "system2",
-      "id": "easyrpg-system2-system2-c",
-      "name": "System2C · 시스템 그림 2 · EasyRPG",
-      "sourcePath": "System2/System2C.png",
-      "path": "assets/easyrpg/system2/System2C.png",
-      "fileName": "System2C.png"
-    },
-    {
-      "category": "title",
-      "id": "easyrpg-title-title1",
-      "name": "Title1 · 타이틀 화면 · EasyRPG",
-      "sourcePath": "Title/Title1.png",
-      "path": "assets/easyrpg/title/Title1.png",
-      "fileName": "Title1.png"
-    },
-    {
-      "category": "title",
-      "id": "easyrpg-title-title2",
-      "name": "Title2 · 타이틀 화면 · EasyRPG",
-      "sourcePath": "Title/Title2.png",
-      "path": "assets/easyrpg/title/Title2.png",
-      "fileName": "Title2.png"
-    },
-    {
-      "category": "title",
-      "id": "easyrpg-title-title3",
-      "name": "Title3 · 타이틀 화면 · EasyRPG",
-      "sourcePath": "Title/Title3.png",
-      "path": "assets/easyrpg/title/Title3.png",
-      "fileName": "Title3.png"
-    },
-    {
-      "category": "title",
-      "id": "easyrpg-title-title4",
-      "name": "Title4 · 타이틀 화면 · EasyRPG",
-      "sourcePath": "Title/Title4.png",
-      "path": "assets/easyrpg/title/Title4.png",
-      "fileName": "Title4.png"
     }
   ]
 }

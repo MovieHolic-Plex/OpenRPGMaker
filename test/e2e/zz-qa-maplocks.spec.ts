@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { serialize } from "@/project/io";
 
 // Adversarial QA for the map-edit-lock fix: scratch sessions (remotePersistenceEnabled=false)
@@ -46,7 +46,7 @@ test("C1: scratch session (freshProject=1) never requests map locks, even with L
 test("C2: remote-enabled session still acquires a map lock", async ({ page }) => {
   test.setTimeout(60_000);
   const lockRequests: string[] = [];
-  const canonicalProject = JSON.parse(serialize(createHouseTemplateGalleryProject()));
+  const canonicalProject = JSON.parse(serialize(createScarloxyDemoProject()));
 
   await page.route("http://dbserver:8100/rest/v1/**", async (route) => {
     const url = route.request().url();

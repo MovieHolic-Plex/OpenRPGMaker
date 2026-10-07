@@ -35,10 +35,9 @@ export const STUDIO_MODE_KEY = "oprn:ai-studio";
 
 export const MAP_TILE_TOOLS = new Set([
   "design_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof",
-  "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",
+  "paint_tiles", "paint_road", "scatter_object", "build_house", "clear_region", "resize_map",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase",
-  "author_house", "author_village",
   "stamp_layer_block", "paint_shadow",
 ]);
 

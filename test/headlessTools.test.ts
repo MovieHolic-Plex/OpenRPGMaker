@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { allTools } from "@/editor/tools/toolRegistry";
-import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
-import { EMBER_WALKTHROUGH } from "@/testing/emberWalkthrough";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import {
   isHeadlessPackagePath,
   listHeadlessMcpTools,
@@ -13,7 +12,7 @@ import {
 
 describe("headless tool runner", () => {
   it("loads project JSON through deserialize validation", () => {
-    const project = createEmberQuestProject();
+    const project = createScarloxyDemoProject();
     const loaded = loadHeadlessProject(JSON.stringify(project));
     expect(loaded.meta.title).toBe(project.meta.title);
     expect(Object.keys(loaded.maps)).toEqual(Object.keys(project.maps));
@@ -54,24 +53,8 @@ describe("headless tool runner", () => {
     }
   });
 
-  it("runs read tools against a fixture project", () => {
-    const project = createEmberQuestProject();
-    const summary = runHeadlessTool(project, "get_project_summary", {});
-    expect(summary.ok).toBe(true);
-    expect(summary.summary).toContain(project.meta.title);
-    expect(summary.data).toMatchObject({ title: project.meta.title, startMapId: project.startMapId });
-
-    const walkthrough = runHeadlessTool(project, "play_walkthrough", {
-      scenario: EMBER_WALKTHROUGH,
-      seed: 20260704,
-    });
-    expect(walkthrough.ok).toBe(true);
-    expect(walkthrough.summary).toContain("완주 성공");
-    expect(walkthrough.data).toMatchObject({ ok: true, reachedEnding: true });
-  });
-
   it("runs write tools as dry-run diff only and preserves the original project", () => {
-    const project = createEmberQuestProject();
+    const project = createScarloxyDemoProject();
     const before = JSON.stringify(project);
     const result = runHeadlessTool(project, "create_map", { name: "헤드리스 실험", width: 12, height: 10 });
 

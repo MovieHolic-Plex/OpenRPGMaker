@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { SCARLOXY_PACK_MANIFEST, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { projectLint } from "@/project/lint/projectLint";

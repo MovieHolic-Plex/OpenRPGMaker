@@ -9,7 +9,7 @@ import { applySkillLike, computeGen1BaseDamage, GEN1_RANDOM_MAX, GEN1_RANDOM_MIN
 import type { MutableBattler } from "@/battle/battleBattlers";
 import { predictSkillDamage } from "@/battle/battlePredict";
 import { computeEnemyTuning, simulateBattle } from "@/battle/simulate";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import type { BattleBattlerSnapshot } from "@/battle/types";
 import type { Project } from "@/project/types";
 

@@ -1,6 +1,0 @@
-# SA-Carpet06.png 3x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  
-   0 #o #r #o 
-   1 #o #r #o 
-   2 #r #r #r 
-   3 #o #r #o 

@@ -1,9 +1,0 @@
-RUN  v3.2.4 /home/main/z-project/rpg-zzu-village-design-db
-
- ✓ test/villageBuilder.test.ts (33 tests | 32 skipped) 9976ms
-   ✓ build_village > 스케치가 이긴 집 배치는 격자 열에 서지 않는다  9973ms
-
- Test Files  1 passed (1)
-      Tests  1 passed | 32 skipped (33)
-   Start at  16:52:26
-   Duration  28.53s (transform 12.59s, setup 0ms, collect 17.61s, tests 9.98s, environment 0ms, prepare 277ms)

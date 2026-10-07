@@ -1,5 +1,4 @@
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
-import { isDungeonSheetTilesetId } from "@/project/defaults/dungeonSheetTilesets";
 import { referenceManifest, referenceOwner, referencePage, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { ToolError, type ToolDefinition } from "./types";
 import type { Project } from '@/project/types';
@@ -30,16 +29,13 @@ export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_ti
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "stamp_worldmap_icon",
   "design_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof",
-  "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object", "build_pack_town",
+  "stamp_tileset_object",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "move_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map", "build_shared_scene",
-  "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
+  "paint_tiles", "paint_road", "build_house", "clear_region",
   "fill_region", "tile_erase", "stamp_layer_block", "paint_shadow", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
   "make_hunting_ground", "create_farm_plot", "apply_spatial_build", "edit_spatial_occurrence",
-  "author_world_bridge", "author_world_mountain", "arrange_rows", "generate_map", "build_castle", "place_concept",
-  "start_interior_room_session", "advance_interior_room_build", "run_interior_room_pipeline", "furnish_interior_space",
-  "start_dungeon_room_session", "advance_dungeon_room_build", "run_dungeon_room_pipeline",
-  "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
-  "arrange_tall_grass", "author_beodeul_town", "build_concept_example", "furnish_outdoor_area",
+  "author_world_bridge", "author_world_mountain", "arrange_rows", "generate_map",
+  "author_beodeul_town", "build_concept_example", "furnish_outdoor_area",
   "dress_beodeul_ground", "harmonize_beodeul_daylight", "naturalize_beodeul_hamlet", "compose_beodeul_courtyard_village", "refine_beodeul_courtyard_vegetation",
   'refine_beodeul_village',
 ]);
@@ -56,7 +52,7 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
  */
 export const TILESET_REFERENCE_TILE_CHOOSERS: ReadonlySet<string> = new Set([
   "paint_tiles", "fill_region", "build_wall", "place_door", "place_window", "build_roof", "lay_path", "place_props", "arrange_rows",
-  "paint_road", "stamp_structure", "build_house", "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object",
+  "paint_road", "build_house", "stamp_tileset_object",
   // MZ 4층: 모델이 층별 번호 배열·그림자 조각을 직접 고른다.
   "stamp_layer_block", "paint_shadow",
 ]);
@@ -158,7 +154,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
       if (args.documentId === undefined && args.imageId === undefined && (args.offset === 0 || args.offset === null)) args = { ...args, offset: undefined };
       const tileset = project.tilesets[String(args.tilesetId)];
       if (isRetiredInteriorTileset(String(args.tilesetId), tileset)) throw new ToolError(retiredInteriorMessage(String(args.tilesetId)), { code: "retired-interior-tileset" });
-      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.${isDungeonSheetTilesetId(String(args.tilesetId)) ? " 던전 재칠 시트의 문서는 easyrpg_chipset_dungeon 에 있다(같은 칸 번호) — 그 tilesetId 로 읽고, 맵은 create_map({tilesetId:'" + String(args.tilesetId) + "'}) 로 만들면 타일셋이 자동으로 생긴다." : ""}`);
+      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.`);
       const owner = referenceOwner(project, tileset);
       const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
       if (!group) throw new ToolError(unknownIdMessage("용도 categoryId", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)).replace("이 용도의 ", `타일셋 ${tileset.id} 의 `));

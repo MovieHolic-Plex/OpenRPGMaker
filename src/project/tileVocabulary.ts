@@ -521,11 +521,11 @@ export function resolveMaterialByLabel(
 function notFillableRoute(role: string | undefined): string {
   switch (role) {
     case "wall":
-      return " 벽이면 build_wall(material 에 이 라벨)로 선을 긋고, 방이 나뉜 실내 전체면 place_concept(plan, 새 mapId)로 지으세요.";
+      return " 벽이면 build_wall(material 에 이 라벨)로 선을 긋고, 방이 나뉜 실내 전체면 build_hand_interior_room 으로 지으세요.";
     case "building":
     case "castle":
     case "roof":
-      return " 건물이면 author_house(외장+실내) 또는 place_concept(실내)로 지으세요.";
+      return " 건물이면 stamp_object(건물 킷) 또는 build_hand_interior_room(실내)로 지으세요.";
     case "furniture":
     case "prop":
     case "decor":

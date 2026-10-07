@@ -1,9 +1,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
-import { createEmberQuestProject } from '../../../project/defaults/emberQuestGame';
+import { createCapabilityFixtureProject } from './capabilityFixture';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
-import { COMBINED_TOWN_TILESET_ID, TILE } from '../../../project/defaults/constants';
+import { DEFAULT_TILESET_ID, TILE } from '../../../project/defaults/constants';
 import { runTool } from '../../../editor/tools/toolRunner';
 import { runSceneTest } from '../../../testing/sceneTestRunner';
 import { buildPiAgentSystemPrompt } from '../../../ai/piAgent/systemPrompt';
@@ -15,9 +15,9 @@ export function checkTools(root: string): number {
   const checks: { id: string; ok: boolean; detail?: string }[] = [];
   const record = (id: string, ok: boolean, detail?: string) => checks.push({ id, ok, detail });
   const make = () => {
-    const project = createEmberQuestProject();
+    const project = createCapabilityFixtureProject();
     const original = project.maps[project.startMapId]!;
-    const map = createBlankMap('control', 24, 18, COMBINED_TOWN_TILESET_ID);
+    const map = createBlankMap('control', 24, 18, DEFAULT_TILESET_ID);
     map.id = project.startMapId;
     map.events = [structuredClone(original.events.find(e => e.id === 'ev_ember_child')!)];
     map.events[0]!.x = 8; map.events[0]!.y = 7;
@@ -48,7 +48,8 @@ export function checkTools(root: string): number {
     const result = runTool(ctx, 'paint_tiles', { mapId: ctx.project.startMapId, layer: 'lower', mode: 'cells', tile: 290, cells: [{ x: 5, y: 5 }] }, { dryRun });
     record(`paint:${dryRun}:executes`, result.ok, result.summary);
     record(`paint:${dryRun}:other-maps-preserved`, Object.entries(before.maps).filter(([id]) => id !== before.startMapId).every(([id, map]) => isDeepStrictEqual(map, ctx.project.maps[id])));
-    record(`paint:${dryRun}:repair-or-dryrun`, dryRun ? isDeepStrictEqual(before, ctx.project) : ctx.project.maps[before.startMapId]!.upperTiles[4 * 24 + 5] === 260);
+    // 합본 마을 칩셋의 290→260 윗층 자동 보정 검사는 칩셋과 함께 지웠다(2026-10-07).
+    if (dryRun) record(`paint:${dryRun}:dryrun-unchanged`, isDeepStrictEqual(before, ctx.project));
   }
   for (const cancelBehavior of ['branch', 'choice1', 'choice2', 'disallow', 'choice5', undefined] as const) {
     const ctx = make(), map = ctx.project.maps[ctx.project.startMapId]!;
@@ -75,7 +76,7 @@ export function checkTools(root: string): number {
 
 /** A strict follow-up audit, not a success calibration or model trial. */
 export function discoverTools(root: string): number {
-  const project=createEmberQuestProject(),map=createBlankMap('scope sentinel',24,18,COMBINED_TOWN_TILESET_ID);
+  const project=createCapabilityFixtureProject(),map=createBlankMap('scope sentinel',24,18,DEFAULT_TILESET_ID);
   map.id=project.startMapId;project.maps[map.id]=map;
   map.lowerTiles[3*map.width+3]=290;
   map.upperTiles[2*map.width+3]=TILE.EMPTY;

@@ -1,8 +1,0 @@
-# sakura2.png 6x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  
-   0 .  ~G +G +G ~G .  
-   1 ~G #G #G #G #G ~c 
-   2 +G #G #G #G #G +G 
-   3 ~G #G #G #G #G ~G 
-   4 ~k #k #k #k #k ~k 
-   5 .  ~k ~k ~k ~k .  

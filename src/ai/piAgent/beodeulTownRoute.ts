@@ -4,7 +4,7 @@
 // packTownRoute 와 같은 모양이다 — 노트를 갈아 끼우고, author_village 전용 마을 계약을 건너뛴다.
 
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import type { Project } from "@/project/types";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
 

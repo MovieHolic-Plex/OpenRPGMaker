@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { MapId, Project } from "@/project/types";
 

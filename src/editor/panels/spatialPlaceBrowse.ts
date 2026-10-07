@@ -280,10 +280,6 @@ function detailCopy(card: SpatialGalleryCard, titleId: string, actions: PlaceBro
       }),
     ] }),
     ...(subtitle ? [el("p", { class: "spatial-place-detail-sub", text: subtitle })] : []),
-    ...(card.compatibility === "house-shape" ? [el("p", {
-      class: "spatial-place-detail-note",
-      text: "건물 외형 도안입니다. 그림의 층수만으로 실내나 계단이 만들어지지는 않습니다.",
-    })] : []),
     el("dl", {
       class: "spatial-place-detail-facts",
       children: facts.flatMap((fact) => [

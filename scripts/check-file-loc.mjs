@@ -11,7 +11,6 @@ const HARD_CEILING = 1000;
 const WARN_THRESHOLD = 500;
 
 const ALLOWLIST = new Set([
-  "src/editor/content/largeRiverMarketVillageBuild.ts",
   "src/editor/interiorRoomPipeline.ts",
   "src/editor/panels/aiChatPanel.ts",
   "src/ai/assistantSession.ts",
@@ -20,14 +19,12 @@ const ALLOWLIST = new Set([
   "src/testing/sceneTestRunner.ts",
   "src/project/defaults/defaultDatabaseItemRecords.ts",
   "src/editor/panels/eventEditor/commandBodyDatabase.ts",
-  "src/editor/tools/village/builder.ts",
   "src/editor/panels/eventEditor/commandBodyCommerce.ts",
   "src/editor/EditScene.ts",
   "src/editor/panels/eventEditor/commandBodyAdvanced.ts",
   "src/battle/runtime.ts",
   "src/editor/tools/mapTools.ts",
   "src/editor/panels/eventEditor/commandBodyPage3Native.ts",
-  "src/editor/tools/villageSession.ts",
   "src/editor/panels/eventEditor/commandPreview.ts",
   "src/editor/panels/eventEditor/commandBodyM2Actor.ts",
   "src/editor/panels/eventEditor/commandSummary.ts",

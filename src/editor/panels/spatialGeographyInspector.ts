@@ -1,7 +1,6 @@
 import type { GeographyView } from "@/editor/panels/spatialGeographyCanvas";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
-  createSettlementRegion,
   geographyDeletePreview,
   mutateWorkingGeography,
   viewableGeography,
@@ -12,8 +11,6 @@ import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor
 import { worldCrossingPoints } from "@/editor/panels/spatialGeographyGeometry";
 import { geographyViewChildren } from "@/editor/panels/spatialGeographyQuery";
 import { openSelectedChild } from "@/editor/panels/spatialGeographyNavigate";
-import { selectVillagePresetDesign } from "./databaseVillageView";
-import { rememberLegacySpatialRoute } from "./spatialAuthoringSession";
 import { el } from "@/util/dom";
 
 import { spatialReferenceDocuments } from './spatialReferenceDocuments';
@@ -38,22 +35,7 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
           : []),
       ],
     }));
-    // 마을 설계서 카드 — 지역 설계가 아니라 레시피이므로 정주지 지역으로 승격하는 액션을 단다.
-    if (kind === "region" && card.regionKind === "settlement" && !card.canonicalSource && card.localId) {
-      body.push(el("button", {
-        class: "spatial-open-child",
-        text: "마을 설계서 편집",
-        attrs: { type: "button" },
-        dataset: { testid: "spatial-settlement-edit-preset" },
-        on: { click: () => { selectVillagePresetDesign(card.localId!); rememberLegacySpatialRoute("villages"); rerender(); } },
-      }), el("button", {
-        class: "spatial-open-child",
-        text: "정주지 지역 만들기",
-        attrs: { type: "button" },
-        dataset: { testid: "spatial-settlement-create" },
-        on: { click: () => createSettlementRegion(card, rerender) },
-      }));
-    }
+    // 마을 설계서 → 정주지 지역 승격(마을 설계서 편집·정주지 지역 만들기)은 숲마을 시공기와 함께 2026-10-07 지웠다.
   }
   if (design) {
     body.push(el("p", {

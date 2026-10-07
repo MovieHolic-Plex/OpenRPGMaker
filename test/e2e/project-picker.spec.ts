@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { serialize } from "@/project/io";
 
 const STORAGE_KEY = "oprn:legacyDb-project-config";
@@ -17,7 +17,7 @@ test("toolbar load shows beginner project cards and opens the selected work", as
   await page.addInitScript(({ key, value }) => {
     window.localStorage.setItem(key, JSON.stringify(value));
   }, { key: STORAGE_KEY, value: TEST_CONFIG });
-  const canonicalProject = JSON.parse(serialize(createHouseTemplateGalleryProject()));
+  const canonicalProject = JSON.parse(serialize(createScarloxyDemoProject()));
   let showEmptyList = false;
 
   await page.route(/http:\/\/dbserver:8100\/rest\/v1\/(?:maps|tilesets)/u, (route) =>
@@ -94,7 +94,7 @@ test("first boot asks for a work choice without exposing connection jargon", asy
   await page.addInitScript(({ key, value }) => {
     window.localStorage.setItem(key, JSON.stringify(value));
   }, { key: STORAGE_KEY, value: TEST_CONFIG });
-  const canonicalProject = JSON.parse(serialize(createHouseTemplateGalleryProject()));
+  const canonicalProject = JSON.parse(serialize(createScarloxyDemoProject()));
   await page.route(/http:\/\/dbserver:8100\/rest\/v1\/(?:maps|tilesets)/u, (route) =>
     route.fulfill({ contentType: "application/json", status: 200, body: "[]" })
   );

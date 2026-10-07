@@ -114,10 +114,10 @@ function addRoundRobin<T>(
 const PROMPT_SE_HEAD_IDS = [
   "cc0-se-osx-wooded-box-open",
   "cc0-se-orp-inventory-coin",
-  "cc0-se-kjg-8-bit-jingles-jingles-nes09",
-  "cc0-se-kra-dooropen-1",
-  "cc0-se-kra-doorclose-1",
-  "cc0-se-kis-footstep-wood-000",
+  "cc0-se-osx-bell-01",
+  "cc0-se-osx-door-open",
+  "cc0-se-osx-door-close-01",
+  "cc0-se-ors-wood-01",
 ] as const;
 
 function collect(

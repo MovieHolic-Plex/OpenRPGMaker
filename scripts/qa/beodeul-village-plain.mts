@@ -93,7 +93,7 @@ const here = currentMapId && project.maps[currentMapId] ? { currentMapId } : {};
 const modelTask = composePiTask(command.task, classified.intentNote);
 fs.writeFileSync(`${OUT}/classification.json`, JSON.stringify({ intent: (classified as any).intent, plan, initialToolNames: classified.initialToolNames, intentNote: classified.intentNote, before }, null, 2));
 const request = buildPiRunRequest({
-  team: false, planOnly: plan.planOnly, readOnly, applyMode, villageContract: plan.villageContract,
+  team: false, planOnly: plan.planOnly, readOnly, applyMode,
   brain, deep: modelForRole(config, "deep"), writer: modelForRole(config, "writer"), modelTask, executionTask: modelTask,
   mapIds: command.mapIds, ...here, project, scopedByUser: false, mapBundleMerge: false, maxTurns: Number(arg("max-turns", String(Math.max(plan.maxTurns ?? 0, 100)))),
   ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
@@ -138,7 +138,7 @@ const byTool = Object.fromEntries([...new Set(trace.map((t) => t.name))].map((n)
 let blank = 0; for (let i = 0; i < target.width * target.height; i += 1) if ((target.lowerTiles[i] ?? -1) < 0 && (target.upperTiles[i] ?? -1) < 0) blank += 1;
 const summary = { label, round, text, model: `${provider}/${modelId}`, projectDir, ms, before, afterMaps: Object.fromEntries(Object.values(reloaded.maps).map((m) => [m.id, m.tilesetId])),
   target: { id: target.id, size: [target.width, target.height], tilesetId: target.tilesetId }, blankCellRatioRaw: +(blank / (target.width * target.height)).toFixed(4),
-  exposedTools: classified.initialToolNames?.length, villageContract: Boolean(plan.villageContract), toolCalls: trace.length, failed: trace.filter((t) => !t.ok).length, byTool, stats: done.stats, metrics,
+  exposedTools: classified.initialToolNames?.length, toolCalls: trace.length, failed: trace.filter((t) => !t.ok).length, byTool, stats: done.stats, metrics,
   finalText: log.filter((l) => l.startsWith("assistant:")).slice(-1)[0] ?? "" };
 fs.writeFileSync(`${OUT}/trace.json`, JSON.stringify(trace, null, 1));
 fs.writeFileSync(`${OUT}/log.txt`, log.join("\n") + "\n");

@@ -1,9 +1,0 @@
-# SC-SantaF01.png 4x7 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  
-   0 +o +o +o +o 
-   1 ~r ~r ~r ~r 
-   2 +o +o +o +o 
-   3 ~r ~r ~r ~r 
-   4 +o +o +o +o 
-   5 ~r ~r ~r ~r 
-   6 +o +o +o +o 

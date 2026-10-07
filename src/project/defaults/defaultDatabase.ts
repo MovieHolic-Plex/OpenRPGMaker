@@ -198,8 +198,7 @@ export function defaultSystem(newProject = false): SystemRecords {
     titleResourceId: "oprn-title-field",
     // CSS-ready 9-slice windowskin. EasyRPG System/*.png is a chrome sheet (orange key + icons), not a windowskin.
     systemResourceId: "windowskin-warm",
-    // System2 stays as gauge/number chrome only — never used as border-image fill.
-    battleSystemResourceId: "easyrpg-system2-system2-c",
+    // System2(전투 게이지 그림)는 EasyRPG 시트였고 저작권 정리(2026-10-07)로 지웠다 — 기본값을 두지 않는다.
     // EasyRPG RTP 음악 30곡은 전부 .mid 다 — 브라우저 HTMLAudioElement 는 MIDI 를 재생하지 못한다.
     // 그래서 easyrpg-music-* 을 기본값으로 두면 게임이 무음으로 돌아간다(실측). CC0 mp3/ogg 를 쓴다.
     //

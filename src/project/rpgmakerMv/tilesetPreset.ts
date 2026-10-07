@@ -13,7 +13,6 @@ import type {
 } from "../types";
 import type { TilesetReferenceCategory, TilesetReferenceImage } from "../tilesetReferences";
 import { autotileNeighborMask } from "../defaults/autotileEngine";
-import { paintAuto, stampKit } from "./packPaint";
 import { autotileVariantMap, quarterTable } from "./autotile";
 import { bakeMvAtlas, tileOpacity, type RgbaImage } from "./bake";
 import { drawNumber } from "./digitFont";
@@ -274,41 +273,14 @@ function plainWallMap(preset: MvPackPreset, index: ReturnType<typeof mvTileIndex
 
 // ───────────────────────── 예시 블록 ─────────────────────────
 
-/** 참고문서 예시: 가로 차도 + 보도 + 붉은 벽돌 가게 + 회색 사무실 + 공원 한 귀퉁이. 22×15. */
-function buildExampleBlock(tileset: TilesetDef, preset: MvPackPreset): MvPackExampleMap {
+/**
+ * 참고문서 예시 블록. Rasak Modern City 전용 예시(차도·벽돌 가게)는 2026-10-07 저작권 정리로 프리셋과 함께 지웠다 —
+ * 지금은 모든 팩이 빈 블록을 받는다(참고문서는 예시 그림 없이 나간다).
+ */
+function buildExampleBlock(_tileset: TilesetDef, _preset: MvPackPreset): MvPackExampleMap {
   const width = 22;
   const height = 15;
-  const map: MvPackExampleMap = { width, height, lowerTiles: new Array(width * height).fill(-1), upperTiles: new Array(width * height).fill(-1) };
-  if (preset.id !== "rasak-modern-city") return map;
-  paintAuto(tileset, map, "회색 콘크리트 보도", 0, 0, width, height);
-  // 건물 두 채를 층 띠로 쌓는다(작가 모텔·유리 상가): 옥상 2줄 → 창 난 위층 3줄(=3개 층) → 창 없는 1층 1줄.
-  paintAuto(tileset, map, "짙은 옥상(붉은 벽돌 테두리)", 1, 0, 8, 2);
-  paintAuto(tileset, map, "붉은 벽돌 외벽 창문", 1, 2, 8, 3);
-  paintAuto(tileset, map, "붉은 벽돌 외벽", 1, 5, 8, 1);
-  paintAuto(tileset, map, "회색 옥상", 11, 0, 9, 2);
-  paintAuto(tileset, map, "회색 외벽 유리창 줄", 11, 2, 9, 2);
-  paintAuto(tileset, map, "회색 유리 상가 외벽", 11, 4, 9, 2);
-  // 차도 5줄 + 중앙선.
-  paintAuto(tileset, map, "아스팔트 차도", 0, 8, width, 5);
-  paintAuto(tileset, map, "잔디", 0, 13, 7, 2);
-  // 차양은 문 윗칸 줄(4행), 문은 맨 아래 줄(5행)이 밑. 차양 줄무늬가 문 윗칸을 덮는다.
-  stampKit(tileset, map, "glass_door_bright", 4, 4);
-  stampKit(tileset, map, "awning_red", 3, 4, { keepDoors: true });
-  stampKit(tileset, map, "metal_door", 15, 4);
-  stampKit(tileset, map, "satellite_dish", 16, 0);
-  for (let x = 0; x < width; x += 2) stampKit(tileset, map, "lane_line_horizontal", x, 10);
-  for (let y = 8; y < 13; y += 1) stampKit(tileset, map, "crosswalk_for_horizontal_road", 9, y);
-  for (let y = 8; y < 13; y += 1) stampKit(tileset, map, "crosswalk_for_horizontal_road", 10, y);
-  // 보도가 2줄이라 1×3 가로등은 건물 사이 틈(9~10열)·끝(21열)에 세운다 — 건물 앞에 세우면 머리가 외벽 창을 가린다.
-  stampKit(tileset, map, "street_lamp_left", 9, 5);
-  stampKit(tileset, map, "street_lamp_left", 21, 5);
-  stampKit(tileset, map, "trash_can", 7, 6);
-  stampKit(tileset, map, "vending_soda", 20, 6);
-  stampKit(tileset, map, "fire_hydrant", 18, 7);
-  stampKit(tileset, map, "park_bench", 3, 13);
-  stampKit(tileset, map, "cone_tree", 1, 13);
-  stampKit(tileset, map, "cone_tree", 5, 13);
-  return map;
+  return { width, height, lowerTiles: new Array(width * height).fill(-1), upperTiles: new Array(width * height).fill(-1) };
 }
 
 // ───────────────────────── 참고문서 ─────────────────────────

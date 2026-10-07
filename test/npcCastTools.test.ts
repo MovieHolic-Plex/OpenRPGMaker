@@ -6,77 +6,12 @@
 // 나온 이유다. 여기서는 생성 코드의 그 문구가 전부 사라졌음을 고정한다.
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { getTool } from "@/editor/tools/toolRegistry";
-import { AUTHOR_VILLAGE_TOOL } from "@/editor/tools/authorVillageTool";
 import { createBlankProject } from "@/project/defaults";
-import type { Command, GameEvent, Project } from "@/project/types";
-import { createExistingProject, EXISTING_TARGET, runFacade } from "./authorVillageFacadeFixtures";
-
-const CANNED = [
-  "소라가 아침마다 우물가를 챙겨 줘요.",
-  "안녕하세요.",
-  "집에서 쉬는 중이야.",
-  "일하는 중이야.",
-  "고마워. 이제 더 이야기할 수 있겠어.",
-  "또 와줘서 기뻐.",
-  "성채에 오신 것을 환영하오.",
-];
+import type { Command, GameEvent } from "@/project/types";
 
 function textBodies(event: GameEvent): string[] {
   return (event.pages ?? []).flatMap((page) => page.commands.filter((command): command is Extract<Command, { kind: "text" }> => command.kind === "text").map((command) => command.body));
 }
-
-function villageNpcs(project: Project, mapId: string): GameEvent[] {
-  return project.maps[mapId]!.events.filter((event) => event.id.startsWith("ev_village_"));
-}
-
-describe("author_village — 주민은 대사 없이 놓이고 residents 로만 대사가 들어온다", () => {
-  it("residents 없이 지으면 주민 페이지에 text 커맨드가 없고 '대사 없는 NPC' 경고가 난다", () => {
-    const project = createExistingProject();
-    const result = runFacade(project, {
-      target: EXISTING_TARGET,
-      houseCount: 2,
-      npcCount: 3,
-      countPolicy: "exact",
-      seed: 7,
-      interior: false,
-    });
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    const npcs = villageNpcs(project, "map_existing");
-    expect(npcs).toHaveLength(3);
-    for (const npc of npcs) expect(textBodies(npc)).toEqual([]);
-    const warnings = (result.diff?.warnings ?? []).join("\n");
-    expect(warnings).toContain("대사 없는 NPC: 3명");
-    for (const canned of CANNED) expect(JSON.stringify(project.maps.map_existing.events)).not.toContain(canned);
-  });
-
-  it("residents:[{name, role, lines}] 를 넘기면 그 이름·대사가 그대로 들어간다", () => {
-    const project = createExistingProject();
-    const result = runFacade(project, {
-      target: EXISTING_TARGET,
-      houseCount: 2,
-      npcCount: 2,
-      countPolicy: "exact",
-      seed: 7,
-      interior: false,
-      residents: [
-        { name: "은호", role: "어부", lines: ["다래 가게에 오늘 잡은 은어를 넘겼어요."] },
-        { name: "다래", role: "잡화점 주인", lines: ["은호가 잡아 온 은어가 오늘의 특산이에요."] },
-      ],
-    });
-    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
-    const npcs = villageNpcs(project, "map_existing");
-    expect(npcs.map((npc) => npc.pages?.[0]?.name).sort()).toEqual(["다래", "은호"]);
-    expect(npcs.flatMap(textBodies).sort()).toEqual(["다래 가게에 오늘 잡은 은어를 넘겼어요.", "은호가 잡아 온 은어가 오늘의 특산이에요."]);
-    expect((result.diff?.warnings ?? []).join("\n")).not.toContain("대사 없는 NPC");
-  });
-
-  it("스키마에 residents 가 선언되어 있다(모델이 직접 쓸 수 있는 자리)", () => {
-    const properties = AUTHOR_VILLAGE_TOOL.parameters.properties as Record<string, unknown>;
-    expect(properties.residents).toBeTruthy();
-    expect(getTool("author_npc_cast")).toBeDefined();
-  });
-});
 
 describe("make_villager / place_npc — 대사를 빼면 인사말을 대신 넣지 않는다", () => {
   it("dialogue 없는 make_villager 의 기본 페이지·활동 페이지는 text 커맨드가 없다", () => {
@@ -117,15 +52,6 @@ describe("make_villager / place_npc — 대사를 빼면 인사말을 대신 넣
     expect(authored.ok, authored.summary).toBe(true);
     const authoredEvent = ctx2.project.maps[map2.id]!.events.find((entry) => entry.pages?.[0]?.name === "마법사")!;
     expect(textBodies(authoredEvent)).toEqual(["기록을 찾고 있어.", "네가 도와줬으니 서고 열쇠를 맡기지.", "서고는 잘 쓰고 있나?"]);
-  });
-
-  it("build_castle 의 문지기·성주는 대사 없이 놓인다", () => {
-    const project = createBlankProject();
-    const result = getTool("build_castle")!.run(project, { id: "map_castle_unit", name: "유닛성채", width: 48, height: 40, seed: 99, npcs: true, path: false });
-    expect(result.summary).toMatch(/성채 시공/);
-    const npcs = project.maps.map_castle_unit!.events.filter((event) => (event.pages?.length ?? 0) > 0 && event.pages!.some((page) => page.graphic && !page.graphic.transparent));
-    expect(npcs.length).toBeGreaterThan(0);
-    for (const npc of npcs) expect(textBodies(npc)).toEqual([]);
   });
 });
 

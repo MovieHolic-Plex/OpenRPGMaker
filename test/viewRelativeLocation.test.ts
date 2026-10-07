@@ -8,8 +8,6 @@ import {
   viewportVisibleFrame,
 } from "@/ai/viewRelativeLocation";
 import { computeMapViewport } from "@/ai/mapViewportContext";
-import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
-import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 
 describe("parseSpatialPhrase", () => {
   it("reads 오른쪽 위 as the north-east corner of the view", () => {
@@ -107,24 +105,5 @@ describe("implicitSpecFromViewLocation", () => {
       title: "화면 기준 위치: 오른쪽 위",
       assets: [{ id: "위치 지시", kind: "prop", x: 20, y: 4, w: 10, h: 6 }],
     });
-  });
-});
-
-describe("village forest follows the spoken corner", () => {
-  it("does not default 오른쪽 위 forest to the river's opposite bank", () => {
-    const req = inferRequirementsFromQuery("마을 깔고, 오른쪽 위에 숲을깔라");
-    expect(req.landmarks).toContain("forest");
-    expect(req.forestAnchor).toEqual({ horizontal: "right", vertical: "top" });
-    expect(req.forestSide).toBe("east");
-  });
-
-  it("masks forest in the north-east of the build area, not a full east strip", () => {
-    const req = inferRequirementsFromQuery("오른쪽 위에 숲 있는 마을");
-    const masks = buildTerrainConstraintMasks({ width: 40, height: 24 }, req);
-    expect(masks.forestRects).toHaveLength(1);
-    const forest = masks.forestRects[0]!;
-    expect(forest.x).toBeGreaterThanOrEqual(20);
-    expect(forest.y).toBeLessThan(12);
-    expect(forest.y + forest.h).toBeLessThanOrEqual(12);
   });
 });

@@ -7,10 +7,8 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { isRetiredEasyRpgTileset } from "@/project/retiredEasyRpgTilesets";
-import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
-import { PLACE_REFERENCES } from "@/project/regionReferences";
 
 const START = "map_blank_start";
 
@@ -66,15 +64,6 @@ describe("조수 실행 차단", () => {
   it("조수 표시가 없는 실행(편집기 UI·스크립트)은 그대로", () => {
     const ctx: ToolContext = { project: createBlankProject(), currentMapId: START };
     expect(createMap(ctx, "forest_harmony").ok).toBe(true);
-  });
-
-  it("등록 장소 가져오기는 폐기 칩셋 위 장소여도 통과", async () => {
-    const place = PLACE_REFERENCES.find((p) => isRetiredEasyRpgTileset(createBlankProject(), String(p.tilesetId)));
-    expect(place, "폐기 칩셋 위 등록 장소가 하나는 있어야 한다").toBeDefined();
-    await preloadRegionReferenceScene(place!.id);
-    const ctx = assistant();
-    const result = runTool(ctx, "import_region_reference", { id: place!.id }, { dryRun: false });
-    expect(result.ok, result.summary).toBe(true);
   });
 
   it("EasyRPG 생성기는 조수에게 숨기고 실행은 남긴다", () => {

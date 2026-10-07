@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { warmBattleStyles } from "@/player/battleStyleWarmup";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { store } from "@/project/store";
 
 afterEach(() => { vi.restoreAllMocks(); document.body.replaceChildren(); });

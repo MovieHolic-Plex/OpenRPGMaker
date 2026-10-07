@@ -1,9 +1,0 @@
-# hanami.png 6x7 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  
-   0 +r #r +r .  .  .  
-   1 +r #r #r ~o +o ~G 
-   2 ~k +k +k ~g +o +o 
-   3 ~r ~r ~r +o ~o ~o 
-   4 #r #r #r ~o ~o ~o 
-   5 #r #r #r ~g +o +o 
-   6 +r +r +r +o +o +o 

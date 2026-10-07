@@ -25,7 +25,7 @@ export const CHEST_OPEN_SE = "cc0-se-osx-wooded-box-open";
 /** 「동전」 0.604s — 금화 입수. */
 export const LOOT_GOLD_SE = "cc0-se-orp-inventory-coin";
 /** 「8비트 징글 09 (상승)」 0.444s — 아이템 입수. */
-export const LOOT_ITEM_SE = "cc0-se-kjg-8-bit-jingles-jingles-nes09";
+export const LOOT_ITEM_SE = "cc0-se-osx-bell-01";
 
 export const LOOT_FEEDBACK_SE_IDS: readonly string[] = [CHEST_OPEN_SE, LOOT_GOLD_SE, LOOT_ITEM_SE];
 

@@ -1,4 +1,4 @@
-import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultToolTilesetId } from "@/project/defaults/outdoorTileset";
 import type { Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 

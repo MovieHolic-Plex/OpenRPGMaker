@@ -54,10 +54,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "rpg-zzu-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",
   "rpg-zzu-title-field": "/assets/generated/title/oprn-title-field.png",
-  "modern-nocturne-title": "/assets/modern-exteriors/modern-nocturne-title.png",
-  "modern-nocturne-logo": "/assets/modern-exteriors/modern-nocturne-logo.png",
-  "modern-nocturne-battle-city": "/assets/modern-exteriors/modern-nocturne-battle-city.png",
-  "modern-nocturne-battle-rooftop": "/assets/modern-exteriors/modern-nocturne-battle-rooftop.png",
   "oprn-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   "rpg-zzu-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   // ── 오프닝 무드 슬라이드 (2026-09-22) ─────────────────────────────────
@@ -189,9 +185,8 @@ export function resolveFacesetFaceAssetUrl(resourceId: string): string | null {
   return FACESET_FACE_RESOURCE_URLS[resourceId] ?? null;
 }
 
-const LEGACY_PACKAGED_RESOURCE_URLS: Record<string, string> = {
-  sample_title: "/assets/easyrpg/title/Title1.png",
-};
+// 옛 sample_title(EasyRPG Title1)은 2026-10-07 저작권 정리로 지웠다.
+const LEGACY_PACKAGED_RESOURCE_URLS: Record<string, string> = {};
 
 export type AssetResourceResolutionOptions = {
   readonly project?: Pick<Project, "assets">;

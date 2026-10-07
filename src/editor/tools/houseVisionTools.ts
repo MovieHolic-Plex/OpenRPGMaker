@@ -1,35 +1,24 @@
 // editor/tools/houseVisionTools.ts
 // look_at_houses — 깔아 놓은 집을 "눈으로" 보는 비전 툴.
 //
-// show_map_region 은 타일만 보여 준다. 모델이 "이 집들이 서로 다른가"를 판단하려면
-// 모양·킷·지붕색을 세어 줘야 한다(2026-08-31: author_house 가 같은 사각형만 깔던 결함).
-// 이 툴은 ① 픽셀 이미지(assistantSession VISION_TOOLS → toolImageRenderer)와
-// ② 모양/킷 집계 리포트를 한 번에 준다. 집을 깐 뒤 반드시 이걸로 확인하게 프롬프트가 요구한다.
+// show_map_region 은 타일만 보여 준다. 이 툴은 ① 픽셀 이미지(assistantSession VISION_TOOLS → toolImageRenderer)와
+// ② 실제로 놓인 건물 키트 집계를 한 번에 준다. 버들항(beodeul_city) 맵의 bd-house-* 키트를 되읽는다.
+// 합본 마을 집 모양 감지(houseVariety)는 그 칩셋과 함께 2026-10-07 저작권 정리로 지웠다.
 
 import type { GameMap, Project } from "@/project/types";
 import { layerTileAt } from '@/project/mapLayers';
 import beodeulArchitecture from '@/assets/beodeulArchitectureCatalog.json';
 import { TILE } from "@/project/defaults/constants";
-import {
-  detectHouses,
-  houseVarietyReport,
-  houseVarietySummary,
-  shapeLabel,
-  type DetectedHouse,
-  type HouseRect,
-} from "./houseVariety";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-/** 이미지 한 변 상한 — show_map_region 과 같은 규약(토큰·base64 폭주 방지). */
-const LOOK_AT_MAX_SPAN = 24;
+type HouseRect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 
 const lookAtHouses: ToolDefinition = {
   name: "look_at_houses",
   description:
-    "맵에 실제로 서 있는 집을 타일에서 되읽어 이미지로 보여주고, 모양(templateId)·킷·지붕색 분포를 집계한다. "
-    + "집을 깐 직후 반드시 호출해 같은 모양이 반복됐는지 눈으로 확인하라 — verdict 가 monotonous/mixed 면 "
-    + "advice 의 안 쓴 templateId 를 골라 다시 깔아라. 영역(x,y,w,h)을 생략하면 맵 전체를 센다.",
+    "버들항(beodeul_city) 맵에 실제로 서 있는 건물 키트(bd-house-*)를 타일에서 되읽어 이미지로 보여주고, 키트 분포를 집계한다. "
+    + "집을 깐 직후 호출해 같은 키트가 반복됐는지 눈으로 확인하라. 영역(x,y,w,h)을 생략하면 맵 전체를 센다.",
   mode: "read",
   domains: ["tile", "map"],
   invalidArgsExample: { mapId: "map_1" },
@@ -47,30 +36,10 @@ const lookAtHouses: ToolDefinition = {
   run(project, args): ToolExecResult {
     const map = requireMap(project, stringArg(args, "mapId"));
     const bounds = optionalBounds(args);
-    if(map.tilesetId==='beodeul_city')return observeBeodeulBuildings(project,map,bounds);
-    const houses = detectHouses(map, bounds);
-    const report = houseVarietyReport(houses);
-    const view = viewportFor(map, houses, bounds);
-    const grid = tileGrid(map, view);
-    const warnings = report.verdict === "diverse" ? [] : [`${houseVarietySummary(report)} — ${report.advice.join(" ")}`];
-    return {
-      summary: `${map.name} 집 관찰: ${houseVarietySummary(report)}`,
-      ...(warnings.length === 0 ? {} : { warnings }),
-      data: {
-        mapId: map.id,
-        bounds: bounds ?? { x: 0, y: 0, w: map.width, h: map.height },
-        houses: houses.map(describeHouse),
-        variety: report,
-        // 비전 렌더러(toolImageRenderer)용 타일 그리드 — compactToolDataForModel 이 배열은 떼고
-        // variety/houses 만 모델에 남긴다(이미지는 별도 user 메시지로 주입).
-        x: view.x,
-        y: view.y,
-        w: view.w,
-        h: view.h,
-        lower: grid.lower,
-        upper: grid.upper,
-      },
-    };
+    if (map.tilesetId !== 'beodeul_city') {
+      throw new ToolError("look_at_houses 는 버들항(beodeul_city) 맵의 건물 키트만 되읽습니다 — 다른 맵은 show_map_region 으로 보세요.", { code: "unsupported-tileset", mapId: map.id });
+    }
+    return observeBeodeulBuildings(project, map, bounds);
   },
 };
 
@@ -107,46 +76,6 @@ function observeBeodeulBuildings(project:Project,map:GameMap,bounds:HouseRect|un
   const variety={houses:houses.length,distinctKits:unique,verdict:houses.length===0?'unidentified':unique===houses.length?'diverse':'mixed'};
   return{summary:`${map.name} 실제 키트 관찰: 민가 ${houses.length-churches}채 · 교회 ${churches}채 · 서로 다른 키트 ${unique}종. 전체 그림 배열과 실제 graft를 대조했습니다.`,
     data:{mapId:map.id,bounds:bounds??{x:0,y:0,w:map.width,h:map.height},houses,variety,...view,...tileGrid(map,view)}};
-}
-
-function describeHouse(house: DetectedHouse): Record<string, unknown> {
-  return {
-    index: house.index,
-    shape: shapeLabel(house),
-    templateId: house.templateId,
-    kitId: house.kitId,
-    roofColor: house.roofColor,
-    bbox: house.bbox,
-    doorAt: house.doorAt,
-    chimney: house.chimney,
-    roofDeck: house.roofDeck,
-    // 벽 밴드 행 수 — 낮은벽 2, 1층 3, 2층 5, 3층 7. "층수를 흔들었는지"를 눈으로 세는 축.
-    wallRows: house.wallRows,
-  };
-}
-
-/** 집이 다 들어오도록 시야를 잡되 한 변 상한을 넘기면 집 중심으로 자른다. */
-function viewportFor(map: GameMap, houses: readonly DetectedHouse[], bounds: HouseRect | undefined): HouseRect {
-  const base = bounds ?? housesEnvelope(houses) ?? { x: 0, y: 0, w: map.width, h: map.height };
-  const w = Math.min(LOOK_AT_MAX_SPAN, Math.max(1, Math.min(map.width, base.w)));
-  const h = Math.min(LOOK_AT_MAX_SPAN, Math.max(1, Math.min(map.height, base.h)));
-  const cx = base.x + Math.floor(base.w / 2);
-  const cy = base.y + Math.floor(base.h / 2);
-  return {
-    x: Math.max(0, Math.min(map.width - w, cx - Math.floor(w / 2))),
-    y: Math.max(0, Math.min(map.height - h, cy - Math.floor(h / 2))),
-    w,
-    h,
-  };
-}
-
-function housesEnvelope(houses: readonly DetectedHouse[]): HouseRect | undefined {
-  if (houses.length === 0) return undefined;
-  const minX = Math.min(...houses.map((house) => house.bbox.x));
-  const minY = Math.min(...houses.map((house) => house.bbox.y));
-  const maxX = Math.max(...houses.map((house) => house.bbox.x + house.bbox.w));
-  const maxY = Math.max(...houses.map((house) => house.bbox.y + house.bbox.h));
-  return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
 }
 
 function tileGrid(map: GameMap, view: HouseRect): { readonly lower: number[][]; readonly upper: number[][] } {

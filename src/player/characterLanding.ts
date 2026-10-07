@@ -19,7 +19,7 @@ import {
 } from "@/player/characterShadow";
 
 /** 저작 효과음이 없는 임팩트 착지의 기본 소리. 번들 카탈로그 id 라 프로젝트 등록이 필요 없다. */
-export const DEFAULT_LANDING_SE = "cc0-se-kis-impactsoft-heavy-000";
+export const DEFAULT_LANDING_SE = "cc0-se-osx-slam-01";
 
 /**
  * 한 칸 높이에서 떨어진 착지의 흔들림. 액션 전투 피격(0.006) 과 같은 급에서 시작한다.

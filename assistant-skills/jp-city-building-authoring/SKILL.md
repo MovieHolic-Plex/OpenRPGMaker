@@ -75,7 +75,7 @@ build_jp_city_building({mapId, x, y, w, floors, floorKind, wall, ground, roof, d
 
 - 지금 보는 맵이 jp_city 가 아니면: `create_map({name, width:50, height:36, tilesetId:"jp_city"})`. 보는 맵이 **다른 계열**이면 실행기가 `tileset-family-change` 로 거부한다 →
   `ask_tileset_change({toTilesetId:"jp_city", reason})` 로 사용자에게 견본을 보이고 그 턴을 끝낸다(사용자가 승인하면 다음 요청에서 통과).
-- 일본 거리에 `author_village`·`author_house`·`author_beodeul_town` 은 쓰지 않는다(숲마을·버들항 전용).
+- 일본 거리에 `author_beodeul_town` 은 쓰지 않는다(버들항 전용).
 - `jp_city` 에는 실내·행인·움직이는 칸이 없다. 가게 안은 다른 칩셋의 실내 맵으로, 행인은 이벤트의 캐릭터 그래픽(Actor1)으로.
 
 ## 6. 검증 (끝낸 뒤)

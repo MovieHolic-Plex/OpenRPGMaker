@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
-import { FARMING_CROP_SPRITE_ASSETS, type FarmingCropSpriteAsset } from "@/assets/farmingSprites";
+import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { cropGraphicIndexForStage, cropGraphicStages, normalizeCropRecord } from "@/project/farmModel";
 
 type BinaryFsReader = {
@@ -78,27 +77,6 @@ describe("farming animal charsets", () => {
 });
 
 describe("farming demo crop graphics wiring", () => {
-  it("gives every crop record a graphic stage with a non-empty resourceId per stage", () => {
-    const project = createFarmingDemoProject();
-    const crops = project.database.crops ?? [];
-    // 개수를 못 박지 않는다 — 작물을 추가할 때마다 이 계약과 무관한 이유로 빨개진다.
-    // 지켜야 할 계약은 "모든 작물이 단계마다 유효한 그림을 갖는다" 하나다.
-    expect(crops.length, "농사 데모에 작물이 없다").toBeGreaterThan(0);
-    // 네 계절 모두 심을 것이 있어야 한다 — 봄만 있으면 나머지 세 계절에 밭이 죽고 할 일이 없다.
-    const seasons = new Set(crops.flatMap((crop) => crop.seasons));
-    for (const season of ["spring", "summer", "fall"]) {
-      expect(seasons.has(season as "spring"), `${season} 에 심을 작물이 없다`).toBe(true);
-    }
-    for (const crop of crops) {
-      const graphicStages = crop.graphicStages ?? [];
-      expect(graphicStages.length, `${crop.id} graphicStages`).toBe(crop.stages.length);
-      for (const [index, stage] of graphicStages.entries()) {
-        expect(stage.resourceId, `${crop.id} stage ${index}`).toBeTruthy();
-        expect(stage.frame, `${crop.id} stage ${index} frame`).toBe(index);
-      }
-    }
-  });
-
   it("derives graphic stages for an unauthored crop at read time, clamping frames to the sheet", () => {
     // 저작 graphicStages 없이 id 만으로 스프라이트가 붙어야 한다(감자 시트 = 2 프레임).
     const crop = normalizeCropRecord({
@@ -137,30 +115,6 @@ describe("farming demo crop graphics wiring", () => {
     });
     expect(optedOut.graphicStages).toEqual([]);
     expect(cropGraphicStages(optedOut)).toEqual([]);
-  });
-
-  it("points every crop graphic stage at a registered farming sprite asset with enough frames", () => {
-    const project = createFarmingDemoProject();
-    const assetById = new Map<string, FarmingCropSpriteAsset>(
-      FARMING_CROP_SPRITE_ASSETS.map((asset) => [asset.id, asset])
-    );
-    for (const crop of project.database.crops ?? []) {
-      for (const stage of cropGraphicStages(crop)) {
-        const asset = assetById.get(stage.resourceId ?? "");
-        expect(asset, `${crop.id} → ${stage.resourceId}`).toBeDefined();
-        expect(typeof stage.frame).toBe("number");
-        expect(Number(stage.frame)).toBeLessThan(asset?.frameCount ?? 0);
-      }
-    }
-  });
-
-  it("places a chicken and a cow on the farming demo map with farm charsets", () => {
-    const project = createFarmingDemoProject();
-    const map = project.maps["map_farming_demo"];
-    expect(map).toBeDefined();
-    const spriteIds = (map?.events ?? []).map((event) => event.pages?.[0]?.graphic.sprite?.id);
-    expect(spriteIds).toContain("tex_farming_charset_chicken");
-    expect(spriteIds).toContain("tex_farming_charset_cow");
   });
 });
 

@@ -1,8 +1,0 @@
-{
-  "projectId": "31250868-3eb7-42c9-a1f6-bd7d1d8e8245",
-  "projectDir": "/home/main/.codex/worktrees/76a3/rpg-zzu/.oprn-projects/dewbank-village-20260922",
-  "beforeSHA256": "c5dad7e77cc47c1d9a32ad78110561098ee753f1e9342e2b1b587de70b2699a0",
-  "afterSHA256": "c5dad7e77cc47c1d9a32ad78110561098ee753f1e9342e2b1b587de70b2699a0",
-  "unchanged": true,
-  "method": "Read-only official SQLite store load; compare JSON values to pre-authoring export."
-}

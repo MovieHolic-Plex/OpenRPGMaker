@@ -4,7 +4,7 @@ import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { resolveGen1DamagingMove } from "@/battle/gen1/damage";
 import { gen1CaptureProbability } from "@/battle/gen1/capture";
 import { gen1TypeModifiersForTypes } from "@/battle/typeChart";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { giveMonster, monsterMaxHp } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";

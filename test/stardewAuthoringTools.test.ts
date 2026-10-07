@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { craftRecipe, canCraft } from "@/project/craftRecipes";
 import { createBlankProject } from "@/project/defaults";
-import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import {
   ensureChest,
@@ -13,12 +12,10 @@ import {
   findChestAt,
   inventoryEntries,
 } from "@/project/placeables";
-import { changeItem, startSession } from "@/project/session";
+import { startSession } from "@/project/session";
 import { hasFarmToolAvailable, setEquippedTool, toolActionRulesOf } from "@/project/toolActions";
 import { applyItemUpgrade, resolveSellPrice } from "@/project/upgrades";
 import { interactWithFarmPlot } from "@/player/farming";
-import { advanceFarmPlotsForDay } from "@/player/farming";
-import { resolveTimeSystem, sleepGameTimeUntilMorning } from "@/project/gameTime";
 
 describe("P1 tool action table", () => {
   it("defaults to legacy hoe/can rules when system.toolActions absent", () => {
@@ -38,18 +35,8 @@ describe("P1 tool action table", () => {
 });
 
 describe("P2 equipped tool hand", () => {
-  it("strict: equipped wrong tool blocks till even if hoe in inventory", () => {
-    const project = createFarmingDemoProject();
-    const session = startSession(project);
-    session.inventory = { item_hoe: 1, item_watering_can: 1 };
-    setEquippedTool(session, "item_watering_can");
-    expect(hasFarmToolAvailable(project, session, "hoe")).toBe(false);
-    const map = project.maps[project.startMapId];
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("ignored");
-  });
-
   it("prefers equipped tool when present in inventory", () => {
-    const project = createFarmingDemoProject();
+    const project = createBlankProject();
     const session = startSession(project);
     session.inventory = { item_hoe: 1, item_watering_can: 1 };
     setEquippedTool(session, "item_hoe");
@@ -57,16 +44,6 @@ describe("P2 equipped tool hand", () => {
     setEquippedTool(session, undefined);
     // empty hand falls back to any inventory hoe
     expect(hasFarmToolAvailable(project, session, "hoe")).toBe(true);
-  });
-
-  it("farm till works with equipped hoe", () => {
-    const project = createFarmingDemoProject();
-    const session = startSession(project);
-    session.inventory = { item_hoe: 1, item_potato_seed: 2 };
-    setEquippedTool(session, "item_hoe");
-    const map = project.maps[project.startMapId];
-    const result = interactWithFarmPlot(project, session, map, 4, 5);
-    expect(result.kind).toBe("tilled");
   });
 });
 
@@ -218,32 +195,6 @@ describe("P6 upgrades and sell prices", () => {
     expect(resolveSellPrice(project, "item_potato")).toBe(30);
     project.system.sellPrices = [];
     expect(resolveSellPrice(project, "item_potato")).toBe(20);
-  });
-});
-
-describe("P7 smoke: farm + day advance tools", () => {
-  it("tills, plants, waters, sleeps growth path without LegacyDb", () => {
-    const project = createFarmingDemoProject();
-    project.system.timeSystem = resolveTimeSystem({
-      enabled: true,
-      dayStartHour: 6,
-      dayEndHour: 26,
-      daysPerSeason: 28,
-    });
-    const session = startSession(project);
-    session.inventory = { item_hoe: 1, item_watering_can: 1, item_potato_seed: 3 };
-    setEquippedTool(session, "item_hoe");
-    const map = project.maps[project.startMapId];
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("tilled");
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("planted");
-    setEquippedTool(session, "item_watering_can");
-    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("watered");
-    // advance growth days without full scene
-    advanceFarmPlotsForDay(project, session, 5, "spring");
-    if (session.gameTime) {
-      session.gameTime = sleepGameTimeUntilMorning(session.gameTime, project.system.timeSystem!).time;
-    }
-    expect(session.farmPlots?.[map.id]?.["4,5"]?.cropId).toBeTruthy();
   });
 });
 

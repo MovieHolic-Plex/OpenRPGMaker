@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { startSession } from "@/project/session";
 import { createSaveSnapshot, saveToSlot, snapshotLoadBlocker, type SaveSnapshot } from "@/player/saveSlots";
 
 // 실측 결함: 저장 당시의 맵이 지워진 슬롯을 그대로 적용하면 부팅이 project.maps[id].width 에서
 // 터져 배포 플레이어가 "맵·에셋 불러오는 중…" 화면에 영구히 갇혔다. 로드는 적용 전에 막아야 한다.
 describe("snapshotLoadBlocker", () => {
-  const project = createSampleAdventureProject();
+  const project = createScarloxyDemoProject();
 
   function snapshotOnMap(mapId: string): SaveSnapshot {
     const session = startSession(project);
@@ -31,7 +31,7 @@ describe("snapshotLoadBlocker", () => {
 // 수동 저장은 quota 초과·프라이빗 모드에서 예외를 던졌고 상태 메뉴가 잡지 않아 성공도 실패도
 // 표시되지 않았다. 오토세이브(performAutosave)처럼 결과를 돌려준다.
 describe("saveToSlot", () => {
-  const project = createSampleAdventureProject();
+  const project = createScarloxyDemoProject();
 
   function throwingStorage(error: unknown): Storage {
     const backing = new Map<string, string>();

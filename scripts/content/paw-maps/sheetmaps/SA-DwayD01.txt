@@ -1,6 +1,0 @@
-# SA-DwayD01.png 3x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  
-   0 #g .  .  
-   1 +g #g +g 
-   2 #g #k #g 
-   3 #g #g #g 

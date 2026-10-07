@@ -69,13 +69,13 @@ export function stampHouseDoorBackground(map: GameMap, door: { readonly x: numbe
 export const HOUSE_DOOR_FRAME_WAIT_MS = 100;
 export const HOUSE_DOOR_OPEN_HOLD_MS = 180;
 /**
- * 문 열림 효과음 — CC0 카탈로그 「문 열기 01」(Kenney RPG Audio, 0.92초).
- * 파일이 레포에 있어(public/assets/se/kenney-rpg/dooropen-1.ogg) 오프라인에서도 울린다.
+ * 문 열림 효과음 — CC0 카탈로그 OpenGameArt 「door open」(Kenney 문 소리는 2026-10-07 저작권 정리로 지웠다).
+ * 파일이 레포에 있어(public/assets/se/) 오프라인에서도 울린다.
  * 리소스 id 는 seCatalog 소속이라 이벤트 참조 검증(resourceReferenceValidation)을 그대로 통과한다.
  */
-export const HOUSE_DOOR_OPEN_SE = "cc0-se-kra-dooropen-1";
-/** 문 닫힘 효과음 — CC0 카탈로그 「문 닫기 01」(Kenney RPG Audio). 열기 01 과 짝. */
-export const HOUSE_DOOR_CLOSE_SE = "cc0-se-kra-doorclose-1";
+export const HOUSE_DOOR_OPEN_SE = "cc0-se-osx-door-open";
+/** 문 닫힘 효과음 — CC0 카탈로그 OpenGameArt 「door close 01」. 열기와 짝. */
+export const HOUSE_DOOR_CLOSE_SE = "cc0-se-osx-door-close-01";
 
 export type HouseDoorVariant = {
   readonly textureKey: typeof HOUSE_DOOR_CHARSET_TEXTURE;

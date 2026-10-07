@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene } from "@/player/battleDom";
 import { BATTLE_INTRO_MS } from "@/player/battleSequencer";
-import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
+import { createScarloxyPokemonDemoProject } from "./support/scarloxyPokemonProject";
 import { store } from "@/project/store";
 
 function mount(introHold: boolean) {

@@ -3,7 +3,6 @@
 
 import { describe, it, expect } from "vitest";
 import { createBlankProject, ensureSwitchVariableSlots, createBlankMap, createStarterMap, TILE, COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILE_SIZE, DEFAULT_EASYRPG_CHARSET_ID, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY, ensureBundledResourceProfiles, removeLegacyRmTileset } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -361,16 +360,6 @@ describe("createBlankProject", () => {
     });
   });
 
-});
-
-describe("createSampleAdventureProject", () => {
-  it("명시 예제 프로젝트로 이슬 장터 데모를 제공한다", () => {
-    const p = createSampleAdventureProject();
-
-    expect(Object.keys(p.maps)).toHaveLength(16);
-    expect(p.meta.title).toBe("이슬 장터 — 30분");
-    expect(Object.values(p.maps).some((map) => map.name === "이슬 장터 마을" && map.events.length > 0)).toBe(true);
-  });
 });
 
 describe("createBlankMap", () => {

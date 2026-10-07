@@ -1,8 +1,0 @@
-# SC-Owl01.png 8x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
-     0  1  2  3  4  5  6  7  
-   0 ~l ~l ~l ~l ~l ~l ~l ~l 
-   1 ~g ~g ~g ~l ~g ~g ~l ~l 
-   2 ~l +l ~l ~l ~l +l ~w ~l 
-   3 ~l ~l ~l ~w ~l ~l ~l ~l 
-   4 ~l ~l ~l ~l ~l ~l ~l ~w 
-   5 +l ~l ~l ~l +l ~l ~l ~l 

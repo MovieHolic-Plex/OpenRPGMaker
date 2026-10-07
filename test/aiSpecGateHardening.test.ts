@@ -17,7 +17,6 @@ import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
 import { getTool, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
-import { createIcePlain64Project } from "@/project/defaults/defaultProject";
 import type { GameMap, Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
@@ -252,21 +251,6 @@ describe("지어진 칸 판정은 잔디 리터럴이 아니라 타일셋 어휘
     expect(errors(project, { mapId: "m1", assets: [{ id: "c", kind: "clear", x: 2, y: 2, w: 6, h: 7 }] }).join(" ")).toContain("confirmDestroy");
   });
 
-  it("얼음 대평원의 눈밭은 지어진 칸이 아니고 절벽은 지어진 칸이다", () => {
-    // break: 역할·통행성을 보지 않으면 눈밭 3844칸이 전부 구조물이 되어 실제 턴이 5회 차단된다(2026-09-03 실측).
-    const project = createIcePlain64Project();
-    const map = project.maps.map_ice_grand_plain_64;
-    const tileset = project.tilesets[map.tilesetId];
-    const snowWindow = findUniformWindow(map, 67, 8);
-    expect(snowWindow).not.toBeNull();
-    const cliffCells = builtCellsInRegions(map, [{ mapId: map.id, x: 0, y: 0, w: map.width, h: map.height }], tileset).count;
-    expect(cliffCells).toBeGreaterThan(0);
-    expect(cliffCells).toBeLessThan(map.width * map.height / 2);
-    const [sx, sy] = snowWindow as [number, number];
-    expect(builtCellsInRegions(map, [{ mapId: map.id, x: sx, y: sy, w: 8, h: 8 }], tileset).count).toBe(0);
-    expect(errors(project, { mapId: map.id, assets: [{ id: "h", kind: "house", x: sx + 1, y: sy + 1, w: 6, h: 6 }] })).toEqual([]);
-  });
-
   it("길(terrain·통행 가능) 옆에 붙인 집은 정리 방침 없이 통과한다", () => {
     // break: 길을 지어진 칸으로 세면 테두리 1칸 규칙이 길 옆 집을 거부한다.
     const project = mkProject();
@@ -388,18 +372,3 @@ describe("질문으로 끝난 턴", () => {
   });
 });
 
-/** lower 가 전부 `tile` 인 size×size 창의 좌상단. 없으면 null. */
-function findUniformWindow(map: GameMap, tile: number, size: number): [number, number] | null {
-  for (let y = 1; y + size < map.height - 1; y += 1) {
-    for (let x = 1; x + size < map.width - 1; x += 1) {
-      let uniform = true;
-      for (let dy = 0; dy < size && uniform; dy += 1) {
-        for (let dx = 0; dx < size; dx += 1) {
-          if (map.lowerTiles[(y + dy) * map.width + x + dx] !== tile || map.upperTiles[(y + dy) * map.width + x + dx] !== TILE.EMPTY) { uniform = false; break; }
-        }
-      }
-      if (uniform) return [x, y];
-    }
-  }
-  return null;
-}

@@ -8,9 +8,7 @@
 import { describe, expect, it } from "vitest";
 import { listTitleMenuOptions } from "../src/player/titleScreen";
 import { defaultTitleScreenSettings } from "../src/project/defaults/defaultDatabase";
-import { createScarloxyPokemonDemoProject } from "../src/project/defaults/defaultProject";
-import { createEmberQuestProject } from "../src/project/defaults/emberQuestGame";
-import { createModernNocturneProject } from "../src/project/defaults/modernNocturneGame";
+import { createScarloxyDemoProject } from "../src/project/defaults/defaultProject";
 import type { TitleScreenSettings } from "../src/project/types/database";
 
 /** 저자가 눈으로 구별하지 못하는 차이(공백)는 같은 라벨로 취급한다. */
@@ -20,9 +18,7 @@ function normalize(label: string): string {
 
 const BUNDLED: readonly (readonly [string, TitleScreenSettings])[] = [
   ["기본 프로젝트", defaultTitleScreenSettings()],
-  ["엠버 퀘스트", createEmberQuestProject().system.titleScreen!],
-  ["모던 녹턴", createModernNocturneProject().system.titleScreen!],
-  ["몬스터 테이머", createScarloxyPokemonDemoProject().system.titleScreen!],
+  ["몬스터 초원", createScarloxyDemoProject().system.titleScreen!],
 ];
 
 describe("타이틀 메뉴 라벨", () => {

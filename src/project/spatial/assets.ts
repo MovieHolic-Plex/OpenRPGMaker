@@ -6,9 +6,10 @@ import type { SpatialAssetContext, SpatialGraphic } from "./types";
 
 // Derive the identity AND layout from the shipped declaration, not the caller's ID/name.
 // Retain only the immutable atlas signature, not another tileset/catalog registry.
+// EasyRPG 실내 시트는 2026-10-07 저작권 정리로 번들에서 빠졌다 — 없으면 내장 기물은 어느 타일셋에도 맞지 않는다.
 const bundledInteriorAtlas = (() => {
   const tileset = defaultTilesets()[INTERIOR_TILESET_ID];
-  if (!tileset) throw new TypeError("Shipped interior atlas declaration is missing");
+  if (!tileset) return null;
   return Object.freeze({
     image: Object.freeze({ ...tileset.image }), kind: tileset.kind,
     tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow, count: tileset.count,
@@ -20,7 +21,8 @@ export type ResolvedSpatialGraphic =
   | { readonly source: "builtin"; readonly object: InteriorObjectDef };
 
 function eligibleInteriorAtlas(tileset: TilesetDef): boolean {
-  return tileset.image.type === "bundled"
+  return bundledInteriorAtlas !== null
+    && tileset.image.type === "bundled"
     && bundledInteriorAtlas.image.type === "bundled"
     && tileset.image.id === bundledInteriorAtlas.image.id
     && tileset.tileSize === bundledInteriorAtlas.tileSize

@@ -1,6 +1,6 @@
 // Transient UI contract fixture; does not author or save an application demo.
 import { writeFileSync, readFileSync, mkdirSync } from 'node:fs';
-import { createScarloxyPokemonDemoProject } from '../../../src/project/defaults/defaultProject';
+import { createScarloxyPokemonDemoProject } from '../../../test/support/scarloxyPokemonProject';
 const project = createScarloxyPokemonDemoProject();
 // 마을에서 시작해 상점·회복·이벤트 흐름까지 검증한다. 전투는 마을 남쪽 이벤트로 진입.
 project.startMapId = 'map_pkmn_town';

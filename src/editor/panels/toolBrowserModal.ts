@@ -59,7 +59,6 @@ const DESTRUCTIVE_NAMES = new Set(["remove_event", "remove_map"]);
 /** 첫 화면용 자주 쓰는 툴 (이름 고정 — 레지스트리에 없으면 건너뜀). */
 export const FREQUENT_TOOL_NAMES = [
   "place_npc",
-  "author_house",
   "build_wall",
   "paint_road",
   "fill_region",

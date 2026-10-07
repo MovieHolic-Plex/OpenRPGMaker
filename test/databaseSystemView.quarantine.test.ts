@@ -3,7 +3,7 @@ import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/edit
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import { createBlankProject } from "@/project/defaults";
-import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
+import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -91,7 +91,7 @@ describe("database system view", () => {
   });
 
   it("preserves multi-member start party when editing one slot", () => {
-    const sample = createSampleAdventureProject();
+    const sample = createScarloxyDemoProject();
     const actorIds = sample.database.actors.map((actor) => actor.id).filter(Boolean);
     if (actorIds.length < 2) throw new Error("need at least two actors in sample database");
     sample.system = { ...sample.system, startActorIds: actorIds.slice(0, 2) };

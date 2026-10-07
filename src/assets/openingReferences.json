@@ -99,28 +99,6 @@
       "무음 검증: 팬페어/SE/박자와 컷의 관계 미청취",
       "표본 밖 개발사 로고/원본 크레딧 미검증",
       "타이틀 메뉴로 넘어가는 원본 입력/음악 계약 미검증"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/pokemon-gb-1.png",
-        "timeSeconds": 7.099,
-        "sourceUrl": "https://www.youtube.com/watch?v=_iybdJCo78Y",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 6
-      },
-      {
-        "publicPath": "/assets/opening-study/pokemon-gb-2.png",
-        "timeSeconds": 9.08,
-        "sourceUrl": "https://www.youtube.com/watch?v=_iybdJCo78Y",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 8
-      }
     ]
   },
   {
@@ -232,28 +210,6 @@
       "무음; GBA 사운드 향상은 공식 제품 맥락이며 intro cue 검증과 별개",
       "이번 조사에서 미검증",
       "intro 이후 NewGame 교수/파트너 선택의 정확한 연결 미검증"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/pokemon-rse-1.png",
-        "timeSeconds": 11.289,
-        "sourceUrl": "https://www.youtube.com/watch?v=LnOfUnzle6w",
-        "visuallyInspected": true,
-        "width": 632,
-        "height": 422,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 10
-      },
-      {
-        "publicPath": "/assets/opening-study/pokemon-rse-2.png",
-        "timeSeconds": 25.091,
-        "sourceUrl": "https://www.youtube.com/watch?v=LnOfUnzle6w",
-        "visuallyInspected": true,
-        "width": 632,
-        "height": 422,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 24
-      }
     ]
   },
   {
@@ -356,8 +312,7 @@
       "이번 조사에서 미검증",
       "편집본은 remade/animated라고 명시되어 원본 타이틀 인계 검증에 쓰지 않음",
       "직접 원본 영상 표본 확보 실패. 보조 설명은 관찰 사실과 분리했다. remade/animated 편집본 및 잘못 발견한 TCG 영상은 공개 프레임에서 제외했다."
-    ],
-    "referenceFrames": []
+    ]
   },
   {
     "id": "pokemon-bw",
@@ -459,28 +414,6 @@
       "이번 조사에서 미검증",
       "이번 조사에서 미검증",
       "이번 조사에서 미검증"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/pokemon-bw-1.png",
-        "timeSeconds": 26.106,
-        "sourceUrl": "https://www.youtube.com/watch?v=NNOjHHOeQg0",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 25
-      },
-      {
-        "publicPath": "/assets/opening-study/pokemon-bw-2.png",
-        "timeSeconds": 41.088,
-        "sourceUrl": "https://www.youtube.com/watch?v=NNOjHHOeQg0",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 40
-      }
     ]
   },
   {
@@ -592,18 +525,6 @@
       "이번 조사에서 미검증",
       "title pendulum 및 원본 전체 제작자 표기 미검증",
       "attract demo와 NewGame 실제 사건은 별도 트랙으로 취급해야 함"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/chrono-snes-1.png",
-        "timeSeconds": 49.063,
-        "sourceUrl": "https://www.youtube.com/watch?v=6YCVtCx8Obo",
-        "visuallyInspected": true,
-        "width": 632,
-        "height": 474,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 48
-      }
     ]
   },
   {
@@ -725,28 +646,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "SNES Magitek 행군/크레딧; Pixel Remaster·PS 애니메이션과 혼합하지 않음",
       "Narshe 도착 뒤 조작/음악 연결은 직접 재생하지 않음"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/ffvi-snes-1.png",
-        "timeSeconds": 11.515,
-        "sourceUrl": "https://www.youtube.com/watch?v=jgRZAGQPJVY",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 554,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 10
-      },
-      {
-        "publicPath": "/assets/opening-study/ffvi-snes-2.png",
-        "timeSeconds": 51.631,
-        "sourceUrl": "https://www.youtube.com/watch?v=jgRZAGQPJVY",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 554,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 50
-      }
     ]
   },
   {
@@ -868,18 +767,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "2020 공식 opening; 3D 비교 사례이며 2D RPG 엔진에 3D 제작을 요구하는 근거 아님",
       "이번 조사에서 미검증"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/ffvii-remake-1.png",
-        "timeSeconds": 32.418,
-        "sourceUrl": "https://www.youtube.com/watch?v=8IrheLf0Ki0",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 30
-      }
     ]
   },
   {
@@ -1002,28 +889,6 @@
       "2025 game prologue의 공식 demo 설명 + story trailer 표본; trailer 컷을 게임 컷 수로 간주하지 않음",
       "trailer 자막은 관찰했지만 노래/음성/게임 cue는 청취하지 않음",
       "이번 조사에서 미검증"
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/octopath-0-1.png",
-        "timeSeconds": 21.109,
-        "sourceUrl": "https://www.youtube.com/watch?v=-xSyjJSAkWw",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 20
-      },
-      {
-        "publicPath": "/assets/opening-study/octopath-0-2.png",
-        "timeSeconds": 46.095,
-        "sourceUrl": "https://www.youtube.com/watch?v=-xSyjJSAkWw",
-        "visuallyInspected": true,
-        "width": 640,
-        "height": 360,
-        "purpose": "research_reference_only",
-        "requestedTimeSeconds": 45
-      }
     ]
   },
   {
@@ -1146,8 +1011,7 @@
       "이번 조사에서 미검증",
       "이번 조사에서 미검증",
       "공개 참고 PNG는 생략: 실제 열람한 별 배경/텍스트가 어두워 가독성이 낮으며 배우·재앙 장면 seek는 실패했다."
-    ],
-    "referenceFrames": []
+    ]
   },
   {
     "id": "persona3",
@@ -1195,8 +1059,7 @@
       "이 영상은 현재 브라우저 성인 인증 게이트로 media.readyState=0이었다.",
       "특정 색상, 컷, 음악 박자, 효과음을 직접 관찰한 것으로 주장하지 않는다.",
       "타이틀 무입력 자동 재생 및 새 게임 시작 위치는 실제 게임에서 검증하지 않았다."
-    ],
-    "referenceFrames": []
+    ]
   },
   {
     "id": "persona4",
@@ -1252,26 +1115,6 @@
       "2012년 영상은 연령 제한으로 막혔고 별개의 ATLUS 공식 2022년 재게시판에서 유효 프레임을 관찰했다.",
       "스냅샷만으로 원작이 몇 장의 포즈 또는 몇 fps로 제작됐는지는 알 수 없다.",
       "음악 청취·BPM/컷의 박자 대응·타이틀 자동 재생은 미검증."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/persona4-1.png",
-        "timeSeconds": 8,
-        "sourceUrl": "https://www.youtube.com/watch?v=t2ZEj8JK2tY",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/persona4-2.png",
-        "timeSeconds": 20,
-        "sourceUrl": "https://www.youtube.com/watch?v=t2ZEj8JK2tY",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1328,26 +1171,6 @@
       "화면 속 모니터의 존재는 관찰했지만 실제 제작에서 레이어 마스크를 썼다는 뜻은 아니다.",
       "동작의 전체 프레임수/보간 방식과 음악 박자는 미측정.",
       "본편 새 게임 프롤로그 및 타이틀 애트랙트와 혼동하지 않는다."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/persona5-1.png",
-        "timeSeconds": 20,
-        "sourceUrl": "https://www.youtube.com/watch?v=O3dX4tCb_5w",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/persona5-2.png",
-        "timeSeconds": 35,
-        "sourceUrl": "https://www.youtube.com/watch?v=O3dX4tCb_5w",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1402,26 +1225,6 @@
       "8초 화면에는 Not Actual Gameplay 표기가 있었다.",
       "35초가 흰 전환 프레임인 것은 확인했지만 전체 전환 길이와 전후 샷은 미측정.",
       "발표 트레일러의 애니메이션이 게임의 어느 지점에 들어가는지는 별도 미검증."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/links-awakening-1.png",
-        "timeSeconds": 8,
-        "sourceUrl": "https://www.youtube.com/watch?v=_U-_XfDGgDw",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/links-awakening-2.png",
-        "timeSeconds": 20,
-        "sourceUrl": "https://www.youtube.com/watch?v=_U-_XfDGgDw",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1460,8 +1263,7 @@
       "PDF 직접 열기는 타임아웃/크기 제한으로 실패했으며 Nintendo 원문 검색 인덱스의 해당 절을 읽었다.",
       "플레이 영상을 직접 보거나 효과음·시간코드·카메라 이동을 실측하지 않았다.",
       "음성 안내에서 실제 입력으로 넘어가는 도구 제안은 문서에 근거한 설계 추론이다."
-    ],
-    "referenceFrames": []
+    ]
   },
   {
     "id": "hades",
@@ -1513,26 +1315,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "홍보 시네마틱이며 게임 시작 프롤로그라고 주장하지 않는다.",
       "컷별 포즈 수, 실제 애니메이션 제작 방식, 효과음 타이밍, 음악 박자는 미검증."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/hades-1.png",
-        "timeSeconds": 8,
-        "sourceUrl": "https://www.youtube.com/watch?v=Bz8l935Bv0Y",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/hades-2.png",
-        "timeSeconds": 20,
-        "sourceUrl": "https://www.youtube.com/watch?v=Bz8l935Bv0Y",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1588,26 +1370,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "Release Trailer이며 본편 인트로 또는 타이틀 무입력 애트랙트가 아니다.",
       "일반 게임의 제작 방법을 설명하는 자료다. 확인한 각 컷의 구체적인 레이어 수/파티클 수는 미측정."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/hollow-knight-1.png",
-        "timeSeconds": 8,
-        "sourceUrl": "https://www.youtube.com/watch?v=UAO2urG23S4",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/hollow-knight-2.png",
-        "timeSeconds": 35,
-        "sourceUrl": "https://www.youtube.com/watch?v=UAO2urG23S4",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1654,8 +1416,7 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "공식 이미지와 소개를 보았으며 전체 프롤로그 재생/텍스트 출력 속도/목소리 효과음은 확인하지 않았다.",
       "흰 글자가 한 번에 보이는 이미지에서 typewriter 구현을 사실로 추론하지 않는다."
-    ],
-    "referenceFrames": []
+    ]
   },
   {
     "id": "stardew",
@@ -1709,26 +1470,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "홍보 영상의 문장과 게임플레이 샷이다. 할아버지/회사/버스의 실제 게임 시작 시퀀스는 이번 조사에서 보지 않았다.",
       "35초 프레임이 실제 플레이 입력을 받았다는 의미는 아니다."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/stardew-1.png",
-        "timeSeconds": 20,
-        "sourceUrl": "https://www.youtube.com/watch?v=ot7uXNQskhs",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      },
-      {
-        "publicPath": "/assets/opening-study/stardew-2.png",
-        "timeSeconds": 35,
-        "sourceUrl": "https://www.youtube.com/watch?v=ot7uXNQskhs",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   },
   {
@@ -1779,17 +1520,6 @@
       "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
       "20초 시도는 currentTime=0/readyState=0, 35초는 readyState=0이어서 유효 관찰에서 제외했다.",
       "본편 오프닝 전체, 애니메이션 프레임수, 음악 청취는 미확인."
-    ],
-    "referenceFrames": [
-      {
-        "publicPath": "/assets/opening-study/gris-1.png",
-        "timeSeconds": 8,
-        "sourceUrl": "https://www.youtube.com/watch?v=RdrvV25zoA8",
-        "visuallyInspected": true,
-        "width": 1440,
-        "height": 950,
-        "purpose": "research_reference_only"
-      }
     ]
   }
 ]
