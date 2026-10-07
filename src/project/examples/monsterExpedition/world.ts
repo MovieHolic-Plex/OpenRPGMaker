@@ -46,6 +46,13 @@ export interface ExpeditionManifest {
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
 const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast" };
 
+/** 관장 타입을 바꾼 관의 배지 이름. 본래 타입이면 worldPlan 의 배지를 그대로 쓴다. */
+const TYPE_BADGE: Readonly<Record<string, string>> = {
+  normal: "보름 배지", fire: "불씨 배지", water: "밀물 배지", grass: "새잎 배지", electric: "번개 배지", ice: "눈결정 배지",
+  fighting: "기백 배지", poison: "가시 배지", ground: "모래시계 배지", flying: "깃털 배지", psychic: "거울 배지", bug: "고치 배지",
+  rock: "주춧돌 배지", ghost: "등불 배지", dragon: "별마루 배지", dark: "그믐 배지", steel: "강철 배지", fairy: "꽃잎 배지",
+};
+
 /** 관장 타입 → 체육관 판(gyms/gym_<키>). 판 여덟 가지에 타입 열여덟을 가장 가까운 분위기로 나눈다. */
 const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
   grass: "grass", bug: "grass",
@@ -97,7 +104,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       const oldWidth = map.width, insert = 6;
       const lower: number[] = [], upper: number[] = [];
       for (let y = 0; y < map.height; y++) for (let x = 0; x < oldWidth + insert; x++) {
-        if (x >= 2 && x < 2 + insert) {
+        if (look === "frost" && x >= 2 && x < 2 + insert && (y < 3 || y >= map.height - 2)) {
+          // 눈 마을 위 숲 띠는 세 줄(아래는 두 줄)이다 — 첫 줄만 이어 붙여 왼쪽 위에 흰 네모가 뚫려 있었다(2026-10-07 눈 시작 렌더).
+          const cell = y * oldWidth + 2 + ((x - 2) & 1);
+          lower.push(t.lower[cell]!); upper.push(t.upper[cell]!);
+        } else if (x >= 2 && x < 2 + insert) {
           lower.push(y === 0 || y === map.height - 1 ? t.lower[y * oldWidth]! : t.names[look === "frost" ? "snow0" : "ash0"]!);
           upper.push(-1);
         } else {
@@ -111,7 +122,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     // 같은 템플릿을 지붕 색만 바꿔 쓰던 마을은 저마다의 판으로 다시 깐다(townLayouts.ts).
     const startTown = !options.startTheme ? undefined : key === "home" ? START_TOWNS[options.startTheme] : key === "meadow" ? START_ROUTES[options.startTheme] : undefined;
     const sketch = startTown?.sketch ?? TOWN_SKETCHES[look];
-    if (sketch) composeTown(project, map, t, sketch);
+    if (sketch) composeTown(project, map, t, sketch, templates);
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
@@ -424,9 +435,22 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
 
   const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : lookTown(t).template, lookTown(t).music, "town")]));
   // 관장 타입을 기획서가 바꾸면(사막 기획서 1관 = 땅) 체육관 판도 그 타입의 판으로 — 「땅 관장」이 꽃밭 정원 체육관에 서 있었다(2026-10-07 사용자 지적).
-  const gymType = (i: number, g: (typeof gyms)[number]): string => options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? g.type;
+  // 1관 타입을 기획서가 다른 관의 본래 타입으로 바꾸면(눈 기획서 1관 = 얼음) 그 관은 1관의 본래 타입을 받는다 — 얼음 관장이 둘 나왔다(2026-10-07 눈 시험).
+  const displaced = options.firstGymType && options.firstGymType !== gyms[0]!.type
+    ? gyms.findIndex((g, i) => i > 0 && g.type === options.firstGymType && options.gymTypes?.[i] === undefined) : -1;
+  const gymType = (i: number, g: { readonly type: string }): string => options.gymTypes?.[i] ?? (i === 0 ? options.firstGymType : undefined) ?? (i === displaced ? gyms[0]!.type : g.type);
   const gymKeys = gyms.map((g, i) => GYM_KEY_BY_TYPE[gymType(i, g)] ?? g.key);
-  const gymMaps = new Map(gyms.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
+  // 이름·배지·대사도 판과 마을을 따른다 — 서리꽃 마을(판을 바꾼 둘째 마을) 얼음 체육관이 「새순 체육관」·「새잎 배지」였다.
+  const gymPersonas = gyms.map((g, i) => {
+    const type = gymType(i, g);
+    const town = lookTown(towns.find(t => t.key === g.town)!).name;
+    const moved = lookOf(g.town) !== g.town || gymKeys[i] !== g.key;
+    const name = moved ? `${town.replace(/ (마을|시티|항구|온천)$/u, "")} ${gymKeys[i] === "dojo" ? "도장" : "체육관"}` : g.name;
+    const badge = type === g.type ? g.badge : TYPE_BADGE[type] ?? g.badge;
+    const after = type === g.type ? g.after : `${g.after.split(/(?<=[.!?])\s/u)[0]} 이 ${badge}를 맡길게.`;
+    return { ...g, name, badge, after };
+  });
+  const gymMaps = new Map(gymPersonas.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");
   const museum = make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior");
   const school = make("school", "조련사 학교", "rooms/school", "town", "interior");
@@ -511,7 +535,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   }
 
   // All gym devices mutate real map tiles. Their switch journals survive save/load.
-  for (const [i, g] of gyms.entries()) {
+  for (const [i, g] of gymPersonas.entries()) {
     const map = gymMaps.get(g.town)!;
     const base = sources.get(map.id)!;
     const key = gymKeys[i]!;
@@ -635,13 +659,13 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.mapTree = { mapId: hometown.id, children: Object.values(project.maps).filter(m => m.id !== hometown.id).map(m => ({ mapId: m.id, children: [] })) };
   project.system.monsterCampaign = { id: "starlight-islands", name: "별빛섬 몬스터 원정", speciesIds: EXPEDITION_SPECIES.map(s => s.id),
     speciesNotes: Object.fromEntries(EXPEDITION_SPECIES.map(s => [s.id, s.description])),
-    badges: gyms.map((g, i) => ({ id: `badge_${i + 1}`, name: g.badge, switchId: `mx_badge_${i + 1}`, cityMapId: id(g.town) })),
-    locations: [...towns.map(t => ({ mapId: id(t.key), name: t.name, x: t.x, y: t.y, kind: "town" as const })),
+    badges: gymPersonas.map((g, i) => ({ id: `badge_${i + 1}`, name: g.badge, switchId: `mx_badge_${i + 1}`, cityMapId: id(g.town) })),
+    locations: [...towns.map(t => ({ mapId: id(t.key), name: lookTown(t).name, x: t.x, y: t.y, kind: "town" as const })),
       ...routes.map((r, i) => ({ mapId: id(r.key), name: r.name, x: (towns[i]!.x + towns[i + 1]!.x) / 2, y: (towns[i]!.y + towns[i + 1]!.y) / 2, kind: "route" as const })),
       { mapId: observatory.id, name: observatory.name, x: 4, y: 2, kind: "dungeon" }, { mapId: league[0]!.id, name: "별빛 리그", x: 4, y: 0, kind: "league" }],
     objectives: [{ id: "starter", title: "별싹 마을 북동쪽 연구소에서 천문박사와 첫 동료를 만나라.", switchId: "mx_starter" },
-      ...gyms.flatMap((g, i) => [ ...(i === 4 ? [{ id: "rescue", title: "프리즘 시티의 별빛 연구소에서 갇힌 몬스터를 구하라.", switchId: "mx_story_rescue", requiresSwitchId: "mx_badge_4" }] : []),
-        { id: `gym_${i + 1}`, title: `${towns[i + 1]!.name}의 ${g.name}에서 ${g.badge}를 받아라.`, switchId: `mx_badge_${i + 1}`, requiresSwitchId: i === 0 ? "mx_starter" : i === 4 ? "mx_story_rescue" : `mx_badge_${i}` } ]),
+      ...gymPersonas.flatMap((g, i) => [ ...(i === 4 ? [{ id: "rescue", title: "프리즘 시티의 별빛 연구소에서 갇힌 몬스터를 구하라.", switchId: "mx_story_rescue", requiresSwitchId: "mx_badge_4" }] : []),
+        { id: `gym_${i + 1}`, title: `${lookTown(towns[i + 1]!).name}의 ${g.name}에서 ${g.badge}를 받아라.`, switchId: `mx_badge_${i + 1}`, requiresSwitchId: i === 0 ? "mx_starter" : i === 4 ? "mx_story_rescue" : `mx_badge_${i}` } ]),
       { id: "beacon", title: "용마루 시티의 옛 별 관측탑에서 밤막회사를 막고 등대를 복구하라.", switchId: "mx_story_beacon", requiresSwitchId: "mx_badge_8" },
       { id: "league", title: "별빛 리그의 사천왕과 챔피언 나루에게 도전하라.", switchId: "mx_ending", requiresSwitchId: "mx_story_beacon" }] };
   project.endings = [{ id: "mx_ending_starlight", name: "여덟 빛의 약속", conditions: [condition("mx_ending")], priority: 100,
@@ -671,7 +695,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   for (const sid of allSwitches) if (!project.switches.some(s => s.id === sid)) project.switches.push({ id: sid, name: sid });
   project.session.switches = Object.fromEntries(project.switches.map(s => [s.id, false]));
   repairExpeditionNpcLayout(project);
-  repairExpeditionResidents(project);
+  repairExpeditionResidents(project, lookOf);
   repairExpeditionShopPrices(project);
   return manifest;
 }
