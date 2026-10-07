@@ -193,6 +193,16 @@ def on_result(meta, code, result):
         store.log(None,'테마 제작 입력 재확인: '+str(error))
 
 
+def preserved_refs(cid, result):
+    """Receipt-backed preserved parts of the approved layout (demo assembly admits them too)."""
+    layout=read(Path(store.DATA)/'concepts'/cid/'art-layout-input.json',{})
+    if not (layout or {}).get('layout',{}).get('preservedSources'): return set()
+    import art_demo
+    try: preserved=art_demo.validate_preserved_sources(store.DATA,cid,layout,result)
+    except (OSError,ValueError,KeyError,TypeError): return set()
+    return {(r['path'],r['sha256']) for r in preserved}
+
+
 def coverage_status(cid, result, components):
     """Report real native coverage without treating an unmade batch as a repair."""
     ctx=context(cid)
@@ -207,7 +217,7 @@ def coverage_status(cid, result, components):
     exceptions={(r['path'],r['sha256']) for r in ctx['policy']['reuseExceptions']}
     authored.update((r['path'],r['sha256']) for g in components['groups'] for c in g['candidates']
                     if c.get('nativeHarness')=='charset-actor' for r in c.get('nativeSheets',[]))
-    refs_allowed=authored|exceptions
+    refs_allowed=authored|exceptions|preserved_refs(cid,result)
     allowed={digest for path,digest in refs_allowed}
     coverage=result.get('themeCoverage',{})
     if not required: raise ValueError('전용 세트 필수 재료 계획이 없습니다.')

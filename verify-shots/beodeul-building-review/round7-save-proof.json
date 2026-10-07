@@ -1,0 +1,49 @@
+{
+  "savedTarget": "/home/main/.local/share/oprn/beodeul-building-review/review.sqlite",
+  "reloadedFrom": "http://127.0.0.1:18317/api/state",
+  "totalCandidates": 55,
+  "newCandidates": 25,
+  "newDecisions": {
+    "r7-building-01": "pending",
+    "r7-building-02": "pending",
+    "r7-building-03": "pending",
+    "r7-building-04": "pending",
+    "r7-building-05": "pending",
+    "r7-building-06": "pending",
+    "r7-building-07": "pending",
+    "r7-building-08": "pending",
+    "r7-building-09": "pending",
+    "r7-building-10": "pending",
+    "r7-building-11": "pending",
+    "r7-building-12": "pending",
+    "r7-building-13": "pending",
+    "r7-building-14": "pending",
+    "r7-building-15": "pending",
+    "r7-building-16": "pending",
+    "r7-building-17": "pending",
+    "r7-building-18": "pending",
+    "r7-building-19": "pending",
+    "r7-building-20": "pending",
+    "r7-building-21": "pending",
+    "r7-building-22": "pending",
+    "r7-building-23": "pending",
+    "r7-building-24": "pending",
+    "r7-building-25": "pending"
+  },
+  "counts": {
+    "allow": 29,
+    "deny": 1,
+    "pending": 25
+  },
+  "allPriorHumanEventsPreserved": true,
+  "allPrior30ImageHashesUnchanged": true,
+  "finalGridsAndSourceHashesMatch": true,
+  "actualTextureAndStructurePassedFor55": true,
+  "blindControlsPassed": true,
+  "noProductionMockDecisionsWritten": true,
+  "gameProjectUnchanged": {
+    "id": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+    "path": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004/project.sqlite",
+    "contentReloadMatchesBefore": true
+  }
+}

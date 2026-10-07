@@ -1,0 +1,3358 @@
+{
+ "name": "theme_potions_repair_r5_joined_low_vault",
+ "item": "theme_potions_repair_r5_joined_low_vault",
+ "candidate": "h1-A",
+ "source": "art-output/repair-r5-single-outline-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_r5_joined_low_vault/h1-A.png",
+ "sha256": "76afe952133b5b371b08b0e6c9c8c73630b991ae60ccdc2a8adbc92f3944c55e",
+ "set": {
+  "id": "theme potions repair-r5 joined low-vault",
+  "name_ko": "단일 아치 윤곽의 접속재와 실제 4행 지주 윗면",
+  "name_en": "theme potions repair-r5 joined low-vault",
+  "parent": "theme potions repair-v3 connected low-vault",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "반려 항목 전용 변형",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   240
+  ],
+  "description": "Revision5 scene repair, spec route. Preserve six locked native crops byte-for-byte including two uses of full48x64 bay at render(48,0)/(144,0). Rewrite only four unlocked connectors. Read stone-architecture.json junctionContract: crown registration link local52..59/148..155 aligns render68..75/164..171, owned ONLY by original bays. Link is transparent in local[32,0,80,32] and[128,0,176,32]; no second independent crowns. Link actual horizontal spring bridges rows16..19, south face20..23, supports24..31 only in local X0..31/80..127/176..239; everything else alpha0. No fill in arch void, no cut/resize bay. Each other new cap has four actual continuous horizontal surface rows0..3: replace old dark outline row0 with plane colour and place outline laterally. side-pier south4..29/contact30..31, south-cut-pier south4..13/contact14..15, height26/10 and pivots unchanged. west-elbow cap0..3 + south face4..63 steps to link spring seam at x16,y16..23. Dedicated42 palette, large stone courses and low contrast cap; avoid repeated bright crowns and excess #D0C3A6, no new floor noise. Inspect actual candidate and local two-bay/link/elbow, side repetition and south-cut samples at1x/3x with native-junction-samples.py. Missing local sample means generate/inspect the sample, not redraw a correct original. Record measured top rows excluding outline for each unlocked slot in slotResults, side_elevation true/false, evidence coordinates and PASS/FAIL to {PACK}/verdict.json. Never replace prior FAIL. Final four states, all19 materials and actors, protected windows(32,48)/(208,48), board(96,32), faces, door/stair passage and workbench-first contrast belong to post-collection art-context-review; no circular waiting for whole room before native verdict.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "north-left",
+    "label": "north-left",
+    "see": "Complete source16x78 at neutral[48, -10], render[48, 22]. Source socket[8, 42] maps render[56, 64]; stone4row/min6px source[11, 14] render[33, 36], separate dark south face. OD4 full upper run and both elbows retained.",
+    "w": 16,
+    "h": 78,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null,
+    "supportPath": [
+     [
+      56,
+      0
+     ],
+     [
+      56,
+      -8
+     ],
+     [
+      60,
+      -8
+     ],
+     [
+      60,
+      55
+     ],
+     [
+      60,
+      32
+     ],
+     [
+      56,
+      32
+     ]
+    ],
+    "wallSocket": [
+     56,
+     0
+    ],
+    "socketLocal": [
+     8,
+     42
+    ],
+    "heightPx": 32,
+    "x": 0,
+    "y": 0,
+    "heightProjection": {
+     "id": "wall-parent-1",
+     "key": "north-left",
+     "rect": [
+      48,
+      -10,
+      64,
+      68
+     ],
+     "socketPixel": [
+      56,
+      32
+     ],
+     "wallSocket": [
+      56,
+      0
+     ],
+     "path": [
+      [
+       56,
+       0
+      ],
+      [
+       56,
+       -8
+      ],
+      [
+       60,
+       -8
+      ],
+      [
+       60,
+       55
+      ],
+      [
+       60,
+       32
+      ],
+      [
+       56,
+       32
+      ]
+     ],
+     "heightPx": 32,
+     "requirement": "low-vault",
+     "groundFootprint": [
+      0,
+      0
+     ],
+     "layer": 5,
+     "pixel": [
+      48,
+      -10
+     ],
+     "socket": "brass-exhaust",
+     "socketLocal": [
+      8,
+      42
+     ],
+     "attachment": "Physical W masonry base and collar support; OD4 pipe. North rises within actual W before moving over walking cells at centreZ40/bottomZ38. Lower3/4 centreZ41/bottomZ39. Parent4 stone relocated to north partition W16,4 at ground264,72, cap31; no stone silhouette near door80..132. All ground and height use screen(X,Y,Z)=(X,Y-Z).",
+     "wallGroundPixel": [
+      56,
+      32
+     ],
+     "wallSocketHeightPx": 32,
+     "wallSocketScreenRise": 32,
+     "terminalHeightPx": 63,
+     "worldPath": [
+      [
+       56,
+       32,
+       32
+      ],
+      [
+       56,
+       32,
+       40
+      ],
+      [
+       60,
+       32,
+       40
+      ],
+      [
+       60,
+       95,
+       40
+      ],
+      [
+       60,
+       95,
+       63
+      ],
+      [
+       56,
+       95,
+       63
+      ]
+     ],
+     "segments": [
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        56,
+        32,
+        32
+       ],
+       "worldTo": [
+        56,
+        32,
+        40
+       ],
+       "screenFrom": [
+        56,
+        0
+       ],
+       "screenTo": [
+        56,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        56,
+        32,
+        40
+       ],
+       "worldTo": [
+        60,
+        32,
+        40
+       ],
+       "screenFrom": [
+        56,
+        -8
+       ],
+       "screenTo": [
+        60,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        60,
+        32,
+        40
+       ],
+       "worldTo": [
+        60,
+        95,
+        40
+       ],
+       "screenFrom": [
+        60,
+        -8
+       ],
+       "screenTo": [
+        60,
+        55
+       ]
+      },
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        60,
+        95,
+        40
+       ],
+       "worldTo": [
+        60,
+        95,
+        63
+       ],
+       "screenFrom": [
+        60,
+        55
+       ],
+       "screenTo": [
+        60,
+        32
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        60,
+        95,
+        63
+       ],
+       "worldTo": [
+        56,
+        95,
+        63
+       ],
+       "screenFrom": [
+        60,
+        32
+       ],
+       "screenTo": [
+        56,
+        32
+       ]
+      }
+     ],
+     "masonrySupport": {
+      "groundPoint": [
+       56,
+       32
+      ],
+      "capPoint": [
+       56,
+       0
+      ],
+      "capHeight": 32,
+      "groundCell": [
+       3,
+       1
+      ],
+      "topFaceRows": 4,
+      "southFaceRange": [
+       5,
+       32
+      ],
+      "opaqueXRange": [
+       48,
+       64
+      ],
+      "groundOccupancy": "existing W only; no new walkable footprint",
+      "actualVisibleTopBand": [
+       1,
+       4
+      ],
+      "southFaceStart": 5,
+      "collarExclusion": "Keep a contiguous stone patch at least6px wide for all4 rows outside OD4 pipe/collar; highlight outline is additional, not a counted surface.",
+      "sourceTopBand": [
+       11,
+       14
+      ],
+      "renderTopBand": [
+       33,
+       36
+      ],
+      "coordinateNote": "Inclusive top bands; sourceLocalY=neutralY+10; renderY=neutralY+32; south face immediately follows all4 stone surface rows."
+     },
+     "projectedOverlap": "Where plan-run and vertical-rise project to same x range, draw rising foreground pipe in darker south side with elbow/collar at transition; do not treat their screen lengths as physical heights. Native independent reviewer checks these actual junctions.",
+     "upperCut": {
+      "worldNodes": [
+       [
+        56,
+        32,
+        32
+       ],
+       [
+        56,
+        32,
+        40
+       ],
+       [
+        60,
+        32,
+        40
+       ],
+       [
+        60,
+        95,
+        40
+       ],
+       [
+        60,
+        95,
+        63
+       ],
+       [
+        56,
+        95,
+        63
+       ]
+      ],
+      "omittedScreenY": [],
+      "reason": "Full OD4 path and both elbows retained; neutral source startsY-10 and render startsY22. No clipping in final/diagnostic/context.",
+      "fullDesignBounds": [
+       48,
+       -10,
+       64,
+       68
+      ],
+      "visibleCrop": [
+       48,
+       -10,
+       64,
+       68
+      ],
+      "topContinuationRequired": false
+     },
+     "headClearance": {
+      "outerDiameterPx": 4,
+      "runs": [
+       {
+        "worldFrom": [
+         56,
+         32,
+         40
+        ],
+        "worldTo": [
+         60,
+         32,
+         40
+        ],
+        "groundCells": [
+         [
+          3,
+          2
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         60,
+         32,
+         40
+        ],
+        "worldTo": [
+         60,
+         95,
+         40
+        ],
+        "groundCells": [
+         [
+          3,
+          2
+         ],
+         [
+          3,
+          3
+         ],
+         [
+          3,
+          4
+         ],
+         [
+          3,
+          5
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         60,
+         95,
+         63
+        ],
+        "worldTo": [
+         56,
+         95,
+         63
+        ],
+        "groundCells": [
+         [
+          3,
+          5
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 61,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 31
+       }
+      ],
+      "verticalRisesWithinW": true
+     },
+     "coordinateTransform": {
+      "sourceOriginNeutral": [
+       48,
+       -10
+      ],
+      "renderOrigin": [
+       48,
+       22
+      ],
+      "sourcePath": [
+       [
+        8,
+        10
+       ],
+       [
+        8,
+        2
+       ],
+       [
+        12,
+        2
+       ],
+       [
+        12,
+        65
+       ],
+       [
+        12,
+        42
+       ],
+       [
+        8,
+        42
+       ]
+      ],
+      "renderPath": [
+       [
+        56,
+        32
+       ],
+       [
+        56,
+        24
+       ],
+       [
+        60,
+        24
+       ],
+       [
+        60,
+        87
+       ],
+       [
+        60,
+        64
+       ],
+       [
+        56,
+        64
+       ]
+      ],
+      "sourceSocket": [
+       8,
+       42
+      ],
+      "renderSocket": [
+       56,
+       64
+      ],
+      "formula": "sourceLocal=neutral-sourceOrigin; render=neutral+[0,32]; neutral=(worldX,worldY-worldZ)"
+     }
+    },
+    "worldPath": [
+     [
+      56,
+      32,
+      32
+     ],
+     [
+      56,
+      32,
+      40
+     ],
+     [
+      60,
+      32,
+      40
+     ],
+     [
+      60,
+      95,
+      40
+     ],
+     [
+      60,
+      95,
+      63
+     ],
+     [
+      56,
+      95,
+      63
+     ]
+    ]
+   },
+   {
+    "key": "north-right",
+    "label": "north-right",
+    "see": "Complete source16x78 at neutral[160, -10], render[160, 22]. Source socket[8, 42] maps render[168, 64]; stone4row/min6px source[11, 14] render[33, 36], separate dark south face. OD4 full upper run and both elbows retained.",
+    "w": 16,
+    "h": 78,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null,
+    "supportPath": [
+     [
+      168,
+      0
+     ],
+     [
+      168,
+      -8
+     ],
+     [
+      172,
+      -8
+     ],
+     [
+      172,
+      55
+     ],
+     [
+      172,
+      32
+     ],
+     [
+      168,
+      32
+     ]
+    ],
+    "wallSocket": [
+     168,
+     0
+    ],
+    "socketLocal": [
+     8,
+     42
+    ],
+    "heightPx": 32,
+    "x": 16,
+    "y": 0,
+    "heightProjection": {
+     "id": "wall-parent-2",
+     "key": "north-right",
+     "rect": [
+      160,
+      -10,
+      176,
+      68
+     ],
+     "socketPixel": [
+      168,
+      32
+     ],
+     "wallSocket": [
+      168,
+      0
+     ],
+     "path": [
+      [
+       168,
+       0
+      ],
+      [
+       168,
+       -8
+      ],
+      [
+       172,
+       -8
+      ],
+      [
+       172,
+       55
+      ],
+      [
+       172,
+       32
+      ],
+      [
+       168,
+       32
+      ]
+     ],
+     "heightPx": 32,
+     "requirement": "low-vault",
+     "groundFootprint": [
+      0,
+      0
+     ],
+     "layer": 5,
+     "pixel": [
+      160,
+      -10
+     ],
+     "socket": "brass-exhaust",
+     "socketLocal": [
+      8,
+      42
+     ],
+     "attachment": "Physical W masonry base and collar support; OD4 pipe. North rises within actual W before moving over walking cells at centreZ40/bottomZ38. Lower3/4 centreZ41/bottomZ39. Parent4 stone relocated to north partition W16,4 at ground264,72, cap31; no stone silhouette near door80..132. All ground and height use screen(X,Y,Z)=(X,Y-Z).",
+     "wallGroundPixel": [
+      168,
+      32
+     ],
+     "wallSocketHeightPx": 32,
+     "wallSocketScreenRise": 32,
+     "terminalHeightPx": 63,
+     "worldPath": [
+      [
+       168,
+       32,
+       32
+      ],
+      [
+       168,
+       32,
+       40
+      ],
+      [
+       172,
+       32,
+       40
+      ],
+      [
+       172,
+       95,
+       40
+      ],
+      [
+       172,
+       95,
+       63
+      ],
+      [
+       168,
+       95,
+       63
+      ]
+     ],
+     "segments": [
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        168,
+        32,
+        32
+       ],
+       "worldTo": [
+        168,
+        32,
+        40
+       ],
+       "screenFrom": [
+        168,
+        0
+       ],
+       "screenTo": [
+        168,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        168,
+        32,
+        40
+       ],
+       "worldTo": [
+        172,
+        32,
+        40
+       ],
+       "screenFrom": [
+        168,
+        -8
+       ],
+       "screenTo": [
+        172,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        172,
+        32,
+        40
+       ],
+       "worldTo": [
+        172,
+        95,
+        40
+       ],
+       "screenFrom": [
+        172,
+        -8
+       ],
+       "screenTo": [
+        172,
+        55
+       ]
+      },
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        172,
+        95,
+        40
+       ],
+       "worldTo": [
+        172,
+        95,
+        63
+       ],
+       "screenFrom": [
+        172,
+        55
+       ],
+       "screenTo": [
+        172,
+        32
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        172,
+        95,
+        63
+       ],
+       "worldTo": [
+        168,
+        95,
+        63
+       ],
+       "screenFrom": [
+        172,
+        32
+       ],
+       "screenTo": [
+        168,
+        32
+       ]
+      }
+     ],
+     "masonrySupport": {
+      "groundPoint": [
+       168,
+       32
+      ],
+      "capPoint": [
+       168,
+       0
+      ],
+      "capHeight": 32,
+      "groundCell": [
+       10,
+       1
+      ],
+      "topFaceRows": 4,
+      "southFaceRange": [
+       5,
+       32
+      ],
+      "opaqueXRange": [
+       160,
+       176
+      ],
+      "groundOccupancy": "existing W only; no new walkable footprint",
+      "actualVisibleTopBand": [
+       1,
+       4
+      ],
+      "southFaceStart": 5,
+      "collarExclusion": "Keep a contiguous stone patch at least6px wide for all4 rows outside OD4 pipe/collar; highlight outline is additional, not a counted surface.",
+      "sourceTopBand": [
+       11,
+       14
+      ],
+      "renderTopBand": [
+       33,
+       36
+      ],
+      "coordinateNote": "Inclusive top bands; sourceLocalY=neutralY+10; renderY=neutralY+32; south face immediately follows all4 stone surface rows."
+     },
+     "projectedOverlap": "Where plan-run and vertical-rise project to same x range, draw rising foreground pipe in darker south side with elbow/collar at transition; do not treat their screen lengths as physical heights. Native independent reviewer checks these actual junctions.",
+     "upperCut": {
+      "worldNodes": [
+       [
+        168,
+        32,
+        32
+       ],
+       [
+        168,
+        32,
+        40
+       ],
+       [
+        172,
+        32,
+        40
+       ],
+       [
+        172,
+        95,
+        40
+       ],
+       [
+        172,
+        95,
+        63
+       ],
+       [
+        168,
+        95,
+        63
+       ]
+      ],
+      "omittedScreenY": [],
+      "reason": "Full OD4 path and both elbows retained; neutral source startsY-10 and render startsY22. No clipping in final/diagnostic/context.",
+      "fullDesignBounds": [
+       160,
+       -10,
+       176,
+       68
+      ],
+      "visibleCrop": [
+       160,
+       -10,
+       176,
+       68
+      ],
+      "topContinuationRequired": false
+     },
+     "headClearance": {
+      "outerDiameterPx": 4,
+      "runs": [
+       {
+        "worldFrom": [
+         168,
+         32,
+         40
+        ],
+        "worldTo": [
+         172,
+         32,
+         40
+        ],
+        "groundCells": [
+         [
+          10,
+          2
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         172,
+         32,
+         40
+        ],
+        "worldTo": [
+         172,
+         95,
+         40
+        ],
+        "groundCells": [
+         [
+          10,
+          2
+         ],
+         [
+          10,
+          3
+         ],
+         [
+          10,
+          4
+         ],
+         [
+          10,
+          5
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         172,
+         95,
+         63
+        ],
+        "worldTo": [
+         168,
+         95,
+         63
+        ],
+        "groundCells": [
+         [
+          10,
+          5
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 61,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 31
+       }
+      ],
+      "verticalRisesWithinW": true
+     },
+     "coordinateTransform": {
+      "sourceOriginNeutral": [
+       160,
+       -10
+      ],
+      "renderOrigin": [
+       160,
+       22
+      ],
+      "sourcePath": [
+       [
+        8,
+        10
+       ],
+       [
+        8,
+        2
+       ],
+       [
+        12,
+        2
+       ],
+       [
+        12,
+        65
+       ],
+       [
+        12,
+        42
+       ],
+       [
+        8,
+        42
+       ]
+      ],
+      "renderPath": [
+       [
+        168,
+        32
+       ],
+       [
+        168,
+        24
+       ],
+       [
+        172,
+        24
+       ],
+       [
+        172,
+        87
+       ],
+       [
+        172,
+        64
+       ],
+       [
+        168,
+        64
+       ]
+      ],
+      "sourceSocket": [
+       8,
+       42
+      ],
+      "renderSocket": [
+       168,
+       64
+      ],
+      "formula": "sourceLocal=neutral-sourceOrigin; render=neutral+[0,32]; neutral=(worldX,worldY-worldZ)"
+     }
+    },
+    "worldPath": [
+     [
+      168,
+      32,
+      32
+     ],
+     [
+      168,
+      32,
+      40
+     ],
+     [
+      172,
+      32,
+      40
+     ],
+     [
+      172,
+      95,
+      40
+     ],
+     [
+      172,
+      95,
+      63
+     ],
+     [
+      168,
+      95,
+      63
+     ]
+    ]
+   },
+   {
+    "key": "west-lower",
+    "label": "west-lower",
+    "see": "west-lower; real4-row stone patch outside pipe, dark south face starts next row",
+    "w": 48,
+    "h": 49,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null,
+    "supportPath": [
+     [
+      8,
+      102
+     ],
+     [
+      40,
+      102
+     ]
+    ],
+    "wallSocket": [
+     8,
+     102
+    ],
+    "socketLocal": [
+     40,
+     4
+    ],
+    "heightPx": 41,
+    "x": 32,
+    "y": 0,
+    "heightProjection": {
+     "id": "wall-parent-3",
+     "key": "west-lower",
+     "rect": [
+      0,
+      98,
+      48,
+      147
+     ],
+     "socketPixel": [
+      40,
+      102
+     ],
+     "wallSocket": [
+      8,
+      102
+     ],
+     "path": [
+      [
+       8,
+       102
+      ],
+      [
+       40,
+       102
+      ]
+     ],
+     "heightPx": 41,
+     "requirement": "low-vault",
+     "groundFootprint": [
+      0,
+      0
+     ],
+     "layer": 5,
+     "pixel": [
+      0,
+      98
+     ],
+     "socket": "brass-exhaust",
+     "socketLocal": [
+      40,
+      4
+     ],
+     "attachment": "Physical W masonry base and collar support; OD4 pipe. North rises within actual W before moving over walking cells at centreZ40/bottomZ38. Lower3/4 centreZ41/bottomZ39. Parent4 stone relocated to north partition W16,4 at ground264,72, cap31; no stone silhouette near door80..132. All ground and height use screen(X,Y,Z)=(X,Y-Z).",
+     "wallGroundPixel": [
+      8,
+      143
+     ],
+     "wallSocketHeightPx": 41,
+     "wallSocketScreenRise": 41,
+     "terminalHeightPx": 41,
+     "worldPath": [
+      [
+       8,
+       143,
+       41
+      ],
+      [
+       40,
+       143,
+       41
+      ]
+     ],
+     "segments": [
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        8,
+        143,
+        41
+       ],
+       "worldTo": [
+        40,
+        143,
+        41
+       ],
+       "screenFrom": [
+        8,
+        102
+       ],
+       "screenTo": [
+        40,
+        102
+       ]
+      }
+     ],
+     "masonrySupport": {
+      "groundPoint": [
+       8,
+       143
+      ],
+      "capPoint": [
+       8,
+       102
+      ],
+      "capHeight": 41,
+      "groundCell": [
+       0,
+       8
+      ],
+      "topFaceRows": 4,
+      "southFaceRange": [
+       102,
+       143
+      ],
+      "opaqueXRange": [
+       0,
+       16
+      ],
+      "groundOccupancy": "existing W only; no new walkable footprint",
+      "actualVisibleTopBand": [
+       98,
+       101
+      ],
+      "southFaceStart": 102,
+      "collarExclusion": "Keep a contiguous stone patch at least6px wide for all4 rows outside OD4 pipe/collar; highlight outline is additional, not a counted surface."
+     },
+     "projectedOverlap": "Where plan-run and vertical-rise project to same x range, draw rising foreground pipe in darker south side with elbow/collar at transition; do not treat their screen lengths as physical heights. Native independent reviewer checks these actual junctions.",
+     "headClearance": {
+      "outerDiameterPx": 4,
+      "runs": [
+       {
+        "worldFrom": [
+         8,
+         143,
+         41
+        ],
+        "worldTo": [
+         40,
+         143,
+         41
+        ],
+        "groundCells": [
+         [
+          0,
+          8
+         ],
+         [
+          1,
+          8
+         ],
+         [
+          2,
+          8
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 39,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 9
+       }
+      ],
+      "verticalRisesWithinW": true
+     }
+    },
+    "worldPath": [
+     [
+      8,
+      143,
+      41
+     ],
+     [
+      40,
+      143,
+      41
+     ]
+    ]
+   },
+   {
+    "key": "partition-lower",
+    "label": "partition-lower",
+    "see": "partition-lower; real4-row stone patch outside pipe, dark south face starts next row",
+    "w": 128,
+    "h": 80,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null,
+    "supportPath": [
+     [
+      264,
+      31
+     ],
+     [
+      152,
+      31
+     ],
+     [
+      152,
+      102
+     ]
+    ],
+    "wallSocket": [
+     264,
+     31
+    ],
+    "socketLocal": [
+     8,
+     75
+    ],
+    "heightPx": 41,
+    "x": 80,
+    "y": 0,
+    "heightProjection": {
+     "id": "wall-parent-4",
+     "key": "partition-lower",
+     "rect": [
+      144,
+      27,
+      272,
+      107
+     ],
+     "socketPixel": [
+      152,
+      102
+     ],
+     "wallSocket": [
+      264,
+      31
+     ],
+     "path": [
+      [
+       264,
+       31
+      ],
+      [
+       152,
+       31
+      ],
+      [
+       152,
+       102
+      ]
+     ],
+     "heightPx": 41,
+     "requirement": "low-vault",
+     "groundFootprint": [
+      0,
+      0
+     ],
+     "layer": 5,
+     "pixel": [
+      144,
+      27
+     ],
+     "socket": "brass-exhaust",
+     "socketLocal": [
+      8,
+      75
+     ],
+     "attachment": "Physical W masonry base and collar support; OD4 pipe. North rises within actual W before moving over walking cells at centreZ40/bottomZ38. Lower3/4 centreZ41/bottomZ39. Parent4 stone relocated to north partition W16,4 at ground264,72, cap31; no stone silhouette near door80..132. All ground and height use screen(X,Y,Z)=(X,Y-Z).",
+     "wallGroundPixel": [
+      264,
+      72
+     ],
+     "wallSocketHeightPx": 41,
+     "wallSocketScreenRise": 41,
+     "terminalHeightPx": 41,
+     "worldPath": [
+      [
+       264,
+       72,
+       41
+      ],
+      [
+       152,
+       72,
+       41
+      ],
+      [
+       152,
+       143,
+       41
+      ]
+     ],
+     "segments": [
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        264,
+        72,
+        41
+       ],
+       "worldTo": [
+        152,
+        72,
+        41
+       ],
+       "screenFrom": [
+        264,
+        31
+       ],
+       "screenTo": [
+        152,
+        31
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        152,
+        72,
+        41
+       ],
+       "worldTo": [
+        152,
+        143,
+        41
+       ],
+       "screenFrom": [
+        152,
+        31
+       ],
+       "screenTo": [
+        152,
+        102
+       ]
+      }
+     ],
+     "masonrySupport": {
+      "groundPoint": [
+       264,
+       72
+      ],
+      "capPoint": [
+       264,
+       31
+      ],
+      "capHeight": 41,
+      "groundCell": [
+       16,
+       4
+      ],
+      "topFaceRows": 4,
+      "southFaceRange": [
+       35,
+       72
+      ],
+      "opaqueXRange": [
+       256,
+       272
+      ],
+      "groundOccupancy": "existing W only; no new walkable footprint",
+      "actualVisibleTopBand": [
+       31,
+       34
+      ],
+      "southFaceStart": 35,
+      "collarExclusion": "Keep a contiguous stone patch at least6px wide for all4 rows outside OD4 pipe/collar; highlight outline is additional, not a counted surface."
+     },
+     "projectedOverlap": "Where plan-run and vertical-rise project to same x range, draw rising foreground pipe in darker south side with elbow/collar at transition; do not treat their screen lengths as physical heights. Native independent reviewer checks these actual junctions.",
+     "headClearance": {
+      "outerDiameterPx": 4,
+      "runs": [
+       {
+        "worldFrom": [
+         264,
+         72,
+         41
+        ],
+        "worldTo": [
+         152,
+         72,
+         41
+        ],
+        "groundCells": [
+         [
+          9,
+          4
+         ],
+         [
+          10,
+          4
+         ],
+         [
+          11,
+          4
+         ],
+         [
+          12,
+          4
+         ],
+         [
+          13,
+          4
+         ],
+         [
+          14,
+          4
+         ],
+         [
+          15,
+          4
+         ],
+         [
+          16,
+          4
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 39,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 9
+       },
+       {
+        "worldFrom": [
+         152,
+         72,
+         41
+        ],
+        "worldTo": [
+         152,
+         143,
+         41
+        ],
+        "groundCells": [
+         [
+          9,
+          4
+         ],
+         [
+          9,
+          5
+         ],
+         [
+          9,
+          6
+         ],
+         [
+          9,
+          7
+         ],
+         [
+          9,
+          8
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 39,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 9
+       }
+      ],
+      "verticalRisesWithinW": true
+     }
+    },
+    "worldPath": [
+     [
+      264,
+      72,
+      41
+     ],
+     [
+      152,
+      72,
+      41
+     ],
+     [
+      152,
+      143,
+      41
+     ]
+    ]
+   },
+   {
+    "key": "north-master",
+    "label": "north-master",
+    "see": "Complete source24x54 at neutral[144, -10], render[144, 22]. Source socket[8, 10] maps render[152, 32]; stone4row/min6px source[19, 22] render[41, 44], separate dark south face. OD4 full upper run and both elbows retained.",
+    "w": 24,
+    "h": 54,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null,
+    "supportPath": [
+     [
+      152,
+      8
+     ],
+     [
+      152,
+      -8
+     ],
+     [
+      160,
+      -8
+     ],
+     [
+      160,
+      23
+     ],
+     [
+      160,
+      0
+     ],
+     [
+      152,
+      0
+     ]
+    ],
+    "wallSocket": [
+     152,
+     8
+    ],
+    "socketLocal": [
+     8,
+     10
+    ],
+    "heightPx": 24,
+    "x": 208,
+    "y": 0,
+    "heightProjection": {
+     "id": "wall-parent-5",
+     "key": "north-master",
+     "rect": [
+      144,
+      -10,
+      168,
+      44
+     ],
+     "socketPixel": [
+      152,
+      0
+     ],
+     "wallSocket": [
+      152,
+      8
+     ],
+     "path": [
+      [
+       152,
+       8
+      ],
+      [
+       152,
+       -8
+      ],
+      [
+       160,
+       -8
+      ],
+      [
+       160,
+       23
+      ],
+      [
+       160,
+       0
+      ],
+      [
+       152,
+       0
+      ]
+     ],
+     "heightPx": 24,
+     "requirement": "low-vault",
+     "groundFootprint": [
+      0,
+      0
+     ],
+     "layer": 5,
+     "pixel": [
+      144,
+      -10
+     ],
+     "socket": "brass-exhaust",
+     "socketLocal": [
+      8,
+      10
+     ],
+     "attachment": "Physical W masonry base and collar support; OD4 pipe. North rises within actual W before moving over walking cells at centreZ40/bottomZ38. Lower3/4 centreZ41/bottomZ39. Parent4 stone relocated to north partition W16,4 at ground264,72, cap31; no stone silhouette near door80..132. All ground and height use screen(X,Y,Z)=(X,Y-Z).",
+     "wallGroundPixel": [
+      152,
+      32
+     ],
+     "wallSocketHeightPx": 24,
+     "wallSocketScreenRise": 24,
+     "terminalHeightPx": 63,
+     "worldPath": [
+      [
+       152,
+       32,
+       24
+      ],
+      [
+       152,
+       32,
+       40
+      ],
+      [
+       160,
+       32,
+       40
+      ],
+      [
+       160,
+       63,
+       40
+      ],
+      [
+       160,
+       63,
+       63
+      ],
+      [
+       152,
+       63,
+       63
+      ]
+     ],
+     "segments": [
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        152,
+        32,
+        24
+       ],
+       "worldTo": [
+        152,
+        32,
+        40
+       ],
+       "screenFrom": [
+        152,
+        8
+       ],
+       "screenTo": [
+        152,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        152,
+        32,
+        40
+       ],
+       "worldTo": [
+        160,
+        32,
+        40
+       ],
+       "screenFrom": [
+        152,
+        -8
+       ],
+       "screenTo": [
+        160,
+        -8
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        160,
+        32,
+        40
+       ],
+       "worldTo": [
+        160,
+        63,
+        40
+       ],
+       "screenFrom": [
+        160,
+        -8
+       ],
+       "screenTo": [
+        160,
+        23
+       ]
+      },
+      {
+       "kind": "vertical-rise",
+       "worldFrom": [
+        160,
+        63,
+        40
+       ],
+       "worldTo": [
+        160,
+        63,
+        63
+       ],
+       "screenFrom": [
+        160,
+        23
+       ],
+       "screenTo": [
+        160,
+        0
+       ]
+      },
+      {
+       "kind": "planar-run",
+       "worldFrom": [
+        160,
+        63,
+        63
+       ],
+       "worldTo": [
+        152,
+        63,
+        63
+       ],
+       "screenFrom": [
+        160,
+        0
+       ],
+       "screenTo": [
+        152,
+        0
+       ]
+      }
+     ],
+     "masonrySupport": {
+      "groundPoint": [
+       152,
+       32
+      ],
+      "capPoint": [
+       152,
+       8
+      ],
+      "capHeight": 24,
+      "groundCell": [
+       9,
+       1
+      ],
+      "topFaceRows": 4,
+      "southFaceRange": [
+       13,
+       32
+      ],
+      "opaqueXRange": [
+       144,
+       160
+      ],
+      "groundOccupancy": "existing W only; no new walkable footprint",
+      "actualVisibleTopBand": [
+       9,
+       12
+      ],
+      "southFaceStart": 13,
+      "collarExclusion": "Keep a contiguous stone patch at least6px wide for all4 rows outside OD4 pipe/collar; highlight outline is additional, not a counted surface.",
+      "sourceTopBand": [
+       19,
+       22
+      ],
+      "renderTopBand": [
+       41,
+       44
+      ],
+      "coordinateNote": "Inclusive top bands; sourceLocalY=neutralY+10; renderY=neutralY+32; south face immediately follows all4 stone surface rows."
+     },
+     "projectedOverlap": "Where plan-run and vertical-rise project to same x range, draw rising foreground pipe in darker south side with elbow/collar at transition; do not treat their screen lengths as physical heights. Native independent reviewer checks these actual junctions.",
+     "upperCut": {
+      "worldNodes": [
+       [
+        152,
+        32,
+        24
+       ],
+       [
+        152,
+        32,
+        40
+       ],
+       [
+        160,
+        32,
+        40
+       ],
+       [
+        160,
+        63,
+        40
+       ],
+       [
+        160,
+        63,
+        63
+       ],
+       [
+        152,
+        63,
+        63
+       ]
+      ],
+      "omittedScreenY": [],
+      "reason": "Full OD4 path and both elbows retained; neutral source startsY-10 and render startsY22. No clipping in final/diagnostic/context.",
+      "fullDesignBounds": [
+       144,
+       -10,
+       168,
+       44
+      ],
+      "visibleCrop": [
+       144,
+       -10,
+       168,
+       44
+      ],
+      "topContinuationRequired": false
+     },
+     "headClearance": {
+      "outerDiameterPx": 4,
+      "runs": [
+       {
+        "worldFrom": [
+         152,
+         32,
+         40
+        ],
+        "worldTo": [
+         160,
+         32,
+         40
+        ],
+        "groundCells": [
+         [
+          9,
+          2
+         ],
+         [
+          10,
+          2
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         160,
+         32,
+         40
+        ],
+        "worldTo": [
+         160,
+         63,
+         40
+        ],
+        "groundCells": [
+         [
+          10,
+          2
+         ],
+         [
+          10,
+          3
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 38,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 8
+       },
+       {
+        "worldFrom": [
+         160,
+         63,
+         63
+        ],
+        "worldTo": [
+         152,
+         63,
+         63
+        ],
+        "groundCells": [
+         [
+          9,
+          3
+         ],
+         [
+          10,
+          3
+         ]
+        ],
+        "outsideWMinPipeBottomZ": 61,
+        "adultHeight": 30,
+        "studentHeight": 27,
+        "headClearancePx": 31
+       }
+      ],
+      "verticalRisesWithinW": true
+     },
+     "coordinateTransform": {
+      "sourceOriginNeutral": [
+       144,
+       -10
+      ],
+      "renderOrigin": [
+       144,
+       22
+      ],
+      "sourcePath": [
+       [
+        8,
+        18
+       ],
+       [
+        8,
+        2
+       ],
+       [
+        16,
+        2
+       ],
+       [
+        16,
+        33
+       ],
+       [
+        16,
+        10
+       ],
+       [
+        8,
+        10
+       ]
+      ],
+      "renderPath": [
+       [
+        152,
+        40
+       ],
+       [
+        152,
+        24
+       ],
+       [
+        160,
+        24
+       ],
+       [
+        160,
+        55
+       ],
+       [
+        160,
+        32
+       ],
+       [
+        152,
+        32
+       ]
+      ],
+      "sourceSocket": [
+       8,
+       10
+      ],
+      "renderSocket": [
+       152,
+       32
+      ],
+      "formula": "sourceLocal=neutral-sourceOrigin; render=neutral+[0,32]; neutral=(worldX,worldY-worldZ)"
+     }
+    },
+    "worldPath": [
+     [
+      152,
+      32,
+      24
+     ],
+     [
+      152,
+      32,
+      40
+     ],
+     [
+      160,
+      32,
+      40
+     ],
+     [
+      160,
+      63,
+      40
+     ],
+     [
+      160,
+      63,
+      63
+     ],
+     [
+      152,
+      63,
+      63
+     ]
+    ]
+   },
+   {
+    "key": "north-vault-bay",
+    "label": "complete stone pointed vault bay",
+    "see": "Complete pointed stone arch with two spring joints at worldY32/Z48, crown Z64. Source48x64 contains crown localY0, springs localY16, piers to localY63. Horizontal upper depth4px projects south at localY0..3; dark south thickness4px follows. Entire source used without crop in final render(48,0); world supports48/96,32 unchanged.",
+    "x": 0,
+    "y": 80,
+    "w": 48,
+    "h": 64,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 5,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": true,
+    "child": null
+   },
+   {
+    "key": "north-link",
+    "label": "north-link",
+    "see": "Link alpha must be zero outside three ownership rects, including both entire bay overlap rectangles. Crown registration x52..59/148..155 follows original crowns x68..75/164..171: full bays alone own the crowns and shoulders. No added crown x20..27/92..99/196..203. Bridge end top rows16..19 and south rows20..23 join preserved bay spring shoulders y16..23. Continuous actual top4 excludes outline; support rows24..31 restricted to non-bay piers. Do not fill arch void or crop original48x64.",
+    "w": 240,
+    "h": 32,
+    "x": 0,
+    "y": 144,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": false,
+    "child": null,
+    "physicalGeometry": {
+     "worldContract": "art-output/repair-r5-single-outline-prep/stone-architecture.json",
+     "topFaceRows": [
+      16,
+      20
+     ],
+     "actualSurfaceRows": 4,
+     "excludeOutline": true
+    },
+    "junctionContract": {
+     "coordinateConvention": "half-open rects; local PNG pixels and render coordinates explicitly separated",
+     "bayRenderRects": [
+      [
+       48,
+       0,
+       96,
+       64
+      ],
+      [
+       144,
+       0,
+       192,
+       64
+      ]
+     ],
+     "bayLinkLocalRects": [
+      [
+       32,
+       0,
+       80,
+       32
+      ],
+      [
+       128,
+       0,
+       176,
+       32
+      ]
+     ],
+     "crownRegistration": [
+      {
+       "bayLocalX": [
+        20,
+        28
+       ],
+       "linkLocalX": [
+        52,
+        60
+       ],
+       "renderX": [
+        68,
+        76
+       ],
+       "owner": "full bay",
+       "topRows": [
+        0,
+        4
+       ],
+       "southRows": [
+        4,
+        8
+       ]
+      },
+      {
+       "bayLocalX": [
+        20,
+        28
+       ],
+       "linkLocalX": [
+        148,
+        156
+       ],
+       "renderX": [
+        164,
+        172
+       ],
+       "owner": "full bay",
+       "topRows": [
+        0,
+        4
+       ],
+       "southRows": [
+        4,
+        8
+       ]
+      }
+     ],
+     "linkOwnershipRects": [
+      [
+       0,
+       16,
+       32,
+       32
+      ],
+      [
+       80,
+       16,
+       128,
+       32
+      ],
+      [
+       176,
+       16,
+       240,
+       32
+      ]
+     ],
+     "linkTopRows": [
+      16,
+      20
+     ],
+     "linkSouthRows": [
+      20,
+      24
+     ],
+     "linkSupportRows": [
+      24,
+      32
+     ],
+     "linkTopWorldZ": 48,
+     "linkTopWorldY": [
+      32,
+      36
+     ],
+     "linkSouthWorldY": 36,
+     "linkSouthWorldZ": [
+      48,
+      44
+     ],
+     "renderJunctions": [
+      {
+       "bayEdgeX": 48,
+       "linkEdgeX": 47,
+       "side": "west",
+       "topRows": [
+        16,
+        20
+       ],
+       "southRows": [
+        20,
+        24
+       ]
+      },
+      {
+       "bayEdgeX": 95,
+       "linkEdgeX": 96,
+       "side": "east",
+       "topRows": [
+        16,
+        20
+       ],
+       "southRows": [
+        20,
+        24
+       ]
+      },
+      {
+       "bayEdgeX": 144,
+       "linkEdgeX": 143,
+       "side": "west",
+       "topRows": [
+        16,
+        20
+       ],
+       "southRows": [
+        20,
+        24
+       ]
+      },
+      {
+       "bayEdgeX": 191,
+       "linkEdgeX": 192,
+       "side": "east",
+       "topRows": [
+        16,
+        20
+       ],
+       "southRows": [
+        20,
+        24
+       ]
+      }
+     ],
+     "originalEdgeRGBA": {
+      "0": [
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        52,
+        51,
+        56,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ]
+      ],
+      "1": [
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ]
+      ],
+      "46": [
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ]
+      ],
+      "47": [
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        0,
+        0,
+        0
+       ],
+       [
+        164,
+        154,
+        135,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        119,
+        113,
+        107,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        52,
+        51,
+        56,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ],
+       [
+        85,
+        81,
+        84,
+        255
+       ]
+      ]
+     },
+     "originalBaySource": {
+      "path": "art-output/repair-v2-order-socket-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_low_vault/h1-A.png",
+      "sha256": "0e1da7c5139a828bddf242f631ca838af840bbaa9f2399587a0f52784a1007cb",
+      "crop": [
+       0,
+       80,
+       48,
+       64
+      ]
+     },
+     "rule": "Link alpha must be zero outside three ownership rects, including both entire bay overlap rectangles. Crown registration x52..59/148..155 follows original crowns x68..75/164..171: full bays alone own the crowns and shoulders. No added crown x20..27/92..99/196..203. Bridge end top rows16..19 and south rows20..23 join preserved bay spring shoulders y16..23. Continuous actual top4 excludes outline; support rows24..31 restricted to non-bay piers. Do not fill arch void or crop original48x64.",
+     "elbowJoin": {
+      "renderBoundaryX": 16,
+      "elbowEndLocalX": 15,
+      "linkStartLocalX": 0,
+      "topRows": [
+       16,
+       20
+      ],
+      "southRows": [
+       20,
+       24
+      ],
+      "upperCapRows": [
+       0,
+       4
+      ],
+      "owner": "elbow alone owns corner cap; link begins only at spring-level y16",
+      "rule": "Elbow cap0..3 is actual plane; outline on lateral boundary, not full dark row0. Step down along W strip to spring bridge16..19; no second arch."
+     },
+     "requiredSamples": [
+      "two full bays + link + west elbow render0,0..272,80",
+      "repeated W/E piers with directional large stone courses",
+      "south cut piers and stairs opening x112..160"
+     ],
+     "expected": "single outline per arch, four actual horizontal face rows at each new top, no double bright shoulders x48..64/144..160,y8..24"
+    }
+   },
+   {
+    "key": "west-elbow",
+    "label": "west-elbow",
+    "see": "Corner cap actual horizontal source0..3, physical height60 above footprint groundY28..32, south-footY32. Top worldY28..32,Z60 projects render0..4; south atY32,Z60..0 projects4..64. Last two rows62..63 are base contact shading within face. Keep16x64/origin0/ground W contact32, lateral contour only. At render x16,y16..23 provide spring step actual top16..19 and south20..23 joining link; no full dark top row or second arch.",
+    "w": 16,
+    "h": 64,
+    "x": 240,
+    "y": 144,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": false,
+    "child": null,
+    "physicalGeometry": {
+     "worldContract": "art-output/repair-r5-single-outline-prep/stone-architecture.json",
+     "topFaceRows": [
+      0,
+      4
+     ],
+     "actualSurfaceRows": 4,
+     "excludeOutline": true
+    }
+   },
+   {
+    "key": "side-pier",
+    "label": "side-pier",
+    "see": "Actual horizontal plane source rows0..3: reauthor row0 as surface, move outline to lateral edges. Four real surface rows exclude outline. side-pier: neutral atY=a (64,128,32,144), physical height26, footprint groundY(a+26)..(a+30), south-foot groundAnchorY=a+30 (94,158,62,174) Z0. Top vertices Z26 project neutralY a..a+4; south face at groundY a+30 Z26..0 projects a+4..a+30; contact groundY a+30..a+32 projects a+30..a+32. Render adds offset32 once. Source16x32 rows top0..4/south4..30/contact30..32, no clip or new ground occupation.",
+    "w": 16,
+    "h": 32,
+    "x": 0,
+    "y": 208,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": false,
+    "child": null,
+    "physicalGeometry": {
+     "height": 26,
+     "footprintRelativeToAt": [
+      0,
+      26,
+      16,
+      30
+     ],
+     "southFootRelativeY": 30,
+     "topFaceRows": [
+      0,
+      4
+     ],
+     "southFaceRows": [
+      4,
+      30
+     ],
+     "contactRows": [
+      30,
+      32
+     ],
+     "worldContract": "art-output/repair-r5-single-outline-prep/stone-architecture.json",
+     "actualSurfaceRows": 4,
+     "excludeOutline": true
+    }
+   },
+   {
+    "key": "south-cut-pier",
+    "label": "south-cut-pier",
+    "see": "Actual horizontal plane source rows0..3: reauthor row0 as surface, move outline to lateral edges. Four real surface rows exclude outline. south-cut-pier: footprint groundY186..190; south-foot groundAnchorY190 Z0; height10. Top north/south vertices (Y186/190,Z10) project renderY208/212. South face at worldY190 Z10..0 projects212..222; contact groundY190..192 Z0 projects222..224. at=(X,186-10)=(X,176) camera-neutral; offset32 once. Top4+south10+contact2 are separate source rows0..4/4..14/14..16. W cells x0,48,192,256 row11 only; no stair or passage occlusion.",
+    "w": 16,
+    "h": 16,
+    "x": 16,
+    "y": 208,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 4,
+    "locked": false,
+    "child": null,
+    "physicalGeometry": {
+     "footprintLocal": [
+      0,
+      186,
+      16,
+      190
+     ],
+     "height": 10,
+     "southFootY": 190,
+     "topFaceRows": [
+      0,
+      4
+     ],
+     "southFaceRows": [
+      4,
+      14
+     ],
+     "contactRows": [
+      14,
+      16
+     ],
+     "worldContract": "art-output/repair-r5-single-outline-prep/stone-architecture.json",
+     "actualSurfaceRows": 4,
+     "excludeOutline": true
+    }
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r5-single-outline-prep/scene-contract.json",
+   "instructions": "Revision5 scene repair, spec route. Preserve six locked native crops byte-for-byte including two uses of full48x64 bay at render(48,0)/(144,0). Rewrite only four unlocked connectors. Read stone-architecture.json junctionContract: crown registration link local52..59/148..155 aligns render68..75/164..171, owned ONLY by original bays. Link is transparent in local[32,0,80,32] and[128,0,176,32]; no second independent crowns. Link actual horizontal spring bridges rows16..19, south face20..23, supports24..31 only in local X0..31/80..127/176..239; everything else alpha0. No fill in arch void, no cut/resize bay. Each other new cap has four actual continuous horizontal surface rows0..3: replace old dark outline row0 with plane colour and place outline laterally. side-pier south4..29/contact30..31, south-cut-pier south4..13/contact14..15, height26/10 and pivots unchanged. west-elbow cap0..3 + south face4..63 steps to link spring seam at x16,y16..23. Dedicated42 palette, large stone courses and low contrast cap; avoid repeated bright crowns and excess #D0C3A6, no new floor noise. Inspect actual candidate and local two-bay/link/elbow, side repetition and south-cut samples at1x/3x with native-junction-samples.py. Missing local sample means generate/inspect the sample, not redraw a correct original. Record measured top rows excluding outline for each unlocked slot in slotResults, side_elevation true/false, evidence coordinates and PASS/FAIL to {PACK}/verdict.json. Never replace prior FAIL. Final four states, all19 materials and actors, protected windows(32,48)/(208,48), board(96,32), faces, door/stair passage and workbench-first contrast belong to post-collection art-context-review; no circular waiting for whole room before native verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "low-vault",
+   "repairOfCollected": true,
+   "preserveSource": {
+    "path": "art-output/repair-v2-order-socket-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v2_low_vault/h1-A.png",
+    "sha256": "0e1da7c5139a828bddf242f631ca838af840bbaa9f2399587a0f52784a1007cb"
+   },
+   "localReviewSamples": {
+    "script": "art-output/repair-r5-single-outline-prep/native-junction-samples.py",
+    "contract": "art-output/repair-r5-single-outline-prep/stone-architecture.json"
+   },
+   "repairSeed": {
+    "path": "art-output/repair-v3-world-contract-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_repair_v3_connected_low_vault/h2-A.png",
+    "sha256": "57cdcddd6804237140dfa22e6f34171f38678edd4ca9fbfb8ad669c2af28efe3"
+   }
+  }
+ }
+}

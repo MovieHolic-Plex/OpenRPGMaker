@@ -919,7 +919,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     // and never wrote the intro. Each stage gets only its relevant tools.
     const placeTools = ['get_map_region', 'get_event', 'show_map_region', 'check_reachability', 'run_lint',
       'find_tools', 'list_tileset_references', 'read_tileset_reference', 'list_hand_interior_parts',
-      'build_hand_interior_room', 'set_map_properties', 'set_start_position', 'author_wild_route',
+      'build_hand_interior_room', 'list_wizarding_spaces', 'build_wizarding_space', 'set_map_properties', 'set_start_position', 'author_wild_route',
       'move_event', 'upsert_event'];
     for (const stage of ['places', 'entry'] as const) {
       const places = stage === 'places';

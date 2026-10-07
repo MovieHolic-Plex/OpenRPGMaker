@@ -1,0 +1,14 @@
+{
+  "savedTarget": "/home/main/.local/share/oprn/beodeul-building-review/review.sqlite",
+  "reloadedThrough": "http://127.0.0.1:18317/api/state",
+  "candidateCount": 20,
+  "newCandidateCount": 10,
+  "counts": {
+    "allow": 4,
+    "deny": 0,
+    "pending": 16
+  },
+  "priorHumanEventsPreserved": 4,
+  "priorApprovedImageHashesUnchanged": true,
+  "productionMockDecisionsWritten": false
+}

@@ -1,9 +1,85 @@
 # 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
+## 2026-10-05 건물 반려와 사람의 허용/거절 대기열
+
+사용자는 아래 `beodeul_forms`의 ㄱ자집·여관·대장간·창고 4종을 반려했다. 검사 통과를 미적 승인으로 쓰지 않는다. `beodeulForms.ts`는 새/기존 공용 선택 목록에서 이 4종의 본체·그림자·기초 키트를 제거하며, 기존 저장 지도의 칸·그림·통행은 보존한다. 관련 공용 참고문서는 반려를 명시한 과거 기록이다. 긴 민가와 좁은 이층집의 키트만 남긴다.
+
+사용자가 새 지붕·창문·벽 질감으로 10종 저작과 개별 허용/거절을 요청했다. [beodeul-building-review](harnesses/beodeul-building-review.md) 하네스는 원본 도트 부품과 명시한 좌표로 비공개 후보를 만들고, 독립적인 질감·구조 Visual QA 및 숨긴 반려 표본 검사에 모두 통과한 그림만 공개한다. `http://mdc-server:18317/`에서 갤러리·고정 메모/결정 패널로 검수하고 확대/격자/잔디·기존 집/나무와 비교한다. 새 형태 필터 `?ui=3&new=1`도 제공한다. round 3은 타 게임의 시설 표식·실루엣 원리를 조사해 용도별 간판과 지붕 색·높이·몸체가 다른 10종을 추가하며, 기존 10종과 인간 선택은 보존한다. 결정/메모는 저장소 밖 SQLite에 PNG 해시와 함께 저장한다. 미선택·거절은 다운로드 팩에서 제외한다. 새 후보는 사람 선택 전까지 공용 기본값이나 정본 마을에 넣지 않는다. 원본 시트 보정 계약은 기존 beodeul-architecture 경로를 따른다.
+
 2026-09-28. Python 손 도트 합성 그림이던 버들항 v6(100×100, 16px, 세 단)을 **그림 그대로** 편집 가능한 맵과 공용 번들 타일셋으로 옮겼다.
 조수(에디터 AI)가 이 타일셋의 참고문서만 보고 「버들항 비슷한 도시」를 깔 수 있는지도 실제 모델로 시험했다(아래 「조수 시험」).
 2026-09-29 라운드 2(v7): 오토타일·새 키트·원본과 다른 예시 배치 둘·배치 자를 더하고 조수를 「원본 복제 금지」 과제로 다시 시험했다(아래 「라운드 2」).
 같은 날 라운드 3(v8): 「만들다 만」 결과를 고치려고 블록 키트 41종·길 위계·작업 순서·빈 바닥 자를 더했다(아래 「라운드 3」).
+
+2026-10-04 집 출입 실모델 시험: 실제 편집기 조수가 `stamp_object`의 문 좌표 → `build_hand_interior_room`의 별도 실내 → `create_transfer_pair`의 양방향 출입을 저작했다. SQLite 저장·닫기·재로드 후 전용 `player.html`에서 시작점부터 걸어 입장·실내 이동·퇴장과 착지 후 40프레임 유지까지 5비트 전부 통과했다. 참고 이미지 조회에서 선택 필드 `offset:0`을 거부하던 도구 오류를 수정한 뒤 재실행한 결과다. 한 채에 대한 시험이며 모든 키트의 출입을 보증하지 않는다. 정본 id·폴더·해시·실제 스크린샷은 `verify-shots/assistant-house-entry/README.md`, 조수 호출 원문은 `verify-shots/assistant-beodeul-village/door-entry-fixed/e7d2-house-entry/`.
+
+같은 날 사용자가 직접 도트로 문 열림을 그려 GIF로 보여 달라고 요청했다. `scripts/content/build-beodeul-door.py`가 살림집 원본 문(5743/2333)과 같은 문틀에 왼쪽 경첩·안쪽 열림 16×32 8단계를 찍는다. 공용 `beodeul_door`/`tex_beodeul_door` 시트(8열·16칸), 기본 프로젝트 배선과 기존 프로젝트 참고문서 보충은 `defaults/beodeulDoor.ts`/`defaultAssets.ts`; 참고문서 원본 `tiledata/beodeul-door/README.md` → `prepare-beodeul-door-references.mjs` → `beodeulDoorReferences.json`. GIF는 자산 시안이며 기존 출입 이벤트 재생을 연결하지 않았다. 시안 `public/assets/beodeul-door/house-door.gif`, 확대 `door-detail.gif`. 저장·재로드 및 새/기존 프로젝트 등록 근거 `verify-shots/beodeul-door/storage-proof.json`.
+
+후속 공용 적용(2026-10-04): `apply_beodeul_door_animation({mapId,eventId,frameMs?})`을 조수 레지스트리와 안내에 등록했다.
+같은 살림집 문 전용이며 시트 16칸을 현 칩셋에 이식한다. 열기 뒤 원래 transfer, 실내 조건부 auto 이벤트가 야외 문을 복원하고 귀환 뒤 야외 auto 이벤트가 닫기 6→0을 맡는다.
+일반 맵 이벤트는 transfer에서 끝나므로 뒤에 명령을 붙이는 초안을 수정했다. SQLite revision 4 저장·재로드, 반복 적용 불변, 실제 게임 렌더 0→7→0과 출입 5비트 확인은 `verify-shots/beodeul-door/applied/README.md`.
+밝은 잔디 737 원본을 유지하는 접지·꾸밈 공용팩 `beodeul_ground`(48칸, 15레시피)을 추가했다.
+`dress_beodeul_ground({mapId,style:"living"|"natural",seed?})`가 2층 그림자·낙엽·흙, 4층 기초·밑동·풀/꽃·살림 소품을 덧그린다.
+집 h101 기초의 벽 줄은 ★로 원래 벽 통행을 따르고 문 열은 완전 투명이다. 수관 3×3 나무 두 종류는 밑동, 기존 줄기 3×4 나무는 아래층 그림자를 보강한다.
+다른 집에는 전용 기초를 강제하지 않고 집 곁 소품만 배치한다. 정확한 범위/전체 배열/정상·오류 그림은 `tiledata/beodeul-ground/README.md`와 `CATALOG.md`.
+공용 그림·정의·용도 `beodeul-ground-dressing`은 새/기존 프로젝트 양쪽에 등록한다. 채팅/Pi 공통 정책은 `promptPolicies.ts`.
+`author_beodeul_town`은 river/coast/city 완성 뒤 같은 도구로 마감하고, desert/snow/swamp는 건너뛴다. 재시공 때 이전 이 팩의 덧그림만 제거하고 다시 마감한다.
+기존 맵 꾸미기에는 재시공하지 않는다. 실제 조수가 MD 전 페이지와 이미지 2장을 읽고 적용한 후 SQLite revision 5로 저장·재로드했고 키트 출처·반복 메타데이터 보충 후 revision 6을 재로드했다(맵/문 동일).
+기초/뿌리 범위와 통행 보존, 실제 플레이 근거: `verify-shots/beodeul-ground/README.md`.
+
+### 나무 연결 보정과 집 5채 작은 마을 (2026-10-04 후속)
+
+첫 접지 판은 3×3 수관 마지막 줄의 투명 여백과 다음 줄 밑동 사이가 끊겨 보였다.
+`bdg-tree-neck`을 source 41에 추가해 수관 마지막 행 가운데에 좁은 줄기와 잎을 겹친다.
+기존 source 0~40은 유지하며 현재 팩은 48칸 슬롯·42개 그림·16레시피다. 연결 칸은 ★로 원래 수관 통행을 따른다.
+`dress_beodeul_ground`는 이미 꾸민 맵에서도 빠진 밑동·연결만 보충하고 다른 꾸밈을 중복하지 않는다.
+
+`author_beodeul_town({houseCount:5,name,seed})`는 별도 40×30 밝은 잔디 마을을 만든다(3~5채 지정 가능).
+`beodeulSmallVillage.ts`가 원본 키트 h101_0·h104_0·h112_0·h109_1·h107_0으로
+별채 박공·넓은 이층·돌벽 박공·ㄱ자·낮은 집을 배치한다. 굽은 큰길 2칸과 샛길 1칸,
+우물 마당, 집 곁 살림과 나무를 배치한 뒤 공용 꾸밈을 적용한다. seed는 꾸밈 변주에 쓰며 이 작은 배치의 집 좌표는 고정이다.
+새 마을 요청에는 mapId를 생략해 원래 맵을 보존한다. 이 모드는 외장 전용이며 실내·출입 이벤트는 별도 저작한다.
+houseCount 생략 시 기존 기후/도시 생성 경로다. 포구·사막·눈·늪 요청에는 해당 경로를 쓴다.
+
+공용 참고문서에 `SMALL-VILLAGE.md`의 집 전체 배열과 `small-village-example.json`의 네 층 전체 배열,
+실제 표본 그림을 추가했다. 생성은 기본 ground 스크립트 뒤 `bun scripts/content/prepare-beodeul-small-village-references.mts`;
+기본 참고문서 재생성도 이미 있는 작은 마을 자료를 보존한다. 용도는 현재 MD 4개·이미지 3개이며 새/기존 프로젝트 공통이다.
+실제 편집기 조수가 기존 두 나무를 보정하고 ‘버들쉼터’ 집 5채를 만든 뒤 화면을 보며 녹지를 보강했다.
+SQLite revision 7 저장·재로드와 전용 플레이어 8비트(모든 집 문 앞 도보 이동·우물 복귀)의 근거는
+`verify-shots/beodeul-small-village/README.md`. 기존 문 이벤트·실내·통행은 보존됐다.
+
+## 민가·성당 외장: 원본 보존 보정 (2026-10-04 사용자 정정)
+
+사용자 조건은 모든 집의 기초, 창문 다양화, 문 하나, 집별 벽 콘셉트 하나와 교회다.
+측면은 필수가 아니다. 원래 버들항 지붕 면·집 윤곽을 유지한다. 후속 사용자 정정에 따라 기와 변경을 철회하고 원본 픽셀로 복원했다. 지적 대상은 stone 지붕 아래 박공 벽이다.
+이전 투영 면 전체 재저작(revision 8)은 사용자가 과도한 변경으로 거부했다.
+공용 `beodeul_architecture`는 원본 h101_0/h104_0/h112_0/h109_1/h107_0/cathedral을 조립한 뒤
+중복 문 제거, 원본 창틀 안의 창문, 돌벽 색조와 stone 박공 벽/중앙 원형창을 허용 영역에서 고친다. 원본 알파 윤곽과 지붕 면 배치는 유지한다.
+성당은 원본 푸른 첨탑·지붕을 쓰고 위층 중복 문만 원본 창문으로 바꾼다.
+하네스 `beodeul-architecture build → validate → review`는 원본/보정본/변경 픽셀과 시트 배열을 대조한다.
+기계 통과는 시각 합격이 아니며 측면 폭·면적을 합격 조건으로 삼지 않는다.
+
+source는 16px/16열/336칸이며 기존 칸 배정을 유지하고 필요한 원본 조각만 추가한다.
+`ensureBeodeulArchitectureTileset`는 기존 source count/통행/우선순위를 갱신한다.
+`installBeodeulArchitecture`는 현재 source의 통행·우선순위를 기존 graft에도 반영한다.
+`author_beodeul_town({houseCount:5})`는 원본 보존 5종, `church:true`는 폭 54칸으로 성당 마당을 연결한다.
+`refine_beodeul_village`는 원본 또는 이전 공용 키트의 정확한 전체 배열만 같은 자리에서 바꾼다.
+기존 키트 정의를 설치 전에 보관해 이전 시안을 알아보고, 이벤트 집과 점유된 칸은 보호한다.
+길·나무·꾸밈·기존 출입 시험/실내를 보존한다.
+
+공용 ground는 기존 48슬롯을 유지한 112칸/21레시피다. 보정 집도 sourceKit별 원본 기초 레시피를 적용한다.
+문 열은 투명하고, ★ 기초는 벽 통행을 유지하며 바쁜 꾸밈 칸을 건너뛴다.
+공용 참고문서는 5 MD/5 이미지에 원본 보존 사전·정상/지붕 재칠 오류·5채 표본·전체 네 층/사용 graft를 담는다.
+사용 graft만 기록해 문서 120,000자 상한을 지킨다.
+저장·재로드·화면 근거는 `verify-shots/beodeul-native-restoration/README.md`.
+이전 거부 시안 기록은 `verify-shots/beodeul-building-refinement/README.md`에 보존한다.
+
+## 원본 유지 일광·길 경계·잔디 보정 (2026-10-04)
+
+광원/접지 조사 후 사용자가 적용을 지시했다. 원본 건물·나무·기초/소품 도트와 원점, 두 출입 시험 맵은 보존한다.
+공용 source beodeul_ground는 앞의 112칸을 그대로 두고 304칸으로 확장한다. 추가 44레시피는 집 6종/수관 3종의 짧은 일광·접촉 그림자, 4×3 저대비 잔디/흙 변화 3종, 원본 길 오토타일 16종의 연석 대비를 낮춘 변형 2개씩이다.
+`harmonize_beodeul_daylight({mapId})`는 기존 맵만 보정한다. 그림자/잔디는 2층 빈칸에 넣고 기존 2층 그림과 높이를 보존한다. 길 보정은 원본 형태와 통행을 유지한 1층 graft이며 원래 길 오토타일 connectTileIds에 연결한다. memberTileIds는 바꾸지 않는다. 반복 적용은 중복하지 않는다.
+작은 마을 houseCount 시공은 마지막에 자동 적용하고 큰 기후 마을에는 강제하지 않는다. 공통 조수 프롬프트와 참고문서 읽기 계약에 등록한다. 하네스 build/validate/review, 공용 신규/기존 source 등록과 실제 마을 전후·그림자만 비교·정본 저장·재로드·통행 근거는 verify-shots/beodeul-light-ground. 전체 게이트는 실행하지 않는다.
 
 ## 기본 타일셋 (2026-09-30)
 
@@ -325,7 +401,7 @@ revision 1. 재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일
 | 걸음 구조물 | 잔교·널다리·다리·계단·나선 계단 | 불투명 = 아래층, 투명 낀 칸 = 윗층 우선 lower(사람 아래, 통행 표시 `o`) | 걸음 |
 | 바닥 소품 | 헤더·고사리·들꽃·자갈·뼈·조개 | 윗층 우선 lower | 걸음 |
 
-  우선 lower 윗층 칸은 `characterDepth.mapUpperTileDepth` 에서 `o` 로 하층 깊이에 그려진다(★ 는 사람 위). 문 칸 위치는 키트에 없다(문 이벤트는 따로).
+  우선 lower 윗층 칸은 `characterDepth.mapUpperTileDepth` 에서 `o` 로 하층 깊이에 그려진다(★ 는 사람 위). 당시 문 칸 위치는 키트에 없었다. 현재 입구가 있는 키트는 `entrances` 메타데이터를 갖고 `stamp_object`가 절대 좌표를 반환한다(2026-10-04 확인). 문 이벤트는 별도로 연결한다.
 
 ### 기존 프로젝트
 `ensureBeodeulCityTileset` 은 칸 수가 23,936 이상인 도시 시트 사본(`beodeul_road_autotile` 있음)을 갈아엎지 않고 **꼬리만 덧붙인다**:
@@ -346,7 +422,7 @@ MD 사본 `tiledata/beodeul-city/references/bd-pick-doc-*.md`.
 
 ### 남은 것
 - var2·var4(재선택 대기 11항목)·var6(재작업 중)이 끝나면 `install_picks.py` → `bake_picks.py` 를 다시 돌린다(칸 번호는 등록부가 지킨다).
-- 문 칸(입구) 부위·실내 연결, 큰 건물의 박공별 통행 세부는 키트에 없다. 막힘 줄 수는 크기 규칙으로 정했다(그림마다 손으로 맞춘 것이 아니다).
+- 현재 입구 메타데이터는 `stamp_object` 결과의 `entrances`로 조회한다(2026-10-04 확인). 실내 연결은 별도 출입 이벤트가 필요하다. 큰 건물의 박공별 통행 세부와 막힘 줄 수는 크기 규칙으로 정했다(그림마다 손으로 맞춘 것이 아니다).
 - 땅 표본은 오토타일이 아니다(이어 찍는 2×2·3×3 표본). 조수가 이 키트로 장소를 까는 실모델 시험은 아직 없다.
 
 ## 마을 문법 (2026-10-01 오후) — 「마을 만들어 줘」가 바둑판이 아니라 고른 변형 마을처럼
@@ -372,3 +448,62 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 - 늪 집은 기둥 위가 아니라 진흙 섬에 선다. 설원은 얼음 못 화면이 빈 바닥 40% 를 넘는다. 바닥 표본은 오토타일이 아니라 경계가 칸 단위로 각지다.
 - 조수는 문법 문서를 읽지 않고 도구를 바로 불렀다(도구가 문법을 지니므로 결과는 같다). 마을 이름·NPC·출입구 이벤트는 짓지 않는다.
 - 버들항 던전·필드 문법 도구는 없다(던전은 참고문서 beodeul-picks-dungeon 을 읽고 키트를 찍는다, 필드 길은 `author_wild_route` 의 버들항 시공).
+
+## 작은 마을 길·마당 구도 보정 (2026-10-04)
+
+`naturalize_beodeul_hamlet({mapId})`는 공용 소규모 집 3~5채의 전체 배열/원점을 먼저 확인하고 원본 집·나무·출입을 보존한 채 큰길/광장과 흙 접근로/마당을 구분한다. 옛 순환 포석 샛길과 흩어진 작은 풀 장식은 정리한다. 텃밭·빨래 마당·식생 군락은 빈 칸과 문 앞 도달성을 확인하고 배치한다. 임의 배치 마을/높이 있는 맵에는 사용하지 않는다. 새 houseCount 시공은 이 구도 후 일광을 자동 적용한다. 공용 source beodeul_ground 368칸(기존304 불변), 문서 tiledata/beodeul-ground/HAMLET.md, 정상/오류 및 full 네 층 예제는 참고문서 beodeul-ground-dressing. SQLite와 플레이어 근거 verify-shots/beodeul-lived-village.
+
+
+## 우물 공동마당으로 원본 마을 재배치 (2026-10-04)
+
+`compose_beodeul_courtyard_village({mapId})`는 인식된 54×30 예제의 원본 민가 5채+교회를 그대로 옮겨 54×34 공동마당 마을로 만든다. 북쪽 세 집은 우물·빨래 마당을 공유하고 남쪽 두 집은 숲/텃밭 가장자리에 둔다. 교회 길과 외곽 숲 입구를 연결한다. 이벤트/높이/다른 맵의 전이 도착점이 없는 예제만 허용하며 기존 배치 변경을 명시적으로 요청했을 때 사용한다. 단순 꾸밈에는 사용하지 않는다. 원본 건물 전체 배열, 시작점(18,17), 다른 두 출입 시험 맵을 보존. 공유 참고문서 COURTYARD.md + courtyard-example.json 전체 네 층/graft 규칙 + 실제 PNG를 새/기존 city·ground 양쪽에 배포한다. 재생성은 scripts/content/prepare-beodeul-courtyard-references.mts, 근거 verify-shots/beodeul-shared-village. 이 도구는 출입 이벤트를 새로 만들지 않는다.
+
+
+## 공동마당 식생·울타리/돌벽 보정 (2026-10-04)
+
+refine_beodeul_courtyard_vegetation({mapId})는 인식된 54×34 예제의 건물/나무 전체 배열을 확인하고 집·길·마당·시작점을 유지하며 흩어진 나무/덤불을 수관이 앞뒤로 겹친 공용 숲 8덩어리로 교체한다. 높이 있는 풀은 숲 밑동에만 겹치고 줄기의 X를 상속하는 ★다. 짧은 문틈 울타리 두 조각을 제거하고 실제 텃밭 3변을 연속 레일/수직선/모서리로 연결한다. 북쪽은 큰길에서 들어오는 면이다. stone 박공은 정면 돌벽과 같은 원본 질감으로 통일한다. 원본 지붕/알파/창문/문 개수/집 위치를 유지한다. 이벤트/높이/다른 이벤트의 전이 도착점/수정된 나무·별도 지형/기물은 거부, 반복은 no-op. source WOODLAND.md, build 하네스가 이전368칸을 보존한다. 공용 문서/정확한 4층 예제/전체 graft 규칙은 새·기존 city/ground 모두 배포하며 각 MD 12만자 이하로 분리한다. 전용 player.html과 SQLite 재로드 근거 verify-shots/beodeul-depth-fix.
+
+## 기와 복원 · stone 박공 벽/중앙 창 (2026-10-04 사용자 정정)
+
+revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했다. 민가 5종/성당의 기와를 원본 픽셀로 복원했다. stone 지붕 아래 삼각형 벽의 일부 회벽 색만 덮던 보정 때문에 기존 목재 기둥/사각창이 남아 새 창과 겹쳤다. gable.py는 전체 박공 벽과 계단형 가장자리만 같은 돌 질감으로 채우고 원형창 하나를 중앙 (31,53)에 둔다. 원래 지붕/문/하단 벽/위치/통행/맵은 유지한다. 원본 기와 픽셀 대조, revision 15 대비 stone 박공 밖 픽셀 불변, 공용 참고문서와 새/기존 프로젝트, 실제 저장·재로드/화면은 verify-shots/beodeul-gable-fix.
+
+
+## 물굽이 조밀한 마을 표본 (2026-10-04)
+
+사용자가 제공한 구도 그림을 큰길/골목/공유 마당/물길로 나뉜 구역 관계로 옮겼다. 새 맵 `map_beodeul_river_town`(버들 물굽이 마을, 76×70)에 민가/회관/주막/대장간/교회 41동과 원본 아치 다리 3개를 배치한다. `scripts/content/lib/beodeul-river-town.mts::buildBeodeulRiverTown`은 물 예약, 원본 전체 건물, 길과 접근로, named 물 오토타일, 전체 다리, 숲/기물, 공용 기초/접점 그림자 순서로 만든다. 원본 기와와 이전 stone 박공 보정을 사용한다. 기존 맵은 바꾸지 않는다. 출입 이벤트/실내/NPC는 이 외장 표본에 포함하지 않는다.
+
+공용 학습 정본 `tiledata/beodeul-ground/RIVER-TOWN.md`, `river-town-example.json`, 전체 네 층 배열/사용 키트/전체 source graft 규칙/실제 정상·갑판 누락 오류 그림을 `prepare-beodeul-river-town-references.mts`가 번들 `beodeulGroundReferences.json`에 넣는다. 기본 ground 참고문서 생성기도 fragment를 보존한다. 새/기존 city·ground 모두 같은 지침을 받는다. 저장은 `scripts/qa/beodeul-river-town-proof.mts`가 기존 맵 불변·41개 실제 문앞/6개 다리 둑의 저작된 길만 사용하는 canMove를 확인한 뒤 SQLite 저장 후 별도 프로세스 `scripts/qa/beodeul-river-town-reload.mts`에서 재로드해 새·기존 맵 전체 층/이벤트와 공용 참고문서를 대조한다(저장 캐시와 재로드 snapshot을 동시에 보유하지 않는다). 전용 player.html은 세 다리를 지나 회관·교회·공방과 우물 복귀를 확인한다. 근거 `verify-shots/beodeul-river-town/`.
+
+## 색 역할 정리 · 따뜻한 황록 확정 (2026-10-05)
+
+사용자는 집 옆에서 형태/뿌리/그림자를 고정한 색상만의 비교 중 warm(따뜻한 황록)을 선택했다. `tiledata/beodeul-ground/PALETTE-STANDARD.md`, `palette-standard/standard.json`은 나뭇잎의 전체 RGBA 치환표와 기존 밝은 잔디737/기와·목재/건물별 벽 역할을 묶는다. 일부 대표색은 실제 픽셀 분포의 표본이며 모든 그림을 세 색으로 줄이는 제한이 아니다. 기존 기와·윤곽·3/4 시점은 원본 기준이다. 현재는 확정 색과 조수 지침 등록이며 게임 아틀라스 자체를 바꾸는 단계는 아니다.
+
+`prepare-beodeul-palette-standard.mjs`가 공용 source 전체/색 사전/정상·palette-scope-leak 실제 변조를 `beodeulGroundReferences.json`으로 배포한다. 기본 참고문서 재생성도 fragment를 보존한다. 새 city/ground와 기존 프로젝트 두 타일셋을 확인하며 정본 저장/별도 재로드 근거는 `verify-shots/beodeul-palette-standard/`. 맵/출입/시작점/통행은 유지한다. 후속 그림 보정은 tree body 영역만 정확한 사전으로 치환하고 공용 아틀라스와 생성 코드·조립/통행 검수·정본 저장을 함께 수행해야 한다.
+
+## 황록 마을 50×50 · 실제 선택 색 적용 (2026-10-05)
+
+`buildBeodeulVillage50` (`scripts/content/lib/beodeul-village50.mts`)는 별도 맵 `map_beodeul_village50`에 민가·회관·주막·대장간·교회 18동, 두 아치 다리, 우물 마당과 공유 흙마당을 저작한다. 기존 기와·윤곽·stone 박공을 그대로 조립한다. 포석 길은 교회 앞에서 굽어 남쪽 다리로 이어지고, 좁은 접근로가 실제 문 앞을 연결한다. 나무 수관은 일부 길 위로 드리울 수 있지만 밑동의 blockingCells는 길·문 앞 여유를 막지 않는다. 전체 나무·그림자가 지도 안에 들어올 때만 배치한다.
+
+선택한 warm 나무를 공용 `beodeul_warm_trees` / `tex_beodeul_warm_trees` (16px·8열·328칸)로 배포했다. `build-beodeul-warm-trees.py`는 색 비교 시안과 정확히 같은 3종 본체 및 기존 숲 4종의 RGBA 치환표를 패킹한다. 알파·줄기·뿌리·숲 겹침·그림자·원본 잔디/건물 시트는 보존한다. `bundled.ts`·공통 기하·`defaultAssets.ts`가 새/기존 프로젝트에 등록하며 참고문서 owner는 `beodeul_city`다.
+
+학습 정본 `tiledata/beodeul-ground/VILLAGE50.md`, `village50-example.json`, `warm-trees-catalog.json`; `prepare-beodeul-village50-references.mts`가 전체 네 층·사용 키트·모든 graft 통행/우선순위·정상/갑판 누락 오류 그림을 공용 city/ground 참고문서에 넣는다. 기본 참고문서 재생성도 fragment를 보존한다. 저장 시 참고문서만 병합하며 일반 ground ensure의 우선순위 갱신을 별도로 호출하지 않는다. 모든 기존 맵을 대조하고 18개 문 앞·네 다리 둑까지 저작된 길만 쓰는 canMove 경로를 확인한다. SQLite 저장·별도 재로드, 전용 player.html 도보 검수, 실제 그림 근거는 `verify-shots/beodeul-village50/`. 이 맵은 외장/길 표본이며 새 실내·전이 이벤트는 포함하지 않는다.
+
+### 포석길 끊김 정정 (2026-10-05)
+
+남쪽 포석길의 스케치가 (15,41)의 민가와 겹쳐 지워졌다. 기존 검사는 교회에서 북쪽 다리를 돌아 남쪽 다리로 갈 수 있어 통과했으며 남쪽 포석길 자체의 단절을 놓쳤다. `repairBeodeulVillage50Roads`는 교회 앞 (9,44)→남쪽 다리 서쪽 (22,37)을 y≥37의 건물 전체 영역을 피하는 실제 자유 지면 경로로 잇고, **포석만 사용하는 canMove**로 다시 확인한다. 실제 기존 맵 보정은 1층 지면만 변경하고 건물·나무·소품·그림자·이벤트를 대조한다. 흙/포석/다리 갑판은 같은 road union으로 N/E/S/W 마스크를 계산해 재료 접점의 잔디 틈도 제거한다. 공용 예제/전체 배열/정확한 수정 좌표와 재로드·실제 도보 근거를 함께 갱신한다 (`verify-shots/beodeul-village50-road-fix/`).
+
+## RPG 시설과 생활 역할 (2026-10-05)
+
+`src/assets/beodeulFacilitiesPlans.ts`의 32개 시설 조립안을 `beodeulFacilities.ts`가 `bd-facility-*` 구조물 키트로 합성한다. 여관/주막/장비점/약초·연금/예배당/길드/치안/회관/은행/마구간/나루/창고/생산/학자·특별한 민가를 포함한다. 기존 승인 건물을 전체 배열로 복사하고 작업 마당 소품을 조립하며 기와·벽·윤곽 픽셀을 재저작하지 않는다. 같은 원본 건물을 사용하는 역할이 있다. `createBeodeulCityTileset`와 `ensureBundledTilesets`의 기존 city 경로에 배선하여 새/기존 프로젝트 모두 키트를 받는다. 건물 보정 시트는 `translateTiles`로 기존 graft를 재사용하며 source 통행·우선순위를 유지한다. 반복 적용은 no-op이다.
+
+공용 참고문서 owner는 city의 `beodeul-facilities`. 정본 `tiledata/beodeul-facilities/`와 준비기 `scripts/content/prepare-beodeul-facilities-references.mts`, 번들 `src/assets/beodeulFacilitiesReferences.json`, 정적 그림 `public/assets/beodeul-facilities/`다. 문서 17쪽에 32개 완전한 source 키트/입구/실제 통행표·네 층 표본·전체 마을 네 층·source 이식표를 제공한다. 그림은 실제 엔진 조립 8개 도안 판/마을/blocked-facility-entrance 변조를 담는다. 원본 그림을 새로 그린 시설이나 판매/회복/은행/의뢰 시스템으로 설명하지 않는다. 실내와 시설 기능은 별도 저작이다.
+
+`dressBeodeulVillageFacilities`는 저장된 50×50의 기존 18동을 유지하고 약초사 집(3,6), 발명가 집(42,7), 술집(28,20), 항구 창고(14,30), 나루터 사무소(28,39)를 기물과 작업 마당으로 구분한다. 나루터 널판 3×3은 (25,46)에 놓아 물가 경계칸까지 실제로 덮는다. (28,47) 육지→(27,47)→(26,47) 잔교가 canMove로 이어져야 한다. 건물·나무·기존 소품/그림자/이벤트, 이전 네 맵과 기존 칸 통행을 대조한다. 모든 18개 문 앞/다리 둑, 남쪽 포석만의 연결, 다섯 시설/잔교 실제 player.html 도보와 SQLite API 저장·별도 프로세스 재로드 근거는 `verify-shots/beodeul-facilities/`에 남긴다.
+
+## 서로 다른 건축 구조의 강변 마을 (2026-10-05 초안 기록 · 4종 반려)
+
+소품 교체 32종에서 실제 몸체/지붕 6계열로 확장했다. `beodeul_forms`(tex_beodeul_forms, 16px/16열/544칸)는 가로 긴 민가·좁은 2층·ㄱ자 별채·현관/다락창 여관·낮은 작업장/굴뚝 대장간·하역 차양 창고를 보유한다. 원본 city/기존 보정 건물은 보존한다. `beodeul-architecture build|validate|review`의 forms.py가 조립/검사/검수 판을 담당한다.
+
+공용 배선은 bundled.ts/geometry/defaultAssets/createBeodeulCityTileset/ensureBundledTilesets와 `beodeulForms.ts`다. source 본체6/그림자6/기초6 도장을 city에 translateTiles로 이식하며 새·기존 프로젝트 양쪽에서 참고문서 `beodeul-forms`를 갖는다. 그림자2층→본체3층→기초4층을 같은 원점에 놓고 각각의 벽 접점을 따른다. 기초/그림자의 통행 ★가 벽 X를 덮지 않는다. 길1층은 별도로 연결한다. 조수는 같은 실루엣3개를 나란히 놓지 않고 폭/높이/용마루/별채가 다른 몸체를 조합한다.
+
+새 지도 `map_beodeul_forms_village`는 50×50/16동/아치 다리2개다. 이전 다섯 지도와 기존 사용 칸의 통행을 보존한다. 전체16개 문앞과 다리 둑까지 실제 canMove 도로 경로를 확인한다. 여관 입구(35,13)를 anvil로 막은 실제 변조는 true→false로 검출한다. 50×50 재현 `scripts/content/lib/beodeul-forms-village.mts`, 자료 준비 `prepare-beodeul-forms-references.mts`, 정본 API 저장·별도 프로세스 재로드·전용 player.html 화면 `verify-shots/beodeul-forms/`. 외장 저작이며 실내/거래/문 전이 이벤트를 추가한 것은 아니다.

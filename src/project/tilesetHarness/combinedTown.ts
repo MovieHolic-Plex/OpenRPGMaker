@@ -79,6 +79,8 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
       || tileset.image.id === "tex_modern_city"
       // 일본 도시: 칸마다 통행·레이어를 굽기(bake_jp.py)에서 정해 둔 정의다
       || tileset.image.id === "tex_jp_city"
+      // 마법 학교 · 해리포터풍: 칸마다 통행·레이어를 굽기(bake_wz.py)에서 정해 둔 정의다
+      || tileset.image.id === "tex_wizarding_world"
       // 생성 칩셋 공용 실내(손 도트 v5)·배·던전: 칸마다 통행·레이어를 구워 둔 정의라 RM2k3 표를 들이대지 않는다
       || tileset.image.id === "tex_atlas_biome_interior" || tileset.image.id === "tex_atlas_biome_dungeon")
   ) return false;

@@ -149,6 +149,7 @@ UI 저장 성공 문구는 원격 저장 영수증이 아니다. 원격 완료�
      잘린 결과는 읽은 것으로 치지 않기 때문이다. 관문(`TilesetReferenceEvidence`)은 `documents[]`·`images[]` 를 쪽·그림마다 읽은 것으로
      치고, 거절 문구는 빠진 용도마다 한 번에 읽는 호출을 먼저 보여 준다. 왜: 버들항 길 깔기에서 관문이 물 용도 15건(MD 2쪽·그림 13장)을
      요구했고, 모델은 한 건씩 두 번 읽다가 길을 포기하고 소품만 찍었다. 같은 용도가 이제 한 번(물), 두 번(조각 사전 53k자)에 끝난다.
+   이미지의 `offset`은 생략하거나 0이다. 선택 필드를 모두 채우는 제공자와의 호환을 위해 0도 허용한다(2026-10-04). 양수 offset은 계속 거부한다.
 5. **다음 모델 응답에서** 타일 쓰기를 한다. 용도가 여러 개면 `referencePurpose: <categoryId>`를 지정한다.
    한 개면 자동 선택한다. 선택 용도의 모든 문서/그림이 필요하다. 다른 용도는 필요에 따라 추가 조회한다.
 
@@ -565,3 +566,36 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
 ### Emerald 몬스터 원본 도트 변형 (2026-10-04)
 
 `emerald_monster_*` 7종은 원본 `monster_*`의 번호·킷·통행을 유지하고 그림만 native 좌표 레시피에서 다시 저작한다. 파생 참조 포인터를 쓰면 원본 용도만 보여 새 표본이 가려지므로, `defaults/emeraldMonsterKit.ts`가 전체 조립 용도와 Emerald 판본 안내를 직접 복제한다. 공용 소스는 `tiledata/emerald-monster`, prepare는 `scripts/content/prepare-emerald-monster.py`, 배포는 `src/assets/emeraldMonsterReferences.json`과 `public/assets/emerald-monster/references`. 54개 정상 맵을 동일 전체 lower/upper 배열로 새 atlas에서 렌더했고, 오류 진단 38 이미지는 원본색임을 caption에 명시했다. 참조 JSON에 이미지 바이트를 넣지 않는다. 기존 프로젝트의 빠진 용도는 보충하되 저자 용도와 의도적으로 비운 배열은 보존한다.
+
+## 버들항 밝은 잔디 접지·꾸밈 공용 용도 (2026-10-04)
+
+`beodeul-ground-dressing`은 `beodeul_city`와 `beodeul_ground` 양쪽이 들고 태어난다.
+`ensureBeodeulGroundReferences`는 기존 프로젝트의 빠진 용도/자료를 보충하고 같은 용도의 저자 추가 문서는 보존한다.
+source `tiledata/beodeul-ground/` → `prepare-beodeul-ground-references.mjs` → `beodeulGroundReferences.json`; 그림은 `/assets/beodeul-ground/` URL이다.
+전체 4층 배열, 실제 시트, 수관+밑동 완성/오류 그림, source↔graft 구분과 ★ 벽 줄 통행을 포함한다.
+`dress_beodeul_ground`는 참고문서 쓰기 도구 목록에 등록됐으며, 실제 조수는 MD 전 페이지와 이미지 2장을 읽고 `referencePurpose`를 지정해 호출했다.
+자료 번호를 자유 선택하는 도구가 아닌 정해진 레시피 적용 도구이므로 TILE_CHOOSERS에는 넣지 않는다.
+근거 `verify-shots/beodeul-ground/README.md`.
+
+후속 작은 마을 자료: `prepare-beodeul-small-village-references.mts`가 실제 공용 도구로 5채 마을을 생성한다.
+`SMALL-VILLAGE.md`에는 원본 집 5종 전체 배열·크기·문 앞 좌표·작업 순서,
+`small-village-example.json`에는 40×30 네 층 전체 배열과 source↔graft/통행 규칙을 남긴다.
+번들 용도에 MD 2개와 실제 그림 1개를 추가해 현재 합계 MD 4개·이미지 3개다.
+기본 ground 참고문서 재생성도 이 자료를 다시 넣는다. 새/기존 등록은 동일 ensure 경로로 보충하며 저자 추가 문서는 보존한다.
+나무 연결 source 41은 마지막 수관 줄에 ★로 겹친다. 실제 조수가 이 자료를 읽고 저장한 마을과 플레이어 근거는
+`verify-shots/beodeul-small-village/README.md`.
+
+같은 용도에 원본 보존 민가·교회 사전/정상·지붕 재칠 오류 그림을 추가했다.
+`tiledata/beodeul-architecture/README.md` → `prepare-beodeul-architecture-references.mjs`이며 기본 ground 재생성도 보존한다.
+source `beodeul_architecture`는 `referenceSourceTilesetId:beodeul_city`로 같은 자료를 공유한다.
+새 민가를 넣은 전체 네 층 예제에서 쓰지 않은 graft를 제거하여 markdown 120,000자 상한을 지킨다.
+교회 연결 길·정본 저장·기초 통행/반복 확인은 `verify-shots/beodeul-building-refinement/README.md`.
+
+2026-10-04 사용자 정정: 버들항은 측면을 강제하지 않는다. 기존 지붕·윤곽·도트를 보존하며 창문/중복 문/기초만 국소 보정한다. 공용 사전과 표본도 같은 원본 보존 판으로 갱신한다.
+
+2026-10-04 버들항 일광 자료: 공용 ground 용도는 7 MD/7 이미지다. source 사전은 그림자/잔디 layer 2와 원본 포석 변형 layer 1의 anchor/dx/dy/baseTile/variant 및 모든 배열을 포함한다. 작은 마을 전체 예제와 전체 graftRules는 source-backed 두 문서로 나누고 각 문서 120,000자 상한을 준비 단계에서 검사한다. 원본 112칸/통행/상위 도트를 유지한 공용 일광 도구와 정본 근거는 verify-shots/beodeul-light-ground.
+
+
+## 버들항 공동마당 배치 참고문서 (2026-10-04)
+
+beodeul-ground-dressing에 COURTYARD.md, courtyard-example.json의 전체 네 층/이식 통행·우선순위 두 문서, /assets/beodeul-ground/courtyard-native.png를 추가한다. source에 저장하고 prepare-beodeul-courtyard-references.mts가 fresh 프로젝트에서 실제 공용 도구를 실행해 그림/배열을 만든다. prepare-beodeul-ground-references.mjs도 해당 source를 보존한다. 각 MD는 120,000자 이하, 이미지 바이트는 JSON에 넣지 않는다. 기존 ensureBeodeulGroundReferences로 city·ground 새/기존 프로젝트 모두 갱신. 좌표는 fresh 예제의 이식 번호이므로 다른 프로젝트는 도구/translateTiles로 옮긴다. 일반 타일 꾸밈을 이유로 재배치하지 않는다.

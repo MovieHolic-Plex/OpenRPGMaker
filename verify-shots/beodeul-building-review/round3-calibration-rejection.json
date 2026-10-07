@@ -1,0 +1,123 @@
+{
+  "items": [
+    {
+      "id": "r3-building-01",
+      "sha": "e678faf11d54a4e1a5f5a160177ce1fab4cb503b12d4eeeabde960358ef7e1bd",
+      "verdict": "PASS",
+      "scores": [
+        {"axis": "projection", "score": 96},
+        {"axis": "roof_joints", "score": 94},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 97},
+        {"axis": "complete_silhouette", "score": 97}
+      ],
+      "issues": [],
+      "observations": "Dense orange shingles retain small highlights and dark tile relief across the main roof and projecting gable. Fine plaster grain and timber framing remain coherent. The central extension has one clear ground-level door; windows and the mounted sign are distinct from entrances. Roof intersections and stepped wall bases appear connected."
+    },
+    {
+      "id": "r3-building-02",
+      "sha": "390b8a1c81d20ed1b428915b28193b627fb4f5ee921f7dc40c68b19485d2ffed",
+      "verdict": "PASS",
+      "scores": [
+        {"axis": "projection", "score": 94},
+        {"axis": "roof_joints", "score": 92},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 97},
+        {"axis": "complete_silhouette", "score": 97}
+      ],
+      "issues": [],
+      "observations": "The two projecting gables show roof depth, granular ochre shingles, and highlights concentrated on their left-facing slopes. Their overlapping rear orange roof remains connected. Both wings use finely mottled plaster and matching timber framing. One door is visible at the left wing's base; the other rectangular features are windows or signage."
+    },
+    {
+      "id": "r3-building-03",
+      "sha": "31a3cdd2a1a84e731d995692593f9a8038b643f4e685c589b0b3e897f9f21906",
+      "verdict": "PASS",
+      "scores": [
+        {"axis": "projection", "score": 95},
+        {"axis": "roof_joints", "score": 93},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 96},
+        {"axis": "complete_silhouette", "score": 97}
+      ],
+      "issues": [],
+      "observations": "The main roof and lower canopy have dense orange tile relief compatible with the reference; the plaster retains fine dot grain and timber divisions. The canopy attaches below the main eave and has visible posts reaching its wooden base. The left doorway remains unobstructed by the counter and hanging sign."
+    },
+    {
+      "id": "r3-building-04",
+      "sha": "6227982726cdaffbb05c7fa71ebc4b9bd8e3ec3135a455b321ec6358f95e83e9",
+      "verdict": "PASS",
+      "scores": [
+        {"axis": "projection", "score": 98},
+        {"axis": "roof_joints", "score": 98},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 98},
+        {"axis": "complete_silhouette", "score": 98}
+      ],
+      "issues": [],
+      "observations": "The green roof preserves granular shingle relief, directional highlights, and the reference's connected main roof and lower annex. Fine plaster mottling and timber framing remain consistent throughout the facade. There is one clear central door, a separate annex window, and a wall-mounted sign. The eaves, wall base, and outer contour are intact."
+    },
+    {
+      "id": "r3-building-05",
+      "sha": "01644d98f7ed103877f09da5ce682205e9fbf76798b08c4fe63a954c900ecd34",
+      "verdict": "PASS",
+      "scores": [
+        {"axis": "projection", "score": 96},
+        {"axis": "roof_joints", "score": 95},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 97},
+        {"axis": "ground_contact", "score": 98},
+        {"axis": "complete_silhouette", "score": 98}
+      ],
+      "issues": [],
+      "observations": "The tower's blue shingles and chapel's orange shingles retain dense relief and consistent left-side lighting. Granular masonry covers both connected masses, including the stone gable. The chapel roof abuts the tower without a visible gap, and both walls reach the same base. One chapel door is visible; the tower's narrow glazed openings are windows."
+    },
+    {
+      "id": "sample-12",
+      "sha": "3a3363ca91133a914896f2df2daf4f1cb32f635af8b557fc152b1824ac1620ed",
+      "verdict": "FAIL",
+      "scores": [
+        {"axis": "projection", "score": 93},
+        {"axis": "roof_joints", "score": 5},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 97},
+        {"axis": "complete_silhouette", "score": 35}
+      ],
+      "issues": [
+        {
+          "code": "FLOATING_ROOF",
+          "x": 56,
+          "y": 72,
+          "reason": "An approximately 16-native-pixel background gap separates the entire roof's lower edge from the wall's upper edge. No supporting structure connects them, leaving the building silhouette disconnected."
+        }
+      ],
+      "observations": "The rectangular orange roof retains dense highlighted shingles, and the separate facade retains fine plaster grain and timber framing. One ground-level door and a distinct window are visible. Nevertheless, the roof visibly floats above the wall."
+    },
+    {
+      "id": "sample-13",
+      "sha": "685845c25d5add926509871eb970c9734a1fd835fb7c2062df36531c74346e74",
+      "verdict": "FAIL",
+      "scores": [
+        {"axis": "projection", "score": 93},
+        {"axis": "roof_joints", "score": 78},
+        {"axis": "single_door", "score": 99},
+        {"axis": "wall_consistency", "score": 98},
+        {"axis": "ground_contact", "score": 97},
+        {"axis": "complete_silhouette", "score": 65}
+      ],
+      "issues": [
+        {
+          "code": "TRUNCATED_ROOF_EDGE",
+          "x": 0,
+          "y": 40,
+          "reason": "The upper-left rear roof ends in a vertical cut at the candidate boundary from approximately y=20 to y=62. This leaves a squared shingle patch above the projecting gable, without a resolved sloping termination where the roof masses meet."
+        }
+      ],
+      "observations": "Dense orange shingle relief and finely mottled timber-and-plaster walls remain compatible with the reference. The projecting wing has one unobstructed door and an intact base. The rear roof's upper-left termination is visibly chopped, compromising the roof junction and complete silhouette."
+    }
+  ]
+}

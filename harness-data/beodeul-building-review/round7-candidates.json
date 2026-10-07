@@ -1,0 +1,1002 @@
+[
+  {
+    "id": "r7-building-01",
+    "name": "둥근 창의 작은 돌집",
+    "role": "주택",
+    "width": 64,
+    "height": 112,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-01",
+        "rect": [
+          0,
+          0,
+          64,
+          112
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 80,
+      "w": 16,
+      "h": 32
+    },
+    "description": "둥근 창의 작은 돌집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "둥근 창의 작은 돌집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-01": "c58d40ebf0192822336385efee2e83d728f568b6142cfa44d725f8f9bc0fea52"
+    }
+  },
+  {
+    "id": "r7-building-02",
+    "name": "길게 누운 지붕의 농가",
+    "role": "주택",
+    "width": 128,
+    "height": 112,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-02",
+        "rect": [
+          0,
+          0,
+          128,
+          112
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 80,
+      "w": 16,
+      "h": 32
+    },
+    "description": "길게 누운 지붕의 농가 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "길게 누운 지붕의 농가",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-02": "8e03cfc09b6bf53662425207a5bc54718fbc5ad36bcc0920687ab8cfd5149888"
+    }
+  },
+  {
+    "id": "r7-building-03",
+    "name": "높은 본채와 낮은 부엌집",
+    "role": "주택",
+    "width": 112,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-03",
+        "rect": [
+          0,
+          0,
+          112,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높은 본채와 낮은 부엌집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "높은 본채와 낮은 부엌집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-03": "1e6c1d875d5fb760e32c91aa716658863f4f6b1725860433c41a7651c8780819"
+    }
+  },
+  {
+    "id": "r7-building-04",
+    "name": "가운데 박공이 솟은 상인집",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-04",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "가운데 박공이 솟은 상인집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "가운데 박공이 솟은 상인집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-04": "cb58b43d379de25b97de3480fc1fc97e21a6df83781de1e199034b80b349b5bb"
+    }
+  },
+  {
+    "id": "r7-building-05",
+    "name": "한쪽 지붕이 낮은 골목집",
+    "role": "주택",
+    "width": 112,
+    "height": 128,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-05",
+        "rect": [
+          0,
+          0,
+          112,
+          128
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 96,
+      "w": 16,
+      "h": 32
+    },
+    "description": "한쪽 지붕이 낮은 골목집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "한쪽 지붕이 낮은 골목집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-05": "902b352fc97dd4c1fed71eb899d65283b5fcd0370958d74ce4e71e4ab5bcb352"
+    }
+  },
+  {
+    "id": "r7-building-06",
+    "name": "발코니가 있는 삼층 주택",
+    "role": "주택",
+    "width": 96,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-06",
+        "rect": [
+          0,
+          0,
+          96,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "발코니가 있는 삼층 주택 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "발코니가 있는 삼층 주택",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-06": "8ed66a0978f6f8e7193375ac8c7227b253c8f9dba0803e9fc7b7f14527587299"
+    }
+  },
+  {
+    "id": "r7-building-07",
+    "name": "높은 돌집과 낮은 살림채",
+    "role": "주택",
+    "width": 160,
+    "height": 192,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-07",
+        "rect": [
+          0,
+          0,
+          160,
+          192
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 160,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높은 돌집과 낮은 살림채 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "높은 돌집과 낮은 살림채",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-07": "922470e97eaa432204d9b44996a8549884ea5dfbc7558ce17b9163075d02d7ff"
+    }
+  },
+  {
+    "id": "r7-building-08",
+    "name": "두 박공 사이의 넓은 집",
+    "role": "주택",
+    "width": 160,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-08",
+        "rect": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "두 박공 사이의 넓은 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "두 박공 사이의 넓은 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-08": "8600281394c5dbd3beaed845487e56fbe4d80a3429885fb1a8cb8ea1bb6f207c"
+    }
+  },
+  {
+    "id": "r7-building-09",
+    "name": "긴 맨사드 지붕의 연립집",
+    "role": "주택",
+    "width": 176,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-09",
+        "rect": [
+          0,
+          0,
+          176,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "긴 맨사드 지붕의 연립집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "긴 맨사드 지붕의 연립집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-09": "502cd3f61670649a64e54ce19f055d1e3e30cb37db4c816fc2d0b3f991a83e14"
+    }
+  },
+  {
+    "id": "r7-building-10",
+    "name": "앞 날개가 두 개인 저택",
+    "role": "주택",
+    "width": 192,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-10",
+        "rect": [
+          0,
+          0,
+          192,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 96,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "앞 날개가 두 개인 저택 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "앞 날개가 두 개인 저택",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-10": "460a4cb95f0473700d72baafffa27b938c251bd81b02b8694207da51e64a62e9"
+    }
+  },
+  {
+    "id": "r7-building-11",
+    "name": "박공 현관이 붙은 청회색 집",
+    "role": "주택",
+    "width": 128,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-11",
+        "rect": [
+          0,
+          0,
+          128,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "박공 현관이 붙은 청회색 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "박공 현관이 붙은 청회색 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-11": "3a37d11db8ab4fd6393b264fbc4b7d4198f73a4b90b451d5810bf656cd4c19ef"
+    }
+  },
+  {
+    "id": "r7-building-12",
+    "name": "십자 지붕의 큰 가족집",
+    "role": "주택",
+    "width": 160,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-12",
+        "rect": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "십자 지붕의 큰 가족집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "십자 지붕의 큰 가족집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-12": "7dfc47f5fd0aa0b63b991147429bf3836907b0f80cfcab1c025b5079916c79a1"
+    }
+  },
+  {
+    "id": "r7-building-13",
+    "name": "엇갈린 박공의 석조 민가",
+    "role": "주택",
+    "width": 176,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-13",
+        "rect": [
+          0,
+          0,
+          176,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "엇갈린 박공의 석조 민가 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "엇갈린 박공의 석조 민가",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-13": "ca6b2b70c4d458922cf19ce6715e5c4a6e90f7688ca13ea4fe9eb958d9f62b05"
+    }
+  },
+  {
+    "id": "r7-building-14",
+    "name": "깊은 현관채가 있는 민가",
+    "role": "주택",
+    "width": 128,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-14",
+        "rect": [
+          0,
+          0,
+          128,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "깊은 현관채가 있는 민가 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "깊은 현관채가 있는 민가",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-14": "ec4b0d9ba2b678f4d6f9f15444e4017406bd12ff6b20ff92f8293fe4a523dd63"
+    }
+  },
+  {
+    "id": "r7-building-15",
+    "name": "세 박공이 이어진 지붕집",
+    "role": "주택",
+    "width": 192,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-15",
+        "rect": [
+          0,
+          0,
+          192,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "세 박공이 이어진 지붕집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "세 박공이 이어진 지붕집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-15": "fd954f5a63b97c2333bf13a45b2e7d150351c8f44791588c1bd7593d969f7c13"
+    }
+  },
+  {
+    "id": "r7-building-16",
+    "name": "둥근 탑과 작은 살림집",
+    "role": "주택",
+    "width": 112,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-16",
+        "rect": [
+          0,
+          0,
+          112,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "둥근 탑과 작은 살림집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "둥근 탑과 작은 살림집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-16": "0119220dae8d4ec21994cb343c73f9f242fd399cd71c655da1d6a80c606bd622"
+    }
+  },
+  {
+    "id": "r7-building-17",
+    "name": "종 지붕 탑이 붙은 집",
+    "role": "주택",
+    "width": 144,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-17",
+        "rect": [
+          0,
+          0,
+          144,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "종 지붕 탑이 붙은 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "종 지붕 탑이 붙은 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-17": "15f86c2f8512a1db4e6ddb2e7f44a17e6650035fe34fc14f85f725a66d1bfddb"
+    }
+  },
+  {
+    "id": "r7-building-18",
+    "name": "두 둥근 탑 사이의 집",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-18",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "두 둥근 탑 사이의 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "두 둥근 탑 사이의 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-18": "d33bdecf326fde7f993e492227bf8c7412bb9d77fc08f0cf1e789461c1787a9d"
+    }
+  },
+  {
+    "id": "r7-building-19",
+    "name": "구근 지붕과 두 낮은 날개",
+    "role": "주택",
+    "width": 176,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-19",
+        "rect": [
+          0,
+          0,
+          176,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "구근 지붕과 두 낮은 날개 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "구근 지붕과 두 낮은 날개",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-19": "dce11488aad894bdad4ff217861f1c4b6770347211d7cdf8e44cc51f1c66db24"
+    }
+  },
+  {
+    "id": "r7-building-20",
+    "name": "둥근 본채와 긴 현관채",
+    "role": "주택",
+    "width": 112,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-20",
+        "rect": [
+          0,
+          0,
+          112,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "둥근 본채와 긴 현관채 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "둥근 본채와 긴 현관채",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-20": "3f5f2443e194dc7e7a8f491b1ebaa022008a86922a6abad49132f328da87c3be"
+    }
+  },
+  {
+    "id": "r7-building-21",
+    "name": "다락 박공이 있는 맨사드 집",
+    "role": "주택",
+    "width": 160,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-21",
+        "rect": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "다락 박공이 있는 맨사드 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "다락 박공이 있는 맨사드 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-21": "e5fd9cb047dd8585337f98b0c800b1d61360580156cb8a98740b65fb2934cfff"
+    }
+  },
+  {
+    "id": "r7-building-22",
+    "name": "꺾인 너와와 낮은 기와채",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-22",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 112,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "꺾인 너와와 낮은 기와채 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "꺾인 너와와 낮은 기와채",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-22": "14e858fa152bab7ca0315e140dbe5ebe5f6dadbaa6b43c0689cde1ab499223d1"
+    }
+  },
+  {
+    "id": "r7-building-23",
+    "name": "통지붕과 둥근 창의 삼층집",
+    "role": "주택",
+    "width": 112,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-23",
+        "rect": [
+          0,
+          0,
+          112,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "통지붕과 둥근 창의 삼층집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "통지붕과 둥근 창의 삼층집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-23": "efd6ca556ae97c44251cb2a2533b4dae096db47791ac3d61684b32944af80ed6"
+    }
+  },
+  {
+    "id": "r7-building-24",
+    "name": "종 지붕 다락을 얹은 집",
+    "role": "주택",
+    "width": 128,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-24",
+        "rect": [
+          0,
+          0,
+          128,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "종 지붕 다락을 얹은 집 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "종 지붕 다락을 얹은 집",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-24": "41b0a5137b945997750c15f3afe828f2bbee5f1d1ba7e11db60359db96664091"
+    }
+  },
+  {
+    "id": "r7-building-25",
+    "name": "박공 날개와 다락의 큰 저택",
+    "role": "주택",
+    "width": 208,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r7-building-25",
+        "rect": [
+          0,
+          0,
+          208,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 104,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "박공 날개와 다락의 큰 저택 · 창문과 지붕의 높낮이를 달리한 주택. 출입문은 한 곳이며 벽 재질을 통일했습니다.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-7",
+    "silhouette": "박공 날개와 다락의 큰 저택",
+    "round": 7,
+    "nativeAssetHashes": {
+      "review-r7-building-25": "5e4c5bb725b5bda2ae316304b69d8594edf7c0aaa421fdd374b0db169e1c71f0"
+    }
+  }
+]

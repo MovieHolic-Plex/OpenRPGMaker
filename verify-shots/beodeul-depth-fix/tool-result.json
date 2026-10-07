@@ -1,0 +1,260 @@
+{
+  "summary": "흩어진 나무/덤불을 앞뒤 수관이 겹치는 숲으로 묶고 높이 있는 풀 군락·텃밭 연결 울타리·단일 돌벽 박공을 보정했습니다.",
+  "data": {
+    "mapId": "map_beodeul_rest",
+    "removedTrees": 42,
+    "groves": 8,
+    "placements": [
+      {
+        "recipe": "bdg-woodland-north-shadow",
+        "x": 0,
+        "y": 0,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-north",
+        "x": 0,
+        "y": 0,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-north-open-shadow",
+        "x": 23,
+        "y": 0,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-north-open",
+        "x": 23,
+        "y": 0,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-north-shadow",
+        "x": 46,
+        "y": 0,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-north",
+        "x": 46,
+        "y": 0,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-west-shadow",
+        "x": 0,
+        "y": 5,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-west",
+        "x": 0,
+        "y": 5,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-west-shadow",
+        "x": 0,
+        "y": 24,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-west",
+        "x": 0,
+        "y": 24,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-east-shadow",
+        "x": 34,
+        "y": 7,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-east",
+        "x": 34,
+        "y": 7,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-east-shadow",
+        "x": 47,
+        "y": 25,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-east",
+        "x": 47,
+        "y": 25,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-north-open-shadow",
+        "x": 38,
+        "y": 29,
+        "layer": 2
+      },
+      {
+        "recipe": "bdg-woodland-north-open",
+        "x": 38,
+        "y": 29,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 30,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 31,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 32,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 33,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 34,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-horizontal",
+        "x": 35,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-corner",
+        "x": 29,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-corner",
+        "x": 36,
+        "y": 22,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-vertical",
+        "x": 29,
+        "y": 20,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-vertical",
+        "x": 36,
+        "y": 20,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-vertical",
+        "x": 29,
+        "y": 21,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fence-vertical",
+        "x": 36,
+        "y": 21,
+        "layer": 3
+      },
+      {
+        "recipe": "bdg-woodland-fringe-0",
+        "x": 1,
+        "y": 3,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-1",
+        "x": 26,
+        "y": 3,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-0",
+        "x": 49,
+        "y": 3,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-1",
+        "x": 3,
+        "y": 12,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-0",
+        "x": 3,
+        "y": 31,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-1",
+        "x": 35,
+        "y": 12,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-0",
+        "x": 48,
+        "y": 30,
+        "layer": 4
+      },
+      {
+        "recipe": "bdg-woodland-fringe-1",
+        "x": 41,
+        "y": 32,
+        "layer": 4
+      }
+    ],
+    "fronts": [
+      {
+        "kit": "bd-house-village-cream",
+        "x": 10,
+        "y": 12
+      },
+      {
+        "kit": "bd-house-village-brick",
+        "x": 19,
+        "y": 13
+      },
+      {
+        "kit": "bd-house-village-stone",
+        "x": 29,
+        "y": 14
+      },
+      {
+        "kit": "bd-house-village-sage",
+        "x": 8,
+        "y": 29
+      },
+      {
+        "kit": "bd-house-village-ochre",
+        "x": 32,
+        "y": 29
+      },
+      {
+        "kit": "bd-house-village-church",
+        "x": 48,
+        "y": 18
+      }
+    ],
+    "doorsReachable": true,
+    "buildingPositionsAndRoadsPreserved": true
+  }
+}

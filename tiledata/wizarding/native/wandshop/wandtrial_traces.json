@@ -1,0 +1,76 @@
+{
+ "name": "wandtrial_traces",
+ "item": "wandtrial_traces",
+ "candidate": "h6-A",
+ "source": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_traces/h6-A.png",
+ "sha256": "fba79e0eb96cffd8e38fe0883ad6e88cf0101b7e44a9c828e223a1153bb771f1",
+ "set": {
+  "id": "wandtrial traces",
+  "name_ko": "시험대 주변 희미한 그을음·긁힘",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "flat",
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "description": "짙은 널마루 위 작은 그을음과 긁힘 투명 오버레이. 넓은 검은 바닥이나 임의 점 노이즈 금지. 타일 2×1, 통행 허용, 마법 반응은 별도 일회 효과.",
+  "parent": "wandtrial traces",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "traces",
+    "label": "traces",
+    "w": 32,
+    "h": 16,
+    "foot": [
+     2,
+     1
+    ],
+    "see": "시험대 남쪽 노출 마루 (4..5,9)의 희미한 작은 긁힘·그을음. 2층 통행 허용; 상판이나 전면에 그리지 않음.",
+    "topMin": 0,
+    "mount": "floor",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "wandtrial traces traces"
+   }
+  ],
+  "contract": {
+   "era": "medieval British magical shop",
+   "camera": "south above, orthogonal 3/4, no isometric side skew",
+   "light": "upper left",
+   "palette": "theme-3e7ac64c5cf1d943e08a dedicated 42 colors; isolated palette.pal only",
+   "registration": "human choice required; production sheet is not installed as one object",
+   "pose": [
+    4,
+    9
+   ],
+   "walkable": true,
+   "layer": 2,
+   "response": "static decal only",
+   "coordinateSpace": "floor-local cells; screen px = floor px + (0,32)",
+   "occlusion": "32×16 노출 마루; 작업대 y8의 알파와 겹침 0. u(5,9)는 밟을 수 있음.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "reuse": "Existing images are geometry reference only; create dedicated native pixels from transparent seed."
+  },
+  "refs": [
+   "magic circle"
+  ],
+  "tags": [
+   "medieval",
+   "wand-trial"
+  ],
+  "use": [
+   "display"
+  ],
+  "contextRoom": "scholar"
+ }
+}

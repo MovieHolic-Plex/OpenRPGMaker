@@ -1,0 +1,1550 @@
+{
+ "name": "theme_potions_potion_response",
+ "item": "theme_potions_potion_response",
+ "candidate": "h1-A",
+ "source": "art-output/repair-r5-missing-production/content/tiledata/hand-interior/pick/candidates/theme_potions_potion_response/h1-A.png",
+ "sha256": "031bacdc3cb4877350a00aa7093a9731394ccb6d4029078d65fd016f64cd582e",
+ "set": {
+  "id": "theme potions potion-response",
+  "name_ko": "potion-response",
+  "name_en": "theme potions potion-response",
+  "parent": "theme potions potion-response",
+  "derive": "production",
+  "kind": "flat",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 6,
+   "h": 6
+  },
+  "canvas": [
+   96,
+   96
+  ],
+  "description": "기포/가는증기/녹색/보라/호박색 반응/병담기의 각6프레임을 직접 화소 저작한다. 36개 슬롯 전부 비어 있지 않아야 한다. 각 프레임16×16, 동일 원점(8,15),150ms. 기포 팽창→파열, 증기 상승→분산, 약액 색 반응 전파→정착, 병담기 유입→채움→봉인으로 읽히게 하고 동일 프레임 복사나 자동 tween으로 대체하지 않는다. 솥·상판·인물 본체를 이 시트에 재제작하지 않으며 배경은 투명하다. 최초5상태는6프레임 루프, bottle은6프레임 일회 실행 후 마지막 상태 유지. 밝은 면적과 높이를 제한하고 솥rim·hood 흡입구16px 간격을 침범하지 않는다. 표면반응은 local x3..12/y12..15, 기포는 x3..12/y8..15, 증기는 x5..10/y1..14; 병담기는 x2..13/y7..15 안에 새 병/가는 유입선만 그린다. 슬롯 밖과 제한영역 밖은 투명. 접촉픽셀(8,15)은 솥rim의 부착소켓이며 steam에 바닥접지를 강제하지 않는다. face/board/door 실제alpha 가림은 수집후5솥에서 대조한다.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "bubble-1",
+    "label": "bubble-1",
+    "see": "bubble-1",
+    "x": 0,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 0,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "bubble-2",
+    "label": "bubble-2",
+    "see": "bubble-2",
+    "x": 16,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 1,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bubble-1"
+   },
+   {
+    "key": "bubble-3",
+    "label": "bubble-3",
+    "see": "bubble-3",
+    "x": 32,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 2,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bubble-2"
+   },
+   {
+    "key": "bubble-4",
+    "label": "bubble-4",
+    "see": "bubble-4",
+    "x": 48,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 3,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bubble-3"
+   },
+   {
+    "key": "bubble-5",
+    "label": "bubble-5",
+    "see": "bubble-5",
+    "x": 64,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 4,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bubble-4"
+   },
+   {
+    "key": "bubble-6",
+    "label": "bubble-6",
+    "see": "bubble-6",
+    "x": 80,
+    "y": 0,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bubble",
+    "frame": 5,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      8,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bubble-5"
+   },
+   {
+    "key": "steam-1",
+    "label": "steam-1",
+    "see": "steam-1",
+    "x": 0,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 0,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "steam-2",
+    "label": "steam-2",
+    "see": "steam-2",
+    "x": 16,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 1,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "steam-1"
+   },
+   {
+    "key": "steam-3",
+    "label": "steam-3",
+    "see": "steam-3",
+    "x": 32,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 2,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "steam-2"
+   },
+   {
+    "key": "steam-4",
+    "label": "steam-4",
+    "see": "steam-4",
+    "x": 48,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 3,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "steam-3"
+   },
+   {
+    "key": "steam-5",
+    "label": "steam-5",
+    "see": "steam-5",
+    "x": 64,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 4,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "steam-4"
+   },
+   {
+    "key": "steam-6",
+    "label": "steam-6",
+    "see": "steam-6",
+    "x": 80,
+    "y": 16,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "steam",
+    "frame": 5,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      5,
+      1,
+      11,
+      15
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "steam-5"
+   },
+   {
+    "key": "green-1",
+    "label": "green-1",
+    "see": "green-1",
+    "x": 0,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 0,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "green-2",
+    "label": "green-2",
+    "see": "green-2",
+    "x": 16,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 1,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "green-1"
+   },
+   {
+    "key": "green-3",
+    "label": "green-3",
+    "see": "green-3",
+    "x": 32,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 2,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "green-2"
+   },
+   {
+    "key": "green-4",
+    "label": "green-4",
+    "see": "green-4",
+    "x": 48,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 3,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "green-3"
+   },
+   {
+    "key": "green-5",
+    "label": "green-5",
+    "see": "green-5",
+    "x": 64,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 4,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "green-4"
+   },
+   {
+    "key": "green-6",
+    "label": "green-6",
+    "see": "green-6",
+    "x": 80,
+    "y": 32,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "green",
+    "frame": 5,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "green-5"
+   },
+   {
+    "key": "purple-1",
+    "label": "purple-1",
+    "see": "purple-1",
+    "x": 0,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 0,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "purple-2",
+    "label": "purple-2",
+    "see": "purple-2",
+    "x": 16,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 1,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "purple-1"
+   },
+   {
+    "key": "purple-3",
+    "label": "purple-3",
+    "see": "purple-3",
+    "x": 32,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 2,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "purple-2"
+   },
+   {
+    "key": "purple-4",
+    "label": "purple-4",
+    "see": "purple-4",
+    "x": 48,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 3,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "purple-3"
+   },
+   {
+    "key": "purple-5",
+    "label": "purple-5",
+    "see": "purple-5",
+    "x": 64,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 4,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "purple-4"
+   },
+   {
+    "key": "purple-6",
+    "label": "purple-6",
+    "see": "purple-6",
+    "x": 80,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "purple",
+    "frame": 5,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "purple-5"
+   },
+   {
+    "key": "amber-1",
+    "label": "amber-1",
+    "see": "amber-1",
+    "x": 0,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 0,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "amber-2",
+    "label": "amber-2",
+    "see": "amber-2",
+    "x": 16,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 1,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "amber-1"
+   },
+   {
+    "key": "amber-3",
+    "label": "amber-3",
+    "see": "amber-3",
+    "x": 32,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 2,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "amber-2"
+   },
+   {
+    "key": "amber-4",
+    "label": "amber-4",
+    "see": "amber-4",
+    "x": 48,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 3,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "amber-3"
+   },
+   {
+    "key": "amber-5",
+    "label": "amber-5",
+    "see": "amber-5",
+    "x": 64,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 4,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "amber-4"
+   },
+   {
+    "key": "amber-6",
+    "label": "amber-6",
+    "see": "amber-6",
+    "x": 80,
+    "y": 64,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "amber",
+    "frame": 5,
+    "ms": 150,
+    "loop": true,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      3,
+      12,
+      13,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "amber-5"
+   },
+   {
+    "key": "bottle-1",
+    "label": "bottle-1",
+    "see": "bottle-1",
+    "x": 0,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 0,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    }
+   },
+   {
+    "key": "bottle-2",
+    "label": "bottle-2",
+    "see": "bottle-2",
+    "x": 16,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 1,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bottle-1"
+   },
+   {
+    "key": "bottle-3",
+    "label": "bottle-3",
+    "see": "bottle-3",
+    "x": 32,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 2,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bottle-2"
+   },
+   {
+    "key": "bottle-4",
+    "label": "bottle-4",
+    "see": "bottle-4",
+    "x": 48,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 3,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bottle-3"
+   },
+   {
+    "key": "bottle-5",
+    "label": "bottle-5",
+    "see": "bottle-5",
+    "x": 64,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 4,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bottle-4"
+   },
+   {
+    "key": "bottle-6",
+    "label": "bottle-6",
+    "see": "bottle-6",
+    "x": 80,
+    "y": 80,
+    "w": 16,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     8,
+     15
+    ],
+    "layer": 4,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "state": "bottle",
+    "frame": 5,
+    "ms": 150,
+    "loop": false,
+    "attachment": "cauldron-rim",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      7,
+      14,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true
+    },
+    "differentFrom": "bottle-5"
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r5-missing-production/scene-contract.json",
+   "instructions": "전용42색과 concept-art.png의 거친 고딕 석재·오크·황동·절제된 약액 발광을 따른다. 승인23×14/368×224 장면을 유지한다. 교사 sole(136,47)/hand(150,42), 보조자 sole(328,127)/hand(328,123), 북쪽 몸1→상판2→손7과 칠판 읽을면(98,2)..(126,14)을 보호한다. 배기5개 부모·소켓 및 하단 끝(40,102)/(152,102)을 보존한다. 기존16종과 인물 원본은 다시 그리지 않는다. 빈 시드는 승인 그림이 아니다.\n기포/가는증기/녹색/보라/호박색 반응/병담기의 각6프레임을 직접 화소 저작한다. 36개 슬롯 전부 비어 있지 않아야 한다. 각 프레임16×16, 동일 원점(8,15),150ms. 기포 팽창→파열, 증기 상승→분산, 약액 색 반응 전파→정착, 병담기 유입→채움→봉인으로 읽히게 하고 동일 프레임 복사나 자동 tween으로 대체하지 않는다. 솥·상판·인물 본체를 이 시트에 재제작하지 않으며 배경은 투명하다. 최초5상태는6프레임 루프, bottle은6프레임 일회 실행 후 마지막 상태 유지. 밝은 면적과 높이를 제한하고 솥rim·hood 흡입구16px 간격을 침범하지 않는다. 표면반응은 local x3..12/y12..15, 기포는 x3..12/y8..15, 증기는 x5..10/y1..14; 병담기는 x2..13/y7..15 안에 새 병/가는 유입선만 그린다. 슬롯 밖과 제한영역 밖은 투명. 접촉픽셀(8,15)은 솥rim의 부착소켓이며 steam에 바닥접지를 강제하지 않는다. face/board/door 실제alpha 가림은 수집후5솥에서 대조한다.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "potion-response",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r5-missing-production/attachment-contract.json"
+  }
+ }
+}

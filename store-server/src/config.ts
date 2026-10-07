@@ -1,3 +1,4 @@
+import { r2ConfigFromEnv, type R2Config } from "./r2";
 import { randomBytes } from "node:crypto";
 
 /** 환경 변수 → 설정. 비밀값은 환경에서만 읽고 어디에도 쓰지 않는다. */
@@ -22,6 +23,8 @@ export interface StoreConfig {
   readonly trustProxy: boolean;
   /** 익명 양식(신고) 토큰 서명 키. 없으면 실행마다 새로 만든다(재시작 뒤 열린 양식만 다시 받게 된다). */
   readonly secret: string;
+  /** 파일을 내보낼 Cloudflare R2. 없으면 서버가 디스크에서 직접 보낸다. */
+  readonly r2?: R2Config | null;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): StoreConfig {
@@ -43,6 +46,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): StoreConfig {
     publicUrl,
     databaseUrl: required("STORE_DATABASE_URL"),
     blobDir: required("STORE_BLOB_DIR"),
+    r2: r2ConfigFromEnv(env),
     adminEmails: new Set((env.STORE_ADMIN_EMAILS ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)),
     devLogin: env.STORE_DEV_LOGIN === "1",
     google: googleId && googleSecret ? {

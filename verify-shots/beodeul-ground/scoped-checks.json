@@ -1,0 +1,194 @@
+{
+  "freshAndExistingReferences": true,
+  "authoredReferencePreserved": true,
+  "blockedCellsPreserved": 62,
+  "originalGroundObjectsEventsInteriorPreserved": true,
+  "existingOverlaysPreserved": true,
+  "doorApproachPassable": true,
+  "repeatIdempotent": true,
+  "graftsSurviveBundleEnsure": true,
+  "riverFinishingApplied": true,
+  "snowFinishingSkipped": true,
+  "rebuildRemovesOnlyOldGroundDressing": true,
+  "result": {
+    "mapId": "map_blank_start",
+    "style": "living",
+    "seed": 1004,
+    "placements": [
+      {
+        "recipe": "bdg-foundation",
+        "x": 8,
+        "y": 6,
+        "layer": 4,
+        "width": 7,
+        "height": 2
+      },
+      {
+        "recipe": "bdg-roots",
+        "x": 3,
+        "y": 6,
+        "layer": 4,
+        "width": 3,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-litter",
+        "x": 1,
+        "y": 6,
+        "layer": 2,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-roots",
+        "x": 4,
+        "y": 13,
+        "layer": 4,
+        "width": 3,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-litter",
+        "x": 2,
+        "y": 13,
+        "layer": 2,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-root-shadow",
+        "x": 16,
+        "y": 8,
+        "layer": 2,
+        "width": 3,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-litter",
+        "x": 14,
+        "y": 9,
+        "layer": 2,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-flowerbed",
+        "x": 7,
+        "y": 8,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-barrel",
+        "x": 15,
+        "y": 7,
+        "layer": 4,
+        "width": 1,
+        "height": 2
+      },
+      {
+        "recipe": "bdg-grass-0",
+        "x": 17,
+        "y": 10,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-grass-1",
+        "x": 13,
+        "y": 12,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-grass-2",
+        "x": 1,
+        "y": 3,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-flowers-pink",
+        "x": 17,
+        "y": 3,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-grass-1",
+        "x": 8,
+        "y": 11,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-stones",
+        "x": 7,
+        "y": 9,
+        "layer": 4,
+        "width": 1,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-grass-2",
+        "x": 1,
+        "y": 7,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-flowers-white",
+        "x": 2,
+        "y": 9,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-grass-0",
+        "x": 4,
+        "y": 1,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      },
+      {
+        "recipe": "bdg-flowers-blue",
+        "x": 1,
+        "y": 12,
+        "layer": 4,
+        "width": 2,
+        "height": 1
+      }
+    ],
+    "detectedHouses": 1,
+    "detectedTrees": 3,
+    "houseKits": [
+      "bd-house-h101_0"
+    ],
+    "protectedCells": [
+      130,
+      149,
+      150,
+      151,
+      170,
+      169,
+      171,
+      190,
+      209,
+      210,
+      211,
+      230
+    ],
+    "slotsAdded": 41,
+    "groundPreserved": true,
+    "originalUpperPreserved": true
+  }
+}

@@ -1,4 +1,5 @@
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
+import { transitBlocksCell, tryBoardTransit } from "@/player/playSceneTransit";
 import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
 import { applyFieldStepStates } from "@/project/stateFieldSteps";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -732,6 +733,7 @@ function performAction(
     void scene.runEvent(event.event.id);
     return true;
   }
+  if (tryBoardTransit(scene, tx, ty)) return true;   // 정류장에 문 연 버스·전차·전철에 타기
   if (tryChestInteraction(scene as any, tx, ty)) return true;
   if (attemptLifeInteraction(scene, tx, ty)) return true;
   const facingFarm = attemptFarmInteraction(scene, tx, ty, farmAttempts);
@@ -878,6 +880,12 @@ export function findRuntimeEventInScene(
  * canMoveFootprint 의 대각은 `(H1 && H2) || (V1 && V2)` 이고 바깥 게이트가 `H1 && V1`
  * 이라, 합치면 `H1 && V1 && (H2 || V2)` — 같은 식이다. 분해가 두 곳에 있을 이유가 없다.
  */
+/** 탈것 몸이 주인공 통행 사각(양끝 포함)의 한 칸이라도 덮는가. */
+function transitRectBlocked(scene: Pick<PlaySceneContext, "map">, rect: { left: number; right: number; top: number; bottom: number }): boolean {
+  for (let y = rect.top; y <= rect.bottom; y += 1) for (let x = rect.left; x <= rect.right; x += 1) if (transitBlocksCell(scene, x, y)) return true;
+  return false;
+}
+
 export function playerCanStep(
   scene: Pick<PlaySceneContext, "map" | "tileX" | "tileY"> & Partial<Pick<PlaySceneContext, "session">>,
   body: PlayerBody,
@@ -896,7 +904,7 @@ export function playerCanStep(
     toX,
     toY,
     body.passRows
-  ) && (!scene.session || !isSpatialPlacementBlocking(
+  ) && !transitRectBlocked(scene, playerPassageRect(body, toX, toY)) && (!scene.session || !isSpatialPlacementBlocking(
     project,
     scene.session,
     scene.map.id,

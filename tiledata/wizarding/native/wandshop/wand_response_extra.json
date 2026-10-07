@@ -1,0 +1,115 @@
+{
+ "name": "wand_response_extra",
+ "item": "wand_response_extra",
+ "candidate": "h11-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/wand_response_extra/h11-A.png",
+ "sha256": "8f3e30cdf420792a9eee59b252b19f9ae4221575845f8984d1ebafe7d5e0cdf7",
+ "set": {
+  "id": "wand-response-extra",
+  "name_ko": "wand-response-extra",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "flat",
+  "canvas": [
+   96,
+   48
+  ],
+  "footprint": {
+   "w": 6,
+   "h": 3
+  },
+  "description": "전문 효과 보완 경로: 기존 interior-props production pxgrid/bake/receipt + pixel-fx-animation. 기존 emit/travel/absorb/fade/end 다섯 프레임 불변, 추가 세 프레임만 직접 저작. 각32×48 origin(8,40), screen worldOrigin(88,152), sheetTopLeft(80,112), 마지막 기존 end 완전투명, nonloop. 전문 제작·실속도 GIF/접촉시트/얼굴·문 가림 검수 필수.",
+  "parent": "wand-response-extra",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "emit-unfurl",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "topMin": 0,
+    "mount": "floor",
+    "layer": 5,
+    "see": "origin(8,40) 근처의 금빛 핵이 두 갈래로 벌어지는 방출 변화. x4..13,y32..40 내; 얼굴을 그리거나 가리지 않는다.",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "label": "emit-unfurl",
+    "child": "wand-response-extra emit-unfurl"
+   },
+   {
+    "key": "absorb-break",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "topMin": 0,
+    "mount": "floor",
+    "layer": 5,
+    "see": "표적 내부 x4..13,y4..12에서 금빛 핵이 작은 흡수 조각으로 찢어짐. 이전 absorb를 확대/축소한 복제 금지.",
+    "x": 32,
+    "y": 0,
+    "locked": false,
+    "label": "absorb-break",
+    "child": "wand-response-extra absorb-break"
+   },
+   {
+    "key": "settle",
+    "w": 32,
+    "h": 48,
+    "foot": [
+     2,
+     3
+    ],
+    "topMin": 0,
+    "mount": "floor",
+    "layer": 5,
+    "see": "표적 내부 x4..13,y4..12에서 조각이 짧은 낮은 잔광으로 가라앉음. fade 이후 end 이전. 불꽃 덩어리와 재질 변화.",
+    "x": 64,
+    "y": 0,
+    "locked": false,
+    "label": "settle",
+    "child": "wand-response-extra settle"
+   }
+  ],
+  "contract": {
+   "palette": "theme dedicated42 colors only",
+   "lighting": "upper left",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "separate native supplement; no selection/install during preparation",
+   "requirement": "wand-response-traces",
+   "specialistRoute": {
+    "harness": "interior-props",
+    "pipeline": "production pxgrid -> existing native bake/check/independent review -> receipt",
+    "authoringSkill": "art-output/repair-spec-r7-completion/pixel-fx-animation.md",
+    "automaticTweening": false
+   },
+   "origin": [
+    8,
+    40
+   ],
+   "worldOriginScreen": [
+    88,
+    152
+   ],
+   "sheetTopLeftScreen": [
+    80,
+    112
+   ],
+   "collision": false,
+   "assemblyAllowed": false,
+   "preservedSheet": {
+    "path": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_response/h7-A.png",
+    "sha256": "0235a4f7d4a0eca8404e543718d2f766c3271c5db190631ca36ad2dc1e016439"
+   }
+  }
+ }
+}

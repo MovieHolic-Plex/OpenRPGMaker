@@ -1,0 +1,89 @@
+{
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737,
+    737
+  ],
+  "lowerOverlayTiles": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "upperTiles": [
+    538,
+    540,
+    542,
+    695,
+    697,
+    699,
+    842,
+    844,
+    846,
+    -1,
+    -1,
+    -1
+  ],
+  "upperOverlayTiles": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    27689,
+    -1,
+    27663,
+    27664,
+    27665
+  ],
+  "tileGrafts": [
+    {
+      "targetTile": 27663,
+      "sourceChipset": "tex_beodeul_ground",
+      "sourceTile": 15
+    },
+    {
+      "targetTile": 27664,
+      "sourceChipset": "tex_beodeul_ground",
+      "sourceTile": 16
+    },
+    {
+      "targetTile": 27665,
+      "sourceChipset": "tex_beodeul_ground",
+      "sourceTile": 17
+    },
+    {
+      "targetTile": 27689,
+      "sourceChipset": "tex_beodeul_ground",
+      "sourceTile": 41
+    }
+  ],
+  "errors": [
+    {
+      "code": "missing-root",
+      "x": 1,
+      "y": 3
+    }
+  ]
+}

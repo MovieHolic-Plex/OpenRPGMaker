@@ -5,28 +5,28 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 29849
+   "chars": 35995
   },
   {
    "id": "jp-autotile",
    "name": "일본 도시 · 오토타일 17세트",
    "documents": 18,
    "images": 51,
-   "chars": 94476
+   "chars": 94472
   },
   {
    "id": "jp-building",
    "name": "일본 도시 · 건물 조립 도구",
    "documents": 11,
    "images": 42,
-   "chars": 102457
+   "chars": 102805
   },
   {
    "id": "jp-road",
    "name": "일본 도시 · 도로·교차로 키트",
    "documents": 7,
    "images": 13,
-   "chars": 72082
+   "chars": 72078
   },
   {
    "id": "jp-shop",
@@ -36,27 +36,71 @@
    "chars": 68713
   },
   {
+   "id": "jp-buildings-hand",
+   "name": "일본 도시 · 손 도트 건물 77종",
+   "documents": 5,
+   "images": 13,
+   "chars": 87474
+  },
+  {
+   "id": "jp-street-hand",
+   "name": "일본 도시 · 손 도트 거리 시설 62종",
+   "documents": 3,
+   "images": 9,
+   "chars": 34794
+  },
+  {
+   "id": "jp-school",
+   "name": "일본 도시 · 손 도트 小学校 33종",
+   "documents": 3,
+   "images": 10,
+   "chars": 73630
+  },
+  {
+   "id": "jp-transit",
+   "name": "일본 도시 · 탈것·노면전차·지하철 (키트 53종 · 탈것 14종)",
+   "documents": 3,
+   "images": 11,
+   "chars": 77053
+  },
+  {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15435
+   "chars": 15481
   }
  ],
  "totals": {
-  "categories": 6,
-  "documents": 47,
-  "images": 125,
-  "chars": 383012,
-  "maxDocChars": 38250,
+  "categories": 10,
+  "documents": 61,
+  "images": 168,
+  "chars": 662495,
+  "maxDocChars": 52855,
   "maxImagePx": 820
  },
- "tilesEmitted": 3482,
- "kitsEmitted": 215,
- "kitArrayItemsRoundtrip": 215,
- "unknownTokens": [],
+ "tilesEmitted": 7590,
+ "kitsEmitted": 440,
+ "kitArrayItemsRoundtrip": 440,
+ "unknownTokens": [
+  "jp-school-ex:jp-city-school-68x48",
+  "jp-transit-rules:jp-bus-city",
+  "jp-transit-rules:jp-car-black",
+  "jp-transit-rules:jp-car-blue",
+  "jp-transit-rules:jp-car-kei-mint",
+  "jp-transit-rules:jp-car-kei-yellow",
+  "jp-transit-rules:jp-car-red",
+  "jp-transit-rules:jp-car-silver",
+  "jp-transit-rules:jp-car-taxi",
+  "jp-transit-rules:jp-car-white",
+  "jp-transit-rules:jp-subway",
+  "jp-transit-rules:jp-train-commuter",
+  "jp-transit-rules:jp-tram",
+  "jp-transit-rules:jp-truck-box",
+  "jp-transit-rules:jp-truck-kei"
+ ],
  "sha256": {
-  "json": "b7c69ef1c64999d1819b3328a2051f9dc7c720d469afd9dec5d3234cad87c01b",
-  "images": "0c4e65f482b361bf4fb88d97c5737724cd5c47bc771c88a47f4c1361376ff8e2"
+  "json": "3fb4512675a4da92d9877499231e55b7058941c7077e6784d1c5f4ba3f63fbd3",
+  "images": "6b17978cf7bebf76632157e33330d3410bd314cced3b1e738786643a5e6a6aa1"
  }
 }

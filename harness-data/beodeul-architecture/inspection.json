@@ -1,0 +1,49 @@
+{
+  "stage": "review",
+  "mechanicalPass": true,
+  "visualVerdict": "requires actual image review",
+  "buildings": [
+    {
+      "id": "bd-house-village-cream",
+      "sha256": "64ea88faa6c84b59e1bf64ac318228d937fc74847a2b98f1d9a9d8353b1c7b39",
+      "silhouettePreserved": true,
+      "changedPixels": 917,
+      "preservedPixelRatio": 0.9147135416666666
+    },
+    {
+      "id": "bd-house-village-brick",
+      "sha256": "12c6023b0f04d8ffd40c69acc40b43d895753857d307013046bea71be0b72d34",
+      "silhouettePreserved": true,
+      "changedPixels": 384,
+      "preservedPixelRatio": 0.9732142857142857
+    },
+    {
+      "id": "bd-house-village-stone",
+      "sha256": "3822bccd0ca1a713220b1fca2177c316d342a3c5182ecd3037c40d288d45e44c",
+      "silhouettePreserved": true,
+      "changedPixels": 1290,
+      "preservedPixelRatio": 0.7900390625
+    },
+    {
+      "id": "bd-house-village-sage",
+      "sha256": "c394101a00ee47f130fe524bca3f9007f34d3e279f08c0deceb4c30dda808d98",
+      "silhouettePreserved": true,
+      "changedPixels": 307,
+      "preservedPixelRatio": 0.98126220703125
+    },
+    {
+      "id": "bd-house-village-ochre",
+      "sha256": "e6e2e963c026a4916103a298308b014b3601338447297eee99ec347469851843",
+      "silhouettePreserved": true,
+      "changedPixels": 142,
+      "preservedPixelRatio": 0.9845920138888888
+    },
+    {
+      "id": "bd-house-village-church",
+      "sha256": "ebb5007c1d9f7d7b5f63d9d458ed5a424ba041c391c26642277c7cfb5c7364e6",
+      "silhouettePreserved": true,
+      "changedPixels": 267,
+      "preservedPixelRatio": 0.9933143028846154
+    }
+  ]
+}

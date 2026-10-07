@@ -95,6 +95,7 @@ import { updateScreenDistortion } from "@/player/playSceneScreenDistortion";
 import { updateFieldStaging } from "@/player/playSceneFieldStaging";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import { installCloudShadowLayer, syncCloudShadowLayer, updateCloudShadows } from "@/player/playSceneCloudShadows";
+import { syncTransitForMap, updateTransit } from "@/player/playSceneTransit";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
@@ -412,6 +413,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);
     updateCloudShadows(this, deltaMs);
+    updateTransit(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
@@ -482,6 +484,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     resetEncounterCounter();
     // 맵마다 설정이 다르다 — 새 맵의 구름을 즉시 다시 계산하지 않으면 이전 맵의 그림자가 남는다.
     syncCloudShadowLayer(this);
+    syncTransitForMap(this);
     void this.syncMinimap();
   }
 

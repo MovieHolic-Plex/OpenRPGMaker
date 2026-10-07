@@ -1,0 +1,14 @@
+{
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "projectDir": "/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004",
+  "revision": 17,
+  "sha256": "f549255cd96a6272fab2b01a6d5e74fa764e1cd317ff9364704304a6910a4bf0",
+  "savedAndReopened": true,
+  "allMapLayersAndEventsUnchanged": true,
+  "passabilityAndPriorityUnchanged": true,
+  "sourceSlotsUnchanged": true,
+  "newAndExistingProjectsHaveGableReferences": true,
+  "buildingCount": 6,
+  "allNativeRoofsRestored": true,
+  "onlyStoneGableChangedFromRevision15": true
+}

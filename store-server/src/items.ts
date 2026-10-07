@@ -9,6 +9,9 @@ import {
   referenceDocumentCount,
   slugify,
   validateManifest,
+  storeImageHasSpec,
+  storeImageSizeProblem,
+  STORE_TILE_SIZE,
   type StoreAssetKind,
   type StoreItemDetail,
   type StoreItemKind,
@@ -128,14 +131,14 @@ export async function versionManifest(db: Db, slug: string, version: number, vie
 }
 
 /** blob 을 내줘도 되는가: 내려가지 않은 상품의 판본이 쓰고 있어야 한다(업로드만 된 파일은 주지 않는다). */
-export async function blobServable(db: Db, sha256: string): Promise<{ mime: string } | null> {
+export async function blobServable(db: Db, sha256: string): Promise<{ mime: string; inR2: boolean } | null> {
   const { rows } = await db.query(
-    `select b.mime from store_blobs b where b.sha256 = $1 and exists (
+    `select b.mime, b.r2_at from store_blobs b where b.sha256 = $1 and exists (
        select 1 from store_version_blobs vb join store_items i on i.id = vb.item_id
        where vb.sha256 = b.sha256 and i.status <> 'removed')`,
     [sha256],
   );
-  return rows[0] ? { mime: String(rows[0].mime) } : null;
+  return rows[0] ? { mime: String(rows[0].mime), inR2: rows[0].r2_at !== null } : null;
 }
 
 async function checkBlobs(db: Db | Tx, store: BlobStore, manifest: StorePackManifest): Promise<number> {
@@ -149,6 +152,15 @@ async function checkBlobs(db: Db | Tx, store: BlobStore, manifest: StorePackMani
     if (!row || !store.has(blob.sha256)) errors.push(`아직 올라오지 않은 파일이 있습니다: ${blob.sha256.slice(0, 12)}`);
     else if (row.mime !== blob.mime || Number(row.bytes) !== blob.bytes) errors.push(`파일 설명이 실제와 다릅니다: ${blob.sha256.slice(0, 12)}`);
     total += blob.bytes;
+  }
+  // 에디터가 그대로 쓸 수 있는 크기인지 본다. 규격이 있는 종류만 읽는다(얼굴 수천 장을 다 열지 않게).
+  if (errors.length === 0) {
+    for (const asset of Object.values(manifest.content.assets)) {
+      if (asset.mime !== "image/png" || !storeImageHasSpec(asset.kind)) continue;
+      const size = pngSize(store.read(asset.blob));
+      const problem = size ? storeImageSizeProblem(asset.kind, size.width, size.height) : "PNG 크기를 읽지 못했습니다.";
+      if (problem) errors.push(`${asset.name}: ${problem}`);
+    }
   }
   if (errors.length > 0) throw new HttpError(422, "팩을 받을 수 없습니다.", "invalid_pack", errors);
   return total;
@@ -323,7 +335,7 @@ export async function adminQueue(db: Db, lang?: StoreLocale | null): Promise<{ p
 /** 웹에서 낱장 하나를 올릴 때: 서버가 에셋 하나짜리 팩(타일셋이면 기본 타일셋 포함)으로 감싼다. */
 export interface SingleInput {
   blob: string; title: string; summary: string; description: string; kind: string; license: string;
-  aiGenerated: boolean; credits: string; tags: string[]; tileSize?: number; fileName?: string;
+  aiGenerated: boolean; credits: string; tags: string[]; fileName?: string;
 }
 const SINGLE_ASSET_KIND: Partial<Record<StoreItemKind, StoreAssetKind>> = {
   tileset: "chipset", character: "charset", face: "faceset", battler: "battleCharset", picture: "picture", music: "music", sound: "sound",
@@ -349,11 +361,10 @@ export async function singleManifest(db: Db, store: BlobStore, input: SingleInpu
     if (!size) throw new HttpError(422, "PNG 크기를 읽지 못했습니다.", "bad_png");
     meta.width = size.width;
     meta.height = size.height;
+    const problem = storeImageSizeProblem(assetKind, size.width, size.height);
+    if (problem) throw new HttpError(422, problem, "bad_image_size");
     if (kind === "tileset") {
-      const tileSize = Number(input.tileSize);
-      if (![16, 32, 48].includes(tileSize) || size.width % tileSize !== 0 || size.height % tileSize !== 0) {
-        throw new HttpError(422, `타일셋 그림의 가로·세로(${size.width}×${size.height})가 칸 크기 ${input.tileSize}의 배수여야 합니다.`, "bad_tile_size");
-      }
+      const tileSize = STORE_TILE_SIZE;
       Object.assign(meta, { tileSize, frameWidth: tileSize, frameHeight: tileSize, frames: (size.width / tileSize) * (size.height / tileSize) });
       const tileset = basicTilesetFor(assetId, input.title.slice(0, 80), size.width, size.height, tileSize);
       tilesets[tileset.id] = tileset;
@@ -379,7 +390,7 @@ export async function singleManifest(db: Db, store: BlobStore, input: SingleInpu
  * 아무 판본에도 들지 않은 채 하루가 지난 blob 을 지운다. 올리기 도중 끊긴 것과, 디스크를 채우려고 올린 것을 치운다.
  * 판본에 든 blob 은 판본이 불변이므로 지우지 않는다.
  */
-export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours = 24): Promise<number> {
+export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours = 24, remote?: { remove(sha256: string): Promise<void> } | null): Promise<number> {
   const { rows } = await db.query(
     `delete from store_blobs b where b.created_at < now() - make_interval(hours => $1)
        and not exists (select 1 from store_version_blobs v where v.sha256 = b.sha256)
@@ -387,6 +398,9 @@ export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours 
      returning sha256`,
     [olderThanHours],
   );
-  for (const row of rows) store.remove(String(row.sha256));
+  for (const row of rows) {
+    store.remove(String(row.sha256));
+    if (remote) await remote.remove(String(row.sha256)).catch((error) => console.error("[store] r2 remove", error));
+  }
   return rows.length;
 }

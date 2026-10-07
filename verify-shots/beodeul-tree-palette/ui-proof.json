@@ -1,0 +1,59 @@
+{
+  "metrics": {
+    "canvases": [
+      {
+        "w": 320,
+        "h": 256,
+        "pixels": true
+      },
+      {
+        "w": 320,
+        "h": 256,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      },
+      {
+        "w": 160,
+        "h": 128,
+        "pixels": true
+      }
+    ],
+    "scroll": 704,
+    "client": 704
+  },
+  "focus": {
+    "width": 320,
+    "height": 80
+  },
+  "mobile": {
+    "scroll": 288,
+    "client": 288,
+    "buttons": true
+  },
+  "errors": [],
+  "variantAndFocusControlsWork": true
+}

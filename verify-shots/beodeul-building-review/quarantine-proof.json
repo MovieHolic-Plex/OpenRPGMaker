@@ -1,0 +1,11 @@
+{
+  "freshRejectsFourFamilies": true,
+  "existingRejectsFourFamilies": true,
+  "remainingStamps": 6,
+  "unrelatedKitsPreserved": true,
+  "savedMapsAndPassabilityPreserved": true,
+  "idempotent": true,
+  "canonicalStoreUnmodified": true,
+  "projectId": "3dd2427f-38dc-46e5-925b-a717dbe5bb03",
+  "revision": 25
+}

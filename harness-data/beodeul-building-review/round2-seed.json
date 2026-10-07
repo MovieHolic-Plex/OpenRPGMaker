@@ -1,0 +1,613 @@
+{
+  "schema": "beodeul-building-review/2",
+  "round": 2,
+  "brief": "사용자: 이전 10개 모두 삭제. 원본 질감을 기준으로, 적대적 visualqa 게이트를 통과한 새 10종만 사람 검수에 등록.",
+  "candidates": [
+    {
+      "id": "r2-building-01",
+      "name": "낮고 긴 민가",
+      "role": "민가",
+      "width": 112,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "bd-house-h120_0",
+      "components": [
+        {
+          "source": "bd-house-h120_0",
+          "rect": [
+            0,
+            0,
+            112,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h103_2",
+          "rect": [
+            64,
+            64,
+            80,
+            80
+          ],
+          "at": [
+            16,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "낮고 긴 기와지붕. 원본 기와 굴곡·회벽 도트·목재 명암을 유지하고 왼쪽 창을 바꾼 후보.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-02",
+      "name": "좁은 박공 이층집",
+      "role": "민가",
+      "width": 64,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "bd-house-h117_1",
+      "components": [
+        {
+          "source": "bd-house-h117_1",
+          "rect": [
+            0,
+            0,
+            64,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h103_2",
+          "rect": [
+            64,
+            64,
+            80,
+            80
+          ],
+          "at": [
+            16,
+            96
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "높은 앞 박공과 좁은 이층 몸체. 원본 세부 질감을 유지하고 아래층에 작은 창 하나를 더함.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-03",
+      "name": "회벽 ㄱ자집",
+      "role": "민가",
+      "width": 128,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "bd-house-h109_1",
+      "components": [
+        {
+          "source": "bd-house-h109_1",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h103_2",
+          "rect": [
+            64,
+            64,
+            80,
+            96
+          ],
+          "at": [
+            64,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 16,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "원본의 교차 지붕과 높이가 다른 두 처마. 뒤채의 중복 문을 창과 회벽으로 교체하여 한 입구만 남김.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-04",
+      "name": "넓은 회벽 여관",
+      "role": "여관",
+      "width": 128,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "bd-house-inn",
+      "components": [
+        {
+          "source": "bd-house-inn",
+          "rect": [
+            0,
+            0,
+            128,
+            128
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            0,
+            64,
+            128,
+            128
+          ],
+          "at": [
+            0,
+            64
+          ],
+          "replace": true
+        },
+        {
+          "source": "bd-house-h103_2",
+          "rect": [
+            64,
+            64,
+            80,
+            96
+          ],
+          "at": [
+            64,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 64,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "넓은 우진각 지붕과 두 층의 회벽. 원본 입자 밀도 유지, 벽 재질 통일, 위층 중복 문 제거.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-05",
+      "name": "기와지붕 돌벽 대장간",
+      "role": "대장간",
+      "width": 96,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "bd-house-smithy_town",
+      "components": [
+        {
+          "source": "bd-house-smithy_town",
+          "rect": [
+            0,
+            0,
+            96,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            0,
+            0,
+            32,
+            64
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": true
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            32,
+            0,
+            64,
+            64
+          ],
+          "at": [
+            32,
+            0
+          ],
+          "replace": true
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            96,
+            0,
+            128,
+            64
+          ],
+          "at": [
+            64,
+            0
+          ],
+          "replace": true
+        },
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            64,
+            32,
+            80
+          ],
+          "at": [
+            64,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 48,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "석벽 대장간. 원본 기와의 볼륨과 명암을 보존한 짧은 우진각 지붕과 굴뚝, 작은 창과 문 하나.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-06",
+      "name": "회벽 화물 창고",
+      "role": "창고",
+      "width": 112,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "bd-house-h120_0",
+      "components": [
+        {
+          "source": "bd-house-h120_0",
+          "rect": [
+            0,
+            16,
+            112,
+            96
+          ],
+          "at": [
+            0,
+            16
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            0,
+            64,
+            16,
+            96
+          ],
+          "at": [
+            32,
+            64
+          ],
+          "replace": true
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            0,
+            64,
+            16,
+            96
+          ],
+          "at": [
+            64,
+            64
+          ],
+          "replace": true
+        },
+        {
+          "source": "bd-house-ware0",
+          "rect": [
+            32,
+            80,
+            64,
+            112
+          ],
+          "at": [
+            40,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 40,
+        "y": 64,
+        "w": 32,
+        "h": 32
+      },
+      "description": "목재 프레임과 원본의 고운 회벽 질감을 쓰는 화물 창고. 가운데 넓은 화물문 하나와 양쪽 원본 기와 마감.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-07",
+      "name": "넓은 박공 상점",
+      "role": "찻집",
+      "width": 80,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "bd-house-h109_0",
+      "components": [
+        {
+          "source": "bd-house-h109_0",
+          "rect": [
+            0,
+            0,
+            80,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        },
+        {
+          "source": "bd-house-h104_1",
+          "rect": [
+            16,
+            64,
+            32,
+            80
+          ],
+          "at": [
+            16,
+            64
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "원본의 굵기가 살아 있는 기와 박공 상점. 작은 다락 창과 왼쪽 진열 창, 가운데 문 하나.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-08",
+      "name": "돌벽 이층 박공집",
+      "role": "민가",
+      "width": 64,
+      "height": 128,
+      "authoring": "native-parts",
+      "reference": "arch:stone",
+      "components": [
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            0,
+            64,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ]
+        },
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            64,
+            64,
+            96
+          ],
+          "at": [
+            0,
+            96
+          ]
+        },
+        {
+          "source": "arch:stone",
+          "rect": [
+            16,
+            64,
+            32,
+            96
+          ],
+          "at": [
+            32,
+            64
+          ],
+          "replace": true
+        },
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            80,
+            32,
+            82
+          ],
+          "at": [
+            0,
+            94
+          ],
+          "replace": true
+        },
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            80,
+            32,
+            82
+          ],
+          "at": [
+            32,
+            94
+          ],
+          "replace": true
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 96,
+        "w": 16,
+        "h": 32
+      },
+      "description": "돌벽과 원형 박공창을 유지한 이층집. 같은 재질의 두 층, 윗층 문은 창으로 바꾸고 입구는 아래 하나만 남김.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-09",
+      "name": "푸른 기와 교회",
+      "role": "교회",
+      "width": 192,
+      "height": 208,
+      "authoring": "native-parts",
+      "reference": "arch:church",
+      "components": [
+        {
+          "source": "arch:church",
+          "rect": [
+            0,
+            0,
+            192,
+            208
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 112,
+        "y": 176,
+        "w": 16,
+        "h": 32
+      },
+      "description": "원본 청색 기와·돌벽·첨탑 질감과 이전 보정된 단일 문을 유지. 거친 새 패턴으로 재저작하지 않음.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    },
+    {
+      "id": "r2-building-10",
+      "name": "작은 돌벽 박공집",
+      "role": "민가",
+      "width": 64,
+      "height": 96,
+      "authoring": "native-parts",
+      "reference": "arch:stone",
+      "components": [
+        {
+          "source": "arch:stone",
+          "rect": [
+            0,
+            0,
+            64,
+            96
+          ],
+          "at": [
+            0,
+            0
+          ],
+          "replace": false
+        }
+      ],
+      "entrance": {
+        "x": 32,
+        "y": 64,
+        "w": 16,
+        "h": 32
+      },
+      "description": "원본 기와와 보정된 돌 박공·원형 창을 사용한 작은 집. 처마와 기초의 원래 접점을 유지.",
+      "lighting": "원본 버들항 왼쪽 위 광원과 같은 1:1 명암",
+      "perspective": "원본 지붕 윗면을 유지하는 3/4 탑뷰",
+      "source": "native-recipes/round-2"
+    }
+  ],
+  "previousRejected": [
+    {
+      "id": "form-wing",
+      "decision": "deny"
+    },
+    {
+      "id": "form-inn",
+      "decision": "deny"
+    },
+    {
+      "id": "form-smithy",
+      "decision": "deny"
+    },
+    {
+      "id": "form-warehouse",
+      "decision": "deny"
+    }
+  ],
+  "publication": "file-contract -> native-style-contract -> adversarial texture and structural vision -> publish -> human allow/deny",
+  "autoHumanApproval": false
+}

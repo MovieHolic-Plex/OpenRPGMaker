@@ -40,6 +40,7 @@ export const MAP_CREATING_TOOLS: ReadonlySet<string> = new Set([
   "duplicate_map",
   "place_concept",
   "build_hand_interior_room",
+  "build_wizarding_space",
   "run_interior_room_pipeline",
   "start_interior_room_session",
   "start_dungeon_room_session",

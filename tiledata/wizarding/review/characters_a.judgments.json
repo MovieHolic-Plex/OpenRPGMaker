@@ -1,0 +1,55 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-chr-student-gryffindor": {
+  "verdict": "PASS",
+  "reason": "Re-review at 8x: up view back of head is now plain hair ramp (orange highlight top-left, no dark/maroon nape dots), no face-like marks. Gryffindor crimson hem/tie visible on side views, 3 frames alternate legs, 26px student scale, native-style outline and shading."
+ },
+ "wz-chr-student-slytherin": {
+  "verdict": "PASS",
+  "reason": "Green/silver student reads at 1x. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-student-ravenclaw": {
+  "verdict": "PASS",
+  "reason": "Blue/bronze student reads at 1x. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-student-hufflepuff": {
+  "verdict": "PASS",
+  "reason": "Yellow/black student reads at 1x. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-professor": {
+  "verdict": "PASS",
+  "reason": "Tall (31px) adult with distinct robe silhouette. Faint centre hair highlight in the up view is a normal 2px part, not a face. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-caretaker": {
+  "verdict": "PASS",
+  "reason": "27px adult, lantern/coat silhouette distinct from the professor. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-librarian": {
+  "verdict": "PASS",
+  "reason": "28px adult, distinct silhouette. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-owlpost-student": {
+  "verdict": "PASS",
+  "reason": "Student with post satchel, distinguishable by silhouette. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-winter-postman": {
+  "verdict": "PASS",
+  "reason": "28px adult, winter hat/scarf silhouette distinct. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-potions-apron": {
+  "verdict": "PASS",
+  "reason": "Re-review at 8x: up view nape fixed, clean hair ramp with no eye-like dots. Apron strap/back tie reads on the up view and the brown apron panel on the right view; frames alternate, scale and style match the native walk sheets."
+ },
+ "wz-chr-gear-mechanic": {
+  "verdict": "PASS",
+  "reason": "Adult 26px (lower end for an adult but acceptable), tool/goggle silhouette distinct. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-carriage-guide": {
+  "verdict": "PASS",
+  "reason": "27px adult, coat/cap silhouette distinct. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ },
+ "wz-chr-travel-student": {
+  "verdict": "PASS",
+  "reason": "Hooded travel cloak with pack reads at 1x; back-view hood seam is minor. 3/4 top-down, 4 directions x 3 frames, legs alternate, frames differ 20-100px, scale within spec, native-style 1px coloured outline with 3-4 shade steps, upper-left light; reads as the named role at 1x."
+ }
+}

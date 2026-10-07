@@ -1,0 +1,77 @@
+{
+ "stage": "transit",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 11,
+ "seconds": 151,
+ "focus": "노면전차·지하철역 키트 — 11회차. 10회차는 통과(minor 5). 그 뒤 바뀐 것: 노면전차 거리 쪽(가로수 종·센터 전주 x2·22·44·깃발 기둥)과 참고문서 다시 굽기만 — 키트·역 맵은 그대로, 런타임 사진은 다시 찍음(probe 15/15). 10회차 minor(콘코스 남쪽 빈 바닥, のりば 간판·계단 머리 겹침, 서쪽행 가선이 섬 아랫줄을 지남, 계단 초록 ↑ 표지, 북쪽 차 앞범퍼)는 남은 minor 로 둔다.",
+ "files": {
+  "tiledata/jp-city/blocks/transit_street/_all-x2.png": "b2427ea4b8f0356d88bf4c873b1e460895e38ae98873775fb5f4ca4869c363bd",
+  "tiledata/jp-city/blocks/transit_station/scene-concourse-x3.png": "f731f4c7ec6e821cb3d97a1ffea81441cdbe3dafb1bf191f9e4d0fecb827125f",
+  "tiledata/jp-city/blocks/transit_station/scene-platform-train-x3.png": "e0e0861859102373ccd368dc40b4c14fc416a48e1856600c361c9cda174aa9b7",
+  "tiledata/jp-city/blocks/transit_station/_all-x2.png": "290fbbb0814d1d891195ba73ce52932e9135870b9c2aafaa7982a9abbf6fb988",
+  "verify-shots/jp-city/station-concourse-x3.png": "36c62ac582d0582ad2c6425d1657e52ea8ad74ff0b06eb060648d72388f7df95",
+  "verify-shots/jp-city/station-platform-x3.png": "4f7090bee0771786621711efe429d77114edb26f6d07d250fcd3e5d11633d428",
+  "verify-shots/jp-city/transit-runtime/subway-stop.png": "74556cf77de78be11bfaaf949e18ae4701f3f734990aa531aa6b14a0e60d5942",
+  "verify-shots/jp-city/transit-runtime/SUMMARY.md": "50e3b4bf85c26fb595e91a21f2ee36573686bf26a8998e742e8219db823e27c2",
+  "verify-shots/jp-city/tram-runtime/tram-stop.png": "ed9320aaba0355c81eecc42f3819faca2263f904750dccf4bde354c9e0f5fee9",
+  "verify-shots/jp-city/tram-runtime/tram-stop-e.png": "9c7416f4328fdb8092251d44e49766f451737295b6f1af2a307fa961e0202625",
+  "verify-shots/jp-city/tram-runtime/concourse-stairs.png": "d02804a89059c0123c26e660e9aafc8540bdb39c86280a2049bc3bb4548fa616",
+  "verify-shots/jp-city/tram-runtime/platform-arrive.png": "4b1820219df13e6112227c12a17ffb918ae89463536358f36b6571fc1e772cae",
+  "verify-shots/jp-city/tram-runtime/concourse-return.png": "3a2740fe5acce6b2a1bca9ef0100b34f5d5e0947791c09351d147fa2c3796b49",
+  "verify-shots/jp-city/tram-runtime/SUMMARY.md": "0e8698be8ffd9701e513c89ce0903d37dead6c5312ad17c1a6d8b2497fb46fb5",
+  "scripts/content/jp-city/blocks/transit_street.py": "5668f525d9f7690759bb12ec0dfea7fe96548e317388d36befa2c46864bf4067",
+  "scripts/content/jp-city/blocks/transit_station.py": "222cdf79720aacc8e0360605d4c461d8d33fa3c444d0cd7c814b65e704191950",
+  "scripts/content/jp-city/maps/station.mjs": "478087844f91ccf7ccb71ee2f3b6ffd2b1c85b2e64bfafa3130ba999267fffda",
+  "scripts/content/jp-city/maps/kitmap.mjs": "1a34440fc0b9420dad7fae66d37cd3bf4532a356c399cf559b6237b60f03014b",
+  "scripts/content/jp-city/qa/tram-street.probe.mjs": "f80d876b9191d65aed9890195e3e81d0014c08232e7cb36d43c1f9e09e2f63e1",
+  "src/player/characterDepth.ts": "46e74d5cd958699067eed49442ea4a2992d579f5002eb1468b53736aa91082a5",
+  "tiledata/jp-city/refs/transit-rules.md": "97852a5336fb08a13237bc35fb7819a5df639464b93f6ea38dbe72190234f8a6"
+ },
+ "findings": [
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460",
+   "problem": "The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.",
+   "fix": "Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half",
+   "problem": "(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.",
+   "fix": "Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/station.mjs",
+   "where": "concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475",
+   "problem": "(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.",
+   "fix": "Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/maps/tramstreet.mjs",
+   "where": "Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png",
+   "problem": "(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.",
+   "fix": "Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/blocks/transit_station.py",
+   "where": "Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475",
+   "problem": "(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.",
+   "fix": "Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/tram-runtime/tram-stop-e.png",
+   "where": "North-side car on the eastbound lane, row 12, front bumper",
+   "problem": "(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.",
+   "fix": "Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap."
+  }
+ ],
+ "report": "Round 11 passes with no blocker or major findings; there are 6 minors. The 5 minors from round 10 are not fixed and are listed again. There is one new minor: the platform pillars, which are unchanged since round 10 but were not flagged then.\n\nChecked this round:\n- **Centre poles at x2·22·44:** gaps are 20 and 22, inside the 16–24 rule. None stands on the crosswalk, and their bases are on the bottom row of the centre band.\n- **Ginkgo at x6 and zelkova at x40:** different species, spaced unevenly, so not mechanical repetition. The trunks sit on the row-27 curb. The canopies hang over the westbound lane, and cars on row 25 are drawn under them, which is correct for a tree in front of the lane.\n- **Flag pole at x46:** the banner is vertical, which the research README requires (horizontal nobori is listed as a common mistake). It stands in a gap of the guardrail and leaves the walking strip on rows 28–29 clear.\n- **Runtime photos:** they match the probe results.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-platform L84 jp-subway-pillar x8·x32, base y8 (1x3 → drawn over rows 6~8); platform-arrive.png right edge x≈945, scene-platform-train-x3.png x≈300·880·1460\", \"problem\": \"The pillars' upper part covers the yellow tactile band on the platform edge row (jp-subway-edge, row 6), so the band looks cut off. The pillar is only 3 tiles tall and does not reach the ceiling beam (row 0), so its head looks like it floats in mid-air. The tile still works because only the base row is solid, but it reads as an obstacle on the warning line.\", \"fix\": \"Move the pillars to base y10 or lower, where their top stops at row 8 and leaves the edge band clear. Or give the pillar a ceiling-mounted top piece so it rises from the backwall/ceiling row and reads as standing back from the edge.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"station-concourse south floor below the gates (about rows 10~15, both sides away from the x≈12~15 axis), scene-concourse-x3.png lower half\", \"problem\": \"(Carried over from round 10, not fixed.) Wide empty floor south of the gates, with nothing placed and no clear purpose.\", \"fix\": \"Shrink the concourse height by 1–2 rows, or place a pillar, a timetable or a bench (fare-paid area facilities) in the south corners.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/station.mjs\", \"where\": \"concourse のりば hanging sign right above the stairs-down head (x≈12~14, about rows 11~12), concourse-stairs.png x≈315~455,y≈405~475\", \"problem\": \"(Carried over, not fixed.) The hanging sign's frame touches the top of the stairs' roof, so they look stuck together.\", \"fix\": \"Move the sign up 1 row, or offset it 1 tile left or right so there is a floor tile between it and the stairs head.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/maps/tramstreet.mjs\", \"where\": \"Layer-4 westbound wire on rows 18~19, crossing the lower row of the eastbound island (7,18)~(17,18), tram-stop-e.png\", \"problem\": \"(Carried over, not fixed, accepted as intended 3/4 overlap.) The wire passes across the island railing row, so it looks as if it hangs on the island.\", \"fix\": \"Hide the wire for the island's x range (6~17), or move the pole arm so the wire row sits over the track rows only.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/blocks/transit_station.py\", \"where\": \"Green ↑ sign on the head of the subway-stairs-up and concourse exit stairs, platform-arrive.png x≈437~475,y≈445~475\", \"problem\": \"(Carried over, not fixed.) The emergency-exit-style green pictogram is attached straight to the stairs head, so it reads as an exit sign. The direction sign is already provided by the separate 出口 sign, so this is duplicated.\", \"fix\": \"Remove the green pictogram from the stairs head, or change it to a plain arrow in the line colour.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/tram-runtime/tram-stop-e.png\", \"where\": \"North-side car on the eastbound lane, row 12, front bumper\", \"problem\": \"(Carried over, not fixed.) The front bumper of the north-side car is covered by the tram roof, so it looks cut off in a stopped frame.\", \"fix\": \"Set the car to stop one tile short of the crosswalk/tram stop, or move the photo timing to a frame where the two do not overlap.\"}\n]}\n```"
+}

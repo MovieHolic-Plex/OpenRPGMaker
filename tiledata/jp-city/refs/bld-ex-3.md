@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 · 완성 예제 3/5 (`machiya_izakaya`, `sushi_bar`, `ramen_tower`, `bento_corner`, `sento_front`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **8126칸**, 16px 칸, 시트 768×2720px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 `list_jp_city_building_parts({"example":"<이름>"})` 의 완성 예제 입력을 **실제 `build_jp_city_building` 도구로 지은 결과**다(`tiledata/jp-city/refs/engine_dump.mts` 가 도구를 호출해 맵 배열을 읽었다).
 시험판 맵: 폭 = 건물 폭 + 4, 높이 = 건물 높이 + 5, 1층 전체가 보도(`sw`), 아래 3줄이 도로(`road_c`), 건물 사각형은 맵 (2,1) 에서 시작한다. 좌표는 맵 칸 0 기준.
@@ -8,7 +8,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 그림은 원본 해상도 ×2 로 시트에서 직접 합성한 것이다(AI 모형 아님).
 
 ## machiya_izakaya — 마치야 이자카야 (그림 `jp-img-ex-machiya_izakaya`)
-- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(5,8) 부착물 board.izakaya 와 door.machiya 가 같은 칸(열 3, 줄 7)을 덮는다 — 위층이 둘뿐이라 한 칸에 부착물은 하나만
+- 결과: **거부됐다** — `DECO_CLASH` — 건물을 짓지 않았다 — 오류 1건: DECO_CLASH(5,8) 부착물 board.izakaya 와 door.machiya 가 같은 칸(열 3, 줄 7)을 덮는다 — 위층이 둘뿐이라 한 칸에 부착물은 하나만 → 다음: DECO_CLASH: 창 위에 얹은 부착물의 col·row 를 옮기거나 floor 를 바꾸거나 빼고, 한 칸에 위층 칸이 3장 겹치지 않게 한다
 - 오류 1건: `DECO_CLASH`@(5,8)
 - 맵은 한 칸도 바뀌지 않았다. 아래 배열·그림은 **조립기가 계산한 「지었다면」 결과**(맵에 쓰지 않음, 빨강 테두리 = 오류 칸)다.
 

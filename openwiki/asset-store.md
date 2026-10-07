@@ -70,6 +70,24 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
 
 이름 기반 안전장치일 뿐이고, 권리 확인 책임은 올리는 사람에게 있다(동의 체크박스, 이용약관).
 
+### 그림 규격 (2026-10-07)
+
+에디터가 그대로 쓰는 크기만 받는다. 규칙은 `src/assetStore/format.ts` 의 `STORE_TILE_SIZE`·`STORE_FIXED_SHEETS`·`storeImageSizeProblem` 하나에 두고, 세 곳이 같이 쓴다.
+
+| 종류 | 규격 | 근거 |
+|---|---|---|
+| 타일셋(chipset) | 16×16 칸, 가로·세로 16의 배수. 팩의 타일셋 정의도 `tileSize` 16 만 | `RESOURCE_SLICING.chipset` |
+| 캐릭터(charset) | 288×256 고정 = 24×32 칸 12×8 (8명, 한 명 3×4칸) | 다른 크기는 `registerUploadedCharsetTextures` 가 콘솔 오류만 내고 건너뛴다 |
+| 전투 그림(battleCharset) | 144×384 고정 = 48×48 칸 3×8 | `RESOURCE_SLICING.battleCharset` |
+| 전투 무기(battleWeapon) | 192×512 고정 = 64×64 칸 3×8 | `RESOURCE_SLICING.battleWeapon` |
+| 얼굴·그림·배경 | 자유 (기본 얼굴은 48×48, 흉상·전신은 큰 그림) | 한 장짜리 그림 |
+
+- 서버: 낱장(`/api/v1/single`)은 422 `bad_image_size`, 팩은 `checkBlobs` 가 규격 있는 종류의 PNG 만 열어 보고 422 `invalid_pack`. 얼굴 수천 장은 열지 않는다.
+- 웹 올리기 화면: 종류 밑에 규격 한 줄을 화면 언어로 보이고, 파일을 고르면 올리기 전에 브라우저에서 크기를 재서 알려 준다. 칸 크기 고르는 칸은 없앴다.
+- 작은 캐릭터 시트(72×128 한 명 ~ 가로 72·세로 128 의 배수, 288×256 이하)는 웹 올리기 화면이 브라우저 캔버스로 288×256 시트 왼쪽 위에 그대로 넣어 올린다(`upload.js` `padCharacterSheet`). 남는 칸은 왼쪽 위 픽셀 색으로 채운다 — 에디터 투명색 키가 그 픽셀이다. 서버는 288×256 만 받는 그대로다.
+- 에디터 「스토어 → 올리기」: 규격 밖 타일셋(32·48px)·캐릭터는 「올릴 수 없는 것」으로 접힌다.
+- 2026-10-07 시점 운영에 있던 상품은 전부 규격 안이었다(타일셋 16px, 캐릭터 288×256 ×14).
+
 ## 서버
 
 
@@ -85,6 +103,26 @@ dev 모드의 vite http 오리진에서도 같은 방식이다.
 - 신고: 서로 다른 신고자가 `STORE_REPORT_HIDE_THRESHOLD`(3)명이 되면 자동으로 숨긴다.
   - 신고로 숨겨진 상품은 작가가 다시 공개할 수 없다(409).
   - 운영자 조치는 `/admin` 에서 한다.
+
+### 파일은 Cloudflare R2 로 내보낸다 (2026-10-06)
+
+- `src/r2.ts`: S3 SigV4 를 직접 서명한다(SDK 없음). PUT·HEAD·DELETE 와 읽기용 서명 주소(`presign`).
+- `GET /api/v1/blobs/:sha`: `blobServable`(내려지지 않은 상품이 쓰는 파일인가) 확인 → `r2_at` 이 있으면 R2 서명 주소로 303.
+  - 서명 주소는 한 시간 단위로 같은 값(브라우저 캐시가 맞는다), 유효 2시간, 303 응답 자체는 5분 캐시.
+  - R2 객체는 `cache-control: public, max-age=31536000, immutable` 과 원래 mime 으로 올린다.
+  - 아직 R2 에 없으면 디스크에서 내주고 뒤에서 올린다. 올리기(`POST /api/v1/blobs`)도 바로 R2 에 올린다.
+- `migrations/005_r2.sql`: `store_blobs.r2_at`. 켜질 때와 매시간 `r2_at is null` 인 파일을 4개씩 병렬로 올린다.
+- 웹 화면 CSP 의 `img-src`·`media-src` 에 R2 출처를 더한다(`setFileOrigin`). 편집기(Electron 중계)의 fetch 는 303 을 따라가고 sha256 을 검사한다.
+- 설정 `STORE_R2_*` 넷이 없으면 R2 없이 디스크에서 내준다. 운영·스테이징 설정과 토큰 범위는 `store-server/deploy/README.md`.
+  - 스테이징은 `~/.config/systemd/user/oprn-store-staging.service.d/r2.conf` → `~/.config/oprn-store-staging-r2.env`(600).
+- 토큰은 버킷 하나로만 묶는다. **IP 조건은 걸면 안 된다** — R2 는 서명 주소로 받는 방문자에게도 토큰의 IP 조건을 적용한다(걸었다가 방문자 전원 403).
+
+### 앞단은 Cloudflare (2026-10-06)
+
+- `openrpgmaker.com` 네임서버를 Namecheap → Cloudflare 로 옮겼다. `store` 레코드만 프록시(WAF·DDoS 완화·정적 캐시), 나머지는 DNS 만.
+- 오리진은 `cloudflare-real-ip.conf` 로 `$remote_addr` 를 사용자 IP 로 되돌린다. 빠뜨리면 `app.ts` 의 IP 속도 제한이 Cloudflare 엣지 단위로 묶인다.
+- 무료 플랜 한도: 요청 본문 100MB(앱은 blob 32MB), 첫 바이트 100초(nginx 120초). 둘 다 지금 앱 한도 안이다.
+- 파일 303 은 `cf-cache-status: DYNAMIC`(캐시 안 함), 실제 바이트는 R2 서명 주소에서 나간다. 운영 절차·zone id 는 `store-server/deploy/README.md`.
 
 ## 보안 검토 반영 (2026-10-06)
 
@@ -174,3 +212,4 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - 버들항 타일셋 JSON 은 8.7MB 다. 매니페스트 한도는 24MB(`STORE_LIMITS.manifestBytes`)다.
 - 한글 제목 slug 는 `romanizeHangul` 로 로마자로 바꾼다(`버들항 — 로마풍 항구 도시` → `beodeulhang-romapung-hanggu-dosi-…`).
 - 시드는 같은 제목이 이미 있으면 건너뛴다. 시드 그림을 바꾸려면 데이터 폴더를 새로 만든다.
+- R2 서명 주소는 상품을 내린 뒤에도 최대 약 2시간 유효하다. 바로 막아야 하면 R2 객체를 지운다(`R2.remove`).

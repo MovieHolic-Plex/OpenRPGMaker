@@ -1,0 +1,41 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {renderMapPng} from '../qa-game/render.mts';
+import {canMove} from '../../src/project/collision.ts';
+import {layerTileAt,setLayerTileAt} from '../../src/project/mapLayers.ts';
+const p=JSON.parse(fs.readFileSync('output/beodeul-village50/preview-project.json','utf8'));
+const result=JSON.parse(fs.readFileSync('output/beodeul-village50/build-result.json','utf8'));
+const m=p.maps[result.mapId],ts=p.tilesets[m.tilesetId];
+const root='tiledata/beodeul-ground',publicDir='public/assets/beodeul-ground';
+fs.writeFileSync(`${root}/village50-native.png`,renderMapPng({...p,startMapId:''},m).png);
+execFileSync('convert',[`${root}/village50-native.png`,'-strip','-filter','point','-resize','820x820>','-dither','None','-colors','128',`${publicDir}/village50-native.png`]);
+const used=new Set([...(m.lowerTiles??[]),...(m.lowerOverlayTiles??[]),...(m.upperTiles??[]),...(m.upperOverlayTiles??[])]);
+const grafts=ts.tileGrafts.filter(g=>used.has(g.targetTile));
+const warmCatalog=JSON.parse(fs.readFileSync('src/assets/beodeulWarmTreesCatalog.json','utf8'));
+const sourceKits=ts.structureKits.filter(k=>result.placements.some(a=>a.kit===k.id));
+const guide=`# 황록 마을 50×50 · 공유 마당/두 다리/황록 숲\n\n사용자 제공 마을 구도 그림에서 길의 위계와 물길로 나뉜 구역 관계를 적용한 버들항 실제 맵이다. 원본 그림을 게임 소재로 잘라 쓰거나 건물 그림을 재저작하지 않는다.\n\n50×50, 16px. 건물 ${result.fronts.length}개(민가/회관/주막/대장간/교회), 다리 2개. 집을 떨어뜨린 잔디 필지가 아니라 2~4개 건물이 붙은 작은 건물군과 공유 흙마당으로 구성한다. 포석 큰길은 서쪽 입구-우물-동쪽 골목, 남쪽 길은 교회 앞에서 굽어 둘째 다리로 이어진다. 북쪽 길은 회관 곁으로 들어온다. 흙 골목은 좁게 만들며 모든 실제 문앞을 연결한다. 서쪽 교회/주거와 동쪽 회관/장터/공방이 두 다리로 연결된다. warm 색만 적용한 공용 나무/합성 숲은 건물을 덮지 않는다. 수관은 길 위로 드리울 수 있지만 blockingCells 밑동과 문 앞 여유는 길을 막지 않는다.\n\n재현 입구: scripts/content/lib/beodeul-village50.mts의 buildBeodeulVillage50(project,newMapId). 반드시 새 맵으로 만든다. 기존 맵을 재시공하지 않는다. 기존 기와/stone 박공 정리/문 1개/3/4 탑뷰를 그대로 사용한다. 기존 source 조각은 현재 프로젝트 참고문서 beodeul-city-pieces와 beodeul-ground-dressing의 warm 색 기준에서 MD 전체와 실제 그림을 먼저 읽는다.\n\n시공: 물/큰길 예약 → 완전한 건물 → 길/사유 접근로/연속 마당 → 예약 물을 named material 버들항 강·운하 물로 fill_region → 아치 다리 완전체 → 식생/기물 → 공용 기초/짧은 일광 그림자. 오토타일의 자동 틈 메움 때문에 물 그림은 길 다음에 적용한다. 물을 거쳐 가는 문앞 접근로로 집 배치 오류를 숨기지 않는다.\n\n아치 다리 bd-bridge-arch는 4×5이며 동서 갑판은 원점 y+1/y+2의 두 줄뿐이다. 두 원점: ${JSON.stringify(result.bridges)}. 강은 남북으로 흐르는 4칸 폭이다. 굽이를 가로지르는 비스듬한 다리, 다리 없는 물 건너 길은 이 표본에 없다. 갑판/양쪽 둑 실제 canMove와 모든 문앞 착지 칸을 검사한다.\n\n목표를 source 번호로 현재 map에 직접 칠하지 않는다. 아래 층별 target 배열은 이 정확한 예제 전용이며 사용한 모든 graft의 source 텍스처/칸/우선순위/통행을 별도 문서로 제공한다. 공용 조각은 translateTiles로 이식한다. 기와/건물은 3층, 기초/접점 풀은 4층, 낮은 그림자는 2층, 길/물/다리 갑판은 1층이다.\n\n정상/오류: bridge-deck-missing, 첫 다리 target-local (23,16). 실제 맵의 4×2 갑판을 원래 물 칸으로 교체한 오류와 정상 다리를 같은 좌표로 렌더한다. 정상 canMove (22,16)→(23,16)는 true, 오류는 false다.\n\n시작 (${result.start.x},${result.start.y}). 외장/길 예제이며 새 실내/전이 이벤트는 별도로 만든다. 화면 검수 후 실제 프로젝트 SQLite 저장/재로드가 완료 조건이다.\n\n## 모든 입구\n\n| 건물 | 문앞 x | 문앞 y | 구역 |\n|---|---|---|---|\n${result.fronts.map(f=>`| ${f.kit} | ${f.x} | ${f.y} | ${f.district} |`).join('\n')}\n`;
+const warmGuide='# 따뜻한 황록 공용 나무 · 전체 source 사전\n\nbeodeul_warm_trees / tex_beodeul_warm_trees, 16px·8열. 이 자료 전체 배열은 source 번호이며 map target 번호가 아니다. source 픽셀은 (n%8*16, floor(n/8)*16). tree body 4×5는 선택한 warm 시안과 픽셀 일치, 원래 알파/뿌리/줄기 보존. grove는 기존 woodland RGBA의 정확한 from→to 표만 적용하고 원래 blockingCells와 앞뒤 합성을 유지했다. 기본 잔디·건물에는 이 색을 적용하지 않는다. 그림은 공용 번들로 모든 프로젝트가 받는다.\n\n3층 body와 2층 -shadow를 같은 원점에 놓는다. 빈 -1은 기존 층 유지. 본체는 ★, blockingCells는 lower+네 방향 X. 수관은 길 위로 드리울 수 있지만 밑동은 문 앞 한 칸과 큰길/다리/물 금지. 전체 조각+그림자가 맵 안에 들어올 때만 배치한다. source 번호는 translateTiles로 대상 칩셋에 이식한다. 민가/교회는 기존 beodeul_architecture, 길·풀·기초는 beodeul_ground를 사용한다.\n\n```json\n'+JSON.stringify(warmCatalog)+'\n```';
+const docs=[{id:'bd-ground-warm-tree-catalog',name:'따뜻한 황록 나무·숲 전체 source와 배치 규칙',markdown:warmGuide},{id:'bd-ground-village50-guide',name:'조밀한 황록 마을 50×50 · 시공/다리/구역 지침',markdown:guide}];
+const roadGuide='# 포석길 연속성 · 재료 접점 정정\n\n건물과 겹친 포석길을 지운 뒤 임의의 흙길 우회가 있다는 이유로 포석길을 합격 처리하지 않는다. repairBeodeulVillage50Roads는 교회 문앞 (9,44)에서 남쪽 다리 서쪽 둑 (22,37)까지 건물 전체 영역을 피하고 실제 canMove가 허용하는 짧은 자유 지면 경로를 찾고 그 경로를 포석으로 잇는다. y>=37 안에서 포석만 사용하는 연결을 별도로 확인하므로 북쪽 길로 우회해 결손을 숨길 수 없다. 건물·나무·그림자·소품·이벤트는 그대로 두고 1층 길만 바꾼다.\n\n흙길/포석/다리 갑판은 road union으로 N/E/S/W mask를 계산한다. 서로 다른 길 재료가 만나는 내부 접점에는 잔디 경계를 넣지 않는다. 원본 bdg-hamlet-soil/stone-0..15를 사용하며 새 그림을 만들지 않는다. 전체 source와 target 칸/좌표·우선순위·통행은 동일 용도 사전과 graft 문서에 있다.\n\n```json\n'+JSON.stringify(result.roadRepair??{})+'\n```';
+docs.push({id:'bd-ground-village50-road-continuity',name:'포석길 끊김·재료 접점 보정과 정확한 좌표',markdown:roadGuide});
+for(const [layer,key] of [[1,'lowerTiles'],[2,'lowerOverlayTiles'],[3,'upperTiles'],[4,'upperOverlayTiles']] as const){
+ docs.push({id:`bd-ground-village50-layer-${layer}`,name:`황록 마을 50×50 전체 ${layer}층 배열`,markdown:`# ${layer}층 전체 target 배열\n\n50×50, 16px. 빈 칸 -1. 배열 인덱스 y*50+x. source 이식표/우선순위/통행은 동일 접두어 문서를 모두 읽는다.\n\n\x60\x60\x60json\n${JSON.stringify({mapId:m.id,width:m.width,height:m.height,tilesetId:m.tilesetId,layer,tiles:m[key]??Array(m.width*m.height).fill(-1)})}\n\x60\x60\x60`});
+}
+docs.push({id:'bd-ground-village50-kits',name:'황록 마을 50×50 사용 키트/입구/전체 조각 배열',markdown:'# 사용 target 키트 전체\n\nparts와 전체 rows를 생략하지 않는다. 각 문 앞은 entrance.dy+h다.\n```json\n'+JSON.stringify({placements:result.placements,kits:sourceKits,warmSource: warmCatalog})+'\n```'});
+for(let i=0;i<grafts.length;i+=300)docs.push({id:`bd-ground-village50-grafts-${i/300+1}`,name:`황록 마을 50×50 source 이식 규칙 ${i/300+1}`,markdown:'# 사용한 모든 source→target 칸\n\n다음 번호 문서까지 모두 읽는다. source 좌표는 각 텍스처의 tileSize/tilesPerRow로 계산한다.\n```json\n'+JSON.stringify({tilesetId:ts.id,count:ts.count,tilesPerRow:ts.tilesPerRow,offset:i,total:grafts.length,graftRules:grafts.slice(i,i+300).map(g=>({...g,priority:ts.priority[g.targetTile],passability:ts.passability[g.targetTile]}))})+'\n```'});
+assert(docs.every(d=>d.markdown.length<=120000));
+const bad=structuredClone(p),bm=bad.maps[m.id],b=result.bridges[0],waterTile=layerTileAt(m,1,(b.y-1)*m.width+b.x);
+assert(canMove(p,m,b.x-1,b.y+1,b.x,b.y+1));
+for(let y=b.y+1;y<=b.y+2;y++)for(let x=b.x;x<b.x+4;x++)setLayerTileAt(bm,1,y*m.width+x,waterTile);
+assert(!canMove(bad,bm,b.x-1,b.y+1,b.x,b.y+1));
+fs.writeFileSync('output/beodeul-village50/bad-bridge.png',renderMapPng({...bad,startMapId:''},bm).png);
+execFileSync('python',['-c',`from PIL import Image\na=Image.open('${root}/village50-native.png');b=Image.open('output/beodeul-village50/bad-bridge.png');box=(22*16,14*16,28*16,21*16);a=a.crop(box);b=b.crop(box);c=Image.new('RGB',(200,112),'#588a39');c.paste(a,(0,0));c.paste(b,(104,0));c.resize((600,336),Image.Resampling.NEAREST).save('${publicDir}/village50-normal-error.png')`]);
+const images=[{id:'bd-ground-village50-image',name:'황록 마을 50×50 실제 전체 조립',caption:'실제 800×800 네 층 조립의 820px/128색 학습 사본. 건물군/공유 마당/길 위계/두 다리/교회 구역. 게임 타일로 잘라 쓰지 않는다.',dataUrl:'/assets/beodeul-ground/village50-native.png'},
+ {id:'bd-ground-village50-error',name:'다리 정상/갑판 누락 오류',caption:'왼쪽 정상·오른쪽 같은 map (23,16)의 4×2 갑판을 실제 물로 교체. bridge-deck-missing, 실제 canMove true→false.',dataUrl:'/assets/beodeul-ground/village50-normal-error.png'}];
+fs.writeFileSync(`${root}/VILLAGE50.md`,guide+'\n\n'+roadGuide);fs.writeFileSync(`${root}/village50-example.json`,JSON.stringify({result,map:m,sourceKits,grafts},null,2));
+fs.writeFileSync(`${root}/village50-references.json`,JSON.stringify({documents:docs,images},null,2));
+const refs=JSON.parse(fs.readFileSync('src/assets/beodeulGroundReferences.json','utf8'));
+refs[0].documents=refs[0].documents.filter(d=>!d.id.startsWith('bd-ground-village50')&&d.id!=='bd-ground-warm-tree-catalog');refs[0].images=refs[0].images.filter(i=>!i.id.startsWith('bd-ground-village50'));
+refs[0].documents.push(...docs);refs[0].images.push(...images);fs.writeFileSync('src/assets/beodeulGroundReferences.json',JSON.stringify(refs,null,2)+'\n');
+console.log(JSON.stringify({pages:docs.map(d=>[d.id,d.markdown.length]),images:images.length,bridgeMutationDetected:true}));

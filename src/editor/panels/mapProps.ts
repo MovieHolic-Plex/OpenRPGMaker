@@ -5,8 +5,10 @@ import { selectField as climateSelectField } from "@/editor/panels/databaseContr
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole, setMapCharacterScale,
-  setMapCloudShadows, setMapClimate, setMapSunlight,
+  setMapCloudShadows, setMapClimate, setMapSunlight, setMapTransit,
 } from "@/editor/actions";
+import { mapRoadBands, planMapTransit } from "@/editor/tools/transitTools";
+import { normalizeMapTransit, transitVehicle, type MapTransitRoute } from "@/project/mapTransit";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { audioPlayback } from "@/editor/panels/audioResourcePresentation";
@@ -47,13 +49,14 @@ function roleLabel(role: MapRole): string {
   return role === "unknown" ? "알 수 없음" : MAP_ROLE_LABELS[role];
 }
 
-type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "sunlight" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
+type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "sunlight" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap" | "transit";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
   climate: "기후",
   general: "기본 설정",
   background: "맵 배경",
   clouds: "구름 그림자",
+  transit: "탈것(차·버스·전차)",
   sunlight: "태양과 그림자",
   atmosphere: "환경 효과",
   bgm: "배경 음악",
@@ -67,7 +70,7 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 const SECTION_ORDER: readonly MapPropsTab[] = [
   // 게임플레이에 바로 걸리는 설정을 위에, 장식(기후·구름·환경)은 아래로.
   // 2026-09-22 실측: 기후·배경·구름이 먼저 와서 BGM·인카운터를 찾으려면 스크롤이 길었다.
-  "general", "bgm", "encounter", "spawns", "battle", "restrictions", "background", "minimap", "sunlight", "climate", "clouds", "atmosphere",
+  "general", "bgm", "encounter", "spawns", "battle", "restrictions", "background", "minimap", "transit", "sunlight", "climate", "clouds", "atmosphere",
 ];
 
 const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
@@ -75,6 +78,7 @@ const SECTION_DESCRIPTIONS: Record<MapPropsTab, string> = {
   general: "맵의 이름, 타일 그림판과 크기를 설정합니다.",
   background: "투명한 타일 뒤에 표시할 그림과 움직임을 설정합니다.",
   clouds: "맵 위를 흘러가는 구름 그림자를 설정합니다.",
+  transit: "길 위를 달리는 차·버스·노면전차와 지하철·전철 노선을 설정합니다. 게임에서 실제로 움직이고, 주인공 앞에서는 섭니다.",
   sunlight: "태양의 방향과 고도를 정해 절벽·집·나무가 땅에 드리우는 그림자를 설정합니다.",
   atmosphere: "자연·판타지·도시·물속 효과를 겹쳐 적용합니다.",
   bgm: "이 맵에 들어왔을 때 재생할 음악을 고릅니다.",
@@ -89,7 +93,7 @@ const SECTION_RENDERERS: Record<MapPropsTab, (host: HTMLElement, map: import("@/
   climate: renderClimateTab, general: renderGeneralTab, background: renderBackgroundTab, clouds: renderCloudShadowTab, bgm: renderBgmTab,
   sunlight: renderSunlightTab,
   battle: renderBattleTab, restrictions: renderRestrictionsTab, encounter: renderEncounterTab,
-  spawns: renderSpawnsTab, minimap: renderMinimapTab,
+  spawns: renderSpawnsTab, minimap: renderMinimapTab, transit: renderTransitTab,
   atmosphere: (host, map) => renderMapAtmosphere(host, map, () => rerender(host)),
 };
 const lastChangedControl = new WeakMap<HTMLElement, string>();
@@ -154,6 +158,7 @@ function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap
     return "전역 날씨 따르기";
   }
   if (tab === "clouds") return map.cloudShadows?.enabled ? `구름량 ${map.cloudShadows.amount ?? 3}` : "꺼짐";
+  if (tab === "transit") { const n = map.transit?.routes?.length ?? 0; return n ? `노선 ${n}` : "없음"; }
   const effects = map.atmosphereEffects ?? [];
   return effects.length ? `효과 ${effects.length}` : "없음";
 }
@@ -1291,6 +1296,92 @@ function renderSunlightTab(host: HTMLElement, map: import("@/project/types").Gam
     appendSliderRow(section, { label: "집·나무의 그림자 높이 (%)", testid: "map-sunlight-height", min: 25, max: 200, step: 5,
       value: Math.round(sun.heightScale * 100), normalize: v => clampSlider(v, 25, 200), describe: v => `${v}% — 집·나무의 그림자 길이를 조절합니다.`, apply: v => setMapSunlight(map.id, { heightScale: v / 100 }) });
   }
+  host.append(section);
+}
+
+const TRANSIT_KIND_LABEL: Record<MapTransitRoute["kind"], string> = { road: "차 흐름", bus: "버스", tram: "노면전차", train: "전철", subway: "지하철" };
+
+// 탈것: 길 그림에서 자동으로 깔거나(조수 도구 set_map_transit 과 같은 계산 planMapTransit), 노선을 켜고 끄고 지운다.
+// 정류장·순환선·지하철 승강장 노선처럼 칸 경로가 필요한 것은 AI 조수(set_map_transit routes)로 만든다.
+function renderTransitTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-transit-section" } });
+  const project = store.getCurrent();
+  const bands = mapRoadBands(project, map);
+  const routes = map.transit?.routes ?? [];
+  const { problems } = normalizeMapTransit(map.transit, { width: map.width, height: map.height });
+  const usable = bands.road.filter((b) => b.edgeToEdge);
+  section.append(el("p", {
+    class: "map-props-hint",
+    text: usable.length
+      ? `맵 끝에서 끝까지 이어진 차도 ${usable.length}줄을 찾았습니다(${usable.map((b) => b.axis === "ew" ? `동서 y ${b.edge}~${b.edge + b.width - 1}` : `남북 x ${b.edge}~${b.edge + b.width - 1}`).join(", ")}). 왼쪽 차선으로 달립니다(좌측통행).`
+      : "맵 끝에서 끝까지 이어진 생활도로(일본 도시 칩셋의 차도 바닥)가 없어 자동으로 깔 수 없습니다. 칸 경로는 AI 조수에게 「이 길로 버스가 다니게 해 줘」처럼 말해 만드세요.",
+  }));
+  const runAuto = (auto: Record<string, unknown>): void => {
+    try {
+      const plan = planMapTransit(project, map, { auto });
+      setMapTransit(map.id, plan.next);
+      toast(`탈것 노선 ${plan.routes.length}개를 깔았습니다${plan.warnings.length ? ` — ${plan.warnings[0]}` : ""}`, "ok");
+    } catch (error) {
+      toast(String((error as Error)?.message ?? error), "error");
+    }
+    rerender(host);
+  };
+  const buttons = el("div", { class: "map-props-size-row" });
+  const autoButton = el("button", { class: "btn btn-sm", text: "차 흐름 자동으로 깔기", attrs: { type: "button" }, dataset: { testid: "map-transit-auto" } }) as HTMLButtonElement;
+  autoButton.disabled = usable.length === 0;
+  autoButton.addEventListener("click", () => runAuto({}));
+  buttons.append(autoButton);
+  if (bands.tram.some((b) => b.edgeToEdge)) {
+    const tramButton = el("button", { class: "btn btn-sm", text: "노면전차도 깔기", attrs: { type: "button" }, dataset: { testid: "map-transit-auto-tram" } });
+    tramButton.addEventListener("click", () => runAuto({ tram: true, traffic: usable.length > 0 }));
+    buttons.append(tramButton);
+  }
+  if (routes.length) {
+    const clearButton = el("button", { class: "btn btn-sm", text: "모두 지우기", attrs: { type: "button" }, dataset: { testid: "map-transit-clear" } });
+    clearButton.addEventListener("click", () => { setMapTransit(map.id, null); rerender(host); });
+    buttons.append(clearButton);
+  }
+  section.append(buttons);
+
+  for (const route of routes) {
+    const row = el("label", { class: "map-props-check-row", dataset: { testid: `map-transit-route-${route.id}` } });
+    const check = el("input", { attrs: { type: "checkbox" } }) as HTMLInputElement;
+    check.checked = route.enabled !== false;
+    check.addEventListener("change", () => {
+      const next = routes.map((r) => (r.id === route.id ? { ...r, enabled: check.checked } : r));
+      setMapTransit(map.id, { routes: next });
+      rerender(host);
+    });
+    const names = [...new Set(route.vehicles.map((id) => transitVehicle(id)?.id.replace(/^jp-/, "") ?? id))];
+    const stops = route.stops?.length ? ` · 정류장 ${route.stops.map((s) => s.name ?? `#${s.index}`).join(", ")}` : "";
+    const remove = el("button", { class: "btn btn-sm", text: "지우기", attrs: { type: "button" } });
+    remove.addEventListener("click", (event) => {
+      event.preventDefault();
+      setMapTransit(map.id, { routes: routes.filter((r) => r.id !== route.id) });
+      rerender(host);
+    });
+    row.append(check, el("span", { text: `${TRANSIT_KIND_LABEL[route.kind]} — ${route.name ?? route.id}${route.loop ? " (순환)" : ""} · ${names.slice(0, 4).join(", ")}${names.length > 4 ? " …" : ""}${stops}` }), remove);
+    section.append(row);
+  }
+  const roads = routes.filter((r) => r.kind === "road");
+  if (roads.length) {
+    appendSliderRow(section, {
+      label: "차 간격 (초)",
+      testid: "map-transit-headway",
+      min: 2,
+      max: 30,
+      step: 1,
+      value: Math.round(roads[0]!.headwaySec ?? 6),
+      normalize: (value) => clampSlider(value, 2, 30),
+      describe: (value) => `${value}초마다 한 대 — 큰길 4~6, 한산한 주택가 10~14.`,
+      apply: (value) => setMapTransit(map.id, { routes: (store.getCurrent().maps[map.id]?.transit?.routes ?? routes).map((r) => (r.kind === "road" ? { ...r, headwaySec: value } : r)) }),
+    });
+  }
+  if (problems.length) section.append(el("p", { class: "map-props-hint", text: `고칠 노선: ${problems.map((p) => `${p.routeId} — ${p.message}`).join(" / ")}` }));
+  section.append(el("p", {
+    class: "map-props-hint",
+    text: "버스 정류장·순환 버스·지하철 승강장 열차는 AI 조수에게 말하세요(예: 「정문 앞에 버스 정류장, 타면 역 맵으로」). 실제 움직임은 플레이 화면에서 확인합니다.",
+  }));
   host.append(section);
 }
 

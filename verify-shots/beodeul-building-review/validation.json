@@ -1,0 +1,347 @@
+{
+  "candidates": [
+    {
+      "id": "r2-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1"
+    },
+    {
+      "id": "r2-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d"
+    },
+    {
+      "id": "r2-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911"
+    },
+    {
+      "id": "r2-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817"
+    },
+    {
+      "id": "r2-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "f0658ae5f4ecab3608ee4983ae73fc9dfd9def33ff41d67806ae184cb4b09b98"
+    },
+    {
+      "id": "r2-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8"
+    },
+    {
+      "id": "r2-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234"
+    },
+    {
+      "id": "r2-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "360ea659cb47f719b6ed89a67d72eeffe435c616123209c2babd0a7a4f94bebf"
+    },
+    {
+      "id": "r2-building-09",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a"
+    },
+    {
+      "id": "r2-building-10",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816"
+    },
+    {
+      "id": "r3-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "e678faf11d54a4e1a5f5a160177ce1fab4cb503b12d4eeeabde960358ef7e1bd"
+    },
+    {
+      "id": "r3-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "390b8a1c81d20ed1b428915b28193b627fb4f5ee921f7dc40c68b19485d2ffed"
+    },
+    {
+      "id": "r3-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "31a3cdd2a1a84e731d995692593f9a8038b643f4e685c589b0b3e897f9f21906"
+    },
+    {
+      "id": "r3-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "53253d45c9f01e7ab6f00df765e01b412ee40ceb99abe3564b3095c9a4614f6e"
+    },
+    {
+      "id": "r3-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "01644d98f7ed103877f09da5ce682205e9fbf76798b08c4fe63a954c900ecd34"
+    },
+    {
+      "id": "r3-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "d0f817cbcb9e70d3d3808ea063716dc1247fc6f5a8a3a15cc75ec7f7fad90d12"
+    },
+    {
+      "id": "r3-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "fe8826c9bc509661164a757f6694f138edd6bb63c505dfeafb076eec899cb181"
+    },
+    {
+      "id": "r3-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "2f6af1d64b7681edc57e08855bc011370bc895e9b351f206ac39ef5c4fafbb94"
+    },
+    {
+      "id": "r3-building-09",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "1c81f0367c2ee8fc4b62bb66446d5200a007df2d1d54d5af498d38aecd12a007"
+    },
+    {
+      "id": "r3-building-10",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "5c80c93319f4328f2a6d4a640ccfd36986d645713457f10c4101732081782447"
+    },
+    {
+      "id": "r6-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "6fffb65abe676fd5eb33dab086ab73a58aa2d96d7d5ee28c532e98bc6508dbee"
+    },
+    {
+      "id": "r6-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "84a631a8fe78724cb479368da55834d11f02fe53773a9ca22b7418c96313c7bb"
+    },
+    {
+      "id": "r6-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "575ab85f9f2a52bed0dae0a66f8b092303076a8311a74278df7f6e6b8203deb8"
+    },
+    {
+      "id": "r6-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "03f8fa092477a1b2d51c03144fc04c45d89959eaf63db905822ce50352fa718d"
+    },
+    {
+      "id": "r6-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "cdeaf95fd167d0c58b564a99b801ee17bfbef32cf84bd21a29e98b76d9c52256"
+    },
+    {
+      "id": "r6-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "fdf779db7d3ccf4c83813aa2fe0c7ed306f83104a5ccdf6291a082147d6ac54f"
+    },
+    {
+      "id": "r6-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "4741b8156ceff2dc11be88786cf3db5e537254f6674dce875ad89ff1e6268294"
+    },
+    {
+      "id": "r6-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "96b8ea6683f3e385165dd6496d125f26de37e777bd4e698a5861885ebcfd3b4c"
+    },
+    {
+      "id": "r6-building-09",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c14b1df990f81c6fc3d3db3834c72573a0d0d157e2c36113b1fb62b1bd940384"
+    },
+    {
+      "id": "r6-building-10",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "52e9e4a6e239cbd941234be716b92b11bc0fa4a3d156629778243d4bae5cb4f3"
+    },
+    {
+      "id": "r7-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c58d40ebf0192822336385efee2e83d728f568b6142cfa44d725f8f9bc0fea52"
+    },
+    {
+      "id": "r7-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "8e03cfc09b6bf53662425207a5bc54718fbc5ad36bcc0920687ab8cfd5149888"
+    },
+    {
+      "id": "r7-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "8600281394c5dbd3beaed845487e56fbe4d80a3429885fb1a8cb8ea1bb6f207c"
+    },
+    {
+      "id": "r7-building-09",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "502cd3f61670649a64e54ce19f055d1e3e30cb37db4c816fc2d0b3f991a83e14"
+    },
+    {
+      "id": "r8-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "23d51a81f91ef068ce44ec645e34ac5d1cbd64db86f6806e95d47a4b3385a73f"
+    },
+    {
+      "id": "r8-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "68d21453a53111f6ec718ee950ee5c70eb3a94cc1eb83a75588587fc30ef3e6f"
+    },
+    {
+      "id": "r8-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "58c3bb59f08662523925a90f0f97276495f9c66e7454255c3e833000187e1b02"
+    },
+    {
+      "id": "r8-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c1187c1dedc6d5bbf06e30ca40d9b678a787f37761e13e948d9eec2f6268ce30"
+    },
+    {
+      "id": "r9-building-01",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "6fea91b27c2269d043a49bf5420fbdc8ea580f66d1c5a355b4ff04321ce3840a"
+    },
+    {
+      "id": "r9-building-02",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "257ea4505d8b833285650dc6533dcd114636720a568a1b2003fd2dd70f47496b"
+    },
+    {
+      "id": "r9-building-03",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "dbbd4fd0d9efa702d0fe8e30f6eba4a1244a612cb5950823a33ad2a90bdc60a3"
+    },
+    {
+      "id": "r9-building-04",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "95af284d700bd1975f5bb5a485a9f7c2d5540b271a2592aae3ec7ccc55ddc1f1"
+    },
+    {
+      "id": "r9-building-05",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "6ead4621932ae995ce546de7c7c057a0b88939640ea0d6092cafb320ee01bb34"
+    },
+    {
+      "id": "r9-building-06",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "b6aca38da6ba4eb3ff831a81e78d9ee4ff4bd07e97975b0f38cf0ed184961e25"
+    },
+    {
+      "id": "r9-building-07",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "3344177aa3e4585d8902537b62b990aa7cd7e5749bd3999183975a847be429ab"
+    },
+    {
+      "id": "r9-building-08",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "efd307bb5401823b4713ec43ed8bd5085891503663a9c2197f1a0d154690ccd1"
+    },
+    {
+      "id": "r9-building-09",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "34004e7ad8e25bcf1d70fe3e309310b07e72c81970a6cd9449ea7f8ab90e391b"
+    },
+    {
+      "id": "r9-building-10",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "51daccb878d8a8dfecfaee88339c8fce5f11c209ac434d1470c56c2b033dba18"
+    },
+    {
+      "id": "r9-building-11",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "11a9614bea3ddcabada5aafdc9fa67f5b35a9634c58f66997c0e3e3be51c1f50"
+    },
+    {
+      "id": "r9-building-12",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "c9e6479c500981703b413727e4d82d4fad6744cc402195490f57a5b555437c61"
+    },
+    {
+      "id": "r9-building-13",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "1d691d5c33b6bc976e7faa8819728297d703dbe8452073abcecd1f5e4644e76a"
+    },
+    {
+      "id": "r9-building-14",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "4bd6229bb6fa63f75ef1497b782fbcbef58a84e98ba1e24d25d9ed5b2a40d817"
+    },
+    {
+      "id": "r9-building-15",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "e29c5a8ae097430577e0f93d31350b8378c89186b21b24e49ddf095c6be31be2"
+    },
+    {
+      "id": "r9-building-16",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "a176555189e94c9172dfddd4f71578dee8fc386bc02cbb12ee104cb3e8d9c027"
+    },
+    {
+      "id": "r9-building-17",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "d786356f39810fa85781cafe584caf6f9eb957fead8a6d4cfc3ad0b65305bbb3"
+    },
+    {
+      "id": "r9-building-18",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "b007340c64ab70d7676207f389d678ac93f95c092f397ad4ba2dc649e79f871a"
+    },
+    {
+      "id": "r9-building-19",
+      "sourceMatches": true,
+      "entranceMetadataPresent": true,
+      "sha": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a"
+    }
+  ],
+  "visualApproval": "requires-vision-gate-and-human-decision"
+}

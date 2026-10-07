@@ -1,10 +1,10 @@
 // src/editor/assetStore/storeUpload.ts
 /** 에디터에서 올리기: 프로젝트의 타일셋·에셋을 골라 팩으로 묶는다. 서버 전송은 메인 프로세스가 한다. */
-import { STORE_ASSET_KINDS, packGrade, type StoreGrade } from "@/assetStore/format";
+import { STORE_ASSET_KINDS, STORE_TILE_SIZE, packGrade, storeImageSizeProblem, type StoreAssetKind, type StoreGrade } from "@/assetStore/format";
 import { buildPack, closeSelection, type BuiltPack, type PackMeta, type PackSelection } from "@/assetStore/pack";
 import { base64ToBytes, dataUrlParts } from "@/assetStore/sniff";
 import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
-import type { Project, TilesetDef } from "@/project/types";
+import type { Project, TilesetDef, UploadedAsset } from "@/project/types";
 
 export interface UploadCandidate {
   readonly kind: "tileset" | "asset";
@@ -29,6 +29,12 @@ export function uploadBlockReason(id: string, name: string, origin: unknown): st
   if (THIRD_PARTY.test(`${id} ${name}`.replace(/_/g, " ")) || THIRD_PARTY.test(id)) return "제3자 팩(PAW·Rasak·REFMAP·RPG Maker 계열)은 올릴 수 없습니다.";
   return null;
 }
+/** 스토어 그림 규격(16×16 칸, 캐릭터 288×256 등)에 안 맞으면 이유. 크기를 모르는 에셋은 서버가 다시 본다. */
+function sizeBlockReason(asset: UploadedAsset): string | null {
+  const { width, height } = asset.meta;
+  if (typeof width !== "number" || typeof height !== "number") return null;
+  return storeImageSizeProblem(asset.kind as StoreAssetKind, width, height);
+}
 const referenceCount = (tileset: TilesetDef): number => (tileset.referenceDocuments ?? []).reduce((n, c) => n + c.documents.length, 0);
 
 /** 올릴 수 있는 후보. 번들 그림을 쓰는 타일셋(직접 올린 그림이 아님)과 스토어에서 받은 것은 막는다. */
@@ -43,7 +49,8 @@ export function uploadCandidates(project: Project): UploadCandidate[] {
       kind: "tileset", id: tileset.id, name: tileset.name,
       detail: `${tileset.tileSize}px · ${tileset.count}칸${refs > 0 ? ` · 참고문서 ${refs}` : ""}`,
       withReferences: refs > 0, fromStore,
-      blocked: !asset ? "그림이 프로젝트에 없습니다." : uploadBlockReason(tileset.id, tileset.name, asset.origin) ?? uploadBlockReason(asset.id, asset.name, null),
+      blocked: !asset ? "그림이 프로젝트에 없습니다." : uploadBlockReason(tileset.id, tileset.name, asset.origin) ?? uploadBlockReason(asset.id, asset.name, null)
+        ?? (tileset.tileSize !== STORE_TILE_SIZE ? `스토어는 ${STORE_TILE_SIZE}×${STORE_TILE_SIZE} 칸 타일셋만 받습니다(이 타일셋은 ${tileset.tileSize}px).` : sizeBlockReason(asset)),
     });
   }
   const tilesetImages = new Set(Object.values(project.tilesets).flatMap((t) => (t.image.type === "uploaded" ? [t.image.id] : [])));
@@ -51,7 +58,7 @@ export function uploadCandidates(project: Project): UploadCandidate[] {
     if (tilesetImages.has(asset.id) || !UPLOADABLE.has(asset.kind)) continue;
     out.push({
       kind: "asset", id: asset.id, name: asset.name, detail: asset.kind, withReferences: false, fromStore: Boolean(asset.origin),
-      blocked: uploadBlockReason(asset.id, asset.name, asset.origin),
+      blocked: uploadBlockReason(asset.id, asset.name, asset.origin) ?? sizeBlockReason(asset),
     });
   }
   return out.sort((a, b) => Number(Boolean(a.blocked)) - Number(Boolean(b.blocked)) || Number(b.withReferences) - Number(a.withReferences) || a.name.localeCompare(b.name, "ko"));

@@ -1,0 +1,9 @@
+{
+  "freshAndExistingArchitectureReferences": true,
+  "allReferenceDocumentsFitCanonicalSchema": true,
+  "newAndOldArchitectureSourceKits": true,
+  "allFiveNativeHouseFoundationsSupported": true,
+  "missingFourNativeFoundationsApplied": true,
+  "nativeMapPassabilityPreserved": true,
+  "repeatIdempotent": true
+}

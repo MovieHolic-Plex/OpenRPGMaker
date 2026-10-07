@@ -1,0 +1,175 @@
+{
+ "module": "boathouse",
+ "sealed": "2026-10-07T09:17:08.418326+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-lake-water-deep": {
+   "verdict": "PASS",
+   "hash": "eabdc1d4375e5ebb99e9d60e44efb8317839f6cbb374132da24f04d8078df128",
+   "reason": "4프레임 모두 이웃 프레임과 48픽셀씩 달라지고 단순 이동이 아님, 3->0 루프도 같은 크기로 변해 튀지 않음. 3~4단 청색, 하이라이트 줄. 1x에서 물로 읽힘. 통행 X."
+  },
+  "wz-lake-water-shallow": {
+   "verdict": "PASS",
+   "hash": "cad74997b93c337ed17f0e99f84f573a4ad8f569a183c1b7c2ae265b63928f87",
+   "reason": "4프레임 각 36픽셀 변화, 이동 아닌 모양 변화(어두운 덩이·하이라이트 줄 위치·형태 변함). 깊은 물보다 밝아 구분됨. 좌우/상하 이음 무난. X."
+  },
+  "wz-lake-pebble": {
+   "verdict": "PASS",
+   "hash": "49931b599ee42cd6e0e0aaee19ae4117157caae1946f78f5d39ab08af121078f",
+   "reason": "회갈색 바닥에 작은 자갈 무늬 반복. 무작위 맵에서 격자 반복이 약간 보이나 바닥 칸으로 허용 범위. F."
+  },
+  "wz-lake-shore-edge-n": {
+   "verdict": "PASS",
+   "hash": "7d92eabe71dad53f6b6c1b3001d4d8ef6f2525caff85513b0f72c04bed9ab937",
+   "reason": "위 자갈 띠+아래 물, 거품선으로 경계가 읽힘. 윗면 시점 일관. X."
+  },
+  "wz-lake-dock-h": {
+   "verdict": "PASS",
+   "hash": "520ae6de0ee2cf93d856ac786a5b010590ad84ea6ad0ab643650f1291650225b",
+   "reason": "가로 널판 3줄, 유색 윤곽, 3단 명암, 빛 왼쪽 위. 부두 바닥으로 읽힘. F."
+  },
+  "wz-lake-dock-v": {
+   "verdict": "PASS",
+   "hash": "e3fb5a011045cd79ef9af7695d7c2924cb4dbb87efedc19ea8bec4db2b6e0f48",
+   "reason": "세로 널판, 못 자국 있어 재질감 확인. dock-h와 같은 톤. F."
+  },
+  "wz-lake-dock-end": {
+   "verdict": "PASS",
+   "hash": "bd1a83ebc0757fc27cd71c3f73a0cd0635a85981d27a8505db80803124db608d",
+   "reason": "부두 끝 널판+아래 테두리 마감, 읽힘. F."
+  },
+  "wz-lake-dock-band": {
+   "verdict": "PASS",
+   "hash": "67bb27cf654c5b9398b2c3c87b27628dfa719e3466636988f3f6c3848d710f7b",
+   "reason": "부두 옆 가로대 아래 물이 보이는 측면 띠. 3/4 정면 면으로 읽힘. 통행 X(물 위 받침) 타당."
+  },
+  "wz-lake-dock-piles": {
+   "verdict": "PASS",
+   "hash": "5942076824103adadc56dc607d33ad549de7249a470004353a40344048ae6b5e",
+   "reason": "말뚝 두 개+물가 거품. 목재 결 보이고 3/4에 맞음. X."
+  },
+  "wz-lake-plank-wet": {
+   "verdict": "PASS",
+   "hash": "fc087825034c975e7520a8215d7629b3f4dc34eb0ee82e0b74285ded5f455ab5",
+   "reason": "젖은 널판, 푸른 물방울 점으로 dock-h와 구분됨. F."
+  },
+  "wz-lake-railing": {
+   "verdict": "PASS",
+   "hash": "b685eac4816ea2e185a08b16124244357ca7abdcab1ad06adf2b8e0908f3e04b",
+   "reason": "난간 기둥 2개+가로대, 유색 윤곽, 3단 명암. 1x에서 난간으로 읽힘. S."
+  },
+  "wz-lake-ramp": {
+   "verdict": "PASS",
+   "hash": "351cfe1f40a8dbe2f7850be4be4e6da8a9a2434b730451f0f19410f9867188cb",
+   "reason": "2x3 널판 경사로, 가로 보강대와 명암으로 진수대로 읽힘, 아래 물 닿는 부분 거품. 하단 물 픽셀이 F로 걷힐 수 있으나 진수대 특성상 허용."
+  },
+  "wz-lake-bollard": {
+   "verdict": "PASS",
+   "hash": "0df497c83f02ee184b14e1c12082667809fac88de82c19628cb73d64ac8f1771",
+   "reason": "밧줄 감긴 계선주, 윗면+정면, 유색 윤곽. 1x에서 말뚝/통으로 읽힘, 허용. S."
+  },
+  "wz-lake-ropehook": {
+   "verdict": "PASS",
+   "hash": "68a565cf4500db01346817b1814935d1d89292e560a632916edd04b3d4ceceaa",
+   "reason": "재검수: 황마 갈색 두 가닥 밧줄이 둥글게 감긴 꾸러미로 읽히고(대각선 꼬임 하이라이트, 안쪽 어두운 구멍), 위쪽 중앙의 회색 못에 걸려 있으며 아래쪽에 풀린 끝이 보인다. 이전의 회백색 점 고리(톱니바퀴·시계)는 사라짐. 나무판은 유색 윤곽 3~4단 명암, 빛 왼쪽 위로 보트·부두와 같은 화풍. 1배(16x16)에서도 판 위의 밧줄로 읽힘. 정면 벽걸이라 3/4 정면 규칙에 맞고 walk S 로 막힌 소품이며 크기 1x1 적절. 기계 검사 오류 0."
+  },
+  "wz-lake-lamp-post": {
+   "verdict": "PASS",
+   "hash": "219882eb10ca13ec9e6799f5ff83afffbe55fb423e4c1361a3781f9ec8b96eb0",
+   "reason": "1x2 등불 기둥, 위 C·아래 S, 따뜻한 등불 유리+지붕캡, 빛 왼쪽 위. 사람 키(32px)와 비슷해 축척 적절."
+  },
+  "wz-lake-dock-join": {
+   "verdict": "PASS",
+   "hash": "6e98ca9f0c5b063306fa82238136ffa5cefbc55fb0c20d9c6f2c4b444127cc77",
+   "reason": "물과 부두 널판 모서리가 만나는 접합 옆면. 윤곽·명암은 부두와 동일해 이음 자연스러움. 얇은 띠지만 접합 용도로 허용. X."
+  },
+  "wz-lake-oar-single": {
+   "verdict": "PASS",
+   "hash": "e5fb8dffd57dabd0cfeb0b301e8c940d95f0cc354c40d3176e815dbae9538334",
+   "reason": "눕힌 노 2x1, 손잡이·자루·넓은 날 구분됨, 유색 윤곽. f 통행. 읽힘."
+  },
+  "wz-lake-oar-crossed": {
+   "verdict": "PASS",
+   "hash": "0c56a3d72691f6857b5cdc9f28c816d9b007e1fc68afe724003af1809f06c068",
+   "reason": "교차한 노 2x2, 날 밝은 면과 자루가 구분됨. 자루가 가늘고 어둡지만 1x에서도 X자 노로 읽힘. f."
+  },
+  "wz-lake-boathouse": {
+   "verdict": "PASS",
+   "hash": "52a48440d237c2eb85095e69fc807d960f5511a7982f45320b917999ceafb974",
+   "reason": "7x5 보트 창고. 슬레이트 지붕(청회색 블록 4단 변화), 목재 벽, 창 2개, 큰 물가 개구부, 돌 기단. 좌우 대칭, 윗면 지붕+남쪽 정면. 몸체 S, 처마 C, 입구 F. 사람(24x32) 옆에서 큰 창고 규모로 적절. 지붕 변화 약하나 허용."
+  },
+  "wz-lake-boathouse-5": {
+   "verdict": "PASS",
+   "hash": "a1e5e25de1c19174845f2e6f5618a584151d4b0538319786dd1f90e805a44a32",
+   "reason": "5x5 소형 보트 창고, 7칸과 같은 화풍·구조. C/S/F 층 적절."
+  },
+  "wz-lake-bh-end-l": {
+   "verdict": "PASS",
+   "hash": "609dee48c531c3e647c9a4aaa7c14263cf4cfe095fb134f822029c734e06c888",
+   "reason": "창고 왼쪽 끝 조립 조각, 본체와 이음 맞음. C 지붕/S 벽."
+  },
+  "wz-lake-bh-wall": {
+   "verdict": "PASS",
+   "hash": "5629f5f994a4fe6753f901092d73b440f7ee2178c19321b071bbfb580799b9d3",
+   "reason": "창고 가운데 벽 조립 조각, 반복해도 이음 튀지 않음."
+  },
+  "wz-lake-bh-door": {
+   "verdict": "PASS",
+   "hash": "0d5e16268020afbbd64e640d711534e7c09218f996205feb4d02a7c628327a35",
+   "reason": "3x5 개구부 조립 조각, 하단 F 통행 가능, 안쪽 어둠 연출. 높이 32px 이상으로 문 규격 충족."
+  },
+  "wz-lake-bh-end-r": {
+   "verdict": "PASS",
+   "hash": "25b83cff4c1deaf42309e1f98a3a108551a397cf123f37155a76920b7d152e2b",
+   "reason": "창고 오른쪽 끝 조립 조각, bh-end-l 과 거울 대칭."
+  },
+  "wz-lake-boat-up": {
+   "verdict": "PASS",
+   "hash": "bdb1c2f9342702f9deaf7a4b9636ac1c3bf0e472c5c49f18343e46ac80edd506",
+   "reason": "2x4(32x64) 뱃머리 북쪽 보트. 좌석(가로 노걸이 판) 3개, 선수 등불, 선미 밧줄 뭉치, 유색 윤곽과 선체 3~4단 명암. 위에서 본 시점이지만 선미 아래쪽 두께가 보여 3/4로 허용. 통행 S 전 칸."
+  },
+  "wz-lake-boat-up-oars": {
+   "verdict": "PASS",
+   "hash": "434e6bba7c2356e5b547baa8073e7a297022e3f1737941a80c0b852d89d949a8",
+   "reason": "노를 양쪽 현에 걸친 상태, 두 쌍의 노가 선체 밖으로 길게 나와 읽힘, 크기·피벗은 빈 보트와 동일(2x4)."
+  },
+  "wz-lake-boat-down": {
+   "verdict": "PASS",
+   "hash": "89346141804a557e375fed45a9e8d91fece2f40ef4b7eb3744cdf23e9c07a655",
+   "reason": "2x4 뱃머리 남쪽 보트, up 과 같은 구조 대칭 방향. 좌석 3, 등불 선수. 읽힘 양호. 통행 S 전 칸."
+  },
+  "wz-lake-boat-down-oars": {
+   "verdict": "PASS",
+   "hash": "97cdaaa986fbf4b91dd2c080b663b650c82e63aa2dc5eb70093d5861022cc301",
+   "reason": "노 걸친 상태, 선체 밖으로 노 날이 보임, 크기 2x4 동일."
+  },
+  "wz-lake-boat-left": {
+   "verdict": "PASS",
+   "hash": "34f54c32ff70f05e9d1af4df39e43a77f93a80c93781ee7f0054ebf93459298b",
+   "reason": "4x2(64x32) 뱃머리 서쪽 보트. 선체 옆면+내부+좌석 3개 모두 보여 3/4 시점 정확. 선수 등불, 선미 밧줄 뭉치. 통행 S 전 칸."
+  },
+  "wz-lake-boat-left-oars": {
+   "verdict": "PASS",
+   "hash": "6d4c7409aeb73c5d9eb795fe960ecf41f76bb25124b15d68f20bef880de0a923",
+   "reason": "노 날이 먼 쪽 현 위로 솟고 가까운 쪽은 가는 선으로 물에 걸쳐 약간 가늘지만 노 두 개로 읽힘, 크기 4x2 동일."
+  },
+  "wz-lake-boat-right": {
+   "verdict": "PASS",
+   "hash": "e7bd1d2bfb6dbb9a668038d201e06e6b86a50636a351cc6259f1f0c105e4b684",
+   "reason": "4x2 뱃머리 동쪽 보트, left 의 거울 구조. 좌석 3, 선체 옆면 읽힘. 통행 S 전 칸."
+  },
+  "wz-lake-boat-right-oars": {
+   "verdict": "PASS",
+   "hash": "642d10080295c0c8fec22ab89020fb6e264677c3b44d537f53927fee5d73d85b",
+   "reason": "left 거울 구조, 노 두 개 읽힘, 크기 4x2 동일."
+  }
+ },
+ "autotiles": {
+  "wz-lake-shore": {
+   "verdict": "PASS",
+   "hash": "0e6bc2fc43bc7b62e7b3248b888ca9ef7221e94c007b8fc2d26ff26c86d465e1",
+   "reason": "블롭 47칸으로 임의 호수 모양(수로·구멍·돌출 1칸 포함)을 구성해 확대 확인: 안쪽 모서리·바깥 모서리·가는 수로 끝 모두 이음새·끊김 없음, 거품선+청회색 짙은 윤곽 연속, 자갈 테두리 이어짐. 물 속 무늬는 규칙적이나 정적 물이라 허용."
+  }
+ },
+ "characters": {}
+}

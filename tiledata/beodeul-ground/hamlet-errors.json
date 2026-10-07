@@ -1,0 +1,12 @@
+[
+  {
+    "code": "grass-transition-missing",
+    "exampleMapCell": [
+      0,
+      0
+    ],
+    "expectedMask": 6,
+    "actualMask": 15,
+    "detected": true
+  }
+]

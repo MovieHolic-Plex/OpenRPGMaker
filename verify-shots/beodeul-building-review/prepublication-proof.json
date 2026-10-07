@@ -1,0 +1,11 @@
+{
+  "privateDrafts": 10,
+  "visibleCandidates": 0,
+  "publishExitCode": 1,
+  "missingCurrentVisionEvidenceBlocked": true,
+  "humanDecisions": {
+    "allow": 0,
+    "deny": 0,
+    "pending": 0
+  }
+}

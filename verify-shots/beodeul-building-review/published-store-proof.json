@@ -1,0 +1,52 @@
+{
+  "savedTarget": "/home/main/.local/share/oprn/beodeul-building-review/review.sqlite",
+  "reloadedRows": [
+    [
+      "r2-building-01",
+      "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1"
+    ],
+    [
+      "r2-building-02",
+      "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d"
+    ],
+    [
+      "r2-building-03",
+      "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911"
+    ],
+    [
+      "r2-building-04",
+      "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817"
+    ],
+    [
+      "r2-building-05",
+      "f0658ae5f4ecab3608ee4983ae73fc9dfd9def33ff41d67806ae184cb4b09b98"
+    ],
+    [
+      "r2-building-06",
+      "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8"
+    ],
+    [
+      "r2-building-07",
+      "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234"
+    ],
+    [
+      "r2-building-08",
+      "360ea659cb47f719b6ed89a67d72eeffe435c616123209c2babd0a7a4f94bebf"
+    ],
+    [
+      "r2-building-09",
+      "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a"
+    ],
+    [
+      "r2-building-10",
+      "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816"
+    ]
+  ],
+  "decisionRows": 0,
+  "reloadedApiCounts": {
+    "allow": 0,
+    "deny": 0,
+    "pending": 10
+  },
+  "allGatePassed": true
+}

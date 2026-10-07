@@ -6,6 +6,9 @@
 // consecutive frames with animationStrips. The structure kits are the districts and houses of the city, cut from it.
 import data from "@/assets/beodeulCityTileset.json";
 import references from "@/assets/beodeulCityReferences.json";
+import { beodeulGroundReferences } from './beodeulGround';
+import {ensureBeodeulFacilityKits} from './beodeulFacilities';
+import {ensureBeodeulForms} from './beodeulForms';
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
@@ -29,7 +32,7 @@ const REFERENCES = references as unknown as TilesetReferenceCategory[];
 
 /** Independent copy of the shipped tileset, born with its reference documents. */
 export function createBeodeulCityTileset(): TilesetDef {
-  return {
+  const tileset:TilesetDef = {
     id: BEODEUL_CITY_ID,
     name: data.name,
     image: { type: "bundled", id: BEODEUL_CITY_TEXTURE },
@@ -46,8 +49,11 @@ export function createBeodeulCityTileset(): TilesetDef {
     animationStrips: structuredClone(data.animationStrips),
     structureKits: structuredClone(data.structureKits) as unknown as StructureKitDef[],
     autotileGroups: structuredClone(data.autotileGroups) as unknown as AutotileGroup[],
-    referenceDocuments: structuredClone(REFERENCES),
+    referenceDocuments: [...structuredClone(REFERENCES),...beodeulGroundReferences()],
   };
+  ensureBeodeulFacilityKits(tileset);
+  ensureBeodeulForms(tileset);
+  return tileset;
 }
 
 /**

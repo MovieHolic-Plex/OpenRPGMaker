@@ -1,0 +1,55 @@
+{
+ "name": "deep_display_window",
+ "item": "deep_display_window",
+ "candidate": "h4-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/deep_display_window/h4-A.png",
+ "sha256": "7e74ec76de5e6b1c7a6b36471f7e43c636f5ab6b2cb639536c55d746d1f8aeec",
+ "set": {
+  "id": "deep-display-window",
+  "name_ko": "deep-display-window",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "wall",
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 0
+  },
+  "description": "서벽(0,4..5)의 깊은 진열창, screen[0,96,16,128). 내외창턱과 짧은1px 유리반사. 창깊이는 벽체 안, 선반(1,4..5) 상자를 안쪽전시로 통합. 남쪽면과 밝은8..11px 창턱, 보행칸 덮지 않음.",
+  "parent": "deep-display-window",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "recess",
+    "label": "recess",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "서벽(0,4..5)의 깊은 진열창, screen[0,96,16,128). 내외창턱과 짧은1px 유리반사. 창깊이는 벽체 안, 선반(1,4..5) 상자를 안쪽전시로 통합. 남쪽면과 밝은8..11px 창턱, 보행칸 덮지 않음. 슬롯 recess을 방향·상태별로 독립 저작한다. 좌상단광원/전용42색. 내부선반판·테두리·광택선을 꼭대기면으로 세지 않는다.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "child": "deep-display-window recess"
+   }
+  ],
+  "contract": {
+   "camera": "남쪽 위 직교3/4, 좌상단 광원; actual bbox 기반 윗면25~35%; 내부 판/광택선 제외",
+   "palette": "전용42색 only",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "선택·설치 금지; 아래 설치 좌표와 레이어를 제작 후 독립 검수",
+   "reuse": "빈 seed에서 전용 신규 픽셀 제작; stock 참고는 구조 비교만"
+  }
+ }
+}

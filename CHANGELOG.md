@@ -5,6 +5,245 @@
 
 <!-- releases -->
 
+## 0.164.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — round 9 — 대기 19장을 원본 칸 파사드로 재저작(창 위치·종류 통일) (`a489c5f`)
+
+### 수정
+
+- **beodeul-building-review** — r9-09/10 의 떨어진 탑·곁채를 본채에 이어 붙임(UNENTERED_DETACHED_VOLUME) (`83f3eb1`)
+- **beodeul-building-review** — 사람이 허용한 r7/r8 8장은 대체하지 않고 복원 (`605ee69`)
+
+### 문서
+
+- **beodeul-building-review** — round 9 창문 파사드 재저작 기록 (`7b88155`)
+
+## 0.163.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — r7-23 철회, 공개 49장, 문서 갱신 (`fa2978f`)
+- **wizarding** — 조수 공간 빌더 build_wizarding_space·list_wizarding_spaces — 13공간을 게임 크기로 한 번에(벽·문·바닥·가구, 놓을 때마다 통행 검사), 장소 17곳을 빌더 결과로 다시 게시 (`180d5a6`)
+- **beodeul-building-review** — 사람이 허용한 그림은 게이트 재검수 면제, round 8 시드 편입 (`bf8e307`)
+
+### 수정
+
+- **wizarding** — build_wizarding_space 가 문 앞 접근 칸(keepClear)을 돌려주고 「비워 둘 것」을 요약에 적는다 — 1칸 문 앞에 NPC 를 세워 길이 막히던 실측 (`82522af`)
+- **wizarding** — 조수 실행 결과 반영 — 시작 맵 재건축 때 시작 칸을 spawn 으로, Wizarding 인물 검색어(마법약 교수·호그와트 학생·부엉이 관리인…), 헤드리스 칩 미리보기가 못 읽는 시트 하나로 전체 실패하지 않게 (`c4b202e`)
+- **beodeul-building-review** — round 8 의 돌 기단 혼합 벽 2장을 단일 재질 돌집으로 교체 (`3c6350a`)
+- **wizarding** — 성채 바닥을 어두운 청회색 판석으로(벽과 명도 차), 붉은 통로 깔개·양탄자 추가 (`f3fef99`)
+- **wizarding** — 우체국 안·시계탑·허니듀크 지하 벽과 바닥 구분 — 회벽/널마루, 파란 격자 바닥 제거, 어두운 판석 (`b4a5f69`)
+- **wizarding** — 통행 덩이 검사 WZ-ISLAND — 갇힌 주머니가 있는 예제는 장소로 게시하지 않는다 (`2a66811`)
+
+### 문서
+
+- **wizarding** — 조수 실경로 3판 결과(blocker 0·엔딩 도달) (`cca1fd3`)
+- **wizarding** — 벽·바닥 수정·통행 관문·조수 실경로 시험 기록 (`4892cce`)
+- **wizarding** — 참고문서 입구에 「맵 짓기 — 먼저 build_wizarding_space」 (`fa1a622`)
+
+### 테스트
+
+- **qa-game** — 마법 학교 기획 견본 — wizarding_world 로 실제 게임을 만드는지 재는 판 (`3f53940`)
+
+### 잡무
+
+- **wizarding** — 벽·바닥 수정분 다시 굽기(칸 2472·키트 627), 프로젝트 맵 그림 도구 (`a94ec68`)
+- **wizarding** — 벽·바닥 수정 조각 29개 재검수 봉인 (`112f3c4`)
+
+## 0.162.0 — 2026-10-07
+
+### 기능
+
+- **wizarding** — 공용 번들 굽기 — 조각 682·오토타일 6·움직이는 칸 101·키트 621·인물/생물 35명(Wizarding1~5), 참고문서 17용도·장소 17곳 (`fa29461`)
+- **wizarding** — 호그스미드 우체국 49·숲 마차 19 — 수정 후 얇은 재검수 전부 PASS (`5fc2a23`)
+- **wizarding** — 부엉이 탑 38·시계탑 28·인물 12명 — 수정 후 얇은 재검수 전부 PASS (`1714a52`)
+- **wizarding** — 성채 공용 키트 48·퀴디치 44·보트 창고 33·공용 가구 31 — 수정 후 재검수 전부 PASS (`20c4662`)
+- **wizarding** — 도서관 29·자연 29·마법 생물 24·마법약 교실 추가 29 — 수정 후 재검수 전부 PASS (`b3fc0c0`)
+- **wizarding** — 온실 40조각 — 독립 검수 40/40 PASS (`23d1909`)
+- **wizarding** — 마법 효과 30·학생/교수 13명 — 독립 검수 전부 PASS, 불러오기에 모듈 도우미 경로 (`a37ab18`)
+- **wizarding** — 병동 29조각 — 독립 검수 29/29 PASS (`848c81a`)
+- **wizarding** — 허니듀크 지하 창고 25조각 — 독립 검수 25/25 PASS (`e5acffe`)
+
+### 수정
+
+- **beodeul** — 키트 이름과 시설 칸 접근을 타입에 맞춘다 (`731fabd`)
+- **beodeul** — 문 키트 출처와 남은 선택 칸을 맞춘다 (`d2ed04d`)
+- **beodeul** — 없는 윗칸·부위 목록을 빈 배열로 보고 문 키트에 출처를 넣는다 (`9092363`)
+- **wizarding** — 재검수 시트가 다른 조각을 그려 넣는 키트도 그린다 (`f5171e8`)
+
+### 문서
+
+- **wizarding** — 현재 굽기 수치 (`5f19002`)
+- **wizarding** — openwiki 쪽·AGENTS 길 안내, 얇은 재검수 시트 (`cace442`)
+
+### 테스트
+
+- **wizarding** — 번들 id 대조에 wizarding_world 추가 (`fe9ceda`)
+
+### 기타
+
+- **wizarding** — 참고문서 굽기(사전·완성 예제·정상/오류·검사 범위)·장소 게시·검수 봉인 (`921fcc4`)
+- **wizarding** — 굽기(검수 통과분만·자리 키 핀·애니메이션 행 맞춤)·번들 배선·캐릭터 시트 카탈로그, native 168조각 먼저 (`86b06d1`)
+- **wizarding** — 군별 작업자 주문서 18개 (`e0e259f`)
+- **wizarding** — 조각 계약·wzlib(42색 램프·캔버스·등록·블롭 합성·검수 시트)·예제 미리보기 (`9de02ca`)
+- **wizarding** — 지팡이 가게·마법약 교실 데모가 실제로 쓴 native 원본 55장 가져오기 (`f30063b`)
+
+## 0.161.0 — 2026-10-07
+
+### 기능
+
+- **asset-store** — 한 명짜리 72×128 캐릭터를 288×256 시트에 넣어서 받기 (`5393951`)
+- **beodeul-building-review** — round 8 단순한 주택 8장 초안과 문서 (`f675cf7`)
+- **beodeul-building-review** — round 7 중 13장 철회, 게이트 프로필을 체크아웃 경로와 무관하게 (`87a2a77`)
+- **asset-store** — 에디터 규격(16×16 칸·캐릭터 288×256 등)에 맞는 그림만 받기 (`aa0f382`)
+
+### 기타
+
+- 버들항 건축·시설·바닥·마을 하네스와 beodeul-building-review (round 7 직전 스냅샷) (`72108fb`)
+
+## 0.160.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 지하철 콘코스 둘레 벽·칸 가득 경고 블록·↓のりば, 점자 길을 개찰 통로 한 열로 — 노면전차 probe 가 지상→콘코스→승강장→복귀를 칸마다 걷는다, 관문 transit 11회차·tramstreet 7회차 통과·게시 (`8081c0d`)
+- **jp-city** — 노면전차 거리 가운데 띠 3행(서쪽행 가선이 섬 난간 줄로)·남 보도 3행·행선지 분리(駅前/学校前) — 관문 tramstreet 4회차 통과·게시, 콘코스 점자를 승강장 계단 남쪽 입구까지 (`5d4e367`)
+- **jp-city** — 노면전차 거리 가운데 섬 단면 — 두 섬 모두 궤도 남쪽(문 보이는 면), 전주 밑동 가운데 띠, 레일 광택·軌道敷 침목 결·일본식 보행 신호기, 보도 시설, 레일·횡단보도 이음 검사 (`c88fc1d`)
+- **jp-city** — 노면전차 거리 예제 맵·런타임 QA, 궤도 칸은 차도에서 빼고 나란한 일방 차로 둘을 양방향으로, 키 큰 기물 밑동 y 정렬(foot-dy), 역 소품 4종·노면전차 4회차 (`9340704`)
+
+### 기타
+
+- **jp-city** — 노면전차 5회차 키트(軌道敷·횡단보도 레일·정지선·경계선·foot-dy 태그)·역 5회차(광고·계단 구별·승차 위치)·참고문서는 실제 예제 맵을 굽는다 — 가운데 섬 단면으로 옮기는 중 (`551e983`)
+
+## 0.159.0 — 2026-10-07
+
+### 기능
+
+- **jp-city** — 동네 한 장에 차 흐름·버스(駅前·学校前) — 횡단보도를 지나는 간선도 한 띠로, 출하 플레이어 촬영 (`3cf1e08`)
+- **jp-city** — 조수 탈것 도구 — 선로 찾기·auto.subway·정류장 몸 가운데(at:center)·선로 밖 거절, 노면전차 거리 3회차(센터 전주) (`8d56588`)
+- **jp-city** — 참고문서 용도 「탈것·노면전차·지하철」 + 노면전차 거리 2회차·역 점자 유도 블록 정리, 학교 관문 통과(8회차) (`afcfb36`)
+- **jp-city** — 지하철역 さくら町 예제 맵(콘코스·승강장) + 승강장 지하철 노선·타기, 역 블록 관문 1회차 반영 (`6050656`)
+- **editor** — 맵 설정 「탈것(차·버스·전차)」 칸 — 길 그림에서 차 흐름 자동 깔기·노선 켜고 끄기·지우기·차 간격 (`daa494e`)
+- **jp-city** — 맵 탈것 조수 도구 set_map_transit·inspect_map_transit + 런타임 QA 통과, 학교 관문 5회차 반영 (`1508727`)
+- **jp-city** — 노면전차·지하철 블록 굽기(transit_street 7·transit_station 18) + 학교 관문 4회차(빈칸 4층 제외·수영장 데크 두 줄·덤불 섞기·「30」 차로 안·전봇대) (`a392b01`)
+- **jp-city** — 지하철역 transit_station 블록 — 개찰구·발권기·계단·역무실·승강장 32칸+ 선로·역명판·LED·벤치 (`8d8a496`)
+- **jp-city** — 노면전차·지하철 거리 블록 transit_street — 궤도(가로·세로·끝)·전차 정류장 섬·가선·전주·지하철 출입구 키트 7종 (`a09d38a`)
+- **runtime** — 맵 탈것 노선(transit) — 순수 시뮬레이션·주인공 막기·정류장 정차·타기·QA 훅 + jp-city 참고문서 학교 분류 준비 (`be54cf4`)
+- **jp-city** — 탈것 옆모습 3/4 윗면 띠·어두운 옆유리·경차 L4·세단/해치 두 차체 (`e38b2f1`)
+- **jp-city** — 대형 탈것 검수 반영 — 버스 문은 왼쪽 면만·옆 유리 짙은 남색·전철 3문·마름모 팬터그래프·지붕 윗면 확대 (`b3ce165`)
+- **jp-city** — 대형 탈것 4종 — 노선버스·노면전차·통근 전철·지하철 손 도트 프레임 (`ba9d08a`)
+- **jp-city** — 승용·경차·택시·트럭 움직이는 탈것 10종 손 도트 (`075a9fc`)
+- **jp-city** — 小学校 블록 24키트 + 교정 예제 맵 + 적대적 검증 관문 + kitmap 공용 생성기 (`bc4adab`)
+
+### 수정
+
+- **jp-city** — 학교 관문 3회차 — 수영장 탈의동→샤워 동선, 고무 칩·ツツジ 植え込み, 빈칸=바탕 흙만·무시 칸 분모 제외, 차선별 「30」(동서 길) (`ed5609d`)
+- **jp-city** — 학교 관문 2회차 — 전선 처짐 잘림 수정(모든 경간), 놀이 구역 4줄 재배치·오르기 봉·외발자전거 걸이·등나무 그늘·비오톱, kitmap 입구(anchor) 도달·빈칸 상한 검사 (`7d3af9b`)
+- **jp-city** — 학교 관문 1회차 지적 반영 — 25m 수영장·수돗가·학급 밭·정글짐 윗면·정문 4칸·동상, 맵 68×48 재배치 (`cf07585`)
+
+### 문서
+
+- **jp-city** — openwiki 학교·관문·kitmap·탈것·노면전차·지하철역, 조수 정책에 탈것 도구·순서, 툴 카탈로그 두 줄, 小学校 장소 게시 (`24de61b`)
+
+### 빌드
+
+- **jp-city** — 탈것 관문 1회차 반영 굽기(경차 4칸·옆 3/4 윗면·짙은 유리·버스 문 왼쪽 면) + SPEC 갱신 (`3e197f6`)
+- **jp-city** — 탈것 14종 시트·목록 굽기 + 미리보기 (`5e8c6a6`)
+
+### 잡무
+
+- **jp-city** — 탈것 관문 3회차 판정 기록(fail — blocker 1·major 2, 4회차 진행) (`aa4723a`)
+- **jp-city** — 콘코스 점자 블록 매표기~역무실, 런타임 QA 화면 갱신, 조수 시험 픽스처·위키 (`3cd5060`)
+- **jp-city** — 움직이는 탈것 스프라이트 계약·굽기 틀 + 가나·교통 글리프 (`517f964`)
+
+## 0.158.0 — 2026-10-07
+
+### 기능
+
+- **monster** — start town and first route follow the brief's landscape (`851d493`)
+- **assistant** — furnish empty outdoor ground on kit sheets with find_empty_ground and furnish_outdoor_area (`1242ac7`)
+
+### 수정
+
+- **assistant** — monster game fingerprint ignores key order; repair keeps an equal hero cell (`74399be`)
+- **assistant** — garden fill places a few props even when trees already cover the ground; film tolerates boot tileset resync (`b503405`)
+
+### 문서
+
+- **openwiki** — startTheme, canonical monster fingerprint, journey video (`d01c71c`)
+
+### 테스트
+
+- **qa** — monster journey records an mp4 and walks the opening stretch (`4b2ec53`)
+
+## 0.157.1 — 2026-10-07
+
+### 수정
+
+- count approved preserved sources as authored theme coverage (`82326b4`)
+- keep scene-bound coverage links across collection batches (`a390106`)
+- accept same-theme actor sheets as preserved-source receipts (`883296e`)
+- admit hash-bound native shelf re-review in candidate collection (`8fd9840`)
+- **assistant** — check_reachability accepts a single to point (`bb11e1e`)
+- **editor** — kit overlay tiles of bundled sheets paint on the upper layer (`00b0e5f`)
+- **assistant** — show_map_region reads uploaded charsets stored by ref (`124177b`)
+- **editor** — tile_erase finds kit ground via layer backing; reference reads find the category owner (`4fc7427`)
+- **editor** — route tiles with an authored layer backing to their declared layer (`6805d68`)
+- **qa** — monster autoplay trains in short chunks, heals at 60% HP, retries knocked-out walks (`5106c85`)
+
+### 문서
+
+- record super-harness coverage accumulation and actor action gap (`263da5a`)
+- **openwiki** — monster film cases and bundled kit layer routing (`8c49ce8`)
+
+### 테스트
+
+- **harness** — follow-up fixture reads the campaign from ctx.project (`ef92eb6`)
+- **harness** — build the follow-up campaign fixture in bun, not inside vite-node (`65026e2`)
+- **harness** — film monster-followup — ask the assistant to fill an empty corner of an existing monster game (`de95940`)
+- **harness** — film monster cases for the desert and harbor briefs, record gym 1 team (`043dd7f`)
+
+## 0.157.0 — 2026-10-06
+
+### 기능
+
+- **jp-city** — 거리 시설 참고문서·동네 한 장 장소 게시 (`a62fc12`)
+- **jp-city** — 동네 지도 — 전봇대 자리 비용 최소화, 전선 5~20칸, 상점가·신사·학교·공원 꾸밈 (`741e8fc`)
+- **jp-city** — 간판 가나 섞기·셔터 가게·동네 거점·손 도트 거리 소품 50종 (`fa7176c`)
+
+### 문서
+
+- **asset-store** — openrpgmaker.com 을 Cloudflare 로 옮기고 store 만 프록시 (`c9a8138`)
+
+### 기타
+
+- **jp-city** — 동네 지도 생성기 town.mjs 첫 판 + 전선 폭·문기둥 1칸 수정 (`e68771d`)
+
+## 0.156.0 — 2026-10-06
+
+### 기능
+
+- **jp-city** — 손 도트 일본 건물 53종 + 상점가 줄 키트 6종을 jp_city 번들에 굽기 (`9da6703`)
+- **jp-city** — 주택 조립 키트 v1 — 기준 집 부품으로 6종(寄棟·妻入り 切妻+차고·平屋·片流れ·3층 陸屋根·목조 아파트) (`d3a6de0`)
+- **jp-city** — 기준 2층 주택 손 도트 시안 v1 — modern3·칩셋 규약(윤곽 sumi, 한 층 32px, 문 16x28) (`5e227b2`)
+- **asset-store** — 스토어 파일을 Cloudflare R2 로 내보내기 (`f50c8be`)
+
+### 문서
+
+- **jp-city** — 실제 일본 거리 조사 4편 + jp_city 대조·다음 작업 순서 (`df36277`)
+- **asset-store** — R2 토큰에 IP 조건을 걸면 서명 주소가 403 — 기록 (`8460c18`)
+
+## 0.155.0 — 2026-10-06
+
+### 기능
+
+- **monster** — the assistant can name and type all eight gyms and the first route's trainers (`60490f3`)
+
+### 테스트
+
+- **harness** — film save waits for a settled autosave state (`3365fbd`)
+
 ## 0.154.0 — 2026-10-06
 
 ### 기능

@@ -1,0 +1,325 @@
+{
+  "profile": "1ad0e77d3fd82858148a590e4dc0c15dddb28fa45e56bf12d641a91c0a8ea5ce",
+  "stage": "texture",
+  "failed": [
+    "r2-building-05",
+    "r2-building-08"
+  ],
+  "reviews": {
+    "r2-building-01": {
+      "id": "r2-building-01",
+      "sha": "a15bb44a284f0b12945cf207ce51d959a187aa76440e0fffc3b8c3a405c5dec1",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 98
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 98
+        }
+      ],
+      "issues": [],
+      "observations": "The rectangular roof retains dense, small terracotta shingles, amber highlights and dark recessed grooves. Plaster has fine pale speckling, narrow timber edges and cool under-eave shading consistent with the originals."
+    },
+    "r2-building-02": {
+      "id": "r2-building-02",
+      "sha": "711e4a671152085789c5ad33dc6930c90e7195776a81639b965bccaf923a4f2d",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 97
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "The steep roof has bright overlapping tile ends on its left plane and granular darker shingles on its right. Both plaster stories and the gable retain fine dot grain; timber, blue glazing and eave shadows fit the reference rendering."
+    },
+    "r2-building-03": {
+      "id": "r2-building-03",
+      "sha": "6d322a6dcf06beb0cd3b1c7884b93dee50fd2da79c57b50e7d845bdd941bd911",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 96
+        },
+        {
+          "axis": "wall_grain",
+          "score": 98
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 96
+        }
+      ],
+      "issues": [],
+      "observations": "The main roof and projecting gable retain small shingle marks, dark grooves and brighter left-facing tile relief. Exposed plaster uses the original fine speckling and narrow brown framing; the joined roof sections maintain compatible warm light and shadow colors."
+    },
+    "r2-building-04": {
+      "id": "r2-building-04",
+      "sha": "9c82485d3ac706f537fcf2cdf8a583e720a21201937915d1249fe85b148dd817",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 98
+        },
+        {
+          "axis": "wall_grain",
+          "score": 98
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 98
+        }
+      ],
+      "issues": [],
+      "observations": "The broad hipped roof preserves dense rounded tile relief, a bright left slope and darker right slope. Both facade stories retain fine plaster grain, shaded panel tops and reference-sized timber and window details."
+    },
+    "r2-building-05": {
+      "id": "r2-building-05",
+      "sha": "69107b85bf2b0655fade2e1afb5917b19715555b79f83e768ecfacd8118242ae",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 90
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [
+        {
+          "code": "WALL_DETAIL_CLIPPED",
+          "x": 24,
+          "y": 80,
+          "reason": "An ochre window-sill fragment survives on the left facade while continuous masonry fills the area above it. The stone texture visibly overwrites the opening, leaving a clipped facade detail."
+        }
+      ],
+      "observations": "Roof shingles retain the original granular highlights and dark relief. Masonry generally has compatible small irregular stones and fine mortar flecks, but its continuous courses leave an isolated sill fragment on the left."
+    },
+    "r2-building-06": {
+      "id": "r2-building-06",
+      "sha": "1ecc854313652274e40cdafb03cb3ff1c5560328980a76242796005aa06347b8",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 96
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [],
+      "observations": "The roof retains dense terracotta shingles and tiny amber highlights. Plaster remains finely speckled, and the broad wooden opening has visible plank grain and narrow highlighted braces rather than a flat fill. Eave and doorway shadows fit the references."
+    },
+    "r2-building-07": {
+      "id": "r2-building-07",
+      "sha": "6aa0d73f0ea08d05881c0fa373ddcc4286b4e21768caf3f4d6a0caa5980e6234",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 98
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 98
+        }
+      ],
+      "issues": [],
+      "observations": "Bright tile ends distinguish the left roof plane from the darker, finely shingled right plane. The triangular gable and lower plaster panels retain native-sized speckles, narrow framing and compatible blue window accents."
+    },
+    "r2-building-08": {
+      "id": "r2-building-08",
+      "sha": "982ddefc4747977c86d7be10b82a0ba20713d72f888410bdebc10777e3edd639",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 99
+        },
+        {
+          "axis": "wall_grain",
+          "score": 92
+        },
+        {
+          "axis": "palette",
+          "score": 99
+        },
+        {
+          "axis": "light_consistency",
+          "score": 97
+        }
+      ],
+      "issues": [
+        {
+          "code": "WALL_DETAIL_FRAGMENT",
+          "x": 44,
+          "y": 94,
+          "reason": "A small ochre and dark fragment remains immediately above the upper floor's bottom band. Continuous stone courses surround it, with no visible opening connecting to it; it reads as an incompletely overwritten facade detail."
+        }
+      ],
+      "observations": "The roof retains dense original-sized shingles and bright left-plane relief. Both stone stories preserve fine mortar and irregular stone grain, but the upper facade contains an isolated high-contrast fragment near its bottom edge."
+    },
+    "r2-building-09": {
+      "id": "r2-building-09",
+      "sha": "b48654bdb36b5b4fb46fe3a29380fb50c9434f23496a7bb8e04d05f67b1db71a",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 100
+        },
+        {
+          "axis": "wall_grain",
+          "score": 100
+        },
+        {
+          "axis": "palette",
+          "score": 100
+        },
+        {
+          "axis": "light_consistency",
+          "score": 100
+        }
+      ],
+      "issues": [],
+      "observations": "The blue tower and nave roofing retain the original dense violet grooves and tiny pale tile highlights. Stone walls preserve fine irregular mortar, cream highlights and mauve shadows. Roof bands, glazing and overall lighting match the original church anchor."
+    },
+    "r2-building-10": {
+      "id": "r2-building-10",
+      "sha": "42b5dc8a5fa45cd2fe490a641be2036e973e229f4054ef8835cb1e016a5c6816",
+      "verdict": "PASS",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 100
+        },
+        {
+          "axis": "wall_grain",
+          "score": 100
+        },
+        {
+          "axis": "palette",
+          "score": 100
+        },
+        {
+          "axis": "light_consistency",
+          "score": 100
+        }
+      ],
+      "issues": [],
+      "observations": "The roof preserves the stone original's bright layered left tiles and granular darker right shingles. The gable and facade retain fine irregular stone grain, muted teal circular glazing and shaded wooden door detail without visible texture interruptions."
+    },
+    "sample-11": {
+      "id": "sample-11",
+      "sha": "d231b18832e383d2c1a343348e25f85d018b8e7cf039bf8cd53927c2d12c437f",
+      "verdict": "FAIL",
+      "scores": [
+        {
+          "axis": "roof_grain",
+          "score": 40
+        },
+        {
+          "axis": "wall_grain",
+          "score": 35
+        },
+        {
+          "axis": "palette",
+          "score": 88
+        },
+        {
+          "axis": "light_consistency",
+          "score": 86
+        }
+      ],
+      "issues": [
+        {
+          "code": "ROOF_GRAIN_COARSE",
+          "x": 48,
+          "y": 36,
+          "reason": "Widely spaced repeated tan dashes sit on broad flat brown areas. They lack the reference's dense small shingles, rounded tile relief and fine dark grooves."
+        },
+        {
+          "code": "WALL_GRAIN_MISSING",
+          "x": 29,
+          "y": 75,
+          "reason": "Large cream panels have virtually no plaster speckling. Broad layered window and door boxes and coarse foundation blocks replace the reference's fine grain and restrained edges."
+        },
+        {
+          "code": "PALETTE_CONTRAST_MISMATCH",
+          "x": 48,
+          "y": 40,
+          "reason": "Roof values remain predominantly middle brown and tan, with weak dark separation. Together with uniformly warm facade edging, this loses the reference's stronger dark accents and cool shaded wall tones."
+        },
+        {
+          "code": "LIGHT_RELIEF_FLAT",
+          "x": 75,
+          "y": 32,
+          "reason": "Bright edging traces both roof slopes while the interior tile marks have little directional relief. The roof planes and boxed facade details read uniformly lit compared with the reference's distinct highlights and recessed shadows."
+        }
+      ],
+      "observations": "The roof uses a coarse regular dash grid on flat brown fill. Walls are largely untextured cream with prominent boxed frames and blocky foundations. Its muted contrast and perimeter-led highlights produce a graphic rendering that does not fit the original granular style."
+    }
+  },
+  "published": false
+}

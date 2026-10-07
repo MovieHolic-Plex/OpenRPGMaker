@@ -1,0 +1,4871 @@
+{
+ "version": 1,
+ "tilesetId": "wizarding_world",
+ "tileCount": 2472,
+ "note": "scripts/content/wizarding/space_recipes.py 가 굽는다(손 편집 금지). 조립 규칙 src/editor/wizarding/builder.ts.",
+ "wallsets": {
+  "castle": {
+   "ko": "성채 석벽",
+   "n": "wz-castle-wall-n",
+   "nw": "wz-castle-wall-nw",
+   "ne": "wz-castle-wall-ne",
+   "w": "wz-castle-wall-w",
+   "e": "wz-castle-wall-e",
+   "s": "wz-castle-wall-s",
+   "sw": "wz-castle-wall-sw",
+   "se": "wz-castle-wall-se",
+   "door1": "wz-castle-door1-open",
+   "door2": "wz-castle-door2-open",
+   "doorS": "wz-castle-door-s",
+   "rhythm": [
+    "n",
+    "n",
+    "wz-castle-wall-n-window",
+    "n",
+    "n",
+    "wz-castle-wall-n-pillar"
+   ],
+   "sRhythm": [
+    "s",
+    "s",
+    "s",
+    "wz-castle-wall-s-window",
+    "s",
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "infirmary": {
+   "ko": "병동 석회벽",
+   "n": "wz-inf-wall-n",
+   "nw": "wz-inf-wall-nw",
+   "ne": "wz-inf-wall-ne",
+   "w": "wz-inf-wall-w",
+   "e": "wz-inf-wall-e",
+   "s": "wz-inf-wall-s",
+   "sw": "wz-inf-wall-sw",
+   "se": "wz-inf-wall-se",
+   "door1": "wz-inf-door-open",
+   "rhythm": [
+    "n",
+    "wz-inf-wall-n-window-big",
+    "n",
+    "wz-inf-wall-n-window"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "greenhouse": {
+   "ko": "온실 철틀 유리벽",
+   "n": "wz-gh-wall-n",
+   "nw": "wz-gh-corner-nw",
+   "ne": "wz-gh-corner-ne",
+   "w": "wz-gh-side-w",
+   "e": "wz-gh-side-e",
+   "s": "wz-gh-wall-s",
+   "sw": "wz-gh-corner-sw",
+   "se": "wz-gh-corner-se",
+   "door1": "wz-gh-door-open",
+   "rhythm": [
+    "n",
+    "wz-gh-roof",
+    "n",
+    "wz-gh-vent-closed",
+    "wz-gh-roof"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "owlery": {
+   "ko": "부엉이 탑 돌벽",
+   "n": "wz-owl-wall-n",
+   "w": "wz-owl-wall-w",
+   "e": "wz-owl-wall-e",
+   "s": "wz-owl-wall-s",
+   "door1": "wz-owl-door-open",
+   "rhythm": [
+    "n",
+    "wz-owl-window",
+    "n",
+    "wz-owl-wall-n-stained",
+    "wz-owl-window-bare",
+    "n",
+    "wz-owl-wall-n-beam"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "owlcastle": {
+   "ko": "부엉이 탑(성채 석벽 + 비행 창)",
+   "n": "wz-castle-wall-n",
+   "nw": "wz-castle-wall-nw",
+   "ne": "wz-castle-wall-ne",
+   "w": "wz-castle-wall-w",
+   "e": "wz-castle-wall-e",
+   "s": "wz-castle-wall-s",
+   "sw": "wz-castle-wall-sw",
+   "se": "wz-castle-wall-se",
+   "door1": "wz-owl-door-open",
+   "door2": "wz-castle-door2-open",
+   "doorS": "wz-castle-door-s",
+   "rhythm": [
+    "n",
+    "n",
+    "wz-owl-window",
+    "n",
+    "n",
+    "wz-castle-wall-n-pillar",
+    "n",
+    "wz-owl-window-bare"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "postoffice": {
+   "ko": "우체국 목재 벽",
+   "n": "wz-post-iwall",
+   "w": "wz-post-ibeam",
+   "e": "wz-post-ibeam",
+   "s": "wz-post-wainscot",
+   "sw": "wz-post-ibeam",
+   "se": "wz-post-ibeam",
+   "rhythm": [
+    "n"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 1
+  },
+  "honeydukes": {
+   "ko": "지하 창고 오크 보 벽",
+   "n": "wz-hd-wall-n",
+   "w": "wz-castle-wall-w",
+   "e": "wz-castle-wall-e",
+   "s": "wz-castle-wall-s",
+   "sw": "wz-castle-wall-sw",
+   "se": "wz-castle-wall-se",
+   "door1": "wz-hd-panel-open",
+   "doorS": "wz-castle-door-s",
+   "rhythm": [
+    "n"
+   ],
+   "sRhythm": [
+    "s"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  },
+  "pitch": {
+   "ko": "경기장 터널 벽·울타리",
+   "n": "wz-qd-tunnel-wall4",
+   "w": "wz-qd-fence-v",
+   "e": "wz-qd-fence-v",
+   "s": "wz-qd-fence-g",
+   "sw": "wz-qd-fence-corner-sw",
+   "se": "wz-qd-fence-corner-se",
+   "door1": "wz-qd-tunnel-arch",
+   "door2": "wz-qd-door-open",
+   "northFloor": "wz-qd-flag",
+   "rhythm": [
+    "n"
+   ],
+   "sRhythm": [
+    "wz-qd-fence-g",
+    "wz-qd-fence-g",
+    "wz-qd-fence-g",
+    "wz-qd-fence-s",
+    "wz-qd-fence-s",
+    "wz-qd-fence-s",
+    "wz-qd-fence-r",
+    "wz-qd-fence-r",
+    "wz-qd-fence-r",
+    "wz-qd-fence-h",
+    "wz-qd-fence-h",
+    "wz-qd-fence-h"
+   ],
+   "northRows": 4,
+   "southRows": 2
+  }
+ },
+ "spaces": {
+  "shared": {
+   "ko": "성채 대연회장(공용 홀)",
+   "indoor": true,
+   "layout": "room",
+   "wall": "castle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     30,
+     22
+    ],
+    "max": [
+     48,
+     40
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s",
+     "kind": "double"
+    },
+    {
+     "side": "n",
+     "kind": "double"
+    }
+   ],
+   "spaceKo": "공용(성채·공통 가구)",
+   "floor": {
+    "autotile": "wz-castle-flag"
+   },
+   "runner": {
+    "ns": "wz-castle-runner-ns",
+    "ew": "wz-castle-runner-ew",
+    "nEnd": "wz-castle-runner-n-end",
+    "sEnd": "wz-castle-runner-s-end"
+   },
+   "furniture": [
+    {
+     "kit": "wz-furn-fireplace",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-bench-long",
+     "placement": "grid",
+     "count": [
+      10,
+      18
+     ],
+     "clearance": 0,
+     "gap": 1,
+     "with": [
+      {
+       "kit": "wz-furn-bench-seat",
+       "dx": 0,
+       "dy": -1
+      },
+      {
+       "kit": "wz-furn-bench-seat",
+       "dx": 0,
+       "dy": 2
+      },
+      {
+       "kit": "wz-furn-prop-bottles",
+       "dx": 1,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-furn-banner-lion",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-banner-snake",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-banner-eagle",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-banner-badger",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-curtain-open",
+     "placement": "north-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "window"
+    },
+    {
+     "kit": "wz-castle-sconce",
+     "placement": "north-wall",
+     "count": [
+      2,
+      4
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-candlestick",
+     "placement": "beside",
+     "count": [
+      2,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-furn-fireplace"
+     ]
+    },
+    {
+     "kit": "wz-furn-barrel",
+     "placement": "edge",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0
+    }
+   ],
+   "decals": [],
+   "npcs": [
+    {
+     "id": "wz-chr-trial-student",
+     "name": "지팡이 시험 학생",
+     "desc": "지팡이 시험 학생 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-potions-student",
+     "name": "마법약 학생",
+     "desc": "마법약 학생 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-student-gryffindor",
+     "name": "그리핀도르 학생",
+     "desc": "그리핀도르 학생 — 검은 로브·붉은+금 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 5
+    },
+    {
+     "id": "wz-chr-student-slytherin",
+     "name": "슬리데린 학생",
+     "desc": "슬리데린 학생 — 검은 로브·녹+은 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 6
+    },
+    {
+     "id": "wz-chr-student-ravenclaw",
+     "name": "래번클로 학생",
+     "desc": "래번클로 학생 — 검은 로브·청+청동 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-chr-student-hufflepuff",
+     "name": "후플푸프 학생",
+     "desc": "후플푸프 학생 — 검은 로브·황+흑 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-professor",
+     "name": "교수",
+     "desc": "긴 보라 로브·뾰족 모자·흰 수염, 금 단추 줄.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-caretaker",
+     "name": "성 관리인",
+     "desc": "누더기 갈색 코트·낡은 모자·등불을 든 관리인.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 2
+    }
+   ],
+   "variants": {
+    "corridor": {
+     "ko": "성채 복도",
+     "size": {
+      "min": [
+       8,
+       16
+      ],
+      "default": [
+       10,
+       22
+      ],
+      "max": [
+       16,
+       48
+      ]
+     },
+     "defaultDoors": [
+      {
+       "side": "s"
+      },
+      {
+       "side": "n"
+      }
+     ],
+     "floor": {
+      "autotile": "wz-castle-flag"
+     },
+     "furniture": [
+      {
+       "kit": "wz-furn-banner-lion",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-snake",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-eagle",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-badger",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-curtain-open",
+       "placement": "north-wall",
+       "count": [
+        0,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "window"
+      },
+      {
+       "kit": "wz-castle-sconce",
+       "placement": "north-wall",
+       "count": [
+        1,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-candlestick",
+       "placement": "side-wall",
+       "count": [
+        1,
+        3
+       ],
+       "clearance": 1
+      },
+      {
+       "kit": "wz-furn-barrel",
+       "placement": "corner",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0
+      }
+     ]
+    },
+    "common": {
+     "ko": "기숙사 휴게실",
+     "size": {
+      "min": [
+       16,
+       12
+      ],
+      "default": [
+       24,
+       17
+      ],
+      "max": [
+       40,
+       30
+      ]
+     },
+     "defaultDoors": [
+      {
+       "side": "s"
+      }
+     ],
+     "floor": {
+      "tile": "wz-castle-floor-flag"
+     },
+     "runner": null,
+     "furniture": [
+      {
+       "kit": "wz-furn-fireplace",
+       "placement": "north-wall",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 1,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-bookshelf",
+       "placement": "north-wall",
+       "count": [
+        1,
+        3
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-table-small",
+       "placement": "center",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 1,
+       "with": [
+        {
+         "kit": "wz-castle-rug-red",
+         "dx": 0,
+         "dy": 0,
+         "under": true
+        },
+        {
+         "kit": "wz-furn-chair-back-left",
+         "dx": -1,
+         "dy": 0
+        },
+        {
+         "kit": "wz-furn-chair-back-right",
+         "dx": 2,
+         "dy": 0
+        },
+        {
+         "kit": "wz-furn-prop-book-open",
+         "dx": 0,
+         "dy": 0
+        },
+        {
+         "kit": "wz-furn-prop-inkwell",
+         "dx": 1,
+         "dy": 0
+        }
+       ]
+      },
+      {
+       "kit": "wz-furn-banner-lion",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-snake",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-eagle",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-banner-badger",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "plain"
+      },
+      {
+       "kit": "wz-furn-curtain-open",
+       "placement": "north-wall",
+       "count": [
+        0,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 1,
+       "wallMatch": "window"
+      },
+      {
+       "kit": "wz-furn-bookshelf-low",
+       "placement": "north-wall",
+       "count": [
+        1,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 3
+      },
+      {
+       "kit": "wz-furn-cabinet-closed",
+       "placement": "north-wall",
+       "count": [
+        0,
+        1
+       ],
+       "clearance": 1,
+       "wallTop": 3
+      },
+      {
+       "kit": "wz-furn-crate-stack",
+       "placement": "corner",
+       "count": [
+        1,
+        1
+       ],
+       "clearance": 0
+      },
+      {
+       "kit": "wz-furn-barrel",
+       "placement": "beside",
+       "count": [
+        1,
+        2
+       ],
+       "clearance": 0,
+       "near": [
+        "wz-furn-crate-stack"
+       ]
+      },
+      {
+       "kit": "wz-furn-candlestick",
+       "placement": "beside",
+       "count": [
+        2,
+        2
+       ],
+       "clearance": 0,
+       "near": [
+        "wz-furn-fireplace"
+       ]
+      },
+      {
+       "kit": "wz-furn-lantern-hanging",
+       "placement": "north-wall",
+       "count": [
+        0,
+        2
+       ],
+       "clearance": 0,
+       "wallTop": 2,
+       "wallMatch": "plain"
+      }
+     ]
+    }
+   }
+  },
+  "owlery": {
+   "ko": "부엉이 탑",
+   "indoor": true,
+   "layout": "room",
+   "wall": "owlcastle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     22,
+     16
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "부엉이 탑",
+   "floor": {
+    "tile": "wz-castle-floor-flag"
+   },
+   "furniture": [
+    {
+     "kit": "wz-owl-mailbox",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 3
+    },
+    {
+     "kit": "wz-owl-perch-1x3",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 1,
+     "wallTop": 2
+    },
+    {
+     "kit": "wz-owl-perch-2x3",
+     "placement": "grid",
+     "count": [
+      6,
+      8
+     ],
+     "clearance": 0,
+     "gap": 1
+    },
+    {
+     "kit": "wz-owl-stair-up",
+     "placement": "corner",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "wz-owl-water-dish",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-owl-perch-2x3"
+     ]
+    },
+    {
+     "kit": "wz-owl-mail-sack",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-owl-mailbox"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-owl-droppings",
+     "count": [
+      2,
+      4
+     ],
+     "near": [
+      "wz-owl-perch-2x3",
+      "wz-owl-perch-1x3"
+     ]
+    },
+    {
+     "kit": "wz-owl-feathers",
+     "count": [
+      2,
+      4
+     ],
+     "near": [
+      "wz-owl-perch-2x3"
+     ]
+    },
+    {
+     "kit": "wz-owl-straw",
+     "count": [
+      2,
+      4
+     ],
+     "near": [
+      "wz-owl-perch-1x3",
+      "wz-owl-window"
+     ]
+    },
+    {
+     "kit": "wz-owl-pellets",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-owl-perch-2x3"
+     ]
+    },
+    {
+     "kit": "wz-owl-letters",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-owl-mailbox"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-owlpost-student",
+     "name": "부엉이 우편 담당 학생",
+     "desc": "검은 로브·편지 묶음을 안은 학생.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 4
+    },
+    {
+     "id": "wz-chr-winter-postman",
+     "name": "겨울 마법 우편 배달원",
+     "desc": "두꺼운 푸른 망토·붉은 목도리·털모자·우편 가방.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 5
+    },
+    {
+     "id": "wz-cre-owl-barn",
+     "name": "헛간부엉이 (걷기 시트)",
+     "desc": "헛간부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 6
+    },
+    {
+     "id": "wz-cre-owl-eagle",
+     "name": "수리부엉이 (걷기 시트)",
+     "desc": "수리부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-cre-owl-snowy",
+     "name": "흰부엉이 (걷기 시트)",
+     "desc": "흰부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음)",
+     "textureKey": "tex_oprn_charset_wizarding5",
+     "resourceId": "oprn-charset-wizarding5",
+     "characterIndex": 0
+    }
+   ]
+  },
+  "potions": {
+   "ko": "지하 마법약 교실",
+   "indoor": true,
+   "layout": "room",
+   "wall": "castle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     24,
+     17
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "지하 마법약 교실",
+   "floor": {
+    "tile": "wz-castle-floor-flag"
+   },
+   "doors": {
+    "door2": "wz-pot-door-open"
+   },
+   "rhythm": [
+    "n",
+    "n",
+    "wz-pot-vault-arch-pillar",
+    "n",
+    "n",
+    "wz-castle-wall-n-window"
+   ],
+   "furniture": [
+    {
+     "kit": "wz-pot-hood",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-pot-shelf",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-nv-pot-teaching-kit-blackboard",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-pot-herb-hanger",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-pot-wall-lamp",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-pot-cauldron-bench-green",
+     "placement": "grid",
+     "count": [
+      10,
+      18
+     ],
+     "clearance": 0,
+     "gap": 1,
+     "alt": [
+      "wz-pot-cauldron-bench-violet"
+     ]
+    },
+    {
+     "kit": "wz-pot-basin",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 4
+    },
+    {
+     "kit": "wz-nv-pot-ingredient-storage-drawers",
+     "placement": "side-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-nv-pot-ingredient-storage-dried-herbs",
+     "placement": "side-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-pot-prep-bench",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "with": [
+      {
+       "kit": "wz-pot-mortar",
+       "dx": 0,
+       "dy": 0
+      },
+      {
+       "kit": "wz-pot-knife-board",
+       "dx": 1,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-pot-root-basket",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-pot-prep-bench"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-pot-stain-violet",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-pot-cauldron-bench-violet"
+     ]
+    },
+    {
+     "kit": "wz-pot-stain-green",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-pot-cauldron-bench-green"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-potions-master",
+     "name": "마법약 교사",
+     "desc": "마법약 교사 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 2
+    },
+    {
+     "id": "wz-chr-potions-student",
+     "name": "마법약 학생",
+     "desc": "마법약 학생 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-potions-assistant",
+     "name": "마법약 조교",
+     "desc": "마법약 조교 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 4
+    },
+    {
+     "id": "wz-chr-potions-apron",
+     "name": "마법약 앞치마 학생",
+     "desc": "로브 위 가죽 앞치마·걷어붙인 소매.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 6
+    }
+   ]
+  },
+  "clocktower": {
+   "ko": "시계탑 기어실",
+   "indoor": true,
+   "layout": "room",
+   "wall": "castle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     24,
+     18
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "시계탑 기어실",
+   "floor": {
+    "tile": "wz-clock-grate"
+   },
+   "runner": {
+    "ns": "wz-clock-floor-plate",
+    "ew": "wz-clock-floor-plate"
+   },
+   "doors": {
+    "door1": "wz-clock-door-open"
+   },
+   "rhythm": [
+    "n",
+    "n",
+    "wz-clock-wall-gear",
+    "n",
+    "wz-castle-wall-n-pillar"
+   ],
+   "furniture": [
+    {
+     "kit": "wz-clock-dial-back",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 0,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-clock-toolrack",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-clock-gear-l-spin",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "wz-clock-gear-m-spin",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-clock-gear-l-spin"
+     ],
+     "access": false
+    },
+    {
+     "kit": "wz-clock-gear-s-spin",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-clock-gear-m-spin",
+      "wz-clock-gear-l-spin"
+     ],
+     "access": false
+    },
+    {
+     "kit": "wz-clock-stair",
+     "placement": "corner",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "wz-clock-toolchest",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-clock-oilcan",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-clock-toolchest"
+     ]
+    },
+    {
+     "kit": "wz-clock-stool",
+     "placement": "beside",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-clock-toolchest"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-clock-oil-a",
+     "count": [
+      2,
+      3
+     ],
+     "near": [
+      "wz-clock-gear-l-spin",
+      "wz-clock-gear-m-spin"
+     ]
+    },
+    {
+     "kit": "wz-clock-oil-b",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-clock-oilcan"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-professor",
+     "name": "교수",
+     "desc": "긴 보라 로브·뾰족 모자·흰 수염, 금 단추 줄.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-caretaker",
+     "name": "성 관리인",
+     "desc": "누더기 갈색 코트·낡은 모자·등불을 든 관리인.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 2
+    },
+    {
+     "id": "wz-chr-gear-mechanic",
+     "name": "기어 정비사",
+     "desc": "푸른 작업복·이마 위 고글·렌치.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-chr-greenhouse-professor",
+     "name": "온실 담당 교수",
+     "desc": "흙 묻은 초록 망토와 챙 처진 낡은 모자의 약초학 교수",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 3
+    }
+   ]
+  },
+  "postoffice": {
+   "ko": "호그스미드 부엉이 우체국(실내)",
+   "indoor": true,
+   "layout": "room",
+   "wall": "postoffice",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     20,
+     15
+    ],
+    "max": [
+     36,
+     28
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "호그스미드 눈 덮인 우체국",
+   "floor": {
+    "tile": "wz-post-floor"
+   },
+   "furniture": [
+    {
+     "kit": "wz-post-iwall-win",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain",
+     "access": false
+    },
+    {
+     "kit": "wz-post-sort",
+     "placement": "grid",
+     "count": [
+      2,
+      2
+     ],
+     "clearance": 0,
+     "gap": 1,
+     "rowsFrom": "north"
+    },
+    {
+     "kit": "wz-post-counter",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "wz-post-letters",
+       "dx": 1,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-post-perch",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-post-sort"
+     ]
+    },
+    {
+     "kit": "wz-post-sack",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-post-counter"
+     ]
+    },
+    {
+     "kit": "wz-post-parcels",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-post-counter",
+      "wz-post-sack"
+     ]
+    },
+    {
+     "kit": "wz-post-parcel",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-post-parcels"
+     ]
+    },
+    {
+     "kit": "wz-furn-crate-stack",
+     "placement": "corner",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-post-letters",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-post-sort"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-owlpost-student",
+     "name": "부엉이 우편 담당 학생",
+     "desc": "검은 로브·편지 묶음을 안은 학생.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 4
+    },
+    {
+     "id": "wz-chr-winter-postman",
+     "name": "겨울 마법 우편 배달원",
+     "desc": "두꺼운 푸른 망토·붉은 목도리·털모자·우편 가방.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 5
+    },
+    {
+     "id": "wz-cre-owl-barn",
+     "name": "헛간부엉이 (걷기 시트)",
+     "desc": "헛간부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 6
+    },
+    {
+     "id": "wz-cre-owl-eagle",
+     "name": "수리부엉이 (걷기 시트)",
+     "desc": "수리부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-cre-owl-snowy",
+     "name": "흰부엉이 (걷기 시트)",
+     "desc": "흰부엉이. 4방향×3프레임: 0·2 날갯짓, 1 날개 접고 선 자세. 몸 10~14px(사람보다 훨씬 작음)",
+     "textureKey": "tex_oprn_charset_wizarding5",
+     "resourceId": "oprn-charset-wizarding5",
+     "characterIndex": 0
+    }
+   ]
+  },
+  "wandshop": {
+   "ko": "다이애건 앨리 지팡이 가게",
+   "indoor": true,
+   "layout": "room",
+   "wall": "castle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     20,
+     15
+    ],
+    "max": [
+     36,
+     28
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "다이애건 앨리 지팡이 가게",
+   "floor": {
+    "tile": "wz-wand-floor-oak"
+   },
+   "doors": {
+    "door1": "wz-wand-testdoor-open"
+   },
+   "rhythm": [
+    "n",
+    "wz-wand-box-wall",
+    "n",
+    "wz-castle-wall-n-pillar",
+    "wz-wand-box-wall"
+   ],
+   "furniture": [
+    {
+     "kit": "wz-nv-wand-wandtrial-shelves-west-run",
+     "placement": "side-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "side": "w"
+    },
+    {
+     "kit": "wz-nv-wand-wandtrial-shelves-east-run",
+     "placement": "side-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "side": "e"
+    },
+    {
+     "kit": "wz-nv-wand-wood-service-counter-counter",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "wz-wand-display-1",
+       "dx": 0,
+       "dy": 0
+      },
+      {
+       "kit": "wz-wand-tape",
+       "dx": 2,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-nv-wand-wand-testing-table-height16-table",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-nv-wand-wandtrial-target-target",
+     "placement": "edge",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-nv-wand-stock-ladder-ladder",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-furn-cabinet-closed",
+     "placement": "north-wall",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 3
+    },
+    {
+     "kit": "wz-furn-candlestick",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-nv-wand-wood-service-counter-counter"
+     ]
+    },
+    {
+     "kit": "wz-furn-crate-stack",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-wand-scorch-1",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-nv-wand-wandtrial-target-target",
+      "wz-nv-wand-wand-testing-table-height16-table"
+     ]
+    },
+    {
+     "kit": "wz-wand-scorch-2",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-nv-wand-wandtrial-target-target",
+      "wz-nv-wand-wand-testing-table-height16-table"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-elder-wandmaker",
+     "name": "노년 지팡이 장인",
+     "desc": "노년 지팡이 장인 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-trial-student",
+     "name": "지팡이 시험 학생",
+     "desc": "지팡이 시험 학생 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-wand-clerk",
+     "name": "마법 상점 직원",
+     "desc": "보라 조끼에 놋 소매 고정 밴드를 찬 지팡이 가게 직원(귀 뒤에 지팡이)",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 5
+    }
+   ]
+  },
+  "library": {
+   "ko": "도서관 제한 구역",
+   "indoor": true,
+   "layout": "room",
+   "wall": "castle",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     24,
+     17
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "도서관 제한 구역",
+   "floor": {
+    "tile": "wz-castle-floor-flag"
+   },
+   "doors": {
+    "door2": "wz-lib-arch"
+   },
+   "rhythm": [
+    "n",
+    "n",
+    "wz-castle-wall-n-pillar"
+   ],
+   "furniture": [
+    {
+     "kit": "wz-lib-shelf-chain-3x3",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-lib-shelf-chain-2x3",
+     "placement": "north-wall",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 1,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-lib-ladder",
+     "placement": "north-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-lib-shelf-plain-2x3",
+     "placement": "grid",
+     "count": [
+      12,
+      18
+     ],
+     "clearance": 0,
+     "gap": 1
+    },
+    {
+     "kit": "wz-lib-record-table",
+     "placement": "edge",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-lib-lectern",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lib-record-table"
+     ]
+    },
+    {
+     "kit": "wz-furn-bookshelf-low",
+     "placement": "side-wall",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-furn-candlestick",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lib-record-table"
+     ]
+    }
+   ],
+   "decals": [],
+   "npcs": [
+    {
+     "id": "wz-chr-student-ravenclaw",
+     "name": "래번클로 학생",
+     "desc": "래번클로 학생 — 검은 로브·청+청동 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-chr-professor",
+     "name": "교수",
+     "desc": "긴 보라 로브·뾰족 모자·흰 수염, 금 단추 줄.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-librarian",
+     "name": "사서",
+     "desc": "머리를 높이 묶은 회색 로브·안경·책.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-greenhouse-professor",
+     "name": "온실 담당 교수",
+     "desc": "흙 묻은 초록 망토와 챙 처진 낡은 모자의 약초학 교수",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-quidditch-ravenclaw",
+     "name": "퀴디치 선수 (래번클로)",
+     "desc": "청색 경기복에 청동띠, 가죽 모자, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 0
+    }
+   ]
+  },
+  "greenhouse": {
+   "ko": "온실(맨드레이크)",
+   "indoor": true,
+   "layout": "room",
+   "wall": "greenhouse",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     24,
+     17
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "온실(맨드레이크)",
+   "floor": {
+    "tile": "wz-castle-floor-flag"
+   },
+   "furniture": [
+    {
+     "kit": "wz-gh-vine-wall",
+     "placement": "north-wall",
+     "count": [
+      1,
+      4
+     ],
+     "clearance": 0,
+     "wallTop": 0,
+     "wallMatch": "plain",
+     "access": false
+    },
+    {
+     "kit": "wz-gh-earmuff-rack",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-gh-workbench",
+     "placement": "grid",
+     "count": [
+      6,
+      10
+     ],
+     "clearance": 0,
+     "gap": 1,
+     "with": [
+      {
+       "kit": "wz-gh-mandrake-pulled-f",
+       "dx": 1,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-gh-earmuff-basket",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-earmuff-rack"
+     ]
+    },
+    {
+     "kit": "wz-gh-pot-row",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-workbench"
+     ]
+    },
+    {
+     "kit": "wz-gh-mandrake-pot",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-workbench"
+     ]
+    },
+    {
+     "kit": "wz-gh-pot-full",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-workbench"
+     ]
+    },
+    {
+     "kit": "wz-gh-watercan",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-workbench"
+     ]
+    },
+    {
+     "kit": "wz-gh-soilbox",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-gh-pot-empty",
+     "placement": "beside",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-soilbox"
+     ]
+    },
+    {
+     "kit": "wz-gh-vine-bush",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "access": false
+    },
+    {
+     "kit": "wz-gh-toothflower",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-vine-bush"
+     ]
+    },
+    {
+     "kit": "wz-gh-purplethorn",
+     "placement": "beside",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-vine-bush"
+     ]
+    },
+    {
+     "kit": "wz-gh-tentaclevine",
+     "placement": "beside",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-gh-vine-bush"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-gh-soil-a",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-gh-workbench",
+      "wz-gh-soilbox"
+     ]
+    },
+    {
+     "kit": "wz-gh-soil-b",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-gh-soilbox"
+     ]
+    },
+    {
+     "kit": "wz-gh-water-a",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-gh-watercan"
+     ]
+    },
+    {
+     "kit": "wz-gh-shovel",
+     "count": [
+      0,
+      1
+     ],
+     "near": [
+      "wz-gh-soilbox"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-student-hufflepuff",
+     "name": "후플푸프 학생",
+     "desc": "후플푸프 학생 — 검은 로브·황+흑 넥타이·로브 안감",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-earmuff-student",
+     "name": "귀마개 약초학 학생",
+     "desc": "큰 털 귀마개·목도리·가죽 장갑을 낀 약초학 학생",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 2
+    },
+    {
+     "id": "wz-chr-greenhouse-professor",
+     "name": "온실 담당 교수",
+     "desc": "흙 묻은 초록 망토와 챙 처진 낡은 모자의 약초학 교수",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-quidditch-hufflepuff",
+     "name": "퀴디치 선수 (후플푸프)",
+     "desc": "노랑 경기복에 검은 띠, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-cre-mandrake",
+     "name": "맨드레이크",
+     "desc": "작은 뿌리 몸에 머리 위 잎다발을 인 맨드레이크. 주름진 얼굴로 비명을 지르며 걷는 대신 꿈틀거린다(3프레임",
+     "textureKey": "tex_oprn_charset_wizarding5",
+     "resourceId": "oprn-charset-wizarding5",
+     "characterIndex": 1
+    }
+   ]
+  },
+  "infirmary": {
+   "ko": "병동",
+   "indoor": true,
+   "layout": "room",
+   "wall": "infirmary",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     26,
+     18
+    ],
+    "max": [
+     40,
+     30
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "병동",
+   "floor": {
+    "tile": "wz-castle-floor-oak"
+   },
+   "furniture": [
+    {
+     "kit": "wz-inf-chart",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-inf-bed-empty",
+     "placement": "grid",
+     "count": [
+      6,
+      10
+     ],
+     "clearance": 0,
+     "gap": 1,
+     "rowsFrom": "north",
+     "alt": [
+      "wz-inf-bed-patient"
+     ],
+     "with": [
+      {
+       "kit": "wz-inf-bed-shadow",
+       "dx": 0,
+       "dy": 0,
+       "under": true
+      },
+      {
+       "kit": "wz-inf-curtain-closed",
+       "dx": 2,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-inf-shelf",
+     "placement": "side-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-inf-table",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-inf-bed-empty",
+      "wz-inf-bed-patient"
+     ],
+     "with": [
+      {
+       "kit": "wz-inf-candle",
+       "dx": 0,
+       "dy": 1
+      }
+     ]
+    },
+    {
+     "kit": "wz-inf-cart",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-inf-basin",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-inf-cart"
+     ]
+    },
+    {
+     "kit": "wz-inf-screen",
+     "placement": "edge",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-inf-bandage",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-inf-cart"
+     ]
+    },
+    {
+     "kit": "wz-inf-splint",
+     "count": [
+      0,
+      2
+     ],
+     "near": [
+      "wz-inf-cart"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-night-healer",
+     "name": "야간 치료사",
+     "desc": "흰 앞치마·간호 모자에 등불을 든 병동 야간 치료사",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 4
+    },
+    {
+     "id": "wz-chr-bandaged-patient",
+     "name": "붕대 환자",
+     "desc": "머리와 팔에 붕대를 감은 줄무늬 잠옷 환자(빨간 슬리퍼)",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 5
+    }
+   ]
+  },
+  "honeydukes": {
+   "ko": "허니듀크 지하 창고",
+   "indoor": true,
+   "layout": "room",
+   "wall": "honeydukes",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     22,
+     16
+    ],
+    "max": [
+     36,
+     28
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "허니듀크 지하 창고",
+   "floor": {
+    "tile": "wz-hd-floor-sugar-a"
+   },
+   "furniture": [
+    {
+     "kit": "wz-hd-stairs-down",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-hd-shelf",
+     "placement": "north-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "wallTop": 2,
+     "wallMatch": "plain"
+    },
+    {
+     "kit": "wz-hd-workbench",
+     "placement": "center",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "wz-hd-jar-red",
+       "dx": 0,
+       "dy": 0
+      },
+      {
+       "kit": "wz-hd-box-frog",
+       "dx": 1,
+       "dy": 0
+      },
+      {
+       "kit": "wz-hd-scale",
+       "dx": 1,
+       "dy": 1
+      },
+      {
+       "kit": "wz-hd-jar-green",
+       "dx": 2,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "kit": "wz-hd-stack-2x2",
+     "placement": "corner",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-hd-stack-1x2",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-hd-stack-2x2"
+     ]
+    },
+    {
+     "kit": "wz-hd-tub",
+     "placement": "edge",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0
+    },
+    {
+     "kit": "wz-hd-box-beans",
+     "placement": "beside",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-hd-workbench"
+     ]
+    },
+    {
+     "kit": "wz-hd-jar-violet",
+     "placement": "beside",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-hd-shelf"
+     ]
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-hd-floor-packing",
+     "count": [
+      2,
+      3
+     ],
+     "near": [
+      "wz-hd-workbench"
+     ]
+    },
+    {
+     "kit": "wz-hd-paper-roll",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-hd-workbench"
+     ]
+    },
+    {
+     "kit": "wz-hd-twine-ball",
+     "count": [
+      0,
+      2
+     ],
+     "near": [
+      "wz-hd-workbench"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-honeydukes-packer",
+     "name": "허니듀크 포장 작업자",
+     "desc": "분홍 줄무늬 앞치마와 매듭 두건의 사탕 가게 포장 작업자",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 4
+    },
+    {
+     "id": "wz-cre-frog",
+     "name": "초콜릿 개구리",
+     "desc": "반질한 갈색 초콜릿 개구리. 프레임 0·2 는 도약, 1 은 웅크림.",
+     "textureKey": "tex_oprn_charset_wizarding5",
+     "resourceId": "oprn-charset-wizarding5",
+     "characterIndex": 2
+    }
+   ]
+  },
+  "carriage": {
+   "ko": "금지된 숲 세스트랄 마차 승차장",
+   "indoor": false,
+   "layout": "forest",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     30,
+     22
+    ],
+    "max": [
+     64,
+     48
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "s",
+     "kind": "double"
+    },
+    {
+     "side": "n",
+     "kind": "double"
+    }
+   ],
+   "spaceKo": "금지된 숲 세스트랄 마차 승차장",
+   "floor": {
+    "tile": "wz-nat-forest-floor-a"
+   },
+   "ground": {
+    "clearing": "wz-nat-dirt",
+    "band": 4,
+    "border": [
+     "wz-nat-conifer-large",
+     "wz-nat-conifer-small",
+     "wz-nat-broadleaf-old",
+     "wz-nat-twisted-old",
+     "wz-nat-conifer-small",
+     "wz-nat-bush-wide",
+     "wz-nat-rock-moss-big",
+     "wz-nat-bush"
+    ]
+   },
+   "furniture": [
+    {
+     "kit": "wz-car-carriage-down",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "with": [
+      {
+       "kit": "wz-car-harness-s",
+       "dx": 1,
+       "dy": 5
+      },
+      {
+       "kit": "wz-cre-thestral-harness",
+       "dx": 0,
+       "dy": 7
+      }
+     ]
+    },
+    {
+     "kit": "wz-car-carriage-right",
+     "placement": "free",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "wz-car-canopy",
+     "placement": "free",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1
+    },
+    {
+     "kit": "wz-car-lantern-post",
+     "placement": "beside",
+     "count": [
+      2,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-car-canopy"
+     ]
+    },
+    {
+     "kit": "wz-car-noticeboard",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-car-canopy"
+     ]
+    },
+    {
+     "kit": "wz-car-harness-hook",
+     "placement": "beside",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-car-noticeboard"
+     ]
+    },
+    {
+     "kit": "wz-car-trunk",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-car-carriage-down",
+      "wz-car-carriage-right"
+     ]
+    },
+    {
+     "kit": "wz-cre-thestral-down",
+     "placement": "free",
+     "count": [
+      0,
+      1
+     ],
+     "clearance": 1,
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-nat-fern-a",
+     "count": [
+      2,
+      5
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    },
+    {
+     "kit": "wz-nat-fern-b",
+     "count": [
+      1,
+      4
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    },
+    {
+     "kit": "wz-nat-mushrooms",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    },
+    {
+     "kit": "wz-nat-leaves-a",
+     "count": [
+      2,
+      5
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    },
+    {
+     "kit": "wz-nat-leaves-b",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    },
+    {
+     "kit": "wz-nat-grass-tuft",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-nat-conifer-large",
+      "wz-nat-conifer-small",
+      "wz-nat-broadleaf-old",
+      "wz-nat-twisted-old"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-carriage-guide",
+     "name": "마차 승차 안내인",
+     "desc": "제모·검은 코트·붉은 허리띠·등불.",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-travel-student",
+     "name": "여행 망토 학생",
+     "desc": "후드 달린 녹색 여행 망토·트렁크 손잡이.",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 1
+    }
+   ]
+  },
+  "quidditch": {
+   "ko": "퀴디치 경기장·선수 터널",
+   "indoor": false,
+   "layout": "room",
+   "wall": "pitch",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     32,
+     24
+    ],
+    "max": [
+     64,
+     48
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "n"
+    },
+    {
+     "side": "s",
+     "kind": "double"
+    }
+   ],
+   "spaceKo": "퀴디치 선수 터널·경기장",
+   "floor": {
+    "tile": "wz-qd-grass-a"
+   },
+   "furniture": [
+    {
+     "kit": "wz-qd-goal-kit",
+     "placement": "center",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "wz-qd-mark-circle",
+     "placement": "free",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "access": false
+    },
+    {
+     "kit": "wz-qd-locker-g",
+     "placement": "north-wall",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "wallTop": 4
+    },
+    {
+     "kit": "wz-qd-locker-s",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-qd-locker-g"
+     ]
+    },
+    {
+     "kit": "wz-qd-locker-r",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-qd-locker-s"
+     ]
+    },
+    {
+     "kit": "wz-qd-locker-h",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-qd-locker-r"
+     ]
+    },
+    {
+     "kit": "wz-qd-broom-rack",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-qd-locker-h",
+      "wz-qd-locker-r"
+     ]
+    },
+    {
+     "kit": "wz-qd-ball-crate-open",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-qd-broom-rack"
+     ]
+    },
+    {
+     "kit": "wz-qd-target",
+     "placement": "side-wall",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 1
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-qd-ball-quaffle",
+     "count": [
+      1,
+      1
+     ],
+     "near": [
+      "wz-qd-ball-crate-open"
+     ]
+    },
+    {
+     "kit": "wz-qd-ball-bludger",
+     "count": [
+      1,
+      2
+     ],
+     "near": [
+      "wz-qd-ball-crate-open"
+     ]
+    },
+    {
+     "kit": "wz-qd-broom-lying",
+     "count": [
+      1,
+      1
+     ],
+     "near": [
+      "wz-qd-broom-rack"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-professor",
+     "name": "교수",
+     "desc": "긴 보라 로브·뾰족 모자·흰 수염, 금 단추 줄.",
+     "textureKey": "tex_oprn_charset_wizarding2",
+     "resourceId": "oprn-charset-wizarding2",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-greenhouse-professor",
+     "name": "온실 담당 교수",
+     "desc": "흙 묻은 초록 망토와 챙 처진 낡은 모자의 약초학 교수",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 3
+    },
+    {
+     "id": "wz-chr-quidditch-gryffindor",
+     "name": "퀴디치 선수 (그리핀도르)",
+     "desc": "진홍 경기복에 금띠, 팔·무릎 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 6
+    },
+    {
+     "id": "wz-chr-quidditch-slytherin",
+     "name": "퀴디치 선수 (슬리데린)",
+     "desc": "녹색 경기복에 은띠, 이마 위 고글, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding3",
+     "resourceId": "oprn-charset-wizarding3",
+     "characterIndex": 7
+    },
+    {
+     "id": "wz-chr-quidditch-ravenclaw",
+     "name": "퀴디치 선수 (래번클로)",
+     "desc": "청색 경기복에 청동띠, 가죽 모자, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-quidditch-hufflepuff",
+     "name": "퀴디치 선수 (후플푸프)",
+     "desc": "노랑 경기복에 검은 띠, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 1
+    }
+   ]
+  },
+  "boathouse": {
+   "ko": "검은 호수 보트 창고",
+   "indoor": false,
+   "layout": "lake",
+   "size": {
+    "min": [
+     16,
+     12
+    ],
+    "default": [
+     30,
+     22
+    ],
+    "max": [
+     64,
+     48
+    ]
+   },
+   "defaultDoors": [
+    {
+     "side": "w"
+    },
+    {
+     "side": "s"
+    }
+   ],
+   "spaceKo": "검은 호수 보트 창고",
+   "floor": {
+    "tile": "wz-lake-pebble"
+   },
+   "ground": {
+    "shore": "wz-lake-shore-edge-n",
+    "shallow": "wz-lake-water-shallow",
+    "deep": "wz-lake-water-deep",
+    "boathouse": [
+     "wz-lake-boathouse",
+     "wz-lake-boathouse-5"
+    ],
+    "ramp": "wz-lake-ramp",
+    "dock": {
+     "v": "wz-lake-dock-v",
+     "end": "wz-lake-dock-end",
+     "band": "wz-lake-dock-band",
+     "piles": "wz-lake-dock-piles"
+    },
+    "landFrac": 0.42,
+    "docks": 2
+   },
+   "furniture": [
+    {
+     "kit": "wz-lake-lamp-post",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lake-dock-v"
+     ]
+    },
+    {
+     "kit": "wz-lake-bollard",
+     "placement": "beside",
+     "count": [
+      1,
+      3
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lake-dock-v"
+     ]
+    },
+    {
+     "kit": "wz-lake-ropehook",
+     "placement": "beside",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lake-boathouse",
+      "wz-lake-boathouse-5"
+     ]
+    },
+    {
+     "kit": "wz-furn-crate-a",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-lake-boathouse",
+      "wz-lake-boathouse-5"
+     ]
+    },
+    {
+     "kit": "wz-furn-barrel",
+     "placement": "beside",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 0,
+     "near": [
+      "wz-furn-crate-a"
+     ]
+    },
+    {
+     "kit": "wz-lake-boat-right",
+     "placement": "free",
+     "count": [
+      1,
+      1
+     ],
+     "clearance": 1,
+     "on": "water",
+     "access": false
+    },
+    {
+     "kit": "wz-lake-boat-up-oars",
+     "placement": "free",
+     "count": [
+      1,
+      2
+     ],
+     "clearance": 1,
+     "on": "water",
+     "access": false
+    },
+    {
+     "kit": "wz-nat-reeds-big",
+     "placement": "edge",
+     "count": [
+      0,
+      2
+     ],
+     "clearance": 0,
+     "on": "water",
+     "access": false
+    }
+   ],
+   "decals": [
+    {
+     "kit": "wz-lake-oar-crossed",
+     "count": [
+      0,
+      1
+     ],
+     "near": [
+      "wz-lake-boathouse",
+      "wz-lake-boathouse-5"
+     ]
+    },
+    {
+     "kit": "wz-lake-oar-single",
+     "count": [
+      1,
+      1
+     ],
+     "near": [
+      "wz-lake-boathouse",
+      "wz-lake-boathouse-5"
+     ]
+    },
+    {
+     "kit": "wz-lake-plank-wet",
+     "count": [
+      1,
+      3
+     ],
+     "near": [
+      "wz-lake-ramp",
+      "wz-lake-dock-v"
+     ]
+    }
+   ],
+   "npcs": [
+    {
+     "id": "wz-chr-elder-wandmaker",
+     "name": "노년 지팡이 장인",
+     "desc": "노년 지팡이 장인 — 데모에서 승인된 native 걷기 시트.",
+     "textureKey": "tex_oprn_charset_wizarding1",
+     "resourceId": "oprn-charset-wizarding1",
+     "characterIndex": 0
+    },
+    {
+     "id": "wz-chr-quidditch-hufflepuff",
+     "name": "퀴디치 선수 (후플푸프)",
+     "desc": "노랑 경기복에 검은 띠, 보호대, 등에 빗자루",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 1
+    },
+    {
+     "id": "wz-chr-boat-guide",
+     "name": "보트 안내인",
+     "desc": "덩치 큰 털 코트에 수염, 등불을 든 사냥터지기풍 보트 안내인",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 2
+    },
+    {
+     "id": "wz-chr-rowing-student",
+     "name": "노 젓는 학생",
+     "desc": "소매를 걷은 셔츠에 조끼, 노를 든 학생",
+     "textureKey": "tex_oprn_charset_wizarding4",
+     "resourceId": "oprn-charset-wizarding4",
+     "characterIndex": 3
+    }
+   ]
+  }
+ },
+ "pieces": {
+  "wz-car-canopy": {
+   "name": "목재 승차 차양",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-car-carriage-down": {
+   "name": "세스트랄 마차(아래 향함)",
+   "w": 3,
+   "h": 5,
+   "src": "kit"
+  },
+  "wz-car-carriage-right": {
+   "name": "세스트랄 마차(오른쪽 향함)",
+   "w": 5,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-car-harness-hook": {
+   "name": "마구 걸이",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-car-harness-s": {
+   "name": "견인봉·마구 연결부",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-car-lantern-post": {
+   "name": "걸이 등불 기둥",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-car-noticeboard": {
+   "name": "운행 게시판",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-car-trunk": {
+   "name": "짐 트렁크",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-castle-door-s": {
+   "name": "성채 남벽 출입구(문턱)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-door1-open": {
+   "name": "성채 1칸 오크 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-door2-open": {
+   "name": "성채 2칸 오크 문(열림)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-flag": {
+   "name": "성채 포석(오토타일)",
+   "w": 1,
+   "h": 1,
+   "src": "autotile"
+  },
+  "wz-castle-floor-flag": {
+   "name": "성채 포석 바닥",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-castle-floor-oak": {
+   "name": "성채 오크 마루",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-castle-rug-red": {
+   "name": "그리핀도르 붉은 깔개",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-runner-ew": {
+   "name": "기숙사 러너(동서)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-runner-n-end": {
+   "name": "기숙사 러너 북쪽 끝",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-castle-runner-ns": {
+   "name": "기숙사 러너(남북)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-castle-runner-s-end": {
+   "name": "기숙사 러너 남쪽 끝",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-castle-sconce": {
+   "name": "성채 황동 벽 촛대",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-castle-wall-e": {
+   "name": "성채 동벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-castle-wall-n": {
+   "name": "성채 북벽(직선)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-wall-n-pillar": {
+   "name": "성채 북벽 버트레스",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-wall-n-window": {
+   "name": "성채 북벽 납살 창",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-wall-ne": {
+   "name": "성채 북동 바깥 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-wall-nw": {
+   "name": "성채 북서 바깥 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-castle-wall-s": {
+   "name": "성채 남쪽 낮춘 벽",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-wall-s-window": {
+   "name": "성채 남벽 창",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-wall-se": {
+   "name": "성채 남동 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-wall-sw": {
+   "name": "성채 남서 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-castle-wall-w": {
+   "name": "성채 서벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-clock-dial-back": {
+   "name": "큰 시계 문자판 뒷면(4×4)",
+   "w": 4,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-clock-door-open": {
+   "name": "시계탑 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-clock-floor-plate": {
+   "name": "리벳 철판 통로(1×1)",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-clock-gear-l-spin": {
+   "name": "큰 톱니(회전)",
+   "w": 4,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-clock-gear-m-spin": {
+   "name": "중간 톱니(회전)",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-clock-gear-s-spin": {
+   "name": "작은 톱니(회전)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-clock-grate": {
+   "name": "금속 발판 바닥(1×1)",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-clock-oil-a": {
+   "name": "기름 얼룩(웅덩이)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-clock-oil-b": {
+   "name": "기름 얼룩(흘린 줄기)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-clock-oilcan": {
+   "name": "윤활통(1×1)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-clock-stair": {
+   "name": "정비 계단(2×2)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-clock-stool": {
+   "name": "작업 발판(1×1)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-clock-toolchest": {
+   "name": "정비 공구 상자(1×1)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-clock-toolrack": {
+   "name": "공구 걸이판(1×2)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-clock-wall-gear": {
+   "name": "기어 개방벽(2×4)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-cre-thestral-down": {
+   "name": "세스트랄 서 있음 (아래)",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-cre-thestral-harness": {
+   "name": "세스트랄 마구 착용",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-furn-banner-badger": {
+   "name": "기숙사 깃발 후플푸프(황+흑, 오소리)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-banner-eagle": {
+   "name": "기숙사 깃발 래번클로(청+청동, 독수리)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-banner-lion": {
+   "name": "기숙사 깃발 그리핀도르(붉은+금, 사자)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-banner-snake": {
+   "name": "기숙사 깃발 슬리데린(녹+은, 뱀)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-barrel": {
+   "name": "나무 통",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-bench-long": {
+   "name": "긴 오크 작업대",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-bench-seat": {
+   "name": "긴 의자 벤치",
+   "w": 3,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-bookshelf": {
+   "name": "높은 서가",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-furn-bookshelf-low": {
+   "name": "낮은 서가",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-cabinet-closed": {
+   "name": "오크 수납장(닫힘)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-candlestick": {
+   "name": "황동 촛대",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-chair-back-left": {
+   "name": "오크 의자(등받이 왼쪽)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-chair-back-right": {
+   "name": "오크 의자(등받이 오른쪽)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-crate-a": {
+   "name": "나무 상자(버팀)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-crate-stack": {
+   "name": "쌓인 상자",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-furn-curtain-open": {
+   "name": "붉은 커튼(열림)",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-furn-fireplace": {
+   "name": "돌 벽난로",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-furn-lantern-hanging": {
+   "name": "걸이 등불",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-prop-book-open": {
+   "name": "펼친 책",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-prop-bottles": {
+   "name": "유리병 묶음",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-prop-inkwell": {
+   "name": "잉크병",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-furn-table-small": {
+   "name": "작은 오크 탁자",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-corner-ne": {
+   "name": "온실 북동 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-corner-nw": {
+   "name": "온실 북서 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-corner-se": {
+   "name": "온실 남동 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-corner-sw": {
+   "name": "온실 남서 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-door-open": {
+   "name": "온실 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-earmuff-basket": {
+   "name": "귀마개 바구니",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-earmuff-rack": {
+   "name": "귀마개 걸이",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-mandrake-pot": {
+   "name": "맨드레이크 (화분 속)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-mandrake-pulled-f": {
+   "name": "맨드레이크 (뽑힘, 덧그림)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-pot-empty": {
+   "name": "빈 화분",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-pot-full": {
+   "name": "찬 화분",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-pot-row": {
+   "name": "맨드레이크 화분 줄",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-purplethorn": {
+   "name": "보라 가시",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-roof": {
+   "name": "온실 유리 지붕 행",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-shovel": {
+   "name": "삽",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-side-e": {
+   "name": "온실 동쪽 옆벽",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-gh-side-w": {
+   "name": "온실 서쪽 옆벽",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-gh-soil-a": {
+   "name": "흩어진 분갈이 흙 A",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-soil-b": {
+   "name": "흩어진 분갈이 흙 B",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-soilbox": {
+   "name": "흙 상자",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-tentaclevine": {
+   "name": "촉수 덩굴",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-toothflower": {
+   "name": "이빨 꽃",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-vent-closed": {
+   "name": "온실 환기창(닫힘)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-vine-bush": {
+   "name": "덩굴 덤불",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-vine-wall": {
+   "name": "벽 타는 덩굴",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-gh-wall-n": {
+   "name": "온실 북벽(철틀 유리벽)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-gh-wall-s": {
+   "name": "온실 남쪽 낮은 벽",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-gh-water-a": {
+   "name": "흘린 물 A",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-watercan": {
+   "name": "물뿌리개",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-gh-workbench": {
+   "name": "분갈이 작업대",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-hd-box-beans": {
+   "name": "백미향 젤리빈 상자",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-box-frog": {
+   "name": "초콜릿 개구리 상자",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-floor-packing": {
+   "name": "포장 작업 바닥(끈·종이 조각)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-floor-sugar-a": {
+   "name": "설탕 판재 바닥 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-hd-jar-green": {
+   "name": "사탕 항아리(초록)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-jar-red": {
+   "name": "사탕 항아리(빨강)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-jar-violet": {
+   "name": "사탕 항아리(보라)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-panel-open": {
+   "name": "비밀 패널(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-hd-paper-roll": {
+   "name": "포장지 두루마리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-scale": {
+   "name": "놋쇠 저울",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-shelf": {
+   "name": "과자 상자 선반",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-hd-stack-1x2": {
+   "name": "완성 과자 상자 적치(1×2)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-hd-stack-2x2": {
+   "name": "완성 과자 상자 적치(2×2)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-hd-stairs-down": {
+   "name": "창고 내려오는 나무 계단",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-hd-tub": {
+   "name": "술통형 사탕 통",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-twine-ball": {
+   "name": "끈 뭉치",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-hd-wall-n": {
+   "name": "지하 창고 북벽(오크 보)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-hd-workbench": {
+   "name": "과자 포장 작업대",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-bandage": {
+   "name": "붕대 두루마리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-basin": {
+   "name": "물 대야",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-bed-empty": {
+   "name": "병상(빈 침대)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-inf-bed-patient": {
+   "name": "병상(환자)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-inf-bed-shadow": {
+   "name": "병상 아래 그림자",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-inf-candle": {
+   "name": "야간 촛대",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-cart": {
+   "name": "치료 카트",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-chart": {
+   "name": "환자 기록판",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-curtain-closed": {
+   "name": "침상 커튼(닫힘)",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-inf-door-open": {
+   "name": "병동 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-screen": {
+   "name": "응급 처치 칸막이",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-shelf": {
+   "name": "약병 진열 선반",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-splint": {
+   "name": "부목",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-table": {
+   "name": "침대 옆 탁자",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-inf-wall-e": {
+   "name": "병동 동벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-inf-wall-n": {
+   "name": "병동 북벽(석회색)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-wall-n-window": {
+   "name": "병동 높은 아치 창(1칸)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-wall-n-window-big": {
+   "name": "병동 큰 아치 창(2칸)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-wall-ne": {
+   "name": "병동 북동 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-wall-nw": {
+   "name": "병동 북서 모서리",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-inf-wall-s": {
+   "name": "병동 남쪽 낮춘 벽",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-wall-se": {
+   "name": "병동 남동 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-wall-sw": {
+   "name": "병동 남서 모서리",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-inf-wall-w": {
+   "name": "병동 서벽 윗면 띠",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-lake-boat-right": {
+   "name": "학생 보트(오른쪽, 빈 보트)",
+   "w": 4,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-lake-boat-up-oars": {
+   "name": "학생 보트(위, 노 걸침)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-lake-boathouse": {
+   "name": "목재 보트 창고(폭 7, 완성형)",
+   "w": 7,
+   "h": 5,
+   "src": "kit"
+  },
+  "wz-lake-boathouse-5": {
+   "name": "목재 보트 창고(폭 5, 소형)",
+   "w": 5,
+   "h": 5,
+   "src": "kit"
+  },
+  "wz-lake-bollard": {
+   "name": "계선주(밧줄 감김)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-dock-band": {
+   "name": "부두 단차 띠(갑판 옆면)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-dock-end": {
+   "name": "부두 끝(마구리 판)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-dock-piles": {
+   "name": "부두 말뚝 띠",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-dock-v": {
+   "name": "부두 갑판(세로 판자)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-lamp-post": {
+   "name": "안전 등불 기둥",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-lake-oar-crossed": {
+   "name": "노(교차 두 자루)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-lake-oar-single": {
+   "name": "노(한 자루)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-pebble": {
+   "name": "호숫가 자갈 땅",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-plank-wet": {
+   "name": "젖은 판자 바닥",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-ramp": {
+   "name": "진수대(젖은 판자 경사)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-lake-ropehook": {
+   "name": "밧줄 걸이(밧줄 꾸러미)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-shore-edge-n": {
+   "name": "호수 물가 북쪽 줄",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-water-deep": {
+   "name": "검은 호수 깊은 물",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lake-water-shallow": {
+   "name": "호수 얕은 물",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-lib-arch": {
+   "name": "성채 도서관 아치(열린)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-lib-ladder": {
+   "name": "서가 사다리",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-lib-lectern": {
+   "name": "검사 열람대",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-lib-record-table": {
+   "name": "양피지 기록 탁자",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-lib-shelf-chain-2x3": {
+   "name": "쇠사슬 서가 2×3",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-lib-shelf-chain-3x3": {
+   "name": "쇠사슬 서가 3×3",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-lib-shelf-plain-2x3": {
+   "name": "일반 서가 2×3",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-nat-broadleaf-old": {
+   "name": "넓은 잎 고목",
+   "w": 4,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-nat-bush": {
+   "name": "덤불",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-bush-wide": {
+   "name": "넓은 덤불",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-conifer-large": {
+   "name": "큰 침엽수",
+   "w": 3,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-nat-conifer-small": {
+   "name": "작은 침엽수",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-nat-dirt": {
+   "name": "숲길 흙",
+   "w": 1,
+   "h": 1,
+   "src": "autotile"
+  },
+  "wz-nat-fern-a": {
+   "name": "양치 A",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-fern-b": {
+   "name": "양치 B",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-forest-floor-a": {
+   "name": "이끼 숲 바닥 A",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-nat-grass-tuft": {
+   "name": "관리된 잔디 덩어리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-leaves-a": {
+   "name": "낙엽 A",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-leaves-b": {
+   "name": "낙엽 B",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-mushrooms": {
+   "name": "버섯 무리",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nat-reeds-big": {
+   "name": "큰 갈대 군락",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nat-rock-moss-big": {
+   "name": "큰 이끼 바위",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nat-twisted-old": {
+   "name": "금지된 숲 뒤틀린 고목",
+   "w": 4,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-nv-pot-ingredient-storage-drawers": {
+   "name": "ingredient-storage · 재료 서랍장",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nv-pot-ingredient-storage-dried-herbs": {
+   "name": "ingredient-storage · 말린 약초 장",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nv-pot-teaching-kit-blackboard": {
+   "name": "teaching-kit · 칠판",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-nv-wand-stock-ladder-ladder": {
+   "name": "stock-ladder · 재고 사다리",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-nv-wand-wand-testing-table-height16-table": {
+   "name": "wand-testing-table-height16 · 교탁",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nv-wand-wandtrial-shelves-east-run": {
+   "name": "wandtrial-shelves · east-run",
+   "w": 1,
+   "h": 7,
+   "src": "kit"
+  },
+  "wz-nv-wand-wandtrial-shelves-west-run": {
+   "name": "wandtrial-shelves · west-run",
+   "w": 1,
+   "h": 7,
+   "src": "kit"
+  },
+  "wz-nv-wand-wandtrial-target-target": {
+   "name": "wandtrial-target · 지팡이 시험 표적",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-nv-wand-wood-service-counter-counter": {
+   "name": "wood-service-counter · 오크 카운터",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-owl-door-open": {
+   "name": "탑 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-owl-droppings": {
+   "name": "새똥 얼룩",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-feathers": {
+   "name": "떨어진 깃털",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-letters": {
+   "name": "봉인된 편지 더미",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-mail-sack": {
+   "name": "우편 자루",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-mailbox": {
+   "name": "우편 분류함(2×2)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-owl-pellets": {
+   "name": "올빼미 펠릿과 깃털",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-perch-1x3": {
+   "name": "올빼미 횃대(1×3)",
+   "w": 1,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-owl-perch-2x3": {
+   "name": "올빼미 횃대(2×3)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-owl-stair-up": {
+   "name": "탑 계단(위, 정면)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-owl-straw": {
+   "name": "짚 더미",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-wall-e": {
+   "name": "탑 벽 동(E)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-wall-n": {
+   "name": "탑 벽 북(N)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-owl-wall-n-beam": {
+   "name": "탑 안쪽 마감(오크 보)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-owl-wall-n-stained": {
+   "name": "탑 벽 북(새똥 얼룩)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-owl-wall-s": {
+   "name": "탑 벽 남(S, 낮게 잘린 면)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-owl-wall-w": {
+   "name": "탑 벽 서(W)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-water-dish": {
+   "name": "올빼미 물그릇",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-owl-window": {
+   "name": "깊은 비행 창(짚 깔림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-owl-window-bare": {
+   "name": "깊은 비행 창(빈 문턱)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-post-counter": {
+   "name": "우체국 카운터",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-post-floor": {
+   "name": "우체국 판자 바닥",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-post-ibeam": {
+   "name": "목재 기둥 벽(1x1)",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-post-iwall": {
+   "name": "우체국 목재 뒷벽(1x4)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-post-iwall-win": {
+   "name": "목재 벽 격자창(1x2)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-post-letters": {
+   "name": "밀봉 편지 더미",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-post-parcel": {
+   "name": "소포 더미",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-post-parcels": {
+   "name": "소포 무더기",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-post-perch": {
+   "name": "부엉이 횃대",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-post-sack": {
+   "name": "배달 자루 걸이",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-post-sort": {
+   "name": "편지 분류 선반",
+   "w": 3,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-post-wainscot": {
+   "name": "우체국 징두리 벽(1x1)",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-pot-basin": {
+   "name": "세척 수조(돌 2×2)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-pot-cauldron-bench-green": {
+   "name": "가열 가마솥 작업대(녹색 약)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-pot-cauldron-bench-violet": {
+   "name": "가열 가마솥 작업대(보라 약)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-pot-door-open": {
+   "name": "약실 연결문(열림)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-pot-herb-hanger": {
+   "name": "말린 약초 다발 걸이(벽 1×2)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-pot-hood": {
+   "name": "구리 배기 후드(2×3)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-pot-knife-board": {
+   "name": "칼과 도마(탁상)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-pot-mortar": {
+   "name": "절구와 공이(탁상)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-pot-prep-bench": {
+   "name": "재료 준비대(2×2)",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-pot-root-basket": {
+   "name": "생재료 뿌리 바구니",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-pot-shelf": {
+   "name": "재료 병 진열대(2×3)",
+   "w": 2,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-pot-stain-green": {
+   "name": "시약 자국(녹)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-pot-stain-violet": {
+   "name": "시약 자국(보라)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-pot-vault-arch-pillar": {
+   "name": "지하 볼트 벽 기둥 아치(1×4)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-pot-wall-lamp": {
+   "name": "벽 황동 램프(정적)",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-qd-ball-bludger": {
+   "name": "블러저",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-qd-ball-crate-open": {
+   "name": "볼 수납 상자(열림)",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-qd-ball-quaffle": {
+   "name": "퀘이플",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-qd-broom-lying": {
+   "name": "눕혀 둔 빗자루 2×1",
+   "w": 2,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-qd-broom-rack": {
+   "name": "빗자루 랙 2×2",
+   "w": 2,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-door-open": {
+   "name": "선수 팀 문(열림·공용)",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-qd-fence-corner-se": {
+   "name": "경기장 울타리 모서리(남동)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-corner-sw": {
+   "name": "경기장 울타리 모서리(남서)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-g": {
+   "name": "경기장 판자 울타리(붉은 사자 기숙사 천 띠)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-h": {
+   "name": "경기장 판자 울타리(노란 오소리 기숙사 천 띠)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-r": {
+   "name": "경기장 판자 울타리(푸른 독수리 기숙사 천 띠)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-s": {
+   "name": "경기장 판자 울타리(초록 뱀 기숙사 천 띠)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-fence-v": {
+   "name": "경기장 울타리(세로)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-flag": {
+   "name": "터널 포석",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-qd-goal-kit": {
+   "name": "링 골대 세 개 묶음 6×8",
+   "w": 6,
+   "h": 8,
+   "src": "kit"
+  },
+  "wz-qd-grass-a": {
+   "name": "관리 잔디(가로 줄무늬)",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-qd-locker-g": {
+   "name": "선수 사물함(붉은 사자 기숙사 색)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-locker-h": {
+   "name": "선수 사물함(노란 오소리 기숙사 색)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-locker-r": {
+   "name": "선수 사물함(푸른 독수리 기숙사 색)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-locker-s": {
+   "name": "선수 사물함(초록 뱀 기숙사 색)",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-mark-circle": {
+   "name": "훈련 표식(원)",
+   "w": 3,
+   "h": 3,
+   "src": "kit"
+  },
+  "wz-qd-target": {
+   "name": "훈련 표적 1×2",
+   "w": 1,
+   "h": 2,
+   "src": "kit"
+  },
+  "wz-qd-tunnel-arch": {
+   "name": "선수 터널 석조 아치 3×4",
+   "w": 3,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-qd-tunnel-wall4": {
+   "name": "터널 벽 1×4",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-wand-box-wall": {
+   "name": "지팡이 상자 벽",
+   "w": 2,
+   "h": 4,
+   "src": "kit"
+  },
+  "wz-wand-display-1": {
+   "name": "지팡이 진열 나선 장미목 손잡이",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-wand-floor-oak": {
+   "name": "오크 시험 바닥",
+   "w": 1,
+   "h": 1,
+   "src": "tile"
+  },
+  "wz-wand-scorch-1": {
+   "name": "그을린 시험 바닥 큰 번짐",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-wand-scorch-2": {
+   "name": "그을린 시험 바닥 방사 그을음",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-wand-tape": {
+   "name": "황동 줄자",
+   "w": 1,
+   "h": 1,
+   "src": "kit"
+  },
+  "wz-wand-testdoor-open": {
+   "name": "시험실 문(열림)",
+   "w": 1,
+   "h": 4,
+   "src": "kit"
+  }
+ },
+ "skipped": []
+}

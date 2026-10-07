@@ -17,6 +17,8 @@
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 | `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
+| `beodeul-architecture` | 버들항 건물 · 원본 보존 | 장르 무관 | `harness-data/beodeul-architecture/seed.json` | `openwiki/harnesses/beodeul-architecture.md` |
+| `beodeul-building-review` | 버들항 건물 · 사람의 허용/거절 | 장르 무관 | `harness-data/beodeul-building-review/seed.json` | `openwiki/harnesses/beodeul-building-review.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -268,5 +270,40 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `review` — 시각 검수: 실제로 열어 본 그림의 해시에 묶어 독립 검수 결과를 기록한다.
 - `report` — 결과 집계: 미검증·실패·환경 차단을 숨기지 않고 JSON·HTML·Markdown으로 집계한다.
 - `aggregate` — 여러 실행 집계: 각 기능의 최초 실제 모델 시도를 선택하고 입력 전 기동 장애와 모든 시도를 별도 보존한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## beodeul-architecture — 버들항 건물 · 원본 보존
+
+버들항 원본 보존 보정과 별도 건축 구조 여섯 계열. 원본 지붕·윤곽/수정 마스크, 신규 구조 전체 시트 재조립·source 해시·한 입구·기초를 확인한다. 기계 검사만으로 시각 합격을 선언하지 않는다.
+
+**이럴 때 쓴다:**
+- 버들항(beodeul_city) 민가·교회를 새로 그리거나 창문·문·벽 재질·기초를 바꿀 때
+- 버들항 건물이 정면 입면으로 읽힌다는 지적이 있을 때
+
+**단계** (`npm run harness -- beodeul-architecture <단계>`):
+- `build` — 손 도트 시트: 기존 민가5종/교회를 국소 보정하고 별도 시트에 폭·높이·용마루·별채가 다른 여섯 구조를 원본 1:1 도트로 조립한다. 프로젝트 저장은 별도다.
+- `validate` — 면과 픽셀 대조: 원본 지붕·알파·박공 수정 영역, 신규 여섯 구조의 source 해시·문 메타·시트 전체 배열을 대조한다. 시각 판정은 별도다.
+- `review` — 시점 검수 그림: 기존 원본/보정/변경 픽셀과 여섯 구조를 정확한 3배로 출력한다. 실제 도안과 마을을 열어 시점을 확인한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## beodeul-building-review — 버들항 건물 · 사람의 허용/거절
+
+원본 도트 부품·명시한 지붕 색상표·간판 격자로 후보를 저작하고 독립적인 적대적 이미지 검사 두 단계를 통과한 것만 사람이 허용/거절한다. 판단은 그림 해시에 묶이며 재저작하면 미선택으로 돌아간다. 선택 전에는 게임 번들·맵에 설치하지 않는다.
+
+**이럴 때 쓴다:**
+- 버들항 건물 후보를 새 지붕·창문·벽 재질로 만들고 사람이 하나씩 고를 때
+
+**단계** (`npm run harness -- beodeul-building-review <단계>`):
+- `build` — 비공개 초안 굽기: 원본 도트 부품을 1:1로 조립한다. 초안은 검수 화면에 공개하지 않는다.
+- `validate` — 파일 계약 확인: 전체 초안 존재·크기·해시·원본 픽셀 일치를 확인한다. 문 개수의 시각 판정은 gate 단계에서 한다.
+- `gate` — 적대적 Visual QA: 독립적인 질감·구조 이미지 검사와 숨긴 반려 표본 검사를 수행한다. 누락·실패·낡은 결과는 공개를 차단한다.
+- `publish` — 검증 통과 후보 공개: 모든 후보의 현재 그림과 시드·검사 규칙이 일치하는 서명된 통과 증거가 있어야 공개한다. 사람의 허용은 별도다.
+- `produce` — 후보 생성·검증·공개: 활성 시드 전체에 build → validate → gate → publish를 직렬로 수행한다. 실패하면 공개하지 않는다.
+- `serve` — 허용/거절 화면: 큰 카드 갤러리·검색/필터·고정 메모/결정 패널·집중 보기·원본 비교로 검수하며 메모만 저장도 제공한다.
+- `repair` — 메모대로 고쳐 다시 올리기: 검수 화면의 「메모대로 고쳐 다시 올리기」 요청을 받는 별도 서비스(:18322). 거절 메모를 작업자(codex)에게 주어 원본 부품으로 다시 그리고, 같은 build→validate→gate→publish를 거친다. 실패하면 시드를 원래 바이트로 되돌린다.
+- `status` — 현재 선택: 현재 그림 해시와 일치하는 허용/거절/미선택을 보여 준다.
+- `export` — 허용한 것만 내보내기: 사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다. 공용 설치·정본 지도 적용은 별도 단계다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

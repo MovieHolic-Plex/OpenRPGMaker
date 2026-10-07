@@ -21,6 +21,12 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
 
+- **버들항 새 건물 후보를 사람이 하나씩 허용/거절할 때** → `beodeul-building-review` · 시드 `harness-data/beodeul-building-review/seed.json` · `npm run harness -- beodeul-building-review produce|build|validate|gate|publish|serve|status|export` · 문서 `openwiki/harnesses/beodeul-building-review.md`. 사용자가 새 지붕·창문·벽 질감 저작을 명시 허용한 후보 경로다. 원본 도트 질감을 보존하고, 독립적인 질감·구조 Visual QA와 숨긴 반려 표본 검사를 모두 통과한 후보만 공개한다. build는 비공개 초안이다. 검사 생략·강제 PASS·점수 완화 금지. 사람이 현재 그림 해시에 대해 허용하기 전에는 번들·지도에 설치하지 않는다. 이전 form-wing/inn/smithy/warehouse는 사용자 반려이며 기준작으로 쓰지 않는다. 기존 원본 보존 보정은 아래 beodeul-architecture 경로를 따른다.
+
+**버들항 건물 보정:** 기존 지붕·윤곽·도트 질감을 보존한다. 3/4 탑뷰는 원본 지붕 윗면으로 충분하며 측면은 필수 조건이 아니다. 창문·중복 문·벽색·기초만 국소 보정한다. 다른 칩셋과 월드맵 아이콘은 각 전용 시점 계약을 따른다.
+
+- **버들항 민가·교회 그림/창문·문·벽 재질·기초를 저작할 때** → `beodeul-architecture` · 시드 `harness-data/beodeul-architecture/seed.json` · `npm run harness -- beodeul-architecture build|validate|review` · 문서 `openwiki/harnesses/beodeul-architecture.md`. 원본과 보정본의 지붕·투명 윤곽·수정 영역을 대조하고 검수 그림을 연다. 기계 통과를 시각 합격으로 대신하지 않는다.
+
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 
@@ -84,6 +90,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
+   - 마법 학교(해리포터풍) 번들 wizarding_world · 성채 공용 벽·바닥·문과 12공간 기물·학생/교수/생물 걷기 칩(Wizarding 시트)·마법 효과를 코드 손 도트 조각 모듈로 그려 **독립 검수 PASS·해시 일치분만** 굽는다 (계약 `scripts/content/wizarding/CONTRACT.md`, 굽기 4단계, 얇은 재검수 `recheck_sheet.py`, 장소 예제): `openwiki/wizarding-world.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`

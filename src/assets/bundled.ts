@@ -12,9 +12,14 @@ import forestHarmonyTreeShadows from "./forestHarmonyTreeShadows.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
+import beodeulGroundCatalog from './beodeulGroundCatalog.json';
+import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
+import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
+import beodeulFormsCatalog from './beodeulFormsCatalog.json';
 import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
+import wizardingWorldSheet from "./wizardingWorldSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
@@ -171,6 +176,11 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
+  {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
+  {textureKey:"tex_beodeul_door",path:"assets/beodeul-door/door-states.png",name:"버들항 · 문 열림 손 도트 시안"},
+  {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
+  {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
+  {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:"tex_shared_forest_village_objects",path:"assets/shared-village/objects.png",name:"숲마을 · 선별 소품 19종"},
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
   {textureKey:"tex_forest_harmony_grass_joins",path:"assets/forest-harmony/grass-joins.png",name:"숲마을 · 잔디 사선 경계"},
@@ -204,6 +214,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 일본 도시(2026-10) — modern3 팔레트 손 도트 상가·주택·역·신사를 48열 16px 칸으로 구운 시트. modern_city 와 별개 번들이다. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/jp-city/bake_jp.py, 정의는 project/defaults/jpCity.ts, openwiki/jp-city.md.
   {textureKey:"tex_jp_city",path:"assets/jp-city/jp-city-chipset.png",name:"일본 도시 · 상가·주택·역·신사 (도트)"},
+  // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
+  {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
@@ -246,6 +259,11 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
 export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_atlas_cartography") return 136;
+  if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
+  if (key === "tex_beodeul_door") return 16;
+  if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
+  if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
+  if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;
@@ -267,6 +285,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
+  if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;

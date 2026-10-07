@@ -1,0 +1,21 @@
+{
+  "isolatedOnly": true,
+  "draftsInvisible": true,
+  "missingReceiptBlocksPublication": true,
+  "pollingRevealsPassedCandidates": true,
+  "corruptPngBlocksStateImageDecisionExportAndPublish": true,
+  "tamperedReceiptBlocksState": true,
+  "corruptSceneAndPixelGridBlockState": true,
+  "allowPersistedAfterReload": true,
+  "denyPersistedAfterReload": true,
+  "undoPersisted": true,
+  "exportOnlyAllowed": true,
+  "staleHashRejected": true,
+  "missingTokenRejected": true,
+  "actualQueue": {
+    "allow": 0,
+    "deny": 0,
+    "pending": 10
+  },
+  "pageErrors": []
+}

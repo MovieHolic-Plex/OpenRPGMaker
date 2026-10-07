@@ -1,0 +1,159 @@
+{
+ "module": "effects",
+ "sealed": "2026-10-07T08:53:49.236275+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-fx-candle-flame": {
+   "verdict": "PASS",
+   "hash": "d32f2a7146e5de61cacb9ffef5001bd2de7a1e7987571a4c92ef6b4e401e84cb",
+   "reason": "4프레임 모두 불꽃 모양(곧음·꺾임·갈라짐)이 바뀌고 1배로 촛불로 읽힘. 윤곽 없이 3단 주황·노랑, 빛 표현 적절. walk C 적합."
+  },
+  "wz-fx-fireplace": {
+   "verdict": "PASS",
+   "hash": "ca50cc99bc3ca5b6ae2d799d49655252356356b5e39c6d41221c3b46a8c62bee",
+   "reason": "3x2 불길 6프레임, 불꽃 혀 개수·높이와 불똥이 프레임마다 달라짐. 3단 명암(자주·주황·노랑) 화풍 일치, 1배로 활활 타는 불로 읽힘."
+  },
+  "wz-fx-dust-motes": {
+   "verdict": "PASS",
+   "hash": "795e9afd0d78dabb8a96b726f18d2646544de18c2a0087a6aadba6e196fa1c5c",
+   "reason": "성긴 먼지 알갱이가 프레임마다 위치·밝기가 바뀜. 면적 작고 1배로 먼지로 읽힘."
+  },
+  "wz-fx-wand-glow": {
+   "verdict": "PASS",
+   "hash": "3dccbc3c2f90d3a54a2fc30a0a190115d1a7acbbb617b6a017f90f923c859e4c",
+   "reason": "점→십자→별→희미한 별로 모양 변화 확실, 청록 마법색 규정 준수."
+  },
+  "wz-fx-owl-feather": {
+   "verdict": "PASS",
+   "hash": "b62748c8283915f628b41a02e2f3f8a9682aa82c96ed702f2787536237e2d796",
+   "reason": "깃털이 서서→기울어→바닥에 눕는 4단, 1배로 깃털로 읽힘, 모양 변화 뚜렷."
+  },
+  "wz-fx-seal-afterglow": {
+   "verdict": "PASS",
+   "hash": "af3c4475bbe7f99f22bb9e0357eee4857e9aea0d9779e14560a749e201300f4e",
+   "reason": "붉은 봉인 구와 불똥이 프레임마다 줄어드는 잔광. 모양(불똥 개수·크기)이 바뀌어 합격. 읽힘은 다소 약하나 용도상 충분."
+  },
+  "wz-fx-cauldron-violet": {
+   "verdict": "PASS",
+   "hash": "2320618e551c3a94da1d6f3e94af2fd763d9d0e104bc562435288015789af9f2",
+   "reason": "Re-review: over the native cauldron first cell (16x16) all 6 frames read as bubbling violet potion: ring bubbles rise and burst at the rim, steam wisps curl upward with a different silhouette each frame, light from upper left kept, walk C (upper layer). Loop 5->0 does not jump."
+  },
+  "wz-fx-cauldron-green": {
+   "verdict": "PASS",
+   "hash": "e74324edf95670a2c9cb6db94e70d0010d855fe52b9babd62c76d8ae6cc79608",
+   "reason": "Re-review: over the native cauldron first cell all 6 frames show green bubbles (ring then pop) and steam wisps with distinct shapes per frame, readable at 1x with the pale-mint highlight; same layout as violet, walk C, loop clean."
+  },
+  "wz-fx-potion-reaction": {
+   "verdict": "PASS",
+   "hash": "2a0c428382030e76290c4279507481fa49e0e3e5cf51945457122d09fc161f12",
+   "reason": "Re-review: frames 0-2 are a growing teal spark/flash with halo, frames 3-5 turn into a pale smoke puff that spreads and breaks into dither; each frame changes shape (not only scale) and the smoke now reads as a cloud, not a rock. Walk C."
+  },
+  "wz-fx-gear-oil-glint": {
+   "verdict": "PASS",
+   "hash": "a8aa84befb58922bb7bdfe84979e9a75345fc54845f2cd1451eb5a78ba5d785e",
+   "reason": "황금 반짝이 십자·점 크기와 위치가 프레임마다 바뀜, 1배로 반짝임으로 읽힘."
+  },
+  "wz-fx-snow-fine": {
+   "verdict": "PASS",
+   "hash": "1f977d51f6fd9ecc9620e83d47dd6a1d41fbc10ec269c2193cbe17d1b250c1bb",
+   "reason": "가는 눈발 알갱이가 프레임마다 다른 배치, 일부 십자 모양 혼합. 반복 위층으로 1배로 눈으로 읽힘."
+  },
+  "wz-fx-snow-shake": {
+   "verdict": "PASS",
+   "hash": "5eb8349dbdfdcf31f4a5f4fd96d5f4a56ef787f0207d0887da5d26742f3f25ba",
+   "reason": "눈 덩이→흩날림→성긴 가루→바닥에 쌓인 눈 4단, 모양 변화 확실하고 읽힘."
+  },
+  "wz-fx-wand-test": {
+   "verdict": "PASS",
+   "hash": "90a649bf12531aa42737fa5cbc4553257a36b14cc6474dc858d6fd314b1886a1",
+   "reason": "2x1 8프레임: 청록 빛줄기 확장→끝에 불꽃→불꽃 가라앉아 불씨·연기로 소멸. 단계별 모양이 실제로 바뀌고 읽힘. 불꽃이 칸 안에서 윤곽 3단 화풍과 일치."
+  },
+  "wz-fx-book-tremble": {
+   "verdict": "PASS",
+   "hash": "d682ba520a083b1f600b1813d9a01ceccd522f58cc3e0213da1301a6c46c4f14",
+   "reason": "잠금 책이 기울고 비틀리며 흔들림 6프레임, 모양이 매 프레임 달라짐. 책 형태·자물쇠 읽힘. 루프 시작·끝 프레임 같아 튀지 않음."
+  },
+  "wz-fx-page-wind": {
+   "verdict": "PASS",
+   "hash": "d9060e6e2ea39ea2bc2089eb22de7f72e01eb9bc416c54aee9f4ddae58543c69",
+   "reason": "펼친 책 위 페이지가 말려 올라갔다 넘어가는 6프레임, 모양 변화 확실. 책상·책 3단 명암 화풍 일치."
+  },
+  "wz-fx-chain-tension": {
+   "verdict": "PASS",
+   "hash": "0bf8b78f30935fe845701b97d3384c1ec16248be1ddfa3e7c17432ae0661347b",
+   "reason": "Re-review: light steel-grey chain links with darker underside now read as a chain; across 6 frames the links shift between slack zigzag and taut line with a spark pair at the peak frames, so the shape really changes. Walk C, loop 5->0 acceptable."
+  },
+  "wz-fx-forest-fog": {
+   "verdict": "PASS",
+   "hash": "c604e57798bc4a2c15735ce4956adfca32ac7a9e044e5a01517323bcad14fdf2",
+   "reason": "Re-review: 2x1 ground overlay of low-contrast blue-grey dither patches; the 4 frames have different patch shapes and positions (drifting banks, not a pure shift), reads as thin mist at 1x and not as noise or dark dashes. Walk ff (under people)."
+  },
+  "wz-fx-wheel-dust": {
+   "verdict": "PASS",
+   "hash": "e93dc09a7d1eb2ae43ac1173963fd9f92bf62164816fbe44a61992379881d246",
+   "reason": "흙먼지 덩이→번짐→풀어짐→알갱이 4단, 갈색 3단 명암, 1배로 먼지로 읽힘."
+  },
+  "wz-fx-mandrake-scream": {
+   "verdict": "PASS",
+   "hash": "4a2e4fc7d3d8b4bf96b350f120bdb12e87a692b61bec8e8a0c95a00fd3a7ea22",
+   "reason": "2x2 동심 파동이 프레임마다 링 수·반지름이 커지고 마지막에 흙 부스러기로 끝남. 모양 변화 확실, 읽힘 양호."
+  },
+  "wz-fx-watering-stream": {
+   "verdict": "PASS",
+   "hash": "48fa83d3aac6fefeb7042f7542e8e2f7c1d7d4a71f55157156537ff32fe93ac8",
+   "reason": "대각선 물줄기에서 물방울 위치·크기가 프레임마다 이동하고 끝에 튀김 점. 변화는 작지만 흐르는 물줄기 연출로 읽힘."
+  },
+  "wz-fx-ward-heal": {
+   "verdict": "PASS",
+   "hash": "1adaee82cf277341858438d416d99a73cc5dc54b2624fda7528371db732d761a",
+   "reason": "청록 반짝이 십자가 프레임마다 위치·크기가 바뀜, 읽힘 양호."
+  },
+  "wz-fx-vial-vapor": {
+   "verdict": "PASS",
+   "hash": "d16be2831893cca75f2d903f9c645d630b752bd2ac99f7128f31845ad1495a28",
+   "reason": "녹색 김이 S자·V자로 형태가 바뀌며 올라감, 1배로 김으로 읽힘. 대비 낮지만 용도상 적절."
+  },
+  "wz-fx-snitch-wings": {
+   "verdict": "PASS",
+   "hash": "00ab74ee1ed171927162be164436d85c38811d93f7b7c3ba90c079576d3ac594",
+   "reason": "금빛 공과 날개가 위로 접힘·수평·아래로 접힘·펼침 4단, 날개 모양이 실제로 바뀜. 스니치로 읽힘."
+  },
+  "wz-fx-bludger-trail": {
+   "verdict": "PASS",
+   "hash": "da615312d52b3c59717c19e26ebd1111b30895462e8a138cc5ac40fecfa16d5f",
+   "reason": "2x1 6프레임: 검은 공 뒤 궤적 선이 길어졌다 흩어짐, 공과 궤적 모양 변화 있음. 1배로 날아가는 공으로 읽힘."
+  },
+  "wz-fx-broom-stop-dust": {
+   "verdict": "PASS",
+   "hash": "efd91e3abeaad2f16d8434b611d091dad5a4746ea9d8719a53e502cb38536cbe",
+   "reason": "2x1 바닥 덧그림: 미끄럼 선→먼지 덩이 번짐→알갱이 흩어짐, 6단 변화 확실. f 통행 적합."
+  },
+  "wz-fx-boat-ripple": {
+   "verdict": "PASS",
+   "hash": "01397bfd5b27c61cab1b86262b2e0bb6d0d9ff0d534de96fb6c3ff22bea10e9a",
+   "reason": "2x1 물 위 f: 작은 물보라→점점 커지는 이중 타원 파문 6단, 모양 변화 확실, 물색 읽힘."
+  },
+  "wz-fx-launch-ripple": {
+   "verdict": "PASS",
+   "hash": "bc69e5b1066a534b91e99a3a8d0858f1777ae2a1bcba7adac9a6647cafec7155",
+   "reason": "2x2 f: 작은 물보라에서 3중 타원 파문으로 확장 6단, 모양 변화 확실, 읽힘 양호."
+  },
+  "wz-fx-candy-wrap": {
+   "verdict": "PASS",
+   "hash": "4f57bed952d23ff2091cacc9b3c3142af421da4162eb3207f3fe37a59c85d7eb",
+   "reason": "포장지가 접혀 사탕 모양으로 변하고 끝이 꼬이는 8단. 초반 프레임은 책 표지처럼 보일 소지가 있으나 후반 사탕 형태 읽힘과 단계 변화는 충분."
+  },
+  "wz-fx-string-tie": {
+   "verdict": "PASS",
+   "hash": "739b4802041ca8055845fc675f7aefb2c603953023191a39ed393c4420a1fb7b",
+   "reason": "상자에 끈이 가로·세로로 감기고 리본으로 묶이는 8단, 단계 변화 뚜렷, 선물상자로 읽힘."
+  },
+  "wz-fx-magic-seal": {
+   "verdict": "PASS",
+   "hash": "ea3d0cae5c19efa539f3c4f22ee718a720ffc1bd9a25686bee37f233a49df61c",
+   "reason": "점→점 고리→보라 인장 구→문양 도장→소멸 8단, 모양 변화 뚜렷, 마법 봉인으로 읽힘."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}

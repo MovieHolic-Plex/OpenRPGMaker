@@ -1,0 +1,67 @@
+{
+ "name": "theme_potions_south_stair",
+ "item": "theme_potions_south_stair",
+ "candidate": "h4-A",
+ "source": "art-output/repair-v2-order-socket-sync-prep/content/tiledata/hand-interior/pick/candidates/theme_potions_south_stair/h4-A.png",
+ "sha256": "2eb5ea96de868ecbd10d11e1291206f2f1736349602a43575cb9f359d73f276a",
+ "set": {
+  "id": "theme potions south-stair",
+  "name_ko": "south-stair",
+  "name_en": "theme potions south-stair",
+  "parent": "theme potions south-stair",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   32
+  ],
+  "description": "전용 남쪽에서 북쪽으로 내려오는 석재 계단3×2, 디딤판 한 칸에 두 단, 양옆 난간 및 문턱. 접지3폭과 시각 난간을 분리.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "stair",
+    "label": "stair",
+    "see": "stair",
+    "w": 48,
+    "h": 32,
+    "foot": [
+     3,
+     2
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 2,
+    "passage": "ooo/ooo",
+    "topMin": 10,
+    "locked": false,
+    "child": null,
+    "stepped": true,
+    "x": 0,
+    "y": 0
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-v2-order-socket-sync-prep/scene-contract.json",
+   "instructions": "Unchanged original stair native technical re-review only. Observe four separate5row treads and low fronts; independently measure each slotResults.stair.top_bands using current protocol. Do not redraw or change any pixels. Actual room canvas368x224, stair at112,176,3x2 footprint; all three lanes unchanged. No claim constitutes PASS. Supervisor fresh machine check and independent verdict precede current receipt.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "south-stair",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r5-missing-production/attachment-contract.json"
+  }
+ }
+}

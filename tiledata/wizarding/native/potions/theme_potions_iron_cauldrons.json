@@ -1,0 +1,103 @@
+{
+ "name": "theme_potions_iron_cauldrons",
+ "item": "theme_potions_iron_cauldrons",
+ "candidate": "h6-A",
+ "source": "art-output/repair-r4-actors-vault/content/tiledata/hand-interior/pick/candidates/theme_potions_iron_cauldrons/h6-A.png",
+ "sha256": "82afc18434f58f44ae47609009da7367852c3bf36ba5d94a532897ccecfc69f0",
+ "set": {
+  "id": "theme potions iron-cauldrons",
+  "name_ko": "iron-cauldrons",
+  "name_en": "theme potions iron-cauldrons",
+  "parent": "theme potions iron-cauldrons",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   16
+  ],
+  "description": "전용 금속 가열 가마솥5개 각 상판1×1, 황동 버너·교반봉 포함. 학생4세트/교사1세트, 윗면/남쪽 면·약액 레이어·교반 손잡이 접속을 새로 저작. 큰 솥을 아이콘으로 축소하지 않고 사람/탁자 비교 표본 검수.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "cauldron-burner-stirrer",
+    "label": "cauldron-burner-stirrer",
+    "see": "cauldron-burner-stirrer",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 5,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      2,
+      0,
+      12,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      3,
+      7
+     ],
+     "vertical_y": [
+      8,
+      15
+     ]
+    },
+    "rim": [
+     8,
+     3
+    ],
+    "stirrerTop": [
+     9,
+     0
+    ],
+    "effectAnchor": [
+     8,
+     3
+    ]
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r4-actors-vault/scene-contract.json",
+   "instructions": "전용 금속 가열 가마솥5개 각 상판1×1, 황동 버너·교반봉 포함. 학생4세트/교사1세트, 윗면/남쪽 면·약액 레이어·교반 손잡이 접속을 새로 저작. 큰 솥을 아이콘으로 축소하지 않고 사람/탁자 비교 표본 검수.\nRead current sceneContract, theme-brief.json and concept-art.png. Use only the dedicated 42 colours. No stock artwork or palette. Logical ground cells remain fixed; rendered pixels are the resolved ground/support/hood anchors in scene-contract.json. Use the approved 23x14 coordinates. Read approved planning and compare each required attachment, footprint and actor scale; no room PASS before complete native coverage.\nRead scene-contract and attachment-contract: teacher sole(136,47)/hand(150,42), assistant sole(328,127)/hand(328,123), same sole in walking/action. North bodies behind tables, hand/tool separate above top. Board pixel(96,0), readable rect(98,2,126,14). Five named new cut-vault rib parents are ordered, with in-range source sockets. Lower exhaust endpoints(40,102)/(152,102) on ribs in y98..105 gap; continuous duct-return alpha behind upper bench fascia, not terminating at table front. Each slot contact/inlet/exhaust is an actual in-range pixel; boundary endpoints separately declared. Use only42 theme colours. Verify real native PNG alpha and all three comparison regions before verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "iron-cauldrons",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r4-actors-vault/attachment-contract.json"
+  }
+ }
+}

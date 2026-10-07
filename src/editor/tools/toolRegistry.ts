@@ -26,6 +26,13 @@ import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
+import { BEODEUL_DOOR_TOOLS } from "./beodeulDoorTools";
+import { BEODEUL_HAMLET_TOOLS } from './beodeulHamletTools';
+import { BEODEUL_COURTYARD_TOOLS } from './beodeulCourtyardTools';
+import { BEODEUL_VEGETATION_TOOLS } from './beodeulVegetationTools';
+import { BEODEUL_LIGHT_TOOLS } from './beodeulLightTools';
+import { BEODEUL_GROUND_TOOLS } from './beodeulGroundTools';
+import { BEODEUL_ARCHITECTURE_TOOLS } from './beodeulArchitectureTools';
 import { DIRECTING_GUIDE_TOOLS } from "./directingGuideTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
 import { EXPORT_TOOLS } from "./exportTools";
@@ -81,6 +88,8 @@ import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
+import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { TRANSIT_TOOLS } from "./transitTools";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -244,6 +253,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
+  // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
+  ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
+  ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile").map(retireEasyRpgGenerator),
   ...withDomain(CASTLE_TOOLS, "tile"),
@@ -262,6 +275,13 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(WILD_ROUTE_TOOLS, "map"),
   ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
+  ...BEODEUL_DOOR_TOOLS,
+  ...BEODEUL_GROUND_TOOLS,
+  ...BEODEUL_LIGHT_TOOLS,
+  ...BEODEUL_HAMLET_TOOLS,
+  ...BEODEUL_COURTYARD_TOOLS,
+  ...BEODEUL_VEGETATION_TOOLS,
+  ...BEODEUL_ARCHITECTURE_TOOLS,
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
   ...AUTHORING_HARNESS_TOOLS,

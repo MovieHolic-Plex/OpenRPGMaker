@@ -1,0 +1,412 @@
+[
+  {
+    "id": "r6-building-01",
+    "name": "꺾인 너와 지붕 양조장",
+    "role": "양조장",
+    "width": 96,
+    "height": 96,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-01",
+        "rect": [
+          0,
+          0,
+          96,
+          96
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 64,
+      "w": 16,
+      "h": 32
+    },
+    "description": "완만한 상단과 가파른 하단 경사가 꺾이는 너와 지붕. 미세한 회벽 박공과 술잔 간판, 출입문 하나.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "꺾인 경사 · 따뜻한 회벽 박공",
+    "round": 6,
+    "roofPalette": "wood",
+    "nativeAssetHashes": {
+      "review-r6-building-01": "6fffb65abe676fd5eb33dab086ab73a58aa2d96d7d5ee28c532e98bc6508dbee"
+    }
+  },
+  {
+    "id": "r6-building-02",
+    "name": "청회색 맨사드 지붕 열쇠점",
+    "role": "열쇠점",
+    "width": 128,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-02",
+        "rect": [
+          0,
+          0,
+          128,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "상부의 완만한 사면과 하부의 깊은 경사를 구분한 청회색 기와. 같은 회벽·목조 틀을 쓰는 이층 열쇠점.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "꺾인 사면 지붕 · 이층",
+    "round": 6,
+    "roofPalette": "slate",
+    "nativeAssetHashes": {
+      "review-r6-building-02": "84a631a8fe78724cb479368da55834d11f02fe53773a9ca22b7418c96313c7bb"
+    }
+  },
+  {
+    "id": "r6-building-03",
+    "name": "낮은 황동 기와 돌벽 목욕탕",
+    "role": "목욕탕",
+    "width": 128,
+    "height": 96,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-03",
+        "rect": [
+          0,
+          0,
+          128,
+          96
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 64,
+      "w": 16,
+      "h": 32
+    },
+    "description": "낮고 넓은 황동 기와와 일정한 돌벽 색. 원형 창과 좁은 창을 섞은 한 층의 목욕탕.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "낮은 사면 지붕 · 넓은 돌벽",
+    "round": 6,
+    "roofPalette": "gold",
+    "nativeAssetHashes": {
+      "review-r6-building-03": "575ab85f9f2a52bed0dae0a66f8b092303076a8311a74278df7f6e6b8203deb8"
+    }
+  },
+  {
+    "id": "r6-building-04",
+    "name": "둥근 통지붕 찻집",
+    "role": "찻집",
+    "width": 112,
+    "height": 96,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-04",
+        "rect": [
+          0,
+          0,
+          112,
+          96
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 64,
+      "w": 16,
+      "h": 32
+    },
+    "description": "중앙의 곡면과 휘어진 기와 줄로 읽히는 낮은 통지붕. 올리브빛 기와·회벽과 찻잎 간판.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "낮은 둥근 통지붕 · 단층",
+    "round": 6,
+    "roofPalette": "olive",
+    "nativeAssetHashes": {
+      "review-r6-building-04": "03f8fa092477a1b2d51c03144fc04c45d89959eaf63db905822ce50352fa718d"
+    }
+  },
+  {
+    "id": "r6-building-05",
+    "name": "종 모양 지붕 파수탑",
+    "role": "파수탑",
+    "width": 64,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-05",
+        "rect": [
+          0,
+          0,
+          64,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 24,
+      "y": 140,
+      "w": 16,
+      "h": 29
+    },
+    "description": "아래로 갈수록 곡선으로 벌어지는 청회색 종 지붕. 같은 회벽과 석재 기초를 유지한 높은 원형 파수탑.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "곡선으로 벌어지는 종 지붕 · 높은 원형 탑",
+    "round": 6,
+    "roofPalette": "slate",
+    "nativeAssetHashes": {
+      "review-r6-building-05": "cdeaf95fd167d0c58b564a99b801ee17bfbef32cf84bd21a29e98b76d9c52256"
+    }
+  },
+  {
+    "id": "r6-building-06",
+    "name": "긴 너와 지붕 숲지기 숙소",
+    "role": "숲지기",
+    "width": 160,
+    "height": 96,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-06",
+        "rect": [
+          0,
+          0,
+          160,
+          96
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 64,
+      "w": 16,
+      "h": 32
+    },
+    "description": "긴 단층 회벽과 넓은 너와 사면. 서로 다른 창 간격과 잎 간판의 숲지기 숙소.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "길고 낮은 지붕 · 회벽과 목조 틀",
+    "round": 6,
+    "roofPalette": "wood",
+    "nativeAssetHashes": {
+      "review-r6-building-06": "fdf779db7d3ccf4c83813aa2fe0c7ed306f83104a5ccdf6291a082147d6ac54f"
+    }
+  },
+  {
+    "id": "r6-building-07",
+    "name": "높은 박공과 낮은 옆채 직조 공방",
+    "role": "직조 공방",
+    "width": 128,
+    "height": 128,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-07",
+        "rect": [
+          0,
+          0,
+          128,
+          128
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 96,
+      "w": 16,
+      "h": 32
+    },
+    "description": "앞 박공의 높은 집과 낮은 작업채를 붙인 공방. 상부 창과 작업실 창의 높이를 달리하고 문은 본채 하나.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "높은 박공 · 낮은 작업채",
+    "round": 6,
+    "roofPalette": "copper/olive",
+    "nativeAssetHashes": {
+      "review-r6-building-07": "4741b8156ceff2dc11be88786cf3db5e537254f6674dce875ad89ff1e6268294"
+    }
+  },
+  {
+    "id": "r6-building-08",
+    "name": "높낮이가 다른 청회색 서기관 집",
+    "role": "서기관",
+    "width": 144,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-08",
+        "rect": [
+          0,
+          0,
+          144,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높은 본채와 낮게 이어진 옆채의 비대칭 윤곽. 넓은 윗면의 기와·동일한 회벽·서기관 깃펜 간판.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "깊은 지붕 · 비대칭 낮은 옆채",
+    "round": 6,
+    "roofPalette": "copper",
+    "nativeAssetHashes": {
+      "review-r6-building-08": "96b8ea6683f3e385165dd6496d125f26de37e777bd4e698a5861885ebcfd3b4c"
+    }
+  },
+  {
+    "id": "r6-building-09",
+    "name": "별빛 구근 지붕 관측소",
+    "role": "관측소",
+    "width": 80,
+    "height": 128,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-09",
+        "rect": [
+          0,
+          0,
+          80,
+          128
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 40,
+      "y": 96,
+      "w": 16,
+      "h": 32
+    },
+    "description": "허리가 좁아졌다가 볼록하게 벌어지는 구근형 기와 지붕. 둥근 기와 줄·황동 계열 명암과 별 관측 간판.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "구근형 기와 지붕 · 좁은 관측소",
+    "round": 6,
+    "roofPalette": "gold",
+    "nativeAssetHashes": {
+      "review-r6-building-09": "c14b1df990f81c6fc3d3db3834c72573a0d0d157e2c36113b1fb62b1bd940384"
+    }
+  },
+  {
+    "id": "r6-building-10",
+    "name": "둥근 종탑과 긴 예배당",
+    "role": "예배당",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r6-building-10",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "둥근 너와 종탑과 황동빛 통지붕의 긴 본당. 종탑 하부 문은 회벽·기초로 바꾸고 본당 출입문만 남김.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-6",
+    "silhouette": "둥근 종탑 · 긴 낮은 본당",
+    "round": 6,
+    "roofPalette": "wood/gold",
+    "nativeAssetHashes": {
+      "review-r6-building-10": "52e9e4a6e239cbd941234be716b92b11bc0fa4a3d156629778243d4bae5cb4f3"
+    }
+  }
+]

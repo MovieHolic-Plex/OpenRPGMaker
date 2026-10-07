@@ -1,0 +1,18 @@
+OK   get_map_region — 빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 2개, 물 0칸
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   get_project_summary — 프로젝트 '새 프로젝트' — 맵 2개, 아이템 1000, 트룹 7
+OK   find_tools — 편집기 툴 1개 발견: dress_beodeul_ground
+OK   list_tileset_references — 버들항 · 밝은 잔디 접지·꾸미기 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   read_tileset_reference — 버들항 · 밝은 잔디 접지·꾸미기 / 접지·군락·출입 보호 지침 (0–2367, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 밝은 잔디 접지·꾸미기 / 정확한 칸 배열·전체 조립 (0–5502, 1/2쪽)
+OK   read_tileset_reference — 버들항 · 밝은 잔디 접지·꾸미기 / 실제 공용 칸 전체 — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 밝은 잔디 접지·꾸미기 / 밑동 조립 정상/오류 — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 밝은 잔디 접지·꾸미기 / 정확한 칸 배열·전체 조립 (5502–6496, 2/2쪽)
+OK   set_build_spec — 
+OK   dress_beodeul_ground — 공용 버들항 접지·잔디 꾸밈 19곳: living · 밝은 잔디/원본 집·문·길 보존
+OK   find_tools — 편집기 툴 1개 발견: check_reachability
+OK   get_event — 이벤트 'ev_gate_bae695ea-4cbc-4aea-a7e3-de95642a529a' (10,7) — 페이지 1개
+OK   show_map_region — 맵 미리보기: (0,0) 20×15 (빈 맵)
+OK   check_reachability — 도달성: 전부 도달 가능
+OK   find_events — 이벤트 1개 검색됨
+assistant: 밝은 잔디를 그대로 두고 집의 얇은 기초와 나무 밑동을 다듬었으며, 빈 잔디에 풀·꽃 군락과 낙엽·잔돌, 집 곁 화단과 통을 추가했습니다. 새 맵은 만들지 않았고 기존 집·나무·길과 문 열림·실내 왕복 연결은 건드리지 않았으며, 문 앞까지 통행 가능한 것도 확인했습니다.

@@ -760,6 +760,28 @@ AGENTS 규칙에 따라 gates/vitest/전체 typecheck는 실행하지 않는다.
 - 키워드 UI는 전용 세트 모드와 공통 기획/독립 검수/제작 단계 및 오류를 표시한다. theme 작업도
   기존 슬롯, 공급자 재시도, job-invocations 기록을 사용한다. 공통 기획 확장은 승인 미술 기준을 유지한다.
 
+### 누적 coverage·보존 원본·재검수 영수증 (2026-10-06)
+
+- 수집 작업자는 자기 실행분만 `themeCoverage`에 적고, `art_batches.collect`는 같은 테마 배치를
+  최신 우선으로 누적한다. 그래서 장면이 계속 쓰는 앞 배치 원본(보존한 북쪽 재고 선반 등)이 빠졌고,
+  준비 작업자가 검수자 지시대로 다시 선언해도 수집 결과가 `art-result.json`을 덮어 반영되지 않았다
+  (같은 specification FAIL 반복). 이제 `sh.on_art`가 준비 결과를 `art-prepare-result.json`
+  (최종 실행 요청 포함)으로 보존하고, `art_batches.scene_links`가 그 선언 중 **영수증 근거가 있고
+  현재 승인 도면 sources에 묶인** 원본만 덧붙인다. 앞 배치끼리 합집합은 하지 않는다 — 도면은 비교용
+  옛 판본도 묶기 때문이다. 준비 결과 파일이 없으면 동작은 이전과 같다.
+- `theme_production.coverage_status`는 현재 부품 후보뿐 아니라 `validate_preserved_sources`를
+  통과한 승인 도면의 `preservedSources`도 저작 원본으로 인정한다(데모 조립과 같은 기준).
+  안 그러면 보존 원본을 장부에 연결하는 순간 「재료 누락」으로 재제작이 큐에 오른다.
+- 보존 원본 근거는 소품 영수증 `candidateImages`와 함께 같은 테마 `charset-actor` 영수증의
+  납품 시트(`actors[].sheets`)도 인정한다.
+- 원래 READ 단독 FAIL 품목은 같은 원본 해시의 독립 재검수 2건이 `art-supplementary-evidence.json`
+  항목의 `nativeReviewReceipt`로 등록됐을 때만 후보 수집에서 해소한다(`art_native_rereview.py`).
+  원 영수증은 그대로 두고, 장면 검수·선택·설치는 별도 관문이다.
+- 수집 영수증의 `runs` 행에 `item`이 없으면 같은 영수증 `rounds`에서 판 번호로 찾는다.
+- 아직 감독에 없는 단계: 준비가 `art-actor-actions-next.json`으로 넘긴 **인물 새 동작 제작**.
+  지금은 운영자가 `charset-actor/actions.py produce` → 준비의 검증 스크립트 → 독립 검수 → 활성화·재수집을
+  한다(선례 `monitoring/potions-stir-rim-*.py`, `*-wand-lift-actions.py`).
+
 이 계약 자체가 새 타일 팩이나 생물 제작 어댑터를 제공하지는 않는다. 해당 제작 경로는 실제
 native 하네스의 지원·확장과 그림 검수를 거쳐야 한다. 전용 팩의 번들 배포와 정본 저장/재로드는
 기존 완료 조건을 그대로 적용한다. 정책 전환을 그림 완성/사용자 Allow로 표시하지 않는다.

@@ -1,0 +1,164 @@
+{
+  "mapId": "map_beodeul_village50",
+  "roles": [
+    {
+      "id": "apothecary",
+      "label": "약초사 집",
+      "body": "bd-house-village-cream",
+      "x": 3,
+      "y": 6,
+      "front": {
+        "x": 5,
+        "y": 12
+      }
+    },
+    {
+      "id": "inventor",
+      "label": "발명가 집",
+      "body": "bd-house-village-stone",
+      "x": 42,
+      "y": 7,
+      "front": {
+        "x": 44,
+        "y": 13
+      }
+    },
+    {
+      "id": "tavern",
+      "label": "강바람 술집",
+      "body": "bd-house-cafe",
+      "x": 28,
+      "y": 20,
+      "front": {
+        "x": 30,
+        "y": 26
+      }
+    },
+    {
+      "id": "warehouse",
+      "label": "항구 창고",
+      "body": "bd-house-village-sage",
+      "x": 14,
+      "y": 30,
+      "front": {
+        "x": 15,
+        "y": 38
+      }
+    },
+    {
+      "id": "ferry-office",
+      "label": "나루터 사무소",
+      "body": "bd-house-village-sage",
+      "x": 28,
+      "y": 39,
+      "front": {
+        "x": 29,
+        "y": 47
+      }
+    }
+  ],
+  "placements": [
+    {
+      "kit": "bd-pick-wizard-tower-herb-rack",
+      "x": 2,
+      "y": 10,
+      "role": "apothecary"
+    },
+    {
+      "kit": "bd-pick-wizard-tower-bed-herb",
+      "x": 7,
+      "y": 13,
+      "role": "apothecary"
+    },
+    {
+      "kit": "bd-pick-wizard-tower-bed-herb",
+      "x": 9,
+      "y": 13,
+      "role": "apothecary"
+    },
+    {
+      "kit": "bd-pick-wizard-tower-armillary",
+      "x": 42,
+      "y": 14,
+      "role": "inventor"
+    },
+    {
+      "kit": "bd-pick-wizard-tower-orrery",
+      "x": 46,
+      "y": 15,
+      "role": "inventor"
+    },
+    {
+      "kit": "bd-prop-stall_jug_bottle",
+      "x": 35,
+      "y": 25,
+      "role": "tavern"
+    },
+    {
+      "kit": "bd-prop-sandwich_board",
+      "x": 28,
+      "y": 26,
+      "role": "tavern"
+    },
+    {
+      "kit": "bd-prop-goods_pile",
+      "x": 14,
+      "y": 27,
+      "role": "warehouse"
+    },
+    {
+      "kit": "bd-prop-fish_crates",
+      "x": 15,
+      "y": 29,
+      "role": "warehouse"
+    },
+    {
+      "kit": "bd-pick-swamp-stilt-ground-deck",
+      "x": 25,
+      "y": 46,
+      "role": "ferry-office"
+    },
+    {
+      "kit": "bd-prop-mooring_bollard",
+      "x": 25,
+      "y": 46,
+      "role": "ferry-office"
+    },
+    {
+      "kit": "bd-pick-swamp-stilt-rowboat",
+      "x": 23,
+      "y": 48,
+      "role": "ferry-office"
+    },
+    {
+      "kit": "bd-prop-sandwich_board",
+      "x": 30,
+      "y": 48,
+      "role": "ferry-office"
+    },
+    {
+      "kit": "bd-pick-volcano-cave-anvil",
+      "x": 42,
+      "y": 36,
+      "role": "smithy"
+    },
+    {
+      "kit": "bd-pick-volcano-cave-ingots",
+      "x": 46,
+      "y": 38,
+      "role": "smithy"
+    }
+  ],
+  "dock": {
+    "x": 26,
+    "y": 47
+  },
+  "buildingsTreesShadowsAndEventsPreserved": true,
+  "all18DoorFrontsReachable": true,
+  "fourBridgeBanksReachable": true,
+  "lowerPavedLaneConnected": true,
+  "onlyNineDockGroundCellsChanged": true,
+  "runtimeBeats": 10,
+  "runtimeErrors": [],
+  "previewMatchesReloadRGB": "5d2d02d620d9740ea3b9a7c3b78c73892013e0385ae186186e1e3e09c8338a29"
+}

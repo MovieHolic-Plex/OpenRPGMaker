@@ -1,0 +1,2141 @@
+{
+ "name": "dark_timber_wall__scene-coverage-preparation-r9",
+ "item": "dark_timber_wall",
+ "candidate": "h1-A",
+ "source": "art-output/scene-coverage-preparation-r9/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h1-A.png",
+ "sha256": "6ed9728b3ed940984084cf8cd28bf563a05ab903ce2c648800aa929fc7707bd7",
+ "set": {
+  "id": "dark-timber-wall",
+  "name_ko": "dark-timber-wall",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "wall",
+  "canvas": [
+   400,
+   32
+  ],
+  "footprint": {
+   "w": 25,
+   "h": 0
+  },
+  "description": "rev7 원본 400×32 시트에서 outer-SW/SE 두 종료 슬롯만 수정. 나머지28슬롯의 픽셀은 locked 보존. 오크/황동 좌상광원, 상면6행/남전면2행, 실외와 y8..15 투명.",
+  "parent": "dark-timber-wall",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "N-face",
+    "label": "N-face",
+    "w": 16,
+    "h": 32,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 0,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall N-face"
+   },
+   {
+    "key": "W-cap",
+    "label": "W-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 16,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall W-cap"
+   },
+   {
+    "key": "E-cap",
+    "label": "E-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 32,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall E-cap"
+   },
+   {
+    "key": "S-cap",
+    "label": "S-cap",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 48,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall S-cap"
+   },
+   {
+    "key": "partition",
+    "label": "partition",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 64,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall partition"
+   },
+   {
+    "key": "N-end",
+    "label": "N-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 80,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall N-end"
+   },
+   {
+    "key": "W-end",
+    "label": "W-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 96,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall W-end"
+   },
+   {
+    "key": "E-end",
+    "label": "E-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 112,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall E-end"
+   },
+   {
+    "key": "S-end",
+    "label": "S-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 128,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall S-end"
+   },
+   {
+    "key": "partition-end",
+    "label": "partition-end",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 144,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall partition-end"
+   },
+   {
+    "key": "outer-N",
+    "label": "outer-N",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 160,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-N"
+   },
+   {
+    "key": "outer-W",
+    "label": "outer-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 176,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-W"
+   },
+   {
+    "key": "outer-E",
+    "label": "outer-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 192,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-E"
+   },
+   {
+    "key": "outer-S",
+    "label": "outer-S",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 208,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-S"
+   },
+   {
+    "key": "inner-NE",
+    "label": "inner-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 224,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall inner-NE"
+   },
+   {
+    "key": "inner-NW",
+    "label": "inner-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 240,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall inner-NW"
+   },
+   {
+    "key": "inner-SE",
+    "label": "inner-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 256,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall inner-SE"
+   },
+   {
+    "key": "inner-SW",
+    "label": "inner-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 272,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall inner-SW"
+   },
+   {
+    "key": "outer-NE",
+    "label": "outer-NE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 288,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-NE"
+   },
+   {
+    "key": "outer-NW",
+    "label": "outer-NW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 304,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall outer-NW"
+   },
+   {
+    "key": "outer-SE",
+    "label": "outer-SE",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "inner-SW/SE의 기존 합집합은 잠금 보존. outer-SW는 local[10,0,16,6) 상면+[10,6,16,8) 남전면만, outer-SE는[0,0,6,6)+[0,6,6,8)만 불투명. 다른 모든 local 픽셀 alpha0. 전폭/전높이 합집합 금지.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 320,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SE",
+    "topRatio": 0.75,
+    "origin": [
+     0,
+     0
+    ],
+    "opaqueRects": [
+     [
+      0,
+      0,
+      6,
+      6
+     ],
+     [
+      0,
+      6,
+      6,
+      8
+     ]
+    ],
+    "transparentRects": [
+     [
+      0,
+      8,
+      16,
+      16
+     ],
+     [
+      6,
+      0,
+      16,
+      8
+     ]
+    ]
+   },
+   {
+    "key": "outer-SW",
+    "label": "outer-SW",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "inner-SW/SE의 기존 합집합은 잠금 보존. outer-SW는 local[10,0,16,6) 상면+[10,6,16,8) 남전면만, outer-SE는[0,0,6,6)+[0,6,6,8)만 불투명. 다른 모든 local 픽셀 alpha0. 전폭/전높이 합집합 금지.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 336,
+    "y": 0,
+    "locked": false,
+    "child": "dark-timber-wall outer-SW",
+    "topRatio": 0.75,
+    "origin": [
+     0,
+     0
+    ],
+    "opaqueRects": [
+     [
+      10,
+      0,
+      16,
+      6
+     ],
+     [
+      10,
+      6,
+      16,
+      8
+     ]
+    ],
+    "transparentRects": [
+     [
+      0,
+      8,
+      16,
+      16
+     ],
+     [
+      0,
+      0,
+      10,
+      8
+     ]
+    ]
+   },
+   {
+    "key": "T-join",
+    "label": "T-join",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 352,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall T-join"
+   },
+   {
+    "key": "entry-jamb",
+    "label": "entry-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 368,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall entry-jamb"
+   },
+   {
+    "key": "staff-jamb",
+    "label": "staff-jamb",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 384,
+    "y": 0,
+    "locked": true,
+    "child": "dark-timber-wall staff-jamb"
+   },
+   {
+    "key": "N-base",
+    "label": "N-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 16,
+    "y": 16,
+    "locked": true,
+    "child": "dark-timber-wall N-base"
+   },
+   {
+    "key": "NW-base",
+    "label": "NW-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 32,
+    "y": 16,
+    "locked": true,
+    "child": "dark-timber-wall NW-base"
+   },
+   {
+    "key": "NE-base",
+    "label": "NE-base",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 6,
+    "mount": "wall",
+    "x": 48,
+    "y": 16,
+    "locked": true,
+    "child": "dark-timber-wall NE-base"
+   },
+   {
+    "key": "T-W",
+    "label": "T-W",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 64,
+    "y": 16,
+    "locked": true,
+    "child": "dark-timber-wall T-W"
+   },
+   {
+    "key": "T-E",
+    "label": "T-E",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "see": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님.",
+    "layer": 3,
+    "topMin": 0,
+    "mount": "wall",
+    "x": 80,
+    "y": 16,
+    "locked": true,
+    "child": "dark-timber-wall T-E"
+   }
+  ],
+  "contract": {
+   "boundaryContract": "art-output/scene-terminal-repair-rev8/boundary-contract.json",
+   "operations": [
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      0,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      16,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      32,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      48,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      64,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      80,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      96,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      112,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      128,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      144,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-face",
+     "offset": [
+      160,
+      0
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      32
+     ],
+     "layer": 1,
+     "direction": "N",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      48
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      48
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      64
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      64
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      96
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      112
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      128
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      128
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      144
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      144
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      160
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      160
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "W-cap",
+     "offset": [
+      0,
+      176
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "W",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "E-cap",
+     "offset": [
+      160,
+      176
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "E",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      0,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      16,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      144,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      160,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "inner-SW",
+     "offset": [
+      32,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "SW",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "inner-SE",
+     "offset": [
+      128,
+      192
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "SE",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      48,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      64,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      96,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "S-cap",
+     "offset": [
+      112,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      8
+     ],
+     "layer": 1,
+     "direction": "S",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "outer-SW",
+     "offset": [
+      32,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "SW",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "outer-SE",
+     "offset": [
+      128,
+      208
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "SE",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      16,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      32,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      48,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "staff-jamb",
+     "offset": [
+      112,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "staff-jamb",
+     "offset": [
+      144,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "T-W",
+     "offset": [
+      0,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition-T",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "T-E",
+     "offset": [
+      160,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition-T",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "NW-base",
+     "offset": [
+      0,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      16,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      32,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      48,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      64,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      80,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      96,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      112,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      128,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "N-base",
+     "offset": [
+      144,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "NE-base",
+     "offset": [
+      160,
+      32
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "N-base",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      64,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      80,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    },
+    {
+     "group": "dark-timber-wall",
+     "slot": "partition",
+     "offset": [
+      96,
+      80
+     ],
+     "clip": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "layer": 1,
+     "direction": "partition",
+     "owner": "single-wall-surface"
+    }
+   ],
+   "internalBoundaries": {
+    "west": 16,
+    "east": 160,
+    "partitionSouth": 96
+   },
+   "immutableSlots": [
+    "N-face",
+    "T-join",
+    "N-base",
+    "NW-base",
+    "NE-base"
+   ],
+   "scope": "current active rev7 geometry; original north slots locked, final scene gate separate",
+   "partialRepair": true,
+   "preservedSource": {
+    "path": "art-output/scene-junction-repair-rev7/content/tiledata/hand-interior/pick/candidates/dark_timber_wall/h1-A.png",
+    "sha256": "d813a9fef695d6d7b800d854d60b74e8b6cd77f83f3ecb31e53847bc9f1c6606"
+   },
+   "editableSlots": [
+    "outer-SW",
+    "outer-SE"
+   ],
+   "termination": "inner-SW/SE의 기존 합집합은 잠금 보존. outer-SW는 local[10,0,16,6) 상면+[10,6,16,8) 남전면만, outer-SE는[0,0,6,6)+[0,6,6,8)만 불투명. 다른 모든 local 픽셀 alpha0. 전폭/전높이 합집합 금지.",
+   "slotGeometry": {
+    "N-face": {
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      16,
+      32
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "W-cap": {
+     "at": [
+      16,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "E-cap": {
+     "at": [
+      32,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "S-cap": {
+     "at": [
+      48,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "partition": {
+     "at": [
+      64,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "N-end": {
+     "at": [
+      80,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "W-end": {
+     "at": [
+      96,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "E-end": {
+     "at": [
+      112,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "S-end": {
+     "at": [
+      128,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "partition-end": {
+     "at": [
+      144,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-N": {
+     "at": [
+      160,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-W": {
+     "at": [
+      176,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-E": {
+     "at": [
+      192,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-S": {
+     "at": [
+      208,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "inner-NE": {
+     "at": [
+      224,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "inner-NW": {
+     "at": [
+      240,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "inner-SE": {
+     "at": [
+      256,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "inner-SW": {
+     "at": [
+      272,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-NE": {
+     "at": [
+      288,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-NW": {
+     "at": [
+      304,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "outer-SE": {
+     "at": [
+      320,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": false,
+     "surface": "inner-SW/SE의 기존 합집합은 잠금 보존. outer-SW는 local[10,0,16,6) 상면+[10,6,16,8) 남전면만, outer-SE는[0,0,6,6)+[0,6,6,8)만 불투명. 다른 모든 local 픽셀 alpha0. 전폭/전높이 합집합 금지.",
+     "opaqueRects": [
+      [
+       0,
+       0,
+       6,
+       6
+      ],
+      [
+       0,
+       6,
+       6,
+       8
+      ]
+     ],
+     "transparentRects": [
+      [
+       0,
+       8,
+       16,
+       16
+      ],
+      [
+       6,
+       0,
+       16,
+       8
+      ]
+     ]
+    },
+    "outer-SW": {
+     "at": [
+      336,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": false,
+     "surface": "inner-SW/SE의 기존 합집합은 잠금 보존. outer-SW는 local[10,0,16,6) 상면+[10,6,16,8) 남전면만, outer-SE는[0,0,6,6)+[0,6,6,8)만 불투명. 다른 모든 local 픽셀 alpha0. 전폭/전높이 합집합 금지.",
+     "opaqueRects": [
+      [
+       10,
+       0,
+       16,
+       6
+      ],
+      [
+       10,
+       6,
+       16,
+       8
+      ]
+     ],
+     "transparentRects": [
+      [
+       0,
+       8,
+       16,
+       16
+      ],
+      [
+       0,
+       0,
+       10,
+       8
+      ]
+     ]
+    },
+    "T-join": {
+     "at": [
+      352,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "entry-jamb": {
+     "at": [
+      368,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "staff-jamb": {
+     "at": [
+      384,
+      0
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "N-base": {
+     "at": [
+      16,
+      16
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "NW-base": {
+     "at": [
+      32,
+      16
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "NE-base": {
+     "at": [
+      48,
+      16
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "T-W": {
+     "at": [
+      64,
+      16
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    },
+    "T-E": {
+     "at": [
+      80,
+      16
+     ],
+     "size": [
+      16,
+      16
+     ],
+     "locked": true,
+     "surface": "rev7 실제 원본 seed.png 해당 슬롯 전체 픽셀 잠금 보존. 이번 수정 대상 아님."
+    }
+   },
+   "terminalChecks": {
+    "transparent": [
+     [
+      32,
+      208,
+      42,
+      216
+     ],
+     [
+      134,
+      208,
+      144,
+      216
+     ],
+     [
+      42,
+      216,
+      48,
+      224
+     ],
+     [
+      128,
+      216,
+      134,
+      224
+     ]
+    ],
+    "opaque": [
+     [
+      42,
+      208,
+      48,
+      216
+     ],
+     [
+      128,
+      208,
+      134,
+      216
+     ]
+    ]
+   }
+  },
+  "production": {
+   "northBase": {
+    "bounds": [
+     0,
+     32,
+     176,
+     48
+    ],
+    "exposedBounds": [
+     112,
+     32,
+     160,
+     48
+    ],
+    "topFace": "N-base local [0,0,16,6) solid oak horizontal upper plane; screen y32..37",
+    "verticalFace": "local [0,6,16,16) exposed oak south face; screen y38..47; contact at y48, no transparent pixels in entire16x16 slot",
+    "contact": [
+     0,
+     48,
+     176,
+     48
+    ],
+    "heightComparison": "N-face32px + architectural base16px =48px; adult29px/student24px; stock48px tall at y16..64 and ladder48px at y16..64 remain foreground with ground64. Base is a reserved structure row, not extra furniture height.",
+    "ownership": "N-base owns x16..159,y32..47; NW-base x0..15 and NE-base x160..175 own full opaque ends including6px vertical cap continuation. W/E-cap at y32 removed, resume y48. No floor/decor/outside replacement.",
+    "opacityRequirement": "All alpha=255 in[0,32,176,48), explicitly[112,32,160,48); N-face bottom y31 contiguous with base y32; base y47 adjacent staff floor y48. Future actual PNG measurement required."
+   }
+  },
+  "immutableSlots": [
+   "N-face",
+   "T-join",
+   "N-base",
+   "NW-base",
+   "NE-base"
+  ]
+ }
+}
