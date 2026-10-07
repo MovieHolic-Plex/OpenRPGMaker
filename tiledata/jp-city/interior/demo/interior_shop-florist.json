@@ -1,0 +1,189 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "##...####"
+ ],
+ "floor": "sh-concrete",
+ "wall": "sh-white",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 13,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
+ "objects": [
+  {
+   "id": "door-open-western",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "sh-shutter",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "window-sash",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-wrap-table",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "cupboard",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "window-sash",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sh-wrap-table",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sh-counter",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "sh-register",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "sh-counter",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "sh-flower-buckets",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "sh-flower-buckets",
+   "x": 5,
+   "y": 12
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 3,
+   "y": 10
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-bouquet",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sh-bouquet",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 7,
+   "y": 10
+  }
+ ]
+}
