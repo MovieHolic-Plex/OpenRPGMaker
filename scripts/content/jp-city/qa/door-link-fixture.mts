@@ -111,14 +111,35 @@ for (const link of LINKS) {
   const ap = approaches.find(({ c, from }) => !pad.has(`${from.x},${from.y}`) && isPassable(ctx.project, sm, from.x, from.y) && canMove(ctx.project, sm, from.x, from.y, c.x, c.y));
   if (!ap) throw new Error(`${link.building}: 문 앞 발판으로 걸어 들어갈 칸이 없다`);
   const front = ap.c;
-  // 실내를 실제로 돌아다닌다: 도착 칸에서 가장 먼 칸까지 갔다가 출입구로 나온다.
-  const far = farthest(interior, data.entryLanding);
-  const tour = route(interior, data.entryLanding, [far]) ?? [];
-  const inside = route(interior, far, data.exitCells);
-  if (!inside) throw new Error(`${data.interiorMapId}: (${far.x},${far.y}) → 출입구 길이 없다`);
+  // 층 계단 왕복(여러 층 장소): 도착 칸 → 위층으로 가는 발판 → 위층 도착 → 내려오는 발판 → 1층 도착.
+  type Tr = { mapId: string; x: number; y: number };
+  const transferOf = (e: { pages?: { commands?: { kind: string; mapId?: string; x?: number; y?: number }[] }[] }): Tr | null => {
+    const c = (e.pages ?? []).flatMap((pg) => pg.commands ?? []).find((k) => k.kind === "transfer");
+    return c && c.mapId ? { mapId: c.mapId, x: c.x!, y: c.y! } : null;
+  };
+  let walkFrom = data.entryLanding;
+  let stairs: unknown = null;
+  const floorIds = new Set((res.data as { floorMapIds?: string[] }).floorMapIds ?? []);
+  const up = (interior.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && floorIds.has(t.mapId));
+  if (up) {
+    const upSteps = route(interior, data.entryLanding, [{ x: up.e.x, y: up.e.y }]);
+    const floor = ctx.project.maps[up.t!.mapId]!;
+    const down = (floor.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && t.mapId === interior.id);
+    if (!upSteps || !down) throw new Error(`${data.interiorMapId}: 계단 왕복 길이 없다`);
+    const floorTour = farthest(floor, up.t!);
+    const downSteps = [...(route(floor, up.t!, [floorTour]) ?? []), ...(route(floor, floorTour, [{ x: down.e.x, y: down.e.y }]) ?? [])];
+    stairs = { floor: floor.id, upSteps, upAt: [up.t!.x, up.t!.y], downSteps, downAt: [down.t!.x, down.t!.y] };
+    walkFrom = { x: down.t!.x, y: down.t!.y };
+  }
+  // 실내를 실제로 돌아다닌다: 가장 먼 칸 → 그 칸에서 가장 먼 칸(지름 양 끝 — 안쪽 문 너머 방까지 간다) → 출입구.
+  const far = farthest(interior, walkFrom);
+  const far2 = farthest(interior, far);
+  const tour = [...(route(interior, walkFrom, [far]) ?? []), ...(route(interior, far, [far2]) ?? [])];
+  const inside = route(interior, far2, data.exitCells);
+  if (!inside) throw new Error(`${data.interiorMapId}: (${far2.x},${far2.y}) → 출입구 길이 없다`);
   legs.push({
     label: `${link.building} → ${interior.name}`, street: street.id, interior: data.interiorMapId,
-    startAt: [ap.from.x, ap.from.y], enter: [ap.dir, front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y],
+    startAt: [ap.from.x, ap.from.y], enter: [ap.dir, front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y], stairs,
     tourSteps: tour, exitSteps: inside, exitAt: [data.exitLanding.x, data.exitLanding.y],
   });
 }

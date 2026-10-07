@@ -1,0 +1,7 @@
+[
+ { "building": "A2", "example": "laundry" },
+ { "building": "B1a", "example": "koban" },
+ { "building": "A1b", "example": "clinic" },
+ { "building": "E1", "example": "mokuchin" },
+ { "building": "A1c", "example": "hiraya" }
+]
