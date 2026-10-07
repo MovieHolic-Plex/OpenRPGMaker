@@ -174,38 +174,11 @@ def _dw(c):
     c.HL(1, 31, 14, W_(-3)); c.HL(2, 30, 12, W_(-2))
 
 
-@R.obj('fusuma', '후스마(襖)', w=2, kind='hang', hrows=2, use=('open', 'travel'), tags=('문', '화실', '襖'), place='화실 벽면', desc='종이 미닫이 후스마(襖). 두 짝, 가운데 손잡이.' + DOOR_NOTE)
-def _fusuma(c):
-    c.R(1, 0, 30, 32, W_(-3)); c.R(2, 1, 28, 31, W_(-1))
-    for x0 in (3, 16):
-        c.R(x0, 2, 13, 29, K('kinari', 1))
-        c.HL(x0, 2, 13, K('kinari', 2))
-        for y in range(22, 30):                                    # 아랫단 먹그림 번짐
-            for x in range(x0, x0 + 13):
-                if (x + y * 3) % 5 == 0: c.P(x, y, K('kinari', 0))
-        for (px, py, ph) in ((x0 + 3, 20, 3), (x0 + 7, 18, 5), (x0 + 10, 21, 2)): c.R(px, py + 1, 2, ph, K('conc', 1))
-    c.R(15, 2, 2, 29, W_(-2))
-    c.R(13, 15, 2, 3, W_(-3)); c.R(17, 15, 2, 3, W_(-3))
-    c.HL(1, 31, 30, W_(-3))
-
-
 def _shoji_paper(c, x, y, w, h, gx=6, gy=6):
     c.R(x, y, w, h, SH(1))
     for i in range(x, x + w, gx): c.VL(i, y, h, W_(1))
     for j in range(y, y + h, gy): c.HL(x, j, w, W_(1))
     c.HL(x, y + h - 1, w, SH(-1))
-
-
-@R.obj('shoji-door', '쇼지 문(障子)', w=2, kind='hang', hrows=2, use=('open', 'travel'), tags=('문', '화실', '障子'), place='화실 벽면', desc='격자 목재 + 흰 종이 미닫이 쇼지(障子). 아래 널빤지.' + DOOR_NOTE)
-def _shoji(c):
-    c.R(1, 0, 30, 32, W_(-3)); c.R(2, 1, 28, 31, W_(-1))
-    for x0 in (3, 16):
-        c.R(x0, 2, 13, 29, W_(0))
-        _shoji_paper(c, x0 + 1, 3, 11, 18, 4, 6)
-        c.R(x0, 22, 13, 8, W_(1)); c.HL(x0, 22, 13, W_(2)); c.HL(x0, 29, 13, W_(-2))   # 허리널
-        c.R(x0 + 1, 24, 11, 4, W_(0)); c.HL(x0 + 1, 24, 11, W_(-1))
-    c.R(15, 2, 2, 29, W_(-2)); c.R(14, 14, 1, 4, K('sumi', 0)); c.R(17, 14, 1, 4, K('sumi', 0))
-    c.HL(1, 31, 30, W_(-3))
 
 
 @R.obj('oshiire', '오시이레(押入れ)', w=2, kind='hang', hrows=2, use=('open',), tags=('문', '화실', '수납', '押入れ'), place='화실 벽면', desc='위·아래 두 칸 붙박이장. 오른쪽 위 칸이 열려 이불이 보인다.' + DOOR_NOTE)
@@ -224,16 +197,6 @@ def _oshi(c):
     c.HL(18, 14, 10, SH(-2))
     c.R(16, 15, 14, 2, W_(0)); c.HL(16, 15, 14, W_(2)); c.HL(16, 16, 14, W_(-2))   # 가운데 선반
     c.HL(1, 31, 30, W_(-3))
-
-
-@R.obj('toilet-door', '화장실 문', w=1, kind='hang', hrows=2, use=('open', 'travel'), tags=('문', '화장실', 'トイレ'), place='복도·화장실 벽면', desc='밝은 문 + 위쪽 불투명 유리창 + 아래 환기 칸살.' + DOOR_NOTE)
-def _td(c):
-    c.R(1, 0, 14, 32, K('sumi', 0)); c.R(2, 1, 12, 31, W_(-2)); c.R(3, 2, 10, 30, K('kinari', 2))
-    c.R(4, 4, 8, 8, GL(-2)); c.R(5, 5, 6, 6, GL(1)); c.R(5, 5, 6, 1, GL(2)); c.VL(5, 6, 5, GL(2))
-    for (x, y) in ((7, 7), (9, 9), (8, 6), (6, 9)): c.P(x, y, GL(2))
-    for y in (22, 24, 26, 28): c.HL(4, y, 8, K('kinari', 0)); c.HL(4, y + 1, 8, K('kinari', 2))
-    c.R(4, 15, 2, 1, ST(1)); c.R(4, 16, 3, 1, ST(2)); c.R(4, 15, 1, 3, ST(-1))   # 레버 손잡이
-    c.HL(1, 31, 14, K('sumi', 0)); c.HL(3, 14, 10, K('kinari', 0))
 
 
 # ───────────────────────── 창 ─────────────────────────

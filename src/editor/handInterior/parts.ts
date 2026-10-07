@@ -12,6 +12,7 @@ const KIND_WORDS: Record<string, string> = {
   hang: "hang 벽 벽면 걸이",
   flat: "flat 바닥 무늬 깔개 밟음",
   door: "door 문 방문 칸막이 틈 열린 문",
+  sidedoor: "sidedoor 옆문 문 세로 칸막이 틈 열린 문 미닫이",
 };
 
 export interface PartRow {
@@ -95,7 +96,7 @@ export function searchParts(query: string, category = "", spec: HandInteriorSpec
   return { ids, hits, tokens, allMatch: all.length, partial: scored.length - all.length };
 }
 
-export type RoomGroupKind = "floor" | "wall" | "hang" | "flat" | "door" | "table" | "line" | "dais";
+export type RoomGroupKind = "floor" | "wall" | "hang" | "flat" | "door" | "sidedoor" | "table" | "line" | "dais";
 export interface RoomPart { readonly id: string; readonly ko: string; readonly w?: number; readonly h?: number; readonly rooms: number; readonly count: number; readonly desc?: string }
 export interface RoomResult {
   readonly key: string; readonly ko: string; readonly mode: "room" | "building";

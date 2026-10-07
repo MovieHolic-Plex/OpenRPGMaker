@@ -120,11 +120,6 @@ def _dt(c): _door_open_toilet(c)
 def _df(c): _door_open_fusuma(c)
 
 
-@R.obj('shoji-open', '쇼지 문(열림)', kind='door', use=('travel',), tags=('문', '화실', '障子'),
-       place='가로 칸막이 1칸 틈 칸', desc='어두운 나무 기둥·가모이·시키이 두 줄 레일, 한쪽으로 밀려 끝만 보이는 쇼지 한 짝(격자·종이), 통로는 투명.')
-def _ds(c): _door_open_shoji(c)
-
-
 @R.obj('genkan-door', '현관문 문턱', kind='flat', use=('travel', 'walk'), tags=('현관', '문'),
        place='맨 아래 출입구 틈 칸', desc='위에서 본 현관 미닫이문 문턱 — 알루미늄 레일 2줄, 좌우 문틀, 한쪽으로 밀린 유리문 끝.')
 def _gd(c):
@@ -139,6 +134,22 @@ def _gd(c):
     c.R(3, 1, 6, 6, ST(2)); c.HL(3, 1, 6, ST(3)); c.HL(3, 6, 6, ST(-1))
     c.R(4, 2, 4, 3, GL(2)); c.P(4, 2, GL(5)); c.P(5, 2, GL(4)); c.P(7, 4, GL(0))
     c.VL(8, 1, 6, ST(-1)); c.R(7, 3, 1, 2, ST(3))                       # 문짝 끝 + 당김 손잡이
+
+
+# ───────────────────────── 옆문(kind sidedoor) — 세로 칸막이 3줄 틈 ─────────────────────────
+# 그림 16×48: 위 두 줄(0~31) = 틈 위 칸막이 끝 벽면 위에 겹친다(★), 아랫줄(32~47) = 통로 칸(2층). (임시 자리표시 — 작업자가 다시 그린다.)
+def _side(c, leaf):
+    c.R(0, 0, 16, 3, W_(-3)); c.HL(0, 1, 16, W_(1))
+    c.R(6, 3, 4, 40, W_(-3)); c.R(7, 3, 2, 40, leaf)
+    c.HL(0, 44, 16, W_(-2)); c.HL(0, 45, 16, W_(-3))
+
+
+@R.obj('door-side-western', '옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '방', '복도', '탈의실', '거실'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽에 난 출입구의 열린 나무 문.')
+def _sw(c): _side(c, W_(1))
+
+
+@R.obj('door-side-sliding', '미닫이 옆문(열림)', kind='sidedoor', use=('travel',), tags=('문', '욕실', '탈의실', '화실', '미닫이'), place='세로 칸막이 3줄 틈의 통로 칸(셋째 줄)', desc='세로 벽에 난 출입구의 열린 미닫이(욕실 접이문·탈의실 미닫이).')
+def _ss(c): _side(c, K('kinari', 2))
 
 
 def build(): return R.build()
