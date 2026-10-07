@@ -143,6 +143,7 @@ import { resolveCanvasGestureOwner } from "@/editor/canvasPointerOwnership";
 import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { repositionEventAiQueuePins } from "@/editor/eventAiQueue/eventAiQueueView";
+import { repositionAiMapPresence } from "@/editor/aiMapPresence";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import {
@@ -3050,6 +3051,8 @@ export class EditScene extends PhaserRuntime.Scene {
     repositionRegionChunkOverlay();
     // AI 작업함의 칸 핀·입력창도 같은 계약이다.
     repositionEventAiQueuePins();
+    // 조수 이름표(지도 위 AI 존재감)도 같은 계약이다.
+    repositionAiMapPresence();
     // 로케이션 상자·설계 고스트도 카메라를 따라간다. 같은 계약: 노드는 그대로, 좌표만.
     // (인스펙터는 손대지 않는다 — 팬 중에 이름을 입력하고 있을 수 있다.)
     repositionMapLocationLayer();

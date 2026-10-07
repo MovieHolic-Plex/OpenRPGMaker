@@ -2,7 +2,7 @@ import { activityEntryIndex } from "./aiActivityIndex";
 import { createKeyedRows } from "./aiKeyedRows";
 import { createActivityMedia } from "./aiActivityMedia";
 import { createActivityView } from "./aiActivityView";
-import { bindActivityLevel, createActivityLevelControl } from "./aiActivityPreference";
+import { bindActivityLevel } from "./aiActivityPreference";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 // Live team members share the workspace and retain their scoped follow-up lifecycle.
 import { el } from "@/util/dom";
@@ -58,11 +58,10 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const nextText = el("p", { class: "ai-team-next-action", dataset: { testid: "ai-member-next" } });
   const reportText = el("p", { class: "ai-team-report-text" });
   const report = el("details", { class: "ai-team-member-report", children: [el("summary", { text: "보고서" }), reportText] });
-  const activityControl = createActivityLevelControl();
   const assignment = el("p", { class: "ai-team-member-assignment", dataset: { testid: "ai-member-assignment" }, attrs: { translate: "no" } });
   const currentAction = el("p", { class: "ai-team-current-action", dataset: { testid: "ai-member-current-action" }, attrs: { role: "status", "aria-live": "polite" } });
   const recent = el("ol", { class: "ai-team-recent", dataset: { testid: "ai-member-recent" }, attrs: { "aria-label": "최근 활동" } });
-  const records = el("details", { class: "ai-team-member-records", dataset: { testid: "ai-member-records" }, children: [el("summary", { text: "작업 기록" }), report, recent, activityControl, activityView.root, process] });
+  const records = el("details", { class: "ai-team-member-records", dataset: { testid: "ai-member-records" }, children: [el("summary", { text: "작업 기록" }), report, recent, activityView.root, process] });
   const conversation = el("div", { children: [assignment, el("dl", { class: "ai-team-work-summary", children: [
     el("dt", { text: "지금" }), el("dd", { children: [currentAction] }),
     el("dt", { text: "결과" }), el("dd", { children: [resultText] }),
@@ -221,7 +220,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
         class: entry.failed ? "is-failed" : "", children: [el("span", { text: entry.failed ? "!" : "·", attrs: { "aria-hidden": "true" } }),
           el("span", { text: entry.label }), el("time", { text: entry.at ? new Date(entry.at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "", attrs: { translate: "no" } })],
       })));
-      activityControl.dispatchEvent(new Event("ai-activity-level"));
       if (m.agent) {
         resultText.textContent = observed.report || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
         if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
