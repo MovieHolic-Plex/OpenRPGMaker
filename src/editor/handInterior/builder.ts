@@ -8,6 +8,7 @@
 //  층:   1층 = 구조, 2층 = 바닥 무늬(깔개·줄 자동 타일 중 밟는 것), 3·4층 = 그리는 순서대로 가구 조각, 탁상 물건은 4층.
 //  순서: 걸이 = 벽면 윗줄 y·16, 바닥 무늬 = 맨 먼저, 나머지 = (y + 높이)·16 — 남쪽 가구가 나중(앞)에 그려진다.
 import spec from "@/assets/handInteriorSpec.json";
+import jpSpec from "@/assets/jpInteriorSpec.json";
 import { passabilityOf } from "@/project/collision";
 import type { TilesetDef } from "@/project/types";
 
@@ -32,6 +33,8 @@ export interface HandInteriorRoomTable {
   readonly kinds: Readonly<Record<string, { readonly ko: string; readonly alias: readonly string[] }>>;
   readonly buildings: Readonly<Record<string, string>>;
   readonly examples: readonly (readonly [string, string, string, readonly (readonly [string, number])[]])[];
+  /** 예제 참고문서 id 머리(없으면 hand-interior-v5-map-). */
+  readonly docPrefix?: string;
 }
 interface SpecTable { readonly ko: string; readonly up: number; readonly oneRow: boolean; readonly pieces: Readonly<Record<string, readonly SpecCell[]>> }
 interface SpecLine { readonly ko: string; readonly kind: "floor" | "flat"; readonly up: number; readonly pieces: Readonly<Record<string, readonly SpecCell[]>> }
@@ -50,6 +53,11 @@ export interface HandInteriorSpec {
   readonly rooms?: HandInteriorRoomTable;
 }
 export const HAND_INTERIOR_SPEC = spec as unknown as HandInteriorSpec;
+/** 일본 실내(jp_city 번들 안) — 같은 모양의 사양을 scripts/content/jp-city/bake_interior_spec.py 가 굽는다. 조립 규칙은 같다. */
+export const JP_INTERIOR_TILESET_ID = "jp_city";
+export const JP_INTERIOR_SPEC = jpSpec as unknown as HandInteriorSpec;
+/** 실내를 지을 수 있는 칩셋 → 사양. */
+export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = { [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC };
 
 export interface HandInteriorZone { readonly x0: number; readonly y0: number; readonly x1: number; readonly y1: number; readonly floor?: string; readonly wall?: string }
 export interface HandInteriorObject { readonly id: string; readonly x: number; readonly y: number }
@@ -102,8 +110,7 @@ export function analyseHandInteriorPlan(plan: readonly string[]) {
 }
 
 /** 1층(구조) — build_tileset.py structure() 와 같다. */
-export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling">, issues: HandInteriorIssue[] = []): { W: number; H: number; lower: number[] } {
-  const S = HAND_INTERIOR_SPEC;
+export function handInteriorStructure(input: Pick<HandInteriorInput, "plan" | "floor" | "wall" | "zones" | "ceiling">, issues: HandInteriorIssue[] = [], S: HandInteriorSpec = HAND_INTERIOR_SPEC): { W: number; H: number; lower: number[] } {
   const { W, H, g, face, top, inn } = analyseHandInteriorPlan(input.plan);
   const ceiling = input.ceiling ?? "default";
   const ceil = S.ceilings[ceiling];
@@ -156,7 +163,7 @@ export function linePieceKey(cells: ReadonlySet<string>, x: number, y: number): 
 
 const SEATS = ["chair", "stool", "bar stool", "armchair", "sofa", "bench", "pew", "theater seat", "choir stall"];
 /** room4.is_seat — 앉는 가구는 옆 가구의 「사용 칸」 노릇을 한다. */
-export function isSeatId(id: string): boolean { return SEATS.some((s) => id.startsWith(s)); }
+export function isSeatId(id: string, d?: Pick<SpecObject, "use">): boolean { return SEATS.some((s) => id.startsWith(s)) || !!d?.use?.includes("sit"); }
 
 interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string }
 
@@ -164,11 +171,10 @@ interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label:
  * 평면 + 물건 목록 → 네 층. 오류(겹침·벽면 밖 걸이·바닥 밖 가구)는 issues 에 error 로, 통행 BFS 결과는 warning 으로 남긴다.
  * tileset 이 있으면 통행을 그 정의로 계산한다(없으면 BFS 생략).
  */
-export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: TilesetDef): HandInteriorLayers {
-  const S = HAND_INTERIOR_SPEC;
+export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: TilesetDef, S: HandInteriorSpec = HAND_INTERIOR_SPEC): HandInteriorLayers {
   const issues: HandInteriorIssue[] = [];
   if (!Array.isArray(input.plan) || input.plan.length < 3) throw new HandInteriorError("plan 은 3줄 이상의 문자열 배열이어야 한다.", "invalid-plan");
-  const { W, H, lower } = handInteriorStructure(input, issues);
+  const { W, H, lower } = handInteriorStructure(input, issues, S);
   const A = analyseHandInteriorPlan(input.plan);
   if (W < 3 || W > 120 || H > 120) throw new HandInteriorError(`맵 크기 ${W}×${H} — 3~120 칸`, "invalid-plan");
   const per = new Map<number, Entry[]>();
@@ -212,7 +218,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
         const x = o.x + dx, y = o.y + dy;
         if (!A.isFloor(x, y) && d.stairs !== "up") issues.push({ severity: "error", code: "not-on-floor", message: `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
         claim(x, y, label);
-        if (isSeatId(o.id) && inBounds(x, y)) seats.add(y * W + x);
+        if (isSeatId(o.id, d) && inBounds(x, y)) seats.add(y * W + x);
       }
       if (d.kind === "wall") for (let dx = 0; dx < d.w; dx++) {
         const x = o.x + dx;

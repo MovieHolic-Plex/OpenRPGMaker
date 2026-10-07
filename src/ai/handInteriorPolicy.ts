@@ -5,4 +5,5 @@ export const HAND_INTERIOR_POLICY_LINE =
   + "build_hand_interior_room(plan 문자열 · floor · wall · zones · objects · tables · lines · goods · links) 한 번으로 짓는다 — 벽면·천장은 plan 에서 자동이다. "
   + "가구를 고르기 전에 list_spatial_designs({kind:\"object\",query:\"장소·물건 이름\"})로 사용자 선택 공용 기물을 먼저 찾는다. 검색 결과의 사용자 선택 태그를 우선하되 시대·장소·기능이 맞는 것만 쓴다. "
   + "shared_hand_interior_harness의 킷은 방 골조를 만든 다음 stamp_object로 배치한다. 공용 킷 id를 build_hand_interior_room의 objects에 넘기지 않는다. 같은 자리에 기본 가구를 중복으로 놓지 않고 출입구·통로·접근 칸을 남긴다. "
-  + "옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)과 place_concept·방 세션은 폐기되어 거부된다. 층이 여럿이면 층마다 한 맵, 계단 칸에 links 로 이동을 단다.";
+  + "옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)과 place_concept·방 세션은 폐기되어 거부된다. 층이 여럿이면 층마다 한 맵, 계단 칸에 links 로 이동을 단다. "
+  + "일본 현대 집(현관 타타키·화실 다다미·LDK·욕실·화장실·아파트 원룸)은 같은 두 도구에 tileset:\"jp_city\" 를 준다 — 부품은 list_hand_interior_parts({tileset:\"jp_city\", room:\"화실\"}), 조립법은 list_tileset_references({tilesetId:\"jp_city\"}) 의 일본 실내 용도(jp-interior). 일본 거리(jp_city) 맵의 집에 들어가는 실내도 이 길이다.";

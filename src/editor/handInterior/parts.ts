@@ -161,7 +161,7 @@ export function roomParts(q: string, perGroup = 12, spec: HandInteriorSpec = HAN
   const key = r.mode === "alias" ? r.keys.join("+") : r.key;
   const ko = r.mode === "building" ? t.buildings[r.key]!.split(" — ")[0]! : (roomKeys ?? []).map((k) => t.kinds[k]!.ko).join(" + ");
   return {
-    key, ko, mode: r.mode === "building" ? "building" : "room", exampleDocs: maps.map((m) => `hand-interior-v5-map-${m}`), roomCount: rows.length, groups,
+    key, ko, mode: r.mode === "building" ? "building" : "room", exampleDocs: maps.map((m) => `${t.docPrefix ?? "hand-interior-v5-map-"}${m}`), roomCount: rows.length, groups,
     ...(r.mode === "building" ? { rooms: rows.map(([, , room, items]) => ({ room, ko: t.kinds[room]?.ko ?? room, items: items.map(([id, n]) => (n > 1 ? `${id}×${n}` : id)).join(", ") })) } : {}),
     ...(alsoTagged.length ? { alsoTagged } : {}),
   };
