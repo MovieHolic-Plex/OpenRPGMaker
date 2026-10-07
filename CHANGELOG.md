@@ -5,6 +5,28 @@
 
 <!-- releases -->
 
+## 0.166.0 — 2026-10-07
+
+### 기능
+
+- **beodeul-building-review** — 결정 로그 저장소화 + 허용한 건물 42채를 공용 번들 beodeul_reviewed 로 설치 (`15f0b57`)
+- **asset-store** — 마법 학교 팩 시트 이름에서 원작 이름을 빼고(displayName) 기존 상품에 판본 더하기(--new-version) (`050b729`)
+- **asset-store** — 마법 학교 번들을 공식 스토어 팩으로 — 칩셋+참고문서+걷기 칩 35명, 운영 올리기 스크립트 (`92421c1`)
+- **beodeul-building-review** — 통나무 후보는 원본 통나무 오두막을 비교 기준으로(게이트 확장, 점수·대조군 불변) (`ad1dfa4`)
+- **beodeul-building-review** — round 10 통나무집 7장, r9 탑을 집 바닥선에 맞춤, 화면에 바닥 그림자 (`c73b127`)
+
+### 수정
+
+- **beodeul-building-review** — r9-15/16 접합부를 끝 칸 대신 전폭 칸으로(틈 반려 해소) (`1763958`)
+
+### 문서
+
+- **beodeul-building-review** — round 10 통나무집·탑 접지·바닥 그림자·게이트 통나무 기준 (`d69d453`)
+
+### 잡무
+
+- regenerate openwiki/harness indexes after sync (`f0dff1e`)
+
 ## 0.165.0 — 2026-10-07
 
 ### 기능
