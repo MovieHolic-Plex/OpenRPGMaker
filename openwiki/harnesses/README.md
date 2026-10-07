@@ -48,6 +48,7 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트
 - [jp-city](jp-city.md) — 일본 도시 칩셋(jp_city · modern3) 주택가·역·공원·신사 그림 후보
 - [joseon-baram](joseon-baram.md) — 조선(바람의나라풍) 칩셋 joseon_baram 조각 관문·판정·지도 관문·재굽기·16구역 적대 검수 (기존 도구를 한 입구로)
+- [murim-chipset](murim-chipset.md) — 무림(중국 무협) 칩셋 murim_wuxia 조각 후보(코드 손 도트)·잠긴 팔레트·기계 관문·고르기 시트·사람 pick(해시에 묶임)
 
 - [pokemon-character-casting](pokemon-character-casting.md) — native NPC 후보의 사용자 Allow/Deny·SQLite 판정·현재 승인에 묶인 출력과 공용 등록.
 
