@@ -12,6 +12,7 @@ import { referenceOwner } from "@/project/tilesetReferences";
 import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
+import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -64,6 +65,7 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? [HAND_INTERIOR_POLICY_LINE] : []),
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),
+    ...(spatial ? [JOSEON_POINTER_LINE] : []),
     ...(spatial ? ["마을·방에 물건을 배치할 때 사용자 선택 태그가 있는 공용 기물을 먼저 검색하고, 시대·장소·기능이 맞으면 우선 사용한다. 이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다. 태그 「요청 시에만」(사막 메사·짐승 뼈)은 사용자가 그 물건을 말했을 때만 찍는다 — 사막 기본 꾸밈은 고목 덩이·선인장·사구·물가 야자."] : []),
     ...genreMechanicLines(project),
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",

@@ -61,6 +61,35 @@ export function resolveObjectAlias(id: string): string {
   return id;
 }
 
+/**
+ * 장소 검색 동의어 — 이름·칩셋 id 에 없는 낱말로 찾는 요청을 등록 장소에 잇는다.
+ * 실측(2026-10-07 space-craft 무림 과제 4회): 조수가 list_spatial_designs 로 「객잔」「한옥」「사극」을 찾으면 0건이라
+ * 번들 조선 주막·민가(joseon_baram)를 한 번도 못 쓰고 버들항·실내 v5 로 깔았다.
+ * 칩셋 낱말은 그 칩셋의 장소 전부에, 이름 낱말은 이름에 그 말이 든 장소에만 붙는다. 그림체가 다른 장르 낱말(무협·도장)은 붙이지 않는다 —
+ * 무림은 전용 칩셋이 따로 생긴다(openwiki/chipset-roadmap.md).
+ */
+const TILESET_SEARCH_TAGS: Readonly<Record<string, readonly string[]>> = {
+  joseon_baram: ["조선", "한국 전통", "한옥", "사극", "바람의나라", "고려", "삼국"],
+};
+const NAME_SEARCH_TAGS: readonly (readonly [RegExp, readonly string[]])[] = [
+  [/주막|여관/, ["객잔", "주점", "술집", "여관", "여인숙"]],
+  [/민가/, ["초가", "가정집", "살림집"]],
+  [/대장간/, ["무기점", "대장장이", "무기 상점"]],
+  [/약방/, ["한의원", "의원", "약국", "약재상"]],
+  [/서당/, ["학당", "글방", "교실", "학교"]],
+  [/관아/, ["관청", "동헌", "포도청", "관공서"]],
+  [/어좌전/, ["궁궐", "왕궁", "옥좌", "알현실"]],
+  [/서고/, ["서재", "도서관", "책방"]],
+  [/침전/, ["침실", "왕의 침실"]],
+  [/사냥터/, ["필드", "들판", "산길"]],
+  [/동굴/, ["굴", "던전"]],
+];
+function placeSearchTags(tilesetId: string | null | undefined, name: string): string[] {
+  const tags = [...(tilesetId ? TILESET_SEARCH_TAGS[tilesetId] ?? [] : [])];
+  if (tilesetId && TILESET_SEARCH_TAGS[tilesetId]) for (const [pattern, words] of NAME_SEARCH_TAGS) if (pattern.test(name)) tags.push(...words);
+  return tags;
+}
+
 export function sharedPlaces(): SharedPlaceEntry[] {
   const reviewed = reviewedPlaceIndex().map((place): SharedPlaceEntry => ({
     id: `reviewed:${place.id}`, kind: "place", name: place.name, placeKind: place.kind, tilesetId: place.tilesetId,
@@ -70,7 +99,7 @@ export function sharedPlaces(): SharedPlaceEntry[] {
     const placeKind = "placeKind" in entry && typeof entry.placeKind === "string" ? entry.placeKind as SharedPlaceEntry["placeKind"]
       : "regionKind" in entry && entry.regionKind === "terrain" ? "natural" : "settlement";
     return { id: entry.id, kind: "place", name: entry.name, placeKind, tilesetId: entry.tilesetId, width: entry.width, height: entry.height,
-      tags: [placeKind, entry.tilesetId, `${entry.width}×${entry.height}`], source: "registered",
+      tags: [placeKind, entry.tilesetId, `${entry.width}×${entry.height}`, ...placeSearchTags(entry.tilesetId, entry.name)], source: "registered",
       referenceRead: { kind: "region", id: entry.id },
       use: `import_region_reference({id:'${entry.id}'}) · 칸 배열은 read_region_reference · 소유자 문서는 read_spatial_reference({kind:'region',id:'${entry.id}'})` };
   });
@@ -119,8 +148,10 @@ export function isSharedDesignId(id: string): boolean {
     || [...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].some(entry => entry.id === id);
 }
 
+/** 낱말마다(공백으로 나눔) id·이름·태그 중 하나에 들면 맞다 — 「한옥 주막」처럼 이름에 붙어 있지 않은 두 낱말도 잡는다. */
 export function matchesQuery(entry: { id: string; name: string; tags: readonly string[] }, query: string): boolean {
-  if (!query) return true;
-  const q = query.toLocaleLowerCase();
-  return [entry.id, entry.name, ...entry.tags].some(value => value.toLocaleLowerCase().includes(q));
+  const words = query.toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const fields = [entry.id, entry.name, ...entry.tags].map(value => value.toLocaleLowerCase());
+  return words.every(word => fields.some(value => value.includes(word)));
 }
