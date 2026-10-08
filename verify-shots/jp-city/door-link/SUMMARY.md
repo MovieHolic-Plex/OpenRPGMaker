@@ -1,6 +1,6 @@
 # 거리 문 ↔ 실내 런타임 QA
 
-판정: **통과** · PASS 86줄 · 커밋 0d4e0ace93
+판정: **통과** · PASS 86줄 · 커밋 b973baa3bd
 
 실행 방식: links 의 `example` 은 게시 전 예제 JSON(tiledata/jp-city/interior/examples)을 build_hand_interior_room 으로 지어 `interiorMapId` 로 잇고, `place` 는 게시된 장소(public/assets/region-references)를 도구가 가져와 잇는다. 게시 뒤에는 같은 장소 id 로 place 경로가 된다.
 
@@ -15,7 +15,7 @@
 - 일본 도시 · 상가 거리 문 (1,10) 외 1칸 ↔ 가게 딸린 집 · 2층 단독주택 1층: 문 앞 (1,11) (2,11) 발판 → 실내 (9,13) · 실내 출입구 (9,14) → 거리 (1,12) · 「일본 2층 단독주택 실내(1층·2층)」 새 맵 map_ref_jp_city_house_interior_21x15 + 다른 층 map_ref_jp_city_house_interior_21x15:jp-city-house-2f
 
 - PASS — 01a. A2 → 일본 편의점(コンビニ) 실내 — 문 앞 발판 (19,11) 으로 up 한 걸음: jp-city-konbini (7,9) / 기대 (7,9)
-- PASS — 01b. 실내 양 끝(가장 먼 칸 → 거기서 가장 먼 칸)까지 43걸음: 10,6 → 10,5 → 10,4 → 11,4
+- PASS — 01b. 실내 양 끝(가장 먼 칸 → 거기서 가장 먼 칸)까지 29걸음: 10,6 → 10,5 → 10,4 → 11,4
 - PASS — 01c. 출입구 밟고 거리로: jp-city-shopstreet (19,12) / 기대 (19,12)
 - PASS — 01d. 거리에 머문다(되튕김 없음, 1.5초): jp-city-shopstreet (19,12)
 - PASS — 02a. B1a → 일본 이자카야 실내 — 문 앞 발판 (1,23) 으로 up 한 걸음: jp-city-izakaya (7,12) / 기대 (7,12)
