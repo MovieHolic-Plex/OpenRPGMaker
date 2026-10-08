@@ -67,6 +67,15 @@
     "A",
     "B"
    ]
+  },
+  "inn-r1": {
+   "wave": "inn",
+   "module": "src/harnesses/murim-chipset/rounds/inn_r1.py",
+   "keys": "line",
+   "lines": [
+    "A",
+    "B"
+   ]
   }
  },
  "kinds": {
@@ -1154,7 +1163,27 @@
     "걸상 배치 견본(set_table_four)을 함께 낸다: 뒤 걸상은 탁자 뒤에 윗면 절반 이상 보이게, 좌·우 걸상은 앉는 면이 탁자 윗면 가운데 높이, 앞 걸상은 탁자 앞 두께 띠에 2~4px 띄워 붙는다",
     "그리는 순서(깊이): 뒤 걸상 → 탁자 → 좌·우 걸상 → 앞 걸상. 걸상이 탁자 다리에 겹치거나 공중에 뜨지 않는다",
     "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 옆 걸상이 탁자 다리 높이로 처지고, 앞 걸상은 떨어져 뜨고, 뒤 걸상은 눌려 겹쳤다."
-   ]
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true,
+   "geometry": {
+    "$comment": "모든 후보가 지키는 탁자 계약(set_table_four 배치가 후보와 상관없이 같게). 행·열은 2×2 조각(32×32) 안 화소.",
+    "ellipse": [
+     12,
+     21
+    ],
+    "topCenter": 16,
+    "band": 22,
+    "foot": 31,
+    "x": [
+     3,
+     28
+    ],
+    "note": "윗면 타원 12~20행(윤곽 포함) → 가운데 16행 = 두 칸 사이 경계. 두께 띠 맨 아래 22행, 받침 발 31행(칸 아래 경계). 다리는 두께 띠 아래(23행~)만."
+   }
   },
   {
    "id": "stool_drum",
@@ -1173,7 +1202,129 @@
     "발이 칸 아래 경계에 닿는다(뜨지 않는다)",
     "탁자 옆에 놓았을 때 앉는 면 높이가 탁자 윗면 가운데와 맞는다",
     "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 옆 걸상이 탁자 다리 높이로 처지고, 앞 걸상은 떨어져 뜨고, 뒤 걸상은 눌려 겹쳤다."
-   ]
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true,
+   "geometry": {
+    "$comment": "모든 후보가 지키는 걸상 계약. 행·열은 1×1 조각(16×16) 안 화소.",
+    "seat": [
+     8,
+     12
+    ],
+    "seatCenter": 9.5,
+    "foot": 15,
+    "x": [
+     3,
+     12
+    ],
+    "note": "앉는 면 타원 8~11행(윤곽 포함, 가운데 9.5) · 발 15행(칸 아래 경계) · 폭 3~12열(가운데 7.5 = 탁자 가운데 15.5 와 반 칸 차)."
+   }
+  },
+  {
+   "id": "set_table_four",
+   "wave": "inn",
+   "title": "탁자+걸상 넷 배치 견본",
+   "size": [
+    4,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "둥근 탁자(table_round) 하나 + 북 걸상(stool_drum) 넷을 아래 layout 대로 합성한 견본. 4×2 칸을 통째로 찍거나, 탁자·걸상을 따로 놓을 때는 layout 의 px 오프셋을 그대로 쓴다. 장면의 탁자 세트는 반드시 이 견본이다.",
+   "criteria": [
+    "좌·우 걸상의 앉는 면 가운데 = 탁자 윗면 가운데 ±2px (옆 걸상이 탁자 다리 높이로 처지지 않는다)",
+    "뒤 걸상은 탁자 뒤에 앉는 면 절반 이상이 보인다(눌려 겹치지 않는다)",
+    "앞 걸상 앉는 면 위 행이 탁자 두께 띠 아래 행에서 2~4px — 떨어져 뜨지 않는다. 앞 걸상 발 = 견본 맨 아래 행",
+    "깊이 순서: 뒤 걸상 → 탁자 → 좌·우 걸상 → 앞 걸상. 좌·우 걸상은 탁자 다리와 겹치지 않는다",
+    "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 이 견본이 고친 기준이다"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "layout": {
+    "$comment": "칸 좌표 at = px / 16. 탁자는 칸 (1,0) 에 맞고, 뒤·앞 걸상은 가로 반 칸(1.5) — 탁자 가운데(2칸 경계)에 맞추느라 반 칸이다. 좌·우 걸상은 세로 6px(0.375칸) 내려 앉는 면을 탁자 윗면 가운데에 맞춘다. 칸 격자에 정수로만 놓는 도구는 4×2 견본을 통째로 찍는다. 그리는 순서 = order(층: 뒤 걸상이 가장 아래, 앞 걸상이 가장 위). 그림자는 빈 바닥에만 남는다.",
+    "parts": {
+     "table": "table_round",
+     "stool": "stool_drum"
+    },
+    "place": {
+     "back": {
+      "part": "stool",
+      "px": [
+       24,
+       0
+      ],
+      "at": [
+       1.5,
+       0
+      ]
+     },
+     "table": {
+      "part": "table",
+      "px": [
+       16,
+       0
+      ],
+      "at": [
+       1,
+       0
+      ]
+     },
+     "left": {
+      "part": "stool",
+      "px": [
+       7,
+       6
+      ],
+      "at": [
+       0.4375,
+       0.375
+      ]
+     },
+     "right": {
+      "part": "stool",
+      "px": [
+       41,
+       6
+      ],
+      "at": [
+       2.5625,
+       0.375
+      ]
+     },
+     "front": {
+      "part": "stool",
+      "px": [
+       24,
+       16
+      ],
+      "at": [
+       1.5,
+       1
+      ]
+     }
+    },
+    "order": [
+     "back",
+     "table",
+     "left",
+     "right",
+     "front"
+    ],
+    "rules": {
+     "sideSeatTol": 2,
+     "backSeatVisible": 0.5,
+     "frontGap": [
+      2,
+      4
+     ]
+    }
+   }
   },
   {
    "id": "counter_inn",
@@ -1190,7 +1341,13 @@
    "criteria": [
     "상판 윗면이 보인다",
     "소품이 얼굴처럼 안 읽힌다"
-   ]
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true
   },
   {
    "id": "kitchen_stove",
@@ -1207,7 +1364,18 @@
    "criteria": [
     "솥 뚜껑 윗면이 보인다",
     "아궁이 불빛"
-   ]
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar",
+    "inn_floor_wood",
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "huang",
+    "jin"
+   ],
+   "footOnEdge": true
   },
   {
    "id": "wine_jars",
@@ -1223,7 +1391,15 @@
    "brief": "붉은 천으로 입 막은 술독 2~3개.",
    "criteria": [
     "독 입 윗면 타원"
-   ]
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "huang"
+   ],
+   "footOnEdge": true
   },
   {
    "id": "menu_board",
@@ -1233,13 +1409,20 @@
     2,
     1
    ],
-   "kind": "wall",
+   "kind": "object",
    "layer": "wall",
    "walk": "solid",
    "brief": "벽에 거는 나무 차림판(글자 없이 색 판).",
    "criteria": [
     "글자·한자 금지",
-    "벽에 붙은 판으로 읽힌다"
+    "벽에 붙은 판으로 읽힌다",
+    "위에 2행 이상 갓(윗면)이 있어 벽에서 앞으로 나온 판으로 읽힌다",
+    "색 판·색 띠만 — 띠 안에 획처럼 읽히는 화소를 두지 않는다"
+   ],
+   "kindNote": "2026-10-08 inn-r1: wall(전부 불투명) → object(층은 wall). 벽 조각 위에 거는 판이라 둘레가 투명해야 그 줄 벽(띠장·기둥)과 상관없이 얹힌다.",
+   "styleRef": [
+    "inn_wall_pillar",
+    "inn_floor_wood"
    ]
   },
   {
@@ -1247,7 +1430,7 @@
    "wave": "inn",
    "title": "종이 등롱",
    "size": [
-    1,
+    2,
     1
    ],
    "kind": "object",
@@ -1257,6 +1440,42 @@
    "criteria": [
     "위 뚜껑 윗면이 보인다",
     "빛나는 느낌"
+   ],
+   "sizeNote": "2026-10-08 inn-r1: 1×1 → 2×1 세트(매다는 것 hang + 세우는 것 stand). brief 가 둘을 함께 요구한다.",
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "pieces": [
+    {
+     "id": "hang",
+     "title": "매다는 등롱(처마·보 밑)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "object"
+    },
+    {
+     "id": "stand",
+     "title": "세우는 등롱(받침 위)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "object",
+     "footOnEdge": true
+    }
    ]
   },
   {

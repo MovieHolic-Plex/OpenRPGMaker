@@ -108,6 +108,31 @@ def grid(rows, legend, w=None, h=None):
     return cv
 
 
+def layer(dst, src, x, y):
+    """배치 견본 합성: src(Cv) 를 dst(Cv) 의 (x, y) 에 얹는다. 불투명 화소는 덮고, 그림자 화소는 dst 가 빈 자리에만 둔다
+    (그림자가 다른 물체 위에 섞여 잠금 밖 색이 생기지 않게). 그리는 순서 = 깊이 순서(뒤 → 앞)."""
+    for yy in range(src.h):
+        for xx in range(src.w):
+            p = src.a[yy, xx]
+            if p[3] == 0:
+                continue
+            X, Y = x + xx, y + yy
+            if not (0 <= X < dst.w and 0 <= Y < dst.h):
+                continue
+            if p[3] == 255 or dst.a[Y, X, 3] == 0:
+                dst.a[Y, X] = p
+
+
+def compose_layout(layout, parts, size):
+    """seed layout(배치 견본)을 그린다. layout = {'place': {자리: {'part', 'px': [x, y]}}, 'order': [자리...]},
+    parts = {part 이름: Cv}, size = (칸w, 칸h). 반환 Cv."""
+    cv = Cv(size[0] * T, size[1] * T)
+    for slot in layout['order']:
+        pl = layout['place'][slot]
+        layer(cv, parts[pl['part']], pl['px'][0], pl['px'][1])
+    return cv
+
+
 def image_hash(im):
     """그림 해시 = 크기 + RGBA 원시 바이트의 sha256. PNG 압축과 무관하게 같은 그림이면 같다."""
     a = np.asarray(im.convert('RGBA'))

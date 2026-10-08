@@ -838,6 +838,746 @@
      "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
     }
    }
+  },
+  {
+   "at": "2026-10-08T10:35:18",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 11,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 3,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 8,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "081b68aa835d93dc7461a82bb509908d4e99171a10424306db17b8d3c48308be",
+     "B2": "596586e99c6dcc200dca16a36589aa946ac18b0ace6ca8337bbc9f5d37d15eaa"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "9b4284a78bddd2b02da8ad2761ebcbb20574aa42d770827ab3d45fffdd6ee332",
+     "B2": "9e3eae373f63cb9d5e27e6567dc2e3196b938668abfd8879140195eca3c01749"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "d93c53142699df934f8012306b8a1f7cdba94235bd946c5505be4c35ae08a69f"
+    },
+    "kitchen_stove": {
+     "A1": "3cb98374dd96a96f8bc01c3c9be7cc5a92c3688628fc69df415ef09d94c1f144",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "e4d931336c7ef5e222dcbc7e4b7c9ac16830fee6d698cdb70ecda29f78ee734b",
+     "B1": "ecdde3309a7cda40f7ca44fffa88af631322ecaeb5224d3b0600eecb3aea0a02",
+     "B2": "dd057769163b9bb06e9e8b3a1c61a6645942bd468dbf5e8cb11e481a3813d906"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:36:29",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 1,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 1,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "7c0f4f3a0ca1c6436b277fb62657c3488b5e55dd4eed00ca413e1a933b294f7c",
+     "B2": "7b6d3e64f052aee8af5ce0721ec54ea7ee2029cdf6db3ebba4c70eacca31d360"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "f382480edd4f276b5eb7246edc6fc4169c96ae2f2f3b7cff9f80b12e0842c38e",
+     "B2": "6a0716c8564cdd4281ef4ff196f23417015d065d069b528d9531246cc393e7a2"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "1b6d051d5c68302dd343b3f902f4e709db2d3c0d58be65177b756a1e08cc9bc2"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:36:40",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "7c0f4f3a0ca1c6436b277fb62657c3488b5e55dd4eed00ca413e1a933b294f7c",
+     "B2": "7b6d3e64f052aee8af5ce0721ec54ea7ee2029cdf6db3ebba4c70eacca31d360"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "f382480edd4f276b5eb7246edc6fc4169c96ae2f2f3b7cff9f80b12e0842c38e",
+     "B2": "6a0716c8564cdd4281ef4ff196f23417015d065d069b528d9531246cc393e7a2"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:37:19",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "7c0f4f3a0ca1c6436b277fb62657c3488b5e55dd4eed00ca413e1a933b294f7c",
+     "B2": "7b6d3e64f052aee8af5ce0721ec54ea7ee2029cdf6db3ebba4c70eacca31d360"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "f382480edd4f276b5eb7246edc6fc4169c96ae2f2f3b7cff9f80b12e0842c38e",
+     "B2": "6a0716c8564cdd4281ef4ff196f23417015d065d069b528d9531246cc393e7a2"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:38:35",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "7c0f4f3a0ca1c6436b277fb62657c3488b5e55dd4eed00ca413e1a933b294f7c",
+     "B2": "7b6d3e64f052aee8af5ce0721ec54ea7ee2029cdf6db3ebba4c70eacca31d360"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "f382480edd4f276b5eb7246edc6fc4169c96ae2f2f3b7cff9f80b12e0842c38e",
+     "B2": "6a0716c8564cdd4281ef4ff196f23417015d065d069b528d9531246cc393e7a2"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:41:43",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "bb48015f913490f2c6270ac6bae513a7572d3dffe606f2377cdfe7648464693d",
+     "B2": "84b6a2e4a60a91d87695c9ee14d06f8a661eae7ccc1cc304d328e32293292f28"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "9c458fb2385833eceeab20c91a8648ee6f5622f6660ce5bdb18585604fb6d83d",
+     "B2": "633767d09765068e94e261b656ff2aad9cae89d556d17db0c35ed561678c597d"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:41:45",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "bb48015f913490f2c6270ac6bae513a7572d3dffe606f2377cdfe7648464693d",
+     "B2": "84b6a2e4a60a91d87695c9ee14d06f8a661eae7ccc1cc304d328e32293292f28"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "9c458fb2385833eceeab20c91a8648ee6f5622f6660ce5bdb18585604fb6d83d",
+     "B2": "633767d09765068e94e261b656ff2aad9cae89d556d17db0c35ed561678c597d"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:44:45",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "5ef81976d0dd1ec7339f4b7bcbd6e30b5d24d42e4379194e6adbe1cc4be31b61",
+     "B2": "84b6a2e4a60a91d87695c9ee14d06f8a661eae7ccc1cc304d328e32293292f28"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "793fd411ea30e7fd21c3cb3771c939114fe058e340445cd0b8e93436deccf3c0",
+     "B2": "633767d09765068e94e261b656ff2aad9cae89d556d17db0c35ed561678c597d"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:52:07",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "82f8db2335bf35aa3448d7092bc2be58d5a9643f984d6b2384c773dde4cf1f57"
+    },
+    "door_double": {
+     "A1": "d8aa97fc8fb19eda38bd679ff3c17e85bb52120d6904a5a5f21bf5cf3ef1e4fc",
+     "A2": "ba3995054cc568c1a874355a506b9f4ba3ba53af18d9f8627f6599590ff2d057",
+     "B1": "d08286e5db55bef589f0b82b240c26a237588d2c16c661dfe07ac97b504b8cad",
+     "B2": "d59a2967373a8168d171c34518390c732594f505a8ebacebfe763dc3ac43117b"
+    },
+    "stairs_wood": {
+     "A1": "853f47c09084d584f11581eac4a989e9efdada006effa7388123582c900e7a2d",
+     "A2": "681c924de149fa1be0159adbab0731543ac5083e8dea69d191c30311a0daba44",
+     "B1": "240672b0a2037fca7fa47f79d5e820e85b0f94a3bded2e37287756280d439c36",
+     "B2": "150d54c46fa50d62593e9b442795a5043989acb83a1a8624b875e0b414bb27c3"
+    },
+    "railing_upper": {
+     "A1": "6315935bc8e68611dccafeaa350cbf88bfa1b39024ad4d74f91d4167280d414b",
+     "A2": "ce68ae8ec6cbf4a4dbbac96277a203ce61f509f618bc1d894e20e5cbf18af776",
+     "B1": "8aa1a82f870f27d313e9c9bc4d1961808a940d66ad7d36003af3138cb64fef0e",
+     "B2": "8463f2ee191fc113e0694ad94c4e25970fc1b65b7e90df917e647cb85af15e7e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:52:08",
+   "stage": "gate",
+   "round": "style-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "-": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "inn_floor_wood": {
+     "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+     "B": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+     "C": "8638e5afdda9cab1ed00523eddead4e3a30ad3a663650e8a6ea40cd1f8324613"
+    },
+    "yard_floor_stone": {
+     "A": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+     "B": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+     "C": "b57fe53eb1284cb4e701d1fa9c28978e4ef7d0be34c27a2cea33a4e07f2ae51e"
+    },
+    "inn_wall_pillar": {
+     "A": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+     "B": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+     "C": "fa1e8b48d8761d8bf0007ac3530305c13d4838492d381864e789878502815b5b"
+    },
+    "roof_tile_eave": {
+     "A": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+     "B": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+     "C": "8374f4e7b57970f96825d4a6bcaa48403ea664919bcf67cd1760d9212f9d7939"
+    },
+    "training_dummy": {
+     "A": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+     "B": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+     "C": "e43cb16561dbca7173587233aa25d2dee3c511bf006deaa5740b582d29757515"
+    },
+    "round_table_stools": {
+     "A": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+     "B": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+     "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T10:52:09",
+   "stage": "gate",
+   "round": "inn-r1",
+   "fail": 0,
+   "warn": 1,
+   "byLine": {
+    "A": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 16,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "table_round": {
+     "A1": "f3f2509082b739147e2983cb6c7c9459624d8947fc39855c04d73e8375c87ca7",
+     "A2": "b60354e8382ee517fea794de6aebf3c57ef77fdd2b7f0befe6436c5d0142bbf9",
+     "B1": "5ef81976d0dd1ec7339f4b7bcbd6e30b5d24d42e4379194e6adbe1cc4be31b61",
+     "B2": "84b6a2e4a60a91d87695c9ee14d06f8a661eae7ccc1cc304d328e32293292f28"
+    },
+    "stool_drum": {
+     "A1": "309a770e0d1bf583e1833e994038c8979a340e1007569cbccaad8e515358bc1d",
+     "A2": "2387f6afb510ee7973d395b80b9e8bf89d9d4390cc2292c7e4679e8fab0baa76",
+     "B1": "acdb622313de989f3c282044d1740d20b39d68ef276e3f806841c05030d9a0ac",
+     "B2": "7a9bdd6438efdf4e66119f13dfac7bee1cb73dbdd3d8c3516b23e9b441e53d02"
+    },
+    "set_table_four": {
+     "A1": "e6a94cf3a07d51ff134710bf69ba5484555f6898a3411575c6a0a8f4ce818f75",
+     "A2": "df004521a849caac8642447238dc04587cfc92c50bea781316614e4a0ac99abb",
+     "B1": "793fd411ea30e7fd21c3cb3771c939114fe058e340445cd0b8e93436deccf3c0",
+     "B2": "633767d09765068e94e261b656ff2aad9cae89d556d17db0c35ed561678c597d"
+    },
+    "counter_inn": {
+     "A1": "82fb3e30a0da06154e34d2eb7cef385ba6ef545c61510981660334d830e94140",
+     "A2": "ea9abe793b60b83f8a2060264678db8bd641d8a8d532c0f08fdd17545ab38dd0",
+     "B1": "02f3e5ecd996d1cc28e47e86dad13a31a6180ac998cef178cdf801eb449bc6a5",
+     "B2": "e9a9b585217fb6d47b84eb5a373ea8112f871ca928f6959dabe82f4495faad02"
+    },
+    "kitchen_stove": {
+     "A1": "2b9da5bf1a92c86ae0c61e33fda1a55b47f8d5e098d0850f2736a328aae6bf0f",
+     "A2": "fad8518d8dd2ee5851770988406db026b113decc25a1bb8b27a5719fbb97fea4",
+     "B1": "324a26ee9381593e077c5e8c51af5b74d562489c954a5f58d51ed8236ab9dceb",
+     "B2": "ec9f302eb5b0f37eab38a0552b163b2f2d70dfd849baa2546826f99711da64e7"
+    },
+    "wine_jars": {
+     "A1": "3cc30c50a51626c4c7ba4bc5b76d6d4e4bc560da77a82c91393c0a4a0416540b",
+     "A2": "84f2ea1e754b6248eea41d118b3662d6a4c280b86ab430279c156e71e42c9866",
+     "B1": "fde567157a2bfde4007148791eac87ef8e977cceac4530647375ceb98c31f4c9",
+     "B2": "e088383f42f4cee1296c19c2aa838518c3855726a6cb0cbcb60b7f97ed63ad82"
+    },
+    "menu_board": {
+     "A1": "628dd45e6ce34a1d6e49a1883e04b4053b9279469d05327cc61448949f5963d6",
+     "A2": "7efffaf6dc68e01f6e50a6d1e34e93514ed42d8191a8d54fe750a55c88d4bd6e",
+     "B1": "ea2245b2824a514835740920e39ebefb5504ea95ecee75e443d9390e9825d9cd",
+     "B2": "9843b73bc4d39301eee0b6391cd9b3225796e2df29633f7a7cddd155a62ffb92"
+    },
+    "lantern_paper": {
+     "A1": "d12487914eb3540f37e9523c18c9b3578c6fb39ab0462f20d1636e2af73a3f00",
+     "A2": "22ba7b4fab233263ce40811b18ad526bd2a94514b3b3cfaa15964a7cd40da572",
+     "B1": "046f9e89881ed1a11f8190c92c934190cd9f3cb345e9ad01424ccb3153bd95ec",
+     "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
+    }
+   }
   }
  ]
 }

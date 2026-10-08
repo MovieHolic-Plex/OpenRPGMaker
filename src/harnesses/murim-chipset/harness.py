@@ -4,7 +4,7 @@
   palette                          잠금 팔레트 보고(단마다 밝기 vs joseon_baram 범위, 가장 가까운 조선 램프)
   list [--wave W]                  시드 항목(줄마다 ★ = 사람이 고른 것, 현재 그림과 해시가 맞을 때만)
   draw <판>                        판의 후보를 그려 qa-runs/harnesses/murim-chipset/<판>/ 에 PNG·manifest.json
-  gate <판>                        draw + 기계 관문(P Z Q O F S R J Y / WARN T L N). 줄별로 센다. FAIL 이 있으면 종료코드 1
+  gate <판>                        draw + 기계 관문(P Z Q O F S R J Y G K / WARN T L N). 줄별로 센다. FAIL 이 있으면 종료코드 1
   sheet <판> [--force]             draw + gate + ~/claude-viz/murim-<판>.html (FAIL 이 있으면 --force 없이는 안 쓴다)
   pick <판> <항목> <후보> [--note]  사람이 고른 후보를 해시에 묶어 (항목, 줄)마다 기록, picked/<줄>/<항목>.png 로 복사
   reject <판> <항목> <후보> --why   사람이 버린 후보와 이유
@@ -22,6 +22,7 @@ import argparse
 import base64
 import datetime
 import importlib.util
+import inspect
 import io
 import json
 import os
@@ -191,8 +192,8 @@ def _merge(code_results):
     return out
 
 
-def check_candidate(rid, item, key, im, meta):
-    """후보 하나의 관문(R 제외). 세트 항목은 조각별 검사 + J(맞물림) + Y(줄 재료)."""
+def check_candidate(rid, item, key, im, meta, rendered=None):
+    """후보 하나의 관문(R 제외). 세트 항목은 조각별 검사 + J(맞물림) + Y(줄 재료). 배치 견본(layout)은 K."""
     if not item.get('pieces'):
         rs = G.check_one(item, im, meta)
     else:
@@ -222,6 +223,13 @@ def check_candidate(rid, item, key, im, meta):
         style = line_style(L)
         refs = [style[r] for r in item['styleRef'] if r in style]
         rs.append(G.check_line_material(im, refs, item.get('extraRamps', [])))
+    if item.get('layout'):
+        names = item['layout']['parts']
+        miss = [n for n in names.values() if key not in (rendered or {}).get(n, {})]
+        if miss:
+            rs.append(G._res('K', 'FAIL', False, f'같은 후보 키 {key} 의 {", ".join(miss)} 가 이 판에 없다'))
+        else:
+            rs.append(G.check_layout(item, im, {n: rendered[n][key] for n in names.values()}))
     return rs
 
 
@@ -234,7 +242,7 @@ def run_gate(rid, rendered):
         rc = G.check_recolor({K: im for K, (im, _) in cands.items()})
         res[item] = {}
         for key, (im, meta) in cands.items():
-            res[item][key] = check_candidate(rid, items[item], key, im, meta) + [rc[key]]
+            res[item][key] = check_candidate(rid, items[item], key, im, meta, rendered) + [rc[key]]
     return res
 
 
@@ -518,8 +526,8 @@ def cmd_sheet(rid, force=False):
                      ''.join(fig(v, 3, k) for k, v in vs.items()) + '</div></div>')
         H.append('</div>')
     elif hasattr(mod, 'scenes'):
-        H.append('<h2>줄별 장면 6×5 칸 (3배) — 그 줄 style 조각 + 이 판 후보로 객잔 한 모퉁이</h2>'
-                 '<p class="lead">같은 번호끼리 묶은 장면이다(항목마다 다른 번호를 골라도 된다). 사람은 Actor1. 맨 왼쪽은 조선 객잔 지도 같은 크기 자락.</p>')
+        H.append(getattr(mod, 'SCENE_HEAD', '<h2>줄별 장면 6×5 칸 (3배) — 그 줄 style 조각 + 이 판 후보로 객잔 한 모퉁이</h2>'
+                 '<p class="lead">같은 번호끼리 묶은 장면이다(항목마다 다른 번호를 골라도 된다). 사람은 Actor1. 맨 왼쪽은 조선 객잔 지도 같은 크기 자락.</p>'))
         nums = sorted({KEY_RE.match(K).group(2) for c in rendered.values() for K in c if KEY_RE.match(K)})
         for g in [x for x in LN if any(line_of(rid, K) == x for c in rendered.values() for K in c)]:
             H.append(f'<div class="lineh">{line_label(g)}</div><div class="row">')
@@ -534,7 +542,8 @@ def cmd_sheet(rid, force=False):
                         return None
                     im = c[key][0]
                     return {pid: cc for pid, (cc, _) in piece_crops(items[item], im).items()} if items[item].get('pieces') else im
-                vs = mod.scenes(get, line_style(g), act)
+                takes_key = len(inspect.signature(mod.scenes).parameters) >= 4
+                vs = mod.scenes(get, line_style(g), act, key) if takes_key else mod.scenes(get, line_style(g), act)
                 H.append(f'<div class="card"><h3>{key} 묶음</h3><div class="imgs">' +
                          ''.join(fig(v, 3, k) for k, v in vs.items()) + '</div></div>')
             H.append('</div>')
@@ -708,6 +717,22 @@ def cmd_validate():
             for k in ('sheet', 'pieces'):
                 if not os.path.exists(os.path.join(REPO, ref[k])):
                     errs.append(f'{i}: joseonRef.{k} 파일 없음 {ref[k]}')
+        lay = it.get('layout')
+        if lay:
+            for role, part in lay.get('parts', {}).items():
+                tgt = next((x for x in s['items'] if x['id'] == part), None)
+                if not tgt or tgt['wave'] != it['wave']:
+                    errs.append(f'{i}: layout.parts.{role} = {part} 는 같은 묶음 항목이어야 한다')
+            pl = lay.get('place', {})
+            if set(lay.get('order', [])) != set(pl) or not {'back', 'table', 'left', 'right', 'front'} <= set(pl):
+                errs.append(f'{i}: layout.place 는 back·table·left·right·front, order 는 그 전부')
+            for slot, p_ in pl.items():
+                if p_.get('part') not in lay.get('parts', {}):
+                    errs.append(f'{i}: layout.place.{slot}.part 가 parts 에 없다')
+                px, at = p_.get('px'), p_.get('at')
+                if not (isinstance(px, list) and len(px) == 2 and isinstance(at, list) and len(at) == 2
+                        and all(abs(a_ * tk.T - b_) < 1e-6 for a_, b_ in zip(at, px))):
+                    errs.append(f'{i}: layout.place.{slot}: at(칸) × 16 = px 여야 한다')
         style_ids = {x['id'] for x in s['items'] if x['wave'] == 'style'}
         for r_ in it.get('styleRef', []):
             if r_ not in style_ids:
