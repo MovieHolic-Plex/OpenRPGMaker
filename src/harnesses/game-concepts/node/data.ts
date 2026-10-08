@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import { normalizeGameConcept, type ConceptTag, type GameConcept } from "../../../concepts/format";
+import { isBuildableConcept, normalizeGameConcept, type ConceptTag, type GameConcept } from "../../../concepts/format";
 
 export const DATA_DIR = resolve(process.env.GC_HARNESS_DATA ?? join(homedir(), "oprn-harness-data", "game-concepts"));
 export const SEED_PATH = resolve("harness-data/game-concepts/seed.json");
@@ -24,6 +24,8 @@ export type Seed = {
   presetGuide: Record<string, string>;
   tilesetHints: Record<string, string>;
   rules: string[];
+  /** 피드에 실제로 내보내는 컨셉 slug(지금 칩셋으로 지을 수 있는 것만). bundle·publish 가 이것만 쓴다. */
+  lineup?: string[];
 };
 export type Verdict = "accept" | "reject";
 export type Decision = { verdict: Verdict; imageSha: string; at: string };
@@ -99,6 +101,25 @@ export function acceptedCandidates(): GameConcept[] {
     const decision = decisions[concept.slug];
     return decision?.verdict === "accept" && decision.imageSha === currentImageSha(concept.slug);
   });
+}
+
+/**
+ * 피드에 내보낼 컨셉 — 시드 lineup 중 사람이 받았고(현재 그림 기준) 지금 칩셋으로 지을 수 있는 것, 분류 순환 순서.
+ * lineup 이 없으면 받은 것 가운데 지을 수 있는 것 전부. 빠진 lineup 항목은 까닭과 함께 돌려준다.
+ */
+export function lineupCandidates(): { concepts: GameConcept[]; skipped: string[] } {
+  const accepted = acceptedCandidates();
+  const lineup = readSeed().lineup;
+  if (!lineup) return { concepts: roundRobinByTag(accepted.filter(isBuildableConcept)), skipped: [] };
+  const bySlug = new Map(accepted.map((concept) => [concept.slug, concept]));
+  const skipped: string[] = [];
+  const picked = lineup.flatMap((slug) => {
+    const concept = bySlug.get(slug);
+    if (!concept) { skipped.push(`${slug}: 받지 않았거나 그림이 바뀜`); return []; }
+    if (!isBuildableConcept(concept)) { skipped.push(`${slug}: 지금 칩셋으로 못 짓는 컨셉`); return []; }
+    return [concept];
+  });
+  return { concepts: roundRobinByTag(picked), skipped };
 }
 
 /** 분류(첫 태그)마다 하나씩 번갈아 고른다 — 피드 첫 쪽이 한 분류로 몰리지 않게. */

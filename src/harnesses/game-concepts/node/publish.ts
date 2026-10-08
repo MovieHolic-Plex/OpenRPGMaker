@@ -1,4 +1,4 @@
-// publish — 사람이 받은 컨셉(판정 해시 == 현재 그림)만 스토어에 올린다.
+// publish — 피드 라인업(사람이 받았고 판정 해시 == 현재 그림, 지금 칩셋으로 지을 수 있는 것)만 스토어에 올린다.
 // --target staging(기본, 테일스케일 스테이징) | prod(운영, 명시해야 한다) | http://… (임시 로컬 서버).
 // 토큰: OPRN_STORE_TOKEN, 없으면 storeCli 로그인 파일(~/.config/oprn-store/cli.json)의 그 주소 항목. 운영자 계정이어야 한다.
 import { createHash } from "node:crypto";
@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { GameConcept } from "../../../concepts/format";
-import { acceptedCandidates, imagePath, paths, readJson, roundRobinByTag, sha256File, writeJsonAtomic } from "./data";
+import { imagePath, lineupCandidates, paths, readJson, sha256File, writeJsonAtomic } from "./data";
 
 const TARGETS: Record<string, string> = { staging: "http://mdc-server:18320", prod: "https://store.openrpgmaker.com" };
 
@@ -34,7 +34,8 @@ export async function publish(argv: string[]): Promise<number> {
   if (targetArg === "prod" && !argv.includes("--yes-prod")) throw new Error("운영 게시는 --target prod --yes-prod 를 함께 줘야 합니다.");
   const base = (TARGETS[targetArg] ?? targetArg).replace(/\/+$/, "");
   const token = tokenFor(base);
-  const ordered = roundRobinByTag(acceptedCandidates());
+  const { concepts: ordered, skipped } = lineupCandidates();
+  for (const line of skipped) console.warn(`[publish] 뺌 ${line}`);
   const published = readJson<Record<string, Record<string, string>>>(paths.published, {});
   const done = published[base] ?? {};
   let count = 0;
@@ -58,6 +59,6 @@ export async function publish(argv: string[]): Promise<number> {
     writeJsonAtomic(paths.published, published);
     count += 1;
   }
-  console.log(`[publish] ${base} 에 ${count}개 올림 (받은 것 ${ordered.length}개)`);
+  console.log(`[publish] ${base} 에 ${count}개 올림 (라인업 ${ordered.length}개)`);
   return 0;
 }

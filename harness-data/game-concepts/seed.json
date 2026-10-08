@@ -49,5 +49,27 @@
     "brief 5칸(experience, activity, progression, detail, scope)은 조수가 바로 지을 수 있는 구체 문장. scope 는 한 맵~세 맵 안에서 끝나는 첫 구간.",
     "presetId 는 presetGuide 의 키 중 하나. 컨셉이 실제로 그 틀로 지어질 수 있어야 한다.",
     "같은 목록 안에서 무대·주인공·소재가 겹치지 않게 다양하게."
+  ],
+  "lineup": [
+    "a-wizard-in-joseon-opening-shop-in-hanyang-1d0k7h",
+    "a-day-as-a-martial-inn-part-timer-1fvzy4",
+    "crack-the-code-in-the-courtesan-house-ledger-d2jw26",
+    "hanyang-alley-apothecary-boss-1cni67",
+    "the-dancheong-girl-s-goblin-palace-1nq8dq",
+    "joseon-s-top-matchmaker-s-first-client-is-the-crown-prince-q5diih",
+    "a-13th-floor-appeared-in-our-apartment-elevator-zci1w9",
+    "cat-ninja-rooftop-infiltration-1cr8f8",
+    "late-night-diner-at-the-alley-s-end-every-regular-is-my-firs-bzr0md",
+    "the-demon-lord-is-now-our-convenience-store-clerk-1aeafy",
+    "the-suspicious-regulars-of-the-alley-teahouse-dm442b",
+    "body-swapped-as-the-blond-rival-young-master-magic-academy-s-ck1ld3",
+    "after-school-alchemy-club-the-explosion-class-ka8utp",
+    "night-patrol-at-the-cursed-academy-of-magic-rjjscz",
+    "the-great-final-exam-theft-at-magic-academy-2h923f",
+    "the-principal-was-the-demon-lord-on-opening-day-1k95xo",
+    "harbor-smuggler-murder-the-salt-crate-secret-4ympck",
+    "reviving-the-harbor-oyster-farm-w9sf2y",
+    "the-retired-hero-s-suspicious-moving-company-1o76cf",
+    "the-lighthouse-post-office-s-unanswered-letters-3muvs1"
   ]
 }

@@ -116,6 +116,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   (`IntersectionObserver`, 600px 앞) 다음 24장. 「더 보기」 단추도 남긴다. 상세 = 큰 키아트·훅·「이런 게임이 됩니다」(장르 틀·주인공·무대·첫 장면)·
   「살짝 바꾸기」(300자)·비슷한 컨셉 6장. 만드는 중엔 단추를 잠그고, 처리기가 false(연결 거절)면 풀고, 던지면 오류 줄에 남긴다.
   컨셉 출처는 `src/concepts/source.ts` — 데스크톱이면 스토어(Electron 메인 중계, 3초 시한), 안 되면 앱 번들 비상용(`src/assets/bundledConcepts.json`).
+  어느 쪽이든 지금 칩셋으로 지을 수 있는 컨셉만 보인다(`isBuildableConcept`, 칩은 있는 분류만) — `openwiki/harnesses/game-concepts.md` 「라인업」.
   컨셉 카드 형식·스토어 경로는 `openwiki/asset-store.md` 「컨셉 피드」.
 - **만들기(런처)**: `launcherMake.ts` — AI 연결 관문 → `suggestProjectDir`(`문서/OPRN Games/<제목>`) → `start.createProject` →
   `startIntent` 에 `{choiceId: presetId, startMode: "ai", screenSize: "wide", gameDesignBrief: {...conceptBrief, generationPending: true}}` → 편집기.

@@ -144,7 +144,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   root.append(top, body, errorLine);
 
   const renderChips = (): void => {
-    chips.replaceChildren(...["전체", ...CONCEPT_TAGS].map((tag) => {
+    chips.replaceChildren(...["전체", ...(source.tags?.() ?? CONCEPT_TAGS)].map((tag) => {
       const active = (tag === "전체" && !query.tag) || tag === query.tag;
       return el("button", {
         class: "cf-chip" + (active ? " is-on" : ""),
