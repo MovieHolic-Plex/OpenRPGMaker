@@ -29,7 +29,7 @@ npm run harness -- game-concepts bundle [--size 20]                             
 | draw | 앱 그림 경로 `http://mdc-server:9888/v1/images/generations`(`GC_IMAGE_ENDPOINT`), 제공자 `openai-codex` | 한 장 40~60초. 9888 이 떠 있어야 한다. 실패는 `logs/draw.log` |
 | check | `claude -p --allowedTools Read` 비전 판정 | 결과는 `checks/<slug>.json`(그림 해시 포함). 화면에 노란 경고로만 보인다 — 결정은 사람 |
 | publish | `POST /api/v1/blobs` → `POST /api/v1/admin/concepts` | 토큰 `OPRN_STORE_TOKEN` 또는 `~/.config/oprn-store/cli.json`(storeCli 로그인). 운영자여야 한다. rank 는 분류 순환으로 매겨 첫 쪽이 다양하다 |
-| bundle | 받은 것 분류 순환 앞 20개 | 커밋 대상(그림 20쌍 + JSON) |
+| bundle | 받은 것 분류 순환 앞 20개(분류 안에서 현재 그림 검사 통과분 먼저) | 커밋 대상(그림 20쌍 + JSON) |
 
 ## 데이터 폴더
 
