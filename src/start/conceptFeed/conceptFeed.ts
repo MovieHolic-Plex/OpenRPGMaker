@@ -5,7 +5,7 @@ import "./conceptFeed.css";
 import { el } from "@/util/dom";
 import { getLocale, t } from "@/i18n";
 import { CONCEPT_TAGS, CONCEPT_TWEAK_LIMIT, localizedConcept, type GameConcept } from "@/concepts/format";
-import { CONCEPT_FALLBACK_THUMB, type ConceptQuery, type ConceptSource } from "@/concepts/source";
+import { CONCEPT_FALLBACK_THUMB, type ConceptFallback, type ConceptQuery, type ConceptSource } from "@/concepts/source";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 
 export const CONCEPT_FEED_TESTIDS = {
@@ -88,7 +88,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   let exhausted = false;
   let loading = false;
   let seq = 0;
-  let offline = false;
+  let fallback: ConceptFallback | null = null;
   let disposed = false;
   let feedScroll = 0;
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
@@ -127,7 +127,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const chips = el("div", { class: "cf-chips", attrs: { role: "tablist", "aria-label": "분류" } });
   const grid = el("div", { class: "cf-grid" });
   const more = el("button", { class: "cf-more", attrs: { type: "button" }, text: "더 보기", dataset: { testid: CONCEPT_FEED_TESTIDS.more } });
-  const offlineNote = el("p", { class: "cf-offline", text: "인터넷에 연결하면 더 많은 컨셉을 볼 수 있어요.", dataset: { testid: CONCEPT_FEED_TESTIDS.offline } });
+  const offlineNote = el("p", { class: "cf-offline", dataset: { testid: CONCEPT_FEED_TESTIDS.offline } });
   offlineNote.hidden = true;
   const blank = options.onBlank ? el("p", { class: "cf-blank", children: [
     el("span", { text: "직접 처음부터 만들고 싶다면" }),
@@ -218,7 +218,9 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     grid.replaceChildren(...cards);
     more.hidden = exhausted || items.length === 0;
     more.disabled = loading;
-    offlineNote.hidden = !offline;
+    offlineNote.hidden = fallback === null;
+    offlineNote.dataset.fallback = fallback ?? "";
+    offlineNote.textContent = t(fallback === "offline" ? "인터넷에 연결하면 더 많은 컨셉을 볼 수 있어요." : "지금은 앱에 든 기본 컨셉만 보여요.");
   };
 
   const loadMore = async (): Promise<void> => {
@@ -234,7 +236,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       items = [...items, ...page.items.filter((concept) => !seen.has(concept.slug))];
       cursor = page.nextCursor;
       exhausted = page.nextCursor === null;
-      offline = page.offline;
+      fallback = page.fallback;
     } catch (error) {
       if (mine !== seq) return;
       exhausted = true;
@@ -250,7 +252,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     cursor = null;
     exhausted = false;
     loading = false;
-    offline = false;
+    fallback = null;
     setError("");
     await loadMore();
   };

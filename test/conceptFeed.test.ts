@@ -12,7 +12,7 @@ function concept(index: number, overrides: Partial<GameConcept> = {}): GameConce
 
 function fakeSource(pages: Record<string, ConceptPage>, calls: { query: ConceptQuery; cursor: string | null }[] = []): ConceptSource {
   return {
-    page: async (query, cursor) => { calls.push({ query, cursor }); return pages[cursor ?? "first"] ?? { items: [], nextCursor: null, offline: false }; },
+    page: async (query, cursor) => { calls.push({ query, cursor }); return pages[cursor ?? "first"] ?? { items: [], nextCursor: null, fallback: null }; },
     detail: async (item) => ({ concept: item, similar: [concept(99, { title: "비슷한 것" })] }),
     thumbUrl: async () => "/assets/x.webp",
     made: () => undefined,
@@ -43,8 +43,8 @@ describe("concept feed", () => {
   it("loads the next page when the end comes into view and does not duplicate cards", async () => {
     const calls: { query: ConceptQuery; cursor: string | null }[] = [];
     const source = fakeSource({
-      first: { items: [concept(1), concept(2)], nextCursor: "p2", offline: false },
-      p2: { items: [concept(2), concept(3)], nextCursor: null, offline: false },
+      first: { items: [concept(1), concept(2)], nextCursor: "p2", fallback: null },
+      p2: { items: [concept(2), concept(3)], nextCursor: null, fallback: null },
     }, calls);
     const { root, scrollToEnd } = mount({ source });
     await flush();
@@ -58,7 +58,7 @@ describe("concept feed", () => {
 
   it("a tag chip restarts the list with that tag", async () => {
     const calls: { query: ConceptQuery; cursor: string | null }[] = [];
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }, calls) });
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }, calls) });
     await flush();
     q(root, `${CONCEPT_FEED_TESTIDS.chip}-추리`)!.click();
     await flush();
@@ -66,16 +66,26 @@ describe("concept feed", () => {
     expect(q(root, `${CONCEPT_FEED_TESTIDS.chip}-추리`)!.getAttribute("aria-selected")).toBe("true");
   });
 
-  it("shows the offline note for bundle pages", async () => {
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: true } }) });
+  it("shows the offline note only when the store was unreachable", async () => {
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: "offline" } }) });
     await flush();
-    expect(q(root, CONCEPT_FEED_TESTIDS.offline)!.hidden).toBe(false);
+    const note = q(root, CONCEPT_FEED_TESTIDS.offline)!;
+    expect(note.hidden).toBe(false);
+    expect(note.textContent).toContain("인터넷에 연결하면");
+  });
+
+  it("says bundle-only (not 'connect to the internet') when the store has no concepts", async () => {
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: "bundled" } }) });
+    await flush();
+    const note = q(root, CONCEPT_FEED_TESTIDS.offline)!;
+    expect(note.hidden).toBe(false);
+    expect(note.textContent).not.toContain("인터넷");
   });
 
   it("typing shows the custom card first, and Enter drafts a concept into the detail view", async () => {
     const drafted = concept(7, { title: "초안 컨셉" });
     const draft = vi.fn(async () => ({ concept: drafted, thumb: Promise.resolve(null) }));
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), draft });
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }), draft });
     await flush();
     const search = q(root, CONCEPT_FEED_TESTIDS.search) as HTMLInputElement;
     search.value = "고양이 탐정";
@@ -90,7 +100,7 @@ describe("concept feed", () => {
 
   it("a declined AI gate keeps the feed and never drafts", async () => {
     const draft = vi.fn();
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), draft, beforeDraft: async () => false });
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }), draft, beforeDraft: async () => false });
     await flush();
     const search = q(root, CONCEPT_FEED_TESTIDS.search) as HTMLInputElement;
     search.value = "고양이 탐정";
@@ -103,7 +113,7 @@ describe("concept feed", () => {
   it("make passes the tweak, locks while running, and unlocks when cancelled", async () => {
     let finish: (started: boolean) => void = () => {};
     const onMake = vi.fn((_concept: GameConcept, _tweak: string) => new Promise<boolean>((resolve) => { finish = resolve; }));
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), onMake });
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }), onMake });
     await flush();
     q(root, CONCEPT_FEED_TESTIDS.card)!.click();
     await flush();
@@ -121,7 +131,7 @@ describe("concept feed", () => {
   });
 
   it("a failed make shows the error and re-enables the button", async () => {
-    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), onMake: async () => { throw new Error("폴더를 만들지 못했습니다."); } });
+    const { root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }), onMake: async () => { throw new Error("폴더를 만들지 못했습니다."); } });
     await flush();
     q(root, CONCEPT_FEED_TESTIDS.card)!.click();
     await flush();
@@ -134,7 +144,7 @@ describe("concept feed", () => {
 
   it("a late similar list keeps the typed tweak and the locked make button", async () => {
     let answer: (value: { concept: GameConcept; similar: GameConcept[] }) => void = () => {};
-    const source = { ...fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }), detail: () => new Promise<{ concept: GameConcept; similar: GameConcept[] }>((resolve) => { answer = resolve; }) };
+    const source = { ...fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }), detail: () => new Promise<{ concept: GameConcept; similar: GameConcept[] }>((resolve) => { answer = resolve; }) };
     const onMake = vi.fn((_concept: GameConcept, _tweak: string) => new Promise<boolean>(() => {}));
     const { feed, root } = mount({ source, onMake });
     await flush();
@@ -155,7 +165,7 @@ describe("concept feed", () => {
   });
 
   it("escape() goes back from detail first and reports false on the feed", async () => {
-    const { feed, root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, offline: false } }) });
+    const { feed, root } = mount({ source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }) });
     await flush();
     expect(feed.escape()).toBe(false);
     q(root, CONCEPT_FEED_TESTIDS.card)!.click();

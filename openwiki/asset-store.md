@@ -259,7 +259,10 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
   `POST /api/v1/concepts/:slug/made`(204, 하루 한 번/클라이언트), `POST /api/v1/admin/concepts`(작성자+운영자, `{concept, rank}`).
   썸네일은 blob 과 같은 R2/청소 경로를 탄다. 서버는 `?lang` 을 합치지 않는다 — 화면이 `localizedConcept` 로 고른다.
 - Electron 중계: `oprn:store.concepts` / `oprn:store.concept` / `oprn:store.conceptMade`(zod 스키마), 프리로드 `window.oprn.store.concepts/concept/conceptMade`.
-- 렌더러: `src/concepts/source.ts` — 3초 안에 첫 쪽이 안 오거나 비면 앱 번들(`src/assets/bundledConcepts.json`)로 대신하고 「인터넷에 연결하면…」을 띄운다.
+- 렌더러: `src/concepts/source.ts` — 3초 안에 첫 쪽이 안 오거나 비면 앱 번들(`src/assets/bundledConcepts.json`)로 대신한다. 안내는 까닭(`ConceptPage.fallback`)에 따라 둘로 나뉜다.
+  - `offline`: 스토어에 닿지 못함(중계 오류 status 0·응답 늦음) → 「인터넷에 연결하면 더 많은 컨셉을 볼 수 있어요.」
+  - `bundled`: 스토어가 답했지만 컨셉이 없음(빈 첫 쪽)·컨셉 주소가 없음(404 등 status>0, 아직 배포 안 된 서버)·브리지 없는 브라우저 → 「지금은 앱에 든 기본 컨셉만 보여요.」
+  - 실측(2026-10-08): 운영 스토어 `GET /api/v1/concepts` 가 404(서버 미배포) → 인터넷이 되는데도 「인터넷에 연결하면…」이 떴다. 이 구분으로 고쳤다.
   다음 쪽이 실패하면 번들을 섞지 않고 끝낸다.
 - 공식 컨셉 공급: `game-concepts` 하네스(`openwiki/harnesses/game-concepts.md`) — `produce` → `draw`(도트 썸네일) → 사람이 18321 에서 받기/버리기 →
   `publish --target staging|prod`(prod 는 `--yes-prod`) → `bundle`(비상용 번들 갱신). 받은 것만, 현재 그림 해시에 묶인 판정만 나간다.
