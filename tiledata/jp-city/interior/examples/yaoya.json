@@ -64,48 +64,43 @@
    "y": 6
   },
   {
-   "id": "sh-crate-stack",
-   "x": 3,
+   "id": "sh-veg-stand",
+   "x": 4,
    "y": 6
   },
   {
-   "id": "sh-veg-stand",
-   "x": 4,
-   "y": 5
-  },
-  {
-   "id": "sh-veg-stand",
-   "x": 7,
-   "y": 5
-  },
-  {
-   "id": "sh-fruit-box",
-   "x": 6,
-   "y": 7
-  },
-  {
    "id": "sh-crate-stack",
-   "x": 8,
-   "y": 8
+   "x": 6,
+   "y": 6
   },
   {
    "id": "sh-counter",
    "x": 1,
-   "y": 9
-  },
-  {
-   "id": "sh-register",
-   "x": 2,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-counter",
-   "x": 3,
-   "y": 9
+   "x": 2,
+   "y": 8
   },
   {
-   "id": "sh-veg-stand",
+   "id": "sh-register",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sh-fruit-box",
    "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 8,
    "y": 9
   },
   {
@@ -119,12 +114,12 @@
   {
    "id": "sh-scale",
    "x": 1,
-   "y": 9
+   "y": 8
   },
   {
    "id": "sh-price-dots",
-   "x": 3,
-   "y": 9
+   "x": 2,
+   "y": 8
   }
  ],
  "name": "일본 동네 채소가게 실내",

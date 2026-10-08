@@ -141,16 +141,6 @@
    "y": 14
   },
   {
-   "id": "cv-cart-rack",
-   "x": 5,
-   "y": 15
-  },
-  {
-   "id": "cv-basket-stack",
-   "x": 9,
-   "y": 15
-  },
-  {
    "id": "cv-baskets",
    "x": 10,
    "y": 15
@@ -196,7 +186,7 @@
    "y": 11
   },
   {
-   "id": "cv-produce",
+   "id": "cv-gondola",
    "x": 8,
    "y": 11
   },
@@ -206,17 +196,17 @@
    "y": 11
   },
   {
-   "id": "cv-gondola",
+   "id": "cv-produce",
    "x": 2,
    "y": 13
   },
   {
-   "id": "cv-gondola",
+   "id": "cv-freezer",
    "x": 6,
    "y": 13
   },
   {
-   "id": "cv-gondola",
+   "id": "cv-produce",
    "x": 8,
    "y": 13
   },
@@ -224,6 +214,21 @@
    "id": "cv-freezer",
    "x": 12,
    "y": 13
+  },
+  {
+   "id": "cv-cart",
+   "x": 5,
+   "y": 15
+  },
+  {
+   "id": "cv-cart",
+   "x": 6,
+   "y": 15
+  },
+  {
+   "id": "cv-baskets",
+   "x": 9,
+   "y": 15
   }
  ],
  "tables": [],

@@ -3,88 +3,132 @@
  "verdict": "fail",
  "reviewerVerdict": "fail",
  "reviewer": "claude -p --model sonnet[1m] --effort high",
- "rounds": 10,
- "seconds": 597,
- "focus": "일본 가게·공공 실내 19곳(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·센토·코인세탁·파출소·의원)과 집 보강(맨션 2LDK+베란다·목조 아파트·단층 옛집), 그리고 거리 건물 문 ↔ 실내 잇기 도구 link_jp_city_interior. sheet1~4 = 예제 맵(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일 이름), _all-x3 = 블록별 새 가구 도감. 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 가게처럼 보이는가(편의점 음료 냉장 벽·섬 진열·계산대+핫스낵, 라멘 L자 카운터·식권기, 이자카야 다다미 좌석, 센토 반다이·탈의실·욕장·후지산 벽화, 코인세탁 세탁기 줄, 交番, 의원 접수·대기·진찰실) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색 뭉침, modern3 팔레트·윤곽·명암, 승인된 street_hand 그림과 같은 게임으로 보이는가) ⑤ 동선(손님: 입구→진열→출구 가까운 계산대, 직원: 카운터 안쪽↔주방·뒷방) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 글자·로고·사람이 그려져 있지 않은가 ⑧ 같은 틀 반복(뒷방 여섯이 다 같은 싱크·그릇장 등) ⑨ 문 잇기: door-link/SUMMARY.md 와 01a~01d(거리 문 앞→실내 도착→거리 복귀, 출하 player.html 실측), 도구 코드(발판 위치·착지 칸이 발판을 다시 밟지 않는가, 여러 칸 문, 실내 출구 탐색이 맨 아래 3줄인 것의 위험) ⑩ 참고문서(interior-shop-index.md·interior-rules.md 「없는 것」)가 조수가 따라 할 수 있게 정확한가. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 【게시 순서】 장소 19곳 게시(interior.mjs --publish)는 이 관문 pass 가 조건이라 지금은 게시 전이다 — 게시 안 된 것 자체는 결함이 아니다. door-link QA 는 게시 전 예제를 도구(build_hand_interior_room→interiorMapId)로 지어 잇는다(SUMMARY 머리에 커밋·방식). 【같은 틀 반복】 space.txt 의 SAME 줄 = 같은 크기 예제끼리 가구 자리 50% 넘게 겹침. 【빈 바닥 판정】 interior2/space.txt = 도구 그대로 지은 맵의 엔진 통행 수치(sq = 걸음 칸만으로 된 가장 큰 정사각형 변, 2 = 통로 폭; e3 = 3×3 이 다 걸음 칸인 창이 덮는 칸 수). 3/4 시점이라 키 큰 가구는 발밑 한 줄만 막고 그림은 위로 솟는다 — 그림에서 바닥이 보여도 걸음 칸이 통로 폭이면 빈 바닥이 아니다. 빈 바닥 지적은 sq ≥ 3 인 곳의 좌표로 한다. 【읽기 제한 — 지난 실행이 컨텍스트 폭주로 죽었다】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 기준 그림은 street_hand/_all-x2.png 한 장만, buildings/*.png 는 읽지 마라. 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로. 가구 도감(_all-x3)은 앞 회차에서 봤으니 이번엔 예제 시트만 본다. 지난 지적 확인도 위 파일 목록 안에서만 한다(door-link 는 SUMMARY.md 텍스트로 — 21곳 86/86, 계단 왕복 08s, 되튕김 d 줄).",
+ "rounds": 11,
+ "seconds": 1621,
+ "focus": "일본 가게·공공 실내 19곳(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·센토·코인세탁·파출소·의원)과 집 보강(맨션 2LDK+베란다·목조 아파트·단층 옛집), 그리고 거리 건물 문 ↔ 실내 잇기 도구 link_jp_city_interior. sheet1~4 = 예제 맵(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일 이름), _all-x3 = 블록별 새 가구 도감. 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 가게처럼 보이는가(편의점 음료 냉장 벽·섬 진열·계산대+핫스낵, 라멘 L자 카운터·식권기, 이자카야 다다미 좌석, 센토 반다이·탈의실·욕장·후지산 벽화, 코인세탁 세탁기 줄, 交番, 의원 접수·대기·진찰실) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색 뭉침, modern3 팔레트·윤곽·명암, 승인된 street_hand 그림과 같은 게임으로 보이는가) ⑤ 동선(손님: 입구→진열→출구 가까운 계산대, 직원: 카운터 안쪽↔주방·뒷방) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 글자·로고·사람이 그려져 있지 않은가 ⑧ 같은 틀 반복(뒷방 여섯이 다 같은 싱크·그릇장 등) ⑨ 문 잇기: door-link/SUMMARY.md 와 01a~01d(거리 문 앞→실내 도착→거리 복귀, 출하 player.html 실측), 도구 코드(발판 위치·착지 칸이 발판을 다시 밟지 않는가, 여러 칸 문, 실내 출구 탐색이 맨 아래 3줄인 것의 위험) ⑩ 참고문서(interior-shop-index.md·interior-rules.md 「없는 것」)가 조수가 따라 할 수 있게 정확한가. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 【게시 순서】 장소 19곳 게시(interior.mjs --publish)는 이 관문 pass 가 조건이라 지금은 게시 전이다 — 게시 안 된 것 자체는 결함이 아니다. door-link QA 는 게시 전 예제를 도구(build_hand_interior_room→interiorMapId)로 지어 잇는다(SUMMARY 머리에 커밋·방식). 【같은 틀 반복】 space.txt 의 SAME 줄 = 같은 크기 예제끼리 가구 자리 50% 넘게 겹침. 【빈 바닥 판정】 interior2/space.txt = 도구 그대로 지은 맵의 엔진 통행 수치(sq = 걸음 칸만으로 된 가장 큰 정사각형 변, 2 = 통로 폭; e3 = 3×3 이 다 걸음 칸인 창이 덮는 칸 수). 3/4 시점이라 키 큰 가구는 발밑 한 줄만 막고 그림은 위로 솟는다 — 그림에서 바닥이 보여도 걸음 칸이 통로 폭이면 빈 바닥이 아니다. 빈 바닥 지적은 sq ≥ 3 인 곳의 좌표로 한다. 【통로 폭 — 10회차에 규칙을 바꿨다】 interior-rules.md 「통로 폭」 절: 주 동선(입구→계산대 앞, 입구→안쪽 방 문·트인 연결)은 2칸, 진열 줄 사이 가로 통로는 1칸도 된다(2칸 주 동선에 붙고, 아래 줄 가구 윗부분이 덮어 안 보이지 않고, 막다른 1칸은 3칸까지). 카운터석 의자 뒤·직원 전용 길은 1칸이 맞다. space.txt 의 w2(걸음 칸 중 2×2 덩이 비율)·cut(막으면 출입구에서 4칸 이상 끊기는 1칸 병목 좌표)로 확인하고, 통로 지적은 이 규칙 기준으로 cut 좌표를 짚어라. 규칙 자체가 틀렸다고 보면 그 근거를 따로 적어라. 【읽기 제한 — 지난 실행이 컨텍스트 폭주로 죽었다】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 기준 그림은 street_hand/_all-x2.png 한 장만, buildings/*.png 는 읽지 마라. 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로. 가구 도감(_all-x3)은 앞 회차에서 봤으니 이번엔 예제 시트만 본다. 지난 지적 확인도 위 파일 목록 안에서만 한다(door-link 는 SUMMARY.md 텍스트로 — 21곳 86/86, 계단 왕복 08s, 되튕김 d 줄).",
  "files": {
-  "verify-shots/jp-city/interior2/sheet1.png": "f20f9fd5d6e9ed6ae7530ba7c4891c64ff5bff78cc6904930052800f64dcee80",
+  "verify-shots/jp-city/interior2/sheet1.png": "702a45c3dc69e827d40512a94bcd8fda83576ea5d75fd80383b9daa395ebd2d6",
   "verify-shots/jp-city/interior2/sheet2.png": "11b139ccd26d8c9f89b09131c52a7f6dc8362f6c0db5c3921d81b0c4e47b9145",
-  "verify-shots/jp-city/interior2/sheet3.png": "c3e1af8a28d9d7b006d7ed14a573339ca4c0a3e05f19c44e4024b46198469f6a",
+  "verify-shots/jp-city/interior2/sheet3.png": "17c789053fdbcbb5abbe5ede5b734d57086c6c991758beebfb8c76654623baed",
   "verify-shots/jp-city/interior2/sheet4.png": "81d02302b46f507b195cb4b41d65dd2fe59356028be15b48dc154836df5461c8",
-  "verify-shots/jp-city/interior2/space.txt": "92a2ce8b7fa17a0879420fa0d3e14c8a78acf006761081f916292e57cb78a61d",
-  "tiledata/jp-city/interior/examples/places2.json": "272d95b81702f50ecb88bf241e8686d704e8acb66997289ffe4d926ca28fbfd1",
-  "tiledata/jp-city/interior/examples/konbini.json": "f1325c8ed1804d378e9b61dad496008cf4f5d9f3491fd3c42c4f4bbb2513e90a",
+  "verify-shots/jp-city/interior2/space.txt": "27ab6b4a8e96aa39811745c493bec0a0646f1828f056ac1838b76c57b798c806",
+  "tiledata/jp-city/interior/examples/places2.json": "50e0a9c6e87a199590137eea9047f524a1ad694633c5d28f9f772421d3e32708",
+  "tiledata/jp-city/interior/examples/konbini.json": "90b4a6da9e9f1b508e7c4a8c2bfd025ced3c6fec7b367675fbf2c71fd5c189ba",
   "tiledata/jp-city/interior/examples/ramen.json": "2a2b9ce5588e4e97090757443f8f3ed71d3340e9f8f37966749234cc7d338778",
-  "tiledata/jp-city/interior/examples/sento.json": "afcbb5d9e9fa28d7315239d59e60bb1b5d4ad606dfeef4e2f5035948bf6f3203",
+  "tiledata/jp-city/interior/examples/sento.json": "8deb7221ae0cd5ec9d5000244fb730706b256b729416f739b570abd7f61189b0",
   "tiledata/jp-city/interior/examples/mansion-2ldk.json": "b64eba993fe56bb2174bb4608abc6024b49d6dca56b6d097c28946f1dd776bc0",
-  "tiledata/jp-city/refs/interior-shop-index.md": "d80bb3acfe6034ec0173264efb1ee2c5b702198e185a7713ecdcbe7c5726bc4a",
-  "tiledata/jp-city/refs/interior-rules.md": "4a7b730843264985dca7fb196e3f6ae381d4957664ee79be3bde5af94dd37b37",
-  "verify-shots/jp-city/door-link/SUMMARY.md": "9f668c152c94b1d804de921e795e461fe9e506ead0e6bd8b3ce91fa4bf13e0ab",
+  "tiledata/jp-city/refs/interior-shop-index.md": "bf67fc3f273668a975368f9e7915303c957fd59d22802c471a3535e22293ead5",
+  "tiledata/jp-city/refs/interior-rules.md": "cc78db955883a89fbd1c9a2de94c0c8f6e069ee3097af6c0b207d249bd2d23a9",
+  "verify-shots/jp-city/door-link/SUMMARY.md": "8c6d601e0c2ff14de67d97fa85a68b62097ba6aa8b42b06324ddfcd7bf6f438b",
   "verify-shots/jp-city/door-link/01a-street.png": "545645d942fa74ec3c983fd5ae5d5438fcc6fb78501aa264d417b64b6104458f",
-  "verify-shots/jp-city/door-link/01b-inside.png": "bae0a099d7173e083565dcb46d4543bdb54f4c97f03b6c001dc94eb7456f9438",
+  "verify-shots/jp-city/door-link/01b-inside.png": "eae7c494bfefba41313cca0b803e6490fda491062f6fe9f107b4d51d80c23394",
   "verify-shots/jp-city/door-link/18c-far.png": "9228619b796cd35078ab8ce794dba742623002b488294d1580eb0ff986fe8b13",
   "verify-shots/jp-city/door-link/19c-far.png": "7b7bc63bed1941540ce82412eac2c6064e288e36cfbd8a166da92b3a4a4c7e0a",
   "tiledata/jp-city/interior/examples/izakaya.json": "99ae9a898169934c06f01167a5ef02f7d9641f716a90cd1f1fa5e834ffd6ee97",
   "tiledata/jp-city/interior/examples/koban.json": "8defdd61a4c6929a783427c39c72d30530bc9fd039844b72cb670c19070757f5",
+  "tiledata/jp-city/interior/examples/supermarket.json": "8d67fcc82de2a9d00e8b8e20dada2f60bcb8e248b992f8bdc6d26a6e19cf4f71",
+  "tiledata/jp-city/interior/examples/clinic.json": "e969d2e7e23b7a738f85e4d8f9228fd77aab67d951ac0e0b8ee2fc45f6be4857",
   "src/editor/tools/jpCityInteriorLink.ts": "a238b2fe043f4a08adb6bc84b217f3d2f8aae765d523d269c25fbb66db1a1227"
  },
  "findings": [
   {
    "severity": "major",
    "file": "tiledata/jp-city/interior/examples/konbini.json",
-   "where": "cv-gondola (2,6)(4,6)(6,6) 가 x=2..7 벽까지 이어짐 + cv-cooler (1..4,3..4) 앞 y=5 한 줄, 진입 (1,5)(1,6) 1칸, y=7 통로(x=1..7)도 gondola/freezer 사이 1줄",
-   "problem": "음료 냉장 벽 앞 통로가 1칸 폭 막다른 길이고 gondola 오버행에 통째로 덮인다. 규칙 95행(핵심 통로 2칸) 위반. space.txt sq 2 와 BFS 게이트가 못 잡는다. index 의 「가운데 섬 진열대 줄」도 실제와 다르다.",
-   "fix": "gondola (6,6) 를 지우거나 (3,6)(5,6) 으로 옮겨 입구 틈 (6..7,8) 바로 위 x=6..7 을 2칸 이상 열어 y=5 와 잇는다. y=7 통로 아래 freezer (1,8)(3,8) 를 y=9 로 내려 2칸 폭을 만든다. index 문구 정정."
+   "where": "계산대 앞 (8,9)~(12,9). cv-hotcase(8,8) cv-register(9,8) cv-counter(11,8) cv-coffee(12,8). 위 y6~7 은 칸막이 벽면. space.txt cut 7,9 8,9 9,9 10,9. 증거 01b-inside.png 의 계산대 아래 한 줄",
+   "problem": "계산대 앞이 y9 한 줄(1칸 폭)이고, 입구(6~7,9)에서 계산대·핫스낵·커피까지 가는 주 동선이 (8,9) 부터 1칸으로 좁다. 손님 둘이 서면 서로 막고 줄 설 자리가 없다. interior-rules 95행 「입구→계산대 앞 주 동선 처음부터 끝까지 2칸」 위반. 직원 길이 아니라 손님 줄이다.",
+   "fix": "칸막이 행 y5 를 y4 로 올려 뒷방을 y1..3 으로 줄이고, 계산대 줄(hotcase·register·counter·coffee)을 y8→y7 로 올려 앞 y8·y9 두 줄을 비운다. 직원 틈 x=10 은 그대로 y7 줄에 둔다."
   },
   {
    "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/sento.json",
-   "where": "탈의실 y=9 줄 locker(1,9)(2,9) basket-shelf(5,9) bandai(7,9) basket-shelf(8,9) locker(13,9) 와 y=11 줄 getabako(5,11)(9,11) pb-massage-chair pb-bench 사이 y=10",
-   "problem": "입구에서 남탕·여탕 문 (3,6)(11,6) 으로 가는 핵심 경로 중 x=5..6, x=9..10 이 1칸 폭이고 선반·getabako 오버행에 가려진다. 신발장 getabako 가 현관이 아닌 탈의실 한가운데에 있다.",
-   "fix": "getabako (5,11)(9,11) 를 현관 옆 한 쌍으로 줄이거나 지워 y=10..11 을 2칸 폭으로 만든다. 또는 y=9 줄 basket-shelf 를 벽 쪽 y=9 로 두고 평면을 한 줄 키운다."
+   "file": "tiledata/jp-city/interior/examples/clinic.json",
+   "where": "접수 앞 (1,4)(1,5)(2,5)(3,5). pb-reception(2,4)(3,4) 북쪽, pb-waiting-sofa-n(1,6) 남쪽. cut 4,5. 그림 19c-far.png",
+   "problem": "접수 카운터 앞이 소파에 막힌 y5 한 줄이고 막다른 4칸(막다른 1칸 통로 3칸 한도 초과)이다. 소파 윗부분이 y5 아래 절반을 덮어 서 있는 사람이 반쯤 가려진다. interior-shop-index.md 의 「두 칸 폭 통로로 접수 카운터 앞」은 사실과 다르다.",
+   "fix": "소파를 (1,6)→(1,7) 로 내리고 houseplant(1,7)는 (4,7) 등 빈 곳으로 옮겨 접수 앞 y5~6 을 2줄로 만든다. 소파가 남쪽 벽에 등을 대게 한다. 고친 뒤 index 문장을 실제 좌표로 맞춘다."
   },
   {
    "severity": "major",
-   "file": "tiledata/jp-city/interior/examples/supermarket.json",
-   "where": "cv-cooler 줄 y=8..9, cv-produce y=11, cv-gondola y=13 줄 사이 통로 y=10·y=12 와 줄 안 틈 (6,11)(9,11)(14,11)",
-   "problem": "판매장 통로가 거의 전부 1칸 폭이다. 걸음 칸 82개 중 2×2 소속 18(21%), 오버행 제외 시 10%. 규칙 95행 「진열 사이 통로 2칸」 위반.",
-   "fix": "cv-produce (4,11)·cv-gondola (4,13)·(9,13) 같은 줄 중간 조각을 지워 2칸 폭 세로 교차 통로 둘을 만들고, 가로 통로 y=12 위쪽 produce 줄을 y=10 쪽으로 붙여 2칸 폭을 확보한다."
+   "file": "tiledata/jp-city/interior/examples/bookstore.json",
+   "where": "책 섬 sh-book-island (1,10)(4,10)(4,12), sh-book-table(1,12). 통로 y9 (1..2,9)(4..5,9) 와 y11 (1..9,11). sheet2.png bookstore 의 파란 윗면 띠 아래·위",
+   "problem": "섬 윗부분이 위 줄 통로를 덮는다. 3배 확대 실측으로 y9 는 책장 아래와 섬 윗면 사이 보이는 바닥이 약 27%, y11 은 약 35% 다. 서점 주 매장 전체가 가려진 1칸 통로 두 줄이다. interior-rules 95행 조건 ② 「아래 줄 가구 윗부분이 통로를 덮어 안 보이게 하면 안 된다」 위반. space.txt 의 sq·cut 은 이 가려짐을 못 잡는다.",
+   "fix": "책 섬 줄을 y10→y11 로 내려 책장(y8)과 섬 사이 y9~10 을 2줄로 만든다. y12 섬 (4,12) 은 삭제하고 평대 (1,12)만 남긴다. 그다음 그림을 원 해상도로 다시 확인한다."
   },
   {
-   "severity": "minor",
+   "severity": "major",
+   "file": "tiledata/jp-city/interior/examples/yaoya.json",
+   "where": "북쪽 통로 y4 (4..8,4). sh-basket-shelf(4..7,3) 아래, sh-veg-stand(4,5)(7,5) 위. 진입 목 (6,5). cut 6,4 6,5 6,6. 그림 sheet2.png yaoya 위쪽",
+   "problem": "y4 는 평대 윗부분이 거의 다 덮어 선반 아래와 평대 위 틈이 약 23% 뿐이라 통로로 안 읽힌다(조건 ②). 진입이 (6,5) 한 칸이라 2칸 폭 주 동선에 붙지 못한다(조건 ①). 막다른 길이 (6,5)(6,4)(7,4)(8,4) 4칸이라 3칸 한도를 넘는다(조건 ③). 선반 앞 손님이 평대 뒤에 숨는다.",
+   "fix": "sh-veg-stand (4,5)(7,5) 를 y6 으로 내려 y4~5 를 2줄 통로로 만든다. 아래 줄 가구 위치는 그에 맞춰 한 줄씩 조정하고 (6,6) 을 비운다."
+  },
+  {
+   "severity": "major",
+   "file": "tiledata/jp-city/interior/examples/florist.json",
+   "where": "목 (2,8)→(2,7). sh-plant-pot(1,8), sh-wrap-table(3,7) 가 양옆을 막음. 북서 구역 y4~7 의 냉장 유리장 (1..3,3)·재고 선반 (4,3)·양동이 (1,5). cut 2,7 2,8 3,8 4,8 5,8",
+   "problem": "가게 주력 진열인 냉장 유리장 벽 구역으로 가는 길이 (2,8)·(2,7) 한 칸 목이다. (1,8) 화분과 (3,7) 포장 작업대가 목을 만든다. 입구→주 진열 동선이 1칸이고, (3,8) 은 (3,9) 화분 윗부분에도 덮인다.",
+   "fix": "sh-plant-pot (1,8) 을 삭제하거나 (1,11) 쪽으로 옮겨 (1,8)(2,8) 2칸 폭으로 연다. 화분 (3,9) 도 한 칸 옆으로 옮겨 y8 이 덮이지 않게 한다."
+  },
+  {
+   "severity": "major",
+   "file": "tiledata/jp-city/interior/examples/bakery.json",
+   "where": "(4,11)(5,11)(6,11). sh-tray-stand(5,12), sh-plant-pot(1,12). 빵 평대 sh-bread-table(1,10)(3,10) 앞. cut 4,11 5,11 6,11",
+   "problem": "입구(6~7,13)에서 서쪽 빵 평대 앞으로 가는 길이 (6,11)→(5,11)→(4,11) 한 줄 목이다. 쟁반 스탠드 (5,12) 가 막고, (5,10) 은 직원 틈이라 손님 길이 아니다. 가게 주 진열(빵 평대)까지의 주 동선이 1칸이다.",
+   "fix": "sh-tray-stand (5,12) 를 삭제하고 입구 오른쪽 (8,12) 한 개만 둔다. 서쪽 y11~12 를 2칸 폭으로 이어 붙인다."
+  },
+  {
+   "severity": "major",
    "file": "tiledata/jp-city/interior/examples/izakaya.json",
-   "where": "tables fd-counter (7..10,8) 북쪽 (4..11,6..7) 이 벽면",
-   "problem": "카운터 안쪽에 점원 칸이 없고 주방 문 (3,5) 은 서쪽 끝 1칸 통로로 떨어져 있다. 직원 동선 규칙(93행) 미충족, 벽에 붙은 스툴 선반으로 읽힌다.",
-   "fix": "카운터를 y=9 로 내려 북쪽 y=8 에 점원 한 줄을 확보하거나 칸막이 틈을 카운터 뒤로 옮긴다."
+   "where": "화장실 길 (12,10)(12,11). fd-zashiki(9,10), zataku(10,10)(10..11,10 막힘), 화장실 문 door-open-toilet(12,5). cut 12,10 12,11",
+   "problem": "입구에서 화장실 문으로 가는 길이 다다미 좌탁이 (11,10) 을 막아 x=12 한 칸 폭이다. 목이 2칸 길이다. 안쪽 방 문까지 주 동선 2칸 규칙(interior-rules 95행) 위반이다.",
+   "fix": "zashiki/zataku 를 한 칸 서쪽 (8,10)/(9,10) 으로 옮겨 (10,10)~(12,10) 을 비운다. 계산대 (8,12)·디딤돌 (9,12) 도 맞춰 옮기고 space.txt cut 에 12,10 이 사라졌는지 확인한다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/sento.json",
-   "where": "pb-bandai (7,9)",
-   "problem": "1×1 에 창 포스터와 병이 있는 작은 게시판으로 읽혀 높은 번대 단상이 아니다. 센토의 핵심 가구가 인식되지 않는다.",
-   "fix": "2칸 폭 단상형 번대로 다시 그리고 앞 나무판 카운터와 점원 자리를 표현한다."
+   "file": "tiledata/jp-city/refs/interior-shop-index.md",
+   "where": "supermarket 행 「입구에서 냉장 벽까지 곧게」, ramen 행·interior-rules.md 91행 「라멘은 가운데」",
+   "problem": "슈퍼는 입구 (7~8,16) 바로 위 y13 이 gondola (6,13)(8,13) 으로 막혀 곧게 못 간다. 세로 통로는 x4~5·x10~11 이라 입구에서 3칸 옆이다. 라멘 출입구는 (6,8)(7,8) 로 가운데가 아니라 오른쪽 끝이다.",
+   "fix": "슈퍼 문장을 「입구 위는 진열 줄이라 좌우 세로 통로로 돌아간다」로, 라멘은 91행 예제 목록에서 빼거나 오른쪽 끝으로 고친다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/sento.json",
-   "where": "pb-wash-station (1,3)(2,3)(12,3)(13,3) 와 pb-wash-stool (2,4)(12,4)",
-   "problem": "씻는 자리가 쪽당 2개뿐이고 의자는 하나씩이라 다른 자리 앞이 비어 있다.",
-   "fix": "씻는 자리 줄을 3~4개로 늘리거나 자리마다 stool·bucket 을 짝으로 놓는다."
+   "file": "tiledata/jp-city/interior/examples/supermarket.json",
+   "where": "가로 통로 y10·y12 와 계산대 cv-checkout (3,14)(12,14)",
+   "problem": "y12 통로는 produce 아래~gondola 윗부분 사이 보이는 바닥이 약 55% 로 경계선이다. 일본 슈퍼 통로는 1.5~2m 인데 1칸(1m)에 카트 cv-cart·cart-rack 이 있다(규칙의 근거 약함). 계산대 양옆이 pocket 이라 점원이 서는 칸이 불분명하다.",
+   "fix": "가로 통로 하나는 2줄로 줄 사이를 넓히는 것을 권한다. 계산대 한쪽에 점원 칸을 명시하거나 문서에 적는다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/qa/check-interior-examples.mts",
+   "where": "sq·w2·cut 계산부(36~42행)",
+   "problem": "자동 검사가 아래 줄 가구 윗부분이 통로를 덮는 정도, 계산대 앞 폭, 입구→진열·방 문 경로의 1칸 목 길이를 검사하지 않는다. 서점·채소가게·의원·편의점이 모두 OK 로 통과한다.",
+   "fix": "걸음 칸 중 남쪽 이웃이 위로 솟은 가구 발자국인 칸을 가려짐으로 세고 목록에 낸다. 계산대 칸의 남쪽 앞이 2줄인지, 입구→(계산대 앞·방 문) 최단 경로 폭을 따로 출력한다."
   },
   {
    "severity": "minor",
    "file": "verify-shots/jp-city/door-link/SUMMARY.md",
-   "where": "01a (width 2 문, (19,11) 한 칸만 밟음) 와 01a-street.png 의 (20,11) 볼라드·화단 그림",
-   "problem": "width≥2 문에서 첫 발판만 검증한다. 둘째 발판 칸의 통행과 가림은 검증되지 않았고 사진에서는 장애물 그림이 겹친다.",
-   "fix": "door-link 프로브가 모든 front 칸을 한 번씩 밟고, 둘째 칸 위 그림·통행을 같이 확인한다."
+   "where": "머리 「실행 방식」 — 가게 16곳은 example(interiorMapId) 경로",
+   "problem": "참고문서가 조수에게 안내하는 경로는 `place:<장소 id>` 인데, 가게 16곳은 그 경로를 한 번도 거치지 않았다. 게시된 장소 래스터 가져오기와 도구가 지은 맵의 통행이 같다는 근거가 없다. 86/86 은 다른 경로다.",
+   "fix": "게시 직후 같은 door-link.probe 를 place 경로로 다시 돌려 별도 표로 남기고, 이 관문의 pass 와는 별개로 게시 완료 조건에 넣는다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/interior2/space.txt",
-   "where": "sq/e3 지표 전체",
-   "problem": "sq 2 는 입구 2×2 한 곳만 있어도 통과해 편의점·센토·슈퍼의 1칸 병목을 놓친다. 같은 급의 병목 지적이 반복된다.",
-   "fix": "걸음 칸 중 2×2 소속 비율, 입구→카운터·진열 구간의 최소 통로 폭을 지표에 추가한다."
+   "file": "tiledata/jp-city/interior/examples/pharmacy.json",
+   "where": "door-side-sliding (5,7)",
+   "problem": "y7 이 x1..9 전부 걸음 칸이라 이 미닫이 문은 열린 바닥 한가운데에 서 있고, 조제실 입구도 아니다. 조제실 실제 입구는 (6,6) 직원 틈이다. index 의 「미닫이 문(가운데)으로 이어지는 조제실」과 어긋난다.",
+   "fix": "미닫이 문을 지우거나 조제실 쪽 칸막이 틈 칸으로 옮기고 index 문장을 맞춘다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/sento.json",
+   "where": "출입구 (7,12)(8,12), 탈의실 (3,11) pb-massage-chair, 서쪽 문 접근 (4,10)",
+   "problem": "실내와 같은 나무 바닥 입구에 신발 벗는 단·신발장이 없어 신발로 탈의실에 들어서는 모양이다. 서쪽 안마의자 (3,11) 때문에 남탕 문 접근이 (4,10) 한 칸 목이다(cut 4,10, 여탕은 없음).",
+   "fix": "남쪽 줄 서쪽 안마의자를 (2,11) 로 한 칸 옮기거나 문서에 입구 처리를 적는다. 신발장 배치는 거리 건물 쪽 현관 몫인지 문서에 밝힌다."
+  },
+  {
+   "severity": "minor",
+   "file": "src/editor/tools/jpCityInteriorLink.ts",
+   "where": "exteriorLanding (96~100행)",
+   "problem": "나올 때 내릴 칸이 문 아래 한 줄 칸이 통행 칸이기만 하면 되고 보도인지 확인하지 않는다. 문서는 보도 두 줄 이상이라고 하지만 코드는 강제하지 않아 한 줄 보도면 차도에 내려놓는다.",
+   "fix": "착지 칸이 문 앞 줄 칸과 같은 지형 계열(보도)인지 확인하거나, 두 줄 이상이 아니면 no-exterior-landing 으로 거부한다."
   }
  ],
- "report": "**지난 지적 3건 확인**\n- 편의점 쿨러는 (1..4,3)에 4칸 연속으로 고쳐졌다.\n- 이자카야 의자는 fd-chair-e (3,10)(3,11), fd-chair-w (5,10)(5,11)로 탁자를 향한다. 확대 크롭에서도 등받이가 바깥쪽이다.\n- 의원 소파는 한 줄 3칸(1,6)뿐이고, 진찰실 통로 (8,6)(8,7)이 2칸이다.\n- 이 3건은 고쳐졌다.\n\n아래는 새로 찾은 결함이다. 그림, 엔진 통행, 예제 JSON 좌표를 함께 확인했다. 가구 발자국은 `jpInteriorSpec.json`의 w/h와 `up`으로 계산했고, `/tmp/adv/neck.py`·`tight.py`로 1칸 병목을 셌다.\n\n- **편의점 음료 냉장 통로 (major):** `konbini.json`에서 gondola (2,6)(4,6)(6,6)가 각 2칸 폭이라 x=2..7이 벽까지 이어진다. 동쪽 x=8은 칸막이 벽면이라 막혀 있다.\n  - 쿨러 발자국은 1×2라 (1..4,3..4)를 차지한다. 그래서 쿨러 앞 걸음 칸은 y=5 한 줄뿐이다.\n  - 이 줄은 gondola `up`=16 때문에 그림이 통째로 덮이고, 그 줄에 서면 캐릭터가 선반 윗부분에 가려진다. 01b-inside.png에서도 쿨러 아래와 gondola 위 사이가 약 0.8칸이다.\n  - 쿨러 줄에는 (1,6) 한 칸으로만 들어간다. 그 앞 y=7 통로(x=1..7)도 위는 gondola, 아래는 freezer (1,8)(3,8)+baskets (5,8)이라 1줄이다.\n  - 입구 틈 (6,8)(7,8)로 올라와 y=7에서 서쪽 끝까지 가서 (1,6)을 지나야 쿨러에 닿는다. 실내 규칙 95행 「핵심 통로 폭 2칸」 위반이다. BFS 게이트와 space.txt의 sq 2는 이 병목을 잡지 못한다.\n  - index의 「가운데 섬 진열대 줄」도 실제로는 벽에서 벽으로 이어진 줄이라 맞지 않는다.\n\n- **센토 탈의실 중앙 통로 (major):** `sento.json` y=9 줄에 locker (1,9), basket-shelf (5,9), bandai (7,9), basket-shelf (8,9), locker (13,9)가 이어진다. y=11 줄에는 getabako (5,11)(9,11), massage-chair, bench가 있다.\n  - 입구 (7,12)(8,12)에서 남탕·여탕 문 (3,6)(11,6)으로 가려면 y=10 한 줄을 지나야 한다. x=5..6과 x=9..10 구간은 위아래가 모두 막혀 1칸이다.\n  - 탈의실 2칸 안 되는 구간이 길고, 시각적으로도 선반 밑과 getabako 윗부분 사이 틈이 0.5칸 남짓이다(sheet3).\n  - 신발장 getabako는 현관(타타키)용인데 탈의실 한가운데에 놓여 있다.\n\n- **슈퍼 통로 폭 (major):** `supermarket.json`의 판매장 통로가 거의 전부 1칸이다. 쿨러(y=8..9)·produce(y=11)·gondola(y=13) 줄 사이 y=10·12가 각 1칸이고, 줄 안 틈은 (6,11)·(9,11)·(14,11)처럼 1칸이다.\n  - 걸음 칸 82개 중 2×2 안에 드는 칸은 18개(21%)뿐이고, 덮이는 칸을 빼면 10%다. 2칸 폭 영역은 입구 (7..8,14..15)와 (5..10,9..10)뿐이다.\n  - 가운데 진열대 줄이 쓸려 나가면 되돌아 나오는 동선이 모두 1칸이다.\n\n- **이자카야 카운터에 직원 쪽이 없음 (minor):** 카운터 (7..10,8) 바로 북쪽 (4..11,6..7)이 벽면이라 점원이 설 칸이 없다. 주방은 (3,5)(3,6)(3,7) 1칸 통로 너머 서쪽 끝에 떨어져 있다. 규칙 93행 「카운터 안쪽↔주방」에 맞지 않고, 장식 선반에 스툴만 붙은 모양이다. 카운터를 y=9로 내리거나, 주방 띠에 카운터 안쪽 한 줄을 확보한다.\n\n- **센토 반다이가 읽히지 않음 (minor):** `pb-bandai`(7,9)는 1×1이다. 그림은 창문 포스터와 병이 있는 작은 게시판으로 보여서(sento2 크롭) 높은 번대 단상이 아니다. 센토의 핵심 가구라 2칸 폭 단상으로 다시 그린다.\n\n- **센토 씻는 자리 의자 (minor):** `pb-wash-station`이 양쪽에 2개씩 (1,3)(2,3)(12,3)(13,3)인데 pb-wash-stool은 (2,4)(12,4) 하나씩뿐이다. 나머지 자리 앞에는 의자가 없고, 한쪽 욕장에 씻는 자리가 2개라 센토답지 않다.\n\n- **문 잇기 QA가 첫 발판만 밟음 (minor):** door-link/SUMMARY.md의 01a는 width 2 문에서 (19,11) 하나만 밟는다. 01a-street.png에서는 둘째 발판 (20,11) 자리에 볼라드·화단 그림이 겹쳐 보인다. 둘째 칸 통행과 문 앞 가림은 검증되지 않았다. width≥2는 모든 front 칸을 한 번씩 밟고, 둘째 칸이 통행·시야에서 막히는지 검사한다.\n\n- **게이트가 병목을 못 봄 (minor):** space.txt의 sq·e3과 door-link의 「가장 먼 칸」 BFS는 모두 1칸 병목을 통과시킨다(위 편의점·센토·슈퍼가 PASS). 걸음 칸 중 2×2 소속 비율이나 입구→핵심 지점 경로의 최소 폭을 space.txt에 더한다.\n\n도구 코드 `jpCityInteriorLink.ts`는 발판 위치, 착지 칸이 발판을 다시 밟지 않는지, 여러 칸 문, 출구 탐색(맨 아래 한 줄)을 확인했다. 결함을 찾지 못했다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/konbini.json\", \"where\": \"cv-gondola (2,6)(4,6)(6,6) 가 x=2..7 벽까지 이어짐 + cv-cooler (1..4,3..4) 앞 y=5 한 줄, 진입 (1,5)(1,6) 1칸, y=7 통로(x=1..7)도 gondola/freezer 사이 1줄\", \"problem\": \"음료 냉장 벽 앞 통로가 1칸 폭 막다른 길이고 gondola 오버행에 통째로 덮인다. 규칙 95행(핵심 통로 2칸) 위반. space.txt sq 2 와 BFS 게이트가 못 잡는다. index 의 「가운데 섬 진열대 줄」도 실제와 다르다.\", \"fix\": \"gondola (6,6) 를 지우거나 (3,6)(5,6) 으로 옮겨 입구 틈 (6..7,8) 바로 위 x=6..7 을 2칸 이상 열어 y=5 와 잇는다. y=7 통로 아래 freezer (1,8)(3,8) 를 y=9 로 내려 2칸 폭을 만든다. index 문구 정정.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/sento.json\", \"where\": \"탈의실 y=9 줄 locker(1,9)(2,9) basket-shelf(5,9) bandai(7,9) basket-shelf(8,9) locker(13,9) 와 y=11 줄 getabako(5,11)(9,11) pb-massage-chair pb-bench 사이 y=10\", \"problem\": \"입구에서 남탕·여탕 문 (3,6)(11,6) 으로 가는 핵심 경로 중 x=5..6, x=9..10 이 1칸 폭이고 선반·getabako 오버행에 가려진다. 신발장 getabako 가 현관이 아닌 탈의실 한가운데에 있다.\", \"fix\": \"getabako (5,11)(9,11) 를 현관 옆 한 쌍으로 줄이거나 지워 y=10..11 을 2칸 폭으로 만든다. 또는 y=9 줄 basket-shelf 를 벽 쪽 y=9 로 두고 평면을 한 줄 키운다.\"},\n{\"severity\": \"major\", \"file\": \"tiledata/jp-city/interior/examples/supermarket.json\", \"where\": \"cv-cooler 줄 y=8..9, cv-produce y=11, cv-gondola y=13 줄 사이 통로 y=10·y=12 와 줄 안 틈 (6,11)(9,11)(14,11)\", \"problem\": \"판매장 통로가 거의 전부 1칸 폭이다. 걸음 칸 82개 중 2×2 소속 18(21%), 오버행 제외 시 10%. 규칙 95행 「진열 사이 통로 2칸」 위반.\", \"fix\": \"cv-produce (4,11)·cv-gondola (4,13)·(9,13) 같은 줄 중간 조각을 지워 2칸 폭 세로 교차 통로 둘을 만들고, 가로 통로 y=12 위쪽 produce 줄을 y=10 쪽으로 붙여 2칸 폭을 확보한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/izakaya.json\", \"where\": \"tables fd-counter (7..10,8) 북쪽 (4..11,6..7) 이 벽면\", \"problem\": \"카운터 안쪽에 점원 칸이 없고 주방 문 (3,5) 은 서쪽 끝 1칸 통로로 떨어져 있다. 직원 동선 규칙(93행) 미충족, 벽에 붙은 스툴 선반으로 읽힌다.\", \"fix\": \"카운터를 y=9 로 내려 북쪽 y=8 에 점원 한 줄을 확보하거나 칸막이 틈을 카운터 뒤로 옮긴다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/sento.json\", \"where\": \"pb-bandai (7,9)\", \"problem\": \"1×1 에 창 포스터와 병이 있는 작은 게시판으로 읽혀 높은 번대 단상이 아니다. 센토의 핵심 가구가 인식되지 않는다.\", \"fix\": \"2칸 폭 단상형 번대로 다시 그리고 앞 나무판 카운터와 점원 자리를 표현한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/sento.json\", \"where\": \"pb-wash-station (1,3)(2,3)(12,3)(13,3) 와 pb-wash-stool (2,4)(12,4)\", \"problem\": \"씻는 자리가 쪽당 2개뿐이고 의자는 하나씩이라 다른 자리 앞이 비어 있다.\", \"fix\": \"씻는 자리 줄을 3~4개로 늘리거나 자리마다 stool·bucket 을 짝으로 놓는다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/door-link/SUMMARY.md\", \"where\": \"01a (width 2 문, (19,11) 한 칸만 밟음) 와 01a-street.png 의 (20,11) 볼라드·화단 그림\", \"problem\": \"width≥2 문에서 첫 발판만 검증한다. 둘째 발판 칸의 통행과 가림은 검증되지 않았고 사진에서는 장애물 그림이 겹친다.\", \"fix\": \"door-link 프로브가 모든 front 칸을 한 번씩 밟고, 둘째 칸 위 그림·통행을 같이 확인한다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior2/space.txt\", \"where\": \"sq/e3 지표 전체\", \"problem\": \"sq 2 는 입구 2×2 한 곳만 있어도 통과해 편의점·센토·슈퍼의 1칸 병목을 놓친다. 같은 급의 병목 지적이 반복된다.\", \"fix\": \"걸음 칸 중 2×2 소속 비율, 입구→카운터·진열 구간의 최소 통로 폭을 지표에 추가한다.\"}\n]}\n```"
+ "report": "## 지난 지적 확인\n\n- **편의점 쿨러 벽 앞**: 고쳐졌다. 쿨러가 y3~4, 앞이 y5~6 두 줄이다.\n- **센토 탈의실**: 고쳐졌다. getabako 를 뺐고 y10~11 이 x4..11 에서 2칸 폭이다.\n- **슈퍼 y10·y12 가로 통로**: 규칙 변경으로 합법이 됐다. 조건 ①(2칸 주 동선에 붙음)·③(막다른 3칸 이하)은 충족한다. 조건 ②(아래 줄 가구 윗부분이 통로를 덮지 않음)는 경계선이다. 아래 minor 로 남긴다.\n\n이번 회차에 새로 확인한 결함은 가게 7곳의 통로·진열 배치다. 방법은 `check-interior-examples.mts` 에 걸음 칸 격자 출력을 임시로 붙여 돌린 것이다. 임시 파일은 지웠고 `git status` 는 깨끗하다. 격자 대조 결과는 다음과 같다.\n\n- **편의점**: 계산대 앞이 y9 한 줄이다. space.txt 의 cut `7,9 8,9 9,9 10,9` 가 그 줄이다. 입구→계산대 앞은 주 동선 2칸 규칙(interior-rules 95행)을 어긴다.\n- **의원**: 접수 카운터 앞 y5 가 소파 y6 에 막힌 1칸 폭이다. 막다른 칸이 `(1,4)(1,5)(2,5)(3,5)` 4개이고 cut 은 `4,5` 다. 이 문서의 「두 칸 폭 통로로 접수 카운터 앞」은 거짓이다.\n- **서점**: 책 섬 y10 과 y12 의 윗부분이 아래 줄을 덮는다. 그림 실측으로 y9 통로는 보이는 폭이 약 27%, y11 은 약 35% 다. 이 가려짐은 space.txt 의 sq·cut 으로 못 잡는다.\n- **채소가게**: 벽 바구니 선반과 채소 평대 사이 y4 가 거의 안 보인다. 선반 아래와 평대 위 사이 틈이 약 23% 다.\n- **꽃집**: 냉장 유리장 벽과 양동이가 있는 북서 구역이 `(2,8)→(2,7)` 한 칸 목으로만 이어진다. cut `2,7 2,8 3,8 4,8 5,8` 이 그 길이다.\n- **빵집**: 빵 평대 앞(서쪽 x1..4)으로 가는 길이 `(6,11)(5,11)(4,11)` 로 한 줄이다. 입구 옆 쟁반 스탠드 `(5,12)` 가 목을 만든다.\n- **이자카야**: 화장실 길이 `(12,11)→(12,10)` 에서 한 칸 폭이다. 다다미 좌탁 `(10,10)` 이 `(11,10)` 을 막는다. cut `12,10 12,11` 이다.\n\n규칙 자체는 틀렸다고 보지 않는다. 다만 규칙 ②(가려짐)와 계산대 앞 폭은 space.txt 가 검사하지 않아 사람이 놓친다. 문제는 검사 수단이다.\n\n## 도구 코드 `jpCityInteriorLink.ts`\n\n- 실내 출구를 맨 아래 한 줄만 보는 것은 문서와 일치한다. 3줄 탐색의 위험은 없다.\n- 착지 칸은 발판 줄에서 한 줄 아래로 잡아 발판을 다시 밟지 않는다. 여러 칸 문 처리도 맞다.\n- 거리 쪽 착지 칸이 보도인지는 확인하지 않는다. 보도가 한 줄뿐이면 차도에 내릴 수 있다.\n\n```json\n{\"verdict\":\"fail\",\"findings\":[\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/konbini.json\",\"where\":\"계산대 앞 (8,9)~(12,9). cv-hotcase(8,8) cv-register(9,8) cv-counter(11,8) cv-coffee(12,8). 위 y6~7 은 칸막이 벽면. space.txt cut 7,9 8,9 9,9 10,9. 증거 01b-inside.png 의 계산대 아래 한 줄\",\"problem\":\"계산대 앞이 y9 한 줄(1칸 폭)이고, 입구(6~7,9)에서 계산대·핫스낵·커피까지 가는 주 동선이 (8,9) 부터 1칸으로 좁다. 손님 둘이 서면 서로 막고 줄 설 자리가 없다. interior-rules 95행 「입구→계산대 앞 주 동선 처음부터 끝까지 2칸」 위반. 직원 길이 아니라 손님 줄이다.\",\"fix\":\"칸막이 행 y5 를 y4 로 올려 뒷방을 y1..3 으로 줄이고, 계산대 줄(hotcase·register·counter·coffee)을 y8→y7 로 올려 앞 y8·y9 두 줄을 비운다. 직원 틈 x=10 은 그대로 y7 줄에 둔다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/clinic.json\",\"where\":\"접수 앞 (1,4)(1,5)(2,5)(3,5). pb-reception(2,4)(3,4) 북쪽, pb-waiting-sofa-n(1,6) 남쪽. cut 4,5. 그림 19c-far.png\",\"problem\":\"접수 카운터 앞이 소파에 막힌 y5 한 줄이고 막다른 4칸(막다른 1칸 통로 3칸 한도 초과)이다. 소파 윗부분이 y5 아래 절반을 덮어 서 있는 사람이 반쯤 가려진다. interior-shop-index.md 의 「두 칸 폭 통로로 접수 카운터 앞」은 사실과 다르다.\",\"fix\":\"소파를 (1,6)→(1,7) 로 내리고 houseplant(1,7)는 (4,7) 등 빈 곳으로 옮겨 접수 앞 y5~6 을 2줄로 만든다. 소파가 남쪽 벽에 등을 대게 한다. 고친 뒤 index 문장을 실제 좌표로 맞춘다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/bookstore.json\",\"where\":\"책 섬 sh-book-island (1,10)(4,10)(4,12), sh-book-table(1,12). 통로 y9 (1..2,9)(4..5,9) 와 y11 (1..9,11). sheet2.png bookstore 의 파란 윗면 띠 아래·위\",\"problem\":\"섬 윗부분이 위 줄 통로를 덮는다. 3배 확대 실측으로 y9 는 책장 아래와 섬 윗면 사이 보이는 바닥이 약 27%, y11 은 약 35% 다. 서점 주 매장 전체가 가려진 1칸 통로 두 줄이다. interior-rules 95행 조건 ② 「아래 줄 가구 윗부분이 통로를 덮어 안 보이게 하면 안 된다」 위반. space.txt 의 sq·cut 은 이 가려짐을 못 잡는다.\",\"fix\":\"책 섬 줄을 y10→y11 로 내려 책장(y8)과 섬 사이 y9~10 을 2줄로 만든다. y12 섬 (4,12) 은 삭제하고 평대 (1,12)만 남긴다. 그다음 그림을 원 해상도로 다시 확인한다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/yaoya.json\",\"where\":\"북쪽 통로 y4 (4..8,4). sh-basket-shelf(4..7,3) 아래, sh-veg-stand(4,5)(7,5) 위. 진입 목 (6,5). cut 6,4 6,5 6,6. 그림 sheet2.png yaoya 위쪽\",\"problem\":\"y4 는 평대 윗부분이 거의 다 덮어 선반 아래와 평대 위 틈이 약 23% 뿐이라 통로로 안 읽힌다(조건 ②). 진입이 (6,5) 한 칸이라 2칸 폭 주 동선에 붙지 못한다(조건 ①). 막다른 길이 (6,5)(6,4)(7,4)(8,4) 4칸이라 3칸 한도를 넘는다(조건 ③). 선반 앞 손님이 평대 뒤에 숨는다.\",\"fix\":\"sh-veg-stand (4,5)(7,5) 를 y6 으로 내려 y4~5 를 2줄 통로로 만든다. 아래 줄 가구 위치는 그에 맞춰 한 줄씩 조정하고 (6,6) 을 비운다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/florist.json\",\"where\":\"목 (2,8)→(2,7). sh-plant-pot(1,8), sh-wrap-table(3,7) 가 양옆을 막음. 북서 구역 y4~7 의 냉장 유리장 (1..3,3)·재고 선반 (4,3)·양동이 (1,5). cut 2,7 2,8 3,8 4,8 5,8\",\"problem\":\"가게 주력 진열인 냉장 유리장 벽 구역으로 가는 길이 (2,8)·(2,7) 한 칸 목이다. (1,8) 화분과 (3,7) 포장 작업대가 목을 만든다. 입구→주 진열 동선이 1칸이고, (3,8) 은 (3,9) 화분 윗부분에도 덮인다.\",\"fix\":\"sh-plant-pot (1,8) 을 삭제하거나 (1,11) 쪽으로 옮겨 (1,8)(2,8) 2칸 폭으로 연다. 화분 (3,9) 도 한 칸 옆으로 옮겨 y8 이 덮이지 않게 한다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/bakery.json\",\"where\":\"(4,11)(5,11)(6,11). sh-tray-stand(5,12), sh-plant-pot(1,12). 빵 평대 sh-bread-table(1,10)(3,10) 앞. cut 4,11 5,11 6,11\",\"problem\":\"입구(6~7,13)에서 서쪽 빵 평대 앞으로 가는 길이 (6,11)→(5,11)→(4,11) 한 줄 목이다. 쟁반 스탠드 (5,12) 가 막고, (5,10) 은 직원 틈이라 손님 길이 아니다. 가게 주 진열(빵 평대)까지의 주 동선이 1칸이다.\",\"fix\":\"sh-tray-stand (5,12) 를 삭제하고 입구 오른쪽 (8,12) 한 개만 둔다. 서쪽 y11~12 를 2칸 폭으로 이어 붙인다.\"},\n{\"severity\":\"major\",\"file\":\"tiledata/jp-city/interior/examples/izakaya.json\",\"where\":\"화장실 길 (12,10)(12,11). fd-zashiki(9,10), zataku(10,10)(10..11,10 막힘), 화장실 문 door-open-toilet(12,5). cut 12,10 12,11\",\"problem\":\"입구에서 화장실 문으로 가는 길이 다다미 좌탁이 (11,10) 을 막아 x=12 한 칸 폭이다. 목이 2칸 길이다. 안쪽 방 문까지 주 동선 2칸 규칙(interior-rules 95행) 위반이다.\",\"fix\":\"zashiki/zataku 를 한 칸 서쪽 (8,10)/(9,10) 으로 옮겨 (10,10)~(12,10) 을 비운다. 계산대 (8,12)·디딤돌 (9,12) 도 맞춰 옮기고 space.txt cut 에 12,10 이 사라졌는지 확인한다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/refs/interior-shop-index.md\",\"where\":\"supermarket 행 「입구에서 냉장 벽까지 곧게」, ramen 행·interior-rules.md 91행 「라멘은 가운데」\",\"problem\":\"슈퍼는 입구 (7~8,16) 바로 위 y13 이 gondola (6,13)(8,13) 으로 막혀 곧게 못 간다. 세로 통로는 x4~5·x10~11 이라 입구에서 3칸 옆이다. 라멘 출입구는 (6,8)(7,8) 로 가운데가 아니라 오른쪽 끝이다.\",\"fix\":\"슈퍼 문장을 「입구 위는 진열 줄이라 좌우 세로 통로로 돌아간다」로, 라멘은 91행 예제 목록에서 빼거나 오른쪽 끝으로 고친다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/supermarket.json\",\"where\":\"가로 통로 y10·y12 와 계산대 cv-checkout (3,14)(12,14)\",\"problem\":\"y12 통로는 produce 아래~gondola 윗부분 사이 보이는 바닥이 약 55% 로 경계선이다. 일본 슈퍼 통로는 1.5~2m 인데 1칸(1m)에 카트 cv-cart·cart-rack 이 있다(규칙의 근거 약함). 계산대 양옆이 pocket 이라 점원이 서는 칸이 불분명하다.\",\"fix\":\"가로 통로 하나는 2줄로 줄 사이를 넓히는 것을 권한다. 계산대 한쪽에 점원 칸을 명시하거나 문서에 적는다.\"},\n{\"severity\":\"minor\",\"file\":\"scripts/content/jp-city/qa/check-interior-examples.mts\",\"where\":\"sq·w2·cut 계산부(36~42행)\",\"problem\":\"자동 검사가 아래 줄 가구 윗부분이 통로를 덮는 정도, 계산대 앞 폭, 입구→진열·방 문 경로의 1칸 목 길이를 검사하지 않는다. 서점·채소가게·의원·편의점이 모두 OK 로 통과한다.\",\"fix\":\"걸음 칸 중 남쪽 이웃이 위로 솟은 가구 발자국인 칸을 가려짐으로 세고 목록에 낸다. 계산대 칸의 남쪽 앞이 2줄인지, 입구→(계산대 앞·방 문) 최단 경로 폭을 따로 출력한다.\"},\n{\"severity\":\"minor\",\"file\":\"verify-shots/jp-city/door-link/SUMMARY.md\",\"where\":\"머리 「실행 방식」 — 가게 16곳은 example(interiorMapId) 경로\",\"problem\":\"참고문서가 조수에게 안내하는 경로는 `place:<장소 id>` 인데, 가게 16곳은 그 경로를 한 번도 거치지 않았다. 게시된 장소 래스터 가져오기와 도구가 지은 맵의 통행이 같다는 근거가 없다. 86/86 은 다른 경로다.\",\"fix\":\"게시 직후 같은 door-link.probe 를 place 경로로 다시 돌려 별도 표로 남기고, 이 관문의 pass 와는 별개로 게시 완료 조건에 넣는다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/pharmacy.json\",\"where\":\"door-side-sliding (5,7)\",\"problem\":\"y7 이 x1..9 전부 걸음 칸이라 이 미닫이 문은 열린 바닥 한가운데에 서 있고, 조제실 입구도 아니다. 조제실 실제 입구는 (6,6) 직원 틈이다. index 의 「미닫이 문(가운데)으로 이어지는 조제실」과 어긋난다.\",\"fix\":\"미닫이 문을 지우거나 조제실 쪽 칸막이 틈 칸으로 옮기고 index 문장을 맞춘다.\"},\n{\"severity\":\"minor\",\"file\":\"tiledata/jp-city/interior/examples/sento.json\",\"where\":\"출입구 (7,12)(8,12), 탈의실 (3,11) pb-massage-chair, 서쪽 문 접근 (4,10)\",\"problem\":\"실내와 같은 나무 바닥 입구에 신발 벗는 단·신발장이 없어 신발로 탈의실에 들어서는 모양이다. 서쪽 안마의자 (3,11) 때문에 남탕 문 접근이 (4,10) 한 칸 목이다(cut 4,10, 여탕은 없음).\",\"fix\":\"남쪽 줄 서쪽 안마의자를 (2,11) 로 한 칸 옮기거나 문서에 입구 처리를 적는다. 신발장 배치는 거리 건물 쪽 현관 몫인지 문서에 밝힌다.\"},\n{\"severity\":\"minor\",\"file\":\"src/editor/tools/jpCityInteriorLink.ts\",\"where\":\"exteriorLanding (96~100행)\",\"problem\":\"나올 때 내릴 칸이 문 아래 한 줄 칸이 통행 칸이기만 하면 되고 보도인지 확인하지 않는다. 문서는 보도 두 줄 이상이라고 하지만 코드는 강제하지 않아 한 줄 보도면 차도에 내려놓는다.\",\"fix\":\"착지 칸이 문 앞 줄 칸과 같은 지형 계열(보도)인지 확인하거나, 두 줄 이상이 아니면 no-exterior-landing 으로 거부한다.\"}\n]}\n```"
 }
