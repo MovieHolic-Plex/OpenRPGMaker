@@ -30,11 +30,23 @@
  },
  "characters": {"sheet": "public/assets/easyrpg/charset/Actor1.png", "frame": [24, 32], "use": "크기 눈금(정면 가운데 프레임)"},
  "waves": {
-  "style": "화풍 시험 — 항목 5 × 후보 A·B·C. 여기서 고른 화법이 뒤 묶음의 기준이 된다.",
+  "style": "화풍 시험 — 항목 5 × 후보 A·B·C. 사용자가 셋 다 남겨 A·B·C 가 곧 줄(lines)이 됐다. 뒤 묶음은 줄마다 그 글자 화법을 따른다.",
   "cave": "자연 동굴 벽·바닥 오토타일 한 벌(안/바깥 모서리 포함), 천장, 잔돌, 석순.",
   "edges": "바닥과 물·용암·얼음 가장자리 오토타일, 다리.",
   "built": "벽돌·지하묘지 벽, 문, 쇠창살 문, 오르내리는 계단, 기둥, 횃불, 상자, 함정, 지렛대.",
   "deco": "뼈, 수정, 뿌리, 물웅덩이."
+ },
+ "lines": {
+  "note": "던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(사용자 2026-10-08: 「A B C 셋다 써도 그만일거같은데? … 버리긴 아깝군.」). style-r1 의 후보 글자 A·B·C 가 곧 줄이다. 이후 판은 줄마다 후보를 그린다(후보 키 <줄><번호>: A1 A2 B1 …). 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결·윤곽). 컨셉에 안 맞는 항목은 그 줄 skip 에 이유와 함께 적고 그리지 않는다. 고르기 단위는 (항목, 줄).",
+  "A": {"name": "해안 흙굴", "origin": {"round": "style-r1", "letter": "A"},
+        "concept": "버들항 바다 동굴 계보 — 어둠 위 갈색 흙 띠와 밝은 끝선, 이끼 낀 녹회색 돌 앞면, 갈색 반점 흙바닥, 맑은 푸른 물. 해안·습지·초반 동굴의 따뜻한 흙빛.",
+        "skip": {}},
+  "B": {"name": "산속 바위굴", "origin": {"round": "style-r1", "letter": "B"},
+        "concept": "천장 어둠 대신 갈라진 회색 바위 윗면이 드러난 산 속 굴·광산 — 큰 바윗덩이 앞면, 어두운 흙과 자갈, 검푸른 고인 물, 쇠창살문·세우는 화로. 거칠고 무거운 바위.",
+        "skip": {}},
+  "C": {"name": "검푸른 심층굴", "origin": {"round": "style-r1", "letter": "C"},
+        "concept": "깊은 지하의 차가운 층암굴 — 울퉁불퉁한 돌 혹 테두리와 깊은 어둠, 물결 층리 검푸른 화산암 앞면, 차가운 회색 자갈, 얕은 물가·청록 보석. 고대·심연·후반 던전.",
+        "skip": {}}
  },
  "items": [
   {"id": "style.cave", "wave": "style", "title": "동굴 벽 + 바닥 오토타일", "kind": "cave-set", "size": [10, 8], "layer": "lower",
@@ -134,7 +146,8 @@
   "castle-catacombs:brazier": {"file": "tiledata/beodeul-variants/castle-catacombs/parts/brazier.png", "label": "버들항 — 화로"}
  },
  "rounds": {
-  "style-r1": {"module": "src/harnesses/dungeon-chipset/rounds/style_r1.py", "wave": "style",
+  "style-r1": {"module": "src/harnesses/dungeon-chipset/rounds/style_r1.py", "wave": "style", "title": "화풍 시험 style-r1",
+               "lead": "항목마다 후보 A·B·C 를 1배·4배로, 왼쪽에 버들항 던전 조각과 Actor1 사람 크기를 같은 배율로 놓았다. 각 후보 옆 장면은 같은 글자의 동굴 바닥·벽 위에 놓은 것이다(맥락). 2026-10-08 사용자가 세 글자를 모두 서로 다른 던전 컨셉 줄로 남겼다.",
                "items": ["style.cave", "style.water", "style.stairs_down", "style.door", "style.chest_torch"]}
  }
 }

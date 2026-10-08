@@ -1,16 +1,22 @@
 """dungeon-chipset 하네스 본체. `npm run harness -- dungeon-chipset <단계>` 또는 `python3 src/harnesses/dungeon-chipset/harness.py <단계>`.
 
   palette [--check]                 버들항 그림에서 잠금 팔레트를 다시 뽑는다(--check 는 비교만)
-  validate                          시드·팔레트·판 모듈·기준 그림·Actor1 점검
-  list [--wave W]                   시드 항목(★ = 사람이 고른 것, 현재 그림과 해시가 맞을 때만)
+  validate                          시드·팔레트·판 모듈·줄·기준 그림·Actor1 점검
+  list [--wave W]                   시드 항목. 줄마다 ★A = 줄 A 에서 사람이 고름(현재 그림과 해시가 맞을 때만) · -A = 줄 A 에서 뺀 항목
   draw <판>                         판 후보를 그려 qa-runs/harnesses/dungeon-chipset/<판>/ 에 PNG·manifest.json
   gate <판>                         draw + 기계 관문(P Z Q O F S G / WARN R). FAIL 이 있으면 종료코드 1
   sheet <판> [--force]              draw + gate + ~/claude-viz/dungeon-<판>.html (FAIL 이면 --force 없이는 안 쓴다)
-  pick <판> <항목> <글자> --sha <앞 8자리> [--note …]   사람이 시트에서 고른 후보를 그림 해시에 묶어 기록
-  reject <판> <항목> <글자> --why …   사람이 버린 후보와 이유
-  status                            판·관문·시트·고른 것(현재 그림과 해시가 맞는지)
+  pick <판> <항목> <후보> --sha <앞 8자리> [--note …]   사람이 시트에서 고른 후보를 그림 해시에 묶어 기록
+  reject <판> <항목> <후보> --why …   사람이 버린 후보와 이유
+  status                            판·관문·시트, 줄별·묶음별 고른 것(현재 그림과 해시가 맞는지)
 
-감독·에이전트는 pick/reject 를 스스로 부르지 않는다. 사람이 고른 글자와 시트에 적힌 해시 앞자리를 받아 적을 때만 쓴다.
+줄(line) — 던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(사용자 2026-10-08). 시드 `lines` 의 줄마다 따로 고른다.
+  - 화풍 판(style-r1)의 후보 글자 A·B·C 가 곧 줄이다. 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결·윤곽).
+  - 이후 판은 **줄마다** 후보를 그린다. 후보 키는 `<줄><번호>`(A1 A2 B1 …), pick 은 앞 글자로 줄을 안다.
+  - 고르기 단위는 (항목, 줄). 고른 그림은 picked/<줄>/<항목>.png. 같은 (항목, 줄)을 다시 고르면 앞 기록을 바꾼다.
+  - 줄 컨셉에 안 맞는 항목은 그 줄에서 빼도 된다 — 시드 lines.<줄>.skip 에 항목과 이유를 적는다(그 줄 후보를 그리지 않는다).
+
+감독·에이전트는 pick/reject 를 스스로 부르지 않는다. 사람이 고른 후보와 시트에 적힌 해시 앞자리를 받아 적을 때만 쓴다.
 기계 관문 통과는 합격이 아니다.
 """
 import argparse
@@ -50,6 +56,30 @@ def seed():
 
 def items_by_id():
     return {it['id']: it for it in seed()['items']}
+
+
+def lines():
+    """시드 줄 {id: {name, concept, origin, skip}} — 줄 id 는 대문자 한 글자(화풍 판 후보 글자)."""
+    return {k: v for k, v in seed().get('lines', {}).items() if isinstance(v, dict)}   # 'note' 는 설명
+
+
+def line_of(key):
+    """후보 키 → 줄. 화풍 판은 글자 그대로(A), 이후 판은 <줄><번호>(A1)."""
+    if key and key[0] in lines() and (len(key) == 1 or key[1:].isdigit()):
+        return key[0]
+    return None
+
+
+def skipped(line, item):
+    return lines().get(line, {}).get('skip', {}).get(item)
+
+
+def pick_line(p):
+    return p.get('line') or line_of(p['letter'])
+
+
+def picked_path(line, item):
+    return os.path.join(PICKED, line, f'{item}.png')
 
 
 def ledger():
@@ -204,12 +234,19 @@ img{image-rendering:pixelated;display:block} .lbl{font-size:11px;color:#8f897f;m
 .sha{font-family:ui-monospace,monospace;color:#d8c48a}
 .pal .sw{display:inline-block;width:18px;height:18px;margin:0 1px 1px 0;border:1px solid #000;vertical-align:middle}
 .pal div{margin:2px 0;font-size:12px}
+.star{color:#ffd24a;font-weight:700} .card.picked{border-color:#c9a227;box-shadow:0 0 0 1px #c9a227}
+.lineh{font-weight:700;color:#d9cfa8;margin:14px 0 2px}
 '''
 
 
 def img_tag(im, k, alt=''):
     w = (im.width if not isinstance(im, dot.Cv) else im.w) * k
     return f'<img src="{b64(im, k)}" width="{w}" alt="{alt}">'
+
+
+def cand_note(mod, key):
+    notes = getattr(mod, 'NOTES', None) or getattr(mod, 'STYLE_NOTE', {})
+    return notes.get(key, '')
 
 
 def cmd_sheet(rid, force=False):
@@ -219,19 +256,28 @@ def cmd_sheet(rid, force=False):
             print(f'FAIL {i} {L} {r["code"]}: {r["msg"]}')
         raise SystemExit('관문 FAIL 이 있어 시트를 쓰지 않는다(--force 로 강제, 사람에게 FAIL 을 같이 보인다)')
     s = seed()
+    rd = s['rounds'][rid]
+    style = rd.get('wave') == 'style'
     items = items_by_id()
+    ls = lines()
+    ps = pick_state()
     act = actor()
     H = [f'<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>던전 칩셋 {rid}</title><style>{CSS}</style></head><body>']
-    H.append(f'<h1>버들항 던전 칩셋(beodeul_dungeon) — 화풍 시험 {rid}</h1>')
-    H.append('<p class="lead">편집기에 던전·동굴 칩셋이 없다. 버들항(oprn-atlas) 계열로 쓸 던전 문법의 <b>화풍</b>을 먼저 고른다. '
-             '항목마다 후보 A·B·C 를 <b>1배·4배</b>로, 왼쪽에 <b>버들항 던전 조각</b>과 <b>Actor1 사람 크기</b>를 같은 배율로 놓았다. '
-             '각 후보 옆 장면은 같은 글자의 동굴 바닥·벽 위에 놓은 것이다(맥락). 맨 아래에 글자마다 다섯 항목을 한 장면으로 모았다.</p>')
-    H.append('<p class="lead"><b>A 버들항 정통 띠</b> — 바다 동굴 그대로(어둠 + 갈색 윗면 띠 + 밝은 끝선). '
-             '<b>B 바위 윗면</b> — 어둠 대신 갈라진 바위 윗면, 큰 바윗덩이 앞면, 어두운 흙. '
-             '<b>C 검푸른 층리</b> — 울퉁불퉁한 돌 혹 테두리, 물결 층리 앞면, 회색 자갈.</p>')
-    H.append('<p class="lead warn">기계 관문(팔레트·크기·불투명·윤곽·윗면·이음) 통과는 합격이 아니다. 감독·에이전트는 고르지 않았다. '
-             '항목마다 하나를 고르거나 전부 버려 주세요. 고르기: <code>npm run harness -- dungeon-chipset pick '
-             f'{rid} &lt;항목&gt; &lt;글자&gt; --sha &lt;해시 앞 8자리&gt;</code> · 버리기: <code>… reject {rid} &lt;항목&gt; &lt;글자&gt; --why "…"</code></p>')
+    H.append(f'<h1>버들항 던전 칩셋(beodeul_dungeon) — {rd.get("title", rid)}</h1>')
+    if rd.get('lead'):
+        H.append(f'<p class="lead">{rd["lead"]}</p>')
+    H.append('<p class="lead">던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(2026-10-08 결정). <b>줄(line)마다 따로 고른다</b> — '
+             '줄의 화풍 기준은 style-r1 의 그 글자 조각이다.</p><div class="row">')
+    for ln, info in ls.items():
+        cut = info.get('skip', {})
+        H.append(f'<div class="card"><h3>줄 {ln} 「{info["name"]}」</h3><div class="sub">{info["concept"]}</div>'
+                 f'<div class="sub">기원: {info["origin"]["round"]} {info["origin"]["letter"]}'
+                 + (''.join(f'<br>뺀 항목 {k}: {v}' for k, v in cut.items()) if cut else '') + '</div></div>')
+    H.append('</div>')
+    H.append('<p class="lead warn">기계 관문(팔레트·크기·불투명·윤곽·윗면·이음·구조) 통과는 합격이 아니다. 감독·에이전트는 고르지 않았다. '
+             '항목마다 <b>줄마다</b> 하나를 고르거나 버려 주세요. 고르기: <code>npm run harness -- dungeon-chipset pick '
+             f'{rid} &lt;항목&gt; &lt;후보&gt; --sha &lt;해시 앞 8자리&gt;</code> · 버리기: <code>… reject {rid} &lt;항목&gt; &lt;후보&gt; --why "…"</code> · '
+             '<span class="star">★</span> = 사람이 그 줄에서 고른 후보(현재 그림과 해시가 맞음).</p>')
     for item, cands in rendered.items():
         it = items[item]
         H.append(f'<h2>{item} — {it["title"]}</h2><p class="lead">{it["brief"]}<br><span class="sub">받아들일 기준: '
@@ -243,35 +289,67 @@ def cmd_sheet(rid, force=False):
                      f'<div>{img_tag(rim, 1)}<div class="lbl">1배</div></div><div>{img_tag(rim, 4)}<div class="lbl">4배</div></div></div></div>')
         H.append(f'<div class="card ref"><h3>사람 크기</h3><div class="sub">Actor1 정면 24×32</div><div class="imgs">'
                  f'<div>{img_tag(act, 1)}<div class="lbl">1배</div></div><div>{img_tag(act, 4)}<div class="lbl">4배</div></div></div></div>')
-        H.append('</div><div class="row">')
-        for L, (im, meta) in cands.items():
-            sha = man['items'][item][L]['sha256']
-            rs = res[item][L]
-            gl = ' '.join(f'<span class="{"ok" if r["ok"] else ("bad" if r["level"] == "FAIL" else "w")}" title="{r["msg"]}">{r["code"]}{"✓" if r["ok"] else "✗"}</span>' for r in rs)
-            H.append(f'<div class="card"><h3>후보 {L} <span class="sha">{sha[:8]}</span></h3>'
-                     f'<div class="sub">{mod.STYLE_NOTE[L]}</div><div class="imgs">'
-                     f'<div>{img_tag(im, 1)}<div class="lbl">원본 1배</div></div><div>{img_tag(im, 4)}<div class="lbl">4배</div></div>')
-            if 'vignette' in meta:
-                v = meta['vignette']
-                H.append(f'<div>{img_tag(v, 1)}<div class="lbl">장면 1배</div></div><div>{img_tag(v, 3)}<div class="lbl">장면 3배</div></div>')
-            H.append('</div>')
-            if meta.get('kind') == 'cave-set':
-                fl = meta['parts']['floor']
-                H.append(f'<div class="imgs" style="margin-top:6px"><div>{img_tag(dot.tiled(fl.body, 6, 6), 2)}<div class="lbl">바닥 몸통 6×6 (2배)</div></div>'
-                         f'<div>{img_tag(dot.tiled(meta["parts"]["ceil"].body, 6, 6), 2)}<div class="lbl">천장 몸통 6×6</div></div>'
-                         f'<div>{img_tag(_face_run(meta["parts"]["face"]), 2)}<div class="lbl">앞면 6칸 이어 붙임</div></div></div>')
-            H.append(f'<div class="gate">관문 {gl}<br>' + '<br>'.join(f'{r["code"]} {r["msg"]}' for r in rs if not r['ok'] or r['code'] in 'SF') + '</div></div>')
         H.append('</div>')
-    H.append('<h2>세트 장면 — 글자마다 다섯 항목을 한 곳에</h2><p class="lead">동굴 벽·바닥·물·내림 계단·벽돌 문(벽돌은 맥락)·상자·횃불·Actor1. 1배와 3배.</p><div class="row">')
-    for L in 'ABC':
-        sc = set_scene(mod, L)
-        H.append(f'<div class="card"><h3>세트 {L}</h3><div class="sub">{mod.STYLE_NOTE[L]}</div><div class="imgs">'
-                 f'<div>{img_tag(sc, 1)}<div class="lbl">1배</div></div><div>{img_tag(sc, 3)}<div class="lbl">3배</div></div></div></div>')
-    H.append('</div><h2>잠금 팔레트</h2><p class="lead">버들항 변형 조각에서 램프마다 실제 화소색을 뽑았다(palette.py). 모든 색이 공용 시트에 있다.</p><div class="pal">')
+        groups = {}
+        for key in cands:
+            groups.setdefault(line_of(key), []).append(key)
+        one_row = all(len(v) <= 1 for v in groups.values())
+        if one_row:
+            H.append('<div class="row">')
+        for ln in ls:
+            if not one_row:
+                H.append(f'<div class="lineh">줄 {ln} 「{ls[ln]["name"]}」</div><div class="row">')
+            if skipped(ln, item):
+                H.append(f'<div class="card"><h3>줄 {ln} — 뺌</h3><div class="sub">{skipped(ln, item)}</div></div>')
+            for key in groups.get(ln, []):
+                im, meta = cands[key]
+                sha = man['items'][item][key]['sha256']
+                rs = res[item][key]
+                st = ps.get((item, ln))
+                st = st if st and st[0]['round'] == rid else None
+                star = (f' <span class="star">★ 줄 {ln} 고름</span>' if st and st[0]['letter'] == key and st[1] == 'current' else
+                        f' <span class="bad">VOID</span>' if st and st[0]['letter'] == key else '')
+                gl = ' '.join(f'<span class="{"ok" if r["ok"] else ("bad" if r["level"] == "FAIL" else "w")}" title="{r["msg"]}">{r["code"]}{"✓" if r["ok"] else "✗"}</span>' for r in rs)
+                H.append(f'<div class="card{" picked" if "star" in star else ""}"><h3>후보 {key} <span class="sha">{sha[:8]}</span>{star}</h3>'
+                         f'<div class="sub">{cand_note(mod, key)}</div><div class="imgs">'
+                         f'<div>{img_tag(im, 1)}<div class="lbl">원본 1배</div></div><div>{img_tag(im, 4)}<div class="lbl">4배</div></div>')
+                if 'vignette' in meta:
+                    v = meta['vignette']
+                    H.append(f'<div>{img_tag(v, 1)}<div class="lbl">장면 1배</div></div><div>{img_tag(v, 3)}<div class="lbl">장면 3배</div></div>')
+                H.append('</div>')
+                extras = list(meta.get('extras', []))
+                if meta.get('kind') == 'cave-set':
+                    extras = [('바닥 몸통 6×6 (2배)', dot.tiled(meta['parts']['floor'].body, 6, 6), 2),
+                              ('천장 몸통 6×6', dot.tiled(meta['parts']['ceil'].body, 6, 6), 2),
+                              ('앞면 6칸 이어 붙임', _face_run(meta['parts']['face']), 2)]
+                if extras:
+                    H.append('<div class="imgs" style="margin-top:6px">' + ''.join(
+                        f'<div>{img_tag(x, k)}<div class="lbl">{lb}</div></div>' for lb, x, k in extras) + '</div>')
+                H.append(f'<div class="gate">관문 {gl}<br>' + '<br>'.join(f'{r["code"]} {r["msg"]}' for r in rs if not r['ok'] or r['code'] in 'SF') + '</div></div>')
+            if not one_row:
+                H.append('</div>')
+        if one_row:
+            H.append('</div>')
+    if style and hasattr(mod, 'SET_GRID'):
+        H.append('<h2>세트 장면 — 줄마다 다섯 항목을 한 곳에</h2><p class="lead">동굴 벽·바닥·물·내림 계단·벽돌 문(벽돌은 맥락)·상자·횃불·Actor1. 1배와 3배.</p><div class="row">')
+        for L in 'ABC':
+            sc = set_scene(mod, L)
+            H.append(f'<div class="card"><h3>줄 {L} 「{ls.get(L, {}).get("name", "")}」</h3><div class="sub">{mod.STYLE_NOTE[L]}</div><div class="imgs">'
+                     f'<div>{img_tag(sc, 1)}<div class="lbl">1배</div></div><div>{img_tag(sc, 3)}<div class="lbl">3배</div></div></div></div>')
+        H.append('</div>')
+    if hasattr(mod, 'line_scenes'):
+        H.append(f'<h2>줄별 장면</h2><p class="lead">{getattr(mod, "SCENE_LEAD", "")}</p>')
+        for ln, scs in mod.line_scenes().items():
+            H.append(f'<div class="lineh">줄 {ln} 「{ls[ln]["name"]}」</div><div class="row">')
+            for title, sub, sc in scs:
+                H.append(f'<div class="card"><h3>{title}</h3><div class="sub">{sub}</div><div class="imgs">'
+                         f'<div>{img_tag(sc, 1)}<div class="lbl">1배</div></div><div>{img_tag(sc, 3)}<div class="lbl">3배</div></div></div></div>')
+            H.append('</div>')
+    H.append('<h2>잠금 팔레트</h2><p class="lead">버들항 변형 조각에서 램프마다 실제 화소색을 뽑았다(palette.py). 모든 색이 공용 시트에 있다.</p><div class="pal">')
     for k, v in dot.PAL['ramps'].items():
         H.append(f'<div><b>{k}</b> ' + ''.join(f'<span class="sw" style="background:{c}" title="{c}"></span>' for c in v)
                  + f' <span class="sub">{dot.PAL["sources"][k]["why"]}</span></div>')
-    H.append(f'</div><p class="sub">판 {rid} · {man["at"]} · 그림 원본 {s["rounds"][rid]["module"]}</p></body></html>')
+    H.append(f'</div><p class="sub">판 {rid} · {man["at"]} · 그림 원본 {rd["module"]}</p></body></html>')
     os.makedirs(VIZ, exist_ok=True)
     out = os.path.join(VIZ, f'dungeon-{rid}.html')
     open(out, 'w', encoding='utf-8').write('\n'.join(H))
@@ -296,44 +374,54 @@ def current_hash(rid, item, letter):
     return dot.image_hash(im), im
 
 
-def cmd_pick(rid, item, letter, sha, note):
+def cmd_pick(rid, item, key, sha, note):
+    ln = line_of(key)
+    if not ln:
+        raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines())} (화풍 판은 글자, 이후 판은 <줄><번호>)')
+    if skipped(ln, item):
+        raise SystemExit(f'{item} 은 줄 {ln} 에서 뺀 항목이다: {skipped(ln, item)}')
     man_p = os.path.join(RUNS, rid, 'manifest.json')
     if not os.path.exists(man_p):
         raise SystemExit(f'판 {rid} 의 manifest 가 없다 — sheet {rid} 를 먼저(사람이 본 시트가 있어야 고를 수 있다)')
     man = json.load(open(man_p, encoding='utf-8'))
-    if item not in man['items'] or letter not in man['items'][item]:
-        raise SystemExit(f'{rid} 에 {item} {letter} 후보가 없다')
-    shown = man['items'][item][letter]['sha256']
+    if item not in man['items'] or key not in man['items'][item]:
+        raise SystemExit(f'{rid} 에 {item} {key} 후보가 없다')
+    shown = man['items'][item][key]['sha256']
     if not sha or not shown.startswith(sha):
         raise SystemExit(f'--sha 가 시트에 보인 해시({shown[:8]})와 다르다 — 사람이 본 그림의 해시 앞자리를 그대로 받는다')
-    cur, im = current_hash(rid, item, letter)
+    cur, im = current_hash(rid, item, key)
     if cur != shown:
         raise SystemExit(f'시트 이후 그림이 바뀌었다(시트 {shown[:12]} ≠ 현재 {str(cur)[:12]}). sheet {rid} 를 다시 만들어 다시 보여야 한다')
-    os.makedirs(PICKED, exist_ok=True)
-    im.save(os.path.join(PICKED, f'{item}.png'))
+    out = picked_path(ln, item)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    im.save(out)
     L = ledger()
-    L['picks'] = [p for p in L['picks'] if p['item'] != item] + [
-        {'round': rid, 'item': item, 'letter': letter, 'sha256': cur, 'note': note, 'at': now(), 'by': 'user'}]
+    L['picks'] = [p for p in L['picks'] if not (p['item'] == item and pick_line(p) == ln)] + [
+        {'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': 'user'}]
     save_ledger(L)
-    print(f'고름 기록: {item} ← {rid} {letter} ({cur[:12]}) → harness-data/dungeon-chipset/picked/{item}.png')
+    print(f'고름 기록: {item} 줄 {ln} ← {rid} {key} ({cur[:12]}) → {os.path.relpath(out, REPO)}')
 
 
-def cmd_reject(rid, item, letter, why):
+def cmd_reject(rid, item, key, why):
     if not why:
         raise SystemExit('--why 가 필요하다(다음 판의 「하지 말 것」이 된다)')
-    cur, _ = current_hash(rid, item, letter)
+    ln = line_of(key)
+    if not ln:
+        raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines())}')
+    cur, _ = current_hash(rid, item, key)
     if cur is None:
-        raise SystemExit(f'{rid} 에 {item} {letter} 후보가 없다')
+        raise SystemExit(f'{rid} 에 {item} {key} 후보가 없다')
     L = ledger()
-    L['rejects'].append({'round': rid, 'item': item, 'letter': letter, 'sha256': cur, 'why': why, 'at': now(), 'by': 'user'})
+    L['rejects'].append({'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'why': why, 'at': now(), 'by': 'user'})
     save_ledger(L)
-    print(f'버림 기록: {rid} {item} {letter} ({cur[:8]}) — {why}')
+    print(f'버림 기록: {rid} {item} {key}(줄 {ln}) ({cur[:8]}) — {why}')
 
 
 def pick_state():
+    """{(항목, 줄): (기록, 'current' | 'VOID — …')}. 현재 그림 해시·picked 파일 해시가 고른 해시와 같아야 current."""
     out, cache = {}, {}
     for p in ledger()['picks']:
-        rid = p['round']
+        rid, ln = p['round'], pick_line(p)
         try:
             if rid not in cache:
                 cache[rid] = render_round(rid)[1]
@@ -341,14 +429,14 @@ def pick_state():
             cur = dot.image_hash(c[0]) if c else None
         except SystemExit:
             cur = None
-        f = os.path.join(PICKED, f'{p["item"]}.png')
+        f = picked_path(ln, p['item'])
         fh = dot.image_hash(Image.open(f)) if os.path.exists(f) else None
         if cur != p['sha256']:
-            out[p['item']] = (p, 'VOID — 판 코드의 그림이 고른 뒤 바뀌었다')
+            out[(p['item'], ln)] = (p, 'VOID — 판 코드의 그림이 고른 뒤 바뀌었다')
         elif fh != p['sha256']:
-            out[p['item']] = (p, 'VOID — picked/ 파일이 고른 그림과 다르다')
+            out[(p['item'], ln)] = (p, 'VOID — picked/ 파일이 고른 그림과 다르다')
         else:
-            out[p['item']] = (p, 'current')
+            out[(p['item'], ln)] = (p, 'current')
     return out
 
 
@@ -366,13 +454,17 @@ def cmd_status():
     waves = {}
     for it in s['items']:
         waves.setdefault(it['wave'], []).append(it)
-    for w, its in waves.items():
-        got = [i for i in its if i['id'] in ps and ps[i['id']][1] == 'current']
-        print(f'  묶음 {w}: {len(got)}/{len(its)} 고름')
-        for it in its:
-            if it['id'] in ps:
-                p, st = ps[it['id']]
-                print(f'    {it["id"]:22} {p["round"]} {p["letter"]} {p["sha256"][:8]}  {st}')
+    for ln, info in lines().items():
+        print(f'줄 {ln} 「{info["name"]}」 — {info["concept"]}')
+        for w, its in waves.items():
+            live = [i for i in its if not skipped(ln, i['id'])]
+            got = [i for i in live if (i['id'], ln) in ps and ps[(i['id'], ln)][1] == 'current']
+            cut = len(its) - len(live)
+            print(f'  묶음 {w}: {len(got)}/{len(live)} 고름' + (f' (뺀 항목 {cut})' if cut else ''))
+            for it in its:
+                if (it['id'], ln) in ps:
+                    p, st = ps[(it['id'], ln)]
+                    print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {p["sha256"][:8]}  {st}')
     print(f'버림 기록 {len(L["rejects"])}건')
 
 
@@ -381,8 +473,10 @@ def cmd_list(wave=None):
     for it in seed()['items']:
         if wave and it['wave'] != wave:
             continue
-        star = '★' if it['id'] in ps and ps[it['id']][1] == 'current' else ' '
-        print(f'{star} {it["wave"]:6} {it["id"]:22} {it["size"][0]}×{it["size"][1]} {it["layer"]:5} {it["kind"]:11} {it["title"]}')
+        marks = ' '.join(('-' if skipped(ln, it['id']) else
+                          '★' if (it['id'], ln) in ps and ps[(it['id'], ln)][1] == 'current' else '·') + ln
+                         for ln in lines())
+        print(f'{marks}  {it["wave"]:6} {it["id"]:22} {it["size"][0]}×{it["size"][1]} {it["layer"]:5} {it["kind"]:11} {it["title"]}')
 
 
 def cmd_validate():
@@ -403,6 +497,17 @@ def cmd_validate():
         for r in it.get('refs', []):
             if r not in s['refs']:
                 errs.append(f'{it["id"]}: 기준 그림 {r} 이 refs 에 없다')
+    for ln, info in lines().items():
+        if len(ln) != 1 or not ln.isupper():
+            errs.append(f'줄 id {ln!r} 는 대문자 한 글자여야 한다(후보 키 <줄><번호> 의 앞 글자)')
+        for k in ('name', 'concept', 'origin'):
+            if k not in info:
+                errs.append(f'줄 {ln}: {k} 없음')
+        for item, why in info.get('skip', {}).items():
+            if item not in ids:
+                errs.append(f'줄 {ln} skip: 모르는 항목 {item}')
+            if not why:
+                errs.append(f'줄 {ln} skip {item}: 이유가 비었다')
     for k, r in s['refs'].items():
         if not os.path.exists(os.path.join(REPO, r['file'])):
             errs.append(f'기준 그림 파일 없음: {r["file"]}')
@@ -424,6 +529,21 @@ def cmd_validate():
                 errs.append(f'판 {rid}: 항목 {item} 이 시드에 없다')
             if item not in mod.CANDIDATES:
                 errs.append(f'판 {rid}: 모듈에 {item} 후보가 없다')
+                continue
+            style = rd.get('wave') == 'style'
+            for key in mod.CANDIDATES[item]:
+                ln = line_of(key)
+                if not ln or (style and key != ln) or (not style and key == ln):
+                    errs.append(f'판 {rid} {item}: 후보 키 {key} — 화풍 판은 줄 글자, 이후 판은 <줄><번호>')
+                elif skipped(ln, item):
+                    errs.append(f'판 {rid} {item}: 줄 {ln} 에서 뺀 항목인데 후보 {key} 가 있다')
+            if not style:
+                for ln in lines():
+                    if not skipped(ln, item) and not any(line_of(k) == ln for k in mod.CANDIDATES[item]):
+                        errs.append(f'판 {rid} {item}: 줄 {ln} 후보가 없다(뺄 거면 lines.{ln}.skip 에 이유)')
+        for item in mod.CANDIDATES:
+            if item not in rd['items']:
+                errs.append(f'판 {rid}: 모듈 후보 {item} 이 시드 rounds.{rid}.items 에 없다')
         src = open(os.path.join(REPO, rd['module']), encoding='utf-8').read()
         if re.search(r"['\"]#[0-9a-fA-F]{6}['\"]", src):
             errs.append(f'판 {rid}: 후보 코드에 hex 색이 있다(팔레트 램프만 쓴다)')
@@ -449,13 +569,13 @@ def main(argv=None):
     p = sub.add_parser('pick')
     p.add_argument('round')
     p.add_argument('item')
-    p.add_argument('letter')
+    p.add_argument('letter', metavar='후보', help='화풍 판은 줄 글자(A), 이후 판은 <줄><번호>(A1)')
     p.add_argument('--sha', required=True)
     p.add_argument('--note', default='')
     p = sub.add_parser('reject')
     p.add_argument('round')
     p.add_argument('item')
-    p.add_argument('letter')
+    p.add_argument('letter', metavar='후보', help='화풍 판은 줄 글자(A), 이후 판은 <줄><번호>(A1)')
     p.add_argument('--why', default='')
     sub.add_parser('status')
     a = ap.parse_args(argv)

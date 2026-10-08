@@ -133,7 +133,7 @@ def check_one(item, im, meta):
         zok = zok and w <= sw * 16 and h <= sh * 16
     res.append(_r('Z', 'FAIL', zok, f'{w}×{h}' + ('' if zok else f' — 16 배수·시드 {sw}×{sh}칸 이내여야')))
 
-    if kind in ('cave-set', 'autotile'):
+    if kind in ('cave-set', 'autotile', 'face'):
         holes, pbad, seams, info, nvar = 0, set(), [], [], 0
         for name, at in meta.get('autotiles', {}).items():
             n, hl, b, s, i = autotile_checks(name, at)
@@ -154,7 +154,7 @@ def check_one(item, im, meta):
     elif kind in ('tile', 'face-insert'):
         res.append(_r('Q', 'FAIL', opaque(a) == 0, '전부 불투명' if opaque(a) == 0 else f'투명 화소 {opaque(a)}'))
 
-    if kind == 'cave-set':
+    if kind == 'cave-set' or meta.get('rim_check'):
         errs = dot.structure_errors(meta['grid'])
         res.append(_r('G', 'FAIL', not errs, '앞면 위 천장 있음' if not errs else '; '.join(errs[:4])))
         k = dot.classify(meta['grid'])
@@ -168,13 +168,13 @@ def check_one(item, im, meta):
                     if voidish > strip.shape[0] * strip.shape[1] * 0.5:
                         miss.append(f'({x},{y})')
         res.append(_r('F', 'FAIL', not miss, '모든 앞면 위에 벽 윗면 테두리' if not miss else '윗면 없는 앞면 ' + ' '.join(miss)))
-    elif kind == 'autotile' and 'water' in meta.get('autotiles', {}):
+    if kind == 'autotile' and 'water' in meta.get('autotiles', {}):
         at = meta['autotiles']['water']
         n_edge = at.tile(dot.E | dot.W | dot.S | dot.SE | dot.SW).a[:4]
         body = at.body.a[:4]
         diff = float(np.abs(lum(n_edge) - lum(body)).mean())
         res.append(_r('F', 'FAIL', diff > 15, f'북쪽 물가 띠와 몸통 차이 {diff:.0f}(>15 이어야 앞면이 보임)'))
-    elif kind == 'objects':
+    if kind in ('objects', 'object'):
         for name, part in meta['parts'].items():
             pa = arr(part)
             ratio, n = outline_ratio(pa)

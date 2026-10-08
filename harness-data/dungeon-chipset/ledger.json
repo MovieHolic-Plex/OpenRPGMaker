@@ -1,5 +1,156 @@
 {
- "picks": [],
+ "picks": [
+  {
+   "round": "style-r1",
+   "item": "style.cave",
+   "line": "A",
+   "letter": "A",
+   "sha256": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:00",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.cave",
+   "line": "B",
+   "letter": "B",
+   "sha256": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:00",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.cave",
+   "line": "C",
+   "letter": "C",
+   "sha256": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:01",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.water",
+   "line": "A",
+   "letter": "A",
+   "sha256": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:01",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.water",
+   "line": "B",
+   "letter": "B",
+   "sha256": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:01",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.water",
+   "line": "C",
+   "letter": "C",
+   "sha256": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:01",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.stairs_down",
+   "line": "A",
+   "letter": "A",
+   "sha256": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:02",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.stairs_down",
+   "line": "B",
+   "letter": "B",
+   "sha256": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:02",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.stairs_down",
+   "line": "C",
+   "letter": "C",
+   "sha256": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:02",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.door",
+   "line": "A",
+   "letter": "A",
+   "sha256": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:02",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.door",
+   "line": "B",
+   "letter": "B",
+   "sha256": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:03",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.door",
+   "line": "C",
+   "letter": "C",
+   "sha256": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:03",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.chest_torch",
+   "line": "A",
+   "letter": "A",
+   "sha256": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:03",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.chest_torch",
+   "line": "B",
+   "letter": "B",
+   "sha256": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:04",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "style.chest_torch",
+   "line": "C",
+   "letter": "C",
+   "sha256": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a",
+   "note": "사용자 2026-10-08: 세 컨셉 줄로 모두 남김",
+   "at": "2026-10-08T09:14:04",
+   "by": "user"
+  }
+ ],
  "rejects": [],
  "runs": [
   {
@@ -71,6 +222,72 @@
   {
    "round": "style-r1",
    "at": "2026-10-08T04:18:55",
+   "fail": 0,
+   "warn": 0,
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T09:13:59",
+   "fail": 0,
+   "warn": 0,
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T09:14:10",
    "fail": 0,
    "warn": 0,
    "hashes": {
