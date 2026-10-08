@@ -75,6 +75,10 @@ CATEGORIES = [
     # (사무실 끝)
 
     # [interior_post po-]
+    ('post', '우체국', ['po-counter', 'po-parcel-scale', 'po-counter-end', 'po-ticket-machine', 'po-atm', 'po-writing-desk', 'po-bench-n', 'po-bench-s',
+                      'po-po-box', 'po-poster', 'po-staff-desk', 'po-sorting-shelf', 'po-mail-cart', 'po-mail-bag']),
+    ('mansion-common', '맨션 공용부', ['mc-autolock', 'mc-autodoor', 'mc-mailboxes', 'mc-delivery-box', 'mc-notice-board', 'mc-elevator', 'mc-stairs-up',
+                                  'mc-stairwell-down', 'mc-railing', 'mc-unit-door', 'mc-meter-box', 'mc-bike-rack']),
     # (우체국 끝)
 ]
 

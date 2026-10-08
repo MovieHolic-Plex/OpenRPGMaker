@@ -1,0 +1,220 @@
+{
+ "name": "일본 우체국(郵便局) 실내",
+ "plan": [
+  "############",
+  "#......#...#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#......#...#",
+  "#......#####",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#..........#",
+  "#####..#####"
+ ],
+ "exitWidth": 2,
+ "floor": "po-floor",
+ "wall": "po-wall",
+ "zones": [
+  {
+   "x0": 7,
+   "y0": 0,
+   "x1": 11,
+   "y1": 6,
+   "floor": "po-back-floor",
+   "wall": "pb-office-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "po-poster",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "po-staff-desk",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "po-staff-desk",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "po-counter-end",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "po-counter",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "po-counter",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "po-counter",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "po-counter",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "po-parcel-scale",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "door-side-western",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "po-sorting-shelf",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "po-mail-bag",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "po-mail-bag",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "po-mail-cart",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "po-ticket-machine",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "po-writing-desk",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "po-poster",
+   "x": 10,
+   "y": 7
+  },
+  {
+   "id": "po-atm",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "po-po-box",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "po-bench-n",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 5,
+   "y": 12
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "po-stamp-sheet",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "po-envelope",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "po-parcel",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "po-envelope",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "po-envelope",
+   "x": 4,
+   "y": 8
+  }
+ ],
+ "rooms": [
+  {
+   "room": "postcounter",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 5
+  },
+  {
+   "room": "postback",
+   "x0": 7,
+   "y0": 0,
+   "x1": 11,
+   "y1": 6
+  },
+  {
+   "room": "postlobby",
+   "x0": 0,
+   "y0": 6,
+   "x1": 11,
+   "y1": 12
+  }
+ ],
+ "start": [
+  5,
+  11
+ ],
+ "links": [],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 4,
+   "x1": 6,
+   "y1": 4,
+   "why": "창구 안쪽 직원 길(카운터와 직원 책상 사이) — 손님은 들어오지 않는다"
+  },
+  {
+   "x0": 1,
+   "y0": 5,
+   "x1": 1,
+   "y1": 5,
+   "why": "창구 끝 여닫이 칸 — 직원만 지나는 길"
+  }
+ ]
+}

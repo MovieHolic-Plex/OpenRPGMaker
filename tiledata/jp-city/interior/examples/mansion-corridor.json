@@ -1,0 +1,192 @@
+{
+ "name": "일본 맨션 위층 외복도",
+ "inner": true,
+ "plan": [
+  "######################",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "####...............###",
+  "######################"
+ ],
+ "floor": "mc-corridor",
+ "wall": "mc-corridor-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "mc-elevator",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mc-unit-door",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "mc-unit-door",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "mc-unit-door",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "mc-unit-door",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "mc-meter-box",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "mc-meter-box",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "mc-meter-box",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "mc-meter-box",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "mc-stairwell-down",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "mc-railing",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 17,
+   "y": 5
+  },
+  {
+   "id": "mc-railing",
+   "x": 18,
+   "y": 5
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "extcorridor",
+   "x0": 0,
+   "y0": 0,
+   "x1": 21,
+   "y1": 6
+  }
+ ],
+ "start": [
+  3,
+  4
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "toMapId": "jp-city-mansion-lobby",
+   "toX": 3,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "toMapId": "jp-city-mansion-lobby",
+   "toX": 3,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 19,
+   "y": 4,
+   "toMapId": "jp-city-mansion-lobby",
+   "toX": 5,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 20,
+   "y": 4,
+   "toMapId": "jp-city-mansion-lobby",
+   "toX": 5,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

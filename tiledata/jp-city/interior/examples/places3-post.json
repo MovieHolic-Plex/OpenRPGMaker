@@ -1,0 +1,96 @@
+[
+ {
+  "file": "post-office",
+  "maps": [
+   "post-office"
+  ],
+  "placeId": "jp-city-post-office-12x13",
+  "name": "일본 우체국(郵便局) 실내",
+  "kind": "postoffice",
+  "kindKo": "우체국",
+  "alias": [
+   "郵便局",
+   "우체국",
+   "post office"
+  ],
+  "building": "jp_post_office",
+  "roomKinds": {
+   "postlobby": [
+    "우체국 로비",
+    [
+     "郵便局ロビー",
+     "로비",
+     "대기실"
+    ]
+   ],
+   "postcounter": [
+    "우체국 창구 안쪽",
+    [
+     "窓口",
+     "창구",
+     "직원 자리"
+    ]
+   ],
+   "postback": [
+    "우편 구분 작업실",
+    [
+     "仕分け室",
+     "작업실",
+     "뒷방"
+    ]
+   ]
+  },
+  "rules": [
+   "남쪽 자동문 출입구(2칸) → 오른쪽 벽 쪽 ATM·사서함 벽(입구 가까이) · 왼쪽 관엽 화분·창구를 보는 대기 벤치(po-bench-n)·그 뒤 서서 쓰는 기재대 · 길가에 번호표 기계 → 창구 카운터 줄(po-counter 4칸 + 소포 창구 po-parcel-scale, 앞 손님 자리 두 줄 비움) → 카운터 안쪽 직원 책상 둘 · 직원 길 한 줄 → 동쪽 세로 칸막이 옆문 너머 작은 구분 작업실(구분 선반·우편 수레·자루).",
+   "창구 카운터 줄은 로비와 직원 쪽을 끝까지 가르고, 끝 한 칸은 여닫이 칸(po-counter-end — 직원 길)으로 남긴다. 카운터 남쪽 두 줄은 비운다(손님이 줄 서는 자리).",
+   "평면·가구는 tiledata/jp-city/interior/examples/post-office.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-post-office-12x13\"})."
+  ]
+ },
+ {
+  "file": "mansion-lobby",
+  "maps": [
+   "mansion-lobby",
+   "mansion-corridor"
+  ],
+  "placeId": "jp-city-mansion-lobby-9x12",
+  "name": "일본 맨션 공용부(엔트런스·엘리베이터 홀·외복도)",
+  "kind": "mansioncommon",
+  "kindKo": "맨션 공용부",
+  "alias": [
+   "マンション共用部",
+   "맨션 공용부",
+   "apartment lobby"
+  ],
+  "building": "jp_mansion_common",
+  "roomKinds": {
+   "windbreak": [
+    "바람막이(엔트런스)",
+    [
+     "風除室",
+     "엔트런스",
+     "현관 홀"
+    ]
+   ],
+   "elevatorhall": [
+    "엘리베이터 홀",
+    [
+     "エレベーターホール",
+     "로비"
+    ]
+   ],
+   "extcorridor": [
+    "외복도",
+    [
+     "外廊下",
+     "복도"
+    ]
+   ]
+  },
+  "rules": [
+   "1층: 남쪽 바깥 자동문(2칸) → 바람막이(風除室 — 북쪽 벽에 집합 우편함·택배 보관함, 안쪽 자동문 바로 옆 오토록 조작반) → 가로 칸막이 1칸 틈의 안쪽 유리 자동문(mc-autodoor) → 엘리베이터 홀(엘리베이터 1대·관엽 화분·공용 계단·관리 게시판, 동쪽 구석 자전거 셋).",
+   "위층 외복도(mansion-corridor, 거리와 잇지 않는 맵): 북쪽 벽면에 세대 현관문 4개(mc-unit-door, 장식)와 문마다 계량기함, 남쪽 가장자리 한 줄 전부 난간(mc-railing), 복도 2줄, 서쪽 끝 엘리베이터·동쪽 끝 내려가는 계단통.",
+   "층 이동: 1층 엘리베이터 앞 두 칸 ↔ 외복도 엘리베이터 앞 두 칸, 1층 계단 발칸 → 외복도 계단통 옆, 외복도 계단통 아랫줄 → 1층 계단 앞. 맨션 세대 실내는 jp-city-mansion-2ldk 를 따로 쓴다.",
+   "평면·가구는 tiledata/jp-city/interior/examples/mansion-lobby.json·mansion-corridor.json — 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-lobby-9x12\"})."
+  ]
+ }
+]
