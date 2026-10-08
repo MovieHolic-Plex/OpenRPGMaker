@@ -48,10 +48,13 @@ def lum(a):
 
 def seam(tile, nx=6, ny=6, axes='xy'):
     """칸 반복에서 경계 차이 / 칸 안 차이. 반환 [(축, 경계, 안쪽 중앙값, 튐?)]"""
-    big = dot.tiled(tile, nx, ny).a
-    L = lum(big)
+    return seam_big(dot.tiled(tile, nx, ny), tile.w, tile.h, axes)
+
+
+def seam_big(cv, w, h, axes='xy'):
+    """이미 깐 그림 cv 에서 w×h 칸 경계 차이 / 칸 안 차이."""
+    L = lum(cv.a)
     out = []
-    w, h = tile.w, tile.h
     if 'x' in axes:
         d = np.abs(np.diff(L, axis=1)).mean(axis=0)
         b = np.array([d[i] for i in range(len(d)) if (i + 1) % w == 0]).mean()
@@ -76,9 +79,14 @@ def autotile_checks(name, at):
     vs = at.variants()
     holes = sum(opaque(v.a) for v in vs.values())
     bad = set()
-    for v in vs.values():
+    for v in list(vs.values()) + at.bodies:
         bad |= palette_bad(v.a)[0]
+    holes += sum(opaque(b.a) for b in at.bodies[1:])
     seams, info = [], []
+    if len(at.bodies) > 1:   # 몸통 변형: 엔진과 같은 해시로 8×8 섞어 깔고 경계를 본다
+        res = seam_big(dot.mosaic(at, 8, 8), 16, 16)
+        seams += [f'{name} 몸통 변형 섞음 {ax} 경계 {b:.1f} > 안쪽 {i:.1f}' for ax, b, i, f in res if f]
+        info.append(', '.join(f'{name} 변형 섞음 {ax} {b:.1f}/{i:.1f}' for ax, b, i, _ in res))
     for nm, tile, axes in ((f'{name} 몸통', at.body, 'xy'),
                            (f'{name} 북변', at.tile(dot.E | dot.W | dot.S | dot.SE | dot.SW), 'x'),
                            (f'{name} 남변', at.tile(dot.E | dot.W | dot.N | dot.NE | dot.NW), 'x'),

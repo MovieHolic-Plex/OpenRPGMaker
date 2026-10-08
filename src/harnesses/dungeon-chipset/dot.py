@@ -152,8 +152,19 @@ class Autotile:
     각 조각은 Cv. 사분면 TL 은 (N, W, NW), TR (N, E, NE), BL (S, W, SW), BR (S, E, SE) 로 판정한다.
     """
 
-    def __init__(s, body, edge, outer, inner):
+    def __init__(s, body, edge, outer, inner, variants=()):
         s.body, s.edge, s.outer, s.inner = body, edge, outer, inner
+        # 몸통 변형(엔진 AutotileGroup.interiorVariants 한 단). 8방이 다 이어진 칸(마스크 255)만 cell_hash 로 고른다.
+        # 변형끼리·본몸통과 어떤 순서로 붙어도 이어지도록, 그리는 쪽이 칸 둘레 한 줄을 같게 맞춘다.
+        s.bodies = [body] + list(variants)
+
+    def tile_at(s, mask, x, y):
+        """맵 (x, y) 칸의 그림 — 마스크 255 칸은 엔진 shadeAutotileInterior 와 같은 해시로 몸통 변형을 고른다."""
+        if mask == 255 and len(s.bodies) > 1:
+            cv = Cv(T, T)
+            cv.a[:] = s.bodies[cell_hash(x, y) % len(s.bodies)].a
+            return cv
+        return s.tile(mask)
 
     def tile(s, mask):
         cv = Cv(T, T)
@@ -180,6 +191,24 @@ class Autotile:
             if k not in out:
                 out[k] = s.tile(k)
         return out
+
+
+def cell_hash(x, y):
+    """src/project/defaults/autotileEngine.ts cellHash 와 같은 값(32비트)."""
+    def imul(a, b):
+        return (a * b) & 0xFFFFFFFF
+    n = (imul(x & 0xFFFFFFFF, 374761393) ^ imul(y & 0xFFFFFFFF, 668265263) ^ 0x2F6B1D) & 0xFFFFFFFF
+    n = imul(n ^ (n >> 13), 1274126177)
+    return (n ^ (n >> 16)) & 0xFFFFFFFF
+
+
+def mosaic(at, nx, ny):
+    """마스크 255 칸만 nx×ny 로 깐 그림(몸통 변형 섞임 확인용)."""
+    out = Cv(nx * T, ny * T)
+    for j in range(ny):
+        for i in range(nx):
+            out.a[j * T:(j + 1) * T, i * T:(i + 1) * T] = at.tile_at(255, i, j).a
+    return out
 
 
 def canon(m):
@@ -306,16 +335,17 @@ def render_cave(g, ceil, face, floor, water=None, floor_conn=None):
             kk = k[y][x]
             if kk == 'ceil':
                 m = mask_at(g, x, y, lambda ch, X, Y: k[Y][X] == 'ceil')
-                t = ceil.tile(m)
+                t = ceil.tile_at(m, x, y)
             elif kk in ('hi', 'lo'):
                 lv = 0 if kk == 'hi' else 1
                 lo = not (x - 1 >= 0 and k[y][x - 1] == kk)
                 ro = not (x + 1 < Wd and k[y][x + 1] == kk)
                 t = face.tile(lv, lo, ro)
             elif kk == 'w' and water is not None:
-                t = water.tile(mask_at(g, x, y, lambda ch, X, Y: ch == 'w'))
+                m = mask_at(g, x, y, lambda ch, X, Y: ch == 'w')
+                t = water.tile_at(m, x, y)
             else:
-                t = floor.tile(mask_at(g, x, y, fc))
+                t = floor.tile_at(mask_at(g, x, y, fc), x, y)
             out.a[y * T:(y + 1) * T, x * T:(x + 1) * T] = t.a
     return out
 

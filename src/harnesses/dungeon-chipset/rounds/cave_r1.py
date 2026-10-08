@@ -6,6 +6,9 @@
     손으로 적은 16×16 결 표에서 그 자리 글자를 가져온다. 사분면 경계(8·16·24 열/행)는 줄마다 정한 「표준 깊이」로 맞춰
     바꿔 끼워도 이어진다(check_frame 이 어긋남을 잡는다).
   - 같은 줄의 1·2 는 같은 램프·같은 표준 깊이·같은 바닥 바탕색이라 서로 바꿔 끼울 수 있다(천장 A1 + 바닥 A2 도 이어진다).
+  - 넓게 깔리는 몸통(A1·C2 돌바닥, B1·B2 천장)은 본몸통 + 변형 셋(엔진 AutotileGroup.interiorVariants 한 단). 8방이 다 이어진 칸만
+    엔진과 같은 cellHash 로 고른다(dot.Autotile.tile_at). 변형끼리 어떤 순서로 붙어도 이어지게 칸 둘레 한 줄을 같게 맞춘다 —
+    판석·바윗덩이는 「공통 이음 자리」(ports: 변마다 한 곳)로만 칸을 건너고 안쪽 이음은 변형마다 다르다(net_body).
   - 천장 테두리의 바닥색 홈('f'·'g')은 그 줄 흙바닥의 바탕색 한 단이다 — 칸 격자가 아니라 바위 윤곽이 울퉁불퉁하게 보이게 한다.
 
 글자 범례는 줄마다 따로 둔다. '.' = 투명(오토타일 조각에서는 몸통 유지), '~' = 바닥 그림자.
@@ -140,12 +143,78 @@ def on_base(base, frame_rows, inner_rows, leg, base_ch=','):
     return fr, inn
 
 
-def autotile_cv(body, fr, inn):
+def autotile_cv(body, fr, inn, variants=()):
     q = lambda c, qx, qy: c.crop(qx * 8, qy * 8, 8, 8)  # noqa: E731
     edge = {'N': fr.crop(8, 0, 16, 8), 'S': fr.crop(8, 24, 16, 8), 'W': fr.crop(0, 8, 8, 16), 'E': fr.crop(24, 8, 8, 16)}
     outer = {'NW': q(fr, 0, 0), 'NE': q(fr, 3, 0), 'SW': q(fr, 0, 3), 'SE': q(fr, 3, 3)}
     inner = {'NW': q(inn, 0, 0), 'NE': q(inn, 1, 0), 'SW': q(inn, 0, 1), 'SE': q(inn, 1, 1)}
-    return dot.Autotile(body, edge, outer, inner)
+    return dot.Autotile(body, edge, outer, inner, variants)
+
+
+def carve(rows, pts, dark='p', shade='q', lit='s'):
+    """손으로 적은 갈라진 금 화소 목록 pts 를 몸통 행에 판다(16 주기로 감김). 금의 왼쪽·위 = 그늘, 오른쪽·아래 = 빛 받는 턱."""
+    g = [list(r) for r in rows]
+    h, w = len(g), len(g[0])
+    P = {(x % w, y % h) for x, y in pts}
+    for x, y in P:
+        g[y][x] = dark
+    for x, y in P:
+        for dx, dy, ch in ((-1, 0, shade), (0, -1, shade), (1, 0, lit), (0, 1, lit)):
+            X, Y = (x + dx) % w, (y + dy) % h
+            if (X, Y) not in P and g[Y][X] == rows[Y][X]:
+                g[Y][X] = ch
+    return [''.join(r) for r in g]
+
+
+def poly(*pts):
+    """손으로 고른 꼭짓점을 잇는 금(8방 이웃 선). 반환 화소 목록."""
+    out = []
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0), 1)
+        for i in range(n + 1):
+            out.append((x0 + round((x1 - x0) * i / n), y0 + round((y1 - y0) * i / n)))
+    return out
+
+
+def ports(xs, ys):
+    """칸 경계를 건너는 이음 자리. 위·아래 변을 x 에서, 왼·오른 변을 y 에서 2px 씩 — 변형 모두 같은 자리라 아무 순서로 붙여도 이어진다."""
+    out = []
+    for x in xs:
+        out += [(x, 0), (x, 1), (x, 14), (x, 15)]
+    for y in ys:
+        out += [(0, y), (1, y), (14, y), (15, y)]
+    return out
+
+
+def base_turn(base, k):
+    """바탕 점 자리를 변형마다 돌려 쓴다(0 그대로 · 1 좌우 · 2 상하 · 3 대각 뒤집기). 바탕 둘레는 한 글자라 둘레는 그대로다."""
+    rows = [r[::-1] for r in base] if k == 1 else base[::-1] if k == 2 else [''.join(c) for c in zip(*base)] if k == 3 else base
+    ring = {r[0] for r in base} | {r[-1] for r in base} | set(base[0]) | set(base[-1])
+    assert len(ring) == 1, '바탕 둘레가 한 글자가 아니면 변형끼리 어긋난다'
+    return list(rows)
+
+
+def net_body(base, port, paths, check=True, **kw):
+    """몸통 = base 에 (공통 이음 자리 + 이 변형의 금) 을 판다. 안쪽 금은 둘레 2px 에 들어가지 않는다(check)."""
+    pts = list(port)
+    for path in paths:
+        for x, y in poly(*path):
+            if check and not (2 <= x <= 13 and 2 <= y <= 13):
+                raise AssertionError(f'금 ({x},{y}) 이 둘레 2px 에 들어갔다 — 변형끼리 어긋난다')
+            pts.append((x, y))
+    return carve(base, pts, **kw)
+
+
+def a2_plus(at):
+    """후보 원본: A2 모양 32×48 + 오른쪽에 몸통 변형(16×16 세로로)."""
+    vs = at.bodies[1:]
+    if not vs:
+        return a2_block(at)
+    cv = Cv(32 + 16 * ((len(vs) + 2) // 3), 48)
+    cv.paste(a2_block(at), 0, 0)
+    for i, b in enumerate(vs):
+        cv.paste(b, 32 + 16 * (i // 3), 16 * (i % 3))
+    return cv
 
 
 def floor_frame(nprof, wprof, dark, mid):
@@ -213,11 +282,6 @@ TEX_A1 = {'B': [   # 띠 결: 갈색 b·c 교대, d 어두운 점, a 밝은 점
     'bdbcbbcbcbdbcbab', 'cbcabcbdbcbcbbcb', 'bcbcbcbbcabcbdbc', 'cbdbcbcbbcbcbcbb',
     'bcbbcbdbcbbcacbc', 'cbcbacbcbdbcbbcb', 'bcbdbcbbcbcbcbdb', 'cbcbbcbcabcbdbcb',
     'bdbcbcbdbcbbcbcb', 'cbcbbcbcbcbdbcab', 'bcacbdbcbcbcbbcb', 'cbcbcbbcbdbcbcbc']}
-TEX_A2 = {'B': [   # 더 어두운 띠(c·d) 속에 앞면 돌과 같은 녹회색 자갈(x 빛 · y · z 그늘)
-    'cdcbcdcxycdcbcdc', 'dcbcdcbyzcdcbcdb', 'cbcdcbcdcbcdxycd', 'dcdcbcdcbcdcyzdc',
-    'cdxycdcbcdcbcdcb', 'dcyzcbcdcbcdcbcd', 'cbcdcdcbcdxycdcb', 'dcbcbcdcbcyzcbcd',
-    'cdcbcdxycdcbcdcb', 'dcdcbcyzdcbcdcxy', 'cbcdcbcdcbcdcbyz', 'dcbcdcbcdcxycdcb',
-    'cdxycbcdcbyzcbcd', 'dcyzdcbcdcbcdcbc', 'cbcdcbcdxycbcdcb', 'dcbcdcbcyzcdcbcd']}
 
 # A1 — 표준 깊이 6(끝선 l · 띠 4 · 안선 e). 북·서·동 변은 바닥(f)이 1~2px 파고들어 윤곽이 울퉁불퉁, 남변(벽 윗면)은 곧은 끝선.
 A1_NW = ['ffflllll', 'fflBBBBB', 'flBBBBBB', 'lBBBBBBB', 'lBBBBBBB', 'lBBBBBee', 'lBBBBe..', 'lBBBBe..']
@@ -235,20 +299,35 @@ A1_FRAME = frame(A1_NW, mirror_h(A1_NW), mirror_v(A1_NW), mirror_v(mirror_h(A1_N
 A1_INNER = inner_of(A1_IN)
 A1_BODY = ['v' * 16] * 16
 
-# A2 — 표준 깊이 5, 끝선은 한 단 낮은 k(덜 하얗다), 띠는 c·d 에 녹회색 자갈. 어둠 몸통에 아주 옅은 결(u·t).
-A2_NW = ['fffkkkkk', 'ffkBBBBB', 'fkBBBBBB', 'kBBBBBBB', 'kBBBBBee', 'kBBBBe..', 'kBBBe...', 'kBBBe...']
-A2_IN = ['kBBBe...', 'BBBBe...', 'BBBe....', 'BBe.....', 'ee......', '........', '........', '........']
-_A2 = bands('k', 'B', 'e')
-A2_N = strips([(0, 5), (1, 6), (2, 6), (2, 7), (1, 6), (0, 5), (0, 4), (0, 5),
-               (0, 5), (0, 5), (1, 5), (1, 6), (0, 6), (0, 6), (0, 5), (0, 5)], _A2, 'f')
-A2_S = strips([(0, 5), (0, 5), (0, 6), (0, 6), (0, 5), (0, 4), (0, 4), (0, 5),
-               (0, 5), (0, 6), (0, 6), (0, 5), (0, 5), (0, 4), (0, 5), (0, 5)], _A2, 'f')
-A2_W = strips([(0, 5), (1, 6), (1, 6), (0, 5), (0, 4), (0, 4), (0, 5), (0, 5),
-               (0, 5), (0, 5), (1, 5), (2, 6), (2, 7), (1, 6), (0, 5), (0, 5)], _A2, 'f')
-A2_E = strips([(0, 5), (0, 5), (0, 6), (1, 6), (1, 6), (0, 5), (0, 5), (0, 5),
-               (0, 5), (0, 4), (0, 4), (0, 5), (1, 6), (2, 6), (1, 5), (0, 5)], _A2, 'f')
-A2_FRAME = frame(A2_NW, mirror_h(A2_NW), mirror_v(A2_NW), mirror_v(mirror_h(A2_NW)), A2_N, A2_S, A2_W, A2_E)
-A2_INNER = inner_of(A2_IN)
+# A2 — 흙 띠 대신 **굵은 바위 혹** 테두리: 둥근 사암 덩이(rim, 위·왼 빛 k a, 아래·오른 그늘 c d, 윤곽 e)가 한 칸에 둘씩
+# 늘어서고, 덩이 사이로 바닥(f)이 파고든다. 남변(벽 윗면)은 덩이 앞턱이 앞면 위로 둥글게 나온다. 어둠 몸통에 아주 옅은 결(u·t).
+A2_N1 = ['feeeeeef', 'eakkkabe', 'dakaabcd', 'dabbbccd', 'ecbccdde', '.edddde.', '..eeee..', '........']
+A2_N2 = ['feeeeeef', 'ekkaaabe', 'dkaabbcd', 'dbbbccdd', 'eccccdde', '.eeeeee.', '........', '........']
+A2_S1 = ['........', '..eeee..', '.eakkae.', 'eakkaabe', 'dkaabbcd', 'dabbbccd', 'dbccccdd', 'edddddde']
+A2_S2 = ['........', '........', '.eeeeee.', 'eakkaabe', 'dabbbbcd', 'dbbbcccd', 'dccccddd', 'edddddde']
+A2_NW = ['ffffeeef', 'ffeeakbe', 'feakkbcd', 'eakabbcd', 'ekabbcde', 'eabbcde.', 'dbccde..', 'fedde...']
+A2_SW = ['fedde...', 'eakde...', 'eakbbe..', 'eakabbee', 'ekabbccd', 'eabbcccd', 'edccdddd', 'feeeeeee']
+A2_IN_NW = ['fedde...', 'eade....', 'dde.....', 'de......', 'e.......', '........', '........', '........']
+A2_IN_SW = ['........', '........', '........', 'e.......', 'de......', 'dde.....', 'ddde....', 'fedde...']
+
+
+def _tr(rows):
+    return [''.join(c) for c in zip(*rows)]
+
+
+def _lump_frame():
+    w1, w2 = _tr(A2_N1), _tr(A2_N2)
+    e1, e2 = mirror_h(w2), mirror_h(w1)
+    ne, se = mirror_h(A2_NW), mirror_h(A2_SW)
+    rows = [A2_NW[y] + A2_N1[y] + A2_N2[y] + ne[y] for y in range(8)]
+    rows += [w1[y] + '.' * 16 + e1[y] for y in range(8)] + [w2[y] + '.' * 16 + e2[y] for y in range(8)]
+    rows += [A2_SW[y] + A2_S2[y] + A2_S1[y] + se[y] for y in range(8)]
+    return rows
+
+
+A2_FRAME = _lump_frame()
+A2_INNER = inner_of(A2_IN_NW, sw=A2_IN_SW, se=mirror_h(A2_IN_SW))
+TEX_A2 = {}
 A2_BODY = [
     'vvvvvvvvvvvvvvvv', 'vvvvuvvvvvvvvvvv', 'vvvvvuvvvvvvvvvv', 'vvvvvvuuvvvvvtvv',
     'vvvvvvvvuvvvvvvv', 'vvtvvvvvvvvvvvvv', 'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvuvvvv',
@@ -256,7 +335,7 @@ A2_BODY = [
     'vvvuvvvvvvvvvvvv', 'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvvvvvu', 'vvvvvvvvtvvvvvvv']
 
 check_frame('A1 천장', A1_FRAME, A1_INNER)
-check_frame('A2 천장', A2_FRAME, A2_INNER)
+check_frame('A2 천장', A2_FRAME, A2_INNER, strict_inner=False)
 
 
 def ceil_a(n):
@@ -328,11 +407,26 @@ def floor_a(n):
 # 돌바닥 A1 — 녹회색 판석(윗변·왼변 O 빛, 아랫변·오른변 K 그늘, 이음 J). 흙과 만나는 가장자리는 흙(,)이 파고들고 판석 끝 J.
 LA_STONE = legend(J=('crock', 1), K=('crock', 2), M=('crock', 3), N=('crock', 4), O=('crock', 5),
                   **{str(i): ('cfloor', i) for i in range(8)})
-A1_STONE = [
-    'OOOOOOKJOOOOOOKJ', 'ONNNNNKJONNMNNKJ', 'ONNMNNKJONNNNNKJ', 'ONNNNNKJONNNNMKJ',
-    'ONMNNNKJONNNNNKJ', 'ONNNNNKJOMNNNNKJ', 'KKKKKKKJKKKKKKKJ', 'J1JJJJJJJJ1JJJJJ',
-    'OOKJOOOOOOKJOOOO', 'NNKJONNNNNKJONNN', 'NMKJONNMNNKJONNN', 'NNKJONNNNNKJONMN',
-    'NNKJOMNNNNKJONNN', 'NNKJONNNNNKJONNN', 'KKKJKKKKKKKJKKKK', 'JJJJJJ1JJJJJJJJ1']
+# 판석은 「공통 이음 자리」(위·아래 변 x=4·11, 왼·오른 변 y=5·12 에서만 칸 경계를 건넌다) + 변형마다 다른 안쪽 이음.
+# 본몸통 + 변형 셋이 아무 순서로 붙어도 이어지고, 판석 크기·배치는 칸마다 달라 넓게 깔아도 같은 줄이 안 생긴다.
+A1_STONE_BASE = ['NNNNNNNNNNNNNNNN', 'NNNNNNNNNNNNNNNN', 'NNNNNNNNNMNNNNNN', 'NNNNNNNNNNNNNNNN',
+                 'NNNMNNNNNNNNNNNN', 'NNNNNNNNNNNNNNNN', 'NNNNNNNNNNNMNNNN', 'NNNNNNNNNNNNNNNN',
+                 'NNNNNMNNNNNNNNNN', 'NNNNNNNNNNNNNNNN', 'NNNNNNNNNNNNMNNN', 'NNNNNNNNNNNNNNNN',
+                 'NNNNNNNNNNNNNNNN', 'NNNNNNNNMNNNNNNN', 'NNNNNNNNNNNNNNNN', 'NNNNNNNNNNNNNNNN']
+A1_STONE_PORT = ports((5,), (9,))
+A1_STONE_NETS = [
+    [[(5, 2), (6, 5), (9, 7), (13, 9)], [(2, 9), (4, 10), (5, 13)], [(9, 7), (10, 11), (8, 13)], [(6, 5), (3, 6)]],
+    [[(5, 2), (4, 5), (2, 9)], [(13, 9), (10, 8), (9, 12), (5, 13)], [(10, 8), (11, 4), (9, 3)]],
+    [[(5, 2), (5, 6), (7, 9), (5, 13)], [(2, 9), (4, 8), (7, 9)], [(13, 9), (11, 10), (7, 9)], [(10, 3), (12, 5)]],
+    [[(5, 2), (7, 4), (12, 6), (13, 9)], [(2, 9), (3, 8), (6, 11), (5, 13)], [(7, 4), (4, 6), (3, 8)]],
+]
+
+
+def a1_stone_bodies():
+    return [grid(net_body(base_turn(A1_STONE_BASE, i), A1_STONE_PORT, n, dark='J', shade='K', lit='O'), LA_STONE)
+            for i, n in enumerate(A1_STONE_NETS)]
+
+
 _SJ = bands('J', 'J', 'J')
 A1_STONE_NW = [',,,,,,,,', ',,,,,,,,', ',,,,JJJJ', ',,,J....', ',,J.....', ',,J.....', ',,J.....', ',,J.....']
 A1_STONE_IN = [',,J.....', ',J......', 'J.......', '........', '........', '........', '........', '........']
@@ -386,11 +480,11 @@ check_frame('A2 돌바닥', A2_STONE_FRAME, A2_STONE_INNER)
 def stone_a(n):
     dirt = grid(A1_FLOOR if n == 1 else A2_FLOOR, LA_FLOOR)
     if n == 1:
-        body, fr, inn, leg = shift(grid(A1_STONE, LA_STONE), 3, 3), A1_STONE_FRAME, A1_STONE_INNER, LA_STONE
+        bodies, fr, inn, leg = a1_stone_bodies(), A1_STONE_FRAME, A1_STONE_INNER, LA_STONE
     else:
-        body, fr, inn, leg = shift(a2_stone_body(), 6, 6), A2_STONE_FRAME, A2_STONE_INNER, LA_COB
+        bodies, fr, inn, leg = [shift(a2_stone_body(), 6, 6)], A2_STONE_FRAME, A2_STONE_INNER, LA_COB
     f, i = on_base(dirt, fr, inn, leg)
-    return autotile_cv(body, f, i)
+    return autotile_cv(bodies[0], f, i, bodies[1:])
 
 
 # 잔돌 A1 — 녹회색 돌(crock 0 윤곽 · 6 5 윗면 빛 · 4 3 2 앞면). 1×1 은 걸을 수 있는 작은 돌 둘, 2×1 은 쌓인 덩이.
@@ -504,37 +598,32 @@ LB_TOP = SR.LB_TOP   # 윗면 몸통: r→stone2 · q→stone1 · p,o→stone0 �
 LB_FACE = legend(**{str(i): ('crock', i) for i in range(7)})
 
 
-def carve(rows, pts, dark='p', shade='q', lit='s'):
-    """손으로 적은 갈라진 금 화소 목록 pts 를 몸통 행에 판다(16 주기로 감김). 금의 왼쪽·위 = 그늘, 오른쪽·아래 = 빛 받는 턱."""
-    g = [list(r) for r in rows]
-    h, w = len(g), len(g[0])
-    P = {(x % w, y % h) for x, y in pts}
-    for x, y in P:
-        g[y][x] = dark
-    for x, y in P:
-        for dx, dy, ch in ((-1, 0, shade), (0, -1, shade), (1, 0, lit), (0, 1, lit)):
-            X, Y = (x + dx) % w, (y + dy) % h
-            if (X, Y) not in P and g[Y][X] == rows[Y][X]:
-                g[Y][X] = ch
-    return [''.join(r) for r in g]
+# 바위 윗면 — 본몸통 + 변형 셋(엔진 interiorVariants). B1: 금은 칸 둘레 2px 안쪽에만 있어 둘레가 모두 같다(아무 순서로 붙어도 이어짐).
+# B2: 바윗덩이 사이 틈은 공통 이음 자리(위·아래 x=3·10, 왼·오른 y=4·11)로만 칸을 건너고, 덩이 모양은 변형마다 다르다.
+B_TOP_BASE = ['rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrsrrrrrrrrrrrrr', 'rrrrrrrrrrrsrrrr',
+              'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrqrrrrrrrrr', 'rrrrrrrrrrrrrrrr',
+              'rrrrrrrrrrrrrsrr', 'rrrrsrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrqrrrrrr',
+              'rrrrrrrrrrrrrrrr', 'rrsrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr']
+B1_TOP_NETS = [   # 금의 양을 칸마다 달리(긴 금 · 없음 · 없음 · 갈래 진 금) — 넓게 깔면 금이 몰린 곳과 빈 곳이 생긴다
+    [[(3, 3), (6, 5), (9, 8), (10, 12)], [(6, 5), (10, 4)]],
+    [],
+    [],
+    [[(12, 3), (9, 6), (5, 7), (3, 10)], [(9, 6), (10, 9)]],
+]
+B2_TOP_PORT = ports((9,), (6,))
+B2_TOP_NETS = [
+    [[(9, 2), (8, 4), (5, 5), (2, 6)], [(13, 6), (11, 9), (9, 13)], [(8, 4), (10, 7), (11, 9)]],
+    [[(9, 2), (10, 5), (13, 6)], [(2, 6), (4, 8), (6, 11), (9, 13)], [(10, 5), (7, 8), (4, 8)]],
+    [[(9, 2), (8, 6), (10, 10), (9, 13)], [(2, 6), (5, 7), (8, 6)], [(13, 6), (12, 9), (10, 10)]],
+    [[(2, 6), (4, 5), (7, 3), (9, 2)], [(13, 6), (11, 8), (8, 11), (9, 13)], [(4, 5), (5, 9), (8, 11)]],
+]
 
 
-B1_TOP = carve([
-    'rrrrrrrrrrrrrrrr', 'rrsrrrrrrrrrrrrr', 'rrrrrrrrrrrrrsrr', 'rrrrrrrrrrrrrrrr',
-    'rrrrrrrrrrrrrqrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr',
-    'rrrrrrrrrrrrrrrr', 'rrrsrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrqrrrrrrrrrrr',
-    'rrrrrrrrrrrrrrrr', 'rrsrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrqrrrrrrrrr'],
-    [(10, 15), (10, 0), (10, 1), (9, 2), (8, 3), (5, 5), (4, 5), (3, 6), (2, 6), (1, 7),
-     (14, 8), (13, 9), (12, 10), (12, 11), (3, 11), (4, 12), (4, 13), (8, 13), (7, 14)])
-# B2 — 바윗덩이 밭: 둥근 덩이 윗면 사이로 틈이 그물처럼(덩이마다 왼쪽 위 빛 s, 틈 옆 그늘 q).
-B2_TOP = carve([
-    'rrrrrrrrrrrrrrrr', 'rsrrrrrrrrsrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr',
-    'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr',
-    'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrsrrrrrrrrsrrr',
-    'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr', 'rrrrrrrrrrrrrrrr'],
-    [(0, 9), (1, 9), (2, 8), (3, 8), (4, 8), (5, 9), (6, 9), (7, 9), (8, 8), (9, 8), (10, 9), (11, 9), (12, 10),
-     (13, 10), (14, 9), (15, 9), (7, 1), (8, 2), (8, 3), (8, 4), (7, 5), (7, 6), (8, 7),
-     (3, 10), (3, 11), (2, 12), (2, 13), (3, 14), (3, 15), (3, 0), (12, 11), (13, 12), (13, 13), (12, 14), (12, 15), (12, 0)])
+def b_top_bodies(n):
+    if n == 1:
+        return [grid(net_body(base_turn(B_TOP_BASE, i), [], k, dark='q', shade='q'), LB_TOP) for i, k in enumerate(B1_TOP_NETS)]
+    return [grid(net_body(base_turn(B_TOP_BASE, i), B2_TOP_PORT, k), LB_TOP) for i, k in enumerate(B2_TOP_NETS)]
+
 
 TEX_B1 = {'H': ['hhshhhshhshhhshh', 'hshhhshhhhshhshh'] * 8, 'S': ['srsrssrsrsrrsrss', 'rssrsrssrsrsrsrs'] * 8,
           'R': ['r.r.rr.r.r.rr.r.', '.r.rr.r..r.r.rr.'] * 8}
@@ -575,8 +664,9 @@ check_frame('B2 천장', B2_FRAME, B_INNER, strict_inner=False)
 
 
 def ceil_b(n):
-    top, fr, tex = (B1_TOP, B1_FRAME, TEX_B1) if n == 1 else (B2_TOP, B2_FRAME, TEX_B2)
-    return autotile_cv(grid(top, LB_TOP), tex_grid(fr, tex, LB, 32, 32), tex_grid(B_INNER, tex, LB, 16, 16))
+    fr, tex = (B1_FRAME, TEX_B1) if n == 1 else (B2_FRAME, TEX_B2)
+    tops = b_top_bodies(n)
+    return autotile_cv(tops[0], tex_grid(fr, tex, LB, 32, 32), tex_grid(B_INNER, tex, LB, 16, 16), tops[1:])
 
 
 # 앞면 B1 — style-r1 B 의 바윗덩이 셋을 새 자리에, B2 — 한 칸에 둘 들어가는 큰 바윗덩이(손 도트 12×11) 사이로 깊은 틈.
@@ -738,18 +828,21 @@ B2_STALAG = ['................'] * 9 + [
     '..oooo.ohsrqpo..', '.ohhssoosrrqpo..', '.osrrqoohsrqpo..',
     '.ohsrqpoosrqqpo.', '.osrrqpoohsrqpo.', '.ohsrqpoosrrqqpo', '.osrrqqpohsrrqpo', '.oqqqqppoqqqqppo',
     '..oooooo~ooooooo', '...~~~~~~~~~~~~.'] + ['................'] * 8
-B2_PILLAR = [
-    '....oo.ooo......', '...oqqoqrqo.....', '..oqrrrrrrqo....', '..oqrrrrrrqo....', '..ohsrrrqqpo....',
-    '..ohsrrrqqpo....', '.ohssrrrqqpo....', '.ohsrrpqqqpo....', '.osrrrrpqqppo...', '.ohsrrrrpqqpo...',
-    '..ohsrrrrpqpo...', '..ohsrrrrqppo...', '..osrrrrqqpo....', '..ohsrrrqqpo....', '..ohsprrqqpo....',
-    '..ohspprqqpo....', '.ohssrpprqqpo...', '.ohsrrrppqqpo...', '.osrrrrrpqqpo...', '.ohsrrrrqpqpo...',
-    '.ohsrrrrqqppo...', 'ohssrrrrqqqppo..', 'ohsrrrrrqqqppo..', 'osrrrrrrrqqqppo.', 'oqrrrrrrrqqqppo.',
-    'oqqqqqqqqqpppppo', '.ooooooooooooo~.', '..~~~~~~~~~~~~..', '................', '................',
-    '................', '................']
+B2_BOUL_A = ['..ooooo..', '.ohhssqo.', 'ohssrrqpo', 'ohsrrrqpo', 'osrrrqqpo', 'oqrrqqppo', 'oqqqqpppo', '.oqpppoo.',
+             '..ooooo..']
+B2_BOUL_B = ['...ooooo...', '..ohhsssoo.', '.ohssrrrqo.', 'ohssrrrrqpo', 'ohsrrrrqqpo', 'osrrrrqqqpo', 'oqrrrqqqppo',
+             'oqqqqqqpppo', '.oqqppppoo.', '..ooooooo..']
+B2_BOUL_C = ['....ooooo....', '..oohhsssoo..', '.ohhssrrrrqo.', 'ohssrrrrrrqpo', 'ohsrrrrrrqqpo', 'osrrrrrrqqqpo',
+             'osrrrrrqqqppo', 'oqrrrrqqqqppo', 'oqqqqqqqqpppo', '.ooqqqpppppo.', '...ooooooo...']
+
+
+def b2_pillar():
+    """둥근 바윗덩이 셋이 엇갈려 쌓인 기둥 — 아래(큰 덩이)부터 얹어 위 덩이가 아래 덩이 윗면을 덮는다. 덩이마다 위·왼 빛, 오른·아래 그늘."""
+    return pile(16, 32, [(B2_BOUL_C, 1, 15), (B2_BOUL_B, 4, 9), (B2_BOUL_A, 2, 3)], [(2, 26, 13), (14, 25, 2)], LB)
 
 
 def stalag_b(n):
-    return (grid(B1_STALAG, LB), grid(B1_PILLAR, LB)) if n == 1 else (grid(B2_STALAG, LB), grid(B2_PILLAR, LB))
+    return (grid(B1_STALAG, LB), grid(B1_PILLAR, LB)) if n == 1 else (grid(B2_STALAG, LB), b2_pillar())
 
 
 
@@ -829,16 +922,23 @@ C1_FACE = [
     '0044001111044000', '4433440000433444', '3333334444333333', '3333333333333233',
     '3233333233333333', '3333333333333333', '3333323333332333', '2333333333333333',
     '3333333333333332', '2333233333233333', '1111111111111111', '0000000000000000']
-# 앞면 C2 — 얇은 층 다섯(가는 홈 1 + 그 밑 빛 4), 홈이 층마다 다른 자리에서 한 줄 오르내린다.
-C2_FACE = [
-    '1111111111111111', '2222222222222222', '3333333333333333', '3332333333333233',
-    '3333111111333333', '1111444444111111', '4444333333444444', '3333333233333333',
-    '3323333333333333', '3333333111111333', '1111111444444111', '4444444333333444',
-    '3333333333233333', '3233333333333333', '3331111111133333', '1114444444411111',
-    '4443333333344444', '3333333333333323', '3333233333333333', '3333331111113333',
-    '1111114444441111', '4444443333334444', '3332333333333333', '3333333333323333',
-    '3333333331111111', '1111111114444444', '4444444443333333', '3333333233333333',
-    '3333333333333332', '2222222222222222', '1111111111111111', '0000000000000000']
+# 앞면 C2 — 얇은 층리를 **끊어서**: 홈(1)과 그 밑 빛(4)이 3~7칸 길이 토막으로, 층 간격 2~5줄, 토막마다 한 줄씩 어긋난다.
+C2_GROOVES = ((4, 2, 7), (5, 8, 10), (7, 12, 18), (10, 4, 9), (12, 10, 13), (13, 14, 15), (16, 0, 3), (17, 4, 5),
+              (18, 8, 13), (21, 1, 6), (23, 11, 17), (25, 6, 9), (27, 12, 14))
+
+
+def c2_face_rows():
+    rows = [list(r) for r in (['1' * 16, '2' * 16]
+                              + [('3332333333333233' if y % 5 == 0 else '3333333233333333' if y % 5 == 3 else '3' * 16)
+                                 for y in range(2, 29)] + ['2' * 16, '1' * 16, '0' * 16])]
+    for y, x0, x1 in C2_GROOVES:
+        for x in range(x0, x1 + 1):
+            rows[y][x % 16] = '1'
+            if rows[y + 1][x % 16] in '23':
+                rows[y + 1][x % 16] = '4'
+    return [''.join(r) for r in rows]
+
+
 C_CAP_L = cap_cols(['0' * 32, '0' + '1' * 30 + '0'])
 C_CAP_R = cap_cols(['0' * 32, '0' + '1' * 30 + '0'])
 
@@ -847,7 +947,7 @@ def face_c(n):
     if n == 1:
         cv = grid(C1_FACE, LC)
     else:
-        cv = grid(C2_FACE, LC)
+        cv = grid(c2_face_rows(), LC)
     return face_block(cv, LC, C_CAP_L, C_CAP_R)
 
 
@@ -892,11 +992,24 @@ C1_ROCK = carve([   # 검푸른 암반 윗면(y 바탕 · z 빛 점)을 손으�
      (13, 4), (14, 4), (15, 4), (6, 5), (6, 6), (7, 7), (7, 8), (7, 9), (8, 10), (9, 11), (10, 11), (11, 11),
      (12, 12), (13, 12), (14, 12), (15, 12), (0, 12), (1, 13), (2, 13), (3, 14), (3, 15), (3, 0), (3, 1), (2, 2),
      (2, 3), (12, 13), (12, 14), (11, 15), (11, 0), (12, 1), (12, 2), (12, 3)], dark='v', shade='x', lit='z')
-C2_SLAB = [
-    '6665551666655551', '6555541655555441', '6554441655454441', '6555441654555441',
-    '5444441655544441', '1111111654444441', '5555566111111111', '5544455666655551',
-    '5454455655555441', '5444455654554441', '4444441655544441', '1111111654444441',
-    '6666555111111111', '6555544166655551', '5554444165555441', '1111111111111111']
+C2_SLAB_BASE = ['5555555555555555', '5555555555555555', '5555455555555555', '5555555555555455',
+                '5555555555555555', '5555555545555555', '5555555555555555', '5545555555555555',
+                '5555555555554555', '5555555555555555', '5555555555555555', '5555555455555555',
+                '5555555555555555', '5555455555555555', '5555555555555555', '5555555555555555']
+C2_SLAB_PORT = ports((11,), (4,))
+C2_SLAB_NETS = [
+    [[(11, 2), (10, 4), (6, 5), (2, 4)], [(13, 4), (12, 7), (10, 10), (11, 13)], [(6, 5), (7, 9), (10, 10)]],
+    [[(2, 4), (5, 6), (8, 5), (11, 2)], [(13, 4), (12, 6), (11, 9), (11, 13)], [(5, 6), (4, 10), (7, 12)]],
+    [[(11, 2), (12, 3), (13, 4)], [(2, 4), (4, 7), (8, 8), (11, 13)], [(8, 8), (9, 4)], [(3, 11), (5, 12)]],
+    [[(11, 2), (9, 5), (5, 7), (2, 4)], [(13, 4), (11, 7), (11, 13)], [(9, 5), (11, 7)], [(5, 7), (6, 11)]],
+]
+
+
+def c2_slab_bodies():
+    return [grid(net_body(base_turn(C2_SLAB_BASE, i), C2_SLAB_PORT, n, dark='1', shade='4', lit='6'), LC_FLOOR)
+            for i, n in enumerate(C2_SLAB_NETS)]
+
+
 _CJ = bands('v', 'v', 'v')
 _CJ2 = bands('1', '1', '1')
 C_STONE_NW = [',,,,,,,,', ',,,,,,,,', ',,,,JJJJ', ',,,J....', ',,J.....', ',,J.....', ',,J.....', ',,J.....']
@@ -929,19 +1042,16 @@ check_frame('C2 돌바닥', C2_STONE_FRAME, C2_STONE_INNER)
 
 def stone_c(n):
     dirt = floor_c(n).body
-    body, fr, inn = ((grid(C1_ROCK, LC_FLOOR), C1_STONE_FRAME, C1_STONE_INNER) if n == 1 else
-                     (shift(grid(C2_SLAB, LC_FLOOR), 2, 7), C2_STONE_FRAME, C2_STONE_INNER))
+    bodies, fr, inn = (([grid(C1_ROCK, LC_FLOOR)], C1_STONE_FRAME, C1_STONE_INNER) if n == 1 else
+                       (c2_slab_bodies(), C2_STONE_FRAME, C2_STONE_INNER))
     f, i = on_base(dirt, fr, inn, LC_FLOOR)
-    return autotile_cv(body, f, i)
+    return autotile_cv(bodies[0], f, i, bodies[1:])
 
 
-# 잔돌 C1 — 층이 진 검푸른 덩이(윗면 4 3, 옆 층 줄 1, 윤곽 0). C2 — 쪼개진 얇은 판 조각과 작은 파편.
-C1_BLOCK = ['.000000.', '04443330', '03332220', '01111110', '02221110', '.000000.']
-C1_BLOCK_B = ['..0000000..', '.044443330.', '04433333220', '01111111110', '03322222110', '02211111100', '.000000000.']
-C1_LUMP = ['.000.', '04430', '01110', '.000.']
-C1_RUB_S = ['................'] * 8 + [
-    '.....000000.....', '....04443330....', '....03322220....', '....01111110.00.',
-    '.....000000~0430', '......~~~~~~0110', '.............00~', '..............~.']
+# 잔돌 C1 — 둥근 검푸른 덩이(윗면 4 3 빛 · 앞 아래 2 1 그늘 · 앞면을 가로지르는 층 줄 1 · 윤곽 0). C2 — 쪼개진 얇은 판 조각과 작은 파편.
+C1_BIG = ['...00000...', '..0444330..', '.044443320.', '04443333220', '04333332210', '01112222110', '.021111110.', '..0000000..']
+C1_MED = ['..0000..', '.044330.', '04443320', '03332210', '01122110', '.011110.', '..0000..']
+C1_SML = ['.000.', '04430', '01210', '.000.']
 C2_PLATE = ['..00000000..', '.0444443330.', '033333322220', '.0111111110.', '..00000000..']
 C2_SHARD = ['.0..', '040.', '0430', '0110', '.00.']
 C2_FLAKE = ['.00.', '0430', '.00.']
@@ -952,9 +1062,9 @@ C2_RUB_S = ['................'] * 9 + [
 
 def rubble_c(n):
     if n == 1:
-        small = grid(C1_RUB_S, LC)
-        big = pile(32, 16, [(C1_BLOCK_B, 10, 1), (C1_BLOCK, 3, 5), (C1_BLOCK_B, 17, 5), (C1_LUMP, 11, 9), (C1_LUMP, 26, 10)],
-                   [(4, 11, 8), (12, 13, 4), (19, 12, 10), (27, 14, 4)], LC)
+        small = pile(16, 16, [(C1_MED, 3, 6), (C1_SML, 10, 9)], [(4, 13, 11)], LC)
+        big = pile(32, 16, [(C1_MED, 11, 1), (C1_BIG, 2, 5), (C1_BIG, 17, 4), (C1_SML, 12, 9), (C1_SML, 27, 10)],
+                   [(3, 13, 10), (13, 13, 4), (18, 12, 11), (28, 14, 4)], LC)
     else:
         small = grid(C2_RUB_S, LC)
         big = pile(32, 16, [(C2_PLATE, 9, 3), (C2_PLATE, 2, 7), (C2_SHARD, 22, 3), (C2_PLATE, 17, 8), (C2_SHARD, 14, 9),
@@ -1019,7 +1129,7 @@ def render(g, line, n, ceil=None, face=None, floor=None, stone=None):
         for y, row in enumerate(g):
             for x, ch in enumerate(row):
                 if ch == 's':
-                    cv.a[y * T:(y + 1) * T, x * T:(x + 1) * T] = stone.tile(dot.mask_at(g, x, y, lambda c, X, Y: c == 's')).a
+                    cv.a[y * T:(y + 1) * T, x * T:(x + 1) * T] = stone.tile_at(dot.mask_at(g, x, y, lambda c, X, Y: c == 's'), x, y).a
     return cv
 
 
@@ -1095,9 +1205,10 @@ def cand_ceiling(line, n):
     def fn():
         at = part(line, n, 'ceil')
         v = render(VIGN_GRID, line, n, ceil=at)
-        return a2_block(at), {'kind': 'autotile', 'autotiles': {'ceil': at}, 'vignette': v, 'grid': VIGN_GRID,
-                              'rim_check': True,
-                              'extras': [('천장 몸통 6×6', dot.tiled(at.body, 6, 6), 1), ('47 변형', variants_sheet(at), 2)]}
+        return a2_plus(at), {'kind': 'autotile', 'autotiles': {'ceil': at}, 'vignette': v, 'grid': VIGN_GRID,
+                             'rim_check': True,
+                             'extras': [(f'천장 몸통 8×8 (변형 {len(at.bodies) - 1} 섞음)', dot.mosaic(at, 8, 8), 2),
+                                        ('47 변형', variants_sheet(at), 2)]}
     return fn
 
 
@@ -1114,8 +1225,9 @@ def cand_floor(line, n):
     def fn():
         at = part(line, n, 'floor')
         v = render(VIGN_GRID, line, n, floor=at)
-        return a2_block(at), {'kind': 'autotile', 'autotiles': {'floor': at}, 'vignette': v,
-                              'extras': [('몸통 6×6', dot.tiled(at.body, 6, 6), 1), ('47 변형', variants_sheet(at), 2)]}
+        return a2_plus(at), {'kind': 'autotile', 'autotiles': {'floor': at}, 'vignette': v,
+                             'extras': [(f'몸통 8×8 (변형 {len(at.bodies) - 1} 섞음)', dot.mosaic(at, 8, 8), 2),
+                                        ('47 변형', variants_sheet(at), 2)]}
     return fn
 
 
@@ -1123,8 +1235,9 @@ def cand_stone(line, n):
     def fn():
         at = part(line, n, 'stone')
         v = render(STONE_GRID, line, n, stone=at)
-        return a2_block(at), {'kind': 'autotile', 'autotiles': {'stone': at}, 'vignette': v,
-                              'extras': [('몸통 6×6', dot.tiled(at.body, 6, 6), 1), ('47 변형', variants_sheet(at), 2)]}
+        return a2_plus(at), {'kind': 'autotile', 'autotiles': {'stone': at}, 'vignette': v,
+                             'extras': [(f'몸통 8×8 (변형 {len(at.bodies) - 1} 섞음)', dot.mosaic(at, 8, 8), 2),
+                                        ('47 변형', variants_sheet(at), 2)]}
     return fn
 
 
@@ -1190,17 +1303,17 @@ SETS['C'] = {n: {'ceil': (lambda n=n: ceil_c(n)), 'face': (lambda n=n: face_c(n)
                  'stalag': (lambda n=n: stalag_c(n))} for n in (1, 2)}
 NOTES = {
     'A1': '해안 흙굴 1벌 — 하얀 끝선·울퉁불퉁한 흙 띠, 조약돌 벽, 갈색 반점 흙, 녹회색 판석',
-    'A2': '해안 흙굴 2벌 — 덜 하얀 끝선·자갈 박힌 띠, 이끼 낀 갈라진 벼랑, 자갈 섞인 흙, 사암 자갈',
+    'A2': '해안 흙굴 2벌 — 굵은 사암 바위 혹 테두리, 이끼 낀 갈라진 벼랑, 자갈 섞인 흙, 사암 자갈',
     'B1': '산속 바위굴 1벌 — 금 간 바위 윗면, 바윗덩이 벽, 어두운 흙, 드러난 암반',
-    'B2': '산속 바위굴 2벌 — 바윗덩이 밭 윗면, 큰 바윗덩이 벽, 거친 자갈 흙, 깨진 큰 바닥돌',
+    'B2': '산속 바위굴 2벌 — 바윗덩이 밭 윗면, 큰 바윗덩이 벽, 거친 자갈 흙, 깨진 큰 바닥돌, 둥근 덩이 쌓인 기둥',
     'C1': '검푸른 심층굴 1벌 — 돌 혹 테두리, 굵은 물결 층리, 회색 자갈, 갈라진 검푸른 암반',
-    'C2': '검푸른 심층굴 2벌 — 층 진 턱 테두리, 얇은 층리, 잔자갈·실금, 옅은 판석',
+    'C2': '검푸른 심층굴 2벌 — 층 진 턱 테두리, 끊긴 얇은 층리, 잔자갈·실금, 옅은 판석',
 }
 ITEM_NOTES = {
     'ceil': {'A1': '띠 6px · 하얀 끝선 l. 북·서·동 변에 흙(f)이 1~2px 파고들어 윤곽이 울퉁불퉁, 남변(벽 윗면)은 곧은 끝선. 둥근 바깥 모서리',
-             'A2': '띠 5px · 한 단 낮은 끝선 k. 띠 속에 녹회색 자갈, 어둠 몸통에 아주 옅은 결',
-             'B1': '바위 윗면에 짧은 금 넷. 바닥 쪽 윤곽 o + 그늘 p(홈 1~2px), 앞면 위 빛 받는 턱 2~4줄',
-             'B2': '바윗덩이 밭 — 금 그물로 나뉜 덩이마다 위·왼 빛. 홈 최대 3px 로 더 울퉁불퉁, 턱 3~5줄',
+             'A2': '흙 띠 대신 굵은 바위 혹 — 둥근 사암 덩이가 한 칸에 둘, 덩이 사이로 흙이 파고듦. 남변은 덩이 앞턱이 둥글게',
+             'B1': '바위 윗면 + 몸통 변형 3(금 양이 칸마다 다름 — 긴 금·없음·갈래 금). 바닥 쪽 윤곽 o + 그늘 p(홈 1~2px), 앞면 위 빛 받는 턱 2~4줄',
+             'B2': '바윗덩이 밭 + 몸통 변형 3(덩이 모양이 칸마다 다름, 칸 경계는 공통 이음 자리로만 건넘). 홈 최대 3px, 턱 3~5줄',
              'C1': '돌 혹 테두리 깊이 2~5(바깥 밝음 → 어둠 쪽 어두움), 바닥 홈 g',
              'C2': '층 진 턱 테두리(밝은 끝선 4 · 그늘 2 · 안쪽 턱 3 · 1), 어둠에 옅은 검푸른 결'},
     'face': {'A1': 'style-r1 A 의 돌 셋을 새 자리에, 끝 마구리 둥글게',
@@ -1208,29 +1321,29 @@ ITEM_NOTES = {
              'B1': 'style-r1 B 의 바윗덩이 셋을 새 자리에',
              'B2': '한 칸에 둘 들어가는 큰 바윗덩이, 사이 깊은 틈',
              'C1': '굵은 층 셋, 물결 경계(style-r1 C 문법)',
-             'C2': '얇은 층 다섯, 홈이 층마다 다른 자리에서 오르내림'},
+             'C2': '얇은 층리를 끊은 토막 — 홈 길이 3~7, 층 간격 2~5줄, 토막마다 어긋남'},
     'floor': {'A1': '갈색 반점 흙(바탕 2). 앞면 밑 그늘 2~4줄, 서쪽 그늘 1~3열',
               'A2': '같은 바탕에 녹회색 자갈과 젖은 얼룩',
               'B1': '어두운 흙(바탕 1) + 회색 자갈 셋',
               'B2': '같은 바탕에 자갈 일곱 — 더 거친 자갈 바닥',
               'C1': '차가운 회색 자갈(바탕 3), 자갈 열 개',
               'C2': '잔자갈 + 실금'},
-    'stone': {'A1': '녹회색 판석(이음 J). 흙이 가장자리로 1~3px 파고듦. 가장자리 흙은 같은 번호 흙바닥 몸통',
+    'stone': {'A1': '녹회색 판석 + 몸통 변형 3 — 판석 크기·배치가 칸마다 다름(칸 경계는 공통 이음 자리로만). 흙이 가장자리로 1~3px 파고듦',
               'A2': '흙에 박힌 둥근 사암 자갈',
               'B1': '흙 위로 드러난 바닥 암반(짧은 금), 윤곽 o',
               'B2': '깨진 큰 바닥돌(밝은 판), 틈에 흙',
               'C1': '검푸른 암반이 불규칙한 판으로 갈라짐',
-              'C2': '옅은 회색 판석'},
+              'C2': '옅은 회색 판석 + 몸통 변형 3 — 판석 모양이 칸마다 다름'},
     'rubble': {'A1': '1×1 작은 돌 둘(걸음) · 2×1 녹회색 둥근 돌 덩이(막힘)',
                'A2': '무너진 사암 띠 판 조각',
                'B1': '둥근 회색 바윗덩이',
                'B2': '모난 바위 조각(갱도 잔해)',
-               'C1': '층 진 검푸른 덩이',
+               'C1': '둥근 검푸른 덩이 — 윗면 빛, 앞면을 가로지르는 층 줄 하나',
                'C2': '얇은 판 조각·파편'},
     'stalag': {'A1': '갈색 원뿔 석순 / 모래시계 기둥(머리가 어둠 쪽으로 어두워짐)',
                'A2': '이끼 낀 쌍둥이 석순 / 이끼 띠 감긴 기둥',
                'B1': '회색 원뿔 / 바위 윗면 빛깔 머리의 기둥',
-               'B2': '부러진 석순 그루터기 둘 / 비스듬한 틈이 난 울퉁불퉁한 바위 기둥',
+               'B2': '부러진 석순 그루터기 둘 / 둥근 바윗덩이 셋이 엇갈려 쌓인 기둥',
                'C1': '층 고리 진 검푸른 원뿔 / 층 기둥',
                'C2': '가는 바늘 석순 + 짧은 것 / 위아래가 굵은 층암 기둥'},
 }
