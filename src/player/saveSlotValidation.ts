@@ -47,8 +47,8 @@ export function isSaveOrigin(value: unknown): value is "manual" | "auto" {
   return value === "manual" || value === "auto";
 }
 
-export function isAutosaveTrigger(value: unknown): value is "transfer" | "battleVictory" {
-  return value === "transfer" || value === "battleVictory";
+export function isAutosaveTrigger(value: unknown): value is "transfer" | "battleVictory" | "ending" {
+  return value === "transfer" || value === "battleVictory" || value === "ending";
 }
 
 export function isActorRowsRecord(value: unknown): value is Record<string, "front" | "back"> {

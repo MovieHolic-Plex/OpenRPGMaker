@@ -2,6 +2,7 @@ import { openPersistenceRecovery, persistenceRecoveryCopy } from "@/editor/persi
 import { SpatialPersistenceError } from "@/project/spatial/persistenceTypes";
 import { ProjectRoutingError } from "@/project/spatial/saveRouting";
 import { projectRepository } from "@/project/persistence/repository";
+import { prepareProjectMedia } from "@/project/persistence/prepareProjectMedia";
 import { store } from "@/project/store";
 import { dismissToastsByKey, toast } from "@/util/toast";
 
@@ -21,6 +22,11 @@ export async function saveProjectNow(): Promise<boolean> {
   }
   toast("저장 중...", "info");
   try {
+    // Promote inline uploads before taking the persistence snapshot. On a fresh
+    // folder project the host used to save the data URL first and rewrite it to
+    // a file reference immediately afterwards, producing a second SHA/revision
+    // and making the first save look stale to the editor and AI worker.
+    await prepareProjectMedia(store.getCurrent(), projectRepository());
     const result = await store.flush();
     switch (result.kind) {
       case "saved": {

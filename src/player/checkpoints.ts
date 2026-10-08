@@ -1,6 +1,13 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { applySaveSnapshot, createSaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
+import {
+  applySaveSnapshot,
+  createSaveSnapshot,
+  snapshotLoadBlocker,
+  withSaveCheckpoint,
+  type SaveSnapshot,
+  type SaveSnapshotPayload,
+} from "@/player/saveSlots";
 
 const CHECKPOINTS = new WeakMap<PlaySession, SaveSnapshot>();
 
@@ -15,7 +22,25 @@ export function getSessionCheckpoint(session: PlaySession): SaveSnapshot | undef
 }
 
 export function setSessionCheckpoint(session: PlaySession, snapshot: SaveSnapshot): void {
-  CHECKPOINTS.set(session, snapshot);
+  const { checkpoint: _nested, ...payload } = structuredClone(snapshot);
+  CHECKPOINTS.set(session, payload);
+}
+
+/** Add the in-memory retry checkpoint to a manual or automatic save. */
+export function attachSessionCheckpoint(session: PlaySession, snapshot: SaveSnapshot): SaveSnapshot {
+  return withSaveCheckpoint(snapshot, getSessionCheckpoint(session));
+}
+
+/** Re-key a persisted checkpoint after a real Continue creates a new session object. */
+export function restorePersistedSessionCheckpoint(
+  project: Project,
+  session: PlaySession,
+  snapshot: Pick<SaveSnapshot, "checkpoint">,
+): void {
+  if (snapshot.checkpoint && snapshotLoadBlocker(project, snapshot.checkpoint as SaveSnapshot)) {
+    return;
+  }
+  if (snapshot.checkpoint) setSessionCheckpoint(session, snapshot.checkpoint as SaveSnapshotPayload);
 }
 
 export function hasSessionCheckpoint(session: PlaySession): boolean {

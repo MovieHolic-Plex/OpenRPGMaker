@@ -4,7 +4,12 @@ import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { createInterpreter } from "@/player/interpreter";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
-import { hasSessionCheckpoint, restoreSessionCheckpoint } from "@/player/checkpoints";
+import {
+  attachSessionCheckpoint,
+  hasSessionCheckpoint,
+  restorePersistedSessionCheckpoint,
+  restoreSessionCheckpoint,
+} from "@/player/checkpoints";
 import type { Command } from "@/project/types";
 
 describe("checkpointSave / killPlayer / triggerEnding", () => {
@@ -51,6 +56,50 @@ describe("checkpointSave / killPlayer / triggerEnding", () => {
     const loaded = applySaveSnapshot(project, createSaveSnapshot(project, session));
 
     expect(hasSessionCheckpoint(loaded)).toBe(false);
+  });
+
+  it("실제 Continue가 새 세션으로 바뀌어도 저장된 체크포인트를 다시 연결한다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    session.x = 3;
+    session.y = 4;
+    createInterpreter([{ kind: "checkpointSave" }], session, project).start();
+
+    const saved = attachSessionCheckpoint(session, createSaveSnapshot(project, session));
+    expect(saved.checkpoint).toBeDefined();
+    expect((saved.checkpoint as unknown as Record<string, unknown>).checkpoint).toBeUndefined();
+
+    const continued = applySaveSnapshot(project, JSON.parse(JSON.stringify(saved)));
+    expect(hasSessionCheckpoint(continued)).toBe(false);
+    restorePersistedSessionCheckpoint(project, continued, saved);
+    expect(hasSessionCheckpoint(continued)).toBe(true);
+
+    continued.x = 1;
+    const retried = restoreSessionCheckpoint(project, continued);
+    expect(retried).toMatchObject({ x: 3, y: 4 });
+  });
+
+  it("패배 분기 transfer 뒤 recoverAll을 이어서 실행한다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const actorId = session.partyActorIds[0]!;
+    session.actorVitals[actorId]!.hp = 0;
+    const interpreter = createInterpreter([{
+      kind: "battleProcessing",
+      troopId: "missing-troop",
+      canEscape: true,
+      canLose: true,
+      branchOnResult: true,
+      defeatBranch: [
+        { kind: "transfer", mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y },
+        { kind: "recoverAll" },
+      ],
+    }], session, project);
+
+    expect(interpreter.start().kind).toBe("battleProcessing");
+    expect(interpreter.resume("defeat").kind).toBe("transfer");
+    expect(interpreter.resume(undefined)).toEqual({ kind: "done" });
+    expect(session.actorVitals[actorId]!.hp).toBe(session.actorVitals[actorId]!.maxHp);
   });
 
   it("killPlayer는 파티 전멸 후 gameOver를 내고 체크포인트 복원으로 이전 상태를 돌린다", () => {

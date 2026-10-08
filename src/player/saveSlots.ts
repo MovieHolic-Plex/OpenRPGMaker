@@ -125,7 +125,7 @@ export type SaveSlotIndex = 1 | 2 | 3;
 /** 스냅샷 출처. 생략(구 세이브)은 수동 저장과 동일하게 취급한다. */
 export type SaveOrigin = "manual" | "auto";
 /** 오토세이브를 일으킨 트리거. 수동 저장에는 없다. */
-export type AutosaveTrigger = "transfer" | "battleVictory";
+export type AutosaveTrigger = "transfer" | "battleVictory" | "ending";
 
 export type SaveSnapshot = {
   readonly schemaVersion: typeof SAVE_SCHEMA_VERSION | 6;
@@ -140,6 +140,12 @@ export type SaveSnapshot = {
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
+  /**
+   * The retry checkpoint captured at the time of this save. It deliberately
+   * omits its own checkpoint field so a checkpoint can never recursively grow
+   * while a real Continue is persisted and restored.
+   */
+  readonly checkpoint?: SaveSnapshotPayload;
   readonly session: {
     readonly switches: Record<string, boolean>;
     readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
@@ -264,6 +270,9 @@ export type SaveSnapshot = {
     readonly systemAudio?: Record<string, string>;
   };
 };
+
+/** A persisted retry checkpoint is a one-level save snapshot by contract. */
+export type SaveSnapshotPayload = Omit<SaveSnapshot, "checkpoint">;
 
 export type SaveScreenState = {
   readonly tint?: string;
@@ -522,6 +531,20 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
   };
+}
+
+/**
+ * Attach the current retry checkpoint to a real save without allowing a
+ * checkpoint to carry another checkpoint. The returned value is detached from
+ * both inputs so a later retry or session mutation cannot rewrite the save.
+ */
+export function withSaveCheckpoint(
+  snapshot: SaveSnapshot,
+  checkpoint: SaveSnapshot | undefined,
+): SaveSnapshot {
+  if (!checkpoint) return snapshot;
+  const { checkpoint: _nested, ...payload } = structuredClone(checkpoint);
+  return { ...snapshot, checkpoint: payload };
 }
 
 // 지속형 화면 효과(색조/날씨/숨김)만 추려 세이브에 담는다. 값이 전혀 없으면 생략.
@@ -978,7 +1001,7 @@ type ParsedSnapshotResult =
   | { readonly ok: false; readonly message: string };
 
 // Save4 migrates in memory; Save5 is intentionally unreadable by the previous reader.
-function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
+function parseSnapshotValue(value: unknown, allowCheckpoint = true): ParsedSnapshotResult {
   if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
   if (value.schemaVersion !== 4 && value.schemaVersion !== 5 && value.schemaVersion !== 6) return { ok: false, message: "Unsupported save schema" };
   if (value.schemaVersion === 6 ? !isSaveIdentity(value.identity) : value.identity !== undefined) return { ok: false, message: "Unsupported save schema" };
@@ -987,6 +1010,13 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
   if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
   const parsed = parseSessionRecord(value.session);
   if (!parsed.ok) return { ok: false, message: parsed.message };
+  let checkpoint: SaveSnapshotPayload | undefined;
+  if (value.checkpoint !== undefined) {
+    if (!allowCheckpoint) return { ok: false, message: "Nested checkpoint is not allowed" };
+    const parsedCheckpoint = parseSnapshotValue(value.checkpoint, false);
+    if (!parsedCheckpoint.ok) return { ok: false, message: `Invalid checkpoint: ${parsedCheckpoint.message}` };
+    checkpoint = parsedCheckpoint.snapshot;
+  }
   return {
     ok: true,
     snapshot: {
@@ -1000,6 +1030,7 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,
+      ...(checkpoint ? { checkpoint } : {}),
       session: parsed.session,
     },
   };

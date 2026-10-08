@@ -13,11 +13,13 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
+import { attachSessionCheckpoint } from "@/player/checkpoints";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
+  listStatusMenuCommandIds,
   listStatusMenuGroupCommandIds,
   listStatusMenuRailIds,
   statusMenuRailIdForCommand,
@@ -136,7 +138,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
     const available = listStatusMenuRailIds(project, session);
-    selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    // A folded rail does not contain child commands such as System → Save, but the
+    // detail pane still needs to render that child when it is entered (including
+    // the event-owned openSaveMenu path). Falling back to the first rail item here
+    // was the Save → Items regression.
+    const visibleCommand = listStatusMenuCommandIds(project, session).includes(nextCommand as StatusMenuCommandId);
+    selectedCommand = available.includes(nextCommand) || (mode === "function" && visibleCommand)
+      ? nextCommand
+      : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
@@ -465,7 +474,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     confirmToTitlePending = false;
     let snapshot;
     try {
-      snapshot = createSaveSnapshot(store.getCurrent(), scene.getSession());
+      snapshot = attachSessionCheckpoint(scene.getSession(), createSaveSnapshot(store.getCurrent(), scene.getSession()));
     } catch (error) {
       if (!(error instanceof LifeReconciliationError)) throw error;
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다`);

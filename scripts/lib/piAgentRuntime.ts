@@ -251,6 +251,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
+  let visualPreviewCount = 0;
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
   const scopeGuard = piMapScopeGuard(request);
@@ -466,6 +467,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
         const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
+        visualPreviewCount += 1;
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
@@ -822,6 +824,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
     let previousOpeningIssues = '';
+    let finalLayoutIssues: ReturnType<typeof inspectPiLayoutQuality> = [];
     for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || signature === previousOpeningIssues) break;
@@ -829,7 +832,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
       await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
     }
-    // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
+    // 배치 품질 수리는 한 번 요청하되, 두 번째 결과는 완료 게이트에 보존한다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
@@ -844,6 +847,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
           summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
       }
+      finalLayoutIssues = layout;
     }
     let previousInteriorIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < 2; attempt++) {
@@ -875,13 +879,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
+  if (!request.readOnly && !options.readOnlyTools && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
+    finalLayoutIssues = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
+  }
   const interiorProblems = interiorCompletion.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
+  if (finalLayoutIssues.length) emit({ type: 'error', message: '시각 배치 검수 미완료: ' + JSON.stringify(finalLayoutIssues) });
   const done: PiAgentDoneEvent = {
     ...(monsterGameProduction.requested ? { monsterGameProduction: { issues: monsterGameProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
     ...(gameSystemProduction.requested ? { gameSystemProduction: { issues: gameSystemProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
     ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
+    visualCompletion: { layoutIssues: finalLayoutIssues, previewCount: visualPreviewCount },
     type: "done",
     ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,

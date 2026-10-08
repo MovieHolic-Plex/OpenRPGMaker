@@ -301,6 +301,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
   if (checkpointError && !stale && !done) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
+  if (done?.visualCompletion?.layoutIssues.length) throw new PiAgentClientError(`시각 배치 검수 미완료: ${done.visualCompletion.layoutIssues.map(issue => `${issue.mapId}(${issue.problems.join(", ")})`).join(" / ")}`);
   if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));
   if (done?.gameSystemProduction?.issues.length) throw new PiAgentClientError('게임 시스템 제작 미완료: ' + done.gameSystemProduction.issues.join(' '));
   if (done?.openingProduction?.issues.length) throw new PiAgentClientError('오프닝 제작 미완료: ' + done.openingProduction.issues.join(' '));

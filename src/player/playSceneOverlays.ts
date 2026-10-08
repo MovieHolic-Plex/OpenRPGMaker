@@ -11,6 +11,7 @@ import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { performAutosave } from "@/player/autosave";
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -67,8 +68,27 @@ export function returnToTitle(scene: PlaySceneContext): void {
 /** 엔딩 클리어를 호스트(플레이어)에 알린다. 저장은 호스트가 한다 — 인터프리터는 저장소를 모른다. */
 export function reportEndingClear(scene: PlaySceneContext, clear: { readonly endingId: string } | undefined): void {
   if (!clear) return;
+  // Ending epilogues can grant the final badge, gold, or flag after the last
+  // ordinary autosave. Commit that completed session before the terminal scene
+  // can return to the title. Authored no-save access and map restrictions still
+  // win, so puzzle rooms and other deliberate no-save modes are unchanged.
+  persistEndingSession(scene);
   const callback: unknown = scene.game.registry.get("recordEndingClear");
   if (typeof callback === "function") callback(clear.endingId, scene.session);
+}
+
+function persistEndingSession(scene: PlaySceneContext): void {
+  const project = store.getCurrent();
+  if (scene.session.m2Runtime?.access?.save === false) return;
+  if (project.maps[scene.session.currentMapId]?.disableSave === true) return;
+  let storage: Storage | undefined;
+  try {
+    storage = globalThis.localStorage;
+  } catch {
+    return;
+  }
+  if (!storage) return;
+  performAutosave(project, scene.session, storage, "ending");
 }
 
 function textNode(tag: string, className: string, text: string): HTMLElement {

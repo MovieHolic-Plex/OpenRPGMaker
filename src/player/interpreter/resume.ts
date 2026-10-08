@@ -121,7 +121,13 @@ export function advanceResume(
     if (command?.kind === "tacticsBattle") {
       const result = typeof value === "string" ? value : state.session.battleResult;
       const branch = result === "victory" ? command.victoryBranch : result === "defeat" ? command.defeatBranch : undefined;
-      if (branch?.length && pushFrame(state, branch)) return "continue";
+      if (branch?.length && pushFrame(state, branch)) {
+        // A can-lose defeat branch commonly transfers the party to a clinic
+        // and then runs recoverAll. Transfer is terminal for ordinary authored
+        // events, but this branch owns the post-battle continuation explicitly.
+        if (result === "defeat") state.continueAfterTransfer = true;
+        return "continue";
+      }
     }
     frame.pc += 1;
   } else if (pending === "battleProcessing") {
@@ -133,7 +139,10 @@ export function advanceResume(
           : result === "defeat" ? command.defeatBranch
             : result === "escape" ? command.escapeBranch
               : undefined;
-      if (branch?.length && pushFrame(state, branch)) return "continue";
+      if (branch?.length && pushFrame(state, branch)) {
+        if (result === "defeat") state.continueAfterTransfer = true;
+        return "continue";
+      }
     }
     frame.pc += 1;
   } else {

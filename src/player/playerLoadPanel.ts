@@ -190,6 +190,8 @@ export function autosaveTriggerLabel(trigger: AutosaveTrigger | undefined): stri
       return "맵 이동";
     case "battleVictory":
       return "전투 승리";
+    case "ending":
+      return "엔딩 완료";
     default:
       return undefined;
   }

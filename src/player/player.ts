@@ -38,6 +38,7 @@ import {
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
+import { restorePersistedSessionCheckpoint } from "@/player/checkpoints";
 import { createDialogueUI } from "@/player/dialogue";
 import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
@@ -607,6 +608,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     let restored: PlaySession;
     try {
       restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+      restorePersistedSessionCheckpoint(store.getCurrent(), restored, result.snapshot);
     } catch (error) {
       if (!(error instanceof LifeReconciliationError)) throw error;
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
@@ -636,6 +638,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     let restored: PlaySession;
     try {
       restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+      restorePersistedSessionCheckpoint(store.getCurrent(), restored, result.snapshot);
     } catch (error) {
       if (!(error instanceof LifeReconciliationError)) throw error;
       renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");

@@ -6,6 +6,7 @@ import {
   type AutosaveTrigger,
   type SaveSnapshot,
 } from "@/player/saveSlots";
+import { attachSessionCheckpoint } from "@/player/checkpoints";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 
@@ -52,7 +53,7 @@ export function performAutosave(
   let snapshot: SaveSnapshot;
   try {
     snapshot = {
-      ...createSaveSnapshot(project, session),
+      ...attachSessionCheckpoint(session, createSaveSnapshot(project, session)),
       savedBy: "auto",
       autosaveTrigger: trigger,
     };
