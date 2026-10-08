@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import type { OprnStoreBridge } from "@/assetStore/bridgeTypes";
 import { CONCEPT_FALLBACK_THUMB, bundledConcepts, conceptFallbackOf, createConceptSource, similarFrom } from "@/concepts/source";
-import type { GameConcept } from "@/concepts/format";
+import { BUILDABLE_CONCEPT_TILESETS, isBuildableConcept, type GameConcept } from "@/concepts/format";
+import seed from "../harness-data/game-concepts/seed.json";
 
 const SHA_A = "a".repeat(64);
 const SHA_B = "b".repeat(64);
@@ -17,9 +18,26 @@ function fakeBridge(overrides: Partial<OprnStoreBridge>): OprnStoreBridge {
 }
 
 describe("concept source", () => {
-  it("ships a valid offline bundle", () => {
+  it("ships a valid offline bundle of concepts the current chipsets can build", () => {
     expect(bundledConcepts().length).toBeGreaterThanOrEqual(7);
-    for (const concept of bundledConcepts()) expect(concept.thumb.card.startsWith("/assets/concepts/")).toBe(true);
+    for (const concept of bundledConcepts()) {
+      expect(concept.thumb.card.startsWith("/assets/concepts/")).toBe(true);
+      expect(isBuildableConcept(concept)).toBe(true);
+    }
+  });
+
+  it("hides store concepts the chipsets cannot build, and offers only chips that have concepts", async () => {
+    const ok = storeConcept("ok-one-abcdef");
+    const items = [ok, { ...storeConcept("monster-abcdef"), presetId: "monster-collect" as const }, { ...storeConcept("space-abcdef"), tilesetHint: undefined }];
+    const source = createConceptSource({ bridge: fakeBridge({ concepts: async () => ({ items, nextCursor: null }) }) });
+    expect((await source.page({}, null)).items.map((concept) => concept.slug)).toEqual(["ok-one-abcdef"]);
+    const tags = source.tags!();
+    expect(tags.length).toBeGreaterThan(0);
+    for (const tag of tags) expect(bundledConcepts().some((concept) => concept.tags.includes(tag))).toBe(true);
+  });
+
+  it("keeps the seed stage list and the buildable tileset list in step", () => {
+    expect(Object.values(seed.tilesetHints).sort()).toEqual([...BUILDABLE_CONCEPT_TILESETS].sort());
   });
 
   it("uses the bundle without a bridge and filters by tag", async () => {

@@ -4,7 +4,7 @@ import bundled from "@/assets/bundledConcepts.json";
 import type { OprnStoreBridge } from "@/assetStore/bridgeTypes";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GamePresetId } from "@/project/gameDesignIds";
-import { normalizeGameConcept, type GameConcept } from "./format";
+import { CONCEPT_TAGS, isBuildableConcept, normalizeGameConcept, type ConceptTag, type GameConcept } from "./format";
 
 export type ConceptQuery = { readonly tag?: string; readonly q?: string };
 /** 비상용으로 대신한 까닭. offline = 스토어에 닿지 못함(연결 끊김·응답 늦음), bundled = 닿았지만 컨셉이 없거나 아직 지원하지 않음·스토어 없는 화면. */
@@ -17,6 +17,8 @@ export interface ConceptSource {
   detail(concept: GameConcept): Promise<ConceptDetail>;
   thumbUrl(concept: GameConcept, size: "full" | "card"): Promise<string>;
   made(slug: string): void;
+  /** 분류 칩에 낼 분류 — 내보내는 컨셉에 실제로 있는 것만. 없으면 화면이 전 분류를 쓴다. */
+  tags?(): readonly ConceptTag[];
 }
 
 /** 썸네일을 받지 못했을 때 — 장르 틀의 기존 대표 그림. */
@@ -29,8 +31,9 @@ const SHA256 = /^[a-f0-9]{64}$/;
 
 let bundledCache: readonly GameConcept[] | null = null;
 export function bundledConcepts(): readonly GameConcept[] {
+  // 지금 칩셋으로 못 짓는 컨셉은 번들에 들어 있어도 내보내지 않는다(format.ts isBuildableConcept).
   bundledCache ??= ((bundled as { concepts: unknown[] }).concepts).flatMap((raw) => {
-    try { return [normalizeGameConcept(raw)]; } catch { return []; }
+    try { const concept = normalizeGameConcept(raw); return isBuildableConcept(concept) ? [concept] : []; } catch { return []; }
   });
   return bundledCache;
 }
@@ -104,7 +107,7 @@ export function createConceptSource(deps: ConceptSourceDeps = {}): ConceptSource
       try {
         const page = await withTimeout(bridge.concepts({ ...(query.tag ? { tag: query.tag } : {}), ...(query.q?.trim() ? { q: query.q.trim() } : {}), ...(cursor ? { cursor } : {}) }), timeoutMs);
         if (!cursor && page.items.length === 0 && !query.tag && !query.q?.trim()) return bundledPage(query, null);
-        return { items: page.items, nextCursor: page.nextCursor, fallback: null };
+        return { items: page.items.filter(isBuildableConcept), nextCursor: page.nextCursor, fallback: null };
       } catch (error) {
         // 첫 쪽이 실패하면 비상용으로. 이어지는 쪽이 실패하면 여기서 멈춘다(앞 쪽과 섞지 않는다).
         const fallback = conceptFallbackOf(error);
@@ -115,7 +118,7 @@ export function createConceptSource(deps: ConceptSourceDeps = {}): ConceptSource
       if (bridge && SHA256.test(concept.thumb.full)) {
         try {
           const detail = await withTimeout(bridge.concept({ slug: concept.slug }), timeoutMs);
-          return { concept: detail.concept, similar: detail.similar };
+          return { concept: detail.concept, similar: detail.similar.filter(isBuildableConcept) };
         } catch { /* 아래 비상용 비슷한 컨셉으로 */ }
       }
       return { concept, similar: similarFrom(bundledConcepts(), concept) };
@@ -133,6 +136,10 @@ export function createConceptSource(deps: ConceptSourceDeps = {}): ConceptSource
         thumbs.set(ref, pending);
       }
       return pending;
+    },
+    tags() {
+      const present = new Set(bundledConcepts().flatMap((concept) => concept.tags));
+      return CONCEPT_TAGS.filter((tag) => present.has(tag));
     },
     made(slug) {
       void bridge?.conceptMade({ slug }).catch(() => false);

@@ -19,8 +19,8 @@ npm run harness -- game-concepts draw [--parallel 4] [--slug S] [--force]       
 npm run harness -- game-concepts check [--redraw] [--force]                          # 금지 이름 + 그림 비전 판정(참고용 경고)
 npm run harness -- game-concepts serve [--port 18321]                                # 받기/버리기 화면 http://mdc-server:18321/
 npm run harness -- game-concepts status                                              # 분류별 후보·그림·경고·받음·버림·대기
-npm run harness -- game-concepts publish [--target staging|prod|http://…]            # 받은 것만 스토어에 (운영은 --yes-prod)
-npm run harness -- game-concepts bundle [--size 20]                                  # 앱 비상용 번들 public/assets/concepts + src/assets/bundledConcepts.json
+npm run harness -- game-concepts publish [--target staging|prod|http://…]            # 라인업만 스토어에 (운영은 --yes-prod)
+npm run harness -- game-concepts bundle [--size N]                                   # 라인업을 앱 번들 public/assets/concepts + src/assets/bundledConcepts.json
 ```
 
 | 단계 | 쓰는 것 | 메모 |
@@ -28,8 +28,22 @@ npm run harness -- game-concepts bundle [--size 20]                             
 | produce | `claude -p --model sonnet`(`GC_WRITER_MODEL`) | 시드 `targets` 의 분류별 목표에서 부족한 만큼 12개씩. 같은 제목·형식 오류·원작 이름은 `logs/produce.log` 에 사유를 남기고 버린다. slug 는 영어 번역 제목에서 만든다 |
 | draw | 앱 그림 경로 `http://mdc-server:9888/v1/images/generations`(`GC_IMAGE_ENDPOINT`), 제공자 `openai-codex` | 한 장 40~60초. 9888 이 떠 있어야 한다. 실패는 `logs/draw.log` |
 | check | `claude -p --allowedTools Read` 비전 판정 | 결과는 `checks/<slug>.json`(그림 해시 포함). 화면에 노란 경고로만 보인다 — 결정은 사람 |
-| publish | `POST /api/v1/blobs` → `POST /api/v1/admin/concepts` | 토큰 `OPRN_STORE_TOKEN` 또는 `~/.config/oprn-store/cli.json`(storeCli 로그인). 운영자여야 한다. rank 는 분류 순환으로 매겨 첫 쪽이 다양하다 |
-| bundle | 받은 것 분류 순환 앞 20개(분류 안에서 현재 그림 검사 통과분 먼저) | 커밋 대상(그림 20쌍 + JSON) |
+| publish | 라인업만. `POST /api/v1/blobs` → `POST /api/v1/admin/concepts` | 토큰 `OPRN_STORE_TOKEN` 또는 `~/.config/oprn-store/cli.json`(storeCli 로그인). 운영자여야 한다. rank 는 분류 순환으로 매겨 첫 쪽이 다양하다 |
+| bundle | 라인업 전부(분류 순환 순서) | 커밋 대상(그림 쌍 + JSON) |
+
+## 라인업 — 지금 칩셋으로 지을 수 있는 것만 내보낸다
+
+2026-10-08 사용자 결정: 칩셋이 아직 많이 준비되지 않았으므로 피드는 **지을 수 있는 컨셉 20개 정도만** 보인다.
+받기(18321)는 330개 전부 했지만, 내보내는 것은 시드 `lineup`(slug 목록)뿐이다.
+
+- **지을 수 있다** = `src/concepts/format.ts` `isBuildableConcept` — `tilesetHint` 가 `BUILDABLE_CONCEPT_TILESETS`
+  (`joseon_baram`·`wizarding_world`·`jp_city`·`beodeul_city`) 중 하나이고, 장르 틀이 `UNBUILDABLE_CONCEPT_PRESETS`(`monster-collect` —
+  첫 구간 도로 `author_wild_route` 가 버들항 전용)가 아닐 것. 시드 `tilesetHints` 값과 이 목록은 같아야 한다(`test/conceptSource.test.ts`).
+- `lineupCandidates()`(`node/data.ts`) = lineup ∩ 받음(현재 그림 해시) ∩ 지을 수 있음. 빠진 항목은 까닭을 경고로 찍는다. lineup 이 없으면 받은 것 중 지을 수 있는 것 전부.
+- 앱도 같은 판정으로 거른다 — 번들·스토어 쪽·비슷한 컨셉에서 못 짓는 것을 숨기고, 분류 칩은 번들에 실제로 있는 분류만 낸다(`ConceptSource.tags`).
+  「내가 쓴 컨셉」 초안도 네 무대 중 하나·몬스터 수집 아닌 장르 틀만 고르게 하고, 어기면 다시 묻는다(`src/concepts/draft.ts`).
+- 첫 라인업(20): 조선 6 · 일본 도시 5 · 마법 학교 5 · 버들항 4. 모두 그림 검사 통과, 비슷한 변주(마법사 in 조선·편의점 계열)는 하나씩만. 분류 12개(몬스터 수집·SF 없음).
+- **칩셋이 준비되면**: `BUILDABLE_CONCEPT_TILESETS`·시드 `tilesetHints` 에 더하고, 그 무대 컨셉 slug 를 `lineup` 에 넣은 뒤 `bundle`·`publish`.
 
 ## 데이터 폴더
 

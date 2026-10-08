@@ -6,7 +6,7 @@ import { chatCompletion, configForLiteModel, loadAiConfig } from "@/ai/llmClient
 import { configForRole } from "@/ai/modelRoles";
 import { GAME_PRESET_IDS } from "@/project/gameDesignIds";
 import { conceptArtPrompt, conceptForbiddenNameHits } from "./art";
-import { CONCEPT_TAGS, conceptSlug, normalizeGameConcept, type GameConcept } from "./format";
+import { CONCEPT_TAGS, UNBUILDABLE_CONCEPT_PRESETS, conceptSlug, isBuildableConcept, normalizeGameConcept, type GameConcept } from "./format";
 import { CONCEPT_FALLBACK_THUMB } from "./source";
 
 export type DraftDeps = {
@@ -15,6 +15,8 @@ export type DraftDeps = {
   readonly now?: () => number;
 };
 
+// 지금 칩셋으로 못 짓는 장르 틀은 고르지 않게 한다(format.ts isBuildableConcept).
+const DRAFT_PRESETS = GAME_PRESET_IDS.filter((id) => !UNBUILDABLE_CONCEPT_PRESETS.includes(id));
 const FAILED = "컨셉을 만들지 못했습니다. 문장을 조금 바꿔 다시 시도해 주세요.";
 
 export function draftPrompt(text: string, avoid: readonly string[] = []): string {
@@ -25,8 +27,8 @@ export function draftPrompt(text: string, avoid: readonly string[] = []): string
     "규칙:",
     ...seed.rules.map((rule) => `- ${rule}`),
     `- tags 는 1~4개. 쓸 수 있는 분류: ${CONCEPT_TAGS.join(", ")}`,
-    `- presetId 는 다음 중 하나: ${GAME_PRESET_IDS.map((id) => `${id}(${guide[id] ?? ""})`).join("; ")}`,
-    `- tilesetHint 는 무대가 맞을 때만: ${Object.entries(seed.tilesetHints).map(([where, id]) => `${where} → ${id}`).join("; ")}. 아니면 빼라.`,
+    `- presetId 는 다음 중 하나: ${DRAFT_PRESETS.map((id) => `${id}(${guide[id] ?? ""})`).join("; ")}`,
+    `- tilesetHint 는 반드시 다음 중 하나(지금 그림이 준비된 무대는 이것뿐이다): ${Object.entries(seed.tilesetHints).map(([where, id]) => `${where} → ${id}`).join("; ")}. 사용자 문장의 무대가 이 넷과 다르면 이야기를 살려 가장 가까운 무대로 옮겨 써라.`,
     ...(avoid.length ? [`- 다음 낱말은 원작 이름이라 쓰지 마라. 다른 이름으로 바꿔라: ${avoid.join(", ")}`] : []),
     "출력은 JSON 객체 하나뿐. 설명·코드 펜스 금지. 모양:",
     JSON.stringify({
@@ -78,6 +80,7 @@ export async function draftConceptFromText(text: string, deps: DraftDeps = {}): 
         ...raw, tilesetHint: typeof raw.tilesetHint === "string" ? raw.tilesetHint : undefined,
         slug, source: "user", aiGenerated: true, thumb: { full: fallback, card: fallback },
       });
+      if (!isBuildableConcept(concept)) continue; // 준비 안 된 무대·장르 틀 — 다시 묻는다
       const hits = conceptForbiddenNameHits([concept.title, concept.hook, concept.description, concept.protagonist, concept.stage, concept.firstScene].join(" "));
       if (hits.length > 0) { avoid = hits; continue; }
       return concept;
