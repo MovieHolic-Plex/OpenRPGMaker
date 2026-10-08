@@ -80,7 +80,7 @@ openrpgmaker.com 메인 페이지를 꾸미는 에이전트가 읽는 문서입�
 | 🏯 | **Historical and modern settings** — a Joseon palace, a Japanese neighbourhood, a modern city, a magic school | **역사와 현대 무대** — 조선 궁궐, 일본 주택가, 현대 도시, 마법 학교 |
 | 💌 | **Story games** — romance, mystery and horror with branching dialogue and cutscenes | **이야기 게임** — 갈림길 대화와 컷신이 있는 연애·추리·호러 |
 
-중국어·일본어 문구는 저장소 루트 `README.md`의 「可以做什么」「作れるもの」 절에 같은 내용이 있습니다.
+중국어·일본어 문구는 저장소 루트의 `README.zh-CN.md`, `README.ja.md` 에 같은 내용이 있습니다(영어 `README.md`, 한국어 `README.ko.md`).
 
 ---
 
