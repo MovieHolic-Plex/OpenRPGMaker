@@ -70,6 +70,18 @@ RM2k3 투명 칸 자동 보정(`applyCustomChipsetMinimalHarness`)에서 이 시
   - 확인(2026-10-07): 역할표 없던 마법 학교 칩셋에 성채 포석·석벽·어두운 천장을 골라 저장 → `__oprnEditorTool("build_hand_interior_room")` ㄱ자 방이 실제 편집기(Phaser)에서 이식 칸으로 그려짐.
 - **바닥 깔기 규칙 `floors[].lay` (2026-10-07):** `"rowShift"` 면 줄마다 무늬를 가로로 밀어 깐다(`floorLayX`, jp `ikit.lay_x` 와 같은 식).
   한 판을 바둑판처럼 반복하면 넓은 빈 바닥에서 밝은 널이 같은 자리에 줄 섰다(일본 마루). 가로로만 이어지는 무늬에만 쓴다.
+- **방 목록 입력 `rooms`·`connect`·`exit` (2026-10-08, `src/editor/handInterior/rooms.ts`):** 방이 여럿이면 조수가 `#`·`.` 평면을 손으로 그리지 않고
+  방 사각형(바닥 칸 x0..x1·y0..y1, 맨 위 두 줄은 벽면)과 이을 방 쌍만 준다. 사이 1칸 = 칸막이, 0칸 = 트인 한 방(ㄱ·ㄷ자), 2칸 이상 = 두꺼운 벽.
+  `connect` 는 위·아래 방이면 1칸 틈, 왼·오른 방이면 3줄 틈(셋째 줄 통로)을 열고, 사양에 door·sidedoor 가 있으면(일본 집) 문 기물을 단다(`door:"none"` = 틈만).
+  방별 floor·wall 은 zones 로 바뀐다. 결과 data 에 계산한 `plan`·`openings`.
+  - 왜: 실제 조수(Gemini 3.8 Flash) 시험에서 일본 집 1층을 칸막이 0, 바닥 무늬 구역만 바꿔 깔았다 — 다다미방이 마루 한가운데 떠 있었다. rooms 를 연 뒤 jp·v5 빵집·마법 학교·업로드 칩셋 네 시험 모두 rooms 로 칸막이 있는 방을 지었다.
+  - 경고 둘: 바닥만 다른 구역이 칸막이 없이 다른 바닥과 둘레 절반 넘게 맞닿으면(출구에 붙은 현관 구역 제외) 「떠 있다」, 평면이 참고문서 예제 평면(칸막이 있는 것만)과 ±3칸 밀어 94% 이상 같으면 「예제 베낌」.
+    조수가 「일본 집 1층」에 예제 2층 단독주택 1층을 통째로 넣고, 경고 뒤 가로 1칸만 늘려 다시 낸 것을 잡는다(85% 문턱은 v5 두 칸짜리 가게끼리도 걸려 올렸다).
+  - 역할표 id 맞춤(`fitToSpec`): 바닥·벽면·천장이 하나뿐인 사양(업로드 칩셋 역할표)이면 모르는 id(plank·log·wood)를 그 하나로 바꾸고, 가구·탁자·줄·단·탁상 물건 표가 빈 사양이면 그 목록을 빼고 방만 지은 뒤 경고로 알린다.
+    시험에서 업로드 칩셋에 v5 이름을 넣어 세 번 거부된 뒤 「칩셋을 바꾸자」고 물었다. 지금은 방을 짓고 가구는 공용 기물 `stamp_object`(그림이 이 칩셋에 이식된다)로 채운다.
+  - `tileset` 을 빠뜨리면 다시 지을 맵의 칩셋, 아니면 바닥·벽면 id 를 가진 칩셋이 하나뿐일 때 그 칩셋(`inferTileset`). 예전엔 늘 v5 로 떨어졌다.
+  - 시험 경로: `bun scripts/qa/hand-interior-assistant-run.mts --label <l> --task "…" --model google-antigravity/gemini-3.8-flash [--start-tileset jp_city|wizarding_world] [--ugc]` —
+    편집기 기본 제공자(OAuth)는 models.yml 이 아니라 편집기와 같은 자격 해석으로 부른다. `--ugc` = v5 시트를 이름표 없이 올리고 방 짓기 탭과 같은 `compileRoomKit`·`installRoomKit` 으로 역할표만 단 칩셋.
 - 도구 설명은 「네모 하나로만 그리지 말 것(ㄱ·ㄷ·T·알코브)」과 ㄱ자 평면 예시를 싣는다 — 조수 호출 114번 중 99번이 바깥 모양 네모였다(2026-10-07 qa-runs 집계).
 - 폐기된 실내 칩셋 `src/project/retiredInteriorTilesets.ts`: `easyrpg_chipset_interior`·`tibo_interior_expanded`·LPC 가구(32·16). 조수 목록(참고문서·공용 장소/오브젝트·킷)에서 빼고,
   `create_map`·`import_region_reference`·`stamp_object`·참고문서 읽기에서 `retired-interior-tileset` 으로 거부. 공용 장소 중 실내 태그(`공간형태:건물 내부`)인데 v5 칩셋이 아닌 것도 숨긴다.

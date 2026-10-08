@@ -296,7 +296,7 @@ function fitToSpec(args: Record<string, unknown>, S: HandInteriorSpec, tilesetId
       delete out[key];
     }
   }
-  if (dropped.length) notes.push(`칩셋 ${tilesetId} 에는 방 짓기 ${dropped.map((d) => d.split(" ")[0]).join("·")} 가 없어 ${dropped.join("·")}를 빼고 방(바닥·벽·천장)만 지었다 — 가구는 이 칩셋의 기물(list_tileset_objects → stamp_tileset_object)로 놓거나, 사용자에게 「자료집 → 타일 → 칩셋」에서 조립 부품(기물)을 만들어 달라고 안내한다`);
+  if (dropped.length) notes.push(`칩셋 ${tilesetId} 에는 방 짓기 ${dropped.map((d) => d.split(" ")[0]).join("·")} 가 없어 ${dropped.join("·")}를 빼고 방(바닥·벽·천장)만 지었다 — 가구는 이 칩셋의 기물(list_tileset_objects → stamp_tileset_object)이나 공용 기물(list_spatial_designs kind:object → stamp_object, 그림이 이 칩셋에 이식된다)로 놓는다. 칩셋을 바꾸자고 하지 않는다`);
   return out;
 }
 
@@ -353,7 +353,7 @@ function copiedExample(project: Project, tileset: TilesetDef, plan: readonly str
         if (at(plan, x, y) === at(ex.plan, exX, ey)) same++;
       }
       const pct = Math.round(same * 100 / Math.max(1, area));
-      if (pct >= 85 && (!best || pct > best.same)) best = { name: ex.name, same: pct };
+      if (pct >= 94 && (!best || pct > best.same)) best = { name: ex.name, same: pct };
     }
   }
   return best;
