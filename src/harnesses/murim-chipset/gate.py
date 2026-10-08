@@ -17,8 +17,8 @@
   G 바닥 닿음       시드 footOnEdge: 불투명 화소의 맨 아래 행이 칸 아래 경계(마지막 행)다 — 걸상·가구가 뜨지 않는다 FAIL
   K 배치 견본       시드 layout(탁자+걸상 배치): 후보 그림 = 같은 번호 탁자·걸상을 layout 대로 합성한 것(화소 일치),
                     좌·우 걸상 앉는 면 가운데 = 탁자 윗면 가운데 ±2px, 뒤 걸상 앉는 면이 탁자에 가리고도 절반 이상 보임,
-                    앞 걸상 앉는 면 위 행 − 탁자 두께 띠 아래 행 = 2~4px, 앞 걸상 발 = 견본 맨 아래 행,
-                    좌·우 걸상이 탁자 다리(두께 띠 아래 화소)와 겹치지 않음. 기계 검사는 눈 판정을 대신하지 않는다   FAIL
+                    앞 걸상 앉는 면이 탁자 받침(맨 아래 화소) 아래 바닥 틈 2~4px 뒤, 앞 걸상은 탁자와 한 화소도
+                    겹치지 않음(받침 기둥에 꽂혀 보이지 않게), 좌·우 걸상이 탁자 다리(두께 띠 아래 화소)와 겹치지 않음. 기계 검사는 눈 판정을 대신하지 않는다   FAIL
   T 가는 줄         object 폭 1px 화소 비율 > 0.14                                            WARN
   L 빛 방향         object 오른쪽 반이 왼쪽 반보다 밝음(> 0.06)                                 WARN
   N 1px 잡티        네 이웃이 모두 같은 색인데 혼자 다른 화소 비율 > 0.03                         WARN
@@ -347,17 +347,31 @@ def check_layout(item, set_im, parts):
     n = int(seat.sum())
     vis = float((seat & ~tmask).sum()) / max(n, 1)
     (bad if vis < vis_min else ok_msgs).append(f'뒤 걸상 앉는 면 {vis:.0%} 보임')
-    # 4) 앞 걸상 간격·발
+    # 4) 앞 걸상: 탁자 받침(발) 아래 바닥 틈 g0~g1 px 뒤에 앉는 면 — 받침 기둥에 꽂혀 보이지 않게(감독 2026-10-08)
     fx, fy = place['front']['px']
-    gap = fy + s0 - band
-    (bad if not (g0 <= gap <= g1) else ok_msgs).append(f'앞 걸상 간격 {gap}px (띠 아래 {band}행 → 앉는 면 {fy + s0}행)')
+    tys = np.nonzero((ta[:, :, 3] == 255).any(axis=1))[0]
+    tfoot = ty + int(tys.max())
+    if 'foot' in tmeta and ty + tmeta['foot'] != tfoot:
+        bad.append(f'탁자 meta foot {ty + tmeta["foot"]} ≠ 탁자 맨 아래 화소 {tfoot}')
+    gap = fy + s0 - tfoot - 1
+    (bad if not (g0 <= gap <= g1) else ok_msgs).append(f'앞 걸상 바닥 틈 {gap}px (탁자 받침 아래 {tfoot}행 → 앉는 면 {fy + s0}행)')
     ys = np.nonzero((sa[:, :, 3] == 255).any(axis=1))[0]
     foot = fy + int(ys.max())
-    if foot != Hh - 1:
-        bad.append(f'앞 걸상 발 {foot}행 ≠ 견본 맨 아래 {Hh - 1}행')
-    # 5) 좌·우 걸상 vs 탁자 다리
+    if foot > Hh - 1:
+        bad.append(f'앞 걸상 발 {foot}행이 견본 밖({Hh - 1}행까지)')
+    # 5) 좌·우 걸상은 탁자 다리와, 앞 걸상은 탁자 어느 화소와도 겹치지 않는다
     legs = tmask.copy()
     legs[:band + 1, :] = False
+    fm = np.zeros((Hh, W), bool)
+    sop = sa[:, :, 3] == 255
+    for j in range(sop.shape[0]):
+        for i in range(sop.shape[1]):
+            Y, X = fy + j, fx + i
+            if sop[j, i] and 0 <= Y < Hh and 0 <= X < W:
+                fm[Y, X] = True
+    k = int((fm & tmask).sum())
+    if k:
+        bad.append(f'앞 걸상이 탁자와 {k}화소 겹친다(받침 기둥에 꽂혀 보인다)')
     for side in ('left', 'right'):
         sx, sy = place[side]['px']
         m = np.zeros((Hh, W), bool)

@@ -67,7 +67,7 @@ TOP = {
     21: "......KKKBBBBBBBBBBBBBBKKK......",
     22: ".........KKKKKKKKKKKKKK.........",
 }
-TABLE_META = {'top': (13, 20), 'ellipse': (12, 21), 'band': 22}
+TABLE_META = {'top': (13, 20), 'ellipse': (12, 21), 'band': 22, 'foot': 31}
 
 
 def table(face, band, legs, legend, deco=(), note=''):
@@ -159,16 +159,17 @@ def table_b1():
         19: "44444555544433",
     }
     band = {19: "tssr", 20: "ttssrr", 21: "tttttssssssrrr"}
-    teapot = [
-        "...K..",
-        "..KkK.",
-        ".KkkjKK",
-        "KkkjiKS",
-        ".KjihK.",
-        "..KKK..",
+    # 자사(紫砂) 찻주전자·찻잔 — 흰 덩이·먹 점이면 6배에서 눈처럼 읽혔다(감독 2026-10-08).
+    # 짙은 나무 램프 한 덩이로 그리고 윤곽은 먹 대신 mu 1단(a), 속에 홀로 떨어진 점을 두지 않는다. 왼쪽 손잡이·오른쪽 부리.
+    teapot = [             # 10×7: 꼭지·뚜껑 윗면(밝은 f e)·몸통 둥근 앞면, 왼쪽 고리 손잡이, 오른쪽 위로 솟은 부리
+        "....aa....",
+        "...afea..a",
+        "..affeeaab",
+        "aaaeeeedaa",
+        "a.aeddddca",
+        "aaadccccba",
+        "...aaaaaa.",
     ]
-    teapot = [r.ljust(7, '.') for r in teapot]
-    cup = ["KkK", ".K."]
     legs = [                                      # 벌어진 다리 둘 + 가로대(윗면 밝은 줄·아랫면 그늘)
         R((10, "K43K"), (18, "K32K"), (22, "~~")),
         R((10, "K43K"), (18, "K32K"), (22, "~")),
@@ -180,9 +181,9 @@ def table_b1():
         R((6, "KK43K"), (21, "K32KK"), (26, "~")),
         R((6, "KKKKK"), (21, "KKKKK"), (26, "~~~")),
     ]
-    deco = [(teapot, 6, 12), (cup, 13, 16)]   # 뒤 걸상 앉는 면을 가리지 않게 왼쪽 앞에 한 무더기(점이 따로 떨어져 얼굴처럼 읽히지 않게)
+    deco = [(teapot, 7, 12)]   # 찻주전자 하나만 — 둥근 덩이 둘이 나란하면 눈처럼 읽힌다. 뒤 걸상 앉는 면을 가리지 않게 왼쪽
     return table(face, band, legs, leg('song'), deco,
-                 note='줄 B · style B 그대로 밝은 소나무 탁자·주칠 두께 띠·찻주전자와 잔 하나(찻자리). 벌어진 다리 둘에 가로대.')
+                 note='줄 B · style B 그대로 밝은 소나무 탁자·주칠 두께 띠·자사 찻주전자 하나(짙은 흙빛, 먹 점 없음). 벌어진 다리 둘에 가로대.')
 
 
 def table_b2():
@@ -198,7 +199,7 @@ def table_b2():
     face[14] = face[14].ljust(20, 'c')[:19] + 'c'
     face[16] = face[16].ljust(24, 'c')[:23] + 'c'
     band = {19: "cbba", 20: "ccbbaa", 21: "ccyccybbybbyaa"}
-    plate = [".KKKKK.", "KjkkkjK", "KjooojK", ".KKKKK."]
+    steam = [".LLLLLL.", "LooooonL", "LmmmmmlL", ".LLLLLL."]   # 소나무 찜바구니(윤곽 소나무 1단) — 흰 접시는 입처럼 읽혔다
     jug = ["..KK..", ".KPOK.", "KPOONK", "KONNMK", ".KKKK."]
     legs = [                                      # 짙은 나무 북 모양 통받침에 금 징 두 줄
         R((10, "KKKKKKKKKKKK"), (22, "~~~")),
@@ -211,9 +212,9 @@ def table_b2():
         R((9, "KbbbbaaaaaaaaK"), (23, "~~")),
         R((9, "KKKKKKKKKKKKKK"), (23, "~~~~")),
     ]
-    deco = [(jug, 7, 12), (plate, 15, 15)]   # 비대칭 대각선 — 두 점이 눈처럼 나란히 서지 않게
+    deco = [(jug, 7, 12), (steam, 15, 15)]   # 비대칭 대각선 — 두 덩이가 눈처럼 나란히 서지 않게
     return table(face, band, legs, leg('song'), deco,
-                 note='줄 B · 소나무 윗면에 짙은 나무 테·두께 띠에 금 징·접시와 황토 술병. 받침은 금 징 박은 짙은 나무 북 모양 통받침.')
+                 note='줄 B · 소나무 윗면에 짙은 나무 테·두께 띠에 금 징·소나무 찜바구니와 황토 술병. 받침은 금 징 박은 짙은 나무 북 모양 통받침.')
 
 
 # ---------------------------------------------------------------------------
@@ -413,13 +414,13 @@ def counter_b1():
     for p_ in pan:
         rows.append("Kc" + p_ * 3 + "K")
     rows += ["K" + "c" * 46 + "K", "K" + "a" * 46 + "K", "K" + "C" * 46 + "K", "K" + "B" * 46 + "K", "K" * 48]
-    tea = ["KKKKKKKKK", "KoKjKoKjK", "KnnnnnnnK", "KKKKKKKKK"]
-    teapot = ["..KK...", ".KkkKK.", "KkjjKS.", "KjihK..", ".KKK..."]
+    tea = ["KKKKKKKKK", "KndcndcnK", "KnnnnnnnK", "KKKKKKKKK"]      # 쟁반 위 자사 잔 둘(흰 점 없이)
+    teapot = ["....ab....", "..aeeddca.", "baeedddcaa", "badddcccba", "..abbbbba."]
     deco = [(ABACUS, 6, 9), (tea, 26, 11), (teapot, 37, 9)]
     L_ = leg('song')
     L_['a'] = ('mu', 1)
     return counter(rows, L_, deco,
-                   '줄 B · 소나무 윗판에 주칠 앞 모서리·짙은 나무 판벽 앞면(style B 징두리 판)·청석 굽. 위에 주판·찻잔 쟁반·찻주전자.')
+                   '줄 B · 소나무 윗판에 주칠 앞 모서리·짙은 나무 판벽 앞면(style B 징두리 판)·청석 굽. 위에 주판·자사 잔 쟁반·자사 찻주전자.')
 
 
 def counter_b2():
@@ -1116,9 +1117,9 @@ PREVIEWS = {
     'set_table_four': lambda c, st: [('그 줄 style 마루 위 견본(4배로 보임)', _x2(_floor_under(c['_'], st.get('inn_floor_wood'))))],
 }
 
-SCENE_HEAD = ('<h2>줄별 장면 8×6 칸 객잔 홀 (3배) — 같은 번호의 frame-r1 벽·마루 + 이 판 후보</h2>'
+SCENE_HEAD = ('<h2>줄별 장면 8×8 칸 객잔 홀 (3배) — 같은 번호의 frame-r1 벽·마루 + 이 판 후보</h2>'
               '<p class="lead">벽(왼끝·창·가운데·오른끝)과 마루(벽 밑 foot·변형·style 조각)는 frame-r1 의 같은 번호 후보다. '
-              '탁자 세트 둘은 <b>set_table_four 견본을 그대로</b> 찍었다(층: 뒤 걸상 → 탁자 → 좌·우 → 앞). '
+              '탁자 세트 둘은 <b>set_table_four 견본(4×3)을 그대로</b> 찍었다(층: 뒤 걸상 → 탁자 → 좌·우 → 앞). 세트 아래 맨 끝 줄은 빈 바닥으로 남겼다. '
               '계산대 위에 세우는 등롱, 벽에 차림판과 매다는 등롱. 사람은 Actor1. 맨 왼쪽은 조선 객잔 지도 같은 크기 자락.</p>')
 
 
@@ -1133,20 +1134,22 @@ def _frame_parts(key):
 
 
 def scenes(get, style, actor, key):
-    """줄별 장면 8×6 칸(128×96): 벽 2줄 + 마루 4줄. 계산대·술독·아궁이는 벽 밑 줄, 탁자 세트 둘은 아래 두 줄."""
+    """줄별 장면 8×8 칸(128×128): 벽 2줄 + 마루 6줄. 계산대·술독·아궁이는 벽 밑 두 줄, 탁자 세트(4×3) 둘은 칸 (0,4)·(4,4), 맨 아래 줄은 빈 바닥."""
     out = {}
     need = [get(i) for i in ('set_table_four', 'counter_inn', 'kitchen_stove', 'wine_jars', 'menu_board', 'lantern_paper')]
     if any(n is None for n in need):
         return out
     sett, counter_, stove_, jars_, menu, lant = need
     wall, floor = _frame_parts(key)
-    v = _img(128, 96, (0, 0, 0, 255))
+    v = _img(128, 128, (0, 0, 0, 255))
     v.alpha_composite(F.wall_patch(wall, ('l', 'win', 'm', 'r')), (0, 0))
     for bx in range(4):
         v.alpha_composite(floor['foot'], (bx * 32, 32))
     st = style.get('inn_floor_wood')
-    for bx, im in enumerate((floor['v1'], floor['v2'], st if st is not None else floor['v1'], floor['v3'])):
-        v.alpha_composite(im, (bx * 32, 64))
+    sty = st if st is not None else floor['v1']
+    for by, row in enumerate(((floor['v1'], floor['v2'], sty, floor['v3']), (floor['v3'], sty, floor['v1'], floor['v2']))):
+        for bx, im in enumerate(row):
+            v.alpha_composite(im, (bx * 32, 64 + by * 32))
     v.alpha_composite(menu, (80, 16))            # 칸 (5,1) — 벽 아래 칸에 건다
     v.alpha_composite(lant['hang'], (48, 0))     # 칸 (3,0)·(7,0) — 보 앞에 매단다
     v.alpha_composite(lant['hang'], (112, 0))
@@ -1157,5 +1160,5 @@ def scenes(get, style, actor, key):
     v.alpha_composite(actor, (66, 34))
     v.alpha_composite(sett, (0, 64))
     v.alpha_composite(sett, (64, 64))
-    out['객잔 홀 8×6: 벽·차림판·등롱 / 계산대·술독·아궁이 / 탁자 세트(견본) 둘'] = v
+    out['객잔 홀 8×8: 벽·차림판·등롱 / 계산대·술독·아궁이 / 탁자 세트(견본 4×3) 둘 / 빈 바닥 한 줄'] = v
     return out
