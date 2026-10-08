@@ -293,7 +293,8 @@ for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
 for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation'),
                ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior'), ('interior_doors', 'interior'),
                ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
-               ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior')):
+               ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
+               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior')):
     for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -2575,7 +2576,8 @@ add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 �
 # 사전 — 블록 순서, 문서 하나 ≤ 36000자
 _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
                           'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
-                          'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
+                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:

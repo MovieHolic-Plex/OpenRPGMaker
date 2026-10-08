@@ -91,6 +91,21 @@ CATEGORIES = [
     ('mansion-common', '맨션 공용부', ['mc-autolock', 'mc-autodoor', 'mc-mailboxes', 'mc-delivery-box', 'mc-notice-board', 'mc-elevator', 'mc-stairs-up',
                                   'mc-stairwell-down', 'mc-railing', 'mc-unit-door', 'mc-meter-box', 'mc-bike-rack']),
     # (우체국 끝)
+    # ── 4묶음(2026-10-08~): 현대 던전. 블록마다 자기 칸 아래에만. ──
+    # [dungeon_underground ug-]
+    # (지하 끝)
+
+    # [dungeon_hospital hp-]
+    # (폐병원 끝)
+
+    # [dungeon_school as-]
+    # (폐교 끝)
+
+    # [dungeon_construction cs-]
+    # (공사장 끝)
+
+    # [dungeon_warehouse wh-]
+    # (창고 끝)
 ]
 
 BY_ID = {}

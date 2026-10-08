@@ -35,7 +35,7 @@ for _p in PLACES2:
     BUILDINGS[_p['building']] = '%s(%s)' % (_p['name'], _p['file'])
 MAPS = MAPS + tuple((_p['file'], _p['building']) for _p in PLACES2)
 # 3묶음(학교·역·사무실 …): examples/places3*.json. 한 장소 = 맵 여러 장(maps) · 방 여러 개(rooms 사각형) — 방 종류는 roomKinds {id: [한국어, 별칭]}.
-PLACES3 = [p for f in sorted(os.listdir(EX)) if f.startswith('places3') and f.endswith('.json')
+PLACES3 = [p for f in sorted(os.listdir(EX)) if f[:6] == 'places' and f[6:7] in '3456789' and f.endswith('.json')
            for p in json.load(open(os.path.join(EX, f), encoding='utf-8'))]
 for _p in PLACES3:
     KINDS[_p['kind']] = (_p['kindKo'], _p['alias'])

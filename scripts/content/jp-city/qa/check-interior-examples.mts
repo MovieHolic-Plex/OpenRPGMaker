@@ -16,9 +16,9 @@ const GRID = process.argv.includes("--grid");
 // --places <파일> = 예제 표 하나만(작업자는 자기 표 places3-<블록>.json). 기본 = places2.json + places3*.json 전부.
 // 한 장소가 여러 맵(maps: 1층·2층·옥상 …)이면 맵마다 따로 잰다.
 const placesAt = process.argv.indexOf("--places");
-const PLACES_FILES = placesAt > 0 ? [process.argv[placesAt + 1]!] : ["places2.json", ...readdirSync(EX).filter((f) => /^places3.*\.json$/.test(f)).sort()].map((f) => `${EX}/${f}`);
+const PLACES_FILES = placesAt > 0 ? [process.argv[placesAt + 1]!] : ["places2.json", ...readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f)).sort()].map((f) => `${EX}/${f}`);
 const only = process.argv.slice(2).filter((a, i, all) => a !== "--grid" && a !== "--places" && all[i - 1] !== "--places");
-type Place = { file: string; maps?: string[]; placeId: string; kind?: string; rules?: string[] };
+type Place = { file: string; maps?: string[]; placeId: string; kind?: string; dungeon?: boolean; rules?: string[] };
 const places = PLACES_FILES.flatMap((pf) => JSON.parse(readFileSync(pf, "utf8")) as Place[])
   .flatMap((p) => (p.maps ?? [p.file]).map((f) => ({ ...p, file: f })))
   .filter((p) => !only.length || only.includes(p.file));
@@ -109,12 +109,25 @@ for (const p of places) {
     // open = 일부러 트인 바닥(체육관 코트·콘코스·옥상) — 그 안의 3×3 빈 바닥은 경고하지 않는다. 그 밖은 집이 아니면 0 이어야 한다.
     const open = (ex.open ?? []) as { x0: number; y0: number; x1: number; y1: number; why: string }[];
     const e3loose = [...cover].filter((c) => { const x = c % m.width, y = (c - x) / m.width; return !open.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1); });
-    if (e3loose.length && !HOME_KINDS.has(p.kind ?? "")) w.push(`3×3 빈 바닥 ${e3loose.length}칸(예: ${e3loose.slice(0, 3).map((c) => `${c % m.width},${Math.floor(c / m.width)}`).join(" ")}) — 맵을 줄이거나 가구로 쓰임을 주거나, 원래 트인 곳이면 open 으로 밝힌다`);
+    // 던전(4묶음 — 지하철 터널·하수도·폐병원 …, 장소 표 dungeon:true): 통로 폭·막다른 길·빈 바닥·계산대 규칙을 빼고 길이(가장 먼 칸까지 걸음 수)·잠긴 문(locks)을 본다.
+    const dungeon = p.dungeon === true;
+    if (e3loose.length && !HOME_KINDS.has(p.kind ?? "") && !dungeon) w.push(`3×3 빈 바닥 ${e3loose.length}칸(예: ${e3loose.slice(0, 3).map((c) => `${c % m.width},${Math.floor(c / m.width)}`).join(" ")}) — 맵을 줄이거나 가구로 쓰임을 주거나, 원래 트인 곳이면 open 으로 밝힌다`);
     const openNote = open.length ? ` open ${open.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "";
+    const narrowNoteExtra: string[] = [];
     const narrowNote = openNote + (staff.length ? ` narrow ${staff.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "");
     // 집(맨션·목조 아파트·옛집)은 규칙 「가게·공공 실내」 통로 폭 절 밖이다 — 작은 다다미방·복도의 1칸은 흔하다. 가려진 통로·계산대만 본다.
     const home = HOME_KINDS.has((p as { kind?: string }).kind ?? "");
-    if (home) { necks.length = 0; deadEnds.length = 0; }
+    if (home || dungeon) { necks.length = 0; deadEnds.length = 0; }
+    if (dungeon) {
+      counterFront.length = 0;
+      // far = 출발 칸에서 가장 먼 걸음 칸까지 걸음 수(던전은 길어야 한다 — 맵 둘레 반 이상 권장).
+      if (exitCell) { const d0 = new Map([[exitCell.y * m.width + exitCell.x, 0]]); const q = [exitCell.y * m.width + exitCell.x]; let far = 0;
+        while (q.length) { const c = q.shift()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (!d0.has(n) && ok(nx, ny)) { d0.set(n, d0.get(c)! + 1); far = Math.max(far, d0.get(n)!); q.push(n); } } }
+        narrowNoteExtra.push(` far ${far}`); }
+      // locks = [{x,y,key,why}] 잠긴 문 — 그 칸은 걸을 수 있는 문이어야 한다(잠금은 조수가 이벤트로 단다).
+      for (const l of (ex.locks ?? []) as { x: number; y: number; key: string }[]) if (!ok(l.x, l.y)) w.push(`잠긴 문 (${l.x},${l.y}) 이 걸음 칸이 아니다 — 문 틈 칸을 준다(잠금은 이벤트)`);
+      if ((ex.locks ?? []).length) narrowNoteExtra.push(` locks ${(ex.locks as { x: number; y: number; key: string }[]).map((l) => `${l.key}@${l.x},${l.y}`).join(" ")}`);
+    }
     if (necks.length) w.push(`주 동선 1칸 목 ${necks.join(" ")} — 2칸으로 넓히거나, 1칸이 맞는 곳이면 narrow 로 밝힌다`);
     if (deadEnds.length) w.push(`막다른 1칸 통로(칸+끊기는 칸 수) ${deadEnds.join(" ")} — 직원 길이 아니면 3칸까지`);
     if (counterFront.length) w.push(`계산대 앞 손님 자리가 2줄이 아니다 ${counterFront.join(" ")}`);
@@ -124,7 +137,7 @@ for (const p of places) {
     // 안내 문장의 장소 id 는 지금 placeId 와 같아야 한다(게시하면 조수가 그 id 로 부른다).
     for (const id of (p.rules ?? []).join(" ").match(/jp-city-[a-z0-9-]+-\d+x\d+/g) ?? []) if (id !== p.placeId) w.push(`rules 의 장소 id ${id} ≠ placeId ${p.placeId}`);
     if (w.length && !(r.warnings ?? []).length) bad++;
-    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}${narrowNote}`, w.join("\n      "));
+    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}${narrowNote}${narrowNoteExtra.join("")}`, w.join("\n      "));
   } catch (e) { bad++; console.log("FAIL", p.file, String((e as Error).message)); }
 }
 // 같은 틀 반복 두 가지:

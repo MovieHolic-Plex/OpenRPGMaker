@@ -47,9 +47,11 @@ if '--p3' in sys.argv:
     os.makedirs(OUT3, exist_ok=True)
     COLS = 2
     for f in sorted(os.listdir(EX)):
-        if f.startswith('places3') and f.endswith('.json'):
+        if f[:6] == 'places' and f[6:7] in '3456789' and f.endswith('.json'):
+            o = os.path.join(SRC, 'interior' + f[6])          # places4 → interior4/
+            os.makedirs(o, exist_ok=True)
             for p in json.load(open(os.path.join(EX, f), encoding='utf-8')):
-                sheet(p.get('maps') or [p['file']], os.path.join(OUT3, p['file'] + '.png'))
+                sheet(p.get('maps') or [p['file']], os.path.join(o, p['file'] + '.png'))
 else:
     os.makedirs(OUT, exist_ok=True)
     for i, names in enumerate(SHEETS, 1):

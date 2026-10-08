@@ -30,7 +30,10 @@ const exitCell = (plan) => { const y = plan.length - 1; return { x: plan[y].inde
 const PLACES2 = JSON.parse(fs.readFileSync(join(EX, "places2.json"), "utf8"));
 // 3묶음(2026-10-08~): 학교·역·사무실·우체국 … — examples/places3*.json. 한 장소가 여러 맵(maps: 1층·2층·옥상·승강장·차내)일 수 있다.
 // inner:true 인 맵(위층·승강장·차내)은 거리 문과 잇지 않는다 — 계단·이동(links)으로만 들어온다.
-const PLACES3 = fs.readdirSync(EX).filter((f) => /^places3.*\.json$/.test(f)).sort().flatMap((f) => JSON.parse(fs.readFileSync(join(EX, f), "utf8")));
+// 4묶음(현대 던전)은 places4*.json — 같은 방식, 관문 단계만 interior-p4.
+const P_FILES = fs.readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f)).sort();
+const PLACES3 = P_FILES.flatMap((f) => JSON.parse(fs.readFileSync(join(EX, f), "utf8")));
+const P_STAGES = [...new Set(P_FILES.map((f) => `interior-p${f[6]}`))];
 // --only a,b = 그 예제 파일만 짓는다(작업자 확인용 — 서로 잇는 층은 함께 준다). --only 를 주면 게시하지 않는다.
 const onlyAt = process.argv.indexOf("--only");
 const ONLY = onlyAt > 0 ? new Set(process.argv[onlyAt + 1].split(",")) : null;
@@ -84,7 +87,7 @@ if (process.argv.includes("--publish") && ONLY) { console.error("--only 와 --pu
 if (process.argv.includes("--publish")) {
   if (process.exitCode) { console.error("검사 실패 — 게시하지 않았다"); process.exit(2); }
   // 집 실내(1묶음)는 관문 interior, 가게·공공·집 보강(2묶음 places2)은 관문 interior-shop — 둘 다 통과해야 게시한다.
-  for (const stage of ["interior", "interior-shop", ...(PLACES3.length ? ["interior-p3"] : [])]) {
+  for (const stage of ["interior", "interior-shop", ...P_STAGES]) {
     const gate = spawnSync("python3", ["scripts/content/jp-city/gate/adversarial_gate.py", "check", "--stage", stage], { cwd: ROOT, encoding: "utf8" });
     process.stdout.write(gate.stdout);
     if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error(`적대적 검증 관문 ${stage} 미통과 — 게시하지 않았다`); process.exit(3); }

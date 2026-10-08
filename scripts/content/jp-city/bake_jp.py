@@ -41,7 +41,8 @@ BLOCKS_DIR = os.path.join(HERE, 'blocks')
 BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'street_hand', 'school', 'transit_street', 'transit_station',
                'interior_shell', 'interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
                'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
-               'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post']
+               'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
+               'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
