@@ -62,41 +62,6 @@
    "y": 3
   },
   {
-   "id": "cv-gondola",
-   "x": 2,
-   "y": 6
-  },
-  {
-   "id": "cv-gondola",
-   "x": 4,
-   "y": 6
-  },
-  {
-   "id": "cv-gondola",
-   "x": 6,
-   "y": 6
-  },
-  {
-   "id": "cv-freezer",
-   "x": 1,
-   "y": 8
-  },
-  {
-   "id": "cv-freezer",
-   "x": 3,
-   "y": 8
-  },
-  {
-   "id": "cv-trash",
-   "x": 1,
-   "y": 9
-  },
-  {
-   "id": "cv-baskets",
-   "x": 5,
-   "y": 8
-  },
-  {
    "id": "cv-hotcase",
    "x": 8,
    "y": 8
@@ -140,6 +105,31 @@
    "id": "h2-cardboard",
    "x": 9,
    "y": 4
+  },
+  {
+   "id": "cv-gondola",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "cv-gondola",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "cv-freezer",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "cv-freezer",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "cv-baskets",
+   "x": 5,
+   "y": 9
   }
  ],
  "tables": [],
