@@ -197,7 +197,7 @@
    "x": 5,
    "y": 8,
    "toMapId": "jp-city-station",
-   "toX": 7,
+   "toX": 4,
    "toY": 4,
    "direction": "down"
   },
@@ -205,7 +205,7 @@
    "x": 6,
    "y": 8,
    "toMapId": "jp-city-station",
-   "toX": 7,
+   "toX": 4,
    "toY": 4,
    "direction": "down"
   },
