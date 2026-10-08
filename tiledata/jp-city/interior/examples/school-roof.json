@@ -1,0 +1,145 @@
+{
+ "name": "학교 본관 옥상",
+ "plan": [
+  "##############",
+  "#....####....#",
+  "#....####....#",
+  "#....####....#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "##############"
+ ],
+ "floor": "sc-roof-conc",
+ "wall": "sc-parapet",
+ "zones": [],
+ "objects": [
+  {
+   "id": "sc-roof-door",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "sc-roof-fence",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "sc-water-tank",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "h2-ac-outdoor",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "h2-ac-outdoor",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-bench",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "houseplant",
+   "x": 9,
+   "y": 3
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "rooftop",
+   "x0": 0,
+   "y0": 0,
+   "x1": 13,
+   "y1": 9
+  }
+ ],
+ "start": [
+  6,
+  7
+ ],
+ "inner": true,
+ "open": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 12,
+   "y1": 7,
+   "why": "옥상 — 철망 펜스 안 트인 바닥"
+  }
+ ],
+ "links": [
+  {
+   "x": 6,
+   "y": 6,
+   "toMapId": "jp-city-school-3f",
+   "toX": 21,
+   "toY": 13,
+   "direction": "down"
+  }
+ ]
+}

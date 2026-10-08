@@ -50,6 +50,17 @@ CATEGORIES = [
                        'pb-med-cabinet', 'pb-scale-height', 'pb-magazine-rack', 'pb-water-dispenser']),
     # ── 3묶음(2026-10-08~): 학교·체육관·역·사무실·우체국. 블록마다 자기 칸 아래에만 분류 줄을 넣는다(병합 충돌 방지). ──
     # [interior_school sc-]
+    ('school-entry', '학교 현관', ['sc-shoe-locker', 'sc-sunoko']),
+    ('classroom', '교실', ['sc-blackboard', 'sc-podium', 'sc-teacher-desk', 'sc-desk-n', 'sc-back-locker', 'sc-notice-board',
+                          'sc-cleaning-locker', 'sc-classroom-door', 'sc-tv-stand', 'sc-chair-s']),
+    ('staffroom', '교무실·보건실', ['sc-staff-desk', 'sc-staff-chair-s', 'sc-staff-chair-n', 'sc-whiteboard', 'sc-key-box',
+                                 'sc-copy-machine', 'sc-tea-shelf', 'sc-nurse-bed', 'sc-curtain', 'sc-med-shelf', 'sc-scale',
+                                 'sc-sink', 'sc-urinal']),
+    ('special-room', '특별교실(음악·도서·이과)', ['sc-piano', 'sc-music-stand', 'sc-music-chair-n', 'sc-instrument-shelf',
+                                              'sc-bookshelf', 'sc-book-island', 'sc-lib-counter', 'sc-lab-bench', 'sc-lab-stool',
+                                              'sc-specimen-case', 'sc-fume-hood']),
+    ('school-stairs', '학교 계단·옥상', ['sc-stairs-up', 'sc-stairwell-down', 'sc-roof-fence', 'sc-roof-fence-side', 'sc-water-tank',
+                                       'sc-roof-door']),
     # (학교 끝)
 
     # [interior_gym gy-]

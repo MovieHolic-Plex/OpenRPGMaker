@@ -1,0 +1,403 @@
+{
+ "name": "학교 본관 1층(昇降口·교무실·보건실)",
+ "plan": [
+  "##########################",
+  "#...........#......#######",
+  "#...........#......#######",
+  "#...........#......#######",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "#...........#......#.....#",
+  "######.########.######.###",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "############..############",
+  "#########........#########",
+  "#########........#########",
+  "#########........#########",
+  "#########........#########",
+  "###########....###########"
+ ],
+ "floor": "sc-corridor",
+ "wall": "sc-wall",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 11,
+   "y1": 8,
+   "floor": "pb-linoleum"
+  },
+  {
+   "x0": 13,
+   "y0": 0,
+   "x1": 18,
+   "y1": 8,
+   "floor": "sc-corridor"
+  },
+  {
+   "x0": 20,
+   "y0": 3,
+   "x1": 24,
+   "y1": 8,
+   "floor": "sc-genkan-tile",
+   "wall": "sc-wall-tile"
+  },
+  {
+   "x0": 9,
+   "y0": 14,
+   "x1": 16,
+   "y1": 19,
+   "floor": "sc-genkan-tile"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sc-whiteboard",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "sc-key-box",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "window-sash",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "sc-tea-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sc-copy-machine",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "sc-staff-chair-s",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "sc-nurse-bed",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "sc-curtain",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "sc-nurse-bed",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "sc-med-shelf",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "wall-clock",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "sc-scale",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "sc-lab-stool",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "sc-staff-chair-n",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "door-open-western",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "sc-urinal",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "sc-urinal",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "sc-sink",
+   "x": 23,
+   "y": 6
+  },
+  {
+   "id": "toilet",
+   "x": 24,
+   "y": 6
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 22,
+   "y": 9
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 23,
+   "y": 12
+  },
+  {
+   "id": "sc-sunoko",
+   "x": 12,
+   "y": 16
+  },
+  {
+   "id": "sc-sunoko",
+   "x": 13,
+   "y": 16
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 9,
+   "y": 15
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 15,
+   "y": 15
+  },
+  {
+   "id": "sc-shoe-locker",
+   "x": 9,
+   "y": 17
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 11,
+   "y": 17
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 14,
+   "y": 17
+  },
+  {
+   "id": "sc-shoe-locker",
+   "x": 15,
+   "y": 17
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-documents",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "mug",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "pb-documents",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "sc-attendance-book",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "laptop",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "pb-stethoscope",
+   "x": 17,
+   "y": 6
+  }
+ ],
+ "rooms": [
+  {
+   "room": "staffroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 11,
+   "y1": 9
+  },
+  {
+   "room": "infirmary",
+   "x0": 12,
+   "y0": 0,
+   "x1": 18,
+   "y1": 9
+  },
+  {
+   "room": "schooltoilet",
+   "x0": 19,
+   "y0": 0,
+   "x1": 25,
+   "y1": 9
+  },
+  {
+   "room": "corridor",
+   "x0": 0,
+   "y0": 10,
+   "x1": 25,
+   "y1": 13
+  },
+  {
+   "room": "shoegenkan",
+   "x0": 8,
+   "y0": 14,
+   "x1": 17,
+   "y1": 19
+  }
+ ],
+ "start": [
+  13,
+  18
+ ],
+ "exitWidth": 4,
+ "links": [
+  {
+   "x": 23,
+   "y": 12,
+   "toMapId": "jp-city-school-2f",
+   "toX": 22,
+   "toY": 13,
+   "direction": "left"
+  },
+  {
+   "x": 24,
+   "y": 12,
+   "toMapId": "jp-city-school-2f",
+   "toX": 22,
+   "toY": 13,
+   "direction": "left"
+  }
+ ]
+}
