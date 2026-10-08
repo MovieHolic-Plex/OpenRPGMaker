@@ -155,230 +155,6 @@
  "runs": [
   {
    "round": "cave-r1",
-   "at": "2026-10-08T09:41:32",
-   "fail": 4,
-   "warn": 0,
-   "hashes": {
-    "cave.ceiling": {
-     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
-     "A2": "76515b34e4ad5eea7aecab541756b40efbd6ccd9b08f90a4a605e6d22cd6a17f",
-     "B1": "9cc170d697aea6b20e492dcb58a453dd1a56c2fb84ff988368780d90a7f7b775",
-     "B2": "af1f95b23ad60fa4bf6b6a09dde9eee47cd90358023d117ed8ba7a3a179bf71b",
-     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
-     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
-    },
-    "cave.face": {
-     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
-     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
-     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
-     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
-     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
-     "C2": "a44b73e8e3a9f2e0b91f840ba01c63a0b0da10d22c5f20c58f00dd0aec2ff72d"
-    },
-    "cave.floor": {
-     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
-     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
-     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
-     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
-     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
-     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
-    },
-    "cave.floor_stone": {
-     "A1": "40c1a80dbec993b0083cd2f519f8d174f247960adb7b04376a80e839cd326b00",
-     "A2": "9271416a85287430fbb4ae5286f8303f79be7660fb94357adc9a7a537e1ee89c",
-     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
-     "B2": "40c3b05f85b0746c7e600f4bb03a3caf98b0ceee4ff4e96ccefc2c0b5eae390c",
-     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
-     "C2": "2c43e4ab487cd24fcf7d56e0e7776f8124097ed696fae11d3360a0ad9ddd767f"
-    },
-    "cave.rubble": {
-     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
-     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
-     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
-     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
-     "C1": "973e676fdec9dc7b07dc2eaf072758dca2deb3cbdb6038b07ce5098ee52c8a64",
-     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
-    },
-    "cave.stalagmite": {
-     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
-     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
-     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
-     "B2": "d1dbbb6797e8c98099aa9ca6095897bd0e61a9b7c25facde63cf32570f16ce86",
-     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
-     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
-    }
-   }
-  },
-  {
-   "round": "cave-r1",
-   "at": "2026-10-08T09:42:05",
-   "fail": 0,
-   "warn": 0,
-   "hashes": {
-    "cave.ceiling": {
-     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
-     "A2": "76515b34e4ad5eea7aecab541756b40efbd6ccd9b08f90a4a605e6d22cd6a17f",
-     "B1": "9cc170d697aea6b20e492dcb58a453dd1a56c2fb84ff988368780d90a7f7b775",
-     "B2": "af1f95b23ad60fa4bf6b6a09dde9eee47cd90358023d117ed8ba7a3a179bf71b",
-     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
-     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
-    },
-    "cave.face": {
-     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
-     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
-     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
-     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
-     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
-     "C2": "a44b73e8e3a9f2e0b91f840ba01c63a0b0da10d22c5f20c58f00dd0aec2ff72d"
-    },
-    "cave.floor": {
-     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
-     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
-     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
-     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
-     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
-     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
-    },
-    "cave.floor_stone": {
-     "A1": "ca1497b34a369dec69d812aa85800400a0fbb723d40663989392c1e06d5fa168",
-     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
-     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
-     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
-     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
-     "C2": "154b1f670c393b441ba69e7098d61c29deb5d695ce72d9dbbcde87212533d2ed"
-    },
-    "cave.rubble": {
-     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
-     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
-     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
-     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
-     "C1": "973e676fdec9dc7b07dc2eaf072758dca2deb3cbdb6038b07ce5098ee52c8a64",
-     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
-    },
-    "cave.stalagmite": {
-     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
-     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
-     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
-     "B2": "d1dbbb6797e8c98099aa9ca6095897bd0e61a9b7c25facde63cf32570f16ce86",
-     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
-     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
-    }
-   }
-  },
-  {
-   "round": "cave-r1",
-   "at": "2026-10-08T09:42:17",
-   "fail": 0,
-   "warn": 0,
-   "hashes": {
-    "cave.ceiling": {
-     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
-     "A2": "76515b34e4ad5eea7aecab541756b40efbd6ccd9b08f90a4a605e6d22cd6a17f",
-     "B1": "9cc170d697aea6b20e492dcb58a453dd1a56c2fb84ff988368780d90a7f7b775",
-     "B2": "af1f95b23ad60fa4bf6b6a09dde9eee47cd90358023d117ed8ba7a3a179bf71b",
-     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
-     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
-    },
-    "cave.face": {
-     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
-     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
-     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
-     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
-     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
-     "C2": "a44b73e8e3a9f2e0b91f840ba01c63a0b0da10d22c5f20c58f00dd0aec2ff72d"
-    },
-    "cave.floor": {
-     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
-     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
-     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
-     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
-     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
-     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
-    },
-    "cave.floor_stone": {
-     "A1": "ca1497b34a369dec69d812aa85800400a0fbb723d40663989392c1e06d5fa168",
-     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
-     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
-     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
-     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
-     "C2": "154b1f670c393b441ba69e7098d61c29deb5d695ce72d9dbbcde87212533d2ed"
-    },
-    "cave.rubble": {
-     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
-     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
-     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
-     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
-     "C1": "973e676fdec9dc7b07dc2eaf072758dca2deb3cbdb6038b07ce5098ee52c8a64",
-     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
-    },
-    "cave.stalagmite": {
-     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
-     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
-     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
-     "B2": "d1dbbb6797e8c98099aa9ca6095897bd0e61a9b7c25facde63cf32570f16ce86",
-     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
-     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
-    }
-   }
-  },
-  {
-   "round": "cave-r1",
-   "at": "2026-10-08T09:42:20",
-   "fail": 0,
-   "warn": 0,
-   "hashes": {
-    "cave.ceiling": {
-     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
-     "A2": "76515b34e4ad5eea7aecab541756b40efbd6ccd9b08f90a4a605e6d22cd6a17f",
-     "B1": "9cc170d697aea6b20e492dcb58a453dd1a56c2fb84ff988368780d90a7f7b775",
-     "B2": "af1f95b23ad60fa4bf6b6a09dde9eee47cd90358023d117ed8ba7a3a179bf71b",
-     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
-     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
-    },
-    "cave.face": {
-     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
-     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
-     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
-     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
-     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
-     "C2": "a44b73e8e3a9f2e0b91f840ba01c63a0b0da10d22c5f20c58f00dd0aec2ff72d"
-    },
-    "cave.floor": {
-     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
-     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
-     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
-     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
-     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
-     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
-    },
-    "cave.floor_stone": {
-     "A1": "ca1497b34a369dec69d812aa85800400a0fbb723d40663989392c1e06d5fa168",
-     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
-     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
-     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
-     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
-     "C2": "154b1f670c393b441ba69e7098d61c29deb5d695ce72d9dbbcde87212533d2ed"
-    },
-    "cave.rubble": {
-     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
-     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
-     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
-     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
-     "C1": "973e676fdec9dc7b07dc2eaf072758dca2deb3cbdb6038b07ce5098ee52c8a64",
-     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
-    },
-    "cave.stalagmite": {
-     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
-     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
-     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
-     "B2": "d1dbbb6797e8c98099aa9ca6095897bd0e61a9b7c25facde63cf32570f16ce86",
-     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
-     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
-    }
-   }
-  },
-  {
-   "round": "cave-r1",
    "at": "2026-10-08T09:43:38",
    "fail": 0,
    "warn": 0,
@@ -2473,6 +2249,452 @@
      "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
      "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
      "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "style-r1",
+   "at": "2026-10-08T17:48:30",
+   "fail": 0,
+   "warn": 5,
+   "warnByCode": {
+    "OUTLINE": 5
+   },
+   "polish": [
+    {
+     "item": "style.cave",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 392화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: ceil 북변 빛 쪽 먹·0단 79%; ceil 서변 빛 쪽 먹·0단 88%; floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.water",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 160화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "A",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 82% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "B",
+     "code": "OUTLINE",
+     "msg": "가장자리 73화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100%; torch 빛 쪽 먹·0단 88% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "style.chest_torch",
+     "key": "C",
+     "code": "OUTLINE",
+     "msg": "가장자리 61화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: chest 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "style.cave": {
+     "A": "8e734503aa7ba22f08bfa97e1d1c993911527f17003fe65d250418f21241f393",
+     "B": "b9605cbe4371772832c85cbb7115f28b1244062d79d2147e97770d4e222d6de0",
+     "C": "d6c626455d6c479f90371534da8303e5884d66c56ff24799461ea2e20b917750"
+    },
+    "style.water": {
+     "A": "e560029ad46236ad3254f9398883f6c139f71a6242f08d6f16ca6ab232045371",
+     "B": "cecef180a6343894cc6eae9bb17d5d95b7a489dba90eecfa4ddb1fc8280c76c1",
+     "C": "6d8af3dc03ff3af0320186e613f0cbb80a8ebf6bc7bcf700fb253bccf283f04d"
+    },
+    "style.stairs_down": {
+     "A": "cc933af02d56b4308a3d0f9b6c4b586c17e3f3a9ee29a801cab7a024d996f9e4",
+     "B": "03c469d5a01c2de258e7b40c7297ca01ef4dffa55d0e28471b87fe29628ac63b",
+     "C": "2a70eeb22dcd755a832748aa19e295c4721851c6860105549702c8407eaaccfb"
+    },
+    "style.door": {
+     "A": "a9e26fc5270c7b960363d826d450d5bcb2bdcc285e6e95d107e6a94fff90f5b6",
+     "B": "7e80a6c7c0fcf9dc28fe216fa6a3be7fa5a440ceb76099dfb1ed34abf0867ef8",
+     "C": "d49279c67cfe01f6efa1f0c4c512e61d16cb39db0eb1db32d60f7a48ae0597e4"
+    },
+    "style.chest_torch": {
+     "A": "87bd2cdd7529f6d536c575a76db7dda02a5ec7feaa78baaf4caf771b7ab253a5",
+     "B": "82d1ac592a6b772752bac15db0ce08aeee3192b2024de1f65db2339f7090ac78",
+     "C": "08e1aadb5066a80b5de08ffeb9c2552bb7159ab556180ffbe7caef311f146c8a"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:48:50",
+   "fail": 0,
+   "warn": 16,
+   "warnByCode": {
+    "OUTLINE": 16
+   },
+   "polish": [
+    {
+     "item": "cave.floor",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 68화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 77화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 76화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 93%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
+    }
+   }
+  },
+  {
+   "round": "edges-r1",
+   "at": "2026-10-08T17:49:17",
+   "fail": 0,
+   "warn": 4,
+   "warnByCode": {
+    "OUTLINE": 2,
+    "R": 2
+   },
+   "polish": [
+    {
+     "item": "edges.water",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 257화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 52% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "edges.water",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 260화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: water 서변 빛 쪽 먹·0단 52% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "edges.water": {
+     "A1": "ba09485e3cd91f672b970e7fa6ad2e8d0f003fe0b3fb3bfbdf7a6df9fb7344b5",
+     "A2": "44d89327037ee1117ec8baaa70aafaf7fc020499676738dd6d8881fcb474b5ca",
+     "B1": "95ba336c150dd2da9a8976b6519a96c1499462bf19d578e067a44a4d6b4ee657",
+     "B2": "11044bfc15bec104e50692f7aef258f3bb56cfea17dc228f147935defaa3d725",
+     "C1": "da4f809cf1536e622117ece134072cc2cebece190645713aa5189299b9c05e9d",
+     "C2": "a49f0662f8970c3013cb4a8c09a22df9bd8c14d37b556931aae12f84b3369c8d"
+    },
+    "edges.lava": {
+     "B1": "1ecffd5333667ba8a22bd20c8f91137a947044389a350490ad6b05ccc64b5182",
+     "B2": "d248032e9b352cd09df681852e3b8328c3c690a68876edb9dbe3aedc0192915b",
+     "C1": "e85fb4bf9d55aa3eee5a6dc2818d5278288768f141cc3ba648ae964d1f128e6f",
+     "C2": "6657335f2464b0ad9cc7fc246028b890f4accdf58d9a2e921e40c3b04fb9ed06"
+    },
+    "edges.ice": {
+     "A1": "5b423e4824c98dd29ee449c78cce86e11e95d2ed51bb5ad6a1a3b805811ffc75",
+     "A2": "85e93bd8b9ca495264d848b40afd1ec71ad0e974ded42f081091ecce5863e14c",
+     "B1": "a9dd2f8a9e1a269910ae8bc8a46a49cb4889820a79fe0f9b5d59e61d18c51b8c",
+     "B2": "b919939d4623019c4070ce05d4a688ac134e8dbf78e8799933083bacfa5942a0",
+     "C1": "b8681bb3733d9bf603df0f76856eebc75d85eff35ad2e94f0ef56d62a86e9b72",
+     "C2": "244802c55d2cee910d36a216da543138ad58f96d8eab56d621d6aa4affeb842d"
+    },
+    "edges.chasm": {
+     "A1": "a9d2b74f3a3b561c796356b40cdac20f9817c2f04085e92f921bfe410213feb6",
+     "A2": "eabaffb20a01d3d23fe1bb757044ec6a7c463f7910c99cf142dd8a584754d588",
+     "B1": "94ca4d852870eac1da4ea7ec9f8c12b5f61c25e7031e550355e45a24970258e5",
+     "B2": "1939dc186657d0428e1e5e1b98603f393ed37c828a470409e6af7108031c209f",
+     "C1": "21d72a0b872eecc1aea8388dc7f4ba9d1b7e5d5dbbf9ac537e5accd06bed11b9",
+     "C2": "23878382e7d8931404a2e0f60b31c782cfe8daa8d891548c667c7c1ba99caf12"
+    },
+    "edges.bridge": {
+     "A1": "19229e6485d658a606dd59519c604afe8e48ee741940de3993baa3df8aaacc12",
+     "A2": "49b00fe977c7de693040312a6da7766973d82baa5439d696dd49534608c6d193",
+     "B1": "abeeebd5420d5a576203b68fbdd8d9a8da5f113a1d864f4afb40fcf6c6add3ad",
+     "B2": "c212ac99bb3705a50ec6ce907dd5e4d4df7adaf68814fdc06908932897b756da",
+     "C1": "96da720afcae50cf366b071a1b06ca379e0fd393ced4a351a493820334d73be3",
+     "C2": "d7a31a1848c349b0dd3a9e2d680dac833d4f9c73bac9cf1bf7d49828e8640473"
+    }
+   }
+  },
+  {
+   "round": "cave-r1",
+   "at": "2026-10-08T17:49:57",
+   "fail": 0,
+   "warn": 16,
+   "warnByCode": {
+    "OUTLINE": 16
+   },
+   "polish": [
+    {
+     "item": "cave.floor",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 68화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 65화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 서변 빛 쪽 먹·0단 62% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 77화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.floor",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 76화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: floor 북변 빛 쪽 먹·0단 100%; floor 서변 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 93화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 115화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 94%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 89화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 103화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 100%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.rubble",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 99화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: small 빛 쪽 먹·0단 93%; big 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "A2",
+     "code": "OUTLINE",
+     "msg": "가장자리 139화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B1",
+     "code": "OUTLINE",
+     "msg": "가장자리 125화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "B2",
+     "code": "OUTLINE",
+     "msg": "가장자리 104화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C1",
+     "code": "OUTLINE",
+     "msg": "가장자리 128화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    },
+    {
+     "item": "cave.stalagmite",
+     "key": "C2",
+     "code": "OUTLINE",
+     "msg": "가장자리 141화소 중 먹 0% — 상한(먹 15%·빛 쪽 50%) 넘음: stalagmite 빛 쪽 먹·0단 100%; pillar 빛 쪽 먹·0단 100% — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)"
+    }
+   ],
+   "hashes": {
+    "cave.ceiling": {
+     "A1": "599f83ab94b1a9b93aa2823c3dcf479fbd0c12a070afdb4ee48d645b892d30dc",
+     "A2": "8664b43fea2967a7dd045e62c731a242b9e071b7b119f07b11a7f62ec263db9c",
+     "B1": "ce5bde8d820a88629a57cee2098fc848da17bddbe1e57d9fbe0ae84266378722",
+     "B2": "72b36e7a4d7d5b669029314b01d3caaf572d746fcf7f218073b06eea54a66b7d",
+     "C1": "8f56ed86ef72dc2c5a108c08d044adeee7285753d7418ecb002b2ecf1afed5ab",
+     "C2": "1f1f41e5c6515842221a76025ab28893cc9a773432dce2f53c14ddd4db081bd7"
+    },
+    "cave.face": {
+     "A1": "3a637e35a3a010b6b9cd6fb084aa699403c3f9454d4e611ac3ef51488fd79c66",
+     "A2": "15605b1f70c4cb4c6d46c264e36bcd8c6f73f86f6c45ce9bacbededb3869c130",
+     "B1": "72c9ea57ae3870041c05e3a346128c9f6d94b4484f6be35d2a1864e8cf3daf14",
+     "B2": "36bca8abed9226f6fbc3554ad7452278347e819062f90b3c6a4b2ab57bbeac53",
+     "C1": "5f825357f45d2e64d7358af766641e410012c7317b229584439e29f98c8ade13",
+     "C2": "7b494d5539cf737fdc1159d9249c9c9906025a957f2dfef4bf1b7255a946467e"
+    },
+    "cave.floor": {
+     "A1": "fe5a48d5504cfc30b80b726c1abdc85639bc9f5e373dbdda565b11f477740d65",
+     "A2": "4be979acf879a0aeb895410d1aad770469882111225f52ef412021012b659cda",
+     "B1": "a5c40cf7bd1414d18e4e4f8e894e4bc7c747d932923482d14313e952125bef9b",
+     "B2": "6e95ae7ad57eac8fe7eaadd68a8dcc639b02a50e3d08f760eb7a4e57aa2021b2",
+     "C1": "e084944b0d665f3410b9304280b941985a15ca95878a963e82a0901a2cb46223",
+     "C2": "cfc096251db1a3732204e1ef182fd1cefd288ad137b70ebd52398afbca2fa240"
+    },
+    "cave.floor_stone": {
+     "A1": "fb0c8977c3e2722a1d748582cd74852b69012f2135c5c2f86508ccb7b8e330f9",
+     "A2": "cc5948ee956e244d508772ba983268ea4f417ff61e0a2bad58d2a6c06b2ecfcd",
+     "B1": "1d2085bbe2cf4d7f89f25a82215a61e4253c24bd624e3cf27a041c35f723df46",
+     "B2": "632d43203ebba54a9e1e4df3b8984c476114ffcc1337145a7ce10342d8c09a05",
+     "C1": "ed4ea365a231998098063920d310f358582782e828409470e5b2bd4afa294f62",
+     "C2": "1cc8d3c4b45e94014d2a71792c0040838a6f1725e94b26ac4d8ad91679cf5260"
+    },
+    "cave.rubble": {
+     "A1": "7421487ca98bcf8330a0ba337cbf04d041c35b804b5c73fde557d12af0d532e4",
+     "A2": "69a0619c884ccc541c60674001eb06af71521d5f4a15dd0441138713028ab5a6",
+     "B1": "6fb5a4131286e635b31006a1d24d191581a04e5374fc8869acfd184fcef4ad7f",
+     "B2": "fd2f42d7974132c7b58606f68518d7594100930bb585c461931c40890f3951ba",
+     "C1": "5afcca62178f972df8be6c2dd3b9ba8a01631d1fb76dcab8f620a38836a72007",
+     "C2": "eda27dc4651e400df0e5809f1fba627283b3753303b645a4444c4abb60a36934"
+    },
+    "cave.stalagmite": {
+     "A1": "fc0383155f5d0032e3f3aad44a67b809f0b64de501c6a1f3e7be3788e4dde925",
+     "A2": "0bb2825c46933e2f0ae5c184aaee68b46dac20c97739cdd8711feac9f36847cc",
+     "B1": "14730c32b4005923c06ef286cd84c69993e306ac23c7bef530408b9ef5f32d27",
+     "B2": "1792dbcd43bc0133ffedf01af5ee02c13dea9c80b9f27db0090fbbd159985129",
+     "C1": "0ff9ead86f9c2a2f9b53065ed1dc0c05c6c7c26f6dfca697e3b38957da987a80",
+     "C2": "e5d59ab26814d363ce445239310e3bdfb63061aabfde1b1afd66a64ae09a2f19"
     }
    }
   }

@@ -316,7 +316,12 @@ for _name, _ramp in dot.RAMPS.items():
 
 
 def is_ink(c):
-    """팔레트 색 c(RGB 튜플)가 먹(밝기 ≤ INK_LUMA)인가."""
+    """팔레트 색 c(RGB 튜플)가 먹인가 — void 램프(또는 램프 밖) 색 중 밝기 ≤ INK_LUMA.
+    재질 램프의 가장 어두운 단(crock 0단 0.097·brick 0단 0.087·vrock 0단 0.104)은 먹이 아니라 재질 명암이다 — 사용자 결정 2026-10-08
+    「그래 그렇게 하고」(제안: 그늘 쪽·천장 어둠과 닿는 곳에만 허용, 빛 쪽까지 빙 두르면 경고). 빛 쪽 검사는 check_outline 의 lit 마스크가 0단까지 센다."""
+    r = TONE_OF.get(c)
+    if r and r[0] != 'void':
+        return False
     return float(np.dot(c, LUM)) / 255.0 <= INK_LUMA
 
 
@@ -374,14 +379,16 @@ def check_outline(kind, meta):
             t = at.tile(mask).a
             band = np.zeros(t.shape[:2], bool)
             band[sl] = True
-            pieces.append((f'{name} {side}변', t, band & (t != b).any(axis=2) & (t[:, :, 3] == 255), None))
+            e = band & (t != b).any(axis=2) & (t[:, :, 3] == 255)
+            pieces.append((f'{name} {side}변', t, e, e if side in ('북', '서') else None))   # 북·서 = 빛 쪽: 0단 띠면 경고
     # 벽 앞면(큰 구조): 끝 마구리 = 끝 조각에서 가운데 조각과 달라진 화소(끝 쪽 반 칸 안) · 밑 = 아랫단 맨 아래 2줄(바닥 닿는 선)
     for name, f in meta.get('faces', {}).items():
         mid = f.tile(0, False, False).a
         for lab, t, sl in (('왼끝', f.tile(0, True, False).a, np.s_[:, :8]), ('오른끝', f.tile(0, False, True).a, np.s_[:, 8:])):
             band = np.zeros(t.shape[:2], bool)
             band[sl] = True
-            pieces.append((f'{name} 앞면 {lab}', t, band & (t != mid).any(axis=2), None))
+            e = band & (t != mid).any(axis=2)
+            pieces.append((f'{name} 앞면 {lab}', t, e, e if lab == '왼끝' else None))   # 왼끝 = 빛 쪽: 0단 마구리면 경고
         bot = f.tile(1, False, False).a
         band = np.zeros(bot.shape[:2], bool)
         band[-2:] = True
