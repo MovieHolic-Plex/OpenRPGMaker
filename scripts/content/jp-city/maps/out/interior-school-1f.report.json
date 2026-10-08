@@ -1,0 +1,58 @@
+{
+ "map": {
+  "id": "jp-city-school-1f",
+  "size": [
+   26,
+   20
+  ]
+ },
+ "start": [
+  13,
+  18
+ ],
+ "summary": "손 도트 실내 '학교 본관 1층(昇降口·교무실·보건실)' 26×20 (jp-city-school-1f, jp_city) — 출입구에서 닿는 칸 150, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 일본 학교·역·사무실 실내 예제 · 학교 본관 1층(昇降口·교무실·보건실)」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다",
+ "tool": {
+  "mapId": "jp-city-school-1f",
+  "tilesetId": "jp_city",
+  "width": 26,
+  "height": 20,
+  "reachable": 150,
+  "floorCells": 198,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 13,
+    "y": 18
+   }
+  ],
+  "exitWidth": 4,
+  "exits": [
+   {
+    "x": 11,
+    "y": 19,
+    "width": 4
+   }
+  ],
+  "links": 2,
+  "warnings": [
+   "평면이 참고 예제 「일본 도시 · 일본 학교·역·사무실 실내 예제 · 학교 본관 1층(昇降口·교무실·보건실)」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다"
+  ]
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 23,
+   "y": 12,
+   "to": "jp-city-school-2f",
+   "reached": true
+  },
+  {
+   "x": 24,
+   "y": 12,
+   "to": "jp-city-school-2f",
+   "reached": true
+  }
+ ],
+ "reach": 150,
+ "ok": true
+}

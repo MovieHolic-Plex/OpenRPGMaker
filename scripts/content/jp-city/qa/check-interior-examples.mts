@@ -5,7 +5,7 @@
 // 빈 바닥 수치(엔진 통행 판정): sq = 걸을 수 있는 칸만으로 된 가장 큰 정사각형 변(2 = 통로 폭, 4 이상 = 빈 마당),
 //   e3 = 3×3 이 전부 걸음 칸인 창이 덮는 칸 수(빈 바닥 넓이), walk = 걸음 칸 수. 가게 목표 sq ≤ 2.
 // w2·cut·hid = 통로 폭·가려진 1줄 통로(아래 주석). SAME = 같은 틀 반복(아래 ①②).
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { isPassable } from "@/project/collision";
@@ -13,15 +13,25 @@ const EX = "tiledata/jp-city/interior/examples";
 const HOME_KINDS = new Set(["mansion", "mokuchin", "hiraya"]);
 const SPEC = JSON.parse(readFileSync("src/assets/jpInteriorSpec.json", "utf8")).objects as Record<string, { w?: number; h?: number; up?: number; kind?: string }>;
 const GRID = process.argv.includes("--grid");
-const only = process.argv.slice(2).filter((a) => a !== "--grid");
-const places = JSON.parse(readFileSync(`${EX}/places2.json`, "utf8")).filter((p: { file: string }) => !only.length || only.includes(p.file)) as { file: string; placeId: string; rules?: string[] }[];
+// --places <파일> = 예제 표 하나만(작업자는 자기 표 places3-<블록>.json). 기본 = places2.json + places3*.json 전부.
+// 한 장소가 여러 맵(maps: 1층·2층·옥상 …)이면 맵마다 따로 잰다.
+const placesAt = process.argv.indexOf("--places");
+const PLACES_FILES = placesAt > 0 ? [process.argv[placesAt + 1]!] : ["places2.json", ...readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f)).sort()].map((f) => `${EX}/${f}`);
+const only = process.argv.slice(2).filter((a, i, all) => a !== "--grid" && a !== "--places" && all[i - 1] !== "--places");
+type Place = { file: string; maps?: string[]; placeId: string; kind?: string; dungeon?: boolean; rules?: string[] };
+const places = PLACES_FILES.flatMap((pf) => JSON.parse(readFileSync(pf, "utf8")) as Place[])
+  .flatMap((p) => (p.maps ?? [p.file]).map((f) => ({ ...p, file: f })))
+  .filter((p) => !only.length || only.includes(p.file));
+// 도구 경고 중 예제 검사에서 받아들이는 것: ① 「평면이 참고 예제 … 같다」 — 예제가 곧 참고 예제다(조수가 베꼈는지 보는 경고) ② 칸막이 없이 떠 있는 구역 중 open-zones.json 에 이유와 함께 밝힌 것.
+const OPEN_ZONES = JSON.parse(readFileSync(`${EX}/open-zones.json`, "utf8")) as Record<string, { zone: string }[]>;
+const accepted = (file: string, msg: string) => msg.startsWith("평면이 참고 예제") || (OPEN_ZONES[file] ?? []).some((z) => msg.startsWith(`구역 (${z.zone.split(",").slice(0, 2).join(",")})~(${z.zone.split(",").slice(2).join(",")})`));
 let bad = 0;
 const project = createEmptyToolProject("chk");
 for (const p of places) {
   const ex = JSON.parse(readFileSync(`${EX}/${p.file}.json`, "utf8"));
   try {
     const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, { tileset: "jp_city", mapId: `chk-${p.file}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
-    const w = [...(r.warnings ?? [])];
+    const w = [...(r.warnings ?? [])].filter((m) => !accepted(p.file, m));
     if (w.length) bad++;
     const m = project.maps[`chk-${p.file}`]!;
     const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < m.width && y < m.height && isPassable(project, m, x, y);
@@ -47,7 +57,9 @@ for (const p of places) {
     const hid1 = (x: number, y: number) => ok(x, y) && over.has(y * m.width + x) && !ok(x, y - 1);
     // 한 칸짜리(의자·화분 하나 뒤)는 통로가 아니다 — 가로로 2칸 이상 이어진 것만 센다.
     for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) if (hid1(x, y) && (hid1(x - 1, y) || hid1(x + 1, y))) hid.push(`${x},${y}`);
-    const exitCell = (() => { for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1)) return { x, y: m.height - 1 }; return null; })();
+    // inner:true = 거리 문과 잇지 않는 안쪽 맵(위층·옥상·전철 차내 — 계단·이동으로만 들어온다): 출구 검사를 빼고 도달은 start 칸에서 잰다.
+    const inner = ex.inner === true;
+    const exitCell = inner ? { x: ex.start[0] as number, y: ex.start[1] as number } : (() => { for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1)) return { x, y: m.height - 1 }; return null; })();
     const reach = (block: number) => { if (!exitCell) return 0; const s0 = exitCell.y * m.width + exitCell.x; if (s0 === block) return 0; const seen = new Set([s0]); const q = [s0];
       while (q.length) { const c = q.pop()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (n !== block && !seen.has(n) && ok(nx, ny)) { seen.add(n); q.push(n); } } }
       return seen.size; };
@@ -69,7 +81,7 @@ for (const p of places) {
     const deadEnds: string[] = [];
     // 1칸 목: 병목(cut)인데 2×2 덩이 밖 — 문 칸·문 옆·직원 구역·출구(맨 아래 줄과 그 바로 위)는 원래 병목이라 뺀다.
     const necks = cuts.filter((k) => { const [x, y] = k.split(",").map(Number) as [number, number];
-      return !in2(x, y) && !nearDoor(y * m.width + x) && !inStaff(x, y) && y < m.height - 2; });
+      return !in2(x, y) && !nearDoor(y * m.width + x) && !inStaff(x, y) && (inner || y < m.height - 2) && !(inner && x === exitCell!.x && y === exitCell!.y); });
     for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) {
       if (!ok(x, y) || in2(x, y) || inStaff(x, y)) continue;
       const block = y * m.width + x; const s0 = exitCell ? exitCell.y * m.width + exitCell.x : -1; if (s0 < 0 || s0 === block) continue;
@@ -97,20 +109,38 @@ for (const p of places) {
       for (let y = 0; y < m.height; y++) console.log(String(y).padStart(3) + " " + Array.from({ length: m.width }, (_, x) => !ok(x, y) ? "#" : hs.has(`${x},${y}`) ? "^" : cs.has(`${x},${y}`) ? "x" : over.has(y * m.width + x) ? "~" : ".").join(""));
     }
     if (hid.length) w.push(`가려진 1줄 통로 ${hid.join(" ")} — 남쪽 가구 윗부분이 덮는다`);
-    const narrowNote = staff.length ? ` narrow ${staff.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "";
+    // open = 일부러 트인 바닥(체육관 코트·콘코스·옥상) — 그 안의 3×3 빈 바닥은 경고하지 않는다. 그 밖은 집이 아니면 0 이어야 한다.
+    const open = (ex.open ?? []) as { x0: number; y0: number; x1: number; y1: number; why: string }[];
+    const e3loose = [...cover].filter((c) => { const x = c % m.width, y = (c - x) / m.width; return !open.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1); });
+    // 던전(4묶음 — 지하철 터널·하수도·폐병원 …, 장소 표 dungeon:true): 통로 폭·막다른 길·빈 바닥·계산대 규칙을 빼고 길이(가장 먼 칸까지 걸음 수)·잠긴 문(locks)을 본다.
+    const dungeon = p.dungeon === true;
+    if (e3loose.length && !HOME_KINDS.has(p.kind ?? "") && !dungeon) w.push(`3×3 빈 바닥 ${e3loose.length}칸(예: ${e3loose.slice(0, 3).map((c) => `${c % m.width},${Math.floor(c / m.width)}`).join(" ")}) — 맵을 줄이거나 가구로 쓰임을 주거나, 원래 트인 곳이면 open 으로 밝힌다`);
+    const openNote = open.length ? ` open ${open.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "";
+    const narrowNoteExtra: string[] = [];
+    const narrowNote = openNote + (staff.length ? ` narrow ${staff.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "");
     // 집(맨션·목조 아파트·옛집)은 규칙 「가게·공공 실내」 통로 폭 절 밖이다 — 작은 다다미방·복도의 1칸은 흔하다. 가려진 통로·계산대만 본다.
     const home = HOME_KINDS.has((p as { kind?: string }).kind ?? "");
-    if (home) { necks.length = 0; deadEnds.length = 0; }
+    if (home || dungeon) { necks.length = 0; deadEnds.length = 0; }
+    if (dungeon) {
+      counterFront.length = 0;
+      // far = 출발 칸에서 가장 먼 걸음 칸까지 걸음 수(던전은 길어야 한다 — 맵 둘레 반 이상 권장).
+      if (exitCell) { const d0 = new Map([[exitCell.y * m.width + exitCell.x, 0]]); const q = [exitCell.y * m.width + exitCell.x]; let far = 0;
+        while (q.length) { const c = q.shift()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (!d0.has(n) && ok(nx, ny)) { d0.set(n, d0.get(c)! + 1); far = Math.max(far, d0.get(n)!); q.push(n); } } }
+        narrowNoteExtra.push(` far ${far}`); }
+      // locks = [{x,y,key,why}] 잠긴 문 — 그 칸은 걸을 수 있는 문이어야 한다(잠금은 조수가 이벤트로 단다).
+      for (const l of (ex.locks ?? []) as { x: number; y: number; key: string }[]) if (!ok(l.x, l.y)) w.push(`잠긴 문 (${l.x},${l.y}) 이 걸음 칸이 아니다 — 문 틈 칸을 준다(잠금은 이벤트)`);
+      if ((ex.locks ?? []).length) narrowNoteExtra.push(` locks ${(ex.locks as { x: number; y: number; key: string }[]).map((l) => `${l.key}@${l.x},${l.y}`).join(" ")}`);
+    }
     if (necks.length) w.push(`주 동선 1칸 목 ${necks.join(" ")} — 2칸으로 넓히거나, 1칸이 맞는 곳이면 narrow 로 밝힌다`);
     if (deadEnds.length) w.push(`막다른 1칸 통로(칸+끊기는 칸 수) ${deadEnds.join(" ")} — 직원 길이 아니면 3칸까지`);
     if (counterFront.length) w.push(`계산대 앞 손님 자리가 2줄이 아니다 ${counterFront.join(" ")}`);
     // 정문 하나: 맨 아래 줄 걸음 칸 덩이가 정확히 1(link_jp_city_interior 가 그 덩이만 출구로 본다).
     let runs = 0; for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1) && !ok(x - 1, m.height - 1)) runs++;
-    if (runs !== 1) w.push(`맨 아래 줄 걸음 칸 덩이 ${runs}군데 — 출입구 틈은 한 군데여야 한다`);
+    if (runs !== 1 && !inner) w.push(`맨 아래 줄 걸음 칸 덩이 ${runs}군데 — 출입구 틈은 한 군데여야 한다`);
     // 안내 문장의 장소 id 는 지금 placeId 와 같아야 한다(게시하면 조수가 그 id 로 부른다).
     for (const id of (p.rules ?? []).join(" ").match(/jp-city-[a-z0-9-]+-\d+x\d+/g) ?? []) if (id !== p.placeId) w.push(`rules 의 장소 id ${id} ≠ placeId ${p.placeId}`);
     if (w.length && !(r.warnings ?? []).length) bad++;
-    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}${narrowNote}`, w.join("\n      "));
+    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}${narrowNote}${narrowNoteExtra.join("")}`, w.join("\n      "));
   } catch (e) { bad++; console.log("FAIL", p.file, String((e as Error).message)); }
 }
 // 같은 틀 반복 두 가지:

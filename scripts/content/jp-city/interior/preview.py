@@ -18,9 +18,10 @@ BLOCKS = os.path.join(os.path.dirname(HERE), 'blocks')
 
 
 def registries(blocks_dir=BLOCKS):
-    """blocks/interior_*.py 를 모두 불러 Registry 목록(이름순)."""
+    """blocks/interior_*.py·dungeon_*.py 를 모두 불러 Registry 목록(이름순)."""
     out = []
-    for path in sorted(glob.glob(os.path.join(blocks_dir, 'interior_*.py'))):
+    # 실내 블록 다음에 4묶음 던전 블록(dungeon_*) — 순서는 실내 먼저(사양·도감 순서가 그대로 이어지게).
+    for path in sorted(glob.glob(os.path.join(blocks_dir, 'interior_*.py'))) + sorted(glob.glob(os.path.join(blocks_dir, 'dungeon_*.py'))):
         name = os.path.splitext(os.path.basename(path))[0]
         spec = importlib.util.spec_from_file_location('jpint_' + name, path)
         mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)

@@ -292,8 +292,10 @@ for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
 for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation'),
                ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior'), ('interior_doors', 'interior'),
-               ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior')):
-    for _t in PIN_BLOCK[_b]: REGION[_t] = _name
+               ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
+               ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
+               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior')):
+    for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
 NCELL = {r: sum(b - a + 1 for a, b in RUNS[r]) for r in RUNS}
@@ -2523,7 +2525,7 @@ def doc_in_rules():
 - **방문(`door` 종류)**: 열린 양식 문 `door-open-western` · 열린 화장실 문 `door-open-toilet` · 열린 후스마 `fusuma-open`. 좌표 = 평면의 가로 칸막이 1칸 틈 칸. 틈 칸에는 천장 띠가 이어진 인방이, 그 아래 벽면 높이 두 줄에는 문틀·옆으로 젖혀진(밀린) 문짝이 그려지고 가운데는 비어 통로다. 예제: 1층 화실 `fusuma-open`(7,6)·화장실 `door-open-toilet`(10,6), 2층 침실 `door-open-western`(7,6)·화장실 `door-open-toilet`(11,6)·아이방 `door-open-western`(16,6), 원룸 부엌↔방 `door-open-western`(6,6).
 - **옆문(`sidedoor` 종류)**: 열린 나무 옆문 `door-side-western` · 열린 미닫이 옆문 `door-side-sliding`(욕실·탈의실). 좌표 = 세로 칸막이 3줄 틈의 통로 칸. 예제: 1층 욕실 (3,11)·탈의실 (6,11) `door-side-sliding`, LDK (12,10) `door-side-western`, 원룸 유닛 배스 (4,10) `door-side-sliding`.
 - **닫힌 문·창(걸이)** `door-western`·`oshiire`·`closet-doors`·창 4종은 **벽면 윗줄에 거는 닫힌 그림** — 들어가지 않는 문(벽장 `oshiire`·`closet-doors`, 광·납戸 문)을 벽면에 보여 줄 때, 또는 이벤트(조사·이동)를 붙일 자리. 예제: 1층 화실 `oshiire`(5,1), 아이방 `closet-doors`(18,1). `door-western` 은 예제에 안 쓴다 — 통로처럼 읽혀 「방마다 문 하나」를 헷갈리게 하므로, 들어가는 방이 아닌 곳에는 벽장 그림을 쓴다.
-- 탁자 자동 타일 `tables:[{{style, x, y, w, h}}]` — 다섯 종: `dining`(집 식탁, 아무 크기) · `kcounter`(대면 부엌 카운터, 한 줄만) · `fd-counter`(식당 카운터 — 라멘·초밥·이자카야, 한 줄만) · `fd-table`(식당 탁자, 아무 크기 — 1×2 세로 탁자도 된다) · `pb-bath`(센토 큰 탕, 아무 크기). 한 줄만 되는 종류에 h≥2 를 주면 도구가 거부한다. 윗면이 있어 탁상 물건을 올린다(탕 제외).
+- 탁자 자동 타일 `tables:[{{style, x, y, w, h}}]` — {len(JPI['tables'])}종: {' · '.join(f"`{k}`({v['ko']}, {'한 줄만' if v.get('oneRow') else '아무 크기'})" for k, v in JPI['tables'].items())}. 한 줄만 되는 종류에 h≥2 를 주면 도구가 거부한다. 윗면이 있어 탁상 물건을 올린다(탕·선로·무대 제외).
 - 탁상 물건 `goods:[{{id, x, y}}]` — 윗면 있는 가구(`surface`)나 탁자 칸 위에만, 그 칸 4층이 비어 있어야 한다(위로 솟은 이웃 가구가 4층을 쓰면 거부). 물건: {', '.join(f'`{g}`' for g in JPI['goods'])}.
 - 의자·소파·좌의자는 바라보는 쪽별 id(`-s` 남향 · `-n` 북향 · `-e` · `-w`) — 탁자·TV 를 보게 놓는다(탁자 북쪽 의자 = `-s`).
 
@@ -2547,7 +2549,7 @@ def doc_in_rules():
 {md_table(['변조', '코드', '검출 칸(맵 좌표 x,y)', '도구 결과', '고치는 법', '그림'], err_rows)}
 - 오류(`error`)면 도구는 **맵을 만들거나 바꾸지 않는다**(부분 배치 없음). 경고(`warning`: 닿지 못한 바닥·쓸 수 없는 가구·조각 셋 겹침)는 짓되 요약에 남는다 — 0 이 될 때까지 고친다.
 - **레이어 정정 조건**: 가구 조각은 3층(앞뒤 둘이면 4층까지), 밟는 무늬는 2층, 탁상 물건은 4층. 4층이 이미 찼다는 `goods-no-layer` 는 물건이 아니라 이웃 가구 자리를 옮겨 고친다(위 표). `paint_tiles` 로 가구 칸을 1층에 칠하면 바닥이 사라지고 통행이 바뀐다 — 지우고 도구로 다시 짓는다.
-- **검사 범위**: 칸 번호·층·발자국 겹침·놓는 곳(벽·벽면·윗면·문 틈)·출입구에서의 도달(BFS, 엔진 `passabilityOf`)만. 이벤트 실행(계단 이동이 실제로 일어나는지)과 「집처럼 보이는가」(미감)는 도구가 보지 않는다 — 미감은 적대적 검증 관문(`adversarial_gate.py --stage interior`, 판정과 그림·문서 해시가 `tiledata/jp-city/gates/interior.json` 에 남는다. 통과 여부는 그 파일의 verdict 를 본다. 가게·공공 실내는 `--stage interior-shop` → `tiledata/jp-city/gates/interior-shop.json`), 계단 이동은 런타임 QA(`scripts/content/jp-city/qa/interior.probe.mjs` — 출하 플레이어에서 방향 입력으로 방마다·계단 왕복)가, 거리 문 ↔ 실내 왕복은 `scripts/content/jp-city/qa/door-link.probe.mjs`(장소 21곳)가 본다.
+- **검사 범위**: 칸 번호·층·발자국 겹침·놓는 곳(벽·벽면·윗면·문 틈)·출입구에서의 도달(BFS, 엔진 `passabilityOf`)만. 이벤트 실행(계단 이동이 실제로 일어나는지)과 「집처럼 보이는가」(미감)는 도구가 보지 않는다 — 미감은 적대적 검증 관문(`adversarial_gate.py --stage interior`, 판정과 그림·문서 해시가 `tiledata/jp-city/gates/interior.json` 에 남는다. 통과 여부는 그 파일의 verdict 를 본다. 가게·공공 실내는 `--stage interior-shop` → `tiledata/jp-city/gates/interior-shop.json`, 학교·역·사무실 실내는 `--stage interior-p3` → `tiledata/jp-city/gates/interior-p3.json`), 계단 이동은 런타임 QA(`scripts/content/jp-city/qa/interior.probe.mjs` — 출하 플레이어에서 방향 입력으로 방마다·계단 왕복)가, 거리 문 ↔ 실내 왕복은 `scripts/content/jp-city/qa/door-link.probe.mjs`(장소 21곳)가 본다.
 
 ## 가게·공공 실내 (용도 「일본 가게·공공 실내」 예제가 따르는 규칙 — 짓는 도구·평면 규칙은 위와 같다)
 - **출입구**: 맨 아래 줄(맵 끝)에 이어진 틈 — 손님이 드나드는 매장(편의점·슈퍼·음식점·골목 가게·센토)은 2칸 이상(가운데든 모서리 쪽이든 — 계산대가 출구 가까이 오게 정한다. 예제: 편의점·슈퍼는 가운데, 이발소·약국은 왼쪽, 라멘·빵집·채소가게는 오른쪽), 파출소·의원·코인세탁·집 현관은 1칸 문도 된다. 틈 바로 위 1줄은 반드시 비우고(도착 칸), 2줄째도 되도록 비운다(들어오자마자 진열대 앞에 서지 않게). 맨 아래 줄의 다른 걸음 칸은 모두 막는다 — 덩이가 둘이면 `interior-exit-ambiguous`. 출구 = 맨 아래 줄의 이어진 통행 칸 한 덩이 — 맨 아래 줄에 틈이 없으면 `link_jp_city_interior` 가 `no-interior-exit` 로 거부한다(위 줄 틈은 출구로 치지 않는다).
@@ -2565,7 +2567,7 @@ def doc_in_rules():
 가게·공공 실내(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·목욕탕·코인세탁·파출소·의원)와 집 보강(맨션 2LDK·베란다·목조 아파트·단층 옛집)은 용도 「일본 가게·공공 실내」(`jp-interior-shop-*`). 사람(가족·점원 NPC)은 Actor1 캐릭터를 이벤트로 놓는다.
 
 ## 없는 것
-세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·사무실·병원 병동 실내 없음.
+세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·체육관·유치원·역(승강장·전철 차내)·사무 빌딩·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`). 병원 병동은 아직 없다.
 '''
 
 
@@ -2573,7 +2575,9 @@ add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 �
 
 # 사전 — 블록 순서, 문서 하나 ≤ 36000자
 _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
-                          'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
+                          'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
+                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
@@ -2687,7 +2691,7 @@ door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 �
 {md_table(['장소 id', '이름', '종류', '예제 문서', '짜임'], rows)}
 
 ## 없는 것
-점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·사무실·병원 병동 실내는 이 번들에 아직 없다.
+점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·역·사무실·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`).
 '''
 
 
@@ -2696,11 +2700,44 @@ for _p in _P2:
     add_doc(C_INT2, f"interior-ex-{_p['file']}", f"일본 도시 · 일본 가게·공공 실내 예제 · {_p['name']}", doc_in_ex(_p['file']))
 
 
+# 3묶음 — 학교·체육관·유치원·역·사무실·우체국·맨션 공용부(장소 하나 = 맵 여러 장 — 층·승강장·차내). 표: examples/places3*.json
+_EXD = os.path.join(ROOT, 'tiledata', 'jp-city', 'interior', 'examples')
+_P3 = [p for _f3 in sorted(os.listdir(_EXD)) if _f3.startswith('places3') and _f3.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f3), encoding='utf-8'))]
+_P3_FILES = [m for p in _P3 for m in (p.get('maps') or [p['file']])]
+for _p in _P3:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P3:
+    C_INT3 = new_cat('interior-public3', f'일본 도시 · 일본 학교·역·사무실 실내 ({len(_P3)}곳, 맵 {len(_P3_FILES)}장)',
+                     '학교 본관(현관·교무실·보건실·교실·음악실·도서실·이과실·옥상)·체육관·유치원·지상역(개찰·승강장·전철 차내)·사무 빌딩(로비·사무층)·우체국·맨션 공용부: '
+                     '장소 목록(장소 id·가져오기·거리 문 잇기·층 이동), 맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p3_index():
+        rows = [[f"`{p['placeId']}`", p['name'], p['kindKo'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P3]
+        rk = sorted({(k, v[0]) for p in _P3 for k, v in (p.get('roomKinds') or {}).items()})
+        return f'''# 일본 도시 — 일본 학교·역·사무실 실내 장소 {len(_P3)}곳
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 맵 여러 장(층·승강장·차내 — 서로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 첫 맵(1층·역사·로비)에만 거리 문을 잇는다.
+층이 여럿인 장소의 위층·승강장·전철 차내는 거리와 잇지 않는다(맨 아래 줄이 막혀 있다). 층 이동은 계단(올라가는 계단 발칸 ↔ 위층 계단통 아랫줄)·엘리베이터 문 앞 칸·승강장 승차 칸의 `links` 다.
+직접 지으려면 맵마다 `build_hand_interior_room({{tileset:"jp_city", …}})` — 짓는 순서는 `jp-interior-rules` 「읽는 순서 · 실행 순서」 4번(모든 층을 links 없이 → links 를 넣어 replace:true). 방 종류: {', '.join(f'`{k}` {ko}' for k, ko in rk)}.
+
+{md_table(['장소 id', '이름', '종류', '맵(예제 문서)', '짜임'], rows)}
+
+## 없는 것
+교사·학생·역무원·승객 NPC(Actor1 캐릭터를 이벤트로 놓는다), 수업·개찰 이벤트, 전철이 움직이는 연출(차내는 정지 맵). 칠판·게시판·운임표·안내판에 글자는 없다(색 덩이·선). 병원 병동·대형 쇼핑몰·지하 던전은 아직 없다.
+'''
+
+    add_doc(C_INT3, 'interior-p3-index', '일본 도시 · 일본 학교·역·사무실 실내 · 장소 목록·가져오기·거리 문 잇기·층 이동', doc_in_p3_index())
+    for _m in _P3_FILES:
+        add_doc(C_INT3, f"interior-ex-{_m}", f"일본 도시 · 일본 학교·역·사무실 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2]:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else C_INT2)
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else C_INT2))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)
@@ -2771,7 +2808,11 @@ _LM_UP = [t for v in _LM_UP_BY.values() for t in v]
 _LM_LO = [t for v in _LM_LO_BY.values() for t in v]
 assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
 _STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
-assert len(_STAIR_STAR) == 62 + 8 and sum(1 for t in AUD['walkableStairs'] if REGION[t] == 'interior') == 8, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘) + 일본 집 실내 계단 8(올라가는 계단 발칸·솟은 칸, 계단통 솟은 칸)
+# 실내 계단(3묶음부터 학교·사무실·맨션·던전 계단이 늘어난다): 실내 칸은 모두 계단 가구(id 에 stairs/stairwell/ladder/escalator)의 칸이어야 한다.
+_IN_STAIRS = [t for t in AUD['walkableStairs'] if REGION[t] == 'interior']
+assert len(_STAIR_STAR) - len(_IN_STAIRS) == 62, len(_STAIR_STAR)
+_bad_st = [(t, label_of(t)) for t in _IN_STAIRS if not re.search(r'계단|사다리|에스컬레이터|stair|ladder|escalator', label_of(t))]
+assert not _bad_st, ('계단이 아닌 실내 가구가 밟는 계단(★)으로 판정됐다 — 태그·이름에 「계단」?', _bad_st[:10])   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘) + 일본 집 실내 계단 8(올라가는 계단 발칸·솟은 칸, 계단통 솟은 칸)
 
 
 def n_issue(lst): return len(lst)

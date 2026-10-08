@@ -48,6 +48,64 @@ CATEGORIES = [
                        'pb-lost-found-shelf', 'pb-steel-locker']),
     ('clinic', '의원', ['pb-reception', 'pb-waiting-sofa-s', 'pb-waiting-sofa-n', 'pb-exam-bed', 'pb-curtain', 'pb-doctor-desk',
                        'pb-med-cabinet', 'pb-scale-height', 'pb-magazine-rack', 'pb-water-dispenser']),
+    # ── 3묶음(2026-10-08~): 학교·체육관·역·사무실·우체국. 블록마다 자기 칸 아래에만 분류 줄을 넣는다(병합 충돌 방지). ──
+    # [interior_school sc-]
+    ('school-entry', '학교 현관', ['sc-shoe-locker', 'sc-sunoko']),
+    ('classroom', '교실', ['sc-blackboard', 'sc-podium', 'sc-teacher-desk', 'sc-desk-n', 'sc-back-locker', 'sc-notice-board',
+                          'sc-cleaning-locker', 'sc-classroom-door', 'sc-tv-stand', 'sc-chair-s', 'sc-washstand']),
+    ('staffroom', '교무실·보건실', ['sc-staff-desk', 'sc-staff-chair-s', 'sc-staff-chair-n', 'sc-whiteboard', 'sc-key-box',
+                                 'sc-copy-machine', 'sc-tea-shelf', 'sc-nurse-bed', 'sc-curtain', 'sc-med-shelf', 'sc-scale',
+                                 'sc-sink', 'sc-urinal']),
+    ('special-room', '특별교실(음악·도서·이과)', ['sc-piano', 'sc-music-stand', 'sc-music-chair-n', 'sc-instrument-shelf',
+                                              'sc-bookshelf', 'sc-book-island', 'sc-lib-counter', 'sc-lab-bench', 'sc-lab-stool',
+                                              'sc-specimen-case', 'sc-fume-hood']),
+    ('school-stairs', '학교 계단·옥상', ['sc-stairs-up', 'sc-stairwell-down', 'sc-roof-fence', 'sc-roof-fence-side', 'sc-water-tank',
+                                       'sc-roof-door']),
+    # (학교 끝)
+
+    # [interior_gym gy-]
+    ('gym', '체육관', ['gy-line-h', 'gy-line-v', 'gy-line-nw', 'gy-line-ne', 'gy-line-sw', 'gy-line-se', 'gy-line-tn', 'gy-line-ts', 'gy-line-circle', 'gy-key-w', 'gy-key-e', 'gy-line-v-y', 'gy-bench', 'gy-hoop-e', 'gy-hoop-w', 'gy-stage-steps', 'gy-curtain', 'gy-wall-bars', 'gy-mat', 'gy-mat-stack', 'gy-vault-box', 'gy-ball-cart', 'gy-net-post', 'gy-score-board', 'gy-pipe-chair', 'gy-clock-cage']),
+    ('kindergarten', '유치원', ['gy-cubby', 'gy-kid-chair-s', 'gy-kid-chair-n', 'gy-kid-chair-e', 'gy-kid-chair-w', 'gy-upright-piano', 'gy-picture-books', 'gy-toy-box', 'gy-blocks-mat', 'gy-nap-futon', 'gy-kids-sink', 'gy-shoe-cubby', 'gy-drawing-board']),
+    # (체육관 끝)
+
+    # [interior_station st-]
+    ('station', '역사·개찰', ['st-gate', 'st-fence', 'st-ticket-machine', 'st-fare-map', 'st-office-window', 'st-kiosk', 'st-bench',
+                           'st-vending', 'st-timetable', 'st-platform-door', 'st-tactile', 'st-tactile-dot']),
+    ('platform', '승강장', ['st-edge', 'st-boarding-mark', 'st-roof-pillar', 'st-platform-bench', 'st-sign-pole']),
+    ('train', '전철 차내', ['st-long-seat', 'st-long-seat-s', 'st-priority-seat', 'st-priority-seat-s', 'st-car-door', 'st-car-end',
+                          'st-pole', 'st-strap', 'st-car-door-s', 'st-door-line']),
+    # (역 끝)
+
+    # [interior_office of-]
+    ('office-lobby', '사무 빌딩 로비', ['of-reception', 'of-security-gate', 'of-elevator', 'of-elevator-button', 'of-lobby-sofa-s', 'of-lobby-sofa-n',
+                                       'of-plant-big', 'of-directory', 'of-mailbox-wall']),
+    ('office', '사무실', ['of-desk-w', 'of-desk-e', 'of-desk-n', 'of-desk-s', 'of-boss-desk-e', 'of-boss-desk-w', 'of-desk', 'of-desk-chair-s', 'of-desk-chair-n', 'of-desk-chair-e', 'of-desk-chair-w', 'of-boss-desk',
+                         'of-partition', 'of-cabinet', 'of-copier', 'of-whiteboard', 'of-server-rack', 'of-coat-rack', 'of-glass-door', 'of-fire-door',
+                         'of-window-blind', 'of-stairs-up', 'of-stairwell-down']),
+    ('pantry', '급탕실·휴게', ['of-pantry-sink', 'of-fridge-small', 'of-vending', 'of-stool']),
+    # (사무실 끝)
+
+    # [interior_post po-]
+    ('post', '우체국', ['po-counter', 'po-parcel-scale', 'po-counter-end', 'po-ticket-machine', 'po-atm', 'po-writing-desk', 'po-bench-n', 'po-bench-s',
+                      'po-po-box', 'po-poster', 'po-staff-desk', 'po-sorting-shelf', 'po-mail-cart', 'po-mail-bag']),
+    ('mansion-common', '맨션 공용부', ['mc-autolock', 'mc-autodoor', 'mc-mailboxes', 'mc-delivery-box', 'mc-notice-board', 'mc-elevator', 'mc-stairs-up',
+                                  'mc-stairwell-down', 'mc-railing', 'mc-unit-door', 'mc-meter-box', 'mc-bike-rack']),
+    # (우체국 끝)
+    # ── 4묶음(2026-10-08~): 현대 던전. 블록마다 자기 칸 아래에만. ──
+    # [dungeon_underground ug-]
+    # (지하 끝)
+
+    # [dungeon_hospital hp-]
+    # (폐병원 끝)
+
+    # [dungeon_school as-]
+    # (폐교 끝)
+
+    # [dungeon_construction cs-]
+    # (공사장 끝)
+
+    # [dungeon_warehouse wh-]
+    # (창고 끝)
 ]
 
 BY_ID = {}

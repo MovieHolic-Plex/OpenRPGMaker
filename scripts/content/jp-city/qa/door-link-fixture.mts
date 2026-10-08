@@ -21,7 +21,8 @@ for (let i = 2; i < process.argv.length; i += 1) {
 }
 if (!out || !pathsOut) throw new Error("사용법: --out <경로.json> --paths <길.json> [--links <links.json>]");
 // place = 게시된 장소 id(가져오기까지 도구가 한다) · example = tiledata/jp-city/interior/examples/<이름>.json 을 build_hand_interior_room 으로 먼저 짓고 interiorMapId 로 잇는다(게시 전 시험).
-type Link = { building: string; place?: string; example?: string; name?: string };
+// maps = 여러 층 예제(3묶음 학교·역·사무실): 첫 맵이 거리와 잇는 주 맵. 층마다 links 없이 짓고 → links 를 넣어 replace 로 다시 짓는다(조수에게 가르치는 순서).
+type Link = { building: string; place?: string; example?: string; maps?: string[]; name?: string };
 const LINKS: Link[] = linksPath ? JSON.parse(readFileSync(linksPath, "utf8")) : [
   { building: "E1", place: "jp-city-apartment-1k-12x13", name: "맨션 1K" },
   { building: "A1a", place: "jp-city-house-interior-21x15", name: "가게 딸린 집" },
@@ -88,12 +89,19 @@ for (const link of LINKS) {
   const doors = plan.doors.filter((d) => d.b === link.building).sort((a, b) => a.x - b.x);
   if (!doors.length) throw new Error(`건물 ${link.building} 의 문이 plan 에 없다`);
   let target: Record<string, unknown>;
+  let exampleFloors: string[] = [];
   if (link.example) {
-    const ex = JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${link.example}.json`, "utf8"));
-    const id = `jp-city-${link.example}`;
-    const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: id, name: link.name ?? ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
-    if (!built.ok) throw new Error(`${link.example}: ${JSON.stringify(built.issues)}`);
-    target = { interiorMapId: id };
+    const files = link.maps ?? [link.example];
+    const read = (f: string) => JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${f}.json`, "utf8"));
+    const build = (f: string, withLinks: boolean) => {
+      const ex = read(f);
+      const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: `jp-city-${f}`, name: f === link.example ? (link.name ?? ex.name) : ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: withLinks ? (ex.links ?? []) : [], ...(withLinks ? { replace: true } : {}) });
+      if (!built.ok) throw new Error(`${f}: ${JSON.stringify(built.issues)}`);
+    };
+    for (const f of files) build(f, false);
+    if (files.length > 1) for (const f of files) if (read(f).links?.length) build(f, true);
+    exampleFloors = files.filter((f) => f !== link.example).map((f) => `jp-city-${f}`);
+    target = { interiorMapId: `jp-city-${link.example}` };
   } else {
     await preloadRegionReferenceScene(link.place!);
     target = { place: link.place, ...(link.name ? { name: link.name } : {}) };
@@ -119,15 +127,19 @@ for (const link of LINKS) {
   };
   let walkFrom = data.entryLanding;
   let stairs: unknown = null;
-  const floorIds = new Set((res.data as { floorMapIds?: string[] }).floorMapIds ?? []);
+  const floorIds = new Set([...((res.data as { floorMapIds?: string[] }).floorMapIds ?? []), ...exampleFloors]);
   const up = (interior.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && floorIds.has(t.mapId));
   if (up) {
     const upSteps = route(interior, data.entryLanding, [{ x: up.e.x, y: up.e.y }]);
     const floor = ctx.project.maps[up.t!.mapId]!;
-    const down = (floor.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && t.mapId === interior.id);
-    if (!upSteps || !down) throw new Error(`${data.interiorMapId}: 계단 왕복 길이 없다`);
+    // 내려오는 발판은 여럿일 수 있다(2칸 폭 엘리베이터·계단통) — 그중 하나라도 닿으면 된다(발판 옆 발판은 밟지 않는 길이라 한 칸만 노리면 못 닿는다).
+    const downs = (floor.events ?? []).map((e) => ({ e, t: transferOf(e) })).filter(({ t }) => t && t.mapId === interior.id);
+    if (!upSteps || !downs.length) throw new Error(`${data.interiorMapId}: 계단 왕복 길이 없다`);
     const floorTour = farthest(floor, up.t!);
-    const downSteps = [...(route(floor, up.t!, [floorTour]) ?? []), ...(route(floor, floorTour, [{ x: down.e.x, y: down.e.y }]) ?? [])];
+    const back = route(floor, floorTour, downs.map(({ e }) => ({ x: e.x, y: e.y }))) ?? [];
+    const last = back.length ? back[back.length - 1]! : null;
+    const down = downs.find(({ e }) => last && e.x === last[1] && e.y === last[2]) ?? downs[0]!;
+    const downSteps = [...(route(floor, up.t!, [floorTour]) ?? []), ...back];
     stairs = { floor: floor.id, upSteps, upAt: [up.t!.x, up.t!.y], downSteps, downAt: [down.t!.x, down.t!.y] };
     walkFrom = { x: down.t!.x, y: down.t!.y };
   }
@@ -137,7 +149,25 @@ for (const link of LINKS) {
   const tour = [...(route(interior, walkFrom, [far]) ?? []), ...(route(interior, far, [far2]) ?? [])];
   const inside = route(interior, far2, data.exitCells);
   if (!inside) throw new Error(`${data.interiorMapId}: (${far2.x},${far2.y}) → 출입구 길이 없다`);
+  // 층·구역 사이 이동 칸 전부(계단·엘리베이터·승차 칸·사다리)를 하나씩 밟는다: 이동 칸 옆 걸음 칸으로 순간이동 → 한 걸음 → 대상 맵·칸 도착.
+  // (걸어서 닿는지는 maps/interior.mjs 의 엔진 BFS 가 따로 잰다 — 여기서는 이벤트가 실제로 옳은 곳으로 보내는지만.)
+  const hops: unknown[] = [];
+  for (const mid of [data.interiorMapId, ...floorIds]) {
+    const fm = ctx.project.maps[mid]; if (!fm) continue;
+    const padsF = new Set((fm.events ?? []).map((e) => `${e.x},${e.y}`));
+    for (const e of fm.events ?? []) {
+      const t = transferOf(e); if (!t || !(t.mapId === data.interiorMapId || floorIds.has(t.mapId))) continue;
+      const nb = ([["up", 0, 1], ["down", 0, -1], ["left", 1, 0], ["right", -1, 0]] as const).map(([dir, dx, dy]) => ({ dir, x: e.x + dx, y: e.y + dy }))
+        .find((c) => !padsF.has(`${c.x},${c.y}`) && isPassable(ctx.project, fm, c.x, c.y) && canMove(ctx.project, fm, c.x, c.y, e.x, e.y));
+      // 2칸 폭 계단통 안쪽 칸처럼 옆이 모두 발판이면 건너뛴다 — 같은 맵 쌍의 다른 발판이 밟힌다(아래에서 쌍마다 하나 이상인지 확인).
+      if (!nb) continue;
+      hops.push({ map: mid, from: [nb.x, nb.y], dir: nb.dir, at: [e.x, e.y], to: t.mapId, toAt: [t.x, t.y] });
+    }
+    const pairs = new Set((fm.events ?? []).map((e) => transferOf(e)?.mapId).filter((m): m is string => !!m && (m === data.interiorMapId || floorIds.has(m))));
+    for (const to of pairs) if (!hops.some((h) => (h as { map: string; to: string }).map === mid && (h as { to: string }).to === to)) throw new Error(`${mid} → ${to}: 옆에서 걸어 들어갈 수 있는 이동 칸이 하나도 없다`);
+  }
   legs.push({
+    hops,
     label: `${link.building} → ${interior.name}`, street: street.id, interior: data.interiorMapId,
     startAt: [ap.from.x, ap.from.y], enter: [ap.dir, front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y], stairs,
     tourSteps: tour, exitSteps: inside, exitAt: [data.exitLanding.x, data.exitLanding.y],

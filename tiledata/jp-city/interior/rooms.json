@@ -292,6 +292,333 @@
     "시골집",
     "이로리"
    ]
+  },
+  "gym": {
+   "ko": "체육관",
+   "alias": [
+    "体育館",
+    "체육관",
+    "school gym"
+   ]
+  },
+  "gymfloor": {
+   "ko": "체육관 마루(코트)",
+   "alias": [
+    "アリーナ",
+    "体育館",
+    "코트",
+    "농구 코트"
+   ]
+  },
+  "stage": {
+   "ko": "무대(단상)",
+   "alias": [
+    "ステージ",
+    "舞台",
+    "단상",
+    "강당 무대"
+   ]
+  },
+  "gymstore": {
+   "ko": "체육 창고",
+   "alias": [
+    "体育倉庫",
+    "창고",
+    "체육 창고"
+   ]
+  },
+  "kindergarten": {
+   "ko": "유치원",
+   "alias": [
+    "幼稚園",
+    "保育園",
+    "유치원",
+    "kindergarten"
+   ]
+  },
+  "playroom": {
+   "ko": "놀이방(보육실)",
+   "alias": [
+    "保育室",
+    "遊戯室",
+    "놀이방",
+    "교실"
+   ]
+  },
+  "napping": {
+   "ko": "낮잠 방",
+   "alias": [
+    "お昼寝",
+    "午睡室",
+    "낮잠",
+    "이불방"
+   ]
+  },
+  "office": {
+   "ko": "사무실 빌딩",
+   "alias": [
+    "オフィスビル",
+    "事務所",
+    "オフィス",
+    "사무실",
+    "사무 빌딩",
+    "회사",
+    "office",
+    "office building"
+   ]
+  },
+  "lobby": {
+   "ko": "로비",
+   "alias": [
+    "ロビー",
+    "受付",
+    "접수",
+    "현관 로비"
+   ]
+  },
+  "elevatorhall": {
+   "ko": "엘리베이터 홀",
+   "alias": [
+    "エレベーターホール",
+    "로비"
+   ]
+  },
+  "stairwell": {
+   "ko": "비상계단",
+   "alias": [
+    "非常階段",
+    "계단통"
+   ]
+  },
+  "openoffice": {
+   "ko": "사무실",
+   "alias": [
+    "オフィス",
+    "執務室",
+    "사무 공간",
+    "島型"
+   ]
+  },
+  "meetingroom": {
+   "ko": "회의실",
+   "alias": [
+    "会議室",
+    "미팅룸"
+   ]
+  },
+  "pantry": {
+   "ko": "급탕실·휴게",
+   "alias": [
+    "給湯室",
+    "休憩",
+    "탕비실",
+    "휴게실"
+   ]
+  },
+  "postoffice": {
+   "ko": "우체국",
+   "alias": [
+    "郵便局",
+    "우체국",
+    "post office"
+   ]
+  },
+  "postlobby": {
+   "ko": "우체국 로비",
+   "alias": [
+    "郵便局ロビー",
+    "로비",
+    "대기실"
+   ]
+  },
+  "postcounter": {
+   "ko": "우체국 창구 안쪽",
+   "alias": [
+    "窓口",
+    "창구",
+    "직원 자리"
+   ]
+  },
+  "postback": {
+   "ko": "우편 구분 작업실",
+   "alias": [
+    "仕分け室",
+    "작업실",
+    "뒷방"
+   ]
+  },
+  "mansioncommon": {
+   "ko": "맨션 공용부",
+   "alias": [
+    "マンション共用部",
+    "맨션 공용부",
+    "apartment lobby"
+   ]
+  },
+  "windbreak": {
+   "ko": "바람막이(엔트런스)",
+   "alias": [
+    "風除室",
+    "엔트런스",
+    "현관 홀"
+   ]
+  },
+  "extcorridor": {
+   "ko": "외복도",
+   "alias": [
+    "外廊下",
+    "복도"
+   ]
+  },
+  "school": {
+   "ko": "학교",
+   "alias": [
+    "学校",
+    "학교",
+    "school",
+    "中学校",
+    "高校",
+    "校舎"
+   ]
+  },
+  "shoegenkan": {
+   "ko": "학교 현관(昇降口)",
+   "alias": [
+    "昇降口",
+    "신발장 현관",
+    "school entrance"
+   ]
+  },
+  "corridor": {
+   "ko": "학교 복도",
+   "alias": [
+    "廊下",
+    "복도",
+    "school corridor"
+   ]
+  },
+  "staffroom": {
+   "ko": "교무실",
+   "alias": [
+    "職員室",
+    "교무실",
+    "staff room"
+   ]
+  },
+  "infirmary": {
+   "ko": "보건실",
+   "alias": [
+    "保健室",
+    "보건실",
+    "school infirmary"
+   ]
+  },
+  "classroom": {
+   "ko": "교실",
+   "alias": [
+    "教室",
+    "교실",
+    "classroom"
+   ]
+  },
+  "musicroom": {
+   "ko": "음악실",
+   "alias": [
+    "音楽室",
+    "음악실",
+    "music room"
+   ]
+  },
+  "library": {
+   "ko": "도서실",
+   "alias": [
+    "図書室",
+    "도서실",
+    "school library"
+   ]
+  },
+  "sciencelab": {
+   "ko": "이과실",
+   "alias": [
+    "理科室",
+    "과학실",
+    "science lab"
+   ]
+  },
+  "rooftop": {
+   "ko": "학교 옥상",
+   "alias": [
+    "屋上",
+    "옥상",
+    "school rooftop"
+   ]
+  },
+  "schooltoilet": {
+   "ko": "학교 화장실",
+   "alias": [
+    "トイレ",
+    "화장실",
+    "school toilet"
+   ]
+  },
+  "station": {
+   "ko": "역",
+   "alias": [
+    "駅",
+    "駅舎",
+    "ホーム",
+    "電車",
+    "역",
+    "기차역",
+    "전철역",
+    "승강장",
+    "station",
+    "train station",
+    "platform"
+   ]
+  },
+  "concourse": {
+   "ko": "역사 대합실·콘코스",
+   "alias": [
+    "駅舎",
+    "待合室",
+    "コンコース",
+    "대합실",
+    "콘코스"
+   ]
+  },
+  "ticketgate": {
+   "ko": "개찰구",
+   "alias": [
+    "改札",
+    "改札口",
+    "개찰"
+   ]
+  },
+  "stationoffice": {
+   "ko": "역무실 창구",
+   "alias": [
+    "駅務室",
+    "みどりの窓口",
+    "창구"
+   ]
+  },
+  "platform": {
+   "ko": "승강장",
+   "alias": [
+    "ホーム",
+    "プラットホーム",
+    "플랫폼"
+   ]
+  },
+  "traincar": {
+   "ko": "전철 차내",
+   "alias": [
+    "車内",
+    "電車",
+    "客車",
+    "차내"
+   ]
   }
  },
  "buildings": {
@@ -315,7 +642,14 @@
   "jp_clinic": "일본 동네 의원(내과) 실내(clinic)",
   "jp_mansion": "일본 맨션 2LDK 실내(베란다)(mansion-2ldk)",
   "jp_mokuchin": "일본 목조 아파트(木造アパート) 6조 한 칸(mokuchin)",
-  "jp_hiraya": "일본 단층 옛집(平屋) 실내(hiraya)"
+  "jp_hiraya": "일본 단층 옛집(平屋) 실내(hiraya)",
+  "jp_school_gym": "일본 학교 체육관 실내(gym)",
+  "jp_kindergarten": "일본 유치원 실내(kindergarten)",
+  "jp_office": "일본 사무 빌딩 실내(1층 로비 + 사무층)(office-1f, office-floor)",
+  "jp_post_office": "일본 우체국(郵便局) 실내(post-office)",
+  "jp_mansion_common": "일본 맨션 공용부(엔트런스·엘리베이터 홀·외복도)(mansion-lobby, mansion-corridor)",
+  "jp_school": "일본 학교 본관(中学校・高校) 실내(school-1f, school-2f, school-3f, school-roof)",
+  "jp_station": "일본 작은 지상역(駅) — 역사·승강장·전철 차내(station, station-platform, train-car)"
  },
  "examples": [
   [
@@ -2128,6 +2462,1229 @@
     [
      "dining",
      1
+    ]
+   ]
+  ],
+  [
+   "gym",
+   "jp_school_gym",
+   "stage",
+   [
+    [
+     "gy-curtain",
+     4
+    ],
+    [
+     "gy-stage-steps",
+     2
+    ],
+    [
+     "gy-stage",
+     1
+    ]
+   ]
+  ],
+  [
+   "gym",
+   "jp_school_gym",
+   "gymstore",
+   [
+    [
+     "door-side-sliding",
+     1
+    ],
+    [
+     "gy-mat-stack",
+     1
+    ],
+    [
+     "gy-net-post",
+     2
+    ],
+    [
+     "gy-vault-box",
+     1
+    ],
+    [
+     "gy-pipe-chair",
+     1
+    ],
+    [
+     "gy-ball-cart",
+     1
+    ]
+   ]
+  ],
+  [
+   "gym",
+   "jp_school_gym",
+   "gymfloor",
+   [
+    [
+     "gy-wall-bars",
+     3
+    ],
+    [
+     "gy-clock-cage",
+     1
+    ],
+    [
+     "gy-line-nw",
+     1
+    ],
+    [
+     "gy-line-sw",
+     1
+    ],
+    [
+     "gy-line-h",
+     16
+    ],
+    [
+     "gy-line-tn",
+     1
+    ],
+    [
+     "gy-line-ts",
+     1
+    ],
+    [
+     "gy-line-ne",
+     1
+    ],
+    [
+     "gy-line-se",
+     1
+    ],
+    [
+     "gy-line-v",
+     6
+    ],
+    [
+     "gy-key-w",
+     1
+    ],
+    [
+     "gy-key-e",
+     1
+    ],
+    [
+     "gy-line-circle",
+     1
+    ],
+    [
+     "gy-line-v-y",
+     10
+    ],
+    [
+     "gy-hoop-e",
+     1
+    ],
+    [
+     "gy-hoop-w",
+     1
+    ],
+    [
+     "gy-bench",
+     2
+    ],
+    [
+     "gy-shoe-cubby",
+     1
+    ],
+    [
+     "gy-pipe-chair",
+     1
+    ],
+    [
+     "gy-score-board",
+     1
+    ],
+    [
+     "gy-ball-cart",
+     1
+    ],
+    [
+     "genkan-door",
+     2
+    ],
+    [
+     "gy-folding-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "kindergarten",
+   "jp_kindergarten",
+   "napping",
+   [
+    [
+     "door-side-sliding",
+     1
+    ],
+    [
+     "gy-nap-futon",
+     4
+    ],
+    [
+     "oshiire",
+     1
+    ]
+   ]
+  ],
+  [
+   "kindergarten",
+   "jp_kindergarten",
+   "toilet",
+   [
+    [
+     "door-side-sliding",
+     1
+    ],
+    [
+     "gy-kids-sink",
+     1
+    ],
+    [
+     "toilet",
+     1
+    ]
+   ]
+  ],
+  [
+   "kindergarten",
+   "jp_kindergarten",
+   "playroom",
+   [
+    [
+     "gy-cubby",
+     1
+    ],
+    [
+     "gy-picture-books",
+     1
+    ],
+    [
+     "gy-upright-piano",
+     1
+    ],
+    [
+     "gy-toy-box",
+     1
+    ],
+    [
+     "gy-drawing-board",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "gy-kid-chair-s",
+     6
+    ],
+    [
+     "gy-kid-chair-n",
+     6
+    ],
+    [
+     "gy-kid-chair-w",
+     1
+    ],
+    [
+     "gy-kid-chair-e",
+     1
+    ],
+    [
+     "gy-blocks-mat",
+     1
+    ],
+    [
+     "gy-shoe-cubby",
+     2
+    ],
+    [
+     "genkan-door",
+     2
+    ],
+    [
+     "gy-kid-table",
+     2
+    ]
+   ]
+  ],
+  [
+   "office-1f",
+   "jp_office",
+   "elevatorhall",
+   [
+    [
+     "of-plant-big",
+     2
+    ],
+    [
+     "of-elevator",
+     2
+    ],
+    [
+     "of-elevator-button",
+     1
+    ],
+    [
+     "of-directory",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-1f",
+   "jp_office",
+   "stairwell",
+   [
+    [
+     "of-stairs-up",
+     1
+    ],
+    [
+     "of-fire-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-1f",
+   "jp_office",
+   "lobby",
+   [
+    [
+     "of-desk-chair-s",
+     1
+    ],
+    [
+     "of-security-gate",
+     4
+    ],
+    [
+     "of-reception",
+     3
+    ],
+    [
+     "of-lobby-sofa-n",
+     1
+    ],
+    [
+     "of-plant-big",
+     1
+    ],
+    [
+     "of-mailbox-wall",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-floor",
+   "jp_office",
+   "openoffice",
+   [
+    [
+     "of-window-blind",
+     5
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "of-desk-chair-s",
+     8
+    ],
+    [
+     "of-desk-n",
+     8
+    ],
+    [
+     "of-desk-s",
+     8
+    ],
+    [
+     "of-desk-chair-n",
+     8
+    ],
+    [
+     "of-desk-chair-e",
+     3
+    ],
+    [
+     "of-boss-desk-e",
+     1
+    ],
+    [
+     "of-boss-desk-w",
+     1
+    ],
+    [
+     "of-desk-chair-w",
+     3
+    ],
+    [
+     "of-partition",
+     7
+    ],
+    [
+     "of-cabinet",
+     3
+    ],
+    [
+     "of-server-rack",
+     1
+    ],
+    [
+     "of-copier",
+     1
+    ],
+    [
+     "of-vending",
+     1
+    ],
+    [
+     "of-whiteboard",
+     1
+    ],
+    [
+     "of-coat-rack",
+     1
+    ],
+    [
+     "pb-water-dispenser",
+     1
+    ],
+    [
+     "of-meeting-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-floor",
+   "jp_office",
+   "meetingroom",
+   [
+    [
+     "of-glass-door",
+     1
+    ],
+    [
+     "of-desk-chair-e",
+     2
+    ],
+    [
+     "of-desk-chair-w",
+     2
+    ],
+    [
+     "of-meeting-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-floor",
+   "jp_office",
+   "pantry",
+   [
+    [
+     "door-open-western",
+     1
+    ],
+    [
+     "of-pantry-sink",
+     1
+    ],
+    [
+     "of-fridge-small",
+     1
+    ],
+    [
+     "of-stool",
+     3
+    ],
+    [
+     "of-break-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-floor",
+   "jp_office",
+   "stairwell",
+   [
+    [
+     "of-fire-door",
+     1
+    ],
+    [
+     "of-stairwell-down",
+     1
+    ]
+   ]
+  ],
+  [
+   "office-floor",
+   "jp_office",
+   "elevatorhall",
+   [
+    [
+     "of-elevator",
+     2
+    ]
+   ]
+  ],
+  [
+   "post-office",
+   "jp_post_office",
+   "postcounter",
+   [
+    [
+     "po-poster",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "po-staff-desk",
+     2
+    ],
+    [
+     "po-counter-end",
+     1
+    ],
+    [
+     "po-counter",
+     4
+    ],
+    [
+     "po-parcel-scale",
+     1
+    ]
+   ]
+  ],
+  [
+   "post-office",
+   "jp_post_office",
+   "postback",
+   [
+    [
+     "door-side-western",
+     1
+    ],
+    [
+     "po-sorting-shelf",
+     1
+    ],
+    [
+     "po-mail-bag",
+     2
+    ],
+    [
+     "po-mail-cart",
+     1
+    ]
+   ]
+  ],
+  [
+   "post-office",
+   "jp_post_office",
+   "postlobby",
+   [
+    [
+     "po-ticket-machine",
+     1
+    ],
+    [
+     "po-writing-desk",
+     1
+    ],
+    [
+     "po-poster",
+     1
+    ],
+    [
+     "po-atm",
+     1
+    ],
+    [
+     "po-po-box",
+     1
+    ],
+    [
+     "po-bench-n",
+     2
+    ],
+    [
+     "houseplant",
+     2
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "mansion-lobby",
+   "jp_mansion_common",
+   "elevatorhall",
+   [
+    [
+     "mc-elevator",
+     1
+    ],
+    [
+     "houseplant",
+     1
+    ],
+    [
+     "mc-stairs-up",
+     1
+    ],
+    [
+     "mc-notice-board",
+     1
+    ],
+    [
+     "mc-bike-rack",
+     2
+    ]
+   ]
+  ],
+  [
+   "mansion-lobby",
+   "jp_mansion_common",
+   "windbreak",
+   [
+    [
+     "mc-autodoor",
+     1
+    ],
+    [
+     "mc-mailboxes",
+     1
+    ],
+    [
+     "mc-autolock",
+     1
+    ],
+    [
+     "mc-delivery-box",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "mansion-corridor",
+   "jp_mansion_common",
+   "extcorridor",
+   [
+    [
+     "mc-elevator",
+     1
+    ],
+    [
+     "mc-unit-door",
+     4
+    ],
+    [
+     "mc-meter-box",
+     4
+    ],
+    [
+     "mc-stairwell-down",
+     1
+    ],
+    [
+     "mc-railing",
+     15
+    ]
+   ]
+  ],
+  [
+   "school-1f",
+   "jp_school",
+   "staffroom",
+   [
+    [
+     "sc-whiteboard",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "sc-key-box",
+     1
+    ],
+    [
+     "window-sash",
+     1
+    ],
+    [
+     "sc-tea-shelf",
+     1
+    ],
+    [
+     "sc-copy-machine",
+     1
+    ],
+    [
+     "sc-staff-desk",
+     8
+    ],
+    [
+     "sc-staff-chair-s",
+     4
+    ],
+    [
+     "sc-staff-chair-n",
+     4
+    ],
+    [
+     "sc-classroom-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-1f",
+   "jp_school",
+   "infirmary",
+   [
+    [
+     "sc-nurse-bed",
+     2
+    ],
+    [
+     "sc-curtain",
+     1
+    ],
+    [
+     "sc-med-shelf",
+     1
+    ],
+    [
+     "sc-sink",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "sc-scale",
+     1
+    ],
+    [
+     "sc-lab-stool",
+     1
+    ],
+    [
+     "sc-staff-desk",
+     1
+    ],
+    [
+     "sc-staff-chair-n",
+     1
+    ],
+    [
+     "sc-classroom-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-1f",
+   "jp_school",
+   "schooltoilet",
+   [
+    [
+     "sc-urinal",
+     2
+    ],
+    [
+     "sc-sink",
+     1
+    ],
+    [
+     "toilet",
+     1
+    ],
+    [
+     "door-side-western",
+     1
+    ],
+    [
+     "sc-classroom-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-1f",
+   "jp_school",
+   "corridor",
+   [
+    [
+     "sc-notice-board",
+     2
+    ],
+    [
+     "sc-stairs-up",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-1f",
+   "jp_school",
+   "shoegenkan",
+   [
+    [
+     "sc-sunoko",
+     2
+    ],
+    [
+     "sc-notice-board",
+     2
+    ],
+    [
+     "sc-shoe-locker",
+     2
+    ],
+    [
+     "umbrella-stand",
+     2
+    ]
+   ]
+  ],
+  [
+   "school-2f",
+   "jp_school",
+   "classroom",
+   [
+    [
+     "wall-clock",
+     2
+    ],
+    [
+     "sc-blackboard",
+     2
+    ],
+    [
+     "sc-notice-board",
+     2
+    ],
+    [
+     "sc-podium",
+     8
+    ],
+    [
+     "sc-tv-stand",
+     2
+    ],
+    [
+     "sc-teacher-desk",
+     2
+    ],
+    [
+     "sc-desk-n",
+     55
+    ],
+    [
+     "sc-back-locker",
+     4
+    ],
+    [
+     "sc-cleaning-locker",
+     2
+    ],
+    [
+     "sc-classroom-door",
+     4
+    ],
+    [
+     "houseplant",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-2f",
+   "jp_school",
+   "corridor",
+   [
+    [
+     "sc-notice-board",
+     2
+    ],
+    [
+     "houseplant",
+     3
+    ],
+    [
+     "sc-washstand",
+     2
+    ],
+    [
+     "pb-water-dispenser",
+     1
+    ],
+    [
+     "sc-cleaning-locker",
+     1
+    ],
+    [
+     "sc-stairs-up",
+     1
+    ],
+    [
+     "sc-stairwell-down",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-3f",
+   "jp_school",
+   "musicroom",
+   [
+    [
+     "sc-instrument-shelf",
+     2
+    ],
+    [
+     "sc-music-stand",
+     2
+    ],
+    [
+     "sc-piano",
+     1
+    ],
+    [
+     "sc-music-chair-n",
+     12
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "door-open-western",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-3f",
+   "jp_school",
+   "library",
+   [
+    [
+     "sc-bookshelf",
+     4
+    ],
+    [
+     "sc-chair-s",
+     2
+    ],
+    [
+     "sc-lib-counter",
+     2
+    ],
+    [
+     "sc-book-island",
+     1
+    ],
+    [
+     "sc-music-chair-n",
+     2
+    ],
+    [
+     "sc-classroom-door",
+     1
+    ],
+    [
+     "sc-reading-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-3f",
+   "jp_school",
+   "sciencelab",
+   [
+    [
+     "sc-specimen-case",
+     2
+    ],
+    [
+     "sc-sink",
+     1
+    ],
+    [
+     "sc-med-shelf",
+     1
+    ],
+    [
+     "sc-fume-hood",
+     1
+    ],
+    [
+     "sc-lab-bench",
+     2
+    ],
+    [
+     "sc-lab-stool",
+     4
+    ],
+    [
+     "sc-classroom-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-3f",
+   "jp_school",
+   "corridor",
+   [
+    [
+     "sc-notice-board",
+     2
+    ],
+    [
+     "sc-stairs-up",
+     1
+    ],
+    [
+     "sc-stairwell-down",
+     1
+    ]
+   ]
+  ],
+  [
+   "school-roof",
+   "jp_school",
+   "rooftop",
+   [
+    [
+     "sc-roof-door",
+     1
+    ],
+    [
+     "sc-roof-fence",
+     12
+    ],
+    [
+     "sc-water-tank",
+     1
+    ],
+    [
+     "h2-ac-outdoor",
+     2
+    ],
+    [
+     "pb-bench",
+     1
+    ],
+    [
+     "houseplant",
+     1
+    ]
+   ]
+  ],
+  [
+   "station",
+   "jp_station",
+   "ticketgate",
+   [
+    [
+     "st-platform-door",
+     1
+    ],
+    [
+     "st-timetable",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "st-vending",
+     2
+    ],
+    [
+     "st-bench",
+     1
+    ],
+    [
+     "cv-trash",
+     1
+    ],
+    [
+     "st-kiosk",
+     1
+    ],
+    [
+     "houseplant",
+     1
+    ],
+    [
+     "st-fence",
+     3
+    ],
+    [
+     "st-gate",
+     4
+    ],
+    [
+     "st-tactile-dot",
+     1
+    ]
+   ]
+  ],
+  [
+   "station",
+   "jp_station",
+   "concourse",
+   [
+    [
+     "st-bench",
+     2
+    ],
+    [
+     "st-tactile",
+     2
+    ],
+    [
+     "st-tactile-dot",
+     1
+    ]
+   ]
+  ],
+  [
+   "station",
+   "jp_station",
+   "stationoffice",
+   [
+    [
+     "st-office-window",
+     1
+    ],
+    [
+     "st-ticket-machine",
+     2
+    ],
+    [
+     "st-fare-map",
+     1
+    ]
+   ]
+  ],
+  [
+   "station-platform",
+   "jp_station",
+   "platform",
+   [
+    [
+     "st-edge",
+     16
+    ],
+    [
+     "st-boarding-mark",
+     4
+    ],
+    [
+     "st-roof-pillar",
+     4
+    ],
+    [
+     "st-platform-bench",
+     3
+    ],
+    [
+     "st-sign-pole",
+     1
+    ],
+    [
+     "st-tactile-dot",
+     2
+    ],
+    [
+     "st-track",
+     1
+    ]
+   ]
+  ],
+  [
+   "train-car",
+   "jp_station",
+   "traincar",
+   [
+    [
+     "st-car-end",
+     2
+    ],
+    [
+     "st-priority-seat",
+     2
+    ],
+    [
+     "st-long-seat",
+     2
+    ],
+    [
+     "st-pole",
+     2
+    ],
+    [
+     "st-car-door",
+     2
+    ],
+    [
+     "st-strap",
+     12
+    ],
+    [
+     "st-priority-seat-s",
+     2
+    ],
+    [
+     "st-long-seat-s",
+     2
+    ],
+    [
+     "st-car-door-s",
+     2
+    ],
+    [
+     "st-door-line",
+     4
     ]
    ]
   ]

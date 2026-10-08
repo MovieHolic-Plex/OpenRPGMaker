@@ -39,6 +39,20 @@ def sheet(names, out):
     print(out, m.size)
 
 
-os.makedirs(OUT, exist_ok=True)
-for i, names in enumerate(SHEETS, 1):
-    sheet(names, os.path.join(OUT, f'sheet{i}.png'))
+import json, sys
+if '--p3' in sys.argv:
+    # 3묶음(학교·체육관·역·사무실·우체국): 장소 하나 = 시트 하나(층 여럿을 2열로) → verify-shots/jp-city/interior3/<주 맵>.png
+    EX = os.path.join(ROOT, 'tiledata/jp-city/interior/examples')
+    OUT3 = os.path.join(SRC, 'interior3')
+    os.makedirs(OUT3, exist_ok=True)
+    COLS = 2
+    for f in sorted(os.listdir(EX)):
+        if f[:6] == 'places' and f[6:7] in '3456789' and f.endswith('.json'):
+            o = os.path.join(SRC, 'interior' + f[6])          # places4 → interior4/
+            os.makedirs(o, exist_ok=True)
+            for p in json.load(open(os.path.join(EX, f), encoding='utf-8')):
+                sheet(p.get('maps') or [p['file']], os.path.join(o, p['file'] + '.png'))
+else:
+    os.makedirs(OUT, exist_ok=True)
+    for i, names in enumerate(SHEETS, 1):
+        sheet(names, os.path.join(OUT, f'sheet{i}.png'))

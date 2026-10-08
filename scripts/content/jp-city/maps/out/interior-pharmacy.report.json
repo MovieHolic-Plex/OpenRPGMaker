@@ -10,7 +10,7 @@
   3,
   11
  ],
- "summary": "손 도트 실내 '일본 동네 약국 실내' 11×13 (jp-city-pharmacy, jp_city) — 출입구에서 닿는 칸 57, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 약국 실내' 11×13 (jp-city-pharmacy, jp_city) — 출입구에서 닿는 칸 57, 닿지 못한 빈 바닥 0, 경고 1 — 구역 (0,0)~(10,6) 바닥 pb-linoleum 이 칸막이 없이 다른 바닥과 8칸 맞닿아 떠 있다 — 따로 쓰는 방(화실·욕실·부엌·침실)이면 rooms+connect 로 칸막이를 세운다",
  "tool": {
   "mapId": "jp-city-pharmacy",
   "tilesetId": "jp_city",
@@ -34,7 +34,9 @@
    }
   ],
   "links": 0,
-  "warnings": []
+  "warnings": [
+   "구역 (0,0)~(10,6) 바닥 pb-linoleum 이 칸막이 없이 다른 바닥과 8칸 맞닿아 떠 있다 — 따로 쓰는 방(화실·욕실·부엌·침실)이면 rooms+connect 로 칸막이를 세운다"
+  ]
  },
  "warnings": [],
  "links": [],

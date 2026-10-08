@@ -1,0 +1,74 @@
+{
+ "map": {
+  "id": "jp-city-station-platform",
+  "size": [
+   18,
+   10
+  ]
+ },
+ "start": [
+  5,
+  7
+ ],
+ "summary": "손 도트 실내 '일본 지상역 승강장' 18×10 (jp-city-station-platform, jp_city) — 출입구에서 닿는 칸 45, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-station-platform",
+  "tilesetId": "jp_city",
+  "width": 18,
+  "height": 10,
+  "reachable": 45,
+  "floorCells": 88,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 5,
+    "y": 7
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 6,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 5,
+   "y": 8,
+   "to": "jp-city-station",
+   "reached": true
+  },
+  {
+   "x": 6,
+   "y": 8,
+   "to": "jp-city-station",
+   "reached": true
+  },
+  {
+   "x": 5,
+   "y": 6,
+   "to": "jp-city-train-car",
+   "reached": true
+  },
+  {
+   "x": 6,
+   "y": 6,
+   "to": "jp-city-train-car",
+   "reached": true
+  },
+  {
+   "x": 14,
+   "y": 6,
+   "to": "jp-city-train-car",
+   "reached": true
+  },
+  {
+   "x": 15,
+   "y": 6,
+   "to": "jp-city-train-car",
+   "reached": true
+  }
+ ],
+ "reach": 45,
+ "ok": true
+}
