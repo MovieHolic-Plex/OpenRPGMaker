@@ -10,7 +10,8 @@ import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools"
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { isPassable } from "@/project/collision";
 const EX = "tiledata/jp-city/interior/examples";
-const SPEC = JSON.parse(readFileSync("src/assets/jpInteriorSpec.json", "utf8")).objects as Record<string, { w?: number; up?: number; kind?: string }>;
+const HOME_KINDS = new Set(["mansion", "mokuchin", "hiraya"]);
+const SPEC = JSON.parse(readFileSync("src/assets/jpInteriorSpec.json", "utf8")).objects as Record<string, { w?: number; h?: number; up?: number; kind?: string }>;
 const GRID = process.argv.includes("--grid");
 const only = process.argv.slice(2).filter((a) => a !== "--grid");
 const places = JSON.parse(readFileSync(`${EX}/places2.json`, "utf8")).filter((p: { file: string }) => !only.length || only.includes(p.file)) as { file: string; placeId: string; rules?: string[] }[];
@@ -51,19 +52,65 @@ for (const p of places) {
       while (q.length) { const c = q.pop()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (n !== block && !seen.has(n) && ok(nx, ny)) { seen.add(n); q.push(n); } } }
       return seen.size; };
     const all = reach(-1); const cuts: string[] = [];
+    const in2 = (x: number, y: number) => [[0, 0], [-1, 0], [0, -1], [-1, -1]].some(([dx, dy]) => ok(x + dx!, y + dy!) && ok(x + dx! + 1, y + dy!) && ok(x + dx!, y + dy! + 1) && ok(x + dx! + 1, y + dy! + 1));
     for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) if (ok(x, y) && all - 1 - reach(y * m.width + x) >= 4) cuts.push(`${x},${y}`);
+    // 막다른 1칸 통로: 칸 하나를 막으면 끊기는 쪽이 전부 1칸 폭(2×2 덩이 밖)이고 4칸 이상 — 규칙 ③(3칸까지). 직원 길이면 사람이 판단한다.
+    // 문 칸: 문·옆문·노렌(걸이 문 포함) 조각의 칸과 그 아래 두 줄(벽면을 지나는 길).
+    const doorCells: number[] = [];
+    for (const o of (ex.objects ?? []) as { id: string; x: number; y: number }[]) {
+      const d = SPEC[o.id]; if (!(d?.kind === "door" || d?.kind === "sidedoor" || /noren|door/.test(o.id))) continue;
+      for (let dy = 0; dy <= 3; dy++) doorCells.push((o.y + dy) * m.width + o.x);
+    }
+    // 밝힌 좁은 곳: 예제 JSON narrow:[{x0,y0,x1,y1,why}] — 1칸이 맞는 곳(직원 길·카운터석 뒤·계산 레인·집 복도). 출력에 그대로 찍어 사람·관문이 판정한다.
+    const staff = (ex.narrow ?? []) as { x0: number; y0: number; x1: number; y1: number; why: string }[];
+    const inStaff = (x: number, y: number) => staff.some((r) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1);
+    const doorSet = new Set(doorCells);
+    const nearDoor = (c: number) => { const cx = c % m.width, cy = Math.floor(c / m.width); return [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => doorSet.has((cy + dy!) * m.width + cx + dx!)); };
+    const deadEnds: string[] = [];
+    // 1칸 목: 병목(cut)인데 2×2 덩이 밖 — 문 칸·문 옆·직원 구역·출구(맨 아래 줄과 그 바로 위)는 원래 병목이라 뺀다.
+    const necks = cuts.filter((k) => { const [x, y] = k.split(",").map(Number) as [number, number];
+      return !in2(x, y) && !nearDoor(y * m.width + x) && !inStaff(x, y) && y < m.height - 2; });
+    for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) {
+      if (!ok(x, y) || in2(x, y) || inStaff(x, y)) continue;
+      const block = y * m.width + x; const s0 = exitCell ? exitCell.y * m.width + exitCell.x : -1; if (s0 < 0 || s0 === block) continue;
+      const seen = new Set([s0]); const q = [s0];
+      while (q.length) { const c = q.pop()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (n !== block && !seen.has(n) && ok(nx, ny)) { seen.add(n); q.push(n); } } }
+      const cut: number[] = []; for (let yy = 0; yy < m.height; yy++) for (let xx = 0; xx < m.width; xx++) if (ok(xx, yy) && yy * m.width + xx !== block && !seen.has(yy * m.width + xx)) cut.push(yy * m.width + xx);
+      const cutSet = new Set(cut);
+      if (nearDoor(block) || doorCells.some((c) => cutSet.has(c))) continue; // 문 너머 방(화장실·욕실·침실)은 작아도 된다
+      if (cut.every((c) => inStaff(c % m.width, Math.floor(c / m.width)))) continue; // 예제가 밝힌 직원 구역
+      if (cut.length >= 3 && cut.every((c) => !in2(c % m.width, Math.floor(c / m.width)))) deadEnds.push(`${x},${y}+${cut.length}`);
+    }
+    // 계산대 앞 2줄: 금전기·계산 레인·접수 칸의 손님 쪽 두 칸이 걸음 칸.
+    const counterFront: string[] = [];
+    for (const o of (ex.objects ?? []) as { id: string; x: number; y: number }[]) {
+      if (!/register|checkout|reception/.test(o.id)) continue;
+      const h = SPEC[o.id]?.h ?? 1;
+      // 손님 쪽: 남쪽 첫 칸이 걸음 칸이면 남쪽이 손님 쪽(두 칸이어야 한다). 아니면 서·동·북 중 두 칸 비어 있는 쪽.
+      const two = (dx: number, dy: number, base: { x: number; y: number }) => ok(base.x + dx, base.y + dy) && ok(base.x + 2 * dx, base.y + 2 * dy);
+      const good = ok(o.x, o.y + h) ? two(0, 1, { x: o.x, y: o.y + h - 1 }) : (two(-1, 0, o) || two(1, 0, o) || two(0, -1, o) || two(-1, 0, { x: o.x, y: o.y + h - 1 }) || two(1, 0, { x: o.x, y: o.y + h - 1 }));
+      if (!good) counterFront.push(`${o.id}@${o.x},${o.y}`);
+    }
     if (GRID) { // . 걸음 · # 막힘 · x 병목(cut) · ^ 가려진 1줄(hid) · ~ 남쪽 가구 윗부분이 덮는 걸음 칸
       const cs = new Set(cuts), hs = new Set(hid);
       console.log("    " + Array.from({ length: m.width }, (_, x) => x % 10).join(""));
       for (let y = 0; y < m.height; y++) console.log(String(y).padStart(3) + " " + Array.from({ length: m.width }, (_, x) => !ok(x, y) ? "#" : hs.has(`${x},${y}`) ? "^" : cs.has(`${x},${y}`) ? "x" : over.has(y * m.width + x) ? "~" : ".").join(""));
     }
+    if (hid.length) w.push(`가려진 1줄 통로 ${hid.join(" ")} — 남쪽 가구 윗부분이 덮는다`);
+    const narrowNote = staff.length ? ` narrow ${staff.map((r) => `${r.why}@${r.x0},${r.y0}-${r.x1},${r.y1}`).join("; ")}` : "";
+    // 집(맨션·목조 아파트·옛집)은 규칙 「가게·공공 실내」 통로 폭 절 밖이다 — 작은 다다미방·복도의 1칸은 흔하다. 가려진 통로·계산대만 본다.
+    const home = HOME_KINDS.has((p as { kind?: string }).kind ?? "");
+    if (home) { necks.length = 0; deadEnds.length = 0; }
+    if (necks.length) w.push(`주 동선 1칸 목 ${necks.join(" ")} — 2칸으로 넓히거나, 1칸이 맞는 곳이면 narrow 로 밝힌다`);
+    if (deadEnds.length) w.push(`막다른 1칸 통로(칸+끊기는 칸 수) ${deadEnds.join(" ")} — 직원 길이 아니면 3칸까지`);
+    if (counterFront.length) w.push(`계산대 앞 손님 자리가 2줄이 아니다 ${counterFront.join(" ")}`);
     // 정문 하나: 맨 아래 줄 걸음 칸 덩이가 정확히 1(link_jp_city_interior 가 그 덩이만 출구로 본다).
     let runs = 0; for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1) && !ok(x - 1, m.height - 1)) runs++;
     if (runs !== 1) w.push(`맨 아래 줄 걸음 칸 덩이 ${runs}군데 — 출입구 틈은 한 군데여야 한다`);
     // 안내 문장의 장소 id 는 지금 placeId 와 같아야 한다(게시하면 조수가 그 id 로 부른다).
     for (const id of (p.rules ?? []).join(" ").match(/jp-city-[a-z0-9-]+-\d+x\d+/g) ?? []) if (id !== p.placeId) w.push(`rules 의 장소 id ${id} ≠ placeId ${p.placeId}`);
     if (w.length && !(r.warnings ?? []).length) bad++;
-    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}`, w.join("\n      "));
+    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"} hid ${hid.length ? hid.join(" ") : "-"}${narrowNote}`, w.join("\n      "));
   } catch (e) { bad++; console.log("FAIL", p.file, String((e as Error).message)); }
 }
 // 같은 틀 반복 두 가지:

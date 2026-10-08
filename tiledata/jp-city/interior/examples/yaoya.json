@@ -54,12 +54,12 @@
    "y": 3
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-stock-shelf",
    "x": 1,
    "y": 6
   },
   {
-   "id": "sh-basket-shelf",
+   "id": "sh-stock-shelf",
    "x": 2,
    "y": 6
   },
@@ -135,6 +135,15 @@
    "y0": 0,
    "x1": 9,
    "y1": 11
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 7,
+   "x1": 5,
+   "y1": 7,
+   "why": "계산대 안쪽 직원 줄(재고 선반 앞)"
   }
  ]
 }

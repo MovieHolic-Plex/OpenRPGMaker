@@ -10,6 +10,7 @@
   "#.#.######.####.##",
   "#...#............#",
   "#...#............#",
+  "#...#............#",
   "#................#",
   "#................#",
   "#................#",
@@ -67,24 +68,24 @@
   },
   {
    "x0": 1,
-   "y0": 12,
-   "x1": 2,
-   "y1": 13,
+   "y0": 13,
+   "x1": 3,
+   "y1": 14,
    "floor": "tataki"
   },
   {
    "x0": 7,
-   "y0": 14,
+   "y0": 15,
    "x1": 14,
-   "y1": 17,
+   "y1": 18,
    "floor": "h2-veranda-floor",
    "wall": "cloth-beige"
   },
   {
    "x0": 1,
-   "y0": 13,
+   "y0": 14,
    "x1": 2,
-   "y1": 18,
+   "y1": 19,
    "floor": "h2-veranda-floor"
   }
  ],
@@ -200,64 +201,9 @@
    "y": 6
   },
   {
-   "id": "h2-shoe-closet",
-   "x": 2,
-   "y": 9
-  },
-  {
-   "id": "genkan-mat",
-   "x": 1,
-   "y": 10
-  },
-  {
-   "id": "slippers",
-   "x": 3,
-   "y": 10
-  },
-  {
-   "id": "agarikamachi",
-   "x": 1,
-   "y": 11
-  },
-  {
-   "id": "agarikamachi",
-   "x": 2,
-   "y": 11
-  },
-  {
-   "id": "door-side-western",
-   "x": 4,
-   "y": 11
-  },
-  {
-   "id": "shoes-pair",
-   "x": 1,
-   "y": 12
-  },
-  {
-   "id": "umbrella-stand",
-   "x": 3,
-   "y": 12
-  },
-  {
    "id": "h2-genkan-door-steel",
    "x": 2,
-   "y": 13
-  },
-  {
-   "id": "tv-board",
-   "x": 5,
-   "y": 9
-  },
-  {
-   "id": "low-table",
-   "x": 5,
-   "y": 10
-  },
-  {
-   "id": "sofa-n",
-   "x": 5,
-   "y": 12
+   "y": 14
   },
   {
    "id": "kitchen-worktop",
@@ -285,64 +231,129 @@
    "y": 9
   },
   {
-   "id": "chair-dining-s",
-   "x": 8,
-   "y": 11
-  },
-  {
-   "id": "chair-dining-s",
-   "x": 9,
-   "y": 11
-  },
-  {
    "id": "houseplant",
    "x": 16,
-   "y": 12
+   "y": 13
   },
   {
    "id": "h2-sash-door",
    "x": 10,
-   "y": 13
+   "y": 14
   },
   {
    "id": "h2-sandals",
    "x": 10,
-   "y": 16
+   "y": 17
   },
   {
    "id": "h2-laundry-pole",
    "x": 7,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-railing",
    "x": 9,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-railing",
    "x": 10,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-railing",
    "x": 11,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-railing",
    "x": 12,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-ac-outdoor",
    "x": 13,
-   "y": 17
+   "y": 18
   },
   {
    "id": "h2-planter",
    "x": 14,
-   "y": 17
+   "y": 18
+  },
+  {
+   "id": "h2-shoe-closet",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "genkan-mat",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "slippers",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "door-side-western",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "shoes-pair",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "tv-board",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "low-table",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "sofa-n",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "chair-dining-e",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-e",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "chair-dining-w",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-w",
+   "x": 9,
+   "y": 11
   }
  ],
  "tables": [
@@ -356,9 +367,9 @@
   {
    "style": "dining",
    "x": 8,
-   "y": 12,
-   "w": 2,
-   "h": 1
+   "y": 10,
+   "w": 1,
+   "h": 2
   }
  ],
  "goods": [
@@ -380,17 +391,12 @@
   {
    "id": "plates",
    "x": 8,
-   "y": 12
-  },
-  {
-   "id": "remote",
-   "x": 5,
    "y": 10
   }
  ],
  "start": [
   1,
-  17
+  18
  ],
  "links": [],
  "rooms": [
@@ -399,7 +405,7 @@
    "x0": 0,
    "y0": 0,
    "x1": 17,
-   "y1": 18
+   "y1": 19
   }
  ]
 }
