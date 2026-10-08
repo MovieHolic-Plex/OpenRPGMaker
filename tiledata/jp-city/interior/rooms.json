@@ -908,22 +908,6 @@
      1
     ],
     [
-     "cv-gondola",
-     3
-    ],
-    [
-     "cv-freezer",
-     2
-    ],
-    [
-     "cv-trash",
-     1
-    ],
-    [
-     "cv-baskets",
-     1
-    ],
-    [
      "cv-hotcase",
      1
     ],
@@ -953,6 +937,18 @@
     ],
     [
      "h2-cardboard",
+     1
+    ],
+    [
+     "cv-gondola",
+     2
+    ],
+    [
+     "cv-freezer",
+     2
+    ],
+    [
+     "cv-baskets",
      1
     ]
    ]
@@ -1003,18 +999,6 @@
      1
     ],
     [
-     "cv-produce",
-     4
-    ],
-    [
-     "cv-gondola",
-     5
-    ],
-    [
-     "cv-freezer",
-     1
-    ],
-    [
      "cv-checkout",
      2
     ],
@@ -1036,6 +1020,18 @@
     ],
     [
      "h2-cardboard",
+     1
+    ],
+    [
+     "cv-produce",
+     3
+    ],
+    [
+     "cv-gondola",
+     4
+    ],
+    [
+     "cv-freezer",
      1
     ]
    ]
@@ -1621,10 +1617,6 @@
     ],
     [
      "pb-massage-chair",
-     2
-    ],
-    [
-     "getabako",
      2
     ],
     [

@@ -68,14 +68,14 @@
    "name": "일본 도시 · 일본 집 실내 (가구 249종 · 바닥 18 · 벽면 11)",
    "documents": 9,
    "images": 18,
-   "chars": 164541
+   "chars": 164909
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 95877
+   "chars": 95711
   },
   {
    "id": "jp-errors",
@@ -89,7 +89,7 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 926926,
+  "chars": 927128,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "fb05ffcf9ba0431f0eb76e1ae2fa2a82b92fead29c583b4ed9e0b77375a521ac",
-  "images": "d23a104f8725bd9f61fdd149d06ee754aae558f6e1d270bc86f9f6295b6f5772"
+  "json": "d316a26d54d254ee50eae869f73b49eab0fe1b504d1fcc2569e7a2b1f6b41e5a",
+  "images": "7b320dae0a126612b1247372b8961130b9bb85cd7517301d5f049481e82a5923"
  }
 }

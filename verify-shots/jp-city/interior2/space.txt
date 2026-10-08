@@ -1,19 +1,19 @@
-OK   konbini       14x11 walk 38 sq 2 e3 0 (0%) 
-OK   supermarket   16x17 walk 82 sq 2 e3 0 (0%) 
-OK   ramen         9x9 walk 21 sq 2 e3 0 (0%) 
-OK   izakaya       14x14 walk 64 sq 2 e3 0 (0%) 
-OK   sushi         11x11 walk 31 sq 2 e3 0 (0%) 
-OK   kissaten      10x9 walk 25 sq 2 e3 0 (0%) 
-OK   bakery        10x14 walk 40 sq 2 e3 0 (0%) 
-OK   bookstore     11x14 walk 41 sq 2 e3 0 (0%) 
-OK   pharmacy      11x13 walk 57 sq 2 e3 0 (0%) 
-OK   florist       9x12 walk 31 sq 2 e3 0 (0%) 
-OK   yaoya         10x12 walk 39 sq 2 e3 0 (0%) 
-OK   barber        10x9 walk 25 sq 2 e3 0 (0%) 
-OK   sento         15x13 walk 47 sq 2 e3 0 (0%) 
-OK   laundry       9x8 walk 18 sq 2 e3 0 (0%) 
-OK   koban         14x9 walk 39 sq 2 e3 0 (0%) 
-OK   clinic        14x9 walk 37 sq 2 e3 0 (0%) 
-OK   mansion-2ldk  18x19 walk 99 sq 2 e3 0 (0%) 
-OK   mokuchin      8x9 walk 18 sq 2 e3 0 (0%) 
-OK   hiraya        15x14 walk 59 sq 2 e3 0 (0%) 
+OK   konbini       14x11 walk 41 sq 2 e3 0 (0%) w2 49% cut 10,7 10,8 7,9 8,9 9,9 10,9 6,10 
+OK   supermarket   16x17 walk 86 sq 2 e3 0 (0%) w2 42% cut 1,4 2,4 3,4 4,4 5,4 6,4 7,4 8,4 9,4 10,4 1,5 1,6 1,7 1,8 1,9 1,10 1,12 14,12 7,16 
+OK   ramen         9x9 walk 21 sq 2 e3 0 (0%) w2 29% cut 1,4 2,4 3,4 4,4 1,5 1,6 1,7 2,7 3,7 4,7 5,7 6,7 6,8 
+OK   izakaya       14x14 walk 64 sq 2 e3 0 (0%) w2 70% cut 3,4 4,4 5,4 6,4 7,4 3,5 3,6 12,6 3,7 12,7 3,8 12,8 12,9 12,10 9,11 12,11 6,13 
+OK   sushi         11x11 walk 31 sq 2 e3 0 (0%) w2 58% cut 6,5 6,6 6,7 6,10 
+OK   kissaten      10x9 walk 25 sq 2 e3 0 (0%) w2 72% cut 4,4 4,8 
+OK   bakery        10x14 walk 40 sq 2 e3 0 (0%) w2 45% cut 4,4 4,5 4,6 4,7 4,8 4,9 5,9 6,9 5,10 4,11 5,11 6,11 6,13 
+OK   bookstore     11x14 walk 41 sq 2 e3 0 (0%) w2 34% cut 3,4 3,5 3,6 3,7 3,8 3,9 8,11 7,13 
+OK   pharmacy      11x13 walk 57 sq 2 e3 0 (0%) w2 84% cut 6,5 6,6 6,7 3,12 
+OK   florist       9x12 walk 31 sq 2 e3 0 (0%) w2 74% cut 2,6 3,6 2,7 2,8 3,8 4,8 5,8 4,11 
+OK   yaoya         10x12 walk 39 sq 2 e3 0 (0%) w2 62% cut 6,4 6,5 6,6 6,11 
+OK   barber        10x9 walk 25 sq 2 e3 0 (0%) w2 88% cut 1,8 
+OK   sento         15x13 walk 51 sq 2 e3 0 (0%) w2 45% cut 3,5 11,5 3,6 11,6 3,7 11,7 3,8 11,8 3,9 11,9 4,10 7,12 
+OK   laundry       9x8 walk 18 sq 2 e3 0 (0%) w2 78% cut 7,5 7,6 7,7 
+OK   koban         14x9 walk 39 sq 2 e3 0 (0%) w2 51% cut 1,3 1,4 1,5 1,6 2,6 4,7 6,7 7,7 8,7 4,8 
+OK   clinic        14x9 walk 37 sq 2 e3 0 (0%) w2 54% cut 4,5 10,6 6,7 6,8 
+OK   mansion-2ldk  18x19 walk 99 sq 2 e3 0 (0%) w2 58% cut 3,5 4,5 10,5 3,6 10,6 15,6 3,7 10,7 15,7 1,8 3,8 10,8 15,8 1,9 3,9 10,9 15,9 1,10 3,10 7,10 10,10 15,10 3,11 4,11 5,11 6,11 7,11 1,18 
+OK   mokuchin      8x9 walk 18 sq 2 e3 0 (0%) w2 56% cut 3,4 2,7 2,8 
+OK   hiraya        15x14 walk 59 sq 2 e3 0 (0%) w2 24% cut 1,4 11,4 12,4 1,5 4,5 5,5 6,5 9,5 10,5 11,5 1,6 2,6 3,6 4,6 9,6 4,7 9,7 4,8 9,8 4,9 9,9 4,10 9,10 4,11 9,11 2,12 3,12 4,12 2,13 

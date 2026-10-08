@@ -4,7 +4,7 @@
 // 출력: 예제마다 OK(경고 없음) · WARN(경고 전부) · FAIL(오류 전부). 종료 코드 = WARN+FAIL 수.
 // 빈 바닥 수치(엔진 통행 판정): sq = 걸을 수 있는 칸만으로 된 가장 큰 정사각형 변(2 = 통로 폭, 4 이상 = 빈 마당),
 //   e3 = 3×3 이 전부 걸음 칸인 창이 덮는 칸 수(빈 바닥 넓이), walk = 걸음 칸 수. 가게 목표 sq ≤ 2.
-// SAME = 같은 틀 반복(아래 ①②).
+// w2·cut = 통로 폭(아래 주석). SAME = 같은 틀 반복(아래 ①②).
 import { readFileSync } from "node:fs";
 import { BUILD_HAND_INTERIOR_ROOM_TOOL } from "@/editor/tools/handInteriorTools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -30,13 +30,23 @@ for (const p of places) {
       sq = Math.max(sq, dp[y]![x]!);
       if (dp[y]![x]! >= 3) for (let yy = y - 2; yy <= y; yy++) for (let xx = x - 2; xx <= x; xx++) cover.add(yy * m.width + xx);
     }
+    // w2 = 걸음 칸 중 2×2 걸음 덩이에 속한 칸 비율(낮을수록 1칸 통로가 많다).
+    // cut = 그 칸 하나를 막으면 출입구에서 걸음 칸 4개 이상이 끊기는 1칸 병목(방문·노렌 틈은 원래 병목이다 — 목록으로 사람이 본다).
+    let w2 = 0;
+    for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) if (ok(x, y) && [[0, 0], [-1, 0], [0, -1], [-1, -1]].some(([dx, dy]) => ok(x + dx!, y + dy!) && ok(x + dx! + 1, y + dy!) && ok(x + dx!, y + dy! + 1) && ok(x + dx! + 1, y + dy! + 1))) w2++;
+    const exitCell = (() => { for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1)) return { x, y: m.height - 1 }; return null; })();
+    const reach = (block: number) => { if (!exitCell) return 0; const s0 = exitCell.y * m.width + exitCell.x; if (s0 === block) return 0; const seen = new Set([s0]); const q = [s0];
+      while (q.length) { const c = q.pop()!; const cx = c % m.width, cy = (c - cx) / m.width; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx!, ny = cy + dy!, n = ny * m.width + nx; if (n !== block && !seen.has(n) && ok(nx, ny)) { seen.add(n); q.push(n); } } }
+      return seen.size; };
+    const all = reach(-1); const cuts: string[] = [];
+    for (let y = 0; y < m.height; y++) for (let x = 0; x < m.width; x++) if (ok(x, y) && all - 1 - reach(y * m.width + x) >= 4) cuts.push(`${x},${y}`);
     // 정문 하나: 맨 아래 줄 걸음 칸 덩이가 정확히 1(link_jp_city_interior 가 그 덩이만 출구로 본다).
     let runs = 0; for (let x = 0; x < m.width; x++) if (ok(x, m.height - 1) && !ok(x - 1, m.height - 1)) runs++;
     if (runs !== 1) w.push(`맨 아래 줄 걸음 칸 덩이 ${runs}군데 — 출입구 틈은 한 군데여야 한다`);
     // 안내 문장의 장소 id 는 지금 placeId 와 같아야 한다(게시하면 조수가 그 id 로 부른다).
     for (const id of (p.rules ?? []).join(" ").match(/jp-city-[a-z0-9-]+-\d+x\d+/g) ?? []) if (id !== p.placeId) w.push(`rules 의 장소 id ${id} ≠ placeId ${p.placeId}`);
     if (w.length && !(r.warnings ?? []).length) bad++;
-    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%)`, w.join("\n      "));
+    console.log(w.length ? "WARN" : "OK  ", p.file.padEnd(13), `${m.width}x${m.height} walk ${walk} sq ${sq} e3 ${cover.size} (${Math.round(100 * cover.size / Math.max(1, walk))}%) w2 ${Math.round(100 * w2 / Math.max(1, walk))}% cut ${cuts.length ? cuts.join(" ") : "-"}`, w.join("\n      "));
   } catch (e) { bad++; console.log("FAIL", p.file, String((e as Error).message)); }
 }
 // 같은 틀 반복 두 가지:
