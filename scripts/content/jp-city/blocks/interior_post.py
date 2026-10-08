@@ -164,14 +164,13 @@ def _po_scale(c):
        tags=('우체국', '창구', '직원'), place='창구 카운터 줄의 맨 끝 한 칸 — 창구 안쪽과 로비를 잇는 직원 길', pair=('po-counter',),
        desc='카운터 줄 끝의 여닫이 칸 — 카운터 끝 마구리와 반쯤 열린 낮은 나무 문짝이 바닥에 보인다. 밟고 지나간다(직원 길).')
 def _po_end(c):
-    rc(c, 0, 0, 3, 13, kc('shiro', 1)); vl(c, 0, 0, 13, kc('shiro', 2)); vl(c, 2, 0, 13, kc('conc', 1))   # 서쪽 벽 쪽 카운터 마구리(윗면)
-    rc(c, 0, 13, 3, 3, kc('yuka', 1)); hl(c, 0, 13, 3, kc('shiro', 2))                                # 마구리 앞면
-    outline(c, 0, 0, 3, 16)
-    rc(c, 3, 1, 2, 12, kc('yuka', 2)); vl(c, 4, 1, 12, kc('yuka', 0))                                  # 남북으로 젖혀 연 여닫이 판(윗변)
-    rc(c, 3, 13, 2, 2, kc('yuka', 0)); hl(c, 3, 14, 2, kc('aka', 0))                                   # 판 남쪽 끝면
-    vl(c, 5, 1, 14, kc('kinari', 0))                                                                  # 판 그늘
-    px(c, 3, 2, kc('tekko', 2)); px(c, 3, 11, kc('tekko', 2))                                          # 경첩
-    hl(c, 5, 15, 11, kc('kinari', 0))                                                                 # 문턱 줄
+    # 칸 안쪽(2~13px)에만 그린다 — 서쪽 벽 쪽으로 번지지 않게. 위로 젖혀 연 판은 동쪽(창구 카운터 쪽) 경첩에 붙는다.
+    rc(c, 10, 2, 3, 11, kc('yuka', 2)); vl(c, 10, 2, 11, kc('yuka', 3)); vl(c, 12, 2, 11, kc('yuka', 0))   # 젖혀 세운 여닫이 판(윗변)
+    outline(c, 9, 1, 5, 13)
+    rc(c, 10, 12, 3, 1, kc('aka', 0))                                                                 # 판 끝 빨강 줄(카운터 앞판과 같은 색)
+    px(c, 13, 3, kc('tekko', 2)); px(c, 13, 10, kc('tekko', 2))                                        # 경첩
+    vl(c, 8, 2, 12, kc('kinari', 0))                                                                  # 판 그늘
+    hl(c, 2, 14, 12, kc('kinari', 2)); hl(c, 2, 15, 12, kc('kinari', 0))                              # 문턱 줄
 
 
 @R.obj('po-ticket-machine', '번호표 기계', w=1, h=1, up=16, kind='floor', cat=PO, cat_ko=PO_KO, use=('push',),

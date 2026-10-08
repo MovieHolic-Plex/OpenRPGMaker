@@ -135,6 +135,16 @@
    "y": 10
   },
   {
+   "id": "po-bench-n",
+   "x": 9,
+   "y": 11
+  },
+  {
+   "id": "houseplant",
+   "x": 10,
+   "y": 9
+  },
+  {
    "id": "houseplant",
    "x": 1,
    "y": 11
