@@ -6,7 +6,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-sushi", "name": "일본 초밥집 실내", "plan": ["###########", "######....#", "######....#", "######....#", "######....#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "######..###"], "floor": "fd-wood-dark", "wall": "fd-plaster", "zones": [{"x0": 6, "x1": 9, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-wood-wall"}], "objects": [{"id": "fd-fridge", "x": 9, "y": 3}, {"id": "fd-rice-tub", "x": 8, "y": 3}, {"id": "fd-grill-range", "x": 7, "y": 3}, {"id": "fd-cutting-block", "x": 7, "y": 4}, {"id": "fd-noren", "x": 7, "y": 1}, {"id": "fd-menu-board", "x": 8, "y": 1}, {"id": "fd-menu-board", "x": 1, "y": 5}, {"id": "fd-menu-board", "x": 3, "y": 5}, {"id": "fd-lantern", "x": 5, "y": 5}, {"id": "fd-register", "x": 5, "y": 8}, {"id": "fd-stool", "x": 7, "y": 7}, {"id": "fd-stool", "x": 8, "y": 7}, {"id": "fd-stool", "x": 9, "y": 7}, {"id": "fd-zashiki", "x": 1, "y": 7}, {"id": "zataku", "x": 2, "y": 7}], "tables": [{"style": "fd-counter", "x": 7, "y": 6, "w": 3, "h": 1}], "goods": [{"id": "fd-sushi-geta", "x": 7, "y": 6}, {"id": "fd-tokkuri", "x": 9, "y": 6}], "exitWidth": 2, "start": [{"x": 6, "y": 9}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-sushi", "name": "일본 초밥집 실내", "plan": ["###########", "######....#", "######....#", "######....#", "######....#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "######..###"], "floor": "fd-wood-dark", "wall": "fd-plaster", "zones": [{"x0": 6, "x1": 9, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-wood-wall"}], "objects": [{"id": "fd-fridge", "x": 9, "y": 3}, {"id": "fd-rice-tub", "x": 8, "y": 3}, {"id": "fd-grill-range", "x": 7, "y": 3}, {"id": "fd-cutting-block", "x": 7, "y": 4}, {"id": "fd-noren", "x": 7, "y": 1}, {"id": "fd-menu-board", "x": 8, "y": 1}, {"id": "fd-menu-board", "x": 1, "y": 5}, {"id": "fd-menu-board", "x": 3, "y": 5}, {"id": "fd-lantern", "x": 5, "y": 5}, {"id": "fd-register", "x": 5, "y": 7}, {"id": "fd-stool", "x": 7, "y": 7}, {"id": "fd-stool", "x": 8, "y": 7}, {"id": "fd-stool", "x": 9, "y": 7}, {"id": "fd-zashiki", "x": 1, "y": 7}, {"id": "zataku", "x": 2, "y": 7}], "tables": [{"style": "fd-counter", "x": 7, "y": 6, "w": 3, "h": 1}], "goods": [{"id": "fd-sushi-geta", "x": 7, "y": 6}, {"id": "fd-tokkuri", "x": 9, "y": 6}], "exitWidth": 2, "start": [{"x": 6, "y": 9}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -26,8 +26,8 @@ XXXXXX.XXXX
 XXXXXX.X.XX
 XXXXXX....X
 XXXXXX.XXXX
-X.XX...XXXX
-X....X....X
+X.XX.X.XXXX
+X.........X
 X.........X
 XXXXXX..XXX
 ```
@@ -71,9 +71,9 @@ y=02: . . . . . . . 9575 9563 9564 .
 y=03: . . . . . . . 9576 9574 9534 .
 y=04: . . . . . . . 9578 . 9535 .
 y=05: . 9561 9562 9561 9562 9560 . . . . .
-y=06: . 9563 9564 9563 9564 . . 9579 9580 9581 .
-y=07: . . 8823 8824 . 9544 . 9515 9515 9515 .
-y=08: . . . . . 9545 . . . . .
+y=06: . 9563 9564 9563 9564 9544 . 9579 9580 9581 .
+y=07: . . 8823 8824 . 9545 . 9515 9515 9515 .
+y=08: . . . . . . . . . . .
 y=09: . . . . . . . . . . .
 y=10: . . . . . . . . . . .
 ```

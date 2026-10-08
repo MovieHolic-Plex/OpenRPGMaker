@@ -6,7 +6,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-yaoya", "name": "일본 동네 채소가게 실내", "plan": ["##########", "####.....#", "####.....#", "####.....#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "######...#"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 9, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-basket-shelf", "x": 4, "y": 3}, {"id": "sh-basket-shelf", "x": 5, "y": 3}, {"id": "sh-basket-shelf", "x": 6, "y": 3}, {"id": "sh-basket-shelf", "x": 7, "y": 3}, {"id": "sh-stock-shelf", "x": 8, "y": 3}, {"id": "sh-basket-shelf", "x": 1, "y": 6}, {"id": "sh-basket-shelf", "x": 2, "y": 6}, {"id": "sh-veg-stand", "x": 4, "y": 6}, {"id": "sh-crate-stack", "x": 6, "y": 6}, {"id": "sh-counter", "x": 1, "y": 8}, {"id": "sh-counter", "x": 2, "y": 8}, {"id": "sh-register", "x": 3, "y": 8}, {"id": "sh-fruit-box", "x": 4, "y": 8}, {"id": "sh-fruit-box", "x": 5, "y": 8}, {"id": "sh-crate-stack", "x": 8, "y": 9}, {"id": "sh-shutter", "x": 6, "y": 11}], "tables": [], "goods": [{"id": "sh-scale", "x": 1, "y": 8}, {"id": "sh-price-dots", "x": 2, "y": 8}], "exitWidth": 3, "start": [{"x": 7, "y": 10}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-yaoya", "name": "일본 동네 채소가게 실내", "plan": ["##########", "####.....#", "####.....#", "####.....#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "######...#"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 9, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-basket-shelf", "x": 4, "y": 3}, {"id": "sh-basket-shelf", "x": 5, "y": 3}, {"id": "sh-basket-shelf", "x": 6, "y": 3}, {"id": "sh-basket-shelf", "x": 7, "y": 3}, {"id": "sh-stock-shelf", "x": 8, "y": 3}, {"id": "sh-stock-shelf", "x": 1, "y": 6}, {"id": "sh-stock-shelf", "x": 2, "y": 6}, {"id": "sh-veg-stand", "x": 4, "y": 6}, {"id": "sh-crate-stack", "x": 6, "y": 6}, {"id": "sh-counter", "x": 1, "y": 8}, {"id": "sh-counter", "x": 2, "y": 8}, {"id": "sh-register", "x": 3, "y": 8}, {"id": "sh-fruit-box", "x": 4, "y": 8}, {"id": "sh-fruit-box", "x": 5, "y": 8}, {"id": "sh-crate-stack", "x": 8, "y": 9}, {"id": "sh-shutter", "x": 6, "y": 11}], "tables": [], "goods": [{"id": "sh-scale", "x": 1, "y": 8}, {"id": "sh-price-dots", "x": 2, "y": 8}], "exitWidth": 3, "start": [{"x": 7, "y": 10}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -73,8 +73,8 @@ y=01: . . . . . . . . . .
 y=02: . . . . 9848 9848 9848 9848 9830 .
 y=03: . . . . 9849 9849 9849 9849 9831 .
 y=04: . . . . . . . . . .
-y=05: . 9848 9848 . 9792 9793 9838 . . .
-y=06: . 9849 9849 . 9794 9795 9839 . . .
+y=05: . 9830 9830 . 9792 9793 9838 . . .
+y=06: . 9831 9831 . 9794 9795 9839 . . .
 y=07: . . . 9752 . . . . . .
 y=08: . 9751 9751 9751 9796 9796 . . 9838 .
 y=09: . . . . . . . . 9839 .

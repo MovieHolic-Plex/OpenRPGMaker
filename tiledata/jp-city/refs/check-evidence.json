@@ -68,14 +68,14 @@
    "name": "일본 도시 · 일본 집 실내 (가구 249종 · 바닥 18 · 벽면 11)",
    "documents": 9,
    "images": 18,
-   "chars": 165057
+   "chars": 165678
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 95693
+   "chars": 96150
   },
   {
    "id": "jp-errors",
@@ -89,7 +89,7 @@
   "categories": 12,
   "documents": 90,
   "images": 205,
-  "chars": 927258,
+  "chars": 928336,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
@@ -123,7 +123,7 @@
   "jp-interior-shop-index:jp-city-barber-10x9",
   "jp-interior-shop-index:jp-city-bookstore-11x14",
   "jp-interior-shop-index:jp-city-clinic-14x9",
-  "jp-interior-shop-index:jp-city-florist-9x12",
+  "jp-interior-shop-index:jp-city-florist-9x13",
   "jp-interior-shop-index:jp-city-hiraya-15x14",
   "jp-interior-shop-index:jp-city-house-interior-21x15",
   "jp-interior-shop-index:jp-city-izakaya-14x14",
@@ -131,7 +131,7 @@
   "jp-interior-shop-index:jp-city-koban-14x9",
   "jp-interior-shop-index:jp-city-konbini-14x12",
   "jp-interior-shop-index:jp-city-laundry-9x8",
-  "jp-interior-shop-index:jp-city-mansion-2ldk-18x19",
+  "jp-interior-shop-index:jp-city-mansion-2ldk-18x20",
   "jp-interior-shop-index:jp-city-mokuchin-8x9",
   "jp-interior-shop-index:jp-city-pharmacy-11x13",
   "jp-interior-shop-index:jp-city-ramen-9x9",
@@ -156,7 +156,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "c3d7c2aeb28de9f30eeeb896e383dfecb4be96c5f8c2fdf48a32230342cf1dec",
-  "images": "90cf610259c3349c3e0148327e1af9f15215ad8b84227575222d55b2ad024fd3"
+  "json": "44d3efcd64e5b1a18b54946638a71bf35d5dcb3a59118e5380d2df3584a90154",
+  "images": "12a6ca8da0f2d3ef138d5adce26d16c721d25a2342c1e746504183d307fe09df"
  }
 }

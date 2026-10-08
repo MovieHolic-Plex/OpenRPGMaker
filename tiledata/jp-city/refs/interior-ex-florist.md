@@ -1,18 +1,18 @@
-# 일본 도시 — 일본 실내 예제: 일본 동네 꽃집 실내 (`jp-city-florist`, 9×12)
+# 일본 도시 — 일본 실내 예제: 일본 동네 꽃집 실내 (`jp-city-florist`, 9×13)
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×12 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×13 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#....####", "#....####", "#....####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-stock-shelf", "x": 4, "y": 3}, {"id": "sh-wall-shelf", "x": 5, "y": 6}, {"id": "sh-flower-cooler", "x": 6, "y": 6}, {"id": "sh-flower-cooler", "x": 7, "y": 6}, {"id": "sh-flower-buckets", "x": 1, "y": 6}, {"id": "sh-wrap-table", "x": 1, "y": 9}, {"id": "sh-counter", "x": 6, "y": 9}, {"id": "sh-register", "x": 7, "y": 9}, {"id": "sh-shutter-2", "x": 4, "y": 11}, {"id": "sh-plant-pot", "x": 3, "y": 9}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 2, "y": 9}, {"id": "sh-price-dots", "x": 6, "y": 9}], "exitWidth": 2, "start": [{"x": 4, "y": 10}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#....####", "#....####", "#....####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 12, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-stock-shelf", "x": 4, "y": 3}, {"id": "sh-wall-shelf", "x": 5, "y": 6}, {"id": "sh-flower-cooler", "x": 6, "y": 6}, {"id": "sh-flower-cooler", "x": 7, "y": 6}, {"id": "sh-flower-buckets", "x": 1, "y": 6}, {"id": "sh-wrap-table", "x": 1, "y": 9}, {"id": "sh-counter", "x": 6, "y": 9}, {"id": "sh-register", "x": 7, "y": 9}, {"id": "sh-shutter-2", "x": 4, "y": 12}, {"id": "sh-plant-pot", "x": 3, "y": 9}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 2, "y": 9}, {"id": "sh-price-dots", "x": 6, "y": 9}], "exitWidth": 2, "start": [{"x": 4, "y": 11}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
 | 방 | 사각형(x0,y0)-(x1,y1) |
 |---|---|
-| florist | (0,0)-(8,11) |
+| florist | (0,0)-(8,12) |
 
 ## 이동
 (이동 이벤트 없음 — 현관 밖은 거리 맵에 붙일 때 단다)
@@ -29,6 +29,7 @@ XXX..XXXX
 X.......X
 X.......X
 XXXX..XXX
+X.......X
 X.......X
 XXXX..XXX
 ```
@@ -47,7 +48,8 @@ y=07: 8732 9661 9663 9667 9655 9659 9663 9667 8728
 y=08: 8732 9613 9615 9619 9607 9611 9615 9619 8728
 y=09: 8732 9629 9631 9635 9623 9627 9631 9635 8728
 y=10: 8732 9645 9647 9651 9639 9643 9647 9651 8728
-y=11: 8724 8726 8726 8734 9657 9659 8730 8726 8724
+y=11: 8732 9661 9663 9667 9655 9659 9663 9667 8728
+y=12: 8724 8726 8726 8734 9609 9611 8730 8726 8724
 ```
 
 ### 2층
@@ -63,7 +65,8 @@ y=07: . . . . . . . . .
 y=08: . . . . . . . . .
 y=09: . . . . . . . . .
 y=10: . . . . . . . . .
-y=11: . . . . 9753 9755 . . .
+y=11: . . . . . . . . .
+y=12: . . . . 9753 9755 . . .
 ```
 
 ### 3층
@@ -80,6 +83,7 @@ y=08: . . . 9788 . . . 9752 .
 y=09: . 9790 9791 9789 . . 9751 9751 .
 y=10: . . . . . . . . .
 y=11: . . . . . . . . .
+y=12: . . . . . . . . .
 ```
 
 ### 4층
@@ -96,4 +100,5 @@ y=08: . . . . . . . . .
 y=09: . . 9851 . . . 9855 . .
 y=10: . . . . . . . . .
 y=11: . . . . . . . . .
+y=12: . . . . . . . . .
 ```

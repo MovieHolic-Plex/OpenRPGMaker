@@ -164,7 +164,7 @@
  },
  {
   "file": "florist",
-  "placeId": "jp-city-florist-9x12",
+  "placeId": "jp-city-florist-9x13",
   "name": "일본 동네 꽃집 실내",
   "kind": "florist",
   "kindKo": "꽃집",
@@ -176,7 +176,7 @@
   "building": "jp_florist",
   "rules": [
    "뒷방 없이 위쪽 오른쪽이 파인 ㄱ자 가게. 입구(아래 가운데 2칸) → 왼쪽 위 꽃 냉장 유리장 셋과 재고 선반(앞 통로 2줄) · 왼쪽 벽 가 꽃 양동이 · 왼쪽 아래 포장 작업대(꽃다발)와 화분 · 오른쪽 벽 선반과 냉장장 둘 · 입구 가까운 오른쪽 계산대(계산대·금전기, 뒤 직원 칸, 앞 손님 두 줄).",
-   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x12\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/florist.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-florist-9x13\"})."
   ]
  },
  {
@@ -294,7 +294,7 @@
  },
  {
   "file": "mansion-2ldk",
-  "placeId": "jp-city-mansion-2ldk-18x19",
+  "placeId": "jp-city-mansion-2ldk-18x20",
   "name": "일본 맨션 2LDK 실내(베란다)",
   "kind": "mansion",
   "kindKo": "맨션 2LDK",
@@ -308,7 +308,7 @@
   "building": "jp_mansion",
   "rules": [
    "공용 복도(2칸 폭) → 철문 현관(토방 2칸·올라서는 단 두 칸·현관 매트·슬리퍼·신발장·우산꽂이) → 현관 홀에서 화장실·탈의실(세면대·세탁기) 문 — 욕실은 탈의실 안쪽 미닫이 옆문 → 홀 옆문으로 LDK(거실 TV·좌탁·소파, 식탁, 대면 카운터, 북쪽 벽 부엌 줄·냉장고) → LDK 북쪽 문으로 방 둘(침실·아이방) → 유리 미닫이 → 남쪽 베란다(빨래 장대·난간·실외기·화분).",
-   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-18x19\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/mansion-2ldk.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-mansion-2ldk-18x20\"})."
   ]
  },
  {

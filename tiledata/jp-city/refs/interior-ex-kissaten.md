@@ -6,7 +6,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-kissaten", "name": "일본 킷사텐(찻집) 실내", "plan": ["##########", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "####..####"], "floor": "fd-wood-dark", "wall": "fd-wood-wall", "zones": [], "objects": [{"id": "window-sash", "x": 1, "y": 1}, {"id": "window-sash", "x": 6, "y": 1}, {"id": "fd-menu-board", "x": 3, "y": 1}, {"id": "fd-bean-shelf", "x": 4, "y": 3}, {"id": "fd-cake-case", "x": 6, "y": 3}, {"id": "fd-siphon", "x": 7, "y": 3}, {"id": "fd-coffee-machine", "x": 8, "y": 3}, {"id": "fd-chair-s", "x": 1, "y": 3}, {"id": "fd-chair-s", "x": 2, "y": 3}, {"id": "fd-chair-w", "x": 2, "y": 6}, {"id": "fd-chair-w", "x": 2, "y": 7}, {"id": "fd-chair-e", "x": 5, "y": 5}, {"id": "fd-chair-w", "x": 8, "y": 5}], "tables": [{"style": "fd-table", "x": 1, "y": 4, "w": 2, "h": 1}, {"style": "fd-table", "x": 1, "y": 6, "w": 1, "h": 2}, {"style": "fd-table", "x": 6, "y": 5, "w": 2, "h": 1}], "goods": [{"id": "fd-coffee-cup", "x": 1, "y": 4}, {"id": "fd-coffee-cup", "x": 2, "y": 4}, {"id": "fd-coffee-cup", "x": 1, "y": 6}, {"id": "fd-coffee-cup", "x": 1, "y": 7}, {"id": "fd-coffee-cup", "x": 6, "y": 5}, {"id": "fd-coffee-cup", "x": 7, "y": 5}], "exitWidth": 2, "start": [{"x": 4, "y": 7}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-kissaten", "name": "일본 킷사텐(찻집) 실내", "plan": ["##########", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "####..####"], "floor": "fd-wood-dark", "wall": "fd-wood-wall", "zones": [], "objects": [{"id": "window-sash", "x": 1, "y": 1}, {"id": "window-sash", "x": 6, "y": 1}, {"id": "fd-menu-board", "x": 3, "y": 1}, {"id": "fd-bean-shelf", "x": 4, "y": 3}, {"id": "fd-cake-case", "x": 6, "y": 3}, {"id": "fd-siphon", "x": 7, "y": 3}, {"id": "fd-coffee-machine", "x": 8, "y": 3}, {"id": "fd-chair-s", "x": 1, "y": 3}, {"id": "fd-chair-s", "x": 2, "y": 3}, {"id": "fd-chair-w", "x": 2, "y": 6}, {"id": "fd-chair-w", "x": 2, "y": 7}, {"id": "fd-chair-e", "x": 5, "y": 6}, {"id": "fd-chair-w", "x": 8, "y": 6}], "tables": [{"style": "fd-table", "x": 1, "y": 4, "w": 2, "h": 1}, {"style": "fd-table", "x": 1, "y": 6, "w": 1, "h": 2}, {"style": "fd-table", "x": 6, "y": 6, "w": 2, "h": 1}], "goods": [{"id": "fd-coffee-cup", "x": 1, "y": 4}, {"id": "fd-coffee-cup", "x": 2, "y": 4}, {"id": "fd-coffee-cup", "x": 1, "y": 6}, {"id": "fd-coffee-cup", "x": 1, "y": 7}, {"id": "fd-coffee-cup", "x": 6, "y": 6}, {"id": "fd-coffee-cup", "x": 7, "y": 6}], "exitWidth": 2, "start": [{"x": 4, "y": 7}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -24,8 +24,8 @@ XXXXXXXXXX
 XXXXXXXXXX
 XXX.XXXXXX
 XXX......X
-X....XXXXX
-XXX......X
+X........X
+XXX..XXXXX
 XXX......X
 XXXX..XXXX
 ```
@@ -63,9 +63,9 @@ y=00: . . . . . . . . . .
 y=01: . 8798 8799 9561 9562 . 8798 8799 . .
 y=02: . 8800 8801 9563 9564 9570 8800 8801 9567 .
 y=03: . 9517 9517 . 9571 9572 9566 9566 9566 .
-y=04: . 9595 9597 . . 9520 . . 9522 .
-y=05: . . 9522 . . 9521 9595 9597 9523 .
-y=06: . 9592 9523 . . . . . . .
+y=04: . 9595 9597 . . . . . . .
+y=05: . . 9522 . . 9520 . . 9522 .
+y=06: . 9592 9523 . . 9521 9595 9597 9523 .
 y=07: . 9594 9523 . . . . . . .
 y=08: . . . . . . . . . .
 ```
@@ -77,8 +77,8 @@ y=01: . . . . . . . . . .
 y=02: . 9516 9516 . 9569 . 9568 9565 . .
 y=03: . . . . . . . . . .
 y=04: . 9606 9606 . . . . . . .
-y=05: . . . . . . 9606 9606 . .
-y=06: . 9606 9522 . . . . . . .
+y=05: . . . . . . . . . .
+y=06: . 9606 9522 . . . 9606 9606 . .
 y=07: . 9606 . . . . . . . .
 y=08: . . . . . . . . . .
 ```

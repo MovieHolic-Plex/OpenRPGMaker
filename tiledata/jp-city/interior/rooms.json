@@ -1479,11 +1479,11 @@
    [
     [
      "sh-basket-shelf",
-     6
+     4
     ],
     [
      "sh-stock-shelf",
-     1
+     3
     ],
     [
      "sh-veg-stand",
@@ -1597,10 +1597,6 @@
     ],
     [
      "pb-bench",
-     1
-    ],
-    [
-     "pb-scale",
      1
     ],
     [
@@ -1872,47 +1868,7 @@
      1
     ],
     [
-     "h2-shoe-closet",
-     1
-    ],
-    [
-     "genkan-mat",
-     1
-    ],
-    [
-     "slippers",
-     1
-    ],
-    [
-     "agarikamachi",
-     2
-    ],
-    [
-     "door-side-western",
-     1
-    ],
-    [
-     "shoes-pair",
-     1
-    ],
-    [
-     "umbrella-stand",
-     1
-    ],
-    [
      "h2-genkan-door-steel",
-     1
-    ],
-    [
-     "tv-board",
-     1
-    ],
-    [
-     "low-table",
-     1
-    ],
-    [
-     "sofa-n",
      1
     ],
     [
@@ -1930,10 +1886,6 @@
     [
      "fridge",
      1
-    ],
-    [
-     "chair-dining-s",
-     2
     ],
     [
      "houseplant",
@@ -1962,6 +1914,54 @@
     [
      "h2-planter",
      1
+    ],
+    [
+     "h2-shoe-closet",
+     1
+    ],
+    [
+     "genkan-mat",
+     1
+    ],
+    [
+     "slippers",
+     1
+    ],
+    [
+     "umbrella-stand",
+     1
+    ],
+    [
+     "agarikamachi",
+     2
+    ],
+    [
+     "door-side-western",
+     1
+    ],
+    [
+     "shoes-pair",
+     1
+    ],
+    [
+     "tv-board",
+     1
+    ],
+    [
+     "low-table",
+     1
+    ],
+    [
+     "sofa-n",
+     1
+    ],
+    [
+     "chair-dining-e",
+     2
+    ],
+    [
+     "chair-dining-w",
+     2
     ],
     [
      "kcounter",
