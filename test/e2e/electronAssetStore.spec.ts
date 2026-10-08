@@ -146,7 +146,10 @@ test.afterAll(async () => {
 test("browse, add to project, save, reload, log in, upload from the editor, admin approves", async () => {
   test.setTimeout(420_000);
   const catalog = await (await fetch(`${storeUrl}/api/v1/items?page=1`)).json() as { items: { slug: string; title: string; grade: string }[] };
-  expect(catalog.items).toHaveLength(4);
+  // The seeded catalog grows when an official pack is added. Assert the
+  // contract (the required pack exists) rather than freezing the fixture count.
+  expect(catalog.items.length).toBeGreaterThanOrEqual(4);
+  const seededItemCount = catalog.items.length;
   const beodeul = catalog.items.find((item) => item.title === BEODEUL)!;
   expect(beodeul.grade).toBe("pack");
 
@@ -154,7 +157,7 @@ test("browse, add to project, save, reload, log in, upload from the editor, admi
   const first = await launch();
   let page = first.page;
   await openStore(page, "browse");
-  await expect(page.locator('[data-testid^="store-card-"]')).toHaveCount(4);
+  await expect(page.locator('[data-testid^="store-card-"]')).toHaveCount(seededItemCount);
   await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>('[data-testid^="store-card-"] img')].every((img) => img.complete && img.naturalWidth > 0));
   await shot(page, "app-browse");
   await page.locator(`[data-testid="store-card-${beodeul.slug}"]`).click();
@@ -233,10 +236,10 @@ test("browse, add to project, save, reload, log in, upload from the editor, admi
     await page.locator('[data-testid="store-upload-agree"]').check();
     await shot(page, "app-upload-form");
     await page.locator('[data-testid="store-upload-submit"]').click();
-    await expect(page.locator('[data-testid="store-upload-result"]')).toContainText("운영자가 한 번 확인", { timeout: 60_000 });
+    await expect(page.locator('[data-testid="store-upload-result"]')).toContainText("운영자가 확인한 뒤 목록에 보입니다", { timeout: 60_000 });
     await shot(page, "app-upload-done");
     const pending = await (await fetch(`${storeUrl}/api/v1/items?page=1`)).json() as { items: unknown[] };
-    expect(pending.items).toHaveLength(4);
+    expect(pending.items).toHaveLength(seededItemCount);
 
     // 5) 운영자 승인 → 공개 목록에 보인다
     const adminContext = await browser.newContext({ viewport: { width: 1180, height: 820 } });
@@ -258,7 +261,7 @@ test("browse, add to project, save, reload, log in, upload from the editor, admi
   }
 
   await page.locator('[data-testid="store-tab-browse"]').click();
-  await expect(page.locator('[data-testid^="store-card-"]')).toHaveCount(5, { timeout: 20_000 });
+  await expect(page.locator('[data-testid^="store-card-"]')).toHaveCount(seededItemCount + 1, { timeout: 20_000 });
   await page.locator('[data-testid="store-search"]').fill("숲 가장자리");
   await page.locator('[data-testid="store-search"]').press("Enter");
   await expect(page.locator('[data-testid^="store-card-"]')).toHaveCount(1, { timeout: 20_000 });

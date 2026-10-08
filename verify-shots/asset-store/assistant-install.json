@@ -1,0 +1,153 @@
+{
+  "baseUrl": "http://100.73.251.77:18320",
+  "cache": "/tmp/oprn-assistant-store-kfZaEd",
+  "search": {
+    "total": 34,
+    "items": [
+      {
+        "slug": "beodeulhang-jangso-bunggoe-hu-hwangpye-p-f78ef830",
+        "title": "버들항 장소 — 붕괴 후 황폐 필드",
+        "summary": "붕괴 후 황폐 필드 16px 손 도트 타일셋. 키트 60종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 1,
+        "tags": [
+          "버들항",
+          "붕괴 후 황폐 필드",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-hwasan-jidae-pildeu-944e3e49",
+        "title": "버들항 장소 — 화산 지대 필드",
+        "summary": "화산 지대 필드 16px 손 도트 타일셋. 키트 41종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "화산 지대 필드",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-daechowon-tugijang-dbb58ab8",
+        "title": "버들항 장소 — 대초원·투기장",
+        "summary": "대초원·투기장 16px 손 도트 타일셋. 키트 58종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "대초원·투기장",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-tap-naebu-gyedan-deon-2bc7aa9a",
+        "title": "버들항 장소 — 탑 내부·계단 던전",
+        "summary": "탑 내부·계단 던전 16px 손 도트 타일셋. 키트 56종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "탑 내부·계단 던전",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-siganui-teum-d97e227d",
+        "title": "버들항 장소 — 시간의 틈",
+        "summary": "시간의 틈 16px 손 도트 타일셋. 키트 34종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "시간의 틈",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-neup-deonjeon-1f67c411",
+        "title": "버들항 장소 — 늪 던전",
+        "summary": "늪 던전 16px 손 도트 타일셋. 키트 46종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "늪 던전",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-haneul-dosi-buyuseom-68b4280e",
+        "title": "버들항 장소 — 하늘 도시·부유섬",
+        "summary": "하늘 도시·부유섬 16px 손 도트 타일셋. 키트 47종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "하늘 도시·부유섬",
+          "16px",
+          "판타지"
+        ]
+      },
+      {
+        "slug": "beodeulhang-jangso-pyeheo-maeul-8e0fafa4",
+        "title": "버들항 장소 — 폐허 마을",
+        "summary": "폐허 마을 16px 손 도트 타일셋. 키트 58종·참고문서 포함·전투 배경 1장.",
+        "kind": "tileset",
+        "aiReady": true,
+        "author": "OPRN 운영",
+        "license": "OPRN-GAME",
+        "downloads": 0,
+        "tags": [
+          "버들항",
+          "폐허 마을",
+          "16px",
+          "판타지"
+        ]
+      }
+    ]
+  },
+  "installed": [
+    {
+      "slug": "beodeulhang-jangso-bunggoe-hu-hwangpye-p-f78ef830",
+      "version": 1,
+      "title": "버들항 장소 — 붕괴 후 황폐 필드"
+    }
+  ],
+  "applied": {
+    "summary": "스토어 상품 「버들항 장소 — 붕괴 후 황폐 필드」 판본 1을 넣었다: 타일셋 1개, 그림·소리 2개.",
+    "tilesetIds": [
+      "store_beodeulhang_jangso_bunggoe_hu_hwangpye_p_f78ef830__beodeul_wasteland_world"
+    ],
+    "assetCount": 2,
+    "referenceDocumentCount": 1,
+    "storeOrigins": 2
+  }
+}
