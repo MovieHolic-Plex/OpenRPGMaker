@@ -1,0 +1,228 @@
+{
+ "name": "일본 작은 지상역 역사(駅舎) 실내",
+ "plan": [
+  "################",
+  "#....#.....#####",
+  "#....#.....#####",
+  "#....#.....#####",
+  "#....#.....#####",
+  "#....#.........#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "######...#######"
+ ],
+ "floor": "st-concourse",
+ "wall": "st-wall",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "st-fare-map",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "st-ticket-machine",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "st-ticket-machine",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "st-ticket-machine",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "st-platform-door",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "st-timetable",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "st-kiosk",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "st-gate",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "st-gate",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "st-gate",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "st-bench",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "st-bench",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "st-vending",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "st-vending",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "st-office-window",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "st-vending",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "houseplant",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "st-tactile",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "st-tactile",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "st-tactile-dot",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "st-tactile-dot",
+   "x": 7,
+   "y": 5
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "st-ic-card",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "st-newspaper",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "st-ekiben",
+   "x": 10,
+   "y": 3
+  }
+ ],
+ "rooms": [
+  {
+   "room": "concourse",
+   "x0": 1,
+   "y0": 1,
+   "x1": 4,
+   "y1": 9
+  },
+  {
+   "room": "ticketgate",
+   "x0": 6,
+   "y0": 1,
+   "x1": 10,
+   "y1": 6
+  },
+  {
+   "room": "concourse",
+   "x0": 5,
+   "y0": 7,
+   "x1": 10,
+   "y1": 9
+  },
+  {
+   "room": "stationoffice",
+   "x0": 11,
+   "y0": 5,
+   "x1": 14,
+   "y1": 9
+  }
+ ],
+ "start": [
+  7,
+  9
+ ],
+ "exitWidth": 3,
+ "links": [
+  {
+   "x": 7,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 5,
+   "toY": 7,
+   "direction": "up"
+  },
+  {
+   "x": 8,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 5,
+   "toY": 7,
+   "direction": "up"
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 7,
+   "y0": 6,
+   "x1": 7,
+   "y1": 6,
+   "why": "개찰기 사이 통로 — 한 대 건너 1칸(실제 개찰구 폭)"
+  },
+  {
+   "x0": 9,
+   "y0": 6,
+   "x1": 9,
+   "y1": 6,
+   "why": "개찰기 사이 통로 — 한 대 건너 1칸(실제 개찰구 폭)"
+  }
+ ],
+ "open": [
+  {
+   "x0": 5,
+   "y0": 7,
+   "x1": 10,
+   "y1": 10,
+   "why": "출입구와 개찰 사이 콘코스 — 사람이 오가는 트인 바닥"
+  }
+ ]
+}

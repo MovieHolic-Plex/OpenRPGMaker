@@ -58,6 +58,11 @@ CATEGORIES = [
     # (체육관 끝)
 
     # [interior_station st-]
+    ('station', '역사·개찰', ['st-gate', 'st-fence', 'st-ticket-machine', 'st-fare-map', 'st-office-window', 'st-kiosk', 'st-bench',
+                           'st-vending', 'st-timetable', 'st-platform-door', 'st-tactile', 'st-tactile-dot']),
+    ('platform', '승강장', ['st-edge', 'st-boarding-mark', 'st-roof-pillar', 'st-platform-bench', 'st-sign-pole']),
+    ('train', '전철 차내', ['st-long-seat', 'st-long-seat-s', 'st-priority-seat', 'st-priority-seat-s', 'st-car-door', 'st-car-end',
+                          'st-pole', 'st-strap']),
     # (역 끝)
 
     # [interior_office of-]
