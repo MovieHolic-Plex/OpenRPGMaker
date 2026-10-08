@@ -401,7 +401,7 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset"];
+const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset" | "battleCharset")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset", "battleCharset"];
 
 /**
  * 얼굴 검색. 번들 얼굴은 공용 대응표의 사람 말 라벨("금발 여성")과 **짝 걷기 그림**을 함께 준다.
@@ -512,7 +512,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 battleCharset(배우 측면 전투 시트: 사람·비인간 파티원, battleCharacterResourceId에 사용), faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode는 kind:\"faceset\"일 때만 얼굴/흉상/전신을 고를 수 있다(kind:\"tile\"·\"battleCharset\" 검색에는 넣지 않는다). 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
@@ -534,7 +534,7 @@ const listResources: ToolDefinition = {
       throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
     }
     if (args.portraitMode !== undefined && (kind !== "faceset" || !["face", "bust", "full"].includes(String(args.portraitMode)))) {
-      throw new ToolError("portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다.", { code: "invalid-args" });
+      throw new ToolError(`portraitMode는 kind:"faceset"에서만 사용합니다. 현재 kind=${kind}이므로 portraitMode를 빼고 다시 호출하세요. faceset이면 face/bust/full 중 하나를 쓰세요.`, { code: "invalid-args" });
     }
     const offset = args.offset === undefined ? 0 : args.offset;
     const limit = args.limit === undefined ? 20 : args.limit;
@@ -549,12 +549,12 @@ const listResources: ToolDefinition = {
     if (kind === "faceset") {
       all = searchFacesets(project, args.query);
       if (args.portraitMode !== undefined) all = all.filter((face) => facePresentationForResource(face.id) === args.portraitMode);
-    } else if (kind === "picture") {
-      // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
+    } else if (kind === "picture" || kind === "battleCharset") {
+      // 그림·배우 전투 시트는 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
       const needle = args.query.trim().toLocaleLowerCase();
       const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
-      all = listDatabaseResourceOptions("picture", project)
+      all = listDatabaseResourceOptions(kind, project)
         .filter(option => browse
           || option.name.toLocaleLowerCase().includes(needle)
           || option.id.toLocaleLowerCase().includes(needle)
