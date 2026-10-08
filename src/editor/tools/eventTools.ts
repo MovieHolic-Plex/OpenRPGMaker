@@ -55,7 +55,6 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
-  COMMAND_SCHEMA,
   COMMAND_SCHEMA_COMPACT,
   COORD_SCHEMA,
   CUTSCENE_BEAT_SCHEMA,
