@@ -84,7 +84,7 @@ if (process.argv.includes("--publish") && ONLY) { console.error("--only 와 --pu
 if (process.argv.includes("--publish")) {
   if (process.exitCode) { console.error("검사 실패 — 게시하지 않았다"); process.exit(2); }
   // 집 실내(1묶음)는 관문 interior, 가게·공공·집 보강(2묶음 places2)은 관문 interior-shop — 둘 다 통과해야 게시한다.
-  for (const stage of ["interior", "interior-shop"]) {
+  for (const stage of ["interior", "interior-shop", ...(PLACES3.length ? ["interior-p3"] : [])]) {
     const gate = spawnSync("python3", ["scripts/content/jp-city/gate/adversarial_gate.py", "check", "--stage", stage], { cwd: ROOT, encoding: "utf8" });
     process.stdout.write(gate.stdout);
     if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error(`적대적 검증 관문 ${stage} 미통과 — 게시하지 않았다`); process.exit(3); }
@@ -110,6 +110,9 @@ if (process.argv.includes("--publish")) {
       limitations: "실내만이다 — 현관 밖 이동은 비어 있다. NPC·이벤트 없음." },
     ...PLACES2.map((p) => ({ file: p.file, placeId: p.placeId, name: p.name, maps: [`jp-city-${p.file}`], main: `jp-city-${p.file}`, rules: p.rules,
       limitations: "실내만이다 — 거리 건물 문과는 link_jp_city_interior 로 잇는다. 점원·손님 NPC·이벤트 없음." })),
+    // 3묶음: 장소 하나 = 맵 여러 장(층·승강장·차내 — 예제 links 로 이미 이어짐). 거리 문은 첫 맵에만.
+    ...PLACES3.map((p) => { const ids = (p.maps ?? [p.file]).map((f) => `jp-city-${f}`); return { file: p.file, placeId: p.placeId, name: p.name, maps: ids, main: ids[0], rules: p.rules,
+      limitations: "실내만이다 — 거리 건물 문과는 link_jp_city_interior 로 첫 맵에만 잇는다(위층·승강장·차내는 계단·엘리베이터·승차 칸 links 로 이어져 있다). 교사·학생·역무원·승객 NPC·이벤트 없음." }; }),
   ];
   for (const g of groups) {
     const proj = structuredClone(tpl);

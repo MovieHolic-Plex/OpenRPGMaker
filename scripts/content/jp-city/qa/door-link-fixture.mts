@@ -21,7 +21,8 @@ for (let i = 2; i < process.argv.length; i += 1) {
 }
 if (!out || !pathsOut) throw new Error("사용법: --out <경로.json> --paths <길.json> [--links <links.json>]");
 // place = 게시된 장소 id(가져오기까지 도구가 한다) · example = tiledata/jp-city/interior/examples/<이름>.json 을 build_hand_interior_room 으로 먼저 짓고 interiorMapId 로 잇는다(게시 전 시험).
-type Link = { building: string; place?: string; example?: string; name?: string };
+// maps = 여러 층 예제(3묶음 학교·역·사무실): 첫 맵이 거리와 잇는 주 맵. 층마다 links 없이 짓고 → links 를 넣어 replace 로 다시 짓는다(조수에게 가르치는 순서).
+type Link = { building: string; place?: string; example?: string; maps?: string[]; name?: string };
 const LINKS: Link[] = linksPath ? JSON.parse(readFileSync(linksPath, "utf8")) : [
   { building: "E1", place: "jp-city-apartment-1k-12x13", name: "맨션 1K" },
   { building: "A1a", place: "jp-city-house-interior-21x15", name: "가게 딸린 집" },
@@ -88,12 +89,19 @@ for (const link of LINKS) {
   const doors = plan.doors.filter((d) => d.b === link.building).sort((a, b) => a.x - b.x);
   if (!doors.length) throw new Error(`건물 ${link.building} 의 문이 plan 에 없다`);
   let target: Record<string, unknown>;
+  let exampleFloors: string[] = [];
   if (link.example) {
-    const ex = JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${link.example}.json`, "utf8"));
-    const id = `jp-city-${link.example}`;
-    const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: id, name: link.name ?? ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
-    if (!built.ok) throw new Error(`${link.example}: ${JSON.stringify(built.issues)}`);
-    target = { interiorMapId: id };
+    const files = link.maps ?? [link.example];
+    const read = (f: string) => JSON.parse(readFileSync(`tiledata/jp-city/interior/examples/${f}.json`, "utf8"));
+    const build = (f: string, withLinks: boolean) => {
+      const ex = read(f);
+      const built = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: `jp-city-${f}`, name: f === link.example ? (link.name ?? ex.name) : ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: withLinks ? (ex.links ?? []) : [], ...(withLinks ? { replace: true } : {}) });
+      if (!built.ok) throw new Error(`${f}: ${JSON.stringify(built.issues)}`);
+    };
+    for (const f of files) build(f, false);
+    if (files.length > 1) for (const f of files) if (read(f).links?.length) build(f, true);
+    exampleFloors = files.filter((f) => f !== link.example).map((f) => `jp-city-${f}`);
+    target = { interiorMapId: `jp-city-${link.example}` };
   } else {
     await preloadRegionReferenceScene(link.place!);
     target = { place: link.place, ...(link.name ? { name: link.name } : {}) };
@@ -119,7 +127,7 @@ for (const link of LINKS) {
   };
   let walkFrom = data.entryLanding;
   let stairs: unknown = null;
-  const floorIds = new Set((res.data as { floorMapIds?: string[] }).floorMapIds ?? []);
+  const floorIds = new Set([...((res.data as { floorMapIds?: string[] }).floorMapIds ?? []), ...exampleFloors]);
   const up = (interior.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && floorIds.has(t.mapId));
   if (up) {
     const upSteps = route(interior, data.entryLanding, [{ x: up.e.x, y: up.e.y }]);

@@ -292,8 +292,9 @@ for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
 for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
 for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock'), ('buildings', 'bldgblock'), ('street_hand', 'streethand'), ('school', 'schoolblock'), ('transit_street', 'transitstreet'), ('transit_station', 'transitstation'),
                ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior'), ('interior_doors', 'interior'),
-               ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior')):
-    for _t in PIN_BLOCK[_b]: REGION[_t] = _name
+               ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
+               ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior')):
+    for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
 NCELL = {r: sum(b - a + 1 for a, b in RUNS[r]) for r in RUNS}
@@ -2573,7 +2574,8 @@ add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 �
 
 # 사전 — 블록 순서, 문서 하나 ≤ 36000자
 _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
-                          'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
+                          'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
@@ -2696,11 +2698,44 @@ for _p in _P2:
     add_doc(C_INT2, f"interior-ex-{_p['file']}", f"일본 도시 · 일본 가게·공공 실내 예제 · {_p['name']}", doc_in_ex(_p['file']))
 
 
+# 3묶음 — 학교·체육관·유치원·역·사무실·우체국·맨션 공용부(장소 하나 = 맵 여러 장 — 층·승강장·차내). 표: examples/places3*.json
+_EXD = os.path.join(ROOT, 'tiledata', 'jp-city', 'interior', 'examples')
+_P3 = [p for _f3 in sorted(os.listdir(_EXD)) if _f3.startswith('places3') and _f3.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f3), encoding='utf-8'))]
+_P3_FILES = [m for p in _P3 for m in (p.get('maps') or [p['file']])]
+for _p in _P3:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P3:
+    C_INT3 = new_cat('interior-public3', f'일본 도시 · 일본 학교·역·사무실 실내 ({len(_P3)}곳, 맵 {len(_P3_FILES)}장)',
+                     '학교 본관(현관·교무실·보건실·교실·음악실·도서실·이과실·옥상)·체육관·유치원·지상역(개찰·승강장·전철 차내)·사무 빌딩(로비·사무층)·우체국·맨션 공용부: '
+                     '장소 목록(장소 id·가져오기·거리 문 잇기·층 이동), 맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p3_index():
+        rows = [[f"`{p['placeId']}`", p['name'], p['kindKo'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P3]
+        rk = sorted({(k, v[0]) for p in _P3 for k, v in (p.get('roomKinds') or {}).items()})
+        return f'''# 일본 도시 — 일본 학교·역·사무실 실내 장소 {len(_P3)}곳
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 맵 여러 장(층·승강장·차내 — 서로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 첫 맵(1층·역사·로비)에만 거리 문을 잇는다.
+층이 여럿인 장소의 위층·승강장·전철 차내는 거리와 잇지 않는다(맨 아래 줄이 막혀 있다). 층 이동은 계단(올라가는 계단 발칸 ↔ 위층 계단통 아랫줄)·엘리베이터 문 앞 칸·승강장 승차 칸의 `links` 다.
+직접 지으려면 맵마다 `build_hand_interior_room({{tileset:"jp_city", …}})` — 짓는 순서는 `jp-interior-rules` 「읽는 순서 · 실행 순서」 4번(모든 층을 links 없이 → links 를 넣어 replace:true). 방 종류: {', '.join(f'`{k}` {ko}' for k, ko in rk)}.
+
+{md_table(['장소 id', '이름', '종류', '맵(예제 문서)', '짜임'], rows)}
+
+## 없는 것
+교사·학생·역무원·승객 NPC(Actor1 캐릭터를 이벤트로 놓는다), 수업·개찰 이벤트, 전철이 움직이는 연출(차내는 정지 맵). 칠판·게시판·운임표·안내판에 글자는 없다(색 덩이·선). 병원 병동·대형 쇼핑몰·지하 던전은 아직 없다.
+'''
+
+    add_doc(C_INT3, 'interior-p3-index', '일본 도시 · 일본 학교·역·사무실 실내 · 장소 목록·가져오기·거리 문 잇기·층 이동', doc_in_p3_index())
+    for _m in _P3_FILES:
+        add_doc(C_INT3, f"interior-ex-{_m}", f"일본 도시 · 일본 학교·역·사무실 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2]:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else C_INT2)
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else C_INT2))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)

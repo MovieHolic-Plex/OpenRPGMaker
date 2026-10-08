@@ -768,6 +768,9 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   const LINKS: Record<string, true> = { "house-1f": true, "house-2f": true, "apartment-1k": true };   // start·links 는 예제 JSON 이 들고 있다
   // 2묶음 가게·공공·집 보강 예제(맵 하나씩) — examples/places2.json
   for (const p2 of JSON.parse(fs.readFileSync(path.join(EXD, "places2.json"), "utf8")) as { file: string }[]) LINKS[p2.file] = true;
+  // 3묶음 학교·역·사무실 …(장소 하나 = 맵 여러 장) — examples/places3*.json
+  for (const f3 of fs.readdirSync(EXD).filter((f) => /^places3.*\.json$/.test(f)).sort())
+    for (const p3 of JSON.parse(fs.readFileSync(path.join(EXD, f3), "utf8")) as { file: string; maps?: string[] }[]) for (const m of p3.maps ?? [p3.file]) LINKS[m] = true;
   const argsOf = (f: string) => {
     const ex = exRead(f);
     return { tileset: "jp_city", mapId: `jp-city-${f}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}),
