@@ -239,6 +239,41 @@ img{image-rendering:pixelated;display:block} .lbl{font-size:11px;color:#8f897f;m
 '''
 
 
+def gif_b64(frames, k=1, ms=333):
+    """움직이는 장면(3fps = 편집기 animationStrips 기본) → GIF data URI. 색은 그대로 옮긴다(팔레트 양자화 없음)."""
+    import numpy as np
+    bg = np.array([0x21, 0x1e, 0x29], float)
+    rgbs = []
+    for f in frames:
+        a = (f.a if isinstance(f, dot.Cv) else np.array(f.convert('RGBA'))).astype(float)
+        al = a[:, :, 3:4] / 255.0
+        rgbs.append((a[:, :, :3] * al + bg * (1 - al)).round().astype(np.uint8))
+    packed = [(r[:, :, 0].astype(np.int64) << 16) | (r[:, :, 1].astype(np.int64) << 8) | r[:, :, 2] for r in rgbs]
+    cols = np.unique(np.concatenate([p.ravel() for p in packed]))
+    if len(cols) > 256:
+        raise SystemExit(f'GIF 색 {len(cols)} > 256')
+    pal = []
+    for c in cols:
+        pal += [int(c) >> 16 & 255, int(c) >> 8 & 255, int(c) & 255]
+    ims = []
+    for p in packed:
+        idx = np.searchsorted(cols, p).astype(np.uint8)
+        im = Image.fromarray(idx, 'P')
+        im.putpalette(pal + [0] * (768 - len(pal)))
+        if k != 1:
+            im = im.resize((im.width * k, im.height * k), Image.NEAREST)
+        ims.append(im)
+    buf = io.BytesIO()
+    ims[0].save(buf, 'GIF', save_all=True, append_images=ims[1:], duration=ms, loop=0, optimize=False)
+    return 'data:image/gif;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+
+def anim_tag(frames, k, alt=''):
+    f0 = frames[0]
+    w = (f0.w if isinstance(f0, dot.Cv) else f0.width) * k
+    return f'<img src="{gif_b64(frames, k)}" width="{w}" alt="{alt}">'
+
+
 def img_tag(im, k, alt=''):
     w = (im.width if not isinstance(im, dot.Cv) else im.w) * k
     return f'<img src="{b64(im, k)}" width="{w}" alt="{alt}">'
@@ -334,7 +369,10 @@ def cmd_sheet(rid, force=False):
                 H.append(f'<div class="card{" picked" if "star" in star else ""}"><h3>후보 {key} <span class="sha">{sha[:8]}</span>{star}</h3>'
                          f'<div class="sub">{meta.get("note") or cand_note(mod, key)}</div><div class="imgs">'
                          f'<div>{img_tag(im, 1)}<div class="lbl">원본 1배</div></div><div>{img_tag(im, 4)}<div class="lbl">4배</div></div>')
-                if 'vignette' in meta:
+                if 'anim' in meta:
+                    H.append(f'<div>{anim_tag(meta["anim"], 1)}<div class="lbl">장면 1배(움직임)</div></div>'
+                             f'<div>{anim_tag(meta["anim"], 3)}<div class="lbl">장면 3배(움직임)</div></div>')
+                elif 'vignette' in meta:
                     v = meta['vignette']
                     H.append(f'<div>{img_tag(v, 1)}<div class="lbl">장면 1배</div></div><div>{img_tag(v, 3)}<div class="lbl">장면 3배</div></div>')
                 H.append('</div>')
@@ -363,8 +401,11 @@ def cmd_sheet(rid, force=False):
         for ln, scs in mod.line_scenes().items():
             H.append(f'<div class="lineh">줄 {ln} 「{ls[ln]["name"]}」</div><div class="row">')
             for title, sub, sc in scs:
+                tag = anim_tag if isinstance(sc, list) else img_tag
                 H.append(f'<div class="card"><h3>{title}</h3><div class="sub">{sub}</div><div class="imgs">'
-                         f'<div>{img_tag(sc, 1)}<div class="lbl">1배</div></div><div>{img_tag(sc, 3)}<div class="lbl">3배</div></div></div></div>')
+                         f'<div>{tag(sc, 1)}<div class="lbl">1배</div></div><div>{tag(sc, 3)}<div class="lbl">3배</div></div>'
+                         + (f'<div>{img_tag(sc[0], 4)}<div class="lbl">장면 1 정지 4배</div></div>' if isinstance(sc, list) else '')
+                         + '</div></div>')
             H.append('</div>')
     H.append('<h2>잠금 팔레트</h2><p class="lead">버들항 변형 조각에서 램프마다 실제 화소색을 뽑았다(palette.py). 모든 색이 공용 시트에 있다.</p><div class="pal">')
     for k, v in dot.PAL['ramps'].items():

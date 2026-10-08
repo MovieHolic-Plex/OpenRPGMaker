@@ -9,6 +9,11 @@ FAIL
                  / 물: 북쪽 물가 띠가 몸통과 다르다(물로 떨어지는 앞면)
   S 이음         몸통 6×6 반복·앞면 가운데 가로 반복·가장자리 띠 반복에서 칸 경계 차이가 칸 안 차이(중앙값)의 1.5배·+8 을 넘지 않는다
   G 구조         동굴 격자: 앞면 위에 천장이 있다(dot.structure_errors). cave-set 과 meta['rim_check'] 가 켜진 천장·앞면 후보(F 동굴 검사도 같이)
+  A 장면         물·용암(meta['frames']): 4장면, 47 변형마다 장면끼리 바뀌는 화소는 물·용암 램프(meta['liquid'])뿐(물가 화소 동일),
+                 이웃 장면끼리 몸통이 다르다(멈춘 그림 아님). 장면마다 Q·S 도 본다
+  K 상태         얼음 깨짐(meta['states']): 47 변형마다 칸 둘레 2px 가 상태끼리 같다(깨진 칸이 이웃과 이어진다), 상태끼리 몸통이 다르다
+  J 키트 이음     다리(종류 kit, meta['kit']): 가로 조각 서끝|가운데|가운데|동끝 이 맞닿는 열, 세로 조각 북끝|가운데|가운데|남끝 이
+                 맞닿는 행의 투명 모양이 같다 + 가운데 조각 반복 이음(S)
 WARN
   R 색만 바꾼 후보  같은 항목 후보끼리 밝기 윤곽선이 90% 넘게 겹침
 """
@@ -143,7 +148,9 @@ def check_one(item, im, meta):
 
     if kind in ('cave-set', 'autotile', 'face'):
         holes, pbad, seams, info, nvar = 0, set(), [], [], 0
-        for name, at in meta.get('autotiles', {}).items():
+        more = [(f'{nm} {lab}{i}', at) for key, lab in (('frames', '장면'), ('states', '상태'))
+                for nm, ats in meta.get(key, {}).items() for i, at in enumerate(ats) if i]
+        for name, at in list(meta.get('autotiles', {}).items()) + more:
             n, hl, b, s, i = autotile_checks(name, at)
             nvar += n
             holes += hl
@@ -176,12 +183,19 @@ def check_one(item, im, meta):
                     if voidish > strip.shape[0] * strip.shape[1] * 0.5:
                         miss.append(f'({x},{y})')
         res.append(_r('F', 'FAIL', not miss, '모든 앞면 위에 벽 윗면 테두리' if not miss else '윗면 없는 앞면 ' + ' '.join(miss)))
-    if kind == 'autotile' and 'water' in meta.get('autotiles', {}):
-        at = meta['autotiles']['water']
-        n_edge = at.tile(dot.E | dot.W | dot.S | dot.SE | dot.SW).a[:4]
-        body = at.body.a[:4]
-        diff = float(np.abs(lum(n_edge) - lum(body)).mean())
-        res.append(_r('F', 'FAIL', diff > 15, f'북쪽 물가 띠와 몸통 차이 {diff:.0f}(>15 이어야 앞면이 보임)'))
+    for bank in ('water', 'lava', 'chasm'):
+        if kind == 'autotile' and bank in meta.get('autotiles', {}):
+            at = meta['autotiles'][bank]
+            n_edge = at.tile(dot.E | dot.W | dot.S | dot.SE | dot.SW).a[:4]
+            body = at.body.a[:4]
+            diff = float(np.abs(lum(n_edge) - lum(body)).mean())
+            res.append(_r('F', 'FAIL', diff > 15, f'{bank} 북쪽 가장자리 띠와 몸통 차이 {diff:.0f}(>15 이어야 앞면이 보임)'))
+    for name, ats in meta.get('frames', {}).items():
+        res.append(frames_check(name, ats, meta.get('liquid', [])))
+    for name, ats in meta.get('states', {}).items():
+        res.append(states_check(name, ats))
+    if kind == 'kit':
+        res += kit_checks(meta['kit'])
     if kind in ('objects', 'object'):
         for name, part in meta['parts'].items():
             pa = arr(part)
@@ -196,6 +210,65 @@ def check_one(item, im, meta):
             ok = len(top) > 0 and len(front) > 0 and top.mean() > front.mean() and (t1 - t0 + 1) >= 3
             res.append(_r('F', 'FAIL', ok, f'{name} 윗면 {t1 - t0 + 1}줄 밝기 {top.mean():.0f} vs 앞면 {front.mean():.0f}'))
     return res
+
+
+def _masks():
+    return sorted({dot.canon(m) for m in range(256)})
+
+
+def frames_check(name, ats, liquid, want=4):
+    """장면 오토타일 목록 → A 결과. 장면끼리 바뀌는 화소가 liquid 램프 색만인지(47 변형 모두), 이웃 장면 몸통이 다른지."""
+    allowed = {dot.C(r, i) for r in liquid for i in range(len(dot.RAMPS[r]))}
+    bad, n = [], len(ats)
+    for m in _masks():
+        ts = [a.tile(m).a for a in ats]
+        diff = np.zeros(ts[0].shape[:2], bool)
+        for t in ts[1:]:
+            diff |= (t != ts[0]).any(axis=2)
+        for t in ts:
+            cols = {tuple(int(v) for v in p[:3]) for p in t[diff]}
+            if cols - allowed:
+                bad.append(m)
+                break
+    still = [i for i in range(n) if (ats[i].body.a == ats[(i + 1) % n].body.a).all()]
+    ok = n == want and not bad and not still
+    return _r('A', 'FAIL', ok, f'{name} 장면 {n}(={want}) · 물가 화소 동일 {47 - len(bad)}/47 변형'
+              + (f' · 멈춘 장면 {still}' if still else ' · 장면마다 몸통이 움직임'))
+
+
+def states_check(name, ats):
+    """상태 오토타일 목록 → K 결과. 47 변형마다 칸 둘레 2px 가 상태끼리 같은지, 상태끼리 몸통이 다른지."""
+    ring = np.ones((16, 16), bool)
+    ring[2:14, 2:14] = False
+    bad = []
+    for m in _masks():
+        ts = [a.tile(m).a for a in ats]
+        if any((t[ring] != ts[0][ring]).any() for t in ts[1:]):
+            bad.append(m)
+    same = [i for i in range(1, len(ats)) if (ats[i].body.a == ats[i - 1].body.a).all()]
+    ok = not bad and not same
+    return _r('K', 'FAIL', ok, f'{name} 상태 {len(ats)} · 둘레 2px 동일 {47 - len(bad)}/47 변형'
+              + (f' · 같은 상태 {same}' if same else ''))
+
+
+def kit_checks(kit):
+    """다리 키트 이음(J)과 가운데 조각 반복(S)."""
+    def alpha(c):
+        return c.a[:, :, 3] > 0
+    bad = []
+    hw, hm, he = kit['h']
+    for a, b, nm in ((hw, hm, '서끝|가운데'), (hm, hm, '가운데|가운데'), (hm, he, '가운데|동끝')):
+        if (alpha(a)[:, 15] != alpha(b)[:, 0]).any():
+            bad.append(nm)
+    vn, vm, vs = kit['v']
+    for a, b, nm in ((vn, vm, '북끝|가운데'), (vm, vm, '가운데|가운데'), (vm, vs, '가운데|남끝')):
+        if (alpha(a)[15] != alpha(b)[0]).any():
+            bad.append(nm)
+    out = [_r('J', 'FAIL', not bad, '가로·세로 조각 맞닿는 줄 모양 같음' if not bad else '어긋남 ' + ', '.join(bad))]
+    hb, hi = _seam_res('가로 가운데', hm, 'x')
+    vb, vi = _seam_res('세로 가운데', vm, 'y')
+    out.append(_r('S', 'FAIL', not hb and not vb, ('이음 없음 — ' if not hb and not vb else '; '.join(hb + vb) + ' — ') + hi + ' · ' + vi))
+    return out
 
 
 def check_recolor(cands):
