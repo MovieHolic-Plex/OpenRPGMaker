@@ -2059,13 +2059,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 쓴 그대로 보낸다 — 고친 문장 뒤에 숨은 지시를 몰래 붙이지 않는다.
    */
   // `team`: 프리셋 첫 생성 핸드오프 — 이 한 턴만 팀으로 돈다(사용자 팀 설정은 그대로다).
-  let composerHandoff: { readonly display: string; readonly full: string; readonly team?: boolean } | null = null;
+  let composerHandoff: { readonly display: string; readonly full: string; readonly team?: boolean; readonly command?: ParsedPiCommand } | null = null;
   /** 입력창을 되살릴 때 — 보낼 지시문이 보이는 문장과 다르면 핸드오프도 함께 되살린다. */
-  const restoreComposer = (display: string, full?: string, team?: boolean): void => {
+  const restoreComposer = (display: string, full?: string, team?: boolean, command?: ParsedPiCommand): void => {
     input.value = display;
     composerHandoff = team
       ? { display, full: full ?? display, team: true }
       : full && full !== display ? { display, full } : null;
+    if (command) composerHandoff = { display, full: full ?? display, ...(team ? { team } : {}), command };
     syncInputHeight();
     refreshSendEnabled();
   };
@@ -2181,29 +2182,31 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       refreshAbortButton();
       syncGlassIdle();
     }
-    if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard);
+    if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion, command);
+    if (storeCard && !disposed && turnConversation === conversationId) showStoreCard(storeCard, command);
   };
   /** 스토어 카드(aiStoreCard). 넣기·그리기·있는 타일 고르기는 후속 요청을 평소 전송 경로로 보낸다. 올리기·숨기기는 카드 안에서 끝난다. */
-  const showStoreCard = (request: StoreCardRequest): void => {
+  const showStoreCard = (request: StoreCardRequest, origin: ParsedPiCommand): void => {
     const owner = conversationId;
     const card = createStoreCard(request, (followUp) => {
       if (disposed || owner !== conversationId) return;
-      restoreComposer(followUp);
+      const task = `${followUp}\n\n[이어갈 원래 요청]\n${origin.task}`;
+      restoreComposer(followUp, task, origin.mode === "team", { ...origin, task });
       void send();
     });
     log.append(card);
     followConversationLog(log);
   };
   /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
-  const showTilesetChangeCard = (question: TilesetChangeQuestion): void => {
+  const showTilesetChangeCard = (question: TilesetChangeQuestion, origin: ParsedPiCommand): void => {
     const owner = conversationId;
     const card = createTilesetChangeCard(store.getCurrent(), question, (decision) => {
       if (disposed || owner !== conversationId) return;
       if (decision.approved && !approvedTilesetFamilies.includes(decision.family)) {
         approvedTilesetFamilies = [...approvedTilesetFamilies, decision.family];
       }
-      restoreComposer(decision.followUp);
+      const task = `${decision.followUp}\n칩셋 계열 선택은 원래 수정 범위를 넓히거나 비교용 맵을 지워도 된다는 허락이 아니다.\n\n[이어갈 원래 요청]\n${origin.task}`;
+      restoreComposer(decision.followUp, task, origin.mode === "team", { ...origin, task });
       void send();
     });
     log.append(card);
@@ -2261,6 +2264,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 패널의 앞 턴(상태줄·작업 카드·캔버스 카드)은 하나다. 앞 턴이 돌고 있거나 보낸 맵을 다른 실행이 잡고 있으면,
   // 그 요청은 맵별 대기열로 가서 자기 카드(aiMapRunCard)를 갖고 돈다 — 다른 맵이면 바로 같이, 같은 맵이면 차례대로.
   interface MapRunInput {
+    readonly command?: ParsedPiCommand;
     readonly text: string;
     readonly shown: string;
     readonly team: boolean;
@@ -2278,7 +2282,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const owner = conversationId;
     if (run.mapId && !store.getCurrent().maps[run.mapId]) throw new Error("보낸 맵이 사라졌어요");
     card.setStatus("의도 읽는 중…");
-    const explicit = parsePiCommand(run.text, store.getCurrent(), run.mapId);
+    const explicit = run.command ?? parsePiCommand(run.text, store.getCurrent(), run.mapId);
     let command: ParsedPiCommand;
     let options: PiRunOptions = {};
     if (explicit) command = explicit;
@@ -2316,8 +2320,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }, options);
     card.finish({ ok: !signal.aborted && phase !== "실패" && phase !== "중단",
       message: signal.aborted || phase === "중단" ? "중단" : phase === "실패" ? "실패" : phase === "검토 대기" ? "검토 필요" : "끝남" });
-    if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion);
-    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard);
+    if (tilesetQuestion && !disposed && owner === conversationId) showTilesetChangeCard(tilesetQuestion, command);
+    if (storeCard && !disposed && owner === conversationId) showStoreCard(storeCard, command);
   };
   const enqueueMapRun = (run: MapRunInput, mapKey: string, exclusive: boolean): void => {
     const project = store.getCurrent();
@@ -2381,9 +2385,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 이 가드는 그 둘을 한 자리에서 막는다: 거부는 입력을 건드리기 전에 일어난다.
     // 맵별 실행: 보낸 순간 보고 있던 맵을 잡는다. 앞 턴이 돌고 있거나 이 맵을 이미 다른 실행이 잡고 있으면
     // 거절하지 않고 대기열로 보낸다(2026-10-03 사용자: 맵당 AI 하나, 맵마다 대기열, 여러 맵은 동시에).
-    const runMapId = editorState.get().currentMapId ?? store.getCurrent().startMapId ?? null;
+    const runMapId = handoff?.command?.currentMapId ?? editorState.get().currentMapId ?? store.getCurrent().startMapId ?? null;
     const mapKey = runMapId ?? "__project__";
-    const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
+    const explicit = handoff?.command ?? parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text);
     const queue = mapRunQueue();
@@ -2393,7 +2397,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncInputHeight();
       refreshSendEnabled();
       const selection = mapContext().selection;
-      enqueueMapRun({ text, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null }, mapKey, exclusive);
+      enqueueMapRun({ text, shown, ...(handoff?.command ? { command: handoff.command } : {}), team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null }, mapKey, exclusive);
       return;
     }
     const releaseMapRun = claimForegroundMapRun(mapKey, shown, exclusive);

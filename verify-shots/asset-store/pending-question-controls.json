@@ -1,0 +1,21 @@
+{
+  "kind": "scripted-real-agent-loop-control",
+  "modelCalls": 0,
+  "passed": true,
+  "checks": [
+    {
+      "question": "ask_tileset_change",
+      "requests": 1,
+      "sameBatchWriteBlocked": true,
+      "rekickBlocked": true,
+      "cardResultPreserved": true
+    },
+    {
+      "question": "ask_missing_tiles",
+      "requests": 1,
+      "sameBatchWriteBlocked": true,
+      "rekickBlocked": true,
+      "cardResultPreserved": true
+    }
+  ]
+}

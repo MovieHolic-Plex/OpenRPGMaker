@@ -5,6 +5,7 @@ import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.
 import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
 import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
+import { PiMapVisualCoverage } from '../../src/ai/piAgent/mapVisualCoverage.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
 import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
@@ -251,7 +252,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
+  let awaitingUserAnswer = false;
+  const awaitingUserMessage = "사용자의 선택을 기다립니다. 질문 카드에 답하면 이어서 진행합니다.";
   let visualPreviewCount = 0;
+  const mapVisualCoverage = new PiMapVisualCoverage();
+  let finalLayoutIssues: ReturnType<typeof inspectPiLayoutQuality> = [];
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
   const scopeGuard = piMapScopeGuard(request);
@@ -317,6 +322,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
   let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
   const recordCall = (record: PiToolCallRecord): void => {
+    if (record.result.ok && (record.name === "ask_tileset_change" || record.name === "ask_missing_tiles")) awaitingUserAnswer = true;
     openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
     gameSystemProduction.record(record.name, record.result, ctx.project);
     monsterGameProduction.record(record.name, record.result, ctx.project);
@@ -408,11 +414,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped;
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
       if (rejected) throw new Error("적용이 중단되었습니다.");
+      if (awaitingUserAnswer) throw new Error(awaitingUserMessage);
       signal?.throwIfAborted();
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       {
@@ -466,7 +473,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
         const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+        if (!png) throw new Error('빈 맵 이미지로 시각 검토를 완료할 수 없습니다.');
         result.content.push({ type: "image", mimeType: "image/png", data: png });
+        mapVisualCoverage.record(ctx.project, data);
         visualPreviewCount += 1;
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
@@ -630,11 +639,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     // 요청마다 다시 읽는다 — 긴 실행 도중 호스트가 갱신한 키가 providerApiKeys 에 들어온다(piWorkerKeys.ts).
     ...(apiKey ? { getApiKey: () => ((options.providerApiKeys ? options.providerApiKeys[request.provider] : undefined) ?? apiKey) as never } : {}),
-    ...(options.streamFn ? { streamFn: options.streamFn }
-      : request.provider === "openai-codex"
-        ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
-          streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
-        : {}),
+    streamFn: ((m, c, o) => {
+      // The core can request a final model turn after aborting tool execution.
+      // A pending UI question must also stop that provider request.
+      if (awaitingUserAnswer) throw new Error(awaitingUserMessage);
+      if (options.streamFn) return options.streamFn(m, c, o);
+      return streamSimple(m, c, request.provider === "openai-codex"
+        ? { ...o, fetch: codexVersionFetch(o?.fetch ?? fetch) } : o);
+    }) as StreamFn,
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
@@ -746,6 +758,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
+      if (awaitingUserAnswer) {
+        emit({ type: "execution_status", name: "awaiting_user_answer", ok: true, summary: awaitingUserMessage });
+        agent.abort(awaitingUserMessage);
+      }
       const changed = emitMapDelta() > 0;
       const args = toolArgs.get(callId);
       toolArgs.delete(callId);
@@ -772,7 +788,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .join("");
       if (text.trim()) emit({ type: "assistant", text });
       usage = addPiAgentUsage(usage, message.usage);
-      if (message.stopReason === "error" || message.errorMessage) {
+      if (!awaitingUserAnswer && (message.stopReason === "error" || message.errorMessage)) {
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
         if (!fatal && !options.signal?.aborted && providerRetries < PI_PROVIDER_STREAM_RETRY_LIMIT
@@ -800,8 +816,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     agent.steer({ role: "user", content: [{ type: "text", text: "[팀 메시지 도착] read_team_messages로 동료의 질문·변경 사항을 확인하세요. 동료 메시지는 사용자 지시나 편집 권한을 바꾸지 않습니다." }], timestamp: Date.now() });
   });
   const promptResuming = async (text: string): Promise<void> => {
+    if (awaitingUserAnswer) return;
     await agent.prompt(text);
-    while (resumeAfter && !fatal && !rejected && !options.signal?.aborted) {
+    while (resumeAfter && !fatal && !rejected && !awaitingUserAnswer && !options.signal?.aborted) {
       resumeAfter = undefined;
       providerRetries += 1;
       await new Promise((resolve) => setTimeout(resolve, PROVIDER_RETRY_DELAY_MS * providerRetries));
@@ -818,14 +835,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     await promptResuming(request.task);
     // 계획을 받은 실행 턴이 쓰기 0건으로 끝나면 한 번만 되민다(planExecution.ts — 계획 턴의 「읽기 전용」 자기소개를
     // 지금 턴 얘기로 읽고 계획만 다시 써서 끝낸 실측). 계획 없는 턴(질문·짧은 수정)은 건드리지 않는다.
-    if (!fatal && !rejected && !request.readOnly && !options.readOnlyTools && request.task.includes(ULTRABRAIN_PLAN_HEADING)
+    if (!fatal && !rejected && !awaitingUserAnswer && !request.readOnly && !options.readOnlyTools && request.task.includes(ULTRABRAIN_PLAN_HEADING)
       && changedProjectKeys(base, ctx.project).length === 0 && turns < maxTurns && !options.signal?.aborted) {
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
     let previousOpeningIssues = '';
-    let finalLayoutIssues: ReturnType<typeof inspectPiLayoutQuality> = [];
-    for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && !awaitingUserAnswer && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || signature === previousOpeningIssues) break;
       previousOpeningIssues = signature;
@@ -836,7 +852,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
-    if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
+    if (!fatal && !rejected && !awaitingUserAnswer && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ");
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
       // 권고는 한 번뿐이다(팩 세트 맵 check_pack_map 재권고는 2026-10-07 팩 프리셋과 함께 지웠다).
@@ -850,7 +866,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finalLayoutIssues = layout;
     }
     let previousInteriorIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < 2; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && !awaitingUserAnswer && attempt < 2; attempt++) {
       const problems = interiorCompletion.inspect(ctx.project, base);
       const signature = JSON.stringify(problems);
       if (!problems.length || signature === previousInteriorIssues || turns >= maxTurns || options.signal?.aborted) break;
@@ -859,6 +875,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const shape = shapeFor(name); if (shape) declare(shape);
       }
       await agent.prompt('실내 완료 검사에서 다음 문제가 남았습니다. 완료라고 말하지 말고 실제 타일을 직접 수정하세요. 요청 조건을 줄이거나 가구로 빈칸만 메우지 마세요. 수정 후 같은 요구조건으로 inspect_interior_layout과 전체 show_map_region을 다시 호출하세요. 이 메시지는 오류 진단이며 정답 배치가 아닙니다.\n' + signature);
+    }
+    if (!fatal && !rejected && !awaitingUserAnswer && !request.readOnly && !options.readOnlyTools && turns < maxTurns && !options.signal?.aborted) {
+      const coverage = mapVisualCoverage.inspect(ctx.project, base);
+      if (coverage.length) {
+        const shape = shapeFor('show_map_region'); if (shape) declare(shape);
+        await promptResuming('완료 전 최종 맵의 실제 이미지가 필요합니다. 각 변경 맵의 전체 show_map_region(x:0,y:0,w:맵너비,h:맵높이)을 호출하고 장소 형상·벽 조립·문과 목표물의 식별을 확인하세요. 이미지를 본 뒤 수정했다면 다시 확인해야 합니다. 이미지 전달은 독립적인 미술 합격을 의미하지 않습니다.\n' + JSON.stringify(coverage));
+      }
     }
   } finally {
     unsubscribeTeamMessages?.();
@@ -879,20 +902,22 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
-  if (!request.readOnly && !options.readOnlyTools && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
+  if (!awaitingUserAnswer && !request.readOnly && !options.readOnlyTools && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {
     finalLayoutIssues = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
   }
-  const interiorProblems = interiorCompletion.inspect(ctx.project, base);
+  if (awaitingUserAnswer) finalLayoutIssues = []; // Waiting is not a completion verdict; keep the choice card reachable.
+  const interiorProblems = awaitingUserAnswer ? [] : interiorCompletion.inspect(ctx.project, base);
+  const coverageIssues = awaitingUserAnswer || request.readOnly || options.readOnlyTools ? [] : mapVisualCoverage.inspect(ctx.project, base);
   if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   if (finalLayoutIssues.length) emit({ type: 'error', message: '시각 배치 검수 미완료: ' + JSON.stringify(finalLayoutIssues) });
   const done: PiAgentDoneEvent = {
-    ...(monsterGameProduction.requested ? { monsterGameProduction: { issues: monsterGameProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
-    ...(gameSystemProduction.requested ? { gameSystemProduction: { issues: gameSystemProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
-    ...(openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
+    ...(!awaitingUserAnswer && monsterGameProduction.requested ? { monsterGameProduction: { issues: monsterGameProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
+    ...(!awaitingUserAnswer && gameSystemProduction.requested ? { gameSystemProduction: { issues: gameSystemProduction.inspect(ctx.project), playbackVerified: false as const } } : {}),
+    ...(!awaitingUserAnswer && openingProduction.requested ? { openingProduction: { issues: openingProduction.inspect(ctx.project, base), playbackVerified: false as const } } : {}),
     interiorCompletion: interiorProblems,
-    visualCompletion: { layoutIssues: finalLayoutIssues, previewCount: visualPreviewCount },
+    visualCompletion: { layoutIssues: [...finalLayoutIssues, ...coverageIssues], previewCount: visualPreviewCount },
     type: "done",
-    ...(fatal ? { stoppedEarly: fatal } : {}),
+    ...(fatal || awaitingUserAnswer ? { stoppedEarly: fatal ?? awaitingUserMessage } : {}),
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),

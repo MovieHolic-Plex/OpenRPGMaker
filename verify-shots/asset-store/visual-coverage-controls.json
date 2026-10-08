@@ -1,0 +1,15 @@
+{
+  "kind": "controlled-coverage-checks",
+  "modelCalls": 0,
+  "checks": [
+    "unchanged map exempt",
+    "missing image rejected",
+    "repeated crop rejected",
+    "union accepted",
+    "later write invalidates",
+    "full image accepted",
+    "tileset change invalidates"
+  ],
+  "passed": true,
+  "artisticAcceptance": false
+}
