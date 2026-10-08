@@ -1,0 +1,16 @@
+{
+  "kind": "controlled-product-checks",
+  "modelCalls": 0,
+  "source": "http://100.73.251.77:18320/api/v1/items/beodeulhang-jangso-bunggoe-hu-hwangpye-p-f78ef830/versions/1/manifest",
+  "manifestSha256": "e60e4dbede9880bdc5e0133784953874532aee6172d9da0f5cc726e9af526049",
+  "checks": {
+    "separateIdsAccepted": true,
+    "partialPropRejected": true,
+    "actualFillSucceeds": true,
+    "groundPreserved": true,
+    "upperPathWritten": true,
+    "falseSuggestionsRemoved": true,
+    "sameMaterialPathFallback": true
+  },
+  "visualQuality": "not evaluated"
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "store-layer-routing-control",
+  "source": "http://100.73.251.77:18320/api/v1/items/beodeulhang-jangso-bunggoe-hu-hwangpye-p-f78ef830/versions/1/manifest",
+  "checks": [
+    "explicit autotile layer beats imported pixel priority",
+    "upper fill preserves lower ground",
+    "path writes trail members"
+  ],
+  "pathTile": 53,
+  "home": "upper",
+  "changedUpper": 32,
+  "passed": true,
+  "visualQuality": "not evaluated"
+}
