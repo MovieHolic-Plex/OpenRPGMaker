@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-mansion-2ldk",
+  "size": [
+   18,
+   20
+  ]
+ },
+ "start": [
+  1,
+  18
+ ],
+ "summary": "손 도트 실내 '일본 맨션 2LDK 실내(베란다)' 18×20 (jp-city-mansion-2ldk, jp_city) — 출입구에서 닿는 칸 112, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-mansion-2ldk",
+  "tilesetId": "jp_city",
+  "width": 18,
+  "height": 20,
+  "reachable": 112,
+  "floorCells": 159,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 1,
+    "y": 18
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 1,
+    "y": 19,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 112,
+ "ok": true
+}

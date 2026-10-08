@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (231개)
+# 일본 도시 — 타일 그룹 사전 (248개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9054칸**, 16px 칸, 시트 768×3024px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 36, wall 48, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 47, wall 54, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -249,6 +249,23 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-wall-juraku","name":"실내 벽면 · 화실 흙벽(聚楽)","role":"wall","layer":"lower","n":16,"from":8700,"to":8715},
 {"id":"jp:interior-wall-bathwall","name":"실내 벽면 · 욕실 벽 패널","role":"wall","layer":"lower","n":4,"from":8716,"to":8719},
 {"id":"jp:interior-wall-kitchen-panel","name":"실내 벽면 · 부엌 벽 패널","role":"wall","layer":"lower","n":4,"from":8720,"to":8723},
-{"id":"jp:interior-ceiling-default","name":"실내 천장 띠 · 기본 천장 띠","role":"wall","layer":"lower","n":30,"from":8724,"to":8753}
+{"id":"jp:interior-ceiling-default","name":"실내 천장 띠 · 기본 천장 띠","role":"wall","layer":"lower","n":30,"from":8724,"to":8753},
+{"id":"jp:interior-floor-cv-vinyl","name":"실내 바닥 · 편의점 비닐 타일","role":"terrain","layer":"lower","n":64,"from":9054,"to":9117},
+{"id":"jp:interior-floor-cv-backroom","name":"실내 바닥 · 창고 콘크리트 바닥","role":"terrain","layer":"lower","n":64,"from":9118,"to":9181},
+{"id":"jp:interior-wall-cv-panel","name":"실내 벽면 · 매장 흰 패널 벽","role":"wall","layer":"lower","n":8,"from":9182,"to":9189},
+{"id":"jp:interior-floor-fd-tile-red","name":"실내 바닥 · 라멘집 붉은 타일 바닥","role":"terrain","layer":"lower","n":60,"from":9253,"to":9312},
+{"id":"jp:interior-floor-fd-wood-dark","name":"실내 바닥 · 이자카야 짙은 마루","role":"terrain","layer":"lower","n":136,"from":9313,"to":9448},
+{"id":"jp:interior-floor-fd-kitchen-tile","name":"실내 바닥 · 주방 회색 타일","role":"terrain","layer":"lower","n":40,"from":9449,"to":9488},
+{"id":"jp:interior-wall-fd-plaster","name":"실내 벽면 · 회벽 + 나무 허리벽","role":"wall","layer":"lower","n":16,"from":9489,"to":9504},
+{"id":"jp:interior-wall-fd-wood-wall","name":"실내 벽면 · 짙은 널벽","role":"wall","layer":"lower","n":10,"from":9505,"to":9514},
+{"id":"jp:interior-floor-sh-concrete","name":"실내 바닥 · 가게 콘크리트 바닥","role":"terrain","layer":"lower","n":64,"from":9607,"to":9670},
+{"id":"jp:interior-floor-sh-wood","name":"실내 바닥 · 가게 밝은 나무 바닥","role":"terrain","layer":"lower","n":64,"from":9671,"to":9734},
+{"id":"jp:interior-wall-sh-white","name":"실내 벽면 · 가게 흰 벽(나무 걸레받이)","role":"wall","layer":"lower","n":16,"from":9735,"to":9750},
+{"id":"jp:interior-floor-pb-sento-tile","name":"실내 바닥 · 목욕탕 타일 바닥","role":"terrain","layer":"lower","n":4,"from":9856,"to":9859},
+{"id":"jp:interior-floor-pb-linoleum","name":"실내 바닥 · 리놀륨 바닥(연녹·베이지 체크)","role":"terrain","layer":"lower","n":12,"from":9860,"to":9871},
+{"id":"jp:interior-wall-pb-sento-wall","name":"실내 벽면 · 목욕탕 타일 벽","role":"wall","layer":"lower","n":4,"from":9872,"to":9875},
+{"id":"jp:interior-wall-pb-office-wall","name":"실내 벽면 · 사무실 벽(크림·회색 걸레받이)","role":"wall","layer":"lower","n":8,"from":9876,"to":9883},
+{"id":"jp:interior-floor-h2-veranda-floor","name":"실내 바닥 · 베란다 방수 바닥","role":"terrain","layer":"lower","n":64,"from":9993,"to":10056},
+{"id":"jp:interior-floor-h2-engawa","name":"실내 바닥 · 툇마루","role":"terrain","layer":"lower","n":124,"from":10057,"to":10180}
 ]
 ```

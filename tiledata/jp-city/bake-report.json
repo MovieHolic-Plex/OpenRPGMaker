@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 9054,
+  "count": 10217,
   "tilesPerRow": 48,
-  "rows": 189,
+  "rows": 213,
   "sheetPx": [
    768,
-   3024
+   3408
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 5567,
+  "block_cells": 6730,
   "legacy": 350,
   "legacy_ids": [
    5137,
@@ -45,40 +45,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 5567
+   "block": 6730
   }
  },
  "pc_counts": {
-  "star": 4888,
-  "solid": 1801,
-  "floor": 963,
-  "solidfloor": 418,
-  "flat": 479,
+  "star": 5062,
+  "solid": 2008,
+  "floor": 1659,
+  "solidfloor": 480,
+  "flat": 503,
   "blank": 155
  },
  "kits": {
-  "total": 537,
+  "total": 689,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 361
+   "block-kit": 513
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 361
+  "block_kit": 513
  },
  "groups": {
-  "total": 231,
+  "total": 248,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 78
+   "block": 95
   }
  },
  "autotiles": {
@@ -119,7 +119,12 @@
    "interior_ldk",
    "interior_wet",
    "interior_bed",
-   "interior_doors"
+   "interior_doors",
+   "interior_konbini",
+   "interior_food",
+   "interior_shop",
+   "interior_public",
+   "interior_home2"
   ],
   "merged": [
    "autotiles_ground",
@@ -136,7 +141,12 @@
    "interior_ldk",
    "interior_wet",
    "interior_bed",
-   "interior_doors"
+   "interior_doors",
+   "interior_konbini",
+   "interior_food",
+   "interior_shop",
+   "interior_public",
+   "interior_home2"
   ],
   "missing": [],
   "on_disk_not_in_order": [],
@@ -260,11 +270,51 @@
     "groups": 0,
     "kits": 6,
     "notes": "열린 방문·현관문 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 0 · 벽면 0 · 천장 0 · 가구 6 · 탁자 0 · 탁상 0"
+   },
+   {
+    "name": "interior_konbini",
+    "cells": 199,
+    "autotiles": 0,
+    "groups": 3,
+    "kits": 23,
+    "notes": "편의점·슈퍼 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 23 · 탁자 0 · 탁상 4"
+   },
+   {
+    "name": "interior_food",
+    "cells": 354,
+    "autotiles": 0,
+    "groups": 5,
+    "kits": 29,
+    "notes": "음식점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 29 · 탁자 2 · 탁상 8"
+   },
+   {
+    "name": "interior_shop",
+    "cells": 249,
+    "autotiles": 0,
+    "groups": 3,
+    "kits": 45,
+    "notes": "상점 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 1 · 천장 0 · 가구 45 · 탁자 0 · 탁상 6"
+   },
+   {
+    "name": "interior_public",
+    "cells": 137,
+    "autotiles": 0,
+    "groups": 4,
+    "kits": 35,
+    "notes": "공공·목욕탕 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 2 · 천장 0 · 가구 35 · 탁자 1 · 탁상 4"
+   },
+   {
+    "name": "interior_home2",
+    "cells": 224,
+    "autotiles": 0,
+    "groups": 2,
+    "kits": 20,
+    "notes": "집 보강 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 0 · 천장 0 · 가구 20 · 탁자 0 · 탁상 4"
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 537,
+  "kits_checked": 689,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -321,7 +371,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 97
+   "in": 249
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -331,9 +381,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 9054,
-  "kits_checked": 537,
-  "groups_checked": 231,
+  "tiles_checked": 10217,
+  "kits_checked": 689,
+  "groups_checked": 248,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -348,10 +398,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "dbc47e46081a1e7128d4dd6003a15b10daeb53de",
+ "sheet_hash": "3dfc808a235fff9a339403e8cdaefbabb753a71d",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 537,
+  "kits_checked": 689,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -408,7 +458,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 97
+   "in": 249
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -418,9 +468,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 9054,
-  "kits_checked": 537,
-  "groups_checked": 231,
+  "tiles_checked": 10217,
+  "kits_checked": 689,
+  "groups_checked": 248,
   "autotiles_checked": 17
  },
  "files": {

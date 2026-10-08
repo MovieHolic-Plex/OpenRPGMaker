@@ -1,0 +1,398 @@
+{
+ "name": "맨션 2LDK",
+ "plan": [
+  "###############",
+  "#....#.#...#..#",
+  "#....#.#...#..#",
+  "#....#.#...#..#",
+  "#....#.#...#..#",
+  "#....#.#...#..#",
+  "##.###.##.##.##",
+  "#..#..........#",
+  "#..#..........#",
+  "#.............#",
+  "#.............#",
+  "#.............#",
+  "#..#..........#",
+  "#..#####..#####",
+  "#..#..........#",
+  "#..#..........#",
+  "#..#..........#",
+  "#..#..........#",
+  "#..############",
+  "##.############"
+ ],
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 4,
+   "y1": 5,
+   "floor": "carpet",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 6,
+   "y0": 0,
+   "x1": 6,
+   "y1": 5,
+   "floor": "cushion",
+   "wall": "cloth"
+  },
+  {
+   "x0": 12,
+   "y0": 0,
+   "x1": 13,
+   "y1": 5,
+   "floor": "bathtile",
+   "wall": "bathwall"
+  },
+  {
+   "x0": 7,
+   "y0": 6,
+   "x1": 13,
+   "y1": 8,
+   "floor": "flooring",
+   "wall": "kitchen-panel"
+  },
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 2,
+   "y1": 13,
+   "floor": "tataki"
+  },
+  {
+   "x0": 4,
+   "y0": 14,
+   "x1": 13,
+   "y1": 17,
+   "floor": "h2-veranda-floor",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 1,
+   "y0": 13,
+   "x1": 2,
+   "y1": 19,
+   "floor": "h2-veranda-floor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "bed-single",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "h2-bed-side",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "wardrobe",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "curtain-window",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "toilet",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "toilet-paper",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "bed-single",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "desk-study",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "window-sash-small",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "bathtub",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "shower-faucet",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "bath-mirror",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "bath-stool",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "bath-bucket",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "door-open-western",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "door-open-western",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "door-open-western",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "h2-shoe-closet",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "door-side-western",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "agarikamachi",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "shoes-pair",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "h2-genkan-door-steel",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "tv-board",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "rug",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "low-table",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "sofa-n",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "fridge",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "cupboard",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "chair-dining-s",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-s",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-n",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "chair-dining-n",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "washing-machine",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "h2-sash-door",
+   "x": 8,
+   "y": 13
+  },
+  {
+   "id": "h2-laundry-pole",
+   "x": 4,
+   "y": 16
+  },
+  {
+   "id": "h2-ac-outdoor",
+   "x": 12,
+   "y": 16
+  },
+  {
+   "id": "h2-planter",
+   "x": 13,
+   "y": 16
+  },
+  {
+   "id": "h2-sandals",
+   "x": 8,
+   "y": 16
+  },
+  {
+   "id": "h2-railing",
+   "x": 4,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 5,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 6,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 7,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 8,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 9,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 10,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 11,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 12,
+   "y": 17
+  },
+  {
+   "id": "h2-railing",
+   "x": 13,
+   "y": 17
+  }
+ ],
+ "tables": [
+  {
+   "style": "kcounter",
+   "x": 8,
+   "y": 11,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "dining",
+   "x": 11,
+   "y": 11,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "rice-cooker",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "kettle",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "fruit-bowl",
+   "x": 8,
+   "y": 11
+  },
+  {
+   "id": "plates",
+   "x": 11,
+   "y": 11
+  },
+  {
+   "id": "remote",
+   "x": 5,
+   "y": 11
+  }
+ ]
+}

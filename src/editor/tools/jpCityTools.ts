@@ -8,6 +8,7 @@ import {
   type JpCityBuildingInput, type JpCityDecoInput, type JpCityFloorInput, type JpCityIssue, type JpCityWingInput,
 } from "@/editor/jpCity/builder";
 import { isPassable } from "@/project/collision";
+import { LINK_JP_CITY_INTERIOR_TOOL } from "./jpCityInteriorLink";
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
@@ -314,4 +315,4 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
   },
 };
 
-export const JP_CITY_TOOLS: readonly ToolDefinition[] = [LIST_JP_CITY_BUILDING_PARTS_TOOL, BUILD_JP_CITY_BUILDING_TOOL];
+export const JP_CITY_TOOLS: readonly ToolDefinition[] = [LIST_JP_CITY_BUILDING_PARTS_TOOL, BUILD_JP_CITY_BUILDING_TOOL, LINK_JP_CITY_INTERIOR_TOOL];

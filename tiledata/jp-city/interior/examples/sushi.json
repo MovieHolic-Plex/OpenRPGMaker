@@ -1,0 +1,150 @@
+{
+ "plan": [
+  "###########",
+  "######....#",
+  "######....#",
+  "######....#",
+  "######....#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "######..###"
+ ],
+ "exitWidth": 2,
+ "floor": "fd-wood-dark",
+ "wall": "fd-plaster",
+ "zones": [
+  {
+   "x0": 6,
+   "x1": 9,
+   "y0": 1,
+   "y1": 5,
+   "floor": "fd-kitchen-tile",
+   "wall": "fd-wood-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "fd-fridge",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "fd-rice-tub",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "fd-grill-range",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "fd-cutting-block",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "fd-noren",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "fd-lantern",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "fd-register",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "fd-stool",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "fd-stool",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "fd-stool",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "fd-zashiki",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "zataku",
+   "x": 2,
+   "y": 7
+  }
+ ],
+ "tables": [
+  {
+   "style": "fd-counter",
+   "x": 7,
+   "y": 6,
+   "w": 3,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fd-sushi-geta",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "fd-tokkuri",
+   "x": 9,
+   "y": 6
+  }
+ ],
+ "name": "일본 초밥집 실내",
+ "start": [
+  6,
+  9
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "sushi",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 10
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 6,
+   "y0": 3,
+   "x1": 6,
+   "y1": 7,
+   "why": "카운터 안쪽 주방 직원 길"
+  }
+ ]
+}

@@ -1,0 +1,101 @@
+{
+ "name": "파출소(交番) — 입구 책상·지도판 · 옆문 안쪽 사무실",
+ "plan": [
+  "###########",
+  "#.....#...#",
+  "#.....#...#",
+  "#.....#...#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "####.######"
+ ],
+ "floor": "pb-linoleum",
+ "wall": "pb-office-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 7,
+   "y0": 0,
+   "x1": 10,
+   "y1": 7,
+   "floor": "flooring-dark",
+   "wall": "juraku"
+  }
+ ],
+ "objects": [
+  {
+   "id": "pb-map-board",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "pb-police-desk",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "pb-bicycle",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "pb-police-desk",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "genkan-door",
+   "x": 4,
+   "y": 7
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-documents",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-documents",
+   "x": 9,
+   "y": 5
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+[
+ { "building": "A2", "example": "sushi" },
+ { "building": "B1a", "example": "bookstore" },
+ { "building": "A1b", "example": "pharmacy" },
+ { "building": "B1b", "example": "florist" },
+ { "building": "A1c", "example": "sento" },
+ { "building": "B2", "example": "yaoya" },
+ { "building": "E1", "example": "mansion-2ldk" },
+ { "building": "A1a", "example": "barber" }
+]

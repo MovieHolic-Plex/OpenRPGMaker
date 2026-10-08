@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-mokuchin",
+  "size": [
+   8,
+   9
+  ]
+ },
+ "start": [
+  2,
+  7
+ ],
+ "summary": "손 도트 실내 '일본 목조 아파트(木造アパート) 6조 한 칸' 8×9 (jp-city-mokuchin, jp_city) — 출입구에서 닿는 칸 18, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-mokuchin",
+  "tilesetId": "jp_city",
+  "width": 8,
+  "height": 9,
+  "reachable": 18,
+  "floorCells": 29,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 7
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [
+   {
+    "x": 2,
+    "y": 8,
+    "width": 1
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 18,
+ "ok": true
+}

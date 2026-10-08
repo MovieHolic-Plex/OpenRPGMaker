@@ -1,0 +1,89 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#######.#"
+ ],
+ "floor": "pb-linoleum",
+ "wall": "pb-office-wall",
+ "ceiling": "default",
+ "objects": [
+  {
+   "id": "pb-washer",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-washer",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "pb-washer",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-dryer",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-dryer",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "pb-changer",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-vending",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "pb-fold-table",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "pb-bench",
+   "x": 5,
+   "y": 6
+  }
+ ],
+ "goods": [
+  {
+   "id": "pb-detergent",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "pb-documents",
+   "x": 3,
+   "y": 6
+  }
+ ],
+ "name": "일본 코인세탁(コインランドリー) 실내",
+ "start": [
+  7,
+  6
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "laundry",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 6
+  }
+ ]
+}

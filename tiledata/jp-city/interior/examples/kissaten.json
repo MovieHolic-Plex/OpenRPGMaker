@@ -1,0 +1,154 @@
+{
+ "plan": [
+  "##########",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "####..####"
+ ],
+ "exitWidth": 2,
+ "floor": "fd-wood-dark",
+ "wall": "fd-wood-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "window-sash",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "window-sash",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "fd-bean-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "fd-cake-case",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fd-siphon",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "fd-coffee-machine",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 8,
+   "y": 6
+  }
+ ],
+ "tables": [
+  {
+   "style": "fd-table",
+   "x": 1,
+   "y": 4,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "fd-table",
+   "x": 1,
+   "y": 6,
+   "w": 1,
+   "h": 2
+  },
+  {
+   "style": "fd-table",
+   "x": 6,
+   "y": 6,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fd-coffee-cup",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 7,
+   "y": 6
+  }
+ ],
+ "name": "일본 킷사텐(찻집) 실내",
+ "start": [
+  4,
+  7
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "kissaten",
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 8
+  }
+ ]
+}

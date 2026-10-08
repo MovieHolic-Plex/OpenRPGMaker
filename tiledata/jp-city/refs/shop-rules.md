@@ -1,6 +1,6 @@
 # 일본 도시 — 상가 키트·문·소품 규칙 (시점·통행·문 앞·반복/고정·배치 순서)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9054칸**, 16px 칸, 시트 768×3024px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 ## 키트 세 종류
 - **레시피 25종**(`jp-recipe-*`): 건물 한 채 완성품(문·간판 부위 포함). 건물 조립 도구의 완성 예제 25개와 이름이 1:1 로 대응한다(`konbini_block` ↔ `jp-recipe-konbini-block`, L자는 `jp-recipe-l-…`). 칸 배열은 문서 「상가 레시피 사전」.

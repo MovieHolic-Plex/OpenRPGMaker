@@ -1,0 +1,78 @@
+{
+ "stage": "interior-shop",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
+ "reviewer": "claude -p --model sonnet[1m] --effort high",
+ "rounds": 13,
+ "seconds": 1419,
+ "focus": "일본 가게·공공 실내 19곳(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·센토·코인세탁·파출소·의원)과 집 보강(맨션 2LDK+베란다·목조 아파트·단층 옛집), 그리고 거리 건물 문 ↔ 실내 잇기 도구 link_jp_city_interior. sheet1~4 = 예제 맵(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일 이름), _all-x3 = 블록별 새 가구 도감. 거리 기준(보도·전선·좌측통행)은 적용하지 말고 다음을 본다: ① 실제 일본 가게처럼 보이는가(편의점 음료 냉장 벽·섬 진열·계산대+핫스낵, 라멘 L자 카운터·식권기, 이자카야 다다미 좌석, 센토 반다이·탈의실·욕장·후지산 벽화, 코인세탁 세탁기 줄, 交番, 의원 접수·대기·진찰실) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, 색 뭉침, modern3 팔레트·윤곽·명암, 승인된 street_hand 그림과 같은 게임으로 보이는가) ⑤ 동선(손님: 입구→진열→출구 가까운 계산대, 직원: 카운터 안쪽↔주방·뒷방) ⑥ 빈 바닥이 넓게 남는 방 ⑦ 글자·로고·사람이 그려져 있지 않은가 ⑧ 같은 틀 반복(뒷방 여섯이 다 같은 싱크·그릇장 등) ⑨ 문 잇기: door-link/SUMMARY.md 와 01a~01d(거리 문 앞→실내 도착→거리 복귀, 출하 player.html 실측), 도구 코드(발판 위치·착지 칸이 발판을 다시 밟지 않는가, 여러 칸 문, 실내 출구 탐색이 맨 아래 3줄인 것의 위험) ⑩ 참고문서(interior-shop-index.md·interior-rules.md 「없는 것」)가 조수가 따라 할 수 있게 정확한가. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 【게시 순서】 장소 19곳 게시(interior.mjs --publish)는 이 관문 pass 가 조건이라 지금은 게시 전이다 — 게시 안 된 것 자체는 결함이 아니다. door-link QA 는 게시 전 예제를 도구(build_hand_interior_room→interiorMapId)로 지어 잇는다(SUMMARY 머리에 커밋·방식). 【같은 틀 반복】 space.txt 의 SAME 줄 = 같은 크기 예제끼리 가구 자리 50% 넘게 겹침. 【빈 바닥 판정】 interior2/space.txt = 도구 그대로 지은 맵의 엔진 통행 수치(sq = 걸음 칸만으로 된 가장 큰 정사각형 변, 2 = 통로 폭; e3 = 3×3 이 다 걸음 칸인 창이 덮는 칸 수). 3/4 시점이라 키 큰 가구는 발밑 한 줄만 막고 그림은 위로 솟는다 — 그림에서 바닥이 보여도 걸음 칸이 통로 폭이면 빈 바닥이 아니다. 빈 바닥 지적은 sq ≥ 3 인 곳의 좌표로 한다. 【통로 폭 — 10회차에 규칙을 바꿨고 13회차에 검사기가 넷을 경고한다: 가려진 1줄 통로·밝히지 않은 1칸 목·막다른 1칸 4칸 이상·계산대 앞 두 줄 아님. 1칸이 맞는 곳은 예제 JSON narrow(why 포함)로 밝히고 space.txt 줄에 찍힌다 — narrow 가 정말 직원 길·카운터석 뒤·계산 레인인지, 손님 길을 narrow 로 숨기지 않았는지 따져라. 집 셋(맨션·목조 아파트·옛집)은 이 절 밖이다】 interior-rules.md 「통로 폭」 절: 주 동선(입구→계산대 앞, 입구→안쪽 방 문·트인 연결)은 2칸, 진열 줄 사이 가로 통로는 1칸도 된다(2칸 주 동선에 붙고, 아래 줄 가구 윗부분이 덮어 안 보이지 않고, 막다른 1칸은 3칸까지). 카운터석 의자 뒤·직원 전용 길은 1칸이 맞다. 계산대 앞 손님 자리도 2줄. space.txt 의 w2(걸음 칸 중 2×2 덩이 비율)·cut(막으면 출입구에서 4칸 이상 끊기는 1칸 병목 좌표 — 방문·노렌 틈·직원 길·출구 칸은 원래 병목)·hid(북쪽이 막힌 1줄 통로인데 남쪽 가구 윗부분 up≥16 이 덮는 칸, 가로 2칸 이상만; up 8 짜리 낮은 진열은 반쯤만 덮는다)로 확인하고, 칸별 그림은 `check-interior-examples.mts --grid <이름>` 으로 볼 수 있다(. 걸음 # 막힘 x 병목 ^ 가려짐 ~ 윗부분이 덮는 걸음 칸). 통로 지적은 이 규칙 기준으로 cut 좌표를 짚어라. 규칙 자체가 틀렸다고 보면 그 근거를 따로 적어라. 【읽기 제한 — 지난 실행이 컨텍스트 폭주로 죽었다】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 기준 그림은 street_hand/_all-x2.png 한 장만, buildings/*.png 는 읽지 마라. 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로. 가구 도감(_all-x3)은 앞 회차에서 봤으니 이번엔 예제 시트만 본다. 지난 지적 확인도 위 파일 목록 안에서만 한다(door-link 는 SUMMARY.md 텍스트로 — 21곳 86/86, 계단 왕복 08s, 되튕김 d 줄).",
+ "files": {
+  "verify-shots/jp-city/interior2/sheet1.png": "7cfc161c5c5dd1f1272726d3ce5d4fb877ed71959bafde03d77a41afec4dacb6",
+  "verify-shots/jp-city/interior2/sheet2.png": "78050e2202933cea5ab7aadae371bed310aa68e9320c9ec0101e31ba8c3c626f",
+  "verify-shots/jp-city/interior2/sheet3.png": "1a8e26f6f7955aa9da1288fe21658e0ad2f1cc0e0172598d9b062abf01bc8979",
+  "verify-shots/jp-city/interior2/sheet4.png": "673e71f2cb7e51cae401a7a161f7cccd3f78f4c4263f50bf4adf71c4e8d7491b",
+  "verify-shots/jp-city/interior2/space.txt": "17c805f20aa1fc4750e1cdb65c2249cbd38a91837a561d341795fb8e1536cde4",
+  "tiledata/jp-city/interior/examples/places2.json": "3be3b20e96ab144f1f848b1f907c61699ff43fdf076cfe1a149365137384e659",
+  "tiledata/jp-city/interior/examples/konbini.json": "74d6c5d6af71e4ef2edd337da1d55cdbc99d0e058984a9b2e954aa758048176c",
+  "tiledata/jp-city/interior/examples/ramen.json": "27a6cae8b99432d653a39050434225de2acd1227c8a207e2991b42d8fc481d96",
+  "tiledata/jp-city/interior/examples/sento.json": "d7f2d2a0bfaee913539dc7d30e57f7b1ff3096ace59f41d68f41c483c817bf07",
+  "tiledata/jp-city/interior/examples/mansion-2ldk.json": "179fe6f35e43002782df0ba67db41f77e2834b107ad5922063bbc8625d657262",
+  "tiledata/jp-city/refs/interior-shop-index.md": "122c0cad4c8c9f6670f7e32901d35118c1f1f92dee4088b2c99fadf487b72d8c",
+  "tiledata/jp-city/refs/interior-rules.md": "6fe671354fafc788c560d6855e646414f10d85f5d7f828aa278dd37c608fbf56",
+  "verify-shots/jp-city/door-link/SUMMARY.md": "d95a1477d5bdf05a682f46f925acf539159cfc2569a1bd9ebd9c620bd09907ad",
+  "verify-shots/jp-city/door-link/01a-street.png": "545645d942fa74ec3c983fd5ae5d5438fcc6fb78501aa264d417b64b6104458f",
+  "verify-shots/jp-city/door-link/01b-inside.png": "6d746dbd7bcc31e98743c2e4ee905991a37d1ffe5e9a5eea3befa771016a4bd9",
+  "verify-shots/jp-city/door-link/18c-far.png": "9228619b796cd35078ab8ce794dba742623002b488294d1580eb0ff986fe8b13",
+  "verify-shots/jp-city/door-link/19c-far.png": "370a24134360de7e336ef2dd7af3c9c19a2d86c3cd8b4c90fa0d16f58317411a",
+  "tiledata/jp-city/interior/examples/izakaya.json": "889a6cc16bc234aa2d2f8d3e23ea61368477d5e497a4bb80a2fdadcb1af8a750",
+  "tiledata/jp-city/interior/examples/koban.json": "abd11416fee95c30ba2b086e792e08737c9b6b7e9a7c6c7247f539b9ba3a63f6",
+  "tiledata/jp-city/interior/examples/supermarket.json": "ebd10c88c64919c8bb50b9d96c63fab8a2bb456200f01b664132ce44e9a0550a",
+  "tiledata/jp-city/interior/examples/clinic.json": "fa14fc43a06088c1aa81e1f5d60b270a26c97ba3f910de06b4f9190d8163d6a0",
+  "src/editor/tools/jpCityInteriorLink.ts": "a238b2fe043f4a08adb6bc84b217f3d2f8aae765d523d269c25fbb66db1a1227"
+ },
+ "findings": [
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/supermarket.json",
+   "where": "narrow (1,5)-(1,13) '직원 길' 과 (1,14)-(2,15) '서쪽 계산 레인(손님이 한 줄로 지난다)'; 서쪽 계산대 cv-checkout (3,14), 진입은 (1,12)→(1,13) 한 칸뿐",
+   "problem": "직원 길로 밝힌 x1 열에 손님이 지나는 (1,10)~(1,12)가 섞여 있고, 서쪽 레인은 그 직원 길로만 들어간다. 레인에 서는 사람이 손님인지 계산원인지 설명이 서로 충돌한다.",
+   "fix": "narrow 를 직원 길 (1,5)-(1,9) 와 레인 (1,13)-(2,15) 로 나누고 why 에 계산원 자리인지 손님 줄인지 한 가지로 적는다. 손님 줄이면 (2,13) cv-produce 를 옮겨 막다른 길을 없앤다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/yaoya.json",
+   "where": "narrow (1,7)-(5,7) '계산대 안쪽 직원 줄'; space.txt cut 6,7",
+   "problem": "직원 줄 입구 (6,7)이 병목으로 잡히는데 narrow 범위(x1..5)에 없다. 주 동선이 아니라서 검사기 경고만 피했다.",
+   "fix": "narrow x1 을 6 으로 늘린다."
+  },
+  {
+   "severity": "minor",
+   "file": "src/editor/tools/jpCityInteriorLink.ts",
+   "where": "run(): olds/taken 필터 (148~149, 185~186행)",
+   "problem": "replace:true 가 문 앞·실내 출구 칸의 모든 이벤트를 지운다. 이전 연결 이벤트(ev_jp_enter_*/ev_jp_exit_*)와 NPC·표지·가게 이벤트를 구분하지 않는다.",
+   "fix": "replace 대상은 transfer 명령 하나짜리 jp 연결 이벤트(id 접두사 ev_jp_)로 한정한다. 그 밖의 이벤트가 있으면 replace:true 여도 door-event-exists 로 거절한다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/pharmacy.json",
+   "where": "pb-scale (4,9), sheet2 약국",
+   "problem": "둥근 눈금판이 달린 체중계가 벽시계처럼 읽혀 무엇인지 알아보기 어렵다.",
+   "fix": "눈금판을 작게 하고 발판 직사각형을 키우거나, 이 자리에 sh-consult 같이 읽히는 가구를 둔다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/supermarket.json",
+   "where": "뒷방 y3~y4, narrow (1,3)-(14,4)",
+   "problem": "걸음 칸이 y4 한 줄(x1..10, x11..14)뿐이고 y3 은 물건으로 가득 차 있어 창고가 아니라 14칸 복도로 읽힌다.",
+   "fix": "뒷방 한쪽을 한 줄 더 열거나 물건 수를 줄여 바닥이 2줄 보이게 한다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/refs/interior-rules.md",
+   "where": "95행 「통로 폭」 단락",
+   "problem": "주 동선·진열 줄·계산대 앞·막다른 칸·1칸 허용 목록·검사기 기호·예제 설명이 한 문단에 모두 들어 있어 조수가 조건을 놓치기 쉽다.",
+   "fix": "허용 조건 ①②③, 1칸이 맞는 곳, narrow 작성법, 검사기 기호를 소제목이나 목록으로 나눈다."
+  }
+ ],
+ "report": "지난 지적 5건은 모두 고쳐졌고, 이번 검수에서 blocker·major는 찾지 못했다. 예제 JSON·`--grid` 출력·시트·door-link 증거·`jpCityInteriorLink.ts`를 직접 대조했다.\n\n**지난 지적 확인**\n1. 맨션 홀→LDK는 `door-side-western`(4,12) 한 칸 문으로 바뀌었다. 문 앞뒤는 `hid -`이고 `cut`은 문 좌표(3~5,12)뿐이다. 집은 이 절 밖이다.\n2. 센토 탈의실은 y10~11 두 줄이 3..12 구간에서 열려 있다. 안마의자는 (13,11)로 옮겨졌고 `cut`은 노렌 문 통로와 출구뿐이다.\n3. 꽃집 계산대 (6,9)(7,9) 앞은 y10·y11 두 줄이다. 맵이 13행으로 늘고 출구는 y12다.\n4. 킷사텐은 카운터 앞 y4와 y5가 x3..8에서 모두 걸음 칸이다. 탁자 줄에 낀 막다른 칸이 없다.\n5. 채소가게 서쪽 선반은 `sh-stock-shelf`로 바뀌고 직원 줄(1..5,7)로 밝혔다. 선반 id를 바꾼 것이지 위치를 옮긴 것은 아니다. 아래 minor 2건이 남는다.\n\n**거리 문 잇기**\nSUMMARY의 PASS 86줄은 21곳 × 4줄 + 계단 2줄로 맞다. 01a를 보면 보도가 두 줄이라 착지 (19,12)는 차도가 아니다. 착지 칸은 발판 줄이 아니라 한 줄 아래라서 발판을 다시 밟지 않는다. 출구 탐색은 현재 코드상 맨 아래 한 줄만 본다(프롬프트의 \"3줄\"은 옛 설계). 문 폭 1~4칸 처리는 코드와 증거가 일치한다.\n\n**남은 지적(minor)**\n- **슈퍼 narrow 설명 불일치:** 서쪽 계산 레인은 \"손님이 한 줄로 지난다\"고 적혀 있다. 그런데 이 레인은 직원 길로 밝힌 x1 열 (1,12)→(1,13)으로만 들어간다. 직원 길 범위(1,5)~(1,13)에 손님이 지나는 (1,10)~(1,12)가 섞여 있다. 계산대 (3,14)의 반대편(4,14)은 열린 통로다. 레인에 서는 사람이 손님인지 계산원인지 읽히지 않는다.\n- **채소가게 narrow 범위:** 직원 줄 입구 (6,7)이 `cut`인데 narrow x1..5에 들어 있지 않다. 검사기가 경고하지 않아 통과했을 뿐이다.\n- **`replace:true`의 삭제 범위:** 거리 문 앞과 실내 출구 칸에 있는 모든 이벤트가 지워진다(`jpCityInteriorLink.ts` 148·185~186행). 이전 `ev_jp_enter_*`·`ev_jp_exit_*`만 대상으로 한다는 보장이 없어 NPC나 표지 이벤트가 사라질 수 있다. 오류 메시지가 이벤트 목록을 보여 주긴 한다.\n- **약국 `pb-scale` (4,9):** 화면에서 벽시계로 읽힌다. 계산대가 출구에서 먼 점은 조제 카운터 구조상 수용된다.\n- **슈퍼 뒷방:** 걸음 칸이 y4 한 줄 14칸이고 북쪽 벽 줄이 물건으로 차 있어 복도처럼 읽힌다.\n- **참고문서:** `interior-rules.md` 95행이 한 문단에 규칙 열댓 개를 담고 있어 조수가 따라 하기 어렵다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/supermarket.json\", \"where\": \"narrow (1,5)-(1,13) '직원 길' 과 (1,14)-(2,15) '서쪽 계산 레인(손님이 한 줄로 지난다)'; 서쪽 계산대 cv-checkout (3,14), 진입은 (1,12)→(1,13) 한 칸뿐\", \"problem\": \"직원 길로 밝힌 x1 열에 손님이 지나는 (1,10)~(1,12)가 섞여 있고, 서쪽 레인은 그 직원 길로만 들어간다. 레인에 서는 사람이 손님인지 계산원인지 설명이 서로 충돌한다.\", \"fix\": \"narrow 를 직원 길 (1,5)-(1,9) 와 레인 (1,13)-(2,15) 로 나누고 why 에 계산원 자리인지 손님 줄인지 한 가지로 적는다. 손님 줄이면 (2,13) cv-produce 를 옮겨 막다른 길을 없앤다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/yaoya.json\", \"where\": \"narrow (1,7)-(5,7) '계산대 안쪽 직원 줄'; space.txt cut 6,7\", \"problem\": \"직원 줄 입구 (6,7)이 병목으로 잡히는데 narrow 범위(x1..5)에 없다. 주 동선이 아니라서 검사기 경고만 피했다.\", \"fix\": \"narrow x1 을 6 으로 늘린다.\"},\n{\"severity\": \"minor\", \"file\": \"src/editor/tools/jpCityInteriorLink.ts\", \"where\": \"run(): olds/taken 필터 (148~149, 185~186행)\", \"problem\": \"replace:true 가 문 앞·실내 출구 칸의 모든 이벤트를 지운다. 이전 연결 이벤트(ev_jp_enter_*/ev_jp_exit_*)와 NPC·표지·가게 이벤트를 구분하지 않는다.\", \"fix\": \"replace 대상은 transfer 명령 하나짜리 jp 연결 이벤트(id 접두사 ev_jp_)로 한정한다. 그 밖의 이벤트가 있으면 replace:true 여도 door-event-exists 로 거절한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/pharmacy.json\", \"where\": \"pb-scale (4,9), sheet2 약국\", \"problem\": \"둥근 눈금판이 달린 체중계가 벽시계처럼 읽혀 무엇인지 알아보기 어렵다.\", \"fix\": \"눈금판을 작게 하고 발판 직사각형을 키우거나, 이 자리에 sh-consult 같이 읽히는 가구를 둔다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/supermarket.json\", \"where\": \"뒷방 y3~y4, narrow (1,3)-(14,4)\", \"problem\": \"걸음 칸이 y4 한 줄(x1..10, x11..14)뿐이고 y3 은 물건으로 가득 차 있어 창고가 아니라 14칸 복도로 읽힌다.\", \"fix\": \"뒷방 한쪽을 한 줄 더 열거나 물건 수를 줄여 바닥이 2줄 보이게 한다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md\", \"where\": \"95행 「통로 폭」 단락\", \"problem\": \"주 동선·진열 줄·계산대 앞·막다른 칸·1칸 허용 목록·검사기 기호·예제 설명이 한 문단에 모두 들어 있어 조수가 조건을 놓치기 쉽다.\", \"fix\": \"허용 조건 ①②③, 1칸이 맞는 곳, narrow 작성법, 검사기 기호를 소제목이나 목록으로 나눈다.\"}\n]}\n```"
+}

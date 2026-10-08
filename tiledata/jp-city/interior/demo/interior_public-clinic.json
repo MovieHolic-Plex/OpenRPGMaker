@@ -1,0 +1,126 @@
+{
+ "name": "의원 — 접수 → 대기 소파 → 옆문 안쪽 진찰실(책상·침대·커튼·약장)",
+ "plan": [
+  "##############",
+  "#.......#....#",
+  "#.......#....#",
+  "#.......#....#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "######.#######"
+ ],
+ "floor": "pb-linoleum",
+ "wall": "pb-office-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 8,
+   "y0": 0,
+   "x1": 13,
+   "y1": 7,
+   "floor": "flooring",
+   "wall": "cloth"
+  }
+ ],
+ "objects": [
+  {
+   "id": "pb-med-cabinet",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-reception",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "pb-reception",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "pb-reception",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "pb-waiting-sofa-s",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "pb-waiting-sofa-n",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "pb-scale-height",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "door-side-western",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "pb-doctor-desk",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "pb-exam-bed",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "pb-curtain",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "genkan-door",
+   "x": 6,
+   "y": 7
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-documents",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "pb-stethoscope",
+   "x": 10,
+   "y": 3
+  }
+ ]
+}

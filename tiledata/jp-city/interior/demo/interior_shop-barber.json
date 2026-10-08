@@ -1,0 +1,184 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####"
+ ],
+ "floor": "sh-wood",
+ "wall": "cloth-beige",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 13,
+   "floor": "sh-wood",
+   "wall": "cloth-beige"
+  }
+ ],
+ "objects": [
+  {
+   "id": "door-open-western",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "genkan-door",
+   "x": 4,
+   "y": 13
+  },
+  {
+   "id": "window-sash",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "cupboard",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-shampoo",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "trash-bins",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "window-sash",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "wall-clock",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-shampoo",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sh-waiting-bench",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "sh-counter",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "sh-register",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "sh-barber-pole",
+   "x": 3,
+   "y": 12
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 7,
+   "y": 12
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-scissors",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-scissors",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 6,
+   "y": 11
+  }
+ ]
+}

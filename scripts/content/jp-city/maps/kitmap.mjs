@@ -254,7 +254,7 @@ export async function kitMap(W, H, { fill = T.SW } = {}) {
     process.stdout.write(gate.stdout);
     if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error(`적대적 검증 관문 ${file} 미통과 — 게시하지 않았다(--stage ${file} 로 run 먼저)`); process.exit(3); }
     const REGION_DIR = join(ROOT, "public/assets/region-references");
-    const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "interior-inn-tavern-1f.oprn.json"), "utf8"));
+    const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "jp-city-apartment-1k.oprn.json"), "utf8"));
     const mapOut = { ...MAP, name };
     const proj = structuredClone(tpl);
     proj.meta.title = name;

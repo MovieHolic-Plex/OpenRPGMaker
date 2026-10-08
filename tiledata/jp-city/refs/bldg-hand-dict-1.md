@@ -1,6 +1,6 @@
 # 일본 도시 — 손 도트 건물 사전 1/2 (47종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **9054칸**, 16px 칸, 시트 768×3024px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 항목: `kit` · `name` · `category` · `w`×`h` · `anchor` · `access`(문 앞 접근칸 dx,dy — 키트 바깥 한 줄 아래) · `parts`(`entrance` = 출입구 그림 칸) ·
 `upperTiles`(3층 칸 전체, `-1` = 맵을 건드리지 않는 칸) · `codes`(엔진 판정 `X` 막힘 · `*` ★ 뒤로 지나감 · `.` 걸음 · `_` 빈 칸) · `accessReach`(시험판 도달).

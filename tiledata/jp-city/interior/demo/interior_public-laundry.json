@@ -1,0 +1,74 @@
+{
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#######.#"
+ ],
+ "floor": "pb-linoleum",
+ "wall": "pb-office-wall",
+ "ceiling": "default",
+ "objects": [
+  {
+   "id": "pb-washer",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-washer",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "pb-washer",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-dryer",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-dryer",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "pb-changer",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-vending",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "pb-fold-table",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-bench",
+   "x": 5,
+   "y": 5
+  }
+ ],
+ "goods": [
+  {
+   "id": "pb-detergent",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-documents",
+   "x": 3,
+   "y": 5
+  }
+ ]
+}
