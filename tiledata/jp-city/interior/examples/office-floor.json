@@ -1,0 +1,436 @@
+{
+ "name": "사무 빌딩 사무층(기준층)",
+ "plan": [
+  "########################",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#.######.####.#####..###",
+  "#......#....#...#......#",
+  "#......#....#...#......#",
+  "#......#....#...#......#",
+  "#......#....#...#......#",
+  "#......#....#...########",
+  "#......#....############",
+  "########################"
+ ],
+ "floor": "of-carpet-tile",
+ "wall": "of-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 9,
+   "x1": 6,
+   "y1": 15,
+   "floor": "of-carpet-tile",
+   "wall": "of-glass-wall"
+  },
+  {
+   "x0": 8,
+   "y0": 9,
+   "x1": 11,
+   "y1": 15,
+   "floor": "of-pantry-tile",
+   "wall": "of-wall"
+  },
+  {
+   "x0": 13,
+   "y0": 9,
+   "x1": 15,
+   "y1": 14,
+   "floor": "of-stair-conc",
+   "wall": "of-wall"
+  },
+  {
+   "x0": 17,
+   "y0": 9,
+   "x1": 22,
+   "y1": 14,
+   "floor": "of-lobby-stone",
+   "wall": "of-lobby-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "of-window-blind",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "of-window-blind",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "of-window-blind",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "of-boss-desk",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "of-desk-w",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "of-desk-e",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "of-desk-w",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "of-desk-e",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "of-boss-desk",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "of-desk-w",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "of-desk-e",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "of-desk-w",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "of-desk-e",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "of-cabinet",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "of-server-rack",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "of-copier",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "of-vending",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "of-coat-rack",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "of-whiteboard",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "of-plant-big",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "pb-water-dispenser",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "of-glass-door",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 2,
+   "y": 14
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 5,
+   "y": 13
+  },
+  {
+   "id": "of-desk-chair-w",
+   "x": 5,
+   "y": 14
+  },
+  {
+   "id": "door-open-western",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "of-pantry-sink",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "of-fridge-small",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "of-stool",
+   "x": 10,
+   "y": 14
+  },
+  {
+   "id": "of-stool",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "of-stool",
+   "x": 9,
+   "y": 15
+  },
+  {
+   "id": "of-fire-door",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "of-stairwell-down",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "of-elevator",
+   "x": 17,
+   "y": 12
+  },
+  {
+   "id": "of-elevator",
+   "x": 21,
+   "y": 12
+  }
+ ],
+ "tables": [
+  {
+   "style": "of-meeting-table",
+   "x": 3,
+   "y": 13,
+   "w": 2,
+   "h": 2
+  },
+  {
+   "style": "of-break-table",
+   "x": 10,
+   "y": 15,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "laptop",
+   "x": 3,
+   "y": 13
+  },
+  {
+   "id": "pb-documents",
+   "x": 4,
+   "y": 14
+  },
+  {
+   "id": "mug",
+   "x": 10,
+   "y": 15
+  },
+  {
+   "id": "senbei-plate",
+   "x": 11,
+   "y": 15
+  }
+ ],
+ "rooms": [
+  {
+   "room": "openoffice",
+   "x0": 0,
+   "y0": 0,
+   "x1": 23,
+   "y1": 8
+  },
+  {
+   "room": "meetingroom",
+   "x0": 0,
+   "y0": 9,
+   "x1": 7,
+   "y1": 16
+  },
+  {
+   "room": "pantry",
+   "x0": 8,
+   "y0": 9,
+   "x1": 12,
+   "y1": 16
+  },
+  {
+   "room": "stairwell",
+   "x0": 13,
+   "y0": 9,
+   "x1": 16,
+   "y1": 16
+  },
+  {
+   "room": "elevatorhall",
+   "x0": 17,
+   "y0": 9,
+   "x1": 23,
+   "y1": 16
+  }
+ ],
+ "start": [
+  19,
+  13
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 14,
+   "y": 13,
+   "toMapId": "jp-city-office-1f",
+   "toX": 14,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 15,
+   "y": 13,
+   "toMapId": "jp-city-office-1f",
+   "toX": 14,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 17,
+   "y": 12,
+   "toMapId": "jp-city-office-1f",
+   "toX": 4,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 18,
+   "y": 12,
+   "toMapId": "jp-city-office-1f",
+   "toX": 5,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 21,
+   "y": 12,
+   "toMapId": "jp-city-office-1f",
+   "toX": 7,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 22,
+   "y": 12,
+   "toMapId": "jp-city-office-1f",
+   "toX": 8,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

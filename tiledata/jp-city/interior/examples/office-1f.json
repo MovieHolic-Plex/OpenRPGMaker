@@ -1,0 +1,229 @@
+{
+ "name": "사무 빌딩 1층 로비",
+ "plan": [
+  "################",
+  "#..........#...#",
+  "#..........#...#",
+  "#..........#...#",
+  "#..........#...#",
+  "#..........#.###",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#######..#######"
+ ],
+ "floor": "of-lobby-stone",
+ "wall": "of-lobby-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 11,
+   "y0": 0,
+   "x1": 15,
+   "y1": 5,
+   "floor": "of-stair-conc",
+   "wall": "of-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "of-plant-big",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-elevator",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "of-elevator-button",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "of-elevator",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "of-directory",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "of-plant-big",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "of-stairs-up",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "of-fire-door",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "of-security-gate",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "of-security-gate",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "of-security-gate",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "of-security-gate",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "of-reception",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "of-reception",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "of-reception",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "of-lobby-sofa-n",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "of-plant-big",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "of-mailbox-wall",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 7,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "of-phone",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "of-name-card-box",
+   "x": 3,
+   "y": 6
+  }
+ ],
+ "rooms": [
+  {
+   "room": "elevatorhall",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 4
+  },
+  {
+   "room": "stairwell",
+   "x0": 11,
+   "y0": 0,
+   "x1": 15,
+   "y1": 5
+  },
+  {
+   "room": "lobby",
+   "x0": 0,
+   "y0": 5,
+   "x1": 15,
+   "y1": 9
+  }
+ ],
+ "start": [
+  7,
+  8
+ ],
+ "exitWidth": 2,
+ "narrow": [
+  {
+   "x0": 5,
+   "y0": 5,
+   "x1": 5,
+   "y1": 5,
+   "why": "보안 게이트의 1인 통로(사원증) — 2칸 넓은 통로는 x7~8"
+  },
+  {
+   "x0": 1,
+   "y0": 5,
+   "x1": 3,
+   "y1": 5,
+   "why": "접수 카운터 안쪽 직원 자리(엘리베이터 홀 쪽에서 들어간다)"
+  }
+ ],
+ "links": [
+  {
+   "x": 14,
+   "y": 3,
+   "toMapId": "jp-city-office-floor",
+   "toX": 13,
+   "toY": 13,
+   "direction": "up"
+  },
+  {
+   "x": 4,
+   "y": 3,
+   "toMapId": "jp-city-office-floor",
+   "toX": 17,
+   "toY": 13,
+   "direction": "down"
+  },
+  {
+   "x": 5,
+   "y": 3,
+   "toMapId": "jp-city-office-floor",
+   "toX": 18,
+   "toY": 13,
+   "direction": "down"
+  },
+  {
+   "x": 7,
+   "y": 3,
+   "toMapId": "jp-city-office-floor",
+   "toX": 21,
+   "toY": 13,
+   "direction": "down"
+  },
+  {
+   "x": 8,
+   "y": 3,
+   "toMapId": "jp-city-office-floor",
+   "toX": 22,
+   "toY": 13,
+   "direction": "down"
+  }
+ ]
+}
