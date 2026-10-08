@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-clinic`. 도구 결과: 손 도트 실내 '일본 동네 의원(내과) 실내' 14×9 (jp-city-clinic, jp_city) — 출입구에서 닿는 칸 36, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-clinic`. 도구 결과: 손 도트 실내 '일본 동네 의원(내과) 실내' 14×9 (jp-city-clinic, jp_city) — 출입구에서 닿는 칸 37, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-clinic", "name": "일본 동네 의원(내과) 실내", "plan": ["##############", "#.......#....#", "#.......#....#", "#.......#....#", "#............#", "#............#", "#............#", "#............#", "######.#######"], "floor": "pb-linoleum", "wall": "pb-office-wall", "zones": [{"x0": 8, "y0": 0, "x1": 13, "y1": 8, "floor": "flooring", "wall": "cloth"}], "objects": [{"id": "pb-med-cabinet", "x": 1, "y": 3}, {"id": "pb-office-chair-s", "x": 2, "y": 3}, {"id": "pb-reception", "x": 2, "y": 4}, {"id": "pb-reception", "x": 3, "y": 4}, {"id": "pb-magazine-rack", "x": 5, "y": 3}, {"id": "pb-water-dispenser", "x": 7, "y": 3}, {"id": "pb-waiting-sofa-n", "x": 1, "y": 6}, {"id": "pb-waiting-sofa-n", "x": 5, "y": 6}, {"id": "houseplant", "x": 1, "y": 7}, {"id": "pb-doctor-desk", "x": 9, "y": 3}, {"id": "pb-office-chair-n", "x": 9, "y": 5}, {"id": "pb-med-cabinet", "x": 11, "y": 3}, {"id": "pb-exam-bed", "x": 12, "y": 3}, {"id": "pb-curtain", "x": 11, "y": 5}, {"id": "pb-scale-height", "x": 12, "y": 7}, {"id": "genkan-door", "x": 6, "y": 8}], "tables": [], "goods": [{"id": "pb-documents", "x": 2, "y": 4}, {"id": "pb-stethoscope", "x": 10, "y": 3}], "start": [{"x": 6, "y": 7}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-clinic", "name": "일본 동네 의원(내과) 실내", "plan": ["##############", "#.......#....#", "#.......#....#", "#.......#....#", "#............#", "#............#", "#............#", "#............#", "######.#######"], "floor": "pb-linoleum", "wall": "pb-office-wall", "zones": [{"x0": 8, "y0": 0, "x1": 13, "y1": 8, "floor": "flooring", "wall": "cloth"}], "objects": [{"id": "pb-med-cabinet", "x": 1, "y": 3}, {"id": "pb-office-chair-s", "x": 2, "y": 3}, {"id": "pb-reception", "x": 2, "y": 4}, {"id": "pb-reception", "x": 3, "y": 4}, {"id": "pb-magazine-rack", "x": 5, "y": 3}, {"id": "pb-water-dispenser", "x": 7, "y": 3}, {"id": "pb-waiting-sofa-n", "x": 1, "y": 6}, {"id": "houseplant", "x": 1, "y": 7}, {"id": "pb-doctor-desk", "x": 9, "y": 3}, {"id": "pb-office-chair-n", "x": 9, "y": 5}, {"id": "pb-med-cabinet", "x": 11, "y": 3}, {"id": "pb-exam-bed", "x": 12, "y": 3}, {"id": "pb-curtain", "x": 11, "y": 5}, {"id": "pb-scale-height", "x": 12, "y": 7}, {"id": "genkan-door", "x": 6, "y": 8}, {"id": "pb-bench", "x": 6, "y": 5}], "tables": [], "goods": [{"id": "pb-documents", "x": 2, "y": 4}, {"id": "pb-stethoscope", "x": 10, "y": 3}], "start": [{"x": 6, "y": 7}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -24,8 +24,8 @@ XXXXXXXXXXXXXX
 XXXXXXXXXXXXXX
 XXX..XXXXXXXXX
 X.XX....X...XX
-X.......XX.X.X
-XXXX.XXX.....X
+X.....XXXX.X.X
+XXXX.........X
 XX..........XX
 XXXXXX.XXXXXXX
 ```
@@ -64,8 +64,8 @@ y=01: . . . . . . . . . . . . . .
 y=02: . 9963 9928 . . 9967 9968 9971 . 9959 9960 9963 . .
 y=03: . 9964 9929 . . 9969 9970 9972 . 9961 9962 9964 9955 .
 y=04: . . 9942 9942 . . . . . 9930 . 9957 9956 .
-y=05: . 9949 9950 9951 . 9949 9950 9951 . 9931 . 9958 . .
-y=06: . 9952 9953 9954 . 9952 9953 9954 . . . . 9965 .
+y=05: . 9949 9950 9951 . . 9920 9921 . 9931 . 9958 . .
+y=06: . 9952 9953 9954 . . . . . . . . 9965 .
 y=07: . 8905 . . . . . . . . . . 9966 .
 y=08: . . . . . . . . . . . . . .
 ```

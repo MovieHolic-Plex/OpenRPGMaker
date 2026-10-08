@@ -892,23 +892,19 @@
    "konbini",
    [
     [
-     "cv-magazine",
-     1
+     "cv-cooler",
+     4
     ],
     [
      "cv-open-case",
      1
     ],
     [
-     "cv-cooler",
+     "cv-copier",
      1
     ],
     [
      "cv-atm",
-     1
-    ],
-    [
-     "cv-copier",
      1
     ],
     [
@@ -1150,7 +1146,7 @@
     ],
     [
      "fd-stool",
-     5
+     4
     ],
     [
      "fd-zashiki",
@@ -1165,12 +1161,16 @@
      1
     ],
     [
+     "fd-chair-e",
+     2
+    ],
+    [
      "fd-chair-w",
      2
     ],
     [
-     "fd-chair-e",
-     2
+     "fd-register",
+     1
     ],
     [
      "fd-counter",
@@ -1782,7 +1782,7 @@
     ],
     [
      "pb-waiting-sofa-n",
-     2
+     1
     ],
     [
      "houseplant",
@@ -1810,6 +1810,10 @@
     ],
     [
      "genkan-door",
+     1
+    ],
+    [
+     "pb-bench",
      1
     ]
    ]

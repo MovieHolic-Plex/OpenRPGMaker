@@ -6,7 +6,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-izakaya", "name": "일본 이자카야 실내", "plan": ["##############", "#.........#..#", "#.........#..#", "#.........#..#", "#.........#..#", "###.########.#", "#............#", "#............#", "#............#", "#............#", "#............#", "#............#", "#............#", "######..######"], "floor": "fd-wood-dark", "wall": "fd-wood-wall", "zones": [{"x0": 1, "x1": 9, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-plaster"}, {"x0": 11, "x1": 12, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-plaster"}], "objects": [{"id": "fd-fridge", "x": 1, "y": 3}, {"id": "fd-fryer", "x": 2, "y": 3}, {"id": "fd-prep", "x": 3, "y": 3}, {"id": "fd-sake-shelf", "x": 4, "y": 3}, {"id": "fd-prep", "x": 6, "y": 3}, {"id": "fd-fryer", "x": 7, "y": 3}, {"id": "sh-noren", "x": 3, "y": 5}, {"id": "toilet", "x": 11, "y": 3}, {"id": "toilet-mat", "x": 11, "y": 4}, {"id": "toilet-slippers", "x": 12, "y": 3}, {"id": "toilet-paper", "x": 11, "y": 1}, {"id": "toilet-handwash", "x": 12, "y": 1}, {"id": "door-open-toilet", "x": 12, "y": 5}, {"id": "fd-lantern", "x": 1, "y": 6}, {"id": "fd-menu-board", "x": 5, "y": 6}, {"id": "window-sash", "x": 8, "y": 6}, {"id": "fd-lantern", "x": 11, "y": 6}, {"id": "fd-stool", "x": 7, "y": 9}, {"id": "fd-stool", "x": 8, "y": 9}, {"id": "fd-stool", "x": 9, "y": 9}, {"id": "fd-stool", "x": 10, "y": 9}, {"id": "fd-zashiki", "x": 9, "y": 10}, {"id": "zataku", "x": 10, "y": 10}, {"id": "fd-kutsunugi", "x": 9, "y": 12}, {"id": "fd-chair-w", "x": 3, "y": 10}, {"id": "fd-chair-w", "x": 3, "y": 11}, {"id": "fd-chair-e", "x": 5, "y": 10}, {"id": "fd-chair-e", "x": 5, "y": 11}, {"id": "fd-stool", "x": 8, "y": 11}], "tables": [{"style": "fd-counter", "x": 7, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 8, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 9, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 10, "y": 8, "w": 1, "h": 1}, {"style": "fd-table", "x": 4, "y": 10, "w": 1, "h": 2}], "goods": [{"id": "fd-tokkuri", "x": 8, "y": 8}, {"id": "fd-beer-mug", "x": 9, "y": 8}, {"id": "fd-tokkuri", "x": 10, "y": 10}, {"id": "fd-beer-mug", "x": 11, "y": 10}, {"id": "fd-tokkuri", "x": 4, "y": 10}, {"id": "fd-beer-mug", "x": 4, "y": 11}], "exitWidth": 2, "start": [{"x": 6, "y": 12}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-izakaya", "name": "일본 이자카야 실내", "plan": ["##############", "#.........#..#", "#.........#..#", "#.........#..#", "#.........#..#", "###.########.#", "#............#", "#............#", "#............#", "#............#", "#............#", "#............#", "#............#", "######..######"], "floor": "fd-wood-dark", "wall": "fd-wood-wall", "zones": [{"x0": 1, "x1": 9, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-plaster"}, {"x0": 11, "x1": 12, "y0": 1, "y1": 5, "floor": "fd-kitchen-tile", "wall": "fd-plaster"}], "objects": [{"id": "fd-fridge", "x": 1, "y": 3}, {"id": "fd-fryer", "x": 2, "y": 3}, {"id": "fd-prep", "x": 3, "y": 3}, {"id": "fd-sake-shelf", "x": 4, "y": 3}, {"id": "fd-prep", "x": 6, "y": 3}, {"id": "fd-fryer", "x": 7, "y": 3}, {"id": "sh-noren", "x": 3, "y": 5}, {"id": "toilet", "x": 11, "y": 3}, {"id": "toilet-mat", "x": 11, "y": 4}, {"id": "toilet-slippers", "x": 12, "y": 3}, {"id": "toilet-paper", "x": 11, "y": 1}, {"id": "toilet-handwash", "x": 12, "y": 1}, {"id": "door-open-toilet", "x": 12, "y": 5}, {"id": "fd-lantern", "x": 1, "y": 6}, {"id": "fd-menu-board", "x": 5, "y": 6}, {"id": "window-sash", "x": 8, "y": 6}, {"id": "fd-lantern", "x": 11, "y": 6}, {"id": "fd-stool", "x": 7, "y": 9}, {"id": "fd-stool", "x": 8, "y": 9}, {"id": "fd-stool", "x": 9, "y": 9}, {"id": "fd-stool", "x": 10, "y": 9}, {"id": "fd-zashiki", "x": 9, "y": 10}, {"id": "zataku", "x": 10, "y": 10}, {"id": "fd-kutsunugi", "x": 9, "y": 12}, {"id": "fd-chair-e", "x": 3, "y": 10}, {"id": "fd-chair-e", "x": 3, "y": 11}, {"id": "fd-chair-w", "x": 5, "y": 10}, {"id": "fd-chair-w", "x": 5, "y": 11}, {"id": "fd-register", "x": 8, "y": 12}], "tables": [{"style": "fd-counter", "x": 7, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 8, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 9, "y": 8, "w": 1, "h": 1}, {"style": "fd-counter", "x": 10, "y": 8, "w": 1, "h": 1}, {"style": "fd-table", "x": 4, "y": 10, "w": 1, "h": 2}], "goods": [{"id": "fd-tokkuri", "x": 8, "y": 8}, {"id": "fd-beer-mug", "x": 9, "y": 8}, {"id": "fd-tokkuri", "x": 10, "y": 10}, {"id": "fd-beer-mug", "x": 11, "y": 10}, {"id": "fd-tokkuri", "x": 4, "y": 10}, {"id": "fd-beer-mug", "x": 4, "y": 11}], "exitWidth": 2, "start": [{"x": 6, "y": 12}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -30,8 +30,8 @@ XXX.XXXXXXXX.X
 X......XXXX..X
 X......XXXX..X
 X..XXX....XX.X
-X..XXX..X....X
-X............X
+X..XXX.......X
+X.......X....X
 XXXXXX..XXXXXX
 ```
 
@@ -83,10 +83,10 @@ y=05: . . . 9817 . . . . . . . . 9007 .
 y=06: . 9560 . 9818 . 9561 9562 . 8798 8799 . 9560 9010 .
 y=07: . . . . . 9563 9564 . 8800 8801 . . . .
 y=08: . . . . . . . 9582 9582 9582 9582 . . .
-y=09: . . . 9522 . 9520 . 9515 9515 9515 9515 . . .
-y=10: . . . 9523 9592 9521 . . . . 8823 8824 . .
-y=11: . . . 9523 9594 9521 . . 9515 . . . . .
-y=12: . . . . . . . . . . . . . .
+y=09: . . . 9520 . 9522 . 9515 9515 9515 9515 . . .
+y=10: . . . 9521 9592 9523 . . . . 8823 8824 . .
+y=11: . . . 9521 9594 9523 . . 9544 . . . . .
+y=12: . . . . . . . . 9545 . . . . .
 y=13: . . . . . . . . . . . . . .
 ```
 
@@ -102,7 +102,7 @@ y=06: . . . . . . . . . . . . . .
 y=07: . . . . . . . . . . . . . .
 y=08: . . . . . . . . 9602 9601 . . . .
 y=09: . . . . . . . . . . . . . .
-y=10: . . . 9522 9602 9520 . . . . 9602 9601 . .
+y=10: . . . 9520 9602 9522 . . . . 9602 9601 . .
 y=11: . . . . 9601 . . . . . . . . .
 y=12: . . . . . . . . . . . . . .
 y=13: . . . . . . . . . . . . . .
