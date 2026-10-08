@@ -44,6 +44,7 @@ const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT,
   return { id, file, start: ex.start, links: [...(ex.links ?? []), ...(exit && door ? [{ ...exitCell(ex.plan), ...exit }] : [])] };
 });
 
+const OPEN_ZONES = JSON.parse(fs.readFileSync(join(EX, "open-zones.json"), "utf8"));
 const project = createEmptyToolProject("jp-interior");
 const results = [];
 const argsOf = (m, links) => { const ex = read(m.file); return { tileset: "jp_city", mapId: m.id, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}),
@@ -67,8 +68,10 @@ for (const m of MAPS) {
     }
   }
   const linkCells = m.links.map((l) => ({ x: l.x, y: l.y, to: l.toMapId, reached: reach.has(idx(l.x, l.y)) }));
-  const report = { map: { id: m.id, size: [W, H] }, start: m.start, summary: r.summary, tool: r.data, warnings: r.warnings ?? [], links: linkCells, reach: reach.size,
-    ok: !(r.warnings ?? []).length && linkCells.every((l) => l.reached) };
+  // 예제 검사와 같은 받아들임(qa/check-interior-examples.mts 의 accepted): 「참고 예제와 같다」(예제 자신) · open-zones.json 의 밝힌 구역.
+  const warnings = (r.warnings ?? []).filter((msg) => !(msg.startsWith("평면이 참고 예제") || (OPEN_ZONES[m.file] ?? []).some((z) => msg.startsWith(`구역 (${z.zone.split(",").slice(0, 2).join(",")})~(${z.zone.split(",").slice(2).join(",")})`))));
+  const report = { map: { id: m.id, size: [W, H] }, start: m.start, summary: r.summary, tool: r.data, warnings, links: linkCells, reach: reach.size,
+    ok: !warnings.length && linkCells.every((l) => l.reached) };
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(join(OUT, `interior-${m.file}.map.json`), JSON.stringify(MAP));
   fs.writeFileSync(join(OUT, `interior-${m.file}.report.json`), JSON.stringify(report, null, 1));

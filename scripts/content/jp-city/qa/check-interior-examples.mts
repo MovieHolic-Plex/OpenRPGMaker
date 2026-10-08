@@ -22,13 +22,16 @@ type Place = { file: string; maps?: string[]; placeId: string; kind?: string; du
 const places = PLACES_FILES.flatMap((pf) => JSON.parse(readFileSync(pf, "utf8")) as Place[])
   .flatMap((p) => (p.maps ?? [p.file]).map((f) => ({ ...p, file: f })))
   .filter((p) => !only.length || only.includes(p.file));
+// 도구 경고 중 예제 검사에서 받아들이는 것: ① 「평면이 참고 예제 … 같다」 — 예제가 곧 참고 예제다(조수가 베꼈는지 보는 경고) ② 칸막이 없이 떠 있는 구역 중 open-zones.json 에 이유와 함께 밝힌 것.
+const OPEN_ZONES = JSON.parse(readFileSync(`${EX}/open-zones.json`, "utf8")) as Record<string, { zone: string }[]>;
+const accepted = (file: string, msg: string) => msg.startsWith("평면이 참고 예제") || (OPEN_ZONES[file] ?? []).some((z) => msg.startsWith(`구역 (${z.zone.split(",").slice(0, 2).join(",")})~(${z.zone.split(",").slice(2).join(",")})`));
 let bad = 0;
 const project = createEmptyToolProject("chk");
 for (const p of places) {
   const ex = JSON.parse(readFileSync(`${EX}/${p.file}.json`, "utf8"));
   try {
     const r = BUILD_HAND_INTERIOR_ROOM_TOOL.run(project, { tileset: "jp_city", mapId: `chk-${p.file}`, name: ex.name, plan: ex.plan, floor: ex.floor, wall: ex.wall, zones: ex.zones ?? [], objects: ex.objects ?? [], tables: ex.tables ?? [], goods: ex.goods ?? [], ...(ex.exitWidth ? { exitWidth: ex.exitWidth } : {}), start: [{ x: ex.start[0], y: ex.start[1] }], links: [] });
-    const w = [...(r.warnings ?? [])];
+    const w = [...(r.warnings ?? [])].filter((m) => !accepted(p.file, m));
     if (w.length) bad++;
     const m = project.maps[`chk-${p.file}`]!;
     const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < m.width && y < m.height && isPassable(project, m, x, y);
