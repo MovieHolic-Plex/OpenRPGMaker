@@ -4,17 +4,25 @@
   validate                          시드·팔레트·판 모듈·줄·기준 그림·Actor1 점검
   list [--wave W]                   시드 항목. 줄마다 ★A = 줄 A 에서 사람이 고름(현재 그림과 해시가 맞을 때만) · -A = 줄 A 에서 뺀 항목
   draw <판>                         판 후보를 그려 qa-runs/harnesses/dungeon-chipset/<판>/ 에 PNG·manifest.json
-  gate <판>                         draw + 기계 관문(P Z Q O F S G / WARN R). FAIL 이 있으면 종료코드 1
+  gate <판>                         draw + 기계 관문(P Z Q F S G A K J / WARN R OUTLINE CONTRAST). FAIL 이 있으면 종료코드 1
   sheet <판> [--force]              draw + gate + ~/claude-viz/dungeon-<판>.html (FAIL 이면 --force 없이는 안 쓴다)
   pick <판> <항목> <후보> --sha <앞 8자리> [--note …]   사람이 시트에서 고른 후보를 그림 해시에 묶어 기록
   reject <판> <항목> <후보> --why …   사람이 버린 후보와 이유
-  status                            판·관문·시트, 줄별·묶음별 고른 것(현재 그림과 해시가 맞는지)
+  status                            판·관문·시트, 줄별·묶음별 고른 것(현재 그림과 해시가 맞는지) + 외곽선 규칙 경고·굽기 전에 다듬을 목록
 
 줄(line) — 던전은 컨셉이 여럿이라 화풍을 하나로 고정하지 않는다(사용자 2026-10-08). 시드 `lines` 의 줄마다 따로 고른다.
-  - 화풍 판(style-r1)의 후보 글자 A·B·C 가 곧 줄이다. 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결·윤곽).
+  - 화풍 판(style-r1)의 후보 글자 A·B·C 가 곧 줄이다. 줄의 화풍 기준 = style-r1 의 그 글자 조각(색·결 — 윤곽은 아래 외곽선 규칙이 우선).
   - 이후 판은 **줄마다** 후보를 그린다. 후보 키는 `<줄><번호>`(A1 A2 B1 …), pick 은 앞 글자로 줄을 안다.
   - 고르기 단위는 (항목, 줄). 고른 그림은 picked/<줄>/<항목>.png. 같은 (항목, 줄)을 다시 고르면 앞 기록을 바꾼다.
   - 줄 컨셉에 안 맞는 항목은 그 줄에서 빼도 된다 — 시드 lines.<줄>.skip 에 항목과 이유를 적는다(그 줄 후보를 그리지 않는다).
+
+외곽선 규칙(사용자 2026-10-08, seed rules.outline — 시연 http://mdc-server:18301/outline-before-after.html):
+  - 지형(바닥·벽면·천장·물·용암)과 기물(상자·석순·잔돌·문…) 모두 **먹 윤곽 없이** 재질 자신의 명암으로 형태를 읽게 한다.
+    빛 받는 위·왼 가장자리 = 그 재질의 밝은 단, 그늘 아래·오른 = 그 재질의 어두운 단. 사람만 외곽선(Actor1 그대로, 그리지 않는다).
+  - 예외: 바닥과 밝기가 비슷한 작은 기물(1~2칸: 석순·잔돌)은 그늘 쪽만 그 재질의 가장 어두운 단 + 바닥 닿는 곳 접지 그림자를 진하게. 그래도 먹은 아니다.
+  - 큰 구조(벽 덩어리·절벽·다리)도 바깥 실루엣은 재질 어두운 단이지 먹이 아니다.
+  - 먹 = 밝기 ≤ 0.12(void 전부·brick·crock·vrock 0단). 던전 팔레트에는 따로 된 ink 가 없다. 천장·낭떠러지의 어둠은 재질이라 윤곽이 아니다.
+  - 관문 OUTLINE·CONTRAST 는 WARN 이다(고른 것만 굽기 전에 다듬을 목록, status). 이미 그린 판의 그림은 사람이 고르는 중이라 고치지 않는다.
 
 감독·에이전트는 pick/reject 를 스스로 부르지 않는다. 사람이 고른 후보와 시트에 적힌 해시 앞자리를 받아 적을 때만 쓴다.
 기계 관문 통과는 합격이 아니다.
@@ -134,6 +142,21 @@ def cmd_draw(rid, quiet=False):
     return mod, rendered, man
 
 
+_LINE_FLOOR = {}
+
+
+def line_floor(ln):
+    """CONTRAST 의 줄 대표 바닥 = 기원 판(style-r1)의 그 글자 동굴 바닥 몸통(16×16 RGBA 배열). 없으면 None."""
+    if ln not in _LINE_FLOOR:
+        o = lines().get(ln, {}).get('origin', {})
+        try:
+            mod = load_round(o['round'])
+            _LINE_FLOOR[ln] = mod.CANDIDATES['style.cave'][o['letter']]()[1]['parts']['floor'].body.a
+        except (KeyError, SystemExit):
+            _LINE_FLOOR[ln] = None
+    return _LINE_FLOOR[ln]
+
+
 def run_gate(rendered):
     items = items_by_id()
     res = {}
@@ -141,8 +164,15 @@ def run_gate(rendered):
         if item not in items:
             raise SystemExit(f'판의 항목 {item} 이 시드에 없다')
         rc = G.check_recolor({L: im for L, (im, _) in cands.items()})
-        res[item] = {L: G.check_one(items[item], im, meta) + [rc[L]] for L, (im, meta) in cands.items()}
+        res[item] = {}
+        for L, (im, meta) in cands.items():
+            rs = G.check_one(items[item], im, meta) + [rc[L]]
+            ct = G.check_contrast(meta, line_floor(line_of(L)) if line_of(L) else None)
+            res[item][L] = rs + ([ct] if ct else [])
     return res
+
+
+POLISH_CODES = ('OUTLINE', 'CONTRAST')   # 외곽선 규칙(seed rules.outline) 경고 — 고른 것만 굽기 전에 다듬을 목록
 
 
 def gate_summary(res):
@@ -162,8 +192,14 @@ def cmd_gate(rid, quiet=False):
                 print(f'{item:20} {L} {man["items"][item][L]["sha256"][:8]}  '
                       + ('통과' if not bad else ' · '.join(f'{r["level"]} {r["code"]}: {r["msg"]}' for r in bad)))
         print(f'관문: FAIL {len(fails)} · WARN {len(warns)} — 통과는 합격이 아니다(사람이 시트에서 고른다)')
+    by_code = {}
+    for _, _, r in warns:
+        by_code[r['code']] = by_code.get(r['code'], 0) + 1
+    polish = [{'item': i, 'key': K, 'code': r['code'], 'msg': r['msg']} for i, K, r in warns if r['code'] in POLISH_CODES]
+    if not quiet:
+        print(f'외곽선 규칙 경고(굽기 전에 다듬을 것): OUTLINE {by_code.get("OUTLINE", 0)} · CONTRAST {by_code.get("CONTRAST", 0)}')
     L = ledger()
-    L['runs'].append({'round': rid, 'at': now(), 'fail': len(fails), 'warn': len(warns),
+    L['runs'].append({'round': rid, 'at': now(), 'fail': len(fails), 'warn': len(warns), 'warnByCode': by_code, 'polish': polish,
                       'hashes': {i: {k: v['sha256'] for k, v in c.items()} for i, c in man['items'].items()}})
     L['runs'] = L['runs'][-40:]
     save_ledger(L)
@@ -324,7 +360,7 @@ def cmd_sheet(rid, force=False):
                  f'<div class="sub">기원: {info["origin"]["round"]} {info["origin"]["letter"]}'
                  + (''.join(f'<br>뺀 항목 {k}: {v}' for k, v in cut.items()) if cut else '') + '</div></div>')
     H.append('</div>')
-    H.append('<p class="lead warn">기계 관문(팔레트·크기·불투명·윤곽·윗면·이음·구조) 통과는 합격이 아니다. 감독·에이전트는 고르지 않았다. '
+    H.append('<p class="lead warn">기계 관문(팔레트·크기·불투명·윗면·이음·구조, 외곽선 경고) 통과는 합격이 아니다. 감독·에이전트는 고르지 않았다. '
              '항목마다 <b>줄마다</b> 하나를 고르거나 버려 주세요. 고르기: <code>npm run harness -- dungeon-chipset pick '
              f'{rid} &lt;항목&gt; &lt;후보&gt; --sha &lt;해시 앞 8자리&gt;</code> · 버리기: <code>… reject {rid} &lt;항목&gt; &lt;후보&gt; --why "…"</code> · '
              '<span class="star">★</span> = 사람이 그 줄에서 고른 후보(현재 그림과 해시가 맞음).</p>')
@@ -528,6 +564,31 @@ def cmd_status():
                     p, st = ps[(it['id'], ln)]
                     print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {p["sha256"][:8]}  {st}')
     print(f'버림 기록 {len(L["rejects"])}건')
+    polish_report(L, ps)
+
+
+def polish_report(L, ps):
+    """외곽선 규칙(seed rules.outline) 경고 OUTLINE·CONTRAST — 판별 수와, 고른 것(현재 해시) 중 굽기 전에 다듬을 목록.
+    판 그림은 사람이 고르는 중이라 고치지 않는다. 굽는 작업에서 고른 그림만 규칙대로 다듬는다."""
+    last = {}
+    for r in L['runs']:
+        last[r['round']] = r
+    print('외곽선 규칙 경고(마지막 관문, WARN — FAIL 아님):')
+    for rid, r in last.items():
+        if 'polish' not in r:
+            print(f'  {rid}: 외곽선 규칙 관문 전 기록 — gate {rid} 를 다시 돌리면 센다')
+            continue
+        wc = r.get('warnByCode', {})
+        print(f'  {rid}: OUTLINE {wc.get("OUTLINE", 0)} · CONTRAST {wc.get("CONTRAST", 0)}')
+    todo = []
+    for (item, line), (p, st) in sorted(ps.items()):
+        r = last.get(p['round'])
+        if st != 'current' or not r or 'polish' not in r:
+            continue
+        todo += [(line, item, p['round'], p['letter'], w) for w in r['polish'] if w['item'] == item and w['key'] == p['letter']]
+    print(f'굽기 전에 다듬을 목록(고른 것 중 외곽선 규칙 경고) {len(todo)}건' + (':' if todo else ''))
+    for line, item, rid, key, w in todo:
+        print(f'  줄 {line} {item:22} {rid} {key:3} {w["code"]}: {w["msg"]}')
 
 
 def cmd_list(wave=None):
