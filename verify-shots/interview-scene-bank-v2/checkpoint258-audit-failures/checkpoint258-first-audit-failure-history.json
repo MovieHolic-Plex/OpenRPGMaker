@@ -1,0 +1,6 @@
+{
+  "firstAttemptActualExitUnavailable": true,
+  "firstFailure": "AttributeError hashlib.sha258 caused by unsafe blanket batch-number substitution; original script/traceback and incomplete immutable manifest+ledger preserved",
+  "firstAttemptCompletedIntegrityOrBrowser": false,
+  "noLedgerMutationDuringRetry": true
+}

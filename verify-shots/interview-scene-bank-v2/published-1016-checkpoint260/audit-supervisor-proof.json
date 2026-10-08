@@ -1,0 +1,27 @@
+{
+  "published": 1016,
+  "remaining": 441,
+  "snapshot": {
+    "interviewSceneBank.json": "715e47ccf2f74cba51199278f891765fd51e4d03f5b953aadd001cc1c808ebcb",
+    "ledger.json": "4d38d2efe2b438be4163c6702b05ab27ebd8e6dec387fc00290604f5272ed81c"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--companions--bright",
+    "adventure--unknown--companions--bright--journey",
+    "adventure--unknown--companions--bright--journey--scene",
+    "adventure--unknown--companions--bright--journey--short",
+    "adventure--unknown--companions--bright--quests--scene",
+    "adventure--unknown--companions--bright--quests--short"
+  ],
+  "clicks": 33,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To153ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 153
+}

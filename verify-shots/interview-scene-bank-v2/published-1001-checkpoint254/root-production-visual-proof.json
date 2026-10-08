@@ -1,0 +1,21 @@
+{
+  "published": 1001,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "targets": [
+    "adventure--unknown--explore--bright--quests--short",
+    "adventure--unknown--battle--mystic--quests",
+    "adventure--unknown--battle--mystic--quests--episode",
+    "adventure--unknown--battle--mystic--quests--scene",
+    "adventure--unknown--battle--mystic--journey--short",
+    "adventure--unknown--battle--mystic--chapters--episode"
+  ],
+  "snapshot": {
+    "interviewSceneBank.json": "d741902580dec99fe63ad82b7f892b6cdac7c6dc6baebbf4b5d630b80539975c",
+    "ledger.json": "45bc9249f0fdc8633b625793656b518bba88da34f4f01fdcf2d0d658a06321dc"
+  },
+  "checks": "ROOT personally opened all SIX WHOLE actual production screenshots individually. Selected departure/gear/base/empty quest clearings/return/ruin/threshold remain visible before right controls; readable selected facts/buttons, motion and redraw controls visible at lower left. Quests parent differs from its episode and first-fork shot, Journey return and Chapters episode have distinct world/road geometry. No native images or original OWN changed. Browser evidence reports 35 clicks, six paths and no runtime errors.",
+  "knownLimitation": "100px white space below standalone 800px QA container; not full app boot or full screen test.",
+  "notFreshAll1001NativeVisualAudit": true,
+  "notAIHandoffProof": true,
+  "finishedAt": "2026-10-07T22:06:15.904959+00:00"
+}

@@ -1,0 +1,64 @@
+{
+  "published": 1009,
+  "remaining": 448,
+  "snapshot": {
+    "interviewSceneBank.json": "14c12e43aa09f6372a3cef28b90041b1cd0d0f825f783e41a52c5f0776497d7c",
+    "ledger.json": "c377ba3a19dbe9d1ad39babc7b744e2f43f0826d59846b5ade1fb11c23d8e582"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--battle--warm--journey",
+    "adventure--unknown--battle--warm--journey--short",
+    "adventure--unknown--battle--warm--chapters",
+    "adventure--unknown--battle--mystic--quests--short",
+    "adventure--unknown--battle--warm--chapters--scene",
+    "adventure--unknown--battle--warm--chapters--short"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": false,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To152ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 152,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "rootInspection": "ROOT individually opened WHOLE allsix actualproduction PNGs. Native selectedboats/props/floors/wholecolumns/ruins/HOME/BLUEcloth/regioncontrast readable LEFT before controls. Actualbuttons/questions/finalsummary visible, no collision. Knownwhite100pxbelowstandalone800container is notfullscreen/fullappboot QA. WarmQuestsFIRST remains unpublished whileparentF; failedassertion preserved, notclaimedpass.",
+  "knownStandaloneWhiteBelow800Container": true,
+  "notFullAppBootOrAIHandoff": true,
+  "rootFinishedAt": "2026-10-07T23:37:41.272223+00:00",
+  "screenshots": [
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--warm--journey.png",
+      "sha256": "bc67f5c20aa7324b9300a1dd5434cc79c0293eaa7c8f05d2bb6fafcf981c08da",
+      "rootWholePersonallySeen": true
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--warm--journey--short.png",
+      "sha256": "e14367eb0360f655e034ba676cc2dbcb001cd1a2b9effaa369c3efcabeec8fe0",
+      "rootWholePersonallySeen": true
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--warm--chapters.png",
+      "sha256": "c55d632875751a49fe6b21e095a92fdba34622797600d6c9633c07be29aeeb8f",
+      "rootWholePersonallySeen": true
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--mystic--quests--short.png",
+      "sha256": "225a6947ebc854f7cef933358f2b341989f6c4d5fc68c9b242476b553b18ed11",
+      "rootWholePersonallySeen": true
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--warm--chapters--scene.png",
+      "sha256": "dba8f9653c83cb0523a2e0b40a3be24898535805c471a34eb1075e7cc210bb37",
+      "rootWholePersonallySeen": true
+    },
+    {
+      "file": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1009-checkpoint258/selected-adventure--unknown--battle--warm--chapters--short.png",
+      "sha256": "9466c1a357347d385a739f447e532963bf80d345d319f84a0a95c64b5ef69c1f",
+      "rootWholePersonallySeen": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "published": 1016,
+  "remaining": 441,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "targets": [
+    "adventure--unknown--companions--bright",
+    "adventure--unknown--companions--bright--journey",
+    "adventure--unknown--companions--bright--journey--scene",
+    "adventure--unknown--companions--bright--journey--short",
+    "adventure--unknown--companions--bright--quests--scene",
+    "adventure--unknown--companions--bright--quests--short"
+  ],
+  "snapshot": {
+    "interviewSceneBank.json": "715e47ccf2f74cba51199278f891765fd51e4d03f5b953aadd001cc1c808ebcb",
+    "ledger.json": "4d38d2efe2b438be4163c6702b05ab27ebd8e6dec387fc00290604f5272ed81c"
+  },
+  "screenshots": [
+    {
+      "key": "adventure--unknown--companions--bright",
+      "sha256": "e08f8e3f60b07d1368b03d579d4ca5f88d3d3adc37b1a2290e25a2eda704ba09",
+      "ROOTOpenedIndividuallyWhole": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey",
+      "sha256": "8dab1d300153bdcbbaa00367b81cd48df6ffd5e46a015de70eb6b98bef6c8fbe",
+      "ROOTOpenedIndividuallyWhole": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey--scene",
+      "sha256": "13fae1d9e66ee7829f109258758f8fdabaeda3a6e12d7309a3c708e3642b2df8",
+      "ROOTOpenedIndividuallyWhole": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey--short",
+      "sha256": "0db443c830a48eb02fdfec2708c43a25d259e681f853cfdcaf35f4728c578ca8",
+      "ROOTOpenedIndividuallyWhole": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--quests--scene",
+      "sha256": "56c85ab0e4174ddffddfce4ce2822a9756ba3150c081acb6b246dc8f60707b11",
+      "ROOTOpenedIndividuallyWhole": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--quests--short",
+      "sha256": "bc0330acd36c58d28ed8a2ec29df935cd34d5c15c34405ed661504cb6985a6f9",
+      "ROOTOpenedIndividuallyWhole": true
+    }
+  ],
+  "checks": "ROOT individually opened ALLsix WHOLE actual production screenshots: BrightCompanionmood/Journey/JourneyFIRST/JourneyRETURN/QuestsFIRST/QuestsRETURN. Chosen props and all displayed interview options/summary/buttons visible; bottom motion/redraw visible. No native/request rewrite.",
+  "knownLimitation": "100px white area below standalone800px QA container; not appboot/fullscreenQA.",
+  "notFreshAll1016NativeVisualAudit": true,
+  "notAIHandoffProof": true,
+  "finishedAt": "2026-10-08T00:05:58.860552+00:00"
+}

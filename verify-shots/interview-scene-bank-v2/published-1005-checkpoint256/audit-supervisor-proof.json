@@ -1,0 +1,27 @@
+{
+  "published": 1005,
+  "remaining": 452,
+  "snapshot": {
+    "interviewSceneBank.json": "a8ef474a96bdd008ed22eee8ed5961c0f4fc58bd3bdd6113f25da029a326d0bb",
+    "ledger.json": "5a0ed127207e2f0f8fbb66fe332c221ef05ce53cb383b02d6eeb04dc8778faad"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--battle--mystic--quests--short",
+    "adventure--unknown--battle--warm",
+    "adventure--unknown--battle--mystic--chapters--scene",
+    "adventure--unknown--battle--mystic--chapters--short",
+    "adventure--unknown--battle--mystic--quests--episode",
+    "adventure--unknown--explore--bright--quests--short"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To150ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 150
+}

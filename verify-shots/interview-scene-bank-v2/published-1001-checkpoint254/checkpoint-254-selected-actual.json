@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+    "--all-published",
+    "--paths",
+    "adventure--unknown--explore--bright--quests--short,adventure--unknown--battle--mystic--quests,adventure--unknown--battle--mystic--quests--episode,adventure--unknown--battle--mystic--quests--scene,adventure--unknown--battle--mystic--journey--short,adventure--unknown--battle--mystic--chapters--episode"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "interviewSceneBank.json": "d741902580dec99fe63ad82b7f892b6cdac7c6dc6baebbf4b5d630b80539975c",
+    "ledger.json": "45bc9249f0fdc8633b625793656b518bba88da34f4f01fdcf2d0d658a06321dc"
+  },
+  "published": 1001,
+  "finishedAt": "2026-10-07T21:56:05.769390+00:00",
+  "scope": "Scoped current published hash/request-contract integrity and six explicit production click paths; not fresh full-native visual audit/full app boot/AIhandoff"
+}

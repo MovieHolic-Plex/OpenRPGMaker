@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803.mjs",
+    "--all-published",
+    "--paths",
+    "adventure--unknown--companions--bright,adventure--unknown--companions--bright--journey,adventure--unknown--companions--bright--journey--scene,adventure--unknown--companions--bright--journey--short,adventure--unknown--companions--bright--quests--scene,adventure--unknown--companions--bright--quests--short"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "interviewSceneBank.json": "715e47ccf2f74cba51199278f891765fd51e4d03f5b953aadd001cc1c808ebcb",
+    "ledger.json": "4d38d2efe2b438be4163c6702b05ab27ebd8e6dec387fc00290604f5272ed81c"
+  },
+  "published": 1016,
+  "finishedAt": "2026-10-08T00:03:03.928176+00:00",
+  "scope": "Scoped current published hash/request-contract integrity and six explicit production click paths; not fresh full-native visual audit/full app boot/AIhandoff"
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python3",
+    "qa-runs/harnesses/interview-scene-bank/stage-checkpoint260.py"
+  ],
+  "returncode": 1,
+  "failure": "MissingpublishedOWN assertion incorrectly treated ROOTP WarmQuest children as published despite rejected parent. Three absent children256episode/257scene/259short have exactOWN in durable fullstage proof, no published asset claimed.",
+  "gitAddNeverReached": true,
+  "indexEmptyChecked": true,
+  "retryChange": "Only permit unpublished ROOTP child exactOWN embedded in durable proof, require current actualpublished requests unchanged. No review/PNG/OWN/manifest modification.",
+  "finishedAt": "2026-10-08T00:16:54.025871+00:00"
+}

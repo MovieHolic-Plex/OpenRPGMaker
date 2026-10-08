@@ -1,0 +1,120 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 1016,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--bright",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--bright",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-1016-stage260-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1016-stage260-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1016-stage260-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1016-stage260-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all1016 fresh native visual audit.",
+  "rootPersonallySawFourWholeScreenshots": true,
+  "actualBrowserExit": 0,
+  "rootProofRecordedAt": "2026-10-08T00:12:39.510079+00:00",
+  "knownLimit": "Gallery only; not full appboot or AIhandoff. All production native PNG and exactOWN unchanged."
+}

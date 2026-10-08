@@ -1,0 +1,123 @@
+{
+  "snapshotPublished": 1016,
+  "sourceManifestSha256": "715e47ccf2f74cba51199278f891765fd51e4d03f5b953aadd001cc1c808ebcb",
+  "sources": [
+    {
+      "key": "adventure--unknown--companions--bright",
+      "sha256": "dfcd97779fcbea184cd368505cadcb440fe8cf1674b900a44b4b8541612d48f8",
+      "generationPromptSha256": "c77fd45ad59701cf88b12abed0e56e51fa69795a01ae607b5fcbc97ca866719a",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey",
+      "sha256": "80ee60e082b3502ff66870296f3053698045d259bfdc6e29ac710611c75d5169",
+      "generationPromptSha256": "32a5119a8b378f4cf95bbfdf949992d882b9391e224278bc841d056dd467a107",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey--scene",
+      "sha256": "d092123cc23f91e2ecf86f5b09dd445705a45e086d98dcb47be47dadeda2193b",
+      "generationPromptSha256": "f22180ca562a0205646f81f9e1da82ca570f50bde1db39a29d1f61941423cbce",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--journey--short",
+      "sha256": "4e29a3f4fe9b798d56592088e7a0f01fb378467c1146b498747cbfaaf2040472",
+      "generationPromptSha256": "4101d71aec0c0cec980f4c5abc8a596ff4d1fc48e901d183cd4e3551e15269bb",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--quests--scene",
+      "sha256": "4b01032c8c7f2e6ccb8c3172a3318a71ee2041c00f1ce18f604c672b571fefaf",
+      "generationPromptSha256": "30fc57572805a79f85e093dca8a2f8be207b2942d838a906d5417b9d91cc3f3c",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--bright--quests--short",
+      "sha256": "82fae22d1081df5c7aba50cb60a7155b10aba6e2d8ba633f71cb901667605bc3",
+      "generationPromptSha256": "18fae593f2f80f429683a3850868f08331e0f4ce5993d43e475cea77512b41e8",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--battle--warm--journey",
+      "sha256": "cb3ede56d53d6027d437652f9e63ef1af4f0dfe0bc5aa4b2522944afb75bebbc",
+      "generationPromptSha256": "692b41988a4c0d769593d53ed5c1578ea69d77712ae8472a09c1902c852c8dab",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--battle--warm--chapters--short",
+      "sha256": "05070dbc4efe60e0503adea291c65455597bb04db73d3a6d87fabf733e3dc41d",
+      "generationPromptSha256": "854f2a5816163a9d05fceca4fca222ee8f8b3aeb1d231217c61be5d089c44aef",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 742877,
+  "notFreshAll1016NativeVisualAudit": true,
+  "originalCorrection139BeforeSnapshot": true,
+  "snapshotIncludesOriginalCorrections140Through153": true
+}

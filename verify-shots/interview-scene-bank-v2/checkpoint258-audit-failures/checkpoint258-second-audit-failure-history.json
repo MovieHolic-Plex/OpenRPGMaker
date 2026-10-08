@@ -1,0 +1,8 @@
+{
+  "retry1ActualExit": 1,
+  "failure": "Pre-browser explicit target assertion: ROOT P/Gate P WarmQuestsFIRST child intentionally unpublished while WarmQuestsparent remains F; first integrity already actual0 and unchangedimmutable1009 snapshot reused. Browser didnotrun onretry1.",
+  "missingTarget": "adventure--unknown--battle--warm--quests--scene",
+  "substituteActualPublishedTarget": "adventure--unknown--battle--mystic--quests--short",
+  "noFailedTargetPassClaim": true,
+  "published": 1009
+}

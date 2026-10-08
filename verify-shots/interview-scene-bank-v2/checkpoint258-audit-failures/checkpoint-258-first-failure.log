@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/run-checkpoint258-detached-audit.py", line 13, in <module>
+    mp=root/'src/editor/interviewSceneBank.json';lp=root/'harness-data/interview-scene-bank/ledger.json';m=json.loads(mp.read_text());count=len(m['scenes']);snap=v/f'published-{count}-checkpoint258';snap.mkdir(exist_ok=False);shutil.copy2(mp,snap/'interviewSceneBank.json');shutil.copy2(lp,snap/'ledger.json');hashes={p.name:hashlib.sha258(p.read_bytes()).hexdigest() for p in [mp,lp]}
+                                                                                                                                                                                                                                                                                                                                     ^^^^^^^^^^^^^^
+AttributeError: module 'hashlib' has no attribute 'sha258'. Did you mean: 'sha256'?

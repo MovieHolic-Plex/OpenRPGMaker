@@ -1,0 +1,21 @@
+{
+  "published": 1005,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "targets": [
+    "adventure--unknown--battle--mystic--quests--short",
+    "adventure--unknown--battle--warm",
+    "adventure--unknown--battle--mystic--chapters--scene",
+    "adventure--unknown--battle--mystic--chapters--short",
+    "adventure--unknown--battle--mystic--quests--episode",
+    "adventure--unknown--explore--bright--quests--short"
+  ],
+  "snapshot": {
+    "interviewSceneBank.json": "a8ef474a96bdd008ed22eee8ed5961c0f4fc58bd3bdd6113f25da029a326d0bb",
+    "ledger.json": "5a0ed127207e2f0f8fbb66fe332c221ef05ce53cb383b02d6eeb04dc8778faad"
+  },
+  "checks": "ROOT personally opened all SIX WHOLE actual production screenshots individually: Mystic Quests return, Warm Battle, Mystic Chapters first departure/return, Mystic Quests companion ruin, Bright exploration Quests return. Selected whole props and readable facts/buttons visible before right controls; motion/redraw controls visibly at lower left. Native/exact OWN unchanged. Six explicit paths and34 clicks actual browser proof0/error[].",
+  "knownLimitation": "100px white space below standalone800px QA container; not app boot/full screen test.",
+  "notFreshAll1005NativeVisualAudit": true,
+  "notAIHandoffProof": true,
+  "finishedAt": "2026-10-07T22:46:50.731977+00:00"
+}
