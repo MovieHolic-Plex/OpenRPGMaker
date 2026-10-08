@@ -27,28 +27,38 @@
  ],
  "objects": [
   {
-   "id": "cv-magazine",
+   "id": "cv-cooler",
    "x": 1,
    "y": 3
   },
   {
-   "id": "cv-open-case",
+   "id": "cv-cooler",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "cv-cooler",
    "x": 3,
    "y": 3
   },
   {
    "id": "cv-cooler",
-   "x": 5,
+   "x": 4,
    "y": 3
   },
   {
-   "id": "cv-atm",
-   "x": 7,
+   "id": "cv-open-case",
+   "x": 5,
    "y": 3
   },
   {
    "id": "cv-copier",
    "x": 6,
+   "y": 4
+  },
+  {
+   "id": "cv-atm",
+   "x": 7,
    "y": 3
   },
   {

@@ -61,11 +61,6 @@
    "y": 6
   },
   {
-   "id": "pb-waiting-sofa-n",
-   "x": 5,
-   "y": 6
-  },
-  {
    "id": "houseplant",
    "x": 1,
    "y": 7
@@ -104,6 +99,11 @@
    "id": "genkan-door",
    "x": 6,
    "y": 8
+  },
+  {
+   "id": "pb-bench",
+   "x": 6,
+   "y": 5
   }
  ],
  "tables": [],

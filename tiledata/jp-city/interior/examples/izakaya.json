@@ -158,29 +158,29 @@
    "y": 12
   },
   {
-   "id": "fd-chair-w",
+   "id": "fd-chair-e",
    "x": 3,
    "y": 10
   },
   {
-   "id": "fd-chair-w",
+   "id": "fd-chair-e",
    "x": 3,
    "y": 11
   },
   {
-   "id": "fd-chair-e",
+   "id": "fd-chair-w",
    "x": 5,
    "y": 10
   },
   {
-   "id": "fd-chair-e",
+   "id": "fd-chair-w",
    "x": 5,
    "y": 11
   },
   {
-   "id": "fd-stool",
+   "id": "fd-register",
    "x": 8,
-   "y": 11
+   "y": 12
   }
  ],
  "tables": [
