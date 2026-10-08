@@ -1,0 +1,69 @@
+{
+ "label": "jp2",
+ "task": "이 동네 일본 집 1층 실내를 만들어줘. 현관, 거실, 부엌이 이어진 구조로",
+ "model": "google-antigravity/gemini-3.8-flash",
+ "projectId": "efe3ab87-9fdb-4ae8-bcc0-342a6e529612",
+ "projectDir": ".oprn-projects/hand-interior-trial-jp2",
+ "ms": 80988,
+ "reloadEqual": true,
+ "chosenTilesets": [
+  "jp_city"
+ ],
+ "maps": [
+  {
+   "id": "map_f4273aea-98f7-41a1-a21d-a17c51dbbc6d",
+   "name": "일본 집 1층 (LDK)",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    21,
+    15
+   ],
+   "events": 0,
+   "entrances": 1,
+   "exits": [],
+   "reachableFromEntrance": 99,
+   "walkableCells": 99,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 119
+  }
+ ],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 13,
+ "failed": 1,
+ "byTool": {
+  "get_project_summary": 1,
+  "get_map_region": 1,
+  "list_tileset_references": 1,
+  "list_hand_interior_parts": 1,
+  "get_database_records": 1,
+  "read_tileset_reference": 3,
+  "tile_query": 1,
+  "build_hand_interior_room": 2,
+  "show_map_region": 1,
+  "check_reachability": 1
+ },
+ "readReferences": [
+  "jp_city/undefined",
+  "jp_city/undefined",
+  "jp_city/jp-interior-ex-house-1f"
+ ],
+ "stats": {
+  "ms": 80084,
+  "turns": 10,
+  "toolCalls": 14,
+  "toolErrors": 1,
+  "usage": {
+   "input": 149016,
+   "output": 17221,
+   "cacheRead": 906774,
+   "cacheWrite": 0,
+   "totalTokens": 1073011,
+   "calls": 10
+  }
+ },
+ "finalText": "assistant: 일본 도시 칩셋(`jp_city`) 손 도트 규격에 맞춰 **일본 주택 1층 실내**를 시공했습니다.  ---  ### 작업 내용 1. **현관 (玄関)**    - 남쪽 출입구에 미닫이문 문턱(`genkan-door`)과 타타키 바닥, 루버 도어 신발장(`getabako`), 우산꽂이, 벗어둔 신발을 배치했습니다.    - 마루로 올라서는 경계에 나무 단(`agarikamachi`)을 한 줄로 깔고, 올라선 자리에는 현관 매트와 실내용 슬리퍼를 정돈했습니다.  2. **거실 및 다이닝 (Living & Dining)**    - 현관 마루에서 열린 나무 문을 통해 거실로 바로 자연스럽게 이어집니다.    - 거실에는 TV 수납장, 낮은 탁자(리모컨 포함), 소파, 플로어 스탠드 조명, 벽걸이 에어컨, 책장, 화분, 바닥 깔개(러그)를 배치했습니다.    - 다이닝 공간에는 4인용 원목 식탁과 식기류를 놓아 식사 공간을 마련했습니다.  3. **부엌 (Kitchen)**    - 거"
+}
