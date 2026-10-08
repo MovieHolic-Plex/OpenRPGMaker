@@ -1,5 +1,126 @@
 {
- "picks": [],
+ "picks": [
+  {
+   "round": "style-r1",
+   "item": "inn_floor_wood",
+   "line": "A",
+   "letter": "A",
+   "sha256": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:38",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "inn_floor_wood",
+   "line": "B",
+   "letter": "B",
+   "sha256": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:38",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "yard_floor_stone",
+   "line": "A",
+   "letter": "A",
+   "sha256": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:39",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "yard_floor_stone",
+   "line": "B",
+   "letter": "B",
+   "sha256": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:39",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "inn_wall_pillar",
+   "line": "A",
+   "letter": "A",
+   "sha256": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:39",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "inn_wall_pillar",
+   "line": "B",
+   "letter": "B",
+   "sha256": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:40",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "roof_tile_eave",
+   "line": "A",
+   "letter": "A",
+   "sha256": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:40",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "roof_tile_eave",
+   "line": "B",
+   "letter": "B",
+   "sha256": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:40",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "training_dummy",
+   "line": "A",
+   "letter": "A",
+   "sha256": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:41",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "training_dummy",
+   "line": "B",
+   "letter": "B",
+   "sha256": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:41",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "round_table_stools",
+   "line": "A",
+   "letter": "A",
+   "sha256": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:41",
+   "by": "user"
+  },
+  {
+   "round": "style-r1",
+   "item": "round_table_stools",
+   "line": "B",
+   "letter": "B",
+   "sha256": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+   "note": "사용자 2026-10-08: A 주 줄, B 둘째 컨셉 줄로 남김",
+   "at": "2026-10-08T09:19:42",
+   "by": "user"
+  }
+ ],
  "rejects": [],
  "runs": [
   {
@@ -164,6 +285,174 @@
    "round": "style-r1",
    "fail": 0,
    "warn": 0,
+   "hashes": {
+    "inn_floor_wood": {
+     "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+     "B": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+     "C": "8638e5afdda9cab1ed00523eddead4e3a30ad3a663650e8a6ea40cd1f8324613"
+    },
+    "yard_floor_stone": {
+     "A": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+     "B": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+     "C": "b57fe53eb1284cb4e701d1fa9c28978e4ef7d0be34c27a2cea33a4e07f2ae51e"
+    },
+    "inn_wall_pillar": {
+     "A": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+     "B": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+     "C": "fa1e8b48d8761d8bf0007ac3530305c13d4838492d381864e789878502815b5b"
+    },
+    "roof_tile_eave": {
+     "A": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+     "B": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+     "C": "8374f4e7b57970f96825d4a6bcaa48403ea664919bcf67cd1760d9212f9d7939"
+    },
+    "training_dummy": {
+     "A": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+     "B": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+     "C": "e43cb16561dbca7173587233aa25d2dee3c511bf006deaa5740b582d29757515"
+    },
+    "round_table_stools": {
+     "A": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+     "B": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+     "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:18:58",
+   "stage": "gate",
+   "round": "style-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "-": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "inn_floor_wood": {
+     "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+     "B": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+     "C": "8638e5afdda9cab1ed00523eddead4e3a30ad3a663650e8a6ea40cd1f8324613"
+    },
+    "yard_floor_stone": {
+     "A": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+     "B": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+     "C": "b57fe53eb1284cb4e701d1fa9c28978e4ef7d0be34c27a2cea33a4e07f2ae51e"
+    },
+    "inn_wall_pillar": {
+     "A": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+     "B": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+     "C": "fa1e8b48d8761d8bf0007ac3530305c13d4838492d381864e789878502815b5b"
+    },
+    "roof_tile_eave": {
+     "A": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+     "B": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+     "C": "8374f4e7b57970f96825d4a6bcaa48403ea664919bcf67cd1760d9212f9d7939"
+    },
+    "training_dummy": {
+     "A": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+     "B": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+     "C": "e43cb16561dbca7173587233aa25d2dee3c511bf006deaa5740b582d29757515"
+    },
+    "round_table_stools": {
+     "A": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+     "B": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+     "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:19:59",
+   "stage": "gate",
+   "round": "style-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "-": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "inn_floor_wood": {
+     "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+     "B": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+     "C": "8638e5afdda9cab1ed00523eddead4e3a30ad3a663650e8a6ea40cd1f8324613"
+    },
+    "yard_floor_stone": {
+     "A": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+     "B": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+     "C": "b57fe53eb1284cb4e701d1fa9c28978e4ef7d0be34c27a2cea33a4e07f2ae51e"
+    },
+    "inn_wall_pillar": {
+     "A": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+     "B": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+     "C": "fa1e8b48d8761d8bf0007ac3530305c13d4838492d381864e789878502815b5b"
+    },
+    "roof_tile_eave": {
+     "A": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+     "B": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+     "C": "8374f4e7b57970f96825d4a6bcaa48403ea664919bcf67cd1760d9212f9d7939"
+    },
+    "training_dummy": {
+     "A": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+     "B": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+     "C": "e43cb16561dbca7173587233aa25d2dee3c511bf006deaa5740b582d29757515"
+    },
+    "round_table_stools": {
+     "A": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+     "B": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+     "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:21:44",
+   "stage": "gate",
+   "round": "style-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "-": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    }
+   },
    "hashes": {
     "inn_floor_wood": {
      "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",

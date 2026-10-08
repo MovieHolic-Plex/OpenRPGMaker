@@ -3,8 +3,9 @@
  *
  *   validate  ·  palette  ·  list [--wave style]
  *   draw <판>  ·  gate <판>  ·  sheet <판> [--force]
- *   pick <판> <항목> <글자> [--note "…"]      ← 사람이 고른 것을 받아 적을 때만
- *   reject <판> <항목> <글자> --why "…"
+ *   pick <판> <항목> <후보> [--note "…"]      ← 사람이 고른 것을 받아 적을 때만. (항목, 줄)마다 하나
+ *   reject <판> <항목> <후보> --why "…"
+ *   후보: 화풍 판(style-r1)은 글자 = 줄(A·B), 이후 판은 <줄><번호>(A1 A2 B1 B2)
  *   status
  *
  * 실제 일은 같은 폴더의 harness.py(행 문자열 격자 손 도트·관문·시트)가 한다. 이 파일은 입구만 맡는다.

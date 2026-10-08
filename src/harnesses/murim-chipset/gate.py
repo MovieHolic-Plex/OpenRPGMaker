@@ -10,6 +10,10 @@
   S 반복 이음        tileable 축마다 감은 이음(마지막 열→첫 열)의 밝기 차가 안쪽 열 경계 중 가장 큰 차
                     + 0.02 를 넘지 않는다(줄눈·귀틀처럼 일부러 그은 선은 안쪽에도 있으므로 허용)        FAIL
   R 색만 바꾼 후보   같은 항목의 두 후보가 실루엣이 같고(IoU>0.97) 밝기 배치 상관이 0.92 초과          FAIL
+  J 조각 맞물림      세트 항목(seed pieces)에서 시드 joins 로 이웃하는 두 조각의 맞닿는 열(줄) 밝기 차가
+                    두 조각 안쪽 열 경계 중 가장 큰 차 + 0.02 이하. '@style' 은 그 줄의 style 조각       FAIL
+  Y 줄 재료         후보 불투명 화소의 8% 이상을 차지하는 램프가 그 줄 style 조각(seed styleRef)에 쓰인
+                    램프 ∪ 시드 extraRamps 안. 다른 줄의 재료로 그린 후보를 거른다(화풍 판정 아님)      FAIL
   T 가는 줄         object 폭 1px 화소 비율 > 0.14                                            WARN
   L 빛 방향         object 오른쪽 반이 왼쪽 반보다 밝음(> 0.06)                                 WARN
   N 1px 잡티        네 이웃이 모두 같은 색인데 혼자 다른 화소 비율 > 0.03                         WARN
@@ -58,8 +62,11 @@ def check_one(item, im, meta):
         ok = bool(op.all())
         out.append(_res('Q', 'FAIL', ok, '전부 불투명' if ok else f'투명·반투명 화소 {int((~op).sum())}'))
     elif kind == 'roof':
-        ok = bool(op[0].all()) and op.mean() >= 0.9
-        out.append(_res('Q', 'FAIL', ok, f'윗줄 불투명 {bool(op[0].all())}, 불투명 {op.mean():.0%}'))
+        # 추녀 끝·용마루 끝 조각은 바깥이 투명하다 — 시드 조각의 qMin·qTopRow 로 완화(가운데 조각은 기본값 그대로)
+        need_top = item.get('qTopRow', True)
+        qmin = item.get('qMin', 0.9)
+        ok = (bool(op[0].all()) or not need_top) and op.mean() >= qmin
+        out.append(_res('Q', 'FAIL', ok, f'윗줄 불투명 {bool(op[0].all())}{"" if need_top else "(안 봄)"}, 불투명 {op.mean():.0%} (하한 {qmin:.0%})'))
     else:
         corners = [al[0, 0], al[0, w - 1], al[h - 1, 0], al[h - 1, w - 1]]
         corner_ok = all(c != 255 for c in corners[:2])  # 위 귀퉁이 둘은 반드시 비어야(받침이 바닥까지 꽉 찰 수는 있다)
@@ -165,6 +172,64 @@ def check_recolor(cands):
                 hits[b].append(f'{a}(상관 {corr:.2f})')
     return {L: _res('R', 'FAIL', not hits[L], f'{",".join(hits[L])} 와 구조가 같다(색만 바꿈)' if hits[L] else '다른 후보와 구조가 다르다')
             for L in letters}
+
+
+def _edge_pair(A, B, axis):
+    """A 의 끝 열(줄)과 B 의 첫 열(줄)을 맞댄다. 길이가 다르면 짧은 쪽을 감아 늘린다(반복 조각)."""
+    if axis == 'y':
+        A, B = A.transpose(1, 0, 2), B.transpose(1, 0, 2)
+    ha, hb = A.shape[0], B.shape[0]
+    n = max(ha, hb)
+    if ha != n:
+        A = np.concatenate([A] * (n // ha + 1), axis=0)[:n]
+    if hb != n:
+        B = np.concatenate([B] * (n // hb + 1), axis=0)[:n]
+    return A, B
+
+
+def _inner_max(L, op):
+    d = np.abs(np.diff(L, axis=1))
+    both = op[:, 1:] & op[:, :-1]
+    vals = [float(d[:, i][both[:, i]].mean()) for i in range(d.shape[1]) if both[:, i].sum() >= 4]
+    return max(vals) if vals else 0.0
+
+
+def check_join(a_im, b_im, axis):
+    """조각 a 오른쪽(axis x) 또는 아래(axis y)에 b 를 붙였을 때 맞닿는 선이 안쪽 경계보다 튀지 않는지. (ok, 차, 한도)"""
+    A, B = _edge_pair(np.asarray(a_im.convert('RGBA')), np.asarray(b_im.convert('RGBA')), axis)
+    la, lb = luma(A[:, :, :3]), luma(B[:, :, :3])
+    oa, ob = A[:, :, 3] == 255, B[:, :, 3] == 255
+    both = oa[:, -1] & ob[:, 0]
+    if both.sum() < 4:
+        return True, 0.0, 0.0
+    seam = float(np.abs(la[both, -1] - lb[both, 0]).mean())
+    lim = max(_inner_max(la, oa), _inner_max(lb, ob)) + 0.02
+    return seam <= lim, seam, lim
+
+
+def ramp_shares(im):
+    """불투명 화소에서 램프별 비율. ink 는 'ink'."""
+    a = np.asarray(im.convert('RGBA'))
+    op = a[:, :, 3] == 255
+    n = int(op.sum())
+    cnt = {}
+    for y, x in zip(*np.nonzero(op)):
+        r = TONE_OF.get(tuple(int(v) for v in a[y, x, :3]))
+        k = r[0] if r else '?'
+        cnt[k] = cnt.get(k, 0) + 1
+    return {k: v / max(n, 1) for k, v in cnt.items()}
+
+
+def check_line_material(im, ref_ims, extra=(), share=0.08, ref_share=0.01):
+    """후보의 주 재료(불투명 8% 이상 램프)가 줄 style 조각에 쓰인 램프(1% 이상) ∪ extra 안인지."""
+    allowed = {'ink'} | set(extra)
+    for r in ref_ims:
+        allowed |= {k for k, v in ramp_shares(r).items() if v >= ref_share}
+    main = {k: v for k, v in ramp_shares(im).items() if v >= share}
+    off = sorted(k for k in main if k not in allowed)
+    msg = (f'줄 재료 밖 램프 {", ".join(f"{k} {main[k]:.0%}" for k in off)} (허용 {",".join(sorted(allowed))})' if off
+           else f'주 재료 {",".join(sorted(main))} ⊆ 줄 재료')
+    return _res('Y', 'FAIL', not off, msg)
 
 
 def palette_report(joseon_palette_path):
