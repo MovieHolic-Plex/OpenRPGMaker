@@ -1,123 +1,109 @@
 {
  "stage": "interior-p3",
- "verdict": "fail",
- "reviewerVerdict": "fail",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
  "reviewer": "claude -p --model sonnet[1m] --effort high",
- "rounds": 1,
- "seconds": 1000,
- "focus": "일본 실내 3묶음 7곳(맵 14장): 학교 본관(1층 현관 신발장·교무실·보건실 / 2층 교실 2 / 3층 음악실·도서실·이과실 / 옥상), 체육관, 유치원, 지상역(역사 개찰 → 승강장 → 전철 차내), 사무 빌딩(1층 로비·보안 게이트·엘리베이터 → 사무층), 우체국, 맨션 공용부(바람막이·우편함·엘리베이터 홀 → 위층 외복도). interior3/<장소>.png = 장소 하나의 맵들(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일), _all-x3 = 블록별 새 가구 도감. 볼 것: ① 실제 일본 학교·역·사무실·우체국·맨션처럼 보이는가(교실 칠판·교탁·책상 줄·뒤 사물함, 昇降口 신발장, 교무실 책상 섬, 개찰선이 미개찰/개찰 구역을 실제로 가르는가, 승강장 끝·선로, 롱시트 차내, 島型 사무 책상, 우체국 창구, 오토록·집합 우편함) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, modern3 팔레트·윤곽·명암, 2묶음 가게 가구와 같은 게임으로 보이는가) ⑤ 동선·층 이동(계단·엘리베이터·승차 칸 links 가 이어지는가 — door-link-p3/SUMMARY.md 는 출하 player.html 에서 거리 문 → 1층 → 위층 왕복 → 실내 끝 → 거리 복귀를 실측한 것) ⑥ 빈 바닥이 넓게 남는 방(space.txt e3; open = 원래 트인 곳으로 밝힌 체육관 코트·콘코스·옥상 — 정말 트여야 하는 곳인지 따져라) ⑦ 글자·로고·사람이 그려져 있지 않은가(칠판·게시판·운임표·안내판) ⑧ 같은 틀 반복 ⑨ 참고문서 interior-p3-index.md·interior-rules.md 가 조수가 따라 할 수 있게 정확한가. 통로 규칙은 interior-rules.md 「가게·공공 실내」 통로 폭 절(검사기가 넷을 경고하고 1칸이 맞는 곳은 narrow 로 밝힌다 — narrow 가 정말 직원 길·개찰 통로·좌석 뒤인지 따져라). 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 게시는 이 관문 pass 가 조건이라 지금은 게시 전이다. 【읽기 제한】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로.",
+ "rounds": 2,
+ "seconds": 1947,
+ "focus": "일본 실내 3묶음 7곳(맵 14장): 학교 본관(1층 현관 신발장·교무실·보건실 / 2층 교실 2 / 3층 음악실·도서실·이과실 / 옥상), 체육관, 유치원, 지상역(역사 개찰 → 승강장 → 전철 차내), 사무 빌딩(1층 로비·보안 게이트·엘리베이터 → 사무층), 우체국, 맨션 공용부(바람막이·우편함·엘리베이터 홀 → 위층 외복도). interior3/<장소>.png = 장소 하나의 맵들(도구 build_hand_interior_room 이 실제로 지은 것, ×2, 이름표 = 예제 파일), _all-x3 = 블록별 새 가구 도감. 볼 것: ① 실제 일본 학교·역·사무실·우체국·맨션처럼 보이는가(교실 칠판·교탁·책상 줄·뒤 사물함, 昇降口 신발장, 교무실 책상 섬, 개찰선이 미개찰/개찰 구역을 실제로 가르는가, 승강장 끝·선로, 롱시트 차내, 島型 사무 책상, 우체국 창구, 오토록·집합 우편함) ② 3/4 정면 시점(윗면+남쪽 앞면, 벽면 두 줄·천장 띠) ③ 축척(한 칸 1m) ④ 가구 그림 품질·읽힘(무엇인지 알아보는가, modern3 팔레트·윤곽·명암, 2묶음 가게 가구와 같은 게임으로 보이는가) ⑤ 동선·층 이동(계단·엘리베이터·승차 칸 links 가 이어지는가 — door-link-p3/SUMMARY.md 는 출하 player.html 에서 거리 문 → 1층 → 위층 왕복 → 실내 끝 → 거리 복귀를 실측한 것) ⑥ 빈 바닥이 넓게 남는 방(space.txt e3; open = 원래 트인 곳으로 밝힌 체육관 코트·콘코스·옥상 — 정말 트여야 하는 곳인지 따져라) ⑦ 글자·로고·사람이 그려져 있지 않은가(칠판·게시판·운임표·안내판) ⑧ 같은 틀 반복 ⑨ 참고문서 interior-p3-index.md·interior-rules.md 가 조수가 따라 할 수 있게 정확한가. 통로 규칙은 interior-rules.md 「가게·공공 실내」 통로 폭 절(검사기가 넷을 경고하고 1칸이 맞는 곳은 narrow 로 밝힌다 — narrow 가 정말 직원 길·개찰 통로·좌석 뒤인지 따져라). 【2회차 — 1회차 지적 반영】 학생 책상 sc-desk-n 다시 그림(상판+의자 등받이)·교실 5×5/6×5·뒤 사물함·두 교실 배치 다르게·복도 스테인리스 수세대·1층 화장실 칸막이, 유치원 낮잠 요(flat 이불), 체육관 open 을 코트+둘레로 줄이고 남·서쪽 벤치·공 수레 등·흰 선 코트·골대 안쪽·신발장·뜀틀, 전철 차내 남쪽 문 한 쌍·연회색 바닥, 사무층 島型 8자리×2, 우체국 서쪽 벽 흰 조각 제거·남동쪽 벤치, interior-rules.md 탁자 목록(사양에서 자동)·관문 단계, door-link-p3 는 이제 층·구역 이동 칸 전부(승차 칸·엘리베이터·계단 2f↔3f↔옥상)를 옆 칸에서 밟아 대상 맵·칸 도착을 확인한다(NNhK 줄). 1회차 지적이 고쳐졌는지 먼저 그림으로 확인하라. 판정은 blocker/major/minor 로, 좌표·파일·가구 id 를 짚는다. 게시는 이 관문 pass 가 조건이라 지금은 게시 전이다. 【읽기 제한】 src/assets/*.json·public/**·maps/out/*.json·tiledata/jp-city/refs/*.json 은 읽지 마라(수 MB). 같은 파일을 두 번 Read 하지 마라. 확대 크롭은 모두 합쳐 8장 이하(가로 600px 이하)로.",
  "files": {
-  "verify-shots/jp-city/interior3/school-1f.png": "a07586a6fc8fd0b280e79344f48ae93233d3822aceac135e89bf1f8310b2fee5",
-  "verify-shots/jp-city/interior3/gym.png": "0654b2000d730ed61bace39c08c1524aaee7ee5fcf386891f9ef03ebd131306e",
-  "verify-shots/jp-city/interior3/kindergarten.png": "f9124cee7655dd3ca8d0b216d8429614b51f655d78df58ab7a724ef61c96f45d",
-  "verify-shots/jp-city/interior3/station.png": "2a97605ad0f299f15c9a3d14e71cf7c35b5a9db0c33fe234f4b4b499cf02b573",
-  "verify-shots/jp-city/interior3/office-1f.png": "6e736a32b472988d52edf9278bd56650b910338aa8fbf7d6006706250036e168",
-  "verify-shots/jp-city/interior3/post-office.png": "7cff735fc027252842cc802b271b95ea804012c1ba62bcbb2d27c6fb2e1e30e4",
+  "verify-shots/jp-city/interior3/school-1f.png": "41e4fb8c631751063359a65fedaae2d692daa8f45cf1867fcc364b15fef1fa75",
+  "verify-shots/jp-city/interior3/gym.png": "e0ad7ec4f867767f90e927ca4601559a04486dff6574b9d72aaa3efd58cc2985",
+  "verify-shots/jp-city/interior3/kindergarten.png": "64e3f5c84f1070491b118c54d75018549c8810e57e5e5720a0d8a58d5b87c574",
+  "verify-shots/jp-city/interior3/station.png": "a1e645e7199b3009459fa99c8ea6e2b5dbcbac8fee492301d9e15d25f050a637",
+  "verify-shots/jp-city/interior3/office-1f.png": "b35c2083f23303c9f21decf1273100723a24381e82aa09e568b98a451d039fd5",
+  "verify-shots/jp-city/interior3/post-office.png": "1f26636f676dff8165161f6a46e4b92459a41f3f89849103aeb2bba5dbb37d1b",
   "verify-shots/jp-city/interior3/mansion-lobby.png": "52fdbdc2cf9a0bcc12fb27402d59298b8cba0f926f73a25428b592a10b83f087",
-  "verify-shots/jp-city/interior3/space.txt": "0639bdc9b22e96b35cfc1f02a0313d657d0698edf0c3a476f16d9d66fb9c3df8",
-  "tiledata/jp-city/blocks/interior_school/_all-x3.png": "853560ab3eaca4d45a74f4aacd507dfaee27a0eb037e2ff18823ac15b3a6575b",
-  "tiledata/jp-city/blocks/interior_gym/_all-x3.png": "d40b432e49371a35e41ab815b05ecbdddf9968b5fe5c36150de3ece2b279eb1b",
-  "tiledata/jp-city/blocks/interior_station/_all-x3.png": "f952ad7fe55cd7e3977db6f88f2d4c9f1420e3bf4acdda5800f5005a398d20b1",
-  "tiledata/jp-city/blocks/interior_office/_all-x3.png": "22f4a2496851639d3e60213d911e6e29d094cab37b6a6dd498d22c19f8edb7e7",
-  "tiledata/jp-city/blocks/interior_post/_all-x3.png": "6e857cdcf6de5818f821e3dbb407d01f0df2bf24fb66a0638367190651b9dc65",
-  "tiledata/jp-city/interior/examples/places3-school.json": "de71e2b78d32aaab4df1d0e4fe887de192921a244ffa50ccd696a417a445dba6",
-  "tiledata/jp-city/interior/examples/places3-gym.json": "810254a1b7a38ce72404e95e9a3c78a1468d44b75b8709c2b4b839149f5a7e37",
+  "verify-shots/jp-city/interior3/space.txt": "6d76e599ab5b5ffdbf87bdcd5714c98c1726685eec8f5d5f877b628364015d4c",
+  "tiledata/jp-city/blocks/interior_school/_all-x3.png": "412d3ce763e262f59979d64c5846fa02a6d5eb48958b1af6240f4e0ac3ce4898",
+  "tiledata/jp-city/blocks/interior_gym/_all-x3.png": "c93aecf00e76a1ecc7e493bb4e942790ea200e76fe9cdf568b8703bc583b193f",
+  "tiledata/jp-city/blocks/interior_station/_all-x3.png": "d3113473387632d1a7447dcd1993387946d5b25fefe517098437cdac7e0f3943",
+  "tiledata/jp-city/blocks/interior_office/_all-x3.png": "66d7a1bf4ded5deadb6d1494d5b594f5c9c2515781f3baae908c559dd9d1aed2",
+  "tiledata/jp-city/blocks/interior_post/_all-x3.png": "e060865e84e8484f82de9f339d190cd73fdfbad9d7a54dd6419e27cbee1ca1b8",
+  "tiledata/jp-city/interior/examples/places3-school.json": "41f9d3c9bf7385214b46b8a419763356098bf69564a1c732766c2d89a107fed8",
+  "tiledata/jp-city/interior/examples/places3-gym.json": "2b44871d7042b1d92c7a187f51c5afa55f1af839e9cbba4a0e047fd1a50b12ad",
   "tiledata/jp-city/interior/examples/places3-station.json": "011656c70cc5b1d8af6e6d719096a7d258f3f2f398c271679479b1c38994bccd",
-  "tiledata/jp-city/interior/examples/places3-office.json": "817c042b43f56b95f4220a6f552e2d456fd422bfb3f308cb94d7233e831e1408",
-  "tiledata/jp-city/interior/examples/places3-post.json": "ca58b528bbddbbbffcecbd894c4bbdd6402a355139a75f958f6639a06b459f53",
-  "tiledata/jp-city/interior/examples/school-1f.json": "202db9cffa74762ce1e0a977327fd6cb4c88f2a2da739ad789b9e7d77a1e3f45",
-  "tiledata/jp-city/interior/examples/school-2f.json": "9b42b715275e214927b82d4302ee90b1805d7bd9669ba48aa049db9e5802aa98",
+  "tiledata/jp-city/interior/examples/places3-office.json": "3395dc5a443e998a30a2e0dbec5221b40b8d7c491fce53ba3e89d471a2baa368",
+  "tiledata/jp-city/interior/examples/places3-post.json": "c3bbd7f1c7bc7afd44f94fa4b5cfec58db9d00c1bda95b5d02aaad4ba1158159",
+  "tiledata/jp-city/interior/examples/school-1f.json": "2eb53ecaf3ad2f7fc1bfcba2580e04ec976208c0febbe68bd1c3cf2c7b5a66a0",
+  "tiledata/jp-city/interior/examples/school-2f.json": "1752dfcfe2c9a6ac498278f4fc04aa88575d7aa8358ec31407e31b13f2ffdbff",
   "tiledata/jp-city/interior/examples/station.json": "cd9d5c119e9b490b4697f9a774538e5d17eecec83c7e6a90ff898c322a922be0",
-  "tiledata/jp-city/interior/examples/office-floor.json": "c77bb1bc0a659d0ddc17ecc3737178353ed19f9f0c1d0fe5ba5867353409a945",
-  "tiledata/jp-city/refs/interior-p3-index.md": "5d5db08749d63d3b6d33dadf529520d83d6261a8b78e2924d673a1b4ff5cf915",
-  "tiledata/jp-city/refs/interior-rules.md": "fae1c2cce2d4fd560f565ca9863147184b28fe2306a8cbb9ca417fb1c764b7dc",
-  "verify-shots/jp-city/door-link-p3/SUMMARY.md": "f1e753173758f0458861511fe7e9ad4c85a257b990889f4275c2ba5fae9acfc7"
+  "tiledata/jp-city/interior/examples/office-floor.json": "0b8932f49bd09f08962d04af1befe70838d0be143460e4c6b694a83663b11243",
+  "tiledata/jp-city/refs/interior-p3-index.md": "f02cec87838619d11c701c4be23109231d058c16e3a2d2d28d3ae81cf298177e",
+  "tiledata/jp-city/refs/interior-rules.md": "13cce7204f57a871d6d4e42938dd9ae64fa6055b5164dbf4197dbd805eb82186",
+  "verify-shots/jp-city/door-link-p3/SUMMARY.md": "b4d9f20e4c3bbe7b5b21265209ae9913f34a5049a46f522cce2612346ac78bc7"
  },
  "findings": [
   {
-   "severity": "major",
-   "file": "verify-shots/jp-city/interior3/school-1f.png (school-2f 교실 둘, tiledata/jp-city/interior/examples/school-2f.json)",
-   "where": "sc-desk-n 15개/교실, x=2,4,6,8,10 · y=5~7 세로로 붙은 줄",
-   "problem": "책상이 상판+의자로 안 읽히고 베이지 윗면+어두운 서랍 앞면 모양이 3개씩 쌓인 서랍장·의자 줄로 보인다. 칠판·교탁 맥락이 없으면 책상으로 알아보기 어렵다.",
-   "fix": "sc-desk-n 그림을 밝은 상판(나뭇결 한 줄)과 어두운 의자 등받이로 나눠 다시 그리고, 열 사이 1칸 간격은 유지한다."
-  },
-  {
-   "severity": "major",
-   "file": "verify-shots/jp-city/interior3/kindergarten.png (tiledata/jp-city/interior/examples/kindergarten.json)",
-   "where": "gy-nap-futon ×4 at x=13..16,y=3 (우상단 방)",
-   "problem": "파란 상자·흰 테두리·노란 점 무늬의 세워진 모양이라 수족관·수조로 읽힌다. 이불의 윗면이 바닥에 누운 3/4 시점이 아니다.",
-   "fix": "flat 종류 바닥 무늬로 다시 그린다. 윗면 직사각형 단색 이불+베개 하나, 점 대신 줄 한두 개."
-  },
-  {
-   "severity": "major",
-   "file": "verify-shots/jp-city/interior3/space.txt (gym 줄, tiledata/jp-city/interior/examples/gym.json open)",
-   "where": "open 체육관 마루 @1,4-15,16 (195칸, e3 90%)",
-   "problem": "빈 바닥 면제가 마루 전체를 덮는다. 코트(x4~14,y7~13)와 무관한 남쪽 3줄(y14~16)과 서쪽 두 열이 소품 없는 맨바닥으로 남아도 검사기가 통과시킨다.",
-   "fix": "open 사각형을 코트와 둘레 1칸으로 줄이고, 남쪽·서쪽 벽 쪽에 벤치·공 수레·매트 말이·접이 의자 줄 중 2~3개를 놓거나 홀을 2줄 줄인다."
-  },
-  {
-   "severity": "major",
-   "file": "verify-shots/jp-city/door-link-p3/SUMMARY.md",
-   "where": "PASS 36줄 전체",
-   "problem": "승강장↔전철 차내 승차 칸 링크(5,6)(6,6)(14,6)(15,6)↔(5,3)(6,3)(14,3)(15,3), 학교 2f↔3f·3f↔옥상·옥상→3층·3층→2층, 사무 엘리베이터 4쌍, 맨션 계단 (5,3)↔복도 (19,4)(20,4)를 런타임에서 밟은 줄이 없다. 요청 ⑤가 확인하려는 승차 칸 이동이 실측되지 않았다.",
-   "fix": "door-link.probe.mjs에 위 링크 왕복 단계를 더해 출하 player.html에서 다시 돌리고 SUMMARY를 갱신한다."
-  },
-  {
    "severity": "minor",
    "file": "verify-shots/jp-city/interior3/school-1f.png",
-   "where": "1층 화장실 x20~24,y4~8, 문 (22,9)",
-   "problem": "칸막이·남녀 구분 없이 소변기 둘과 양변기 하나가 트여 있고 하단 3줄이 맨바닥이다. 문이 베이지 틀의 흰 패널이라 게시판·호출 패널처럼 보인다.",
-   "fix": "칸막이 한 칸과 문을 더하고, 화장실 문 그림을 다른 방 문과 같은 틀로 맞춘다."
+   "where": "school-2f 교실 두 곳, sc-desk-n x=2..10 / x=12..22, y=5~9",
+   "problem": "책상 상판 색이 마루 색과 비슷하고 윤곽이 약하다. 두 교실이 같은 5×5 격자·같은 틀이라 반복이 읽히고, 앞문·뒷문이 둘 다 칠판 반대편 남쪽 벽에 있다.",
+   "fix": "sc-desk-n 상판에 짙은 sumi 윤곽과 한 단 어두운 옆면을 준다. 한 교실은 앞문을 칠판 쪽으로 옮기거나 책상 열 간격을 바꾼다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/interior3/school-1f.png (school-2f 복도)",
-   "where": "sc-sink 3개, 복도 북쪽 벽 앞 x≈21,25,28 부근",
-   "problem": "거울 달린 받침 세면대가 복도에 떠 있는 모양이라 모니터 거치대로도 읽힌다. 일본 학교 복도는 벽에 붙은 긴 수세대다.",
-   "fix": "벽걸이(wall) 종류의 가로로 긴 스테인리스 수세대(수도꼭지 3~4개)로 바꾼다."
+   "file": "tiledata/jp-city/interior/examples/station-platform.json",
+   "where": "(3,8)(4,8)(7..10,8) — 링크 칸 (5,8)(6,8) 너머 6칸",
+   "problem": "걸어서 닿을 수 없는 죽은 바닥이다. 링크 칸을 밟으면 역사로 이동해 건널 수 없는데, BFS는 링크 칸을 바닥으로 세어 「닿지 못한 바닥 0」으로 보고한다. narrow 설명 「승강장 뒤쪽 길」도 실제 동선과 다르다.",
+   "fix": "row 8 을 (5,8)(6,8) 두 칸으로 줄이고 narrow 를 지운다. 또는 row 8 양쪽에 점자블록·안내판 같은 소품을 놓아 장식 칸으로 삼는다. check-interior-examples 의 BFS 는 링크 칸을 도착점으로만 세도록 고친다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/interior/examples/school-2f.json",
-   "where": "교실 둘, sc-back-locker·sc-tv-stand 위치, sc-desk-n 15개",
-   "problem": "사물함이 칠판 벽 모서리에 있어 교실 뒤쪽이 아니고, 두 교실이 좌우만 뒤집힌 대칭이며 책상이 15개뿐이다.",
-   "fix": "한 교실만 청소 도구함·책상 줄 수·게시판 위치를 달리해 같은 틀 반복을 줄인다."
+   "file": "tiledata/jp-city/interior/examples/station.json",
+   "where": "open @5,7-10,10 (24칸 중 21칸 빈 바닥, e3 34%)",
+   "problem": "개찰 앞 콘코스가 점자블록 한 줄뿐인 빈 바닥이라 「트여야 하는 곳」이라는 근거가 약하다.",
+   "fix": "노선도판·시계·쓰레기통·벤치 중 하나를 콘코스에 놓거나 y=8 한 줄을 막아 맵을 줄인다. open 의 why 에는 구체적 이유를 적는다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/interior3/gym.png",
-   "where": "코트 12×6칸, 동쪽 골대 x≈16, 신발장 x5~6,y15, 체육 창고 뜀틀",
-   "problem": "한 칸 1m 기준이면 코트가 실제의 절반 크기다. 제한 구역과 가운데 원이 붉은 면이고 일본 체육관은 흰 선만 긋는 경우가 대부분이다. 동쪽 골대가 창고 방 벽 창과 겹쳐 잘려 읽힌다. 신발장은 책꽂이로, 뜀틀은 복사기로 읽힌다.",
-   "fix": "문서에 축소 코트임을 밝히고, 붉은 면을 흰 선만으로 줄이고, 동쪽 골대를 한 칸 안쪽으로 옮기고, 신발장·뜀틀 그림의 형태를 다듬는다."
+   "file": "tiledata/jp-city/blocks/interior_station/_all-x3.png",
+   "where": "st-office-window (≈1380~1475, 12~105), 왼쪽 유리 안",
+   "problem": "머리·어깨처럼 보이는 어두운 실루엣이 있어 사람 그림 금지에 걸릴 수 있다.",
+   "fix": "실루엣을 의자 등받이나 모니터 뒷면 같은 사물 모양으로 바꾸거나 유리 안을 비운다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/interior3/office-1f.png (office-floor)",
-   "where": "office-floor 사무실 22×8, 책상 섬 2개",
-   "problem": "島型이 섬당 2~3자리뿐이라 밀도가 낮다. 일본 사무실 섬은 6~8자리다.",
-   "fix": "섬 하나를 좌우로 키우거나 x15~21,y4~8에 섬을 하나 더 놓는다."
+   "file": "verify-shots/jp-city/door-link-p3/SUMMARY.md",
+   "where": "NNhK 줄 / 헤더 커밋",
+   "problem": "3f (24,13), 맨션 외복도 (1,4)(20,4), 옥상 링크 (6,6) 이외 경로는 밟지 않았다. 증거 커밋이 2210458153(+미커밋)이고 HEAD 는 3b4e0233d2 라 최종 트리에 묶이지 않았다.",
+   "fix": "링크 칸을 하나도 빠짐없이 밟도록 probe 를 넓히고, 최종 커밋 뒤에 다시 돌려 헤더에 HEAD 해시를 남긴다."
   },
   {
    "severity": "minor",
-   "file": "verify-shots/jp-city/interior3/station.png (train-car)",
-   "where": "train-car 남쪽 벽, 바닥",
-   "problem": "북쪽 벽에만 문 둘이고 남쪽 벽에는 문이 없다. 바닥이 흙·자갈 같은 갈색 점무늬다.",
-   "fix": "남쪽 좌석 줄 사이에 같은 문 한 쌍을 더하거나 문서에 반대편 문 생략을 밝히고, 바닥을 연회색·갈색 톤 무늬로 바꾼다."
+   "file": "tiledata/jp-city/refs/interior-p3-index.md",
+   "where": "「짜임」 열 — 학교·사무실·우체국·맨션·역 행(places3-*.json rules[0] 만 출력, bake_refs.py:2715)",
+   "problem": "사무층 島型, 교실 책상 배열과 두 교실 차이, 옥상 open, 개찰 이후 구성 같은 서술 규칙이 어느 참고문서에도 실리지 않는다(「島型」 검색 0건). 입력 JSON 은 정확하나 규칙을 읽고 따라 하려는 조수는 못 읽는다.",
+   "fix": "bake_refs.py 가 rules 전체를 불릿으로 출력하게 하거나 interior-ex-*.md 마다 해당 맵의 rules 를 덧붙인다."
+  },
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/interior/examples/school-3f.json",
+   "where": "door-open-western@5,9 (음악실 문)",
+   "problem": "다른 학교 문은 모두 sc-classroom-door(미닫이)인데 음악실만 양식 여닫이라 문 양식 규칙이 어긋난다.",
+   "fix": "sc-classroom-door 로 통일한다. 방음문이라는 이유를 남기려면 rules 에 근거를 적는다."
   },
   {
    "severity": "minor",
    "file": "verify-shots/jp-city/interior3/post-office.png",
-   "where": "서쪽 벽 x0,y≈5 흰 세로 조각, 남동쪽 x6~10,y9~12",
-   "problem": "벽 열을 가르는 흰 조각이 렌더 잔상처럼 보인다. 남동쪽 약 20칸이 맨바닥이다.",
-   "fix": "창구 끝 여닫이 칸 그림이 벽 열에 번지지 않게 하고, 남동쪽에 번호표 기계나 기재대를 옮기거나 방을 줄인다."
+   "where": "po-staff-desk (1,3)(4,3), 직원 길 y=4, po-counter-end (1,5)",
+   "problem": "창구 직원 책상에 의자가 없다. 직원 길이 1칸이라 의자를 놓을 자리도 없다. po-counter-end 는 걸을 수 있어서 손님이 로비에서 직원 길로 들어갈 수 있다.",
+   "fix": "직원 책상 앞 칸에 의자(막힘)를 놓을 수 있게 직원 길을 2칸으로 하거나 책상을 한 줄 북쪽으로 붙인다. counter-end 는 막힘 여닫이 그림으로 하거나 narrow 설명에 개방 칸임을 밝힌다."
   },
   {
    "severity": "minor",
-   "file": "tiledata/jp-city/refs/interior-rules.md",
-   "where": "39행 탁자 설명, 5행 수량, 88행 관문 설명",
-   "problem": "탁자 다섯 종이라 적었지만 office-floor.json이 of-meeting-table·of-break-table을 쓴다. 가구 411종 등 수치가 3묶음 추가분을 반영했는지 확인하지 못했다. 관문 설명에 이번 interior-p3 단계가 없다.",
-   "fix": "탁자 종 목록을 사양 JSON 기준으로 다시 세어 갱신하고, 수량을 재집계하고, interior-p3 관문 이름과 gates 파일 경로를 적는다."
+   "file": "tiledata/jp-city/interior/examples/kindergarten.json",
+   "where": "gy-shoe-cubby (1,9)(1,10) vs 타타키 zone x4~7,y10~11",
+   "problem": "아이 신발장이 흙바닥(타타키)에서 2칸 떨어진 마루 위에 있어 신발 갈아 신는 동선이 어긋난다.",
+   "fix": "신발장을 타타키 서쪽 끝 (3,10) 쪽으로 옮기거나 타타키 zone 을 x1~7 로 넓힌다."
+  },
+  {
+   "severity": "minor",
+   "file": "verify-shots/jp-city/interior3/station.png",
+   "where": "train-car 남쪽 줄 롱시트·st-car-door-s (5,6)(14,6)",
+   "problem": "남쪽 롱시트와 출입문이 1칸 높이만 그려져 북쪽(2칸)과 비대칭이다. 남쪽 문은 위쪽 노란 문턱 아래에 문 몸통이 붙은 방향이라 북쪽 문과 반대로 읽는다.",
+   "fix": "남쪽 시트 위에 등받이 윗단 한 줄을 더해 높이를 맞추고, 문 몸통을 문턱 윗쪽에 그린다. 현재 상태도 읽히긴 하므로 다음 판에서 고쳐도 된다."
   }
  ],
- "report": "## interior-p3 적대적 검수: fail\n\n게시 불가입니다. 내용상 major 3건이 걸립니다. 직접 연 것은 PNG 12장, 확대 크롭 8장, 예제 JSON 계획·링크, 문서 3편입니다.\n\n### major\n1. **교실 책상이 책상으로 안 읽힘** — `school-2f.png`, 교실 둘. `sc-desk-n` 15개가 `x=2,4,6,8,10`, `y=5~7`에 같은 모양 1칸으로 세로로 붙어 있습니다. 베이지 윗면에 어두운 서랍 같은 앞면이 달린 모양이 3개씩 쌓여, 서랍 쌓임이나 의자 줄처럼 보입니다. 상판과 의자 등받이가 구분되지 않습니다. 칠판·교탁이 없으면 알아보기 어렵습니다. 고치려면 `sc-desk-n`을 상판(밝은 면, 나뭇결 한 줄)과 의자(어두운 등받이 한 칸)로 나눠 다시 그리세요. 열 사이 간격은 지금처럼 1칸 두고, 같은 열의 앞뒤 책상은 의자가 보이게 합니다.\n2. **유치원 낮잠 이불이 수족관·수조로 읽힘** — `kindergarten.png`, 우상단 방 `gy-nap-futon` ×4(`x=13~16,y=3`). 파란 상자에 흰 테두리, 노란 점이 있고 바닥에 눕지 않고 세워져 있습니다. 유리 어항이나 수조로 읽힙니다. 3/4 시점에서 이불은 바닥에 누운 윗면(직사각형)과 베개 한 단이어야 합니다. `flat` 종류 바닥 무늬로 다시 그리세요. 윗면은 1칸 단색 이불에 베개 하나, 무늬는 점 대신 줄 한두 개가 좋습니다. 그 방에 `oshiire` 벽장만 있어 침구 방으로 읽히려면 이 수정이 필요합니다.\n3. **체육관의 빈 바닥 면제(open)가 너무 넓음** — `space.txt` 첫 줄, `open …@1,4-15,16`(195칸, e3 90%). 이 면제는 마루 전체를 덮습니다. 농구장은 `x4~14,y7~13`쯤입니다. 거기서 벗어난 남쪽 3줄(`y14~16`, 출입구와 신발장 `x5~6` 말고는 전부 맨바닥)과 서쪽 두 열은 트여야 할 이유가 없습니다. 고치려면 `open` 사각형을 코트와 둘레 1칸으로 줄이세요. 남쪽·서쪽 벽 쪽에 벤치, 공 수레, 매트 말이, 접이 의자 줄 중 2~3개를 놓거나, 홀을 남쪽 2줄 줄이세요.\n4. **링크 런타임 QA에 구멍이 있는데 SUMMARY가 36/36 통과라고 적음** — `door-link-p3/SUMMARY.md`. 실제 이동으로 밟은 것은 거리 문 7곳, 학교 1층→2층 계단, 승강장 왕복 1회, 사무 1층→사무층 계단 왕복, 맨션 엘리베이터 왕복입니다. 아래 링크는 한 번도 안 밟았습니다.\n   - `station-platform` ↔ `train-car` 승차 칸 (5,6)(6,6)(14,6)(15,6) ↔ (5,3)(6,3)(14,3)(15,3). 확인 요청 ⑤가 직접 묻는 부분입니다.\n   - `school-2f` → `school-3f` (21,12)(22,12), `school-3f` → `school-roof` (21,12)(22,12), 옥상 → 3층, 3층 → 2층.\n   - 사무 엘리베이터 4쌍: 1층 (4,3)(5,3)(7,3)(8,3) ↔ 사무층 (17,12)(18,12)(21,12)(22,12).\n   - 맨션 계단 (5,3) ↔ 외복도 (19,4)(20,4).\n   \n   예제 JSON의 도착 칸(`toX,toY`)은 모두 걸을 수 있는 바닥이라 정적으로는 이상 없습니다. 하지만 \"층 왕복 실측\"이라 하려면 위 링크를 `door-link.probe.mjs`에 더해 다시 돌려야 합니다.\n\n### minor\n- **학교 1층 화장실** (`school-1f.png`, `x20~24,y4~8`): 칸막이 없이 소변기 둘, 양변기 하나가 트여 있고 남녀 구분도 없습니다. 하단 3줄은 맨바닥입니다. 칸막이 한 칸과 문을 더하세요. 화장실 문 `(22,9)`는 베이지 틀의 흰 패널이라 게시판이나 호출 패널처럼 보입니다.\n- **2층 복도 세면대** `sc-sink`(`x≈21,25,28`쯤): 거울 달린 받침 세면대가 복도 한가운데 서 있는 모양이라 모니터 거치대로도 읽힙니다. 일본 학교는 벽에 붙은 긴 스테인리스 수세대가 흔합니다. 벽걸이(`wall`) 종류의 가로로 긴 수세대로 바꾸는 편이 낫습니다.\n- **교실 뒤 사물함**: 칠판 벽 쪽 모서리(`x1`, `x10`)에 있어 교실 뒤쪽이 아닙니다. 책상도 열 5 × 줄 3 = 15개뿐이라 학급 규모로는 작습니다. 서쪽·동쪽 벽 창이 없는 것은 엔진 제약으로 이해합니다.\n- **교실 둘이 거울 대칭 반복** (`school-2f`): 칠판, 게시판, TV 위치만 좌우로 뒤집혔습니다. 한쪽에 청소 도구함 위치나 책상 줄 수만 달라도 낫습니다.\n- **체육관 규모와 소품**: 코트가 12×6칸입니다. 한 칸 1m 기준이면 실제 코트의 절반 크기이고 골대 간격도 12m입니다. 한 칸 1m 계약과 어긋나므로 문서에 \"축소 코트\"로 밝혀 두세요.\n  - 코트 선과 제한 구역을 빨강 면으로 칠했습니다. 일본 체육관은 흰 선만 긋는 경우가 대부분입니다.\n  - 동쪽 골대(`x≈16`)가 창고 방 벽 창과 겹쳐 그려집니다. 골대를 한 칸 안쪽으로 옮기세요.\n  - 신발장은 `gy-shoe-cubby` 책장 모양이라 책꽂이로 읽힙니다.\n  - 체육 창고의 뜀틀은 복사기 모양으로 읽힙니다.\n- **사무층 책상 섬이 2개뿐** (`office-floor.png`, 22×8칸 사무실): 섬당 2~3자리입니다. 일본 사무실의 島型 책상은 6~8자리입니다. e3는 0이지만 밀도가 낮습니다. 섬 하나를 좌우로 키우거나 `x15~21,y4~8`에 한 섬을 더하세요.\n- **전철 차내**: 남쪽 벽에 문이 없고 북쪽에만 문 둘이 있습니다. 실제 전동차는 양쪽에 같은 문이 있으니, 남쪽 좌석 줄 사이에 문 한 쌍을 더 그리거나 문서에 \"반대편 문은 생략\"이라 쓰세요. 바닥이 흙이나 자갈 같은 갈색 점무늬라 객차 바닥(연회색·갈색 톤 무늬)보다 흙처럼 보입니다. 좌석 색은 보라/주황 교대로, 우선석 구분은 읽힙니다.\n- **우체국 서쪽 벽** (`x0,y≈5`): 흰 세로 조각이 벽 열을 가르는 렌더 잔상처럼 보입니다. 창구 끝 여닫이 칸(`narrow` 선언 `1,5`)과 맞는지 확인하세요. 남동쪽 `x6~10,y9~12`는 맨바닥 약 20칸입니다.\n- **맨션 로비**: 자전거 2대가 엘리베이터 홀 안에 있습니다. 거리의 자전거 소품과 다른 위치 문법인지 맞추세요. 외복도 문 4개는 같은 틀 반복인데, 맨션 외복도는 원래 그렇습니다.\n- **참고문서 `interior-rules.md`**:\n  - 39행 \"탁자 자동 타일 다섯 종\"이 거짓입니다. `office-floor.json`이 `of-meeting-table`, `of-break-table`을 쓰는데, 다섯 종 목록에 없습니다. 조수가 사무·학교 탁자를 못 씁니다.\n  - 5행 \"가구 411종·탁자 12종·탁상 64종\" 수치는 사양 JSON을 읽지 않아 검증하지 못했습니다. 3묶음 추가분이 반영됐는지 `jpInteriorSpec.json` 집계로 확인하세요.\n  - 88행은 \"가게·공공 실내는 `--stage interior-shop`\"만 적고 `interior-p3`(이번 관문)를 적지 않았습니다.\n- **글자·사람**: 칠판, 게시판, 운임표, 안내판 모두 색 덩이나 선이라 글자와 사람은 없습니다. 통과입니다.\n- **판정 대상 아님으로 두고 본 것**: `narrow` 선언은 사유가 맞습니다.\n  - 역사 개찰기 사이 `(5,6)(7,6)(9,6)`\n  - 승강장 뒤쪽 길 `(3~10,8)`\n  - 사무 보안 게이트 `x5`\n  - 우체국 직원 길\n  \n  개찰선도 실제로 닫혀 있습니다. 서쪽 낮은 칸막이 `x1~3`, 개찰기 `x4,6,8,10`, 역무실 벽 `x11~`이 이어지고, 개찰기 사이 `x5,7,9`만 통로입니다.\n\n```json\n{\"verdict\": \"fail\", \"findings\": [\n{\"severity\": \"major\", \"file\": \"verify-shots/jp-city/interior3/school-1f.png (school-2f 교실 둘, tiledata/jp-city/interior/examples/school-2f.json)\", \"where\": \"sc-desk-n 15개/교실, x=2,4,6,8,10 · y=5~7 세로로 붙은 줄\", \"problem\": \"책상이 상판+의자로 안 읽히고 베이지 윗면+어두운 서랍 앞면 모양이 3개씩 쌓인 서랍장·의자 줄로 보인다. 칠판·교탁 맥락이 없으면 책상으로 알아보기 어렵다.\", \"fix\": \"sc-desk-n 그림을 밝은 상판(나뭇결 한 줄)과 어두운 의자 등받이로 나눠 다시 그리고, 열 사이 1칸 간격은 유지한다.\"},\n{\"severity\": \"major\", \"file\": \"verify-shots/jp-city/interior3/kindergarten.png (tiledata/jp-city/interior/examples/kindergarten.json)\", \"where\": \"gy-nap-futon ×4 at x=13..16,y=3 (우상단 방)\", \"problem\": \"파란 상자·흰 테두리·노란 점 무늬의 세워진 모양이라 수족관·수조로 읽힌다. 이불의 윗면이 바닥에 누운 3/4 시점이 아니다.\", \"fix\": \"flat 종류 바닥 무늬로 다시 그린다. 윗면 직사각형 단색 이불+베개 하나, 점 대신 줄 한두 개.\"},\n{\"severity\": \"major\", \"file\": \"verify-shots/jp-city/interior3/space.txt (gym 줄, tiledata/jp-city/interior/examples/gym.json open)\", \"where\": \"open 체육관 마루 @1,4-15,16 (195칸, e3 90%)\", \"problem\": \"빈 바닥 면제가 마루 전체를 덮는다. 코트(x4~14,y7~13)와 무관한 남쪽 3줄(y14~16)과 서쪽 두 열이 소품 없는 맨바닥으로 남아도 검사기가 통과시킨다.\", \"fix\": \"open 사각형을 코트와 둘레 1칸으로 줄이고, 남쪽·서쪽 벽 쪽에 벤치·공 수레·매트 말이·접이 의자 줄 중 2~3개를 놓거나 홀을 2줄 줄인다.\"},\n{\"severity\": \"major\", \"file\": \"verify-shots/jp-city/door-link-p3/SUMMARY.md\", \"where\": \"PASS 36줄 전체\", \"problem\": \"승강장↔전철 차내 승차 칸 링크(5,6)(6,6)(14,6)(15,6)↔(5,3)(6,3)(14,3)(15,3), 학교 2f↔3f·3f↔옥상·옥상→3층·3층→2층, 사무 엘리베이터 4쌍, 맨션 계단 (5,3)↔복도 (19,4)(20,4)를 런타임에서 밟은 줄이 없다. 요청 ⑤가 확인하려는 승차 칸 이동이 실측되지 않았다.\", \"fix\": \"door-link.probe.mjs에 위 링크 왕복 단계를 더해 출하 player.html에서 다시 돌리고 SUMMARY를 갱신한다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/school-1f.png\", \"where\": \"1층 화장실 x20~24,y4~8, 문 (22,9)\", \"problem\": \"칸막이·남녀 구분 없이 소변기 둘과 양변기 하나가 트여 있고 하단 3줄이 맨바닥이다. 문이 베이지 틀의 흰 패널이라 게시판·호출 패널처럼 보인다.\", \"fix\": \"칸막이 한 칸과 문을 더하고, 화장실 문 그림을 다른 방 문과 같은 틀로 맞춘다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/school-1f.png (school-2f 복도)\", \"where\": \"sc-sink 3개, 복도 북쪽 벽 앞 x≈21,25,28 부근\", \"problem\": \"거울 달린 받침 세면대가 복도에 떠 있는 모양이라 모니터 거치대로도 읽힌다. 일본 학교 복도는 벽에 붙은 긴 수세대다.\", \"fix\": \"벽걸이(wall) 종류의 가로로 긴 스테인리스 수세대(수도꼭지 3~4개)로 바꾼다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/school-2f.json\", \"where\": \"교실 둘, sc-back-locker·sc-tv-stand 위치, sc-desk-n 15개\", \"problem\": \"사물함이 칠판 벽 모서리에 있어 교실 뒤쪽이 아니고, 두 교실이 좌우만 뒤집힌 대칭이며 책상이 15개뿐이다.\", \"fix\": \"한 교실만 청소 도구함·책상 줄 수·게시판 위치를 달리해 같은 틀 반복을 줄인다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/gym.png\", \"where\": \"코트 12×6칸, 동쪽 골대 x≈16, 신발장 x5~6,y15, 체육 창고 뜀틀\", \"problem\": \"한 칸 1m 기준이면 코트가 실제의 절반 크기다. 제한 구역과 가운데 원이 붉은 면이고 일본 체육관은 흰 선만 긋는 경우가 대부분이다. 동쪽 골대가 창고 방 벽 창과 겹쳐 잘려 읽힌다. 신발장은 책꽂이로, 뜀틀은 복사기로 읽힌다.\", \"fix\": \"문서에 축소 코트임을 밝히고, 붉은 면을 흰 선만으로 줄이고, 동쪽 골대를 한 칸 안쪽으로 옮기고, 신발장·뜀틀 그림의 형태를 다듬는다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/office-1f.png (office-floor)\", \"where\": \"office-floor 사무실 22×8, 책상 섬 2개\", \"problem\": \"島型이 섬당 2~3자리뿐이라 밀도가 낮다. 일본 사무실 섬은 6~8자리다.\", \"fix\": \"섬 하나를 좌우로 키우거나 x15~21,y4~8에 섬을 하나 더 놓는다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/station.png (train-car)\", \"where\": \"train-car 남쪽 벽, 바닥\", \"problem\": \"북쪽 벽에만 문 둘이고 남쪽 벽에는 문이 없다. 바닥이 흙·자갈 같은 갈색 점무늬다.\", \"fix\": \"남쪽 좌석 줄 사이에 같은 문 한 쌍을 더하거나 문서에 반대편 문 생략을 밝히고, 바닥을 연회색·갈색 톤 무늬로 바꾼다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/post-office.png\", \"where\": \"서쪽 벽 x0,y≈5 흰 세로 조각, 남동쪽 x6~10,y9~12\", \"problem\": \"벽 열을 가르는 흰 조각이 렌더 잔상처럼 보인다. 남동쪽 약 20칸이 맨바닥이다.\", \"fix\": \"창구 끝 여닫이 칸 그림이 벽 열에 번지지 않게 하고, 남동쪽에 번호표 기계나 기재대를 옮기거나 방을 줄인다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-rules.md\", \"where\": \"39행 탁자 설명, 5행 수량, 88행 관문 설명\", \"problem\": \"탁자 다섯 종이라 적었지만 office-floor.json이 of-meeting-table·of-break-table을 쓴다. 가구 411종 등 수치가 3묶음 추가분을 반영했는지 확인하지 못했다. 관문 설명에 이번 interior-p3 단계가 없다.\", \"fix\": \"탁자 종 목록을 사양 JSON 기준으로 다시 세어 갱신하고, 수량을 재집계하고, interior-p3 관문 이름과 gates 파일 경로를 적는다.\"}\n]}\n```"
+ "report": "**1회차 지적 4건은 모두 고쳐진 것으로 확인했다. blocker와 major는 찾지 못했고, 아래는 minor다.** 검사 근거는 아래 관찰과 같다.\n- 맵 14장 그림 전부와 8번 확대 크롭\n- 예제 JSON 14개와 `--grid` 출력 6개\n- 참고문서 본문 대조(embedded JSON 14개 = 예제와 완전 일치)\n- door-link-p3 SUMMARY\n\n**1회차 지적 확인**\n- **sc-desk-n**: 상판(밝은 베이지)과 의자(어두운 등받이·다리)로 나뉘어 책상 줄로 읽는다. 서랍장·의자 줄로 보이던 문제는 해소됐다. 아래 minor 1번이 남는다.\n- **gy-nap-futon**: 흰 베개와 분홍 이불이 바닥에 누운 모양으로 바뀌어 요로 읽는다. 수조처럼 보이던 문제는 해소됐다.\n- **체육관 open**: `@2,5-14,13`(코트와 둘레 1칸)으로 줄었다. 남·서쪽에는 벤치·신발장·골대 받침·공 수레가 놓였고 ���바닥 띠는 사라졌다.\n- **door-link-p3**: 승차 칸 4쌍, 엘리베이터 4쌍, 계단 2f↔3f↔옥상이 NNhK 줄로 실측된다. 줄 수는 74줄로 일치하고, 대상 맵·칸이 예제 `links`와 맞는다. 안 밟은 칸은 minor 5번.\n\n**minor 요약**\n1. 교실 책상: 상판 색이 마루 색과 가깝고 상판 윤곽(sumi)이 약하다. 같은 교실 5열×5행, 6열×5행이 틀 하나라 반복이 읽힌다. 두 교실의 차이는 열 수·TV 쪽·청소함 쪽뿐이다. 앞문·뒷문이 모두 칠판 반대편(남쪽) 벽에 있다.\n2. 승강장 `(3,8)(4,8)(7..10,8)` 6칸은 걸어서 닿지 못하는 죽은 바닥이다.\n   - 이 칸으로 가는 길은 링크 칸 `(5,8)(6,8)`뿐이라, 밟으면 역사로 이동한다.\n   - 검사기 BFS는 링크 칸을 통과 가능한 바닥으로 세어 「닿지 못한 바닥 0」으로 보고한다.\n   - `narrow`의 「주 동선은 끝선 앞 두 줄」 설명도 이 칸에는 해당하지 않는다.\n   - 승강장 동서 이동은 `st-edge` 줄(y=5, 선로 바로 앞 점자블록 줄)로만 가능하다. y=6은 승차 칸 때문에 사실상 막혀 있다. 그림으로는 주 동선이 한 줄로 읽히지 않는다.\n3. 역사 콘코스 `open @5,7-10,10`은 24칸 중 21칸이 비었다.\n   - 점자블록 한 줄만 있다. 정말 트여야 하는 곳이라는 근거가 약하다.\n   - 노선도·시계·쓰레기통·벤치 중 하나를 넣거나 한 줄 줄이는 편이 맞다.\n4. `st-office-window` 왼쪽 유리 안의 어두운 머리·어깨 모양이 직원 실루엣처럼 읽힐 수 있다(station `_all-x3` 1380~1475,12~105 부근). 사람 금지 규칙과 닿는다.\n5. door-link 미실측 칸: 3f `(24,13)`, 맨션 외복도 `(1,4)` `(20,4)`, 옥상 링크가 `(6,6)` 하나라 경로 하나만 확인됨.\n   - SUMMARY 커밋이 `2210458153`(+미커밋)이고 HEAD는 `3b4e0233d2`다. 증거가 최종 트리에 묶이지 않았다.\n6. 참고문서: `interior-p3-index.md`의 「짜임」 칸은 `rules[0]`만 싣는다.\n   - 사무층 島型, 교실 책상 배열, 옥상, 개찰 이후의 규칙은 `places3-*.json`에만 있다. `interior-ex-*.md`에도 「島型」은 없다.\n   - 입력 JSON은 정확하므로 복제는 가능하다. 서술 규칙을 따라 하려는 조수는 못 읽는다.\n7. 음악실 문 `door-open-western@5,9`만 양식 문이고 나머지 학교 문은 모두 미닫이다. 문 양식 규칙이 어긋난다.\n8. 우체국 직원 책상 둘에 의자가 없다. 직원 길이 1칸이라 의자를 넣을 자리도 없다. 창구 끝 `po-counter-end (1,5)`는 걸어서 지나갈 수 있어서 손님이 직원 길로 들어갈 수 있다.\n9. 유치원 신발장 `(1,9)(1,10)`이 타타키 `x4~7`과 2칸 떨어져 있다. 신발장이 현관 흙바닥 옆에 붙지 않았다.\n10. 전철 차내 남쪽 줄 롱시트와 출입문은 1칸 높이만 그려져 북쪽(2칸)과 비대칭이다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/school-1f.png\", \"where\": \"school-2f 교실 두 곳, sc-desk-n x=2..10 / x=12..22, y=5~9\", \"problem\": \"책상 상판 색이 마루 색과 비슷하고 윤곽이 약하다. 두 교실이 같은 5×5 격자·같은 틀이라 반복이 읽히고, 앞문·뒷문이 둘 다 칠판 반대편 남쪽 벽에 있다.\", \"fix\": \"sc-desk-n 상판에 짙은 sumi 윤곽과 한 단 어두운 옆면을 준다. 한 교실은 앞문을 칠판 쪽으로 옮기거나 책상 열 간격을 바꾼다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/station-platform.json\", \"where\": \"(3,8)(4,8)(7..10,8) — 링크 칸 (5,8)(6,8) 너머 6칸\", \"problem\": \"걸어서 닿을 수 없는 죽은 바닥이다. 링크 칸을 밟으면 역사로 이동해 건널 수 없는데, BFS는 링크 칸을 바닥으로 세어 「닿지 못한 바닥 0」으로 보고한다. narrow 설명 「승강장 뒤쪽 길」도 실제 동선과 다르다.\", \"fix\": \"row 8 을 (5,8)(6,8) 두 칸으로 줄이고 narrow 를 지운다. 또는 row 8 양쪽에 점자블록·안내판 같은 소품을 놓아 장식 칸으로 삼는다. check-interior-examples 의 BFS 는 링크 칸을 도착점으로만 세도록 고친다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/station.json\", \"where\": \"open @5,7-10,10 (24칸 중 21칸 빈 바닥, e3 34%)\", \"problem\": \"개찰 앞 콘코스가 점자블록 한 줄뿐인 빈 바닥이라 「트여야 하는 곳」이라는 근거가 약하다.\", \"fix\": \"노선도판·시계·쓰레기통·벤치 중 하나를 콘코스에 놓거나 y=8 한 줄을 막아 맵을 줄인다. open 의 why 에는 구체적 이유를 적는다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/blocks/interior_station/_all-x3.png\", \"where\": \"st-office-window (≈1380~1475, 12~105), 왼쪽 유리 안\", \"problem\": \"머리·어깨처럼 보이는 어두운 실루엣이 있어 사람 그림 금지에 걸릴 수 있다.\", \"fix\": \"실루엣을 의자 등받이나 모니터 뒷면 같은 사물 모양으로 바꾸거나 유리 안을 비운다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/door-link-p3/SUMMARY.md\", \"where\": \"NNhK 줄 / 헤더 커밋\", \"problem\": \"3f (24,13), 맨션 외복도 (1,4)(20,4), 옥상 링크 (6,6) 이외 경로는 밟지 않았다. 증거 커밋이 2210458153(+미커밋)이고 HEAD 는 3b4e0233d2 라 최종 트리에 묶이지 않았다.\", \"fix\": \"링크 칸을 하나도 빠짐없이 밟도록 probe 를 넓히고, 최종 커밋 뒤에 다시 돌려 헤더에 HEAD 해시를 남긴다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/refs/interior-p3-index.md\", \"where\": \"「짜임」 열 — 학교·사무실·우체국·맨션·역 행(places3-*.json rules[0] 만 출력, bake_refs.py:2715)\", \"problem\": \"사무층 島型, 교실 책상 배열과 두 교실 차이, 옥상 open, 개찰 이후 구성 같은 서술 규칙이 어느 참고문서에도 실리지 않는다(「島型」 검색 0건). 입력 JSON 은 정확하나 규칙을 읽고 따라 하려는 조수는 못 읽는다.\", \"fix\": \"bake_refs.py 가 rules 전체를 불릿으로 출력하게 하거나 interior-ex-*.md 마다 해당 맵의 rules 를 덧붙인다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/school-3f.json\", \"where\": \"door-open-western@5,9 (음악실 문)\", \"problem\": \"다른 학교 문은 모두 sc-classroom-door(미닫이)인데 음악실만 양식 여닫이라 문 양식 규칙이 어긋난다.\", \"fix\": \"sc-classroom-door 로 통일한다. 방음문이라는 이유를 남기려면 rules 에 근거를 적는다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/post-office.png\", \"where\": \"po-staff-desk (1,3)(4,3), 직원 길 y=4, po-counter-end (1,5)\", \"problem\": \"창구 직원 책상에 의자가 없다. 직원 길이 1칸이라 의자를 놓을 자리도 없다. po-counter-end 는 걸을 수 있어서 손님이 로비에서 직원 길로 들어갈 수 있다.\", \"fix\": \"직원 책상 앞 칸에 의자(막힘)를 놓을 수 있게 직원 길을 2칸으로 하거나 책상을 한 줄 북쪽으로 붙인다. counter-end 는 막힘 여닫이 그림으로 하거나 narrow 설명에 개방 칸임을 밝힌다.\"},\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/interior/examples/kindergarten.json\", \"where\": \"gy-shoe-cubby (1,9)(1,10) vs 타타키 zone x4~7,y10~11\", \"problem\": \"아이 신발장이 흙바닥(타타키)에서 2칸 떨어진 마루 위에 있어 신발 갈아 신는 동선이 어긋난다.\", \"fix\": \"신발장을 타타키 서쪽 끝 (3,10) 쪽으로 옮기거나 타타키 zone 을 x1~7 로 넓힌다.\"},\n{\"severity\": \"minor\", \"file\": \"verify-shots/jp-city/interior3/station.png\", \"where\": \"train-car 남쪽 줄 롱시트·st-car-door-s (5,6)(14,6)\", \"problem\": \"남쪽 롱시트와 출입문이 1칸 높이만 그려져 북쪽(2칸)과 비대칭이다. 남쪽 문은 위쪽 노란 문턱 아래에 문 몸통이 붙은 방향이라 북쪽 문과 반대로 읽는다.\", \"fix\": \"남쪽 시트 위에 등받이 윗단 한 줄을 더해 높이를 맞추고, 문 몸통을 문턱 윗쪽에 그린다. 현재 상태도 읽히긴 하므로 다음 판에서 고쳐도 된다.\"}\n]}\n```"
 }
