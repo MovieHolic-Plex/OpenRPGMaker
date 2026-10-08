@@ -11,6 +11,7 @@ import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
 import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+import { codexVersionFetch } from "./codexClientVersion.ts";
 
 applyLegacyEnvAliases();
 
@@ -221,7 +222,7 @@ export async function completeProvider(
   const apiKey = options?.apiKey;
   const message = await completeSimple(model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
-    fetch: options?.fetch,
+    fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch) : options?.fetch,
     signal: options?.signal,
     ...completionThinkingOptions(body),
     ...(typeof body.max_tokens === "number" ? { maxTokens: body.max_tokens } : {}),

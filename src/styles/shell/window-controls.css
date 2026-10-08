@@ -7,6 +7,5 @@
 
 /* The launcher and editor establish different layer orders. Native-only spacing
    must win both graphs so these controls never cover product navigation. */
-body:has(.studio-window-controls) :is(.ci-controls,.editor-welcome-brand) { margin-top: 28px; }
-body:has(.studio-window-controls) .start-rail { padding-top: 48px; }
+body:has(.studio-window-controls) .ci-controls { margin-top: 28px; }
 body:has(.studio-window-controls) .oprn-menu-bar { padding-right: 160px; }

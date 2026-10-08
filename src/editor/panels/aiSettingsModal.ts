@@ -328,7 +328,7 @@ export function renderAiSettingsForm(options: {
     children: ["low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
   }) as HTMLSelectElement;
   brainEffort.value = brainConfig.reasoningEffort!;
-  const specialistControls = (["vision", "writer", "deep"] as const).map(role => {
+  const specialistControls = (["vision", "writer", "deep", "build"] as const).map(role => {
     const selected = modelForRole(config, role);
     const provider = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-provider` },
       attrs: { "aria-label": `${role} 제공자` },
@@ -336,6 +336,7 @@ export function renderAiSettingsForm(options: {
     }) as HTMLSelectElement;
     provider.value = selected.provider;
     const field = role === "writer" ? model : role === "deep" ? liteModel
+      : role === "build" ? modelField("시공 모델", selected.model, "ai-config-build-model", "ai-config-build-model-preset", authMode, selected.model, selected.provider)
       : modelField("Vision 모델", selected.model, "ai-config-vision-model", "ai-config-vision-model-preset", authMode, selected.model, selected.provider);
     field.refresh(authMode, selected.provider);
     const effort = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-reasoning` },
@@ -547,14 +548,21 @@ export function renderAiSettingsForm(options: {
     savedHint.textContent = savedAtText();
   });
 
+  // 시공 행이 실행 행과 같으면 저장하지 않는다 — 저장하면 나중에 실행 모델만 바꿨을 때 시공이 옛 값에 남는다(비우면 실행 모델을 따른다).
+  const withoutBuildEqualToDeep = (roles: Record<string, RoleModel>): Record<string, RoleModel> => {
+    const { build, deep } = roles;
+    if (!build || !deep || build.provider !== deep.provider || build.model !== deep.model || build.thinkingLevel !== deep.thinkingLevel) return roles;
+    const { build: _same, ...rest } = roles;
+    return rest;
+  };
   const collect = (): AiConfig => ({
     authMode,
     providerId,
     modelSelectionOverrides,
-    roleModels: Object.fromEntries(specialistControls.map(({ role, provider, field, effort }) => [role, {
+    roleModels: withoutBuildEqualToDeep(Object.fromEntries(specialistControls.map(({ role, provider, field, effort }) => [role, {
       provider: provider.value, model: field.input.value.trim() || modelForRole(config, role).model,
       thinkingLevel: effort.value as RoleModel["thinkingLevel"],
-    }])),
+    }]))),
     ultrabrainProviderId: brainProvider.value,
     ultrabrainModel: brainModel.input.value.trim() || DEFAULT_ULTRABRAIN_MODEL,
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
@@ -889,6 +897,7 @@ export function renderAiSettingsForm(options: {
     vision: { label: "시각 관찰", eng: "Vision", desc: "맵 이미지의 배치·색감·경계·겹침 관찰" },
     writer: { label: "작문", eng: "Writer", desc: "이야기·세계관·NPC 대사·퀘스트 문장" },
     deep: { label: "실행 · 검증", eng: "Deep", desc: "복잡한 편집·도구 실행·수정·검증" },
+    build: { label: "시공", eng: "Build", desc: "타일·맵·장소 짓기와 게임 전체 짓기(비우면 실행 모델)" },
   } as const;
   const roleTableRow = (
     key: keyof typeof ROLE_TABLE_COPY,

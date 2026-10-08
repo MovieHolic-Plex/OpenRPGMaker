@@ -15,11 +15,14 @@ import { ROMANCE_SCENE_HARNESS } from "../romance-scene/harness";
 import { CHARSET_ACTOR_HARNESS } from "../charset-actor/harness";
 import { WORLDMAP_ICONS_HARNESS } from "../worldmap-icons/harness";
 import { ASSISTANT_CAPABILITY_HARNESS } from "../assistant-capability/harness";
+import { SPACE_CRAFT_HARNESS } from "../space-craft/harness";
 
 import { POKEMON_CHARACTER_MOTION_HARNESS } from "../pokemon-character-motion/harness";
 import { POKEMON_CHARACTER_CASTING_HARNESS } from "../pokemon-character-casting/harness";
 import { BEODEUL_ARCHITECTURE_HARNESS } from "../beodeul-architecture/harness";
 import { BEODEUL_BUILDING_REVIEW_HARNESS } from "../beodeul-building-review/harness";
+import { GAME_CONCEPTS_HARNESS } from "../game-concepts/harness";
+import { MURIM_CHIPSET_HARNESS } from "../murim-chipset/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -35,8 +38,11 @@ export const HARNESSES: readonly HarnessManifest[] = [
   CHARSET_ACTOR_HARNESS,
   WORLDMAP_ICONS_HARNESS,
   ASSISTANT_CAPABILITY_HARNESS,
+  SPACE_CRAFT_HARNESS,
   BEODEUL_ARCHITECTURE_HARNESS,
   BEODEUL_BUILDING_REVIEW_HARNESS,
+  GAME_CONCEPTS_HARNESS,
+  MURIM_CHIPSET_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

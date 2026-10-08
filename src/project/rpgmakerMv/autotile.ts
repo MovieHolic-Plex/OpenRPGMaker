@@ -1,4 +1,5 @@
 // RPG Maker MV/MZ 오토타일 규격 — rpg_core.js Tilemap 의 쿼터(24px) 합성 표와 이웃 → 모양 번호.
+// 표는 rpg_core.js(MIT) 와 같은 값이다 — 고지는 THIRD_PARTY_NOTICES.md 「Format compatibility」.
 // 순수 로직이다. 그림 합성은 bake.ts, 타일셋 조립은 tilesetPreset.ts 가 쓴다.
 // MV 와 MZ 는 이 표가 같다(tileId 기저만 다르다). 배경: openwiki/teaching-assistant-tilesets.md
 

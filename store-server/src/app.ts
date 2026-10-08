@@ -9,6 +9,7 @@ import {
   requireAdmin, requireWriter, revokeToken, sessionCookie, startDeviceCode, upsertUser, type Auth,
 } from "./auth";
 import { BlobStore } from "./blobStore";
+import { conceptDetail, listConcepts, publishConcept, recordConceptMade } from "./concepts";
 import type { StoreConfig } from "./config";
 import type { Db } from "./db";
 import { HttpError, parseCookies, RateLimiter, readBody, readForm, readJson, redirect, Router, sendBytes, sendHtml, sendJson, setFileOrigin, type Ctx } from "./http";
@@ -119,6 +120,26 @@ export function createApp(config: StoreConfig, db: Db, publicDir: string): App {
     const auth = await viewer(ctx);
     await recordDownload(db, ctx.params.slug!, clientKey(ctx, auth));
     sendJson(ctx.res, 200, { ok: true });
+  });
+  // 컨셉 피드. 번역은 본문 locales 에 그대로 실려 가고 화면이 고른다(concepts.ts card 참고) — ?lang= 은 받아도 쓰지 않는다.
+  router.get("/api/v1/concepts", async (ctx) => {
+    const q = ctx.url.searchParams;
+    sendJson(ctx.res, 200, await listConcepts(db, { tag: q.get("tag") ?? undefined, q: q.get("q") ?? undefined, preset: q.get("preset") ?? undefined, cursor: q.get("cursor") ?? undefined }));
+  });
+  router.get("/api/v1/concepts/:slug", async (ctx) => {
+    sendJson(ctx.res, 200, await conceptDetail(db, ctx.params.slug!));
+  });
+  router.post("/api/v1/concepts/:slug/made", async (ctx) => {
+    limit(limits.download, ctx);
+    const auth = await viewer(ctx);
+    await recordConceptMade(db, ctx.params.slug!, clientKey(ctx, auth));
+    ctx.res.writeHead(204).end();
+  });
+  router.post("/api/v1/admin/concepts", async (ctx) => {
+    const auth = await requireWriter(db, ctx);
+    requireAdmin(auth);
+    const body = await readJson<unknown>(ctx.req, 256 * 1024);
+    sendJson(ctx.res, 200, await publishConcept(db, body, null));
   });
   router.get("/api/v1/blobs/:sha", async (ctx) => {
     const sha = ctx.params.sha!;

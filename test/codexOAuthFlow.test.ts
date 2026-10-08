@@ -5,7 +5,7 @@
 // vitest testTimeout(15s) 로는 애초에 통과가 불가능하다.
 import { describe, expect, it } from "vitest";
 import {
-  CODEX_CLIENT_ID,
+  codexClientId,
   CODEX_DEVICE_MAX_POLLS,
   CODEX_DEVICE_REDIRECT_URI,
   CODEX_DEVICE_TOKEN_URL,
@@ -16,6 +16,10 @@ import {
   refreshCodexToken,
   startCodexDeviceAuthorization,
 } from "@/ai/oauth/codexDeviceOAuth";
+import { configureOAuthClients } from "@/ai/oauth/clientConfig";
+
+// 실제 Codex client id 는 저장소에 없다(clientConfig.ts) — 가짜 값으로 와이어만 본다.
+configureOAuthClients({ codexClientId: "test-codex-client" });
 
 const AUTH_CLAIM = "https://api.openai.com/auth";
 const PROFILE_CLAIM = "https://api.openai.com/profile";
@@ -76,7 +80,7 @@ describe("Codex 디바이스 코드 로그인", () => {
       {
         url: CODEX_DEVICE_USERCODE_URL,
         method: "POST",
-        body: JSON.stringify({ client_id: CODEX_CLIENT_ID }),
+        body: JSON.stringify({ client_id: codexClientId() }),
       },
     ]);
     expect(CODEX_DEVICE_USERCODE_URL).toBe("https://auth.openai.com/api/accounts/deviceauth/usercode");
@@ -117,7 +121,7 @@ describe("Codex 디바이스 코드 로그인", () => {
 
     const exchangeBody = new URLSearchParams(poll.calls[3]!.body);
     expect(exchangeBody.get("grant_type")).toBe("authorization_code");
-    expect(exchangeBody.get("client_id")).toBe(CODEX_CLIENT_ID);
+    expect(exchangeBody.get("client_id")).toBe(codexClientId());
     expect(exchangeBody.get("code")).toBe("auth-code-1");
     expect(exchangeBody.get("code_verifier")).toBe("verifier-1");
     expect(exchangeBody.get("redirect_uri")).toBe(CODEX_DEVICE_REDIRECT_URI);
@@ -144,7 +148,7 @@ describe("Codex 디바이스 코드 로그인", () => {
     const body = new URLSearchParams(refresh.calls[0]!.body);
     expect(body.get("grant_type")).toBe("refresh_token");
     expect(body.get("refresh_token")).toBe("refresh-1");
-    expect(body.get("client_id")).toBe(CODEX_CLIENT_ID);
+    expect(body.get("client_id")).toBe(codexClientId());
 
     expect(credentials.access).toBe(ACCESS_TOKEN);
     expect(credentials.refresh).toBe("refresh-2");

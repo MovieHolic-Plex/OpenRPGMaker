@@ -61,6 +61,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
+- **무림(중국 무협) 칩셋 murim_wuxia 의 바닥·벽·지붕·객잔 가구·도장 기물·산문 같은 조각 후보를 그리거나 사람에게 고르게 할 때** → `murim-chipset` · 시드 `harness-data/murim-chipset/seed.json`(묶음 style·frame·inn·dojo·outdoor, 잠긴 팔레트 `palette.json`) · `npm run harness -- murim-chipset validate|palette|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/murim-chipset.md`. 행 문자열 격자 코드 손 도트만(생성 이미지·사람 그리기 금지, 비교는 Actor1). 화풍은 **컨셉 줄**(A 밝은 문파 주 줄 · B 강남 무관)마다 따로 간다 — style-r1 뒤 판은 줄마다 후보(A1 A2 B1 B2)를 그 줄 style-r1 조각과 같은 색·결·윤곽으로 그린다. 관문 통과는 합격이 아니다. **감독·에이전트는 고르지 않는다** — 시트 `~/claude-viz/murim-<판>.html` 에서 사람이 고른 후보만 그림 해시에 묶어 (항목, 줄)마다 기록하고, 번들에는 굽지 않는다.
 
 - **지금 맵 칩셋에 없는 물건을 공방에서 그려 그 칩셋에 넣을 때(조수 「없는 타일」 카드의 「직접 그려 줘」, 손 도트 실내 밖 16px 맵)**
   → `map-objects` · 문서 `openwiki/harnesses/map-objects.md` · 에디터 왼쪽 막대 「공방」 → 「맵 기물」.
@@ -75,10 +76,19 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- worldmap-icons <단계>` (intake·review·draw·serve·status·export·build·check·preview).
   → 사람이 선택한 현재 해시만 굽는다. 선택 정본은 `WMI_HARNESS_DATA/harness.sqlite`, 칸 번호는 덧붙이기 전용이다.
 
+- **조수가 만든 방·실내·현대 실내·무림 장소의 시각 품질을 카테고리·모델별로 잴 때**
+  → `space-craft` · 시드 `harness-data/space-craft/seed.json` · `npm run harness -- space-craft list|prepare|run|measure|sheet|status` · 문서 `openwiki/harnesses/space-craft.md`
+  → 실제 입력창 경로(assistant-capability 실행기 재사용). 기계 지표 통과는 시각 합격이 아니다 — 그림은 판정자·사람이 본다.
+
 - **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
   → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
   → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.
   → 임시 초안·조수의 완료 선언은 합격이 아니다. 실제 이미지 검수와 정본 저장·재로드를 따로 확인한다.
+
+- **새 게임 피드의 공식 컨셉 카드(제목·훅·기획 5칸·도트 썸네일)를 만들거나 늘릴 때**
+  → `game-concepts` · 시드 `harness-data/game-concepts/seed.json`
+  → `npm run harness -- game-concepts produce|draw|check|serve|status|publish|bundle` · 문서 `openwiki/harnesses/game-concepts.md`
+  → 사람이 http://mdc-server:18321/ 에서 받은 것만 스토어에 게시한다. 감독이 대신 고르지 않는다. 운영 게시는 `--target prod --yes-prod`.
 
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
@@ -127,6 +137,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
    - 릴리스·버전 (네 축 구분, 빌드 라벨, `npm run release` 절차): `openwiki/release-and-version.md`
+   - 라이선스 (에디터 SUL · 런타임 MIT · 게임 산출물 자유 · 기본 에셋 OPRN 게임 사용 · CLA, 런타임에 에디터 코드 끌어들이지 않기): `openwiki/licensing.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
 
 

@@ -238,6 +238,7 @@ export function eventIdsCreatedByCall(call: ProposedCall): readonly string[] {
     return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];
   }
   if (call.name === "upsert_event" && isRecord(call.args.event) && typeof call.args.event.id === "string") return [call.args.event.id];
+  if (call.name === "patch_event_page" && typeof call.args.eventId === "string") return [call.args.eventId];
   if (call.name === "duplicate_event") {
     const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
     const fromArgs = typeof call.args.newId === "string" ? call.args.newId : null;

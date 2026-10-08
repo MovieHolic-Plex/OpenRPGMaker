@@ -17,7 +17,11 @@ import {
   buildCodexAuthorizationUrl,
   generatePkcePair,
 } from "@/ai/oauth/codexBrowserOAuth";
-import { CODEX_CLIENT_ID, CODEX_DEVICE_VERIFICATION_URL } from "@/ai/oauth/codexDeviceOAuth";
+import { codexClientId, CODEX_DEVICE_VERIFICATION_URL } from "@/ai/oauth/codexDeviceOAuth";
+import { configureOAuthClients } from "@/ai/oauth/clientConfig";
+
+// 실제 Codex client id 는 저장소에 없다(clientConfig.ts) — 가짜 값으로 와이어만 본다.
+configureOAuthClients({ codexClientId: "test-codex-client" });
 
 function base64UrlOfBytes(bytes: Uint8Array): string {
   let binary = "";
@@ -38,7 +42,7 @@ describe("Codex 인가 URL", () => {
     expect(`${url.origin}${url.pathname}`).toBe(CODEX_AUTHORIZE_URL);
     const params = url.searchParams;
     expect(params.get("response_type")).toBe("code");
-    expect(params.get("client_id")).toBe(CODEX_CLIENT_ID);
+    expect(params.get("client_id")).toBe(codexClientId());
     expect(params.get("redirect_uri")).toBe(CODEX_BROWSER_REDIRECT_URI);
     expect(params.get("scope")).toBe(CODEX_SCOPES.join(" "));
     expect(params.get("code_challenge")).toBe("challenge-1");

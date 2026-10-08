@@ -7,7 +7,7 @@
 // node:/Bun API 를 쓰지 않는다(소켓은 scripts/lib/oauth/loopbackCallbackServer.mjs 담당).
 
 import {
-  CODEX_CLIENT_ID,
+  codexClientId,
   CODEX_DEVICE_VERIFICATION_URL,
   type CodexDeviceAuthorization,
 } from "./codexDeviceOAuth.ts";
@@ -68,7 +68,7 @@ export function buildCodexAuthorizationUrl({
 }: BuildCodexAuthorizationUrlOptions): string {
   const params = new URLSearchParams({
     response_type: "code",
-    client_id: CODEX_CLIENT_ID,
+    client_id: codexClientId(),
     redirect_uri: redirectUri,
     scope: CODEX_SCOPES.join(" "),
     code_challenge: codeChallenge,

@@ -248,6 +248,25 @@ e2e(`test/e2e/electronAssetStore.spec.ts`)는 아래 흐름을 한 번에 지난
 - **코딩 에이전트용 명령줄:** `store-server/scripts/storeCli.ts` — `login`(기기 코드)·`search`·`pull <slug> <폴더>`·`publish <폴더>`·`version <slug> <폴더>`·`hide`·`show`·`mine`. 팩 폴더는 `manifest.json` + `blobs/<sha256>`. 토큰은 `~/.config/oprn-store/cli.json`(600). tsx 가 없으면 `npx esbuild … --bundle --platform=node --format=esm` 으로 묶어 `node` 로 돌린다.
 - **시험(2026-10-07):** 헤드리스 Pi(gemini-3.8-flash) 두 판 — 「우주선 착륙장」은 `ask_missing_tiles` 로 묻고 끝냈고, 「꽃밭과 나무」는 묻지 않고 바로 깔았다. 카드는 스테이징 자료를 담은 가짜 다리로 편집기에서 띄워 넣기(타일셋·참고문서 들어옴)·올리기(동의 전 버튼 꺼짐)·숨기기를 확인했다(`unshare -rn` netns, 스크립트는 저장소 밖).
 
+## 컨셉 피드 (2026-10-07)
+
+새 게임 화면의 컨셉 카드도 스토어가 내보낸다. 팩과 다른 표(`store_concepts`)이고, 1단계는 **운영자 게시만** 있다(사용자 공유는 2단계, 컨셉 카드만).
+
+- 형식 `oprn-concept/1`(`src/concepts/format.ts`): slug·제목·훅·설명·태그(`CONCEPT_TAGS`)·장르 틀(`presetId`)·주인공·무대·첫 장면·기획 다섯 칸·
+  썸네일 `{full, card}`(스토어는 sha256, 앱 번들은 `/assets/concepts/*.webp`)·`locales`·`tilesetHint?`. 원작 이름은 `src/concepts/art.ts` 금지어로 막는다(패러디 표기는 예외 목록).
+- 서버(`store-server/src/concepts.ts`, `migrations/007_concepts.sql`):
+  `GET /api/v1/concepts?tag&q&preset&cursor`(24장, 커서 `rank:id`), `GET /api/v1/concepts/:slug`(`{concept, similar≤6}`),
+  `POST /api/v1/concepts/:slug/made`(204, 하루 한 번/클라이언트), `POST /api/v1/admin/concepts`(작성자+운영자, `{concept, rank}`).
+  썸네일은 blob 과 같은 R2/청소 경로를 탄다. 서버는 `?lang` 을 합치지 않는다 — 화면이 `localizedConcept` 로 고른다.
+- Electron 중계: `oprn:store.concepts` / `oprn:store.concept` / `oprn:store.conceptMade`(zod 스키마), 프리로드 `window.oprn.store.concepts/concept/conceptMade`.
+- 렌더러: `src/concepts/source.ts` — 3초 안에 첫 쪽이 안 오거나 비면 앱 번들(`src/assets/bundledConcepts.json`)로 대신한다. 안내는 까닭(`ConceptPage.fallback`)에 따라 둘로 나뉜다.
+  - `offline`: 스토어에 닿지 못함(중계 오류 status 0·응답 늦음) → 「인터넷에 연결하면 더 많은 컨셉을 볼 수 있어요.」
+  - `bundled`: 스토어가 답했지만 컨셉이 없음(빈 첫 쪽)·컨셉 주소가 없음(404 등 status>0, 아직 배포 안 된 서버)·브리지 없는 브라우저 → 「지금은 앱에 든 기본 컨셉만 보여요.」
+  - 실측(2026-10-08): 운영 스토어 `GET /api/v1/concepts` 가 404(서버 미배포) → 인터넷이 되는데도 「인터넷에 연결하면…」이 떴다. 이 구분으로 고쳤다.
+  다음 쪽이 실패하면 번들을 섞지 않고 끝낸다.
+- 공식 컨셉 공급: `game-concepts` 하네스(`openwiki/harnesses/game-concepts.md`) — `produce` → `draw`(도트 썸네일) → 사람이 18321 에서 받기/버리기 →
+  `publish --target staging|prod`(prod 는 `--yes-prod`) → `bundle`(비상용 번들 갱신). 받은 것만, 현재 그림 해시에 묶인 판정만 나간다.
+
 ## 함정
 
 - `pkill -f oprn-store` 처럼 셸 명령줄에도 들어가는 패턴으로 죽이면 자기 셸이 죽는다. `dev-unit.sh stop` 을 쓴다.

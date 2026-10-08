@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { compileSimplePages, resolveCommandKind } from "@/editor/tools/eventCompile";
 import { normalizeArgsForSchema, validateArgs } from "@/editor/tools/jsonSchema";
-import { COMMAND_SCHEMA, CONDITION_SCHEMA, SIMPLE_PAGE_SCHEMA } from "@/editor/tools/schemaShapes";
+import { COMMAND_SCHEMA, COMMAND_SCHEMA_COMPACT, CONDITION_SCHEMA, SIMPLE_PAGE_SCHEMA } from "@/editor/tools/schemaShapes";
 import { generateToolCatalogMarkdown } from "@/editor/tools/toolCatalog";
 import { runTool } from "@/editor/tools/toolRunner";
 import { getTool } from "@/editor/tools/toolRegistry";
@@ -42,7 +42,9 @@ describe("NPC model-visible command contract", () => {
     expect(kinds).toEqual([...COMMAND_KINDS]);
     expect(kinds?.every(kind => typeof kind === "string" && resolveCommandKind(kind) === kind)).toBe(true);
     expect(SIMPLE_PAGE_SCHEMA.properties?.commands?.items).toBe(COMMAND_SCHEMA);
-    expect(SIMPLE_PAGE_SCHEMA.properties?.choices?.items?.properties?.commands?.items).toBe(COMMAND_SCHEMA);
+    // 같은 도구 안 두 번째 Command 목록은 설명 없는 사본이다(필드·kind 목록은 같다).
+    expect(SIMPLE_PAGE_SCHEMA.properties?.choices?.items?.properties?.commands?.items).toBe(COMMAND_SCHEMA_COMPACT);
+    expect(COMMAND_SCHEMA_COMPACT.properties?.kind?.enum).toEqual([...COMMAND_KINDS]);
     expect(CONDITION_SCHEMA.properties?.kind?.enum).toEqual([...CONDITION_KINDS]);
   });
 

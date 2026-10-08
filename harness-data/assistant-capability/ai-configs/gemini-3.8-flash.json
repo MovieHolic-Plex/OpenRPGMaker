@@ -1,0 +1,16 @@
+{
+  "providerId": "google-antigravity",
+  "model": "gemini-3.8-flash",
+  "liteModel": "gemini-3.8-flash",
+  "reasoningEffort": "high",
+  "ultrabrainProviderId": "google-antigravity",
+  "ultrabrainModel": "gemini-3.8-flash",
+  "ultrabrainReasoningEffort": "high",
+  "roleModels": {
+    "deep": { "provider": "google-antigravity", "model": "gemini-3.8-flash", "thinkingLevel": "low" },
+    "vision": { "provider": "google-antigravity", "model": "gemini-3.8-flash", "thinkingLevel": "medium" },
+    "writer": { "provider": "google-antigravity", "model": "gemini-3.8-flash", "thinkingLevel": "medium" }
+  },
+  "modelSelectionOverrides": { "ultrabrain": true, "deep": true, "vision": true, "writer": true },
+  "roleModelsPolicyVersion": 1
+}

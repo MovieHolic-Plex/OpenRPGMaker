@@ -6,11 +6,12 @@ export interface AiModelCatalogGroup {
   readonly models: readonly string[];
 }
 
-/** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — **이 넷만** 지원한다(감독 지시 2026-09-27).
+/** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — 감독 지시(2026-09-27)의 넷에 gpt-6.1-sol 을 더했고 기본으로 올렸다(2026-10-07).
  * 예전엔 pi-catalog 번들 8종(gpt-5.4-mini·codex-spark·daybreak …)을 다 떠서 보여 줘 고를 이유가 없는
  * 선택지가 목록을 덮었다. 순서가 공장 기본 우선순위다(첫 항목 = 기본, ohMyPiProviders 와 일치).
  * gpt-6-* 는 설치 번들(17.4.0) 밖이라 동반 서비스가 scripts/lib/ohMyPiModel.ts 의 로컬 확장으로 풀어 준다. */
 const CODEX_MODELS: readonly string[] = [
+  "gpt-6.1-sol",
   "gpt-5.6-sol",
   "gpt-6-astra",
   "gpt-6-sol",
@@ -85,7 +86,7 @@ export function modelCatalogForAuthMode(
  * 해당 제공자의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
  * 공장 기본은 Antigravity 의 gemini-3.8-flash — 모든 모델 슬롯이 이 값을 기본으로 쓴다
  * (감독 지시 2026-08-26, 기본 모델 이동 2026-09-26. 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
- * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
+ * Codex 카탈로그 첫 항목은 gpt-6.1-sol(2026-10-07).
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {

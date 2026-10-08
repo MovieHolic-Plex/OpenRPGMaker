@@ -8,14 +8,20 @@ const google = "google-antigravity";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("account selection and persisted work models", () => {
-  it("a first ChatGPT selection routes every default work surface and image to that account", () => {
+  it("a first ChatGPT selection routes work to gpt-6.1-sol and keeps Writer on optional Gemini", () => {
     const next = configForProviderSelection(defaultAiConfig(), codex);
+    // Writer 는 다른 계정이어도 작업 시작을 막지 않는다(없으면 실행기가 실행 모델로 대신한다).
     expect(workProviderIds(next)).toEqual([codex]);
-    for (const role of ["vision", "writer", "deep"] as const) {
+    for (const role of ["vision", "deep"] as const) {
       expect(configForRole(next, role).providerId).toBe(codex);
-      expect(configForRole(next, role).model).toBe("gpt-6-luna");
+      expect(configForRole(next, role).model).toBe("gpt-6.1-sol");
+      expect(configForRole(next, role).reasoningEffort).toBe("medium");
     }
+    expect(configForRole(next, "writer").providerId).toBe(google);
+    expect(configForRole(next, "writer").model).toBe("gemini-3.8-flash");
     expect(next.ultrabrainProviderId).toBe(codex);
+    expect(next.ultrabrainModel).toBe("gpt-6.1-sol");
+    expect(next.ultrabrainReasoningEffort).toBe("high");
     expect(next.imageProviderId).toBe(codex);
   });
 
@@ -35,13 +41,14 @@ describe("account selection and persisted work models", () => {
     expect(new Set(workProviderIds(next))).toEqual(new Set([codex, google]));
     const aligned = configForProviderSelection(next, codex, true);
     expect(workProviderIds(aligned)).toEqual([codex]);
-    expect(aligned.roleModels?.vision?.model).toBe("gpt-6-astra");
+    expect(aligned.roleModels?.vision?.model).toBe("gpt-6.1-sol");
     expect(aligned.modelSelectionOverrides).toEqual({ image: true });
     expect(aligned.imageProviderId).toBe(google);
   });
 
   it("treats stored legacy choices as explicit until the user aligns them", () => {
-    const legacy = { ...defaultAiConfig(), roleModels: { writer: { provider: google, model: "gemini-3-pro", thinkingLevel: "high" } } };
+    const legacy = { ...defaultAiConfig(), providerId: google, ultrabrainProviderId: google, ultrabrainModel: "gemini-3.8-flash",
+      roleModels: { writer: { provider: google, model: "gemini-3-pro", thinkingLevel: "high" } } };
     delete legacy.modelSelectionOverrides;
     vi.stubGlobal("localStorage", { getItem: () => JSON.stringify(legacy) });
     const next = configForProviderSelection(loadAiConfig(), codex);

@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "suite": "space-craft",
+  "description": "조수가 자연어로 방·실내·현대 실내·무림·조선 장소를 만들 때의 시각 품질. 기계 검사 → 그림 판정(판정자 교정 후) → 사람 판정 순으로 본다. 무림은 전용 칩셋이 없어 처음에는 정직성(없다고 말하는지·다른 화풍을 섞지 않는지)을 본다.",
+  "timeoutMs": 900000,
+  "repeat": 3,
+  "categories": {
+    "room": {
+      "label": "방",
+      "families": [
+        "oprn-atlas"
+      ]
+    },
+    "fantasy-interior": {
+      "label": "판타지 실내",
+      "families": [
+        "oprn-atlas"
+      ]
+    },
+    "modern-interior": {
+      "label": "현대 실내",
+      "families": [
+        "oprn-jp",
+        "oprn-modern"
+      ]
+    },
+    "murim": {
+      "label": "무림",
+      "families": [],
+      "note": "무림 전용 칩셋 없음(2026-10-07). 쓰인 계열은 기록만 하고 판정은 그림·사람이 한다."
+    },
+    "joseon": {
+      "label": "조선·사극",
+      "families": [
+        "oprn-joseon"
+      ],
+      "note": "번들 joseon_baram 완성 장소(주막·관아 등)가 있다(2026-10-08 조수 연결). 가져와 고치는지, 버들항·실내 v5 로 대신 까는지 본다."
+    }
+  },
+  "forbiddenFamilies": [
+    "easyrpg"
+  ],
+  "cases": [
+    {
+      "id": "room-study",
+      "category": "room",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "작은 서재 방 하나 만들어줘. 책장 몇 개랑 책상, 의자 정도 있으면 돼.",
+      "requires": [
+        "책장 여러 개",
+        "책상",
+        "의자"
+      ]
+    },
+    {
+      "id": "room-bedroom",
+      "category": "room",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "아이 침실 하나 만들어 줘. 침대, 옷장, 창가에 화분 놓아줘.",
+      "requires": [
+        "침대",
+        "옷장",
+        "창가의 화분"
+      ]
+    },
+    {
+      "id": "fantasy-inn",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "판타지 마을 여관 1층 실내 만들어줘. 카운터, 식탁 여러 개, 벽난로, 2층으로 올라가는 계단이 있어야 해.",
+      "requires": [
+        "카운터",
+        "식탁 여러 개",
+        "벽난로",
+        "2층 계단"
+      ]
+    },
+    {
+      "id": "fantasy-smithy",
+      "category": "fantasy-interior",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "대장간 실내 만들어줘. 화로, 모루, 무기 진열대, 작업대가 있으면 좋겠어.",
+      "requires": [
+        "화로",
+        "모루",
+        "무기 진열대",
+        "작업대"
+      ]
+    },
+    {
+      "id": "modern-store",
+      "category": "modern-interior",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "편의점 실내 만들어줘. 계산대, 진열대 여러 줄, 음료 냉장고 있어야 해.",
+      "requires": [
+        "계산대",
+        "진열대 여러 줄",
+        "음료 냉장고"
+      ]
+    },
+    {
+      "id": "modern-studio",
+      "category": "modern-interior",
+      "mode": "balanced",
+      "startTileset": "jp_city",
+      "prompt": "자취방 원룸 실내 만들어줘. 침대, 책상, 작은 부엌, 화장실 문 정도.",
+      "requires": [
+        "침대",
+        "책상",
+        "작은 부엌",
+        "화장실 문"
+      ]
+    },
+    {
+      "id": "murim-inn",
+      "category": "murim",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "무협 세계 객잔 1층 만들어줘. 주방 쪽 계산대, 원탁 여러 개, 2층 올라가는 계단.",
+      "requires": [
+        "주방 쪽 계산대",
+        "원탁 여러 개",
+        "2층 계단"
+      ]
+    },
+    {
+      "id": "murim-dojo",
+      "category": "murim",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "무림 문파 수련장 만들어줘. 목인장, 무기 걸이, 넓은 수련 마당이 있었으면 해.",
+      "requires": [
+        "목인장",
+        "무기 걸이",
+        "넓은 수련 마당"
+      ]
+    },
+    {
+      "id": "joseon-tavern",
+      "category": "joseon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "조선 시대 주막 안을 만들어줘. 부엌 아궁이와 가마솥, 손님이 앉는 평상, 술독이 있었으면 해.",
+      "requires": [
+        "부엌 아궁이·가마솥",
+        "손님 평상",
+        "술독"
+      ]
+    },
+    {
+      "id": "joseon-office",
+      "category": "joseon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "사극에 나오는 관아 동헌 안을 만들어줘. 사또가 앉는 높은 자리와 병풍, 가운데 넓은 통로.",
+      "requires": [
+        "사또 자리(높은 단)",
+        "병풍",
+        "가운데 넓은 통로"
+      ]
+    }
+  ],
+  "gates": {
+    "reachableRatioMin": 0.95,
+    "emptyPctMax": 30,
+    "emptySquareMax": 5,
+    "mirrorMax": 2.2
+  }
+}

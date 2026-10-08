@@ -1,6 +1,11 @@
 import type { AiConfig } from "./llmClient";
 
-export type SpecialistRole = "vision" | "writer" | "deep";
+/**
+ * build = 공간 시공(타일·맵·장소 짓기, 게임 전체 짓기). 지정하지 않으면 deep 과 같다.
+ * 사용자 판단(2026-10-08): 타일 까는 일은 Gemini 가 훨씬 빠르다 — 조수 시험에서 같은 장르 게임 전체 짓기가 gemini-3.8-flash 10분·
+ * gpt-6.1-sol 50분이었고, DB·이벤트·작은 수정은 GPT 가 더 정확했다. 그래서 실행 모델을 일의 종류로 나눈다(src/ai/buildRole.ts).
+ */
+export type SpecialistRole = "vision" | "writer" | "deep" | "build";
 export interface RoleModel {
   provider: string;
   model: string;
@@ -10,6 +15,7 @@ export type SpecialistModels = Partial<Record<SpecialistRole, RoleModel>>;
 
 /** Old settings remain a migration source, never override an explicit role selection. */
 export function modelForRole(config: AiConfig, role: SpecialistRole): RoleModel {
+  if (role === "build") return config.roleModels?.build ?? modelForRole(config, "deep");
   return config.roleModels?.[role] ?? {
     provider: config.providerId || "google-antigravity",
     // 이 리터럴은 llmClient 의 DEFAULT_MODEL 과 같은 값이어야 한다 — 갈라지면 config 가 빈 옛 blob 만
@@ -30,7 +36,7 @@ export function configForRole(config: AiConfig, role: SpecialistRole): AiConfig 
 export function parseRoleModels(raw: unknown): SpecialistModels {
   const result: SpecialistModels = {};
   if (!raw || typeof raw !== "object") return result;
-  for (const role of ["vision", "writer", "deep"] as const) {
+  for (const role of ["vision", "writer", "deep", "build"] as const) {
     const value = (raw as Record<string, unknown>)[role] as Partial<RoleModel> | undefined;
     if (!value || typeof value.provider !== "string" || !value.provider.trim()
       || typeof value.model !== "string" || !value.model.trim()) continue;

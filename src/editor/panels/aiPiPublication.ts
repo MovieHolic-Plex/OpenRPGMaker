@@ -55,7 +55,9 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     if (loss && mode !== "yolo" && mode !== "auto") {
       const lostIds = "removedMapIds" in loss ? [...loss.removedMapIds, ...loss.emptiedMapIds] : [];
       const repeat = lostIds.length > 0 && lostIds.every(id => declinedLoss.has(id));
-      const accepted = !repeat && await requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
+      const accepted = !repeat && await (surface.decide
+        ? surface.decide({ title: loss.title, message: loss.message, lostMapIds: lostIds })
+        : requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true }));
       if (!accepted) {
         lostIds.forEach(id => declinedLoss.add(id));
         if (!repeat) surface.appendProcess?.(`${loss.cancelNotice} 나머지 작업은 계속합니다.`);

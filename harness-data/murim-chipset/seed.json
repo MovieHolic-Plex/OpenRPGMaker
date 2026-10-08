@@ -1,0 +1,1719 @@
+{
+ "$comment": "murim-chipset 하네스 시드 — 사람이 쓴다. 진행 기록(ledger.json)·고른 그림(picked/)은 하네스가 쓴다. 후보 그림은 src/harnesses/murim-chipset/rounds/<판>.py 의 행 문자열 격자(코드 손 도트)다.",
+ "version": 1,
+ "family": "oprn-murim",
+ "tileset": {
+  "id": "murim_wuxia",
+  "status": "planned",
+  "tile": 16,
+  "view": "정면-위 3/4. 윗면(수평 면)은 보이는 면, 앞면은 전체 높이, 옆면 없음. 빛은 왼쪽 위, 그림자는 오른쪽 아래.",
+  "note": "아직 번들에 굽지 않는다. 사람이 고른 것만 다음 단계로 간다."
+ },
+ "palette": {
+  "file": "harness-data/murim-chipset/palette.json",
+  "tones": 7,
+  "compatWith": "joseon_baram",
+  "compatRule": "램프 단마다 밝기가 joseon_baram 램프들의 같은 단 밝기 범위(±0.04) 안. 색상은 조선 램프와 다르게(공유 램프 cao 제외)."
+ },
+ "characters": {
+  "sheet": "public/assets/easyrpg/charset/Actor1.png",
+  "frame": [
+   24,
+   32
+  ],
+  "note": "사람은 그리지 않는다. 비교 눈금·장면용으로 Actor1 정면 가운데 프레임만 쓴다."
+ },
+ "linesNote": "줄(line) = 같은 칩셋 안에서 따로 가는 컨셉 계열. 화풍을 하나로 고정하지 않고 줄마다 고른다. 줄의 화풍 기준은 origin 판(style-r1)의 그 글자 조각이다. 화풍 판(keys=letter)에서는 후보 글자 = 줄, 이후 판(keys=line)에서는 후보 키 <줄><번호>(A1·A2·B1…)로 줄마다 후보를 그리고, 고르기는 (항목, 줄)마다 하나다. style-r1 의 C 는 줄이 아니다(사용자가 고르지도 버리지도 않음 — 말하면 줄로 더한다).",
+ "lines": {
+  "A": {
+   "name": "밝은 문파",
+   "primary": true,
+   "concept": "산중 명문 정파의 밝은 본산 — 밝은 소나무 가로 마루·큰 네모 판석·흰 회벽에 주칠 둥근 기둥·정통 청회색 수키와·밝은 소나무 목인장·짙은 나무 원탁과 북 걸상.",
+   "origin": {
+    "round": "style-r1",
+    "letter": "A"
+   },
+   "decision": "사용자 2026-10-08: 「무림은 A 묶음이 낫군」 — 주 줄"
+  },
+  "B": {
+   "name": "강남 무관",
+   "primary": false,
+   "concept": "강남 물가 마을의 오래 쓴 무관·객잔 — 붉은 칠 세로 마루·긴 장대석·청회 기와 담머리에 황토 회벽과 판벽 징두리·비늘 평기와와 주칠 처마판·짙은 나무 목인장(새끼줄)·소나무 탁자 찻자리.",
+   "origin": {
+    "round": "style-r1",
+    "letter": "B"
+   },
+   "decision": "사용자 2026-10-08: 「A 랑 B 서로 컨셉 다르게 해서… 마을 A, 마을 B. 버리긴 아깝군」 — 둘째 컨셉 줄"
+  }
+ },
+ "waves": {
+  "style": "스타일 시험 — 항목 6개 × 후보 A/B/C. 사람이 고른 화풍이 나머지 묶음의 기준이 된다.",
+  "frame": "객잔·누각 뼈대(바닥·벽·지붕·문·계단·난간)",
+  "inn": "객잔 살림(탁자·걸상·계산대·부엌·술독·차림판·등롱)",
+  "dojo": "도장(목인장·병기 거치대·과녁·모래주머니·방석·돌사자)",
+  "outdoor": "바깥(산문·대숲·연무장 가장자리·석등·비석)"
+ },
+ "rounds": {
+  "style-r1": {
+   "wave": "style",
+   "module": "src/harnesses/murim-chipset/rounds/style_r1.py",
+   "keys": "letter"
+  },
+  "frame-r1": {
+   "wave": "frame",
+   "module": "src/harnesses/murim-chipset/rounds/frame_r1.py",
+   "keys": "line",
+   "lines": [
+    "A",
+    "B"
+   ]
+  },
+  "inn-r1": {
+   "wave": "inn",
+   "module": "src/harnesses/murim-chipset/rounds/inn_r1.py",
+   "keys": "line",
+   "lines": [
+    "A",
+    "B"
+   ]
+  }
+ },
+ "kinds": {
+  "tile": "바닥 반복 타일(꽉 찬 불투명)",
+  "wall": "벽 조각(꽉 찬 불투명, 윗면 행 필수)",
+  "roof": "지붕 조각(윗줄 불투명, 윗면 행 필수)",
+  "object": "물체(귀퉁이 투명, 먹 윤곽 없이 재질 명암 — outlineRule, 윗면 행 필수)"
+ },
+ "layers": [
+  "ground",
+  "wall",
+  "roof",
+  "object"
+ ],
+ "outlineRule": {
+  "decision": "사용자 2026-10-08 — 시연 http://mdc-server:18301/outline-before-after.html 을 보고 「1 3 4 5 7 8 은 외곽선이 없는 게 나은데」 → 「그래 그렇게하고」. 아래가 확정 규칙이다.",
+  "default": "지형(바닥·벽면·지붕·천장)과 기물(탁자·걸상·문·술독·목인장…) 모두 먹(ink 또는 밝기 0.09 이하인 재질 0단 — mu·wa·zhuz·cao·zhu 0단) 윤곽을 쓰지 않는다. 재질 자신의 명암으로 형태를 읽게 한다: 빛 받는 위·왼쪽 가장자리는 그 재질의 밝은 단, 그늘 아래·오른쪽은 그 재질의 어두운 단(1단 이상). 사람만 외곽선이 있다(Actor1 그대로, 우리는 그리지 않는다).",
+  "smallObjectException": "바닥과 밝기가 비슷한 작은 기물(1~2칸, 예: 술독·걸상·등롱)은 그늘 쪽(아래·오른쪽)만 그 재질의 가장 어두운 단 + 바닥에 닿는 곳 접지 그림자(~)를 진하게. 그래도 먹은 쓰지 않는다.",
+  "structures": "큰 구조(벽 덩어리·지붕·담·계단·난간)도 같다: 바깥 실루엣은 재질의 어두운 단, 먹이 아니다. 안쪽 이음(기와 골·판재 이음·줄눈)은 중간 단.",
+  "inkColor": "palette.json 의 ink 색은 사람 비교용·그림자(~, alpha 88)용으로 남긴다. 조각의 불투명 화소에 ink 를 쓰지 않는다.",
+  "gate": "관문 OUTLINE(WARN): 가장자리 먹 비율 > 15% 또는 object 빛 쪽(위·왼) 가장자리 먹·0단 비율 > 50%. 관문 CONTRAST(WARN): 크기 ≤2칸 object 의 그늘 쪽 가장자리 평균 밝기와 줄 대표 바닥(contrastGround) 평균 밝기 차 < 0.15. 둘 다 FAIL 이 아니다 — 고른 것만 굽기 전에 다듬을 목록(status 에 보인다). 이미 그린 판(style-r1·frame-r1·inn-r1)은 사람이 고르는 중이라 그림을 고치지 않는다.",
+  "contrastGround": {
+   "style": "inn_floor_wood",
+   "frame": "inn_floor_wood",
+   "inn": "inn_floor_wood",
+   "dojo": "yard_floor_stone",
+   "outdoor": "yard_floor_stone"
+  },
+  "contrastGroundNote": "줄 대표 바닥 = 그 줄 style 조각(style-r1 의 그 글자). 묶음별 기본, 항목 contrastGround 로 바꿀 수 있다(벽에 거는 menu_board 는 inn_wall_pillar).",
+  "structureItems": "항목 outlineClass \"structure\"(stairs_wood·railing_upper) = 큰 구조: OUTLINE 이 빛 쪽 검사를 하지 않고 먹만 본다(바깥 실루엣이 재질 어두운 단이어도 된다)."
+ },
+ "items": [
+  {
+   "id": "inn_floor_wood",
+   "wave": "style",
+   "title": "객잔 나무 마루",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "tile",
+   "layer": "ground",
+   "walk": "walk",
+   "brief": "객잔 1층 바닥. 2×2 반복 표본. 판재 방향·폭·이음 엇갈림을 후보마다 다르게.",
+   "criteria": [
+    "가로·세로로 이어 깔았을 때 이음이 안 보인다",
+    "판재 결이 무작위 점이 아니라 짧은 줄로 읽힌다",
+    "조선 마루(in_floor_maru) 옆에서 같은 게임처럼 보인다(밝기·대비)"
+   ],
+   "tileable": "xy",
+   "joseonRef": {
+    "sheet": "tiledata/joseon-interior/joseon_in_inn/joseon_in_inn-chipset.png",
+    "pieces": "tiledata/joseon-interior/joseon_in_inn/pieces.json",
+    "piece": "in_floor_maru",
+    "w": 2,
+    "h": 1,
+    "label": "조선 마루 in_floor_maru"
+   }
+  },
+  {
+   "id": "yard_floor_stone",
+   "wave": "style",
+   "title": "연무장 돌바닥",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "tile",
+   "layer": "ground",
+   "walk": "walk",
+   "brief": "문파 연무장·마당 바닥. 청석. 돌 모양(네모 판석·장대석·방전 등)을 후보마다 다르게.",
+   "criteria": [
+    "반복 이음이 안 보인다",
+    "돌마다 밝기·결이 달라 같은 도장 찍기로 안 보인다",
+    "벽돌 벽이 아니라 바닥으로 읽힌다(볼록한 베개처럼 부풀지 않는다)"
+   ],
+   "tileable": "xy",
+   "joseonRef": {
+    "sheet": "tiledata/joseon-interior/joseon_in_inn/joseon_in_inn-chipset.png",
+    "pieces": "tiledata/joseon-interior/joseon_in_inn/pieces.json",
+    "piece": "in_floor_stone",
+    "w": 2,
+    "h": 1,
+    "label": "조선 돌바닥 in_floor_stone"
+   }
+  },
+  {
+   "id": "inn_wall_pillar",
+   "wave": "style",
+   "title": "객잔 벽면(주칠 기둥·회벽)",
+   "size": [
+    3,
+    2
+   ],
+   "kind": "wall",
+   "layer": "wall",
+   "walk": "solid",
+   "brief": "붉게 칠한 둥근 기둥과 회벽. 3칸 폭이 가로로 반복된다. 맨 위에 보/담머리의 윗면이 보여야 한다.",
+   "criteria": [
+    "위에서 보이는 수평 면(윗면)이 화소 2줄 이상으로 보이고, 그 아래 앞면과 어두운 모서리 줄로 갈린다. 옆면은 그리지 않는다.",
+    "가로로 이어 붙였을 때 기둥 간격이 일정하고 이음이 안 보인다",
+    "기둥은 왼쪽 빛·오른쪽 그늘의 원기둥으로 읽힌다",
+    "조선 벽(in_wall_hoe_m) 옆에서 높이·대비가 맞는다"
+   ],
+   "tileable": "x",
+   "joseonRef": {
+    "sheet": "tiledata/joseon-interior/joseon_in_inn/joseon_in_inn-chipset.png",
+    "pieces": "tiledata/joseon-interior/joseon_in_inn/pieces.json",
+    "piece": "in_wall_hoe_m",
+    "w": 1,
+    "h": 2,
+    "label": "조선 회벽 in_wall_hoe_m"
+   }
+  },
+  {
+   "id": "roof_tile_eave",
+   "wave": "style",
+   "title": "청회색 기와 지붕(처마 조각)",
+   "size": [
+    3,
+    2
+   ],
+   "kind": "roof",
+   "layer": "roof",
+   "walk": "solid",
+   "brief": "유약 바른 청회색 기와. 지붕 앞사면(위에서 보이는 면) + 처마 끝 + 처마 밑 그늘. 3칸 폭 가로 반복.",
+   "criteria": [
+    "지붕 사면이 윗면으로 읽힌다(벽처럼 서 있지 않다)",
+    "처마 끝(막새)과 그 아래 그늘이 갈린다",
+    "가로 반복 이음이 안 보인다",
+    "조선 기와(giwa)와 색상(청회색 vs 먹회색)이 구별된다"
+   ],
+   "tileable": "x",
+   "joseonRef": {
+    "sheet": "tiledata/joseon-demo/joseon-demo-chipset.png",
+    "pieces": "tiledata/joseon-demo/pieces.json",
+    "piece": "giwa_house_6",
+    "w": 8,
+    "h": 3,
+    "label": "조선 기와집 지붕 giwa_house_6"
+   }
+  },
+  {
+   "id": "training_dummy",
+   "wave": "style",
+   "title": "목인장",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "영춘권식 목인장. 통나무 몸통 + 팔 셋 + 다리 하나. 받침·거치 방식을 후보마다 다르게.",
+   "criteria": [
+    "통나무 윗면(나이테)이 타원으로 보인다",
+    "받침/가로대도 윗면이 보인다",
+    "팔·다리가 몸통 앞으로 나온 것으로 읽힌다",
+    "사람 크기(Actor1 24×32) 옆에서 사람 키를 넘지 않는다"
+   ],
+   "joseonRef": {
+    "sheet": "tiledata/joseon-interior/joseon_in_inn/joseon_in_inn-chipset.png",
+    "pieces": "tiledata/joseon-interior/joseon_in_inn/pieces.json",
+    "piece": "in_hangari_tall",
+    "w": 1,
+    "h": 2,
+    "label": "조선 큰 항아리 in_hangari_tall"
+   }
+  },
+  {
+   "id": "round_table_stools",
+   "wave": "style",
+   "title": "둥근 탁자 + 걸상 넷 (덤)",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "객잔 둥근 탁자와 걸상 넷(뒤·좌·우·앞). 재질·걸상 모양을 후보마다 다르게.",
+   "criteria": [
+    "탁자 윗면이 타원으로 넓게 보이고 두께 띠가 앞에 보인다",
+    "걸상 넷 모두 윗면이 보인다",
+    "뒤 걸상은 탁자에 반쯤 가린다",
+    "윗면 소품이 얼굴처럼 읽히지 않는다"
+   ],
+   "joseonRef": {
+    "sheet": "tiledata/joseon-interior/joseon_in_inn/joseon_in_inn-chipset.png",
+    "pieces": "tiledata/joseon-interior/joseon_in_inn/pieces.json",
+    "piece": "in_sang_jumak",
+    "w": 2,
+    "h": 1,
+    "label": "조선 주막 상 in_sang_jumak"
+   }
+  },
+  {
+   "id": "floor_wood_inn",
+   "wave": "frame",
+   "title": "객잔 마루 정식판",
+   "size": [
+    8,
+    2
+   ],
+   "kind": "tile",
+   "layer": "ground",
+   "walk": "walk",
+   "brief": "그 줄 style 마루를 정식 바닥 세트로: 2×2 변형 셋(v1·v2·v3)은 서로·style 조각과 아무 방향으로 이어 깔리고, 벽 밑 줄 foot 은 벽 바로 아래 첫 줄에 깐다(위쪽이 그늘).",
+   "criteria": [
+    "그 줄 style 마루와 같은 판재 방향·폭·결·색(이어 붙여도 이음이 안 보인다)",
+    "변형끼리 섞어 깔아도 같은 무늬 반복이 눈에 띄지 않는다",
+    "foot 의 그늘이 벽 밑에서 아래로 엷어진다"
+   ],
+   "styleRef": [
+    "inn_floor_wood"
+   ],
+   "pieces": [
+    {
+     "id": "v1",
+     "title": "기본 판",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "v2",
+     "title": "변형 2",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "v3",
+     "title": "변형 3",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "foot",
+     "title": "벽 밑 줄(그늘)",
+     "at": [
+      6,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "x"
+    }
+   ],
+   "joinsAll": [
+    "@style",
+    "v1",
+    "v2",
+    "v3"
+   ],
+   "joins": [
+    [
+     "foot",
+     "v1",
+     "y"
+    ],
+    [
+     "foot",
+     "v2",
+     "y"
+    ],
+    [
+     "foot",
+     "v3",
+     "y"
+    ]
+   ]
+  },
+  {
+   "id": "floor_stone_yard",
+   "wave": "frame",
+   "title": "마당 돌바닥 정식판",
+   "size": [
+    9,
+    3
+   ],
+   "kind": "tile",
+   "layer": "ground",
+   "walk": "walk",
+   "brief": "그 줄 style 돌바닥 정식 세트: 2×2 변형 둘 + 풀(조선 잎 램프)과 닿는 가장자리 3×3 블록(nw n ne / w c e / sw s se) + 안쪽 모서리 넷 + 풀 한 칸.",
+   "criteria": [
+    "그 줄 style 돌바닥과 같은 돌 모양·결·색",
+    "가장자리 조각이 이어져 둥근 마당 테두리가 된다(경계석·흙·풀이 갈린다)",
+    "풀 칸은 조선 풀밭과 같은 램프"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "cao",
+    "huang"
+   ],
+   "pieces": [
+    {
+     "id": "v1",
+     "title": "기본 돌",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "v2",
+     "title": "변형",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "nw",
+     "title": "바깥 모서리 ↖",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "n",
+     "title": "위 가장자리",
+     "at": [
+      5,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "x"
+    },
+    {
+     "id": "ne",
+     "title": "바깥 모서리 ↗",
+     "at": [
+      6,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "w",
+     "title": "왼 가장자리",
+     "at": [
+      4,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "y"
+    },
+    {
+     "id": "c",
+     "title": "한 칸 돌",
+     "at": [
+      5,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    },
+    {
+     "id": "e",
+     "title": "오른 가장자리",
+     "at": [
+      6,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "y"
+    },
+    {
+     "id": "sw",
+     "title": "바깥 모서리 ↙",
+     "at": [
+      4,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "s",
+     "title": "아래 가장자리",
+     "at": [
+      5,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "x"
+    },
+    {
+     "id": "se",
+     "title": "바깥 모서리 ↘",
+     "at": [
+      6,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "inw",
+     "title": "안쪽 모서리 ↖",
+     "at": [
+      7,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "ine",
+     "title": "안쪽 모서리 ↗",
+     "at": [
+      8,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "isw",
+     "title": "안쪽 모서리 ↙",
+     "at": [
+      7,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "ise",
+     "title": "안쪽 모서리 ↘",
+     "at": [
+      8,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile"
+    },
+    {
+     "id": "g",
+     "title": "풀",
+     "at": [
+      7,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "tile",
+     "tileable": "xy"
+    }
+   ],
+   "joinsAll": [
+    "@style",
+    "v1",
+    "v2"
+   ],
+   "joins": [
+    [
+     "nw",
+     "n",
+     "x"
+    ],
+    [
+     "n",
+     "ne",
+     "x"
+    ],
+    [
+     "w",
+     "c",
+     "x"
+    ],
+    [
+     "c",
+     "e",
+     "x"
+    ],
+    [
+     "sw",
+     "s",
+     "x"
+    ],
+    [
+     "s",
+     "se",
+     "x"
+    ],
+    [
+     "nw",
+     "w",
+     "y"
+    ],
+    [
+     "w",
+     "sw",
+     "y"
+    ],
+    [
+     "n",
+     "c",
+     "y"
+    ],
+    [
+     "c",
+     "s",
+     "y"
+    ],
+    [
+     "ne",
+     "e",
+     "y"
+    ],
+    [
+     "e",
+     "se",
+     "y"
+    ],
+    [
+     "n",
+     "v1",
+     "y"
+    ],
+    [
+     "v1",
+     "s",
+     "y"
+    ],
+    [
+     "w",
+     "v1",
+     "x"
+    ],
+    [
+     "v1",
+     "e",
+     "x"
+    ],
+    [
+     "g",
+     "n",
+     "y"
+    ],
+    [
+     "s",
+     "g",
+     "y"
+    ],
+    [
+     "g",
+     "w",
+     "x"
+    ],
+    [
+     "e",
+     "g",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "wall_inn_set",
+   "wave": "frame",
+   "title": "객잔 벽 세트",
+   "size": [
+    12,
+    2
+   ],
+   "kind": "wall",
+   "layer": "wall",
+   "walk": "solid",
+   "brief": "그 줄 style 벽면의 세트: 왼끝·가운데(3칸 반복)·창 칸·문 칸(열린 문간 2칸, 판문을 얹는다)·오른끝. 기둥 24px 간격을 조각 경계 너머로 유지한다.",
+   "criteria": [
+    "위에서 보이는 수평 면(윗면)이 화소 2줄 이상으로 보이고, 그 아래 앞면과 어두운 모서리 줄로 갈린다. 옆면은 그리지 않는다.",
+    "끝 조각이 모서리에서 맞물린다(옆벽은 윗면 띠로만 보인다)",
+    "조각을 어떤 순서로 이어도 보·띠장·징두리가 끊기지 않는다",
+    "문 칸의 문간은 칸 경계에 맞아 걸어 지나간다"
+   ],
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "m",
+     "title": "가운데",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      3,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "win",
+     "title": "창 칸",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      3,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "door",
+     "title": "문 칸",
+     "at": [
+      7,
+      0
+     ],
+     "size": [
+      4,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "title": "오른끝",
+     "at": [
+      11,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "win",
+     "x"
+    ],
+    [
+     "win",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "door",
+     "x"
+    ],
+    [
+     "door",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "win",
+     "x"
+    ],
+    [
+     "win",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "door",
+     "x"
+    ],
+    [
+     "door",
+     "r",
+     "x"
+    ],
+    [
+     "win",
+     "door",
+     "x"
+    ],
+    [
+     "door",
+     "win",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "roof_set",
+   "wave": "frame",
+   "title": "기와 지붕 세트",
+   "size": [
+    3,
+    3
+   ],
+   "kind": "roof",
+   "layer": "roof",
+   "walk": "solid",
+   "brief": "그 줄 style 기와의 지붕 세트(1칸 조각 9개): 용마루 줄·앞사면 줄·처마 줄 × 왼끝·가운데(반복)·오른끝. 처마 양 끝은 위로 들린 추녀. 가운데 열을 늘려 3~6칸 폭.",
+   "criteria": [
+    "처마 끝이 위로 들린다",
+    "가운데 조각을 늘려 3~6칸 폭이 된다(이음 없음)",
+    "사면은 윗면으로 읽힌다(벽처럼 서 있지 않다)",
+    "그 줄 style 기와와 같은 기와 모양·색"
+   ],
+   "styleRef": [
+    "roof_tile_eave"
+   ],
+   "pieces": [
+    {
+     "id": "rl",
+     "title": "용마루 왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.5,
+     "qTopRow": false
+    },
+    {
+     "id": "rm",
+     "title": "용마루",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "rr",
+     "title": "용마루 오른끝",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.5,
+     "qTopRow": false
+    },
+    {
+     "id": "sl",
+     "title": "사면 왼끝",
+     "at": [
+      0,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "sm",
+     "title": "사면",
+     "at": [
+      1,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "tileable": "xy"
+    },
+    {
+     "id": "sr",
+     "title": "사면 오른끝",
+     "at": [
+      2,
+      1
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "el",
+     "title": "추녀 왼끝",
+     "at": [
+      0,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.45,
+     "qTopRow": false
+    },
+    {
+     "id": "em",
+     "title": "처마",
+     "at": [
+      1,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "er",
+     "title": "추녀 오른끝",
+     "at": [
+      2,
+      2
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "roof",
+     "qMin": 0.45,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "rl",
+     "rm",
+     "x"
+    ],
+    [
+     "rm",
+     "rr",
+     "x"
+    ],
+    [
+     "sl",
+     "sm",
+     "x"
+    ],
+    [
+     "sm",
+     "sr",
+     "x"
+    ],
+    [
+     "el",
+     "em",
+     "x"
+    ],
+    [
+     "em",
+     "er",
+     "x"
+    ],
+    [
+     "rl",
+     "sl",
+     "y"
+    ],
+    [
+     "sl",
+     "el",
+     "y"
+    ],
+    [
+     "rm",
+     "sm",
+     "y"
+    ],
+    [
+     "sm",
+     "em",
+     "y"
+    ],
+    [
+     "rr",
+     "sr",
+     "y"
+    ],
+    [
+     "sr",
+     "er",
+     "y"
+    ]
+   ]
+  },
+  {
+   "id": "door_double",
+   "wave": "frame",
+   "title": "두 짝 판문",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "wall",
+   "layer": "wall",
+   "walk": "mixed",
+   "brief": "객잔 정문 두 짝 판문 — 벽 세트 문 칸의 문간(2칸)에 얹는다. 맨 위는 그 줄 벽과 같은 보 윗면, 아래는 문지방 윗면.",
+   "criteria": [
+    "위에서 보이는 수평 면(윗면)이 화소 2줄 이상으로 보이고, 그 아래 앞면과 어두운 모서리 줄로 갈린다. 옆면은 그리지 않는다.",
+    "걸어 지나가는 칸이 문으로 읽힌다",
+    "벽 세트 문 칸에 얹었을 때 보·기둥과 이어진다"
+   ],
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "jin"
+   ]
+  },
+  {
+   "id": "stairs_wood",
+   "wave": "frame",
+   "title": "나무 계단",
+   "size": [
+    2,
+    3
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "walk",
+   "brief": "2층 객잔 계단(난간 포함) — 북쪽(화면 위)으로 올라간다. 그 줄 마루 나무 + 그 줄 기둥 칠.",
+   "criteria": [
+    "디딤판 윗면이 줄마다 보인다(챌판보다 밝다)",
+    "난간 손잡이 윗면이 보인다",
+    "Actor1 이 디딤판 위에 설 수 있는 폭이다"
+   ],
+   "styleRef": [
+    "inn_floor_wood",
+    "inn_wall_pillar"
+   ],
+   "outlineClass": "structure"
+  },
+  {
+   "id": "railing_upper",
+   "wave": "frame",
+   "title": "2층 난간",
+   "size": [
+    3,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "2층 회랑 난간(가로 반복). 그 줄 기둥 칠·장식.",
+   "criteria": [
+    "난간 손잡이 윗면이 보인다",
+    "가로 반복 이음이 안 보인다",
+    "난간동자 사이로 뒤가 비친다(투명)"
+   ],
+   "tileable": "x",
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "outlineClass": "structure"
+  },
+  {
+   "id": "table_round",
+   "wave": "inn",
+   "title": "둥근 탁자",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "객잔 둥근 탁자(걸상 따로). 칸 격자에 맞춰 놓이고, 걸상 넷을 칸 단위로 둘러 놓을 자리가 정해져 있다.",
+   "criteria": [
+    "윗면 타원·두께 띠",
+    "탁자 윗면 가운데 높이가 칸 경계와 맞아 옆 걸상의 앉는 면이 그 높이에 온다",
+    "걸상 배치 견본(set_table_four)을 함께 낸다: 뒤 걸상은 탁자 뒤에 윗면 절반 이상 보이게, 좌·우 걸상은 앉는 면이 탁자 윗면 가운데 높이, 앞 걸상은 탁자 받침(받침판·다리 발)이 다 보이고 그 앞 바닥 틈 2~4px 뒤에 앉는 면이 온다(받침보다 아래, 탁자와 안 겹침)",
+    "그리는 순서(깊이): 뒤 걸상 → 탁자 → 좌·우 걸상 → 앞 걸상. 걸상이 탁자 다리에 겹치거나 공중에 뜨지 않는다",
+    "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 옆 걸상이 탁자 다리 높이로 처지고, 앞 걸상은 떨어져 뜨고, 뒤 걸상은 눌려 겹쳤다.",
+    "감독 2026-10-08(inn-r1 첫 시트): 앞 걸상이 받침 기둥 바로 위에 겹쳐 「기둥에 꽂힌 탑」처럼 읽혔다 — 앞 걸상 기준을 두께 띠가 아니라 받침 아래 바닥 틈으로 바꿨다."
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true,
+   "geometry": {
+    "$comment": "모든 후보가 지키는 탁자 계약(set_table_four 배치가 후보와 상관없이 같게). 행·열은 2×2 조각(32×32) 안 화소.",
+    "ellipse": [
+     12,
+     21
+    ],
+    "topCenter": 16,
+    "band": 22,
+    "foot": 31,
+    "x": [
+     3,
+     28
+    ],
+    "note": "윗면 타원 12~20행(윤곽 포함) → 가운데 16행 = 두 칸 사이 경계. 두께 띠 맨 아래 22행, 받침 발 31행(칸 아래 경계 = 받침판·다리 발의 맨 아래 화소). 다리는 두께 띠 아래(23행~)만. 윗면 소품은 타원 안."
+   }
+  },
+  {
+   "id": "stool_drum",
+   "wave": "inn",
+   "title": "북 걸상",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "둥근 북 모양 걸상.",
+   "criteria": [
+    "윗면 타원",
+    "발이 칸 아래 경계에 닿는다(뜨지 않는다)",
+    "탁자 옆에 놓았을 때 앉는 면 높이가 탁자 윗면 가운데와 맞는다",
+    "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 옆 걸상이 탁자 다리 높이로 처지고, 앞 걸상은 떨어져 뜨고, 뒤 걸상은 눌려 겹쳤다."
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true,
+   "geometry": {
+    "$comment": "모든 후보가 지키는 걸상 계약. 행·열은 1×1 조각(16×16) 안 화소.",
+    "seat": [
+     8,
+     12
+    ],
+    "seatCenter": 9.5,
+    "foot": 15,
+    "x": [
+     3,
+     12
+    ],
+    "note": "앉는 면 타원 8~11행(윤곽 포함, 가운데 9.5) · 발 15행(칸 아래 경계) · 폭 3~12열(가운데 7.5 = 탁자 가운데 15.5 와 반 칸 차)."
+   }
+  },
+  {
+   "id": "set_table_four",
+   "wave": "inn",
+   "title": "탁자+걸상 넷 배치 견본",
+   "size": [
+    4,
+    3
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "둥근 탁자(table_round) 하나 + 북 걸상(stool_drum) 넷을 아래 layout 대로 합성한 견본. 4×3 칸을 통째로 찍거나, 탁자·걸상을 따로 놓을 때는 layout 의 px 오프셋을 그대로 쓴다. 장면의 탁자 세트는 반드시 이 견본이다.",
+   "criteria": [
+    "좌·우 걸상의 앉는 면 가운데 = 탁자 윗면 가운데 ±2px (옆 걸상이 탁자 다리 높이로 처지지 않는다)",
+    "뒤 걸상은 탁자 뒤에 앉는 면 절반 이상이 보인다(눌려 겹치지 않는다)",
+    "앞 걸상은 탁자 받침이 다 보이고 그 앞 바닥 틈 2~4px 뒤에 앉는 면이 온다 — 받침 기둥 위에 겹쳐 꽂혀 보이지 않는다(탁자와 한 화소도 안 겹침)",
+    "깊이 순서: 뒤 걸상 → 탁자 → 좌·우 걸상 → 앞 걸상. 좌·우 걸상은 탁자 다리와 겹치지 않는다",
+    "사용자 2026-10-08(frame-r1 장면): 「테이블과 의자의 위치가 좀 이상하다」 — 이 견본이 고친 기준이다",
+    "감독 2026-10-08(inn-r1 첫 시트): 앞 걸상이 받침 기둥에 꽂힌 탑처럼 읽혔다 → 세트를 4×2 에서 4×3 으로 늘리고 앞 걸상을 받침 아래 바닥 틈 3px 뒤로 옮겼다"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "layout": {
+    "$comment": "칸 좌표 at = px / 16. 탁자는 칸 (1,0) 에 맞고, 뒤 걸상은 가로 반 칸(1.5) — 탁자 가운데(2칸 경계)에 맞추느라 반 칸이다. 좌·우 걸상은 세로 6px(0.375칸) 내려 앉는 면을 탁자 윗면 가운데에 맞추고, 앞 걸상은 세로 27px(1.6875칸) — 탁자 받침 아래(31행) 바닥 틈 3px 뒤에 앉는 면(35행)이 온다. 칸 격자에 정수로만 놓는 도구는 4×3 견본을 통째로 찍는다. 그리는 순서 = order(층: 뒤 걸상이 가장 아래, 앞 걸상이 가장 위). 그림자는 빈 바닥에만 남는다.",
+    "parts": {
+     "table": "table_round",
+     "stool": "stool_drum"
+    },
+    "place": {
+     "back": {
+      "part": "stool",
+      "px": [
+       24,
+       0
+      ],
+      "at": [
+       1.5,
+       0
+      ]
+     },
+     "table": {
+      "part": "table",
+      "px": [
+       16,
+       0
+      ],
+      "at": [
+       1,
+       0
+      ]
+     },
+     "left": {
+      "part": "stool",
+      "px": [
+       7,
+       6
+      ],
+      "at": [
+       0.4375,
+       0.375
+      ]
+     },
+     "right": {
+      "part": "stool",
+      "px": [
+       41,
+       6
+      ],
+      "at": [
+       2.5625,
+       0.375
+      ]
+     },
+     "front": {
+      "part": "stool",
+      "px": [
+       24,
+       27
+      ],
+      "at": [
+       1.5,
+       1.6875
+      ]
+     }
+    },
+    "order": [
+     "back",
+     "table",
+     "left",
+     "right",
+     "front"
+    ],
+    "rules": {
+     "sideSeatTol": 2,
+     "backSeatVisible": 0.5,
+     "frontGap": [
+      2,
+      4
+     ],
+     "frontGapNote": "앞 걸상 앉는 면 위 행 − 탁자 맨 아래 화소(받침) 행 − 1 = 바닥 틈 px. 앞 걸상은 탁자와 한 화소도 겹치지 않는다."
+    }
+   }
+  },
+  {
+   "id": "counter_inn",
+   "wave": "inn",
+   "title": "객잔 계산대",
+   "size": [
+    3,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "장부·주판 놓인 긴 계산대, 뒤에 술독 선반 자리.",
+   "criteria": [
+    "상판 윗면이 보인다",
+    "소품이 얼굴처럼 안 읽힌다"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar",
+    "inn_floor_wood"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "kitchen_stove",
+   "wave": "inn",
+   "title": "부엌 아궁이·솥",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "큰 솥 두 개 걸린 흙 아궁이.",
+   "criteria": [
+    "솥 뚜껑 윗면이 보인다",
+    "아궁이 불빛"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar",
+    "inn_floor_wood",
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "huang",
+    "jin"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "wine_jars",
+   "wave": "inn",
+   "title": "술독·술항아리",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "붉은 천으로 입 막은 술독 2~3개.",
+   "criteria": [
+    "독 입 윗면 타원"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "huang"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "menu_board",
+   "wave": "inn",
+   "title": "차림판",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "wall",
+   "walk": "solid",
+   "brief": "벽에 거는 나무 차림판(글자 없이 색 판).",
+   "criteria": [
+    "글자·한자 금지",
+    "벽에 붙은 판으로 읽힌다",
+    "위에 2행 이상 갓(윗면)이 있어 벽에서 앞으로 나온 판으로 읽힌다",
+    "색 판·색 띠만 — 띠 안에 획처럼 읽히는 화소를 두지 않는다"
+   ],
+   "kindNote": "2026-10-08 inn-r1: wall(전부 불투명) → object(층은 wall). 벽 조각 위에 거는 판이라 둘레가 투명해야 그 줄 벽(띠장·기둥)과 상관없이 얹힌다.",
+   "styleRef": [
+    "inn_wall_pillar",
+    "inn_floor_wood"
+   ],
+   "contrastGround": "inn_wall_pillar"
+  },
+  {
+   "id": "lantern_paper",
+   "wave": "inn",
+   "title": "종이 등롱",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "붉은 종이 등롱(금 테·술). 처마 밑에 매다는 것과 세우는 것.",
+   "criteria": [
+    "위 뚜껑 윗면이 보인다",
+    "빛나는 느낌"
+   ],
+   "sizeNote": "2026-10-08 inn-r1: 1×1 → 2×1 세트(매다는 것 hang + 세우는 것 stand). brief 가 둘을 함께 요구한다.",
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "pieces": [
+    {
+     "id": "hang",
+     "title": "매다는 등롱(처마·보 밑)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "object"
+    },
+    {
+     "id": "stand",
+     "title": "세우는 등롱(받침 위)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "object",
+     "footOnEdge": true
+    }
+   ]
+  },
+  {
+   "id": "dummy_wing_chun",
+   "wave": "dojo",
+   "title": "목인장 정식판",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "style 판에서 고른 목인장 정식판 + 방향 변형.",
+   "criteria": [
+    "통나무 윗면"
+   ]
+  },
+  {
+   "id": "weapon_rack",
+   "wave": "dojo",
+   "title": "병기 거치대",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "창·도·검을 세운 나무 거치대.",
+   "criteria": [
+    "거치대 윗면",
+    "병기 끝이 실루엣 위로 나온다"
+   ]
+  },
+  {
+   "id": "archery_target",
+   "wave": "dojo",
+   "title": "활터 과녁",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "짚 과녁(동심원)과 받침.",
+   "criteria": [
+    "과녁 위 테두리 윗면",
+    "받침 윗면"
+   ]
+  },
+  {
+   "id": "sandbags",
+   "wave": "dojo",
+   "title": "모래주머니",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "매단 모래주머니와 쌓은 모래주머니.",
+   "criteria": [
+    "쌓은 것은 윗면이 보인다"
+   ]
+  },
+  {
+   "id": "meditation_mats",
+   "wave": "dojo",
+   "title": "명상 방석",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "walk",
+   "brief": "둥근 부들 방석.",
+   "criteria": [
+    "바닥에 붙은 판 — 윗면만, 두께 1~2px"
+   ]
+  },
+  {
+   "id": "stone_lions",
+   "wave": "dojo",
+   "title": "돌사자 한 쌍",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "문 앞 돌사자 한 쌍(좌우 대칭, 받침대 포함).",
+   "criteria": [
+    "받침대 윗면",
+    "사자 머리 윗면"
+   ]
+  },
+  {
+   "id": "mountain_gate",
+   "wave": "outdoor",
+   "title": "산문(山門)",
+   "size": [
+    5,
+    4
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "mixed",
+   "brief": "문파 산문: 기둥 넷·지붕·편액(글자 없음).",
+   "criteria": [
+    "지붕 윗면",
+    "편액은 색 판(글자 금지)",
+    "가운데를 걸어 지나간다"
+   ]
+  },
+  {
+   "id": "bamboo_grove",
+   "wave": "outdoor",
+   "title": "대숲",
+   "size": [
+    3,
+    3
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "대나무 덩이(잎 덩어리 + 줄기 마디).",
+   "criteria": [
+    "잎 덩이 윗면 빛",
+    "줄기 마디"
+   ]
+  },
+  {
+   "id": "training_yard_edge",
+   "wave": "outdoor",
+   "title": "연무장 가장자리",
+   "size": [
+    3,
+    3
+   ],
+   "kind": "tile",
+   "layer": "ground",
+   "walk": "walk",
+   "brief": "돌바닥과 흙·풀 사이 경계석.",
+   "criteria": [
+    "경계석 윗면"
+   ]
+  },
+  {
+   "id": "stone_lantern",
+   "wave": "outdoor",
+   "title": "석등",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "중국풍 석등(지붕돌 겹).",
+   "criteria": [
+    "지붕돌 윗면",
+    "받침 윗면"
+   ]
+  },
+  {
+   "id": "stele",
+   "wave": "outdoor",
+   "title": "비석(귀부)",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "거북 받침 비석(글자 없음).",
+   "criteria": [
+    "비석 머리 윗면",
+    "거북 등 윗면"
+   ]
+  }
+ ],
+ "forbidden": [
+  {
+   "id": "generated-images",
+   "rule": "생성 이미지·자동 트레이싱 금지. 행 문자열 격자로 화소를 직접 찍는다."
+  },
+  {
+   "id": "people",
+   "rule": "사람·캐릭터를 그리지 않는다. 비교·장면에는 Actor1 을 쓴다."
+  },
+  {
+   "id": "side-faces",
+   "rule": "옆면(아이소메트릭) 금지. 윗면 + 앞면만."
+  },
+  {
+   "id": "text",
+   "rule": "글자·한자·상표 금지(편액·차림판은 색 판)."
+  },
+  {
+   "id": "supervisor-pick",
+   "rule": "감독·에이전트는 후보를 고르지 않는다. pick 은 사람이 시킨 것만 기록한다."
+  },
+  {
+   "id": "bake",
+   "rule": "이 하네스는 번들(src/assets/bundled.ts 등)에 굽지 않는다. 굽기는 고른 뒤 별도 작업."
+  },
+  {
+   "id": "ink-outline",
+   "rule": "먹(ink·밝기 0.09 이하 0단) 윤곽 금지 — 지형·기물·큰 구조 모두 재질 자신의 명암으로(outlineRule). 작은 기물의 그늘 쪽도 재질 가장 어두운 단 + 접지 그림자까지. 사람(Actor1)만 외곽선."
+  }
+ ]
+}

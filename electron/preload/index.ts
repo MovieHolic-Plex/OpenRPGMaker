@@ -110,6 +110,9 @@ const bridge = {
     logout: invoke(OPRN_CHANNELS.storeLogout),
     upload: invoke(OPRN_CHANNELS.storeUpload),
     visibility: invoke(OPRN_CHANNELS.storeVisibility),
+    concepts: invoke(OPRN_CHANNELS.storeConcepts),
+    concept: invoke(OPRN_CHANNELS.storeConcept),
+    conceptMade: invoke(OPRN_CHANNELS.storeConceptMade),
     onProgress: (callback: (payload: unknown) => void): (() => void) => {
       const listener = (_event: unknown, payload: unknown): void => callback(payload);
       ipcRenderer.on(OPRN_CHANNELS.storeProgress, listener);

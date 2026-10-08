@@ -31,7 +31,7 @@ gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 �
 - 조화 검수(reviewMapHarmony)는 돌리지 않는다. 캔버스 캡처가 필요하고 기본 적용 모드에서는 지적만 남기기 때문이다.
 - 의도 선언은 같은 몸통을 워커 `completeProvider` 로 직접 보낸다(제공자 max_tokens 클램프는 생략).
 - 동반 서비스·워커 HTTP 없이 같은 프로세스에서 `runPiAgent` 를 부른다.
-- 맵 손실 확인 모달처럼 사람이 답해야 하는 확인은 헤드리스로 답할 수 없다.
+- 맵 손실 확인은 사람 대신 규칙으로 답한다(`decide`): 이 실행에서 새로 만든 맵만 지우게 두고 씨앗에 있던 맵은 거절한다. 예전에는 카드를 띄우려다 `document is not defined` 로 실행 전체가 죽었다.
 
 키는 동반 서비스 runAgent 와 같게 푼다: 주 제공자 키, 역할 모델(deep·writer) 제공자 키, 웹 검색용 openai-codex 키를 인증 저장소(`resolveRequestApiKey`)에서. 브라우저에서 연결해 둔 제공자는 그대로 쓴다.
 

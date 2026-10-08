@@ -225,7 +225,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
     return [
-      `${GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : preset.label}`,
+      `${GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label}`,
       gameDesignBriefContext(brief),
       preset.packId === "monster-collect" ? "확정 기획을 반영해 실제 전체72맵/60종/8체육관/리그/엔딩 캠페인을 제작하세요. 작은 시작 구간이나 설정만으로 완료하지 마세요." : "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
@@ -291,7 +291,7 @@ export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?
     if (body.length > BRIEF_DISPLAY_LIMIT) body = `${body.slice(0, BRIEF_DISPLAY_LIMIT - 1).trimEnd()}…`;
     const label = brief.interview
       ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ")
-      : preset.label;
+      : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label;
     return body ? `${label} · 확정한 게임 기획\n${body}` : label;
   }
   const short = (text: string | undefined): string => {

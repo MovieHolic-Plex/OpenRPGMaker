@@ -4,6 +4,7 @@
 // Bun 없이도 로그인이 되어야 하므로 같은 와이어 계약을 fetch 만으로 다시 구현한다.
 // 그래서 이 파일에는 node:* import 도 Bun API 도 없다 — 브라우저/Node/테스트에서 동일하게 돈다.
 
+import { oauthClient } from "./clientConfig.ts";
 import type { PortedOAuthCredentials } from "./credentials.ts";
 
 /** URL 문자열과 RequestInit 만 받는 최소 fetch 계약. globalThis.fetch 가 그대로 대입된다. */
@@ -11,17 +12,9 @@ export type OAuthFetch = (input: string, init: RequestInit) => Promise<Response>
 
 export type OAuthSleep = (ms: number) => Promise<void>;
 
-const decode = (value: string): string => atob(value);
-
-// 아래 두 값은 Antigravity 데스크톱 앱(참조 구현 @oh-my-pi/pi-ai)이 소스에 그대로 담고 배포하는
-// **공개 데스크톱 클라이언트 자격**이다. 사용자 비밀도, 유출된 키도 아니다 — 설치형 앱의
-// client_secret 은 OAuth 규격상 비밀로 취급되지 않는다(RFC 8252 §8.5).
-// base64 로 감싼 이유는 보안이 아니라 참조 구현과 동일하게 자동 시크릿 스캐너의 오탐을 피하려는 것이며,
-// 값과 인코딩 방식(atob)까지 참조 구현과 한 글자도 다르지 않게 유지한다.
-const CLIENT_ID = decode(
-  "MTA3MTAwNjA2MDU5MS10bWhzc2luMmgyMWxjcmUyMzV2dG9sb2poNGc0MDNlcC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbQ==",
-);
-const CLIENT_SECRET = decode("R09DU1BYLUs1OEZXUjQ4NkxkTEoxbUxCOHNYQzR6NnFEQWY=");
+// client id·secret 은 저장소에 적지 않는다 — clientConfig.ts 가 실행 환경에서 받는다.
+const clientId = (): string => oauthClient("antigravityClientId");
+const clientSecret = (): string => oauthClient("antigravityClientSecret");
 
 export const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 export const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -87,7 +80,7 @@ export function buildAntigravityAuthorizationUrl({
   codeChallenge,
 }: BuildAuthorizationUrlOptions): string {
   const params = new URLSearchParams({
-    client_id: CLIENT_ID,
+    client_id: clientId(),
     response_type: "code",
     redirect_uri: redirectUri,
     scope: SCOPES.join(" "),
@@ -116,8 +109,8 @@ export async function exchangeAntigravityCode({
   fetch = defaultFetch,
 }: ExchangeCodeOptions): Promise<PortedOAuthCredentials> {
   const body = new URLSearchParams({
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
+    client_id: clientId(),
+    client_secret: clientSecret(),
     code,
     grant_type: "authorization_code",
     redirect_uri: redirectUri,
@@ -309,8 +302,8 @@ export async function refreshAntigravityToken({
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
+      client_id: clientId(),
+      client_secret: clientSecret(),
       refresh_token: refreshToken,
       grant_type: "refresh_token",
     }),

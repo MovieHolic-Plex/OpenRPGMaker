@@ -18,8 +18,11 @@
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 | `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
+| `space-craft` | 조수 공간 제작 시각 품질 | 장르 무관 | `harness-data/space-craft/seed.json` | `openwiki/harnesses/space-craft.md` |
 | `beodeul-architecture` | 버들항 건물 · 원본 보존 | 장르 무관 | `harness-data/beodeul-architecture/seed.json` | `openwiki/harnesses/beodeul-architecture.md` |
 | `beodeul-building-review` | 버들항 건물 · 사람의 허용/거절 | 장르 무관 | `harness-data/beodeul-building-review/seed.json` | `openwiki/harnesses/beodeul-building-review.md` |
+| `game-concepts` | 새 게임 컨셉 카드 | 장르 무관 | `harness-data/game-concepts/seed.json` | `openwiki/harnesses/game-concepts.md` |
+| `murim-chipset` | 무림 칩셋 도트 (murim_wuxia · oprn-murim) | 장르 무관 | `harness-data/murim-chipset/seed.json` | `openwiki/harnesses/murim-chipset.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -293,6 +296,23 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
+## space-craft — 조수 공간 제작 시각 품질
+
+실제 입력창으로 방·판타지 실내·현대 실내·무림 장소를 만들게 하고, 저장·재로드 뒤 결정론 지표(도달·빈 바닥·대칭·칩셋 계열)와 원본 크기 렌더를 남긴다. 기계 통과는 시각 합격이 아니다.
+
+**이럴 때 쓴다:**
+- 조수가 만든 방·실내·장소가 보기에 괜찮은지 카테고리·모델별로 잴 때
+
+**단계** (`npm run harness -- space-craft <단계>`):
+- `list` — 과제 목록: 카테고리·시작 칩셋·기대 계열을 나열한다.
+- `prepare` — 격리 정본 준비: 과제·반복마다 별도 SQLite 프로젝트를 만든다. 공용 DB 사본은 실행당 하나를 하드링크한다.
+- `run` — 실제 수행: 실제 입력창에 자연어를 보내고 적용·저장·새 브라우저 재로드까지 확인한다(assistant-capability 실행기 재사용).
+- `measure` — 결정론 지표·렌더: 조수가 만들거나 바꾼 맵마다 칩셋 계열·도달 비율·빈 바닥·대칭을 재고 원본 크기 PNG와 4분면 확대를 남긴다.
+- `sheet` — 비교 시트: 카테고리 × 모델 × 반복을 그림과 지표로 나란히 놓은 자체완결 HTML을 굽는다.
+- `status` — 진행 상황: 과제별 실행·측정 여부를 보여 준다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
 ## beodeul-architecture — 버들항 건물 · 원본 보존
 
 버들항 원본 보존 보정과 별도 건축 구조 여섯 계열. 원본 지붕·윤곽/수정 마스크, 신규 구조 전체 시트 재조립·source 해시·한 입구·기초를 확인한다. 기계 검사만으로 시각 합격을 선언하지 않는다.
@@ -326,5 +346,48 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `status` — 현재 선택: 현재 그림 해시와 일치하는 허용/거절/미선택을 보여 준다.
 - `export` — 허용한 것만 내보내기: 사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts.
 - `install` — 허용한 건물 공용 번들 설치: 결정 로그에서 현재 그림 해시에 허용된 후보만 시트·카탈로그·참고문서로 굽는다(--profile <id>, 프로필은 profiles.json).
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## game-concepts — 새 게임 컨셉 카드
+
+새 게임 피드의 공식 컨셉(제목·훅·기획 5칸·도트 썸네일)을 만들고, 사람이 받기/버리기로 고른 것만 스토어에 게시
+
+**이럴 때 쓴다:**
+- 새 게임 컨셉
+- 컨셉 피드
+- 새 게임 썸네일
+- 공식 컨셉 추가
+
+**단계** (`npm run harness -- game-concepts <단계>`):
+- `produce` — 컨셉 쓰기: 시드의 분류별 목표 수만큼 AI가 컨셉 JSON 을 쓴다. 형식·금지 이름·중복을 거른다.
+- `draw` — 썸네일: 컨셉마다 도트 썸네일(960×540, 480×270 webp)을 생성한다.
+- `check` — 검사: 형식과 원작 닮음(금지 이름, 그림 비전 판정)을 본다. --redraw 면 실패 그림을 한 번 다시 그린다.
+- `serve` — 고르기 화면: 사람이 받기/버리기를 고른다. 선택은 현재 그림 해시에 묶인다.
+- `status` — 현황: 분류별 받음·버림·대기·검사 실패 수.
+- `publish` — 게시: 받은 것만 스토어에 올린다. 운영은 --target prod 명시.
+- `bundle` — 비상용 번들: 받은 것 중 분류마다 고르게 20개를 앱 번들로 굽는다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## murim-chipset — 무림 칩셋 도트 (murim_wuxia · oprn-murim)
+
+중국 무협 배경 공용 칩셋 murim_wuxia 의 객잔·누각 뼈대·객잔 살림·도장·바깥(산문·대숲·석등) 조각 후보를 코드 손 도트로 찍는다. 잠긴 팔레트(청회색 유약 기와·주칠·황토·흰 회벽·짙은 나무·소나무·청석·대나무·금, 7단 램프, joseon_baram 과 밝기 호환) → 화풍 판 style-r1(후보 글자 = 컨셉 줄) 뒤로는 줄(A 밝은 문파·B 강남 무관)마다 후보 A1·A2·B1·B2 를 그 줄 style 조각과 같은 색·결로 그린다. 판(rounds/<판>.py) → 기계 관문(P·Z·Q·O·F·S·R·J 조각 맞물림·Y 줄 재료·G 바닥 닿음·K 탁자·걸상 배치 견본, 경고 T·L·N) → 조선 조각·줄 기준 조각·Actor1 옆 고르기 시트 → 사람이 (항목, 줄)마다 pick/reject(그림 해시에 묶임) 순서. 관문 통과는 합격이 아니다. 고른 것은 harness-data/murim-chipset/picked/<줄>/ 까지만 가고 번들 굽기는 별도 작업이다.
+
+**이럴 때 쓴다:**
+- 무림·무협·중국풍 칩셋(murim_wuxia) 의 바닥·벽·지붕·문·계단·객잔 가구·도장 기물·산문·대숲·석등 같은 조각을 새로 그리거나 후보를 다시 낼 때
+- 무림 칩셋 후보를 사람이 줄(A 밝은 문파·B 강남 무관)마다 고르게 하거나, 고른 기록이 지금 그림과 맞는지 확인할 때
+- 조선(joseon_baram)·jp_city·버들항·modern 계열 칩셋에는 쓰지 않는다 — 타일셋마다 별도 하네스
+
+**단계** (`npm run harness -- murim-chipset <단계>`):
+- `validate` — 시드 점검: 시드 줄(lines)·항목(크기·종류·층·반복·조선 기준 조각·세트 조각과 맞물림)·판 모듈(후보 키: 화풍 판은 글자, 이후 판은 줄마다 <줄><번호> 2개 이상)·금지 조항·팔레트 호환을 점검한다.
+- `palette` — 팔레트 보고: 잠긴 팔레트의 램프 단별 밝기를 joseon_baram 범위와 대조하고 가장 가까운 조선 램프를 보여 준다(파일을 쓰지 않는다).
+- `list` — 항목 목록: 묶음(style·frame·inn·dojo·outdoor)별 시드 항목. 줄마다 ★ 는 사람이 고른 것 중 지금 그림과 해시가 맞는 것.
+- `draw` — 후보 그리기: 판 모듈의 후보를 그려 qa-runs/harnesses/murim-chipset/<판>/ 에 1배·8배 PNG 와 manifest.json(해시)을 쓴다.
+- `gate` — 기계 관문: P 팔레트 잠금·Z 크기·Q 불투명 계약·O 먹 윤곽·F 윗면 행·S 반복 이음·R 색만 바꾼 후보·J 세트 조각 맞물림·Y 줄 재료·G 바닥 닿음(걸상·가구 발이 칸 아래 경계)·K 배치 견본(탁자+걸상 layout: 화소 일치·좌우 앉는 면 = 탁자 윗면 가운데 ±2px·뒤 걸상 절반 이상 보임·앞 걸상 2~4px)(FAIL), T 가는 줄·L 빛·N 1px 잡티(WARN). 줄별로 센다. 통과는 합격이 아니다.
+- `sheet` — 고르기 시트: 후보를 줄별로 묶어 1배·4배·반복·조립 보기로, 조선 같은 용도 조각·그 줄 화풍 기준 조각·Actor1 옆에 놓고 줄별 장면(판 모듈의 scenes — frame 6×5, inn 8×6 객잔 홀)까지 담은 자체완결 HTML 을 ~/claude-viz/murim-<판>.html 에 쓴다(관문 FAIL 이면 안 쓴다). 고른 후보에 ★ 줄 표시.
+- `pick` — 고르기(사람): 사람이 고른 후보를 시트 때 해시와 대조해 (항목, 줄)마다 ledger.json 에 기록하고 picked/<줄>/<항목>.png 로 복사한다. 화풍 판은 후보 글자 = 줄, 이후 판은 <줄><번호>. 그림이 바뀌면 그 기록은 무효.
+- `reject` — 버리기(사람): 사람이 버린 후보와 이유를 기록한다(다음 판의 「하지 말 것」).
+- `status` — 현황: 판별 그림·관문·시트 유무와 줄별·묶음별 고른 것(현재 해시와 맞는지)을 보여 준다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

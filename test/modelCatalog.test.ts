@@ -34,8 +34,9 @@ const ANTIGRAVITY_BUNDLED = [
   "tab_jump_flash_lite_preview",
 ];
 
-/** ChatGPT 경로는 이 넷만 고를 수 있다(감독 지시 2026-09-27). 순서 = 화면 순서, 첫 항목 = 기본. */
+/** ChatGPT 경로에서 고를 수 있는 모델(2026-09-27 넷 + 2026-10-07 gpt-6.1-sol). 순서 = 화면 순서, 첫 항목 = 기본. */
 const CODEX_SUPPORTED = [
+  "gpt-6.1-sol",
   "gpt-5.6-sol",
   "gpt-6-astra",
   "gpt-6-sol",
@@ -54,12 +55,12 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
 
-  it("Codex 목록은 정확히 네 모델(gpt-6-astra·gpt-6-sol·gpt-5.6-sol·gpt-6-luna)이고 첫 항목이 gpt-5.6-sol 다", async () => {
+  it("Codex 목록은 정확히 다섯 모델이고 첫 항목이 gpt-6.1-sol 다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", CODEX_PROVIDER_ID).flatMap((g) => g.models);
 
     expect(models).toEqual(CODEX_SUPPORTED);
-    expect(defaultModelForAuthMode("chatgpt", CODEX_PROVIDER_ID)).toBe("gpt-5.6-sol");
+    expect(defaultModelForAuthMode("chatgpt", CODEX_PROVIDER_ID)).toBe("gpt-6.1-sol");
   });
 
   it("제공자 레코드의 defaultModel 이 카탈로그 첫 항목과 같다 (기본값 출처 하나)", async () => {

@@ -10,6 +10,24 @@
 
 `place_door`의 `data.transferEndpoint = {mapId,x,y,doorAt}`는 그림 하단(`doorAt`) 바로 남쪽의 밟는 문앞(`x,y`)이다. 이 값을 연결 도구 a/b 또는 from/to로 넘기면 문앞을 다른 칸으로 자동 이동하지 않는다. 길·가구·착지를 먼저 고쳐야 한다. 이 계약은 남향 벽문용이며 계단·포탈·맵 끝은 doorAt 없이 연결한다. `link_maps` 재실행은 요청에 묶인 안정 ID를 유지하고 worldGraph에는 실제 설치된 출발 칸·착지를 기록한다. 시공 후 타일 변경까지 보장하는 영구 잠금은 아니다. 실제 입력·플레이·SQLite 증거는 [수행 하네스](harnesses/assistant-capability.md)의 `portals`/`portal-controls`로 확인한다.
 
+## 조수 한 번 호출의 크기 줄이기 · 통째로 다시 쓰기 (2026-10-07)
+
+조수 기능 시험(12과제 × gpt-6.1-sol·gemini-3.8-flash, `assistant-capability --ai-config`)에서 대사 한 줄 고치기에도
+모델 호출 한 번마다 약 6만 토큰이 실렸다. 첫 대사 수정 실측: 도구 설명 14.7만 자 + 시스템 지시 1.9만 자, 요청은 208자.
+
+- **낱말 일치 승격은 선언 모델이 도구를 고른 요청에서 끈다** (`sessionToolExposure.buildSessionRegistryTools`).
+  승격은 요청 낱말과 설명 낱말의 겹침이라 설명이 긴 도구가 늘 이겼다 — 「아이템 가격만」에 `edit_world_terrain`·`author_village`,
+  「NPC 이동」에 `make_villager`(73k자)·`upsert_event`(69k자). 선언이 없거나 도구가 비면 예전대로 승격한다.
+  빠진 도구는 `find_tools` 와 이름 호출 구제로 잡힌다. 12과제 노출 도구 합계 1,002k자 → 287k자.
+- **공간 시공 규칙은 공간 실행에만** (`buildPiAgentSystemPrompt(..., { spatialWork })`). 판정은 `piAgentRuntime` 이
+  첫 노출 도구(`initialToolNames`)로 한다: tile·world 도메인, 또는 map 도메인 쓰기 도구가 하나라도 있으면 공간 실행.
+  목록이 없으면 모른다고 보고 싣는다. 밑그림 도구 `set_build_spec` 과 그 지시도 같은 판정을 따른다.
+  첫 대사 수정의 첫 호출: 166k자 → 27k자.
+- **통째로 다시 보낸 레코드** (`assistantRewriteGuard.ts`, 조수 실행만). 이벤트 pages 전체 재전송은 거부하고 `patch_event_page`
+  를 안내한다. DB 레코드 에코는 거부하지 않고 **기존에 있던 칸 중 같은 형으로 바뀐 칸만** 적용한다 — 거부했더니 gpt 가 같은 전체
+  레코드를 다섯 번 다시 보내다 끝났다. 원래 없던 칸(`farmTool:"hoe"`)·저장값과 형이 다른 칸(`"noLimit"`→5)은 버리고 경고한다.
+  `event` 안에 넣어 보낸 `replacePages` 는 저장 전에 뗀다.
+
 ## EasyRPG 계열 칩셋 차단 — 대체품이 생기기 전까지 (2026-10-06)
 
 사용자 결정: 「대체품이 생기기 전까지 막고」, 등록 장소는 「조수 추천 목록에 넣어놔라」.

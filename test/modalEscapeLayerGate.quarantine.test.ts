@@ -2,7 +2,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { NEW_PROJECT_DIALOG_TESTIDS, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { store } from "@/project/store";
@@ -90,25 +89,19 @@ afterEach(() => {
 });
 
 describe("Escape 계층 게이트", () => {
-  it("new-project Escape closes only its layer and resolves cancellation", async () => {
+  it("concept feed overlay Escape closes only its layer and resolves closed", async () => {
     const bottom = document.createElement("div");
     document.body.append(bottom);
     let bottomClosed = false;
     registerModal(bottom, () => { bottomClosed = true; bottom.remove(); });
-    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
+    const { openConceptFeedOverlay } = await import("@/editor/conceptFeedOverlay");
+    const pending = openConceptFeedOverlay("welcome");
     expect(modalStackEntryCountForTest()).toBe(2);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
-    await expect(pending).resolves.toBeNull();
+    await expect(pending).resolves.toBe("closed");
     expect(bottomClosed).toBe(false);
     expect(modalStackEntryCountForTest()).toBe(1);
-    expect(document.querySelector(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.host}"]`)).toBeNull();
-  });
-
-  it("new-project confirmation unregisters its layer without cancelling the selection", async () => {
-    const pending = showNewProjectDialog({ defaultValue: "fixture-title" });
-    document.querySelector<HTMLButtonElement>(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.confirm}"]`)?.click();
-    await expect(pending).resolves.toEqual({ title: "fixture-title", choiceId: null });
-    expect(modalStackEntryCountForTest()).toBe(0);
+    expect(document.querySelector('[data-testid="concept-feed"]')).toBeNull();
   });
 
   it("world entry uses the database Escape owner instead of mounting a second modal", async () => {
