@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-08T06:21:35.387Z",
+  "status": "Experiment complete; visual QA corrected and product safeguards improved; rerun pending",
+  "outerEvaluators": {
+    "count": 8,
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "internalCreatorModel": "gemini-3.8-flash",
+  "reportLocalLinksChecked": 39,
+  "preservedEvidenceHashesChecked": 19,
+  "canonicalReadbacks": 8,
+  "editorPortsClosed": [
+    19401,
+    19402,
+    19403,
+    19404,
+    19405,
+    19406,
+    19407,
+    19408
+  ],
+  "viewerURL": "http://100.73.251.77:8811/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/internal-ai-game-audit.view.html",
+  "reportSha256": "96e63af57eff719e1bcdf64f98e1746b6173ba59a03ca24065fc5860ea7f076c",
+  "comparisonDataSha256": "c56cf26f8b9c5a15de451b83ab5abc9ce4959ccd034f03b1b68268f2e929da2b",
+  "fragmentSha256": "1c791f75c75eb42336237dfd99b32941b449b23c89313a508939987723badcd1",
+  "viewSha256": "e20941de1c73a8aa9458cd2dc7a6031e2a5774b25f6a5fa9a8cdcb95028b2cec",
+  "viewerReview": "Improvement view: original 14-image evidence gallery plus safeguards table; no page errors; widths 1024/736/360/320 pass with table overflow contained.",
+  "gatesVitestFullTypecheckExecuted": false,
+  "productFixesImplemented": true,
+  "productImprovementReport": "verify-shots/assistant-eight-genres-20261008/improvements/REPORT.md",
+  "productImprovementScope": ["Pi visual completion gate", "inline media promotion before save", "checkpoint persistence and Continue restore", "ending autosave", "defeat transfer continuation", "Save detail selection"],
+  "productImprovementRerun": "pending: existing content evidence is preserved; a fresh eight-case run is required to claim post-fix visual/function pass",
+  "limitations": "N=1 representative task per genre; unverified requirements remain unverified; historical failures and repairs are separate.",
+  "visualReviewCorrection": {
+    "version": 2,
+    "report": "verify-shots/assistant-eight-genres-20261008/visual-qa/REPORT.md",
+    "contract": "verify-shots/assistant-eight-genres-20261008/visual-qa/CONTRACT.md",
+    "completeTerrainMapsReviewed": 25,
+    "nativeProofImagesReviewed": 15,
+    "criteriaAxes": 5,
+    "sourceSQLiteUnchanged": true,
+    "originalFinalPreserved": "verify-shots/assistant-eight-genres-20261008/visual-qa/history/FINAL-before-visual-correction.json"
+  }
+}

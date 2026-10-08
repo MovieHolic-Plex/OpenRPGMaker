@@ -6,6 +6,41 @@
 
 ## 실행 경로
 
+### 여덟 장르 제작 실측 (2026-10-08)
+
+장르 시드는 `harness-data/assistant-capability/genre-seed.json`이다. 몬스터 수집·회상 스토리·JRPG·갤러리 호러·학교 호러·농장 생활·파트너 육성·액션 RPG의 원문, 요구사항과 적대적 확인 항목을 실행 전에 고정한다. core 기능 점수와 별도로 보고한다.
+
+```bash
+# 새 실행 폴더를 만든 뒤 시드를 experiment.json으로 복사한다.
+mkdir -p qa-runs/harnesses/assistant-capability/<새 실행>
+cp harness-data/assistant-capability/genre-seed.json qa-runs/harnesses/assistant-capability/<새 실행>/experiment.json
+npm run build:packaged
+npm run build:electron
+npm run build:player
+npm run harness -- assistant-capability genre-prepare --out qa-runs/harnesses/assistant-capability/<새 실행>
+npm run harness -- assistant-capability genre-run --out qa-runs/harnesses/assistant-capability/<새 실행> --case farm-life
+# 관측된 결함의 명시적 보수는 별도 시도와 원문 파일로 보존한다.
+npm run harness -- assistant-capability genre-run --out qa-runs/harnesses/assistant-capability/<새 실행> --case farm-life --attempt 2 --prompt-file <보수 원문 파일>
+# 자연어 경로가 Pi까지 진입하지 못했다면 지원되는 명시 명령으로 구분해 측정한다.
+# 위 명령에 --input-mode pi-command를 추가한다. 최초 자연어 성공으로 합치지 않는다.
+```
+
+`genre-prepare`는 실제 `createBlankProject`로 서로 다른 프로젝트 ID와 SQLite 폴더를 만든다. 기본 DB·오프닝·번들 설치는 AI 제작 성과가 아니다. 공용 라이브러리는 읽기 전용 backup을 기준으로 과제별 복사하며 원본 공용 DB에 쓰지 않는다. 포트는 시드에 선언하고 각 호스트는 loopback에만 연다. 동시에 실행하는 에디터는 최대 3개이며 슬롯과 프로젝트의 `run.lock`을 모두 확보한다. 외부 평가자는 게임 데이터를 만들거나 도구를 직접 호출하지 않는다.
+
+`genre-run`은 실제 입력·제공자 요청·공개 도구 추적·SQLite 저장·새 브라우저 context 재로드를 기록한다. 최초와 최대 두 번의 보수는 `attempt-1`~`attempt-3`에 분리하고 기존 폴더를 덮지 않는다. 제공자/모델은 실제 POST에서 읽는다. 외부 운영 에이전트의 모델과 내부 제작 모델을 구분한다. 요청 전 로그인 오버레이 상태도 기록한다. 실행 완료 신호나 `completedMeasurement`는 게임 합격이 아니라 관측기의 종료 상태다. 인증·진입·기동 장애와 실제 제작 실패를 구별하고, 조기 중단은 경과 시간·사유를 남겨 정해진 턴 시간 초과로 바꾸지 않는다.
+
+standalone 호스트는 `/tmp`에 번들한 서버를 실행하므로, 그 안의 `createRequire(import.meta.url)`이 설치된 pi-ai를 찾지 못할 수 있다. 실행기는 저장소 경로의 `readOAuthClientsFromPiAi`로 클라이언트 메타데이터를 읽어 호스트 환경에 전달한다. 기존 OAuth 로그인과 제공자는 유지하고 값을 보고서·콘솔에 출력하지 않는다. 이 환경 보정 전에 분류 500 오류가 난 시도는 원본 실패로 보존한다.
+
+플레이는 `node/genreExperiment.mjs`의 `openGenrePlayer(root, caseId, {attempt, name})`와 기존 `scripts/lib/runtimeQaRun.mjs`를 사용한다. 저장한 `live.json`을 제품 `prepareWebExport`로 투영하고 **컴파일된 `dist/export-player/player.html`과 export shim**에서 실제 방향·조사·전투·메뉴 입력을 한다. 이 경로는 완성 ZIP 패키지나 Electron 전체 출하 검증과는 다르다. 업로드 자산은 제품의 `uploadedAssetBytes`/`uploadedAssetMime`으로 실제 저장된 dataUrl을 읽거나, ref의 정본 파일을 SHA와 대조해 제공한다. 누락·해시 불일치 파일은 404와 자산 영수증으로 남기며 임의 그림으로 대체하지 않는다. `asset-receipts.json`과 `page-errors.json`은 관측 브라우저를 닫을 때 저장한다. 시작 상태·돈·HP·진행 스위치를 주입하거나 순간 이동하지 않는다. 관측 장애는 같은 저장본의 다른 `name` 폴더에 재관측하고 최초 결과를 보존한다.
+
+각 평가자는 `PLAN.md`, `assessment.json`, `REPORT.md`, 런타임 SUMMARY·PNG와 실제 검수한 그림의 SHA를 남긴다. 모든 요구를 pass/fail/unverified/environment-blocked로 개별 판정한다. 정본 전체 SHA 실패는 부분 필드 일치나 플레이 성공으로 상쇄하지 않는다. 기존 캠페인 재사용·새 저작·대사로만 흉내 낸 시스템을 구별한다. 추가 도구 제안에는 관측된 실패와 기존 도구 확인, 입력/출력, 거절 조건, 실제 플레이 수락 기준을 붙인다. 장르당 한 과제로 일반 성공률을 주장하지 않는다.
+
+**장르 게임의 필수 시각 판정 (2026-10-08 사용자 지적 후 보강):** 제작한 모든 맵을 최종 정본/맵 SHA로 목록화하고 전체 지형 그림과 중요한 실제 플레이 상태를 직접 읽는다. 전체도에 이벤트·배우·UI가 없으면 그 한계를 표시한다. 원래 빈 맵도 목록에 남기되 새 제작 장소의 실패 수를 늘리는 데 쓰지 않는다. `show_map_region`은 성공 반환 영역을 마지막 변경 해시별로 합산하며 같은 일부 영역의 반복 조회를 전체 검수로 세지 않는다. 각 PNG 해시·원 시도·관측 장면을 독립 검수 영수증에 기록한다.
+
+장소 식별·형상, 타일 조립·레이어, 출입구·동선, 상호작용 대상, 배우·UI·상태 일치를 각각 통과/실패/미검증으로 판정한다. 동굴은 암반 경계·이어진 통로·입구를 실제 그림으로 검사한다. 이름·판석 바닥·장식만으로 동굴 통과를 주지 않는다. 문 그림과 전이 좌표, 밭 칸과 작물 단계, 실제 자원과 HUD도 대조한다. 필수 축 하나라도 실패면 시각 불합격이며 전체 게임 품질 합격을 주지 않는다. 이미 입증된 기능 성공은 별도 유지한다. 그림 생성/전달·조수 완료·빈칸 수치만으로 통과시키지 않는다. 미검증 동적 상태를 정적 그림으로 합격 처리하거나 빈칸을 기물로 메워 숫자만 낮추지 않는다. 시대·실내 여부가 지정되지 않은 요구에는 검수자가 조건을 새로 만들지 않는다.
+
+[여덟 장르 시각 검수 정정](../../verify-shots/assistant-eight-genres-20261008/visual-qa/REPORT.md)은 25개 정본 전체도와 15개 실제 플레이 PNG를 직접 확인한 축별 판정과 원래 실패 이력을 보존한다. 이는 사용자 지적 후 추가 검수이며 최초 사전 기준으로 소급하지 않는다. 제품의 자동 시각 판정기를 구현한 것으로 설명하지 않는다.
+
 ### 집 문·마을 출구 수행 (2026-10-07)
 
 `npm run harness -- assistant-capability portal-controls --out <새 폴더>`는 두 연결 도구의 도달 불가 거절, 실패한 쌍의 원자성, 문앞 고정과 안정 ID 재실행을 검사한다. 실모델 결과와 분리한다.

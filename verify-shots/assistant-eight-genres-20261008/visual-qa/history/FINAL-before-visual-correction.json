@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-08T04:45:29.698031+00:00",
+  "status": "Experiment, all eight evaluator reports, supervisor audit and comparison complete",
+  "outerEvaluators": {
+    "count": 8,
+    "model": "gpt-6.1-sol",
+    "effort": "high"
+  },
+  "internalCreatorModel": "gemini-3.8-flash",
+  "reportLocalLinksChecked": 39,
+  "preservedEvidenceHashesChecked": 19,
+  "canonicalReadbacks": 8,
+  "editorPortsClosed": [
+    19401,
+    19402,
+    19403,
+    19404,
+    19405,
+    19406,
+    19407,
+    19408
+  ],
+  "viewerURL": "http://100.73.251.77:8811/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/internal-ai-game-audit.view.html",
+  "reportSha256": "f186064b4e9b0e4661c97c9efe5388449479c9c952dd56c5a14d52cd5cb58408",
+  "comparisonDataSha256": "bcdeb53ea9cdb90fc142cc17c1a11b82891c4434c3eed58821c6eec25ec31cf9",
+  "fragmentSha256": "c43c7a4d416d010ce207f58172e2b81086ab45ae2cb689d3ad25c316ada9cde3",
+  "viewSha256": "e13cceb225671fbe7ccda6afe9c6522e903b43e3724c6c24ef6f7528ac6359a3",
+  "viewerReview": "All eight selections, eleven actual images, no page errors, outer overflow absent at1024/736/360/320; narrow tables scroll horizontally. Supervisor reviewed desktop and narrow PNGs.",
+  "gatesVitestFullTypecheckExecuted": false,
+  "productFixesImplemented": false,
+  "limitations": "N=1 representative task per genre; unverified requirements remain unverified; historical failures and repairs are separate."
+}

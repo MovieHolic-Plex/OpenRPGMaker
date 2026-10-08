@@ -1,0 +1,110 @@
+[
+  {
+    "id": "monster-ending",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/attempt-3/runtime-final/actual-ending-loaded.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/monster-ending.png",
+    "sha256": "e2e2afbd4b23f2dabb6419eac6ae4dcbde9b5f7fbfa08fbfa5f3fa4b38051af7",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/monster-ending.png",
+    "displayImageSha256": "650586236567c6d8eb34f1a7a8545b17c98f83ca2f90a26787e6ed165f5e6fc8",
+    "displayBytes": 2881
+  },
+  {
+    "id": "story-count",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/attempt-2/runtime-repair-1/042-pot-first-count-notice.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/story-count.png",
+    "sha256": "9cb1d2a4e6a38fc5b8532deacfb32242e6d4a5edd9ba2daaf7d902364070e4a5",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/story-count.png",
+    "displayImageSha256": "239c6baf68bddeb36fdfb7b8ac6fb27a01076e50f577a575c28c0cfd0e1bdca5",
+    "displayBytes": 23260
+  },
+  {
+    "id": "jrpg-magic",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/attempt-1/runtime-reobserve-2/observations/167.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/jrpg-magic.png",
+    "sha256": "d44f4e9c780d4eed8117684f6818c0b4a211c65314a47820db5b6b4821d59098",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/jrpg-magic.png",
+    "displayImageSha256": "1b799b214ac2e87f5ac5ff087a634399c14f374b6a4ec6bc3af4abfd850fc0a8",
+    "displayBytes": 13872
+  },
+  {
+    "id": "jrpg-cave",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/attempt-1/runtime-reobserve-2/observations/136.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/jrpg-cave.png",
+    "sha256": "084495093b0483d9a0aa7ecd27d5fc008849de31b2f12c354ab57e27536aba75",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/jrpg-cave.png",
+    "displayImageSha256": "56bf9fad93a2d5024836a5ef77eb22f420f6fda2a22aa7685063d7f7b5f9acc1",
+    "displayBytes": 10499
+  },
+  {
+    "id": "gallery-health",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/runtime-reobserved/petals-one-default-hud.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/gallery-health.png",
+    "sha256": "7c858e910dfdf13b50b55710f847c054d50c90795755361146144ec4253792bf",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/gallery-health.png",
+    "displayImageSha256": "cebed8f7e1ddff32cb88f2099ab4d6bed5ba89fcc4bd7c4011763a806ca34c15",
+    "displayBytes": 6772
+  },
+  {
+    "id": "gallery-password",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/runtime-content-first/answer-digit-options.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/gallery-password.png",
+    "sha256": "3faf9394a40f3685631ac1b6efe811c5e42e92e5a9ed7be316ace37b785e5c2c",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/gallery-password.png",
+    "displayImageSha256": "f7108c2a71adb5386079b59afbf26536a6969a36af44fbdcd7a0c17420baf6e9",
+    "displayBytes": 7429
+  },
+  {
+    "id": "school-hiding",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/school-hiding.png",
+    "sha256": "095cb46ba97f780dc06fe4d528d0f35cb4a6c344cf559fd9fe52ccd62b43d53d",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/school-hiding.png",
+    "displayImageSha256": "7a48cee703ee3cc4cd66bf2e954ae0c66b74d9d0208befb298cfba86245175fa",
+    "displayBytes": 7234
+  },
+  {
+    "id": "school-retry-newgame",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/055-new-game-capture-terminal.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/school-retry-newgame.png",
+    "sha256": "9185433830b92aa84d5795ada737e6a7d682282fdb0cb0db15229158f1be04a8",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/school-retry-newgame.png",
+    "displayImageSha256": "5d3290290ecb0176a1f2470ffd5c23a6339f11f8dff14baeac886f606df2af88",
+    "displayBytes": 6608
+  },
+  {
+    "id": "farm-sale-first",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/attempt-2/runtime-repair-1b/sell-nonexistent-pumpkin.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/farm-sale-first.png",
+    "sha256": "d54c3fe5540aed21de9fe2bfcc16df0d6854bf4a9b663e1fafbb482cde95f916",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/farm-sale-first.png",
+    "displayImageSha256": "ea4dba005c31b9fd49689f3d1148da9133536a3ab19c2265ccf0948c9ad84f6f",
+    "displayBytes": 9324
+  },
+  {
+    "id": "partner-form",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/partner-form.png",
+    "sha256": "1acc645e190c49dc69fa820803359603050fe1a2e6c8c4335ffb8e498bf42120",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/partner-form.png",
+    "displayImageSha256": "ccf3dec88c9d2df6249d72db3a4d7a101c9d23abccc474652cceb057f4ca0375",
+    "displayBytes": 19040
+  },
+  {
+    "id": "action-gate-first",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/attempt-1/runtime-adversarial/040-gate-open-state.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/action-gate-first.png",
+    "sha256": "87dcdd7b57f64de30ea85354a28d8f5b5f563ab1e1d6b5aacb16c7ba3719623e",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/action-gate-first.png",
+    "displayImageSha256": "5a0b05ce5fa55836100a367391c82085dc87c11fc05ba23b655a33c00e8ab6a2",
+    "displayBytes": 18683
+  },
+  {
+    "id": "school-retry-continued",
+    "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/033-flee-classroom-after-key.png",
+    "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/images/school-retry-continued.png",
+    "sha256": "fef23615dc8b36e802f6c1b3ca2270d97baf8786dae41ee1f2522dfd9babb30c",
+    "displayImage": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/school-retry-continued.png",
+    "displayImageSha256": "23fc4f01d41fc2afac6eb146cc4a3a9cd212d7ea0a9217b807e8f75e9aee84df",
+    "displayBytes": 5662
+  }
+]

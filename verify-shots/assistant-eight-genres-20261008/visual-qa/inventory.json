@@ -1,0 +1,2037 @@
+{
+  "at": "2026-10-08T05:31:39.313Z",
+  "readOnly": true,
+  "cases": [
+    {
+      "caseId": "monster-collect",
+      "projectId": "6474fc54-7a7b-4ae3-aadb-bcf6e2cf6a4e",
+      "revision": 33,
+      "canonicalExpandedSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/monster-collect/canonical-expanded.json",
+      "prompt": "작은 몬스터 수집 RPG를 실제 플레이 가능한 게임으로 만들어줘. 시작 마을에서 세 동료 중 하나를 고르고, 들판에서 야생 몬스터를 만나 실제로 포획하며, 상점에서 포획구를 사고팔 수 있어야 해. 첫 체육관 관장을 이겨 배지를 얻으면 축하 엔딩에 도달하게 해줘. 동료 중복 지급과 배지 중복 보상을 막고, 돈이 부족하면 구매를 거절해줘. 기존 공용 캠페인을 재사용했다면 어떤 부분이 재사용인지 밝혀줘. 설명이나 기획으로 끝내지 말고 실제 맵·이벤트·DB·플레이 동작을 만들고 저장해줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_town",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "events": []
+        },
+        {
+          "mapId": "map_town",
+          "name": "시작 마을",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "644fcd400a2cf4b61603ac389b732570bf975cf91958a5cd0dba60c682b5d2f1",
+          "events": [
+            {
+              "id": "ev_gate_826ba572-f44a-42b8-8bef-54dfbd29fe2d",
+              "x": 10,
+              "y": 0,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_b60e0ab8-7c57-4d32-ba86-6d44c741dcb8",
+              "x": 4,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_professor",
+              "name": "오박사",
+              "x": 10,
+              "y": 6,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_field",
+          "name": "별빛 들판",
+          "width": 20,
+          "height": 20,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "addb79113d85b3212d08f053cd1a67485bdd4b1ca93f6730b9aee121d0350511",
+          "events": [
+            {
+              "id": "ev_gate_d4e067f7-aa9e-4503-ad8c-b560828a22fa",
+              "x": 10,
+              "y": 19,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_14ec65a5-419f-4d1f-ae69-b07200c52120",
+              "x": 10,
+              "y": 0,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_shop",
+          "name": "마을 상점",
+          "width": 14,
+          "height": 12,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "8490d6e5e25f72c98b4182213dfab22d2875b06266c17698f974cff3744aeebd",
+          "events": [
+            {
+              "id": "ev_gate_2b023827-9b84-40d9-8545-bb21e5578a90",
+              "x": 7,
+              "y": 11,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_merchant",
+              "name": "상점 주인",
+              "x": 7,
+              "y": 5,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 79
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_gym",
+          "name": "풀잎 체육관",
+          "width": 16,
+          "height": 14,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "51fab7b3e6d2619c2b101a79ea71f705f69c5fe0a584a08592b4d33d627f8005",
+          "events": [
+            {
+              "id": "ev_gate_311e971d-e5ba-4257-87c0-92884d81b15a",
+              "x": 8,
+              "y": 13,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gym_leader",
+              "name": "체육관 관장 유림",
+              "x": 8,
+              "y": 5,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_actor1"
+                  },
+                  "direction": "down",
+                  "pattern": 34
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_actor1"
+                  },
+                  "direction": "down",
+                  "pattern": 34
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "story-cutscene",
+      "projectId": "ecf96d17-12a0-4419-ac9f-f07ddc58acde",
+      "revision": 24,
+      "canonicalExpandedSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/story-cutscene/canonical-expanded.json",
+      "prompt": "전투 없는 짧은 회상 스토리 게임을 만들어줘. 주인공이 오래된 집과 정원에서 세 기억 물건을 조사하고 친구와 대화하며 과거를 알아가는 이야기야. 기억을 하나도 찾기 전에는 마지막 문이 열리지 않고, 세 기억을 전부 찾은 뒤 친구에게 '떠난다' 또는 '남는다'를 선택하면 서로 다른 대사와 두 엔딩으로 끝나게 해줘. 재조사로 기억 수가 늘어나면 안 되고, 선택 취소는 아무 결과 없이 대화만 종료돼야 해. 인물 이동·페이드·카메라가 있는 짧은 컷신도 넣어줘. 실제 맵과 대화·조건·엔딩을 만들고 저장해줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_blank_start",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "width": 40,
+          "height": 30,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "14ccbb747741409d8c730ed16a11b42010b47dad344cd2df5ff01f3a25f015f0",
+          "events": [
+            {
+              "id": "ev_gate_c9d1ec10-7162-4389-8c3c-9e56f3612d33",
+              "x": 19,
+              "y": 10,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_intro_cutscene",
+              "x": 1,
+              "y": 13,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_examine_1_3",
+              "name": "기억의 화분",
+              "x": 3,
+              "y": 10,
+              "graphics": [
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_garden_gate",
+              "name": "정원 깊은 곳의 문",
+              "x": 32,
+              "y": 20,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people1"
+                  },
+                  "direction": "down",
+                  "pattern": 25
+                },
+                {}
+              ]
+            },
+            {
+              "id": "ev_friend_npc",
+              "name": "친구",
+              "x": 36,
+              "y": 20,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people1"
+                  },
+                  "direction": "down",
+                  "pattern": 34
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people1"
+                  },
+                  "direction": "down",
+                  "pattern": 34
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_house_interior",
+          "name": "오래된 집 실내",
+          "width": 13,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "b8a0c9cb94f74c02fae3215f50216f2ef4acc0412aa256cb03a0f4ba8b328c09",
+          "events": [
+            {
+              "id": "ev_gate_e6a9cf18-a26d-4e2b-8cdb-5ba777d1a690",
+              "x": 6,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_examine_1",
+              "name": "기억의 일기장",
+              "x": 2,
+              "y": 5,
+              "graphics": [
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_examine_1_2",
+              "name": "기억의 오르골",
+              "x": 10,
+              "y": 4,
+              "graphics": [
+                {},
+                {}
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": []
+        },
+        {
+          "id": "atlas_biome_interior",
+          "name": "실내 · 손 도트 v5 (아틀라스)",
+          "referenceOwner": "atlas_biome_interior",
+          "categories": [
+            {
+              "id": "hand-interior-v5",
+              "name": "손 도트 실내 (v5)",
+              "documentCount": 55,
+              "imageCount": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "projectId": "9f909e45-63e1-48de-8437-fb5f7b784a0d",
+      "revision": 62,
+      "canonicalExpandedSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/adventure-jrpg/canonical-expanded.json",
+      "prompt": "플레이 가능한 작은 턴제 JRPG를 만들어줘. 시작 마을에서 검사와 마법사 두 명이 파티를 이루고, 촌장의 부탁으로 동굴에 들어가 잡몹과 보스를 싸워 약초를 가져오는 이야기야. 마을에 실제 장비·회복약 상점과 유료 여관을 두고, 동굴에는 무작위 전투와 보스가 있어야 해. 보스를 이기기 전 약초 보상을 못 받고, 마을로 돌아와 보고하면 보상은 딱 한 번 지급되고 엔딩이 떠야 해. 상점 돈 부족·여관 거절·전투 패배도 정상 처리해줘. 검사와 마법사의 역할이 실제 능력치·기술에서 달라야 하고, 맵 사이 문이 막히지 않게 해줘. 실제 맵·이벤트·전투 데이터와 저장까지 만들어줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_beodeul_small_village",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "events": []
+        },
+        {
+          "mapId": "map_beodeul_small_village",
+          "name": "버들꽃 마을",
+          "width": 40,
+          "height": 30,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "ea0d50613357f47888c85e29fe657b49ff1d99009dc79a16b69bafd7eab3ebbe",
+          "events": [
+            {
+              "id": "ev_gate_40637cdb-7608-4560-81af-79150f47205b",
+              "x": 6,
+              "y": 10,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_331f95a4-b7d2-4b83-ad0c-e936efa37ea7",
+              "x": 19,
+              "y": 11,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_fd9bb2d5-be73-43b7-8eee-4c782bfca03c",
+              "x": 39,
+              "y": 14,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_village_chief",
+              "name": "촌장 발렌",
+              "x": 18,
+              "y": 16,
+              "graphics": [
+                {
+                  "pattern": 82,
+                  "direction": "down",
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  }
+                },
+                {
+                  "pattern": 82,
+                  "direction": "down",
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  }
+                },
+                {
+                  "pattern": 82,
+                  "direction": "down",
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  }
+                },
+                {
+                  "pattern": 82,
+                  "direction": "down",
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_village_shop",
+          "name": "버들꽃 상점",
+          "width": 10,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "8a95baa46f14487e68182fe1ef114628be9a6d0e61053c268a19119c7ee53cb4",
+          "events": [
+            {
+              "id": "ev_gate_78f5d442-c625-4163-afcb-6e4ef9f9f412",
+              "x": 4,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_shopkeeper",
+              "name": "상인 도란",
+              "x": 5,
+              "y": 3,
+              "graphics": [
+                {
+                  "pattern": 25,
+                  "sprite": {
+                    "type": "uploaded",
+                    "id": "shared_charset_actor_1c7bfb452daa8709d8feb1e9"
+                  },
+                  "direction": "down"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_village_inn",
+          "name": "버들꽃 여관",
+          "width": 12,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "d810e1434a484c5f08a70dda12a7ae76897cca89b46e4cd357498b546f4e3057",
+          "events": [
+            {
+              "id": "ev_gate_0ebcabb8-c12f-4b72-bfb0-c133ebf0d814",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_innkeeper",
+              "name": "여관주인 바란",
+              "x": 3,
+              "y": 3,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "pattern": 79,
+                  "direction": "down"
+                }
+              ]
+            },
+            {
+              "id": "ev_save_crystal",
+              "name": "세이브 수정",
+              "x": 1,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_cave_dungeon",
+          "name": "이끼 서린 동굴",
+          "width": 24,
+          "height": 24,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "40479e5b1a30d5caa7f12b36d016267d964a30393fb6b40239a787a63bb00e6f",
+          "events": [
+            {
+              "id": "ev_gate_de19fd16-951f-490c-94e0-054bc6583f84",
+              "x": 2,
+              "y": 13,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_boss_golem",
+              "name": "동굴 수호자",
+              "x": 16,
+              "y": 5,
+              "graphics": [
+                {
+                  "direction": "down",
+                  "sprite": {
+                    "id": "tex_easyrpg_charset_monster1",
+                    "type": "bundled"
+                  },
+                  "pattern": 82
+                },
+                {
+                  "sprite": {
+                    "id": "tex_easyrpg_charset_monster1",
+                    "type": "bundled"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                }
+              ]
+            },
+            {
+              "id": "ev_cave_herb",
+              "name": "동굴 영약초 제단",
+              "x": 16,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {
+                  "transparent": true
+                },
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "chest_dungeon_potion",
+              "x": 4,
+              "y": 12,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_object1"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_object1"
+                  },
+                  "direction": "up",
+                  "pattern": 58
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": []
+        },
+        {
+          "id": "atlas_biome_interior",
+          "name": "실내 · 손 도트 v5 (아틀라스)",
+          "referenceOwner": "atlas_biome_interior",
+          "categories": [
+            {
+              "id": "hand-interior-v5",
+              "name": "손 도트 실내 (v5)",
+              "documentCount": 55,
+              "imageCount": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "horror-gallery",
+      "projectId": "2fad1b84-fa6d-44e9-8017-7e9cb81d3381",
+      "revision": 28,
+      "canonicalExpandedSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/horror-gallery/canonical-expanded.json",
+      "prompt": "세 전시실을 탐험하는 짧은 갤러리 호러 게임을 만들어줘. 시작에서 푸른 꽃을 얻으며 꽃잎 5장이 실제 체력이고, 위험한 그림을 조사하면 1장 줄고 꽃병에서 회복돼야 해. 꽃잎 0장이면 게임오버나 실패 엔딩이 실제로 나와야 해. 세 방의 단서에서 네 자리 금고 암호를 알아내 직접 입력해 열쇠를 얻고, 잠긴 출구로 탈출하면 성공 엔딩이 나오게 해줘. 열쇠나 체력이 단순 대사만으로 표현되면 안 돼. 암호 선택지에 정답을 노출하지 말고, 잘못 입력·취소·재조사·맵 재진입이 정상 동작해야 해. 실제 벽과 가구가 있는 전시실과 저장 가능한 게임을 만들어줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_gallery_hall",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "events": []
+        },
+        {
+          "mapId": "map_gallery_hall",
+          "name": "제1전시실 (로비)",
+          "width": 11,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "fa463f710a5e59e787114dd3a6aa25c8c5799e35dc77b3016b4c299110653888",
+          "events": [
+            {
+              "id": "ev_gate_d49700d4-0155-4863-b0c1-ef44c41bb360",
+              "x": 9,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_intro",
+              "x": 5,
+              "y": 5,
+              "graphics": [
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_vase",
+              "x": 8,
+              "y": 4,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_clue_1",
+              "x": 2,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_door",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_gallery_corridor",
+          "name": "제2전시실 (회랑)",
+          "width": 11,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "10686a2696163ebf664d8fdd4d6d1d63907ea60df4a0fb177901e5c561e450f8",
+          "events": [
+            {
+              "id": "ev_gate_dd55b149-ad81-4a8a-80b1-7a115d0b7dba",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_7d3d5717-0132-47bd-8390-f5d3915d78a0",
+              "x": 9,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_clue_2",
+              "x": 2,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_danger_1",
+              "x": 5,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_clue_3",
+              "x": 8,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_gallery_vault",
+          "name": "제3전시실 (금고실)",
+          "width": 11,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "25157f55181c07eed09aeab1f1b0180e0f3a74eceadd4778294b753f4db05315",
+          "events": [
+            {
+              "id": "ev_gate_5bd57e38-76a9-414e-aabb-c230161ce8f5",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_clue_4",
+              "x": 2,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_danger_2",
+              "x": 8,
+              "y": 2,
+              "graphics": [
+                {}
+              ]
+            },
+            {
+              "id": "ev_safe",
+              "x": 5,
+              "y": 3,
+              "graphics": [
+                {},
+                {}
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        },
+        {
+          "id": "atlas_biome_interior",
+          "name": "실내 · 손 도트 v5 (아틀라스)",
+          "referenceOwner": "atlas_biome_interior",
+          "categories": [
+            {
+              "id": "hand-interior-v5",
+              "name": "손 도트 실내 (v5)",
+              "documentCount": 55,
+              "imageCount": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "school-horror",
+      "projectId": "d22b90db-9b88-435b-8e06-42c2333b82fb",
+      "revision": 19,
+      "canonicalExpandedSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/school-horror/canonical-expanded.json",
+      "prompt": "교실·복도·창고 세 공간에서 탈출하는 작은 학교 추격 호러를 실제 게임으로 만들어줘. 교실에서 열쇠를 얻으면 추격자가 깨어나고, 문을 지나 다른 방으로 가도 실제로 쫓아와야 해. 창고 옷장에 숨으면 추격자가 플레이어를 놓치고 수색하다 포기해야 해. 잡히면 체크포인트에서 다시 시도할 수 있고, 열쇠로 잠긴 정문을 열어 탈출하면 성공 엔딩이 나와야 해. 숨는 행동을 대사나 추격 스위치를 끄는 것으로 흉내 내면 안 돼. 열쇠 중복·잠긴 문·숨기 취소·재입장도 정상 처리하고, 실제 학교 실내와 통행 가능한 문을 만들어 저장해줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_classroom",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "events": []
+        },
+        {
+          "mapId": "map_classroom",
+          "name": "어두운 교실",
+          "width": 12,
+          "height": 9,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "e2166872166179dd7a5d3aa7f2f6f711f4c4cf1d30cda23aa46f4c84e4fbf237",
+          "events": [
+            {
+              "id": "ev_gate_169e08bc-87a7-48d8-af53-c1351ddb255f",
+              "name": "복도로 나가는 문",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_key_table",
+              "name": "교탁 위 열쇠",
+              "x": 7,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_chaser_186fb9d0-b787-423d-bf35-7dcc5299d301",
+              "x": 3,
+              "y": 3,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_monster1"
+                  },
+                  "direction": "down",
+                  "pattern": 34
+                }
+              ]
+            },
+            {
+              "id": "map_classroom_checkpoint_auto",
+              "x": 4,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_hallway",
+          "name": "적막한 복도",
+          "width": 20,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "7fcf3899c2017cfae71b02ed347bd5ec2fc77f2751c5e760a5ac55f2e610c5d9",
+          "events": [
+            {
+              "id": "ev_gate_dfad6f4f-f18c-45d8-8d98-aa848693d628",
+              "name": "교실로 들어가는 문",
+              "x": 3,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_dc6bad8d-cf52-408f-abda-f93c54a3b4b8",
+              "x": 17,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_front_gate",
+              "name": "학교 정문",
+              "x": 9,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_storage",
+          "name": "지하 창고",
+          "width": 12,
+          "height": 8,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "c712e93f1094ba9bb8bd032da7095fd5a4cd4990e8bc9c00afe08ab97d5b8651",
+          "events": [
+            {
+              "id": "ev_gate_326519a2-9ad7-4c16-ac1c-28d7680b187b",
+              "x": 5,
+              "y": 7,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_hiding_3b3b8630-85b6-43ab-88c6-a1ba765b08ed",
+              "x": 1,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        },
+        {
+          "id": "atlas_biome_interior",
+          "name": "실내 · 손 도트 v5 (아틀라스)",
+          "referenceOwner": "atlas_biome_interior",
+          "categories": [
+            {
+              "id": "hand-interior-v5",
+              "name": "손 도트 실내 (v5)",
+              "documentCount": 55,
+              "imageCount": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "farm-life",
+      "projectId": "c30ce239-8002-4b9d-bf99-0e0cd6a9f005",
+      "revision": 53,
+      "canonicalExpandedSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/farm-life/canonical-expanded.json",
+      "prompt": "집·밭·작은 가게가 있는 실제 농장 생활 게임을 만들어줘. 주인공은 100G와 씨앗을 받고 시작하며, 밭 6칸에 씨앗을 심고 물을 주고 잠을 자서 하루를 넘기면 작물이 자라야 해. 두 종류 작물은 성장일과 판매가가 달라야 하고, 수확물을 가게에서 실제로 판매해 돈을 벌어야 해. 첫 출하 5개를 달성하면 축하 장면으로 첫 목표가 끝나게 해줘. 물 안 준 날과 비 오는 날을 실제 성장 규칙으로 처리하고, 씨앗·돈 부족·수확 전 조사·중복 수확을 막아줘. 시간·기력·수면·재배 상태가 저장 후 이어하기에서도 유지돼야 해. 실제 데이터와 동작을 만들고 저장해줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_blank_start",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "햇살 농장",
+          "width": 25,
+          "height": 25,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "9d70c979ecb0ff50ad630d5f2c794bf871726062725ca8914903b16d17394aa7",
+          "events": [
+            {
+              "id": "ev_gate_1ea5815a-d97c-4bba-9005-51828b5926a4",
+              "x": 4,
+              "y": 8,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_gate_835547af-a5e8-4d15-ba41-63b165e0d00e",
+              "x": 17,
+              "y": 10,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_plot_1",
+              "name": "밭 1",
+              "x": 5,
+              "y": 12,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {
+                  "pattern": 25,
+                  "direction": "down",
+                  "sprite": {
+                    "id": "shared_charset_actor_1bf25a9094657ea7a70e71ea",
+                    "type": "uploaded"
+                  }
+                },
+                {
+                  "direction": "down",
+                  "pattern": 82,
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_monster4"
+                  }
+                },
+                {
+                  "pattern": 25,
+                  "direction": "down",
+                  "sprite": {
+                    "id": "shared_charset_actor_145d212165d554acfe38ece0",
+                    "type": "uploaded"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "ev_plot_2",
+              "name": "밭1",
+              "x": 6,
+              "y": 12,
+              "graphics": [
+                {},
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_plot_3",
+              "name": "밭1",
+              "x": 7,
+              "y": 12,
+              "graphics": [
+                {},
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_plot_4",
+              "name": "밭1",
+              "x": 5,
+              "y": 13,
+              "graphics": [
+                {},
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_plot_5",
+              "name": "밭1",
+              "x": 6,
+              "y": 13,
+              "graphics": [
+                {},
+                {},
+                {}
+              ]
+            },
+            {
+              "id": "ev_plot_6",
+              "name": "밭1",
+              "x": 7,
+              "y": 13,
+              "graphics": [
+                {},
+                {},
+                {}
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_farm_house",
+          "name": "농가 실내",
+          "width": 12,
+          "height": 7,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "7a262eb20e7031b29005e907a796d5bd5389e5c74792cb3688f79680316c4fd7",
+          "events": [
+            {
+              "id": "ev_gate_fea8c0c5-8a17-4bf7-87dd-859f5861a91d",
+              "x": 5,
+              "y": 6,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_bed",
+              "name": "침대",
+              "x": 2,
+              "y": 3,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mapId": "map_farm_shop",
+          "name": "마을 상점 실내",
+          "width": 12,
+          "height": 7,
+          "tilesetId": "atlas_biome_interior",
+          "mapSha256": "f88506b86a3922c819ab01bbdd4a6f1821482cb2937232deac1bc6ab35202b8c",
+          "events": [
+            {
+              "id": "ev_gate_396c0929-5e65-4c8d-b6b3-aabc4fb0c14c",
+              "x": 5,
+              "y": 6,
+              "graphics": [
+                {
+                  "transparent": true
+                }
+              ]
+            },
+            {
+              "id": "ev_shopkeeper",
+              "name": "상인 도란",
+              "x": 4,
+              "y": 3,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "uploaded",
+                    "id": "shared_charset_actor_1c7bfb452daa8709d8feb1e9"
+                  },
+                  "direction": "down",
+                  "pattern": 25
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        },
+        {
+          "id": "atlas_biome_interior",
+          "name": "실내 · 손 도트 v5 (아틀라스)",
+          "referenceOwner": "atlas_biome_interior",
+          "categories": [
+            {
+              "id": "hand-interior-v5",
+              "name": "손 도트 실내 (v5)",
+              "documentCount": 55,
+              "imageCount": 34
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "partner-raise",
+      "projectId": "9734eab9-6580-40ab-b18c-837704a6db8f",
+      "revision": 34,
+      "canonicalExpandedSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/partner-raise/canonical-expanded.json",
+      "prompt": "작은 파트너 몬스터 육성 게임을 만들어줘. 연구소에서 파트너 한 마리를 딱 한 번 받고, 마당에서 먹이를 주거나 장난감으로 놀아 실제 친밀도가 오르며, 훈련장에서 연습 전투로 실제 경험치와 레벨을 얻어야 해. 특정 레벨과 친밀도 조건을 만족하면 같은 파트너가 두 번째 모습으로 진화하고 축하 엔딩이 나와야 해. 먹이와 장난감은 소모품이고 가게에서 실제 돈으로 다시 살 수 있어야 해. 아이템이 없으면 돌보기를 거절하고, 파트너 중복 지급·보상 반복을 막아줘. 진화 전후 개체와 성장 상태가 저장하고 이어하기에서도 유지되는 실제 게임을 만들어줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_blank_start",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "몬스터 육성 연구 마을",
+          "width": 24,
+          "height": 18,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "7c6ced4d6d18018afa0cde02ecf99ee9bb891fe92a8eef4ed556d08ff769a73f",
+          "events": [
+            {
+              "id": "ev_professor",
+              "name": "몬스터 박사",
+              "x": 3,
+              "y": 3,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people5"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                }
+              ]
+            },
+            {
+              "id": "ev_shopkeeper",
+              "name": "돌봄 용품 상인",
+              "x": 19,
+              "y": 4,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people2"
+                  },
+                  "direction": "down",
+                  "pattern": 25
+                }
+              ]
+            },
+            {
+              "id": "ev_trainer",
+              "name": "훈련장 교관",
+              "x": 19,
+              "y": 12,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people3"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people3"
+                  },
+                  "direction": "down",
+                  "pattern": 82
+                }
+              ]
+            },
+            {
+              "id": "ev_partner_yard",
+              "x": 10,
+              "y": 10,
+              "graphics": [
+                {
+                  "sprite": {
+                    "id": "tex_easyrpg_charset_monster1",
+                    "type": "bundled"
+                  },
+                  "pattern": 25,
+                  "direction": "down",
+                  "scale": 1
+                },
+                {
+                  "direction": "down",
+                  "scale": 1,
+                  "pattern": 28,
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_monster2"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "action-rpg",
+      "projectId": "cb035a5b-c212-4429-8568-1fa16716efe4",
+      "revision": 31,
+      "canonicalExpandedSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/action-rpg/canonical-expanded.json",
+      "prompt": "작은 탑뷰 2D 액션 RPG를 실제 플레이 가능한 게임으로 만들어줘. 시작 안전지대에 조작 안내가 있고, 전투 구역에는 근접 적과 투사체 적이 있어야 해. 플레이어의 실제 필드 공격으로 적 체력이 줄고, 적 공격으로 플레이어가 피해를 받으며, 회피와 가드가 실제 피해나 판정을 바꾸고 기력을 써야 해. 적 두 무리를 처치하면 보스 구역이 열리고, 보스를 이기면 보물은 한 번만 받을 수 있고 엔딩으로 이어져야 해. 패배·재시도·보상 중복·잠긴 문도 정상 처리해줘. 턴제 전투로 대체하거나 대사로 전투를 흉내 내지 말고, 실제 액션 런타임에서 확인하고 저장해줘.",
+      "aiConversationCount": 0,
+      "startMapId": "map_blank_start",
+      "maps": [
+        {
+          "mapId": "map_blank_start",
+          "name": "수호자의 시련 회랑",
+          "width": 20,
+          "height": 15,
+          "tilesetId": "beodeul_city",
+          "mapSha256": "09dfa35f888648b145f2c7b56a75f6c1ef3e88482e04aa022d4bd008b70828ce",
+          "events": [
+            {
+              "id": "ev_trainer_guard",
+              "name": "시련 안내 기사",
+              "x": 8,
+              "y": 12,
+              "graphics": [
+                {
+                  "pattern": 82,
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_people3"
+                  },
+                  "direction": "down"
+                }
+              ]
+            },
+            {
+              "id": "ev_boss_door_left",
+              "name": "보스 결계 문 좌측",
+              "x": 9,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {}
+              ]
+            },
+            {
+              "id": "ev_boss_door_right",
+              "name": "보스 결계 문 우측",
+              "x": 10,
+              "y": 4,
+              "graphics": [
+                {
+                  "transparent": true
+                },
+                {}
+              ]
+            },
+            {
+              "id": "ev_boss_reward_chest",
+              "x": 10,
+              "y": 1,
+              "graphics": [
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_object1"
+                  },
+                  "direction": "up",
+                  "pattern": 58
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_object1"
+                  },
+                  "direction": "up",
+                  "pattern": 58
+                },
+                {
+                  "sprite": {
+                    "type": "bundled",
+                    "id": "tex_easyrpg_charset_object1"
+                  },
+                  "direction": "up",
+                  "pattern": 58
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "beodeul_city",
+          "name": "버들항 v6 · 로마풍 항구 도시 (손 도트)",
+          "referenceOwner": "beodeul_city",
+          "categories": [
+            {
+              "id": "beodeul-city",
+              "name": "버들항 · 도시 한 장 조립(원본은 예시)",
+              "documentCount": 5,
+              "imageCount": 6
+            },
+            {
+              "id": "beodeul-city-blocks",
+              "name": "버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다",
+              "documentCount": 3,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-city-kits",
+              "name": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리)",
+              "documentCount": 10,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-city-water",
+              "name": "버들항 · 자동타일과 강·폭포·다리·항구",
+              "documentCount": 2,
+              "imageCount": 13
+            },
+            {
+              "id": "beodeul-city-manor-outskirts",
+              "name": "버들항 · 귀족 저택과 성 밖 목조 마을",
+              "documentCount": 2,
+              "imageCount": 4
+            },
+            {
+              "id": "beodeul-city-pieces",
+              "name": "버들항 · 건물·소품·나무 조각 사전",
+              "documentCount": 5,
+              "imageCount": 5
+            },
+            {
+              "id": "beodeul-city-qa",
+              "name": "버들항 · QA 결함 교훈(오류 그림)",
+              "documentCount": 1,
+              "imageCount": 9
+            },
+            {
+              "id": "beodeul-picks-village",
+              "name": "버들항 장소 · 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 15
+            },
+            {
+              "id": "beodeul-picks-climate-village",
+              "name": "버들항 장소 · 기후 마을(고른 조각)",
+              "documentCount": 6,
+              "imageCount": 14
+            },
+            {
+              "id": "beodeul-picks-dungeon",
+              "name": "버들항 장소 · 던전(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-special",
+              "name": "버들항 장소 · 특수 던전·랜드마크(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-picks-field",
+              "name": "버들항 장소 · 필드(고른 조각)",
+              "documentCount": 5,
+              "imageCount": 8
+            },
+            {
+              "id": "beodeul-ground-dressing",
+              "name": "버들항 · 밝은 잔디 접지·꾸미기",
+              "documentCount": 40,
+              "imageCount": 16
+            },
+            {
+              "id": "beodeul-facilities",
+              "name": "버들항 · RPG 시설과 작업 마당",
+              "documentCount": 17,
+              "imageCount": 10
+            },
+            {
+              "id": "beodeul-forms",
+              "name": "버들항 · 여섯 건축 구조와 강변 마을",
+              "documentCount": 19,
+              "imageCount": 3
+            },
+            {
+              "id": "beodeul-reviewed",
+              "name": "버들항 · 사람이 허용한 건물 58채",
+              "documentCount": 17,
+              "imageCount": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

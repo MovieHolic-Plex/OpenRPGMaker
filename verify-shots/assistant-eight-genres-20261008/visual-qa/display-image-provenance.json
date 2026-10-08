@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-08T06:19:32.313517+00:00",
+  "items": [
+    {
+      "displayPath": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/visual-qa/cave-terrain.png",
+      "displaySha256": "572e5cefd6f8557adb4b0077566dfbf5ad1bb1f1fca8d73ddf208ee38df4da58",
+      "sourcePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_cave_dungeon-terrain.png",
+      "sourceSha256": "62c91d9c79e442e08a7482aa070ec5d9d0f641e7844f769ce6ad7f1770946fba",
+      "displayOnly": true
+    },
+    {
+      "displayPath": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/visual-qa/cave-native.png",
+      "displaySha256": "0d041ff198de2263a85a20f14d4a1f77705cb76325c7365408289895dbd341eb",
+      "sourcePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/native-04.png",
+      "sourceSha256": "084495093b0483d9a0aa7ecd27d5fc008849de31b2f12c354ab57e27536aba75",
+      "displayOnly": true
+    },
+    {
+      "displayPath": "/home/main/.codex/visualizations/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/genre-audit-images/visual-qa/herb-native.png",
+      "displaySha256": "6b7683056c783c579b618e177493deb902b7b54182bce4cafab0cc8203fdfa2a",
+      "sourcePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/native-05.png",
+      "sourceSha256": "356a76c0a754e262d982b5c6e23f94845a90e6f3ee1143208a7406db10b06ecf",
+      "displayOnly": true
+    }
+  ]
+}

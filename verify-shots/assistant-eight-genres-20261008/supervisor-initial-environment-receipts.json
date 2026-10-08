@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-08T04:02:12.373723+00:00",
+  "reviewer": "root-supervisor",
+  "readOnly": true,
+  "noErrorValuesOrCredentialsCopied": true,
+  "cases": [
+    {
+      "caseId": "monster-collect",
+      "matches": [
+        {
+          "path": "monster-collect/project/output/ai-activity/bbea5c78-845f-42c8-bc67-4dfbf97b5f49.json",
+          "sha256": "ff125b764aaa92313225a87d5b8e1bd6f7f831c79d97b6f0839bdd9b7925cc51",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    },
+    {
+      "caseId": "story-cutscene",
+      "matches": [
+        {
+          "path": "story-cutscene/project/output/ai-activity/0e804375-2819-408e-ab55-9f492bdba7ae.json",
+          "sha256": "1f255022d35e2f71cb3e7b3860c111f99005c34dc7d44a5ef9b4b0d26c2fd90a",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    },
+    {
+      "caseId": "horror-gallery",
+      "matches": [
+        {
+          "path": "horror-gallery/project/output/ai-activity/8b441519-9e59-4996-83c1-467cc6eed34f.json",
+          "sha256": "8acae030cc329b182ea72999f802d7d35f89781b6f06508a4bab63442137307a",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    },
+    {
+      "caseId": "school-horror",
+      "matches": [
+        {
+          "path": "school-horror/project/output/ai-activity/e2772929-2a7d-4b9e-a6dc-5491b82d8f5a.json",
+          "sha256": "5ac6ba37b255ff5cab4f4287472ae0a620e05bf18369ee11c49b93dc28aa0419",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    },
+    {
+      "caseId": "farm-life",
+      "matches": [
+        {
+          "path": "farm-life/project/output/ai-activity/d3f331be-2cd2-4ac3-84df-edf0ba593582.json",
+          "sha256": "8c6f6b230701397f1704b52d3d23b4be36233dc7e803ed78172c31e9ed8ec58c",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    },
+    {
+      "caseId": "partner-raise",
+      "matches": [
+        {
+          "path": "partner-raise/project/output/ai-activity/66fdb369-dcd2-4ec7-bec9-76a16f62e71c.json",
+          "sha256": "993baf1956a33c2ba9b1dfb8c502942797ee7f9012c1980c28268c00eb98d900",
+          "missingClientMetadataError": true,
+          "http500Present": true
+        }
+      ]
+    }
+  ]
+}
