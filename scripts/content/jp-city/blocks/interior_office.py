@@ -352,6 +352,70 @@ def _desk_w(c): _desk_side_monitor(c, True)
 def _desk_e(c): _desk_side_monitor(c, False)
 
 
+def _desk_front_monitor(c, seat_n):
+    """가로로 긴 섬의 책상 한 칸. seat_n=True: 북쪽 줄(앉는 사람은 북쪽, 모니터는 남쪽 가장자리 — 등판이 보인다).
+    seat_n=False: 남쪽 줄(앉는 사람은 남쪽, 모니터는 북쪽 가장자리 — 화면이 남쪽으로 보이고 위로 솟아 맞은편 모니터 등판과 맞닿는다)."""
+    if seat_n:
+        rc(c, 0, 16, 16, 12, kc('conc', 4)); hl(c, 0, 16, 16, kc('shiro', 2)); vl(c, 0, 16, 12, kc('shiro', 2))     # 상판(이어진 섬 — 앞판은 얇게)
+        rc(c, 0, 28, 16, 4, kc('tekko', 1)); hl(c, 0, 28, 16, kc('tekko', -1)); hl(c, 0, 31, 16, kc('tekko', -3))
+        _keyboard(c, 4, 17, 8)
+        rc(c, 2, 13, 12, 11, kc('yoru', 0)); hl(c, 2, 13, 12, kc('yoru', 2)); vl(c, 2, 13, 11, kc('yoru', 1))        # 모니터 등판
+        rc(c, 6, 15, 4, 3, kc('yoru', -1)); outline(c, 1, 12, 14, 13)
+        rc(c, 7, 25, 2, 2, kc('tekko', 0)); hl(c, 5, 27, 6, kc('tekko', 2))
+        outline(c, 0, 15, 16, 17, kc('tekko', -3))
+    else:
+        rc(c, 0, 16, 16, 9, kc('conc', 4)); hl(c, 0, 16, 16, kc('shiro', 2)); vl(c, 0, 16, 9, kc('shiro', 2)); hl(c, 0, 24, 16, kc('shiro', 3))
+        rc(c, 0, 25, 16, 7, kc('tekko', 1)); hl(c, 0, 25, 16, kc('tekko', -1)); vl(c, 0, 25, 7, kc('tekko', 2)); vl(c, 15, 25, 7, kc('tekko', -2))
+        hl(c, 0, 31, 16, kc('tekko', -3)); rc(c, 9, 27, 5, 2, kc('tekko', 2)); hl(c, 10, 27, 3, kc('tekko', 4))
+        outline(c, 0, 16, 16, 16, kc('tekko', -3))
+        rc(c, 2, 7, 12, 10, kc('yoru', -1)); rc(c, 3, 8, 10, 7, kc('sora', 1)); hl(c, 3, 8, 10, kc('sora', 2))        # 모니터 화면(남향)
+        px(c, 4, 9, kc('sora', 3)); px(c, 5, 9, kc('sora', 3)); hl(c, 4, 11, 6, kc('sora', 0)); hl(c, 4, 13, 4, kc('sora', 0))
+        outline(c, 1, 6, 14, 12)
+        rc(c, 7, 18, 2, 2, kc('tekko', 0)); hl(c, 5, 19, 6, kc('tekko', 2))
+        _keyboard(c, 4, 21, 8)
+
+
+@R.obj('of-desk-n', '섬 사무 책상(북쪽 줄)', w=1, h=1, up=8, kind='floor', use=('read',), tags=TAGS + ('책상', '島型'),
+       place='가로로 긴 책상 섬의 북쪽 줄. 동서로 3~4칸 이어 붙이고 바로 남쪽에 of-desk-s 줄을 맞붙인다. 북쪽에 of-desk-chair-s.',
+       desc='연회색 상판의 사무 책상 한 칸 — 앉는 사람은 북쪽(남쪽을 본다). 남쪽 가장자리에 모니터 등판이 서고 앞쪽(북쪽)에 키보드. 섬 가운데에서 맞은편 줄 모니터와 등을 맞댄다.')
+def _desk_n(c): _desk_front_monitor(c, True)
+
+
+@R.obj('of-desk-s', '섬 사무 책상(남쪽 줄)', w=1, h=1, up=8, kind='floor', use=('read',), tags=TAGS + ('책상', '島型'),
+       place='가로로 긴 책상 섬의 남쪽 줄. of-desk-n 줄 바로 남쪽에 맞붙인다. 남쪽에 of-desk-chair-n.',
+       desc='연회색 상판의 사무 책상 한 칸 — 앉는 사람은 남쪽(북쪽을 본다). 북쪽 가장자리에 모니터가 서서 화면(하늘색)이 보이고 앞쪽에 키보드, 아래 서랍.')
+def _desk_s(c): _desk_front_monitor(c, False)
+
+
+def _boss_v(c, seat_w):
+    """세로 과장 책상 1×2 — 가로로 긴 섬의 끝에 붙어 섬을 본다. seat_w=True: 과장은 서쪽에 앉아 동쪽(섬)을 본다."""
+    rc(c, 0, 16, 16, 26, kc('ita', 1)); hl(c, 0, 16, 16, kc('ita', 3)); vl(c, 0, 16, 26, kc('ita', 3))
+    for y in (20, 27, 34): hl(c, 3, y, 9, kc('ita', 0))
+    rc(c, 0, 42, 16, 6, kc('ita', -1)); hl(c, 0, 42, 16, kc('ita', -3)); hl(c, 0, 47, 16, kc('ita', -3))
+    vl(c, 15, 16, 26, kc('ita', -2)); outline(c, 0, 16, 16, 32)
+    mx = 11 if seat_w else 2                                                                                 # 모니터(옆모습, 화면은 과장 쪽)
+    sx, bx = (mx - 2, mx + 1) if seat_w else (mx + 1, mx - 1)
+    rc(c, sx, 14, 3, 12, kc('sora', 0)); rc(c, sx, 15, 3, 10, kc('sora', 1)); px(c, sx + 1, 16, kc('sora', 3))
+    rc(c, bx, 13, 2, 14, kc('yoru', -1)); hl(c, bx, 13, 2, kc('yoru', 1)); outline(c, min(sx, bx) - 1, 12, 7, 16)
+    rc(c, mx, 28, 2, 2, kc('tekko', 0))
+    kx = 2 if seat_w else 8
+    _keyboard(c, kx, 31, 6)
+    rc(c, kx, 36, 6, 4, kc('shiro', 2)); hl(c, kx, 36, 6, kc('shiro', 4)); hl(c, kx, 38, 6, kc('conc', 2))       # 결재 서류함
+    rc(c, 9 if seat_w else 2, 18, 5, 3, kc('yoru', 0)); hl(c, 9 if seat_w else 2, 18, 5, kc('yoru', 2))            # 전화
+
+
+@R.obj('of-boss-desk-e', '과장 책상(섬 끝·동향)', w=1, h=2, up=8, kind='floor', use=('read',), tags=TAGS + ('책상', '과장', '島型'),
+       place='가로로 긴 섬의 서쪽 끝에 섬 폭(2줄) 그대로 붙인다. 과장은 서쪽 의자(of-desk-chair-e)에 앉아 동쪽(섬)을 본다.',
+       desc='섬 끝에 세로로 놓는 과장 책상 1×2 — 짙은 나무 상판, 동쪽 가장자리에 모니터(옆모습, 화면은 과장 쪽), 키보드·결재 서류함·전화.')
+def _boss_e(c): _boss_v(c, True)
+
+
+@R.obj('of-boss-desk-w', '과장 책상(섬 끝·서향)', w=1, h=2, up=8, kind='floor', use=('read',), tags=TAGS + ('책상', '과장', '島型'),
+       place='가로로 긴 섬의 동쪽 끝에 섬 폭(2줄) 그대로 붙인다. 과장은 동쪽 의자(of-desk-chair-w)에 앉아 서쪽(섬)을 본다.',
+       desc='섬 끝에 세로로 놓는 과장 책상 1×2 — 짙은 나무 상판, 서쪽 가장자리에 모니터(옆모습, 화면은 과장 쪽), 키보드·결재 서류함·전화.')
+def _boss_w(c): _boss_v(c, False)
+
+
 @R.obj('of-desk', '사무 책상(빈 상판)', w=1, h=1, up=0, kind='floor', surface=True, tags=TAGS + ('책상',),
        place='섬 끝·창가·회의실 옆 보조 책상. 위에 노트북·서류·머그·전화를 놓는다.',
        desc='연회색 멜라민 상판에 회색 철제 앞판(서랍 손잡이)의 사무 책상 한 칸. 상판이 비어 탁상 물건을 올린다.')

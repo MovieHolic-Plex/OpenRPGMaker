@@ -190,7 +190,7 @@
    "y": 3,
    "toMapId": "jp-city-office-floor",
    "toX": 13,
-   "toY": 13,
+   "toY": 15,
    "direction": "up"
   },
   {
@@ -198,7 +198,7 @@
    "y": 3,
    "toMapId": "jp-city-office-floor",
    "toX": 17,
-   "toY": 13,
+   "toY": 15,
    "direction": "down"
   },
   {
@@ -206,7 +206,7 @@
    "y": 3,
    "toMapId": "jp-city-office-floor",
    "toX": 18,
-   "toY": 13,
+   "toY": 15,
    "direction": "down"
   },
   {
@@ -214,7 +214,7 @@
    "y": 3,
    "toMapId": "jp-city-office-floor",
    "toX": 21,
-   "toY": 13,
+   "toY": 15,
    "direction": "down"
   },
   {
@@ -222,7 +222,7 @@
    "y": 3,
    "toMapId": "jp-city-office-floor",
    "toX": 22,
-   "toY": 13,
+   "toY": 15,
    "direction": "down"
   }
  ]

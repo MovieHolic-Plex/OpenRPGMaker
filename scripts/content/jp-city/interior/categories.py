@@ -79,7 +79,7 @@ CATEGORIES = [
     # [interior_office of-]
     ('office-lobby', '사무 빌딩 로비', ['of-reception', 'of-security-gate', 'of-elevator', 'of-elevator-button', 'of-lobby-sofa-s', 'of-lobby-sofa-n',
                                        'of-plant-big', 'of-directory', 'of-mailbox-wall']),
-    ('office', '사무실', ['of-desk-w', 'of-desk-e', 'of-desk', 'of-desk-chair-s', 'of-desk-chair-n', 'of-desk-chair-e', 'of-desk-chair-w', 'of-boss-desk',
+    ('office', '사무실', ['of-desk-w', 'of-desk-e', 'of-desk-n', 'of-desk-s', 'of-boss-desk-e', 'of-boss-desk-w', 'of-desk', 'of-desk-chair-s', 'of-desk-chair-n', 'of-desk-chair-e', 'of-desk-chair-w', 'of-boss-desk',
                          'of-partition', 'of-cabinet', 'of-copier', 'of-whiteboard', 'of-server-rack', 'of-coat-rack', 'of-glass-door', 'of-fire-door',
                          'of-window-blind', 'of-stairs-up', 'of-stairwell-down']),
     ('pantry', '급탕실·휴게', ['of-pantry-sink', 'of-fridge-small', 'of-vending', 'of-stool']),
