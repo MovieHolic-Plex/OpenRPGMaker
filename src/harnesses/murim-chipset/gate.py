@@ -4,7 +4,6 @@
   P 팔레트 잠금     불투명 화소가 잠긴 색 밖 / 반투명이 그림자(ink·고정 alpha) 아님            FAIL
   Z 크기            칸 수 × 16px                                                             FAIL
   Q 불투명 계약      tile·wall: 전부 불투명 / roof: 윗줄 불투명 / object: 귀퉁이 투명·채움 비율   FAIL
-  O 먹 윤곽         object 실루엣 가장자리 화소의 75% 이상이 ink 또는 재질 램프 0~1단             FAIL
   F 윗면 행         wall·roof·object: meta['top'] 의 윗면 띠가 2행 이상·폭 50% 이상이고,
                     그 바로 아래(앞 모서리) 줄보다 밝다. 띠가 있다는 것만 본다 — 시점 판정 아님  FAIL
   S 반복 이음        tileable 축마다 감은 이음(마지막 열→첫 열)의 밝기 차가 안쪽 열 경계 중 가장 큰 차
@@ -20,6 +19,13 @@
                     앞 걸상 앉는 면이 탁자 받침(맨 아래 화소) 아래 바닥 틈 2~4px 뒤, 앞 걸상은 탁자와 한 화소도
                     겹치지 않음(받침 기둥에 꽂혀 보이지 않게), 좌·우 걸상이 탁자 다리(두께 띠 아래 화소)와 겹치지 않음. 기계 검사는 눈 판정을 대신하지 않는다   FAIL
   T 가는 줄         object 폭 1px 화소 비율 > 0.14                                            WARN
+  OUTLINE 먹 윤곽   외곽선 규칙(사용자 2026-10-08): 가장자리 화소 중 먹(밝기 ≤ INK_LUMA) 비율 > OUTLINE_INK_MAX,
+                    또는 object 의 빛 쪽(위·왼) 가장자리 중 먹·재질 0~1단 비율 > OUTLINE_LIT_MAX(빙 두른 어두운 윤곽).
+                    object = 실루엣 바깥 1px, 지형(tile·wall·roof) = 반복 축·맞물림이 아닌 변의 바깥 테두리 띠 2px
+                    (+ 칸 안 투명과 맞닿은 실루엣)                                                  WARN
+  CONTRAST 묻힘     크기 ≤2칸 object 를 그 줄 대표 바닥 위에 놓았을 때 그늘 쪽(아래·오른) 실루엣 가장자리 평균 밝기와
+                    바닥 평균 밝기 차 < CONTRAST_MIN (harness.py 가 줄 바닥을 골라 check_contrast 를 부른다)  WARN
+  ※ 옛 O(object 가장자리 75% 이상 먹·0~1단, FAIL)는 외곽선 규칙과 반대라 지웠다(2026-10-08).
   L 빛 방향         object 오른쪽 반이 왼쪽 반보다 밝음(> 0.06)                                 WARN
   N 1px 잡티        네 이웃이 모두 같은 색인데 혼자 다른 화소 비율 > 0.03                         WARN
 """
@@ -38,7 +44,8 @@ def _res(code, level, ok, msg):
     return {'code': code, 'level': level, 'ok': bool(ok), 'msg': msg}
 
 
-def check_one(item, im, meta):
+def check_one(item, im, meta, open_sides=None):
+    """open_sides: 지형 조각의 바깥 변(세트 조각은 맞물림 변을 뺀 것, harness 가 준다). None 이면 반복 축이 아닌 네 변."""
     a = np.asarray(im.convert('RGBA'))
     h, w = a.shape[:2]
     rgb, al = a[:, :, :3], a[:, :, 3]
@@ -80,21 +87,6 @@ def check_one(item, im, meta):
         out.append(_res('Q', 'FAIL', ok, f'위 귀퉁이 투명 {corner_ok}, 채움 {fill:.0%}'))
 
     L = luma(rgb)
-
-    # O
-    if kind == 'object':
-        pad = np.pad(op, 1)
-        inner = pad[:-2, 1:-1] & pad[2:, 1:-1] & pad[1:-1, :-2] & pad[1:-1, 2:]
-        edge = op & ~inner
-        n = int(edge.sum())
-        dark = 0
-        for y, x in zip(*np.nonzero(edge)):
-            c = tuple(int(v) for v in rgb[y, x])
-            r = TONE_OF.get(c)
-            if r and (r[0] == 'ink' or r[1] <= 1):
-                dark += 1
-        frac = dark / max(n, 1)
-        out.append(_res('O', 'FAIL', frac >= 0.75, f'가장자리 {n}화소 중 먹·어두운 단 {frac:.0%}'))
 
     # F
     if kind in ('wall', 'roof', 'object'):
@@ -158,6 +150,7 @@ def check_one(item, im, meta):
     lone = (c >= 0) & (u == d_) & (u == l_) & (u == r_) & (u >= 0) & (c != u)
     nr = lone.sum() / max(op.sum(), 1)
     out.append(_res('N', 'WARN', nr <= 0.03, f'혼자 다른 1px {int(lone.sum())}개 ({nr:.1%})'))
+    out.append(check_outline(kind, a, item.get('tileable') or '', open_sides, lit_check=item.get('outlineClass') != 'structure'))
     return out
 
 
@@ -385,3 +378,118 @@ def check_layout(item, set_im, parts):
         if k:
             bad.append(f'{side} 걸상이 탁자 다리와 {k}화소 겹친다')
     return _res('K', 'FAIL', not bad, '; '.join(bad) if bad else '배치 통과 — ' + ', '.join(ok_msgs))
+
+
+# ---------------------------------------------------------------------------- 외곽선 규칙 (WARN)
+# 사용자 결정 2026-10-08 — 시연 http://mdc-server:18301/outline-before-after.html 을 보고
+#   「1 3 4 5 7 8 은 외곽선이 없는 게 나은데」 → 「그래 그렇게하고」.
+#   지형·기물 모두 먹 윤곽 없이 재질 자신의 명암(빛 받는 위·왼 = 밝은 단, 그늘 아래·오른 = 어두운 단)으로 형태를 읽게 한다.
+#   바닥과 밝기가 비슷한 작은 기물(1~2칸)만 그늘 쪽을 그 재질의 가장 어두운 단 + 진한 접지 그림자로. 그래도 먹은 쓰지 않는다.
+#
+# 먹 = 밝기 ≤ INK_LUMA. 근거(palette.json, luma = 0.299R + 0.587G + 0.114B):
+#   ink 0.056 과 재질 0단 mu 0.049 · wa 0.061 · zhuz 0.070 · cao 0.074 · zhu 0.079 는 눈으로 먹과 구별되지 않는다
+#   (시연 murim_demo: 「0단은 먹과 밝기가 같아 다시 윤곽이 되므로 쓰지 않는다」). 그다음 어두운 색은 mu 1단 0.099 · song 0단 0.100 —
+#   시연이 그늘 쪽에 쓴 재질의 어두운 단이다. 0.079 와 0.099 사이를 자른다.
+INK_LUMA = 0.09
+# 가장자리 먹 비율 상한. 시연 before(먹 1px 윤곽) 탁자·술독·계단 가장자리는 먹 95~100%, after(빛 쪽만 한 단 밝힌 sel-out) 60~81%,
+# 「외곽선 없음」 안은 0%.
+# 접지 그림자 쪽 한두 화소·문고리 같은 일부러 찍은 어두운 점은 남을 수 있어 0.15 까지 둔다.
+OUTLINE_INK_MAX = 0.15
+# 빛 쪽(위·왼) 가장자리가 먹·재질 어두운 단(0~1단 — 옛 관문 O 가 「어두운 윤곽」으로 친 단)으로 빙 둘러졌는지. 규칙: 빛 쪽은 재질 밝은 단.
+# 시연 탁자·술독·계단 before(먹 윤곽)는 빛 쪽 100%, after(sel-out)는 47~60%(계단 100%), 「외곽선 없음」 안은 0%. 반 넘게 어두우면 경고.
+OUTLINE_LIT_MAX = 0.5
+LIT_DARK_STEP = 1
+# 묻힘 기준. 시연 잔돌 B1: stone 0단 윤곽(밝기 0.21)과 B 줄 흙바닥(0.38) 차 0.17 은 바닥 반점(0.24)에 묻혔다고 했고,
+# 같은 잔돌 「외곽선 없음」 안은 그늘 쪽 0.38 vs 바닥 0.38 (차 0.00) — 형태가 바닥에 녹는다. 예외 규칙(그늘 쪽 = 재질 가장 어두운 단)을
+# 따르면 같은 잔돌이 0.18 이 된다. 「그늘 쪽을 재질 0단까지 내려도 0.15 미만」이면 접지 그림자를 진하게 하거나 재질을 바꿔야 하는 자리라
+# 0.15 로 둔다(시연 석순 「외곽선 없음」 0.11 도 걸린다). 시드 예시값 0.12 는 석순 0.11 을 겨우 잡고 0.12~0.15 의 반쯤 묻힌 기물을 놓친다.
+# 무림 실측: 시연 술독 A1 「외곽선 없음」 0.20 · 탁자 0.23 은 통과, inn-r1 술독 B2(황토 유약, 그늘 쪽 0.18 vs 붉은 마루 0.29) 0.10 은 경고.
+# harness.py 가 기물 크기(≤2칸)·줄 바닥(seed outlineRule.contrastGround)을 고른다.
+CONTRAST_MIN = 0.15
+CONTRAST_CELLS = 2
+
+
+def is_ink(c):
+    """잠금 팔레트 색 c(RGB 튜플)가 먹인가 — ink 그 자체이거나 밝기 ≤ INK_LUMA."""
+    return c == INK or float(luma(c)) <= INK_LUMA
+
+
+def _rings(op, kind, tileable, open_sides):
+    """(가장자리, 빛 쪽 가장자리, 그늘 쪽 가장자리) 마스크.
+    object: 실루엣 바깥 1px(칸 밖은 투명으로 본다).
+    지형(tile·wall·roof): 바깥 변 테두리 띠 2px — 반복 축의 변과 맞물림 변은 바깥이 아니다 — + 칸 안 투명과 맞닿은 실루엣(지붕 끝)."""
+    h, w = op.shape
+    if kind == 'object':
+        p = np.pad(op, 1)
+    else:
+        p = np.pad(op, 1, constant_values=True)
+    up, dn, lf, rt = p[:-2, 1:-1], p[2:, 1:-1], p[1:-1, :-2], p[1:-1, 2:]
+    edge = op & ~(up & dn & lf & rt)
+    lit = op & (~up | ~lf)
+    shade = op & (~dn | ~rt)
+    if kind != 'object':
+        sides = set(open_sides) if open_sides is not None else {'N', 'S', 'W', 'E'}
+        if 'x' in tileable:
+            sides -= {'W', 'E'}
+        if 'y' in tileable:
+            sides -= {'N', 'S'}
+        band = np.zeros_like(op)
+        if 'N' in sides:
+            band[:2] = True
+        if 'S' in sides:
+            band[-2:] = True
+        if 'W' in sides:
+            band[:, :2] = True
+        if 'E' in sides:
+            band[:, -2:] = True
+        edge = edge | (band & op)
+    return edge, lit, shade
+
+
+def check_outline(kind, a, tileable='', open_sides=None, lit_check=True):
+    """OUTLINE(WARN): 가장자리 먹 비율, object 는 빛 쪽 가장자리의 먹·재질 0~1단 비율도.
+    lit_check=False — 시드 outlineClass "structure"(계단·난간 같은 큰 구조): 바깥 실루엣이 재질 어두운 단이어도 되므로 먹만 본다."""
+    rgb, op = a[:, :, :3], a[:, :, 3] == 255
+    edge, lit, _ = _rings(op, kind, tileable, open_sides)
+    n = int(edge.sum())
+    if n == 0:
+        return _res('OUTLINE', 'WARN', True, '바깥 변 없음(반복·맞물림 변뿐)')
+    ink = sum(is_ink(tuple(int(v) for v in rgb[y, x])) for y, x in zip(*np.nonzero(edge)))
+    fi = ink / n
+    msg = f'가장자리 {n}화소 중 먹 {fi:.0%}(상한 {OUTLINE_INK_MAX:.0%})'
+    ok = fi <= OUTLINE_INK_MAX
+    if kind == 'object' and lit_check:
+        lit = lit & edge
+        nl = int(lit.sum())
+        dark = 0
+        for y, x in zip(*np.nonzero(lit)):
+            c = tuple(int(v) for v in rgb[y, x])
+            r = TONE_OF.get(c)
+            if is_ink(c) or (r and r[1] <= LIT_DARK_STEP):
+                dark += 1
+        fl = dark / max(nl, 1)
+        msg += f', 빛 쪽(위·왼) {nl}화소 중 먹·0~{LIT_DARK_STEP}단 {fl:.0%}(상한 {OUTLINE_LIT_MAX:.0%})'
+        ok = ok and fl <= OUTLINE_LIT_MAX
+    return _res('OUTLINE', 'WARN', ok, msg + ('' if ok else ' — 먹 윤곽 대신 재질 명암으로(빛 쪽 밝은 단, 그늘 쪽 어두운 단)'))
+
+
+def check_contrast(im, floor_im, cells):
+    """CONTRAST(WARN): 크기 ≤ CONTRAST_CELLS 칸 기물의 그늘 쪽(아래·오른) 실루엣 가장자리 평균 밝기 vs 바닥 평균 밝기.
+    그늘 쪽만 보는 까닭: 규칙대로 빛 쪽을 밝은 단, 그늘 쪽을 어두운 단으로 칠하면 가장자리 전체 평균은 바닥과 비슷해져 묻힘을 못 가린다.
+    묻힘이 문제 되는 곳이 바닥에 닿는 그늘 쪽이다(예외 규칙이 고치는 자리). 반환 None = 대상 아님."""
+    if cells > CONTRAST_CELLS or floor_im is None:
+        return None
+    a = np.asarray(im.convert('RGBA'))
+    op = a[:, :, 3] == 255
+    if not op.any():
+        return None
+    _, _, shade = _rings(op, 'object', '', None)
+    L = luma(a[:, :, :3])
+    f = np.asarray(floor_im.convert('RGBA'))
+    fo = f[:, :, 3] == 255
+    fl = float(luma(f[:, :, :3])[fo].mean())
+    el = float(L[shade].mean())
+    d = abs(el - fl)
+    ok = d >= CONTRAST_MIN
+    return _res('CONTRAST', 'WARN', ok, f'그늘 쪽 가장자리 밝기 {el:.2f} vs 줄 바닥 {fl:.2f} (차 {d:.2f}, 하한 {CONTRAST_MIN:.2f})'
+                + ('' if ok else ' — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다)'))
