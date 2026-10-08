@@ -144,6 +144,36 @@
    "id": "st-priority-seat-s",
    "x": 16,
    "y": 6
+  },
+  {
+   "id": "st-car-door-s",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "st-car-door-s",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "st-door-line",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 15,
+   "y": 3
   }
  ],
  "tables": [],

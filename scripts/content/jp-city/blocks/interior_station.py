@@ -99,16 +99,17 @@ def _platform(c):
     for y in (1, 17): hl(c, 1, y, 15, K('conc', 0)); hl(c, 17, y, 15, K('conc', 0))
 
 
-@R.floor('st-car-floor', '전철 차내 바닥(회갈 고무)', cols=2, rows=2, tags=('전철', '차내', '전차'),
-         desc='회갈색 고무 바닥. 작은 돌기 점이 엇갈려 찍힌 조용한 무늬. 전철 차내 통로 전체에 깐다.')
+@R.floor('st-car-floor', '전철 차내 바닥(연회색 고무)', cols=2, rows=2, tags=('전철', '차내', '전차'),
+         desc='연회색 고무 바닥. 미끄럼 방지 잔 가로줄이 엇갈려 찍힌 조용한 무늬. 전철 차내 통로 전체에 깐다. 문 앞에는 노란 줄(st-door-line)을 덧깐다.')
 def _car_floor(c):
-    rc(c, 0, 0, 32, 32, K('ita', 0))
+    rc(c, 0, 0, 32, 32, K('hodo', 1))
     for y in range(1, 32, 4):
-        for x in range((y // 4) % 2 * 2, 32, 4):
-            px(c, x, y, K('ita', 1)); px(c, x + 1, y + 1, K('ita', -1))
+        off = 0 if (y // 4) % 2 == 0 else 4
+        for x in range(off, 32, 8):
+            hl(c, x + 1, y, 4, K('hodo', 0)); hl(c, x + 1, y + 1, 4, K('hodo', 2))
     for y in range(32):
         for x in range(32):
-            if rnd(x, y, 7, 18): px(c, x, y, K('ita', -1))
+            if rnd(x, y, 7, 6): px(c, x, y, K('hodo', 0))
 
 
 # ══ 벽면 ═════════════════════════════════════════════════════════════════════
@@ -522,6 +523,30 @@ def _car_door(c):
     rc(c, 13, 0, 6, 2, K('aka', 0)); hl(c, 13, 0, 6, K('aka', 1))
     vl(c, 14, 2, 30, K('kii', 1)); vl(c, 17, 2, 30, K('kii', 1))
     outline(c, 0, 0, 32, 32, OL)
+
+
+@R.obj('st-car-door-s', '전철 출입문(남쪽 줄, 그림만)', w=2, h=1, up=0, kind='floor', cat='train', cat_ko='전철 차내', tags=('전철', '차내', '출입문'),
+       place='차내 남쪽 마지막 바닥 줄, 북쪽 출입문과 같은 x(좌석 사이)', pair=('st-car-door', 'st-long-seat-s'),
+       desc='남쪽 벽의 양쪽 미닫이 출입문 2칸 — 맨 아래 줄 바로 위 칸에 놓는 그림 조각(걸음은 막힘). 문 앞 노란 줄, 문턱 레일, 그 아래 스테인리스 문짝 윗부분과 창 끝, 가운데 검은 고무 이음. 북쪽 출입문과 마주 본다.')
+def _car_door_s(c):
+    rc(c, 0, 0, 32, 3, K('kii', 1)); hl(c, 0, 0, 32, K('kii', 2)); hl(c, 0, 2, 32, K('kii', 0))           # 문 앞 노란 줄
+    for x in range(1, 32, 3): px(c, x, 1, K('kii', 0))
+    rc(c, 0, 3, 32, 3, K('tekko', 1)); hl(c, 0, 3, 32, K('tekko', 3)); hl(c, 0, 4, 32, OL); hl(c, 0, 5, 32, K('tekko', 0))   # 문턱 레일
+    for x0 in (1, 16):
+        rc(c, x0, 6, 15, 10, K('tekko', 1)); vl(c, x0, 6, 10, K('tekko', 3)); vl(c, x0 + 14, 6, 10, K('tekko', -1))
+        rc(c, x0 + 4, 9, 7, 7, K('tekko', -1)); rc(c, x0 + 5, 10, 5, 6, K('sora', 1)); hl(c, x0 + 5, 10, 5, K('sora', 2))
+        px(c, x0 + 6, 12, K('shiro', 1))
+    vl(c, 15, 6, 10, OL); vl(c, 16, 6, 10, K('yoru', -2))
+    vl(c, 14, 6, 10, K('kii', 1)); vl(c, 17, 6, 10, K('kii', 1))
+    outline(c, 0, 6, 32, 10, OL)
+
+
+@R.obj('st-door-line', '출입문 앞 노란 줄', w=1, h=1, kind='flat', cat='train', cat_ko='전철 차내', use=('walk',), tags=('전철', '차내', '출입문'),
+       place='차내 북쪽 출입문 바로 앞 두 칸(내리는 칸)', pair=('st-car-door',),
+       desc='출입문 앞 바닥의 노란 미끄럼 방지 줄 한 칸 — 문 쪽(북쪽) 가장자리에 노란 띠와 잔 홈. 문마다 앞 두 칸에 깐다. 밟는다.')
+def _door_line(c):
+    rc(c, 0, 0, 16, 4, K('kii', 1)); hl(c, 0, 0, 16, K('kii', 2)); hl(c, 0, 4, 16, K('kii', -1))
+    for x in range(1, 16, 3): px(c, x, 2, K('kii', 0))
 
 
 @R.obj('st-car-end', '차량 끝 연결 문', w=1, h=1, up=16, kind='wall', cat='train', cat_ko='전철 차내', use=('open',), tags=('전철', '차내', '연결문'),

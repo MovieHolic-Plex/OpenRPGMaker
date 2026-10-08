@@ -73,7 +73,7 @@ CATEGORIES = [
                            'st-vending', 'st-timetable', 'st-platform-door', 'st-tactile', 'st-tactile-dot']),
     ('platform', '승강장', ['st-edge', 'st-boarding-mark', 'st-roof-pillar', 'st-platform-bench', 'st-sign-pole']),
     ('train', '전철 차내', ['st-long-seat', 'st-long-seat-s', 'st-priority-seat', 'st-priority-seat-s', 'st-car-door', 'st-car-end',
-                          'st-pole', 'st-strap']),
+                          'st-pole', 'st-strap', 'st-car-door-s', 'st-door-line']),
     # (역 끝)
 
     # [interior_office of-]
