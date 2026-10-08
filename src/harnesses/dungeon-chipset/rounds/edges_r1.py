@@ -10,9 +10,10 @@
     (획마다 4장면 그림을 따로 적는다).
   - 얼음은 정지 1 + 깨짐 3상태(dungeon-concepts-research 3b). 상태는 몸통 가운데만 바뀌고 칸 둘레 2px 는 같다(관문 K) —
     깨진 칸이 안 깨진 이웃과 이어진다. slideTiles 의 ice 는 칸 번호별이라 47칸 × 상태를 모두 등록해야 한다.
-  - 낭떠러지는 3/4 시점에서 북쪽(먼 쪽) 가장자리 아래로 떨어지는 벽 앞면이 보이고, 남쪽(가까운 쪽)은 바닥 끝 턱만 보인다.
+  - 낭떠러지는 3/4 시점에서 북쪽(먼 쪽) 끝선 아래로 먼 벽 앞면이 여러 단(칸) 떨어지고 그 밑이 어둠 그라데이션, 남쪽은 바닥 끝 턱만.
     앞면 결은 그 줄 style-r1 벽 앞면의 손 도트를 깊이(행)마다 램프 단을 내려 어둠으로 꺼지게 한 것이다(deepen).
-    <줄>1 = A2 사분면 그대로 8px 앞면 · <줄>2 = 북쪽이 열린 칸은 아랫단까지 14px 로 이어지는 깊은 앞면(DeepAutotile).
+    <줄>1 = 앞면 2단 · <줄>2 = 앞면 3단. 끝선은 몸통 투명 오토타일로 앞면 위에 얹는다(Chasm).
+  - 물가·용암 턱·낭떠러지 끝선·얼음 가장자리는 굴곡 표(wobble)로 들쭉날쭉하고, 물·용암·낭떠러지는 줄 돌(studs)을 얹는다.
   - 다리는 윗층(투명 + 그림자) 키트 — 가로(서끝·가운데·동끝) / 세로(북끝·가운데·남끝). 버들항 걸음 구조물 규약
     (openwiki/beodeul-city.md 「투명 낀 칸 = 윗층 우선 lower, 사람 아래, 통행 o」).
 """
@@ -116,34 +117,121 @@ def deepen(cv, ramp, steps, void_from=0):
     return out
 
 
-class DeepAutotile(dot.Autotile):
-    """북쪽이 열린 칸(낭떠러지 먼 가장자리)은 몸통 대신 「깊은 몸통」(아랫단까지 이어지는 앞면을 깐 16×16)을 바탕으로 조립한다.
-    마스크만의 함수라 엔진 47 변형 그대로 쓴다(사분면 조각은 그 위에 같은 규칙으로 얹힌다)."""
-
-    def __init__(s, body, deep_body, edge, outer, inner, variants=()):
-        super().__init__(body, edge, outer, inner, variants)
-        s.deep_body = deep_body
-
-    def tile(s, mask):
-        if mask & N:
-            return super().tile(mask)
-        b = s.body
-        s.body = s.deep_body
-        try:
-            return super().tile(mask)
-        finally:
-            s.body = b
-
-
-def deep_autotile(body, deep_body, fr, inn):
-    at = autotile_cv(body, fr, inn)
-    return DeepAutotile(body, deep_body, at.edge, at.outer, at.inner)
-
-
-def anim_set(make_body, frame_rows, inner_rows, leg, tex):
-    """장면마다 몸통만 바뀌는 오토타일 4장 — 틀은 한 벌(물가 화소 동일)."""
+def anim_set(make_body, frame_rows, inner_rows, leg, tex, stud=None):
+    """장면마다 몸통만 바뀌는 오토타일 4장 — 틀은 한 벌(물가 화소 동일). stud = (줄, 돌 종류) 면 테두리 돌을 얹는다."""
     fr, inn = fill(frame_rows, inner_rows, leg, tex)
+    if stud:
+        wobble(fr, tex[','], wob_for(stud[0]))
+        studs(fr, inn, *stud)
     return [autotile_cv(make_body(k), fr, inn) for k in range(NFRAMES)]
+
+
+# ------------------------------------------------------------------------------------------------ 테두리 돌(울퉁불퉁한 가장자리)
+# 물가·용암 턱·낭떠러지 끝선에 손으로 찍은 돌을 얹어 가장자리를 울퉁불퉁하게 한다. 돌 하나는 사분면 조각 하나(8×8 칸 띠) 안에만 놓는다 —
+# 사분면 경계를 넘으면 이웃 조각이 다른 변형일 때 돌이 반쪽으로 잘린다. 자리 = (틀 x, 틀 y, 크기) 와 안 모서리 (x, y, 크기).
+STUD_SPOTS = {
+    'frame': [(2, 2, 'm'), (9, 3, 's'), (17, 2, 'm'), (26, 3, 's'), (1, 9, 'm'), (1, 18, 's'), (27, 11, 's'), (26, 17, 'm'),
+              (2, 26, 's'), (10, 26, 'm'), (18, 27, 's'), (25, 26, 'm')],
+    'inner': [(0, 0, 's'), (12, 0, 's'), (0, 13, 's'), (12, 13, 's')],
+}
+
+
+def _mirror_spots(spots, w, key):
+    out = []
+    for x, y, k in spots:
+        sw = len(STONES['A'][k][0])
+        out.append((w - x - sw, y, k))
+    return out
+
+
+def spots_for(line):
+    """줄마다 돌 자리를 다르게 — A 기본, B 좌우 거울, C 크기 맞바꿈(같은 자리·같은 돌이면 줄끼리 윤곽이 겹친다)."""
+    f, i = STUD_SPOTS['frame'], STUD_SPOTS['inner']
+    if line == 'B':
+        return _mirror_spots(f, 32, 'frame'), _mirror_spots(i, 16, 'inner')
+    if line == 'C':
+        sw = {'s': 'm', 'm': 's'}
+        return [(x, y, sw[k]) for x, y, k in f], i
+    return f, i
+
+
+STONES = {   # 줄 돌 — 위·왼 빛, 아래 어두운 밑선(물·용암에 잠긴 쪽)
+    'A': {'s': ['.43.', '4321', '.10.'], 'm': ['.543.', '54321', '43210', '.110.']},
+    'B': {'s': ['.rq.', 'rqpo', '.oo.'], 'm': ['.hsr.', 'srqpo', 'rqppo', '.ooo.']},
+    'C': {'s': ['.65.', '6543', '.21.'], 'm': ['.665.', '65543', '54321', '.110.']},
+    'V': {'s': ['.32.', '3210', '.00.'], 'm': ['.432.', '43210', '32100', '.000.']},   # 용암 턱 화산암
+}
+STONE_LEG = {'A': legend(**{str(i): ('crock', i) for i in range(7)}),
+             'B': legend(o=('stone', 0), p=('stone', 1), q=('stone', 2), r=('stone', 3), s=('stone', 4), h=('stone', 5)),
+             'C': legend(**{str(i): ('cata', i) for i in range(7)}),
+             'V': legend(**{str(i): ('vrock', i) for i in range(5)})}
+
+
+def studs(fr, inn, line, kind=None):
+    """틀·안 모서리 Cv 에 줄 돌을 찍는다(제자리에서 고친다)."""
+    kind = kind or line
+    fs, ins = spots_for(line)
+    for x, y, k in fs:
+        stamp(fr, STONES[kind][k], STONE_LEG[kind], x, y)
+    for x, y, k in ins:
+        stamp(inn, STONES[kind][k], STONE_LEG[kind], x, y)
+    return fr, inn
+
+
+# 물가 굴곡: 변마다 손으로 적은 들쭉날쭉 표(틀 32칸, 0~2px) 만큼 띠를 물 쪽으로 밀고 빈 자리를 줄 바닥으로 채운다 — 땅이 물로 불룩 나온다.
+# 사분면 경계(7|8·15|16·23|24)와 바깥 끝은 0 이라 어느 변형끼리 붙어도 이어진다. 새 화소를 짓지 않는다(띠를 옮기고 바닥 결을 자리대로 가져온다).
+WOB = {'N': [0, 0, 1, 1, 2, 1, 0, 0, 0, 1, 2, 2, 1, 1, 1, 0, 0, 0, 1, 2, 2, 2, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+       'S': [0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 2, 2, 1, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0],
+       'W': [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+       'E': [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 1, 1, 2, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]}
+for _k, _v in WOB.items():
+    assert len(_v) == 32 and all(_v[i] == 0 for i in (0, 7, 8, 15, 16, 23, 24, 31)), _k
+
+
+def wob_for(line):
+    """줄마다 굴곡 표를 다르게 — A 그대로, B 뒤집기, C 남북·동서 맞바꿈."""
+    if line == 'B':
+        return {k: v[::-1] for k, v in WOB.items()}
+    if line == 'C':
+        return {'N': WOB['S'], 'S': WOB['N'], 'W': WOB['E'], 'E': WOB['W']}
+    return WOB
+
+
+def wobble(fr, land, prof, scale=1):
+    """틀 Cv 를 제자리에서 굽힌다. land = 칸 좌표 16×16 바닥(밀려 생긴 자리를 채움). 반환 fr."""
+    a = fr.a.copy()
+
+    def lp(fx, fy):
+        tx, ty = tile_xy(fx, fy)
+        return land.a[ty, tx]
+    for x in range(32):
+        p = prof['N'][x] * scale
+        if p:
+            col = a[0:8, x].copy()
+            a[p:8, x] = col[:8 - p]
+            for y in range(p):
+                a[y, x] = lp(x, y)
+        p = prof['S'][x] * scale
+        if p:
+            col = a[24:32, x].copy()
+            a[24:32 - p, x] = col[p:]
+            for y in range(32 - p, 32):
+                a[y, x] = lp(x, y)
+    for y in range(32):
+        p = prof['W'][y] * scale
+        if p:
+            row = a[y, 0:8].copy()
+            a[y, p:8] = row[:8 - p]
+            for x in range(p):
+                a[y, x] = lp(x, y)
+        p = prof['E'][y] * scale
+        if p:
+            row = a[y, 24:32].copy()
+            a[y, 24:32 - p] = row[p:]
+            for x in range(32 - p, 32):
+                a[y, x] = lp(x, y)
+    fr.a = a
+    return fr
 
 
 def movers(base_rows, leg, sprites, k):
@@ -186,26 +274,34 @@ FACE_RAMP = {'A': 'crock', 'B': 'crock', 'C': 'vrock'}
 
 
 # ================================================================================================ 낭떠러지 (edges.chasm)
-# 기호: ',' 줄 바닥 · 'L' 바닥 끝 밝은 턱 · 'D' 바닥 끝 윤곽 · 'F' 먼 벽 앞면 결 · '.' 몸통(어둠).
-# 북(먼 쪽): 0 L · 1 D · 2~7 앞면(F). 남(가까운 쪽): 13 D · 14 L · 15 바닥. 서: 0·1 바닥 · 2 D. 동: 15·14 바닥 · 13 D.
-CH_N = 'LDFFFFFF'
+# 3/4 시점의 구덩이: 북쪽(먼 쪽) 끝선 아래로 **먼 벽 앞면이 여러 단(칸)** 떨어지고, 그 밑은 바닥 없는 어둠으로 꺼진다. 남쪽(가까운 쪽)은 바닥 끝 턱만.
+# 동굴 벽(천장 오토타일 + 앞면 2단)과 같은 문법이다 — 구덩이 칸마다 「북쪽 끝선에서 몇 칸 내려왔나(d)」로 바탕을 고른다:
+#   d < 단 수 → 앞면 d단 · d = 단 수 → 어둠 그라데이션(먼 벽 결이 어둠에 묻힘) · 그 아래 → 어둠 몸통.
+# 그 위에 **끝선 오토타일**(몸통 투명)을 얹어 북 끝선(L 밝은 턱 · D 윤곽)·서·동·남 턱과 안/바깥 모서리를 만든다. 끝선은 굴곡(wobble)과 줄 돌을 얹어 울퉁불퉁하다.
+# 칩셋에 구울 때: 끝선 + 어둠 = 오토타일 47 변형(몸통 = 어둠), 앞면 단·그라데이션 = 벽 앞면처럼 빌더가 끝선 아래에 놓는 16칸 주기 조각.
+# 기호: ',' 줄 바닥 · 'L' 바닥 끝 밝은 턱 · 'D' 바닥 끝 윤곽 · '.' 투명(아래 바탕이 보임).
+CH_N = 'LD......'
 CH_S = ',LD.....'      # 바깥(15행) → 안쪽
 CH_W = ',,D.....'
-CH_NW = [',,,LLLLL', ',,LDDDDD', ',,DFFFFF', ',,DFFFFF', ',,DFFFFF', ',,DFFFFF', ',,DFFFFF', ',,DFFFFF']
+CH_NW = [',,,LLLLL', ',,LDDDDD', ',,D.....', ',,D.....', ',,D.....', ',,D.....', ',,D.....', ',,D.....']
 CH_SW = [',,D.....', ',,D.....', ',,D.....', ',,D.....', ',,D.....', ',,DDDDDD', ',,,LLLLL', ',,,,,,,,']
-CH_IN_NW = ['LLD.....', 'DDD.....', 'FFD.....', 'FFD.....', 'FFD.....', 'FFD.....', 'FFD.....', 'FFD.....']
+CH_IN_NW = ['LLD.....', 'DDD.....'] + ['........'] * 6
 CH_IN_SW = ['........'] * 5 + ['DDD.....', 'LLD.....', ',,D.....']
 CH_FRAME = edge_frame(CH_NW, CH_N, CH_W, s=CH_S, sw=CH_SW)
 CH_INNER = inner4(CH_IN_NW, mirror_h(CH_IN_NW), CH_IN_SW, mirror_h(CH_IN_SW))
-# 사분면 경계 검사(check_frame)는 쓰지 않는다 — 북쪽 앞면(F)이 아랫단에서 어둠(몸통)·깊은 몸통으로 이어지는 것이 의도다.
+check_frame('낭떠러지 끝선 틀', CH_FRAME, CH_INNER, strict_inner=False)
 
 # 줄별 턱 색(바닥 램프의 밝은 단 · 윤곽) — style-r1 바닥 바탕: A cfloor 2 · B cfloor 1 · C cata 3.
 CH_LIP = {'A': (('cfloor', 7), ('cfloor', 0)), 'B': (('cfloor', 4), ('stone', 0)), 'C': (('cata', 6), ('vrock', 0))}
-# 앞면 결을 가져오는 표본 행(벽 앞면 표본 32행 중) — 줄마다 돌이 잘 보이는 자리를 손으로 골랐다.
-CH_FACE_Y0 = {'A': 9, 'B': 12, 'C': 1}
-# 깊이: 행 → 내릴 단. 1 = 8px(2~7행) · 2 = 14px(2~13행, 깊은 몸통 8~13행).
-CH_DEPTH = {1: [0, 0, 0, 0, 0, 1, 1, 2, 9, 9, 9, 9, 9, 9, 9, 9],
-            2: [0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 5, 9, 9]}
+# 먼 벽 결 = 줄 style-r1 벽 앞면 표본(32행)의 가운데 16칸 열. 행마다 내릴 단 — 단마다 16행, 끝 16행은 어둠 그라데이션.
+CH_STEPS = {1: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2,
+                2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4,
+                4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 9, 9, 9, 9, 9, 9],
+            2: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4,
+                4, 4, 5, 5, 6, 6, 7, 7, 8, 9, 9, 9, 9, 9, 9, 9]}
+CH_TIERS = {1: 2, 2: 3}
 VOID_BODY = [   # 어둠 몸통 — 아주 옅은 먼 바닥 결(void 1·2) 몇 점
     'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvvuvvv', 'vvvvvvvvvvvvvvvv',
     'vvvvuvvvvvvvvvvv', 'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvvvvvv', 'vvvvvvvvvvvuvvvv',
@@ -214,19 +310,42 @@ VOID_BODY = [   # 어둠 몸통 — 아주 옅은 먼 바닥 결(void 1·2) 몇 
 LV = legend(v=('void', 0), u=('void', 1), t=('void', 2))
 
 
+class Chasm:
+    """낭떠러지 한 벌: rim(끝선 오토타일, 몸통 투명) · tiers(앞면 단 + 그라데이션, 16×16) · body(어둠) · at(끝선 + 어둠 = 칩셋 오토타일)."""
+
+    def __init__(s, rim, tiers, body, rim_opaque):
+        s.rim, s.tiers, s.body, s.at = rim, tiers, body, rim_opaque
+
+    def cell(s, g, x, y, ch):
+        d = 0
+        while y - d - 1 >= 0 and g[y - d - 1][x] == ch:
+            d += 1
+        base = s.tiers[d] if d < len(s.tiers) else s.body
+        cv = Cv(T, T)
+        cv.a[:] = base.a
+        cv.paste(s.rim.tile(dot.mask_at(g, x, y, lambda cc, X, Y: cc == ch)), 0, 0)
+        return cv
+
+
 def chasm(line, n):
     (lr, lt), (dr, dt) = CH_LIP[line]
     leg = legend(L=(lr, lt), D=(dr, dt))
-    face = deepen(face_tex(line, CH_FACE_Y0[line] - 2), FACE_RAMP[line], CH_DEPTH[n])
-    tex = {',': floor_body(line), 'F': face}
-    fr, inn = fill(CH_FRAME, CH_INNER, leg, tex)
+    land = floor_body(line)
+    fr, inn = fill(CH_FRAME, CH_INNER, leg, {',': land})
+    wobble(fr, land, wob_for(line))
+    studs(fr, inn, line)
+    empty = Cv(T, T)
+    rim = autotile_cv(empty, fr, inn)
     body = grid(VOID_BODY, LV)
-    if n == 1:
-        return autotile_cv(body, fr, inn)
-    deep = Cv(16, 16)
-    deep.a[:] = body.a
-    deep.a[8:14] = face.a[8:14]
-    return deep_autotile(body, deep, fr, inn)
+    steps = CH_STEPS[n]
+    rows = len(steps)
+    f = cave(line)['face'].b
+    tex = Cv(16, rows)
+    for y in range(rows):
+        tex.a[y] = f.a[y % 32, 8:24]
+    tex = deepen(tex, FACE_RAMP[line], steps)
+    tiers = [tex.crop(0, 16 * k, 16, 16) for k in range(rows // 16)]
+    return Chasm(rim, tiers, body, autotile_cv(body, fr, inn))
 
 
 # ================================================================================================ 장면 렌더
@@ -238,8 +357,12 @@ def render(g, line, layers, objects=()):
     for y, row in enumerate(g):
         for x, ch in enumerate(row):
             if ch in layers:
-                m = dot.mask_at(g, x, y, lambda cc, X, Y, ch=ch: cc == ch)
-                cv.a[y * T:(y + 1) * T, x * T:(x + 1) * T] = layers[ch].tile_at(m, x, y).a
+                L = layers[ch]
+                if hasattr(L, 'cell'):
+                    t = L.cell(g, x, y, ch)
+                else:
+                    t = L.tile_at(dot.mask_at(g, x, y, lambda cc, X, Y, ch=ch: cc == ch), x, y)
+                cv.a[y * T:(y + 1) * T, x * T:(x + 1) * T] = t.a
     for o, x, y in objects:
         cv.paste(o, x, y)
     return cv
@@ -249,13 +372,18 @@ def actor_cv():
     return dot.Cv.of(dot.actor1_frame(1, 0, 0))
 
 
-def at_cell(cx, cy):
-    """Actor1 을 칸 (cx, cy) 에 세우는 화소 자리(발이 칸 아래쪽)."""
-    return cx * T - 4, cy * T - 14
+def at_cell(cx, cy, foot=16):
+    """Actor1 을 칸 (cx, cy) 에 세우는 화소 자리. foot = 발바닥이 닿는 칸 안 행(기본 칸 아래쪽, 다리 위면 상판 가운데)."""
+    return cx * T - 4, cy * T + foot - 30
+
+
+H_FOOT = 9    # 가로 다리 상판(3~9행) 위에 선 발
+V_FOOT = 12
 
 
 # ================================================================================================ 물 (edges.water)
-# 물가(틀·안 모서리)는 style-r1 의 그 줄 물가 그대로(사람이 줄마다 고른 화법). 장면마다 몸통의 물결 획만 움직인다.
+# 물가(틀·안 모서리)는 style-r1 의 그 줄 물가(사람이 줄마다 고른 화법) + 그 줄 테두리 돌(감독 지적 2026-10-08: 동굴 물가는 테두리 돌이 울퉁불퉁해야).
+# 장면마다 몸통의 물결 획만 움직인다.
 # 획 = style-r1 물 몸통에 손으로 찍힌 바탕 아닌 글자의 가로 줄(strokes 가 그 자리를 읽는다 — 새 획을 짓지 않는다).
 WATER = {'A': (SR.WA_BODY, SR.WA_FRAME, SR.WA_INNER, SR.LWA),
          'B': (SR.WB_BODY, SR.WB_FRAME, SR.WB_INNER, SR.LWB),
@@ -321,6 +449,7 @@ def water(line, n):
         ph = PHASES[i % len(PHASES)]
         sprites.append((flow_states(s) if n == 1 else glint_states(s, s[0] in dark), x, y, ph))
     fr, inn = fill(fr_rows, inn_rows, leg, {})
+    fr, inn = studs(wobble(fr, floor_body(line), wob_for(line)), inn, line)
     return [autotile_cv(movers(base, leg, sprites, k), fr, inn) for k in range(NFRAMES)]
 
 
@@ -437,43 +566,66 @@ def lava(line, n):
         mk = lambda k: crust_body(base, paths, k, roll=CRUST_SHIFT[line])  # noqa: E731
     else:
         mk = lambda k: molten_body(line, k)  # noqa: E731
-    return anim_set(mk, LV_FRAME, LV_INNER, leg, tex)
+    return anim_set(mk, LV_FRAME, LV_INNER, leg, tex, stud=(line, 'V'))
 
 
 # ================================================================================================ 얼음판 (edges.ice) — 줄 A·B·C 공통 재료(연구 문서 2a)
-# 바닥 위로 살짝 솟은 얼음판. 색은 설원 얼음(ice 램프) 그대로. 기호: ',' 줄 바닥 · 'o' 얼음판 윤곽(줄의 어두운 색)
-# · 'h' 빛 받는 북·서 가장자리(ice 4) · 'k' 그늘진 동 가장자리(ice 1) · 'g' 'f' 남쪽 두께 앞면 2px(ice 1 · ice 0)
-# · 'z' 판이 바닥에 드리운 그늘(바닥 램프 어두운 단 — 아래층이라 반투명을 쓰지 않는다).
-IC_N = ',oh.....'
-IC_E = 'zok.....'
-IC_S = 'zofg....'
-IC_NW = [',,,,,,,,', ',,,ooooo', ',,ohhhhh', ',oh.....', ',oh.....', ',oh.....', ',oh.....', ',oh.....']
-IC_NE = [',,,,,,,,', 'oooooo,,', 'hhhhhko,', '.....koz', '.....koz', '.....koz', '.....koz', '.....koz']
-IC_SW = [',oh.....', ',oh.....', ',oh.....', ',oh.....', ',ogggggg', ',offffff', ',,oooooo', ',,,zzzzz']
-IC_SE = ['.....koz', '.....koz', '.....koz', '.....koz', 'ggggggoz', 'ffffffoz', 'oooooooz', 'zzzzzzz,']
-IC_IN_NW = [',oh.....', 'ooh.....', 'hhh.....'] + ['........'] * 5
-IC_IN_NE = ['.....koz', '.....koo', '.....khh'] + ['........'] * 5
-IC_IN_SW = ['........'] * 4 + ['go......', 'fo......', 'ooh.....', ',oh.....']
-IC_IN_SE = ['........'] * 4 + ['......og', '......of', '.....koo', '.....koz']
-IC_FRAME = frame(IC_NW, IC_NE, IC_SW, IC_SE, uni(IC_N), uni(IC_S), uni(IC_N), uni(IC_E))
-IC_INNER = inner4(IC_IN_NW, IC_IN_NE, IC_IN_SW, IC_IN_SE)
-check_frame('얼음 틀', IC_FRAME, IC_INNER, strict_inner=False)
+# 색은 설원 얼음(ice 램프) 그대로. 두 안은 다른 물건이다(감독 지적 2026-10-08: 두 후보가 정말 다른 안이어야):
+#   <줄>1 「매끈한 빙판」 — 바닥과 거의 같은 높이로 얇게 언 판. 두께 앞면 없음, 윤곽 1px + 빛 받는 북·서 가장자리, 비스듬한 반사 획.
+#   <줄>2 「금 간 두꺼운 얼음 덩이」 — 바닥 위로 3px 솟은 덩이. 남쪽 두께 앞면 3줄에 세로 금(결 표 Q), 북·서 테두리 2줄, 안쪽 균열선과 갇힌 거품.
+# 가장자리는 둘 다 굴곡(wobble)으로 들쭉날쭉. 줄끼리는 윤곽·그늘 색, 둘레 바닥, 굴곡 표, 몸통 자리(A 그대로 · B 180° 돌림 · C 8칸 밈)가 다르다.
+# 기호: ',' 줄 바닥 · 'o' 윤곽(줄의 어두운 색) · 'h' 빛 받는 가장자리(ice 4) · '3' 그다음(ice 3) · 'k' 그늘진 동 가장자리(ice 1)
+# · 'g' 'f' 두께 앞면(ice 1 · ice 0) · 'Q' 금 간 두께 앞면 결 · 'z' 덩이가 바닥에 드리운 그늘(바닥 램프 어두운 단 — 아래층이라 반투명 금지).
+IC1_NW = [',,,,,,,,', ',,,ooooo', ',,ohhhhh', ',oh.....', ',oh.....', ',oh.....', ',oh.....', ',oh.....']
+IC1_NE = [',,,,,,,,', 'oooooo,,', 'hhhhhko,', '.....ko,', '.....ko,', '.....ko,', '.....ko,', '.....ko,']
+IC1_SW = [',oh.....', ',oh.....', ',oh.....', ',oh.....', ',oh.....', ',okkkkkk', ',,oooooo', ',,,,,,,,']
+IC1_SE = ['.....ko,', '.....ko,', '.....ko,', '.....ko,', '.....ko,', 'kkkkkko,', 'oooooo,,', ',,,,,,,,']
+IC1_FRAME = frame(IC1_NW, IC1_NE, IC1_SW, IC1_SE, uni(',oh.....'), uni(',ok.....'), uni(',oh.....'), uni(',ok.....'))
+IC1_INNER = inner4([',oh.....', 'ooh.....', 'hhh.....'] + ['........'] * 5,
+                   ['.....ko,', '.....koo', '.....khh'] + ['........'] * 5,
+                   ['........'] * 5 + ['kh......', 'oh......', ',oh.....'],
+                   ['........'] * 5 + ['.....kkk', '.....koo', '.....ko,'])
+IC2_NW = [',,,,,,,,', ',,,ooooo', ',,ohhhhh', ',oh33333', ',oh3....', ',oh3....', ',oh3....', ',oh3....']
+IC2_NE = [',,,,,,,,', 'oooooo,,', 'hhhhhko,', '33333koz', '.....koz', '.....koz', '.....koz', '.....koz']
+IC2_SW = [',oh3....', ',oh3....', ',oh3....', ',oQQQQQQ', ',oQQQQQQ', ',oQQQQQQ', ',,oooooo', ',,,zzzzz']
+IC2_SE = ['.....koz', '.....koz', '.....koz', 'QQQQQQoz', 'QQQQQQoz', 'QQQQQQoz', 'oooooooz', 'zzzzzzz,']
+IC2_FRAME = frame(IC2_NW, IC2_NE, IC2_SW, IC2_SE, uni(',oh3....'), uni('zoQQQ...'), uni(',oh3....'), uni('zok.....'))
+IC2_INNER = inner4([',oh3....', 'ooh3....', 'hhh3....', '3333....'] + ['........'] * 4,
+                   ['.....koz', '.....koo', '.....khh', '.....k33'] + ['........'] * 4,
+                   ['........'] * 3 + ['Qoh3....', 'Qoh3....', 'Qoh3....', 'ooh3....', ',oh3....'],
+                   ['........'] * 3 + ['.....koQ', '.....koQ', '.....koQ', '.....koo', '.....koz'])
+IC_FRAMES = {1: (IC1_FRAME, IC1_INNER), 2: (IC2_FRAME, IC2_INNER)}
+for _n, (_f, _i) in IC_FRAMES.items():
+    check_frame(f'얼음 {_n} 틀', _f, _i, strict_inner=False)
+IC_FACE_Q = ['f' * 16] * 11 + [   # 두꺼운 덩이 앞면 3줄(ice 0) — 위 밝은 턱 점(3), 세로 금(o) 두 곳이 앞면을 끊는다
+    '3f3ffff3ffff3fff', 'ffoffffffffffoff', 'ffoffffffffffoff'] + ['f' * 16] * 2
 IC_LINE = {'A': dict(o=('cfloor', 0), z=('cfloor', 1)), 'B': dict(o=('stone', 0), z=('cfloor', 0)),
            'C': dict(o=('vrock', 0), z=('cata', 1))}
 LI = legend(h=('ice', 4), k=('ice', 1), g=('ice', 1), f=('ice', 0), w=('water', 0), x=('water', 1),
             **{str(i): ('ice', i) for i in range(5)})
 ICE_BODY = {
-    1: [   # 맑은 얼음 — 비스듬한 반사 획(4·3)과 옅은 결(1)
+    1: [   # 매끈한 빙판 — 비스듬한 반사 획(4·3)과 옅은 결(1)
         '2222222222222222', '2222222222222342', '2232222222223422', '2234222222234222',
         '2342222222242222', '2422222222222222', '2222222222221122', '2222222222211222',
         '2222222222222222', '2221122222222222', '2211222222222322', '2222222222223422',
         '2222222322234222', '2222223422242222', '2222234222222222', '2222222222222222'],
-    2: [   # 서리 낀 얼음 — 밝은 바탕(3), 서리 덩이(4), 갇힌 거품 고리(2)
-        '3333333333333333', '3344333333333333', '3444433333332333', '3344333333323233',
-        '3333333333332333', '3333333233333333', '3333332323333333', '3333333233333443',
-        '3333333333334443', '3233333333333433', '3323333333333333', '3332333334433333',
-        '3333333344443333', '3333323334433333', '3333232333333333', '3333323333333333'],
+    2: [   # 두꺼운 덩이 — 짙은 푸른 바탕(ice 1·0)에 하얀 안쪽 균열선(3·4)과 갇힌 거품(4 고리) — 매끈한 빙판(바탕 ice 2)과 한눈에 다르게
+        '0010111101110010', '0101111010101101', '1111140111011111', '1111430111111111',
+        '1114301110111101', '1143011111111011', '1140111114111111', '0111111141411111',
+        '1101111114111110', '1010111111111101', '1111110011114301', '1111001111143011',
+        '1100111111430111', '1011111114301111', '0111111111011110', '1101101101111011'],
 }
+
+
+def body_for(rows, line):
+    """줄마다 몸통 자리를 다르게(같은 손 도트를 돌리거나 민다): A 그대로 · B 180° · C 가로 8칸."""
+    if line == 'B':
+        return [r[::-1] for r in rows[::-1]]
+    if line == 'C':
+        return [r[8:] + r[:8] for r in rows]
+    return rows
+
+
 # 깨짐 3상태 — 칸 가운데(둘레 2px 밖)만 그린다. 금 = 0(ice 0) + 금 아래·오른쪽 빛 4. 깨진 구멍은 북쪽 벽에 얼음 두께(g f)가 보이고 그 밑이 물.
 ICE_CRACK = [
     (5, 5, ['..0....', '..40...', '...400.', '.004...', '.4..0..', '.....4.']),
@@ -486,10 +638,13 @@ ICE_CRACK = [
 
 def ice(line, n):
     leg = dict(LI, **legend(**IC_LINE[line]))
-    fr, inn = fill(IC_FRAME, IC_INNER, leg, {',': floor_body(line)})
+    land = floor_body(line)
+    fr_rows, inn_rows = IC_FRAMES[n]
+    fr, inn = fill(fr_rows, inn_rows, leg, {',': land, 'Q': grid(IC_FACE_Q, leg, 16, 16)})
+    wobble(fr, land, wob_for(line))
     out = []
     for st in range(4):
-        body = grid(ICE_BODY[n], leg)
+        body = grid(body_for(ICE_BODY[n], line), leg)
         if st:
             x, y, rows = ICE_CRACK[st - 1]
             stamp(body, rows, leg, x, y)
@@ -634,23 +789,27 @@ def place_v(k, x, y0, y1):
 
 
 # ================================================================================================ 후보·장면
-POOL_GRID = SR.POOL_GRID   # style-r1 물 장면과 같은 웅덩이(바깥/안 모서리·한 칸 혹)
-CHASM_GRID = ['##########', '##########', '##########', '#........#', '#.cccc...#', '#.cccccc.#', '#..cc.cc.#',
-              '#..c.....#', '#........#', '##########']
-ICE_GRID = ['##########', '##########', '##########', '#........#', '#..iii...#', '#.iiiiii.#', '#..ii.ii.#',
-            '#..i.....#', '#........#', '##########']
+# 후보 장면은 오토타일의 바깥·안 모서리가 다 나오게 불규칙하게 깐다 — ㄱ자로 꺾인 물길, 튀어나온 곶, 좁은 목.
+POOL_GRID = ['############', '############', '############', '#..........#', '#..www.....#', '#.wwwwww.w.#',
+             '#.ww..wwww.#', '#..w..ww...#', '#..ww......#', '############']
+CHASM_GRID = ['############', '############', '############', '#..........#', '#..cccc....#', '#.cccccccc.#',
+              '#.ccccccc..#', '#..cc.cccc.#', '#...c..cc..#', '############']
+ICE_GRID = ['############', '############', '############', '#..........#', '#..iiii....#', '#.iiiiiii..#',
+            '#.ii..iiii.#', '#..i..ii...#', '#..........#', '############']
 ICE_STATE_CELLS = [(3, 5), (4, 5), (5, 5)]   # 깨짐 1·2·3 상태를 놓은 칸
-BRIDGE_GRID = ['############', '############', '############', '#..........#', '#.cccc.www.#', '#.cccc.www.#',
-               '#.cccc.www.#', '#..........#', '############']
-# 줄별 장면 8×6 두 장 — α: 물 + 가로 다리 + 얼음판 / β: 낭떠러지 + 세로 다리 + 용암(줄 A 는 용암 대신 얼음판)
-SCENE_A = ['###.iii.', '###.iii.', '###.....', '...wwww.', '...wwww.', '........']
-SCENE_B = ['##......', '##...LLL', '##...LLL', '..ccc...', '..ccc...', '........']
+BRIDGE_GRID = ['#############', '#############', '#############', '#...........#', '#.cccc...ww.#', '#.ccccc.www.#',
+               '#.ccccc.www.#', '#.cc.cc..ww.#', '#...........#', '#############']
+# 줄별 장면 8×6 세 장 — 물가: ㄱ자 물 + 물을 가로지르는 가로 다리(사람이 다리 위) / 낭떠러지: 4칸 깊이 구덩이 + 세로 다리(사람이 다리 위)
+# / 용암·얼음: 좁은 목이 있는 용암(줄 A 는 물) + 들쭉날쭉한 얼음판.
+SCENE_A = ['##......', '##..ww..', '##.wwww.', '.wwwwww.', '.ww..ww.', '...w....']
+SCENE_B = ['##......', '##.cccc.', '##ccccc.', '.cccccc.', '.cc.ccc.', '........']
+SCENE_C = ['##......', '##..LL..', '##.LLLL.', '..LL....', '.....ii.', '...iiii.']
 
 
 def layers_at(line, n, k=0):
-    """장면 k 의 오토타일 묶음(용암 없는 줄은 L 자리에 얼음판)."""
+    """장면 k 의 오토타일 묶음(용암 없는 줄은 L 자리에 물)."""
     ly = {'w': water(line, n)[k], 'c': chasm(line, n), 'i': ice(line, n)[0]}
-    ly['L'] = lava(line, n)[k] if not skip_lava(line) else ly['i']
+    ly['L'] = lava(line, n)[k] if not skip_lava(line) else ly['w']
     return ly
 
 
@@ -660,16 +819,10 @@ def skip_lava(line):
 
 def scene_frames(line, n, which):
     k_ = bridge(line, n)
-    out = []
-    for k in range(NFRAMES):
-        ly = layers_at(line, n, k)
-        if which == 'a':
-            objs = place_h(k_, 3, 6, 4) + [(actor_cv(),) + at_cell(5, 4)]
-            out.append(render(SCENE_A, line, ly, objs))
-        else:
-            objs = place_v(k_, 3, 3, 4) + [(actor_cv(),) + at_cell(6, 4)]
-            out.append(render(SCENE_B, line, ly, objs))
-    return out
+    g, objs = {'a': (SCENE_A, place_h(k_, 1, 6, 3) + [(actor_cv(),) + at_cell(4, 3, foot=H_FOOT)]),
+               'b': (SCENE_B, place_v(k_, 4, 1, 4) + [(actor_cv(),) + at_cell(4, 3, foot=V_FOOT)]),
+               'c': (SCENE_C, [(actor_cv(),) + at_cell(1, 4)])}[which]
+    return [render(g, line, layers_at(line, n, k), objs) for k in range(NFRAMES)]
 
 
 def body_strip(ats, k=1):
@@ -700,7 +853,7 @@ def cand_lava(line, n):
 def cand_ice(line, n):
     def fn():
         sts = ice(line, n)
-        v = render(ICE_GRID, line, {'i': sts[0]})
+        v = render(ICE_GRID, line, {'i': sts[0]}, [(actor_cv(),) + at_cell(9, 4)])
         for s_, (cx, cy) in zip(sts[1:], ICE_STATE_CELLS):
             v.a[cy * T:(cy + 1) * T, cx * T:(cx + 1) * T] = s_.tile_at(255, cx, cy).a
         return hcat(*[SR.a2_block(s_) for s_ in sts]), {
@@ -709,19 +862,32 @@ def cand_ice(line, n):
     return fn
 
 
+def vstack(*cvs):
+    out = Cv(max(c.w for c in cvs), sum(c.h for c in cvs))
+    y = 0
+    for c in cvs:
+        out.paste(c, 0, y)
+        y += c.h
+    return out
+
+
 def cand_chasm(line, n):
     def fn():
-        at = chasm(line, n)
-        v = render(CHASM_GRID, line, {'c': at}, [(actor_cv(),) + at_cell(7, 4)])
-        return SR.a2_block(at), {'kind': 'autotile', 'autotiles': {'chasm': at}, 'vignette': v,
-                                 'extras': [('47 변형', variants_sheet(at), 2)]}
+        ch = chasm(line, n)
+        v = render(CHASM_GRID, line, {'c': ch}, [(actor_cv(),) + at_cell(10, 4)])
+        names = [f'앞면 {k + 1}단' for k in range(len(ch.tiers) - 1)] + ['어둠 그라데이션']
+        col = vstack(*ch.tiers)
+        return hcat(SR.a2_block(ch.at), col), {
+            'kind': 'autotile', 'autotiles': {'chasm': ch.at}, 'tiles': dict(zip(names, ch.tiers)), 'vignette': v,
+            'extras': [('먼 벽 단 · 그라데이션 6칸 이어 붙임', vstack(*[dot.tiled(t, 6, 1) for t in ch.tiers]), 3),
+                       ('끝선 + 어둠 47 변형', variants_sheet(ch.at), 2)]}
     return fn
 
 
 def cand_bridge(line, n):
     def fn():
         k = bridge(line, n)
-        objs = place_v(k, 3, 4, 6) + place_h(k, 7, 9, 5) + [(actor_cv(),) + at_cell(3, 5)]
+        objs = place_v(k, 3, 4, 7) + place_h(k, 8, 10, 5) + [(actor_cv(),) + at_cell(3, 6, foot=V_FOOT)]
         v = render(BRIDGE_GRID, line, {'c': chasm(line, n), 'w': water(line, n)[0]}, objs)
         return kit_sheet(k), {'kind': 'kit', 'kit': k, 'vignette': v,
                               'extras': [('가로 5칸 · 세로 4칸 이어 붙임', bridge_runs(k), 3)]}
@@ -769,40 +935,43 @@ def line_scenes():
     for ln in LINES:
         out[ln] = []
         for n in (1, 2):
-            out[ln].append((f'{ln}{n} 물가', SCENE_NOTES['a'] + (' (용암 없는 줄)' if skip_lava(ln) else ''), scene_frames(ln, n, 'a')))
-            out[ln].append((f'{ln}{n} 낭떠러지', SCENE_NOTES['b'] if not skip_lava(ln) else SCENE_NOTES['b_nolava'],
-                            scene_frames(ln, n, 'b')))
+            out[ln].append((f'{ln}{n} 물가', SCENE_NOTES['a'], scene_frames(ln, n, 'a')))
+            out[ln].append((f'{ln}{n} 낭떠러지', SCENE_NOTES['b'], scene_frames(ln, n, 'b')))
+            out[ln].append((f'{ln}{n} 용암·얼음' if not skip_lava(ln) else f'{ln}{n} 물·얼음',
+                            SCENE_NOTES['c'] if not skip_lava(ln) else SCENE_NOTES['c_nolava'], scene_frames(ln, n, 'c')))
     return out
 
 
-SCENE_NOTES = {'a': '물 + 가로 다리(사람이 다리 위) + 얼음판', 'b': '낭떠러지 + 세로 다리 + 용암',
-               'b_nolava': '낭떠러지 + 세로 다리 + 얼음판(줄 A 는 용암을 뺐다)'}
-SCENE_LEAD = ('그 줄 style-r1 조각(천장·앞면·바닥)과 같은 번호 edges 후보로 깐 8×6 칸 두 장 + Actor1 한 명. 물·용암은 4장면 움직임(3fps). '
+SCENE_NOTES = {'a': 'ㄱ자 물 + 물을 가로지르는 가로 다리 6칸(사람이 다리 위)',
+               'b': '4칸 깊이 구덩이(끝선 · 먼 벽 단 · 어둠) + 세로 다리 4칸(사람이 다리 위)',
+               'c': '좁은 목이 있는 용암 + 들쭉날쭉한 얼음판',
+               'c_nolava': '좁은 목이 있는 물(줄 A 는 용암을 뺐다) + 들쭉날쭉한 얼음판'}
+SCENE_LEAD = ('그 줄 style-r1 조각(천장·앞면·바닥)과 같은 번호 edges 후보로 깐 8×6 칸 세 장 + Actor1 한 명. 물·용암은 4장면 움직임(3fps). '
               '맵 가장자리는 잘린 것(맵이 이어진다고 본다).')
 NOTES = {}
 ITEM_NOTES = {
-    'water': {'A1': 'style-r1 A 물가 그대로 · 흐름: 물결 획이 0→1→2→1px 오른쪽으로 밀렸다 돌아옴(획마다 박자 어긋남)',
-              'A2': 'style-r1 A 물가 그대로 · 반짝임: 밝은 획이 제자리에서 밝아짐→짧아짐→사라짐, 어두운 골은 한 칸 옮김',
-              'B1': 'style-r1 B 바위 둑 그대로 · 흐름. 고인 물이라 획이 드물어 장면용 획 4개를 손으로 더함',
-              'B2': 'style-r1 B 바위 둑 그대로 · 반짝임(획 드묾 — 움직임이 약함)',
-              'C1': 'style-r1 C 얕은 물가 그대로 · 흐름(점 반짝이 + 장면용 획 4개)',
-              'C2': 'style-r1 C 얕은 물가 그대로 · 반짝임(점이 깜빡임 — 움직임이 약함)'},
-    'lava': {'B1': '굳은 껍질 판 + 빛나는 금, 빛이 금을 따라 흐름. 턱 바위 = style-r1 B 바윗덩이를 화산암 색으로',
+    'water': {'A1': 'style-r1 A 물가 + 굴곡·녹회색 테두리 돌 · 흐름: 물결 획이 0→1→2→1px 오른쪽으로 밀렸다 돌아옴(획마다 박자 어긋남)',
+              'A2': 'A1 과 같은 물가 · 반짝임: 밝은 획이 제자리에서 밝아짐→짧아짐→사라짐, 어두운 골은 한 칸 옮김',
+              'B1': 'style-r1 B 바위 둑 + 굴곡·회색 둑 돌 · 흐름. 고인 물이라 획이 드물어 장면용 획 4개를 손으로 더함',
+              'B2': 'B1 과 같은 물가 · 반짝임(획 드묾 — 움직임이 약함)',
+              'C1': 'style-r1 C 얕은 물가 + 굴곡·밝은 자갈 · 흐름(점 반짝이 + 장면용 획 4개)',
+              'C2': 'C1 과 같은 물가 · 반짝임(점이 깜빡임 — 움직임이 약함)'},
+    'lava': {'B1': '굳은 껍질 판 + 빛나는 금, 빛이 금을 따라 흐름. 턱 = style-r1 B 바윗덩이를 화산암 색으로 + 굴곡·화산암 돌',
              'B2': '녹은 용암 + 껍질 조각이 흔들리고 거품 셋이 부풀었다 터짐. 턱은 B1 과 같음',
-             'C1': '검은 화산암 껍질 + 주황 금, 빛이 금을 따라 흐름. 턱 바위 = style-r1 C 층리 앞면',
+             'C1': '검은 화산암 껍질 + 주황 금, 빛이 금을 따라 흐름. 턱 = style-r1 C 층리 앞면 + 굴곡·화산암 돌',
              'C2': '더 뜨거운 주황 녹은 용암 + 노란 획·거품. 턱은 C1 과 같음'},
-    'ice': {'A1': '맑은 얼음(비스듬한 반사 획) · 두께 앞면 2px · 그늘 = 갈색 흙 어두운 단',
-            'A2': '서리 낀 흰 얼음(서리 덩이·갇힌 거품) · 테두리는 A1 과 같음',
-            'B1': '맑은 얼음 · 윤곽 = B 의 어두운 돌 윤곽 o',
-            'B2': '서리 낀 얼음 · 윤곽 o',
-            'C1': '맑은 얼음 · 윤곽 = 검푸른 화산암, 그늘 = 회색 자갈 어두운 단',
-            'C2': '서리 낀 얼음 · 윤곽 화산암'},
-    'chasm': {'A1': '먼 벽 8px — style-r1 A 돌 앞면이 아래로 어두워짐 · 턱 = 밝은 흙 끝선',
-              'A2': '먼 벽 14px(북이 열린 칸은 아랫단까지) — 같은 돌 앞면이 더 깊게 꺼짐',
-              'B1': '먼 벽 8px — style-r1 B 바윗덩이 앞면 · 턱 윤곽 o',
-              'B2': '먼 벽 14px — 바윗덩이가 두 단으로 꺼짐',
-              'C1': '먼 벽 8px — style-r1 C 물결 층리 · 턱 = 밝은 자갈 끝선',
-              'C2': '먼 벽 14px — 층리 두 겹이 어둠으로 꺼짐'},
+    'ice': {'A1': '매끈한 빙판 — 바닥과 같은 높이, 두께 앞면 없음, 비스듬한 반사 획 · 윤곽 = 갈색 흙 어두운 단',
+            'A2': '금 간 두꺼운 얼음 덩이 — 3px 솟음, 남쪽 앞면에 세로 금, 짙은 푸른 바탕에 하얀 안쪽 균열선 · 그늘 = 흙 어두운 단',
+            'B1': '매끈한 빙판 · 윤곽 = B 의 어두운 돌 윤곽 o · 몸통 180° 돌림',
+            'B2': '금 간 두꺼운 얼음 덩이 · 윤곽 o',
+            'C1': '매끈한 빙판 · 윤곽 = 검푸른 화산암, 몸통 8칸 밈',
+            'C2': '금 간 두꺼운 얼음 덩이 · 윤곽 화산암, 그늘 = 회색 자갈 어두운 단'},
+    'chasm': {'A1': '먼 벽 2단(32px) — style-r1 A 돌 앞면이 아래로 어두워지고 셋째 칸에서 어둠으로 꺼짐 · 끝선 = 밝은 흙 턱 + 녹회색 돌',
+              'A2': '먼 벽 3단(48px) — 같은 돌 앞면이 더 깊게 떨어짐',
+              'B1': '먼 벽 2단 — style-r1 B 바윗덩이 앞면 · 끝선 윤곽 o + 회색 돌',
+              'B2': '먼 벽 3단 — 바윗덩이가 세 단으로 꺼짐',
+              'C1': '먼 벽 2단 — style-r1 C 물결 층리 · 끝선 = 밝은 자갈 턱',
+              'C2': '먼 벽 3단 — 층리가 세 겹으로 어둠에 묻힘'},
     'bridge': {'A1': '밧줄 널다리 — 널 3px + 틈, 남북 가장자리 밧줄, 끝에 말뚝 둘',
                'A2': '통나무 다리 — 가로는 통나무 둘, 세로는 셋을 밧줄로 묶음, 남끝에 통나무 단면',
                'B1': '갱도 목재 다리 — 굵은 널 + 쇠 볼트 박은 옆 들보, 쇠띠 감은 기둥',

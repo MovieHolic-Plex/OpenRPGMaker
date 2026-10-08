@@ -157,6 +157,12 @@ def check_one(item, im, meta):
             pbad |= b
             seams += s
             info += i
+        for name, t in meta.get('tiles', {}).items():   # 16칸 주기 아래층 조각(낭떠러지 먼 벽 단 등): 불투명·팔레트·가로 반복
+            holes += opaque(t.a)
+            pbad |= palette_bad(t.a)[0]
+            b, i = _seam_res(name, t, 'x')
+            seams += b
+            info.append(i)
         for name, f in meta.get('faces', {}).items():
             hl, s, i = face_checks(name, f)
             holes += hl
