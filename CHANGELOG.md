@@ -5,6 +5,61 @@
 
 <!-- releases -->
 
+## 0.178.0 — 2026-10-08
+
+### 깨지는 변경
+
+- **start** — 새 게임·새 프로젝트를 컨셉 피드 하나로 — 런처 첫 화면·메뉴·첫 부팅 환영 (`3290cc9`)
+
+### 기능
+
+- **i18n** — 컨셉 피드 문구 en·ja·zh (`8290925`)
+- **start** — 새 게임·새 프로젝트를 컨셉 피드 하나로 — 런처 첫 화면·메뉴·첫 부팅 환영 (`3290cc9`)
+- **start** — 컨셉으로 만들기 — 런처·메뉴·첫 부팅 처리기와 편집기 덮는 창 (`2e9b94e`)
+- **start** — 유튜브식 컨셉 피드 — 칩·검색·무한 스크롤·상세·살짝 바꾸기 (`d721788`)
+- **concepts** — 입력 문장 → 컨셉 초안·도트 썸네일, 기획에 타일셋 힌트 (`42de3f2`)
+- **concepts** — 피드용 컨셉 출처 — 스토어 쪽 읽기와 비상용 번들 (`78874b2`)
+- **harness** — game-concepts 공식 컨셉 하네스 (`353247c`)
+- **electron** — 스토어 컨셉 중계 채널 (`2208a78`)
+- **store-server** — 컨셉 피드 표·목록·상세·만든 수·운영자 게시 (`995bcf2`)
+- **concepts** — 컨셉 카드 형식과 컨셉→게임 기획 변환 (`a2e8b4e`)
+
+### 수정
+
+- **harness** — game-concepts draw 가 그림 서버 재시작에 한꺼번에 실패하지 않게 연결 오류만 다시 시도 (`acbb713`)
+- **concepts** — 리뷰 반영 — 늦은 비슷한 컨셉은 그 칸만, 만드는 중 닫기·두 번 만들기 막음, 첫 부팅도 메뉴와 같은 장르 씨앗 (`1da25e2`)
+- **start** — 내가 쓴 컨셉의 비슷한 컨셉을 출처에서 채우고 떠 있는 오류를 불투명하게 (`8da0c7d`)
+- **concepts** — 내가 쓴 컨셉도 AI 연결 관문을 먼저, 통신 오류는 바로 보이고 글쓰기 모델이 없으면 가벼운 모델로 (`bc2db76`)
+- **start** — 런처 위 막대 단추 줄바꿈·언어 선택 폭, 떠 있는 오류 불투명, Electron 탐침 AI 대역 (`100fddb`)
+- **license** — carry Phaser's MIT notice in exported games (`777144c`)
+
+### 정리
+
+- **ai** — stop hard-coding other vendors' OAuth client values (`8c24521`)
+
+### 문서
+
+- **openwiki** — 컨셉 피드 — 시작 화면·장르 팩·스토어·첫 사용자 흐름, 런처 Electron 탐침 다시 씀 (`8449665`)
+- **plan** — 컨셉 피드 구현 계획 (`9ab7b03`)
+- **spec** — 새 게임 = 컨셉 피드 설계 (`12569e9`)
+- **openwiki** — record post-purge public snapshot size and leftover tileset labels (`87f647e`)
+- **license** — name the public repo OpenRPGMaker and add RPG Maker non-affiliation notice (`ad77ef5`)
+
+### 테스트
+
+- **evidence** — 컨셉 피드 실제 앱·브라우저 화면 증거 (`15db844`)
+- **concepts** — 피드 만들기 처리기 인자 타입, 설계 문서 실행 메모 (`81c2575`)
+
+### 잡무
+
+- **license** — third party notices and audit-driven public exclusions (`7c4f2d3`)
+- **license** — name OPRN as the licensor (`c005ab8`)
+- **oss** — keep the original Brendan walking sprite out of the public snapshot (`9386063`)
+- **oss** — drop dangling castle regions link and survive broken links in export (`e81d10c`)
+- **oss** — export a public OpenRPGMaker snapshot from one commit (`2705ebb`)
+- **oss** — pre-publication scan and public snapshot exclude list (`1c6d832`)
+- **license** — editor under SUL, runtime MIT, games and outputs free (`dfe0ac1`)
+
 ## 0.177.1 — 2026-10-08
 
 ### 수정
