@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.183.0 — 2026-10-08
+
+### 기능
+
+- **interior** — 실내는 방 구성만 고르면 도구가 배치·칸막이·문·예제 방 가구를 정한다 (#2373) (`03cb2a3`)
+
+### 기타
+
+- add adversarial eight-genre visual audit evidence (`9dca473`)
+
 ## 0.182.0 — 2026-10-08
 
 ### 기능
