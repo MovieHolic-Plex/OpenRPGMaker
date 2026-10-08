@@ -21,6 +21,22 @@ export function tilesetHasLayerClassification(tileset: TilesetDef): boolean {
 }
 
 const kitUpperOnlyCache = new WeakMap<TilesetDef, ReadonlySet<number>>();
+/**
+ * Imported/custom atlases can have a tile priority that describes its backing
+ * pixel layer, while an autotile group describes the map layer where the
+ * transparent terrain is actually painted. Prefer a single explicit group
+ * layer over that ambiguous priority. Conflicting groups deliberately return
+ * both so a caller cannot silently move a shared tile between layers.
+ */
+function explicitAutotileLayer(tileset: TilesetDef, tile: number): TileLayerHome | undefined {
+  const layers = new Set((tileset.autotileGroups ?? [])
+    .filter((group) => group.memberTileIds.includes(tile) && group.layer !== undefined)
+    .map((group) => group.layer!));
+  if (layers.size === 1) return [...layers][0];
+  if (layers.size > 1) return "both";
+  return undefined;
+}
+
 /** 이 타일셋의 구조 키트가 upperTiles 로만 쓰고 tiles(1층)로는 한 번도 쓰지 않는 칸. */
 function bundledKitUpperOnlyTiles(tileset: TilesetDef): ReadonlySet<number> {
   let set = kitUpperOnlyCache.get(tileset);
@@ -44,6 +60,11 @@ export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome 
   if (override) return override;
   // Arbitrary atlases have no RM2K tile-number semantics. Explicit priority is authoritative.
   if (isCustomTileset(tileset)) {
+    // Store/imported terrain groups may intentionally live on the upper map
+    // layer even when their tile metadata has lower priority for transparent
+    // pixel backing. The group is the authored source of truth here.
+    const autotileLayer = explicitAutotileLayer(tileset, tile);
+    if (autotileLayer) return autotileLayer;
     // 받침(layerBacking)까지 적힌 칸은 저자가 층을 정한 덧그림이다(몬스터 키트의 울타리·눈더미·얼음 바위 71칸).
     // priority 는 그 칸을 lower 로 두어, 조수가 3층으로 칠한 눈더미가 「상위 전용 칩 자동 라우팅」으로 1층에 놓여
     // 바닥 없이 검은 칸이 됐다(2026-10-06 실제 편집기 이어 고치기).
