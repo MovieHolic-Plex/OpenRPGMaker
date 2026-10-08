@@ -28,8 +28,15 @@ const HOUSE_1F = "jp-city-house-1f", HOUSE_2F = "jp-city-house-2f", APT = "jp-ci
 const exitCell = (plan) => { const y = plan.length - 1; return { x: plan[y].indexOf("."), y }; };
 // 2묶음(2026-10-07): 가게·공공·집 보강 예제 19곳 — 한 장소 = 한 맵, 표는 examples/places2.json.
 const PLACES2 = JSON.parse(fs.readFileSync(join(EX, "places2.json"), "utf8"));
+// 3묶음(2026-10-08~): 학교·역·사무실·우체국 … — examples/places3*.json. 한 장소가 여러 맵(maps: 1층·2층·옥상·승강장·차내)일 수 있다.
+// inner:true 인 맵(위층·승강장·차내)은 거리 문과 잇지 않는다 — 계단·이동(links)으로만 들어온다.
+const PLACES3 = fs.readdirSync(EX).filter((f) => /^places3.*\.json$/.test(f)).sort().flatMap((f) => JSON.parse(fs.readFileSync(join(EX, f), "utf8")));
+// --only a,b = 그 예제 파일만 짓는다(작업자 확인용 — 서로 잇는 층은 함께 준다). --only 를 주면 게시하지 않는다.
+const onlyAt = process.argv.indexOf("--only");
+const ONLY = onlyAt > 0 ? new Set(process.argv[onlyAt + 1].split(",")) : null;
 const MAPS = [[HOUSE_1F, "house-1f", true], [HOUSE_2F, "house-2f", false], [APT, "apartment-1k", true],
-  ...PLACES2.map((p) => [`jp-city-${p.file}`, p.file, true])].map(([id, file, door]) => {
+  ...PLACES2.map((p) => [`jp-city-${p.file}`, p.file, true]),
+  ...PLACES3.flatMap((p) => (p.maps ?? [p.file]).map((f) => [`jp-city-${f}`, f, !read(f).inner]))].filter(([, file]) => !ONLY || ONLY.has(file)).map(([id, file, door]) => {
   const ex = read(file);
   return { id, file, start: ex.start, links: [...(ex.links ?? []), ...(exit && door ? [{ ...exitCell(ex.plan), ...exit }] : [])] };
 });
@@ -73,6 +80,7 @@ for (const m of MAPS) {
 }
 if (results.some((r) => !r.report.ok)) process.exitCode = 2;
 
+if (process.argv.includes("--publish") && ONLY) { console.error("--only 와 --publish 는 같이 쓰지 않는다"); process.exit(2); }
 if (process.argv.includes("--publish")) {
   if (process.exitCode) { console.error("검사 실패 — 게시하지 않았다"); process.exit(2); }
   // 집 실내(1묶음)는 관문 interior, 가게·공공·집 보강(2묶음 places2)은 관문 interior-shop — 둘 다 통과해야 게시한다.

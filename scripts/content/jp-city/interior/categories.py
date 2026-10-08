@@ -48,6 +48,21 @@ CATEGORIES = [
                        'pb-lost-found-shelf', 'pb-steel-locker']),
     ('clinic', '의원', ['pb-reception', 'pb-waiting-sofa-s', 'pb-waiting-sofa-n', 'pb-exam-bed', 'pb-curtain', 'pb-doctor-desk',
                        'pb-med-cabinet', 'pb-scale-height', 'pb-magazine-rack', 'pb-water-dispenser']),
+    # ── 3묶음(2026-10-08~): 학교·체육관·역·사무실·우체국. 블록마다 자기 칸 아래에만 분류 줄을 넣는다(병합 충돌 방지). ──
+    # [interior_school sc-]
+    # (학교 끝)
+
+    # [interior_gym gy-]
+    # (체육관 끝)
+
+    # [interior_station st-]
+    # (역 끝)
+
+    # [interior_office of-]
+    # (사무실 끝)
+
+    # [interior_post po-]
+    # (우체국 끝)
 ]
 
 BY_ID = {}
