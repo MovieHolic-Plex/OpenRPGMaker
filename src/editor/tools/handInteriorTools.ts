@@ -15,6 +15,9 @@ import { workshopHandObjects } from "@/project/workshopTiles";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
+import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
+import { furnishRooms } from '@/editor/handInterior/furnish';
+import { roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
 import { genId } from "@/util/id";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -45,6 +48,17 @@ function inferTileset(project: Project, args: Record<string, unknown>): string {
     if (found.length === 1) return found[0]!;
   }
   return HAND_INTERIOR_TILESET_ID;
+}
+/** 방 구성표 — 예제 맵마다 방 종류 목록, 방 견본 종류별 크기. build_hand_interior_room 의 layout.program·layout.rooms 에 쓴다. */
+function interiorPrograms(tilesetId: string) {
+  const P = roomPrograms(tilesetId);
+  if (!Object.keys(P).length) return {};
+  const kinds = new Map<string, string[]>();
+  for (const t of roomTemplates(tilesetId)) (kinds.get(t.kind) ?? kinds.set(t.kind, []).get(t.kind)!).push(`${t.w}×${t.h}`);
+  return {
+    programs: Object.entries(P).flatMap(([building, list]) => list.map((m) => ({ program: m.map, building, rooms: m.kinds.join(" · ") }))),
+    roomKinds: [...kinds].map(([kind, sizes]) => ({ kind, templates: sizes.length, sizes: [...new Set(sizes)].slice(0, 4).join(" ") })),
+  };
 }
 function pickTileset(project: Project, args: Record<string, unknown>): string {
   const t = typeof args.tileset === "string" && args.tileset.trim() ? args.tileset.trim() : inferTileset(project, args);
@@ -80,6 +94,7 @@ function specFor(project: Project, tilesetId: string): HandInteriorSpec {
   const workshop = workshopHandObjects(tileset);
   return Object.keys(kits).length || Object.keys(workshop).length ? { ...base, objects: { ...base.objects, ...kits, ...workshop } as HandInteriorSpec["objects"] } : base;
 }
+const PAIR = { type: "object", properties: { a: { type: "string" }, b: { type: "string" } }, required: ["a", "b"], additionalProperties: false } as const;
 const XY = { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], additionalProperties: false } as const;
 
 /** 검색 결과가 이 수 이하면 행마다 설명·태그·놓는 곳·짝 소품까지, 넘으면 id·이름·종류·크기·설명 한 줄만. */
@@ -128,8 +143,8 @@ export const LIST_HAND_INTERIOR_PARTS_TOOL: ToolDefinition = {
     }
     if (!q && !cat) {
       const idx = roomIndex(S);
-      return { summary: `${tilesetId === JP_INTERIOR_TILESET_ID ? "일본 집 실내(jp_city)" : tilesetId === WIZARDING_INTERIOR_TILESET_ID ? "마법 학교 실내(wizarding_world)" : HAND_INTERIOR_SPECS[tilesetId] ? "손 도트 실내" : `${project.tilesets[tilesetId]?.name ?? tilesetId} 실내`} 부품: 가구 ${Object.keys(S.objects).length}종(분류 ${categories.size}) · 바닥 ${Object.keys(S.floors).length} · 벽면 ${Object.keys(S.walls).length} · 천장 ${Object.keys(S.ceilings).length} · 탁상 물건 ${Object.keys(S.goods).length}. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.`,
-        data: { tilesetId, roomTilesets: roomTilesetIds(project),
+      return { summary: `${tilesetId === JP_INTERIOR_TILESET_ID ? "일본 집 실내(jp_city)" : tilesetId === WIZARDING_INTERIOR_TILESET_ID ? "마법 학교 실내(wizarding_world)" : HAND_INTERIOR_SPECS[tilesetId] ? "손 도트 실내" : `${project.tilesets[tilesetId]?.name ?? tilesetId} 실내`} 부품: 가구 ${Object.keys(S.objects).length}종(분류 ${categories.size}) · 바닥 ${Object.keys(S.floors).length} · 벽면 ${Object.keys(S.walls).length} · 천장 ${Object.keys(S.ceilings).length} · 탁상 물건 ${Object.keys(S.goods).length}. 가구는 room(방 종류)·query(낱말)·category 로 찾는다.${Object.keys(roomPrograms(tilesetId)).length ? ` 방 구성(programs ${Object.values(roomPrograms(tilesetId)).flat().length}개)·방 견본 종류(roomKinds)는 build_hand_interior_room 의 layout 에 쓴다.` : ""}`,
+        data: { tilesetId, roomTilesets: roomTilesetIds(project), ...interiorPrograms(tilesetId),
           floors: Object.entries(S.floors).map(([id, f]) => ({ id, ko: f.ko })),
           walls: Object.entries(S.walls).map(([id, w]) => ({ id, ko: w.ko })),
           ceilings: Object.keys(S.ceilings),
@@ -443,7 +458,10 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   description: "실내(집·민가·가게·상점·여관·주막·빵집·대장간·저택·교회·성 방·지하 등)를 지어줘·만들어줘 — 한 층을 손 도트 실내 칩셋 atlas_biome_interior 로 짓는다 — 실내를 까는 유일한 도구다. "
     + "plan = 한 줄씩 문자열 배열, '#' = 막힌 칸(외벽·칸막이·건물 밖), 그 밖 문자('.') = 실내. 벽면(막힌 칸 바로 아래 두 줄)·천장 띠·바닥·그림자는 자동이다. "
     + "방을 네모 하나로만 그리지 않는다 — 바깥 모양을 ㄱ·ㄷ·T 자로 꺾거나 알코브(벽에서 들어간 자리)·칸막이로 공간을 나눈다. 꺾인 모서리 벽·천장도 자동이다(예: [\"################\",\"#......#########\",\"#......#########\",\"#..............#\",\"#..............#\",\"#######..#######\"] = ㄱ자 방). "
-    + "방이 둘 이상(집·여관·가게 뒤채·기숙사 등)이면 plan 을 손으로 그리지 말고 rooms(방 사각형) + connect(이을 방 쌍) + exit(출구 방)를 준다 — 칸막이·문 틈·남쪽 출구·방별 바닥/벽면·문 기물(일본 집)을 도구가 계산하고 결과 data.plan·openings(문 자리)를 돌려준다. "
+    + "★ 건물·방이 둘 이상인 실내(집·가게+뒤채·여관·대장간·저택·일본 집·편의점 등)는 layout 하나만 준다: layout:{program:\"house-1f\"} 또는 layout:{rooms:[{kind:\"genkan\"},{kind:\"hall\"},{kind:\"ldk\"},{kind:\"toilet\"},{kind:\"bath\"}]} — 도구가 방 크기·배치(칸막이·문·트인 곳·출구, ㄱ·ㄷ자 바깥 모양)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. "
+    + "program·방 종류(roomKinds) 목록은 list_hand_interior_parts({tileset}) 인자 없이. 보고 있는 맵 크기에 맞추지 않는다 — 크기는 방 구성이 정한다. 결과 data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 1·2, 다른 견본은 layout.seed. "
+    + "가구를 더하거나 빼려면 data.rebuild(rooms·connect·exit·objects…)를 고쳐 같은 mapId·replace:true 로 넘긴다. "
+    + "직접 방 사각형을 정하려면 plan 대신 rooms(방 사각형) + connect(이을 방 쌍) + exit(출구 방)를 준다 — 칸막이·문 틈·남쪽 출구·방별 바닥/벽면·문 기물(일본 집)을 도구가 계산하고 결과 data.plan·openings(문 자리)를 돌려준다. "
     + "방마다 쓰임이 다르면(화실·욕실·화장실·부엌·침실·창고) 바닥만 zones 로 바꾸지 말고 칸막이로 나눈 방으로 만든다 — 바닥 무늬만 다른 구역은 마루 한가운데 떠 보인다. 큰 방 하나는 방 사각형 둘을 맞닿게(사이 0칸) 놓아 ㄱ·ㄷ자로 만든다. "
     + "예: rooms:[{id:\"hall\",x0:6,y0:8,x1:11,y1:14},{id:\"washitsu\",x0:1,y0:1,x1:7,y1:6,floor:\"tatami\"}], connect:[{a:\"washitsu\",b:\"hall\",door:\"fusuma-open\"}], exit:{room:\"hall\"}. "
     + "칸막이 규칙: 세로 칸막이('#' 한 열) 틈 1칸 = 문, 가로 칸막이('#' 한 줄) 틈은 그 아래 벽면 두 줄까지 통로가 된다. 맨 아래 줄의 '.' 틈이 실제 출구이며 결과 exits[].x,y로 반환한다. start는 통행 검사 출발점이다. "
@@ -464,6 +482,19 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       name: { type: "string", description: "맵 이름" },
       replace: { type: "boolean", description: "같은 칩셋의 기존 맵을 통째로 다시 짓기(기본 false)" },
       plan: { type: "array", items: { type: "string" }, description: "평면 — 줄마다 같은 길이, '#' 막힘 · '.' 실내. 방이 여럿이면 plan 대신 rooms 를 준다." },
+      layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
+        properties: {
+          program: { type: "string" },
+          rooms: { type: "array", items: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" }, w: { type: "integer", minimum: 2 }, h: { type: "integer", minimum: 4, description: "세로(벽면 두 줄 포함) — 방은 5 이상, 복도·화장실은 4" },
+            floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["kind"], additionalProperties: false } },
+          entrance: { type: "string", description: "출구 방 id 또는 종류(생략 시 현관·입구·복도·가게 순)" },
+          prefer: { type: "array", description: "문으로 바로 잇고 싶은 방 쌍 — a·b 는 방 id 또는 종류", items: PAIR },
+          open: { type: "array", description: "칸막이 없이 트고 싶은 방 쌍(현관↔복도·부엌↔거실은 기본으로 튼다)", items: PAIR },
+          variant: { type: "integer", minimum: 0, description: "배치 후보 번호(0 = 가장 좋은 것). 결과가 마음에 안 들면 1·2 로 다시 짓는다" },
+          seed: { type: "integer", minimum: 1, description: "다른 견본·다른 배치 묶음" },
+          furnish: { type: "boolean", description: "방마다 견본 가구를 심는다(기본 true). false 면 빈 방만" },
+          maxWidth: { type: "integer", minimum: 6 }, maxHeight: { type: "integer", minimum: 6 },
+        }, additionalProperties: false },
       rooms: { type: "array", description: "방 사각형 목록(plan 대신) — 바닥 칸 x0..x1·y0..y1(맨 위 두 줄은 벽면), 방 밖은 전부 벽. 사이 1칸 = 칸막이, 맞닿음 = 트인 한 방(ㄱ·ㄷ자), 2칸 이상 = 두꺼운 벽. floor·wall 은 그 방 바닥·벽면.",
         items: { type: "object", properties: { id: { type: "string" }, x0: { type: "integer", minimum: 1 }, y0: { type: "integer", minimum: 1 }, x1: { type: "integer" }, y1: { type: "integer" },
           floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["id", "x0", "y0", "x1", "y1"], additionalProperties: false } },
@@ -501,6 +532,20 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     const spec = specFor(draft, tilesetId);
     const fitNotes: string[] = [];
     args = fitToSpec(args, spec, tilesetId, fitNotes);
+    // layout(방 구성) → 배치 후보 중 하나를 rooms·connect·exit 로 바꾸고, 뒤에서 방마다 견본 가구를 심는다.
+    let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
+    if (args.layout && typeof args.layout === "object") {
+      if (args.plan || args.rooms) throw new ToolError("layout 은 plan·rooms 와 함께 줄 수 없다 — 하나만 준다(layout 이 방 배치를 짠다)", { code: "layout-and-plan" });
+      const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean };
+      const variant = Math.max(0, Math.floor(req.variant ?? 0));
+      let cands: LayoutCandidate[];
+      try { cands = layoutCandidates(tilesetId, req, spec, Math.max(3, variant + 1)); }
+      catch (error) { if (error instanceof LayoutError) throw new ToolError(error.message, { code: "layout-failed" }); throw error; }
+      const c = cands[Math.min(variant, cands.length - 1)]!;
+      picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false };
+      const { layout: _l, ...rest } = args;
+      args = { ...rest, rooms: c.rooms, connect: c.connect, exit: c.exit };
+    }
     // rooms(방 사각형 + 이을 쌍)면 평면·칸막이·문 틈·방별 바닥/벽면·문 기물을 계산해 plan 으로 바꾼다.
     let composed: ReturnType<typeof withComposedRooms>["composed"];
     try {
@@ -521,7 +566,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     const shape = handInteriorShapeFromPlan((args as unknown as HandInteriorInput).plan ?? []);
     // 틈=문 맞춤·문 앞 매트는 손 도트 실내(판타지) 문법이다. 일본 집·스토어 칩셋은 문을 기물(door·sidedoor)로 단다.
     const fitsGapDoors = tilesetId === HAND_INTERIOR_TILESET_ID;
-    const input = fitsGapDoors ? withDoormat(args as unknown as HandInteriorInput, shape) : args as unknown as HandInteriorInput;
+    let input = fitsGapDoors ? withDoormat(args as unknown as HandInteriorInput, shape) : args as unknown as HandInteriorInput;
+    let furnished: ReturnType<typeof furnishRooms>["perRoom"] | undefined;
+    if (picked?.furnish && composed) {
+      const f = furnishRooms(input, picked.c.rooms, composed, tilesetId, tileset, spec);
+      input = f.input; furnished = f.perRoom;
+    }
     let built;
     try { built = buildHandInteriorLayers(input, tileset, spec); }
     catch (error) {
@@ -584,10 +634,17 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (copied) warnings.push(`평면이 참고 예제 「${copied.name}」와 ${copied.same}% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다`);
     warnings.push(...doorNotes.map((note) => `자동 맞춤: ${note}`));
     return {
-      summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId}) — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
+      summary: `손 도트 실내 '${name}' ${built.width}×${built.height} (${mapId}, ${tilesetId})${picked ? ` — 배치 후보 ${picked.variant + 1}/${picked.variants}(방 ${picked.c.rooms.length}개, 견본 가구 ${Object.values(furnished ?? {}).reduce((a, f) => a + f.placed, 0)}점 — data.layout.picture 로 배치를 보고, 다른 배치는 layout.variant 를 바꿔 replace:true)` : ""} — 출입구에서 닿는 칸 ${built.reachable}, 닿지 못한 빈 바닥 ${built.unreachedFloor.length}, 경고 ${warnings.length}${warnings.length ? ` — ${warnings.slice(0, 4).join(" / ")}${warnings.length > 4 ? " …" : ""}` : ""}`,
       data: { mapId, tilesetId, width: built.width, height: built.height, reachable: built.reachable, floorCells: built.floorCells,
         unreachedFloor: built.unreachedFloor.slice(0, 20), entrance: built.start, exitWidth, exits, links: links.length, warnings: warnings.slice(0, 20),
-        ...(composed ? { plan: composed.plan, openings: composed.openings } : {}) },
+        ...(composed ? { plan: composed.plan, openings: composed.openings } : {}),
+        ...(picked && composed ? {
+          layout: { variant: picked.variant, variants: picked.variants, score: picked.c.score, notes: picked.c.notes, picture: layoutAscii(picked.c, composed.plan),
+            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, template: r.template, furniture: furnished?.[r.id] })) },
+          // 이 집을 손보려면 이 값을 그대로 rooms·connect·exit·objects… 로 넘기고 replace:true(가구를 빼거나 더해서)
+          rebuild: { rooms: picked.c.rooms.map(({ kind: _k, template: _t, ...r }) => r), connect: picked.c.connect, exit: picked.c.exit,
+            objects: (input.objects ?? []).filter((o) => !composed.doors.some((d) => d.id === o.id && d.x === o.x && d.y === o.y)), tables: input.tables, goods: input.goods, lines: input.lines, daises: input.daises },
+        } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },
