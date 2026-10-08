@@ -53,6 +53,8 @@ CATEGORIES = [
     # (학교 끝)
 
     # [interior_gym gy-]
+    ('gym', '체육관', ['gy-line-h', 'gy-line-v', 'gy-line-nw', 'gy-line-ne', 'gy-line-sw', 'gy-line-se', 'gy-line-tn', 'gy-line-ts', 'gy-line-circle', 'gy-key-w', 'gy-key-e', 'gy-hoop-e', 'gy-hoop-w', 'gy-stage-steps', 'gy-curtain', 'gy-wall-bars', 'gy-mat', 'gy-mat-stack', 'gy-vault-box', 'gy-ball-cart', 'gy-net-post', 'gy-score-board', 'gy-pipe-chair', 'gy-clock-cage']),
+    ('kindergarten', '유치원', ['gy-cubby', 'gy-kid-chair-s', 'gy-kid-chair-n', 'gy-kid-chair-e', 'gy-kid-chair-w', 'gy-upright-piano', 'gy-picture-books', 'gy-toy-box', 'gy-blocks-mat', 'gy-nap-futon', 'gy-kids-sink', 'gy-shoe-cubby', 'gy-drawing-board']),
     # (체육관 끝)
 
     # [interior_station st-]

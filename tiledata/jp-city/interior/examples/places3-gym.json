@@ -1,0 +1,93 @@
+[
+ {
+  "file": "gym",
+  "maps": [
+   "gym"
+  ],
+  "placeId": "jp-city-gym-22x17",
+  "name": "일본 학교 체육관 실내",
+  "kind": "gym",
+  "kindKo": "체육관",
+  "alias": [
+   "体育館",
+   "체육관",
+   "school gym"
+  ],
+  "building": "jp_school_gym",
+  "roomKinds": {
+   "gymfloor": [
+    "체육관 마루(코트)",
+    [
+     "アリーナ",
+     "体育館",
+     "코트",
+     "농구 코트"
+    ]
+   ],
+   "stage": [
+    "무대(단상)",
+    [
+     "ステージ",
+     "舞台",
+     "단상",
+     "강당 무대"
+    ]
+   ],
+   "gymstore": [
+    "체육 창고",
+    [
+     "体育倉庫",
+     "창고",
+     "체육 창고"
+    ]
+   ]
+  },
+  "rules": [
+   "남쪽 출입구 틈 3칸(서쪽 모서리) 옆에 신발장 → 마루 한가운데 농구 코트(흰 선 테두리·가운데 줄·빨간 가운데 원, 양 끝 빨간 제한 구역 gy-key-w/-e 4×3), 양 끝 선 바깥에 이동식 골대 둘(서쪽 gy-hoop-e·동쪽 gy-hoop-w, 코트 가운데 줄에 맞춰) → 북쪽 벽 아래 무대(gy-stage 8×2, 벽면에 자주 막 4장, 양 끝 앞에 작은 계단) → 북서 벽에 늑목 셋, 무대 옆 접이 장탁자(호루라기·초시계), 벽 윗줄에 망 씌운 시계 → 동쪽 골대 뒤 점수판 → 북동 체육 창고(세로·가로 칸막이 + 동쪽 끝 정면 문 — 골대 뒤를 비켜: 쌓은 매트·뜀틀·공 바구니·접이 의자 수레·배구 지주 둘).",
+   "코트와 둘레 동선은 원래 트인 바닥이라 open 으로 밝힌다 — 코트 안에는 선(밟는 무늬)만 깔고 가구를 두지 않는다. 코트 둘레 동선은 2칸 이상.",
+   "평면·가구는 tiledata/jp-city/interior/examples/gym.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-gym-22x17\"})."
+  ]
+ },
+ {
+  "file": "kindergarten",
+  "maps": [
+   "kindergarten"
+  ],
+  "placeId": "jp-city-kindergarten-18x12",
+  "name": "일본 유치원 실내",
+  "kind": "kindergarten",
+  "kindKo": "유치원",
+  "alias": [
+   "幼稚園",
+   "保育園",
+   "유치원",
+   "kindergarten"
+  ],
+  "building": "jp_kindergarten",
+  "roomKinds": {
+   "playroom": [
+    "놀이방(보육실)",
+    [
+     "保育室",
+     "遊戯室",
+     "놀이방",
+     "교실"
+    ]
+   ],
+   "napping": [
+    "낮잠 방",
+    [
+     "お昼寝",
+     "午睡室",
+     "낮잠",
+     "이불방"
+    ]
+   ]
+  },
+  "rules": [
+   "남쪽 출입구 틈 2칸(타타키) 서쪽에 아이 신발장 둘 → 놀이방: 북쪽 벽에 아이 사물함(3칸)·그림책 선반·업라이트 피아노·장난감 상자, 벽 윗줄에 그림 게시판·시계 → 가운데 낮은 탁자 둘(3×1)에 작은 의자가 북·남·탁자 사이에서 탁자를 본다(크레용·색종이) → 위·아래 2줄 통로와 동쪽 2줄 통로가 고리로 이어지고, 동남 구석 놀이 매트.",
+   "놀이방 동쪽 세로 칸막이 너머 두 방: 위 낮잠 방(미닫이 옆문, 아이 요 넷, 벽장), 아래 세면·화장실(미닫이 옆문, 낮은 세면대 + 변기). 아이 키라 가구가 낮다.",
+   "평면·가구는 tiledata/jp-city/interior/examples/kindergarten.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-kindergarten-18x12\"})."
+  ]
+ }
+]
