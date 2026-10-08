@@ -2,35 +2,35 @@
  "map": {
   "id": "jp-city-gym",
   "size": [
-   22,
-   17
+   21,
+   15
   ]
  },
  "start": [
-  3,
-  15
+  1,
+  13
  ],
- "summary": "손 도트 실내 '일본 학교 체육관 실내' 22×17 (jp-city-gym, jp_city) — 출입구에서 닿는 칸 210, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 학교 체육관 실내' 21×15 (jp-city-gym, jp_city) — 출입구에서 닿는 칸 139, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-gym",
   "tilesetId": "jp_city",
-  "width": 22,
-  "height": 17,
-  "reachable": 210,
-  "floorCells": 247,
+  "width": 21,
+  "height": 15,
+  "reachable": 139,
+  "floorCells": 186,
   "unreachedFloor": [],
   "entrance": [
    {
-    "x": 3,
-    "y": 15
+    "x": 1,
+    "y": 13
    }
   ],
-  "exitWidth": 3,
+  "exitWidth": 2,
   "exits": [
    {
-    "x": 2,
-    "y": 16,
-    "width": 3
+    "x": 1,
+    "y": 14,
+    "width": 2
    }
   ],
   "links": 0,
@@ -38,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 210,
+ "reach": 139,
  "ok": true
 }

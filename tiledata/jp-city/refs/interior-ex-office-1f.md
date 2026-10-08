@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 사무 빌딩 1층 로비 (`jp-city-office-1f`, 16×10)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-office-1f`. 도구 결과: 손 도트 실내 '사무 빌딩 1층 로비' 16×10 (jp-city-office-1f, jp_city) — 출입구에서 닿는 칸 60, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-office-1f", "name": "사무 빌딩 1층 로비", "plan": ["################", "#..........#...#", "#..........#...#", "#..........#...#", "#..........#...#", "#..........#.###", "#..............#", "#..............#", "#..............#", "#######..#######"], "floor": "of-lobby-stone", "wall": "of-lobby-wall", "zones": [{"x0": 11, "y0": 0, "x1": 15, "y1": 5, "floor": "of-stair-conc", "wall": "of-wall"}], "objects": [{"id": "of-plant-big", "x": 1, "y": 3}, {"id": "of-elevator", "x": 4, "y": 3}, {"id": "of-elevator-button", "x": 6, "y": 1}, {"id": "of-elevator", "x": 7, "y": 3}, {"id": "of-directory", "x": 9, "y": 1}, {"id": "of-plant-big", "x": 10, "y": 3}, {"id": "of-stairs-up", "x": 14, "y": 3}, {"id": "of-fire-door", "x": 12, "y": 5}, {"id": "of-desk-chair-s", "x": 2, "y": 5}, {"id": "of-security-gate", "x": 4, "y": 5}, {"id": "of-security-gate", "x": 6, "y": 5}, {"id": "of-security-gate", "x": 9, "y": 5}, {"id": "of-security-gate", "x": 10, "y": 5}, {"id": "of-reception", "x": 1, "y": 6}, {"id": "of-reception", "x": 2, "y": 6}, {"id": "of-reception", "x": 3, "y": 6}, {"id": "of-lobby-sofa-n", "x": 5, "y": 8}, {"id": "of-plant-big", "x": 9, "y": 8}, {"id": "of-mailbox-wall", "x": 13, "y": 8}, {"id": "cv-autodoor", "x": 7, "y": 9}], "tables": [], "goods": [{"id": "of-phone", "x": 1, "y": 6}, {"id": "of-name-card-box", "x": 3, "y": 6}], "exitWidth": 2, "start": [{"x": 7, "y": 8}], "links": [{"x": 14, "y": 3, "toMapId": "jp-city-office-floor", "toX": 13, "toY": 13, "direction": "up"}, {"x": 4, "y": 3, "toMapId": "jp-city-office-floor", "toX": 17, "toY": 13, "direction": "down"}, {"x": 5, "y": 3, "toMapId": "jp-city-office-floor", "toX": 18, "toY": 13, "direction": "down"}, {"x": 7, "y": 3, "toMapId": "jp-city-office-floor", "toX": 21, "toY": 13, "direction": "down"}, {"x": 8, "y": 3, "toMapId": "jp-city-office-floor", "toX": 22, "toY": 13, "direction": "down"}], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-office-1f", "name": "사무 빌딩 1층 로비", "plan": ["################", "#..........#...#", "#..........#...#", "#..........#...#", "#..........#...#", "#..........#.###", "#..............#", "#..............#", "#..............#", "#######..#######"], "floor": "of-lobby-stone", "wall": "of-lobby-wall", "zones": [{"x0": 11, "y0": 0, "x1": 15, "y1": 5, "floor": "of-stair-conc", "wall": "of-wall"}], "objects": [{"id": "of-plant-big", "x": 1, "y": 3}, {"id": "of-elevator", "x": 4, "y": 3}, {"id": "of-elevator-button", "x": 6, "y": 1}, {"id": "of-elevator", "x": 7, "y": 3}, {"id": "of-directory", "x": 9, "y": 1}, {"id": "of-plant-big", "x": 10, "y": 3}, {"id": "of-stairs-up", "x": 14, "y": 3}, {"id": "of-fire-door", "x": 12, "y": 5}, {"id": "of-desk-chair-s", "x": 2, "y": 5}, {"id": "of-security-gate", "x": 4, "y": 5}, {"id": "of-security-gate", "x": 6, "y": 5}, {"id": "of-security-gate", "x": 9, "y": 5}, {"id": "of-security-gate", "x": 10, "y": 5}, {"id": "of-reception", "x": 1, "y": 6}, {"id": "of-reception", "x": 2, "y": 6}, {"id": "of-reception", "x": 3, "y": 6}, {"id": "of-lobby-sofa-n", "x": 5, "y": 8}, {"id": "of-plant-big", "x": 9, "y": 8}, {"id": "of-mailbox-wall", "x": 13, "y": 8}, {"id": "cv-autodoor", "x": 7, "y": 9}], "tables": [], "goods": [{"id": "of-phone", "x": 1, "y": 6}, {"id": "of-name-card-box", "x": 3, "y": 6}], "exitWidth": 2, "start": [{"x": 7, "y": 8}], "links": [{"x": 14, "y": 3, "toMapId": "jp-city-office-floor", "toX": 13, "toY": 15, "direction": "up"}, {"x": 4, "y": 3, "toMapId": "jp-city-office-floor", "toX": 17, "toY": 15, "direction": "down"}, {"x": 5, "y": 3, "toMapId": "jp-city-office-floor", "toX": 18, "toY": 15, "direction": "down"}, {"x": 7, "y": 3, "toMapId": "jp-city-office-floor", "toX": 21, "toY": 15, "direction": "down"}, {"x": 8, "y": 3, "toMapId": "jp-city-office-floor", "toX": 22, "toY": 15, "direction": "down"}], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -19,11 +19,11 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 ## 이동
 | 이벤트 | 칸 | 이동 |
 |---|---|---|
-| jp-city-office-1f-link-0 | (14,3) | jp-city-office-floor (13,13) |
-| jp-city-office-1f-link-1 | (4,3) | jp-city-office-floor (17,13) |
-| jp-city-office-1f-link-2 | (5,3) | jp-city-office-floor (18,13) |
-| jp-city-office-1f-link-3 | (7,3) | jp-city-office-floor (21,13) |
-| jp-city-office-1f-link-4 | (8,3) | jp-city-office-floor (22,13) |
+| jp-city-office-1f-link-0 | (14,3) | jp-city-office-floor (13,15) |
+| jp-city-office-1f-link-1 | (4,3) | jp-city-office-floor (17,15) |
+| jp-city-office-1f-link-2 | (5,3) | jp-city-office-floor (18,15) |
+| jp-city-office-1f-link-3 | (7,3) | jp-city-office-floor (21,15) |
+| jp-city-office-1f-link-4 | (8,3) | jp-city-office-floor (22,15) |
 
 ## 통행(엔진 `isPassable`, `X` 막힘 · `.` 걸음)
 ```

@@ -1,6 +1,6 @@
 # 일본 도시 — 문 사전 (9종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 문 키트(`jp-door-*`)는 건물 지면 층(1층 띠 3줄) **위에 겹쳐** 찍는 2×3(마치야 3×3) 부착물이다. 맨 아래 두 줄은 막힘(문 칸), 윗줄은 ★. 문 앞 접근칸 = 키트 바깥 한 줄 아래(`access`).
 건물 조립 도구에서는 `door.type` 으로 고른다(`lattice·auto·lobby·steel·cafe·noren·rollup·machiya·house`). 항목 필드는 「상가 레시피 사전」과 같다. 그림 `jp-img-shop-doors`.

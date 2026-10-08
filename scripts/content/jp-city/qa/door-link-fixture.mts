@@ -159,9 +159,12 @@ for (const link of LINKS) {
       const t = transferOf(e); if (!t || !(t.mapId === data.interiorMapId || floorIds.has(t.mapId))) continue;
       const nb = ([["up", 0, 1], ["down", 0, -1], ["left", 1, 0], ["right", -1, 0]] as const).map(([dir, dx, dy]) => ({ dir, x: e.x + dx, y: e.y + dy }))
         .find((c) => !padsF.has(`${c.x},${c.y}`) && isPassable(ctx.project, fm, c.x, c.y) && canMove(ctx.project, fm, c.x, c.y, e.x, e.y));
-      if (!nb) throw new Error(`${mid} (${e.x},${e.y}) → ${t.mapId}: 이동 칸 옆에서 걸어 들어갈 칸이 없다`);
+      // 2칸 폭 계단통 안쪽 칸처럼 옆이 모두 발판이면 건너뛴다 — 같은 맵 쌍의 다른 발판이 밟힌다(아래에서 쌍마다 하나 이상인지 확인).
+      if (!nb) continue;
       hops.push({ map: mid, from: [nb.x, nb.y], dir: nb.dir, at: [e.x, e.y], to: t.mapId, toAt: [t.x, t.y] });
     }
+    const pairs = new Set((fm.events ?? []).map((e) => transferOf(e)?.mapId).filter((m): m is string => !!m && (m === data.interiorMapId || floorIds.has(m))));
+    for (const to of pairs) if (!hops.some((h) => (h as { map: string; to: string }).map === mid && (h as { to: string }).to === to)) throw new Error(`${mid} → ${to}: 옆에서 걸어 들어갈 수 있는 이동 칸이 하나도 없다`);
   }
   legs.push({
     hops,

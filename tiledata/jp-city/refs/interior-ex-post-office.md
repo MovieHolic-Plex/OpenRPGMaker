@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 우체국(郵便局) 실내 (`jp-city-post-office`, 12×13)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-post-office`. 도구 결과: 손 도트 실내 '일본 우체국(郵便局) 실내' 12×13 (jp-city-post-office, jp_city) — 출입구에서 닿는 칸 55, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-post-office`. 도구 결과: 손 도트 실내 '일본 우체국(郵便局) 실내' 12×13 (jp-city-post-office, jp_city) — 출입구에서 닿는 칸 52, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-post-office", "name": "일본 우체국(郵便局) 실내", "plan": ["############", "#......#...#", "#..........#", "#..........#", "#..........#", "#......#...#", "#......#####", "#..........#", "#..........#", "#..........#", "#..........#", "#..........#", "#####..#####"], "floor": "po-floor", "wall": "po-wall", "zones": [{"x0": 7, "y0": 0, "x1": 11, "y1": 6, "floor": "po-back-floor", "wall": "pb-office-wall"}], "objects": [{"id": "po-poster", "x": 3, "y": 1}, {"id": "wall-clock", "x": 6, "y": 1}, {"id": "po-staff-desk", "x": 1, "y": 3}, {"id": "po-staff-desk", "x": 4, "y": 3}, {"id": "po-counter-end", "x": 1, "y": 5}, {"id": "po-counter", "x": 2, "y": 5}, {"id": "po-counter", "x": 3, "y": 5}, {"id": "po-counter", "x": 4, "y": 5}, {"id": "po-counter", "x": 5, "y": 5}, {"id": "po-parcel-scale", "x": 6, "y": 5}, {"id": "door-side-western", "x": 7, "y": 4}, {"id": "po-sorting-shelf", "x": 8, "y": 3}, {"id": "po-mail-bag", "x": 10, "y": 3}, {"id": "po-mail-bag", "x": 9, "y": 5}, {"id": "po-mail-cart", "x": 10, "y": 5}, {"id": "po-ticket-machine", "x": 1, "y": 8}, {"id": "po-writing-desk", "x": 3, "y": 8}, {"id": "po-poster", "x": 10, "y": 7}, {"id": "po-atm", "x": 7, "y": 9}, {"id": "po-po-box", "x": 8, "y": 9}, {"id": "po-bench-n", "x": 3, "y": 10}, {"id": "houseplant", "x": 1, "y": 11}, {"id": "cv-autodoor", "x": 5, "y": 12}], "tables": [], "goods": [{"id": "po-stamp-sheet", "x": 3, "y": 5}, {"id": "po-envelope", "x": 5, "y": 5}, {"id": "po-parcel", "x": 2, "y": 3}, {"id": "po-envelope", "x": 5, "y": 3}, {"id": "po-envelope", "x": 4, "y": 8}], "exitWidth": 2, "start": [{"x": 5, "y": 11}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-post-office", "name": "일본 우체국(郵便局) 실내", "plan": ["############", "#......#...#", "#..........#", "#..........#", "#..........#", "#......#...#", "#......#####", "#..........#", "#..........#", "#..........#", "#..........#", "#..........#", "#####..#####"], "floor": "po-floor", "wall": "po-wall", "zones": [{"x0": 7, "y0": 0, "x1": 11, "y1": 6, "floor": "po-back-floor", "wall": "pb-office-wall"}], "objects": [{"id": "po-poster", "x": 3, "y": 1}, {"id": "wall-clock", "x": 6, "y": 1}, {"id": "po-staff-desk", "x": 1, "y": 3}, {"id": "po-staff-desk", "x": 4, "y": 3}, {"id": "po-counter-end", "x": 1, "y": 5}, {"id": "po-counter", "x": 2, "y": 5}, {"id": "po-counter", "x": 3, "y": 5}, {"id": "po-counter", "x": 4, "y": 5}, {"id": "po-counter", "x": 5, "y": 5}, {"id": "po-parcel-scale", "x": 6, "y": 5}, {"id": "door-side-western", "x": 7, "y": 4}, {"id": "po-sorting-shelf", "x": 8, "y": 3}, {"id": "po-mail-bag", "x": 10, "y": 3}, {"id": "po-mail-bag", "x": 9, "y": 5}, {"id": "po-mail-cart", "x": 10, "y": 5}, {"id": "po-ticket-machine", "x": 1, "y": 8}, {"id": "po-writing-desk", "x": 3, "y": 8}, {"id": "po-poster", "x": 10, "y": 7}, {"id": "po-atm", "x": 7, "y": 9}, {"id": "po-po-box", "x": 8, "y": 9}, {"id": "po-bench-n", "x": 3, "y": 10}, {"id": "po-bench-n", "x": 9, "y": 11}, {"id": "houseplant", "x": 10, "y": 9}, {"id": "houseplant", "x": 1, "y": 11}, {"id": "cv-autodoor", "x": 5, "y": 12}], "tables": [], "goods": [{"id": "po-stamp-sheet", "x": 3, "y": 5}, {"id": "po-envelope", "x": 5, "y": 5}, {"id": "po-parcel", "x": 2, "y": 3}, {"id": "po-envelope", "x": 5, "y": 3}, {"id": "po-envelope", "x": 4, "y": 8}], "exitWidth": 2, "start": [{"x": 5, "y": 11}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -30,9 +30,9 @@ X.XXXXXX.XXX
 X......XXXXX
 X......XXXXX
 XX.XX..XXXXX
-X......XXX.X
+X......XXXXX
 X..XX......X
-XX.........X
+XX.......XXX
 XXXXX..XXXXX
 ```
 
@@ -82,9 +82,9 @@ y=05: . . 11278 11278 11278 11278 11280 . . 11314 11313 .
 y=06: . . . . . . . . . . . .
 y=07: . 11282 . 11286 11287 . . . . . 11302 .
 y=08: . 11283 . 11288 11289 . . 11284 11298 11299 11303 .
-y=09: . . . 11290 11291 . . 11285 11300 11301 . .
-y=10: . 8904 . 11292 11293 . . . . . . .
-y=11: . 8905 . . . . . . . . . .
+y=09: . . . 11290 11291 . . 11285 11300 11301 8905 .
+y=10: . 8904 . 11292 11293 . . . . 11290 11291 .
+y=11: . 8905 . . . . . . . 11292 11293 .
 y=12: . . . . . . . . . . . .
 ```
 
@@ -98,7 +98,7 @@ y=04: . . . . . . . . . . . .
 y=05: . . . 11358 . 11357 . . . . . .
 y=06: . . . . . . . . . . . .
 y=07: . . . . . . . . . . . .
-y=08: . . . . 11357 . . . . . . .
+y=08: . . . . 11357 . . . . . 8904 .
 y=09: . . . . . . . . . . . .
 y=10: . . . . . . . . . . . .
 y=11: . . . . . . . . . . . .

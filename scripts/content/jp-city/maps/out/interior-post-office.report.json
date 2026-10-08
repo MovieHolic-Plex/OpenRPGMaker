@@ -10,13 +10,13 @@
   5,
   11
  ],
- "summary": "손 도트 실내 '일본 우체국(郵便局) 실내' 12×13 (jp-city-post-office, jp_city) — 출입구에서 닿는 칸 55, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 우체국(郵便局) 실내' 12×13 (jp-city-post-office, jp_city) — 출입구에서 닿는 칸 52, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-post-office",
   "tilesetId": "jp_city",
   "width": 12,
   "height": 13,
-  "reachable": 55,
+  "reachable": 52,
   "floorCells": 78,
   "unreachedFloor": [],
   "entrance": [
@@ -38,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 55,
+ "reach": 52,
  "ok": true
 }

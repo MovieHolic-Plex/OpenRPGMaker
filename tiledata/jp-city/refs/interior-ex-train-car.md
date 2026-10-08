@@ -1,12 +1,12 @@
 # 일본 도시 — 일본 실내 예제: 일본 통근 전철 차내 (`jp-city-train-car`, 21×8)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-train-car`. 도구 결과: 손 도트 실내 '일본 통근 전철 차내' 21×8 (jp-city-train-car, jp_city) — 출입구에서 닿는 칸 46, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-train-car`. 도구 결과: 손 도트 실내 '일본 통근 전철 차내' 21×8 (jp-city-train-car, jp_city) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-train-car", "name": "일본 통근 전철 차내", "plan": ["#####################", "#...................#", "#...................#", "#...................#", "#...................#", "#...................#", "##.................##", "#####################"], "floor": "st-car-floor", "wall": "st-car-wall", "zones": [], "objects": [{"id": "st-car-end", "x": 1, "y": 3}, {"id": "st-priority-seat", "x": 2, "y": 3}, {"id": "st-long-seat", "x": 7, "y": 3}, {"id": "st-pole", "x": 10, "y": 3}, {"id": "st-long-seat", "x": 11, "y": 3}, {"id": "st-priority-seat", "x": 16, "y": 3}, {"id": "st-car-end", "x": 19, "y": 3}, {"id": "st-car-door", "x": 5, "y": 1}, {"id": "st-car-door", "x": 14, "y": 1}, {"id": "st-strap", "x": 2, "y": 1}, {"id": "st-strap", "x": 3, "y": 1}, {"id": "st-strap", "x": 4, "y": 1}, {"id": "st-strap", "x": 7, "y": 1}, {"id": "st-strap", "x": 8, "y": 1}, {"id": "st-strap", "x": 9, "y": 1}, {"id": "st-strap", "x": 11, "y": 1}, {"id": "st-strap", "x": 12, "y": 1}, {"id": "st-strap", "x": 13, "y": 1}, {"id": "st-strap", "x": 16, "y": 1}, {"id": "st-strap", "x": 17, "y": 1}, {"id": "st-strap", "x": 18, "y": 1}, {"id": "st-priority-seat-s", "x": 2, "y": 6}, {"id": "st-long-seat-s", "x": 7, "y": 6}, {"id": "st-pole", "x": 10, "y": 6}, {"id": "st-long-seat-s", "x": 11, "y": 6}, {"id": "st-priority-seat-s", "x": 16, "y": 6}], "tables": [], "goods": [], "start": [{"x": 5, "y": 4}], "links": [{"x": 5, "y": 3, "toMapId": "jp-city-station-platform", "toX": 5, "toY": 7, "direction": "down"}, {"x": 6, "y": 3, "toMapId": "jp-city-station-platform", "toX": 5, "toY": 7, "direction": "down"}, {"x": 14, "y": 3, "toMapId": "jp-city-station-platform", "toX": 14, "toY": 7, "direction": "down"}, {"x": 15, "y": 3, "toMapId": "jp-city-station-platform", "toX": 14, "toY": 7, "direction": "down"}], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-train-car", "name": "일본 통근 전철 차내", "plan": ["#####################", "#...................#", "#...................#", "#...................#", "#...................#", "#...................#", "##.................##", "#####################"], "floor": "st-car-floor", "wall": "st-car-wall", "zones": [], "objects": [{"id": "st-car-end", "x": 1, "y": 3}, {"id": "st-priority-seat", "x": 2, "y": 3}, {"id": "st-long-seat", "x": 7, "y": 3}, {"id": "st-pole", "x": 10, "y": 3}, {"id": "st-long-seat", "x": 11, "y": 3}, {"id": "st-priority-seat", "x": 16, "y": 3}, {"id": "st-car-end", "x": 19, "y": 3}, {"id": "st-car-door", "x": 5, "y": 1}, {"id": "st-car-door", "x": 14, "y": 1}, {"id": "st-strap", "x": 2, "y": 1}, {"id": "st-strap", "x": 3, "y": 1}, {"id": "st-strap", "x": 4, "y": 1}, {"id": "st-strap", "x": 7, "y": 1}, {"id": "st-strap", "x": 8, "y": 1}, {"id": "st-strap", "x": 9, "y": 1}, {"id": "st-strap", "x": 11, "y": 1}, {"id": "st-strap", "x": 12, "y": 1}, {"id": "st-strap", "x": 13, "y": 1}, {"id": "st-strap", "x": 16, "y": 1}, {"id": "st-strap", "x": 17, "y": 1}, {"id": "st-strap", "x": 18, "y": 1}, {"id": "st-priority-seat-s", "x": 2, "y": 6}, {"id": "st-long-seat-s", "x": 7, "y": 6}, {"id": "st-pole", "x": 10, "y": 6}, {"id": "st-long-seat-s", "x": 11, "y": 6}, {"id": "st-priority-seat-s", "x": 16, "y": 6}, {"id": "st-car-door-s", "x": 5, "y": 6}, {"id": "st-car-door-s", "x": 14, "y": 6}, {"id": "st-door-line", "x": 5, "y": 3}, {"id": "st-door-line", "x": 6, "y": 3}, {"id": "st-door-line", "x": 14, "y": 3}, {"id": "st-door-line", "x": 15, "y": 3}], "tables": [], "goods": [], "start": [{"x": 5, "y": 4}], "links": [{"x": 5, "y": 3, "toMapId": "jp-city-station-platform", "toX": 5, "toY": 7, "direction": "down"}, {"x": 6, "y": 3, "toMapId": "jp-city-station-platform", "toX": 5, "toY": 7, "direction": "down"}, {"x": 14, "y": 3, "toMapId": "jp-city-station-platform", "toX": 14, "toY": 7, "direction": "down"}, {"x": 15, "y": 3, "toMapId": "jp-city-station-platform", "toX": 14, "toY": 7, "direction": "down"}], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -30,7 +30,7 @@ XXXXXXXXXXXXXXXXXXXXX
 XXXXX..XXXXXXX..XXXXX
 X...................X
 X...................X
-XXXXX..XXXXXXX..XXXXX
+XXXXXXXXXXXXXXXXXXXXX
 XXXXXXXXXXXXXXXXXXXXX
 ```
 
@@ -52,7 +52,7 @@ y=07: 8126 8724 8726 8726 8726 8726 8726 8726 8726 8726 8726 8726 8726 8726 8726
 y=00: . . . . . . . . . . . . . . . . . . . . .
 y=01: . . . . . . . . . . . . . . . . . . . . .
 y=02: . . . . . . . . . . . . . . . . . . . . .
-y=03: . . . . . . . . . . . . . . . . . . . . .
+y=03: . . . . . 11374 11374 . . . . . . . 11374 11374 . . . . .
 y=04: . . . . . . . . . . . . . . . . . . . . .
 y=05: . . . . . . . . . . . . . . . . . . . . .
 y=06: . . . . . . . . . . . . . . . . . . . . .
@@ -67,7 +67,7 @@ y=02: . 10965 10971 10971 10971 10963 10964 10971 10971 10971 10968 10971 10971 
 y=03: . 10966 10955 10956 10957 . . 10946 10947 10948 10969 10946 10947 10948 . . 10955 10956 10957 10966 .
 y=04: . . . . . . . . . . 10967 . . . . . . . . . .
 y=05: . . . . . . . . . . 10968 . . . . . . . . . .
-y=06: . . 10958 10959 10960 . . 10949 10950 10951 10969 10949 10950 10951 . . 10958 10959 10960 . .
+y=06: . . 10958 10959 10960 11372 11373 10949 10950 10951 10969 10949 10950 10951 11372 11373 10958 10959 10960 . .
 y=07: . . . . . . . . . . . . . . . . . . . . .
 ```
 

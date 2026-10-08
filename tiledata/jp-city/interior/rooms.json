@@ -2490,6 +2490,10 @@
    "gymstore",
    [
     [
+     "door-side-sliding",
+     1
+    ],
+    [
      "gy-mat-stack",
      1
     ],
@@ -2508,10 +2512,6 @@
     [
      "gy-ball-cart",
      1
-    ],
-    [
-     "door-open-western",
-     1
     ]
    ]
   ],
@@ -2529,18 +2529,6 @@
      1
     ],
     [
-     "gy-hoop-e",
-     1
-    ],
-    [
-     "gy-hoop-w",
-     1
-    ],
-    [
-     "gy-score-board",
-     1
-    ],
-    [
      "gy-line-nw",
      1
     ],
@@ -2550,7 +2538,7 @@
     ],
     [
      "gy-line-h",
-     20
+     16
     ],
     [
      "gy-line-tn",
@@ -2573,24 +2561,52 @@
      6
     ],
     [
-     "gy-line-circle",
-     1
-    ],
-    [
-     "gy-shoe-cubby",
-     1
-    ],
-    [
-     "genkan-door",
-     3
-    ],
-    [
      "gy-key-w",
      1
     ],
     [
      "gy-key-e",
      1
+    ],
+    [
+     "gy-line-circle",
+     1
+    ],
+    [
+     "gy-line-v-y",
+     10
+    ],
+    [
+     "gy-hoop-e",
+     1
+    ],
+    [
+     "gy-hoop-w",
+     1
+    ],
+    [
+     "gy-bench",
+     2
+    ],
+    [
+     "gy-shoe-cubby",
+     1
+    ],
+    [
+     "gy-pipe-chair",
+     1
+    ],
+    [
+     "gy-score-board",
+     1
+    ],
+    [
+     "gy-ball-cart",
+     1
+    ],
+    [
+     "genkan-door",
+     2
     ],
     [
      "gy-folding-table",
@@ -2779,7 +2795,7 @@
    [
     [
      "of-window-blind",
-     3
+     5
     ],
     [
      "wall-clock",
@@ -2787,27 +2803,39 @@
     ],
     [
      "of-desk-chair-s",
-     2
+     8
     ],
     [
-     "of-boss-desk",
-     2
+     "of-desk-n",
+     8
+    ],
+    [
+     "of-desk-s",
+     8
+    ],
+    [
+     "of-desk-chair-n",
+     8
     ],
     [
      "of-desk-chair-e",
-     4
+     3
     ],
     [
-     "of-desk-w",
-     4
+     "of-boss-desk-e",
+     1
     ],
     [
-     "of-desk-e",
-     4
+     "of-boss-desk-w",
+     1
     ],
     [
      "of-desk-chair-w",
-     4
+     3
+    ],
+    [
+     "of-partition",
+     7
     ],
     [
      "of-cabinet",
@@ -2826,19 +2854,19 @@
      1
     ],
     [
-     "of-coat-rack",
-     1
-    ],
-    [
      "of-whiteboard",
      1
     ],
     [
-     "of-plant-big",
+     "of-coat-rack",
      1
     ],
     [
      "pb-water-dispenser",
+     1
+    ],
+    [
+     "of-meeting-table",
      1
     ]
    ]
@@ -3000,11 +3028,11 @@
     ],
     [
      "po-bench-n",
-     1
+     2
     ],
     [
      "houseplant",
-     1
+     2
     ],
     [
      "cv-autodoor",
@@ -3182,7 +3210,7 @@
      1
     ],
     [
-     "door-open-western",
+     "sc-classroom-door",
      1
     ]
    ]
@@ -3205,7 +3233,11 @@
      1
     ],
     [
-     "door-open-toilet",
+     "door-side-western",
+     1
+    ],
+    [
+     "sc-classroom-door",
      1
     ]
    ]
@@ -3266,10 +3298,6 @@
      2
     ],
     [
-     "sc-cleaning-locker",
-     2
-    ],
-    [
      "sc-podium",
      8
     ],
@@ -3283,14 +3311,22 @@
     ],
     [
      "sc-desk-n",
-     30
+     55
+    ],
+    [
+     "sc-back-locker",
+     4
+    ],
+    [
+     "sc-cleaning-locker",
+     2
     ],
     [
      "sc-classroom-door",
      4
     ],
     [
-     "ac-unit",
+     "houseplant",
      1
     ]
    ]
@@ -3306,15 +3342,15 @@
     ],
     [
      "houseplant",
+     3
+    ],
+    [
+     "sc-washstand",
+     2
+    ],
+    [
+     "pb-water-dispenser",
      1
-    ],
-    [
-     "sc-back-locker",
-     3
-    ],
-    [
-     "sc-sink",
-     3
     ],
     [
      "sc-cleaning-locker",
@@ -3641,6 +3677,14 @@
     [
      "st-long-seat-s",
      2
+    ],
+    [
+     "st-car-door-s",
+     2
+    ],
+    [
+     "st-door-line",
+     4
     ]
    ]
   ]

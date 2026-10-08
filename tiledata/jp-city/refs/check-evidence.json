@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 44409
+   "chars": 44410
   },
   {
    "id": "jp-autotile",
@@ -65,10 +65,10 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 411종 · 바닥 36 · 벽면 26)",
+   "name": "일본 도시 · 일본 집 실내 (가구 420종 · 바닥 36 · 벽면 26)",
    "documents": 11,
    "images": 20,
-   "chars": 258421
+   "chars": 263368
   },
   {
    "id": "jp-interior-shop",
@@ -82,7 +82,7 @@
    "name": "일본 도시 · 일본 학교·역·사무실 실내 (7곳, 맵 14장)",
    "documents": 15,
    "images": 14,
-   "chars": 109048
+   "chars": 113639
   },
   {
    "id": "jp-errors",
@@ -96,13 +96,13 @@
   "categories": 13,
   "documents": 107,
   "images": 221,
-  "chars": 1134625,
+  "chars": 1144164,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
- "tilesEmitted": 10746,
- "kitsEmitted": 851,
- "kitArrayItemsRoundtrip": 851,
+ "tilesEmitted": 10754,
+ "kitsEmitted": 860,
+ "kitArrayItemsRoundtrip": 860,
  "unknownTokens": [
   "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
   "jp-interior-ex-bakery:jp-city-bakery",
@@ -140,7 +140,7 @@
   "jp-interior-ex-sushi:jp-city-sushi",
   "jp-interior-ex-train-car:jp-city-train-car",
   "jp-interior-ex-yaoya:jp-city-yaoya",
-  "jp-interior-p3-index:jp-city-gym-22x17",
+  "jp-interior-p3-index:jp-city-gym-21x15",
   "jp-interior-p3-index:jp-city-kindergarten-18x12",
   "jp-interior-p3-index:jp-city-mansion-lobby-9x12",
   "jp-interior-p3-index:jp-city-office-1f-16x10",
@@ -184,7 +184,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "42539584a4190a0be075702b12cd945d4f84712a500dfb9882290463bfcfde30",
-  "images": "4ceb66cc2e84ae9ee7f5d01b5d8b0440c3d5b0a06a337084d6770d9f585d41fb"
+  "json": "7db9f5e3f9cb87d1820a3d1504748de1319c6892c9893d3df0af660820426708",
+  "images": "354fb3428f2d75ba312bc5a1526cb3e8c9180115622439bf4db8777780f7e346"
  }
 }

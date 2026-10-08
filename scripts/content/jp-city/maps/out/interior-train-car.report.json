@@ -10,13 +10,13 @@
   5,
   4
  ],
- "summary": "손 도트 실내 '일본 통근 전철 차내' 21×8 (jp-city-train-car, jp_city) — 출입구에서 닿는 칸 46, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 통근 전철 차내' 21×8 (jp-city-train-car, jp_city) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-train-car",
   "tilesetId": "jp_city",
   "width": 21,
   "height": 8,
-  "reachable": 46,
+  "reachable": 42,
   "floorCells": 74,
   "unreachedFloor": [],
   "entrance": [
@@ -57,6 +57,6 @@
    "reached": true
   }
  ],
- "reach": 46,
+ "reach": 42,
  "ok": true
 }

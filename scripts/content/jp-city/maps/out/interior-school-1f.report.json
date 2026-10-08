@@ -10,14 +10,14 @@
   13,
   18
  ],
- "summary": "손 도트 실내 '학교 본관 1층(昇降口·교무실·보건실)' 26×20 (jp-city-school-1f, jp_city) — 출입구에서 닿는 칸 152, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '학교 본관 1층(昇降口·교무실·보건실)' 26×20 (jp-city-school-1f, jp_city) — 출입구에서 닿는 칸 150, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-school-1f",
   "tilesetId": "jp_city",
   "width": 26,
   "height": 20,
-  "reachable": 152,
-  "floorCells": 200,
+  "reachable": 150,
+  "floorCells": 198,
   "unreachedFloor": [],
   "entrance": [
    {
@@ -51,6 +51,6 @@
    "reached": true
   }
  ],
- "reach": 152,
+ "reach": 150,
  "ok": true
 }
