@@ -32,7 +32,7 @@ const PLACES2 = JSON.parse(fs.readFileSync(join(EX, "places2.json"), "utf8"));
 // inner:true 인 맵(위층·승강장·차내)은 거리 문과 잇지 않는다 — 계단·이동(links)으로만 들어온다.
 // 4묶음(현대 던전)은 places4*.json — 같은 방식, 관문 단계만 interior-p4.
 const P_FILES = fs.readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f)).sort();
-const PLACES3 = P_FILES.flatMap((f) => JSON.parse(fs.readFileSync(join(EX, f), "utf8")));
+const PLACES3 = P_FILES.flatMap((f) => JSON.parse(fs.readFileSync(join(EX, f), "utf8")).map((p) => ({ ...p, set: Number(f[6]) })));
 const P_STAGES = [...new Set(P_FILES.map((f) => `interior-p${f[6]}`))];
 // --only a,b = 그 예제 파일만 짓는다(작업자 확인용 — 서로 잇는 층은 함께 준다). --only 를 주면 게시하지 않는다.
 const onlyAt = process.argv.indexOf("--only");
@@ -87,7 +87,12 @@ if (process.argv.includes("--publish") && ONLY) { console.error("--only 와 --pu
 if (process.argv.includes("--publish")) {
   if (process.exitCode) { console.error("검사 실패 — 게시하지 않았다"); process.exit(2); }
   // 집 실내(1묶음)는 관문 interior, 가게·공공·집 보강(2묶음 places2)은 관문 interior-shop — 둘 다 통과해야 게시한다.
-  for (const stage of ["interior", "interior-shop", ...P_STAGES]) {
+  // --sets 3,4 = 그 묶음 장소만 게시하고 그 묶음 관문만 본다(1 = 집·원룸 interior, 2 = 가게 interior-shop, n = interior-p<n>).
+  // 묶음을 더할 때마다 공용 참고문서(interior-rules.md)가 바뀌어 앞 묶음 관문이 「판정 뒤 바뀐 파일」로 낡는다 — 앞 묶음 게시물은 그대로 두고 새 묶음만 낸다.
+  const setsAt = process.argv.indexOf("--sets");
+  const SETS = setsAt > 0 ? new Set(process.argv[setsAt + 1].split(",").map(Number)) : null;
+  const stageOf = (n) => (n === 1 ? "interior" : n === 2 ? "interior-shop" : `interior-p${n}`);
+  for (const stage of SETS ? [...SETS].map(stageOf) : ["interior", "interior-shop", ...P_STAGES]) {
     const gate = spawnSync("python3", ["scripts/content/jp-city/gate/adversarial_gate.py", "check", "--stage", stage], { cwd: ROOT, encoding: "utf8" });
     process.stdout.write(gate.stdout);
     if (gate.status !== 0 && !process.env.SKIP_GATE) { console.error(`적대적 검증 관문 ${stage} 미통과 — 게시하지 않았다`); process.exit(3); }
@@ -103,21 +108,22 @@ if (process.argv.includes("--publish")) {
   // 집은 1층·2층을 한 다운로드에(계단 이동이 이어지게), 원룸은 혼자.
   const groups = [
     { file: "house", placeId: "jp-city-house-interior-21x15", name: "일본 2층 단독주택 실내(1층·2층)", maps: [HOUSE_1F, HOUSE_2F], main: HOUSE_1F,
-      rules: ["1층: 현관(타타키+아가리카마치 띠·신발장·문턱) → 동서 복도(북쪽 벽 계단) — 북쪽 화실(후스마)·화장실(문)·부엌, 남서 욕실·탈의실(미닫이 옆문), 동쪽 LDK(옆문·대면 카운터·식탁·TV).",
+      set: 1, rules: ["1층: 현관(타타키+아가리카마치 띠·신발장·문턱) → 동서 복도(북쪽 벽 계단) — 북쪽 화실(후스마)·화장실(문)·부엌, 남서 욕실·탈의실(미닫이 옆문), 동쪽 LDK(옆문·대면 카운터·식탁·TV).",
         "2층: 남쪽 복도(계단통 — 아랫줄 밟으면 1층·실내 건조대) · 부부 침실(더블 침대·화장대·옷장) · 화장실 · 아이방(이층침대·공부 책상·벽장) — 방마다 가로 칸막이 1칸 틈에 열린 문.",
         "평면 문자열과 가구 id 는 tiledata/jp-city/interior/examples/house-1f.json·house-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로."],
       limitations: "실내만이다 — 현관 밖 이동은 비어 있다(거리 맵에 붙일 때 1층 맨 아래 틈 칸에 links 를 단다). 가족 NPC·이벤트 없음." },
-    { file: "apartment-1k", placeId: "jp-city-apartment-1k-12x13", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT,
+    { file: "apartment-1k", placeId: "jp-city-apartment-1k-12x13", name: "일본 원룸 아파트(1K) 실내", maps: [APT], main: APT, set: 1,
       rules: ["현관 타타키(좁은 신발장·문턱) → 부엌 복도(싱크·조리대·가스대·냉장고·세탁기) · 서쪽 유닛 배스(욕조+변기, 미닫이 옆문) · 문 → 북쪽 방(침대·TV·좌탁).",
         "평면·가구는 tiledata/jp-city/interior/examples/apartment-1k.json."],
       limitations: "실내만이다 — 현관 밖 이동은 비어 있다. NPC·이벤트 없음." },
-    ...PLACES2.map((p) => ({ file: p.file, placeId: p.placeId, name: p.name, maps: [`jp-city-${p.file}`], main: `jp-city-${p.file}`, rules: p.rules,
+    ...PLACES2.map((p) => ({ file: p.file, placeId: p.placeId, name: p.name, maps: [`jp-city-${p.file}`], main: `jp-city-${p.file}`, set: 2, rules: p.rules,
       limitations: "실내만이다 — 거리 건물 문과는 link_jp_city_interior 로 잇는다. 점원·손님 NPC·이벤트 없음." })),
     // 3묶음: 장소 하나 = 맵 여러 장(층·승강장·차내 — 예제 links 로 이미 이어짐). 거리 문은 첫 맵에만.
-    ...PLACES3.map((p) => { const ids = (p.maps ?? [p.file]).map((f) => `jp-city-${f}`); return { file: p.file, placeId: p.placeId, name: p.name, maps: ids, main: ids[0], rules: p.rules,
+    ...PLACES3.map((p) => { const ids = (p.maps ?? [p.file]).map((f) => `jp-city-${f}`); return { file: p.file, placeId: p.placeId, name: p.name, maps: ids, main: ids[0], set: p.set, rules: p.rules,
       limitations: "실내만이다 — 거리 건물 문과는 link_jp_city_interior 로 첫 맵에만 잇는다(위층·승강장·차내는 계단·엘리베이터·승차 칸 links 로 이어져 있다). 교사·학생·역무원·승객 NPC·이벤트 없음." }; }),
   ];
   for (const g of groups) {
+    if (SETS && !SETS.has(g.set)) continue;
     const proj = structuredClone(tpl);
     proj.meta.title = g.name;
     proj.tilesets = { jp_city: { ...structuredClone(TS), referenceDocuments: structuredClone(TS.referenceDocuments ?? []) } };
