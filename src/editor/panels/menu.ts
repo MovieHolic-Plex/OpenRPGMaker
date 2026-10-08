@@ -4,9 +4,7 @@ import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
 import { showAlert, showConfirm } from "@/editor/ui/modal";
-import { createProjectStartSeed } from "@/editor/projectStartSeed";
 import { showBackupRestoreDialog } from "@/editor/ui/backupRestoreDialog";
-import { newProjectChoiceLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderAiConnectionChip } from "@/editor/panels/aiConnectionChip";
@@ -906,45 +904,10 @@ async function editGameDesignBrief(): Promise<void> {
 }
 
 async function createProjectFromDialog(): Promise<void> {
-  // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
-  // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
-  // 새 프로젝트는 이름과 시작 장르를 받고 별도 SQLite 폴더에 저장한다.
-  // 장르가 있으면 genrePacks.ts 정본 경로로 시스템 프리셋을 씨앗에 적용한다 —
-  // 예제는 마을과 플레이 구간을 준비하고, AI 기획은 시스템 프리셋에서 시작한다.
-  const selection = await showNewProjectDialog({
-    defaultValue: "새 프로젝트",
-    ensureAiConnected: async (presetLabel) => {
-      const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-      return ensureAiConnectedForPreset({ presetLabel });
-    },
-  });
-  if (selection === null) return;
-  const title = selection.title.trim() || "새 프로젝트";
-  const choiceId = selection.choiceId;
-  let seed: Project;
-  try { seed = await createProjectStartSeed(choiceId, title, selection.startMode, selection.screenSize); }
-  catch (error) { toast(`시작 프로젝트를 준비하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error"); return; }
-  // 게임 화면 크기(논리 뷰포트)는 createProjectStartSeed 가 넣는다. 타이틀 그림·파티클·음악은
-  // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).
-  if (selection.gameDesignBrief) seed.gameDesignBrief = { ...selection.gameDesignBrief, generationPending: true };
-  const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
-  if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;
-  let created: boolean;
-  try {
-    created = await createProjectFolderWithSeed(title, seed);
-  } catch (error) {
-    toast(`새 프로젝트를 만들지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error");
-    return;
-  }
-  if (!created) {
-    toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
-    return;
-  }
-  const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
-  toast(`'${title}' 프로젝트를 만들었습니다 — 새 폴더에 저장됩니다${genreSuffix}`, "ok");
-  // The new folder's saved brief owns generation. Do not send to the old store before reload.
-  // 데스크톱은 열린 폴더, 웹은 hostProject 주소를 부팅 attach가 다시 연다.
-  if (window.oprn?.start) window.location.reload();
+  // 2026-10-07: 새 프로젝트 = 새 게임 = 컨셉 피드(src/start/conceptFeed). 런처와 같은 화면을 덮는 창으로 연다.
+  // 이름·폴더·화면 크기는 묻지 않는다. 만들기는 새 폴더에 씨앗 + 확정 기획을 저장하고 다시 읽는다(src/editor/conceptMake.ts).
+  const { openConceptFeedOverlay } = await import("@/editor/conceptFeedOverlay");
+  await openConceptFeedOverlay("menu");
 }
 
 async function newScarloxyDemoProject(): Promise<void> {

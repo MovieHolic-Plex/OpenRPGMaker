@@ -7,7 +7,7 @@ import { deserialize, serialize } from "@/project/io/serialize";
 import { projectLint } from "@/project/lint/projectLint";
 import { evaluateGenrePackConfiguration, genrePackById } from "@/editor/genrePacks";
 import { welcomeGenrePresetById, welcomeGenreSystemPresetPlanById } from "@/editor/welcomeGenrePresets";
-import { NEW_PROJECT_GENRE_OPTIONS } from "@/editor/ui/newProjectDialog";
+import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 
 describe("supported action genre", () => {
   it("keeps the action genre in the registry and off the new-project start surface", () => {
@@ -15,7 +15,7 @@ describe("supported action genre", () => {
     expect(genrePackById("action-rpg").starter.defaultRecipeId).toBe("action-system");
     expect(welcomeGenrePresetById("action-rpg")?.packId).toBe("action-rpg");
     expect(welcomeGenreSystemPresetPlanById("action-rpg").recipeId).toBe("action-system");
-    expect(NEW_PROJECT_GENRE_OPTIONS.some((entry) => entry.id === "action-rpg")).toBe(false);
+    expect(NEW_PROJECT_CHOICES.filter((entry) => entry.featured).some((entry) => entry.id === "action-rpg")).toBe(false);
   });
 
   it("roundtrips action settings without turning on every map", () => {

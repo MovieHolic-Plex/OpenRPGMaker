@@ -28,7 +28,7 @@ import {
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
-import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
+import { hasDeepLinkedProject, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { isBlankStartProject } from "@/project/projectBlankness";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
@@ -214,7 +214,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (startHandoff) {
       // 시작 화면을 거친 사용자는 첫 방문 브리핑을 이미 본 셈이다 — 다음 부팅에도 띄우지 않는다.
       setEditorWelcomeDismissed(true);
-      if (startHandoff.presetId || startHandoff.intent.gameDesignBrief) {
+      if (startHandoff.intent.gameDesignBrief) {
         // 프리셋 장르는 셸이 뜬 뒤 인터뷰로 간다(아래). 코치마크가 인터뷰 위에 뜨지 않게 지금 표시한다.
         markWelcomeIntentAppliedThisBoot();
       } else if (startHandoff.prompt) {
@@ -227,14 +227,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   // 브리핑 모듈은 셸 마운트와 **병렬로** 미리 받는다. 셸을 다 그린 뒤에 import 하면 그동안 편집기가
   // 먼저 보였다가 웰컴이 덮는다(2026-09-26 실측: 캔버스 20.3s → 웰컴 23.5s, 최대 7.4s 차이).
   // catch 는 미처리 거부 경고만 막는다 — 실패는 아래 await 에서 그대로 던진다.
-  const welcomeModules = showBriefing
-    ? Promise.all([
-        import("@/editor/welcomeGenreSystemPresetAction"),
-        import("@/ai/llmClient"),
-        import("@/editor/panels/aiChatPanelHelpers"),
-        import("@/editor/panels/aiConnectionStatus"),
-      ])
-    : null;
+  const welcomeModules = showBriefing ? import("@/editor/conceptFeedOverlay") : null;
   void welcomeModules?.catch(() => undefined);
 
   // 맵 URL 동기화: URL의 ?map= 파라미터로 맵 복원 + 뒤로가기/앞으로가기 설치
@@ -249,7 +242,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   await renderTopbar();
   await enterMode("edit");
   // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다. 브리핑이 뜰 때는 웰컴이 마운트된
-  // 직후까지 로더를 남겨 편집기가 한순간도 맨몸으로 보이지 않게 한다(아래 presentEditorWelcome 직후).
+  // 직후까지 로더를 남겨 편집기가 한순간도 맨몸으로 보이지 않게 한다(아래 openConceptFeedOverlay 직후).
   if (!showBriefing || !elements) dismissBootLoader();
 
   if (sharedDemoOpen && !showBriefing) {
@@ -257,88 +250,21 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     presentSharedDemoIntro();
   }
 
-  // 시작 화면에서 프리셋 장르를 골랐으면 메뉴 「새 프로젝트」와 같이 AI 연결 관문 → 기획 인터뷰를 거친다.
-  // 확정하면 기획이 generationPending 으로 심기고 아래 prepareProjectInterviewStartup 이 저장·팀 첫 생성을 넘긴다.
-  // 「나중에」·취소면 예전처럼 한 문장만 조수에게 넘긴다(비었으면 장르만 켜진 채로 둔다).
-  if (startHandoff?.presetId) {
-    const { runStartScreenPresetInterview } = await import("@/editor/startScreenHandoff");
-    const outcome = await runStartScreenPresetInterview(startHandoff);
-    if (outcome === "declined" && startHandoff.prompt) {
-      await queueStartScreenSentence(startHandoff, setPendingWelcomePipeline);
-    }
-  }
-
   if (showBriefing && elements) {
-    // 브리핑이 "만들 수 있다" 고 약속하기 전에 실제로 가능한지 본다. 미설정 상태에서 보내면
-    // 채팅 패널이 "의도 읽는 중…" 에서 조용히 멈춘다(2026-09-22 실측 30초+, 실패 토스트 없음).
+    // 첫 부팅 환영 = 새 게임 컨셉 피드(덮는 창). 컨셉을 고르면 지금 열린 빈 프로젝트에 확정 기획이 심기고,
+    // 바로 아래 prepareProjectInterviewStartup 이 저장·첫 구간 뼈대·팀 첫 생성을 넘긴다.
     // 모듈 로드가 실패하면 로더가 영영 덮지 않도록 걷고 나서 던진다.
-    const [
-      { applyWelcomeGenreSystemPresetPlan },
-      { loadAiConfig },
-      { isAiConfigReady },
-      { getAiConnectionStatus },
-    ] = await welcomeModules!.catch((error: unknown) => {
+    const { openConceptFeedOverlay } = await welcomeModules!.catch((error: unknown) => {
       dismissBootLoader();
       throw error;
     });
-    const aiReady = (): boolean => {
-      try {
-        // config 모양만 보면 chatgpt 모드가 **언제나 true** 다(assistantEndpoint.ts 주석 참고).
-        // 실제 연결은 동반 서비스 캐시가 판정한다 — 그걸 함께 넘겨야 죽은 게이트가 되지 않는다.
-        const config = loadAiConfig();
-        return isAiConfigReady(config, getAiConnectionStatus(config));
-      } catch {
-        // 판정을 못 하면 막지 않는다 — 설정이 멀쩡한 사용자를 잘못 가로막는 게 더 나쁘다.
-        return true;
-      }
-    };
-    const welcomeResult = presentEditorWelcome(elements.root, {
-      applySystemPreset: (plan, brief) => applyWelcomeGenreSystemPresetPlan(plan, undefined, brief),
-      canGenerate: aiReady,
-      openAiSettings: () => {
-        void import("@/editor/panels/aiSettingsModal")
-          .then(({ openAiSettingsModal }) => { openAiSettingsModal(); })
-          .catch(() => undefined);
-      },
-      // 프리셋 포스터는 AI 팀이 첫 생성을 맡는다 — 연결이 없으면 인터뷰 전에 연결부터 안내한다.
-      ensureAiConnected: async (presetLabel) => {
-        const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-        return ensureAiConnectedForPreset({ presetLabel });
-      },
-    });
-    // presentEditorWelcome 은 Promise 실행자 안에서 동기로 마운트한다 — 이 시점에 웰컴이 이미 DOM 에 있다.
-    // 로더 페이드아웃(200ms)이 웰컴 위로 겹쳐 빠지므로 로더 → 웰컴 사이에 편집기가 비치지 않는다.
+    const outcome = openConceptFeedOverlay("welcome");
+    // 창은 동기로 붙는다 — 로더 페이드아웃이 창 위로 겹쳐 빠지므로 편집기가 맨몸으로 비치지 않는다.
     dismissBootLoader();
-    const result = await welcomeResult;
-    if (result.dismiss) setEditorWelcomeDismissed(true);
-    if (result.systemPresetPlan) {
-      clearWelcomeIntentBootFlags();
-      const { toast } = await import("@/util/toast");
-      toast("빈 맵과 장르 기본 설정을 저장했어요. 왼쪽 ‘그리기’에서 타일을 고르고, 위의 ‘테스트’로 확인하세요.", "ok");
-    } else if (result.prompt) {
-      // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
-      // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서
-      // applyGenrePreset 이 한 번도 호출되지 않았다).
-      if (result.source === "chip" && result.presetId) {
-        const { applyWelcomeGenrePresetToOpenProject } = await import("@/editor/welcomeGenrePresetApply");
-        applyWelcomeGenrePresetToOpenProject(result.presetId);
-      }
-      setPendingWelcomePipeline({
-        prompt: result.prompt,
-        // 말풍선에는 사용자 쪽 문장만 — 모델은 prompt 전체를 받는다.
-        ...(result.displayText ? { displayText: result.displayText } : {}),
-        autoSend: result.autoSend,
-        source: result.source === "chip" ? "chip" : "free-text",
-        // 프리셋으로 시작하는 첫 생성만 팀으로 돈다. 자유 입력 「만들기」와 이후 요청은 사용자 팀 설정을 따른다.
-        ...(result.source === "chip" ? { team: true } : {}),
-      });
-      // AI 없이 인터뷰를 끝내면 기획 프롬프트가 조수 입력창에 담기기만 한다. 설명이 없으면 빈 맵과
-      // 낯선 지시문만 남아 「아무 일도 안 일어났다」로 보인다 — 메뉴의 새 프로젝트 경로와 같은 안내를 준다.
-      if (!result.autoSend) {
-        const { toast } = await import("@/util/toast");
-        toast("게임 기획을 저장하고 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
-      }
-    } else {
+    const result = await outcome;
+    if (result === "made") clearWelcomeIntentBootFlags();
+    else {
+      setEditorWelcomeDismissed(true);
       clearWelcomeIntentBootFlags();
     }
   }

@@ -134,9 +134,10 @@ export async function versionManifest(db: Db, slug: string, version: number, vie
 /** blob 을 내줘도 되는가: 내려가지 않은 상품의 판본이 쓰고 있어야 한다(업로드만 된 파일은 주지 않는다). */
 export async function blobServable(db: Db, sha256: string): Promise<{ mime: string; inR2: boolean } | null> {
   const { rows } = await db.query(
-    `select b.mime, b.r2_at from store_blobs b where b.sha256 = $1 and exists (
+    `select b.mime, b.r2_at from store_blobs b where b.sha256 = $1 and (exists (
        select 1 from store_version_blobs vb join store_items i on i.id = vb.item_id
-       where vb.sha256 = b.sha256 and i.status <> 'removed')`,
+       where vb.sha256 = b.sha256 and i.status <> 'removed')
+       or exists (select 1 from store_concepts c where c.status = 'visible' and (c.full_sha = b.sha256 or c.card_sha = b.sha256)))`,
     [sha256],
   );
   return rows[0] ? { mime: String(rows[0].mime), inR2: rows[0].r2_at !== null } : null;
@@ -437,6 +438,7 @@ export async function sweepOrphanBlobs(db: Db, store: BlobStore, olderThanHours 
     `delete from store_blobs b where b.created_at < now() - make_interval(hours => $1)
        and not exists (select 1 from store_version_blobs v where v.sha256 = b.sha256)
        and not exists (select 1 from store_items i where i.cover_sha = b.sha256 or b.sha256 = any(i.previews))
+       and not exists (select 1 from store_concepts c where c.full_sha = b.sha256 or c.card_sha = b.sha256)
      returning sha256`,
     [olderThanHours],
   );

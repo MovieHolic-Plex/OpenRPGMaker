@@ -1,4 +1,6 @@
-// 데스크톱 시작 화면 QA — 실제 Electron(dist-electron/main.cjs + dist/)을 띄워 시작 화면 → 새 게임 → 편집기 → 재기동까지 본다.
+// 데스크톱 시작 화면 QA — 실제 Electron(dist-electron/main.cjs + dist/)을 띄워 컨셉 피드 → 상세 → 만들기 → 편집기 → 재기동까지 본다.
+// (2026-10-07 컨셉 피드로 다시 씀. AI 가 연결 안 된 창이면 만들기가 연결 관문에서 멈춘다 — 「나중에」 로 폴더가 안 생기는지 보고,
+//  편집기 왕복은 「빈 프로젝트로 시작」으로 본다. AI 가 연결돼 있으면 컨셉 기획이 저장됐는지까지 본다.)
 //
 // 사용자 데이터(최근 목록·localStorage)는 임시 --user-data-dir 로 격리한다. 사용자의 최근 목록을 건드리지 않는다.
 // 새 게임 폴더는 OPRN_NEW_PROJECT_ROOT(임시)에 만든다 — 폴더 대화상자는 자동화할 수 없다.
@@ -6,18 +8,18 @@
 //   npm run build:fast && npm run build:electron
 //   xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs
 //
-// 결과: verify-shots/start-screen/ 의 PNG 와 probe.json.
+// 결과: verify-shots/start-screen/(OPRN_START_QA_OUT_NAME 로 바꿈) 의 PNG 와 probe.json.
 // OPRN_START_QA_REAL=<폴더>:<폴더> 를 주면 실제 프로젝트를 **사본으로** 떠서 최근 목록에 더한다(원본에는 쓰지 않는다).
 // 업로드 타일셋·접힌 타일셋(형식 2)·큰 맵에서도 시작 화면이 카드 그림을 굽는지 본다.
 import { _electron as electron } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 
 const REPO_ROOT = resolve(import.meta.dirname, "..", "..");
 const MAIN_BUNDLE = join(REPO_ROOT, "dist-electron/main.cjs");
-const OUT_DIR = resolve(REPO_ROOT, "verify-shots/start-screen");
+const OUT_DIR = resolve(REPO_ROOT, "verify-shots", process.env.OPRN_START_QA_OUT_NAME ?? "start-screen");
 const FIXTURE_PROJECT = "test/fixtures/life-full.reloaded.project.json";
 mkdirSync(OUT_DIR, { recursive: true });
 
@@ -63,6 +65,16 @@ async function launch() {
   });
   const page = await app.firstWindow();
   await page.setViewportSize({ width: 1280, height: 800 });
+  // OPRN_START_QA_STUB_AI=1: 연결 관문만 「연결됨」으로 답하고 바깥 POST(모델 호출)는 끊는다 — 만들기 → 기획 저장 → 재로드를 모델 없이 본다.
+  if (process.env.OPRN_START_QA_STUB_AI === "1") {
+    await page.route("**/*", (route) => {
+      const request = route.request();
+      const url = new URL(request.url());
+      if (url.pathname.endsWith("/auth/status")) return route.fulfill({ json: { connected: true, authKind: "oauth" } });
+      if (/^https?:$/.test(url.protocol) && request.method() === "POST") return route.abort();
+      return route.continue();
+    });
+  }
   const errors = [];
   page.on("pageerror", (error) => errors.push("pageerror: " + error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push("console: " + message.text()); });
@@ -79,30 +91,27 @@ async function shutdown(app) {
 const shot = (page, name) => page.screenshot({ path: join(OUT_DIR, name + ".png"), fullPage: false });
 const probe = { scratch };
 
-// ── 1회차: 시작 화면 → 새 게임 → 편집기 ────────────────────────────────
+// ── 1회차: 피드 → 상세 → 만들기 → 편집기 ──────────────────────────────
 {
   const { app, page, errors } = await launch();
-  await page.waitForSelector("[data-testid='start-continue'], .start-hero", { timeout: 30_000 });
+  await page.waitForSelector("[data-testid='concept-feed-card']", { timeout: 30_000 });
   // 편집기에서 한 번도 안 연 프로젝트(픽스처 마을)도 시작 화면이 직접 카드 그림을 굽는다.
   const coverDeadline = Date.now() + 20_000;
   const expected = [village, ...realProjects];
   while (expected.some((dir) => !existsSync(join(dir, "cover.jpg"))) && Date.now() < coverDeadline + realProjects.length * 20_000) await page.waitForTimeout(300);
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(800);
   await shot(page, "01-home");
   probe.home = await page.evaluate(() => ({
     url: location.href,
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
-    continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
-    cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
-    hiddenNote: document.querySelector(".start-hidden-note")?.textContent ?? null,
-    stylesheetRules: [...document.styleSheets].reduce((sum, sheet) => sum + sheet.cssRules.length, 0),
+    feedCards: document.querySelectorAll("[data-testid='concept-feed-card']").length,
+    offlineNote: !document.querySelector("[data-testid='concept-feed-offline']")?.hidden,
+    continueCards: [...document.querySelectorAll(".cf-continue-title")].map((node) => node.textContent),
+    continueImages: [...document.querySelectorAll(".cf-continue-card")].map((card) => Boolean(card.querySelector("img"))),
+    hiddenNote: document.querySelector(".cf-continue-note")?.textContent ?? null,
+    brokenThumbs: [...document.querySelectorAll(".cf-thumb-img")].filter((img) => img.complete && img.naturalWidth === 0).length,
   }));
   probe.home.neverOpenedCoverBytes = existsSync(join(village, "cover.jpg")) ? readFileSync(join(village, "cover.jpg")).length : 0;
   probe.home.realCovers = realProjects.map((dir) => ({ dir: basename(dir), bytes: existsSync(join(dir, "cover.jpg")) ? readFileSync(join(dir, "cover.jpg")).length : 0 }));
-  probe.home.cardImages = await page.evaluate(() => [...document.querySelectorAll(".start-card")].map((card) => ({
-    title: card.querySelector(".start-card-title")?.textContent ?? null,
-    hasImage: Boolean(card.querySelector("img")),
-  })));
   // 빈 폴더(맵 없음) 프로젝트는 그림을 굽지 않는다 — 첫 글자로 남는다.
   probe.home.emptyProjectCover = existsSync(join(emptyGame, "cover.jpg"));
 
@@ -110,20 +119,48 @@ const probe = { scratch };
   await shot(page, "02-home-hidden-shown");
   await page.click("[data-testid='start-hidden-toggle']");
 
-  await page.click("[data-testid='start-new-game']");
-  await page.waitForFunction(() => document.querySelector("[data-testid='start-location']")?.textContent?.includes("/"), null, { timeout: 10_000 });
-  await page.click("[data-testid='start-genre-option-monster-collect']");
-  await page.fill("[data-testid='start-intent-input']", "풀숲에서 첫 몬스터를 만나는 마을");
-  await page.locator(".start-arrival-settings summary").click();
-  await page.fill("[data-testid='start-title-input']", "QA 몬스터 마을");
-  await page.waitForFunction(() => document.querySelector("[data-testid='start-location']")?.textContent?.endsWith("QA 몬스터 마을"), null, { timeout: 10_000 });
-  await shot(page, "03-new-game");
-  probe.newGame = await page.evaluate(() => ({
-    location: document.querySelector("[data-testid='start-location']")?.textContent ?? null,
-    pressed: [...document.querySelectorAll(".first-world-poster[aria-pressed='true']")].map((node) => node.getAttribute("data-testid")),
-  }));
+  // 내리면 더 나온다(비상용 번들이 24장 이하면 끝 표시만).
+  await page.mouse.wheel(0, 4000);
+  await page.waitForTimeout(800);
+  await shot(page, "03-scrolled");
+  probe.scroll = await page.evaluate(() => ({ cards: document.querySelectorAll("[data-testid='concept-feed-card']").length }));
 
-  await page.click("[data-testid='start-create']");
+  // 분류 칩
+  await page.click("[data-testid='concept-feed-chip-추리']");
+  await page.waitForTimeout(600);
+  probe.chip = await page.evaluate(() => ({ cards: [...document.querySelectorAll("[data-testid='concept-feed-card'] .cf-tags")].map((node) => node.textContent) }));
+  await page.click("[data-testid='concept-feed-chip-전체']");
+  await page.waitForTimeout(600);
+
+  // 상세
+  await page.locator("[data-testid='concept-feed-card']").first().click();
+  await page.waitForSelector("[data-testid='concept-detail']:not([hidden])");
+  await page.waitForTimeout(800);
+  await shot(page, "04-detail");
+  probe.detail = await page.evaluate(() => ({
+    title: document.querySelector(".cf-detail-title")?.textContent ?? null,
+    similar: document.querySelectorAll(".cf-mini").length,
+  }));
+  await page.fill("[data-testid='concept-detail-tweak']", "주인공을 고양이로");
+  const before = existsSync(newRoot) ? readdirSync(newRoot).length : 0;
+  await page.click("[data-testid='concept-detail-make']");
+  const outcome = await Promise.race([
+    page.waitForSelector("[data-testid='ai-connect-gate']", { timeout: 30_000 }).then(() => "gate"),
+    page.waitForURL(/index\.html/, { timeout: 30_000 }).then(() => "editor"),
+  ]).catch(() => "timeout");
+  probe.make = { outcome };
+  if (outcome === "gate") {
+    await page.waitForTimeout(400);
+    await shot(page, "05-make-ai-gate");
+    await page.click("[data-testid='ai-connect-gate-later']");
+    await page.waitForTimeout(600);
+    probe.make.foldersAfterDecline = (existsSync(newRoot) ? readdirSync(newRoot).length : 0) - before;
+    probe.make.makeEnabledAgain = await page.evaluate(() => !document.querySelector("[data-testid='concept-detail-make']")?.disabled);
+    // 편집기 왕복은 빈 프로젝트로.
+    await page.keyboard.press("Escape");
+    await page.waitForSelector("[data-testid='concept-feed-blank']");
+    await page.click("[data-testid='concept-feed-blank']");
+  }
   let editorReady = true;
   try {
     await page.waitForSelector("[data-testid='edit-canvas']", { timeout: 90_000, state: "visible" });
@@ -131,22 +168,18 @@ const probe = { scratch };
     editorReady = false;
   }
   await page.waitForTimeout(3_000);
-  await shot(page, "04-editor-after-create");
+  await shot(page, "06-editor-after-create");
   probe.editor = await page.evaluate(async () => {
     const status = await window.oprn.project.status();
     const loaded = await window.oprn.project.load({ projectDir: status.projectDir });
     const project = loaded?.serialized ? JSON.parse(loaded.serialized) : null;
     return {
       url: location.href,
-      welcomeOverlay: Boolean(document.querySelector("[data-testid='editor-welcome']")),
-      // AI 가 없는 QA 창에서는 한 문장이 보내지지 않고 조수 입력창에 담긴다 — 그 안내가 떠야 한다.
-      handoffNotice: (document.body.innerText ?? "").includes("적어 둔 한 문장을 조수 입력창에 담았습니다"),
-      handoffTextOnPage: (document.body.innerText ?? "").includes("풀숲에서 첫 몬스터를 만나는 마을")
-        || [...document.querySelectorAll("textarea, [contenteditable='true']")].some((node) => (node.value ?? node.textContent ?? "").includes("풀숲에서 첫 몬스터를 만나는 마을")),
+      welcomeOverlay: Boolean(document.querySelector("[data-testid='concept-feed']")),
       projectDir: status.projectDir,
       savedTitle: project?.meta?.title ?? null,
       savedGenre: project?.system?.genre ?? null,
-      monsterCollection: project?.system?.monsterCollection ?? null,
+      savedConcept: project?.gameDesignBrief?.concept ?? null,
     };
   });
   probe.editor.editorReady = editorReady;
@@ -162,18 +195,17 @@ const probe = { scratch };
 // ── 2회차: 재기동하면 방금 만든 게임이 「이어서 만들기」 첫 장에 그림과 함께 있다 ──────
 {
   const { app, page, errors } = await launch();
-  await page.waitForSelector("[data-testid='start-continue']", { timeout: 30_000 });
-  await page.waitForTimeout(400);
-  await shot(page, "05-home-after-create");
+  await page.waitForSelector("[data-testid='start-continue']:not([hidden])", { timeout: 30_000 });
+  await page.waitForTimeout(600);
+  await shot(page, "07-home-after-create");
   probe.relaunch = await page.evaluate(() => ({
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
-    continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
-    cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
+    continueCards: [...document.querySelectorAll(".cf-continue-title")].map((node) => node.textContent),
+    firstHasCover: Boolean(document.querySelector(".cf-continue-card img")),
   }));
   // 좁은 창(세로 배치)
   await page.setViewportSize({ width: 720, height: 900 });
   await page.waitForTimeout(300);
-  await shot(page, "06-home-narrow");
+  await shot(page, "08-home-narrow");
   probe.relaunchErrors = errors.slice(0, 20);
   await shutdown(app);
 }
@@ -184,9 +216,10 @@ writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));
 {
   writeFileSync(join(userData, "recent-projects.json"), "[]");
   const { app, page } = await launch();
-  await page.waitForSelector(".start-hero.is-welcome", { timeout: 30_000 });
-  await page.waitForTimeout(600);
-  await shot(page, "07-first-visit");
+  await page.waitForSelector("[data-testid='concept-feed-card']", { timeout: 30_000 });
+  await page.waitForTimeout(800);
+  await shot(page, "09-first-visit");
+  probe.firstVisit = await page.evaluate(() => ({ continueHidden: Boolean(document.querySelector("[data-testid='start-continue']")?.hidden) }));
   await shutdown(app);
 }
 writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>새 게임 컨셉 고르기</title>
+<style>
+:root{--bg:#0f0f12;--card:#17171c;--fg:#f1f1f3;--mute:#9a9aa6;--ok:#2fbf71;--no:#ff4d5e;--warn:#f0b43c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,"Pretendard","Noto Sans KR",sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(15,15,18,.95);padding:12px 20px;border-bottom:1px solid #222;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+h1{font-size:17px;margin:0}
+.bar{flex:1;min-width:200px;height:8px;background:#222;border-radius:4px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.counts{color:var(--mute);font-size:13px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:10px 20px}
+.chip{background:#22222a;border:0;color:var(--fg);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+.chip.on{background:var(--fg);color:#000}
+.help{color:var(--mute);font-size:12px;padding:0 20px 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;padding:8px 20px 60px}
+.card{background:var(--card);border-radius:12px;overflow:hidden;border:2px solid transparent;outline:none}
+.card:focus{border-color:#5b7cff}
+.card.accept{border-color:var(--ok)}
+.card.reject{border-color:var(--no);opacity:.55}
+.thumb{aspect-ratio:16/9;background:#222;display:block;width:100%;object-fit:cover;image-rendering:pixelated}
+.body{padding:10px 12px 12px}
+.t{font-weight:700;font-size:15px}
+.h{color:#d8d8de;margin-top:2px}
+.meta{color:var(--mute);font-size:12px;margin-top:6px}
+.warn{color:var(--warn);font-size:12px;margin-top:6px}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btns button{flex:1;border:0;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font:inherit;font-weight:700}
+.acc{background:#1f3b2b;color:#bff3d4}.acc.on{background:var(--ok);color:#06150d}
+.rej{background:#3b1f23;color:#ffc9cf}.rej.on{background:var(--no);color:#1c0407}
+details{margin-top:8px;color:var(--mute);font-size:12px}
+details dl{display:grid;grid-template-columns:70px 1fr;gap:4px 8px;margin:6px 0 0}
+details dd{margin:0;color:#cfcfd6}
+</style>
+</head>
+<body>
+<header>
+  <h1>새 게임 컨셉 고르기</h1>
+  <div class="bar" id="bar"></div>
+  <div class="counts" id="counts"></div>
+</header>
+<div class="chips" id="chips"></div>
+<div class="help">카드를 누르고 <b>A</b> = 받기, <b>D</b> = 버리기, <b>←/→</b> = 이동. 받은 것만 스토어에 올라갑니다. 노란 글씨는 자동 검사 경고입니다(참고용, 결정은 직접).</div>
+<div class="grid" id="grid"></div>
+<script>
+let items = [], tag = "대기", focusIndex = 0;
+const TAG_ALL = ["대기", "전체", "받음", "버림", "경고"];
+async function load() {
+  items = (await (await fetch("/api/state")).json()).items;
+  render();
+}
+function visible() {
+  return items.filter((it) => {
+    if (tag === "전체") return true;
+    if (tag === "대기") return !it.decision;
+    if (tag === "받음") return it.decision === "accept";
+    if (tag === "버림") return it.decision === "reject";
+    if (tag === "경고") return it.check && !it.check.ok;
+    return it.concept.tags[0] === tag;
+  });
+}
+function render() {
+  const accepted = items.filter((it) => it.decision === "accept").length;
+  const rejected = items.filter((it) => it.decision === "reject").length;
+  const waiting = items.length - accepted - rejected;
+  document.getElementById("counts").textContent = `받음 ${accepted} · 버림 ${rejected} · 대기 ${waiting} / ${items.length}`;
+  const pct = (n) => items.length ? (n / items.length * 100) + "%" : "0";
+  document.getElementById("bar").innerHTML = `<i style="width:${pct(accepted)};background:var(--ok)"></i><i style="width:${pct(rejected)};background:var(--no)"></i>`;
+  const tags = [...TAG_ALL, ...new Set(items.map((it) => it.concept.tags[0]))];
+  document.getElementById("chips").innerHTML = tags.map((t) => `<button class="chip ${t === tag ? "on" : ""}" data-tag="${t}">${t}</button>`).join("");
+  const list = visible();
+  focusIndex = Math.min(focusIndex, Math.max(0, list.length - 1));
+  document.getElementById("grid").innerHTML = list.map((it, i) => {
+    const c = it.concept;
+    const warn = it.check && !it.check.ok ? `<div class="warn">⚠ ${esc(it.check.findings.join(" · ") || "검사 경고")}</div>` : "";
+    return `<div class="card ${it.decision ?? ""}" tabindex="0" data-i="${i}" data-slug="${c.slug}">
+      <img class="thumb" loading="lazy" src="/img/${c.slug}.card.webp?${it.imageSha.slice(0, 8)}" alt="">
+      <div class="body"><div class="t">${esc(c.title)}</div><div class="h">${esc(c.hook)}</div>
+      <div class="meta">#${c.tags.map(esc).join(" #")} · ${c.presetId}${c.tilesetHint ? " · " + esc(c.tilesetHint) : ""}</div>${warn}
+      <details><summary>기획 보기</summary><dl>
+        <dt>주인공</dt><dd>${esc(c.protagonist)}</dd><dt>무대</dt><dd>${esc(c.stage)}</dd><dt>첫 장면</dt><dd>${esc(c.firstScene)}</dd>
+        <dt>설명</dt><dd>${esc(c.description)}</dd><dt>첫 범위</dt><dd>${esc(c.brief.scope)}</dd></dl></details>
+      <div class="btns"><button class="acc ${it.decision === "accept" ? "on" : ""}" data-v="accept">받기 (A)</button><button class="rej ${it.decision === "reject" ? "on" : ""}" data-v="reject">버리기 (D)</button></div></div></div>`;
+  }).join("") || `<p style="color:var(--mute)">이 분류에 남은 카드가 없습니다.</p>`;
+  const cards = document.querySelectorAll(".card");
+  if (cards[focusIndex] && !document.activeElement?.closest?.(".card")) cards[focusIndex].focus({ preventScroll: true });
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])); }
+async function decide(slug, verdict) {
+  const it = items.find((x) => x.concept.slug === slug);
+  const res = await fetch("/api/decide", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ slug, verdict, imageSha: it.imageSha }) });
+  if (!res.ok) { alert((await res.json()).error || "저장하지 못했습니다."); await load(); return; }
+  it.decision = verdict;
+  const list = visible();
+  render();
+  const cards = document.querySelectorAll(".card");
+  const next = cards[Math.min(focusIndex, cards.length - 1)];
+  next?.focus();
+}
+document.addEventListener("click", (e) => {
+  const chip = e.target.closest(".chip");
+  if (chip) { tag = chip.dataset.tag; focusIndex = 0; render(); return; }
+  const btn = e.target.closest("button[data-v]");
+  if (btn) { const card = btn.closest(".card"); focusIndex = Number(card.dataset.i); decide(card.dataset.slug, btn.dataset.v); }
+});
+document.addEventListener("focusin", (e) => { const card = e.target.closest?.(".card"); if (card) focusIndex = Number(card.dataset.i); });
+document.addEventListener("keydown", (e) => {
+  const card = document.activeElement?.closest?.(".card");
+  if (!card) return;
+  if (e.key === "a" || e.key === "A") decide(card.dataset.slug, "accept");
+  else if (e.key === "d" || e.key === "D") decide(card.dataset.slug, "reject");
+  else if (e.key === "ArrowRight") card.nextElementSibling?.focus();
+  else if (e.key === "ArrowLeft") card.previousElementSibling?.focus();
+});
+load();
+</script>
+</body>
+</html>

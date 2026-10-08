@@ -80,6 +80,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.
   → 임시 초안·조수의 완료 선언은 합격이 아니다. 실제 이미지 검수와 정본 저장·재로드를 따로 확인한다.
 
+- **새 게임 피드의 공식 컨셉 카드(제목·훅·기획 5칸·도트 썸네일)를 만들거나 늘릴 때**
+  → `game-concepts` · 시드 `harness-data/game-concepts/seed.json`
+  → `npm run harness -- game-concepts produce|draw|check|serve|status|publish|bundle` · 문서 `openwiki/harnesses/game-concepts.md`
+  → 사람이 http://mdc-server:18321/ 에서 받은 것만 스토어에 게시한다. 감독이 대신 고르지 않는다. 운영 게시는 `--target prod --yes-prod`.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 

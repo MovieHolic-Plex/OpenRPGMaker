@@ -24,28 +24,41 @@ export type WelcomeGenreSystemPresetDependencies = {
   readonly focusStartMap: () => unknown;
 };
 
+/**
+ * 셸이 이미 연 폴더 프로젝트에 새 시드를 통째로 채택하고 저장한다. 첫 부팅 컨셉 피드(`conceptMake.ts`)도 이 길을 쓴다.
+ * 소재를 준비하는 동안 폴더나 내용이 바뀌었으면 채택하지 않고 던진다(열린 문서는 그대로).
+ */
+export async function adoptSeedIntoOpenProject(
+  project: Project,
+  label = "장르 시스템 프리셋",
+  /** 저장 대상이 없는 세션(임시·데모)이면 채택만 하고 넘어간다. 저장을 시도했다가 실패한 것은 여전히 던진다. */
+  options: { readonly acceptUnsavedSession?: boolean } = {},
+): Promise<void> {
+  const repository = projectRepository();
+  const target = repository.currentTarget();
+  const openProject = store.getCurrent();
+  const version = store.getVersionToken();
+  // New hosted libraries may contain many MB of inline pixels. Write individual files before
+  // the renderer clones/stringifies the game; the open project remains intact if this fails.
+  await prepareProjectMedia(project, repository);
+  const active = repository.currentTarget();
+  const currentVersion = store.getVersionToken();
+  if (target ? (!sameProjectTarget(target, active) || active?.projectId !== target.projectId) : active !== null) {
+    throw new Error("소재를 준비하는 동안 프로젝트 폴더가 바뀌었습니다. 다시 시작하세요.");
+  }
+  if (store.getCurrent() !== openProject || currentVersion.lineage !== version.lineage || currentVersion.generation !== version.generation) {
+    throw new Error("소재를 준비하는 동안 프로젝트 내용이 바뀌었습니다. 변경 내용을 확인하고 다시 시작하세요.");
+  }
+  store.replaceProject(project, { label });
+  const saved = await store.flush();
+  if (saved.kind === "saved") return;
+  if (options.acceptUnsavedSession && (saved.kind === "not-configured" || saved.kind === "disabled" || saved.kind === "saved-local")) return;
+  throw new Error("프로젝트 저장을 완료하지 못했습니다.");
+}
+
 const productionDependencies: WelcomeGenreSystemPresetDependencies = {
   // P6 이후 새 프로젝트는 셸이 폴더로 만든다 — 여기서는 이미 열린 프로젝트에 시드를 채택한다.
-  adoptProject: async (project) => {
-    const repository = projectRepository();
-    const target = repository.currentTarget();
-    const openProject = store.getCurrent();
-    const version = store.getVersionToken();
-    // New hosted libraries may contain many MB of inline pixels. Write individual files before
-    // the renderer clones/stringifies the game; the open project remains intact if this fails.
-    await prepareProjectMedia(project, repository);
-    const active = repository.currentTarget();
-    const currentVersion = store.getVersionToken();
-    if (target ? (!sameProjectTarget(target, active) || active?.projectId !== target.projectId) : active !== null) {
-      throw new Error("소재를 준비하는 동안 프로젝트 폴더가 바뀌었습니다. 다시 시작하세요.");
-    }
-    if (store.getCurrent() !== openProject || currentVersion.lineage !== version.lineage || currentVersion.generation !== version.generation) {
-      throw new Error("소재를 준비하는 동안 프로젝트 내용이 바뀌었습니다. 변경 내용을 확인하고 다시 시작하세요.");
-    }
-    store.replaceProject(project, { label: "장르 시스템 프리셋" });
-    const saved = await store.flush();
-    if (saved.kind !== "saved") throw new Error("프로젝트 저장을 완료하지 못했습니다.");
-  },
+  adoptProject: (project) => adoptSeedIntoOpenProject(project),
   focusStartMap: () => focusProjectStartMap(),
 };
 

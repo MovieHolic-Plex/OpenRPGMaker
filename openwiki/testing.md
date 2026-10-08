@@ -2073,7 +2073,7 @@ Focused QA scripts (no Vitest/full-gate invocation):
   cancellation and mandatory current-image completion.
 - `scripts/qa/maker-terrain-reference.mjs`: terrain-kit source-purpose evidence
   gate, including the observed sewer bridge used as a garden-path bypass.
-- `scripts/qa/maker-interview-ui.mjs`: production component click-only completion
+- `scripts/qa/maker-interview-ui.mjs` (removed 2026-10-07 with the launcher interview): production component click-only completion
   at desktop/short/mobile widths, fixed-action geometry and absence of branch
   thumbnails/shortcut hints, with explicitly synthetic network failure.
 - `scripts/qa/maker-interview-art-live.mjs`: real generation + real vision image

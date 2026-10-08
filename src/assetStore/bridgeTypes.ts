@@ -1,4 +1,5 @@
 /** 렌더러가 보는 데스크톱 스토어 다리(preload `window.oprn.store`). 구현: electron/main/assetStore.ts. */
+import type { GameConcept } from "../concepts/format";
 import type { StoreCatalogPage, StoreItemDetail, StoreItemSummary, StoreItemStatus, StoreLocale, StorePackManifest } from "./format";
 
 export interface StoreUser { readonly id: number; readonly email: string; readonly displayName: string; readonly role: string }
@@ -33,6 +34,12 @@ export interface OprnStoreBridge {
   upload(input: { manifest: StorePackManifest; blobs: Record<string, Uint8Array>; targetSlug?: string }): Promise<{ slug: string; status: StoreItemStatus; version: number }>;
   /** 내 상품 숨기기(hidden: true)·다시 보이기. */
   visibility(input: { slug: string; hidden: boolean }): Promise<{ status: StoreItemStatus }>;
+  /** 컨셉 피드 한 쪽(24개). cursor 는 앞 쪽의 nextCursor. 썸네일 thumb.full·card 는 blob sha256 이라 blob() 으로 받는다. */
+  concepts(input: { tag?: string; q?: string; preset?: string; cursor?: string; lang?: StoreLocale }): Promise<{ items: GameConcept[]; nextCursor: string | null }>;
+  /** 컨셉 상세와 비슷한 컨셉(최대 6개). 번역은 concept.locales 에 실려 오므로 화면은 localizedConcept 로 고른다. */
+  concept(input: { slug: string; lang?: StoreLocale }): Promise<{ concept: GameConcept; similar: GameConcept[] }>;
+  /** 「이걸로 만들었다」 세기. 실패해도 false 만 돌려준다. */
+  conceptMade(input: { slug: string }): Promise<boolean>;
   onProgress(callback: (event: StoreProgressEvent) => void): () => void;
   onChanged(callback: (event: StoreChangedEvent) => void): () => void;
 }

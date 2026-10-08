@@ -1,0 +1,192 @@
+{
+  "format": "oprn-concept/1",
+  "concepts": [
+    {
+      "slug": "body-swap-villainess",
+      "title": "몸이 뒤바뀐 악역영애",
+      "hook": "처형 3일 전, 눈을 떠 보니 내가 괴롭히던 그 아이의 몸이었다.",
+      "description": "왕립 아카데미의 악역영애와 평민 소녀의 몸이 바뀌었다. 처형까지 남은 3일 동안 서로의 몸으로 오해를 풀고 진짜 흑막을 찾아야 한다.",
+      "tags": [
+        "웹소설",
+        "연애"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "악역영애(평민 소녀의 몸)",
+      "stage": "왕립 아카데미",
+      "firstScene": "무도회장 거울 앞에서 서로를 알아본다",
+      "brief": {
+        "experience": "남의 몸으로 살며 처형 운명을 뒤집는 긴장과 웃음",
+        "activity": "대화로 오해를 풀고 단서를 모은다",
+        "progression": "하루씩 지나며 처형까지의 카운트다운이 줄어든다",
+        "detail": "악역영애와 평민 소녀, 왕립 아카데미 무도회장·기숙사·정원",
+        "scope": "첫날 밤까지: 무도회장 → 기숙사 → 정원에서 흑막의 첫 단서"
+      },
+      "thumb": {
+        "full": "/assets/concepts/body-swap-villainess.full.webp",
+        "card": "/assets/concepts/body-swap-villainess.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "wizard-in-joseon",
+      "title": "마법사 in 조선",
+      "hook": "지팡이 하나 들고 한양 한복판에 떨어진 서양 마법사.",
+      "description": "서양의 대마법사가 조선 한양에 떨어졌다. 말도 안 통하고 마법은 요술 취급을 받는다. 궁궐의 수상한 사건을 풀어 집으로 돌아갈 길을 찾는다.",
+      "tags": [
+        "퓨전 사극",
+        "코미디"
+      ],
+      "presetId": "adventure-jrpg",
+      "protagonist": "길 잃은 대마법사",
+      "stage": "조선 한양과 궁궐",
+      "firstScene": "광화문 앞, 양반들이 술렁인다",
+      "brief": {
+        "experience": "낯선 시대에 떨어진 마법사의 좌충우돌 모험",
+        "activity": "저잣거리를 돌며 사람을 돕고 요괴와 싸운다",
+        "progression": "한양 → 궁궐 → 도깨비 숲 순서로 열린다",
+        "detail": "서양 마법사, 포졸, 양반, 저잣거리 상인",
+        "scope": "한양 저잣거리와 첫 요괴 전투까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/wizard-in-joseon.full.webp",
+        "card": "/assets/concepts/wizard-in-joseon.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true,
+      "tilesetHint": "joseon_baram"
+    },
+    {
+      "slug": "my-own-fantasy-novel",
+      "title": "내가 쓰는 판타지 소설",
+      "hook": "연재 중단한 내 소설 속으로 빨려 들어갔다. 설정 구멍이 그대로다.",
+      "description": "마감에 쫓기던 작가가 자기가 쓰다 만 판타지 소설 속으로 들어갔다. 반쯤 그린 건물, 이름 없는 조연, 앞뒤가 안 맞는 설정을 고쳐 가며 결말까지 써야 나갈 수 있다.",
+      "tags": [
+        "웹소설",
+        "코미디"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "마감에 쫓기던 작가",
+      "stage": "반쯤 그리다 만 중세 도시",
+      "firstScene": "연필 선만 있는 건물들 사이에서 깨어난다",
+      "brief": {
+        "experience": "내가 만든 세계의 구멍을 직접 메우는 메타 재미",
+        "activity": "조연과 대화하고 설정 조각을 모아 장면을 완성한다",
+        "progression": "장(章)을 하나씩 완성할수록 도시가 색을 찾는다",
+        "detail": "작가, 이름 없는 조연들, 연필 선 도시",
+        "scope": "1장: 연필 도시 광장에서 첫 조연에게 이름을 붙여 주기까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/my-own-fantasy-novel.full.webp",
+        "card": "/assets/concepts/my-own-fantasy-novel.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "final-fantasia-999",
+      "title": "파이널 판타지아 999",
+      "hook": "999번째 속편. 크리스탈은 지쳤고, 용사도 지쳤다.",
+      "description": "999번째 속편까지 온 크리스탈 RPG. 빛의 전사도, 크리스탈도, 최종 보스도 지쳤다. 익숙한 클리셰를 비틀며 마지막 모험을 떠난다.",
+      "tags": [
+        "패러디",
+        "정통 JRPG"
+      ],
+      "presetId": "adventure-jrpg",
+      "protagonist": "999대째 빛의 전사",
+      "stage": "크리스탈 신전",
+      "firstScene": "최종 보스가 1층 로비에 앉아 있다",
+      "brief": {
+        "experience": "익숙한 JRPG 클리셰를 비트는 웃긴 정통 모험",
+        "activity": "마을·던전 탐험과 턴제 전투",
+        "progression": "크리스탈 신전 층을 하나씩 오른다",
+        "detail": "지친 빛의 전사 파티, 크리스탈 신전, 은퇴하고 싶은 최종 보스",
+        "scope": "신전 1층 로비와 첫 전투까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/final-fantasia-999.full.webp",
+        "card": "/assets/concepts/final-fantasia-999.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "star-sword-classic-jrpg",
+      "title": "정통 JRPG: 별의 검",
+      "hook": "새벽, 소년은 검 한 자루를 들고 마을을 떠난다.",
+      "description": "별이 떨어진 밤, 시골 마을 소년이 전설의 검을 얻는다. 마을 사람들의 배웅을 받으며 마왕의 탑으로 향하는 정통 모험.",
+      "tags": [
+        "정통 JRPG"
+      ],
+      "presetId": "adventure-jrpg",
+      "protagonist": "시골 마을 소년",
+      "stage": "대륙과 마왕의 탑",
+      "firstScene": "마을 입구의 배웅",
+      "brief": {
+        "experience": "정통 JRPG의 출발과 성장",
+        "activity": "마을에서 의뢰를 받고 필드·동굴에서 싸운다",
+        "progression": "마을 → 숲길 → 동굴 → 다음 마을",
+        "detail": "소년 용사, 촌장, 동료 마법사",
+        "scope": "마을과 숲길, 첫 동굴 보스까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/star-sword-classic-jrpg.full.webp",
+        "card": "/assets/concepts/star-sword-classic-jrpg.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "first-partner-monster",
+      "title": "몬스터 수집: 첫 파트너",
+      "hook": "풀숲에서 만난 작은 불꽃 도마뱀과 함께 지방 리그로.",
+      "description": "모자 쓴 신참 트레이너가 풀숲에서 첫 파트너를 만난다. 몬스터를 모으고 키워 지방 체육관에 도전한다.",
+      "tags": [
+        "몬스터 수집"
+      ],
+      "presetId": "monster-collect",
+      "protagonist": "모자 쓴 신참 트레이너",
+      "stage": "햇살 도로 1번길",
+      "firstScene": "첫 파트너 고르기",
+      "brief": {
+        "experience": "첫 파트너와 함께 크는 수집 모험",
+        "activity": "풀숲에서 몬스터를 만나 포획하고 키운다",
+        "progression": "도로를 따라 마을과 체육관이 열린다",
+        "detail": "신참 트레이너, 박사, 불꽃 도마뱀",
+        "scope": "첫 마을과 1번 도로, 첫 포획까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/first-partner-monster.full.webp",
+        "card": "/assets/concepts/first-partner-monster.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "storm-mansion-mystery",
+      "title": "추리: 폭풍의 저택",
+      "hook": "폭풍으로 고립된 저택, 아침이면 한 명씩 사라진다.",
+      "description": "폭풍 속 서양식 저택에 손님들이 갇혔다. 아침마다 한 명씩 사라진다. 견습 탐정이 증언과 단서를 모아 범인을 지목한다.",
+      "tags": [
+        "추리"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "견습 탐정",
+      "stage": "폭풍 속 서양식 저택",
+      "firstScene": "촛불 켜진 계단 홀",
+      "brief": {
+        "experience": "고립된 저택의 긴장과 추리",
+        "activity": "손님을 심문하고 방을 조사해 단서를 모은다",
+        "progression": "밤이 지날 때마다 사건이 하나씩 더해진다",
+        "detail": "견습 탐정, 저택 주인, 수상한 손님 다섯",
+        "scope": "첫날 밤: 계단 홀 → 서재 → 첫 실종 발견까지"
+      },
+      "thumb": {
+        "full": "/assets/concepts/storm-mansion-mystery.full.webp",
+        "card": "/assets/concepts/storm-mansion-mystery.card.webp"
+      },
+      "source": "official",
+      "aiGenerated": true
+    }
+  ]
+}

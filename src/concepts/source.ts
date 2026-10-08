@@ -1,0 +1,125 @@
+// 피드가 컨셉을 받는 곳. 데스크톱 앱이면 스토어(Electron 메인 중계)에서 24개씩, 안 되면 앱 번들 비상용으로 대신한다.
+// 스토어가 한 번 실패해도 붙들지 않는다 — 다음 쪽 요청마다 다시 시도한다(잠깐 끊긴 네트워크로 세션 내내 비상용만 보이지 않게).
+import bundled from "@/assets/bundledConcepts.json";
+import type { OprnStoreBridge } from "@/assetStore/bridgeTypes";
+import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
+import type { GamePresetId } from "@/project/gameDesignIds";
+import { normalizeGameConcept, type GameConcept } from "./format";
+
+export type ConceptQuery = { readonly tag?: string; readonly q?: string };
+export type ConceptPage = { readonly items: readonly GameConcept[]; readonly nextCursor: string | null; readonly offline: boolean };
+export type ConceptDetail = { readonly concept: GameConcept; readonly similar: readonly GameConcept[] };
+
+export interface ConceptSource {
+  page(query: ConceptQuery, cursor: string | null): Promise<ConceptPage>;
+  detail(concept: GameConcept): Promise<ConceptDetail>;
+  thumbUrl(concept: GameConcept, size: "full" | "card"): Promise<string>;
+  made(slug: string): void;
+}
+
+/** 썸네일을 받지 못했을 때 — 장르 틀의 기존 대표 그림. */
+export const CONCEPT_FALLBACK_THUMB: Record<GamePresetId, string> = Object.fromEntries(
+  NEW_PROJECT_CHOICES.map((choice) => [choice.id, choice.thumb]),
+) as Record<GamePresetId, string>;
+
+const BUNDLE_PAGE = 24;
+const SHA256 = /^[a-f0-9]{64}$/;
+
+let bundledCache: readonly GameConcept[] | null = null;
+export function bundledConcepts(): readonly GameConcept[] {
+  bundledCache ??= ((bundled as { concepts: unknown[] }).concepts).flatMap((raw) => {
+    try { return [normalizeGameConcept(raw)]; } catch { return []; }
+  });
+  return bundledCache;
+}
+
+export function matchesQuery(concept: GameConcept, query: ConceptQuery): boolean {
+  if (query.tag && !concept.tags.includes(query.tag as GameConcept["tags"][number])) return false;
+  const q = query.q?.trim().toLowerCase();
+  if (!q) return true;
+  const locales = Object.values(concept.locales ?? {}).flatMap((entry) => [entry.title, entry.hook]);
+  return [concept.title, concept.hook, concept.description, ...concept.tags, ...locales].some((text) => text.toLowerCase().includes(q));
+}
+
+function bundledPage(query: ConceptQuery, cursor: string | null): ConceptPage {
+  const all = bundledConcepts().filter((concept) => matchesQuery(concept, query));
+  const start = cursor && /^b:\d+$/.test(cursor) ? Number(cursor.slice(2)) : 0;
+  const items = all.slice(start, start + BUNDLE_PAGE);
+  return { items, nextCursor: start + BUNDLE_PAGE < all.length ? `b:${start + BUNDLE_PAGE}` : null, offline: true };
+}
+
+/** 같은 태그를 많이 공유하는 것부터, 그다음 같은 장르 틀. 자기 자신은 뺀다. */
+export function similarFrom(pool: readonly GameConcept[], concept: GameConcept, limit = 6): GameConcept[] {
+  return pool
+    .filter((other) => other.slug !== concept.slug)
+    .map((other) => ({ other, score: other.tags.filter((tag) => concept.tags.includes(tag)).length * 2 + (other.presetId === concept.presetId ? 1 : 0) }))
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((entry) => entry.other);
+}
+
+function withTimeout<T>(work: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("스토어 응답이 늦습니다.")), ms);
+    work.then((value) => { clearTimeout(timer); resolve(value); }, (error: unknown) => { clearTimeout(timer); reject(error); });
+  });
+}
+
+export type ConceptSourceDeps = {
+  readonly bridge?: OprnStoreBridge | null;
+  readonly timeoutMs?: number;
+  readonly toUrl?: (bytes: Uint8Array) => string;
+};
+
+function defaultBridge(): OprnStoreBridge | null {
+  if (typeof window === "undefined") return null;
+  return (window as unknown as { oprn?: { store?: OprnStoreBridge } }).oprn?.store ?? null;
+}
+
+export function createConceptSource(deps: ConceptSourceDeps = {}): ConceptSource {
+  const bridge = deps.bridge === undefined ? defaultBridge() : deps.bridge;
+  const timeoutMs = deps.timeoutMs ?? 3000;
+  const toUrl = deps.toUrl ?? ((bytes: Uint8Array) => URL.createObjectURL(new Blob([bytes as BlobPart], { type: "image/webp" })));
+  const thumbs = new Map<string, Promise<string>>();
+  return {
+    async page(query, cursor) {
+      // 비상용 쪽을 넘기는 중이면 그 이어서. 스토어 커서(rank:id)는 스토어로.
+      if (!bridge || (cursor && cursor.startsWith("b:"))) return bundledPage(query, cursor);
+      try {
+        const page = await withTimeout(bridge.concepts({ ...(query.tag ? { tag: query.tag } : {}), ...(query.q?.trim() ? { q: query.q.trim() } : {}), ...(cursor ? { cursor } : {}) }), timeoutMs);
+        if (!cursor && page.items.length === 0 && !query.tag && !query.q?.trim()) return bundledPage(query, null);
+        return { items: page.items, nextCursor: page.nextCursor, offline: false };
+      } catch {
+        // 첫 쪽이 실패하면 비상용으로. 이어지는 쪽이 실패하면 여기서 멈춘다(앞 쪽과 섞지 않는다).
+        return cursor ? { items: [], nextCursor: null, offline: true } : bundledPage(query, null);
+      }
+    },
+    async detail(concept) {
+      if (bridge && SHA256.test(concept.thumb.full)) {
+        try {
+          const detail = await withTimeout(bridge.concept({ slug: concept.slug }), timeoutMs);
+          return { concept: detail.concept, similar: detail.similar };
+        } catch { /* 아래 비상용 비슷한 컨셉으로 */ }
+      }
+      return { concept, similar: similarFrom(bundledConcepts(), concept) };
+    },
+    thumbUrl(concept, size) {
+      const ref = concept.thumb[size];
+      if (!SHA256.test(ref)) return Promise.resolve(ref);
+      if (!bridge) return Promise.resolve(CONCEPT_FALLBACK_THUMB[concept.presetId]);
+      let pending = thumbs.get(ref);
+      if (!pending) {
+        pending = bridge.blob({ sha256: ref }).then(toUrl, () => {
+          thumbs.delete(ref);
+          return CONCEPT_FALLBACK_THUMB[concept.presetId];
+        });
+        thumbs.set(ref, pending);
+      }
+      return pending;
+    },
+    made(slug) {
+      void bridge?.conceptMade({ slug }).catch(() => false);
+    },
+  };
+}

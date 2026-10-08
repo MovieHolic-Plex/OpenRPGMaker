@@ -99,29 +99,27 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 시네마틱 로비 (2026-10-03)
+## 데스크톱 시작 화면 — 컨셉 피드 (2026-10-07, 옛 시네마틱 로비 대체)
 
-옛 `public/start-screen.html + .js`(크림색 카드, 버튼 둘, 경로 목록)를 **vite 엔트리**로 바꿨다.
-실측: 최근 목록 20줄 중 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 였고, 「새 프로젝트」는 장르를 묻지 않고
-빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
+새 게임과 새 프로젝트는 **같은 화면**이다 — 유튜브 홈처럼 게임 컨셉 썸네일 격자를 내려 보며 고르고, 상세에서 「▶ 이 게임 만들기」 한 번이면
+기획이 확정된 채 편집기로 넘어가 조수 팀이 첫 구간을 짓는다. 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
+옛 시네마틱 로비(`startLobby.ts`)·첫 문장 입구(`firstWorldArrival.ts`)·장르 프리셋 인터뷰(`runStartScreenPresetInterview`)·
+편집기 새 프로젝트 다이얼로그(`newProjectDialog.ts`)는 지웠다. 메뉴 「게임 기획」 수정 창(`projectInterviewDialog`)은 그대로 있고 세계 지도 영상도 거기서만 쓴다.
 
-- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
-- **첫 문장 입구(2026-10-03)**: 숨기지 않은 최근 프로젝트가 없으면 홈에 `src/start/firstWorldArrival.ts`의 장르 참고 장면 3개를 표시한다. 새 게임의 AI 경로도 같은 컴포넌트다. 장르 선택은 그림 전환과 입력창 열기만 하고, ‘이 이야기로 시작’을 눌러야 폴더 생성·인계를 시작한다. 이름·저장 위치·해상도는 ‘게임 이름과 저장 위치’를 펼쳐 바꾼다. 예제·빈 프로젝트도 접근할 수 있다. 폴더 생성 실패는 선택과 문장을 유지한다. 예제·빈 프로젝트로 갔다가 새 게임으로 돌아와도 문장은 유지한다. 원문·선택·제목은 기존 `startIntent.ts` 계약으로 전달하며, 무장르 문장은 인터뷰를 열기 위해 `story-cutscene`으로 시작한다(인터뷰에서 변경 가능).
-  `startScreen.ts`는 실제 입구가 마운트된 동안만 `.start-app.is-first-world`를 켠다. `startLobby.css`가 전체 창의 스택·어두운 헤더·보조 설정을 소유하고, 공유 장면의 고정 배경이 네 모서리까지 채운다. 참고 장면 자체에는 카드 테두리/폭 제한이 없다. 입력은 780px, 내용은 1120px까지 제한한다. 예제·팀 참여·기존 최근 작업 화면으로 이동하면 이 표시를 제거한다. 전체 화면 증거: `verify-shots/first-world-fullscreen/`.
-- **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
-  `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
-  첫 문장 입구는 기존 `project-interview`의 세계 지도 영상/포스터와 장르별 그림을 쓰고, 일반 로비의 공용 장면은 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png`다.
-  최근 작업이 있으면 가장 최근의 **숨기지 않은** 프로젝트 표지를 배경으로 쓴다(`start-continue`).
-  실제 「계속 만들기」 버튼(`start-continue-open`)이 프로젝트를 연다. 장면 전체를 덮는 투명 버튼은 없다.
-  표지가 없을 때는 「OPRN 장면 미리보기」로 공용 그림임을 알리고, 기존 `applyCover`가 그림을 굽는 대로 배경만 교체한다.
-  숨긴 항목을 펼쳐도 임시/사라진 폴더를 대표 이어하기로 승격하지 않는다.
-  아래 세 입구(예제·AI·빈 맵)는 기존 `showView("new", choiceId, startMode)`를 사용하며, 새 게임 설정·팀 참여·SQLite 저장 계약은 유지한다.
-  세계·인물·이야기·전투·음악·AI 소개는 키보드로 여는 `details`이고, 가짜 편집기 동작을 실행하지 않는다.
-  카메라 확대·빛·입자는 CSS만 쓴다. 「움직임 멈추기」는 `oprn:start-lobby-motion-paused`에 저장하며,
-  OS `prefers-reduced-motion`이 켜지면 애니메이션과 불필요한 토글을 끈다. 오디오·런타임을 부팅하지 않는다.
-  신규 문구는 en/ja/zh 카탈로그에 함께 넣고, 저작 프로젝트 제목·경로는 `translate="no"`로 보호한다.
-  편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
+- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트, layer `tokens, start, shell`).
+  홈 = `src/start/conceptFeed/conceptFeed.ts`(`mode: "launcher"`) 하나. 위 막대 오른쪽에 폴더 열기·팀에 참여·언어·버전,
+  분류 칩 아래에 「이어하기」 줄(숨기지 않은 최근 프로젝트 카드, 숨김 토글)을 끼운다. 팀 참여는 별도 보기(`start-join-view`).
+  편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
+  `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
+- **피드**: 칩(전체 + `CONCEPT_TAGS`), 입력창(250ms 뒤 검색, Enter = 「내가 쓴 걸로 만들기」), 16:9 카드 격자, 끝이 보이면
+  (`IntersectionObserver`, 600px 앞) 다음 24장. 「더 보기」 단추도 남긴다. 상세 = 큰 키아트·훅·「이런 게임이 됩니다」(장르 틀·주인공·무대·첫 장면)·
+  「살짝 바꾸기」(300자)·비슷한 컨셉 6장. 만드는 중엔 단추를 잠그고, 처리기가 false(연결 거절)면 풀고, 던지면 오류 줄에 남긴다.
+  컨셉 출처는 `src/concepts/source.ts` — 데스크톱이면 스토어(Electron 메인 중계, 3초 시한), 안 되면 앱 번들 비상용(`src/assets/bundledConcepts.json`).
+  컨셉 카드 형식·스토어 경로는 `openwiki/asset-store.md` 「컨셉 피드」.
+- **만들기(런처)**: `launcherMake.ts` — AI 연결 관문 → `suggestProjectDir`(`문서/OPRN Games/<제목>`) → `start.createProject` →
+  `startIntent` 에 `{choiceId: presetId, startMode: "ai", screenSize: "wide", gameDesignBrief: {...conceptBrief, generationPending: true}}` → 편집기.
+  이름·폴더·화면 크기는 묻지 않는다(편집기에서 바꾼다). 연결을 거절하면 폴더를 만들지 않는다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
   임시 폴더(`/tmp`·`os.tmpdir()`) 아래와 사라진 폴더는 `hiddenReason` 을 달아 **기본 숨김** — 목록 파일에서 지우지 않는다.
@@ -136,22 +134,20 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
     `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
     재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
   - 팀 호스트 브라우저 브리지에는 두 채널이 없다.
-- **새 게임**: AI 경로는 장르 미리보기 → 한 문장(필수) → 시작, 예제·빈 프로젝트 경로는 기존 생성 폼이다. 이름·저장 위치의 기본값을 바로 사용할 수 있다. 저장 위치는
-  `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
-  `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.
+- **저장 위치**: `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천한다.
+  `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절).
   `OPRN_NEW_PROJECT_ROOT` 가 기본 상위 위치를 덮는다(QA 전용 — 대화상자를 자동화할 수 없다).
-- **인계**: 시작 화면은 빈 폴더만 만들고 `sessionStorage` 의 `oprn:start-screen-intent`(`src/start/startIntent.ts`)에 장르·한 문장을 남긴다.
+- **인계**: 시작 화면은 빈 폴더만 만들고 `sessionStorage` 의 `oprn:start-screen-intent`(`src/start/startIntent.ts`)에 장르·기획을 남긴다.
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
-  (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
-  인계가 있으면 첫 방문 화면을 다시 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
-- **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
-  메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
-  `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
-  이 저장 → 팀 첫 생성(`team: true`, `장르 프리셋:` 프롬프트)을 넘긴다. 예전에는 한 문장을 자유 입력 프롬프트로만 보내 기획·팀·장르 저작 지침이 빠졌고,
-  한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
-- **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
-  홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
-  첫 문장 화면의 이번 증거는 `verify-shots/first-world-arrival/browser.json`과 `scripts/capture-first-world-arrival.mjs`다. 실제 시작 엔트리·편집기 환영 컴포넌트를 사용하되 브리지/저장 콜백은 격리한다. 이 증거는 Electron 패키지와 SQLite 재로드 검증을 대신하지 않는다.
+  (`src/editor/startScreenHandoff.ts`), 확정 기획(`gameDesignBrief`)이 있으면 같은 부팅의 `prepareProjectInterviewStartup` 이
+  저장 → 첫 구간 뼈대 → 팀 첫 생성을 넘긴다. 인계가 있으면 첫 방문 창을 다시 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다.
+- **편집기 안 입구**: 메뉴 「새 프로젝트」와 첫 부팅 환영은 같은 피드를 덮는 창으로 연다(`src/editor/conceptFeedOverlay.ts`, `modalStack` 등록 —
+  Escape 는 상세면 피드로, 피드면 닫기). 처리기는 `src/editor/conceptMake.ts`: 메뉴는 새 폴더에 씨앗 + 기획을 저장하고 다시 읽는다,
+  환영은 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고(화면 크기 보존) 기획을 심는다. 「빈 프로젝트로 시작」은 장르 없는 새 폴더(메뉴) 또는 그냥 닫기(환영).
+- **기획 필드 `gameDesignBrief.concept?`**: `{slug, title, hook, tweak?}`(각 80/40/120/300자). 컨셉에서 온 기획만 있고 `interview` 와 동시에 있을 수 없다.
+  `summary` 마지막 줄은 `사용자 변경: …` 이며 4000자 제한에 걸려도 남는다. 장르 프리셋 프롬프트의 이름은 `<컨셉 제목> (<장르 틀>)`.
+- **증거**: `verify-shots/concept-feed/`. `scripts/qa/electronStartScreenProbe.mjs` 는 옛 로비를 기준으로 쓴 것이라 새 피드 흐름으로 다시 써야 한다.
+  단위(작성, 이 변경에서 미실행): `test/conceptFeed.test.ts`·`test/conceptMakeGame.test.ts`·`test/conceptDraft.test.ts`·`test/conceptSource.test.ts`·`test/concepts.test.ts`.
 
 ## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
 

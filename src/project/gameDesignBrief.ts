@@ -5,13 +5,8 @@ import { assert, requireRecord, requireString } from "./io/guards";
 import { getHarness } from '../harnesses/_core/registry';
 import { ROMANCE_ART_DIRECTION } from '../harnesses/romance-scene/artDirection';
 
-export const GAME_PRESET_IDS = [
-  "monster-collect", "story-cutscene", "adventure-jrpg", "horror-gallery",
-  "school-horror", "farm-life", "partner-raise", "action-rpg",
-] as const;
-export type GamePresetId = typeof GAME_PRESET_IDS[number];
-export const GAME_BRIEF_SLOTS = ["experience", "activity", "progression", "detail", "scope"] as const;
-export type GameBriefSlot = typeof GAME_BRIEF_SLOTS[number];
+import { GAME_BRIEF_SLOTS, GAME_PRESET_IDS, type GameBriefSlot, type GamePresetId } from "./gameDesignIds";
+export { GAME_BRIEF_SLOTS, GAME_PRESET_IDS, type GameBriefSlot, type GamePresetId };
 export const GAME_BRIEF_ANSWER_LIMIT = 1000;
 export const GAME_BRIEF_SUMMARY_LIMIT = 4000;
 
@@ -34,6 +29,8 @@ export interface GameDesignBrief {
   interview?: GameInterview;
   /** Model-only executable contract. Draft is distinct from validated implementation. */
   implementation?: { harnessId: string; contract: unknown };
+  /** 새 게임 컨셉 피드에서 시작했으면 그 카드(src/concepts/brief.ts). 인터뷰 기획과 함께 오지 않는다. */
+  concept?: { slug: string; title: string; hook: string; tweak?: string };
 }
 
 /** Optional authored metadata: old projects stay absent; malformed authored answers must not disappear. */
@@ -69,12 +66,24 @@ export function normalizeGameDesignBrief(value: unknown): GameDesignBrief {
     implementation = { harnessId, contract: harness!.contract!.normalize(raw.contract) };
   }
   assert(!interview || interviewPreset(interview.genre, interview.secondary) === data.presetId, "인터뷰와 게임 시스템이 다릅니다.");
+  let concept: GameDesignBrief["concept"];
+  if (data.concept !== undefined) {
+    const raw = requireRecord("gameDesignBrief.concept", data.concept);
+    assert(!interview, "인터뷰 기획과 컨셉 기획은 함께 올 수 없습니다.");
+    concept = {
+      slug: bounded(raw.slug, "컨셉 slug", 80),
+      title: bounded(raw.title, "컨셉 제목", 40),
+      hook: bounded(raw.hook, "컨셉 훅", 120),
+      ...(raw.tweak === undefined ? {} : { tweak: bounded(raw.tweak, "컨셉 변경", 300) }),
+    };
+  }
   return {
     version: 1, presetId: data.presetId as GamePresetId, answers: normalized,
     summary: bounded(data.summary, "게임 기획 요약", GAME_BRIEF_SUMMARY_LIMIT),
     ...(data.generationPending === undefined ? {} : { generationPending: data.generationPending }),
     ...(interview ? { interview } : {}),
     ...(implementation ? { implementation } : {}),
+    ...(concept ? { concept } : {}),
   };
 }
 

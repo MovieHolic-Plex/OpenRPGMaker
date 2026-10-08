@@ -13,6 +13,26 @@ Genre packs are editor-side authoring guidance over the single canonical `Projec
 
 `src/project/genrePackId.ts` is also the Phase 4 SSOT. Phase 4 code must import `GenrePackId`, `GENRE_PACK_IDS`, and `isGenrePackId` from that module. Welcome ids such as `horror-gallery` and `school-horror` are recipe/card ids mapped to canonical `horror-chase`; they are not aliases that persistence may accept.
 
+## Concept feed is the only new-game surface (2026-10-07)
+
+The launcher home, the menu 「새 프로젝트」 and the first-boot welcome now all show the same concept feed
+(`src/start/conceptFeed/conceptFeed.ts`; spec `docs/superpowers/specs/2026-10-07-concept-feed-design.md`).
+A concept card (`src/concepts/format.ts`, `oprn-concept/1`) carries a `presetId` from the eight choices in `newProjectChoices.ts`
+plus the five brief slots, so 「▶ 이 게임 만들기」 produces a confirmed `gameDesignBrief` (`src/concepts/brief.ts`) without an interview
+and hands it to the existing `generationPending` → `prepareProjectInterviewStartup` path. `buildWelcomeGenrePresetPrompt` names the preset
+`<concept title> (<preset label>)` when the brief has a `concept`.
+
+- All eight presets are reachable through concepts, not only the three posters. The AI connection gate (`ensureAiConnectedForPreset`) runs
+  when the author presses make; declining keeps the feed open and creates nothing.
+- Removed: the welcome briefing/poster stage (`editorWelcome.ts` is now only the show/dismiss gate), `firstWorldArrival.ts`,
+  the launcher lobby and inline interview (`startLobby.ts`, `startInterview.ts`), `runStartScreenPresetInterview`, and
+  `src/editor/ui/newProjectDialog.ts` with its tests and capture scripts. Sections below that describe those surfaces are history.
+- Kept: `projectInterviewDialog.ts` for 「프로젝트 → 게임 기획...」 editing of a saved brief, the playable-segment skeleton,
+  and the team first build.
+- Official concepts come from the `game-concepts` harness (`openwiki/harnesses/game-concepts.md`): AI writes ~330 candidates and
+  draws a SNES-style pixel thumbnail, a human accepts/rejects each at the review page, then `publish` puts them in the store and
+  `bundle` refreshes the offline fallback. 「내가 쓴 걸로 만들기」 drafts a card from the author's sentence with the same rules (`src/concepts/draft.ts`).
+
 ## Safe blank-project system-preset flow
 
 `action-rpg` selects `action-system`, enabling only `system.actionCombat`.
@@ -47,7 +67,7 @@ Controls (including keyboard input) are blocked during the interview and saving.
 - 「AI 연결하기」 hides the gate, opens AI settings above app modals, and waits for `AI_SETTINGS_CLOSED_EVENT`; then it refreshes again and either resolves `true` (interview continues) or reshows the gate with 「아직 연결되지 않았어요」. Arm the wait **after** `openAiSettingsModal()` — it calls `closeAiSettingsModal()` first, which fires the closed event even with no modal open.
 - The gate is injected (`EditorWelcomeOptions.ensureAiConnected`, `NewProjectDialogOptions.ensureAiConnected`), so component tests without it keep the old flow. The ⚙ system preset, blank project, and free-text welcome input do not pass the gate.
 - The first preset build runs as a team for that one turn: `setPendingAiBootIntent(..., { team: true })` → `AiBootIntentTarget.send/prefill(text, display, { team: true })` → `plainPiTurn(text, { team: true })` → `classifyPlainPiTurn({ piTeam: true })`. `AiConfig.piTeam` is unchanged, so later requests stay single unless the user turns team on. A prefilled draft keeps the team flag through `composerHandoff.team` only while the visible text is unchanged; read-only dials and village contracts still demote to single.
-- Browser evidence: `scripts/capture-preset-ai-gate.mjs` → `verify-shots/preset-ai-connect-gate/SUMMARY.json` + PNG (companion `/auth/status` stubbed signed-out then signed-in; no model calls or project writes).
+- Browser evidence (script removed 2026-10-07 with the dialog): `scripts/capture-preset-ai-gate.mjs` → `verify-shots/preset-ai-connect-gate/SUMMARY.json` + PNG (companion `/auth/status` stubbed signed-out then signed-in; no model calls or project writes).
 
 ## Playable first segment — code builds it, code judges it (2026-09-28)
 
@@ -67,7 +87,7 @@ AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27
 - Genres without a skeleton (farm, horror, partner, action) keep the previous AI-only flow and are not gated.
 - Regression: `test/playableSegment.test.ts` (reload pass, cut end/door/starter fail, other genres untouched). A bun probe with a stub team verified finish rejection then acceptance after repair. Not verified: a live model run through the gates.
 
-## Cinematic interview in the actual app (2026-10-03)
+## Cinematic interview in the actual app (2026-10-03, launcher/welcome entry superseded 2026-10-07)
 
 - First-time launcher Home and launcher New Game embed the first genre question directly, with a pixel still and optional ambient motion. Genre and answer buttons advance in one click; idea entry, genre mixing, custom answers and extra planning fields stay available in disclosures. `src/start/firstWorldArrival.ts` remains the editor welcome's world-preview stage. Later interview choices determine the confirmed engine. Image characters and scenes remain references, never authored project content.
 - `src/editor/ui/projectInterviewDialog.ts` is the production interview, shared by menu creation, welcome posters, launcher planning, and saved-brief editing. New Game opens AI planning by default; examples and blank projects remain under “시작 방식 다시 고르기”. The launcher lazy-loads the draft-only interview on `start-screen.html` before creating a folder. Only final confirmation and account readiness create/open the SQLite project. Legacy launcher payloads without a confirmed brief retain their old editor-side interview route.
@@ -135,6 +155,7 @@ These checks reuse the canonical `Project`, `projectLint`, `collectProjectRefere
 
 ## Dialog layering and receipt fixtures (2026-09-08)
 
+(2026-10-07: the dialog was removed; the concept feed overlay `src/editor/conceptFeedOverlay.ts` now owns this Escape layer and the gate test covers it.)
 The new-project dialog `src/editor/ui/newProjectDialog.ts` registers with `modalStack` and
 unregisters on every settled result. Escape cancels only that layer; it must not dismiss an
 underlying Database window. `src/editor/panels/newProjectDialog.ts` was a stale duplicate of
@@ -148,7 +169,7 @@ commands remain `blocked` (`test/genrePackReceiptCli.test.ts`).
 
 ## Validation
 
-## Two new-project surfaces, one choice model (2026-09-11)
+## Two new-project surfaces, one choice model (2026-09-11, superseded 2026-10-07 by the concept feed)
 
 `newProjectChoices.ts` is the single source; both surfaces are views of it.
 
@@ -263,7 +284,7 @@ Legacy briefs keep the preset-specific recommendation and existing style overrid
 are untouched. The automatically generated garden QA exposed the prior default
 `story-cutscene → gold`; an art prompt alone did not correct that product default.
 
-### Launcher planning before project creation (2026-10-04)
+### Launcher planning before project creation (2026-10-04, superseded 2026-10-07 by the concept feed)
 
 The cinematic interview controls use the custom pixel-corner frame and metallic
 accent treatment in `styles/shell/dialogs/cinematic-interview.css`. Text remains

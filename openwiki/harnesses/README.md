@@ -42,6 +42,7 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 
 ## 하네스 목록
 
+- [game-concepts](game-concepts.md) — 새 게임 피드의 공식 컨셉 카드·도트 썸네일·사람 받기/버리기·스토어 게시
 - [worldmap-icons](worldmap-icons.md) — 월드맵 아이콘 검수·사람 선택·현재 해시 확인·공용 시트 굽기
 
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트
