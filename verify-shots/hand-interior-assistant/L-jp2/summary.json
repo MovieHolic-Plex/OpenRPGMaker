@@ -1,0 +1,67 @@
+{
+ "label": "L-jp2",
+ "task": "다다미방이 있는 일본 단독주택 1층을 만들어줘. 욕실과 화장실도",
+ "model": "google-antigravity/gemini-3.8-flash",
+ "projectId": "5aac3650-1c57-49f6-b256-361090e49def",
+ "projectDir": ".oprn-projects/hand-interior-trial-L-jp2",
+ "ms": 50112,
+ "reloadEqual": true,
+ "chosenTilesets": [
+  "jp_city"
+ ],
+ "maps": [
+  {
+   "id": "map_c63edb09-e487-4482-b979-bf0ba2a73375",
+   "name": "일본 단독주택 1층",
+   "tilesetId": "jp_city",
+   "family": "oprn-jp",
+   "size": [
+    22,
+    19
+   ],
+   "events": 0,
+   "entrances": 1,
+   "exits": [],
+   "reachableFromEntrance": 160,
+   "walkableCells": 160,
+   "unreachedWalkable": 0,
+   "renderNote": null,
+   "upperFilled": 112
+  }
+ ],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 11,
+ "failed": 0,
+ "byTool": {
+  "get_project_summary": 1,
+  "get_database_records": 2,
+  "list_hand_interior_parts": 1,
+  "get_map_region": 1,
+  "tile_query": 1,
+  "list_tileset_references": 1,
+  "read_tileset_reference": 2,
+  "build_hand_interior_room": 1,
+  "show_map_region": 1
+ },
+ "readReferences": [
+  "jp_city/undefined",
+  "jp_city/undefined"
+ ],
+ "stats": {
+  "ms": 48830,
+  "turns": 10,
+  "toolCalls": 11,
+  "toolErrors": 0,
+  "usage": {
+   "input": 101317,
+   "output": 4737,
+   "cacheRead": 505908,
+   "cacheWrite": 0,
+   "totalTokens": 611962,
+   "calls": 10
+  }
+ },
+ "finalText": "assistant: 다다미방(화실)과 욕실, 화장실을 갖춘 **일본 단독주택 1층** 실내를 시공했습니다.  ### 주요 구성 공간 1. **화실 (다다미방)**:    - 전통 다다미 바닥과 흙벽(聚楽) 마감    - 도코노마(족자와 꽃병), 불단, 붙박이 벽장(오시이레), 쇼지 격자 창    - 중앙 좌탁(자타쿠)과 마주 보는 방석 4장, 다기 세트 및 센베 접시 2. **욕실 & 탈의실**:    - 욕실 타일 바닥 및 패널 벽, 수면이 채워진 유닛 욕조, 벽걸이 샤워 수전과 거울, 세숫대야    - 욕실 입구 탈의실과 발매트 3. **독립 화장실**:    - 양변기, 벽걸이 손씻기 세면대, 화장지 홀더, 화장실 전용 매트와 슬리퍼 4. **LDK (거실·식당·주방)**:    - 북쪽 조리대 라인(싱크대, 냉장고, 가스레인지, 찬장, 전자레인지 등)    - 대면 주방 카운터와 4인용 다이닝 식탁 세트    - 남쪽 휴식 공간: 소파, 낮은 거실 탁자, 플로어 스탠드 조명, 러그, 관엽식물 5"
+}

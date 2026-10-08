@@ -86,7 +86,10 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const template = near ? pool[0] : pool[Math.floor(r() * pool.length)];
     const [dw, dh] = DEFAULT_SIZE[q.kind] ?? (/_shop$/u.test(q.kind) ? DEFAULT_SIZE.shop! : [6, 5]);
     const tw = q.w ?? template?.w ?? dw, th = q.h ?? template?.h ?? dh;
-    return { id, kind: q.kind, tw, th, minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH: Math.min(th, 4) < 3 ? 3 : Math.min(th, 4),
+    // 세로는 벽면 두 줄 + 걸을 바닥 — 작은 방(복도·현관·화장실·욕실)은 바닥 2줄, 나머지는 3줄 이상(2026-10-08: 바닥 2줄짜리 여관 방이 납작했다).
+    const small = /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
+    const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
+    return { id, kind: q.kind, tw, th: Math.max(th, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? template?.floor, wall: q.wall ?? template?.wall, template };
   });
 }

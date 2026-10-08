@@ -135,10 +135,10 @@ for (const p of v5maps.plans as { key: string; plan: string[]; floor: string; wa
     for (const g of it.on ?? []) { const w = Math.max(1, it.w), h = Math.max(1, it.h); goods.push({ id: g.goods, x: it.x + Math.min(w - 1, Math.floor(g.fx * w)), y: it.y + Math.min(h - 1, Math.max(0, Math.ceil(g.fy * h) - 1)) }); }
   }
   const zones = p.zones.map(([x0, y0, x1, y1, floor, wall]) => ({ x0, y0, x1, y1, ...(floor ? { floor } : {}), ...(wall ? { wall } : {}) }));
-  const input: FullInput = { plan: p.plan, floor: p.floor, wall: p.wall, zones, objects, lines, goods };
+  const raw: FullInput = { plan: p.plan, floor: p.floor, wall: p.wall, zones, objects, lines, goods };
   // 도구가 앉히지 못하는 탁상 물건은 뺀다(prepare-references.mts 와 같다)
-  const bad = new Set(buildHandInteriorLayers(input, v5tileset).issues.filter((i) => i.code.startsWith("goods")).map((i) => `${i.x},${i.y}`));
-  input.goods = goods.filter((g) => !bad.has(`${g.x},${g.y}`));
+  const bad = new Set(buildHandInteriorLayers(raw, v5tileset).issues.filter((i) => i.code.startsWith("goods")).map((i) => `${i.x},${i.y}`));
+  const input: FullInput = { ...raw, goods: goods.filter((g) => !bad.has(`${g.x},${g.y}`)) };
   const labels = LABELS[p.key] ?? {};
   const got = templatesOf("atlas_biome_interior", p.key, b.id, input, (_c, seed) => labels[seed] ?? null);
   templates.atlas_biome_interior!.push(...got);

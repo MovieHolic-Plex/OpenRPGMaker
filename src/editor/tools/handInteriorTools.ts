@@ -485,7 +485,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       layout: { type: "object", description: "건물·여러 방 실내는 이것을 쓴다 — 방 구성만 주면 도구가 방 배치(칸막이·문·출구)를 짜고 방마다 제작자 예제 방의 가구 한 벌을 심는다. program = 예제 구성 id(list_hand_interior_parts 인자 없이 → data.programs: house-1f·bakery·inn…) 또는 rooms = 방 종류 목록(roomKinds: genkan·hall·ldk·kitchen·toilet·bath·washitsu·bedroom… / bakery_shop·forge·tavern·inn_room…, w·h 생략하면 견본 크기). plan·rooms 와 같이 주지 않는다.",
         properties: {
           program: { type: "string" },
-          rooms: { type: "array", items: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" }, w: { type: "integer", minimum: 2 }, h: { type: "integer", minimum: 3 },
+          rooms: { type: "array", items: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" }, w: { type: "integer", minimum: 2 }, h: { type: "integer", minimum: 4, description: "세로(벽면 두 줄 포함) — 방은 5 이상, 복도·화장실은 4" },
             floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["kind"], additionalProperties: false } },
           entrance: { type: "string", description: "출구 방 id 또는 종류(생략 시 현관·입구·복도·가게 순)" },
           prefer: { type: "array", description: "문으로 바로 잇고 싶은 방 쌍 — a·b 는 방 id 또는 종류", items: PAIR },
