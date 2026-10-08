@@ -496,7 +496,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
   invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
   run(draft, rawArgs): ToolExecResult {
     const trimmed = trimPlanMargin(rawArgs);
-    const args = trimmed.args;
+    let args = trimmed.args;
     const tilesetId = pickTileset(draft, args);
     const spec = specFor(draft, tilesetId);
     const fitNotes: string[] = [];
