@@ -35,8 +35,8 @@ export interface ModelPreset {
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
   [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-3.8-flash", strong: "gemini-3-pro" },
-  // Codex 는 네 모델만 고른다(modelCatalog.CODEX_MODELS). fast = 가장 빠른 gpt-6-luna, strong = 최상위 gpt-6-astra.
-  [CODEX_PROVIDER_ID]: { fast: "gpt-6-luna", strong: "gpt-6-astra" },
+  // Codex 는 두 티어 모두 gpt-6.1-sol 이고 사고 강도로만 가른다(2026-10-07 조수 시험에서 기본으로 채택).
+  [CODEX_PROVIDER_ID]: { fast: "gpt-6.1-sol", strong: "gpt-6.1-sol" },
 };
 
 /** 티어의 실제 모델 ID. 매핑이 없는 제공자면 null — 호출부는 그 역할의 모델을 건드리지 않는다. */
@@ -54,17 +54,19 @@ export const MODEL_PRESETS: readonly ModelPreset[] = [
       vision: { tier: "fast", thinking: "low" },
       writer: { tier: "fast", thinking: "low" },
       deep: { tier: "fast", thinking: "medium" },
+      build: { tier: "fast", thinking: "medium" },
     },
   },
   {
     id: "balanced",
     label: "균형",
-    description: "계획만 상위 모델, 실행은 빠르게. 대부분의 작업에 적합합니다.",
+    description: "계획은 깊게, 실행은 보통 강도로. 대부분의 작업에 적합합니다.",
     ultrabrain: { tier: "strong", thinking: "high" },
     roles: {
       vision: { tier: "fast", thinking: "medium" },
       writer: { tier: "fast", thinking: "medium" },
-      deep: { tier: "fast", thinking: "high" },
+      deep: { tier: "fast", thinking: "medium" },
+      build: { tier: "fast", thinking: "medium" },
     },
   },
   {
@@ -76,6 +78,7 @@ export const MODEL_PRESETS: readonly ModelPreset[] = [
       vision: { tier: "strong", thinking: "high" },
       writer: { tier: "strong", thinking: "high" },
       deep: { tier: "strong", thinking: "high" },
+      build: { tier: "strong", thinking: "high" },
     },
   },
 ];

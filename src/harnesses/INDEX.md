@@ -18,6 +18,7 @@
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 | `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
+| `space-craft` | 조수 공간 제작 시각 품질 | 장르 무관 | `harness-data/space-craft/seed.json` | `openwiki/harnesses/space-craft.md` |
 | `beodeul-architecture` | 버들항 건물 · 원본 보존 | 장르 무관 | `harness-data/beodeul-architecture/seed.json` | `openwiki/harnesses/beodeul-architecture.md` |
 | `beodeul-building-review` | 버들항 건물 · 사람의 허용/거절 | 장르 무관 | `harness-data/beodeul-building-review/seed.json` | `openwiki/harnesses/beodeul-building-review.md` |
 | `game-concepts` | 새 게임 컨셉 카드 | 장르 무관 | `harness-data/game-concepts/seed.json` | `openwiki/harnesses/game-concepts.md` |
@@ -291,6 +292,23 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `review` — 시각 검수: 실제로 열어 본 그림의 해시에 묶어 독립 검수 결과를 기록한다.
 - `report` — 결과 집계: 미검증·실패·환경 차단을 숨기지 않고 JSON·HTML·Markdown으로 집계한다.
 - `aggregate` — 여러 실행 집계: 각 기능의 최초 실제 모델 시도를 선택하고 입력 전 기동 장애와 모든 시도를 별도 보존한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## space-craft — 조수 공간 제작 시각 품질
+
+실제 입력창으로 방·판타지 실내·현대 실내·무림 장소를 만들게 하고, 저장·재로드 뒤 결정론 지표(도달·빈 바닥·대칭·칩셋 계열)와 원본 크기 렌더를 남긴다. 기계 통과는 시각 합격이 아니다.
+
+**이럴 때 쓴다:**
+- 조수가 만든 방·실내·장소가 보기에 괜찮은지 카테고리·모델별로 잴 때
+
+**단계** (`npm run harness -- space-craft <단계>`):
+- `list` — 과제 목록: 카테고리·시작 칩셋·기대 계열을 나열한다.
+- `prepare` — 격리 정본 준비: 과제·반복마다 별도 SQLite 프로젝트를 만든다. 공용 DB 사본은 실행당 하나를 하드링크한다.
+- `run` — 실제 수행: 실제 입력창에 자연어를 보내고 적용·저장·새 브라우저 재로드까지 확인한다(assistant-capability 실행기 재사용).
+- `measure` — 결정론 지표·렌더: 조수가 만들거나 바꾼 맵마다 칩셋 계열·도달 비율·빈 바닥·대칭을 재고 원본 크기 PNG와 4분면 확대를 남긴다.
+- `sheet` — 비교 시트: 카테고리 × 모델 × 반복을 그림과 지표로 나란히 놓은 자체완결 HTML을 굽는다.
+- `status` — 진행 상황: 과제별 실행·측정 여부를 보여 준다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 

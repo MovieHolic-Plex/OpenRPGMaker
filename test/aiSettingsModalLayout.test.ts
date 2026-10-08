@@ -105,7 +105,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     // 역할 4행은 details 안의 표로 압축 — 섹션 단위가 아니다.
     const roles = findByTestId(modal, "ai-settings-advanced");
     expect(roles?.tagName.toLowerCase()).toBe("details");
-    for (const role of ["ultrabrain", "vision", "writer", "deep"]) {
+    for (const role of ["ultrabrain", "vision", "writer", "deep", "build"]) {
       expect(findByTestId(modal, `ai-settings-role-${role}`), role).not.toBeNull();
     }
   });

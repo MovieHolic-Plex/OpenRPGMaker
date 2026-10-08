@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
+import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
@@ -21,8 +22,7 @@ import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
 import { uploadedAssetUrl } from "../../src/project/persistence/assetAccessors.ts";
 import { isColorKeyedChipsetTextureKey, resolveTransparentColorKeys } from "../../src/assets/chipsetTransparency.ts";
 import { applyTransparentColorKey, applyTransparentColorKeys } from "../../src/assets/transparentColorKey.ts";
-import { activeTileGrafts, tileCountWithGrafts } from "../../src/assets/tileGrafts.ts";
-import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "../../src/assets/bundledChipsetGeometry.ts";
+import { activeTileGrafts, graftSourceGeometry, tileCountWithGrafts, uploadedGraftGeometryIn } from "../../src/assets/tileGrafts.ts";
 import { store } from "../../src/project/store.ts";
 import { whereText, type GameCheckReport } from "../../src/qa/gameCheck/index.ts";
 import type { GameMap, Project, TilesetDef } from "../../src/project/types.ts";
@@ -100,7 +100,9 @@ function loadTilesetRaster(project: Project, tileset: TilesetDef): Raster | null
     const sourceType = project.assets.uploaded[graft.sourceChipset] ? "uploaded" : "bundled";
     const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: sourceType, id: graft.sourceChipset } } as TilesetDef);
     if (!source) continue;
-    const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
+    const geometry = graft.sourceTilesPerRow ? graftSourceGeometry(graft)
+      : { ...graftSourceGeometry(graft), ...(uploadedGraftGeometryIn(project.tilesets, graft.sourceChipset) ?? {}) };
+    const ss = geometry.tileSize, sc = geometry.tilesPerRow;
     const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;
     const dx = (graft.targetTile % columns) * size, dy = Math.floor(graft.targetTile / columns) * size;
     for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) {
@@ -127,8 +129,28 @@ function tilesetSourceUrl(project: Project, tileset: TilesetDef): string | null 
   return (asset ? uploadedAssetUrl(asset) : "") || null;
 }
 
+/**
+ * 참조(ref)로 저장된 업로드 자산의 바이트를 찾을 폴더들 — 프로젝트 폴더의 `assets/`(파일 이름 = sha256.확장자).
+ * 헤드리스에는 편집기의 자산 해석기가 없어서, 공용 DB 손 도트 기물 아틀라스처럼 ref 만 있는 그림판이 통째로 빠졌다
+ * (2026-10-08 space-craft: 찍은 냉장고·진열대·목인장이 판정 그림에 없어 두 판정자 모두 「가구 없음」).
+ */
+const refAssetRoots: string[] = [];
+export function addRenderAssetRoot(dir: string): void {
+  if (!refAssetRoots.includes(dir)) refAssetRoots.push(dir);
+}
+function refAssetDataUrl(project: Project, tileset: TilesetDef): string | null {
+  if (tileset.image.type !== "uploaded") return null;
+  const ref = project.assets.uploaded[tileset.image.id]?.ref;
+  if (!ref) return null;
+  for (const root of refAssetRoots) {
+    const file = path.join(root, `${ref.sha256}.${ref.extension.replace(/^\./u, "") || "png"}`);
+    if (fs.existsSync(file)) return `data:${ref.mime};base64,${fs.readFileSync(file).toString("base64")}`;
+  }
+  return null;
+}
+
 function loadBaseTilesetRaster(project: Project, tileset: TilesetDef): Raster | null {
-  const url = tilesetSourceUrl(project, tileset);
+  const url = tilesetSourceUrl(project, tileset) ?? refAssetDataUrl(project, tileset);
   if (!url) return null;
   const key = `${url}|${tileset.transparentColor ?? ""}`;
   if (imageCache.has(key)) return imageCache.get(key)!;
@@ -246,6 +268,52 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
   return { png: PNG.sync.write(png), ...(note ? { note } : {}) };
 }
 
+
+/**
+ * 오프닝 그림 도구(show_opening_image·preview_opening_animatic·generate_opening_*)의 헤드리스 이미지. 브라우저는 캔버스로 합성한다.
+ * 여기서는 쓰인 그림 리소스(PNG)를 가로로 이어 붙인다 — 애니메틱은 시간 표본 합성이 아니라 레이어 그림 목록이다(gen 의 differences 에 적음).
+ * 그림 레이어가 없는 장면(글자만)은 어두운 빈 화면을 준다. 실제로 있는데 못 읽는 그림은 오류로 알린다(가짜 그림을 보이지 않는다).
+ * 이 경로가 없을 때는 「맵을 찾을 수 없습니다(undefined)」로 실패했다(2026-10-07 장르 시험: GPT 두 판에서 5회).
+ */
+function openingImagesPngBase64(project: Project, data: { resourceId?: unknown; resourceIds?: unknown }, maxSide: number): string {
+  const ids = [
+    ...(typeof data.resourceId === "string" ? [data.resourceId] : []),
+    ...(Array.isArray(data.resourceIds) ? data.resourceIds.filter((id): id is string => typeof id === "string") : []),
+  ].filter((id, index, all) => id && all.indexOf(id) === index);
+  const images = ids.map((id) => {
+    const url = resolveAssetResourceUrl(id, { project });
+    const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
+    const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
+      : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
+    if (!bytes) throw new Error(`오프닝 그림을 헤드리스에서 읽지 못했습니다: ${id} (경로 없음)`);
+    // 공용 스틸은 JPEG 다.
+    if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+      const decoded = jpeg.decode(bytes, { useTArray: true, formatAsRGBA: true });
+      const png = new PNG({ width: decoded.width, height: decoded.height });
+      png.data = Buffer.from(decoded.data);
+      return png;
+    }
+    return PNG.sync.read(bytes);
+  });
+  if (images.length === 0) {
+    const blank = new PNG({ width: 320, height: 180 });
+    for (let i = 0; i < blank.data.length; i += 4) { blank.data[i] = 16; blank.data[i + 1] = 18; blank.data[i + 2] = 24; blank.data[i + 3] = 255; }
+    return PNG.sync.write(blank).toString("base64");
+  }
+  const gap = 4, width = images.reduce((sum, im) => sum + im.width, 0) + gap * (images.length - 1), height = Math.max(...images.map((im) => im.height));
+  const sheet = new PNG({ width, height });
+  let x0 = 0;
+  for (const im of images) { PNG.bitblt(im, sheet, 0, 0, im.width, im.height, x0, 0); x0 += im.width + gap; }
+  const factor = Math.max(1, Math.ceil(Math.max(width, height) / maxSide));
+  if (factor === 1) return PNG.sync.write(sheet).toString("base64");
+  const small = new PNG({ width: Math.max(1, Math.floor(width / factor)), height: Math.max(1, Math.floor(height / factor)) });
+  for (let y = 0; y < small.height; y++) for (let x = 0; x < small.width; x++) {
+    const from = ((y * factor) * width + x * factor) * 4, to = (y * small.width + x) * 4;
+    sheet.data.copy(small.data, to, from, from + 4);
+  }
+  return PNG.sync.write(small).toString("base64");
+}
+
 /**
  * show_map_region 의 도구 이미지 — 헤드리스 gen 은 캔버스가 없어 renderToolImage 를 넘기지 않았고,
  * 런타임은 「맵 이미지 전달 경로가 없습니다」로 호출을 실패시켰다(r0735: 4회, 모델은 결과를 못 봄).
@@ -269,7 +337,10 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
     const png = new PNG({ width: raster.width, height: raster.height }); png.data.set(raster.data);
     return PNG.sync.write(png).toString('base64');
   }
-  const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
+  const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown; resourceId?: unknown; resourceIds?: unknown; shotId?: unknown };
+  if (region.mapId === undefined && (region.resourceId !== undefined || region.resourceIds !== undefined || region.shotId !== undefined)) {
+    return openingImagesPngBase64(project, region, maxSide);
+  }
   const map = typeof region.mapId === "string" ? project.maps[region.mapId] : undefined;
   if (!map) throw new Error(`show_map_region 이미지: 맵을 찾을 수 없습니다(${String(region.mapId)})`);
   if (map.relief?.levels.some(n => n > 0)) {

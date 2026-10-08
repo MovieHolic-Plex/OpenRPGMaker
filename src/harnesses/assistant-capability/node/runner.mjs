@@ -12,6 +12,9 @@ const args=process.argv.slice(2), stage=args[0];
 function option(name,fallback) {const i=args.indexOf(`--${name}`);if(i<0)return fallback;const value=args[i+1];if(!value||value.startsWith('--'))throw Error(`--${name} 값 필요`);return value;}
 const root=resolve(option('out','qa-runs/harnesses/assistant-capability/latest'));
 const chosen=option('case');
+// 모델 비교용: 입력창 localStorage 의 oprn:ai-config 위에 얹을 설정 파일. 없으면 제품 기본 선택 그대로.
+const aiConfigFile=option('ai-config');
+const aiConfig=aiConfigFile?JSON.parse(readFileSync(resolve(aiConfigFile),'utf8')):{};
 let stopRequested=false;
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{stopRequested=true;});
 const entries=seed.cases.filter(entry=>!chosen||chosen.split(',').includes(entry.id));
@@ -166,7 +169,8 @@ async function runCases() {
       const timeout=Number(option('timeout-ms',seed.timeoutMs));
       if(!Number.isFinite(timeout)||timeout<=0)throw Error('양수 timeout-ms 필요');
       const submitted = args.includes('--direct-pi') ? { ...entry, prompt: `/pi ${entry.prompt}` } : entry;
-      const run=await execute(submitted,dir,timeout,{});
+      if(aiConfigFile)result.aiConfig={file:relative(process.cwd(),resolve(aiConfigFile)),digest:digest(readFileSync(resolve(aiConfigFile)))};
+      const run=await execute(submitted,dir,timeout,aiConfig);
       result.gates.execution=gate([{id:'native-pi-run',ok:run.realRun,detail:'입력창 POST와 실제 Pi done 영수증'},
         {id:'no-editor-errors',ok:!run.errors.length,detail:run.errors.join('; ')},
         {id:'no-model-errors',ok:!run.events.some(e=>e.type==='error'||e.type==='stream_error'),detail:run.events.filter(e=>['error','stream_error'].includes(e.type)).map(e=>e.message).join('; ')}]);

@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, linkSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { backup, DatabaseSync } from 'node:sqlite';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
@@ -88,12 +88,16 @@ export async function prepare(root: string, selected?: string): Promise<void> {
     mkdirSync(dir, { recursive: true });
     // Pin the real library edition for this case: publishing a new shared
     // character during reload must not alter the strict persistence comparison.
+    // One pinned edition per run folder, hard-linked into each case: a 1.3GB copy
+    // per case filled the disk mid-run (2026-10-07) and killed browsers.
     const sharedSource = sharedContentFile();
-    if (existsSync(sharedSource)) {
+    const pinned = resolve(root, 'shared-content.sqlite');
+    if (existsSync(sharedSource) && !existsSync(pinned)) {
       const source = new DatabaseSync(sharedSource, { readOnly: true });
-      try { await backup(source, resolve(dir, 'shared-content.sqlite')); }
+      try { await backup(source, pinned); }
       finally { source.close(); }
     }
+    if (existsSync(pinned) && !existsSync(resolve(dir, 'shared-content.sqlite'))) linkSync(pinned, resolve(dir, 'shared-content.sqlite'));
     const store = await initLocalProjectStore({ projectDir });
     try {
       await store.saveProject(project);

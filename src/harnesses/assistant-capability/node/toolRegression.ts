@@ -32,6 +32,7 @@ export function checkTools(root: string): number {
     { name: 'set_map_properties', args: { mapId: 'map_ember_village', name: 'renamed' } },
     { name: 'upsert_event', args: { mapId: 'map_ember_village', event: { id: 'ev_ember_child', name: 'renamed' } } },
     { name: 'upsert_item', args: { item: { id: 'item_potion', price: 30 } } },
+    { name: 'patch_event_page', args: { mapId: 'map_ember_village', eventId: 'ev_ember_child', pageIndex: 0, set: { name: 'renamed' } } },
   ];
   for (const { name, args } of trials) {
     const ctx = make(), before = structuredClone(ctx.project);

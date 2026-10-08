@@ -153,6 +153,21 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   }
 
   const kind = sceneKind(scene.kind, index);
+  // 장면 종류에 쓰이지 않는 칸이 「안 움직임」 값이면 거부하지 않고 뺀다. gpt-6.1-sol 은 선택 칸을 다 채워
+  // text 장면에도 motion:"none"·direction:{layers:[]…} 을 보내고 같은 거부를 반복했다(2026-10-07 장르 시험, 9회).
+  // 실제로 움직임을 담은 값은 지금처럼 거부한다 — 그림 장면을 텍스트로 잘못 고른 것일 수 있다.
+  const inert = (key: "motion" | "direction" | "resourceId") => {
+    const value = scene[key];
+    if (value === undefined) return false;
+    if (key === "motion") return value === "none";
+    if (key === "resourceId") return value === "";
+    const layers = (value as { layers?: unknown[] } | null)?.layers;
+    return !Array.isArray(layers) || layers.length === 0;
+  };
+  const unused = kind === "text" ? ["resourceId", "motion", "direction"] as const
+    : kind === "video" ? ["motion", "direction"] as const
+    : kind === "animatic" ? ["resourceId", "motion"] as const : [] as const;
+  for (const key of unused) if (inert(key)) delete (scene as Record<string, unknown>)[key];
   const id = scene.id === undefined ? `opening-scene-${index + 1}` : scene.id;
   if (typeof id !== "string" || id.trim().length === 0) {
     throw new ToolError(`scenes[${index}].id는 비어 있을 수 없습니다.`, { code: "invalid-args" });
@@ -656,7 +671,8 @@ const editOpening: ToolDefinition = {
     if (op !== "settings" && op !== "remove" && op !== "move" && args.scene === undefined) {
       throw new ToolError(`op:"${op}"에는 scene 이 필요합니다.`, { code: "invalid-args" });
     }
-    if ((op === "settings" || op === "remove" || op === "move") && args.scene !== undefined) {
+    // 지우기·옮기기에 딸려 온 scene 은 쓰지 않으므로 무시한다(선택 칸을 다 채우는 모델). settings 는 장면을 바꾸려던 뜻일 수 있어 거부한다.
+    if (op === "settings" && args.scene !== undefined) {
       throw new ToolError(`op:"${op}"은 scene 을 받지 않습니다.`, { code: "invalid-args" });
     }
 

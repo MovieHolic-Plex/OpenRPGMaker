@@ -98,8 +98,9 @@ export function createGraftedTilesetCanvas(
       console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
       continue;
     }
-    const sourceTileSize = bundledChipsetTileSize(graft.sourceChipset);
-    const src = tileXY(graft.sourceTile, bundledChipsetTilesPerRow(graft.sourceChipset), sourceTileSize);
+    const geometry = graftSourceGeometry(graft);
+    const sourceTileSize = geometry.tileSize;
+    const src = tileXY(graft.sourceTile, geometry.tilesPerRow, sourceTileSize);
     const dst = tileXY(graft.targetTile, tileset.tilesPerRow, tileSize);
     context.clearRect(dst.x, dst.y, tileSize, tileSize);
     context.drawImage(
@@ -115,6 +116,33 @@ export function createGraftedTilesetCanvas(
     );
   }
   return canvas;
+}
+
+type GraftGeometry = { tileSize: number; tilesPerRow: number };
+/** 업로드 그림판 키 → 그 그림판을 쓰는 타일셋의 칸 배치. 프로젝트를 아는 쪽(tilesetImage.ts·헤드리스 렌더)이 등록한다. */
+let uploadedGraftGeometry: (sourceChipset: string) => GraftGeometry | null = () => null;
+export function setUploadedGraftGeometryResolver(resolve: (sourceChipset: string) => GraftGeometry | null): void {
+  uploadedGraftGeometry = resolve;
+}
+
+/**
+ * 이식 소스 칸의 크기·한 줄 칸 수 — 이식에 적힌 값이 먼저, 그다음 업로드 그림판을 쓰는 타일셋(칸 배치를 적기 전에 만든 이식),
+ * 마지막으로 번들 키. 업로드 그림판을 번들 기본값(30칸)으로 읽으면 엉뚱한 칸·투명 칸이 그려진다.
+ */
+export function graftSourceGeometry(graft: Pick<TileGraft, "sourceChipset" | "sourceTileSize" | "sourceTilesPerRow">): GraftGeometry {
+  const uploaded = graft.sourceTileSize && graft.sourceTilesPerRow ? null : uploadedGraftGeometry(graft.sourceChipset);
+  return {
+    tileSize: graft.sourceTileSize ?? uploaded?.tileSize ?? bundledChipsetTileSize(graft.sourceChipset),
+    tilesPerRow: graft.sourceTilesPerRow ?? uploaded?.tilesPerRow ?? bundledChipsetTilesPerRow(graft.sourceChipset),
+  };
+}
+
+/** 프로젝트에서 업로드 그림판 키를 쓰는 타일셋의 칸 배치. */
+export function uploadedGraftGeometryIn(tilesets: Readonly<Record<string, TilesetDef>>, sourceChipset: string): GraftGeometry | null {
+  for (const tileset of Object.values(tilesets)) {
+    if (tileset.image.type === "uploaded" && tileset.image.id === sourceChipset) return { tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow };
+  }
+  return null;
 }
 
 function tileXY(tile: number, tilesPerRow: number, tileSize: number): { x: number; y: number } {

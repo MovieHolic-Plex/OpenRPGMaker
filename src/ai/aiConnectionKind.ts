@@ -16,7 +16,7 @@
 
 import { DEFAULT_BASE_URL, type AiConfig } from "@/ai/llmClient";
 import {
-  DEFAULT_OH_MY_PI_PROVIDER,
+  RECOMMENDED_OH_MY_PI_PROVIDER,
   OH_MY_PI_PROVIDERS,
   ohMyPiAuthKind,
   parseOhMyPiProvider,
@@ -56,7 +56,7 @@ export function editorHasProviderChoice(): boolean {
 
 /** 그 종류의 기본 제공자. 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
 export function defaultProviderForKind(_kind: AiConnectionKindId): string {
-  return DEFAULT_OH_MY_PI_PROVIDER;
+  return RECOMMENDED_OH_MY_PI_PROVIDER;
 }
 
 /**

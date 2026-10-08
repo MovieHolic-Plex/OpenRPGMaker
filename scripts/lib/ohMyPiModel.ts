@@ -7,10 +7,17 @@ import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
  * low..max)이고 다른 것은 이름·컨텍스트 창(272k)뿐이다 — 그래서 번들 gpt-5.6-sol 메타데이터에
  * 그 두 값만 덮어 쓴다. 번들이 올라오면 exact 경로가 먼저 잡으므로 이 표는 저절로 안 쓰인다.
  */
-const CODEX_GPT6_EXTENSION: Readonly<Record<string, { readonly name: string; readonly contextWindow: number }>> = {
+const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
+  readonly name: string;
+  readonly contextWindow: number;
+  readonly useResponsesLite?: boolean;
+}>> = {
   "gpt-6-astra": { name: "GPT-6 Astra", contextWindow: 272000 },
   "gpt-6-sol": { name: "GPT-6 Sol", contextWindow: 272000 },
   "gpt-6-luna": { name: "GPT-6 Luna", contextWindow: 272000 },
+  // codex-rs 0.155 카탈로그가 use_responses_lite: true 로 내려 준다. 이 헤더 없이 보내면
+  // 「not supported when using Codex with a ChatGPT account」 400 이다(실측 2026-10-07).
+  "gpt-6.1-sol": { name: "GPT-6.1 Sol", contextWindow: 272000, useResponsesLite: true },
 };
 
 /** Exact selection only. Missing catalog entries must never change the user's model. */
@@ -31,7 +38,9 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
   }
   if (provider === "openai-codex" && CODEX_GPT6_EXTENSION[id]) {
     const base = getBundledModel("openai-codex", "gpt-5.6-sol");
-    if (base) return { ...base, id, ...CODEX_GPT6_EXTENSION[id] };
+    // 웹소켓 핸드셰이크는 옛 클라이언트 버전을 박아 보내 새 모델을 거절당한다 — SSE 로 보내야
+    // codexVersionFetch 가 버전을 올릴 수 있다(codexClientVersion.ts).
+    if (base) return { ...base, id, ...CODEX_GPT6_EXTENSION[id], preferWebsockets: false };
   }
   throw Object.assign(new Error(`지원 목록에 없는 모델입니다: ${provider}/${id}. 다른 모델로 대체하지 않았습니다.`), { status: 400 });
 }

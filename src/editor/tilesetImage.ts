@@ -8,7 +8,7 @@ import {
 } from "@/assets/bundled";
 import { graftedTilesetImageUrl, setUploadedGraftSourceUrlResolver } from "@/assets/tileGraftImageCache";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
-import { activeTileGrafts, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
+import { activeTileGrafts, setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { rawChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -37,6 +37,7 @@ export function tilesetBaseImageUrl(tileset: TilesetDef, project?: Project): str
   );
 }
 
+setUploadedGraftGeometryResolver((sourceChipset) => uploadedGraftGeometryIn(store.getCurrent().tilesets, sourceChipset));
 setUploadedGraftSourceUrlResolver((textureKey) => {
   const asset = store.getCurrent().assets.uploaded[textureKey];
   const url = asset ? uploadedAssetUrl(asset) : "";

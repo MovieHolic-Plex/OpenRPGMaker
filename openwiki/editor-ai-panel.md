@@ -1238,6 +1238,14 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
+**Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
+장르 프리셋 기획(게임 전체 짓기)이거나 첫 노출 도구 중 tile·world 영역 또는 map 쓰기 도구가 있으면 `build`, 아니면 `deep` 을 고르고
+`runPiCommand` 가 그 역할 모델로 실행한다(`roleModels.build` 가 없으면 `deep` 과 같다 — 옛 설정은 동작이 그대로다).
+ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-3.8-flash` 로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
+설정 모달 「역할별 모델 직접 지정」에 「시공」 행이 있고, 시공 행이 실행 행과 같으면 저장하지 않는다(비우면 실행 모델을 따른다).
+근거: 장르 시험에서 같은 기획 전체 짓기가 Gemini 10분·자동 플레이 끝까지 통과, GPT 50분·보스 스위치에서 막힘. 작은 수정은 GPT 12/12·Gemini 11/12.
+판정은 Pi 워커의 `spatialWork`(지시문의 공간 줄을 싣는 판정)와 같지만, 도구 목록이 없을 때 지시문은 싣고 모델은 바꾸지 않는다. 스튜디오 레인(`aiLaneManager`)은 아직 deep 이다.
+
 Provider/model/effort for each LLM role are independent of the autonomy dial. Image keeps
 `imageProviderId`/`imageModel` and the existing `imageGenerationClient` path.
 

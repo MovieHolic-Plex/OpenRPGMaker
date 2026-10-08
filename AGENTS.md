@@ -75,6 +75,10 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- worldmap-icons <단계>` (intake·review·draw·serve·status·export·build·check·preview).
   → 사람이 선택한 현재 해시만 굽는다. 선택 정본은 `WMI_HARNESS_DATA/harness.sqlite`, 칸 번호는 덧붙이기 전용이다.
 
+- **조수가 만든 방·실내·현대 실내·무림 장소의 시각 품질을 카테고리·모델별로 잴 때**
+  → `space-craft` · 시드 `harness-data/space-craft/seed.json` · `npm run harness -- space-craft list|prepare|run|measure|sheet|status` · 문서 `openwiki/harnesses/space-craft.md`
+  → 실제 입력창 경로(assistant-capability 실행기 재사용). 기계 지표 통과는 시각 합격이 아니다 — 그림은 판정자·사람이 본다.
+
 - **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
   → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
   → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.

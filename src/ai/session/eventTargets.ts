@@ -49,6 +49,12 @@ export function eventBaseTarget(proposal: ProposedCall): EventTargetKey | null {
     return mapId === null || eventId === null ? null : { mapId, eventId };
   }
 
+  if (proposal.name === "patch_event_page") {
+    const mapId = stringValue(proposal.args.mapId);
+    const eventId = stringValue(proposal.args.eventId);
+    return mapId === null || eventId === null ? null : { mapId, eventId };
+  }
+
   if (proposal.name === "upsert_event") {
     const mapId = stringValue(proposal.args.mapId);
     const event = isRecord(proposal.args.event) ? proposal.args.event : null;

@@ -312,6 +312,13 @@ export interface TileGraft {
   // 소스 타일 그림판의 번들 textureKey (예: "tex_easyrpg_chipset_retro_house").
   sourceChipset: string;
   sourceTile: number;
+  /**
+   * 소스 그림판의 칸 크기·한 줄 칸 수. 번들 그림판은 키로 안다(bundledChipsetGeometry) — 업로드 그림판(공용 DB 손 도트 기물 아틀라스 등)은
+   * 키로 알 수 없어 이식을 만들 때 적는다. 없으면 키로 찾는다. 2026-10-08: 768px(48칸) 공용 기물 아틀라스를 기본 30칸으로 읽어
+   * 찍은 냉장고·진열대·목인장이 투명 칸으로 그려졌다.
+   */
+  sourceTileSize?: number;
+  sourceTilesPerRow?: number;
 }
 
 // "보이지 않는 하네스" 구조 킷(2026-07-19 v2 설계 §③④ 수직 슬라이스).

@@ -137,8 +137,9 @@ describe("native upsert page contract", () => {
     expect(COMMAND_SCHEMA.properties?.options?.items?.required).toEqual(["branch"]);
     expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.text?.type).toBe("string");
     expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.itemId?.type).toBe("string");
-    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.branch?.items?.properties?.kind?.enum)
-      .toContain("triggerEnding");
+    // 분기 안 kind 는 목록을 반복하지 않는다(바깥 Command 와 같은 값, 실행기가 모든 깊이를 검사) — 바깥 목록에 있으면 된다.
+    expect(COMMAND_SCHEMA.properties?.kind?.enum).toContain("triggerEnding");
+    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.branch?.items?.properties?.kind?.type).toBe("string");
     expect(() => JSON.stringify(getTool("upsert_event")?.parameters)).not.toThrow();
   });
 

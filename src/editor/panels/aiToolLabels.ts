@@ -87,6 +87,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   generate_cutscene_art: build("컷신 그림 만들기", "spark"),
   preview_cutscene: inspect("컷신 미리보기", "eye"),
   upsert_event: people("이벤트 쓰기", "flag"),
+  patch_event_page: people("이벤트 페이지 고치기", "flag"),
   event_command_assist: people("이벤트 명령 만들기", "flag"),
   move_event: people("이벤트 옮기기", "flag"),
   remove_event: people("이벤트 삭제", "flag"),

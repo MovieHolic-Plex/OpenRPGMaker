@@ -7,6 +7,7 @@ import { harmonizeBeodeulDaylight } from './beodeulLightTools';
 // 원본 도시 배치를 베끼지 않는다: 열 폭·띠 높이·블록 종류·공원 자리를 크기와 seed 로 새로 고른다.
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { GameMap, Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3/constructionTools";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
@@ -69,9 +70,16 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     },
   },
   invalidArgsExample: { width: 60, height: 60 },
-  run(draft, args) {
+  run(draft, rawArgs) {
+    const { args, notes } = normalizeTownArgs(draft, rawArgs);
     if(typeof args.mapId==='string') clearBeodeulGroundDressing(draft,args.mapId);
     const result=args.houseCount===undefined?buildTown(draft,args):buildSmallBeodeulVillage(draft,args);
+    const builtMapId = (result.data as { mapId?: string } | undefined)?.mapId;
+    if (builtMapId && draft.startMapId === builtMapId) {
+      const moved = keepStartWalkable(draft, builtMapId);
+      if (moved) notes.push(moved);
+    }
+    if (notes.length) { result.warnings = [...notes, ...(result.warnings ?? [])]; result.summary = `${notes.join(' ')} ${result.summary}`; }
     const theme=String(args.theme??(args.harbour===true?'coast':'river'));
     const mapId=(result.data as {mapId?:string}|undefined)?.mapId;
     if(mapId&&args.houseCount!==undefined&&args.church===true){
@@ -93,6 +101,64 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     return result;
   },
 };
+
+
+/**
+ * 거부 대신 의도대로 고쳐 짓는 인자 정리(2026-10-07 장르 시험, gpt-6.1-sol 등대지기 JRPG).
+ * - 기후·포구 theme 에 houseCount 를 함께 보내면(선택 칸을 다 채우는 모델) 소규모 잔디 마을 전용 칸이라 같은 거부를 7번 받았다.
+ *   houseCount·church 를 버리고 theme 마을로 짓는다.
+ * - 새 프로젝트의 빈 시작 맵(20×15, 바닥 한 가지·이벤트 없음)에 지으라고 하면 「너무 작다」로 거부했다.
+ *   비어 있는 버들항 맵이면 그 자리에서 필요한 크기로 넓혀 짓는다 — 시작 맵 id·시작 위치가 그대로 이어진다.
+ */
+function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args: Record<string, unknown>; notes: string[] } {
+  const notes: string[] = [];
+  let args = raw;
+  if (args.houseCount !== undefined && args.theme && !["river", "city"].includes(String(args.theme))) {
+    const { houseCount: _houseCount, church: _church, ...rest } = args;
+    args = rest;
+    notes.push(`houseCount 는 밝은 잔디 소규모 마을 전용이라 빼고 theme ${String(args.theme)} 마을로 지었다.`);
+  }
+  const map = typeof args.mapId === "string" ? draft.maps[args.mapId] : undefined;
+  const small = args.houseCount !== undefined;
+  const minW = small ? 40 : VILLAGE_MIN_W, minH = small ? 30 : VILLAGE_MIN_H;
+  if (map && map.tilesetId === BEODEUL_TILESET_ID && (map.width < minW || map.height < minH) && isBlankMap(map)) {
+    const theme = String(args.theme ?? (args.harbour === true ? "coast" : "river")) as BeodeulVillageTheme;
+    const [defaultW, defaultH] = small ? [40, 30] : (BEODEUL_VILLAGE_THEMES as readonly string[]).includes(theme) ? themeDefaultSize(theme) : [56, 44];
+    const want = (value: unknown, fallback: number, min: number, max: number) => Math.max(min, Math.min(max, Number.isInteger(value) ? value as number : fallback));
+    const width = want(args.width, defaultW, minW, small ? 48 : VILLAGE_MAX_W), height = want(args.height, defaultH, minH, small ? 38 : VILLAGE_MAX_H);
+    const before = `${map.width}×${map.height}`;
+    requireTool(MAP_TOOLS, "resize_map").run(draft, { mapId: map.id, width, height });
+    notes.push(`빈 맵 ${map.id}(${before})을 ${width}×${height} 로 넓혀 그 자리에 지었다.`);
+  }
+  return { args, notes };
+}
+
+
+/** 시작 맵 위에 지었으면 시작 위치가 집·물에 묻힐 수 있다 — 가장 가까운 통행 칸으로 옮긴다(커밋 무결성 검사가 거부한다). */
+function keepStartWalkable(draft: Project, mapId: string): string | null {
+  const map = draft.maps[mapId];
+  const start = draft.startPos;
+  if (!map || !start) return null;
+  if (start.x < map.width && start.y < map.height && isPassable(draft, map, start.x, start.y)) return null;
+  for (let r = 1; r < Math.max(map.width, map.height); r++) {
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const x = start.x + dx, y = start.y + dy;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height || !isPassable(draft, map, x, y)) continue;
+      draft.startPos = { ...start, x, y };
+      return `시작 위치 (${start.x},${start.y}) 가 시공으로 막혀 가장 가까운 통행 칸 (${x},${y}) 로 옮겼다.`;
+    }
+  }
+  return null;
+}
+
+/** 바닥 한 가지만 깔리고 위층·이벤트·구조물이 없는 맵. */
+function isBlankMap(map: GameMap): boolean {
+  if (map.events.length > 0 || (map.structurePlacements?.length ?? 0) > 0) return false;
+  const first = map.lowerTiles[0];
+  if (!map.lowerTiles.every((tile) => tile === first)) return false;
+  return [map.upperTiles, map.lowerOverlayTiles, map.upperOverlayTiles].every((layer) => !layer || layer.every((tile) => tile < 0));
+}
 
 function requireTool(tools: readonly ToolDefinition[], name: string): ToolDefinition {
   const tool = tools.find((candidate) => candidate.name === name);
