@@ -976,7 +976,7 @@
     ],
     [
      "cv-cart",
-     3
+     5
     ],
     [
      "cv-trash",
@@ -1003,16 +1003,8 @@
      2
     ],
     [
-     "cv-cart-rack",
-     1
-    ],
-    [
-     "cv-basket-stack",
-     1
-    ],
-    [
      "cv-baskets",
-     1
+     2
     ],
     [
      "cv-autodoor",
@@ -1024,15 +1016,15 @@
     ],
     [
      "cv-produce",
-     3
-    ],
-    [
-     "cv-gondola",
      4
     ],
     [
+     "cv-gondola",
+     2
+    ],
+    [
      "cv-freezer",
-     1
+     2
     ]
    ]
   ],
@@ -1331,10 +1323,6 @@
     ],
     [
      "sh-tray-stand",
-     2
-    ],
-    [
-     "sh-plant-pot",
      1
     ],
     [
@@ -1374,7 +1362,7 @@
     ],
     [
      "sh-book-island",
-     3
+     2
     ],
     [
      "sh-book-table",
@@ -1405,10 +1393,6 @@
     ],
     [
      "washbasin",
-     1
-    ],
-    [
-     "door-side-sliding",
      1
     ],
     [
@@ -1464,15 +1448,11 @@
     ],
     [
      "sh-flower-buckets",
-     2
+     1
     ],
     [
      "sh-wrap-table",
      1
-    ],
-    [
-     "sh-plant-pot",
-     3
     ],
     [
      "sh-counter",
@@ -1484,6 +1464,10 @@
     ],
     [
      "sh-shutter-2",
+     1
+    ],
+    [
+     "sh-plant-pot",
      1
     ]
    ]
@@ -1502,16 +1486,12 @@
      1
     ],
     [
+     "sh-veg-stand",
+     1
+    ],
+    [
      "sh-crate-stack",
      2
-    ],
-    [
-     "sh-veg-stand",
-     3
-    ],
-    [
-     "sh-fruit-box",
-     1
     ],
     [
      "sh-counter",
@@ -1520,6 +1500,10 @@
     [
      "sh-register",
      1
+    ],
+    [
+     "sh-fruit-box",
+     2
     ],
     [
      "sh-shutter",
@@ -1616,11 +1600,11 @@
      1
     ],
     [
-     "pb-massage-chair",
-     2
+     "pb-scale",
+     1
     ],
     [
-     "pb-scale",
+     "pb-massage-chair",
      1
     ],
     [
@@ -1774,10 +1758,6 @@
     ],
     [
      "pb-waiting-sofa-n",
-     1
-    ],
-    [
-     "houseplant",
      1
     ],
     [

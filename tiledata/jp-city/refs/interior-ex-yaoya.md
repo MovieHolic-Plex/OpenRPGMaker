@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-yaoya`. 도구 결과: 손 도트 실내 '일본 동네 채소가게 실내' 10×12 (jp-city-yaoya, jp_city) — 출입구에서 닿는 칸 39, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-yaoya`. 도구 결과: 손 도트 실내 '일본 동네 채소가게 실내' 10×12 (jp-city-yaoya, jp_city) — 출입구에서 닿는 칸 42, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-yaoya", "name": "일본 동네 채소가게 실내", "plan": ["##########", "####.....#", "####.....#", "####.....#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "######...#"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 9, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-basket-shelf", "x": 4, "y": 3}, {"id": "sh-basket-shelf", "x": 5, "y": 3}, {"id": "sh-basket-shelf", "x": 6, "y": 3}, {"id": "sh-basket-shelf", "x": 7, "y": 3}, {"id": "sh-stock-shelf", "x": 8, "y": 3}, {"id": "sh-basket-shelf", "x": 1, "y": 6}, {"id": "sh-basket-shelf", "x": 2, "y": 6}, {"id": "sh-crate-stack", "x": 3, "y": 6}, {"id": "sh-veg-stand", "x": 4, "y": 5}, {"id": "sh-veg-stand", "x": 7, "y": 5}, {"id": "sh-fruit-box", "x": 6, "y": 7}, {"id": "sh-crate-stack", "x": 8, "y": 8}, {"id": "sh-counter", "x": 1, "y": 9}, {"id": "sh-register", "x": 2, "y": 9}, {"id": "sh-counter", "x": 3, "y": 9}, {"id": "sh-veg-stand", "x": 5, "y": 9}, {"id": "sh-shutter", "x": 6, "y": 11}], "tables": [], "goods": [{"id": "sh-scale", "x": 1, "y": 9}, {"id": "sh-price-dots", "x": 3, "y": 9}], "exitWidth": 3, "start": [{"x": 7, "y": 10}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-yaoya", "name": "일본 동네 채소가게 실내", "plan": ["##########", "####.....#", "####.....#", "####.....#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "#........#", "######...#"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 9, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-basket-shelf", "x": 4, "y": 3}, {"id": "sh-basket-shelf", "x": 5, "y": 3}, {"id": "sh-basket-shelf", "x": 6, "y": 3}, {"id": "sh-basket-shelf", "x": 7, "y": 3}, {"id": "sh-stock-shelf", "x": 8, "y": 3}, {"id": "sh-basket-shelf", "x": 1, "y": 6}, {"id": "sh-basket-shelf", "x": 2, "y": 6}, {"id": "sh-veg-stand", "x": 4, "y": 6}, {"id": "sh-crate-stack", "x": 6, "y": 6}, {"id": "sh-counter", "x": 1, "y": 8}, {"id": "sh-counter", "x": 2, "y": 8}, {"id": "sh-register", "x": 3, "y": 8}, {"id": "sh-fruit-box", "x": 4, "y": 8}, {"id": "sh-fruit-box", "x": 5, "y": 8}, {"id": "sh-crate-stack", "x": 8, "y": 9}, {"id": "sh-shutter", "x": 6, "y": 11}], "tables": [], "goods": [{"id": "sh-scale", "x": 1, "y": 8}, {"id": "sh-price-dots", "x": 2, "y": 8}], "exitWidth": 3, "start": [{"x": 7, "y": 10}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -24,11 +24,11 @@ XXXXXXXXXX
 XXXXXXXXXX
 XXXXXXXXXX
 XXXX.....X
-XXXXXX.XXX
 XXXX.....X
-X.....X..X
+XXX.XXX..X
+X........X
+XXXXXX...X
 X.......XX
-XXXX.XX..X
 X........X
 XXXXXX...X
 ```
@@ -72,12 +72,12 @@ y=00: . . . . . . . . . .
 y=01: . . . . . . . . . .
 y=02: . . . . 9848 9848 9848 9848 9830 .
 y=03: . . . . 9849 9849 9849 9849 9831 .
-y=04: . . . . 9792 9793 . 9792 9793 .
-y=05: . 9848 9848 9838 9794 9795 . 9794 9795 .
-y=06: . 9849 9849 9839 . . . . . .
-y=07: . . . . . . 9796 . 9838 .
-y=08: . . 9752 . . 9792 9793 . 9839 .
-y=09: . 9751 9751 9751 . 9794 9795 . . .
+y=04: . . . . . . . . . .
+y=05: . 9848 9848 . 9792 9793 9838 . . .
+y=06: . 9849 9849 . 9794 9795 9839 . . .
+y=07: . . . 9752 . . . . . .
+y=08: . 9751 9751 9751 9796 9796 . . 9838 .
+y=09: . . . . . . . . 9839 .
 y=10: . . . . . . . . . .
 y=11: . . . . . . . . . .
 ```
@@ -92,8 +92,8 @@ y=04: . . . . . . . . . .
 y=05: . . . . . . . . . .
 y=06: . . . . . . . . . .
 y=07: . . . . . . . . . .
-y=08: . . . . . . . . . .
-y=09: . 9853 . 9855 . . . . . .
+y=08: . 9853 9855 . . . . . . .
+y=09: . . . . . . . . . .
 y=10: . . . . . . . . . .
 y=11: . . . . . . . . . .
 ```

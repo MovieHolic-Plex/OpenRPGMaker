@@ -1,7 +1,7 @@
 [
  {
   "file": "konbini",
-  "placeId": "jp-city-konbini-14x11",
+  "placeId": "jp-city-konbini-14x12",
   "name": "일본 편의점(コンビニ) 실내",
   "kind": "konbini",
   "kindKo": "편의점",
@@ -13,7 +13,7 @@
   "building": "jp_konbini",
   "rules": [
    "자동문 입구 → 북쪽 벽을 따라 음료 쿨러 4칸 연속 · 그 옆 개방형 도시락 냉장 · 입구 쪽 끝에 ATM, 그 아래 복합 복사기 · 쿨러 벽 앞 2줄 통로 아래로 섬 진열대 한 줄(가운데 틈) · 냉동고 둘·입구 옆 장바구니 · 입구 옆 계산대(계산기·핫스낵·커피, 앞 손님 두 줄) · 칸막이 너머 뒷방(문 없는 열린 통로 — 안에 담배·재고 선반 둘·골판지·상자 더미).",
-   "평면·가구는 tiledata/jp-city/interior/examples/konbini.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-konbini-14x11\"})."
+   "평면·가구는 tiledata/jp-city/interior/examples/konbini.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-konbini-14x12\"})."
   ]
  },
  {

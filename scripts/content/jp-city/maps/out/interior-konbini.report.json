@@ -3,33 +3,33 @@
   "id": "jp-city-konbini",
   "size": [
    14,
-   11
+   12
   ]
  },
  "start": [
   6,
-  9
+  10
  ],
- "summary": "손 도트 실내 '일본 편의점(コンビニ) 실내' 14×11 (jp-city-konbini, jp_city) — 출입구에서 닿는 칸 41, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 편의점(コンビニ) 실내' 14×12 (jp-city-konbini, jp_city) — 출입구에서 닿는 칸 53, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-konbini",
   "tilesetId": "jp_city",
   "width": 14,
-  "height": 11,
-  "reachable": 41,
-  "floorCells": 72,
+  "height": 12,
+  "reachable": 53,
+  "floorCells": 84,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 6,
-    "y": 9
+    "y": 10
    }
   ],
   "exitWidth": 2,
   "exits": [
    {
     "x": 6,
-    "y": 10,
+    "y": 11,
     "width": 2
    }
   ],
@@ -38,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 41,
+ "reach": 53,
  "ok": true
 }

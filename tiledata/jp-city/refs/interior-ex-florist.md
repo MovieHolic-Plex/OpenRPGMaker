@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×12 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 31, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-florist`. 도구 결과: 손 도트 실내 '일본 동네 꽃집 실내' 9×12 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#....####", "#....####", "#....####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-stock-shelf", "x": 4, "y": 3}, {"id": "sh-wall-shelf", "x": 5, "y": 6}, {"id": "sh-flower-cooler", "x": 6, "y": 6}, {"id": "sh-flower-cooler", "x": 7, "y": 6}, {"id": "sh-flower-buckets", "x": 1, "y": 5}, {"id": "sh-wrap-table", "x": 3, "y": 7}, {"id": "sh-plant-pot", "x": 1, "y": 8}, {"id": "sh-flower-buckets", "x": 1, "y": 10}, {"id": "sh-counter", "x": 6, "y": 9}, {"id": "sh-register", "x": 7, "y": 9}, {"id": "sh-plant-pot", "x": 7, "y": 10}, {"id": "sh-shutter-2", "x": 4, "y": 11}, {"id": "sh-plant-pot", "x": 3, "y": 9}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 3, "y": 7}, {"id": "sh-price-dots", "x": 6, "y": 9}], "exitWidth": 2, "start": [{"x": 4, "y": 9}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-florist", "name": "일본 동네 꽃집 실내", "plan": ["#########", "#....####", "#....####", "#....####", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "#.......#", "####..###"], "floor": "sh-concrete", "wall": "sh-white", "zones": [{"x0": 0, "y0": 0, "x1": 8, "y1": 11, "floor": "sh-concrete", "wall": "sh-white"}], "objects": [{"id": "sh-flower-cooler", "x": 1, "y": 3}, {"id": "sh-flower-cooler", "x": 2, "y": 3}, {"id": "sh-flower-cooler", "x": 3, "y": 3}, {"id": "sh-stock-shelf", "x": 4, "y": 3}, {"id": "sh-wall-shelf", "x": 5, "y": 6}, {"id": "sh-flower-cooler", "x": 6, "y": 6}, {"id": "sh-flower-cooler", "x": 7, "y": 6}, {"id": "sh-flower-buckets", "x": 1, "y": 6}, {"id": "sh-wrap-table", "x": 1, "y": 9}, {"id": "sh-counter", "x": 6, "y": 9}, {"id": "sh-register", "x": 7, "y": 9}, {"id": "sh-shutter-2", "x": 4, "y": 11}, {"id": "sh-plant-pot", "x": 3, "y": 9}], "tables": [], "goods": [{"id": "sh-bouquet", "x": 2, "y": 9}, {"id": "sh-price-dots", "x": 6, "y": 9}], "exitWidth": 2, "start": [{"x": 4, "y": 10}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -24,12 +24,12 @@ XXXXXXXXX
 XXXXXXXXX
 XXXXXXXXX
 X....XXXX
-XXX..XXXX
 X....XXXX
-X..XX...X
-XX......X
-X..X..XXX
-XXX....XX
+XXX..XXXX
+X.......X
+X.......X
+XXXX..XXX
+X.......X
 XXXX..XXX
 ```
 
@@ -72,13 +72,13 @@ y=00: . . . . . . . . .
 y=01: . . . . . . . . .
 y=02: . 9786 9786 9786 9830 . . . .
 y=03: . 9787 9787 9787 9831 . . . .
-y=04: . 9782 9783 . . . . . .
-y=05: . 9784 9785 . . 9756 9786 9786 .
-y=06: . . . . . 9757 9787 9787 .
-y=07: . 9788 . 9790 9791 . . . .
-y=08: . 9789 . 9788 . . . 9752 .
-y=09: . 9782 9783 9789 . . 9751 9751 .
-y=10: . 9784 9785 . . . . 9789 .
+y=04: . . . . . . . . .
+y=05: . 9782 9783 . . 9756 9786 9786 .
+y=06: . 9784 9785 . . 9757 9787 9787 .
+y=07: . . . . . . . . .
+y=08: . . . 9788 . . . 9752 .
+y=09: . 9790 9791 9789 . . 9751 9751 .
+y=10: . . . . . . . . .
 y=11: . . . . . . . . .
 ```
 
@@ -91,9 +91,9 @@ y=03: . . . . . . . . .
 y=04: . . . . . . . . .
 y=05: . . . . . . . . .
 y=06: . . . . . . . . .
-y=07: . . . 9851 . . . . .
+y=07: . . . . . . . . .
 y=08: . . . . . . . . .
-y=09: . . . . . . 9855 9788 .
+y=09: . . 9851 . . . 9855 . .
 y=10: . . . . . . . . .
 y=11: . . . . . . . . .
 ```

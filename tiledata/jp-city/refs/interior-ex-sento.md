@@ -2,11 +2,11 @@
 
 tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
-입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-sento`. 도구 결과: 손 도트 실내 '일본 공중목욕탕(센토) 실내' 15×13 (jp-city-sento, jp_city) — 출입구에서 닿는 칸 51, 닿지 못한 빈 바닥 0, 경고 0
+입력(도구 `build_hand_interior_room` 인자 그대로) → 4층 정답 배열 → 원본 그림 `jp-img-interior-sento`. 도구 결과: 손 도트 실내 '일본 공중목욕탕(센토) 실내' 15×13 (jp-city-sento, jp_city) — 출입구에서 닿는 칸 52, 닿지 못한 빈 바닥 0, 경고 0
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-sento", "name": "일본 공중목욕탕(센토) 실내", "plan": ["###############", "#......#......#", "#......#......#", "#......#......#", "#......#......#", "#......#......#", "###.#######.###", "#.............#", "#.............#", "#.............#", "#.............#", "#.............#", "#######..######"], "floor": "flooring", "wall": "juraku", "zones": [{"x0": 0, "y0": 0, "x1": 14, "y1": 6, "floor": "pb-sento-tile", "wall": "pb-sento-wall"}], "objects": [{"id": "pb-wash-station", "x": 1, "y": 3}, {"id": "pb-wash-station", "x": 2, "y": 3}, {"id": "pb-wash-station", "x": 12, "y": 3}, {"id": "pb-wash-station", "x": 13, "y": 3}, {"id": "pb-wash-stool", "x": 2, "y": 4}, {"id": "pb-wash-stool", "x": 12, "y": 4}, {"id": "pb-mural", "x": 4, "y": 1}, {"id": "pb-mural", "x": 8, "y": 1}, {"id": "pb-locker", "x": 1, "y": 9}, {"id": "pb-locker", "x": 2, "y": 9}, {"id": "pb-basket-shelf", "x": 5, "y": 9}, {"id": "pb-bandai", "x": 7, "y": 9}, {"id": "pb-basket-shelf", "x": 8, "y": 9}, {"id": "pb-milk-fridge", "x": 12, "y": 9}, {"id": "pb-locker", "x": 13, "y": 9}, {"id": "pb-bench", "x": 1, "y": 11}, {"id": "pb-massage-chair", "x": 3, "y": 11}, {"id": "pb-scale", "x": 12, "y": 11}, {"id": "pb-massage-chair", "x": 13, "y": 11}, {"id": "genkan-door", "x": 7, "y": 12}, {"id": "genkan-door", "x": 8, "y": 12}, {"id": "pb-noren-m", "x": 3, "y": 6}, {"id": "pb-noren-f", "x": 11, "y": 6}, {"id": "bath-bucket", "x": 5, "y": 5}, {"id": "bath-bucket", "x": 9, "y": 5}], "tables": [{"style": "pb-bath", "x": 4, "y": 3, "w": 3, "h": 2}, {"style": "pb-bath", "x": 8, "y": 3, "w": 3, "h": 2}], "goods": [{"id": "pb-milk-bottle", "x": 7, "y": 9}], "exitWidth": 2, "start": [{"x": 7, "y": 11}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-sento", "name": "일본 공중목욕탕(센토) 실내", "plan": ["###############", "#......#......#", "#......#......#", "#......#......#", "#......#......#", "#......#......#", "###.#######.###", "#.............#", "#.............#", "#.............#", "#.............#", "#.............#", "#######..######"], "floor": "flooring", "wall": "juraku", "zones": [{"x0": 0, "y0": 0, "x1": 14, "y1": 6, "floor": "pb-sento-tile", "wall": "pb-sento-wall"}], "objects": [{"id": "pb-wash-station", "x": 1, "y": 3}, {"id": "pb-wash-station", "x": 2, "y": 3}, {"id": "pb-wash-station", "x": 12, "y": 3}, {"id": "pb-wash-station", "x": 13, "y": 3}, {"id": "pb-wash-stool", "x": 2, "y": 4}, {"id": "pb-wash-stool", "x": 12, "y": 4}, {"id": "pb-mural", "x": 4, "y": 1}, {"id": "pb-mural", "x": 8, "y": 1}, {"id": "pb-locker", "x": 1, "y": 9}, {"id": "pb-locker", "x": 2, "y": 9}, {"id": "pb-basket-shelf", "x": 5, "y": 9}, {"id": "pb-bandai", "x": 7, "y": 9}, {"id": "pb-basket-shelf", "x": 8, "y": 9}, {"id": "pb-milk-fridge", "x": 12, "y": 9}, {"id": "pb-locker", "x": 13, "y": 9}, {"id": "pb-bench", "x": 1, "y": 11}, {"id": "pb-scale", "x": 11, "y": 11}, {"id": "pb-massage-chair", "x": 10, "y": 11}, {"id": "genkan-door", "x": 7, "y": 12}, {"id": "genkan-door", "x": 8, "y": 12}, {"id": "pb-noren-m", "x": 3, "y": 6}, {"id": "pb-noren-f", "x": 11, "y": 6}, {"id": "bath-bucket", "x": 5, "y": 5}, {"id": "bath-bucket", "x": 9, "y": 5}], "tables": [{"style": "pb-bath", "x": 4, "y": 3, "w": 3, "h": 2}, {"style": "pb-bath", "x": 8, "y": 3, "w": 3, "h": 2}], "goods": [{"id": "pb-milk-bottle", "x": 7, "y": 9}], "exitWidth": 2, "start": [{"x": 7, "y": 11}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -30,7 +30,7 @@ XXX.XXXXXXX.XXX
 XXX.XXXXXXX.XXX
 XXX..XXXXX..XXX
 X.............X
-XXXX........XXX
+XXX.......XX..X
 XXXXXXX..XXXXXX
 ```
 
@@ -81,8 +81,8 @@ y=06: . . . 9890 . . . . . . . 9890 . . .
 y=07: . . . 9891 . . . . . . . 9893 . . .
 y=08: . 9901 9901 . . . . 9899 . . . . 9909 9901 .
 y=09: . 9902 9902 . . 9903 9904 9900 9903 9904 . . 9910 9902 .
-y=10: . . . 9907 . . . . . . . . 9905 9907 .
-y=11: . 9920 9921 9908 . . . . . . . . 9906 9908 .
+y=10: . . . . . . . . . . 9907 9905 . . .
+y=11: . 9920 9921 . . . . . . . 9908 9906 . . .
 y=12: . . . . . . . . . . . . . . .
 ```
 

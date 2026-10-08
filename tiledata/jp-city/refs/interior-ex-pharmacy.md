@@ -6,7 +6,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 
 ## 입력
 ```json
-{"tileset": "jp_city", "mapId": "jp-city-pharmacy", "name": "일본 동네 약국 실내", "plan": ["###########", "#....#....#", "#....#....#", "#....#....#", "#....#....#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "###..######"], "floor": "sh-wood", "wall": "cloth-beige", "zones": [{"x0": 0, "y0": 0, "x1": 10, "y1": 6, "floor": "pb-linoleum", "wall": "sh-white"}, {"x0": 0, "y0": 7, "x1": 10, "y1": 12, "floor": "sh-wood", "wall": "cloth-beige"}], "objects": [{"id": "sh-drug-shelf", "x": 1, "y": 3}, {"id": "sh-drug-shelf", "x": 2, "y": 3}, {"id": "sh-drug-shelf", "x": 3, "y": 3}, {"id": "sh-drug-shelf", "x": 4, "y": 3}, {"id": "pb-med-cabinet", "x": 6, "y": 3}, {"id": "pb-med-cabinet", "x": 7, "y": 3}, {"id": "pb-med-cabinet", "x": 8, "y": 3}, {"id": "washbasin", "x": 9, "y": 3}, {"id": "door-side-sliding", "x": 5, "y": 7}, {"id": "sh-dispense-counter", "x": 7, "y": 6}, {"id": "sh-register", "x": 9, "y": 6}, {"id": "sh-drug-island", "x": 1, "y": 9}, {"id": "sh-drug-island", "x": 6, "y": 9}, {"id": "sh-consult", "x": 9, "y": 9}, {"id": "sh-waiting-bench", "x": 7, "y": 11}, {"id": "sh-plant-pot", "x": 1, "y": 11}, {"id": "sh-drug-island", "x": 1, "y": 6}, {"id": "sh-shutter-2", "x": 3, "y": 12}, {"id": "pb-scale", "x": 4, "y": 9}], "tables": [], "goods": [{"id": "sh-medicine", "x": 7, "y": 6}], "exitWidth": 2, "start": [{"x": 3, "y": 11}], "links": [], "replace": true}
+{"tileset": "jp_city", "mapId": "jp-city-pharmacy", "name": "일본 동네 약국 실내", "plan": ["###########", "#....#....#", "#....#....#", "#....#....#", "#....#....#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "#.........#", "###..######"], "floor": "sh-wood", "wall": "cloth-beige", "zones": [{"x0": 0, "y0": 0, "x1": 10, "y1": 6, "floor": "pb-linoleum", "wall": "sh-white"}, {"x0": 0, "y0": 7, "x1": 10, "y1": 12, "floor": "sh-wood", "wall": "cloth-beige"}], "objects": [{"id": "sh-drug-shelf", "x": 1, "y": 3}, {"id": "sh-drug-shelf", "x": 2, "y": 3}, {"id": "sh-drug-shelf", "x": 3, "y": 3}, {"id": "sh-drug-shelf", "x": 4, "y": 3}, {"id": "pb-med-cabinet", "x": 6, "y": 3}, {"id": "pb-med-cabinet", "x": 7, "y": 3}, {"id": "pb-med-cabinet", "x": 8, "y": 3}, {"id": "washbasin", "x": 9, "y": 3}, {"id": "sh-dispense-counter", "x": 7, "y": 6}, {"id": "sh-register", "x": 9, "y": 6}, {"id": "sh-drug-island", "x": 1, "y": 9}, {"id": "sh-drug-island", "x": 6, "y": 9}, {"id": "sh-consult", "x": 9, "y": 9}, {"id": "sh-waiting-bench", "x": 7, "y": 11}, {"id": "sh-plant-pot", "x": 1, "y": 11}, {"id": "sh-drug-island", "x": 1, "y": 6}, {"id": "sh-shutter-2", "x": 3, "y": 12}, {"id": "pb-scale", "x": 4, "y": 9}], "tables": [], "goods": [{"id": "sh-medicine", "x": 7, "y": 6}], "exitWidth": 2, "start": [{"x": 3, "y": 11}], "links": [], "replace": true}
 ```
 
 ## 방 구획(사람이 붙인 이름 — `list_hand_interior_parts` 방 표의 근거)
@@ -61,7 +61,7 @@ y=03: . . . . . . . . . . .
 y=04: . . . . . . . . . . .
 y=05: . . . . . . . . . . .
 y=06: . . . . . . . . . . .
-y=07: . . . . . 9022 . . . . .
+y=07: . . . . . . . . . . .
 y=08: . . . . . . . . . . .
 y=09: . . . . . . . . . . .
 y=10: . . . . . . . . . . .
@@ -76,8 +76,8 @@ y=01: . . . . . . . . . . .
 y=02: . 9775 9775 9775 9775 . 9963 9963 9963 8952 .
 y=03: . 9776 9776 9776 9776 . 9964 9964 9964 8953 .
 y=04: . . . . . . . . . . .
-y=05: . 9777 9778 . . 9017 . . . 9752 .
-y=06: . 9779 9780 . . 9021 . 9828 9829 9751 .
+y=05: . 9777 9778 . . . . . . 9752 .
+y=06: . 9779 9780 . . . . 9828 9829 9751 .
 y=07: . . . . . . . . . . .
 y=08: . 9777 9778 . 9905 . 9777 9778 . . .
 y=09: . 9779 9780 . 9906 . 9779 9780 . 9781 .

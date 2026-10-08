@@ -8,21 +8,21 @@
  },
  "start": [
   4,
-  9
+  10
  ],
- "summary": "손 도트 실내 '일본 동네 꽃집 실내' 9×12 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 31, 닿지 못한 빈 바닥 0, 경고 0",
+ "summary": "손 도트 실내 '일본 동네 꽃집 실내' 9×12 (jp-city-florist, jp_city) — 출입구에서 닿는 칸 35, 닿지 못한 빈 바닥 0, 경고 0",
  "tool": {
   "mapId": "jp-city-florist",
   "tilesetId": "jp_city",
   "width": 9,
   "height": 12,
-  "reachable": 31,
+  "reachable": 35,
   "floorCells": 49,
   "unreachedFloor": [],
   "entrance": [
    {
     "x": 4,
-    "y": 9
+    "y": 10
    }
   ],
   "exitWidth": 2,
@@ -38,6 +38,6 @@
  },
  "warnings": [],
  "links": [],
- "reach": 31,
+ "reach": 35,
  "ok": true
 }
