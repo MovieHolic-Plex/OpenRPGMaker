@@ -78,6 +78,16 @@ for (const linksFile of batches) {
       st = await walkOut(S.downSteps, S.floor); st = await waitMap(leg.interior);
       record(st.currentMapId === leg.interior && st.x === S.downAt[0] && st.y === S.downAt[1], `${tag}s2. 위층 둘러보고 계단 내려오기 ${S.downSteps.length}걸음`, `${st.currentMapId} (${st.x},${st.y}) / 기대 (${S.downAt})`);
     }
+    // h. 층·구역 이동 칸 전부 — 옆 칸에서 한 걸음 밟아 대상 맵·칸에 도착하는가.
+    for (const [hi, h] of (leg.hops ?? []).entries()) {
+      await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [h.map, ...h.from]);
+      await page.waitForTimeout(1600);
+      st = await state();
+      for (let i = 0; i < 3 && st.currentMapId === h.map; i++) { await tap(h.dir); st = await state(); }
+      st = await waitMap(h.to);
+      record(st.currentMapId === h.to && st.x === h.toAt[0] && st.y === h.toAt[1], `${tag}h${hi + 1}. ${h.map.replace("jp-city-", "")} (${h.at}) 밟기 → ${h.to.replace("jp-city-", "")}`, `${st.currentMapId} (${st.x},${st.y}) / 기대 (${h.toAt})`);
+    }
+    if ((leg.hops ?? []).length) { await page.evaluate(([m, x, y]) => window.__oprnDebug.teleport(m, x, y), [leg.interior, ...(leg.stairs ? leg.stairs.downAt : leg.entryAt)]); await page.waitForTimeout(1600); }
     let ok = true; const trail = [];
     for (const [d, x, y] of leg.tourSteps) { st = await stepTo(d, [x, y], leg.interior); trail.push(`${st.x},${st.y}`); if (st.currentMapId !== leg.interior || st.x !== x || st.y !== y) { ok = false; break; } }
     record(ok, `${tag}b. 실내 양 끝(가장 먼 칸 → 거기서 가장 먼 칸)까지 ${leg.tourSteps.length}걸음`, trail.slice(-4).join(" → "));
@@ -107,7 +117,7 @@ const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT, enc
 const dirty = spawnSync("git", ["status", "--porcelain", "--", "tiledata/jp-city/interior/examples", "src/editor/tools", "src/assets/jpInteriorSpec.json"], { cwd: ROOT, encoding: "utf8" }).stdout.trim() ? " (+ 커밋 안 된 예제·도구 변경)" : "";
 const report = ["# 거리 문 ↔ 실내 런타임 QA", "", `판정: **${failures.length ? "실패" : "통과"}** · ${failures.length ? "" : `PASS ${lines.filter((l) => l.startsWith("- PASS")).length}줄 · `}커밋 ${head}${dirty}`, "",
   "실행 방식: links 의 `example` 은 게시 전 예제 JSON(tiledata/jp-city/interior/examples)을 build_hand_interior_room 으로 지어 `interiorMapId` 로 잇고, `place` 는 게시된 장소(public/assets/region-references)를 도구가 가져와 잇는다. 게시 뒤에는 같은 장소 id 로 place 경로가 된다.", "", ...lines, "",
-  "증거: NNa-street(문 앞) · NNb-inside(도착) · NNs-upstairs(위층, 여러 층만) · NNc-far(실내 끝) · NNd-back(거리로 나와 1.5초 뒤)"].join("\n");
+  "증거: NNa-street(문 앞) · NNb-inside(도착) · NNs-upstairs(위층, 여러 층만) · NNc-far(실내 끝) · NNd-back(거리로 나와 1.5초 뒤). NNhK = 층·구역 이동 칸 K번째를 옆 칸에서 한 걸음 밟아 대상 맵·칸 도착(그림 없음)"].join("\n");
 await writeFile(join(OUT, "SUMMARY.md"), report + "\n");
 console.log(report);
 process.exit(failures.length ? 1 : 0);

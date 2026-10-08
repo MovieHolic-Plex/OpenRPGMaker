@@ -149,7 +149,22 @@ for (const link of LINKS) {
   const tour = [...(route(interior, walkFrom, [far]) ?? []), ...(route(interior, far, [far2]) ?? [])];
   const inside = route(interior, far2, data.exitCells);
   if (!inside) throw new Error(`${data.interiorMapId}: (${far2.x},${far2.y}) → 출입구 길이 없다`);
+  // 층·구역 사이 이동 칸 전부(계단·엘리베이터·승차 칸·사다리)를 하나씩 밟는다: 이동 칸 옆 걸음 칸으로 순간이동 → 한 걸음 → 대상 맵·칸 도착.
+  // (걸어서 닿는지는 maps/interior.mjs 의 엔진 BFS 가 따로 잰다 — 여기서는 이벤트가 실제로 옳은 곳으로 보내는지만.)
+  const hops: unknown[] = [];
+  for (const mid of [data.interiorMapId, ...floorIds]) {
+    const fm = ctx.project.maps[mid]; if (!fm) continue;
+    const padsF = new Set((fm.events ?? []).map((e) => `${e.x},${e.y}`));
+    for (const e of fm.events ?? []) {
+      const t = transferOf(e); if (!t || !(t.mapId === data.interiorMapId || floorIds.has(t.mapId))) continue;
+      const nb = ([["up", 0, 1], ["down", 0, -1], ["left", 1, 0], ["right", -1, 0]] as const).map(([dir, dx, dy]) => ({ dir, x: e.x + dx, y: e.y + dy }))
+        .find((c) => !padsF.has(`${c.x},${c.y}`) && isPassable(ctx.project, fm, c.x, c.y) && canMove(ctx.project, fm, c.x, c.y, e.x, e.y));
+      if (!nb) throw new Error(`${mid} (${e.x},${e.y}) → ${t.mapId}: 이동 칸 옆에서 걸어 들어갈 칸이 없다`);
+      hops.push({ map: mid, from: [nb.x, nb.y], dir: nb.dir, at: [e.x, e.y], to: t.mapId, toAt: [t.x, t.y] });
+    }
+  }
   legs.push({
+    hops,
     label: `${link.building} → ${interior.name}`, street: street.id, interior: data.interiorMapId,
     startAt: [ap.from.x, ap.from.y], enter: [ap.dir, front.x, front.y], entryAt: [data.entryLanding.x, data.entryLanding.y], stairs,
     tourSteps: tour, exitSteps: inside, exitAt: [data.exitLanding.x, data.exitLanding.y],
