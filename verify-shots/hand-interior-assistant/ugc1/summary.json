@@ -1,0 +1,49 @@
+{
+ "label": "ugc1",
+ "task": "여관 1층 실내를 만들어줘. 카운터 있는 로비, 식당, 부엌",
+ "model": "google-antigravity/gemini-3.8-flash",
+ "projectId": "ad54fd06-e1ec-45ef-9bc3-7de3949ad546",
+ "projectDir": ".oprn-projects/hand-interior-trial-ugc1",
+ "ms": 140864,
+ "reloadEqual": true,
+ "chosenTilesets": [],
+ "maps": [],
+ "retiredAttempts": [],
+ "retiredRejections": 0,
+ "oldToolCalls": [],
+ "toolCalls": 27,
+ "failed": 5,
+ "byTool": {
+  "get_project_summary": 1,
+  "list_tileset_references": 1,
+  "list_hand_interior_parts": 10,
+  "list_spatial_designs": 1,
+  "read_tileset_reference": 3,
+  "get_database_records": 2,
+  "build_hand_interior_room": 4,
+  "tile_query": 1,
+  "find_tools": 2,
+  "set_map_properties": 1,
+  "ask_tileset_change": 1
+ },
+ "readReferences": [
+  "atlas_biome_interior/undefined",
+  "atlas_biome_interior/hand-interior-v5-map-inn",
+  "atlas_biome_interior/hand-interior-v5-dictionary"
+ ],
+ "stats": {
+  "ms": 140026,
+  "turns": 19,
+  "toolCalls": 28,
+  "toolErrors": 5,
+  "usage": {
+   "input": 451366,
+   "output": 23400,
+   "cacheRead": 2462826,
+   "cacheWrite": 0,
+   "totalTokens": 2937592,
+   "calls": 19
+  }
+ },
+ "finalText": "assistant: 여관 1층의 접수 카운터가 있는 로비, 식당, 부엌을 완벽하게 구현하기 위해 **손 도트 실내 타일셋**(`atlas_biome_interior`)으로의 타일셋 변경 확인 카드를 띄웠습니다.   화면에 표시된 견본을 확인하시고 변경을 승인해 주시면, 승인 즉시 요청하신 구조대로 실내 시공을 완료하겠습니다."
+}
