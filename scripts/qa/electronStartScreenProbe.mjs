@@ -105,6 +105,7 @@ const probe = { scratch };
     url: location.href,
     feedCards: document.querySelectorAll("[data-testid='concept-feed-card']").length,
     offlineNote: !document.querySelector("[data-testid='concept-feed-offline']")?.hidden,
+    fallback: document.querySelector("[data-testid='concept-feed-offline']")?.dataset.fallback ?? "",
     continueCards: [...document.querySelectorAll(".cf-continue-title")].map((node) => node.textContent),
     continueImages: [...document.querySelectorAll(".cf-continue-card")].map((card) => Boolean(card.querySelector("img"))),
     hiddenNote: document.querySelector(".cf-continue-note")?.textContent ?? null,

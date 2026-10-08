@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { OprnStoreBridge } from "@/assetStore/bridgeTypes";
-import { CONCEPT_FALLBACK_THUMB, bundledConcepts, createConceptSource, similarFrom } from "@/concepts/source";
+import { CONCEPT_FALLBACK_THUMB, bundledConcepts, conceptFallbackOf, createConceptSource, similarFrom } from "@/concepts/source";
 import type { GameConcept } from "@/concepts/format";
 
 const SHA_A = "a".repeat(64);
@@ -25,7 +25,7 @@ describe("concept source", () => {
   it("uses the bundle without a bridge and filters by tag", async () => {
     const source = createConceptSource({ bridge: null });
     const page = await source.page({ tag: "추리" }, null);
-    expect(page.offline).toBe(true);
+    expect(page.fallback).toBe("bundled");
     expect(page.items.length).toBeGreaterThan(0);
     expect(page.items.every((concept) => concept.tags.includes("추리"))).toBe(true);
   });
@@ -37,7 +37,7 @@ describe("concept source", () => {
     await vi.advanceTimersByTimeAsync(3001);
     const page = await pending;
     vi.useRealTimers();
-    expect(page.offline).toBe(true);
+    expect(page.fallback).toBe("offline");
     expect(page.items.length).toBe(bundledConcepts().length);
   });
 
@@ -45,12 +45,27 @@ describe("concept source", () => {
     const items = [storeConcept("store-one-abcdef")];
     const source = createConceptSource({ bridge: fakeBridge({ concepts: async () => ({ items, nextCursor: "3:9" }) }) });
     const page = await source.page({}, null);
-    expect(page).toEqual({ items, nextCursor: "3:9", offline: false });
+    expect(page).toEqual({ items, nextCursor: "3:9", fallback: null });
   });
 
   it("stops (does not mix in the bundle) when a later store page fails", async () => {
     const source = createConceptSource({ bridge: fakeBridge({ concepts: async () => { throw new Error("down"); } }) });
-    expect(await source.page({}, "3:9")).toEqual({ items: [], nextCursor: null, offline: true });
+    expect(await source.page({}, "3:9")).toEqual({ items: [], nextCursor: null, fallback: "offline" });
+  });
+
+  it("does not blame the internet when the store answered but has no concepts", async () => {
+    // 메인 중계가 넘기는 모양: Electron invoke 접두어 + {"message","status"} JSON.
+    const notFound = new Error(`Error invoking remote method 'oprn:store-concepts': Error: {"message":"없는 주소입니다.","status":404,"details":[]}`);
+    const unreachable = new Error(`Error invoking remote method 'oprn:store-concepts': Error: {"message":"fetch failed","status":0,"details":[]}`);
+    expect(conceptFallbackOf(notFound)).toBe("bundled");
+    expect(conceptFallbackOf(unreachable)).toBe("offline");
+    expect(conceptFallbackOf(new Error("스토어 응답이 늦습니다."))).toBe("offline");
+    const missing = createConceptSource({ bridge: fakeBridge({ concepts: async () => { throw notFound; } }) });
+    expect((await missing.page({}, null)).fallback).toBe("bundled");
+    const empty = createConceptSource({ bridge: fakeBridge({ concepts: async () => ({ items: [], nextCursor: null }) }) });
+    const page = await empty.page({}, null);
+    expect(page.fallback).toBe("bundled");
+    expect(page.items.length).toBe(bundledConcepts().length);
   });
 
   it("downloads each store thumbnail once and falls back on failure", async () => {

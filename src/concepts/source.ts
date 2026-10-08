@@ -7,7 +7,9 @@ import type { GamePresetId } from "@/project/gameDesignIds";
 import { normalizeGameConcept, type GameConcept } from "./format";
 
 export type ConceptQuery = { readonly tag?: string; readonly q?: string };
-export type ConceptPage = { readonly items: readonly GameConcept[]; readonly nextCursor: string | null; readonly offline: boolean };
+/** 비상용으로 대신한 까닭. offline = 스토어에 닿지 못함(연결 끊김·응답 늦음), bundled = 닿았지만 컨셉이 없거나 아직 지원하지 않음·스토어 없는 화면. */
+export type ConceptFallback = "offline" | "bundled";
+export type ConceptPage = { readonly items: readonly GameConcept[]; readonly nextCursor: string | null; readonly fallback: ConceptFallback | null };
 export type ConceptDetail = { readonly concept: GameConcept; readonly similar: readonly GameConcept[] };
 
 export interface ConceptSource {
@@ -41,11 +43,11 @@ export function matchesQuery(concept: GameConcept, query: ConceptQuery): boolean
   return [concept.title, concept.hook, concept.description, ...concept.tags, ...locales].some((text) => text.toLowerCase().includes(q));
 }
 
-function bundledPage(query: ConceptQuery, cursor: string | null): ConceptPage {
+function bundledPage(query: ConceptQuery, cursor: string | null, fallback: ConceptFallback = "bundled"): ConceptPage {
   const all = bundledConcepts().filter((concept) => matchesQuery(concept, query));
   const start = cursor && /^b:\d+$/.test(cursor) ? Number(cursor.slice(2)) : 0;
   const items = all.slice(start, start + BUNDLE_PAGE);
-  return { items, nextCursor: start + BUNDLE_PAGE < all.length ? `b:${start + BUNDLE_PAGE}` : null, offline: true };
+  return { items, nextCursor: start + BUNDLE_PAGE < all.length ? `b:${start + BUNDLE_PAGE}` : null, fallback };
 }
 
 /** 같은 태그를 많이 공유하는 것부터, 그다음 같은 장르 틀. 자기 자신은 뺀다. */
@@ -57,6 +59,19 @@ export function similarFrom(pool: readonly GameConcept[], concept: GameConcept, 
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((entry) => entry.other);
+}
+
+/** 메인 중계는 스토어 오류를 {"message","status"} JSON 으로 넘긴다. status 0 = 스토어에 닿지 못함. 응답 늦음도 닿지 못한 것으로 친다. */
+export function conceptFallbackOf(error: unknown): ConceptFallback {
+  const message = error instanceof Error ? error.message : String(error);
+  const json = message.match(/\{[\s\S]*\}\s*$/);
+  if (json) {
+    try {
+      const status = (JSON.parse(json[0]) as { status?: unknown }).status;
+      if (typeof status === "number" && status > 0) return "bundled";
+    } catch { /* 아래로 */ }
+  }
+  return "offline";
 }
 
 function withTimeout<T>(work: Promise<T>, ms: number): Promise<T> {
@@ -89,10 +104,11 @@ export function createConceptSource(deps: ConceptSourceDeps = {}): ConceptSource
       try {
         const page = await withTimeout(bridge.concepts({ ...(query.tag ? { tag: query.tag } : {}), ...(query.q?.trim() ? { q: query.q.trim() } : {}), ...(cursor ? { cursor } : {}) }), timeoutMs);
         if (!cursor && page.items.length === 0 && !query.tag && !query.q?.trim()) return bundledPage(query, null);
-        return { items: page.items, nextCursor: page.nextCursor, offline: false };
-      } catch {
+        return { items: page.items, nextCursor: page.nextCursor, fallback: null };
+      } catch (error) {
         // 첫 쪽이 실패하면 비상용으로. 이어지는 쪽이 실패하면 여기서 멈춘다(앞 쪽과 섞지 않는다).
-        return cursor ? { items: [], nextCursor: null, offline: true } : bundledPage(query, null);
+        const fallback = conceptFallbackOf(error);
+        return cursor ? { items: [], nextCursor: null, fallback } : bundledPage(query, null, fallback);
       }
     },
     async detail(concept) {
