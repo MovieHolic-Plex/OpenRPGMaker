@@ -139,90 +139,90 @@
       "aiGenerated": true
     },
     {
-      "slug": "a-13th-floor-appeared-in-our-apartment-elevator-zci1w9",
-      "title": "우리 아파트 엘리베이터에 13층이 생겼다",
-      "hook": "12층에서 멈춘 엘리베이터가 없던 13층 버튼을 눌러 달라고 한다.",
-      "description": "새벽에 귀가하던 주인공은 엘리베이터에 눌린 적 없는 13층 버튼이 켜져 있는 것을 본다. 13층에는 이웃들이 사라지기 전의 일상이 그대로 멈춰 있다. 복도를 탐색해 사라진 입주민들의 사연을 모으고 엘리베이터가 마지막으로 열리기 전에 돌아가야 한다.",
+      "slug": "the-murder-the-night-shift-clerk-saw-1rhj0h",
+      "title": "편의점 야간알바가 본 살인",
+      "hook": "새벽 3시, CCTV에는 아무도 안 찍혔는데 계산대엔 피 묻은 영수증이 있었다.",
+      "description": "야간 편의점 알바생인 당신은 매일 같은 손님들을 본다. 어느 밤 영수증 한 장과 사라진 CCTV 구간이 이상한 사건을 가리킨다. 골목과 편의점, 옥상을 오가며 단골들의 진술을 모아 진실을 맞춘다.",
       "tags": [
-        "호러",
-        "추리"
+        "추리",
+        "코미디"
       ],
-      "presetId": "horror-gallery",
-      "protagonist": "야근하고 귀가하는 직장인 민재현",
-      "stage": "12층 아파트 복도와 존재하지 않는 13층",
-      "firstScene": "엘리베이터 패널에 어제까지 없던 13층 버튼이 붉게 깜빡인다.",
+      "presetId": "story-cutscene",
+      "protagonist": "야간알바 도하준",
+      "stage": "일본풍 도시 골목의 24시간 편의점",
+      "firstScene": "새벽 3시, 계산대 아래에서 피 묻은 영수증이 나온다.",
       "brief": {
-        "experience": "익숙한 아파트 복도가 조금씩 어긋나 있는 데서 오는 생활 밀착형 공포",
-        "activity": "13층 각 호수를 조사하고 문패·우편물·가전 퍼즐로 사라진 사연을 맞춘다",
-        "progression": "사연을 하나 풀 때마다 엘리베이터 버튼이 밝아지고 돌아갈 층수가 열린다",
-        "detail": "집마다 시계가 다른 시각에 멈춰 있고 복도 CCTV는 몇 분 뒤 장면을 보여 준다",
-        "scope": "엘리베이터 홀과 13층 복도·한 세대 내부 두 맵"
+        "experience": "평범한 일상 공간에서 사소한 위화감을 파고드는 생활밀착 추리",
+        "activity": "단골과 대화, 영수증·재고 대조, 골목 탐문",
+        "progression": "단골 진술의 모순이 쌓이면 새 장소가 열리고 범인 지목",
+        "detail": "구매 목록과 시간표가 알리바이 증거가 된다",
+        "scope": "편의점·골목·옥상 세 맵"
       },
       "tilesetHint": "jp_city",
       "thumb": {
-        "full": "/assets/concepts/a-13th-floor-appeared-in-our-apartment-elevator-zci1w9.full.webp",
-        "card": "/assets/concepts/a-13th-floor-appeared-in-our-apartment-elevator-zci1w9.card.webp"
+        "full": "/assets/concepts/the-murder-the-night-shift-clerk-saw-1rhj0h.full.webp",
+        "card": "/assets/concepts/the-murder-the-night-shift-clerk-saw-1rhj0h.card.webp"
       },
       "locales": {
         "en": {
-          "title": "A 13th Floor Appeared in Our Apartment Elevator",
-          "hook": "The elevator stopped on 12 asks you to press a button that shouldn't exist.",
-          "description": "Coming home late at night, you see an unpressed 13th-floor button lit in the elevator. The 13th floor holds the frozen daily lives of neighbors before they vanished. Explore the corridor, piece together their stories, and return before the elevator opens one last time."
+          "title": "The Murder the Night-Shift Clerk Saw",
+          "hook": "At 3 a.m. the CCTV showed nobody, yet a bloody receipt sat at the register.",
+          "description": "You work nights at a convenience store and know every regular. A receipt and a gap in the CCTV point to something wrong. Collect testimonies across the alley, store and rooftop."
         },
         "ja": {
-          "title": "うちのマンションのエレベーターに13階ができた",
-          "hook": "12階で止まったエレベーターが、存在しない13階のボタンを押してくれと言う。",
-          "description": "深夜に帰宅した主人公は、押していない13階のボタンが点灯しているのを見る。13階には、消える前の隣人たちの日常がそのまま止まっていた。廊下を探索して住人の事情を集め、エレベーターが最後に開く前に戻ろう。"
+          "title": "コンビニ夜勤バイトが見た殺人",
+          "hook": "午前三時、防犯カメラには誰もいないのに、レジには血のついたレシートがあった。",
+          "description": "夜勤のコンビニ店員のあなたは常連客を知り尽くしている。一枚のレシートと消えた映像が事件を示す。路地・店・屋上で証言を集め真相に迫る。"
         },
         "zh": {
-          "title": "我们公寓的电梯多了13层",
-          "hook": "停在12楼的电梯,要你按下那个不存在的13楼按钮。",
-          "description": "深夜回家的主角发现电梯里亮着一个没人按过的13楼按钮。13楼保留着邻居们消失前被冻结的日常。探索走廊,拼凑失踪住户的故事,并在电梯最后一次开门前返回。"
+          "title": "便利店夜班店员目睹的命案",
+          "hook": "凌晨三点监控里空无一人,收银台却有张带血的小票。",
+          "description": "你在便利店上夜班,熟悉每位常客。一张小票和缺失的监控片段指向异常。在小巷、店内与天台收集证词,拼出真相。"
         }
       },
       "source": "official",
       "aiGenerated": true
     },
     {
-      "slug": "cat-ninja-rooftop-infiltration-1cr8f8",
-      "title": "고양이 닌자의 옥상 대잠입",
-      "hook": "옥상에서 옥상으로 뛰어넘어 도둑맞은 참치 캔을 되찾아라.",
-      "description": "작은 고양이 닌자가 도시의 옥상을 넘나들며 경비견과 까마귀를 피해 잃어버린 보물을 되찾는 액션. 발톱 공격과 점프, 숨기 능력을 섞어 쓰고 들키면 추격전이 벌어진다. 짧고 경쾌한 잠입 액션을 원하는 사람에게 맞다.",
+      "slug": "delivery-in-3-minutes-moto-rush-1d77z8",
+      "title": "배달 마감 3분 전, 오토바이 액션",
+      "hook": "치킨이 식기 전에 도착해라. 골목을 가르는 초단위 배달 질주.",
+      "description": "좁은 도시 골목을 오토바이로 달리며 장애물과 단속 경찰, 불량배를 피해 제시간에 배달을 끝내는 액션. 지름길을 찾고 점프대를 타고, 몸싸움은 헬멧 휘두르기로 해결한다. 배달 건수가 쌓이면 오토바이를 개조하고 더 어려운 구역의 주문을 받는다.",
       "tags": [
         "액션",
         "코미디"
       ],
       "presetId": "action-rpg",
-      "protagonist": "고양이 닌자 먹물",
-      "stage": "밤의 현대 도시 옥상 지대",
-      "firstScene": "빈 선반 앞에서 참치 캔 도둑의 발자국이 옥상으로 이어진다",
+      "protagonist": "만년 알바생 배달 라이더 도윤",
+      "stage": "좁은 골목이 얽힌 현대 일본풍 상점가",
+      "firstScene": "점장이 '3분 안에 못 가면 월급 깎는다'며 가방을 던져 준다",
       "brief": {
-        "experience": "작은 몸으로 높은 곳을 뛰어다니는 가볍고 귀여운 잠입 액션",
-        "activity": "옥상 사이를 점프하고 경비견과 까마귀를 피하며 들키면 발톱으로 쫓아낸다",
-        "progression": "되찾은 참치로 점프력과 발톱 공격력을 키우고 새로운 옥상 구역을 연다",
-        "detail": "주택가 옥상, 상가 옥상, 시계탑 옥상 세 구역에 감시 동선과 숨을 곳을 둔다",
-        "scope": "옥상 맵 두 장에서 시계탑 위 도둑 까마귀 두목을 쓰러뜨리면 끝난다"
+        "experience": "시간에 쫓기며 골목을 가르는 속도감과 아슬아슬하게 도착하는 웃음",
+        "activity": "골목을 달려 장애물을 피하고 방해하는 불량배를 헬멧으로 쳐내며 배달지에 도착한다",
+        "progression": "배달 성공 보수로 엔진과 가방을 개조해 속도와 적재 한도를 올리고 더 먼 구역 주문을 연다",
+        "detail": "상점가 입구, 시장 골목, 육교 아래 세 구간에 불량배 무리와 공사 구덩이를 배치하고 마지막 집 앞에 단속 경찰 보스를 둔다",
+        "scope": "상점가 맵 한 장에서 세 건의 배달을 완수하면 끝난다"
       },
       "tilesetHint": "jp_city",
       "thumb": {
-        "full": "/assets/concepts/cat-ninja-rooftop-infiltration-1cr8f8.full.webp",
-        "card": "/assets/concepts/cat-ninja-rooftop-infiltration-1cr8f8.card.webp"
+        "full": "/assets/concepts/delivery-in-3-minutes-moto-rush-1d77z8.full.webp",
+        "card": "/assets/concepts/delivery-in-3-minutes-moto-rush-1d77z8.card.webp"
       },
       "locales": {
         "en": {
-          "title": "Cat Ninja: Rooftop Infiltration",
-          "hook": "Leap rooftop to rooftop and take back your stolen tuna can.",
-          "description": "A tiny cat ninja hops across the city's rooftops, dodging guard dogs and crows to retrieve a lost treasure. Mix claw attacks, jumps and hiding, and expect a chase if you're spotted. Perfect for short, bouncy stealth action."
+          "title": "Delivery in 3 Minutes: Moto Rush",
+          "hook": "Get there before the chicken goes cold. A second-by-second sprint through the alleys.",
+          "description": "Ride a scooter through tight city alleys, dodging obstacles, patrol cops and thugs to finish deliveries on time. Find shortcuts, hit ramps, and settle fights by swinging your helmet. Earn upgrades for your bike and take on orders from tougher districts."
         },
         "ja": {
-          "title": "猫忍者の屋上大潜入",
-          "hook": "屋根から屋根へ飛び移り、盗まれたツナ缶を取り戻せ。",
-          "description": "小さな猫忍者が街の屋上を飛び回り、番犬やカラスをかわして失われた宝を取り戻すアクション。爪攻撃、ジャンプ、隠れる能力を使い分け、見つかれば追跡戦になる。短くて軽快な潜入アクションが好きな人にぴったり。"
+          "title": "配達まであと3分!バイクアクション",
+          "hook": "チキンが冷める前に届けろ。路地を駆け抜ける秒単位の配達ラッシュ。",
+          "description": "狭い街の路地をバイクで走り、障害物や取り締まりの警官、チンピラをかわして時間内に配達を終えるアクション。近道を探し、ジャンプ台に乗り、揉め事はヘルメットで解決。配達を重ねてバイクを改造し、難しい地区の注文に挑もう。"
         },
         "zh": {
-          "title": "猫忍者屋顶大潜入",
-          "hook": "在屋顶间跳跃,夺回被偷走的金枪鱼罐头。",
-          "description": "小小猫忍者在城市屋顶间跳跃,躲开看门狗和乌鸦,找回失窃的宝物。混用爪击、跳跃与躲藏,被发现就会展开追逐。适合想玩短小轻快潜入动作的人。"
+          "title": "送餐倒计时3分钟:摩托狂飙",
+          "hook": "赶在炸鸡变凉前送到。小巷里争分夺秒的外卖飞驰。",
+          "description": "骑着摩托在狭窄街巷中穿梭,躲开障碍、巡警和混混,准时完成配送。找近道、冲跳台,打架就抡头盔。送单赚钱改装车子,接下更难街区的订单。"
         }
       },
       "source": "official",
@@ -275,51 +275,6 @@
       "aiGenerated": true
     },
     {
-      "slug": "the-suspicious-regulars-of-the-alley-teahouse-dm442b",
-      "title": "골목 끝 찻집의 수상한 단골들",
-      "hook": "매일 오는 단골 중 한 명이 찻집 금고를 털었다. 범인은 늘 같은 자리에 앉던 사람이다.",
-      "description": "일본 소도시 골목 끝의 작은 찻집에서 하룻밤 사이 금고가 비었다. 아르바이트생인 주인공은 단골 다섯 명의 습관과 취향을 떠올리며 누가 거짓말을 하는지 추리한다. 주문 내역, 영수증, 골목 CCTV 대신 이웃의 목격담이 단서다. 소소하지만 따뜻한 일상 미스터리.",
-      "tags": [
-        "추리",
-        "힐링"
-      ],
-      "presetId": "story-cutscene",
-      "protagonist": "찻집 아르바이트생 대학생",
-      "stage": "현대 일본 소도시의 골목과 작은 찻집",
-      "firstScene": "아침 개점 준비 중, 금고 문이 열려 있고 잔돈 바구니만 남아 있다.",
-      "brief": {
-        "experience": "잔잔한 BGM과 따뜻한 대사로 이웃을 의심하면서도 정이 드는 일상 미스터리.",
-        "activity": "찻집과 골목을 오가며 단골 다섯 명과 대화하고, 습관의 어긋남을 찾아낸다.",
-        "progression": "단골 대화, 목격담 수집, 습관 모순 발견, 범인 대면 순서로 진행한다.",
-        "detail": "단골마다 늘 앉는 자리와 주문 메뉴가 있고, 그날 달랐던 점이 단서가 된다.",
-        "scope": "맵 두 개(찻집 내부, 골목)에서 범인 대면까지."
-      },
-      "tilesetHint": "jp_city",
-      "thumb": {
-        "full": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.full.webp",
-        "card": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.card.webp"
-      },
-      "locales": {
-        "en": {
-          "title": "The Suspicious Regulars of the Alley Teahouse",
-          "hook": "One of the daily regulars robbed the teahouse safe, and the culprit always sat in the same seat.",
-          "description": "In a tiny teahouse at the end of an alley in a Japanese town, the safe is emptied overnight. You, the part-time worker, recall each of the five regulars' habits and tastes to spot who is lying. Order records, receipts and neighbors' sightings are your clues. A small but warm everyday mystery."
-        },
-        "ja": {
-          "title": "路地裏の喫茶店と怪しい常連たち",
-          "hook": "毎日来る常連の誰かが金庫を荒らした。犯人はいつも同じ席に座る人だった。",
-          "description": "日本の小さな町の路地奥にある喫茶店で、一晩のうちに金庫が空になった。アルバイトの主人公は、常連五人の習慣や好みを思い出して誰が嘘をついているか推理する。注文履歴、レシート、近所の目撃談が手がかりだ。ささやかであたたかい日常ミステリー。"
-        },
-        "zh": {
-          "title": "巷尾茶馆的可疑常客",
-          "hook": "每天都来的常客里，有人洗劫了茶馆保险箱，凶手总坐在同一个位子。",
-          "description": "日本小镇巷子尽头的小茶馆，一夜之间保险箱被掏空。身为兼职店员的主角回想五位常客的习惯与口味，推理谁在说谎。点单记录、收据和邻居的目击都是线索。这是一则平凡而温暖的日常推理。"
-        }
-      },
-      "source": "official",
-      "aiGenerated": true
-    },
-    {
       "slug": "after-school-alchemy-club-the-explosion-class-ka8utp",
       "title": "방과 후 연금술부의 폭발 수업",
       "hook": "부원은 단 둘. 오늘도 과학실 천장이 날아갔다.",
@@ -360,6 +315,51 @@
           "title": "放学后炼金社的爆炸课",
           "hook": "社员只有两人。今天理科教室的天花板又飞了。",
           "description": "你被拉进濒临废社的炼金社,社长是天才却爱闯祸,实验总以爆炸收场。在校园里奔走收集材料来拯救社团。第一章在理科教室和后院,完成第一瓶药水。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "night-patrol-at-the-cursed-academy-of-magic-rjjscz",
+      "title": "저주받은 마법 학원 야간 순찰",
+      "hook": "모두가 잠든 밤, 기숙사 감독생에게만 보이는 복도가 있다.",
+      "description": "마법 학원의 야간 순찰 당번이 된 주인공은 자정 이후에만 나타나는 복도를 발견한다. 그 복도는 학원이 지워 버린 실험실 기록으로 이어진다. 순찰 도중 마주치는 사라진 선배의 환영을 피하며 봉인된 실험실의 비밀을 밝혀야 한다.",
+      "tags": [
+        "호러",
+        "학원"
+      ],
+      "presetId": "school-horror",
+      "protagonist": "벌점으로 야간 순찰을 떠맡은 신입생 에리안",
+      "stage": "자정이 지난 마법 학원 기숙사 복도와 지하 실험실",
+      "firstScene": "순찰 등불을 들자 벽에 어제는 없던 문이 줄지어 나타난다.",
+      "brief": {
+        "experience": "익숙한 학원이 밤에는 다른 구조로 바뀌어 있다는 방향 감각의 공포",
+        "activity": "등불로 숨은 문을 비추고 환영을 피해 복도를 이동하며 기록을 모은다",
+        "progression": "실험 기록 조각을 모을수록 지하 실험실의 봉인이 풀린다",
+        "detail": "환영은 등불 빛을 향해 천천히 다가오고 마법 문장이 새겨진 벽만 안전하다",
+        "scope": "기숙사 복도와 지하 입구 두 맵에서 첫 기록 회수까지"
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.full.webp",
+        "card": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Night Patrol at the Cursed Academy of Magic",
+          "hook": "When everyone sleeps, there is a corridor only the dorm monitor can see.",
+          "description": "Assigned night patrol at a magic academy, you find a corridor that appears only after midnight. It leads to erased laboratory records. Avoid the phantom of a vanished senior and uncover the secret of the sealed lab."
+        },
+        "ja": {
+          "title": "呪われた魔法学院の夜間巡回",
+          "hook": "みんなが眠る夜、寮の監督生にだけ見える廊下がある。",
+          "description": "魔法学院の夜間巡回当番になった主人公は、真夜中を過ぎてからだけ現れる廊下を見つける。そこは学院が消した実験室の記録へ続いていた。消えた先輩の幻影を避けながら、封印された実験室の秘密を暴こう。"
+        },
+        "zh": {
+          "title": "被诅咒的魔法学院夜巡",
+          "hook": "所有人入睡后,有一条走廊只有宿舍监督生看得见。",
+          "description": "被分配夜间巡逻的主角,发现一条只在午夜之后出现的走廊。它通向学院抹去的实验室记录。避开失踪学长的幻影,揭开被封印实验室的秘密。"
         }
       },
       "source": "official",
@@ -546,45 +546,45 @@
       "aiGenerated": true
     },
     {
-      "slug": "night-patrol-at-the-cursed-academy-of-magic-rjjscz",
-      "title": "저주받은 마법 학원 야간 순찰",
-      "hook": "모두가 잠든 밤, 기숙사 감독생에게만 보이는 복도가 있다.",
-      "description": "마법 학원의 야간 순찰 당번이 된 주인공은 자정 이후에만 나타나는 복도를 발견한다. 그 복도는 학원이 지워 버린 실험실 기록으로 이어진다. 순찰 도중 마주치는 사라진 선배의 환영을 피하며 봉인된 실험실의 비밀을 밝혀야 한다.",
+      "slug": "the-suspicious-regulars-of-the-alley-teahouse-dm442b",
+      "title": "골목 끝 찻집의 수상한 단골들",
+      "hook": "매일 오는 단골 중 한 명이 찻집 금고를 털었다. 범인은 늘 같은 자리에 앉던 사람이다.",
+      "description": "일본 소도시 골목 끝의 작은 찻집에서 하룻밤 사이 금고가 비었다. 아르바이트생인 주인공은 단골 다섯 명의 습관과 취향을 떠올리며 누가 거짓말을 하는지 추리한다. 주문 내역, 영수증, 골목 CCTV 대신 이웃의 목격담이 단서다. 소소하지만 따뜻한 일상 미스터리.",
       "tags": [
-        "호러",
-        "학원"
+        "추리",
+        "힐링"
       ],
-      "presetId": "school-horror",
-      "protagonist": "벌점으로 야간 순찰을 떠맡은 신입생 에리안",
-      "stage": "자정이 지난 마법 학원 기숙사 복도와 지하 실험실",
-      "firstScene": "순찰 등불을 들자 벽에 어제는 없던 문이 줄지어 나타난다.",
+      "presetId": "story-cutscene",
+      "protagonist": "찻집 아르바이트생 대학생",
+      "stage": "현대 일본 소도시의 골목과 작은 찻집",
+      "firstScene": "아침 개점 준비 중, 금고 문이 열려 있고 잔돈 바구니만 남아 있다.",
       "brief": {
-        "experience": "익숙한 학원이 밤에는 다른 구조로 바뀌어 있다는 방향 감각의 공포",
-        "activity": "등불로 숨은 문을 비추고 환영을 피해 복도를 이동하며 기록을 모은다",
-        "progression": "실험 기록 조각을 모을수록 지하 실험실의 봉인이 풀린다",
-        "detail": "환영은 등불 빛을 향해 천천히 다가오고 마법 문장이 새겨진 벽만 안전하다",
-        "scope": "기숙사 복도와 지하 입구 두 맵에서 첫 기록 회수까지"
+        "experience": "잔잔한 BGM과 따뜻한 대사로 이웃을 의심하면서도 정이 드는 일상 미스터리.",
+        "activity": "찻집과 골목을 오가며 단골 다섯 명과 대화하고, 습관의 어긋남을 찾아낸다.",
+        "progression": "단골 대화, 목격담 수집, 습관 모순 발견, 범인 대면 순서로 진행한다.",
+        "detail": "단골마다 늘 앉는 자리와 주문 메뉴가 있고, 그날 달랐던 점이 단서가 된다.",
+        "scope": "맵 두 개(찻집 내부, 골목)에서 범인 대면까지."
       },
-      "tilesetHint": "wizarding_world",
+      "tilesetHint": "jp_city",
       "thumb": {
-        "full": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.full.webp",
-        "card": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.card.webp"
+        "full": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.full.webp",
+        "card": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.card.webp"
       },
       "locales": {
         "en": {
-          "title": "Night Patrol at the Cursed Academy of Magic",
-          "hook": "When everyone sleeps, there is a corridor only the dorm monitor can see.",
-          "description": "Assigned night patrol at a magic academy, you find a corridor that appears only after midnight. It leads to erased laboratory records. Avoid the phantom of a vanished senior and uncover the secret of the sealed lab."
+          "title": "The Suspicious Regulars of the Alley Teahouse",
+          "hook": "One of the daily regulars robbed the teahouse safe, and the culprit always sat in the same seat.",
+          "description": "In a tiny teahouse at the end of an alley in a Japanese town, the safe is emptied overnight. You, the part-time worker, recall each of the five regulars' habits and tastes to spot who is lying. Order records, receipts and neighbors' sightings are your clues. A small but warm everyday mystery."
         },
         "ja": {
-          "title": "呪われた魔法学院の夜間巡回",
-          "hook": "みんなが眠る夜、寮の監督生にだけ見える廊下がある。",
-          "description": "魔法学院の夜間巡回当番になった主人公は、真夜中を過ぎてからだけ現れる廊下を見つける。そこは学院が消した実験室の記録へ続いていた。消えた先輩の幻影を避けながら、封印された実験室の秘密を暴こう。"
+          "title": "路地裏の喫茶店と怪しい常連たち",
+          "hook": "毎日来る常連の誰かが金庫を荒らした。犯人はいつも同じ席に座る人だった。",
+          "description": "日本の小さな町の路地奥にある喫茶店で、一晩のうちに金庫が空になった。アルバイトの主人公は、常連五人の習慣や好みを思い出して誰が嘘をついているか推理する。注文履歴、レシート、近所の目撃談が手がかりだ。ささやかであたたかい日常ミステリー。"
         },
         "zh": {
-          "title": "被诅咒的魔法学院夜巡",
-          "hook": "所有人入睡后,有一条走廊只有宿舍监督生看得见。",
-          "description": "被分配夜间巡逻的主角,发现一条只在午夜之后出现的走廊。它通向学院抹去的实验室记录。避开失踪学长的幻影,揭开被封印实验室的秘密。"
+          "title": "巷尾茶馆的可疑常客",
+          "hook": "每天都来的常客里，有人洗劫了茶馆保险箱，凶手总坐在同一个位子。",
+          "description": "日本小镇巷子尽头的小茶馆，一夜之间保险箱被掏空。身为兼职店员的主角回想五位常客的习惯与口味，推理谁在说谎。点单记录、收据和邻居的目击都是线索。这是一则平凡而温暖的日常推理。"
         }
       },
       "source": "official",
@@ -631,52 +631,6 @@
           "title": "穿成金发死对头少爷的魔法学院求生记",
           "hook": "醒来发现成了总欺负我的金发死对头,这次轮到我被欺负?",
           "description": "魔法学院开学当天,你在宿敌金发贵族少爷的身体里醒来。仆人毕恭毕敬,家族颜面要守住,真正的身体不知去向。以对话选择为主的喜剧,第一段包含宿舍、走廊和第一堂课教室。"
-        }
-      },
-      "source": "official",
-      "aiGenerated": true
-    },
-    {
-      "slug": "the-great-final-exam-theft-at-magic-academy-2h923f",
-      "title": "마법 학원 기말시험지 도난 사건",
-      "hook": "기말시험 전날 밤 금고 속 시험지가 사라졌다. 마법으로 흔적까지 지운 범인을 잡아라.",
-      "description": "마법 학원의 기말시험 전날, 교무 금고 속 시험지가 증발한다. 현장의 마력 흔적은 누군가 의도적으로 지운 상태다. 신입 조교가 되어 기숙사, 도서관, 약초 온실을 돌며 마법 잔재를 읽고 학생들의 증언을 맞춰 보자. 마법의 규칙을 알아야만 풀 수 있는 트릭이 숨어 있다.",
-      "tags": [
-        "추리",
-        "학원",
-        "웹소설"
-      ],
-      "presetId": "story-cutscene",
-      "protagonist": "마력이 약한 신입 조교",
-      "stage": "기숙사·도서관·온실이 있는 마법 학원",
-      "firstScene": "시험 전날 자정, 교무실 금고가 열린 채 연기만 피어오른다.",
-      "brief": {
-        "experience": "마법 규칙을 이용한 퍼즐형 추리와 학원 특유의 호기심 어린 분위기.",
-        "activity": "마법 잔재 조사 도구로 현장을 살피고, 학생과 교수의 증언을 비교하며 마법 트릭을 추리한다.",
-        "progression": "금고 조사, 세 곳 탐문, 마법 규칙 모순 발견, 범인 추궁 순서로 진행한다.",
-        "detail": "마법에는 지울 수 없는 흔적이 하나 있다는 규칙이 있고, 그것이 결정적 단서가 된다.",
-        "scope": "맵 세 개(교무실, 도서관, 약초 온실)에서 범인 추궁까지."
-      },
-      "tilesetHint": "wizarding_world",
-      "thumb": {
-        "full": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.full.webp",
-        "card": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.card.webp"
-      },
-      "locales": {
-        "en": {
-          "title": "The Great Final Exam Theft at Magic Academy",
-          "hook": "The exam papers vanished from the vault the night before finals, and the thief even erased the magic traces.",
-          "description": "The night before finals at a magic academy, the exam papers evaporate from the staff vault, and someone deliberately wiped the residual magic. As a rookie assistant, visit the dorm, library and herb greenhouse, read magical remnants and compare testimonies. A trick that only makes sense if you know the rules of magic is waiting."
-        },
-        "ja": {
-          "title": "魔法学院・期末試験用紙消失事件",
-          "hook": "期末試験の前夜、金庫の試験用紙が消えた。魔力の痕跡まで消した犯人を捕まえろ。",
-          "description": "魔法学院の期末試験前夜、職員金庫の試験用紙が蒸発する。現場の魔力の痕跡は誰かに意図的に消されていた。新米助手となって寮、図書館、薬草温室を巡り、魔法の残滓を読み、生徒の証言を突き合わせよう。魔法の決まりを知らなければ解けないトリックが潜んでいる。"
-        },
-        "zh": {
-          "title": "魔法学院期末试卷失窃案",
-          "hook": "期末考前夜保险柜里的试卷消失了，犯人连魔力痕迹都抹掉了。",
-          "description": "魔法学院期末考前夜，教务保险柜里的试卷凭空蒸发，现场的魔力痕迹被人刻意抹去。身为新手助教，你要走访宿舍、图书馆和药草温室，解读魔法残留并比对学生证词。这里藏着只有懂魔法规则才能识破的诡计。"
         }
       },
       "source": "official",
@@ -820,45 +774,46 @@
       "aiGenerated": true
     },
     {
-      "slug": "harbor-smuggler-murder-the-salt-crate-secret-4ympck",
-      "title": "항구 도시 밀수꾼 살인사건: 소금 상자의 비밀",
-      "hook": "부두 창고에서 발견된 시체, 소금 상자 속에는 시체보다 더 큰 비밀이 있었다.",
-      "description": "무역 항구의 세관 조사관이 된 당신. 창고에서 죽은 상인과 뒤바뀐 화물 장부를 단서로 밀수 조직을 추적한다. 부두, 시장, 선술집을 돌며 장부의 숫자와 증언을 맞춰 간다.",
+      "slug": "the-great-final-exam-theft-at-magic-academy-2h923f",
+      "title": "마법 학원 기말시험지 도난 사건",
+      "hook": "기말시험 전날 밤 금고 속 시험지가 사라졌다. 마법으로 흔적까지 지운 범인을 잡아라.",
+      "description": "마법 학원의 기말시험 전날, 교무 금고 속 시험지가 증발한다. 현장의 마력 흔적은 누군가 의도적으로 지운 상태다. 신입 조교가 되어 기숙사, 도서관, 약초 온실을 돌며 마법 잔재를 읽고 학생들의 증언을 맞춰 보자. 마법의 규칙을 알아야만 풀 수 있는 트릭이 숨어 있다.",
       "tags": [
         "추리",
-        "정통 JRPG"
+        "학원",
+        "웹소설"
       ],
       "presetId": "story-cutscene",
-      "protagonist": "세관 조사관 리안",
-      "stage": "로마풍 항구 도시의 부두와 시장",
-      "firstScene": "소금 상자를 열자 죽은 상인이 누워 있다.",
+      "protagonist": "마력이 약한 신입 조교",
+      "stage": "기숙사·도서관·온실이 있는 마법 학원",
+      "firstScene": "시험 전날 자정, 교무실 금고가 열린 채 연기만 피어오른다.",
       "brief": {
-        "experience": "장부와 화물을 추적하는 항구 도시 수사극",
-        "activity": "창고 조사, 장부 대조, 상인 심문, 화물 확인",
-        "progression": "장부의 모순을 찾으면 밀수 경로가 지도에 열린다",
-        "detail": "상자 번호·도장·날짜 불일치가 핵심 증거",
-        "scope": "부두·시장·선술집 세 맵"
+        "experience": "마법 규칙을 이용한 퍼즐형 추리와 학원 특유의 호기심 어린 분위기.",
+        "activity": "마법 잔재 조사 도구로 현장을 살피고, 학생과 교수의 증언을 비교하며 마법 트릭을 추리한다.",
+        "progression": "금고 조사, 세 곳 탐문, 마법 규칙 모순 발견, 범인 추궁 순서로 진행한다.",
+        "detail": "마법에는 지울 수 없는 흔적이 하나 있다는 규칙이 있고, 그것이 결정적 단서가 된다.",
+        "scope": "맵 세 개(교무실, 도서관, 약초 온실)에서 범인 추궁까지."
       },
-      "tilesetHint": "beodeul_city",
+      "tilesetHint": "wizarding_world",
       "thumb": {
-        "full": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.full.webp",
-        "card": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.card.webp"
+        "full": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.full.webp",
+        "card": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.card.webp"
       },
       "locales": {
         "en": {
-          "title": "Harbor Smuggler Murder: The Salt Crate Secret",
-          "hook": "A body in the dockside warehouse, and the salt crate hid a bigger secret.",
-          "description": "As a customs inspector you chase a smuggling ring through swapped ledgers and a dead merchant, checking figures and testimonies across docks, market and tavern."
+          "title": "The Great Final Exam Theft at Magic Academy",
+          "hook": "The exam papers vanished from the vault the night before finals, and the thief even erased the magic traces.",
+          "description": "The night before finals at a magic academy, the exam papers evaporate from the staff vault, and someone deliberately wiped the residual magic. As a rookie assistant, visit the dorm, library and herb greenhouse, read magical remnants and compare testimonies. A trick that only makes sense if you know the rules of magic is waiting."
         },
         "ja": {
-          "title": "港町密輸殺人事件:塩の木箱の秘密",
-          "hook": "波止場の倉庫で見つかった死体。塩の箱には死体より大きな秘密があった。",
-          "description": "税関調査官となったあなたは、死んだ商人とすり替えられた帳簿を手掛かりに密輸組織を追う。埠頭・市場・酒場で数字と証言を突き合わせる。"
+          "title": "魔法学院・期末試験用紙消失事件",
+          "hook": "期末試験の前夜、金庫の試験用紙が消えた。魔力の痕跡まで消した犯人を捕まえろ。",
+          "description": "魔法学院の期末試験前夜、職員金庫の試験用紙が蒸発する。現場の魔力の痕跡は誰かに意図的に消されていた。新米助手となって寮、図書館、薬草温室を巡り、魔法の残滓を読み、生徒の証言を突き合わせよう。魔法の決まりを知らなければ解けないトリックが潜んでいる。"
         },
         "zh": {
-          "title": "港城走私命案:盐箱的秘密",
-          "hook": "码头仓库里发现尸体,盐箱里藏着比尸体更大的秘密。",
-          "description": "你是港口海关调查官,凭死去的商人与被调包的账本追查走私集团,在码头、市场与酒馆间核对账目和证词。"
+          "title": "魔法学院期末试卷失窃案",
+          "hook": "期末考前夜保险柜里的试卷消失了，犯人连魔力痕迹都抹掉了。",
+          "description": "魔法学院期末考前夜，教务保险柜里的试卷凭空蒸发，现场的魔力痕迹被人刻意抹去。身为新手助教，你要走访宿舍、图书馆和药草温室，解读魔法残留并比对学生证词。这里藏着只有懂魔法规则才能识破的诡计。"
         }
       },
       "source": "official",
@@ -904,6 +859,51 @@
           "title": "丹青少女的鬼怪宫殿",
           "hook": "画丹青的少女被困在自己画出的宫殿里。",
           "description": "在古寺描绘丹青的学徒被吸入壁画中的鬼怪宫殿。颜色与纹样吻合才能开门,解开谜题寻找出口。第一章是在大门、回廊和鬼怪房间解开三道配色谜题。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "harbor-smuggler-murder-the-salt-crate-secret-4ympck",
+      "title": "항구 도시 밀수꾼 살인사건: 소금 상자의 비밀",
+      "hook": "부두 창고에서 발견된 시체, 소금 상자 속에는 시체보다 더 큰 비밀이 있었다.",
+      "description": "무역 항구의 세관 조사관이 된 당신. 창고에서 죽은 상인과 뒤바뀐 화물 장부를 단서로 밀수 조직을 추적한다. 부두, 시장, 선술집을 돌며 장부의 숫자와 증언을 맞춰 간다.",
+      "tags": [
+        "추리",
+        "정통 JRPG"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "세관 조사관 리안",
+      "stage": "로마풍 항구 도시의 부두와 시장",
+      "firstScene": "소금 상자를 열자 죽은 상인이 누워 있다.",
+      "brief": {
+        "experience": "장부와 화물을 추적하는 항구 도시 수사극",
+        "activity": "창고 조사, 장부 대조, 상인 심문, 화물 확인",
+        "progression": "장부의 모순을 찾으면 밀수 경로가 지도에 열린다",
+        "detail": "상자 번호·도장·날짜 불일치가 핵심 증거",
+        "scope": "부두·시장·선술집 세 맵"
+      },
+      "tilesetHint": "beodeul_city",
+      "thumb": {
+        "full": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.full.webp",
+        "card": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Harbor Smuggler Murder: The Salt Crate Secret",
+          "hook": "A body in the dockside warehouse, and the salt crate hid a bigger secret.",
+          "description": "As a customs inspector you chase a smuggling ring through swapped ledgers and a dead merchant, checking figures and testimonies across docks, market and tavern."
+        },
+        "ja": {
+          "title": "港町密輸殺人事件:塩の木箱の秘密",
+          "hook": "波止場の倉庫で見つかった死体。塩の箱には死体より大きな秘密があった。",
+          "description": "税関調査官となったあなたは、死んだ商人とすり替えられた帳簿を手掛かりに密輸組織を追う。埠頭・市場・酒場で数字と証言を突き合わせる。"
+        },
+        "zh": {
+          "title": "港城走私命案:盐箱的秘密",
+          "hook": "码头仓库里发现尸体,盐箱里藏着比尸体更大的秘密。",
+          "description": "你是港口海关调查官,凭死去的商人与被调包的账本追查走私集团,在码头、市场与酒馆间核对账目和证词。"
         }
       },
       "source": "official",
