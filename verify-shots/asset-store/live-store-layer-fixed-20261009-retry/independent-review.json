@@ -1,0 +1,148 @@
+{
+  "kind": "store-placement-independent-review",
+  "sourceRun": "live-store-layer-fixed-20261009-retry",
+  "realModel": true,
+  "model": "gpt-6-astra",
+  "thinking": "high",
+  "storeInstallOk": true,
+  "referenceRead": 1,
+  "objectWrites": 11,
+  "visualReview": 4,
+  "reachability": 3,
+  "savedAndReopened": true,
+  "uiInputExercised": false,
+  "strictHarnessPassed": false,
+  "failedCalls": [
+    {
+      "i": 8,
+      "name": "list_resources",
+      "args": {
+        "kind": "tile",
+        "query": "황폐",
+        "portraitMode": "face",
+        "mapId": "map_blank_start",
+        "tilesetId": "",
+        "offset": 0,
+        "limit": 20
+      },
+      "ok": false,
+      "summary": "'list_resources' 실행 실패: portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다."
+    },
+    {
+      "i": 9,
+      "name": "list_resources",
+      "args": {
+        "kind": "tile",
+        "query": "붕괴 후 황폐 필드",
+        "portraitMode": "face",
+        "mapId": "map_blank_start",
+        "tilesetId": "",
+        "offset": 0,
+        "limit": 50
+      },
+      "ok": false,
+      "summary": "'list_resources' 실행 실패: portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다."
+    },
+    {
+      "i": 18,
+      "name": "list_resources",
+      "args": {
+        "kind": "tile",
+        "query": "황폐",
+        "portraitMode": "face",
+        "mapId": "map_blank_start",
+        "tilesetId": "store_beodeulhang_jangso_bunggoe_hu_hwangpye_p_f78ef830__beodeul_wasteland_world",
+        "offset": 0,
+        "limit": 50
+      },
+      "ok": false,
+      "summary": "'list_resources' 실행 실패: portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다."
+    },
+    {
+      "i": 36,
+      "name": "lay_path",
+      "args": {
+        "mapId": "map_blank_start",
+        "points": [
+          {
+            "x": 10,
+            "y": 8
+          },
+          {
+            "x": 14,
+            "y": 10
+          },
+          {
+            "x": 18,
+            "y": 12
+          },
+          {
+            "x": 22,
+            "y": 14
+          },
+          {
+            "x": 26,
+            "y": 16
+          },
+          {
+            "x": 30,
+            "y": 18
+          },
+          {
+            "x": 35,
+            "y": 21
+          }
+        ],
+        "material": "버들항 붕괴 후 황폐 필드 · 밟아 다진 흙길",
+        "naturalness": 0.35,
+        "seed": 2408,
+        "referencePurpose": "beodeul-picks-wave4"
+      },
+      "ok": false,
+      "summary": "'lay_path' 실행 실패: 이 재료는 4방향 오토타일입니다. 같은 재료와 경유점은 이 정확한 fill_region 호출로 놓으세요: {\"mapId\":\"map_blank_start\",\"material\":\"버들항 붕괴 후 황폐 필드 · 밟아 다진 흙길\",\"path\":[{\"x\":10,\"y\":8},{\"x\":14,\"y\":10},{\"x\":18,\"y\":12},{\"x\":22,\"y\":14},{\"x\"…"
+    }
+  ],
+  "map": {
+    "width": 36,
+    "height": 24,
+    "trailMemberIds": [
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53
+    ],
+    "trailLowerCells": 0,
+    "trailUpperCells": 52,
+    "trailLowerUnique": [],
+    "trailUpperUnique": [
+      39,
+      41,
+      42,
+      49,
+      50,
+      52
+    ],
+    "trailLowerVariantCount": 0,
+    "trailUpperVariantCount": 6,
+    "groundLowerCells": 864
+  },
+  "render": {
+    "path": "render.png",
+    "sha256": "d8677049990166f12a796217d15f817be8ddb47f9ea0829c4e1236c35a2cab51"
+  },
+  "independentPassed": true,
+  "recoveredPath": "The model first called lay_path and received the new exact fill_region fallback; the subsequent fill_region call wrote the trail to upperTiles with multiple connected variants.",
+  "remainingIssues": "The strict run is false because the model made three invalid list_resources calls and one intentionally rejected lay_path before using the fallback. UI input was not exercised in this headless Pi run; desktop UI evidence remains separate."
+}
