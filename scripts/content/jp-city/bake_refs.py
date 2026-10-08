@@ -2567,7 +2567,7 @@ def doc_in_rules():
 가게·공공 실내(편의점·슈퍼·라멘·이자카야·초밥·킷사텐·빵집·서점·약국·꽃집·채소가게·이발소·목욕탕·코인세탁·파출소·의원)와 집 보강(맨션 2LDK·베란다·목조 아파트·단층 옛집)은 용도 「일본 가게·공공 실내」(`jp-interior-shop-*`). 사람(가족·점원 NPC)은 Actor1 캐릭터를 이벤트로 놓는다.
 
 ## 없는 것
-세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·사무실·병원 병동 실내 없음.
+세로 벽(동·서 벽면)에 거는 창·액자 없음(걸이는 북쪽 벽면만). 간판·메뉴판·가격표·노렌에 글자·상표 없음(색 띠·점). 점원·손님 NPC 와 가게 이벤트(계산·주문)는 없다 — Actor1 캐릭터·이벤트로 단다. 학교·체육관·유치원·역(승강장·전철 차내)·사무 빌딩·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`). 병원 병동은 아직 없다.
 '''
 
 
@@ -2691,7 +2691,7 @@ door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 �
 {md_table(['장소 id', '이름', '종류', '예제 문서', '짜임'], rows)}
 
 ## 없는 것
-점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·사무실·병원 병동 실내는 이 번들에 아직 없다.
+점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·역·사무실·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`).
 '''
 
 
@@ -2808,7 +2808,11 @@ _LM_UP = [t for v in _LM_UP_BY.values() for t in v]
 _LM_LO = [t for v in _LM_LO_BY.values() for t in v]
 assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
 _STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
-assert len(_STAIR_STAR) == 62 + 8 and sum(1 for t in AUD['walkableStairs'] if REGION[t] == 'interior') == 8, len(_STAIR_STAR)   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘) + 일본 집 실내 계단 8(올라가는 계단 발칸·솟은 칸, 계단통 솟은 칸)
+# 실내 계단(3묶음부터 학교·사무실·맨션·던전 계단이 늘어난다): 실내 칸은 모두 계단 가구(id 에 stairs/stairwell/ladder/escalator)의 칸이어야 한다.
+_IN_STAIRS = [t for t in AUD['walkableStairs'] if REGION[t] == 'interior']
+assert len(_STAIR_STAR) - len(_IN_STAIRS) == 62, len(_STAIR_STAR)
+_bad_st = [(t, label_of(t)) for t in _IN_STAIRS if not re.search(r'계단|사다리|에스컬레이터|stair|ladder|escalator', label_of(t))]
+assert not _bad_st, ('계단이 아닌 실내 가구가 밟는 계단(★)으로 판정됐다 — 태그·이름에 「계단」?', _bad_st[:10])   # 54 + 지하철역 계단(내려가는 4·올라가는 4 — 둘 다 맨 윗줄 가운데는 머리벽이라 막힘) + 일본 집 실내 계단 8(올라가는 계단 발칸·솟은 칸, 계단통 솟은 칸)
 
 
 def n_issue(lst): return len(lst)

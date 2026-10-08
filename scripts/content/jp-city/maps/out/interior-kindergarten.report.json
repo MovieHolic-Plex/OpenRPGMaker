@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-kindergarten",
+  "size": [
+   18,
+   12
+  ]
+ },
+ "start": [
+  5,
+  10
+ ],
+ "summary": "손 도트 실내 '일본 유치원 실내' 18×12 (jp-city-kindergarten, jp_city) — 출입구에서 닿는 칸 77, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-kindergarten",
+  "tilesetId": "jp_city",
+  "width": 18,
+  "height": 12,
+  "reachable": 77,
+  "floorCells": 112,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 5,
+    "y": 10
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 5,
+    "y": 11,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 77,
+ "ok": true
+}

@@ -132,10 +132,14 @@ for (const link of LINKS) {
   if (up) {
     const upSteps = route(interior, data.entryLanding, [{ x: up.e.x, y: up.e.y }]);
     const floor = ctx.project.maps[up.t!.mapId]!;
-    const down = (floor.events ?? []).map((e) => ({ e, t: transferOf(e) })).find(({ t }) => t && t.mapId === interior.id);
-    if (!upSteps || !down) throw new Error(`${data.interiorMapId}: 계단 왕복 길이 없다`);
+    // 내려오는 발판은 여럿일 수 있다(2칸 폭 엘리베이터·계단통) — 그중 하나라도 닿으면 된다(발판 옆 발판은 밟지 않는 길이라 한 칸만 노리면 못 닿는다).
+    const downs = (floor.events ?? []).map((e) => ({ e, t: transferOf(e) })).filter(({ t }) => t && t.mapId === interior.id);
+    if (!upSteps || !downs.length) throw new Error(`${data.interiorMapId}: 계단 왕복 길이 없다`);
     const floorTour = farthest(floor, up.t!);
-    const downSteps = [...(route(floor, up.t!, [floorTour]) ?? []), ...(route(floor, floorTour, [{ x: down.e.x, y: down.e.y }]) ?? [])];
+    const back = route(floor, floorTour, downs.map(({ e }) => ({ x: e.x, y: e.y }))) ?? [];
+    const last = back.length ? back[back.length - 1]! : null;
+    const down = downs.find(({ e }) => last && e.x === last[1] && e.y === last[2]) ?? downs[0]!;
+    const downSteps = [...(route(floor, up.t!, [floorTour]) ?? []), ...back];
     stairs = { floor: floor.id, upSteps, upAt: [up.t!.x, up.t!.y], downSteps, downAt: [down.t!.x, down.t!.y] };
     walkFrom = { x: down.t!.x, y: down.t!.y };
   }

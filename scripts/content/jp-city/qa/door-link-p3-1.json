@@ -1,0 +1,9 @@
+[
+ { "building": "A2", "example": "school-1f", "maps": ["school-1f", "school-2f", "school-3f", "school-roof"] },
+ { "building": "B1a", "example": "gym" },
+ { "building": "A1b", "example": "kindergarten" },
+ { "building": "B1b", "example": "station", "maps": ["station", "station-platform", "train-car"] },
+ { "building": "A1c", "example": "office-1f", "maps": ["office-1f", "office-floor"] },
+ { "building": "B2", "example": "post-office" },
+ { "building": "E1", "example": "mansion-lobby", "maps": ["mansion-lobby", "mansion-corridor"] }
+]

@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 39949
+   "chars": 44409
   },
   {
    "id": "jp-autotile",
@@ -65,37 +65,44 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 249종 · 바닥 18 · 벽면 11)",
-   "documents": 9,
-   "images": 18,
-   "chars": 165678
+   "name": "일본 도시 · 일본 집 실내 (가구 411종 · 바닥 36 · 벽면 26)",
+   "documents": 11,
+   "images": 20,
+   "chars": 258421
   },
   {
    "id": "jp-interior-shop",
    "name": "일본 도시 · 일본 가게·공공 실내 (19곳)",
    "documents": 20,
    "images": 19,
-   "chars": 96150
+   "chars": 96186
+  },
+  {
+   "id": "jp-interior-public3",
+   "name": "일본 도시 · 일본 학교·역·사무실 실내 (7곳, 맵 14장)",
+   "documents": 15,
+   "images": 14,
+   "chars": 109048
   },
   {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15485
+   "chars": 15487
   }
  ],
  "totals": {
-  "categories": 12,
-  "documents": 90,
-  "images": 205,
-  "chars": 928336,
+  "categories": 13,
+  "documents": 107,
+  "images": 221,
+  "chars": 1134625,
   "maxDocChars": 52856,
   "maxImagePx": 820
  },
- "tilesEmitted": 9602,
- "kitsEmitted": 689,
- "kitArrayItemsRoundtrip": 689,
+ "tilesEmitted": 10746,
+ "kitsEmitted": 851,
+ "kitArrayItemsRoundtrip": 851,
  "unknownTokens": [
   "jp-interior-ex-apartment-1k:jp-city-apartment-1k",
   "jp-interior-ex-bakery:jp-city-bakery",
@@ -103,22 +110,43 @@
   "jp-interior-ex-bookstore:jp-city-bookstore",
   "jp-interior-ex-clinic:jp-city-clinic",
   "jp-interior-ex-florist:jp-city-florist",
+  "jp-interior-ex-gym:jp-city-gym",
   "jp-interior-ex-hiraya:jp-city-hiraya",
   "jp-interior-ex-house-1f:jp-city-house-1f",
   "jp-interior-ex-house-2f:jp-city-house-2f",
   "jp-interior-ex-izakaya:jp-city-izakaya",
+  "jp-interior-ex-kindergarten:jp-city-kindergarten",
   "jp-interior-ex-kissaten:jp-city-kissaten",
   "jp-interior-ex-koban:jp-city-koban",
   "jp-interior-ex-konbini:jp-city-konbini",
   "jp-interior-ex-laundry:jp-city-laundry",
   "jp-interior-ex-mansion-2ldk:jp-city-mansion-2ldk",
+  "jp-interior-ex-mansion-corridor:jp-city-mansion-corridor",
+  "jp-interior-ex-mansion-lobby:jp-city-mansion-lobby",
   "jp-interior-ex-mokuchin:jp-city-mokuchin",
+  "jp-interior-ex-office-1f:jp-city-office-1f",
+  "jp-interior-ex-office-floor:jp-city-office-floor",
   "jp-interior-ex-pharmacy:jp-city-pharmacy",
+  "jp-interior-ex-post-office:jp-city-post-office",
   "jp-interior-ex-ramen:jp-city-ramen",
+  "jp-interior-ex-school-1f:jp-city-school-1f",
+  "jp-interior-ex-school-2f:jp-city-school-2f",
+  "jp-interior-ex-school-3f:jp-city-school-3f",
+  "jp-interior-ex-school-roof:jp-city-school-roof",
   "jp-interior-ex-sento:jp-city-sento",
+  "jp-interior-ex-station-platform:jp-city-station-platform",
+  "jp-interior-ex-station:jp-city-station",
   "jp-interior-ex-supermarket:jp-city-supermarket",
   "jp-interior-ex-sushi:jp-city-sushi",
+  "jp-interior-ex-train-car:jp-city-train-car",
   "jp-interior-ex-yaoya:jp-city-yaoya",
+  "jp-interior-p3-index:jp-city-gym-22x17",
+  "jp-interior-p3-index:jp-city-kindergarten-18x12",
+  "jp-interior-p3-index:jp-city-mansion-lobby-9x12",
+  "jp-interior-p3-index:jp-city-office-1f-16x10",
+  "jp-interior-p3-index:jp-city-post-office-12x13",
+  "jp-interior-p3-index:jp-city-school-1f-26x20",
+  "jp-interior-p3-index:jp-city-station-16x11",
   "jp-interior-shop-index:jp-city-bakery-10x14",
   "jp-interior-shop-index:jp-city-barber-10x9",
   "jp-interior-shop-index:jp-city-bookstore-11x14",
@@ -156,7 +184,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "44d3efcd64e5b1a18b54946638a71bf35d5dcb3a59118e5380d2df3584a90154",
-  "images": "12a6ca8da0f2d3ef138d5adce26d16c721d25a2342c1e746504183d307fe09df"
+  "json": "42539584a4190a0be075702b12cd945d4f84712a500dfb9882290463bfcfde30",
+  "images": "4ceb66cc2e84ae9ee7f5d01b5d8b0440c3d5b0a06a337084d6770d9f585d41fb"
  }
 }

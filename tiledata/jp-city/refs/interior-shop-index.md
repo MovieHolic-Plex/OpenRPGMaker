@@ -1,6 +1,6 @@
 # 일본 도시 — 일본 가게·공공 실내 장소 19곳
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **가져오기**: `import_region_reference({id:"<장소 id>"})` → 새 맵. **거리 건물 문과 바로 잇기**: `link_jp_city_interior({door:{x,y}, width, place:"<장소 id>"})` 한 번 —
 door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 첫 칸, 같은 줄 문 칸 수 = width). 장소를 새 맵으로 가져와 문 앞 접근칸(문 바로 아래)에 들어가는 발판, 실내 맨 아래 출입구 틈에 나오는 발판(나오면 문 앞 한 줄 아래)을 만든다.
@@ -31,4 +31,4 @@ door = 거리 건물 문 칸(`build_jp_city_building` 결과 `data.doors` 의 �
 | `jp-city-hiraya-15x14` | 일본 단층 옛집(平屋) 실내 | 단층 옛집(平屋) | `jp-interior-ex-hiraya` | 현관 → 다다미방 2~3칸(장지문·차부다이·방석, 이불 곁 등롱) + 이로리 방 + 부엌 → 남쪽 마루방(차부다이·방석, 구석 디딤돌 — 밖으로 트인 툇마루는 아니다). |
 
 ## 없는 것
-점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·사무실·병원 병동 실내는 이 번들에 아직 없다.
+점원·손님 NPC(Actor1 캐릭터를 이벤트로 놓는다), 가게 이벤트(계산·주문). 간판·메뉴판·가격표에 글자는 없다(색 띠·점). 학교·역·사무실·우체국·맨션 공용부는 용도 「일본 학교·역·사무실 실내」(`jp-interior-p3-index`).

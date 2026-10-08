@@ -1,0 +1,44 @@
+{
+ "map": {
+  "id": "jp-city-school-roof",
+  "size": [
+   14,
+   10
+  ]
+ },
+ "start": [
+  6,
+  7
+ ],
+ "summary": "손 도트 실내 '학교 본관 옥상' 14×10 (jp-city-school-roof, jp_city) — 출입구에서 닿는 칸 39, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-school-roof",
+  "tilesetId": "jp_city",
+  "width": 14,
+  "height": 10,
+  "reachable": 39,
+  "floorCells": 60,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 6,
+    "y": 7
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 6,
+   "y": 6,
+   "to": "jp-city-school-3f",
+   "reached": true
+  }
+ ],
+ "reach": 39,
+ "ok": true
+}

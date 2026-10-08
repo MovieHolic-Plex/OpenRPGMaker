@@ -11,7 +11,8 @@ import { fileURLToPath } from "node:url";
 import { startPlayerQaServer } from "../../../lib/runtimeQaRun.mjs";
 
 const ROOT = fileURLToPath(new URL("../../../../", import.meta.url));
-const OUT = join(ROOT, "verify-shots/jp-city/door-link");
+// DOOR_LINK_OUT = 증거 폴더 이름(기본 door-link — 2묶음 관문 증거라 3묶음 이후는 door-link-p3 처럼 따로).
+const OUT = join(ROOT, "verify-shots/jp-city", process.env.DOOR_LINK_OUT ?? "door-link");
 const FIXTURE = "/tmp/oprn-jp-door-fixture.json";
 const PATHS = "/tmp/oprn-jp-door-paths.json";
 const PROJECT_URL = "/__qa/door.json";

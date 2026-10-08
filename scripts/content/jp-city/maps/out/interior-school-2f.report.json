@@ -1,0 +1,62 @@
+{
+ "map": {
+  "id": "jp-city-school-2f",
+  "size": [
+   26,
+   16
+  ]
+ },
+ "start": [
+  22,
+  13
+ ],
+ "summary": "손 도트 실내 '학교 본관 2층(교실)' 26×16 (jp-city-school-2f, jp_city) — 출입구에서 닿는 칸 152, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-school-2f",
+  "tilesetId": "jp_city",
+  "width": 26,
+  "height": 16,
+  "reachable": 152,
+  "floorCells": 204,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 22,
+    "y": 13
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 4,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 21,
+   "y": 12,
+   "to": "jp-city-school-3f",
+   "reached": true
+  },
+  {
+   "x": 22,
+   "y": 12,
+   "to": "jp-city-school-3f",
+   "reached": true
+  },
+  {
+   "x": 23,
+   "y": 13,
+   "to": "jp-city-school-1f",
+   "reached": true
+  },
+  {
+   "x": 24,
+   "y": 13,
+   "to": "jp-city-school-1f",
+   "reached": true
+  }
+ ],
+ "reach": 152,
+ "ok": true
+}

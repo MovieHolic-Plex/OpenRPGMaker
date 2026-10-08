@@ -1,6 +1,6 @@
 # 일본 도시 — 소품 사전 1/1 (142종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 거리 소품 키트 142종 중 이 문서의 142종이다(분류: 아래 목록, 전체는 1개 문서). 항목 필드는 「상가 레시피 사전」과 같다(소품에는 `access`·`parts` 가 없다). 모든 소품은 **고정**.
 `codes` 의 `X` = 밑동(막힘) · `*` = 윗부분 ★(걸음·캐릭터 위) · `.` = 걸음 · `_` 빈 칸. 소품은 **보도·도로·잔디 위**에 찍고, 문 앞 접근칸과 횡단보도 접점을 피한다. 그림 `jp-img-shop-props-*`.

@@ -1,0 +1,62 @@
+{
+ "map": {
+  "id": "jp-city-mansion-lobby",
+  "size": [
+   9,
+   12
+  ]
+ },
+ "start": [
+  3,
+  10
+ ],
+ "summary": "손 도트 실내 '일본 맨션 공용부 1층(엔트런스·엘리베이터 홀)' 9×12 (jp-city-mansion-lobby, jp_city) — 출입구에서 닿는 칸 29, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-mansion-lobby",
+  "tilesetId": "jp_city",
+  "width": 9,
+  "height": 12,
+  "reachable": 29,
+  "floorCells": 40,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 3,
+    "y": 10
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 3,
+    "y": 11,
+    "width": 2
+   }
+  ],
+  "links": 3,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "to": "jp-city-mansion-corridor",
+   "reached": true
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "to": "jp-city-mansion-corridor",
+   "reached": true
+  },
+  {
+   "x": 5,
+   "y": 3,
+   "to": "jp-city-mansion-corridor",
+   "reached": true
+  }
+ ],
+ "reach": 29,
+ "ok": true
+}

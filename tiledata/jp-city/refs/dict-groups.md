@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (248개)
+# 일본 도시 — 타일 그룹 사전 (281개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **10217칸**, 16px 칸, 시트 768×3408px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 47, wall 54, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 65, wall 69, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -266,6 +266,39 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-wall-pb-sento-wall","name":"실내 벽면 · 목욕탕 타일 벽","role":"wall","layer":"lower","n":4,"from":9872,"to":9875},
 {"id":"jp:interior-wall-pb-office-wall","name":"실내 벽면 · 사무실 벽(크림·회색 걸레받이)","role":"wall","layer":"lower","n":8,"from":9876,"to":9883},
 {"id":"jp:interior-floor-h2-veranda-floor","name":"실내 바닥 · 베란다 방수 바닥","role":"terrain","layer":"lower","n":64,"from":9993,"to":10056},
-{"id":"jp:interior-floor-h2-engawa","name":"실내 바닥 · 툇마루","role":"terrain","layer":"lower","n":124,"from":10057,"to":10180}
+{"id":"jp:interior-floor-h2-engawa","name":"실내 바닥 · 툇마루","role":"terrain","layer":"lower","n":124,"from":10057,"to":10180},
+{"id":"jp:interior-floor-sc-classroom-wood","name":"실내 바닥 · 교실 나무 마루(좁은 판자)","role":"terrain","layer":"lower","n":64,"from":10217,"to":10280},
+{"id":"jp:interior-floor-sc-corridor","name":"실내 바닥 · 학교 복도 비닐 시트","role":"terrain","layer":"lower","n":16,"from":10281,"to":10296},
+{"id":"jp:interior-floor-sc-genkan-tile","name":"실내 바닥 · 현관 회색 타일(昇降口)","role":"terrain","layer":"lower","n":16,"from":10297,"to":10312},
+{"id":"jp:interior-floor-sc-roof-conc","name":"실내 바닥 · 옥상 방수 바닥(녹색)","role":"terrain","layer":"lower","n":36,"from":10313,"to":10348},
+{"id":"jp:interior-wall-sc-wall","name":"실내 벽면 · 학교 벽(흰 회반죽 + 나무 허리판)","role":"wall","layer":"lower","n":8,"from":10349,"to":10356},
+{"id":"jp:interior-wall-sc-wall-tile","name":"실내 벽면 · 학교 타일 벽(화장실·이과실)","role":"wall","layer":"lower","n":4,"from":10357,"to":10360},
+{"id":"jp:interior-wall-sc-soundwall","name":"실내 벽면 · 음악실 유공 흡음 벽","role":"wall","layer":"lower","n":6,"from":10361,"to":10366},
+{"id":"jp:interior-wall-sc-parapet","name":"실내 벽면 · 옥상 콘크리트 난간벽","role":"wall","layer":"lower","n":8,"from":10367,"to":10374},
+{"id":"jp:interior-floor-gy-court","name":"실내 바닥 · 체육관 마루(밝은 나무)","role":"terrain","layer":"lower","n":64,"from":10510,"to":10573},
+{"id":"jp:interior-floor-gy-store-floor","name":"실내 바닥 · 체육 창고 콘크리트","role":"terrain","layer":"lower","n":16,"from":10574,"to":10589},
+{"id":"jp:interior-floor-gy-kinder-floor","name":"실내 바닥 · 유치원 놀이방 바닥(연노랑 나무)","role":"terrain","layer":"lower","n":52,"from":10590,"to":10641},
+{"id":"jp:interior-wall-gy-wall","name":"실내 벽면 · 체육관 벽면(나무 판 + 흰 벽 + 높은 창)","role":"wall","layer":"lower","n":4,"from":10642,"to":10645},
+{"id":"jp:interior-wall-gy-kinder-wall","name":"실내 벽면 · 유치원 파스텔 벽(하늘색 허리)","role":"wall","layer":"lower","n":8,"from":10646,"to":10653},
+{"id":"jp:interior-floor-st-concourse","name":"실내 바닥 · 역사 바닥(연회색 석재 타일)","role":"terrain","layer":"lower","n":16,"from":10826,"to":10841},
+{"id":"jp:interior-floor-st-platform","name":"실내 바닥 · 승강장 바닥(회색 콘크리트)","role":"terrain","layer":"lower","n":16,"from":10842,"to":10857},
+{"id":"jp:interior-floor-st-car-floor","name":"실내 바닥 · 전철 차내 바닥(회갈 고무)","role":"terrain","layer":"lower","n":16,"from":10858,"to":10873},
+{"id":"jp:interior-wall-st-wall","name":"실내 벽면 · 역사 벽(흰 패널 + 노선 색 띠)","role":"wall","layer":"lower","n":6,"from":10874,"to":10879},
+{"id":"jp:interior-wall-st-trackside-wall","name":"실내 벽면 · 선로 건너편 옹벽(울타리·덤불)","role":"wall","layer":"lower","n":8,"from":10880,"to":10887},
+{"id":"jp:interior-wall-st-car-wall","name":"실내 벽면 · 전철 차내 벽(크림 + 창 줄)","role":"wall","layer":"lower","n":12,"from":10888,"to":10899},
+{"id":"jp:interior-floor-of-lobby-stone","name":"실내 바닥 · 로비 석재 바닥(광택)","role":"terrain","layer":"lower","n":16,"from":10979,"to":10994},
+{"id":"jp:interior-floor-of-carpet-tile","name":"실내 바닥 · 사무실 카펫 타일(회청)","role":"terrain","layer":"lower","n":16,"from":10995,"to":11010},
+{"id":"jp:interior-floor-of-pantry-tile","name":"실내 바닥 · 급탕실 비닐 타일","role":"terrain","layer":"lower","n":16,"from":11011,"to":11026},
+{"id":"jp:interior-floor-of-stair-conc","name":"실내 바닥 · 비상계단통 콘크리트 바닥","role":"terrain","layer":"lower","n":16,"from":11027,"to":11042},
+{"id":"jp:interior-wall-of-wall","name":"실내 벽면 · 사무 벽면(연회색·걸레받이)","role":"wall","layer":"lower","n":8,"from":11043,"to":11050},
+{"id":"jp:interior-wall-of-lobby-wall","name":"실내 벽면 · 로비 벽면(돌 판·나무 띠)","role":"wall","layer":"lower","n":8,"from":11051,"to":11058},
+{"id":"jp:interior-wall-of-glass-wall","name":"실내 벽면 · 회의실 유리 칸막이 벽면","role":"wall","layer":"lower","n":4,"from":11059,"to":11062},
+{"id":"jp:interior-floor-po-floor","name":"실내 바닥 · 우체국 비닐 타일(연베이지)","role":"terrain","layer":"lower","n":16,"from":11189,"to":11204},
+{"id":"jp:interior-floor-po-back-floor","name":"실내 바닥 · 우체국 작업실 바닥(회색)","role":"terrain","layer":"lower","n":16,"from":11205,"to":11220},
+{"id":"jp:interior-floor-mc-entrance-tile","name":"실내 바닥 · 엔트런스 석재 타일","role":"terrain","layer":"lower","n":16,"from":11221,"to":11236},
+{"id":"jp:interior-floor-mc-corridor","name":"실내 바닥 · 외복도 장척 시트","role":"terrain","layer":"lower","n":8,"from":11237,"to":11244},
+{"id":"jp:interior-wall-po-wall","name":"실내 벽면 · 우체국 벽(흰 벽 + 빨강 띠)","role":"wall","layer":"lower","n":8,"from":11245,"to":11252},
+{"id":"jp:interior-wall-mc-wall","name":"실내 벽면 · 공용부 벽(타일 판 + 돌 띠)","role":"wall","layer":"lower","n":8,"from":11253,"to":11260},
+{"id":"jp:interior-wall-mc-corridor-wall","name":"실내 벽면 · 외복도 세대 벽(흰 벽 + 기둥)","role":"wall","layer":"lower","n":16,"from":11261,"to":11276}
 ]
 ```

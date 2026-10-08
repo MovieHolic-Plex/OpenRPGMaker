@@ -1,0 +1,74 @@
+{
+ "map": {
+  "id": "jp-city-office-floor",
+  "size": [
+   24,
+   17
+  ]
+ },
+ "start": [
+  19,
+  13
+ ],
+ "summary": "손 도트 실내 '사무 빌딩 사무층(기준층)' 24×17 (jp-city-office-floor, jp_city) — 출입구에서 닿는 칸 157, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-office-floor",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 17,
+  "reachable": 157,
+  "floorCells": 208,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 19,
+    "y": 13
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 6,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 14,
+   "y": 13,
+   "to": "jp-city-office-1f",
+   "reached": true
+  },
+  {
+   "x": 15,
+   "y": 13,
+   "to": "jp-city-office-1f",
+   "reached": true
+  },
+  {
+   "x": 17,
+   "y": 12,
+   "to": "jp-city-office-1f",
+   "reached": true
+  },
+  {
+   "x": 18,
+   "y": 12,
+   "to": "jp-city-office-1f",
+   "reached": true
+  },
+  {
+   "x": 21,
+   "y": 12,
+   "to": "jp-city-office-1f",
+   "reached": true
+  },
+  {
+   "x": 22,
+   "y": 12,
+   "to": "jp-city-office-1f",
+   "reached": true
+  }
+ ],
+ "reach": 157,
+ "ok": true
+}

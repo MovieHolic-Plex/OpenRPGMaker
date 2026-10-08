@@ -1,0 +1,20 @@
+# 일본 도시 — 일본 학교·역·사무실 실내 장소 7곳
+
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11361칸**, 16px 칸, 시트 768×3792px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+
+**가져오기**: `import_region_reference({id:"<장소 id>"})` → 맵 여러 장(층·승강장·차내 — 서로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({door:{x,y}, width, place:"<장소 id>"})` 한 번 — 첫 맵(1층·역사·로비)에만 거리 문을 잇는다.
+층이 여럿인 장소의 위층·승강장·전철 차내는 거리와 잇지 않는다(맨 아래 줄이 막혀 있다). 층 이동은 계단(올라가는 계단 발칸 ↔ 위층 계단통 아랫줄)·엘리베이터 문 앞 칸·승강장 승차 칸의 `links` 다.
+직접 지으려면 맵마다 `build_hand_interior_room({tileset:"jp_city", …})` — 짓는 순서는 `jp-interior-rules` 「읽는 순서 · 실행 순서」 4번(모든 층을 links 없이 → links 를 넣어 replace:true). 방 종류: `classroom` 교실, `concourse` 역사 대합실·콘코스, `corridor` 학교 복도, `elevatorhall` 엘리베이터 홀, `extcorridor` 외복도, `gymfloor` 체육관 마루(코트), `gymstore` 체육 창고, `infirmary` 보건실, `library` 도서실, `lobby` 로비, `meetingroom` 회의실, `musicroom` 음악실, `napping` 낮잠 방, `openoffice` 사무실, `pantry` 급탕실·휴게, `platform` 승강장, `playroom` 놀이방(보육실), `postback` 우편 구분 작업실, `postcounter` 우체국 창구 안쪽, `postlobby` 우체국 로비, `rooftop` 학교 옥상, `schooltoilet` 학교 화장실, `sciencelab` 이과실, `shoegenkan` 학교 현관(昇降口), `staffroom` 교무실, `stage` 무대(단상), `stairwell` 비상계단, `stationoffice` 역무실 창구, `ticketgate` 개찰구, `traincar` 전철 차내, `windbreak` 바람막이(엔트런스).
+
+| 장소 id | 이름 | 종류 | 맵(예제 문서) | 짜임 |
+|---|---|---|---|---|
+| `jp-city-gym-22x17` | 일본 학교 체육관 실내 | 체육관 | `jp-interior-ex-gym` | 남쪽 출입구 틈 3칸(서쪽 모서리) 옆에 신발장 → 마루 한가운데 농구 코트(흰 선 테두리·가운데 줄·빨간 가운데 원, 양 끝 빨간 제한 구역 gy-key-w/-e 4×3), 양 끝 선 바깥에 이동식 골대 둘(서쪽 gy-hoop-e·동쪽 gy-hoop-w, 코트 가운데 줄에 맞춰) → 북쪽 벽 아래 무대(gy-stage 8×2, 벽면에 자주 막 4장, 양 끝 앞에 작은 계단) → 북서 벽에 늑목 셋, 무대 옆 접이 장탁자(호루라기·초시계), 벽 윗줄에 망 씌운 시계 → 동쪽 골대 뒤 점수판 → 북동 체육 창고(세로·가로 칸막이 + 동쪽 끝 정면 문 — 골대 뒤를 비켜: 쌓은 매트·뜀틀·공 바구니·접이 의자 수레·배구 지주 둘). |
+| `jp-city-kindergarten-18x12` | 일본 유치원 실내 | 유치원 | `jp-interior-ex-kindergarten` | 남쪽 출입구 틈 2칸(타타키) 서쪽에 아이 신발장 둘 → 놀이방: 북쪽 벽에 아이 사물함(3칸)·그림책 선반·업라이트 피아노·장난감 상자, 벽 윗줄에 그림 게시판·시계 → 가운데 낮은 탁자 둘(3×1)에 작은 의자가 북·남·탁자 사이에서 탁자를 본다(크레용·색종이) → 위·아래 2줄 통로와 동쪽 2줄 통로가 고리로 이어지고, 동남 구석 놀이 매트. |
+| `jp-city-office-1f-16x10` | 일본 사무 빌딩 실내(1층 로비 + 사무층) | 사무실 빌딩 | `jp-interior-ex-office-1f` → `jp-interior-ex-office-floor` | 1층: 남쪽 유리 자동문(2칸) → 석재 로비(접수 카운터 앞 손님 자리 두 줄 · 소파 · 우편함 · 층 안내판) → 보안 게이트 줄(1인 통로와 2칸 넓은 통로) → 북쪽 벽 엘리베이터 두 대 · 그 사이 호출 버튼. 동쪽 비상계단통은 철문으로 들어간다. |
+| `jp-city-post-office-12x13` | 일본 우체국(郵便局) 실내 | 우체국 | `jp-interior-ex-post-office` | 남쪽 자동문 출입구(2칸) → 오른쪽 벽 쪽 ATM·사서함 벽(입구 가까이) · 왼쪽 관엽 화분·창구를 보는 대기 벤치(po-bench-n)·그 뒤 서서 쓰는 기재대 · 길가에 번호표 기계 → 창구 카운터 줄(po-counter 4칸 + 소포 창구 po-parcel-scale, 앞 손님 자리 두 줄 비움) → 카운터 안쪽 직원 책상 둘 · 직원 길 한 줄 → 동쪽 세로 칸막이 옆문 너머 작은 구분 작업실(구분 선반·우편 수레·자루). |
+| `jp-city-mansion-lobby-9x12` | 일본 맨션 공용부(엔트런스·엘리베이터 홀·외복도) | 맨션 공용부 | `jp-interior-ex-mansion-lobby` → `jp-interior-ex-mansion-corridor` | 1층: 남쪽 바깥 자동문(2칸) → 바람막이(風除室 — 북쪽 벽에 집합 우편함·택배 보관함, 안쪽 자동문 바로 옆 오토록 조작반) → 가로 칸막이 1칸 틈의 안쪽 유리 자동문(mc-autodoor) → 엘리베이터 홀(엘리베이터 1대·관엽 화분·공용 계단·관리 게시판, 동쪽 구석 자전거 셋). |
+| `jp-city-school-1f-26x20` | 일본 학교 본관(中学校・高校) 실내 | 학교 | `jp-interior-ex-school-1f` → `jp-interior-ex-school-2f` → `jp-interior-ex-school-3f` → `jp-interior-ex-school-roof` | 층마다 한 맵 — 1층 school-1f(거리와 잇는 주 맵) · 2층 school-2f · 3층 school-3f · 옥상 school-roof. 계단은 모두 동쪽 끝 계단실(x 20~24): 올라가는 콘크리트 계단 sc-stairs-up(2칸, 복도 북쪽 벽) 옆에 내려가는 계단통 sc-stairwell-down(2×2). 계단 발칸 → 위층 계단통 서쪽 칸, 계단통 아랫줄 → 아래층 계단 앞 칸. |
+| `jp-city-station-16x11` | 일본 작은 지상역(駅) — 역사·승강장·전철 차내 | 역 | `jp-interior-ex-station` → `jp-interior-ex-station-platform` → `jp-interior-ex-train-car` | 역사(station): 개찰 줄 한 줄이 서쪽 벽에서 역무실 벽까지 역사를 가로질러 닫는다 — 서쪽 낮은 칸막이 3칸 + 개찰기 4대가 나란히(사이 1칸 통로 3개). 개찰기 사이 통로 말고는 개찰 안쪽으로 가는 길이 없다. 개찰 밖(남쪽): 출입구 3칸, 칸막이 앞에 대합실 벤치 한 줄, 개찰 동쪽 끝 바로 옆 역무실 벽에 창구와 매표기 2대(위에 운임표) — 그 앞 두 줄은 손님 자리. 개찰 안(북쪽, 세 줄): 북벽의 열린 통로(승강장 나가는 문)와 발차 안내판, 매점(앞 두 줄)·자판기·벤치. |
+
+## 없는 것
+교사·학생·역무원·승객 NPC(Actor1 캐릭터를 이벤트로 놓는다), 수업·개찰 이벤트, 전철이 움직이는 연출(차내는 정지 맵). 칠판·게시판·운임표·안내판에 글자는 없다(색 덩이·선). 병원 병동·대형 쇼핑몰·지하 던전은 아직 없다.
