@@ -1,0 +1,54 @@
+{
+  "kind": "store-placement-independent-review",
+  "sourceRun": "live-store-retry-20261009",
+  "realModel": true,
+  "model": "gpt-6-astra",
+  "thinking": "high",
+  "storeInstallOk": true,
+  "referenceRead": 1,
+  "objectWrites": 17,
+  "visualReview": 3,
+  "reachability": 2,
+  "savedAndReopened": true,
+  "uiInputExercised": false,
+  "modelSummaryPassed": true,
+  "map": {
+    "width": 36,
+    "height": 24,
+    "trailMemberIds": [
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53
+    ],
+    "trailLowerCells": 67,
+    "trailUpperCells": 0,
+    "trailLowerUnique": [
+      53
+    ],
+    "trailUpperUnique": [],
+    "trailLowerVariantCount": 1,
+    "trailUpperVariantCount": 0,
+    "groundLowerCells": 768,
+    "upperEmptyCells": 723
+  },
+  "render": {
+    "path": "render.png",
+    "sha256": "270e5d31c0c7c88bafa92e33badfd637edd42b92082ec18517bbacb030bad774"
+  },
+  "independentPassed": false,
+  "failure": "The model summary is not sufficient evidence: the imported store trail group is an upper-layer 4-neighbor autotile, but this run left all 67 trail cells as tile 53 on lowerTiles. The image therefore shows a hard rectangular strip with one variant instead of an upper-layer connected path.",
+  "nextFix": "Honor the explicit autotile group layer in tileLayerHome and give lay_path the exact fill_region upper-layer fallback."
+}

@@ -175,14 +175,16 @@ function requireMaterialGroup(
     requireAutotileGroup: options.requireAutotileGroup,
   });
   if (access.status === "missing") {
-    const suggestions = access.suggestions.length > 0
+    const suggestions = access.suggestions.length > 0 || access.suggestionKind === "fillable"
       ? access.suggestions
       : suggestMaterialsByLabel(tileset, material, 5);
     const labels = suggestions.map((s) => `"${s.label}"`).join(", ");
     // 있는 라벨인데 채울 수 없는 재료였다면 「비슷한 라벨」로 같은 문자열을 되돌려 주지 않는다 —
     // 그 순환이 모델을 같은 실패로 되돌리고 결국 place_props 같은 우회로 몰았다(2026-09-03 실측).
     const hint = suggestions.length === 0
-      ? ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`
+      ? access.suggestionKind === "fillable"
+        ? ` 이 타일셋에 면 채우기가 지원되는 재료가 없습니다. 참고문서의 바탕 대표 칸은 paint_tiles로, 여러 칸 패턴은 stamp_object 또는 stamp_layer_block으로 놓으세요. 다른 재료로 바꾸지 마세요.`
+        : ` tile_query ask:"labels" 로 타일 라벨/설명을 조회하세요.`
       : access.suggestionKind === "fillable"
         ? ` 채울 수 있는 재료: ${labels} — material에 이 문자열을 넣거나, 바닥 마감이면 paint_tiles(단일 타일)를 쓰세요.`
         : ` 비슷한 라벨(그룹): ${labels} — material에 이 문자열을 넣으세요.`;
@@ -700,7 +702,7 @@ function autotileGroupForVocab(tileset: TilesetDef, group: TileGroupMetadata): A
 const layPath: ToolDefinition = {
   name: "lay_path",
   description:
-    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 월드맵 연결 붓은 material=길 하나로 초원·사막·설원 바탕을 자동으로 맞추며 강 횡단은 방향에 맞는 다리로 놓는다(4방향 길 지원). 정확한 경로·폭은 fill_region(material=길,path,width)을 쓴다. 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부(승인 시 오토타일 정의 필요). 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·벽 같은 건물을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회 우선·불가 시 건넌다. 우회로가 없어 길이 끊기면 막힌 좌표와 함께 실패한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
+    "길 어휘로 경유점(2개 이상)을 잇는 길을 깐다(v3 공정 4단계). 월드맵 연결 붓은 material=길 하나로 초원·사막·설원 바탕을 자동으로 맞추며 강 횡단은 방향에 맞는 다리로 놓는다(4방향 길 지원). 정확한 경로·폭은 fill_region(material=길,path,width)을 쓴다. 어휘에 8-이웃 variantMap 오토타일 정의가 필수 — 없으면 거부하고, 오류가 돌려주는 정확한 fill_region 대안을 그대로 재시도한다. 상위 레이어 4-이웃 길은 문서 계약에 따라 fill_region(...,layer:'upper') 또는 paint_tiles로 놓는다. 외곽+inner corner 변형을 자동 재계산한다. 경로가 집·벽 같은 건물을 만나면 그 칸을 덮지 않고 자동으로 우회한다(저작물 보호). 나무·울타리는 치우고, 물은 우회 우선·불가 시 건넌다. 우회로가 없어 길이 끊기면 막힌 좌표와 함께 실패한다. naturalness 0~1(기본 0.5), seed로 결정론 재현. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의.",
   mode: "write",
   version: 3,
   parameters: {
@@ -724,9 +726,17 @@ const layPath: ToolDefinition = {
     const { group, softConfirm } = requireMaterialGroup(tileset, args.material, PATH_EXAMPLE, { preferRoles: ["terrain"] });
     const autotile = autotileGroupForVocab(tileset, group);
     const worldmapAuto = worldmapMaterialGroup(tileset, args.material)?.id === group.id;
+    const fallbackLayer = autotile && autotileGroupLayer(autotile) === "upper" ? "upper" : "lower";
+    const fillFallback = JSON.stringify({ mapId: map.id, material: group.name, path: points, width: 2, layer: fallbackLayer });
+    if (autotile && (autotile.neighborhood ?? 4) === 4 && !group.id.startsWith('worldmap-brush-road-')) {
+      throw new ToolError(
+        `이 재료는 4방향 오토타일입니다. 같은 재료와 경유점은 이 정확한 fill_region 호출로 놓으세요: ${fillFallback}. 8방향으로 재저작하거나 다른 바닥으로 바꾸지 마세요.`,
+        { code: "path-use-fill-region", mapId: map.id }
+      );
+    }
     if (!autotile || (autotile.neighborhood ?? 4) !== 8 && !group.id.startsWith('worldmap-brush-road-')) {
       throw new ToolError(
-        `길 어휘 '${group.name}'(${group.id})에 8-이웃 variantMap 오토타일 정의가 없습니다. 승인 시 오토타일 정의가 필요합니다(inner corner 마감용) — 타일셋 오토타일 편집기에서 8방향 그룹을 정의하세요. — 다시 보낼 형식 예시: ${JSON.stringify(PATH_EXAMPLE)}`,
+        `길 어휘 '${group.name}'(${group.id})에 8-이웃 variantMap 오토타일 정의가 없습니다. 상위 레이어 4-이웃 길은 문서 계약상 이 정확한 fill_region 호출을 사용하세요: ${fillFallback}. 8방향 정의가 필요한 재료라면 승인 시에만 오토타일 편집기로 추가하세요. — 다시 보낼 형식 예시: ${JSON.stringify(PATH_EXAMPLE)}`,
         { code: "path-needs-autotile", mapId: map.id }
       );
     }
