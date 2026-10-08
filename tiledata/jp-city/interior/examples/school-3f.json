@@ -379,7 +379,7 @@
    "y": 13,
    "toMapId": "jp-city-school-2f",
    "toX": 21,
-   "toY": 13,
+   "toY": 16,
    "direction": "down"
   },
   {
@@ -387,7 +387,7 @@
    "y": 13,
    "toMapId": "jp-city-school-2f",
    "toX": 21,
-   "toY": 13,
+   "toY": 16,
    "direction": "down"
   }
  ]

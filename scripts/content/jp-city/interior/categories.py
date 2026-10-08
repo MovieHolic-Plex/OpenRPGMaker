@@ -52,7 +52,7 @@ CATEGORIES = [
     # [interior_school sc-]
     ('school-entry', '학교 현관', ['sc-shoe-locker', 'sc-sunoko']),
     ('classroom', '교실', ['sc-blackboard', 'sc-podium', 'sc-teacher-desk', 'sc-desk-n', 'sc-back-locker', 'sc-notice-board',
-                          'sc-cleaning-locker', 'sc-classroom-door', 'sc-tv-stand', 'sc-chair-s']),
+                          'sc-cleaning-locker', 'sc-classroom-door', 'sc-tv-stand', 'sc-chair-s', 'sc-washstand']),
     ('staffroom', '교무실·보건실', ['sc-staff-desk', 'sc-staff-chair-s', 'sc-staff-chair-n', 'sc-whiteboard', 'sc-key-box',
                                  'sc-copy-machine', 'sc-tea-shelf', 'sc-nurse-bed', 'sc-curtain', 'sc-med-shelf', 'sc-scale',
                                  'sc-sink', 'sc-urinal']),
