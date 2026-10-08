@@ -6,7 +6,7 @@
 거리 외관 `jp-bldg-school-gym`(체육관)·`jp-bldg-kindergarten`(유치원)의 실내다.
 
 크기(§12-3 공식: 폭 = W×16, 앞면 F = H×16, 윗면 T = D×16×압축, 칸 높이 = F+T 가 들어가는 첫 칸 수):
-  · 이동식 농구 골대 1.8×2.5×3.9m — 축약 관례(골대 높이를 화면 한 장에 넣으려 줄임): 2×1 칸, 위로 48px.
+  · 이동식 농구 골대 1.8×2.5×3.9m — 축약 관례(골대 높이를 화면 한 장에 넣으려 줄임): 2×2 칸(받침 깊이), 위로 32px.
   · 무대: 앞면 1.0m 를 10px 로 줄인 탁자식(w×h 아무 크기). 계단 3단 0.9m: 1×1, 위로 4px.
   · 늑목 0.9×0.15×2.4m: 1칸 폭, F 38 → 벽면 두 줄을 덮는 위로 32px.
   · 매트 1.2×2.0×0.05m(깐 것 flat 2×1) · 쌓은 매트 4장 0.2m: 2×1, T 10 + F 6 → 위로 6px.
@@ -172,25 +172,25 @@ for _id, _segs, _ko, _pl in _LINES:
 
 
 def _key(c, west):
-    """제한 구역(키) 4×3 — 끝 선 한 토막 + 빨간 칠 + 흰 테. 선은 칸 가운데를 지난다(col 0 = 끝 선, col 3 = 자유투 선)."""
-    W = 64
-    x0, x1, y0, y1 = 7, 7 + 48, 7, 7 + 32
-    for y in range(y0, y1 + 2):
-        for x in range(x0, x1 + 2):
-            px(c, x, y, kc('aka', -1) if rnd(x, y, 33, 60) else kc('aka', 0))
-    rc(c, x0, y0, 50, 2, kc('shiro', 3)); rc(c, x0, y1, 50, 2, kc('shiro', 3))
-    rc(c, x0, y0, 2, 34, kc('shiro', 3)); rc(c, x1, y0, 2, 34, kc('shiro', 3))
-    rc(c, x0, 0, 2, y0, kc('shiro', 3)); rc(c, x0, y1, 2, 48 - y1, kc('shiro', 3))       # 끝 선이 위·아래 칸으로 이어진다
+    """제한 구역(키) 3×3 — 흰 테만(칠 없음). 선은 칸 가운데를 지난다(col 0 = 끝 선, col 2 = 자유투 선)."""
+    x0, x1, y0, y1 = 7, 7 + 32, 7, 7 + 32
+    rc(c, x0, y0, 34, 2, kc('shiro', 3)); rc(c, x0, y1, 34, 2, kc('shiro', 3))
+    rc(c, x1, y0, 2, 34, kc('shiro', 3))
+    rc(c, x0, 0, 2, 48, kc('shiro', 3))                                                               # 끝 선 세 칸
+    for t in range(0, 26):                                                                            # 자유투 반원(점선 아님, 바깥쪽 반)
+        a = -math.pi / 2 + math.pi * t / 25
+        x, y = int(round(x1 + 1 + 6 * math.cos(a))), int(round(24 + 9 * math.sin(a)))
+        px(c, x, y, kc('shiro', 3)); px(c, x, y + 1 if abs(math.sin(a)) < .9 else y, kc('shiro', 3))
     if not west: flip(c)
 
 
-@R.obj('gy-key-w', '코트 제한 구역(서쪽 끝)', w=4, h=3, kind='flat', use=('walk',), tags=('체육관', '농구', '코트'),
+@R.obj('gy-key-w', '코트 제한 구역(서쪽 끝)', w=3, h=3, kind='flat', use=('walk',), tags=('체육관', '농구', '코트'),
        place='코트 서쪽 끝 선 위, 가운데 3줄 — 첫 열이 끝 선 칸(gy-line-v 대신)', pair=('gy-hoop-e', 'gy-line-v'),
-       desc='골대 앞 빨간 제한 구역 4×3 — 흰 테와 끝 선 한 토막을 함께 그렸다. 서쪽 끝 선 칸에 첫 열을 맞춰 끝 선(gy-line-v) 세 칸을 이것으로 바꾼다.')
+       desc='골대 앞 제한 구역 3×3 — 흰 선 테와 자유투 반원, 끝 선 한 토막을 함께 그렸다(칠 없음, 마루가 보인다). 서쪽 끝 선 칸에 첫 열을 맞춰 끝 선(gy-line-v) 세 칸을 이것으로 바꾼다.')
 def _key_w(c): _key(c, True)
 
 
-@R.obj('gy-key-e', '코트 제한 구역(동쪽 끝)', w=4, h=3, kind='flat', use=('walk',), tags=('체육관', '농구', '코트'),
+@R.obj('gy-key-e', '코트 제한 구역(동쪽 끝)', w=3, h=3, kind='flat', use=('walk',), tags=('체육관', '농구', '코트'),
        place='코트 동쪽 끝 선 위, 가운데 3줄 — 마지막 열이 끝 선 칸', pair=('gy-hoop-w', 'gy-line-v'),
        desc='gy-key-w 의 거울 — 동쪽 끝 선 칸에 마지막 열을 맞춘다.')
 def _key_e(c): _key(c, False)
@@ -198,18 +198,35 @@ def _key_e(c): _key(c, False)
 
 @R.obj('gy-line-circle', '코트 가운데 원', w=3, h=3, kind='flat', use=('walk',), tags=('체육관', '농구', '코트'),
        place='코트 한가운데 — 가운데 세로 줄(gy-line-v) 위에 가운데 칸을 맞춰', pair=('gy-line-v', 'gy-line-tn', 'gy-line-ts'),
-       desc='농구 코트 가운데 원 3×3 — 흰 원 테 안을 빨갛게 칠하고 가운데 세로 줄이 원을 지난다.')
+       desc='농구 코트 가운데 원 3×3 — 흰 원 테(칠 없음)를 가운데 세로 줄이 지난다.')
 def _line_circle(c):
-    disc(c, 24, 24, 17, 15, kc('shiro', 3)); disc(c, 24, 24, 15, 13, kc('aka', 0))
+    disc(c, 24, 24, 15, 13, kc('shiro', 3))
     for y in range(48):
         for x in range(48):
-            if ((x + .5 - 24) / 15) ** 2 + ((y + .5 - 24) / 13) ** 2 <= 1 and rnd(x, y, 31, 60): px(c, x, y, kc('aka', -1))
+            if ((x + .5 - 24) / 13) ** 2 + ((y + .5 - 24) / 11) ** 2 <= 1: c.a[y, x, 3] = 0
     rc(c, 23, 0, 2, 48, kc('shiro', 3))
+
+
+@R.obj('gy-line-v-y', '배구 선(노랑 세로)', w=1, h=1, kind='flat', use=('walk',), tags=('체육관', '배구', '코트'),
+       place='농구 코트 안 — 가운데 원과 제한 구역 사이 열에 위아래로 이어', pair=('gy-line-v',),
+       desc='배구 공격선처럼 코트를 세로로 가로지르는 노란 선(칸 가운데 2px). 흰 농구 선과 다른 경기 색 — 이어 붙여 쓴다.')
+def _line_vy(c): rc(c, 7, 0, 2, 16, kc('kii', 1))
+
+
+@R.obj('gy-bench', '체육관 긴 의자', w=2, h=1, up=0, kind='floor', use=('sit',), tags=('체육관',),
+       place='코트 바깥 벽 곁', desc='나무 판 하나에 철 다리 넷의 긴 의자 2칸 — 코트 바깥 벽을 따라 놓는다. 앉아서 경기를 본다.')
+def _bench(c):
+    rc(c, 0, 5, 32, 5, kc('yuka', 1)); hl(c, 0, 5, 32, kc('yuka', 2)); hl(c, 0, 9, 32, kc('yuka', 2))   # 앉는 판 윗면 + 앞 가장자리
+    rc(c, 0, 10, 32, 2, kc('ita', 0)); hl(c, 0, 11, 32, kc('ita', -2))                               # 판 앞면
+    for x in (2, 8, 23, 29):
+        vl(c, x, 12, 3, kc('tekko', 1)); vl(c, x + 1, 12, 3, kc('tekko', -2))
+    hl(c, 2, 14, 28, kc('tekko', 0))
+    outline(c, 0, 4, 32, 9)
 
 
 # ══ 체육관 가구 ═══════════════════════════════════════════════════════════════
 def _hoop(c, east):
-    """이동식 농구 골대(2×1, 위로 48). east=True 면 서쪽 끝에 서서 동쪽(코트)을 본다 — 옆모습."""
+    """이동식 농구 골대(2×2 — 무게 받침이 남북으로 깊다, 위로 32). east=True 면 서쪽 끝에 서서 동쪽(코트)을 본다 — 옆모습."""
     W = 32
     X = (lambda x, w=1: x) if east else (lambda x, w=1: W - x - w)
     # 받침(무게 상자): 윗면 6 + 앞면 9, 파란 보호 패드
@@ -246,14 +263,14 @@ def _hoop(c, east):
     rc(c, X(26, 2), 23, 2, 2, kc('tekko', 0))                                                       # 링 받침
 
 
-@R.obj('gy-hoop-e', '이동식 농구 골대(동쪽을 봄)', w=2, h=1, up=48, kind='floor', use=('block',), facing='E', tags=('체육관', '농구'),
-       place='농구 코트 서쪽 끝 선 바깥, 코트 가운데 줄에 맞춰', pair=('gy-hoop-w', 'gy-line-v'),
+@R.obj('gy-hoop-e', '이동식 농구 골대(동쪽을 봄)', w=2, h=2, up=32, kind='floor', use=('block',), facing='E', tags=('체육관', '농구'),
+       place='농구 코트 서쪽 끝 선 바깥 — 받침 2×2 의 아랫줄을 코트 가운데 줄에 맞춰', pair=('gy-hoop-w', 'gy-line-v'),
        desc='바퀴 달린 파란 무게 받침에서 기둥이 서고 팔이 동쪽으로 뻗어 백보드(옆모습)와 주황 링·흰 그물이 코트 쪽에 걸린다. 코트 서쪽 끝에 하나, 동쪽 끝에는 gy-hoop-w.')
 def _hoop_e(c): _hoop(c, True)
 
 
-@R.obj('gy-hoop-w', '이동식 농구 골대(서쪽을 봄)', w=2, h=1, up=48, kind='floor', use=('block',), facing='W', tags=('체육관', '농구'),
-       place='농구 코트 동쪽 끝 선 바깥, 코트 가운데 줄에 맞춰', pair=('gy-hoop-e', 'gy-line-v'),
+@R.obj('gy-hoop-w', '이동식 농구 골대(서쪽을 봄)', w=2, h=2, up=32, kind='floor', use=('block',), facing='W', tags=('체육관', '농구'),
+       place='농구 코트 동쪽 끝 선 바깥 — 받침 2×2 의 아랫줄을 코트 가운데 줄에 맞춰. 창고 벽 바로 아래에 두지 않는다(백보드가 벽 창을 가린다)', pair=('gy-hoop-e', 'gy-line-v'),
        desc='gy-hoop-e 의 거울 — 받침이 동쪽, 백보드와 링이 서쪽(코트 쪽). 코트 동쪽 끝에 하나.')
 def _hoop_w(c): _hoop(c, False)
 
@@ -344,19 +361,20 @@ def _mat_stack(c):
     outline(c, 0, 9, 32, 23)
 
 
-@R.obj('gy-vault-box', '뜀틀', w=1, h=1, up=8, kind='floor', use=('block',), tags=('체육관', '창고'),
+@R.obj('gy-vault-box', '뜀틀', w=1, h=1, up=10, kind='floor', use=('block',), tags=('체육관', '창고'),
        place='체육 창고 또는 매트 앞', desc='흰 천을 씌운 윗판 아래로 나무 단이 층층이 넓어지는 뜀틀(손잡이 구멍). 1칸.')
 def _vault_box(c):
-    rc(c, 3, 8, 10, 5, kc('shiro', 2)); hl(c, 3, 8, 10, kc('shiro', 4)); hl(c, 3, 12, 10, kc('shiro', 3))
-    outline(c, 2, 7, 12, 7)
-    for k in range(4):
-        y = 14 + k * 4
-        x0, w = 2 - (k + 1) // 2, 12 + ((k + 1) // 2) * 2
-        rc(c, x0, y, w, 4, kc('yuka', 1)); hl(c, x0, y, w, kc('yuka', 2)); hl(c, x0, y + 3, w, kc('ita', 0))
-        vl(c, x0, y, 4, kc('yuka', 2)); vl(c, x0 + w - 1, y, 4, kc('ita', 0))
-        if k == 0: rc(c, 5, y + 1, 6, 2, kc('ita', -2))                                              # 손잡이 구멍
-    outline(c, 0, 13, 16, 18); hl(c, 1, 31, 14, kc('ita', -2))
-
+    rc(c, 4, 7, 8, 4, kc('shiro', 3)); hl(c, 4, 7, 8, kc('shiro', 4)); hl(c, 4, 10, 8, kc('shiro', 2))   # 흰 가죽 윗면
+    for x in range(5, 12, 2): px(c, x, 9, kc('shiro', 1))                                            # 바늘땀
+    outline(c, 3, 6, 10, 6)
+    y = 12
+    for k, (x0, w) in enumerate(((3, 10), (2, 12), (2, 12), (1, 14), (1, 14))):
+        rc(c, x0, y, w, 3, kc('yuka', 1)); hl(c, x0, y, w, kc('yuka', 2)); vl(c, x0, y, 3, kc('yuka', 2)); vl(c, x0 + w - 1, y, 3, kc('ita', 1))
+        hl(c, x0, y + 3, w, kc('ita', -2))                                                           # 단 사이 틈
+        if k == 0: rc(c, 6, y + 1, 4, 1, kc('ita', -3))                                              # 손잡이 구멍
+        vl(c, x0 - 1, y, 4, OL); vl(c, x0 + w, y, 4, OL)
+        y += 4
+    hl(c, 1, 31, 14, OL)
 
 @R.obj('gy-ball-cart', '공 바구니 수레', w=1, h=1, up=10, kind='floor', use=('search',), tags=('체육관', '창고'),
        place='체육 창고·코트 가장자리', desc='철망 바구니 수레에 주황 농구공이 수북이 담겼다 — 위로 공이 솟고 앞면 철망 사이로 공이 보인다. 아래 바퀴 넷.')
@@ -585,12 +603,11 @@ def _blocks_mat(c):
 @R.obj('gy-nap-futon', '낮잠 이불(아이)', w=1, h=1, kind='flat', use=('sleep',), tags=('유치원', '낮잠'),
        place='낮잠 방 바닥에 줄지어', desc='아이 몸만 한 작은 요 — 흰 베개와 하늘색 별 무늬 덮개. 낮잠 방에 여러 장 줄지어 편다.')
 def _nap_futon(c):
-    rc(c, 2, 1, 12, 14, kc('shiro', 2)); outline(c, 1, 0, 14, 16, kc('conc', 0))
-    rc(c, 4, 2, 8, 3, kc('shiro', 4)); hl(c, 4, 4, 8, kc('shiro', 2))                                # 베개
-    rc(c, 2, 6, 12, 8, kc('sora', 2)); hl(c, 2, 6, 12, kc('sora', 3)); hl(c, 2, 13, 12, kc('sora', 1))
-    for (x, y) in ((5, 8), (10, 11), (9, 7)): px(c, x, y, kc('kii', 3)); px(c, x + 1, y, kc('kii', 2))
-    hl(c, 2, 14, 12, kc('conc', 1))
-
+    rc(c, 2, 1, 12, 14, kc('kinari', 2)); outline(c, 1, 0, 14, 16, kc('kinari', -1))                # 요(크림)
+    rc(c, 4, 2, 8, 3, kc('shiro', 4)); hl(c, 4, 4, 8, kc('shiro', 2)); vl(c, 11, 2, 3, kc('shiro', 2))   # 베개
+    rc(c, 2, 6, 12, 8, kc('pinku', 2)); hl(c, 2, 6, 12, kc('shiro', 4)); hl(c, 2, 7, 12, kc('pinku', 3))   # 덮개(접힌 흰 단 + 분홍)
+    hl(c, 2, 10, 12, kc('pinku', 1))                                                                  # 줄 하나
+    vl(c, 13, 7, 7, kc('pinku', 0)); hl(c, 2, 14, 12, kc('kinari', 0))
 
 @R.obj('gy-kids-sink', '아이 세면대(낮은 줄)', w=2, h=1, up=8, kind='wall', use=('open',), tags=('유치원', '세면'),
        place='세면·화장실 북쪽 벽 바로 아래 첫 바닥 줄', desc='아이 키 높이의 긴 흰 타일 개수대 — 은색 수도꼭지 셋, 오목한 물받이, 앞면 흰 타일.')
@@ -609,18 +626,18 @@ def _kids_sink(c):
 @R.obj('gy-shoe-cubby', '아이 신발장', w=2, h=1, up=4, kind='floor', use=('open',), tags=('유치원', '현관'),
        place='출입구 곁, 들어온 줄 옆', desc='낮은 나무 신발장 2칸 — 두 단 여덟 칸에 작은 실내화·운동화가 한 켤레씩. 유치원 현관 곁.')
 def _shoe_cubby(c):
-    rc(c, 0, 12, 32, 3, kc('mado', 1)); hl(c, 0, 12, 32, kc('mado', 0)); hl(c, 0, 15, 32, kc('mado', 2))
-    rc(c, 0, 16, 32, 14, kc('mado', 0)); hl(c, 0, 16, 32, kc('mado', -2))
+    rc(c, 0, 12, 32, 3, kc('shiro', 3)); hl(c, 0, 12, 32, kc('shiro', 2)); hl(c, 0, 15, 32, kc('shiro', 4))   # 흰 윗면
+    rc(c, 0, 16, 32, 15, kc('sora', 2)); hl(c, 0, 16, 32, kc('sora', 0))                               # 하늘색 몸통
     for row, y in enumerate((17, 24)):
-        for i in range(4):
-            x = 1 + i * 8
-            rc(c, x, y, 7, 6, kc('mado', -2)); vl(c, x + 7, y, 6, kc('mado', 1))
-            if (i + row) % 4 != 3:
-                sc = ('shiro', 'pinku', 'sora')[(i + row) % 3]
-                for sx in (x + 1, x + 4):
-                    rc(c, sx, y + 3, 2, 3, kc(sc, 2)); px(c, sx, y + 3, kc(sc, 3)); px(c, sx + 1, y + 5, kc(sc, 0))
-    rc(c, 0, 30, 32, 2, kc('mado', -2)); outline(c, 0, 11, 32, 21)
-
+        for i in range(3):
+            x = 1 + i * 10 + (1 if i else 0)
+            rc(c, x, y, 9, 6, kc('sora', -1)); hl(c, x, y, 9, kc('sora', -2)); vl(c, x + 9, y, 6, kc('sora', 3))
+            if (i + row) % 3 != 2:                                                                    # 실내화 한 켤레(앞코가 앞)
+                for sx in (x + 1, x + 5):
+                    rc(c, sx, y + 2, 3, 4, kc('shiro', 3)); hl(c, sx, y + 2, 3, kc('shiro', 4))
+                    hl(c, sx, y + 3, 3, kc(('aka', 'kon', 'midori')[(i + row) % 3], 1))               # 고무 밴드
+                    hl(c, sx, y + 5, 3, kc('conc', 0))                                                 # 밑창
+    rc(c, 0, 30, 32, 2, kc('sora', -1)); hl(c, 0, 31, 32, OL); outline(c, 0, 11, 32, 21)
 
 @R.obj('gy-drawing-board', '그림 게시판', w=2, kind='hang', hrows=2, use=('read',), tags=('유치원', '놀이방'),
        place='놀이방 벽면 윗줄', desc='나무 틀 코르크 게시판에 아이들이 그린 색종이 그림(해·꽃·색 동그라미 — 사람·글자 없음)을 압정으로 붙였다.')
