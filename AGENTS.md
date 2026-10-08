@@ -61,6 +61,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
+- **무림(중국 무협) 칩셋 murim_wuxia 의 바닥·벽·지붕·객잔 가구·도장 기물·산문 같은 조각 후보를 그리거나 사람에게 고르게 할 때** → `murim-chipset` · 시드 `harness-data/murim-chipset/seed.json`(묶음 style·frame·inn·dojo·outdoor, 잠긴 팔레트 `palette.json`) · `npm run harness -- murim-chipset validate|palette|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/murim-chipset.md`. 행 문자열 격자 코드 손 도트만(생성 이미지·사람 그리기 금지, 비교는 Actor1). 화풍은 **컨셉 줄**(A 밝은 문파 주 줄 · B 강남 무관)마다 따로 간다 — style-r1 뒤 판은 줄마다 후보(A1 A2 B1 B2)를 그 줄 style-r1 조각과 같은 색·결·윤곽으로 그린다. 관문 통과는 합격이 아니다. **감독·에이전트는 고르지 않는다** — 시트 `~/claude-viz/murim-<판>.html` 에서 사람이 고른 후보만 그림 해시에 묶어 (항목, 줄)마다 기록하고, 번들에는 굽지 않는다.
 
 - **지금 맵 칩셋에 없는 물건을 공방에서 그려 그 칩셋에 넣을 때(조수 「없는 타일」 카드의 「직접 그려 줘」, 손 도트 실내 밖 16px 맵)**
   → `map-objects` · 문서 `openwiki/harnesses/map-objects.md` · 에디터 왼쪽 막대 「공방」 → 「맵 기물」.
