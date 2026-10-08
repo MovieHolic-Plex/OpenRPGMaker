@@ -17,7 +17,8 @@ export const GOLDEN_TITLE_EFFECTS: Required<
   Pick<TitleScreenSettings, "backgroundLayers" | "particles" | "intro">
 > = {
   backgroundLayers: [
-    { resourceId: "easyrpg-title-title1", scrollXPerSec: 16, opacity: 0.6 },
+    // EasyRPG 타이틀은 2026-10-07 저작권 정리로 목록에서 빠졌다. 남은 자체 타이틀을 쓴다.
+    { resourceId: "oprn-title-bright", scrollXPerSec: 16, opacity: 0.6 },
     { resourceId: "oprn-title-field", scrollYPerSec: -8, parallax: 0.5 },
   ],
   particles: { preset: "snow", density: 60 },
