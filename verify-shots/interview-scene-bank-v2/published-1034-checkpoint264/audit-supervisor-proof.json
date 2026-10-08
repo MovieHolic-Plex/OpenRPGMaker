@@ -1,0 +1,27 @@
+{
+  "published": 1034,
+  "remaining": 423,
+  "snapshot": {
+    "interviewSceneBank.json": "1ba1c19a5af3f3c6ca30ae70bd13b18a9487e5bcf22fc11c844a8e1034a9ea9b",
+    "ledger.json": "bb2f53638046492df43da1f112091ea403cb966c33c2c3271b3117d06a0f79d7"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--companions--mystic--quests",
+    "adventure--unknown--companions--mystic--quests--scene",
+    "adventure--unknown--companions--mystic--quests--episode",
+    "adventure--unknown--companions--mystic--quests--short",
+    "adventure--unknown--companions--mystic--chapters",
+    "adventure--unknown--companions--mystic--chapters--episode"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To156ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 156
+}

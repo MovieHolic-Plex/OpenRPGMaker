@@ -1,0 +1,116 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 1053,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--mission--explore--mystic--chapters",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--scene",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--episode",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--scene",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--episode",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--mission--explore--mystic--chapters",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--scene",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--episode",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--mystic--chapters--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--scene",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--episode",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests--short",
+          "caption": "중요한 임무를 맡아서 · 탐험과 발견 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-1053-stage270-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1053-stage270-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1053-stage270-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1053-stage270-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all1053 fresh native visual audit."
+}

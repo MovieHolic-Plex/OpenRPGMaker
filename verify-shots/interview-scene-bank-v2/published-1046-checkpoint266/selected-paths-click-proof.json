@@ -1,0 +1,231 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 1046,
+  "targets": [
+    "adventure--unknown--companions--warm--journey",
+    "adventure--unknown--companions--warm--journey--scene",
+    "adventure--unknown--companions--warm--journey--episode",
+    "adventure--unknown--companions--warm--journey--short",
+    "adventure--unknown--companions--warm--chapters",
+    "adventure--unknown--companions--warm--chapters--episode"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--unknown--companions--warm--journey",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 17.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 7,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 14.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 11.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "ms": 14.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-0846aeeb1ac1.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--warm--journey--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 11.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 13.900000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 8,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "ms": 7.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-0846aeeb1ac1.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--scene",
+          "ms": 16.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey--scene-00e8d4cedc25.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--warm--journey--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 11.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 5.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 11.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "ms": 5.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-0846aeeb1ac1.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--episode",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey--episode-74a980ce8a8d.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--warm--journey--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 6.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 4,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-0846aeeb1ac1.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--short",
+          "ms": 5.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey--short-e2339a58d32e.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--warm--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 6.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--chapters-f47e7f55364c.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--warm--chapters--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 6.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--chapters-f47e7f55364c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--episode",
+          "ms": 4.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--chapters--episode-128b40ea9bdf.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

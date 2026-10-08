@@ -1,0 +1,123 @@
+{
+  "snapshotPublished": 1046,
+  "sourceManifestSha256": "acd6b6c88c9e0c6a4215907243ffa424b18137d68bf9cd7787fd701c7bef5081",
+  "sources": [
+    {
+      "key": "adventure--unknown--companions--warm--journey",
+      "sha256": "0846aeeb1ac1e3402d75515ab33c4a1d390fc8f666a45cad173fd6c6a0b08b64",
+      "generationPromptSha256": "542599b1dbe51aa1244555e082174407e56ed89bb7f86b580cca2acf01a45610",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--scene",
+      "sha256": "00e8d4cedc25ca307589a09d34ad29a3399c3bbc08489fda41641d99db39ebf8",
+      "generationPromptSha256": "5f1d84f0a16d6a6f4f67fcd94e567b7927c617f90b5734266f228044898f18e4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--episode",
+      "sha256": "74a980ce8a8d71f034a8e738a0f528b056356db4ce05a40a9669e2d954220b0f",
+      "generationPromptSha256": "0b04615b7fd0a457967f0754caea8a920785198b8665c7ee24a6bd1e50ff3acd",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--short",
+      "sha256": "e2339a58d32e1fa6bd06b05d4517a9726f0ff236f419256d86bb1d3d6456577e",
+      "generationPromptSha256": "2e47356cdf3eb5ffebe87658101fa2e720e91219a64acc9b708aa9b4816744c7",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters",
+      "sha256": "f47e7f55364cc34a22694a3185175a7ca3d8f351e76bf7e3f40d0cc0bdfc5e83",
+      "generationPromptSha256": "72fa1916319a66952cbf609b00ceb8f03232a9e218a816fe9b06433a82e85493",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters--scene",
+      "sha256": "eb912a446cdffe88b9025a096a5e1f5428ab63e3f408db7cc1e6a2320a386c20",
+      "generationPromptSha256": "c6fb0df97140317172aef970125f12590b872460dbf99bdaad28661cefc243d5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters--episode",
+      "sha256": "128b40ea9bdf5abeb27fb530e1843822e5289512a0e7b23b00659aa7910d85cf",
+      "generationPromptSha256": "60b6951e3da4f07a0cf05155db32e0266ec71653afbfaece70199b272d7e7aa5",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters--short",
+      "sha256": "a238035358a78a67fa0f3b6987ead7c9175df6318087fcb496f236cb836ce3c3",
+      "generationPromptSha256": "b85f8205a8030c58df37aa81053bc58558914312d00dbe64bb7f006e1759fdaa",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 690135,
+  "notFreshAll1046NativeVisualAudit": true,
+  "originalCorrection139BeforeSnapshot": true,
+  "snapshotIncludesOriginalCorrections140Through157": true
+}

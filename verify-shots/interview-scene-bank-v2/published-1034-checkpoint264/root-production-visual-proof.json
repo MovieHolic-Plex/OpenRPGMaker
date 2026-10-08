@@ -1,0 +1,75 @@
+{
+  "published": 1034,
+  "remaining": 423,
+  "snapshot": {
+    "interviewSceneBank.json": "1ba1c19a5af3f3c6ca30ae70bd13b18a9487e5bcf22fc11c844a8e1034a9ea9b",
+    "ledger.json": "bb2f53638046492df43da1f112091ea403cb966c33c2c3271b3117d06a0f79d7"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--companions--mystic--quests",
+    "adventure--unknown--companions--mystic--quests--scene",
+    "adventure--unknown--companions--mystic--quests--episode",
+    "adventure--unknown--companions--mystic--quests--short",
+    "adventure--unknown--companions--mystic--chapters",
+    "adventure--unknown--companions--mystic--chapters--episode"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": false,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To156ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 156,
+  "rootWholeOpened": true,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "screenshots": [
+    {
+      "key": "adventure--unknown--companions--mystic--quests",
+      "note": "ROOT personallyopened WHOLEactualsettledproductionPNG: completefullboat/furledcanvas/coil/quay/allshorestairs, threepersonalrollPACKcup places/base3SEALEDtableparcels/Yroads/TWOEMPTYsites andfullBLUEVIOLETmainmonument visibleLEFT beforeRIGHTcontrols. Allcurrentchosenstructuresinside/screen, actualstep05buttons03/previous/recommend/planconfirm/directown visible. No overlappedoldimage/textoridentity; 100pxwhitebelowstandalone800pxcontainerknownscope, notfullappboot/AIhandoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--quests.png",
+      "screenshotSha256": "aba9890a741de63e7e10d2a2b23381dac2937414d4e5c661837cbf26b19eb4cd"
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--quests--scene",
+      "note": "ROOT WHOLEactualsettledproductionPNG personallyopened: fullboat/FURLED/coil/fullquay/allstairs, threepersonalPACKrollcup places/3sealedBASEtableparcels/TWOEMPTYquestsites/backgroundfullmonument/separateFIRSTmainSIDEfork beforecontrols. Final05selectedfacts match currentbranch, Previous/MakeStart/recentgame/choice-revisit/additionalsettings buttons visible. No oldimageoverlap/writing/identity; standalonewhitebottomknown, notfullboot/handoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--quests--scene.png",
+      "screenshotSha256": "395599ae68a1fe4f4e0e8ee680182cb4bf79a0df14faca73d7a538bb1ac7bf71"
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--quests--episode",
+      "note": "ROOT WHOLEactualsettledproductionPNG personallyopened: fullboat/FURLED/coil/quay/stairs, threepersonalrollPACKcup/base3parcels/TWOEMPTYquestfloors/backgroundfullmonument andseparateTHIRDclearedruinEXACT2EMPTYRESTseats/SIDEroad visibleLEFT beforecontrols. Finalfacts latestsmallruin correct; MakeStart/Previous/recentgame/revisit/additionalsettings visible. No oldimageoverlap; standalonecontainerwhitebottomknown, notfullboot/handoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--quests--episode.png",
+      "screenshotSha256": "de9a05b22f39a14c6258b12a15e11fef90d0b4cbf28b95ab0cb789137b1ed277"
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--quests--short",
+      "note": "ROOT WHOLEactualsettledproductionPNG personallyopened: actualwholeboatbow/furledcanvas/coil/quay/allstairs beforeRIGHTpanel (tightbutvisiblemargin); threepersonalplaces/base3parcels/TWOEMPTYquestsites/fullbackgroundmonument/HOMEroofchimneyOPENentry/BAREBLUEfoldclothtable/THIRDclearedruin/returnroads visibleLEFT. ActualWOODtablecorners notclothgoldmarks. FinallatestRETURNmatches, MakeStart/Previous/recent/revisit/additionalsettings visible. No oldimageoverlap; standalonewhitebottomknown notfullappboot/AIhandoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--quests--short.png",
+      "screenshotSha256": "eaed9bf69e299448ad4b013ca40859fa2dc758f0a214d514fabd335bc2e0080f"
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--chapters",
+      "note": "ROOT WHOLEactualsettledproductionPNG personallyopened: fullboat/FURLED/actualcoil/quay/shorestairs andthreepersonalrollPACKcup places visibleLEFT; completeOPENBLUEVIOLETregionalarch/fullcolumns/ALLstairs actualbareOCHREUP GREENLOWwalkingboundary beforepanel andnativebounds. OCHREordinarygroundcontinuesLEFTallowed, supportingstonesnotchosenfullarchitecturecrop. Actualstep05threebuttons/previous/recommend/planconfirm/recent/directown visible. Noimageoverlap; knownstandalonewhitebottom notfullappboot/handoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--chapters.png",
+      "screenshotSha256": "d12f33831d02aaf0138c3fa8ab059e61b9eb9403045b049883e221bb48bba4f0"
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--chapters--episode",
+      "note": "ROOT WHOLEactualsettledproductionPNG personallyopened: fullboat/FURLED/actualcoil/quay/shoreconnections/threepersonalrollPACKcup places; fullOPENregionalarch/allcolumns/ALLstairs/OCHREUP GREENLOW andseparateTHIRDsmallclearedEMPTYruinEXACT2EMPTYRESTseats/SIDEroad visibleLEFT beforepanel. Finalselectedfacts latestsmallruin matches; MakeStart/Previous/recent/revisit/additionalsettings visible. No oldimageoverlap; standalonewhitebottomknown notfullappboot/handoff.",
+      "rootWholeOpened": true,
+      "screenshot": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1034-checkpoint264/selected-adventure--unknown--companions--mystic--chapters--episode.png",
+      "screenshotSha256": "8cfff3eeec6909789272277fb88aedb7abe7f15ec4f1863d64c4dc584f7dd919"
+    }
+  ],
+  "actualAuditSupervisorExit": 0,
+  "scope": "1034 published hash/request integrity, sixactualproductionpaths34clicks, ROOTsixwhole stablePNGs. Notfreshall1034nativeaudit/fullappboot/AIhandoff."
+}

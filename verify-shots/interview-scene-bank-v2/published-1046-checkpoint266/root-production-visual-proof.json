@@ -1,0 +1,63 @@
+{
+  "published": 1046,
+  "remaining": 411,
+  "snapshot": {
+    "interviewSceneBank.json": "acd6b6c88c9e0c6a4215907243ffa424b18137d68bf9cd7787fd701c7bef5081",
+    "ledger.json": "cb8608b6eff97dac59b7014851432ad2c36709b66da33d73d6f737fc7a279d82"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--companions--warm--journey",
+    "adventure--unknown--companions--warm--journey--scene",
+    "adventure--unknown--companions--warm--journey--episode",
+    "adventure--unknown--companions--warm--journey--short",
+    "adventure--unknown--companions--warm--chapters",
+    "adventure--unknown--companions--warm--chapters--episode"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": false,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To157ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 157,
+  "rootWholeOpened": true,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "rootNotes": [
+    {
+      "key": "adventure--unknown--companions--warm--journey",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. Boat/fullquay/coil/threepersonalrollPACKcup/WARMnook/cup/continuousbridges EMPTYMID→fullmainDEST allvisiblebeforeRIGHTornatecontrols. Buttons previous/recommend/direct andimage motion/redraw visible; alltext readable/nooverlap. MainDESTrightbaseclosesttoborderbutactualarchitecture beforepanel. Knownwhitebelow800pxstandalonecontainer notappbootQA.",
+      "screenshotSha256": "ce275ed9893e3dd7227e999874d685648be063b3c63f331203b0147fb350d561"
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--scene",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. Allfullboat/quay/coil/threepersonalplaces/WARMnook/ONEcup/actualFIRSTfork/continuousEMPTYMID/mainDEST entiretybeforepanel. Summary5selectedfacts legible, modify/previous/start andimage motion/redraw controls visible/nooverlap. FullmainDESTcrestverycloseTOPbutactualnativewhole. Knownstandalonewhitebelow800pxcontainer; notfullappboot/AIhandoff.",
+      "screenshotSha256": "feb7b3362e4b6ff31be31818cf917f8c6017268445573f505cbaa7b45bc1e8b7"
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--episode",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. Fullboat/FURLED/quay/coil/3personalplaces/WARMnook/continuousEMPTYMID→fullmainDEST/THIRDclearedruinEXACT2RESTseats fullybeforeRIGHTpanel. ActualimageboatLOW/gearUP/destinationUP givesdifferentshot fromparent. Summary5facts/modify/previous/start/image motion/redraw legiblevisible/noclipoverlap. Knownwhitebelowstandalone800pxcontainer; notappboot/AIhandoff.",
+      "screenshotSha256": "605cd91f6d7c87d68d0f193cf94d2afc17bed09142e670adab2b56bdd22d3311"
+    },
+    {
+      "key": "adventure--unknown--companions--warm--journey--short",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. FullHOME/openentry/BAREBLUEclothtable/THIRDclearedEMPTYruin/returnroads/boatquaycoil/threepersonalplaces/WARMnookcup/continuousEMPTYMID/mainDEST allfullbeforeRIGHTpanel. ExposedWOODtablecorners notclothornament. Summary5facts/modify/previous/start/image motion/redraw visiblelegible/nooverlap. WholeboatnowLOW/HOMEUP shiftsworldcamera. Knownwhitebelowstandalone800pxcontainer; notappboot/AIhandoff.",
+      "screenshotSha256": "98327734649b4a1f516ee2cc606e04c5231a00a76f5c3d6e865c6f454a1fd1cc"
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. Fullboat/FURLED/quay/coil/shorestairs/3personalrollPACKcup/WARMnook/WALLlanternONEcup/fullregionalarch/allcolumns/stairs/OCHREUP GREENLOW entirelybeforeRIGHTcontrols. Supportingnarrowapproachroad/ordinaryOCHREterrainnativeLEFTcontinuationnotcroppedchosenfloor. Allquestionchoices/direct/previous/recommend/disabledconfirm/image motion/redraw readablevisible/nooverlap. Knownwhitebelowstandalone800pxcontainer; notappboot/AIhandoff.",
+      "screenshotSha256": "ed1b8996929851298f53e4f23eb68df57a5553c7619174b591037e86e4333ab2"
+    },
+    {
+      "key": "adventure--unknown--companions--warm--chapters--episode",
+      "note": "ROOT personallyopenedWHOLE actualproduction screenshot. Fullboat/FURLED/quay/coil/shorestairs/3personalrollPACKcup/WARMnookWALLlanternONEcup/fullregionalarch/allcolumns/stairs/OCHREUP GREENLOW/THIRDclearedruinEXACT2EMPTYrestseats entirelybeforeRIGHTpanel. Allsummary5facts/modify/previous/start andimage motion/redraw visiblelegible/noclipoverlap. Comparedparent gearMID/nookLOW/THIRDrestLOW changedactualscenegeometry. Knownwhitebelowstandalone800pxcontainer; notappboot/AIhandoff.",
+      "screenshotSha256": "07448096fe1ba89d1f8d9f6c016d4ad8184d193af2747f6b97abccbc007c5429"
+    }
+  ],
+  "rootInspectionSavedAt": "2026-10-08T02:24:03.089910+00:00",
+  "scope": "Six explicit actual production click paths; ROOT individually saw all WHOLE screenshots. Not fresh all-native visual audit, full app boot or AI assistant handoff."
+}

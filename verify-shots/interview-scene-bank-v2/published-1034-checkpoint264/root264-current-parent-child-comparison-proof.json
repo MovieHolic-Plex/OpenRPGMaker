@@ -1,0 +1,75 @@
+{
+  "rootPersonallyComparedFullExactNewCurrentParentAndAllThreeChildren": true,
+  "records": [
+    {
+      "key": "adventure--unknown--companions--mystic--quests--scene",
+      "batch": 263,
+      "index": 2,
+      "failChecks": [],
+      "note": "ROOT re-opened full exact263scene OWN/native and exact264CURRENTQparent OWN/native after264import. AllsevenindependentlyP; actualscene boatLOWLEFT vsparentboatLOWcenterRIGHTofpier, departurepier extendsRIGHTvsparentLEFT, horizontalMIDthreeplaces vsparentdiagonalstaggered, BASEMIDUP/newEMPTYplotsUPLEFT+UPRIGHT vsparentBASELEFTUP/EMPTYplotsUPRIGHT+MIDRIGHT, enormousbackgroundacropolis setbackvsparentcompactforegroundarch, separateFIRSTfork. Actualworldcamera/roadgeometry distinct; no merely inheritedpre-replacementP. Allselectedwhole/before1008/no text/identity/hardpixels retained.",
+      "parentKey": "adventure--unknown--companions--mystic--quests",
+      "parentNativeSha256": "e970fd478833af35dab17428b4a7d92503e0749846b521c0f0099b23876bb634",
+      "parentOwnPromptSha256": "93bcf273e1856993275d17ff515beb56e173bf31a87cb5b1f449000fe7099565",
+      "childNativeSha256": "023db155caf035c89b48ada1154a014c6c59591f2f237e2c3e2e1ae42298a806",
+      "childOwnPromptSha256": "9d3fc3831a22c3586622572d0979145c71b3c29b23c8c8cdad905d6312a3df5a",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "rootWholeOpened": true,
+      "officialReviewNotYetReRecorded": true
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--quests--episode",
+      "batch": 264,
+      "index": 2,
+      "failChecks": [],
+      "note": "ROOT re-opened full exact264episode OWN/native and exact264CURRENTQparent OWN/native after264import. Allseven independentlyP; episode boatUPLEFT/gearLOW/baseMID/thirdclearedruinLOW with2EMPTYRESTseats/fullancientacropolisacrosswater/EMPTYplotsUPLEFT+MIDLEFT vsactualparentboatLOW/gearMID/baseUP/neararchUPLEFT/EMPTYplotsUPRIGHT+MIDRIGHT. Actualcoasttiers/roads/camera change, notpalette. Allchosenfullnative/before1008/hardpixels/noidentity/text; narrowapproachpathnativeedge ordinarywalkingconnection notcroppedchosenfloor. No inheritedoldparentP.",
+      "parentKey": "adventure--unknown--companions--mystic--quests",
+      "parentNativeSha256": "e970fd478833af35dab17428b4a7d92503e0749846b521c0f0099b23876bb634",
+      "parentOwnPromptSha256": "93bcf273e1856993275d17ff515beb56e173bf31a87cb5b1f449000fe7099565",
+      "childNativeSha256": "7bcaafd55978f24e9be393f718dedb0f65101b9fba1c5abb65827072694980f5",
+      "childOwnPromptSha256": "566aa2f44d898291eebc2bc9ce5e1e0f5d093cf9e0e1421b57e535e714e450e6",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "rootWholeOpened": true,
+      "officialReviewNotYetReRecorded": true
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--quests--short",
+      "batch": 264,
+      "index": 3,
+      "failChecks": [],
+      "note": "ROOT re-opened full exact264short OWN/native and exact264CURRENTQparent OWN/native after264import. Allseven independentlyP; short boatMIDRIGHT/gearUPLEFT/baseLOWLEFT/HOMEandreturntableLOW/thirdclearedruinMID/EMPTYplotsUPMID+MIDLEFT vsactualparentboatLOWLEFT/gearMID/baseUPLEFT/EMPTYplotsUPRIGHT+MIDRIGHT. Actualcoastlevels/roadcamera change, notpalette. Fullboatbowbefore1008; wholeHOMEOPENentry/BAREBLUEfoldclothtable/returnroadsmallclearedruin latestP. FunctionalWOODtableexposedcorners notclothgoldornament. Hardpixels/noidentity/text/allchosenwhole beforecontrols; no inheritedoldparentP.",
+      "parentKey": "adventure--unknown--companions--mystic--quests",
+      "parentNativeSha256": "e970fd478833af35dab17428b4a7d92503e0749846b521c0f0099b23876bb634",
+      "parentOwnPromptSha256": "93bcf273e1856993275d17ff515beb56e173bf31a87cb5b1f449000fe7099565",
+      "childNativeSha256": "e979a19ddab27f1b1a65a105787410426909d8932dfda8e8f0e87812cb961339",
+      "childOwnPromptSha256": "ba52dfa6e63a109ded7612c0ad055cb23f96b2c293f8a281d6db5c43ad2ad092",
+      "checks": {
+        "pixelArt": true,
+        "composition": true,
+        "allChoices": true,
+        "latestChoice": true,
+        "identityUnset": true,
+        "noText": true,
+        "distinctShot": true
+      },
+      "rootWholeOpened": true,
+      "officialReviewNotYetReRecorded": true
+    }
+  ],
+  "scope": "Independent current-parent comparisons; no ledger mutation during264FULL/audit"
+}

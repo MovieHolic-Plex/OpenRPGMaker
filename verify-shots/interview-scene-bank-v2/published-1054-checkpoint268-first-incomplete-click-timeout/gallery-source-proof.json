@@ -1,0 +1,123 @@
+{
+  "snapshotPublished": 1054,
+  "sourceManifestSha256": "9884fc175d1a1f5a21ad308232ed54817c23c837905a8362cc03a194d385b1c4",
+  "sources": [
+    {
+      "key": "adventure--mission--explore--bright--journey",
+      "sha256": "a7b9125e2ad4101b808eb76bab7f4cf6b3af49fc6d54b88d99399396d15ee910",
+      "generationPromptSha256": "542c6a9e42d41cab2691558592425bd1036bfd0869892d5bb4038d3eec725a29",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--journey--scene",
+      "sha256": "83fa675ec953d217c383993af3fc77c846bcfb466b98914936b7b2f29a0a129e",
+      "generationPromptSha256": "857518f173928a32f80a9534effc43d0d6f45f220a3ba18e1c15417d5c7911d9",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--journey--episode",
+      "sha256": "1cc79db8d008290d064ecb39df2ea629cfbf6b59dcd8eccb3e098d29f327e515",
+      "generationPromptSha256": "ee472e5ca74280d7bf90881568ded8a863496b723e2d933f6ae1bbd4a1f261b4",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--journey--short",
+      "sha256": "717f9d4269c8871fb2c9802eef7775c3ebd4b991e7eee760efd0c177de3a8b0e",
+      "generationPromptSha256": "255565330a82be8abe40ae221f7cb36156df7b220faf6c65fab444fa54c22657",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests",
+      "sha256": "bd947156d3c8757b7bb2d6af70d1fd9a7de1e853b250224a6dd4d578a739871a",
+      "generationPromptSha256": "4a1a90126f4f8881c622f4d0f2947985bf9b56f6cdef4732ca8e670780ffbb95",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests--scene",
+      "sha256": "065f4d50d9773d2285a70247d966f0e5a6c0bc3879afa44162b0fdf8b51565f5",
+      "generationPromptSha256": "21536a5ad1bad7f1b79120d2602cc25b6877e2ed06a75afbdfabb93d01aa0fa2",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests--episode",
+      "sha256": "af34eaa90591806228755faea08cf807bcffa927c67743d5819bc778665c20ee",
+      "generationPromptSha256": "9685504655e2e5183ca491c9e2f593269e982b892b37784def12b02f2ed809ee",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests--short",
+      "sha256": "2b4f38cd9a5306a0f1544122089c6fcf4e5eeda1e6b48854333e9dc5c4ed9493",
+      "generationPromptSha256": "2010f8a5113a5ebdd9e4a1c4b189ece7ce6475824a6c4a044bb107c57aa66f1d",
+      "nativeDimensions": [
+        1672,
+        941
+      ],
+      "previewDimensions": [
+        800,
+        450
+      ],
+      "nativeUnchanged": true
+    }
+  ],
+  "previewOnly": "800x450 NEAREST WEBP52; all native production PNG and exact OWN unchanged",
+  "fragmentBytes": 791307,
+  "notFreshAll1054NativeVisualAudit": true,
+  "originalCorrection139BeforeSnapshot": true,
+  "snapshotIncludesOriginalCorrections140Through159": true
+}

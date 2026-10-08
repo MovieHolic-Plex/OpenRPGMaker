@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803-checkpoint270-retry3.mjs",
+    "--all-published",
+    "--paths",
+    "adventure--mission--explore--mystic--chapters,adventure--mission--explore--mystic--chapters--scene,adventure--mission--explore--mystic--chapters--episode,adventure--mission--explore--mystic--chapters--short,adventure--mission--explore--bright--quests--scene,adventure--mission--explore--bright--quests--short"
+  ],
+  "returncode": 0,
+  "snapshotUnchanged": true,
+  "snapshot": {
+    "interviewSceneBank.json": "6daa5b94fbfa43cfc6c1dee37310446bf3bcca8af8389e6910e4302d7c0bc2c7",
+    "ledger.json": "88fdced38604f53c366c19ba27e67017e10370dbf5ec551729917b20ed8c0998"
+  },
+  "published": 1053,
+  "finishedAt": "2026-10-08T04:25:19.661501+00:00",
+  "scope": "Scoped current published hash/request-contract integrity and six explicit production click paths; not fresh full-native visual audit/full app boot/AIhandoff"
+}

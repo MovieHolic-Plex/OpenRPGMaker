@@ -1,0 +1,125 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 1025,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--battle--warm--quests",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--battle--warm--quests",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--battle--warm--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료와 전략적인 전투 · 따뜻한 동료애로 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--bright--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 힘차고 유쾌하게 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all1025 fresh native visual audit.",
+  "actualBrowserExit": 0,
+  "rootPersonallySawAllFourWholeScreenshots": true,
+  "rootNotes": "ROOT personallyopened four WHOLE screenshots 320/736 first/last; all8controls visible with wrapping, nativeaspectpreview complete, captionselection correct; nooverflow/clipping or runtimeerror. Sourceimmutable1025snapshot, previews-only NEAREST WEBP; notall1025 freshnative audit/fullappboot/AIhandoff.",
+  "screenshotHashes": {
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-320-first.png": "46095c5e2d008f87239441fe8d21601ffc37dcd43f9aba0a57acab6af81e655e",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-320-last.png": "ceb142201732270a6bde8dac1aff606c2765c434985037303cf5f385e9e44b3b",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-736-first.png": "88a65734497b79040166ad8c544269ad7b919ccb1d024c44c8274da7e67d3e01",
+    "verify-shots/interview-scene-bank-v2/gallery-1025-stage262-736-last.png": "d6f370bfbc1563f735ce59cdf9eb72340314f65c0768bd1ef36f3d9178b5019b"
+  }
+}

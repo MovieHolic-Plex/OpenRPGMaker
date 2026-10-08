@@ -1,0 +1,144 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 1034,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 거점에서 의뢰를 선택 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--journey--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 경이롭고 신비롭게 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-1034-stage264-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1034-stage264-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1034-stage264-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1034-stage264-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all1034 fresh native visual audit.",
+  "rootPersonallySawFourWholeScreenshots": true,
+  "rootScreenshotNotes": [
+    {
+      "path": "gallery-1034-stage264-320-first.png",
+      "note": "ROOT WHOLE personallyopened 320pxfirstsample, actual1034/1457correct, nativepreview/selectedcaptionreadable, all8buttonswrapwithinwidth/nooverlap/clipping; firstQparent selected; whiteextraheight standalone viewport notproductfullapp.",
+      "rootWholeOpened": true,
+      "sha256": "0363c3a394ba8e49fa1897d2ea53853aeb19378f77c71850954a6cc8fb9b6f6b"
+    },
+    {
+      "path": "gallery-1034-stage264-320-last.png",
+      "note": "ROOT WHOLE personallyopened320pxlastsample, actual1034/1457correct; finalCHscene previewandcaptionchange, eighthbuttonpressed/all8wrap/primaryinteractionworks/nooverlaporclip. Notproductionappboot.",
+      "rootWholeOpened": true,
+      "sha256": "1751c5dd5f8476d7c8cabb7b9eee559935581723dfed639706095da90301f6db"
+    },
+    {
+      "path": "gallery-1034-stage264-736-first.png",
+      "note": "ROOT WHOLE personallyopened736pxfirstsample, actual1034/1457correct, fullpreview/selectedcaptionreadable; all8buttons wrap02rows/nooverflow/overlap/clipping, firstQparent pressed. Previewonly downsample, nativeunchanged.",
+      "rootWholeOpened": true,
+      "sha256": "4bf5b180ebd1d9a2657c9a4f5e3e68eae6efd4c499e91d0412c3c03331d7f2a9"
+    },
+    {
+      "path": "gallery-1034-stage264-736-last.png",
+      "note": "ROOT WHOLE personallyopened736pxlastsample, actual1034/1457correct, eighthCHscene selectionupdatespreview/caption; all8buttons02rows/wrap/nooverlap/clipping, displayedwholepreviewnativeunchanged. Notfullall1034 freshnativeaudit.",
+      "rootWholeOpened": true,
+      "sha256": "a7b6b045579a84a8072c2bce66b0e67ddb26069c76ba7d7a7d6e41c6f561c628"
+    }
+  ],
+  "actualBrowserExit": 0
+}

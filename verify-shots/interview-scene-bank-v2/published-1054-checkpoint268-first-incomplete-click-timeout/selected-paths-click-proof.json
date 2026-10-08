@@ -1,0 +1,205 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 1054,
+  "targets": [
+    "adventure--mission--explore--bright--journey--scene",
+    "adventure--mission--explore--bright--journey--episode",
+    "adventure--mission--explore--bright--journey--short",
+    "adventure--mission--explore--bright--quests--scene",
+    "adventure--mission--explore--bright--quests--episode",
+    "adventure--mission--explore--bright--quests--short"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--mission--explore--bright--journey--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 58.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--mission",
+          "ms": 16.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png"
+        },
+        {
+          "key": "adventure--mission--explore",
+          "ms": 23.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore-a1a498e4a843.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright",
+          "ms": 29,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey",
+          "ms": 14.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey-a7b9125e2ad4.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--scene",
+          "ms": 18.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey--scene-83fa675ec953.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--mission--explore--bright--journey--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 17.40000009536743,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--mission",
+          "ms": 48.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png"
+        },
+        {
+          "key": "adventure--mission--explore",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore-a1a498e4a843.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright",
+          "ms": 8,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey",
+          "ms": 25.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey-a7b9125e2ad4.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--episode",
+          "ms": 6.700000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey--episode-1cc79db8d008.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--mission--explore--bright--journey--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 8.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--mission",
+          "ms": 7.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png"
+        },
+        {
+          "key": "adventure--mission--explore",
+          "ms": 6.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore-a1a498e4a843.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright",
+          "ms": 18.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey",
+          "ms": 24.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey-a7b9125e2ad4.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--journey--short",
+          "ms": 6.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--journey--short-717f9d4269c8.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--mission--explore--bright--quests--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 13.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--mission",
+          "ms": 19.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png"
+        },
+        {
+          "key": "adventure--mission--explore",
+          "ms": 24.90000009536743,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore-a1a498e4a843.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright",
+          "ms": 57.300000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests",
+          "ms": 3121.6999999284744,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests-bd947156d3c8.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests--scene",
+          "ms": 178.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests--scene-065f4d50d977.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--mission--explore--bright--quests--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 116.80000007152557,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--mission",
+          "ms": 19.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png"
+        },
+        {
+          "key": "adventure--mission--explore",
+          "ms": 13.599999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore-a1a498e4a843.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright",
+          "ms": 17.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests",
+          "ms": 8.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests-bd947156d3c8.png"
+        },
+        {
+          "key": "adventure--mission--explore--bright--quests--episode",
+          "ms": 7.900000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests--episode-af34eaa90591.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  }
+}

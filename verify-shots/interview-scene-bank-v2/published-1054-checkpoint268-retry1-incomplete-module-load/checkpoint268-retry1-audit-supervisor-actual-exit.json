@@ -1,0 +1,8 @@
+{
+  "command": [
+    "python3",
+    "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/run-checkpoint268-retry1-detached-audit.py"
+  ],
+  "returncode": 1,
+  "finishedAt": "2026-10-08T03:31:42.035924+00:00"
+}

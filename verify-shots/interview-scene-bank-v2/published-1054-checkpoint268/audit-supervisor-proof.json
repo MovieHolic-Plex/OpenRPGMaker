@@ -1,0 +1,27 @@
+{
+  "published": 1054,
+  "remaining": 403,
+  "snapshot": {
+    "interviewSceneBank.json": "9884fc175d1a1f5a21ad308232ed54817c23c837905a8362cc03a194d385b1c4",
+    "ledger.json": "a4497bb52abb1c23ac6e1025fa6e7f037c09856591794f0779666274c826d893"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--mission--explore--bright--journey--scene",
+    "adventure--mission--explore--bright--journey--episode",
+    "adventure--mission--explore--bright--journey--short",
+    "adventure--mission--explore--bright--quests--scene",
+    "adventure--mission--explore--bright--quests--episode",
+    "adventure--mission--explore--bright--quests--short"
+  ],
+  "clicks": 36,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To159ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 159
+}

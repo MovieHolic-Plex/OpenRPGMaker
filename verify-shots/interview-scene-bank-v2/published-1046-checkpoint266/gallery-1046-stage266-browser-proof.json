@@ -1,0 +1,153 @@
+{
+  "url": "http://100.73.251.77:8811/2026/10/02/01a0fbfa-b0ef-7e73-bda8-a21f68121718/interview-bank-production.view.html",
+  "publishedSnapshot": 1046,
+  "passed": true,
+  "widths": [
+    {
+      "width": 320,
+      "bounds": {
+        "width": 288,
+        "scroll": 288,
+        "viewport": 288
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "width": 736,
+      "bounds": {
+        "width": 704,
+        "scroll": 704,
+        "viewport": 704
+      },
+      "steps": [
+        {
+          "key": "adventure--unknown--companions--warm--journey",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--journey--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 목적지를 따라 이어지는 여정 · 첫 위기 해결과 귀환",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--scene",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 출발과 첫 선택",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--episode",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 동료와 작은 유적",
+          "selected": true
+        },
+        {
+          "key": "adventure--unknown--companions--warm--chapters--short",
+          "caption": "미지의 세계가 궁금해서 · 동료들의 이야기와 선택 · 따뜻한 동료애로 · 챕터마다 새로운 무대 · 첫 위기 해결과 귀환",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "clicks": 16,
+  "errors": [],
+  "screenshots": [
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-320-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-320-last.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-736-first.png",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-736-last.png"
+  ],
+  "scope": "Eight actual published samples at two widths. Root whole screenshot inspection recorded separately; not all1046 fresh native visual audit.",
+  "rootPersonallySawFourWholeScreenshots": true,
+  "rootWholeNotes": [
+    {
+      "width": 320,
+      "stage": "first",
+      "note": "ROOT personallyopenedWHOLE actualgallery screenshot at320. Correct1046/1457 count/progress, currentWarmJourney preview/caption chosen. All8buttons wrapinsidewidth andselectedstate legible; no horizontaloverflow/clipping/overlap. Largewhitebelowgallery isviewportemptyarea notinternalfixedscroll. Native unchanged."
+    },
+    {
+      "width": 320,
+      "stage": "last",
+      "note": "ROOT personallyopenedWHOLE actualgallery screenshot at320 after8clicks. WarmCHshort preview/HOME/arch and5choicecaption correctlychanged, lastbutton selected;1046count unchanged. All8buttons andcaption wrapwithinwidth legible/nooverlap/clipping. Native unchanged."
+    },
+    {
+      "width": 736,
+      "stage": "first",
+      "note": "ROOT personallyopenedWHOLE actualgallery736 first. Correct1046count/progress/WarmJourney preview/caption, eightbuttons wraptwo rowswithinactualwidth; no captionoverlap/clipping/undefinedcontent. Largepreview showsselectednativefullscene, onlypreviewcompressed nativeunchanged."
+    },
+    {
+      "width": 736,
+      "stage": "last",
+      "note": "ROOT personallyopenedWHOLE actualgallery736 after8clicks. CorrectlastWarmCHshortpreview/caption/buttonselected and1046count; captionwrapstwo readablelines andbuttons wrapnaturally nooverlap/clipping/horizontaloverflow. Allnativeunchanged."
+    }
+  ],
+  "actualBrowserExitReceipt": {
+    "command": [
+      "node",
+      "qa-runs/harnesses/interview-scene-bank/gallery-266-qa.mjs"
+    ],
+    "returncode": 0,
+    "finishedAt": "2026-10-08T02:35:40.721925+00:00"
+  },
+  "screenshotHashes": {
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-320-first.png": "01b4199af71cb45a37a523d87bc6082ec6341662611f9bc964cbee8440a7a64e",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-320-last.png": "8cb05b0792f9431a753c3832f4c65d16b53573b084f9132326715447a2ebef0d",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-736-first.png": "1b53428654807702845e4e5c2bf4f149dcd308b4b42106d59b9731abe184e0b0",
+    "verify-shots/interview-scene-bank-v2/gallery-1046-stage266-736-last.png": "7c14b437a158b086a3a70fb2d51d48cc0a4738540b06142c028288e115d7daa4"
+  }
+}

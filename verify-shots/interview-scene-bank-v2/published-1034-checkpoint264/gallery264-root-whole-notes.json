@@ -1,0 +1,18 @@
+[
+  {
+    "path": "gallery-1034-stage264-320-first.png",
+    "note": "ROOT WHOLE personallyopened 320pxfirstsample, actual1034/1457correct, nativepreview/selectedcaptionreadable, all8buttonswrapwithinwidth/nooverlap/clipping; firstQparent selected; whiteextraheight standalone viewport notproductfullapp."
+  },
+  {
+    "path": "gallery-1034-stage264-320-last.png",
+    "note": "ROOT WHOLE personallyopened320pxlastsample, actual1034/1457correct; finalCHscene previewandcaptionchange, eighthbuttonpressed/all8wrap/primaryinteractionworks/nooverlaporclip. Notproductionappboot."
+  },
+  {
+    "path": "gallery-1034-stage264-736-first.png",
+    "note": "ROOT WHOLE personallyopened736pxfirstsample, actual1034/1457correct, fullpreview/selectedcaptionreadable; all8buttons wrap02rows/nooverflow/overlap/clipping, firstQparent pressed. Previewonly downsample, nativeunchanged."
+  },
+  {
+    "path": "gallery-1034-stage264-736-last.png",
+    "note": "ROOT WHOLE personallyopened736pxlastsample, actual1034/1457correct, eighthCHscene selectionupdatespreview/caption; all8buttons02rows/wrap/nooverlap/clipping, displayedwholepreviewnativeunchanged. Notfullall1034 freshnativeaudit."
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 1054,
+  "targets": [
+    "adventure--mission--explore--bright--journey--scene",
+    "adventure--mission--explore--bright--journey--episode",
+    "adventure--mission--explore--bright--journey--short",
+    "adventure--mission--explore--bright--quests--scene",
+    "adventure--mission--explore--bright--quests--episode",
+    "adventure--mission--explore--bright--quests--short"
+  ],
+  "generatedRequests": 0,
+  "paths": [],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "failure": {
+    "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:9803/src/editor/ui/projectInterviewDialog.ts",
+    "surface": null
+  }
+}

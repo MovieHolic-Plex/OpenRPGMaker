@@ -1,0 +1,65 @@
+{
+  "published": 1053,
+  "remaining": 404,
+  "snapshot": {
+    "interviewSceneBank.json": "6daa5b94fbfa43cfc6c1dee37310446bf3bcca8af8389e6910e4302d7c0bc2c7",
+    "ledger.json": "88fdced38604f53c366c19ba27e67017e10370dbf5ec551729917b20ed8c0998"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "clicks": 35,
+  "rootPersonallySawSixWholeScreenshots": true,
+  "rootAllSixVisualChecksPassed": true,
+  "checkedAt": "2026-10-08T04:33:23.294209+00:00",
+  "screenshots": [
+    {
+      "key": "adventure--mission--explore--mystic--chapters",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--mystic--chapters.png",
+      "sha256": "6a7569e1ba2522b6b28bc404b8af52f592ebcb5567d77561e34a7ebe7f8a4eba",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Whole recessed pit walls, floor, downward stairs and side entry visible before controls; one mission parcel on four-leg table, whole arch and ochre through arch; no identity/text."
+    },
+    {
+      "key": "adventure--mission--explore--mystic--chapters--scene",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--mystic--chapters--scene.png",
+      "sha256": "3772b9cba71c6684253d42c5733440fcad70cace657fccdf7a1ddcfb5f3af500",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Different plateau view; mission foreground, recessed pit middle and whole arch upper; first fork visible, all selected structures clear of controls."
+    },
+    {
+      "key": "adventure--mission--explore--mystic--chapters--episode",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--mystic--chapters--episode.png",
+      "sha256": "069c828db065503c80e1f65986d4d1aa9b573c18040f4d2d0811cb531c1acfcf",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Different raised view; mission left, whole pit middle, arch upper, third empty rest area with two separate benches lower right before controls; side road visible."
+    },
+    {
+      "key": "adventure--mission--explore--mystic--chapters--short",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--mystic--chapters--short.png",
+      "sha256": "ad7161298265e709524d0ed893aef91fad2dfc87e35dec254306133664cd8668",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Whole home/open entrance and blue bare return table foreground, third ruin and return roads; pit upper left, mission middle and arch upper, all selected geometry clear of controls."
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests--scene",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--bright--quests--scene.png",
+      "sha256": "e5884430ccbb8643553ac2f5b64e8256114e9141d00764bbc9f809c531091989",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Exactly three base parcels and separate one mission parcel; whole recess/downward entry, two empty destination grounds and first fork visible before controls."
+    },
+    {
+      "key": "adventure--mission--explore--bright--quests--short",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1053-checkpoint270/selected-adventure--mission--explore--bright--quests--short.png",
+      "sha256": "bc67e8562077f9f9c900da05c0a8d0c7c18c25901bcc475dcacfd572503f185e",
+      "wholePersonallyViewed": true,
+      "pass": true,
+      "notes": "Exactly three base parcels, separate mission parcel, two empty destination grounds, whole pit, home/open doorway/blue bare return table/third ruin and roads before controls."
+    }
+  ],
+  "scope": "Six specified actual production paths only; not fresh all-native audit, app boot or AI handoff. White area below fixed 800px QA mount remains a fixture limitation. First network-change failure preserved; unchanged retry3 succeeded."
+}

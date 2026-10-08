@@ -1,0 +1,63 @@
+{
+  "published": 1025,
+  "remaining": 432,
+  "snapshot": {
+    "interviewSceneBank.json": "f66766538baf0e5d12bee9701e3a73e60806e35987dbca926bf1f1f4baedf7a5",
+    "ledger.json": "0394b0e8ce2e39cddf5976ddedf19f5d5bb8b16ebd9aa00e16c2fd38cad156f8"
+  },
+  "rootWholeOpened": true,
+  "screenshots": [
+    {
+      "key": "adventure--unknown--battle--warm--quests",
+      "note": "ROOT WHOLE screenshot personallyopened: fullboat/furled/coil/quay,2shields/2crossedspikes/plaincovers/lanes,3BASEparcels/table/Yto2EMPTYplots,WARMnookwalllanternONEcup allvisible LEFT before panel. Native coherent sky repaired. Allchoicebuttons/previous/recommendation/creation control visible; no chosenforegroundhidden. Knownstandalone800pxcontainer white100pxbelow, notfullappboot evidence.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--battle--warm--quests.png",
+      "sha256": "bd56e0a3d04374314e38b10e1058ab4e95d673b86aadd55c3eb7e709e2617193",
+      "rootWholeOpened": true
+    },
+    {
+      "key": "adventure--unknown--battle--warm--quests--episode",
+      "note": "ROOT WHOLE screenshot personallyopened: fullforegroundboat/furled/actualcoil/selectedquaystairs,2shields/2crossedspikes/plaincovers/lanes,WARMnookwalllanternONEcup,3sealedBASEparcels/Yroads2EMPTYplots and THIRDclearedruin2EMPTYRESTseats visibleLEFT. Confirmation selectedfacts/readable productionstart/previous/back-to-idea controls visible. Ordinarybackgroundshore/ruinwallcontinuation notnewwholeterrain gate; scopedpublishedpath only, nofreshall-native audit/fullboot/AIhandoff.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--battle--warm--quests--episode.png",
+      "sha256": "c75504e5d63e2f6032c620057b3ff63074a1dd8221450b2abec1982b76e54aa8",
+      "rootWholeOpened": true
+    },
+    {
+      "key": "adventure--unknown--battle--warm--quests--scene",
+      "note": "ROOT WHOLE screenshot personallyopened: boat/furled/coil/STONEquay/stairs whollyLEFT beforecontrols,3BASEparcels/table/YroadsEMPTYtravelclearings,2plainshields/2crossedspikes/plaincover/lanes/WARMnookwalllanternONEcup; actualFIRSTwalkingfork distinctBASEfork visible. Confirmationfacts/start/previous/genre-return controls readable/visible. No selectedforegroundbehindpanel; scopedpath notfullappboot/AIhandoff.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--battle--warm--quests--scene.png",
+      "sha256": "ec949104ce3dca4ef60b2e279b0082ecbea667a1dcd95899d2a89e887756d91b",
+      "rootWholeOpened": true
+    },
+    {
+      "key": "adventure--unknown--battle--warm--quests--short",
+      "note": "ROOT WHOLE screenshot personallyopened: wholeboat/furled/coil/quay/fullshorestairs,2shields/2crossedspikes/plaincovers/lanes,WARMnookwalllanternONEcup,3sealedBASEparcels/Y2EMPTYplots and HOMEwhole roof/chimney/OPENentry/outsideBAREBLUEfoldclothtable/THIRDclearedEMPTYruin/returnroads allvisibleLEFT beforecontrols. Confirmationfacts/readablestart/previous/genre-return buttons visible, no foregroundhidden. Scopedpath notfreshfullnativeaudit/fullappboot/AIhandoff.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--battle--warm--quests--short.png",
+      "sha256": "3e4bbe17e49e8389e89a33a1cefdeddf36b84eaa2cdb349f74f92476508431cd",
+      "rootWholeOpened": true
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--journey",
+      "note": "ROOT WHOLE screenshot personallyopened: fullboat/furled/actualcoil/quay/shorestairs,threecoloredroll/separatePACK/ONEcup places, physicallycontinuouscauseway via genuineEMPTYMID to differentBLUEVIOLETancientDEST/fullstairs visibleLEFT beforepanel. Mainarch crest is very near screenshotTOP; currentnative remainswhole with smallSKYmargin, record tight screenmargin without falsely claiming broadscreenbuffer. Choicebuttons/previous/recommendation/creationcontrol visible. Scopedpath notfreshall-native audit/fullappboot/AIhandoff; knownstandalonewhitebottom.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--companions--mystic--journey.png",
+      "sha256": "be2b572744934b13b8ec1825fa105dde9f8afd6ae305428733c37b43506f49b1",
+      "rootWholeOpened": true
+    },
+    {
+      "key": "adventure--unknown--companions--mystic--journey--scene",
+      "note": "ROOT WHOLE screenshot personallyopened: fullboat/furled/coil/quay/shorestairs,3differentroll/separateactualPACK/ONEcup places on wholeinsetground, continuouscauseway through genuineEMPTYMID to differentmonumentalBLUEVIOLETDEST/fullstairs, physical FIRSTmain/SIDEfork visibleLEFT beforepanel. Wholemainarch ampleSKYmargin and entirechosenforeground beforecontrols; confirmationfacts/start/previous/genre-return readable/visible. Scopedpath notfreshall-nativeaudit/fullappboot/AIhandoff.",
+      "path": "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/verify-shots/interview-scene-bank-v2/published-1025-checkpoint262/selected-adventure--unknown--companions--mystic--journey--scene.png",
+      "sha256": "84608c25544d1b7a70e0bcf90f05804a2c981a01372b5d2bc0335d9b901551f7",
+      "rootWholeOpened": true
+    }
+  ],
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generatedRequests": 0,
+  "scope": "Six current production clickpaths screenshots individually personally opened ROOT; not full-app boot, AI handoff or fresh all-native audit. MainMysticJourney crest tight screenTOP noted; native complete tiny SKYmargin.",
+  "firstPersistenceActualExit": 1,
+  "firstPersistenceFailure": "Read wrong completion filename checkpoint262 instead of checkpoint-262; FileNotFoundError BEFORE any proof write/ledger mutation. All six screenshots had been personally opened. Retry uses actual completion receipt.",
+  "retryPersistenceVerified": true,
+  "rootPersonallySawSixWholeScreenshots": true
+}

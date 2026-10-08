@@ -1,0 +1,86 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 1053,
+  "targets": [
+    "adventure--mission--explore--bright--quests--scene",
+    "adventure--mission--explore--bright--quests--short",
+    "adventure--mission--explore--mystic--chapters",
+    "adventure--mission--explore--mystic--chapters--scene",
+    "adventure--mission--explore--mystic--chapters--episode",
+    "adventure--mission--explore--mystic--chapters--short"
+  ],
+  "generatedRequests": 0,
+  "paths": [],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:9803/src/project/io/errors.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/project/gameAuthoringPresets/documents.json?import",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/project/gameAuthoringPresets/choices.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/_core/manifest.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/monster-collect-species/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/modern-chipset/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/interior-props/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/jp-city/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/joseon-baram/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/super-harness/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/romance-scene/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/charset-actor/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/worldmap-icons/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    },
+    {
+      "url": "http://127.0.0.1:9803/src/harnesses/interview-scene-bank/harness.ts",
+      "error": "net::ERR_NETWORK_CHANGED"
+    }
+  ],
+  "failure": {
+    "message": "Error: page.evaluate: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:9803/src/editor/ui/projectInterviewDialog.ts",
+    "surface": null
+  }
+}

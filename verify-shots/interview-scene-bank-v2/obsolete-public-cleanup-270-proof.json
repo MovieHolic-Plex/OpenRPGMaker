@@ -1,0 +1,96 @@
+{
+  "scope": "Only seven obsolete originals with exact immutable archives and current eligible passing replacements after FULL262/264/266 and FULL270 ROOTsix personally inspected screenshots.158160161 and known2669 falseP retained.",
+  "publishedSnapshot": 1053,
+  "removedThisInterval": 7,
+  "resolvedCumulative": 285,
+  "priorActualProof": "obsolete-public-cleanup-260-proof.json",
+  "removed": [
+    {
+      "number": 149,
+      "key": "adventure--unknown--battle--warm--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--battle--warm--quests-eeac51fc5f9b.png",
+      "nativeSha256": "eeac51fc5f9b12107c3e375968fca8c668e8dba4da400c5063edebc95d9183fc",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source149-adventure--unknown--battle--warm--quests-eeac51fc5f9b.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source149-8bcdb8bc7a4c440b1d914a3f229e173d76d086cfafdc00e69ec2daf024132f98.txt",
+      "replacementSha256": "7b408e93fcbba337ad24eb241fc0341afd315a7d0c66a85b4a65ff414942ce43",
+      "replacementOwnSha256": "4677ea4bb573f7c618346f4d003723e757dc25dc1c3bebb81d1f8e56407e7464"
+    },
+    {
+      "number": 153,
+      "key": "adventure--unknown--companions--mystic--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--journey-147078b9ba6d.png",
+      "nativeSha256": "147078b9ba6d282ad9524c01c3573b09b00b0912add8671100c62388232caaae",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source153-adventure--unknown--companions--mystic--journey-147078b9ba6d.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source153-761f16a8565d36c4c3d44f05e4bd6e8d98b5238db4162f08cc06bef415ceeae5.txt",
+      "replacementSha256": "36bbc629cbbdde5d69950af613bbd30dd351e667dfb24fd578678cfaccc3ce13",
+      "replacementOwnSha256": "381c8d771ced2c4d44e14e2bf7d23d88707c4efeea3418e82faf8c84e0645307"
+    },
+    {
+      "number": 154,
+      "key": "adventure--unknown--companions--mystic--quests",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-4c9545a82c01.png",
+      "nativeSha256": "4c9545a82c01e75dc80e0aa090d7785e1a7faf64083183b6519224dcc62dffe3",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source154-adventure--unknown--companions--mystic--quests-4c9545a82c01.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source154-65ed2e6f7fd41e862046533c55aafd6b2150da42824d0ee11b266fb66b91a374.txt",
+      "replacementSha256": "e970fd478833af35dab17428b4a7d92503e0749846b521c0f0099b23876bb634",
+      "replacementOwnSha256": "93bcf273e1856993275d17ff515beb56e173bf31a87cb5b1f449000fe7099565"
+    },
+    {
+      "number": 155,
+      "key": "adventure--unknown--companions--mystic--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--chapters-07dccc08b242.png",
+      "nativeSha256": "07dccc08b242291863c0e4bc9d6392d173a34a36769e87b2222b0bd03e58d112",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source155-adventure--unknown--companions--mystic--chapters-07dccc08b242.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source155-93ff7b18e861da24b85d61b5545fdf133f52ac8bcc017946c15d346c4fbfcdcc.txt",
+      "replacementSha256": "10f812229bbf78fd5d65f7b1b8126db27ba2aeb5d9e7d68da52ad57cd612f3bd",
+      "replacementOwnSha256": "827812dc73af71a0d416d3e24ec0a6a527407cd1b42c3f3ab988068c13b4daa2"
+    },
+    {
+      "number": 156,
+      "key": "adventure--unknown--companions--warm--journey",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-9f4d7c7d10e7.png",
+      "nativeSha256": "9f4d7c7d10e796e9150e8257d22f9c542c8b781df20848e1b3fbdabc222e5b1e",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source156-adventure--unknown--companions--warm--journey-9f4d7c7d10e7.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source156-ecad0bf8d75a1706205743790c70107d80ee8c07e7a3b392ed29e127e8da732a.txt",
+      "replacementSha256": "0846aeeb1ac1e3402d75515ab33c4a1d390fc8f666a45cad173fd6c6a0b08b64",
+      "replacementOwnSha256": "542599b1dbe51aa1244555e082174407e56ed89bb7f86b580cca2acf01a45610"
+    },
+    {
+      "number": 157,
+      "key": "adventure--unknown--companions--warm--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm--chapters-607966462d0c.png",
+      "nativeSha256": "607966462d0c246431c556748f7a9bbc6ce4a6299a94f009640ef35514d24726",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source157-adventure--unknown--companions--warm--chapters-607966462d0c.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source157-ffa7a593ace73984c0243664a30db163444f66605a7b9a8e0f323a8995e861b8.txt",
+      "replacementSha256": "f47e7f55364cc34a22694a3185175a7ca3d8f351e76bf7e3f40d0cc0bdfc5e83",
+      "replacementOwnSha256": "72fa1916319a66952cbf609b00ceb8f03232a9e218a816fe9b06433a82e85493"
+    },
+    {
+      "number": 159,
+      "key": "adventure--mission--explore--mystic--chapters",
+      "removed": "public/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--chapters-f3b224be23e6.png",
+      "nativeSha256": "f3b224be23e6935639fd99ca948110b62936bcdd32b5f2a34cc7b6a6da9943e8",
+      "unchangedArchiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source159/unchanged-native.png",
+      "unchangedArchiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source159/unchanged-OWN.txt",
+      "replacementSha256": "e4df5a12389930f7fba94737fa5ce3b87b4b6175b159c80a8d6136a542062ae7",
+      "replacementOwnSha256": "40ef0c5d6de190a10a04ee89a56a6f67fc45bfcbd94e329ac455ac0fdd2c6cd6"
+    }
+  ],
+  "retained": [
+    {
+      "number": 158,
+      "key": "adventure--mission--explore--mystic--quests",
+      "reason": "No eligible current passing published parent replacement; immutable original/public retained"
+    },
+    {
+      "number": 160,
+      "key": "adventure--mission--explore--warm--quests",
+      "reason": "No eligible current passing published parent replacement; immutable original/public retained"
+    },
+    {
+      "number": 161,
+      "key": "adventure--mission--explore--warm",
+      "reason": "No eligible current passing published parent replacement; immutable original/public retained"
+    }
+  ]
+}

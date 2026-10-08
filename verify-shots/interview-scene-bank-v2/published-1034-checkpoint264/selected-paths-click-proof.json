@@ -1,0 +1,231 @@
+{
+  "scope": "Only the explicitly selected published paths through the actual production interview; not an all-published audit, full app boot, or AI handoff",
+  "published": 1034,
+  "targets": [
+    "adventure--unknown--companions--mystic--quests",
+    "adventure--unknown--companions--mystic--quests--scene",
+    "adventure--unknown--companions--mystic--quests--episode",
+    "adventure--unknown--companions--mystic--quests--short",
+    "adventure--unknown--companions--mystic--chapters",
+    "adventure--unknown--companions--mystic--chapters--episode"
+  ],
+  "generatedRequests": 0,
+  "paths": [
+    {
+      "target": "adventure--unknown--companions--mystic--quests",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 21.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 9.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 13,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 9.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "ms": 9.900000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-e970fd478833.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--mystic--quests--scene",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 10.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 9.400000095367432,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 5.099999904632568,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 7.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "ms": 6.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-e970fd478833.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--scene",
+          "ms": 12.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests--scene-023db155caf0.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--mystic--quests--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 6.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 5.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "ms": 8.100000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-e970fd478833.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--episode",
+          "ms": 5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests--episode-7bcaafd55978.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--mystic--quests--short",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 8.699999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 5.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests",
+          "ms": 9.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-e970fd478833.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--quests--short",
+          "ms": 4.800000071525574,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests--short-e979a19ddab2.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--mystic--chapters",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.899999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 9.399999976158142,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 4.199999928474426,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters",
+          "ms": 3.799999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--chapters-10f812229bbf.png"
+        }
+      ]
+    },
+    {
+      "target": "adventure--unknown--companions--mystic--chapters--episode",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 4.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--unknown",
+          "ms": 4.600000023841858,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png"
+        },
+        {
+          "key": "adventure--unknown--companions",
+          "ms": 7.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic",
+          "ms": 4.5,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--chapters-10f812229bbf.png"
+        },
+        {
+          "key": "adventure--unknown--companions--mystic--chapters--episode",
+          "ms": 4.299999952316284,
+          "src": "http://127.0.0.1:9803/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--chapters--episode-40600e781131.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "availableScreenshotTargets": [
+    "romance--palace--choice--secret--perspectives",
+    "romance--town--choice--warm--routes",
+    "monster--wild--collect--bright--route",
+    "romance--campus--memory--warm--routes--short",
+    "romance--campus--memory--secret--perspectives--episode",
+    "romance--campus--memory--bittersweet--single--short"
+  ],
+  "missingScreenshotTargets": [],
+  "opening": {
+    "src": "/assets/harnesses/interview-scene-bank/opening-62062ac73a78.png",
+    "width": 1672,
+    "height": 941
+  },
+  "passed": true
+}

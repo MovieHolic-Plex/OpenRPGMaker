@@ -1,0 +1,10 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:9803/src/editor/ui/projectInterviewDialog.ts
+    at /home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/reviewed-structures-bank-browser-9803-checkpoint270-retry2.mjs:27:13 {
+  log: []
+}
+
+Node.js v24.11.1

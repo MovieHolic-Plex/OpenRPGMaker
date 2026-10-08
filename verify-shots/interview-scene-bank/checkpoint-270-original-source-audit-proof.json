@@ -1,0 +1,647 @@
+{
+  "originalSourceCorrections": 8,
+  "cumulativeOriginalSourceCorrections": 161,
+  "notNewGenerations": true,
+  "onlyOriginalOwnApplied": true,
+  "actualExitReceipts": {
+    "source154-155-original-unknown-companions-mystic-progressions-actual-exit.json": {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source154-155-original-unknown-companions-mystic-progressions-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-08T00:25:18.874184+00:00",
+      "originalSourceRejectionsThisStage": 2,
+      "numbers": [
+        154,
+        155
+      ],
+      "cumulativeOriginalSourceRejections": 155,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0,
+      "immutable260AuditAndROOTsixCompletedBeforeMutation": true
+    },
+    "source156-original-unknown-companions-warm-journey-actual-exit.json": {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source156-original-unknown-companions-warm-journey-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-08T01:00:48.070926+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "numbers": [
+        156
+      ],
+      "cumulativeOriginalSourceRejections": 156,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0,
+      "immutable262AuditAndROOTsixCompletedBeforeMutation": true
+    },
+    "source157-original-unknown-companions-warm-chapters-actual-exit.json": {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/source157-original-unknown-companions-warm-chapters-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-08T01:38:28.212248+00:00",
+      "originalSourceRejectionsThisStage": 1,
+      "numbers": [
+        157
+      ],
+      "cumulativeOriginalSourceRejections": 157,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0,
+      "immutable264AuditAndROOTsixCompletedBeforeMutation": true
+    },
+    "sources158159-original-mission-mystic-progressions-actual-exit.json": {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/sources158159-original-mission-mystic-progressions-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-08T02:48:34.890231+00:00",
+      "originalSourceRejectionsThisStage": 2,
+      "numbers": [
+        158,
+        159
+      ],
+      "cumulativeOriginalSourceRejections": 159,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0,
+      "immutable266AuditAndROOTsixBeforeMutation": true
+    },
+    "checkpoint268-semantic-and-sources160161-actual-exit.json": {
+      "command": [
+        "npm",
+        "run",
+        "harness",
+        "--",
+        "interview-scene-bank",
+        "review-batch",
+        "--records",
+        "/home/main/z-project/rpg-zzu-interview-scene-bank-recovery/qa-runs/harnesses/interview-scene-bank/checkpoint268-semantic-and-sources160161-reviews.json"
+      ],
+      "returncode": 0,
+      "finishedAt": "2026-10-08T03:50:18.364823+00:00",
+      "originalSourceRejectionsThisStage": 2,
+      "numbers": [
+        160,
+        161
+      ],
+      "cumulativeOriginalSourceRejections": 161,
+      "separatePublishedFalsePositiveCorrectionCount": 1,
+      "notNewGeneration": true,
+      "publicCopiesDeleted": 0,
+      "immutable268AuditAndROOTsixBeforeMutation": true,
+      "checkpoint268CommitHeldForRepair": true
+    }
+  },
+  "records": [
+    {
+      "number": 154,
+      "key": "adventure--unknown--companions--mystic--quests",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--quests-7-4c9545a82c01.png",
+        "sha256": "4c9545a82c01e75dc80e0aa090d7785e1a7faf64083183b6519224dcc62dffe3",
+        "promptSha256": "d0eeb3d06e5b079caf648bbd7e109ed33314001373341fdd2f2f29fa525afa5a",
+        "generationPromptSha256": "65ed2e6f7fd41e862046533c55aafd6b2150da42824d0ee11b266fb66b91a374",
+        "attempt": 7,
+        "review": {
+          "sourceSha256": "4c9545a82c01e75dc80e0aa090d7785e1a7faf64083183b6519224dcc62dffe3",
+          "promptSha256": "d0eeb3d06e5b079caf648bbd7e109ed33314001373341fdd2f2f29fa525afa5a",
+          "reviewer": "Codex direct original visual inspection: v2-production-061",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened full native corrected candidate and actual native parent: SMALL actual EMPTY ship with FULL mast/hull and tightly furled plain canvas now entirely LEFT, prominent actual rope COIL/loose end LEFT, THREE plain SEALED red/cream/blue separate parcels and THREE plain cups LEFT. THREE actual UNROLLED FLAT EMPTY red/green/blue ground mats EACH separate UPRIGHT actual matching pack/flap/straps/buckles grouped LEFT/CENTER; small third pack straddles center, not giant far-right foreground gear. Actual Y-road fork to TWO different EMPTY ancient destinations, monumental mystic depth LEFT. Prior far-right cropped boat fixed. Primary latest quests clearly LEFT, quiet far-right water/terrain, fresh elevated harbor-floor/LEFT boat shot versus prior giant-right ship view. Hard native square clusters all planes/no signs/flags/heraldry/text/body. Positional hints assessed for actual primary readability, not exact arithmetic."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 565798,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source154-adventure--unknown--companions--mystic--quests-4c9545a82c01.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source154-65ed2e6f7fd41e862046533c55aafd6b2150da42824d0ee11b266fb66b91a374.txt",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Original explicitly places ENTIRE selectedgroup visibly LEFT60 beforecontrols, quietRIGHT35 only water/distantterrain without foregroundgear, and actual Yroadfork LEFT/CENTER to TWO different EMPTYancient destinations. Native has allTHREE actualUNROLLED FLAT RED/GREEN/BLUEsleepingmats with distinctactualuprightPACKs, THREEcups/THREESEALEDparcels atLEFTtable, fullSMALLFURLEDship LEFT and actualconcentriccoil, all those facts otherwise present. But selected BLUEuprightPACK and FLATmat atx~1050..1290 are actualRIGHTforeground behindcontrols, notLEFT/CENTER; composition/allChoices F ORIGINAL placement. Second selected ancient questdestination also aroundx1100..1300 behindcontrols, not originalLEFT/CENTERmissiondestinations, latestChoice F ORIGINALlatestQUESTS spatialfacts. Actual Yrouteexists, no invented missingfork. No new wholefloor/ONEcuppersonalplace/rolledvsflatMATS/moonlit/noSUNSET/LEFT45/x780/newboundretro. Supporting buildings/cliffs/floor nativeedge continuation not newlyfailed. Functionalgoldclasps/straps/parcelseals nottext/heraldry. Hardpixelcraft/noidentity/writing; otherchecks P. Originaldepth3parent cabin/hatch vs thisoutdoorharbor-floor/Yancientdestinationcamera independentlydistinct.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "4c9545a82c01e75dc80e0aa090d7785e1a7faf64083183b6519224dcc62dffe3",
+        "promptSha256": "d0eeb3d06e5b079caf648bbd7e109ed33314001373341fdd2f2f29fa525afa5a",
+        "reviewer": "Codex ROOT full ORIGINAL OWN/WHOLE native sources154-155 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Original explicitly places ENTIRE selectedgroup visibly LEFT60 beforecontrols, quietRIGHT35 only water/distantterrain without foregroundgear, and actual Yroadfork LEFT/CENTER to TWO different EMPTYancient destinations. Native has allTHREE actualUNROLLED FLAT RED/GREEN/BLUEsleepingmats with distinctactualuprightPACKs, THREEcups/THREESEALEDparcels atLEFTtable, fullSMALLFURLEDship LEFT and actualconcentriccoil, all those facts otherwise present. But selected BLUEuprightPACK and FLATmat atx~1050..1290 are actualRIGHTforeground behindcontrols, notLEFT/CENTER; composition/allChoices F ORIGINAL placement. Second selected ancient questdestination also aroundx1100..1300 behindcontrols, not originalLEFT/CENTERmissiondestinations, latestChoice F ORIGINALlatestQUESTS spatialfacts. Actual Yrouteexists, no invented missingfork. No new wholefloor/ONEcuppersonalplace/rolledvsflatMATS/moonlit/noSUNSET/LEFT45/x780/newboundretro. Supporting buildings/cliffs/floor nativeedge continuation not newlyfailed. Functionalgoldclasps/straps/parcelseals nottext/heraldry. Hardpixelcraft/noidentity/writing; otherchecks P. Originaldepth3parent cabin/hatch vs thisoutdoorharbor-floor/Yancientdestinationcamera independentlydistinct.",
+          "allChoices: ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Original explicitly places ENTIRE selectedgroup visibly LEFT60 beforecontrols, quietRIGHT35 only water/distantterrain without foregroundgear, and actual Yroadfork LEFT/CENTER to TWO different EMPTYancient destinations. Native has allTHREE actualUNROLLED FLAT RED/GREEN/BLUEsleepingmats with distinctactualuprightPACKs, THREEcups/THREESEALEDparcels atLEFTtable, fullSMALLFURLEDship LEFT and actualconcentriccoil, all those facts otherwise present. But selected BLUEuprightPACK and FLATmat atx~1050..1290 are actualRIGHTforeground behindcontrols, notLEFT/CENTER; composition/allChoices F ORIGINAL placement. Second selected ancient questdestination also aroundx1100..1300 behindcontrols, not originalLEFT/CENTERmissiondestinations, latestChoice F ORIGINALlatestQUESTS spatialfacts. Actual Yrouteexists, no invented missingfork. No new wholefloor/ONEcuppersonalplace/rolledvsflatMATS/moonlit/noSUNSET/LEFT45/x780/newboundretro. Supporting buildings/cliffs/floor nativeedge continuation not newlyfailed. Functionalgoldclasps/straps/parcelseals nottext/heraldry. Hardpixelcraft/noidentity/writing; otherchecks P. Originaldepth3parent cabin/hatch vs thisoutdoorharbor-floor/Yancientdestinationcamera independentlydistinct.",
+          "latestChoice: ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Original explicitly places ENTIRE selectedgroup visibly LEFT60 beforecontrols, quietRIGHT35 only water/distantterrain without foregroundgear, and actual Yroadfork LEFT/CENTER to TWO different EMPTYancient destinations. Native has allTHREE actualUNROLLED FLAT RED/GREEN/BLUEsleepingmats with distinctactualuprightPACKs, THREEcups/THREESEALEDparcels atLEFTtable, fullSMALLFURLEDship LEFT and actualconcentriccoil, all those facts otherwise present. But selected BLUEuprightPACK and FLATmat atx~1050..1290 are actualRIGHTforeground behindcontrols, notLEFT/CENTER; composition/allChoices F ORIGINAL placement. Second selected ancient questdestination also aroundx1100..1300 behindcontrols, not originalLEFT/CENTERmissiondestinations, latestChoice F ORIGINALlatestQUESTS spatialfacts. Actual Yrouteexists, no invented missingfork. No new wholefloor/ONEcuppersonalplace/rolledvsflatMATS/moonlit/noSUNSET/LEFT45/x780/newboundretro. Supporting buildings/cliffs/floor nativeedge continuation not newlyfailed. Functionalgoldclasps/straps/parcelseals nottext/heraldry. Hardpixelcraft/noidentity/writing; otherchecks P. Originaldepth3parent cabin/hatch vs thisoutdoorharbor-floor/Yancientdestinationcamera independentlydistinct."
+        ],
+        "notes": "ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Original explicitly places ENTIRE selectedgroup visibly LEFT60 beforecontrols, quietRIGHT35 only water/distantterrain without foregroundgear, and actual Yroadfork LEFT/CENTER to TWO different EMPTYancient destinations. Native has allTHREE actualUNROLLED FLAT RED/GREEN/BLUEsleepingmats with distinctactualuprightPACKs, THREEcups/THREESEALEDparcels atLEFTtable, fullSMALLFURLEDship LEFT and actualconcentriccoil, all those facts otherwise present. But selected BLUEuprightPACK and FLATmat atx~1050..1290 are actualRIGHTforeground behindcontrols, notLEFT/CENTER; composition/allChoices F ORIGINAL placement. Second selected ancient questdestination also aroundx1100..1300 behindcontrols, not originalLEFT/CENTERmissiondestinations, latestChoice F ORIGINALlatestQUESTS spatialfacts. Actual Yrouteexists, no invented missingfork. No new wholefloor/ONEcuppersonalplace/rolledvsflatMATS/moonlit/noSUNSET/LEFT45/x780/newboundretro. Supporting buildings/cliffs/floor nativeedge continuation not newlyfailed. Functionalgoldclasps/straps/parcelseals nottext/heraldry. Hardpixelcraft/noidentity/writing; otherchecks P. Originaldepth3parent cabin/hatch vs thisoutdoorharbor-floor/Yancientdestinationcamera independentlydistinct."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--unknown--companions--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW UNKNOWN + COMPANIONS + MYSTIC + QUESTS as an independent elevated harbor-floor view. REQUIRED spatial plan: ONE SMALL EMPTY furled sailing ship in MIDGROUND FAR LEFT x5-18, FULL mast/hull/canvas visible; furled sail is tight narrow plain canvas bundle against boom, NOT open sail. Never place ANY ship or mast on RIGHT, never crop hull/mast at canvas edge. Actual concentric rope COIL/loose end on near LEFT floor x10-25. THREE plain SEALED red/cream/blue separate parcels plus THREE plain matching cups on modest near LEFT worktable x18-35. THREE actual UNROLLED FLAT EMPTY red/green/blue sleeping mats on GROUND x25-55 EACH physically detached IN FRONT OF own separate UPRIGHT pack/flap/straps/buckles. NO rolls strapped atop bags. Clear physical Y-road fork in midground LEFT/CENTER x30-50 to TWO different EMPTY ancient destinations. Monumental mystic ruins LEFT depth. Quiet RIGHT35 WATER/distant terrain ONLY, no boats/foreground gear/giant furniture. Entire selected group visibly LEFT60 before controls. Fresh independent high-oblique camera, native coarse square clusters/stepped edges/discrete ramps/equal focus every plane. No people/body/humanoids/species/portraits, signs/arrow boards even blank, writing/pseudotext/open books/papers/maps/notices/clocks/numerals, flags/banners/tapestries/heraldry/emblems/logos, blur/gradients/collage. Actual prior failure: Root directly opened full native and actual parent: THREE actual UNROLLED separate EMPTY ground sleeping mats EACH beside separate upright red/green/blue packs, THREE plain cups and THREE SEALED red/cream/blue parcels LEFT; actual concentric rope COIL/loose end LEFT and actual Y-fork to TWO empty ancient destinations. Ground-rest and sail problems fixed. But actual EMPTY furled ship is a large cropped near RIGHT foreground hull/mast behind controls, not required SMALL FULL ship LEFT. Native hard square clusters/no text/signs/flags/identity. allChoices and composition fail; do not publish."
+    },
+    {
+      "number": 155,
+      "key": "adventure--unknown--companions--mystic--chapters",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--mystic--chapters-3-07dccc08b242.png",
+        "sha256": "07dccc08b242291863c0e4bc9d6392d173a34a36769e87b2222b0bd03e58d112",
+        "promptSha256": "87a95a67553c618cdc6495a168ab80ffb40eb38bc381149cdd7f5b9631317587",
+        "generationPromptSha256": "93ff7b18e861da24b85d61b5545fdf133f52ac8bcc017946c15d346c4fbfcdcc",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "07dccc08b242291863c0e4bc9d6392d173a34a36769e87b2222b0bd03e58d112",
+          "promptSha256": "87a95a67553c618cdc6495a168ab80ffb40eb38bc381149cdd7f5b9631317587",
+          "reviewer": "Codex direct original visual inspection: v2-production-057",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and applicable parent: THREE actual upright green/blue/red personal packs each separate ground bedroll and THREE plain cups; previously omitted red pack now present. EMPTY plain furled ship and coil LEFT. BARE monumental arch near visible LEFT/CENTER opens DIRECTLY onto actual ochre/red rock desert with green forest before threshold. Core latest chapter and selected boat visible before controls; third small red rest bundle straddles central/right boundary rather than occupying far-right foreground, remaining right mainly quiet sea/distant arid terrain. Composition assessed for actual primary choice readability, not arbitrary perfect coordinate matching. Fresh oblique near rest-floor/threshold versus parent covered cabin. Hard native square clusters all planes, no signs/flags/text/heraldry/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 575874,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source155-adventure--unknown--companions--mystic--chapters-07dccc08b242.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source155-93ff7b18e861da24b85d61b5545fdf133f52ac8bcc017946c15d346c4fbfcdcc.txt",
+      "failChecks": [
+        "composition",
+        "allChoices"
+      ],
+      "note": "ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Originalexplicit EMPTYSMALLFURLEDship ENTIRELYLEFT x5..25 FULLmast/hull/canvas and separate THREEactualemptygroundbedrollplaces/uprightPACKs/THREEplaincups LEFT/CENTER, quietRIGHT35 distantsea/desert ONLY no largeforegroundgear. Native ship LEFTstern/hull/canvas cuts actualnativeLEFT; REDuprightPACK/bedroll/cup actualx~1010..1300 behindRIGHTcontrols, composition/allChoices F ORIGINALwholeboat andselectedgearLEFT facts. AllTHREEactualgroundbedrolls/THREEdistinctuprightPACKs/THREEcups/actualcoil present, doNOTinvent missingthirdPACK. Actual BAREmonumentalarch opensDIRECTLY to substantialOCHREaridground inLEFT/CENTER with GREENforest beforethreshold, latestCHAPTERS P. No newwholeARCH/floor/ONEcup/LEFT45/x780/MOONLIT/noSUNSET/treelessUPdirectionretro. Functionalstrapbuckles notwriting/heraldry. Nativehardpixelcraft/noidentity/writing; otherchecksP. Originaldepth3cabin/hatch vs outdoorharborfloor/largegatecamera independentlydistinct.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "07dccc08b242291863c0e4bc9d6392d173a34a36769e87b2222b0bd03e58d112",
+        "promptSha256": "87a95a67553c618cdc6495a168ab80ffb40eb38bc381149cdd7f5b9631317587",
+        "reviewer": "Codex ROOT full ORIGINAL OWN/WHOLE native sources154-155 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Originalexplicit EMPTYSMALLFURLEDship ENTIRELYLEFT x5..25 FULLmast/hull/canvas and separate THREEactualemptygroundbedrollplaces/uprightPACKs/THREEplaincups LEFT/CENTER, quietRIGHT35 distantsea/desert ONLY no largeforegroundgear. Native ship LEFTstern/hull/canvas cuts actualnativeLEFT; REDuprightPACK/bedroll/cup actualx~1010..1300 behindRIGHTcontrols, composition/allChoices F ORIGINALwholeboat andselectedgearLEFT facts. AllTHREEactualgroundbedrolls/THREEdistinctuprightPACKs/THREEcups/actualcoil present, doNOTinvent missingthirdPACK. Actual BAREmonumentalarch opensDIRECTLY to substantialOCHREaridground inLEFT/CENTER with GREENforest beforethreshold, latestCHAPTERS P. No newwholeARCH/floor/ONEcup/LEFT45/x780/MOONLIT/noSUNSET/treelessUPdirectionretro. Functionalstrapbuckles notwriting/heraldry. Nativehardpixelcraft/noidentity/writing; otherchecksP. Originaldepth3cabin/hatch vs outdoorharborfloor/largegatecamera independentlydistinct.",
+          "allChoices: ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Originalexplicit EMPTYSMALLFURLEDship ENTIRELYLEFT x5..25 FULLmast/hull/canvas and separate THREEactualemptygroundbedrollplaces/uprightPACKs/THREEplaincups LEFT/CENTER, quietRIGHT35 distantsea/desert ONLY no largeforegroundgear. Native ship LEFTstern/hull/canvas cuts actualnativeLEFT; REDuprightPACK/bedroll/cup actualx~1010..1300 behindRIGHTcontrols, composition/allChoices F ORIGINALwholeboat andselectedgearLEFT facts. AllTHREEactualgroundbedrolls/THREEdistinctuprightPACKs/THREEcups/actualcoil present, doNOTinvent missingthirdPACK. Actual BAREmonumentalarch opensDIRECTLY to substantialOCHREaridground inLEFT/CENTER with GREENforest beforethreshold, latestCHAPTERS P. No newwholeARCH/floor/ONEcup/LEFT45/x780/MOONLIT/noSUNSET/treelessUPdirectionretro. Functionalstrapbuckles notwriting/heraldry. Nativehardpixelcraft/noidentity/writing; otherchecksP. Originaldepth3cabin/hatch vs outdoorharborfloor/largegatecamera independentlydistinct."
+        ],
+        "notes": "ROOT FULL unchanged ORIGINAL OWN and WHOLE native personally opened. Originalexplicit EMPTYSMALLFURLEDship ENTIRELYLEFT x5..25 FULLmast/hull/canvas and separate THREEactualemptygroundbedrollplaces/uprightPACKs/THREEplaincups LEFT/CENTER, quietRIGHT35 distantsea/desert ONLY no largeforegroundgear. Native ship LEFTstern/hull/canvas cuts actualnativeLEFT; REDuprightPACK/bedroll/cup actualx~1010..1300 behindRIGHTcontrols, composition/allChoices F ORIGINALwholeboat andselectedgearLEFT facts. AllTHREEactualgroundbedrolls/THREEdistinctuprightPACKs/THREEcups/actualcoil present, doNOTinvent missingthirdPACK. Actual BAREmonumentalarch opensDIRECTLY to substantialOCHREaridground inLEFT/CENTER with GREENforest beforethreshold, latestCHAPTERS P. No newwholeARCH/floor/ONEcup/LEFT45/x780/MOONLIT/noSUNSET/treelessUPdirectionretro. Functionalstrapbuckles notwriting/heraldry. Nativehardpixelcraft/noidentity/writing; otherchecksP. Originaldepth3cabin/hatch vs outdoorharborfloor/largegatecamera independentlydistinct."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--unknown--companions--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW UNKNOWN departure + COMPANION STORIES + MYSTIC + CHAPTERS. Mandatory separate THREE actual EMPTY places near LEFT/CENTER: (1) GREEN bedroll ON ground beside its GREEN upright pack with flap/straps/buckles, (2) BLUE bedroll ON ground beside its BLUE upright pack, (3) RED bedroll ON ground beside its RED upright pack. ALL THREE upright packs must be clearly visible, including actual RED pack; THREE plain cups nearby. Do not omit third bag, merge bags or attach bedrolls instead of empty ground places. EMPTY SMALL furled ship ENTIRELY LEFT x5-25/full mast/hull/canvas and actual coiled rope. BARE ancient arch x35-45 opens DIRECTLY onto arid ochre sand/red rock visible through arch x35-55, green forest before threshold near LEFT, one continuous world. Quiet RIGHT35 distant sea/desert only no large foreground boat/gear. Fresh elevated harbor rest-floor camera, hard coarse square clusters/equal focus/discrete ramps/stepped edges all planes, bare floor/no blur/framing plants/gradients/collage. No people/body/humanoid/species/portraits, writing/pseudotext/open books/papers/maps/notices/clocks/numerals/ANY signs or arrow boards even blank, flags/banners/tapestries/hanging cloth/heraldry/emblems/logos. Actual prior failure: Root directly opened native and parent: EMPTY furled ship/actual coil now LEFT, BARE monumental arch opens DIRECTLY onto arid desert visible within LEFT/CENTER with green forest nearby, quiet right sea/depth. THREE green/blue/red bedrolls and THREE cups exist but only TWO actual upright personal packs (green and blue); red resting place has NO third upright pack. allChoices fails the explicit THREE distinct rest places EACH with actual pack. Latest chapter/composition repair succeeds, hard native pixels/no signs/flags/text/body. New oblique harbor-floor/gate versus cabin rest parent."
+    },
+    {
+      "number": 156,
+      "key": "adventure--unknown--companions--warm--journey",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--warm--journey-3-9f4d7c7d10e7.png",
+        "sha256": "9f4d7c7d10e796e9150e8257d22f9c542c8b781df20848e1b3fbdabc222e5b1e",
+        "promptSha256": "90aa7b626f90d4e762cd59e5aff58c9db964f9cb71f27e3dfa3824e54a537ba1",
+        "generationPromptSha256": "ecad0bf8d75a1706205743790c70107d80ee8c07e7a3b392ed29e127e8da732a",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "9f4d7c7d10e796e9150e8257d22f9c542c8b781df20848e1b3fbdabc222e5b1e",
+          "promptSha256": "90aa7b626f90d4e762cd59e5aff58c9db964f9cb71f27e3dfa3824e54a537ba1",
+          "reviewer": "Codex direct original visual inspection: v2-production-057",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and applicable parent: SMALL EMPTY furled boat/coiled rope LEFT, THREE separate green/blue/red ground bedroll places EACH actual upright pack/flap/straps/buckles, THREE plain cups (two taller mugs and one low open tin cup) beside welcoming lantern supplies. Actual near stone causeway now physically JOINS SAME supply quay, touches actual intermediate empty island landing/arch and continues continuously toward different far empty ruin. Previous isolated quay/unrelated decorative island bridge repaired. Near route/midpoint clear LEFT/CENTER before controls; quiet supporting right sea/destination. Fresh elevated along-route shot versus parent sheltered supply dock, native hard square clusters all planes, no signs/flags/text/heraldry/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 467577,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source156-adventure--unknown--companions--warm--journey-9f4d7c7d10e7.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source156-ecad0bf8d75a1706205743790c70107d80ee8c07e7a3b392ed29e127e8da732a.txt",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT FULL unchanged ORIGINAL OWN/WHOLE native and actualCURRENTdepth3Warm8ba4 exactOWN/WHOLE personallyopened. Original expressly requires SMALL EMPTYFURLEDboat ENTIRELYnearLEFT x5..25 fullmast/canvas/hull and physicallycontinuousnearquay→EMPTYMID→DIFFERENTfarEMPTYruinDEST atx45..55 beforecontrols, quietRIGHT35 only distantsea/rocks. ActualLEFTship hull/stern/canvas cuts nativeLEFT, composition/allChoicesF ORIGINALexplicitwholeboat. ActualfarselectedancientDEST x~1250..1450 behindRIGHTcontrols, not originalLEFT45..55; composition/allChoices/latestChoiceF ORIGINALprimaryJOURNEYdestinationplacement. Actualselectednearquay/causeway/MID/farDEST physicallyconnect: no inventedwatergap. THREEactualdifferentgroundbedrollplaces/uprightPACKs/THREEplaincups/actualcoil/lanternsupplies present. OriginalMIDarch/building allowed, no laterEMPTYMID NOprops rule retro. No newwholefloor/allstairs/ONEcupWARMnook/WALLlantern/BLUEcloth/LEFT45generationguidance/x780/noSUNSET/MOONLIT rule retro. Coarsehardpixels/noidentity/noactualwriting; otherchecksP. Alongstonecauseway/outdoorquay/foreground3places vs actualdepth3Warminsideprotectedwoodthreshold/benches/supplies/midboat actualworldcamera distinctP.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "9f4d7c7d10e796e9150e8257d22f9c542c8b781df20848e1b3fbdabc222e5b1e",
+        "promptSha256": "90aa7b626f90d4e762cd59e5aff58c9db964f9cb71f27e3dfa3824e54a537ba1",
+        "reviewer": "Codex ROOT full ORIGINAL OWN/WHOLE native source156 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL unchanged ORIGINAL OWN/WHOLE native and actualCURRENTdepth3Warm8ba4 exactOWN/WHOLE personallyopened. Original expressly requires SMALL EMPTYFURLEDboat ENTIRELYnearLEFT x5..25 fullmast/canvas/hull and physicallycontinuousnearquay→EMPTYMID→DIFFERENTfarEMPTYruinDEST atx45..55 beforecontrols, quietRIGHT35 only distantsea/rocks. ActualLEFTship hull/stern/canvas cuts nativeLEFT, composition/allChoicesF ORIGINALexplicitwholeboat. ActualfarselectedancientDEST x~1250..1450 behindRIGHTcontrols, not originalLEFT45..55; composition/allChoices/latestChoiceF ORIGINALprimaryJOURNEYdestinationplacement. Actualselectednearquay/causeway/MID/farDEST physicallyconnect: no inventedwatergap. THREEactualdifferentgroundbedrollplaces/uprightPACKs/THREEplaincups/actualcoil/lanternsupplies present. OriginalMIDarch/building allowed, no laterEMPTYMID NOprops rule retro. No newwholefloor/allstairs/ONEcupWARMnook/WALLlantern/BLUEcloth/LEFT45generationguidance/x780/noSUNSET/MOONLIT rule retro. Coarsehardpixels/noidentity/noactualwriting; otherchecksP. Alongstonecauseway/outdoorquay/foreground3places vs actualdepth3Warminsideprotectedwoodthreshold/benches/supplies/midboat actualworldcamera distinctP.",
+          "allChoices: ROOT FULL unchanged ORIGINAL OWN/WHOLE native and actualCURRENTdepth3Warm8ba4 exactOWN/WHOLE personallyopened. Original expressly requires SMALL EMPTYFURLEDboat ENTIRELYnearLEFT x5..25 fullmast/canvas/hull and physicallycontinuousnearquay→EMPTYMID→DIFFERENTfarEMPTYruinDEST atx45..55 beforecontrols, quietRIGHT35 only distantsea/rocks. ActualLEFTship hull/stern/canvas cuts nativeLEFT, composition/allChoicesF ORIGINALexplicitwholeboat. ActualfarselectedancientDEST x~1250..1450 behindRIGHTcontrols, not originalLEFT45..55; composition/allChoices/latestChoiceF ORIGINALprimaryJOURNEYdestinationplacement. Actualselectednearquay/causeway/MID/farDEST physicallyconnect: no inventedwatergap. THREEactualdifferentgroundbedrollplaces/uprightPACKs/THREEplaincups/actualcoil/lanternsupplies present. OriginalMIDarch/building allowed, no laterEMPTYMID NOprops rule retro. No newwholefloor/allstairs/ONEcupWARMnook/WALLlantern/BLUEcloth/LEFT45generationguidance/x780/noSUNSET/MOONLIT rule retro. Coarsehardpixels/noidentity/noactualwriting; otherchecksP. Alongstonecauseway/outdoorquay/foreground3places vs actualdepth3Warminsideprotectedwoodthreshold/benches/supplies/midboat actualworldcamera distinctP.",
+          "latestChoice: ROOT FULL unchanged ORIGINAL OWN/WHOLE native and actualCURRENTdepth3Warm8ba4 exactOWN/WHOLE personallyopened. Original expressly requires SMALL EMPTYFURLEDboat ENTIRELYnearLEFT x5..25 fullmast/canvas/hull and physicallycontinuousnearquay→EMPTYMID→DIFFERENTfarEMPTYruinDEST atx45..55 beforecontrols, quietRIGHT35 only distantsea/rocks. ActualLEFTship hull/stern/canvas cuts nativeLEFT, composition/allChoicesF ORIGINALexplicitwholeboat. ActualfarselectedancientDEST x~1250..1450 behindRIGHTcontrols, not originalLEFT45..55; composition/allChoices/latestChoiceF ORIGINALprimaryJOURNEYdestinationplacement. Actualselectednearquay/causeway/MID/farDEST physicallyconnect: no inventedwatergap. THREEactualdifferentgroundbedrollplaces/uprightPACKs/THREEplaincups/actualcoil/lanternsupplies present. OriginalMIDarch/building allowed, no laterEMPTYMID NOprops rule retro. No newwholefloor/allstairs/ONEcupWARMnook/WALLlantern/BLUEcloth/LEFT45generationguidance/x780/noSUNSET/MOONLIT rule retro. Coarsehardpixels/noidentity/noactualwriting; otherchecksP. Alongstonecauseway/outdoorquay/foreground3places vs actualdepth3Warminsideprotectedwoodthreshold/benches/supplies/midboat actualworldcamera distinctP."
+        ],
+        "notes": "ROOT FULL unchanged ORIGINAL OWN/WHOLE native and actualCURRENTdepth3Warm8ba4 exactOWN/WHOLE personallyopened. Original expressly requires SMALL EMPTYFURLEDboat ENTIRELYnearLEFT x5..25 fullmast/canvas/hull and physicallycontinuousnearquay→EMPTYMID→DIFFERENTfarEMPTYruinDEST atx45..55 beforecontrols, quietRIGHT35 only distantsea/rocks. ActualLEFTship hull/stern/canvas cuts nativeLEFT, composition/allChoicesF ORIGINALexplicitwholeboat. ActualfarselectedancientDEST x~1250..1450 behindRIGHTcontrols, not originalLEFT45..55; composition/allChoices/latestChoiceF ORIGINALprimaryJOURNEYdestinationplacement. Actualselectednearquay/causeway/MID/farDEST physicallyconnect: no inventedwatergap. THREEactualdifferentgroundbedrollplaces/uprightPACKs/THREEplaincups/actualcoil/lanternsupplies present. OriginalMIDarch/building allowed, no laterEMPTYMID NOprops rule retro. No newwholefloor/allstairs/ONEcupWARMnook/WALLlantern/BLUEcloth/LEFT45generationguidance/x780/noSUNSET/MOONLIT rule retro. Coarsehardpixels/noidentity/noactualwriting; otherchecksP. Alongstonecauseway/outdoorquay/foreground3places vs actualdepth3Warminsideprotectedwoodthreshold/benches/supplies/midboat actualworldcamera distinctP."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nLATEST CHOICE: 진행 방식: 목적지를 따라 이어지는 여정 — 한 사건을 해결하면 다음 장소로 나아가요.\nSCENE ID: adventure--unknown--companions--warm--journey. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW UNKNOWN departure + COMPANION STORIES + WARM + JOURNEY. Camera LOOKING ALONG A PHYSICALLY CONNECTED stone causeway rather than side-on open bay panorama. SAME near quay under rest supplies connects directly into near bridge at x25-35 (visible joined stone ground, NO water gap); bridge touches EMPTY midpoint island landing x35-45 and continues joined to a different far EMPTY ruin destination x45-55. Show BOTH ends touching physical ground. Do NOT show only unrelated decorative island bridges or a dead-end sea landing. SMALL EMPTY furled boat ENTIRELY near LEFT x5-25 with full mast/canvas/hull and coiled rope. THREE distinct EMPTY ground rest places EACH different colored bedroll beside actual upright personal pack/flap/straps/buckles; THREE plain cups x10-35. WARM protected inviting lantern rest supplies, one continuous traversable world, fresh high-oblique along-route composition versus parent wood dock supply shot. Quiet RIGHT35 distant sea/rocks only, no large foreground ship/gear. Hard square clusters/discrete ramps/stepped edges/equal focus all planes, no blur/framing plants/gradients/collage. No people/body/humanoid/species/portraits, writing/pseudotext/open books/papers/maps/notices/clocks/numerals/ANY signs or arrow boards even blank, flags/banners/tapestries/hanging cloth/heraldry/emblems/logos. Actual prior failure: Root directly opened native and parent: boat/coiled rope now LEFT, THREE actual upright packs/different bedrolls/cups LEFT, welcoming protected shared lantern supplies, quiet right foreground. But near quay remains physically isolated by water from intermediate island; distant stone bridge only runs from that separate island to a short dead landing, with far ruin on another unconnected island. NO selected connected near route THROUGH midpoint toward actual destination. allChoices/latestChoice fail; ship visibility composition repair succeeds. Fresh sheltered harbor floor, hard native pixels/no signs/flags/text/people."
+    },
+    {
+      "number": 157,
+      "key": "adventure--unknown--companions--warm--chapters",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--warm--chapters-2-607966462d0c.png",
+        "sha256": "607966462d0c246431c556748f7a9bbc6ce4a6299a94f009640ef35514d24726",
+        "promptSha256": "24a773974f7b89e6b590481d6b15925a05cf38f597e5f7930e39240e23384638",
+        "generationPromptSha256": "ffa7a593ace73984c0243664a30db163444f66605a7b9a8e0f323a8995e861b8",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "607966462d0c246431c556748f7a9bbc6ce4a6299a94f009640ef35514d24726",
+          "promptSha256": "24a773974f7b89e6b590481d6b15925a05cf38f597e5f7930e39240e23384638",
+          "reviewer": "Codex direct original visual inspection: v2-production-057",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and parent: THREE actual upright green/blue/red packs each separate ground bedroll and THREE plain cups near LEFT/CENTER, EMPTY small plain furled ship/coiled rope LEFT, inviting protected lantern/rest supplies. Smaller BARE chapter gate now opens DIRECTLY onto actual arid ochre desert inside central visible arch, with green forest/tree ground before threshold; latest change readable before right controls instead of hidden far-right giant opening. Third small red rest bundle straddles central boundary, right mainly quiet coast/sea/desert depth. Fresh elevated compact harbor rest/threshold versus parent supply dock, native hard clusters all planes/no blur/focal obstruction, no signs/text/flags/heraldry/identity."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 650701,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source157-adventure--unknown--companions--warm--chapters-607966462d0c.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/archived-native-source-rejections/source157-ffa7a593ace73984c0243664a30db163444f66605a7b9a8e0f323a8995e861b8.txt",
+      "failChecks": [
+        "composition",
+        "allChoices"
+      ],
+      "note": "ROOT FULL exactORIGINAL57OWN/WHOLEnative personallyseenTHISturn. ORIGINALexplicitSMALLEMPTYplainfurledshipENTIRELYx5..25 actualhull/sternnativeLEFTcut; THIRDactualREDroll/REDPACK/itsOPENcup extendx~940..1180 behindactualRIGHTcontrols1008 whereasOWNthreeplacesx10..40 andRIGHT35quietdistantONLY. Originalcomposition/allChoicesF, independentlyofnewfullfloor/ONEcup/WALLlantern/treelessOCHRE/MOONLIT/780guidance. ORIGINALgateOCHREinsideopeningclearlyvisiblebefore1008/GREENbeforethreshold latestCHP; notinventedmissingOCHRE. Actual3PACK/3roll/3cups/fullcoil/protectedlantern present; no inventedwriting. Originalunchangedbytes andOWN toarchive, officialcorrectionmustwait264stableROOT6. ActualCURRENTdepth3Warm8ba4 full exactORIGINALOWN/WHOLE ROOTpersonallyreopenedTHISturn: insideprotectedtimberthreshold/twoemptyrests/lanternsharedsupplies/MIDboat versus original57CH openharborforegroundboat/3gearplaces/MIDregionalgate changesactualworldcamera distinctP. No originalnewcounts/fullfloors/ONEcup/WALL/MOONLIT constraints.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true,
+      "after": {
+        "sourceSha256": "607966462d0c246431c556748f7a9bbc6ce4a6299a94f009640ef35514d24726",
+        "promptSha256": "24a773974f7b89e6b590481d6b15925a05cf38f597e5f7930e39240e23384638",
+        "reviewer": "Codex ROOT full ORIGINAL OWN/WHOLE native source157 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exactORIGINAL57OWN/WHOLEnative personallyseenTHISturn. ORIGINALexplicitSMALLEMPTYplainfurledshipENTIRELYx5..25 actualhull/sternnativeLEFTcut; THIRDactualREDroll/REDPACK/itsOPENcup extendx~940..1180 behindactualRIGHTcontrols1008 whereasOWNthreeplacesx10..40 andRIGHT35quietdistantONLY. Originalcomposition/allChoicesF, independentlyofnewfullfloor/ONEcup/WALLlantern/treelessOCHRE/MOONLIT/780guidance. ORIGINALgateOCHREinsideopeningclearlyvisiblebefore1008/GREENbeforethreshold latestCHP; notinventedmissingOCHRE. Actual3PACK/3roll/3cups/fullcoil/protectedlantern present; no inventedwriting. Originalunchangedbytes andOWN toarchive, officialcorrectionmustwait264stableROOT6. ActualCURRENTdepth3Warm8ba4 full exactORIGINALOWN/WHOLE ROOTpersonallyreopenedTHISturn: insideprotectedtimberthreshold/twoemptyrests/lanternsharedsupplies/MIDboat versus original57CH openharborforegroundboat/3gearplaces/MIDregionalgate changesactualworldcamera distinctP. No originalnewcounts/fullfloors/ONEcup/WALL/MOONLIT constraints.",
+          "allChoices: ROOT FULL exactORIGINAL57OWN/WHOLEnative personallyseenTHISturn. ORIGINALexplicitSMALLEMPTYplainfurledshipENTIRELYx5..25 actualhull/sternnativeLEFTcut; THIRDactualREDroll/REDPACK/itsOPENcup extendx~940..1180 behindactualRIGHTcontrols1008 whereasOWNthreeplacesx10..40 andRIGHT35quietdistantONLY. Originalcomposition/allChoicesF, independentlyofnewfullfloor/ONEcup/WALLlantern/treelessOCHRE/MOONLIT/780guidance. ORIGINALgateOCHREinsideopeningclearlyvisiblebefore1008/GREENbeforethreshold latestCHP; notinventedmissingOCHRE. Actual3PACK/3roll/3cups/fullcoil/protectedlantern present; no inventedwriting. Originalunchangedbytes andOWN toarchive, officialcorrectionmustwait264stableROOT6. ActualCURRENTdepth3Warm8ba4 full exactORIGINALOWN/WHOLE ROOTpersonallyreopenedTHISturn: insideprotectedtimberthreshold/twoemptyrests/lanternsharedsupplies/MIDboat versus original57CH openharborforegroundboat/3gearplaces/MIDregionalgate changesactualworldcamera distinctP. No originalnewcounts/fullfloors/ONEcup/WALL/MOONLIT constraints."
+        ],
+        "notes": "ROOT FULL exactORIGINAL57OWN/WHOLEnative personallyseenTHISturn. ORIGINALexplicitSMALLEMPTYplainfurledshipENTIRELYx5..25 actualhull/sternnativeLEFTcut; THIRDactualREDroll/REDPACK/itsOPENcup extendx~940..1180 behindactualRIGHTcontrols1008 whereasOWNthreeplacesx10..40 andRIGHT35quietdistantONLY. Originalcomposition/allChoicesF, independentlyofnewfullfloor/ONEcup/WALLlantern/treelessOCHRE/MOONLIT/780guidance. ORIGINALgateOCHREinsideopeningclearlyvisiblebefore1008/GREENbeforethreshold latestCHP; notinventedmissingOCHRE. Actual3PACK/3roll/3cups/fullcoil/protectedlantern present; no inventedwriting. Originalunchangedbytes andOWN toarchive, officialcorrectionmustwait264stableROOT6. ActualCURRENTdepth3Warm8ba4 full exactORIGINALOWN/WHOLE ROOTpersonallyreopenedTHISturn: insideprotectedtimberthreshold/twoemptyrests/lanternsharedsupplies/MIDboat versus original57CH openharborforegroundboat/3gearplaces/MIDregionalgate changesactualworldcamera distinctP. No originalnewcounts/fullfloors/ONEcup/WALL/MOONLIT constraints."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 미지의 세계가 궁금해서 — 새로운 배와 낯선 지역에서 첫걸음을 떼요.\n2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--unknown--companions--warm--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREDRAW UNKNOWN departure + COMPANION STORIES + WARM + CHAPTERS. Smaller BARE stone gate ENTIRELY centered x35-45 with actual open arch spanning x30-50; inside arch actual ARID OCHRE sand/red rock dominates x35-50 clearly visible BEFORE controls. Green forest/tree ground near LEFT x0-25, one continuous traversable path crosses through gate into arid ground. Do NOT make giant arch opening x55-80 or move desert behind right panel. SMALL EMPTY plain furled ship entirely x5-25 waterfront and actual rope coil nearby. THREE SMALL separate EMPTY ground places EACH different colored bedroll plus actual upright pack/flap/straps/buckles, THREE plain cups x10-40. Warm protected helpful lantern/rest supplies. Fresh near-overhead oblique sheltered harbor rest shot; quiet RIGHT35 distant water/arid depth ONLY no huge foreground ship/furniture/arch framing. Native hard square pixel clusters/equal focus/discrete ramps/stepped edges every plane, bare floor/no framing foliage/blur/gradients/collage. No people/body/humanoid/species/portrait, writing/pseudotext/open books/papers/maps/notices/clocks/numerals/ANY signs or arrow boards even blank, flags/banners/tapestries/hanging cloth/heraldry/emblems/logos. Actual prior failure: Root directly opened native and parent: THREE actual upright packs/different ground bedrolls and THREE cups LEFT/CENTER, EMPTY plain sailing ship/actual coil LEFT, welcoming protected lantern supplies. Actual BARE forest/desert gate exists but giant arch opens at x53-77, with entire arid desert transition concentrated x60-100 behind controls; visible LEFT largely rest supplies/green terrain. Required new chapter motif again hidden at RIGHT; composition fails. Other native selected facts exist, fresh sheltered stone arch/rest-floor versus parent wood-dock supplies, hard pixels/no signs/flags/text/people."
+    },
+    {
+      "number": 158,
+      "key": "adventure--mission--explore--mystic--quests",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT personallyopened FULL exact ORIGINAL OWN ad3a3f8d and WHOLE unchanged original58fae9bb44, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWN e057a0b9 and WHOLE native. ORIGINAL expressly requires actualclearlyVISIBLEnear-midgroundYfork selecting differentEMPTYnearbydestinations withfocalLEFT60/quietRIGHT35terrain only. ActualprimaryYjunction/split sits x~1090-1190 BEHINDactualRIGHTcontrols1008; readonlyNEAREST nativecrop1008magentaline verifiesactualforkhidden. Thus originalcomposition/allChoices/latestQUESTfail; actual3plainSEALEDworktableparcels/provisions, belowfloorTOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening andmysticancientdepth present. No laterONEmissionparcel/fourlegtable/allfloors/ALLstairs/NOprops/LEFT45/780/MOONLIT retroconstraints. Protectedruralnear3parcelworkfloor/Yroads vsactualdepth3openancientruinsquarefloorpitONEparcel worldcamera/roads distinctP. Hardpixels/noidentity/text. Originalnative/OWN archivedunchanged; no publicdeletebeforegoodreplacementFULLROOTsix.",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests-1-fae9bb44df36.png",
+        "sha256": "fae9bb44df36b1367a57289ce06aa6ce39cd6c06f67d972c838e413641df14d5",
+        "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+        "generationPromptSha256": "ad3a3f8d21f682ae6142a403820dbccecdffe363a4ceb9168342ccc39d04114b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "fae9bb44df36b1367a57289ce06aa6ce39cd6c06f67d972c838e413641df14d5",
+          "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+          "reviewer": "Codex direct original visual inspection: v2-production-058",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and applicable parent: THREE different plain SEALED wrapped parcels near LEFT worktable with entrusted errand provisions, actual near LEFT below-floor recess/top lip and weathered DESCENDING steps into lower dark side passage. Actual CLEAR Y-road fork links TWO different empty nearby settlement/ancient ruin destinations; no signs. Ancient monumental ruins/depth preserve mystery. Latest parcels/exploration opening visible LEFT/CENTER before controls, right terrain/storage secondary. Fresh sheltered workfloor/recess/fork versus old door/supplies/distant ruin parent, hard native square clusters all planes/no flags/letters/heraldry/identity. Parent original sign separately rejected; replace before combined publication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 386922,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source158/unchanged-native.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source158/unchanged-OWN.txt",
+      "after": {
+        "sourceSha256": "fae9bb44df36b1367a57289ce06aa6ce39cd6c06f67d972c838e413641df14d5",
+        "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+        "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/currentparent native sources158159 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT personallyopened FULL exact ORIGINAL OWN ad3a3f8d and WHOLE unchanged original58fae9bb44, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWN e057a0b9 and WHOLE native. ORIGINAL expressly requires actualclearlyVISIBLEnear-midgroundYfork selecting differentEMPTYnearbydestinations withfocalLEFT60/quietRIGHT35terrain only. ActualprimaryYjunction/split sits x~1090-1190 BEHINDactualRIGHTcontrols1008; readonlyNEAREST nativecrop1008magentaline verifiesactualforkhidden. Thus originalcomposition/allChoices/latestQUESTfail; actual3plainSEALEDworktableparcels/provisions, belowfloorTOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening andmysticancientdepth present. No laterONEmissionparcel/fourlegtable/allfloors/ALLstairs/NOprops/LEFT45/780/MOONLIT retroconstraints. Protectedruralnear3parcelworkfloor/Yroads vsactualdepth3openancientruinsquarefloorpitONEparcel worldcamera/roads distinctP. Hardpixels/noidentity/text. Originalnative/OWN archivedunchanged; no publicdeletebeforegoodreplacementFULLROOTsix.",
+          "allChoices: ROOT personallyopened FULL exact ORIGINAL OWN ad3a3f8d and WHOLE unchanged original58fae9bb44, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWN e057a0b9 and WHOLE native. ORIGINAL expressly requires actualclearlyVISIBLEnear-midgroundYfork selecting differentEMPTYnearbydestinations withfocalLEFT60/quietRIGHT35terrain only. ActualprimaryYjunction/split sits x~1090-1190 BEHINDactualRIGHTcontrols1008; readonlyNEAREST nativecrop1008magentaline verifiesactualforkhidden. Thus originalcomposition/allChoices/latestQUESTfail; actual3plainSEALEDworktableparcels/provisions, belowfloorTOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening andmysticancientdepth present. No laterONEmissionparcel/fourlegtable/allfloors/ALLstairs/NOprops/LEFT45/780/MOONLIT retroconstraints. Protectedruralnear3parcelworkfloor/Yroads vsactualdepth3openancientruinsquarefloorpitONEparcel worldcamera/roads distinctP. Hardpixels/noidentity/text. Originalnative/OWN archivedunchanged; no publicdeletebeforegoodreplacementFULLROOTsix.",
+          "latestChoice: ROOT personallyopened FULL exact ORIGINAL OWN ad3a3f8d and WHOLE unchanged original58fae9bb44, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWN e057a0b9 and WHOLE native. ORIGINAL expressly requires actualclearlyVISIBLEnear-midgroundYfork selecting differentEMPTYnearbydestinations withfocalLEFT60/quietRIGHT35terrain only. ActualprimaryYjunction/split sits x~1090-1190 BEHINDactualRIGHTcontrols1008; readonlyNEAREST nativecrop1008magentaline verifiesactualforkhidden. Thus originalcomposition/allChoices/latestQUESTfail; actual3plainSEALEDworktableparcels/provisions, belowfloorTOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening andmysticancientdepth present. No laterONEmissionparcel/fourlegtable/allfloors/ALLstairs/NOprops/LEFT45/780/MOONLIT retroconstraints. Protectedruralnear3parcelworkfloor/Yroads vsactualdepth3openancientruinsquarefloorpitONEparcel worldcamera/roads distinctP. Hardpixels/noidentity/text. Originalnative/OWN archivedunchanged; no publicdeletebeforegoodreplacementFULLROOTsix."
+        ],
+        "notes": "ROOT personallyopened FULL exact ORIGINAL OWN ad3a3f8d and WHOLE unchanged original58fae9bb44, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWN e057a0b9 and WHOLE native. ORIGINAL expressly requires actualclearlyVISIBLEnear-midgroundYfork selecting differentEMPTYnearbydestinations withfocalLEFT60/quietRIGHT35terrain only. ActualprimaryYjunction/split sits x~1090-1190 BEHINDactualRIGHTcontrols1008; readonlyNEAREST nativecrop1008magentaline verifiesactualforkhidden. Thus originalcomposition/allChoices/latestQUESTfail; actual3plainSEALEDworktableparcels/provisions, belowfloorTOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening andmysticancientdepth present. No laterONEmissionparcel/fourlegtable/allfloors/ALLstairs/NOprops/LEFT45/780/MOONLIT retroconstraints. Protectedruralnear3parcelworkfloor/Yroads vsactualdepth3openancientruinsquarefloorpitONEparcel worldcamera/roads distinctP. Hardpixels/noidentity/text. Originalnative/OWN archivedunchanged; no publicdeletebeforegoodreplacementFULLROOTsix."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--mission--explore--mystic--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nVillage errand departure: unmarked sealed parcel and provisions beside rural threshold and path forward. No unselected apocalypse, faction emblem or assumed hero identity.\nSelected EXPLORATION: actual near LEFT floor recess cut BELOW main level immediately beside selected departure supplies, visible top floor lip/opening with WEATHERED DESCENDING steps going DOWN into concealed dark stone SIDE PASSAGE and lower landing. Do NOT draw ascending stairs rising above main floor toward an elevated tower doorway. Distant ordinary town stairs on RIGHT, or an arch looking only onto sea, does NOT substitute for this hidden traversable exploration opening.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No actual signs/wooden arrow road boards/signposts even blank. Express destinations through physical roads only. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an EMPTY sheltered village outpost with THREE clearly different PLAIN SEALED cloth-wrapped parcels on near LEFT worktable and an actual clearly visible near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true
+    },
+    {
+      "number": 159,
+      "key": "adventure--mission--explore--mystic--chapters",
+      "failChecks": [
+        "composition",
+        "allChoices"
+      ],
+      "note": "ROOT personallyopened FULL exact ORIGINAL OWN45073808 and WHOLE unchangedoriginal58f3b224be, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWNe057a0b9 and WHOLE native. ORIGINAL explicitly binds actualnear-midBAREregionalarch tox35-45, GREENbeforethresholdLEFT and aridOCHREinsidearchx35-55/LEFT60 beforecontrols; quietRIGHT35supportingterrainONLY. Actualchosenarch huge spansx~650-1250, RIGHTwall/column/base BEHINDactualcontrols1008, nottheoriginalLEFTarchstaging. ReadonlyNEARESTnativecrop1008magentaline confirmsfullRIGHTcolumn hidden. Originalcomp/allChoicesF; originalLATESTCH remainsP because aridOCHREsand/redrock isactuallyvisible throughLEFTpartofopeningbeforecontrols withGREENlowerthreshold; doNOT invent all-desertfarRIGHT/missingcontrastF. ActualplainCLOSEDentrustedbox/provisions and weatheredDOWNfloorrecess/toplip/LOWERdarksideopening present. No laterfullnativearch/allfloors/ALLstairs/ONEparcel/fourlegtable/treelessOCHRE/MOONLIT/LEFT45/780 retroconstraints; failure only originalLEFTselectedarchversusactualcontrolocclusion. Forestprotectednearold3supplies/giantregionalarch vsCURRENTdepth3openancientruinsquarefloorpitONEparcel changesworldcamera/geometry distinctP. Hardpixels/noidentity/writing. ArchiveoriginalOWN/nativeunchanged; oldpublic retaineduntilgoodreplacementFULLROOTsix.",
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--mystic--chapters-1-f3b224be23e6.png",
+        "sha256": "f3b224be23e6935639fd99ca948110b62936bcdd32b5f2a34cc7b6a6da9943e8",
+        "promptSha256": "36862974eeb58cfcc9d7fb6b3ce080cc14cc2dc7b15c4ac1ad6c2ef40fc3e235",
+        "generationPromptSha256": "4507380833c6bfa41e37b7b0362db1eb09d3ae97e182829f87e077abfdda8c48",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f3b224be23e6935639fd99ca948110b62936bcdd32b5f2a34cc7b6a6da9943e8",
+          "promptSha256": "36862974eeb58cfcc9d7fb6b3ce080cc14cc2dc7b15c4ac1ad6c2ef40fc3e235",
+          "reviewer": "Codex direct original visual inspection: v2-production-058",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and applicable parent: entrusted plain CLOSED SEALED small latched parcel box with travel provisions near LEFT floor; actual near LEFT floor recess/top lip shows weathered DESCENDING steps into lower dark side passage. Monumental BARE ancient chapter arch opens directly onto actual arid ochre sand/red rock visible through central aperture before panel, green forest/ground before threshold; continuous new stage. Quiet supporting right terrain/no large foreground props, core selected supplies/opening/contrast readable LEFT/CENTER. Fresh elevated open stone floor/recess/arch versus parent door/parcel/far ruin, native hard square clusters all planes/no signs/flags/text/heraldry/identity. Parent original sign separately rejected and replacement required before combined publication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 462861,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source159/unchanged-native.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new269/original-source159/unchanged-OWN.txt",
+      "after": {
+        "sourceSha256": "f3b224be23e6935639fd99ca948110b62936bcdd32b5f2a34cc7b6a6da9943e8",
+        "promptSha256": "36862974eeb58cfcc9d7fb6b3ce080cc14cc2dc7b15c4ac1ad6c2ef40fc3e235",
+        "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/currentparent native sources158159 correction",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT personallyopened FULL exact ORIGINAL OWN45073808 and WHOLE unchangedoriginal58f3b224be, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWNe057a0b9 and WHOLE native. ORIGINAL explicitly binds actualnear-midBAREregionalarch tox35-45, GREENbeforethresholdLEFT and aridOCHREinsidearchx35-55/LEFT60 beforecontrols; quietRIGHT35supportingterrainONLY. Actualchosenarch huge spansx~650-1250, RIGHTwall/column/base BEHINDactualcontrols1008, nottheoriginalLEFTarchstaging. ReadonlyNEARESTnativecrop1008magentaline confirmsfullRIGHTcolumn hidden. Originalcomp/allChoicesF; originalLATESTCH remainsP because aridOCHREsand/redrock isactuallyvisible throughLEFTpartofopeningbeforecontrols withGREENlowerthreshold; doNOT invent all-desertfarRIGHT/missingcontrastF. ActualplainCLOSEDentrustedbox/provisions and weatheredDOWNfloorrecess/toplip/LOWERdarksideopening present. No laterfullnativearch/allfloors/ALLstairs/ONEparcel/fourlegtable/treelessOCHRE/MOONLIT/LEFT45/780 retroconstraints; failure only originalLEFTselectedarchversusactualcontrolocclusion. Forestprotectednearold3supplies/giantregionalarch vsCURRENTdepth3openancientruinsquarefloorpitONEparcel changesworldcamera/geometry distinctP. Hardpixels/noidentity/writing. ArchiveoriginalOWN/nativeunchanged; oldpublic retaineduntilgoodreplacementFULLROOTsix.",
+          "allChoices: ROOT personallyopened FULL exact ORIGINAL OWN45073808 and WHOLE unchangedoriginal58f3b224be, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWNe057a0b9 and WHOLE native. ORIGINAL explicitly binds actualnear-midBAREregionalarch tox35-45, GREENbeforethresholdLEFT and aridOCHREinsidearchx35-55/LEFT60 beforecontrols; quietRIGHT35supportingterrainONLY. Actualchosenarch huge spansx~650-1250, RIGHTwall/column/base BEHINDactualcontrols1008, nottheoriginalLEFTarchstaging. ReadonlyNEARESTnativecrop1008magentaline confirmsfullRIGHTcolumn hidden. Originalcomp/allChoicesF; originalLATESTCH remainsP because aridOCHREsand/redrock isactuallyvisible throughLEFTpartofopeningbeforecontrols withGREENlowerthreshold; doNOT invent all-desertfarRIGHT/missingcontrastF. ActualplainCLOSEDentrustedbox/provisions and weatheredDOWNfloorrecess/toplip/LOWERdarksideopening present. No laterfullnativearch/allfloors/ALLstairs/ONEparcel/fourlegtable/treelessOCHRE/MOONLIT/LEFT45/780 retroconstraints; failure only originalLEFTselectedarchversusactualcontrolocclusion. Forestprotectednearold3supplies/giantregionalarch vsCURRENTdepth3openancientruinsquarefloorpitONEparcel changesworldcamera/geometry distinctP. Hardpixels/noidentity/writing. ArchiveoriginalOWN/nativeunchanged; oldpublic retaineduntilgoodreplacementFULLROOTsix."
+        ],
+        "notes": "ROOT personallyopened FULL exact ORIGINAL OWN45073808 and WHOLE unchangedoriginal58f3b224be, actualCURRENTdepth3Mystic ed3f5056 FULL exactOWNe057a0b9 and WHOLE native. ORIGINAL explicitly binds actualnear-midBAREregionalarch tox35-45, GREENbeforethresholdLEFT and aridOCHREinsidearchx35-55/LEFT60 beforecontrols; quietRIGHT35supportingterrainONLY. Actualchosenarch huge spansx~650-1250, RIGHTwall/column/base BEHINDactualcontrols1008, nottheoriginalLEFTarchstaging. ReadonlyNEARESTnativecrop1008magentaline confirmsfullRIGHTcolumn hidden. Originalcomp/allChoicesF; originalLATESTCH remainsP because aridOCHREsand/redrock isactuallyvisible throughLEFTpartofopeningbeforecontrols withGREENlowerthreshold; doNOT invent all-desertfarRIGHT/missingcontrastF. ActualplainCLOSEDentrustedbox/provisions and weatheredDOWNfloorrecess/toplip/LOWERdarksideopening present. No laterfullnativearch/allfloors/ALLstairs/ONEparcel/fourlegtable/treelessOCHRE/MOONLIT/LEFT45/780 retroconstraints; failure only originalLEFTselectedarchversusactualcontrolocclusion. Forestprotectednearold3supplies/giantregionalarch vsCURRENTdepth3openancientruinsquarefloorpitONEparcel changesworldcamera/geometry distinctP. Hardpixels/noidentity/writing. ArchiveoriginalOWN/nativeunchanged; oldpublic retaineduntilgoodreplacementFULLROOTsix."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 경이롭고 신비롭게 — 거대한 유적과 잊힌 세계를 발견해요.\n4. 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nLATEST CHOICE: 진행 방식: 챕터마다 새로운 무대 — 큰 사건이 끝날 때 배경과 목표가 바뀌어요.\nSCENE ID: adventure--mission--explore--mystic--chapters. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nVillage errand departure: unmarked sealed parcel and provisions beside rural threshold and path forward. No unselected apocalypse, faction emblem or assumed hero identity.\nSelected EXPLORATION: actual near LEFT floor recess cut BELOW main level immediately beside selected departure supplies, visible top floor lip/opening with WEATHERED DESCENDING steps going DOWN into concealed dark stone SIDE PASSAGE and lower landing. Do NOT draw ascending stairs rising above main floor toward an elevated tower doorway. Distant ordinary town stairs on RIGHT, or an arch looking only onto sea, does NOT substitute for this hidden traversable exploration opening.\nMOOD: Monumental ancient ruins and mysterious spatial depth with discrete pixel shade bands; no invented readable runes.\nFRESH SHOT: close foreground with strongly receding spatial layers. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No actual signs/wooden arrow road boards/signposts even blank. Express destinations through physical roads only. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: New stage for each major chapter: an actual near-midground BARE stone arch at x35-45 opens DIRECTLY onto ARID OCHRE DESERT with bare red rock/sand/no grass visibly inside the arch at x35-55. Lush GREEN FOREST and green ground occupy near LEFT x0-30; one continuous traversable path moves from GREEN through arch INTO ARID within LEFT60 before right controls. Do NOT put green forest inside arch while all desert sits far RIGHT; quiet RIGHT35 holds supporting terrain depth only, preserving near selected mission/boat/keepsake and chosen play. One continuous world. Same green valley on both sides or a distant snowy mountain alone FAILS. No separate panels or recap text.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true
+    },
+    {
+      "key": "adventure--mission--explore--warm--quests",
+      "sha256": "33c8aba87442c336c324fabed229ea6fb5e78c06fc0c3925d64134108a783262",
+      "failChecks": [
+        "composition",
+        "allChoices",
+        "latestChoice"
+      ],
+      "note": "ROOT FULL exactORIGINAL OWN/WHOLE native personallyseen. Originalexplicit clearlyVISIBLE near-midgroundY and focalselectedpropsLEFT/right35quiet. ActualprimaryYfork x~1190-1320 entirelyBEHIND1008controls; requireddifferentEMPTYnearbydestinations insteaddrawoccupiedHOUSEandWELL. Independentlycomposition/allChoices/latestQUESTSF usingONLYoriginalOWN. ActualTHREEplainclosedparcels gray/green/red plusordinaryrolledprovisions, realweatheredDOWNfloorrecess/toplip/lowerdarkSIDEopening andWARMlanterns present. No laterONEseparateMISSIONparcel/4legtable/ONEcup/WALLlantern/fullallfloors/ALLstairs/780/countretro.  ActualCURRENTdepth3Warmp arenta06e9f66 FULL exactOWN/WHOLE personallyopened: OUTSIDEruralstoneentry/ONEparcel/sidefloorrecess/riversunsetbridge camera versus ORIGINAL160 INSIDEcoveredWOODworkthreshold/THREEparcels/villagewell/Y roads changesactualcamera/geometry distinctP. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint.",
+      "currentParentSha256": "a06e9f66debd2bbc3c548195fe9ef6b0ab6dab26a66935c4632cf92220c9a56e",
+      "number": 160,
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests-1-33c8aba87442.png",
+        "sha256": "33c8aba87442c336c324fabed229ea6fb5e78c06fc0c3925d64134108a783262",
+        "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+        "generationPromptSha256": "4fdd3c7d2de4437cd78fe3c3bf534c225e36495f00e61ecc3755147b2d8b512c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "33c8aba87442c336c324fabed229ea6fb5e78c06fc0c3925d64134108a783262",
+          "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+          "reviewer": "Codex direct original visual inspection: v2-production-058",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native and applicable parent: THREE different plain SEALED wrapped parcels near LEFT worktable with errand/rest provisions, actual near LEFT recessed opening/top lip below main floor and weathered DESCENDING steps into lower dark concealed passage. Protected helpful lantern/rest supplies preserve WARM mood. Actual CLEAR Y-road fork physically divides toward TWO different nearby EMPTY rural destinations (house and well/outpost), no signs. Latest parcels/opening prominently LEFT, quiet right supporting terrain/fork. Fresh elevated sheltered outpost/floor recess versus old right-foreground parcel table parent. Hard native square clusters all planes/no flags/letters/heraldry/identity. Original parent sign and hidden right primary preparations separately rejected; replace before combined publication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 413108,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new270/original-source160/unchanged-native.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new270/original-source160/unchanged-OWN.txt",
+      "after": {
+        "sourceSha256": "33c8aba87442c336c324fabed229ea6fb5e78c06fc0c3925d64134108a783262",
+        "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+        "reviewer": "Codex ROOT FULL exactOWN/WHOLE/currentparent correction after checkpoint268 actual36clicks ROOTsix",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": false,
+          "latestChoice": false,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exactORIGINAL OWN/WHOLE native personallyseen. Originalexplicit clearlyVISIBLE near-midgroundY and focalselectedpropsLEFT/right35quiet. ActualprimaryYfork x~1190-1320 entirelyBEHIND1008controls; requireddifferentEMPTYnearbydestinations insteaddrawoccupiedHOUSEandWELL. Independentlycomposition/allChoices/latestQUESTSF usingONLYoriginalOWN. ActualTHREEplainclosedparcels gray/green/red plusordinaryrolledprovisions, realweatheredDOWNfloorrecess/toplip/lowerdarkSIDEopening andWARMlanterns present. No laterONEseparateMISSIONparcel/4legtable/ONEcup/WALLlantern/fullallfloors/ALLstairs/780/countretro.  ActualCURRENTdepth3Warmp arenta06e9f66 FULL exactOWN/WHOLE personallyopened: OUTSIDEruralstoneentry/ONEparcel/sidefloorrecess/riversunsetbridge camera versus ORIGINAL160 INSIDEcoveredWOODworkthreshold/THREEparcels/villagewell/Y roads changesactualcamera/geometry distinctP. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint.",
+          "allChoices: ROOT FULL exactORIGINAL OWN/WHOLE native personallyseen. Originalexplicit clearlyVISIBLE near-midgroundY and focalselectedpropsLEFT/right35quiet. ActualprimaryYfork x~1190-1320 entirelyBEHIND1008controls; requireddifferentEMPTYnearbydestinations insteaddrawoccupiedHOUSEandWELL. Independentlycomposition/allChoices/latestQUESTSF usingONLYoriginalOWN. ActualTHREEplainclosedparcels gray/green/red plusordinaryrolledprovisions, realweatheredDOWNfloorrecess/toplip/lowerdarkSIDEopening andWARMlanterns present. No laterONEseparateMISSIONparcel/4legtable/ONEcup/WALLlantern/fullallfloors/ALLstairs/780/countretro.  ActualCURRENTdepth3Warmp arenta06e9f66 FULL exactOWN/WHOLE personallyopened: OUTSIDEruralstoneentry/ONEparcel/sidefloorrecess/riversunsetbridge camera versus ORIGINAL160 INSIDEcoveredWOODworkthreshold/THREEparcels/villagewell/Y roads changesactualcamera/geometry distinctP. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint.",
+          "latestChoice: ROOT FULL exactORIGINAL OWN/WHOLE native personallyseen. Originalexplicit clearlyVISIBLE near-midgroundY and focalselectedpropsLEFT/right35quiet. ActualprimaryYfork x~1190-1320 entirelyBEHIND1008controls; requireddifferentEMPTYnearbydestinations insteaddrawoccupiedHOUSEandWELL. Independentlycomposition/allChoices/latestQUESTSF usingONLYoriginalOWN. ActualTHREEplainclosedparcels gray/green/red plusordinaryrolledprovisions, realweatheredDOWNfloorrecess/toplip/lowerdarkSIDEopening andWARMlanterns present. No laterONEseparateMISSIONparcel/4legtable/ONEcup/WALLlantern/fullallfloors/ALLstairs/780/countretro.  ActualCURRENTdepth3Warmp arenta06e9f66 FULL exactOWN/WHOLE personallyopened: OUTSIDEruralstoneentry/ONEparcel/sidefloorrecess/riversunsetbridge camera versus ORIGINAL160 INSIDEcoveredWOODworkthreshold/THREEparcels/villagewell/Y roads changesactualcamera/geometry distinctP. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint."
+        ],
+        "notes": "ROOT FULL exactORIGINAL OWN/WHOLE native personallyseen. Originalexplicit clearlyVISIBLE near-midgroundY and focalselectedpropsLEFT/right35quiet. ActualprimaryYfork x~1190-1320 entirelyBEHIND1008controls; requireddifferentEMPTYnearbydestinations insteaddrawoccupiedHOUSEandWELL. Independentlycomposition/allChoices/latestQUESTSF usingONLYoriginalOWN. ActualTHREEplainclosedparcels gray/green/red plusordinaryrolledprovisions, realweatheredDOWNfloorrecess/toplip/lowerdarkSIDEopening andWARMlanterns present. No laterONEseparateMISSIONparcel/4legtable/ONEcup/WALLlantern/fullallfloors/ALLstairs/780/countretro.  ActualCURRENTdepth3Warmp arenta06e9f66 FULL exactOWN/WHOLE personallyopened: OUTSIDEruralstoneentry/ONEparcel/sidefloorrecess/riversunsetbridge camera versus ORIGINAL160 INSIDEcoveredWOODworkthreshold/THREEparcels/villagewell/Y roads changesactualcamera/geometry distinctP. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\n4. 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nLATEST CHOICE: 진행 방식: 거점에서 의뢰를 선택 — 여러 작은 임무 중 하고 싶은 일을 골라요.\nSCENE ID: adventure--mission--explore--warm--quests. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nVillage errand departure: unmarked sealed parcel and provisions beside rural threshold and path forward. No unselected apocalypse, faction emblem or assumed hero identity.\nSelected EXPLORATION: actual near LEFT floor recess cut BELOW main level immediately beside selected departure supplies, visible top floor lip/opening with WEATHERED DESCENDING steps going DOWN into concealed dark stone SIDE PASSAGE and lower landing. Do NOT draw ascending stairs rising above main floor toward an elevated tower doorway. Distant ordinary town stairs on RIGHT, or an arch looking only onto sea, does NOT substitute for this hidden traversable exploration opening.\nMOOD: Protected welcoming shared resting nook with warm lantern light and supplies for several companions.\nFRESH SHOT: view from inside a sheltered threshold. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No actual signs/wooden arrow road boards/signposts even blank. Express destinations through physical roads only. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.\nPRIMARY STAGING — SELECTED PROGRESSION: Choose requests at a base: an EMPTY sheltered village outpost with THREE clearly different PLAIN SEALED cloth-wrapped parcels on near LEFT worktable and an actual clearly visible near-midground Y-shaped fork of traversable roads toward different EMPTY nearby destinations. Do NOT draw a quest board, letters, task UI or faction flags.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true
+    },
+    {
+      "key": "adventure--mission--explore--warm",
+      "sha256": "a06e9f66debd2bbc3c548195fe9ef6b0ab6dab26a66935c4632cf92220c9a56e",
+      "failChecks": [
+        "composition"
+      ],
+      "note": "ROOT FULL exactORIGINAL replacement OWN/WHOLE native personallyopened. OriginalOWN explicitly bare floor/no framingfoliage; actualmassiveLOWLEFTnearflower/leafcurtain directlyframes foreground between camera and selectedparcel/floorrecess, violatingoriginalcomposition. FAILcomposition ONLY; no newwholefloor/ONEcup/WALL/count/780retro, realONESEALEDparcel/ordinaryprovisions/ruralthreshold andactualTOPLIP/stepsDOWNbelowmainfloor/lowerdarkSIDEopening/WARMlanterns present, latestWARM P. Hardpixels/noidentity/text.  ActualCURRENTdepth2MissionExplorea1a498e4 FULL exactOWN/WHOLE personallyopened. Currentparent eye-levelthreshold/plainparcelWORKtable/gear/frontroad/RIGHTraisedhiddenarch versusoriginal161 higherOUTSIDEthreshold/stackedparcel/LEFTbelowfloorrecess/riverbridge changesactualworldcamera andsidepassagegeometry, distinctShotP; no stricterDOWN/whole rules applied todepth2 original. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint.",
+      "currentParentSha256": "a1a498e4a8438ec212b72ea462fc1ffc62b59a910883bdf38ab49b98821b5721",
+      "number": 161,
+      "before": {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm-3-a06e9f66debd.png",
+        "sha256": "a06e9f66debd2bbc3c548195fe9ef6b0ab6dab26a66935c4632cf92220c9a56e",
+        "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+        "generationPromptSha256": "1e6dc39df25cd7d2d2c735ca74080d26835e37ff1afaa0d64557e7d83daacf87",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "a06e9f66debd2bbc3c548195fe9ef6b0ab6dab26a66935c4632cf92220c9a56e",
+          "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+          "reviewer": "Codex direct original visual inspection: v2-production-059",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Root directly opened native replacement and rejected old native parent: actual unmarked SEALED entrusted parcel and ordinary travel provisions LEFT rural threshold, near LEFT top floor lip/recess with weathered DESCENDING steps into lower dark side passage. Warm protected helpful lantern preparations clearly LEFT before controls; old giant right parcel table removed. Original forbidden blank arrow road signs removed. No added progression/chapter/boat/battle/identity. Fresh high oblique rural departure-floor/opening versus old cabin right-table composition, native hard square clusters all planes with no blurred foliage/focal obstruction, no signs/flags/letters/heraldry/people. Approved replacement for rejected original f2b893d436fb."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 514892,
+          "findings": []
+        }
+      },
+      "archiveNative": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new270/original-source161/unchanged-native.png",
+      "archiveOwn": "/home/main/.local/share/oprn/interview-scene-bank-recovery-20261007/new270/original-source161/unchanged-OWN.txt",
+      "after": {
+        "sourceSha256": "a06e9f66debd2bbc3c548195fe9ef6b0ab6dab26a66935c4632cf92220c9a56e",
+        "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+        "reviewer": "Codex ROOT FULL exactOWN/WHOLE/currentparent correction after checkpoint268 actual36clicks ROOTsix",
+        "checks": {
+          "pixelArt": true,
+          "composition": false,
+          "allChoices": true,
+          "latestChoice": true,
+          "identityUnset": true,
+          "noText": true,
+          "distinctShot": true
+        },
+        "findings": [
+          "composition: ROOT FULL exactORIGINAL replacement OWN/WHOLE native personallyopened. OriginalOWN explicitly bare floor/no framingfoliage; actualmassiveLOWLEFTnearflower/leafcurtain directlyframes foreground between camera and selectedparcel/floorrecess, violatingoriginalcomposition. FAILcomposition ONLY; no newwholefloor/ONEcup/WALL/count/780retro, realONESEALEDparcel/ordinaryprovisions/ruralthreshold andactualTOPLIP/stepsDOWNbelowmainfloor/lowerdarkSIDEopening/WARMlanterns present, latestWARM P. Hardpixels/noidentity/text.  ActualCURRENTdepth2MissionExplorea1a498e4 FULL exactOWN/WHOLE personallyopened. Currentparent eye-levelthreshold/plainparcelWORKtable/gear/frontroad/RIGHTraisedhiddenarch versusoriginal161 higherOUTSIDEthreshold/stackedparcel/LEFTbelowfloorrecess/riverbridge changesactualworldcamera andsidepassagegeometry, distinctShotP; no stricterDOWN/whole rules applied todepth2 original. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint."
+        ],
+        "notes": "ROOT FULL exactORIGINAL replacement OWN/WHOLE native personallyopened. OriginalOWN explicitly bare floor/no framingfoliage; actualmassiveLOWLEFTnearflower/leafcurtain directlyframes foreground between camera and selectedparcel/floorrecess, violatingoriginalcomposition. FAILcomposition ONLY; no newwholefloor/ONEcup/WALL/count/780retro, realONESEALEDparcel/ordinaryprovisions/ruralthreshold andactualTOPLIP/stepsDOWNbelowmainfloor/lowerdarkSIDEopening/WARMlanterns present, latestWARM P. Hardpixels/noidentity/text.  ActualCURRENTdepth2MissionExplorea1a498e4 FULL exactOWN/WHOLE personallyopened. Currentparent eye-levelthreshold/plainparcelWORKtable/gear/frontroad/RIGHTraisedhiddenarch versusoriginal161 higherOUTSIDEthreshold/stackedparcel/LEFTbelowfloorrecess/riverbridge changesactualworldcamera andsidepassagegeometry, distinctShotP; no stricterDOWN/whole rules applied todepth2 original. FULL268 immutable snapshot and ROOT ALLsix saved; checkpoint268 commit held because independentlyconfirmed2669 semanticfalseP requiresrepair before clean checkpoint."
+      },
+      "exactOriginalOwn": "Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.\nOUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.\nSTYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.\nREFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.\nFORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.\nEach prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.\nGENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.\nSELECTED FACTS:\n1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.\n2. 중심 플레이: 탐험과 발견 — 새 길·유적·숨겨진 장소를 찾아요.\n3. 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\nLATEST CHOICE: 분위기: 따뜻한 동료애로 — 험한 길에서도 서로가 돌아갈 곳이 돼요.\nSCENE ID: adventure--mission--explore--warm. This identifier is metadata; never draw it.\nCONCRETE SCENE BRIEF:\nREPLACE REJECTED NATIVE PARENT: MISSION small village errand, ONE unmarked SEALED entrusted parcel plus ordinary travel provisions near LEFT rural threshold. EXPLORATION: actual near LEFT floor recess/opening cut BELOW main ground, visible top lip and WEATHERED DESCENDING steps into dark half-concealed stone SIDE PASSAGE/lower landing beside supplies; no elevated ascending tower doorway. WARM: protected welcoming helpful shared lantern-lit resting preparations, plain closed supplies and clean ordinary cloth near LEFT, no ominous attacker. Fresh independent near-overhead oblique sheltered departure floor camera versus old door/parcel/arrow-sign view. Chosen parcel/side passage/mood focal scene LEFT60 before controls, quiet fully drawn RIGHT35 supports only distant terrain, no large RIGHT foreground table/parcel/gear. NO actual signs, wooden arrow boards, signposts or wayfinding markers even blank; physical paths alone express direction. No extra selected progression/scope, no invented chapter desert, monster, ship/battle machinery or protagonist. Original hard square pixel clusters/stepped contours/short discrete ramps/equal hard focus EVERY plane, bare floor/no blur/framing foliage/gradients/collage. No people/body/humanoid/species/portraits, writing/pseudotext/open books/papers/maps/documents/notices/clocks/numerals, signs even blank/flags/banners/tapestries/hanging cloth/insignia/heraldry/emblems/logos. Actual source rejection: Root directly re-opened published native parent when comparing current mission-exploration descendants. Actual TWO wooden arrow ROAD SIGN BOARDS is visibly present even without script. Exact original generation base explicitly says FORBIDDEN signs. Earlier note treated lack of script as sufficient; original no-sign contract was missed, not a new retroactive numeric prop rule. Preserve old source/exact request/rejection and replace through official harness. Primary parcel/protected preparations also occupy large RIGHT foreground behind controls rather than original LEFT60 focal area; ordinary geometric woven rug is not claimed to be an emblem.",
+      "pendingOfficialReview": false,
+      "onlyOriginalOwnApplied": true,
+      "notNewGeneration": true
+    }
+  ]
+}

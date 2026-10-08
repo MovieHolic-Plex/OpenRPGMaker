@@ -1,0 +1,27 @@
+{
+  "published": 1046,
+  "remaining": 411,
+  "snapshot": {
+    "interviewSceneBank.json": "acd6b6c88c9e0c6a4215907243ffa424b18137d68bf9cd7787fd701c7bef5081",
+    "ledger.json": "cb8608b6eff97dac59b7014851432ad2c36709b66da33d73d6f737fc7a279d82"
+  },
+  "actualIntegrityExit": 0,
+  "actualProductionBrowserExit": 0,
+  "targets": [
+    "adventure--unknown--companions--warm--journey",
+    "adventure--unknown--companions--warm--journey--scene",
+    "adventure--unknown--companions--warm--journey--episode",
+    "adventure--unknown--companions--warm--journey--short",
+    "adventure--unknown--companions--warm--chapters",
+    "adventure--unknown--companions--warm--chapters--episode"
+  ],
+  "clicks": 34,
+  "runtimeErrors": [],
+  "generationRequests": 0,
+  "rootWholeScreenshotInspectionPending": true,
+  "notFreshAllNativeVisualAudit": true,
+  "originalSourceCorrection139ActualExit": 0,
+  "originalSourceCorrections140To142ActualExit": 0,
+  "originalSourceCorrections143To157ActualExit": 0,
+  "cumulativeOriginalSourceRejections": 157
+}
