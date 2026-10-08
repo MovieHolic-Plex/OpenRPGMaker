@@ -11,6 +11,7 @@ import os from "node:os";
 import path from "node:path";
 import { buildModel } from "@oh-my-pi/pi-catalog/build";
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
+import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { renderMapPng, renderToolRegionPngBase64 } from "../qa-game/render.mts";
 import { runTool, toOpenAiTools } from "../../src/editor/tools/index.ts";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store.ts";
@@ -31,12 +32,20 @@ const projectDir = path.resolve(`.oprn-projects/hand-interior-trial-${label}`);
 fs.rmSync(projectDir, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-const cfg = (Bun as unknown as { YAML: { parse(s: string): any } }).YAML.parse(fs.readFileSync(path.join(os.homedir(), ".omp/agent/models.yml"), "utf8"));
-const prov = (cfg.providers ?? cfg)[provider];
-const md = prov.models.find((m: { id: string }) => m.id === modelId);
-const model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking,
-  input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens,
-  compat: { ...prov.compat, ...md.compat } } as never);
+// 편집기 기본 제공자(google-antigravity·openai-codex 등 OAuth)는 models.yml 이 아니라 편집기와 같은 자격 해석으로 부른다.
+const OAUTH = new Set(["google-antigravity", "openai-codex", "google-gemini-cli"]);
+let model: unknown, apiKey: string | undefined;
+if (OAUTH.has(provider)) {
+  apiKey = await resolveRequestApiKey(provider);
+} else {
+  const cfg = (Bun as unknown as { YAML: { parse(s: string): any } }).YAML.parse(fs.readFileSync(path.join(os.homedir(), ".omp/agent/models.yml"), "utf8"));
+  const prov = (cfg.providers ?? cfg)[provider];
+  const md = prov.models.find((m: { id: string }) => m.id === modelId);
+  model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking,
+    input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens,
+    compat: { ...prov.compat, ...md.compat } } as never);
+  apiKey = prov.apiKey;
+}
 
 // ---- a new SQLite project (the editor's blank project, saved first) ----
 let store = await initLocalProjectStore({ projectDir });
@@ -44,6 +53,26 @@ const projectId = store.info().projectId;
 { const r = await store.saveSerialized(JSON.stringify(createBlankProject()), store.loadSnapshot()?.sha256 ?? null); if (r.kind !== "saved") throw new Error(r.kind); }
 let project = store.loadSnapshot()!.project as Project;
 store.close();
+// --ugc: 사용자가 올린 칩셋(손 도트 v5 시트를 이름표 없이 올린 것)에 「방 짓기」 탭으로 역할표만 만든 상태 — 이름표·조립 부품 없음.
+if (process.argv.includes("--ugc")) {
+  const { PNG } = await import("pngjs");
+  const v5 = JSON.parse(fs.readFileSync("src/assets/handInteriorSpec.json", "utf8"));
+  const src = PNG.sync.read(fs.readFileSync("public/assets/atlas-interior/interior-chipset.png"));
+  const T = 16, per = src.width / T, count = per * (src.height / T);
+  const upId = "up_my_interior";
+  project.assets.uploaded[upId] = { id: upId, name: "내 실내 칩셋", kind: "tileset", dataUrl: `data:image/png;base64,${fs.readFileSync("public/assets/atlas-interior/interior-chipset.png").toString("base64")}`,
+    meta: { tileSize: T, width: src.width, height: src.height } } as never;
+  project.tilesets.my_interior = { id: "my_interior", name: "내 실내 칩셋", kind: "custom", image: { type: "uploaded", id: upId }, tileSize: T, tilesPerRow: per, count,
+    passability: Array.from({ length: count }, () => ({ up: true, down: true, left: true, right: true })), priority: Array.from({ length: count }, () => "lower" as const), terrain: new Array(count).fill(0) } as never;
+  const f = v5.floors.plank, w = v5.walls.plaster;
+  const picks = { floor: Array.from({ length: f.rows }, (_, r) => Array.from({ length: f.cols }, (_, c) => f.tiles[(r * f.cols + c) * 4])),
+    wall: [0, 1].map((row) => Array.from({ length: w.cols }, (_, c) => w.tiles[(row * w.cols + c) * 2])), ceiling: v5.ceilings.default[0] };
+  const { compileRoomKit, installRoomKit, roomKitAssetId } = await import("../../src/project/roomKit.ts");
+  const c = compileRoomKit({ width: src.width, height: src.height, data: src.data }, T, picks as never);
+  const out = new PNG({ width: c.sheet.width, height: c.sheet.height }); out.data = Buffer.from(c.sheet.data);
+  const dataUrl = `data:image/png;base64,${PNG.sync.write(out).toString("base64")}`;
+  installRoomKit(project as never, "my_interior", c, { id: roomKitAssetId(T, dataUrl), dataUrl }, picks as never);
+}
 // --start-tileset <id>: 사용자가 그 칩셋 맵을 보고 있는 상태에서 시작(예: jp_city 거리 맵을 보다가 「집 실내」 요청). 없으면 새 프로젝트 기본 맵을 본다.
 const startTileset = arg("start-tileset");
 let currentMapId: string | undefined;
@@ -108,9 +137,9 @@ const trace: { i: number; name: string; ok: boolean; summary: string; args: stri
 const log: string[] = [];
 const started = Date.now();
 const done = await runPiAgent(
-  { provider, model: modelId, task, mapIds: currentMapId ? [currentMapId] : [], currentMapId: currentMapId as never, project, maxTurns, thinkingLevel: "high" as never, initialToolNames: exposed },
+  { provider, model: modelId, task, mapIds: currentMapId ? [currentMapId] : [], currentMapId: currentMapId as never, project, maxTurns, thinkingLevel: (arg("thinking", "medium")) as never, initialToolNames: exposed },
   {
-    model: model as never, apiKey: prov.apiKey,
+    ...(model ? { model: model as never } : {}), apiKey,
     renderToolImage: async (p: Project, _n: string, data: unknown) => renderToolRegionPngBase64(p, data),
     onToolCall: (r) => { trace.push({ i: trace.length + 1, name: r.name, ok: r.result.ok, summary: String(r.result.summary ?? "").slice(0, 500), args: JSON.stringify(r.args).slice(0, 4000),
       code: (r.result as { issues?: { code?: string }[] }).issues?.[0]?.code }); },
