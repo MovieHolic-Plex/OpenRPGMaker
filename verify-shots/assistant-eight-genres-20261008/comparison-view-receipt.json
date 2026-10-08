@@ -1,0 +1,435 @@
+{
+  "at": "2026-10-08T06:18:14.432Z",
+  "url": "http://100.73.251.77:8811/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/internal-ai-game-audit.view.html",
+  "initial": "모험 JRPG · 요구사항과 근거",
+  "results": [
+    {
+      "id": "monster-collect",
+      "requirements": 12,
+      "groups": [
+        "monster-collect"
+      ]
+    },
+    {
+      "id": "story-cutscene",
+      "requirements": 12,
+      "groups": [
+        "story-cutscene"
+      ]
+    },
+    {
+      "id": "adventure-jrpg",
+      "requirements": 12,
+      "groups": [
+        "adventure-jrpg"
+      ]
+    },
+    {
+      "id": "horror-gallery",
+      "requirements": 12,
+      "groups": [
+        "horror-gallery"
+      ]
+    },
+    {
+      "id": "school-horror",
+      "requirements": 12,
+      "groups": [
+        "school-horror"
+      ]
+    },
+    {
+      "id": "farm-life",
+      "requirements": 13,
+      "groups": [
+        "farm-life"
+      ]
+    },
+    {
+      "id": "partner-raise",
+      "requirements": 12,
+      "groups": [
+        "partner-raise"
+      ]
+    },
+    {
+      "id": "action-rpg",
+      "requirements": 12,
+      "groups": [
+        "action-rpg"
+      ]
+    }
+  ],
+  "widths": [
+    {
+      "width": 1024,
+      "viewport": 992,
+      "documentWidth": 992,
+      "bodyWidth": 992,
+      "imgs": [
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 480,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        }
+      ],
+      "tables": [
+        [
+          992,
+          992
+        ],
+        [
+          992,
+          992
+        ],
+        [
+          992,
+          992
+        ]
+      ]
+    },
+    {
+      "width": 736,
+      "viewport": 704,
+      "documentWidth": 704,
+      "bodyWidth": 704,
+      "imgs": [
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 480,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        }
+      ],
+      "tables": [
+        [
+          704,
+          768
+        ],
+        [
+          704,
+          704
+        ],
+        [
+          704,
+          704
+        ]
+      ]
+    },
+    {
+      "width": 360,
+      "viewport": 328,
+      "documentWidth": 328,
+      "bodyWidth": 328,
+      "imgs": [
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 480,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        }
+      ],
+      "tables": [
+        [
+          328,
+          768
+        ],
+        [
+          328,
+          328
+        ],
+        [
+          328,
+          608
+        ]
+      ]
+    },
+    {
+      "width": 320,
+      "viewport": 288,
+      "documentWidth": 288,
+      "bodyWidth": 288,
+      "imgs": [
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 480,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        },
+        {
+          "w": 640,
+          "h": 480,
+          "ok": true
+        }
+      ],
+      "tables": [
+        [
+          288,
+          768
+        ],
+        [
+          288,
+          288
+        ],
+        [
+          288,
+          608
+        ]
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "pass": true
+}

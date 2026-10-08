@@ -1,0 +1,319 @@
+{
+  "schema": "assistant-capability-case-assessment/1",
+  "caseId": "story-cutscene",
+  "label": "회상 스토리",
+  "completedAt": "2026-10-08T03:56:20.110317+00:00",
+  "scope": "Only assigned case; no direct content repairs, no source edits, no tests/gates/stash/commits",
+  "models": {
+    "outerRequested": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "actualProviderReceipt": "not independently available to this evaluator"
+    },
+    "internalObserved": {
+      "model": "gemini-3.8-flash",
+      "provider": "google-antigravity",
+      "evidence": [
+        "attempt-1/requests.json",
+        "attempt-2/native-start-receipt-authenticated.json"
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "environment-blocked",
+      "inputMode": "natural exact task",
+      "elapsedMs": 304570,
+      "contentChanged": false,
+      "revision": 2,
+      "sha256": "4317521f6c399e561fc3dcb2e6a242222597c7e3d19aca235c5ffba65177e190",
+      "observation": "Classification POST only; no agent/run and no Pi events; idle disconnected bridge. Evaluator stopped owned browser after preserving checkpoint. Not a 45-minute timeout or model authoring failure.",
+      "evidence": [
+        "attempt-1/result.json",
+        "routing-stall-intervention.json"
+      ]
+    },
+    {
+      "attempt": 2,
+      "repair": 1,
+      "status": "pass",
+      "scope": "Measurement completed; gameplay defects recorded separately",
+      "inputMode": "same exact task via documented /pi in actual UI",
+      "elapsedMs": 1238428,
+      "elapsedExcludesEditorSlotQueue": true,
+      "nativeRunId": "02c5d4bb-b6db-4f6a-b9ec-ec1edbf9faff",
+      "contentChanged": true,
+      "savedRevision": 24,
+      "editorUiStatus": "Failure: applied response could not be delivered; authored changes remained. Native trace modelDone is not UI delivery success.",
+      "evidence": [
+        "attempt-2/result.json",
+        "attempt-2/after.png",
+        "attempt-2/trace.json"
+      ]
+    }
+  ],
+  "repairsUsed": 1,
+  "repairsMaximum": 2,
+  "requirements": [
+    {
+      "requirement": "three distinct inspectable memories",
+      "status": "pass",
+      "observedBehavior": "Pot, diary and musicbox separately inspected by native keyboard. Each produced different text and its own persistent switch; count advanced 0→1→2→3.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/042-pot-first-count-notice.json",
+        "attempt-2/runtime-repair-1/060-diary-description.json",
+        "attempt-2/runtime-repair-1/062-diary-memory.json",
+        "attempt-2/runtime-repair-1/089-music-description.json",
+        "attempt-2/runtime-repair-1/091-music-memory.json",
+        "attempt-2/runtime-repair-1/093-all-three-count.json"
+      ],
+      "staticCapability": "Eight actual authored events across two maps. Hotspots and visible representations differ in visual clarity.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "memory count cannot repeat",
+      "status": "pass",
+      "observedBehavior": "Pot repeat remained 1. Musicbox repeat and diary repeat remained 3.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/048-pot-repeat-count-preserved.json",
+        "attempt-2/runtime-repair-1/099-music-repeat-count-preserved.json",
+        "attempt-2/runtime-repair-1/106-diary-repeat-count-preserved.json"
+      ],
+      "staticCapability": "Separate repeat pages contain dialogue only and no increment.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "ending gate requires all memories",
+      "status": "pass",
+      "observedBehavior": "No ending choices at zero or two memories; choices at three. Zero-memory door activation stays closed; physical bypass reaches friend but cannot end.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/014-door-zero-locked-dialogue.json",
+        "attempt-2/runtime-repair-1/025-friend-zero-dialogue.json",
+        "attempt-2/runtime-repair-1/196-friend-gate-at-two.json",
+        "attempt-2/runtime-repair-1/123-ending-choice-before-cancel.json"
+      ],
+      "staticCapability": "Friend pages use count<3 and count>=3. Door opens at count>=1, consistent with exact task requirement that it remain closed at zero.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "two distinct choices and endings",
+      "status": "pass",
+      "observedBehavior": "First New Game selects leave, distinct dialogue and terminal ending. Independent second New Game starts with zero memories and false ending flags, collects all three and selects stay; different terminal ending.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/133-leave-distinct-friend-dialogue.json",
+        "attempt-2/runtime-repair-1/143-leave-final-terminal-screen.json",
+        "attempt-2/runtime-repair-1/152-independent-game-zero-state.json",
+        "attempt-2/runtime-repair-1/235-stay-choice-select.json",
+        "attempt-2/runtime-repair-1/237-stay-distinct-friend-dialogue.json",
+        "attempt-2/runtime-repair-1/245-stay-final-terminal-screen.json"
+      ],
+      "staticCapability": "Two define_ending definitions with triggerEnding branches, distinct epilogues and names.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "cancel changes nothing",
+      "status": "pass",
+      "observedBehavior": "Escape closes final choices; entire readState object before and after is identical. Reentry restores same choices.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/123-ending-choice-before-cancel.json",
+        "attempt-2/runtime-repair-1/125-ending-cancel-state.json",
+        "attempt-2/runtime-repair-1/131-reentry-choice-restored.json"
+      ],
+      "staticCapability": "cancelBehavior branch and empty cancelBranch. Exact comparison receipt: attempt-2/cancel-equality.json.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "authored movement/fade/camera cutscene",
+      "status": "pass",
+      "observedBehavior": "Authored introduction moves player x1→x5 and changes camera scrollX 8→0. Runtime mirror records fadeIn. Authored ending epilogues visibly fade field to black and mirror records fadeOut/tint.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/003-authored-intro-state.json",
+        "attempt-2/runtime-repair-1/009-intro-control-restored.json",
+        "attempt-2/runtime-repair-1/139-leave-epilogue-label.json",
+        "attempt-2/runtime-repair-1/239-stay-epilogue-1.json"
+      ],
+      "staticCapability": "script_cutscene intro has one-shot self switch, movement, fadeIn, camera pan/return. Ending epilogues have fadeOut/fadeIn. Intro fade interpolation was not frame-sampled; no claim about exact temporal smoothness.",
+      "inference": "No broad genre success inference from this one repaired case."
+    },
+    {
+      "requirement": "saved project and player save resume",
+      "status": "pass",
+      "observedBehavior": "Real editor UI Save and fresh editor context reload preserve revision24/full stored SHA and maps/DB. Real transfer autosave at count2 was selected through fresh player page Resume, preserving count/flags/map/position and avoiding intro replay. Manual slot Save separately fails.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/077-autosave-before-last-memory.json",
+        "attempt-2/runtime-repair-1/078-fresh-player-continue-title.json",
+        "attempt-2/runtime-repair-1/079-select-real-autosave.json",
+        "attempt-2/runtime-repair-1/082-resume-load-complete.json"
+      ],
+      "staticCapability": "Canonical stored digest and unfolded document digest independently match. Native manual Save controller defect remains. Resume observation used a new page sharing genuine localStorage, not a fresh storage context.",
+      "inference": "No broad genre success inference from this one repaired case."
+    }
+  ],
+  "additionalAxes": {
+    "firstRunAuthoringRoute": "environment-blocked",
+    "repairedShippingBoot": "pass",
+    "manualPlayerSlotSave": "fail",
+    "transferAutosaveResume": "pass",
+    "visualAndNarrativeFit": "fail",
+    "assetIntegrity": "pass",
+    "allTilesetReferenceSemantics": "unverified",
+    "noBattle": "pass",
+    "deathLossRetry": "unverified"
+  },
+  "adversarial": {
+    "try ending before memories": "pass at count0 and2",
+    "inspect same memory twice": "pass for all three memories",
+    "cancel final choice": "pass, entire readState equality",
+    "both branches in independent new games": "pass; actual native New Game reset shown",
+    "return after dialogue": "pass; repeated memory and cancelled-choice reentry",
+    "save before final memory and resume": "pass via real native transfer autosave; manual save fail",
+    "death/loss/retry": "not applicable to observed noncombat content; not executed"
+  },
+  "persistence": {
+    "readOnly": true,
+    "at": "2026-10-08T03:54:00.864826+00:00",
+    "projectId": "ecf96d17-12a0-4419-ac9f-f07ddc58acde",
+    "revision": 24,
+    "storedSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+    "updatedAt": "2026-10-08T03:31:07.915Z",
+    "mapsTableEqualsStoredDocument": {
+      "map_blank_start": true,
+      "map_house_interior": true
+    },
+    "afterRuntimeStillMatchesEditorReload": true,
+    "foldedJsonSha256": "6a28bdb1b6f35f6fd585b97cda8cfec55c6767f4d4f9f8dc246adfcad183b470",
+    "unfoldedDocumentSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+    "unfoldedDocumentMatchesStoredSha": true,
+    "tilesetBlobCount": 35,
+    "tilesetBlobsValid": true
+  },
+  "shippingSource": {
+    "sha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+    "attempt": 2,
+    "playerRoute": "compiled player.html with prepareWebExport and export shim",
+    "instrumentation": "read-only runtime state and camera; native keyboard/UI input only"
+  },
+  "reuse": {
+    "nativeTemplate": "Village kit, hand interior kit, charset/facesets, hero/stats/HUD/menu, title and unrelated kingdom prologue; no newly generated art.",
+    "assistantAuthoredExtension": "Two connected maps, eight events, three one-shot memory flags/count, friend conditions/choices/cancel, intro movement/fade/camera, two triggered epilogues/endings.",
+    "superficialDialogueSystems": "No fake memory/ending implementation: actual state and branches work. Hard-coded progress text misrepresents actual count; narrative promise of music is text, audio playback of musicbox not independently measured."
+  },
+  "defects": [
+    {
+      "id": "progress-text",
+      "kind": "authored gameplay/UI",
+      "status": "fail",
+      "observed": "Pot first says3/3 while count1; diary second says1/3 while count2; musicbox third says2/3 while count3.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/042-pot-first-count-notice.json",
+        "attempt-2/runtime-repair-1/064-diary-out-of-order-count.json",
+        "attempt-2/runtime-repair-1/093-all-three-count.json"
+      ]
+    },
+    {
+      "id": "manual-save",
+      "kind": "product/controller",
+      "status": "fail",
+      "observed": "Native System→Save changes to Items in clean baseline and authored game.",
+      "sourceInference": "playerStatusMenuController renderMenu rejects nested save absent from rail, falls back to items.",
+      "evidence": [
+        "attempt-1/runtime-first-keyboard-save/005-save-open.json",
+        "attempt-2/runtime-repair-1/070-manual-save-activation.json"
+      ]
+    },
+    {
+      "id": "inherited-war-opening",
+      "kind": "narrative/template",
+      "status": "fail",
+      "observed": "Unrelated kingdom war/citadel/sword prologue retained.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/001-first-native-story-screen.png"
+      ]
+    },
+    {
+      "id": "door-visual-and-bypass",
+      "kind": "authored visual/spatial",
+      "status": "fail",
+      "observed": "Door is represented by human sprite, disappears after one memory, and can be walked around. Friend still correctly blocks endings before3.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/014-door-zero-locked-dialogue.png",
+        "attempt-2/runtime-repair-1/025-friend-zero-dialogue.png"
+      ]
+    },
+    {
+      "id": "pot-visual",
+      "kind": "authored visual",
+      "status": "fail",
+      "observed": "Pot hotspot at3,10 has no event graphic and field image does not show an identifiable pot at interaction location. Garden kit is elsewhere.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/048-pot-repeat-count-preserved.png"
+      ]
+    },
+    {
+      "id": "result-delivery",
+      "kind": "orchestration/UI",
+      "status": "fail",
+      "observed": "Editor result card says applied response could not be delivered while changes are present and native turn completed.",
+      "evidence": [
+        "attempt-2/after.png"
+      ]
+    }
+  ],
+  "assetAndReferenceIssues": {
+    "canonicalAssetReceipts": 512,
+    "invalidAssetReceipts": 0,
+    "tilesetBlobCount": 35,
+    "tilesetBlobsValid": true,
+    "tileReferences": "list/read tools called; full reference correctness not independently audited",
+    "unsupportedArtNeeds": "No proven unavailable art capability. Exact pot/door/musicbox visual fit needs correction or native asset selection; no human art approval manufactured."
+  },
+  "toolProposals": [
+    {
+      "name": "Shipping player verification mode for existing play validation tools",
+      "classification": "Proposed capability extension; no missing content-authoring primitive established",
+      "observedFailure": "Native System→Save opens Items, while assistant headless scene tests settle successfully. Runtime also exposes hard-coded progress notices inconsistent with actual count.",
+      "currentWorkaround": "External assistant-capability export-shim player observation using native keyboard, saved-SHA receipts, screenshots and read-only state. Current run_scene_test/play_walkthrough explicitly execute without a browser.",
+      "existingCapabilitiesChecked": [
+        "src/editor/tools/playTools.ts: run_scene_test and play_walkthrough",
+        "src/editor/tools/questTools.ts: generate_walkthrough and verify_quest",
+        "src/editor/tools/endingTools.ts: define_ending",
+        "src/player/dialogue.ts: numeric variable escape V[n], named string variable T[id]"
+      ],
+      "input": {
+        "savedProjectSha": "required immutable canonical digest",
+        "playerBuildSha": "required compiled build digest",
+        "nativeActions": "bounded keyboard/menu/interaction actions from actual New Game",
+        "assertions": "memory state, dialogue/UI, cancellations, ending IDs, genuine save/resume equality"
+      },
+      "output": "Pass/fail/unverified/environment-blocked assertions, action receipts, exact source/build digests, SUMMARY, PNG hashes and native save/resume receipts",
+      "negativeConditions": [
+        "Reject set/inventory/HP/currency/teleport or seeded completion state as gameplay proof",
+        "Reject editor Test Play or headless interpreter result as shipping verification",
+        "Do not treat turn completion or a hidden debug marker as success",
+        "Missing asset/browser/timeout returns unverified or environment-blocked; do not force PASS",
+        "Verify source digest before re-observation and preserve original failed observer receipt"
+      ],
+      "expectedGameplayAcceptanceCheck": "From fresh native New Game, collect memories in alternate order, repeat all, attempt final choice at0/2/3, cancel with exact state equality, reach both endings in independent games, perform actual manual slot Save and fresh player Resume with matching state."
+    }
+  ],
+  "limits": [
+    "Single trial per case plus one route repair; no genre-wide success rate",
+    "Intro fade interpolation not frame-sampled",
+    "Native Resume uses genuine autosave in same storage context and new player page; manual slot path fails",
+    "Historical browser IndexedDB not inspected before READY; case SQLite had zero prior conversations",
+    "Runtime boot harness verifies title/New Game only; separate native action receipts establish adversarial results",
+    "Earlier observer mouse-block/early-ready/asset-loading failures preserved and not relabelled content defects"
+  ],
+  "deliverables": {
+    "plan": "PLAN.md",
+    "report": "REPORT.md",
+    "reviewedImages": "reviewed-images.json",
+    "runtimeSummary": "attempt-2/runtime-repair-1/SUMMARY.md",
+    "trace": "attempt-2/trace.json",
+    "firstRun": "attempt-1",
+    "repairSnapshots": "attempt-2",
+    "persistence": "attempt-2/persistence.json",
+    "finalCanonicalReceipt": "persistence-final-readonly.json"
+  }
+}

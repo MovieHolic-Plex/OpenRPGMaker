@@ -1,0 +1,94 @@
+{
+  "reviewer": "root-supervisor",
+  "at": "2026-10-08T03:54:45.243444+00:00",
+  "images": [
+    {
+      "caseId": "horror-gallery",
+      "path": "attempt-2/runtime-reobserved/petals-one-default-hud.png",
+      "sha256": "7c858e910dfdf13b50b55710f847c054d50c90795755361146144ec4253792bf",
+      "observation": "SUMMARY first read; HUD still514/514 with paired petal variable1."
+    },
+    {
+      "caseId": "horror-gallery",
+      "path": "attempt-2/runtime-content-first/answer-digit-options.png",
+      "sha256": "3faf9394a40f3685631ac1b6efe811c5e42e92e5a9ed7be316ace37b785e5c2c",
+      "observation": "Restricted single-digit choices1,3,7,9; does not expose whole PIN as a labelled answer."
+    },
+    {
+      "caseId": "partner-raise",
+      "path": "attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.png",
+      "sha256": "1acc645e190c49dc69fa820803359603050fe1a2e6c8c4335ffb8e498bf42120",
+      "observation": "Text says crowned king slime; field form is a blue dragon overlapping hero. Paired promotion result must establish class behavior."
+    },
+    {
+      "caseId": "farm-life",
+      "path": "attempt-2/runtime-repair-1b/sell-nonexistent-pumpkin.png",
+      "sha256": "d54c3fe5540aed21de9fe2bfcc16df0d6854bf4a9b663e1fafbb482cde95f916",
+      "observation": "Actual120G purchase dialogue. Zero stock and money delta established by paired JSON, not caption alone."
+    },
+    {
+      "caseId": "farm-life",
+      "path": "attempt-3/runtime-interrupted-repair-b/unchanged-cell2-instant-wrong-harvest.png",
+      "sha256": "fed7048b08d5430037e5aaa52f90b05a405a8a407176f9627d73087fc26a6050",
+      "observation": "Native farm field; same-day wrong product established by paired runtime receipts, not this no-dialogue frame alone."
+    },
+    {
+      "caseId": "monster-collect",
+      "path": "attempt-3/runtime-final/native-celebration-ending.png",
+      "sha256": "506040b046d0416b02e331a6aca18f61c04cc64e94cb4e3491a27cdc4631cb93",
+      "observation": "Premature black frame. Not an ending visual proof."
+    },
+    {
+      "caseId": "monster-collect",
+      "path": "attempt-3/runtime-final/actual-ending-loaded.png",
+      "sha256": "e2e2afbd4b23f2dabb6419eac6ae4dcbde9b5f7fbfa08fbfa5f3fa4b38051af7",
+      "observation": "Actual rendered gym conquest ending."
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "path": "attempt-1/runtime-reobserve-2/observations/167.png",
+      "sha256": "d44f4e9c780d4eed8117684f6818c0b4a211c65314a47820db5b6b4821d59098",
+      "observation": "Native two-actor battle, mage MP81; paired before85 receipt establishes consumption."
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "path": "attempt-1/runtime-reobserve-2/observations/136.png",
+      "sha256": "084495093b0483d9a0aa7ecd27d5fc008849de31b2f12c354ab57e27536aba75",
+      "observation": "Cave view uses repeated flat tiles/decorations; broad open field rather than articulated cave spaces."
+    },
+    {
+      "caseId": "school-horror",
+      "path": "attempt-3/runtime-final/055-new-game-capture-terminal.png",
+      "sha256": "9185433830b92aa84d5795ada737e6a7d682282fdb0cb0db15229158f1be04a8",
+      "observation": "Real gameover shows native checkpoint retry."
+    },
+    {
+      "caseId": "school-horror",
+      "path": "attempt-3/runtime-final/043-pursuer-searches-hidden-player.png",
+      "sha256": "523c838839befc8c9c4f8e7d82bbee4cf1451fae3537925637c2809ffd2028e4",
+      "observation": "Status menu obscures map. Not standalone hiding visual proof; paired mirror can still show state."
+    },
+    {
+      "caseId": "school-horror",
+      "path": "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.png",
+      "sha256": "095cb46ba97f780dc06fe4d528d0f35cb4a6c344cf559fd9fe52ccd62b43d53d",
+      "observation": "Actual wardrobe room, pursuer and hidden prompt; read-only session confirms search/give-up state."
+    },
+    {
+      "caseId": "story-cutscene",
+      "path": "attempt-2/runtime-repair-1/042-pot-first-count-notice.png",
+      "sha256": "9cb1d2a4e6a38fc5b8532deacfb32242e6d4a5edd9ba2daaf7d902364070e4a5",
+      "observation": "First memory acquisition visibly says3/3 while paired actual count is1."
+    },
+    {
+      "caseId": "school-horror",
+      "path": "attempt-3/runtime-final/033-flee-classroom-after-key.png",
+      "sha256": "fef23615dc8b36e802f6c1b3ca2270d97baf8786dae41ee1f2522dfd9babb30c",
+      "observation": "Actual capture after Continue shows Game Over with title-return only; compare new-game055 checkpoint retry. Its paired receipt also lacks checkpoint-retry testid."
+    }
+  ],
+  "limitations": [
+    "Image names express intended actions; premature/occluded screenshots are explicitly rejected as standalone gameplay proof.",
+    "Every image read followed its runtime SUMMARY."
+  ]
+}

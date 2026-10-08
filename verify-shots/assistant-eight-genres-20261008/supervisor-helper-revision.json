@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-08T02:48:34.248226+00:00",
+  "helperSha256": "aa308497233fe72a601edc9c7b6452123c15889192da34b3264e9e56229e468c",
+  "changes": [
+    "OAuth client metadata passed from installed reference before starting temporary bundled hosts",
+    "Record Pi provider from request body or query",
+    "Record login overlay before input",
+    "Release only own still-owned locks"
+  ],
+  "productSourceChanged": false,
+  "earlierAttemptsPreserved": true
+}

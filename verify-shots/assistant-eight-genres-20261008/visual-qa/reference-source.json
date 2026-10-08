@@ -1,0 +1,13 @@
+{
+  "readOnly": true,
+  "canonicalSource": "qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/adventure-jrpg/canonical-expanded.json",
+  "canonicalSourceSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+  "restorationFunction": "restoreOwnedReferenceDocuments",
+  "ownerMarker": "bundle",
+  "restoredCount": 1,
+  "bundleDefinition": "src/project/defaults/beodeulCity.ts",
+  "referenceBundleSha256": "74944b205d73856354e0bdf9d47dfb61bf0f9fd2756e3b0e31be8a2036ca55a7",
+  "referenceView": "qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/visual-qa/adventure-jrpg/current-reference-view.json",
+  "referenceViewSha256": "14ef2036f5b473f59d075943941085e42b38e6da70cf32aeb61ce5c83a972b35",
+  "explanation": "Reference docs restored through the product owner marker in a read-only projection. Saved maps, actors and source document are unchanged."
+}

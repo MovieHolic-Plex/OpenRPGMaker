@@ -1,0 +1,171 @@
+{
+  "at": "2026-10-08T02:49:35.583919+00:00",
+  "rows": [
+    {
+      "case": "farm-life",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 4.4,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    },
+    {
+      "case": "farm-life",
+      "attempt": "attempt-2",
+      "phase": "internal-ai",
+      "elapsedMinutes": 0.8,
+      "events": null
+    },
+    {
+      "case": "horror-gallery",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 4.1,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    },
+    {
+      "case": "horror-gallery",
+      "attempt": "attempt-2",
+      "phase": "internal-ai",
+      "elapsedMinutes": 0.8,
+      "events": null
+    },
+    {
+      "case": "monster-collect",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 4.0,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    },
+    {
+      "case": "monster-collect",
+      "attempt": "attempt-2",
+      "phase": "internal-ai",
+      "elapsedMinutes": 10.4,
+      "events": 230,
+      "toolEnds": 106,
+      "failedTools": {
+        "create_transfer_pair": 1,
+        "configure_monster_campaign": 5,
+        "stamp_object": 1,
+        "list_hand_interior_parts": 1,
+        "build_hand_interior_room": 2
+      },
+      "lastTools": [
+        {
+          "name": "stamp_object",
+          "ok": true,
+          "summary": "「버들항 소품 채소 손수레 2×2」 → map_shop (2,7) 2×2 · 4칸"
+        },
+        {
+          "name": "stamp_object",
+          "ok": true,
+          "summary": "「버들항 소품 꽃 수레 2×2」 → map_shop (10,7) 2×2 · 4칸"
+        },
+        {
+          "name": "stamp_object",
+          "ok": true,
+          "summary": "「버들항 소품 기념 원주 1×4」 → map_gym (2,2) 1×4 · 4칸"
+        }
+      ]
+    },
+    {
+      "case": "partner-raise",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 3.0,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    },
+    {
+      "case": "partner-raise",
+      "attempt": "attempt-2",
+      "phase": "closed",
+      "elapsedMinutes": 11.3,
+      "events": null,
+      "toolEnds": 82,
+      "failedTools": {
+        "upsert_class": 1,
+        "define_ending": 1,
+        "upsert_event": 2,
+        "run_scene_test": 1,
+        "fill_region": 2
+      },
+      "lastTools": [
+        {
+          "name": "stamp_object",
+          "ok": true,
+          "summary": "「버들항 포도원 마을 · 올리브 나무 A 3×4」 → map_blank_start (7,1) 3×4 · 9칸"
+        },
+        {
+          "name": "show_map_region",
+          "ok": true,
+          "summary": "맵 미리보기: (0,0) 24×18 (몬스터 육성 연구 마을)"
+        },
+        {
+          "name": "play_walkthrough",
+          "ok": true,
+          "summary": "완주 성공 (22/22 스텝, 엔딩=true)"
+        }
+      ]
+    },
+    {
+      "case": "school-horror",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 4.8,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    },
+    {
+      "case": "school-horror",
+      "attempt": "attempt-2",
+      "phase": "closed",
+      "elapsedMinutes": 8.8,
+      "events": null,
+      "toolEnds": 39,
+      "failedTools": {
+        "build_hand_interior_room": 2
+      },
+      "lastTools": [
+        {
+          "name": "build_hand_interior_room",
+          "ok": true,
+          "summary": "손 도트 실내 '지하 창고' 12×8 (map_storage, atlas_biome_interior) — 출입구에서 닿는 칸 37, 닿지 못한 빈 바닥 0, 경고 1 — 방이 칸막이·알코브 없는 직사각형 하나(ㅁ자, 실내 60칸)다 — 큰 방은 ㄱ·ㄷ자 외곽, 벽에서 들어간 알코브, 두꺼운 칸막이('#'"
+        },
+        {
+          "name": "create_transfer_pair",
+          "ok": true,
+          "summary": "출입구 쌍 생성: 어두운 교실(4,6) ↔ 적막한 복도(2,3)"
+        },
+        {
+          "name": "get_map_region",
+          "ok": true,
+          "summary": "어두운 교실(map_classroom) 영역 (0,0)~(12,9) — 이벤트 1개, 물 0칸"
+        }
+      ]
+    },
+    {
+      "case": "story-cutscene",
+      "attempt": "attempt-1",
+      "phase": "closed",
+      "elapsedMinutes": 5.1,
+      "events": null,
+      "toolEnds": 0,
+      "failedTools": {},
+      "lastTools": []
+    }
+  ]
+}

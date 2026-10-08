@@ -1,0 +1,1078 @@
+{
+  "at": "2026-10-08T05:42:41.399653+00:00",
+  "cases": [
+    {
+      "caseId": "monster-collect",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/attempt-1/trace.json",
+          "traceSha256": "9141c3d8aa01230f18c3eb418f610d6f73b298a39feb2d97f14d625b5e04f999",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/attempt-2/trace.json",
+          "traceSha256": "84fa71cf1f1b081d6a5d5ea194415fda97243763be00726ab84de1be271531d2",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_62691",
+              "at": 1791427363588,
+              "ok": true,
+              "args": {
+                "mapId": "map_field"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_62010",
+              "at": 1791427589913,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "mapId": "map_town",
+                "h": 15,
+                "x": 0,
+                "w": 20
+              },
+              "summary": "맵 미리보기: (0,0) 20×15 (시작 마을)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_62013",
+              "at": 1791427590302,
+              "ok": true,
+              "args": {
+                "mapId": "map_field",
+                "h": 20,
+                "y": 0,
+                "x": 0,
+                "w": 20
+              },
+              "summary": "맵 미리보기: (0,0) 20×20 (별빛 들판)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_62019",
+              "at": 1791427590625,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "mapId": "map_shop",
+                "h": 12,
+                "x": 0,
+                "w": 14
+              },
+              "summary": "맵 미리보기: (0,0) 14×12 (마을 상점)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_62022",
+              "at": 1791427590976,
+              "ok": true,
+              "args": {
+                "mapId": "map_gym",
+                "w": 16,
+                "y": 0,
+                "h": 14,
+                "x": 0
+              },
+              "summary": "맵 미리보기: (0,0) 16×14 (풀잎 체육관)"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_37423",
+              "at": 1791427596418,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-village"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_123339",
+              "at": 1791427698654,
+              "ok": true,
+              "args": {
+                "categoryId": "hand-interior-v5"
+              },
+              "summary": "손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "layout_quality",
+              "at": 1791427579958,
+              "ok": false,
+              "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_town 빈 바닥 100% (기준 ≤30%), 소품 없는 빈 정사각형 15×15칸 (왼위 0,0) (기준 ≤5) / map_field 빈 바닥 40% (기준 ≤30%) / map_shop 빈 바닥 100% (기준 ≤30%), 소품 없는 빈 정사각형 12×12칸 (왼위 0,0) (기준 ≤5) / map_gym 빈 바닥 100% (기준 ≤30%), 소품 없는 빈 정사각형 14×14칸 (왼위 0,0) (기준 ≤5)"
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427589913,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427590302,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427590625,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427590976,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "layout_quality",
+              "at": 1791427799277,
+              "ok": false,
+              "summary": "배치 품질 수리 뒤에도 기준 미달: map_town 빈 바닥 59% (기준 ≤30%), 소품 없는 빈 정사각형 8×8칸 (왼위 3,0) (기준 ≤5) / map_field 빈 바닥 31% (기준 ≤30%) / map_shop 빈 바닥 70% (기준 ≤30%), 소품 없는 빈 정사각형 7×7칸 (왼위 3,0) (기준 ≤5), 좌우 대칭 10.3배 (기준 ≤2.2, 우연이면 1) / map_gym 빈 바닥 75% (기준 ≤30%), 소품 없는 빈 정사각형 8×8칸 (왼위 3,0) (기준 ≤5), 좌우 대칭 8.8배 (기준 ≤2.2, 우연이면 1)"
+            }
+          ]
+        },
+        {
+          "attempt": 3,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/attempt-3/trace.json",
+          "traceSha256": "4024ecf710e52c0c467e5b8146887420b6b2adf7f82efc2215dccc625fcaf645",
+          "calls": [],
+          "imageAndQualityEvents": []
+        }
+      ]
+    },
+    {
+      "caseId": "story-cutscene",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/attempt-1/trace.json",
+          "traceSha256": "c3a5e69533d7bc36bf17a8c45095092028e6cd1814c44d7b118108d5f6b72e4c",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/attempt-2/trace.json",
+          "traceSha256": "ec136be9637ec1b43f617b7dd3f3777c9df7b3a91a7a87a5a77c00c7286e3380",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_107425",
+              "at": 1791429350412,
+              "ok": true,
+              "args": {
+                "tilesetId": "atlas_biome_interior"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_62601",
+              "at": 1791429353154,
+              "ok": true,
+              "args": {
+                "tilesetId": "atlas_biome_interior",
+                "categoryId": "hand-interior-v5"
+              },
+              "summary": "손 도트 실내 (v5) — MD 6쪽·이미지 34장 (남은 쪽 92: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_77525",
+              "at": 1791429440227,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_218906",
+              "at": 1791429453757,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-village",
+                "tilesetId": "beodeul_city"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) — MD 5쪽·이미지 15장 (남은 쪽 1: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_109034",
+              "at": 1791430007833,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start",
+                "x": 0,
+                "y": 0,
+                "h": 30,
+                "w": 40
+              },
+              "summary": "맵 미리보기: (0,0) 40×30 (빈 맵)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_104472",
+              "at": 1791430053888,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "documentId": "bd-pick-doc-walled-market",
+                "offset": 0,
+                "categoryId": "beodeul-picks-village"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) / 성벽 장터 마을 조각 10종 (0–3786, 1/1쪽)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_71461",
+              "at": 1791430156413,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start",
+                "h": 30,
+                "y": 0,
+                "x": 0,
+                "w": 40
+              },
+              "summary": "맵 미리보기: (0,0) 40×30 (빈 맵)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "layout_quality",
+              "at": 1791429994253,
+              "ok": false,
+              "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_blank_start 빈 바닥 57% (기준 ≤30%), 소품 없는 빈 정사각형 15×15칸 (왼위 24,15) (기준 ≤5), 좌우 대칭 2.5배 (기준 ≤2.2, 우연이면 1)"
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791430007833,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791430156413,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/attempt-1/trace.json",
+          "traceSha256": "32ddd23164d308589663c8edd20348af98f1ce78854754de7c0e941ad09fafb4",
+          "calls": [
+            {
+              "name": "read_region_reference",
+              "id": "call_56945",
+              "at": 1791427972094,
+              "ok": true,
+              "args": {},
+              "summary": "완성 지역 사례"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_83960",
+              "at": 1791427974005,
+              "ok": true,
+              "args": {},
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_134760",
+              "at": 1791428245140,
+              "ok": true,
+              "args": {
+                "tilesetId": "monster_dungeon"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_94852",
+              "at": 1791428245286,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-dungeon",
+                "tilesetId": "beodeul_city"
+              },
+              "summary": "버들항 장소 · 던전(고른 조각) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_92548",
+              "at": 1791428260690,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-dungeon"
+              },
+              "summary": "버들항 장소 · 던전(고른 조각) — MD 6쪽·이미지 8장 (남은 쪽 2: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_58851",
+              "at": 1791428295488,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-dungeon",
+                "after": [
+                  "bd-pick-doc-dungeon-guide:0",
+                  "bd-pick-doc-aqueduct-sewer:0",
+                  "bd-pick-doc-aqueduct-sewer:5937",
+                  "bd-pick-doc-castle-catacombs:0",
+                  "bd-pick-doc-castle-catacombs:5944",
+                  "bd-pick-doc-temple-ruins:5971"
+                ]
+              },
+              "summary": "버들항 장소 · 던전(고른 조각) — MD 2쪽·이미지 0장 — 이 용도 전부"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_107307",
+              "at": 1791428856489,
+              "ok": false,
+              "args": {
+                "mapId": "map_beodeul_small_village",
+                "x": 10,
+                "h": 15,
+                "w": 20,
+                "y": 10
+              },
+              "summary": "변경 적용 실패 또는 실행 중단: map-rendering-unavailable: snapshot graft bake incomplete or timed out; no approval"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_107312",
+              "at": 1791428859198,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "w": 20,
+                "x": 0,
+                "h": 15,
+                "mapId": "map_cave_dungeon"
+              },
+              "summary": "맵 미리보기: (0,0) 20×15 (이끼 서린 동굴)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_56212",
+              "at": 1791428971715,
+              "ok": true,
+              "args": {
+                "w": 20,
+                "y": 0,
+                "x": 0,
+                "mapId": "map_cave_dungeon",
+                "h": 15
+              },
+              "summary": "맵 미리보기: (0,0) 20×15 (이끼 서린 동굴)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_105027",
+              "at": 1791429007076,
+              "ok": true,
+              "args": {
+                "mapId": "map_village_shop",
+                "w": 10,
+                "h": 15,
+                "y": 0,
+                "x": 0
+              },
+              "summary": "맵 미리보기: (0,0) 10×8 (버들꽃 상점)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_105039",
+              "at": 1791429007344,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "mapId": "map_village_inn",
+                "x": 0,
+                "h": 15,
+                "w": 12
+              },
+              "summary": "맵 미리보기: (0,0) 12×8 (버들꽃 여관)"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_79279",
+              "at": 1791429025481,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-field"
+              },
+              "summary": "버들항 장소 · 필드(고른 조각) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_110851",
+              "at": 1791429032794,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-field"
+              },
+              "summary": "버들항 장소 · 필드(고른 조각) — MD 7쪽·이미지 8장 — 이 용도 전부"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_42011",
+              "at": 1791429212577,
+              "ok": true,
+              "args": {
+                "mapId": "map_cave_dungeon",
+                "x": 0,
+                "w": 20,
+                "h": 15,
+                "y": 0
+              },
+              "summary": "맵 미리보기: (0,0) 20×15 (이끼 서린 동굴)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "map.image.delivered",
+              "at": 1791428859198,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428971715,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791429007076,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791429007344,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "layout_quality",
+              "at": 1791429015672,
+              "ok": false,
+              "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_beodeul_small_village 빈 바닥 53% (기준 ≤30%), 소품 없는 빈 정사각형 15×15칸 (왼위 24,15) (기준 ≤5) / map_cave_dungeon 빈 바닥 90% (기준 ≤30%), 소품 없는 빈 정사각형 14×14칸 (왼위 9,10) (기준 ≤5)"
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791429212577,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "layout_quality",
+              "at": 1791429225245,
+              "ok": false,
+              "summary": "배치 품질 수리 뒤에도 기준 미달: map_beodeul_small_village 빈 바닥 46% (기준 ≤30%), 소품 없는 빈 정사각형 9×9칸 (왼위 31,18) (기준 ≤5) / map_cave_dungeon 빈 바닥 83% (기준 ≤30%), 소품 없는 빈 정사각형 8×8칸 (왼위 0,16) (기준 ≤5), 좌우 대칭 9.2배 (기준 ≤2.2, 우연이면 1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "horror-gallery",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-1/trace.json",
+          "traceSha256": "cfc3e71b8796e83747fd2adbcae264152244ac89738d5e90c9d5b78eef0a8752",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/trace.json",
+          "traceSha256": "30f892e2e620a920a62eb8f56fba02fae2f6b0cc4847f0d100cd481e4ff2cc71",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_50955",
+              "at": 1791427788861,
+              "ok": true,
+              "args": {},
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_62891",
+              "at": 1791427868139,
+              "ok": true,
+              "args": {
+                "tilesetId": "atlas_biome_interior"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_63440",
+              "at": 1791427871837,
+              "ok": true,
+              "args": {
+                "categoryId": "hand-interior-v5",
+                "tilesetId": "atlas_biome_interior"
+              },
+              "summary": "손 도트 실내 (v5) — MD 6쪽·이미지 34장 (남은 쪽 92: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            }
+          ],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 3,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-3/trace.json",
+          "traceSha256": "862a5e187a071e437f642c3bb5ccf3b5f8aa16d90c85696c3421e2bf6da5476b",
+          "calls": [],
+          "imageAndQualityEvents": []
+        }
+      ]
+    },
+    {
+      "caseId": "school-horror",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-1/trace.json",
+          "traceSha256": "83600daacc889a4347ece5234a67068445a935123a172986accf590170618dff",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-2/trace.json",
+          "traceSha256": "d3d1a0e24fddfc66a8e22e496a80d0ba042a1652d0a35cb5385eac36d11a0803",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 3,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/trace.json",
+          "traceSha256": "8e2c70adeb93ef11fccac6ea560081b1b8c50d06f67068bf0bb64a0430ce0d50",
+          "calls": [
+            {
+              "name": "show_map_region",
+              "id": "call_70895",
+              "at": 1791428796994,
+              "ok": true,
+              "args": {
+                "h": 9,
+                "y": 0,
+                "w": 12,
+                "mapId": "map_classroom",
+                "x": 0
+              },
+              "summary": "맵 미리보기: (0,0) 12×9 (어두운 교실)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_79791",
+              "at": 1791428800745,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "x": 0,
+                "h": 8,
+                "mapId": "map_hallway",
+                "w": 20
+              },
+              "summary": "맵 미리보기: (0,0) 20×8 (적막한 복도)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_79794",
+              "at": 1791428800848,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "x": 0,
+                "h": 8,
+                "mapId": "map_storage",
+                "w": 12
+              },
+              "summary": "맵 미리보기: (0,0) 12×8 (지하 창고)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_63453",
+              "at": 1791428857968,
+              "ok": true,
+              "args": {
+                "w": 12,
+                "h": 9,
+                "mapId": "map_classroom",
+                "y": 0,
+                "x": 0
+              },
+              "summary": "맵 미리보기: (0,0) 12×9 (어두운 교실)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_63456",
+              "at": 1791428858088,
+              "ok": true,
+              "args": {
+                "mapId": "map_hallway",
+                "y": 0,
+                "x": 0,
+                "w": 20,
+                "h": 8
+              },
+              "summary": "맵 미리보기: (0,0) 20×8 (적막한 복도)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_63459",
+              "at": 1791428858177,
+              "ok": true,
+              "args": {
+                "w": 12,
+                "h": 8,
+                "y": 0,
+                "mapId": "map_storage",
+                "x": 0
+              },
+              "summary": "맵 미리보기: (0,0) 12×8 (지하 창고)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "map.image.delivered",
+              "at": 1791428796994,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428800745,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428800848,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428857968,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428858088,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428858177,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "farm-life",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/attempt-1/trace.json",
+          "traceSha256": "3e05a64596fe742cf5391eec9c3ebf8a88ea65cea93f9ca2fdd3872861dedf1f",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/attempt-2/trace.json",
+          "traceSha256": "eb4e632d9f90034830435c1a4314b98357cb7cdff399632e5edfd0e824a886fc",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_69438",
+              "at": 1791428064235,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_51034",
+              "at": 1791428067747,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-village"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) — MD 5쪽·이미지 15장 (남은 쪽 1: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_53561",
+              "at": 1791428072827,
+              "ok": true,
+              "args": {
+                "tilesetId": "atlas_biome_interior",
+                "categoryId": "hand-interior-v5"
+              },
+              "summary": "손 도트 실내 (v5) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_84385",
+              "at": 1791428076975,
+              "ok": true,
+              "args": {
+                "categoryId": "hand-interior-v5",
+                "tilesetId": "atlas_biome_interior",
+                "documentId": "hand-interior-v5-order"
+              },
+              "summary": "손 도트 실내 (v5) / 손 도트 실내 · 읽는 순서·짓는 순서 (0–3044, 1/1쪽)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_38839",
+              "at": 1791428133081,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-forms"
+              },
+              "summary": "버들항 · 여섯 건축 구조와 강변 마을 — MD 4쪽·이미지 3장 (남은 쪽 44: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_63771",
+              "at": 1791428386630,
+              "ok": true,
+              "args": {
+                "h": 15,
+                "mapId": "map_blank_start",
+                "x": 0,
+                "w": 20,
+                "y": 5
+              },
+              "summary": "맵 미리보기: (0,5) 20×15 (햇살 농장)"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_55938",
+              "at": 1791428432499,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start",
+                "h": 15,
+                "x": 0,
+                "y": 9,
+                "w": 20
+              },
+              "summary": "맵 미리보기: (0,9) 20×15 (햇살 농장)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "layout_quality",
+              "at": 1791428379380,
+              "ok": false,
+              "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_blank_start 빈 바닥 89% (기준 ≤30%), 소품 없는 빈 정사각형 15×15칸 (왼위 0,8) (기준 ≤5), 좌우 대칭 4.9배 (기준 ≤2.2, 우연이면 1)"
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428386630,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791428432499,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "layout_quality",
+              "at": 1791428466050,
+              "ok": false,
+              "summary": "배치 품질 수리 뒤에도 기준 미달: map_blank_start 빈 바닥 61% (기준 ≤30%), 소품 없는 빈 정사각형 6×6칸 (왼위 19,0) (기준 ≤5)"
+            }
+          ]
+        },
+        {
+          "attempt": 3,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/attempt-3/trace-checkpoint.json",
+          "traceSha256": "c4b169539a44a8a9ed092ced04ee8f3b4bb6dce70ae41c0360aaeb89f76b65e1",
+          "calls": [
+            {
+              "name": "show_map_region",
+              "id": "call_91890",
+              "at": 1791429415894,
+              "ok": false,
+              "args": {
+                "x": 4,
+                "y": 11,
+                "h": 6,
+                "mapId": "map_blank_start",
+                "w": 6
+              },
+              "summary": "변경 적용 실패 또는 실행 중단: map-rendering-unavailable: snapshot graft bake incomplete or timed out; no approval"
+            },
+            {
+              "name": "list_tileset_references",
+              "id": "call_95822",
+              "at": 1791429595036,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_72203",
+              "at": 1791429629712,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start",
+                "categoryId": "beodeul-picks-field"
+              },
+              "summary": "버들항 장소 · 필드(고른 조각) — MD 7쪽·이미지 8장 — 이 용도 전부"
+            }
+          ],
+          "imageAndQualityEvents": []
+        }
+      ]
+    },
+    {
+      "caseId": "partner-raise",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/attempt-1/trace.json",
+          "traceSha256": "bbccc131bebe5a91a831cb02884c19e486f2cd69af459fed58b9f59686133db5",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/attempt-2/trace.json",
+          "traceSha256": "375a71722401f3f9ce4a4b69bf7057841f2b9188d799ab5e1a6d7757a8ac7436",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_64642",
+              "at": 1791427155308,
+              "ok": true,
+              "args": {
+                "mapId": "map_blank_start"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_46371",
+              "at": 1791427465406,
+              "ok": true,
+              "args": {
+                "y": 0,
+                "mapId": "map_blank_start",
+                "h": 18,
+                "x": 0,
+                "w": 24
+              },
+              "summary": "맵 미리보기: (0,0) 24×18 (몬스터 육성 연구 마을)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_93928",
+              "at": 1791427470615,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-village"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) — MD 5쪽·이미지 15장 (남은 쪽 1: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_79980",
+              "at": 1791427505555,
+              "ok": true,
+              "args": {
+                "after": [
+                  "bd-pick-doc-village-grammar:0",
+                  "bd-pick-doc-village-guide:0",
+                  "bd-pick-doc-fishing-port:0",
+                  "bd-pick-doc-riverside-mill:0",
+                  "bd-pick-doc-vineyard:0"
+                ],
+                "tilesetId": "beodeul_city",
+                "categoryId": "beodeul-picks-village"
+              },
+              "summary": "버들항 장소 · 마을(고른 조각) — MD 1쪽·이미지 0장 — 이 용도 전부"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_73541",
+              "at": 1791427657364,
+              "ok": true,
+              "args": {
+                "x": 0,
+                "w": 24,
+                "h": 18,
+                "mapId": "map_blank_start",
+                "y": 0
+              },
+              "summary": "맵 미리보기: (0,0) 24×18 (몬스터 육성 연구 마을)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "layout_quality",
+              "at": 1791427458232,
+              "ok": false,
+              "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_blank_start 빈 바닥 100% (기준 ≤30%), 소품 없는 빈 정사각형 18×18칸 (왼위 0,0) (기준 ≤5)"
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427465406,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "map.image.delivered",
+              "at": 1791427657364,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            },
+            {
+              "name": "layout_quality",
+              "at": 1791427670928,
+              "ok": false,
+              "summary": "배치 품질 수리 뒤에도 기준 미달: map_blank_start 빈 바닥 68% (기준 ≤30%), 소품 없는 빈 정사각형 8×8칸 (왼위 10,6) (기준 ≤5)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "action-rpg",
+      "trials": [
+        {
+          "attempt": 1,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/attempt-1/trace.json",
+          "traceSha256": "51769f7a9b68e55c50e3d5be2ed1e3c0ebc9ae75fa22a86c93789fad24be11dd",
+          "calls": [
+            {
+              "name": "list_tileset_references",
+              "id": "call_98974",
+              "at": 1791428855525,
+              "ok": true,
+              "args": {
+                "tilesetId": "beodeul_city"
+              },
+              "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_53924",
+              "at": 1791428872001,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-dungeon",
+                "tilesetId": "beodeul_city"
+              },
+              "summary": "버들항 장소 · 던전(고른 조각) — MD 6쪽·이미지 8장 (남은 쪽 2: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)"
+            },
+            {
+              "name": "read_tileset_reference",
+              "id": "call_54601",
+              "at": 1791428885026,
+              "ok": true,
+              "args": {
+                "categoryId": "beodeul-picks-dungeon",
+                "after": [
+                  "bd-pick-doc-dungeon-guide:0",
+                  "bd-pick-doc-aqueduct-sewer:0",
+                  "bd-pick-doc-aqueduct-sewer:5937",
+                  "bd-pick-doc-castle-catacombs:0",
+                  "bd-pick-doc-castle-catacombs:5944",
+                  "bd-pick-doc-temple-ruins:5971"
+                ],
+                "tilesetId": "beodeul_city"
+              },
+              "summary": "버들항 장소 · 던전(고른 조각) — MD 2쪽·이미지 0장 — 이 용도 전부"
+            },
+            {
+              "name": "show_map_region",
+              "id": "call_67044",
+              "at": 1791429188009,
+              "ok": true,
+              "args": {
+                "w": 20,
+                "y": 0,
+                "mapId": "map_blank_start",
+                "x": 0,
+                "h": 15
+              },
+              "summary": "맵 미리보기: (0,0) 20×15 (수호자의 시련 회랑)"
+            }
+          ],
+          "imageAndQualityEvents": [
+            {
+              "name": "map.image.delivered",
+              "at": 1791429188009,
+              "ok": true,
+              "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+            }
+          ]
+        },
+        {
+          "attempt": 2,
+          "tracePath": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/attempt-2/trace.json",
+          "traceSha256": "b492f8fdde5b72dc3d69c8c2abd41f958c6a550721f3923c51e910071b31909c",
+          "calls": [],
+          "imageAndQualityEvents": []
+        },
+        {
+          "attempt": 3,
+          "tracePresent": false
+        }
+      ]
+    }
+  ],
+  "interpretation": "Actual image delivery/reference calls are retained. Calling or delivering an image is not independent visual acceptance. Summaries lack source-PNG hashes and do not prove current final SHA acceptance."
+}

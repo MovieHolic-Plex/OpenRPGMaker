@@ -1,0 +1,672 @@
+{
+  "schemaVersion": 1,
+  "caseId": "school-horror",
+  "label": "학교 호러",
+  "finalizedAt": "2026-10-08T03:52:02.695Z",
+  "scope": "One assigned case; no aggregate eight-genre success percentage or sample-generalization.",
+  "taskFile": "attempt-1/task.txt",
+  "plan": "PLAN.md",
+  "requestedOuter": {
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "nativeReceiptAvailable": false
+  },
+  "observedInternal": {
+    "provider": "google-antigravity",
+    "model": "gemini-3.8-flash",
+    "receipts": "native-request-receipts.json"
+  },
+  "authorization": {
+    "maximumRepairInstructions": 2,
+    "repairInstructionsUsed": 2,
+    "contentAuthor": "authenticated internal AI through actual ai-input/ai-send Pi path",
+    "operatorContentWrites": false,
+    "operatorDirectRunTool": false,
+    "operatorDatabaseWrites": false,
+    "repositoryProductHarnessCodeEdits": false,
+    "gatesVitestFullTypecheckRun": false,
+    "commitsStash": false,
+    "artApprovalByOperator": false
+  },
+  "originalTrial": {
+    "verdict": "environment-blocked",
+    "attempt": 1,
+    "requirementsAuthored": false,
+    "firstRunNotOverwritten": true
+  },
+  "finalTrial": {
+    "attempt": 3,
+    "modelTurnCompleted": true,
+    "canonicalUiSaveAndReload": "pass",
+    "shippingGameplayAcceptance": "fail",
+    "reason": "Manual save menu route fails and checkpoint retry does not survive legitimate Continue; room transfer visuals lack clear doors."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "inputMode": "natural",
+      "requestedOuterModel": "gpt-6.1-sol",
+      "requestedOuterEffort": "high",
+      "outerNativeModelReceipt": "not exposed to this evaluator; requested assignment recorded separately",
+      "nativeRequests": [
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": "2026-10-08T02:35:26.847Z"
+        }
+      ],
+      "providerEvidence": "activity-routing-and-pending-receipt.json",
+      "confirmedInternalProvider": "google-antigravity",
+      "confirmedInternalModel": "gemini-3.8-flash",
+      "helperElapsedMs": 288365,
+      "elapsedMeaning": "owned editor measurement after slot acquisition, includes host/browser boot and UI save/reload; excludes preceding slot queue wait",
+      "modelCompletion": [],
+      "traceFiles": [
+        "attempt-1/trace.json",
+        "attempt-1/trace-checkpoint.json"
+      ],
+      "operatorCancellation": "attempt-1/operator-cancellation.json",
+      "turnSettled": false,
+      "completedMeasurement": false,
+      "outcome": "environment-blocked",
+      "failure": "Classifier HTTP 500: required Antigravity OAuth client metadata absent in the initial owned host. No Pi turn began.",
+      "failureClassification": null,
+      "sourceSha256": "02e2862ffc6f9e3156299c65cbf08e412d270f371c7687267e3ce757cf23730a"
+    },
+    {
+      "attempt": 2,
+      "inputMode": "pi-command",
+      "requestedOuterModel": "gpt-6.1-sol",
+      "requestedOuterEffort": "high",
+      "outerNativeModelReceipt": "not exposed to this evaluator; requested assignment recorded separately",
+      "nativeRequests": [
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": null,
+          "mode": "single",
+          "runId": "939d6826-d586-44f2-8adf-084c615c7b77",
+          "at": "2026-10-08T02:40:44.772Z"
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": null,
+          "mode": "single",
+          "runId": "939d6826-d586-44f2-8adf-084c615c7b77",
+          "at": "2026-10-08T02:40:49.462Z"
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": null,
+          "mode": "single",
+          "runId": "03455df9-0736-4de3-a400-907a7d74510a",
+          "at": "2026-10-08T02:41:33.588Z"
+        }
+      ],
+      "providerEvidence": "attempt-2/native-provider-relay-receipt-2.json",
+      "confirmedInternalProvider": "google-antigravity",
+      "confirmedInternalModel": "gemini-3.8-flash",
+      "helperElapsedMs": 525888,
+      "elapsedMeaning": "owned editor measurement after slot acquisition, includes host/browser boot and UI save/reload; excludes preceding slot queue wait",
+      "modelCompletion": [
+        {
+          "at": 1791427293475,
+          "stats": {
+            "ms": 37926,
+            "turns": 8,
+            "toolCalls": 20,
+            "toolErrors": 0,
+            "usage": {
+              "input": 75354,
+              "output": 6585,
+              "cacheRead": 319678,
+              "cacheWrite": 0,
+              "totalTokens": 401617,
+              "calls": 8
+            }
+          }
+        }
+      ],
+      "traceFiles": [
+        "attempt-2/trace.json",
+        "attempt-2/trace-checkpoint.json"
+      ],
+      "operatorCancellation": "attempt-2/operator-cancellation.json",
+      "turnSettled": false,
+      "completedMeasurement": false,
+      "outcome": "fail",
+      "failure": "Partial authoring stalled at reply-required after remove_event; original turn did not finish.",
+      "failureClassification": "Observed reply-required/pending and unmatched remove_event tool_start; map-event-emptying confirmation is a source-backed inference, not an inspected original modal assertion.",
+      "sourceSha256": "98d73900560430024013756a92a06cabfcaba56c5511c207e1fd59446767f2e0"
+    },
+    {
+      "attempt": 3,
+      "inputMode": "pi-command",
+      "requestedOuterModel": "gpt-6.1-sol",
+      "requestedOuterEffort": "high",
+      "outerNativeModelReceipt": "not exposed to this evaluator; requested assignment recorded separately",
+      "nativeRequests": [
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "mode": "single",
+          "runId": "441100ce-7899-4612-aa72-10bc69aa086f",
+          "at": "2026-10-08T03:05:57.468Z"
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "mode": "single",
+          "runId": "441100ce-7899-4612-aa72-10bc69aa086f",
+          "at": "2026-10-08T03:06:09.497Z"
+        },
+        {
+          "endpoint": "/v1/agent/run",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "mode": "single",
+          "runId": "d6402772-b194-407e-903b-3bddc88a9277",
+          "at": "2026-10-08T03:07:19.954Z"
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": "2026-10-08T03:11:26.434Z"
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": "2026-10-08T03:11:26.445Z"
+        },
+        {
+          "endpoint": "/v1/chat/completions",
+          "model": "gemini-3.8-flash",
+          "provider": "google-antigravity",
+          "at": "2026-10-08T03:11:26.449Z"
+        }
+      ],
+      "providerEvidence": "last-repair-native-metadata.json",
+      "confirmedInternalProvider": "google-antigravity",
+      "confirmedInternalModel": "gemini-3.8-flash",
+      "helperElapsedMs": 480372,
+      "elapsedMeaning": "owned editor measurement after slot acquisition, includes host/browser boot and UI save/reload; excludes preceding slot queue wait",
+      "modelCompletion": [
+        {
+          "at": 1791428839654,
+          "stats": {
+            "ms": 57497,
+            "turns": 10,
+            "toolCalls": 36,
+            "toolErrors": 0,
+            "usage": {
+              "input": 77232,
+              "output": 10800,
+              "cacheRead": 408021,
+              "cacheWrite": 0,
+              "totalTokens": 496053,
+              "calls": 10
+            }
+          }
+        },
+        {
+          "at": 1791429085479,
+          "stats": {
+            "ms": 243669,
+            "turns": 34,
+            "toolCalls": 43,
+            "toolErrors": 2,
+            "usage": {
+              "input": 144408,
+              "output": 4186,
+              "cacheRead": 10798368,
+              "cacheWrite": 0,
+              "totalTokens": 10946962,
+              "calls": 34
+            }
+          }
+        }
+      ],
+      "traceFiles": [
+        "attempt-3/trace.json",
+        "attempt-3/trace-checkpoint.json"
+      ],
+      "operatorCancellation": null,
+      "turnSettled": true,
+      "completedMeasurement": true,
+      "outcome": "model completed; game acceptance failed",
+      "failure": null,
+      "failureClassification": null,
+      "sourceSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "three_connected_school_spaces",
+      "name": "three connected school spaces",
+      "verdict": "pass",
+      "observed": "Native walking/transfer visited classroom, hallway and storage, returned storage→hallway→classroom, and crossed them during chase.",
+      "staticCapability": "Four maps saved: original blank map retained plus three hand-v5 room maps.",
+      "evidence": [
+        "attempt-3/runtime-final/019-storage-transfer-visible-result.json",
+        "attempt-3/runtime-final/027-classroom-reentry-before-key.json",
+        "attempt-3/runtime-final/040-pursuer-arrives-in-hallway.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/048-resume-risk-and-attempt-storage-exit.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "key_awakens_actual_pursuer",
+      "name": "key awakens actual pursuer",
+      "verdict": "pass",
+      "observed": "Key inventory changes from zero to one; switch activates a ghost which moves from classroom (3,3) to (5,3) and captures the player. Reinspection says desk empty and key count stays one.",
+      "staticCapability": "One-time key event pages activate connected native chase.",
+      "evidence": [
+        "attempt-3/runtime-final/032-awaken-and-duplicate-key-investigation.json",
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json",
+        "attempt-3/runtime-final/055-new-game-capture-terminal.json",
+        "attempt-3/runtime-final/057-key-reacquire-after-checkpoint-retry.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "pursuit_crosses_room_transfers",
+      "name": "pursuit crosses room transfers",
+      "verdict": "pass",
+      "observed": "The same event ID is observed in classroom, hallway and storage with live pursuit/door/search records and visible ghost in storage.",
+      "staticCapability": "pursuit.scope connected, tracking lastSeen, door delay/search/return configured.",
+      "evidence": [
+        "attempt-3/runtime-final/032-awaken-and-duplicate-key-investigation.json",
+        "attempt-3/runtime-final/040-pursuer-arrives-in-hallway.json",
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "visible_usable_hiding_wardrobe",
+      "name": "visible usable hiding wardrobe",
+      "verdict": "pass",
+      "observed": "Visible wardrobe; native hide removes player render, blocks movement, Enter leaves, repeated facing-correct entry works. Witnessed entry records pursuer ID and does not prevent capture.",
+      "staticCapability": "Native hiding interaction; no authored dialogue or switch-off commands on wardrobe.",
+      "evidence": [
+        "attempt-3/runtime-final/019-storage-transfer-visible-result.json",
+        "attempt-3/runtime-final/021-native-wardrobe-hide-before-key.json",
+        "attempt-3/runtime-final/024-leave-hiding-visible-again.json",
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/060-leave-hiding-while-pursuer-searches.json",
+        "attempt-3/runtime-final/062-wardrobe-reentry-facing-correctly.json",
+        "attempt-3/runtime-final/064-storage-capture-terminal-ready.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "search_loss_of_target",
+      "name": "search/loss of target",
+      "verdict": "pass",
+      "observed": "Hidden unwitnessed player causes searchMs≈883, search targets and then active=false at searchMs≈3417. sw_chase_active remains true; leaving hiding reacquires player.",
+      "staticCapability": "Native pursuit.searchMs 3000, onLost return, tracking lastSeen.",
+      "evidence": [
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.json",
+        "attempt-3/runtime-final/060-leave-hiding-while-pursuer-searches.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "capture_retry_checkpoint",
+      "name": "capture retry checkpoint",
+      "verdict": "fail",
+      "observed": "Fresh-game capture retries successfully from classroom and after storage capture. After legitimate Continue, capture exposes only title return; required checkpoint retry is lost.",
+      "staticCapability": "Native checkpointSave and retry exist; authored checkpoint event runs once using self-switch A.",
+      "evidence": [
+        "attempt-3/runtime-final/016-continue-before-key-loaded.json",
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json",
+        "attempt-3/runtime-final/055-new-game-capture-terminal.json",
+        "attempt-3/runtime-final/056-native-checkpoint-retry-success-new-game.json",
+        "attempt-3/runtime-final/064-storage-capture-terminal-ready.json",
+        "attempt-3/runtime-final/065-checkpoint-retry-after-cross-room-capture.json"
+      ],
+      "inference": "Checkpoint is held in a PlaySession WeakMap; serialized self-switch prevents rerunning the saved one-time checkpoint after load. Source-backed explanation, no product fix made."
+    },
+    {
+      "id": "key_gated_escape_save_resume",
+      "name": "key-gated escape and save resume",
+      "verdict": "fail",
+      "observed": "Before key: locked message and no ending. With key: authored school-escape ending reached. Fresh-context Continue restores before/after-awakening autosaves, including key and pursuit. Manual Save selection returns to Items, and resumed capture lacks checkpoint retry.",
+      "staticCapability": "Key-gated front-door event, authored ending, standard native save UI/autosave.",
+      "evidence": [
+        "attempt-3/runtime-final/007-locked-door-before-key.json",
+        "attempt-3/runtime-final/013-keyboard-save-selection-reverts-to-items.json",
+        "attempt-3/runtime-final/016-continue-before-key-loaded.json",
+        "attempt-3/runtime-final/045-save-menu-after-awakening.json",
+        "attempt-3/runtime-final/047-native-continue-after-awakening.json",
+        "attempt-3/runtime-final/048-resume-risk-and-attempt-storage-exit.json",
+        "attempt-3/runtime-final/051-trigger-authored-escape-ending.json",
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json"
+      ],
+      "inference": null
+    }
+  ],
+  "adversarial": [
+    {
+      "id": "escape_before_key",
+      "name": "escape before key",
+      "verdict": "pass",
+      "observed": "Original front-door action refuses without key and produces no ending.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/007-locked-door-before-key.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "cross_rooms_during_pursuit",
+      "name": "cross rooms during pursuit",
+      "verdict": "pass",
+      "observed": "Same pursuer crosses two transfers and appears in storage.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/040-pursuer-arrives-in-hallway.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "hide_while_chased",
+      "name": "hide while chased",
+      "verdict": "pass",
+      "observed": "Hiding entered while pursuit active and room-crossing queue pending; real search/loss follows.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "leave_hiding",
+      "name": "leave hiding",
+      "verdict": "pass",
+      "observed": "Exit clears native hiding, visible target is reacquired at (1,5).",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/024-leave-hiding-visible-again.json",
+        "attempt-3/runtime-final/060-leave-hiding-while-pursuer-searches.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "get_caught",
+      "name": "get caught",
+      "verdict": "pass",
+      "observed": "HP falls to zero and original Game Over appears in classroom and storage, including witnessed hide.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json",
+        "attempt-3/runtime-final/055-new-game-capture-terminal.json",
+        "attempt-3/runtime-final/064-storage-capture-terminal-ready.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "retry_after_capture",
+      "name": "retry after capture",
+      "verdict": "fail",
+      "observed": "Native retry works in fresh game and after cross-room capture; missing after Continue.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json",
+        "attempt-3/runtime-final/056-native-checkpoint-retry-success-new-game.json",
+        "attempt-3/runtime-final/065-checkpoint-retry-after-cross-room-capture.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "save_before_after_awakening",
+      "name": "save before/after awakening",
+      "verdict": "fail",
+      "observed": "Legitimate transfer autosaves Continue in fresh contexts preserve pre-key and awake/key/pursuit states. Original manual saving fails at both timings. Checkpoint absent after Continue.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/013-keyboard-save-selection-reverts-to-items.json",
+        "attempt-3/runtime-final/016-continue-before-key-loaded.json",
+        "attempt-3/runtime-final/045-save-menu-after-awakening.json",
+        "attempt-3/runtime-final/047-native-continue-after-awakening.json",
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "duplicate_key",
+      "name": "key duplication",
+      "verdict": "pass",
+      "observed": "Repeated desk investigation returns empty message with exactly one key; retry rolls back key and legitimate reacquisition again yields one.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/032-awaken-and-duplicate-key-investigation.json",
+        "attempt-3/runtime-final/056-native-checkpoint-retry-success-new-game.json",
+        "attempt-3/runtime-final/057-key-reacquire-after-checkpoint-retry.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "locked_door",
+      "name": "locked door",
+      "verdict": "pass",
+      "observed": "Observed item-absent refusal and item-present unlock/ending.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/007-locked-door-before-key.json",
+        "attempt-3/runtime-final/051-trigger-authored-escape-ending.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "hiding_cancel",
+      "name": "hiding cancellation",
+      "verdict": "pass",
+      "observed": "Enter cancels hiding; Escape opens native menu rather than cancelling it. Correct facing allows a second hide and witnessed entry can be punished.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/024-leave-hiding-visible-again.json",
+        "attempt-3/runtime-final/060-leave-hiding-while-pursuer-searches.json",
+        "attempt-3/runtime-final/062-wardrobe-reentry-facing-correctly.json",
+        "attempt-3/runtime-final/064-storage-capture-terminal-ready.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "reentry",
+      "name": "reentry",
+      "verdict": "pass",
+      "observed": "Storage and classroom were revisited via real transfers; wardrobe repeated entry/exit works; saved key count remains one.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/019-storage-transfer-visible-result.json",
+        "attempt-3/runtime-final/027-classroom-reentry-before-key.json",
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/048-resume-risk-and-attempt-storage-exit.json",
+        "attempt-3/runtime-final/062-wardrobe-reentry-facing-correctly.json"
+      ],
+      "inference": "Classroom doorway reentry after awakening was not separately tested; do not generalize this pass to every possible transfer order."
+    }
+  ],
+  "additionalExplicitPromptRequirements": [
+    {
+      "id": "school_interior",
+      "name": "actual school interior",
+      "verdict": "pass",
+      "observed": "Classroom desk/chair/chalkboard/bookcase layout, corridor and furnished storage render.",
+      "staticCapability": "Hand-v5 native interior rooms.",
+      "evidence": [
+        "attempt-3/runtime-final/002-classroom-after-original-opening.png",
+        "attempt-3/runtime-final/019-storage-transfer-visible-result.png"
+      ],
+      "inference": null
+    },
+    {
+      "id": "traversable_doors",
+      "name": "traversable visible doors",
+      "verdict": "fail",
+      "observed": "Native transitions are traversable, but hallway room transitions at (3,4)/(17,3) are transparent floor triggers with weak door cues; front door and bottom passage use a mat/gap.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/runtime-final/005-hallway-ready-before-key.png",
+        "attempt-3/runtime-final/019-storage-transfer-visible-result.png",
+        "attempt-3/runtime-final/027-classroom-reentry-before-key.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "save_authored_game",
+      "name": "save authored game through editor",
+      "verdict": "pass",
+      "observed": "Real toolbar Save and fresh editor-context reload preserve project/revision/full document/maps/DB; final read-only readback confirms it.",
+      "staticCapability": null,
+      "evidence": [
+        "attempt-3/persistence.json",
+        "final-persistence-receipt.json"
+      ],
+      "inference": null
+    },
+    {
+      "id": "real_hide_not_dialogue_switch",
+      "name": "hiding must not be dialogue or chase-switch disable",
+      "verdict": "pass",
+      "observed": "Native hiding/search/witnessed entry used; activation switch stays true after target loss.",
+      "staticCapability": "Wardrobe page has native interaction and no dialogue/switch-off command sequence.",
+      "evidence": [
+        "attempt-3/runtime-final/042-hide-during-active-connected-pursuit.json",
+        "attempt-3/runtime-final/043-pursuer-searches-hidden-player.json",
+        "attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.json",
+        "attempt-3/runtime-final/062-wardrobe-reentry-facing-correctly.json"
+      ],
+      "inference": null
+    }
+  ],
+  "evidenceAxes": {
+    "firstRun": "environment-blocked",
+    "repair1Completion": "fail",
+    "repair2Completion": "pass",
+    "strictAuthoringPersistence": "pass",
+    "automaticPlayerSaveContinue": "pass",
+    "manualPlayerSave": "fail",
+    "checkpointAfterContinue": "fail",
+    "nativePursuitHiding": "pass",
+    "keyGateEnding": "pass",
+    "schoolVisualReadability": "fail",
+    "assetBytesForObservedRequests": "pass",
+    "completeUnusedAssetAndReferenceAudit": "unverified"
+  },
+  "persistenceReceipt": "final-persistence-receipt.json",
+  "assetReferenceFindings": {
+    "observedAssetResponses": 512,
+    "invalidResponses": 0,
+    "originalPageErrors": [],
+    "referencedTilesetBlobs": 35,
+    "validReferencedBlobs": true,
+    "referenceDocumentsPresent": [
+      {
+        "id": "hand-interior-v5",
+        "name": "손 도트 실내 (v5)"
+      }
+    ],
+    "referenceUseByInternalAi": "Not independently established by a native reference-reading trace in final attempt; existing hand-room tool/presets were reused.",
+    "limitation": "Hash receipts cover recorded initial-page requests; new fresh contexts reuse legitimate browser/export source but helper pageerror/request collector was bound to original page. No blanket claim for every unused library asset/reference image."
+  },
+  "reuse": {
+    "nativeTemplateReuse": [
+      "Original default database unchanged, including item_old_key",
+      "Hand-v5 interior room tools and bundled desks/chairs/wardrobe",
+      "Bundled default fantasy warrior, ghost charset, default title/opening/music/HUD",
+      "Native pursuit/hiding/checkpoint/ending/autosave engines"
+    ],
+    "assistantAuthoredExtension": [
+      "Three room layouts and transfer/event positions",
+      "Key one-time pages and activation switches",
+      "Connected pursuer and native wardrobe interaction/checkpoint event",
+      "Start map/position and key-gated school-escape ending"
+    ],
+    "superficialSystemDialogue": "No fake hiding/chase-switch implementation observed. Front-door chains/physical unlocking are represented by text and terminal ending, with weak matching door art.",
+    "unsupportedArtNeeds": "No unsupported art primitive demonstrated; reused assets render. School-specific protagonist and coherent horror presentation are quality needs, not proven absent tools."
+  },
+  "defects": [
+    {
+      "id": "save-menu",
+      "category": "product controller",
+      "severity": "blocks manual save",
+      "observed": "System > Save falls back to Items before any slot can be written.",
+      "evidence": [
+        "attempt-3/runtime-final/013-keyboard-save-selection-reverts-to-items.json",
+        "attempt-3/runtime-final/045-save-menu-after-awakening.json"
+      ],
+      "sourceInference": "renderMenu accepts only rail commands, not group subcommands; fallback items."
+    },
+    {
+      "id": "checkpoint-continue",
+      "category": "runtime persistence",
+      "severity": "blocks requested retry after save resume",
+      "observed": "Same frozen saved game has retry in new game, lacks it after Continue.",
+      "evidence": [
+        "attempt-3/runtime-final/033-flee-classroom-after-key.json",
+        "attempt-3/runtime-final/055-new-game-capture-terminal.json",
+        "attempt-3/runtime-final/056-native-checkpoint-retry-success-new-game.json",
+        "attempt-3/runtime-final/064-storage-capture-terminal-ready.json",
+        "attempt-3/runtime-final/065-checkpoint-retry-after-cross-room-capture.json"
+      ],
+      "sourceInference": "WeakMap checkpoint is not restored alongside persisted one-time-event self switch."
+    },
+    {
+      "id": "invisible-room-doors",
+      "category": "authored visual/navigation",
+      "severity": "weak discoverability",
+      "observed": "Hallway transition coordinates are unmarked transparent floor events.",
+      "evidence": [
+        "attempt-3/runtime-final/005-hallway-ready-before-key.png",
+        "attempt-3/static-inspection.json"
+      ]
+    },
+    {
+      "id": "fantasy-presentation",
+      "category": "authored visual/theme",
+      "severity": "school-horror identity incomplete",
+      "observed": "Default fantasy title/opening, warrior and RPG HP/equipment menu remain.",
+      "evidence": [
+        "attempt-3/runtime-final/014-fresh-context-before-key-save-check.png",
+        "attempt-3/runtime-final/027-classroom-reentry-before-key.png",
+        "attempt-3/runtime-final/045-save-menu-after-awakening.json"
+      ]
+    }
+  ],
+  "observerLimitations": [
+    "Attempt 1 driver could not settle a pre-Pi classifier failure; concrete source/activity error retained.",
+    "Attempt 2 original decision modal was not independently inspected; source-backed pending-gate inference labelled.",
+    "Pointer save click was blocked by original keyboard-only UI; failure preserved and keyboard reobservation used on the same SHA.",
+    "Immediate transition screenshots/debug states can be stale. Ready field receipts, original terminal UI and later receipts are used for verdicts.",
+    "Escape menu pauses native simulation. Its use for inspection is recorded in native sequence receipts; no injected game pause/state was used.",
+    "Only one trial per genre plus two prescribed repair turns; no statistical capability claim."
+  ],
+  "runtimeSummary": "attempt-3/runtime-final/SUMMARY.md",
+  "reviewedImageHashes": "reviewed-images.json",
+  "missingToolProposals": "missing-tool-proposals.json",
+  "finalCanonicalProject": {
+    "projectId": "d22b90db-9b88-435b-8e06-42c2333b82fb",
+    "directory": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/project",
+    "revision": 19,
+    "fullStoredSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+    "preserved": true
+  },
+  "lifecycle": "All owned case editor hosts are closed according to attempt host receipts. Final player controller exited after close, and its browser/server close completed. No unrelated process or lock removed."
+}

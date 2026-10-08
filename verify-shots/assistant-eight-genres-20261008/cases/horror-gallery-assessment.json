@@ -1,0 +1,466 @@
+{
+  "caseId": "horror-gallery",
+  "label": "갤러리 호러",
+  "completed": true,
+  "overall": "fail",
+  "scope": "One exact original prompt and two explicit repairs; no percentage or population estimate",
+  "operator": {
+    "role": "external operator/evaluator",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "receipt": "READY.json and actual outer process command",
+    "directContentRepairs": false,
+    "repoCodeEdits": false,
+    "testsGatesTypecheck": false,
+    "stateInjection": false
+  },
+  "internalModel": {
+    "model": "gemini-3.8-flash",
+    "provider": "google-antigravity",
+    "distinction": "Product authentication/model preserved; different from outer evaluator.",
+    "providerEvidence": "attempt-1 classifier and attempt-3 agent/run carry provider. attempt-2 authoring requests omit provider; its three chat/review requests carry google-antigravity. Authoring-provider equivalence is inference, not captured native authoring receipt."
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "inputMode": "natural",
+      "firstTrial": true,
+      "elapsedMs": 244995,
+      "realNativeRun": false,
+      "modelDone": false,
+      "contentChanged": false,
+      "requestsReceipt": "attempt-1/requests.json",
+      "traceReceipt": "attempt-1/trace.json",
+      "snapshot": "attempt-1/after.json",
+      "persistence": null,
+      "outcome": "environment-blocked",
+      "failure": "No Pi agent/run after natural submission; helper completion predicate waited for stream_closed/error although bridge was idle and no stream started"
+    },
+    {
+      "attempt": 2,
+      "inputMode": "pi-command",
+      "firstTrial": false,
+      "elapsedMs": 942709,
+      "realNativeRun": true,
+      "modelDone": true,
+      "contentChanged": true,
+      "requestsReceipt": "attempt-2/requests.json",
+      "traceReceipt": "attempt-2/trace.json",
+      "snapshot": "attempt-2/after.json",
+      "persistence": {
+        "projectId": "2fad1b84-fa6d-44e9-8017-7e9cb81d3381",
+        "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/project",
+        "beforeRevision": 2,
+        "afterRevision": 27,
+        "reloadedRevision": 28,
+        "afterSha256": "c8feab043171165f55c3763063e59caa1ac7b1b82549d14c4dac9255e9e72791",
+        "reloadedSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+        "sameProject": true,
+        "sameStoredDocument": false,
+        "rendererLoadObserved": true,
+        "rendererMapsAndDatabaseEqual": true
+      },
+      "outcome": "authored-but-requirements-failed",
+      "failure": null
+    },
+    {
+      "attempt": 3,
+      "inputMode": "pi-command",
+      "firstTrial": false,
+      "elapsedMs": 252355,
+      "realNativeRun": true,
+      "modelDone": false,
+      "contentChanged": false,
+      "requestsReceipt": "attempt-3/requests.json",
+      "traceReceipt": "attempt-3/trace.json",
+      "snapshot": "attempt-3/after.json",
+      "persistence": {
+        "projectId": "2fad1b84-fa6d-44e9-8017-7e9cb81d3381",
+        "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/project",
+        "beforeRevision": 28,
+        "afterRevision": 28,
+        "reloadedRevision": 28,
+        "afterSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+        "reloadedSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+        "sameProject": true,
+        "sameStoredDocument": true,
+        "rendererLoadObserved": true,
+        "rendererMapsAndDatabaseEqual": true
+      },
+      "outcome": "environment-blocked",
+      "failure": "Two native planning requests; UI reports 작업을 마치지 못했어요; no tool/assistant/done event and no content change. Specific transport/provider cause not captured."
+    }
+  ],
+  "requirements": [
+    {
+      "name": "three connected furnished rooms",
+      "status": "pass",
+      "observed": "Native movement visited hall, corridor and vault. Actual screenshots show walls, floors, pictures, plants, table/vase and bookshelves/safe; original blank map also remains unused.",
+      "evidence": [
+        "attempt-2/runtime-content-first/hall-after-flower.png",
+        "attempt-2/runtime-content-first/corridor.png",
+        "attempt-2/runtime-content-first/vault.png",
+        "attempt-2/runtime-reobserved/004-enter-corridor.json",
+        "attempt-2/runtime-content-first/128-leave-vault-after-dialogue.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "visible native five-petal health",
+      "status": "fail",
+      "observed": "Blue flower is a real inventory item and var_petals is real; HUD still shows five cream hearts and 514/514 at variable values 5,4,3,1 and0. No native petals are present.",
+      "evidence": [
+        "attempt-2/runtime-content-first/hall-after-flower.png",
+        "attempt-2/runtime-reobserved/007-petals-four.json",
+        "attempt-2/runtime-reobserved/071-real-petals-one.json",
+        "attempt-2/runtime-reobserved/077-defeat-rendered.json"
+      ],
+      "staticCapability": "set_life_flower exists and was not called; lack of use is not a missing tool.",
+      "inference": null
+    },
+    {
+      "name": "damage/heal and zero-health defeat",
+      "status": "pass",
+      "observed": "Native picture investigation changes 5→4; vase changes4→5; subsequent hits and actual saved-state Continue reach3→2→1→0. At0 a real bad ending, credits and THE END overlay appear; attempted movement under final overlay does not move.",
+      "evidence": [
+        "attempt-2/runtime-reobserved/007-petals-four.json",
+        "attempt-2/runtime-reobserved/012-heal-and-save-choice.json",
+        "attempt-2/runtime-reobserved/067-continued-health-two.json",
+        "attempt-2/runtime-reobserved/071-real-petals-one.json",
+        "attempt-2/runtime-reobserved/076-actual-zero-defeat.json",
+        "attempt-2/runtime-reobserved/077-defeat-rendered.json",
+        "attempt-2/runtime-reobserved/actual-zero-defeat.png",
+        "attempt-2/runtime-reobserved/084-movement-after-defeat-at-zero.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "actual four-digit input puzzle",
+      "status": "fail",
+      "observed": "Safe uses four restricted choices menus, not inputNumber or native digit typing.",
+      "evidence": [
+        "attempt-2/runtime-content-first/safe-actual-options.png",
+        "attempt-2/runtime-content-first/answer-digit-options.png",
+        "attempt-2/static-inspection.json"
+      ],
+      "staticCapability": "compile_puzzle password already supports numeric input; model did not use it.",
+      "inference": null
+    },
+    {
+      "name": "clue-accessible answer without answer menu",
+      "status": "fail",
+      "observed": "All four clue texts were actually read across three rooms and yield7294. Digit menus include correct digit at every step (1/3/7/9 etc). No whole7294 answer is labelled correct, but restricted digit menus violate direct input/no answer-menu request.",
+      "evidence": [
+        "attempt-2/runtime-content-first/clue1.png",
+        "attempt-2/runtime-content-first/clue2-reobserved.png",
+        "attempt-2/runtime-content-first/clue3.png",
+        "attempt-2/runtime-content-first/clue4.png",
+        "attempt-2/runtime-content-first/answer-digit-options.png"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "key-gated escape ending",
+      "status": "pass",
+      "observed": "Without key the action is handled but does not escape (silent false branch). Correct native choices create item_gallery_key1. Solved-safe reinspection leaves count1. With key the exit produces actual success epilogue/credits.",
+      "evidence": [
+        "attempt-2/runtime-content-first/locked-exit.png",
+        "attempt-2/runtime-content-first/118-receive-key.json",
+        "attempt-2/runtime-content-first/120-repeat-key-acquisition-same-position.json",
+        "attempt-2/runtime-content-first/121-key-repeat-count.json",
+        "attempt-2/runtime-content-first/136-success-reinspect-exit.json",
+        "attempt-2/runtime-content-first/actual-success-epilogue.png"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "saved project and save resume",
+      "status": "fail",
+      "observed": "Actual editor UI save succeeds in attempt2, but fresh context changes full stored SHA/revision by promoting four generated assets. Final attempt3 repeats unchanged revision28 and strict SHA equality. Native player manual Save routes to items, yet transfer autosave stores partial health3 and fresh-tab Continue restores3/flower1; after defeat Continue also restores the checkpoint3.",
+      "evidence": [
+        "attempt-2/persistence.json",
+        "attempt-2/persistence-diff.json",
+        "attempt-3/persistence.json",
+        "attempt-2/runtime-reobserved/vase-save-opens-items.png",
+        "attempt-2/runtime-reobserved/055-partial-health-auto-slot.json",
+        "attempt-2/runtime-reobserved/061-fresh-tab-storage-preserved.json",
+        "attempt-2/runtime-reobserved/062-fresh-tab-boot-failure.json",
+        "attempt-2/runtime-reobserved/088-retry-after-defeat-restored.json"
+      ],
+      "staticCapability": null,
+      "inference": "Composite failure is strict first content-save reload mismatch and broken manual saving; automatic Continue is independently passed."
+    }
+  ],
+  "adversarial": [
+    {
+      "name": "wrong password",
+      "status": "fail",
+      "observed": "Wrong sequence0,2,0,1 gives no key and leaves unlockedfalse, but no failure feedback or input reset occurs. This sequence follows an actual inner cancellation; independent noncancel wrong sequence is unverified.",
+      "evidence": [
+        "attempt-2/runtime-content-first/095-wrong-password-after-cancel.json",
+        "attempt-2/runtime-content-first/wrong-password-result.png"
+      ],
+      "staticCapability": "Runtime fork reads else; authored otherwiseBranch is ignored.",
+      "inference": null
+    },
+    {
+      "name": "cancel password",
+      "status": "fail",
+      "observed": "Esc at first-digit choices advances into second-digit prompt; remaining choice commands continue.",
+      "evidence": [
+        "attempt-2/runtime-content-first/cancel-continued.png",
+        "attempt-2/runtime-content-first/095-wrong-password-after-cancel.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "escape without key",
+      "status": "pass",
+      "observed": "Native action before key cannot produce escape. Silent response is a separate defect.",
+      "evidence": [
+        "attempt-2/runtime-content-first/locked-exit.png",
+        "attempt-2/static-inspection.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "damage until zero",
+      "status": "pass",
+      "observed": "Actual native damage reaches0 and bad ending is displayed; no state or health injection.",
+      "evidence": [
+        "attempt-2/runtime-reobserved/067-continued-health-two.json",
+        "attempt-2/runtime-reobserved/071-real-petals-one.json",
+        "attempt-2/runtime-reobserved/076-actual-zero-defeat.json",
+        "attempt-2/runtime-reobserved/actual-zero-defeat.png"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "reenter after damage",
+      "status": "pass",
+      "observed": "Damage4 survives corridor→hall→corridor; separate corrected observation enters hall at4 then real vase restores5.",
+      "evidence": [
+        "attempt-2/runtime-reobserved/009-reenter-hall-damaged.json",
+        "attempt-2/runtime-reobserved/012-heal-and-save-choice.json",
+        "attempt-2/runtime-content-first/clue2-reobserved.png"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "repeat key acquisition",
+      "status": "pass",
+      "observed": "Repeated solved-safe interaction shows empty-safe dialogue and key remains1.",
+      "evidence": [
+        "attempt-2/runtime-content-first/120-repeat-key-acquisition-same-position.json",
+        "attempt-2/runtime-content-first/121-key-repeat-count.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "save with partial health and resume",
+      "status": "pass",
+      "observed": "Manual save attempted at4 fails to open slots. Native transfer autosave at3 stores actual variable/flower; a fresh tab in same origin/storage uses native Continue and restores3/flower1. No slots or state were injected.",
+      "evidence": [
+        "attempt-2/runtime-reobserved/055-partial-health-auto-slot.json",
+        "attempt-2/runtime-reobserved/061-fresh-tab-storage-preserved.json",
+        "attempt-2/runtime-reobserved/062-fresh-tab-boot-failure.json",
+        "attempt-2/runtime-reobserved/continue-restored-partial-health.png"
+      ],
+      "staticCapability": "Manual Save UI remains failed; this pass covers actual product autosave/Continue.",
+      "inference": null
+    },
+    {
+      "name": "loss/death/retry",
+      "status": "pass",
+      "observed": "Bad ending reaches final THE END; movement attempt leaves(5,3) at0. Fresh-player native Continue restores last autosave3 in corridor, rather than defeated unsaved0.",
+      "evidence": [
+        "attempt-2/runtime-reobserved/083-after-failure-credits.json",
+        "attempt-2/runtime-reobserved/084-movement-after-defeat-at-zero.json",
+        "attempt-2/runtime-reobserved/088-retry-after-defeat-restored.json"
+      ],
+      "staticCapability": null,
+      "inference": null
+    },
+    {
+      "name": "outer investigation cancel and stale correct digits after reentry",
+      "status": "unverified",
+      "observed": "Inner cancel is verified defective; independent outer cancel and post-solved map-reentry stale-password bypass were not executed. Do not infer these pass from static event pages.",
+      "evidence": [],
+      "staticCapability": null,
+      "inference": null
+    }
+  ],
+  "persistence": {
+    "firstContentSave": {
+      "projectId": "2fad1b84-fa6d-44e9-8017-7e9cb81d3381",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/project",
+      "beforeRevision": 2,
+      "afterRevision": 27,
+      "reloadedRevision": 28,
+      "afterSha256": "c8feab043171165f55c3763063e59caa1ac7b1b82549d14c4dac9255e9e72791",
+      "reloadedSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sameProject": true,
+      "sameStoredDocument": false,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true
+    },
+    "bootDiff": {
+      "differentPaths": [
+        "/assets/uploaded/opening_still_58aaee79-da1f-4da2-82fd-eb1609001bc3/dataUrl",
+        "/assets/uploaded/opening_still_58aaee79-da1f-4da2-82fd-eb1609001bc3/ref",
+        "/assets/uploaded/opening_still_c018f7cf-3f64-4c89-914f-bfa4f9fcb456/dataUrl",
+        "/assets/uploaded/opening_still_c018f7cf-3f64-4c89-914f-bfa4f9fcb456/ref",
+        "/assets/uploaded/opening_still_9e708d5a-11a6-46ad-a40c-d44400b15f70/dataUrl",
+        "/assets/uploaded/opening_still_9e708d5a-11a6-46ad-a40c-d44400b15f70/ref",
+        "/assets/uploaded/original_bgm_be77d0e5-ccec-42fa-8492-08f9a0a4d07a/dataUrl",
+        "/assets/uploaded/original_bgm_be77d0e5-ccec-42fa-8492-08f9a0a4d07a/ref"
+      ],
+      "strictShaMismatchRetained": true,
+      "mapEquality": true,
+      "databaseEquality": true
+    },
+    "finalUnchangedReload": {
+      "projectId": "2fad1b84-fa6d-44e9-8017-7e9cb81d3381",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/project",
+      "beforeRevision": 28,
+      "afterRevision": 28,
+      "reloadedRevision": 28,
+      "afterSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "reloadedSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sameProject": true,
+      "sameStoredDocument": true,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true
+    },
+    "strictFirstMismatchRetained": true
+  },
+  "player": {
+    "entry": "frozen compiled player.html + prepareWebExport/export shim",
+    "sourceHead": "1476c6df3c9dcca60cd5dd4f2fa7b68ff0d6b9e1",
+    "compiledPlayerSha256": "d772311ff8a35a313b7e064e4db7bdf0a8ac31ee24e8dcf277c8b48aad66747f",
+    "originalAndCorrectedProjectionSha256": "506f9acd10bb0378a9747a97750fed724959f0e431285ad531d3b2527a883766",
+    "projectionBytesEqual": true,
+    "contentSource": "attempt-2/live.json; original saved attempt2 even after attempt3 failed",
+    "nativeAutosaveContinue": "observed pass",
+    "manualSave": "observed fail",
+    "errors": [],
+    "assetReceipt": "attempt-2/runtime-reobserved/asset-receipts.json",
+    "all512AssetFetchReceiptsValid": true
+  },
+  "reuse": {
+    "native": "Existing hero, default combat stats/HUD/menu, bundled hand interior v5 parts and map builders, native inventory/endings/save engine reused.",
+    "assistantExtension": "Three11x8 rooms, transfers, clue/danger/vase/safe/door events, new flower/key items, variables/switches, two endings, three generated opening stills and original BGM.",
+    "wholeGalleryTemplateUsed": false,
+    "healthPretend": "Petal narration and real variable not connected to visible HUD.",
+    "keyPretend": false
+  },
+  "defects": {
+    "gameplay": [
+      "Digit choices instead of direct numeric input.",
+      "Inner Esc continues puzzle.",
+      "Wrong PIN and keyless-door false branch silent; authored otherwiseBranch ignored.",
+      "Wrong dial values retained; manual player save fails."
+    ],
+    "visual": [
+      "No visible blue petal health; cream default hearts514/514.",
+      "Danger and clue paintings reuse identical small landscape frame art; danger identity is dialogue only.",
+      "Transparent exit lacks an explicit door sprite; floor gap is visible."
+    ],
+    "unsupportedArtNeeds": {
+      "status": "unverified",
+      "observed": "Generic frame reuse is visible; no distinct dangerous painting or flower-HUD art was produced. No actual requested-art unsupported response proves tool absence; existing petal HUD tool is present."
+    },
+    "code": [
+      "Native menu validates nested save command against grouped rail IDs and falls back to items.",
+      "First saved generated assets promote dataUrl to refs on boot, changing strict document SHA/revision.",
+      "Unknown event-command property accepted and ignored at runtime."
+    ],
+    "anticipated": [
+      "Static inputNumber controller inspection found no Escape handling. This trial never used inputNumber, so numeric-input cancellation is unverified, not an observed failure."
+    ]
+  },
+  "existingToolsNotMissing": [
+    "set_life_flower",
+    "compile_puzzle password",
+    "build_hand_interior_room",
+    "create_transfer_pair",
+    "upsert_item",
+    "define_ending",
+    "openSaveMenu command"
+  ],
+  "toolEnhancementProposals": [
+    {
+      "kind": "tool-contract enhancement; not a claimed absent authoring primitive",
+      "name": "audit_event_command_contract",
+      "observedFailure": "upsert_event accepted forks with otherwiseBranch; two run_lint receipts show0 errors; player ignores false branches, so wrong PIN and locked exit are silent.",
+      "currentWorkaround": "Internal AI must use canonical else or existing compile_puzzle; operator cannot repair content. Read-only static command audit plus native negative-path play.",
+      "input": {
+        "projectId": "canonical project",
+        "storedSha256": "required immutable target",
+        "eventIds": "selected event IDs or all",
+        "strictUnknownFields": true
+      },
+      "output": {
+        "diagnostics": "command path/unknown field/ignored branch",
+        "branchMatrix": "required native observations, no simulated pass"
+      },
+      "negativeConditions": [
+        "Unknown fork fields must fail validation, not be silently accepted or converted.",
+        "No project edits or fabricated branch coverage.",
+        "Do not call structural lint complete gameplay QA."
+      ],
+      "expectedGameplayAcceptance": "Actual wrong PIN and keyless exit show intended feedback, give no reward/ending, then allow native reinspection. Correct solved-safe remains exactly one key."
+    },
+    {
+      "kind": "status/driver enhancement; not a claimed missing content tool",
+      "name": "native_execution_receipt",
+      "observedFailure": "Exact initial natural input produced classifier request only; bridge idle, no agent/run. Helper waited for a stream that never opened. Final repair likewise closed planning without authoring.",
+      "currentWorkaround": "Preserve failed first attempt then spend one explicitly labelled repair using actual /pi input; inspect request/stream receipts independently.",
+      "input": {
+        "uiTurnId": "actual submitted UI turn",
+        "projectId": "case project"
+      },
+      "output": {
+        "classifierRoute": "execution/explanation/rejected",
+        "planning": "not-started/running/failed/done",
+        "authoring": "not-started/running/failed/done",
+        "nativeModel": "actual request model/provider",
+        "terminalReason": "observable safe reason without secrets"
+      },
+      "negativeConditions": [
+        "Classifier response or stream_closed alone must not count as game creation.",
+        "Do not replace requests/provider or invoke authoring directly.",
+        "No private reasoning or credentials in receipts."
+      ],
+      "expectedGameplayAcceptance": "Original natural request either reaches native agent authoring and a persisted revision, or terminates with a concrete visible no-authoring receipt instead of hanging."
+    }
+  ],
+  "observerLimitations": [
+    "Early reversed movement guards and commands under open dialogue/menu produced preserved observer failures; intended labels are not verdicts. Re-observation uses byte-identical prepared player source; no game repairs.",
+    "Helper runRuntimeQa initial summary tests only title/start. Its two passing beats are not full game success.",
+    "Continue observations use new page in same context/origin to retain genuine localStorage; not a separately recreated browser profile. Editor project reload does use fresh browser context.",
+    "Wrong-PIN evidence is the wrong sequence after an inner cancel; separate noncancel wrong entry remains unverified.",
+    "Initial canonical SQLite AI records were checked and empty. A dedicated initial oprn-ai-records IndexedDB inspection receipt was not captured; prior browser-history search cannot be claimed complete.",
+    "New player tabs inherit source/storage configuration, not the original page asset interceptor. Already cached resources are used; full original asset fetch receipts and SHA checks are preserved.",
+    "Third attempt failure cause is not captured beyond native planning closures/UI failure."
+  ],
+  "evidenceIndex": {
+    "plan": "PLAN.md",
+    "report": "REPORT.md",
+    "reviewedImages": "reviewed-images.json",
+    "finalCanonicalReceipt": "canonical-final-receipt.json",
+    "firstPlayerSummary": "attempt-1/runtime-first/initial/SUMMARY.md",
+    "authoredPlayerSummary": "attempt-2/runtime-content-first/SUMMARY.md",
+    "correctedPlayerSummary": "attempt-2/runtime-reobserved/SUMMARY.md"
+  },
+  "cleanup": "Owned helper hosts/browser observations closed; canonical project and all attempts preserved."
+}

@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-08T04:08:28.291124+00:00",
+  "readOnly": true,
+  "findings": [
+    {
+      "kind": "existing-tool",
+      "name": "make_hunting_ground",
+      "fields": [
+        "persistKill",
+        "onKillSwitchId"
+      ],
+      "source": "src/editor/tools/mapTools.ts:2136",
+      "runtime": "src/player/playSceneFieldSpawns.ts:25",
+      "actualActionCalls": [
+        "src/player/playSceneActionCombat.ts:459",
+        "src/player/playSceneActionCombat.ts:803"
+      ],
+      "qualification": "Schema/runtime support is not proof that the authored game wired or exercised these fields."
+    },
+    {
+      "kind": "runtime-inference",
+      "name": "checkpoint",
+      "source": "src/player/checkpoints.ts:5",
+      "mechanism": "WeakMap<PlaySession, SaveSnapshot>",
+      "qualification": "Source corroborates separate actual new-game versus Continue observations; source alone does not prove every save path loses checkpoint."
+    },
+    {
+      "kind": "observed-dispatch-failure",
+      "name": "run_action_combat_test",
+      "piSource": "src/ai/piAgent/toolAdapter.ts:286",
+      "syncFailure": "src/editor/tools/playTools.ts:274",
+      "asyncImplementation": "src/ai/assistantSession.ts:1546",
+      "evidence": [
+        "action-rpg/attempt-1/trace.json",
+        "action-rpg/attempt-2/trace.json"
+      ],
+      "qualification": "Actual Pi calls return async-harness-required. Source shows Pi uses synchronous runTool for read tools, while AssistantSession has a separate asynchronous browser verifier. No new combat verifier needs to be invented to fix that routing."
+    },
+    {
+      "kind": "source-supported-event-contract-gap",
+      "name": "fork else",
+      "runtimeSource": "src/player/interpreter/commandCatalog.ts:593",
+      "schemaSource": "src/editor/tools/schemaShapes.ts:131",
+      "observedCase": "horror-gallery",
+      "qualification": "otherwiseBranch is valid for presentItem; fork consumes else. Do not reject otherwiseBranch for every command kind. Strengthen per-kind validation and actual negative-branch proof."
+    }
+  ],
+  "sourceSha256": {
+    "src/editor/tools/mapTools.ts": "bd7c207767156ad6e3dc45cf513d251d13e787d151e0d4af5e6c47f91520e379",
+    "src/editor/tools/actionTools.ts": "285dc134fb84240e4943bc8c63510ffc292e9af09004f8b182decef804158925",
+    "src/player/playSceneFieldSpawns.ts": "10b18f9b67d3b6b365281dbf26c50acb078ecf8a70ea94defc2d58b0dd31f9ff",
+    "src/player/playSceneActionCombat.ts": "3fae360ccffac3b07378811deb398fbc03890d7baf7b750620d3991d655db6c5",
+    "src/player/checkpoints.ts": "06f2649653a3436c7c8a416bd5f59f1a106c6bc816649ce839117a3597b0e5aa",
+    "src/player/playerStatusMenuController.ts": "a5e817f1398dd2f755a992081084bc4a21d48e9566719e44dcf190ba65f58877",
+    "src/ai/piAgent/toolAdapter.ts": "069eadbf7a50cdfd0bad025240faf139a0ea7f5ad50fe1faa54800d66a884a9f",
+    "src/ai/assistantSession.ts": "037a920a634bd8ba62065b1ebcc2b9e2297f35b9b80b93771734176e20034a95",
+    "src/editor/tools/playTools.ts": "767d534149bbb0e7f4ad6b77fe98917d32767a83cb01913b3f00a298334a94fc",
+    "src/player/interpreter/commandCatalog.ts": "b1a4a20c1869958787fcc51fc9e080b0349f111d146365c384c91b3d5f55d22d",
+    "src/editor/tools/schemaShapes.ts": "07ec683653f150c126e2142392c2f2c030dedf5f8cc1ccebb92144fb74b4ddc0"
+  }
+}

@@ -9,6 +9,8 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
   seed: 'harness-data/assistant-capability/seed.json',
   doc: 'openwiki/harnesses/assistant-capability.md',
   stages: [
+    { id: 'genre-prepare', title: '장르별 격리 정본', summary: '빈 프로젝트 여덟 개와 공용 SQLite 판본을 분리해 준비한다. 콘텐츠는 조수가 실제 입력창에서 만든다.' },
+    { id: 'genre-run', title: '장르별 실제 제작', summary: '전용 포트·입력창으로 장르 게임을 제작하고 최초/보수 시도·모델 요청·엄격한 저장 재로드를 각각 보존한다.' },
     { id: 'portals', title: '출입구 실제 수행', summary: '격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다.' },
     { id: 'portal-controls', title: '출입구 결함 반례', summary: '막힌 문앞·닿지 않는 맵 끝·연결 재실행을 실제 도구로 검사한다. 실모델 성적과 별도로 남긴다.' },
     { id: 'portal-recheck', title: '저장 출입구 플레이 재관측', summary: '모델 재실행·결과 수선 없이 같은 저장본의 플레이 관측을 다시 남기고 최초 판정을 보존한다.' },

@@ -1,0 +1,682 @@
+{
+  "schema": "genre-authoring-assessment/1",
+  "caseId": "adventure-jrpg",
+  "label": "모험 JRPG",
+  "assessmentComplete": true,
+  "gameFullyVerified": false,
+  "evaluatedAt": "2026-10-08T04:20:07.639680+00:00",
+  "exactTask": "플레이 가능한 작은 턴제 JRPG를 만들어줘. 시작 마을에서 검사와 마법사 두 명이 파티를 이루고, 촌장의 부탁으로 동굴에 들어가 잡몹과 보스를 싸워 약초를 가져오는 이야기야. 마을에 실제 장비·회복약 상점과 유료 여관을 두고, 동굴에는 무작위 전투와 보스가 있어야 해. 보스를 이기기 전 약초 보상을 못 받고, 마을로 돌아와 보고하면 보상은 딱 한 번 지급되고 엔딩이 떠야 해. 상점 돈 부족·여관 거절·전투 패배도 정상 처리해줘. 검사와 마법사의 역할이 실제 능력치·기술에서 달라야 하고, 맵 사이 문이 막히지 않게 해줘. 실제 맵·이벤트·전투 데이터와 저장까지 만들어줘.",
+  "modelReceipt": {
+    "outerModelRequested": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "independentRuntimeVerification": false
+    },
+    "internalModelObserved": "gemini-3.8-flash",
+    "internalProviderObservedOnNativeChatRequests": "google-antigravity",
+    "agentRunProviderField": "not emitted in captured request body; correlated with native chat/provider configuration",
+    "transport": "actual ai-input → ai-send → Pi /v1/agent/run",
+    "replacedProvider": false,
+    "requests": [
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T02:51:56.655Z"
+      },
+      {
+        "endpoint": "/v1/agent/run",
+        "model": "gemini-3.8-flash",
+        "mode": "single",
+        "runId": "3e5d82a5-92aa-45c0-9efa-0b732752eaea",
+        "at": "2026-10-08T02:52:02.215Z"
+      },
+      {
+        "endpoint": "/v1/agent/run",
+        "model": "gemini-3.8-flash",
+        "mode": "single",
+        "runId": "3e5d82a5-92aa-45c0-9efa-0b732752eaea",
+        "at": "2026-10-08T02:52:07.479Z"
+      },
+      {
+        "endpoint": "/v1/agent/run",
+        "model": "gemini-3.8-flash",
+        "mode": "single",
+        "runId": "66c1c643-6525-4ce0-8d8f-86819504c456",
+        "at": "2026-10-08T02:52:25.894Z"
+      },
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T03:13:55.725Z"
+      },
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T03:13:55.783Z"
+      },
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T03:13:55.790Z"
+      },
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T03:13:55.800Z"
+      },
+      {
+        "endpoint": "/v1/chat/completions",
+        "model": "gemini-3.8-flash",
+        "provider": "google-antigravity",
+        "at": "2026-10-08T03:13:55.862Z"
+      }
+    ],
+    "firstRunElapsedMs": 1465683,
+    "externalRepairInstructions": 0
+  },
+  "execution": {
+    "externalRole": "operator/evaluator",
+    "internalAIAuthoredContent": true,
+    "firstRunPreserved": true,
+    "repairInstructionsUsed": 0,
+    "attempts": [
+      {
+        "attempt": 1,
+        "status": "model turn completed; independent gameplay contains failures/unverified axes",
+        "elapsedMs": 1465683,
+        "receipts": [
+          "attempt-1/trace.json",
+          "attempt-1/requests.json",
+          "attempt-1/result.json",
+          "attempt-1/answer.txt"
+        ]
+      }
+    ],
+    "operatorContentRepairs": false,
+    "runtimeStateInjection": false,
+    "repositoryProductHarnessEdits": false,
+    "testsGatesVitestTypecheckRun": false,
+    "canonicalProjectPreserved": true
+  },
+  "requirements": [
+    {
+      "name": "two party roles with distinct usable skills",
+      "status": "pass",
+      "staticCapability": "Two native actors modified; existing distinct classes and skills reused, not newly authored skills. Hero HP/MP 520/35, mage 360/85 at level 1.",
+      "observedBehavior": "Actual two-member combat party; mage Fireball spent 4 MP (85→81), warrior Cross Slash spent 3 MP (35→32). Different native skill lists and equipment eligibility.",
+      "inference": "No inference required for this limited usability observation.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/161.json",
+        "attempt-1/runtime-reobserve-2/observations/165.json",
+        "attempt-1/runtime-reobserve-2/observations/172.json",
+        "attempt-1/runtime-reobserve-2/observations/175.json",
+        "attempt-1/static-inspection.json"
+      ]
+    },
+    {
+      "name": "village/cave reachable round trips",
+      "status": "pass",
+      "staticCapability": "Native transfer pairs with distinct landing cells; shop and inn also connected.",
+      "observedBehavior": "Walked to cave, returned to village, reentered cave; later returned with herb. Real shop and inn round trips also executed. Some failed path attempts came from the observer skipping blocked upper tiles, then succeeded with corrected read-only routing and native keyboard steps.",
+      "inference": "Only the routes actually traversed are certified.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/136.json",
+        "attempt-1/runtime-reobserve-2/observations/138.json",
+        "attempt-1/runtime-reobserve-2/observations/140.json",
+        "attempt-1/runtime-reobserve-2/observations/144.json",
+        "attempt-1/runtime-reobserve-2/observations/572.json",
+        "attempt-1/runtime-reobserve-2/observations/walk-steps.jsonl"
+      ]
+    },
+    {
+      "name": "native random encounters and boss battle",
+      "status": "pass",
+      "staticCapability": "Native rate-25 encounter table, slime/bat troops and authored golem troop.",
+      "observedBehavior": "Walking triggered actual random slime and bat encounters, native battle results/rewards; distinct golem boss was fought, lost, retried and won.",
+      "inference": "Not a combat-balance certification. Battle presentation is native ATB gauge, not proof of a strict round-turn mode.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/154.json",
+        "attempt-1/runtime-reobserve-2/observations/196.json",
+        "attempt-1/runtime-reobserve-2/observations/264.json",
+        "attempt-1/runtime-reobserve-2/observations/363.json",
+        "attempt-1/runtime-reobserve-2/observations/489.json"
+      ]
+    },
+    {
+      "name": "real equipment/potion shop",
+      "status": "pass",
+      "staticCapability": "Native shop resolves both equipment and items.",
+      "observedBehavior": "180G sword purchase at 150G denied with no currency/item change; bought 80G mage staff (150→70G, staff +1), then 30G potion (70→40G, potion 2→3). Eligibility/stat preview visible. Merchant required approaching through the side aisle.",
+      "inference": "Buying an already equipped staff proves inventory transaction, not a new equipment upgrade.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/043.json",
+        "attempt-1/runtime-reobserve-2/observations/046.json",
+        "attempt-1/runtime-reobserve-2/observations/049.json",
+        "attempt-1/runtime-reobserve-2/observations/050.png"
+      ]
+    },
+    {
+      "name": "inn fee and cancellation",
+      "status": "pass",
+      "staticCapability": "Authored choices + gold condition + real changeGold/recoverAll commands, rather than a native inn scene.",
+      "observedBehavior": "Escape cancellation kept 40G; accepted stays charged 20G each; at 0G stay rejected. After boss defeat, paid stay changed 162→142G and restored both actors from 0 HP to full HP/MP.",
+      "inference": "The dialogue is backed by currency/vital mutations, not merely a claim to sleep.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/079.json",
+        "attempt-1/runtime-reobserve-2/observations/085.json",
+        "attempt-1/runtime-reobserve-2/observations/098.json",
+        "attempt-1/runtime-reobserve-2/observations/380.json",
+        "attempt-1/runtime-reobserve-2/observations/391.json"
+      ]
+    },
+    {
+      "name": "boss-gated herb and one-time quest reward",
+      "status": "unverified",
+      "subchecks": {
+        "beforeBossHerbGate": "pass",
+        "prematureReport": "pass",
+        "postBossHerb": "pass",
+        "firstQuestReward": "pass",
+        "postClearOrdinaryMapReentry": "unverified",
+        "loadedCheckpointReplayNoAccumulation": "pass"
+      },
+      "staticCapability": "Separate boss/herb/clear switch pages; final chief page has no currency command.",
+      "observedBehavior": "Before boss, herb interaction denied and premature report gave no reward. Victory then herb +1; repeat herb page did not increase inventory. First report consumed herb and added exactly 300G (556→856), followed by ending. Loading the genuine pre-report autosave rolled completion back; second report again ended at 856G, not 1156G.",
+      "inference": "Checkpoint replay does not establish the once-only guard after ordinary map reentry from a retained cleared state. Ending terminates field play and manual Save is broken, so that subcheck remains unverified.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-1/observations/016.json",
+        "attempt-1/runtime-reobserve-2/observations/246.json",
+        "attempt-1/runtime-reobserve-2/observations/502.json",
+        "attempt-1/runtime-reobserve-2/observations/507.json",
+        "attempt-1/runtime-reobserve-2/observations/601.json",
+        "attempt-1/runtime-reobserve-2/observations/608.json",
+        "attempt-1/runtime-reobserve-2/observations/614.json",
+        "attempt-1/runtime-reobserve-2/observations/636.json",
+        "attempt-1/runtime-reobserve-2/observations/673.json",
+        "post-ending-save-receipt.json"
+      ]
+    },
+    {
+      "name": "ending and save resume",
+      "status": "fail",
+      "subchecks": {
+        "nativeEnding": "pass",
+        "midquestAutosaveContinue": "pass",
+        "manualSave": "fail",
+        "strictEditorDocumentPersistence": "fail",
+        "postEndingCompletionInAvailableSave": "fail"
+      },
+      "staticCapability": "Official ending definition and openSaveMenu command exist.",
+      "observedBehavior": "Official ending rendered. Fresh-context title Continue restored actual midquest map/position, gold, inventory, switches, variables, party and party vitals. Native manual Save twice opened Items without save slots. After ending, loading available autosave restored the pre-report 556G/herb1/clear=false state. Canonical editor UI save/reload kept maps/DB but changed revision and full stored SHA.",
+      "inference": "No claim that autosave promises an ending trigger: the available resume path does not retain completion and manual saving cannot supply it.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/615.png",
+        "player-persistence-receipt.json",
+        "attempt-1/runtime-reobserve-1/observations/059.json",
+        "attempt-1/runtime-reobserve-1/observations/061.json",
+        "attempt-1/persistence.json",
+        "post-ending-save-receipt.json"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "name": "report before defeating boss",
+      "status": "pass",
+      "observed": "Chief reminder, gold150, no herb/reward, boss/herb/clear switches false.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-1/observations/016.json"
+      ]
+    },
+    {
+      "name": "repeat reward after reentry",
+      "status": "unverified",
+      "observed": "Post-ending native slot reload reverted to pre-report state. Replayed report gave 556→856G, no retained accumulation. Ordinary map reentry with clear=true could not be exercised after terminal ending/manual-save failure.",
+      "static": "Cleared chief page prevents additional reward commands.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/636.json",
+        "attempt-1/runtime-reobserve-2/observations/673.json",
+        "post-ending-save-receipt.json"
+      ]
+    },
+    {
+      "name": "insufficient gold",
+      "status": "pass",
+      "observed": "Unaffordable sword rejected at150G; inn rejected at0G. Values unchanged.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/043.json",
+        "attempt-1/runtime-reobserve-2/observations/098.json"
+      ]
+    },
+    {
+      "name": "decline inn",
+      "status": "pass",
+      "observed": "Native Escape cancellation at paid-stay choice preserved40G and vitals.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/075.json",
+        "attempt-1/runtime-reobserve-2/observations/079.json"
+      ]
+    },
+    {
+      "name": "lose boss fight",
+      "status": "fail",
+      "observed": "Actual repeated defense and acceleration inputs produced both actors at0 HP. Loss branch returned to inn with both still0 HP; boss/herb flags remainedfalse. Paid20G inn recovery restored usable party and real retry won.",
+      "static": "Loss commands contain text→transfer→recoverAll.",
+      "inference": "Transfer/continuation/session ownership is a suspected cause of lost recovery; not proven by editing or instrumentation that changes state.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/316.png",
+        "attempt-1/runtime-reobserve-2/observations/363.json",
+        "attempt-1/runtime-reobserve-2/observations/380.json",
+        "attempt-1/runtime-reobserve-2/observations/391.json",
+        "attempt-1/runtime-reobserve-2/observations/489.json"
+      ]
+    },
+    {
+      "name": "use magic and consume MP",
+      "status": "pass",
+      "observed": "Selected mage Fireball, selected enemy, executed; MP85→81 and a slime disappeared after damage.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/161.json",
+        "attempt-1/runtime-reobserve-2/observations/165.json",
+        "attempt-1/runtime-reobserve-2/observations/167.png"
+      ]
+    },
+    {
+      "name": "save midquest and resume",
+      "status": "pass",
+      "scope": "Native automatic save and fresh-context title Continue only. Manual-save subcheck fails separately.",
+      "observed": "Before105/after111 selected state and two-party vitals equality alltrue; real slot existed and native Continue used. Slot full byte SHA not independently captured.",
+      "evidence": [
+        "player-persistence-receipt.json",
+        "attempt-1/runtime-reobserve-2/observations/105.json",
+        "attempt-1/runtime-reobserve-2/observations/111.json",
+        "attempt-1/runtime-reobserve-2/observations/112.png"
+      ]
+    }
+  ],
+  "axes": {
+    "nativeAuthoringTransport": {
+      "status": "pass",
+      "evidence": "attempt-1/trace.json"
+    },
+    "storedMapsAndDatabaseReloadEquality": {
+      "status": "pass",
+      "evidence": "attempt-1/persistence.json"
+    },
+    "strictStoredDocumentReloadEquality": {
+      "status": "fail",
+      "evidence": "attempt-1/persistence.json"
+    },
+    "nativeCombatUsability": {
+      "status": "pass",
+      "scope": "observed skills and battles only"
+    },
+    "bossDefeatRecovery": {
+      "status": "fail",
+      "evidence": "attempt-1/runtime-reobserve-2/observations/380.json"
+    },
+    "manualPlayerSave": {
+      "status": "fail",
+      "evidence": "attempt-1/runtime-reobserve-1/observations/061.json"
+    },
+    "midquestAutosaveResume": {
+      "status": "pass",
+      "evidence": "player-persistence-receipt.json"
+    },
+    "visualQuality": {
+      "status": "fail",
+      "evidence": [
+        "layout-quality-receipt.json",
+        "attempt-1/runtime-reobserve-2/observations/136.png",
+        "attempt-1/runtime-reobserve-2/observations/246.png",
+        "attempt-1/runtime-reobserve-2/observations/264.png"
+      ]
+    },
+    "postClearMapReentryRewardGuard": {
+      "status": "unverified",
+      "evidence": "post-ending-save-receipt.json"
+    },
+    "shippingStandaloneZip": {
+      "status": "unverified",
+      "reason": "Compiled shipping player.html/export shim was exercised; no standalone ZIP deployment was tested."
+    }
+  },
+  "persistence": {
+    "projectId": "9f909e45-63e1-48de-8437-fb5f7b784a0d",
+    "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/project",
+    "beforeRevision": 2,
+    "afterRevision": 61,
+    "reloadedRevision": 62,
+    "afterSha256": "d43326c87b586340ca0b854a1620f1c0d4e0adc3e1bf99490430f7af303c8cb2",
+    "reloadedSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+    "sameProject": true,
+    "sameStoredDocument": false,
+    "rendererLoadObserved": true,
+    "rendererMapsAndDatabaseEqual": true
+  },
+  "preservedCanonical": {
+    "readOnly": true,
+    "observedAt": "2026-10-08T04:06:21.834928+00:00",
+    "projectId": "9f909e45-63e1-48de-8437-fb5f7b784a0d",
+    "revision": 62,
+    "storedSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+    "updatedAt": "2026-10-08T03:15:02.052Z",
+    "projectDirectory": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/project",
+    "runtimeSourceSha256": "dadee402438d2ec33ab296590d4a5d5f846293f012e5eb0122ade33b9029092d"
+  },
+  "runtimeSourceSha256": "dadee402438d2ec33ab296590d4a5d5f846293f012e5eb0122ade33b9029092d",
+  "audioExternalization": {
+    "status": "byte equality proven for five WAV assets",
+    "checks": [
+      {
+        "assetId": "original_bgm_23af4cae-c7b1-4a39-b7ea-642636af237a",
+        "beforeDecodedSha256": "a9f37c155170c165f8347167fdeca3b2f89d3c53e247b9e1b119bc81ddf1914f",
+        "afterRefSha256": "a9f37c155170c165f8347167fdeca3b2f89d3c53e247b9e1b119bc81ddf1914f",
+        "bytesEqual": true
+      },
+      {
+        "assetId": "original_bgm_55e0e829-a439-4b2e-9fdd-eecd60de395a",
+        "beforeDecodedSha256": "758acd6bbbcc0cf47e0cf7f4f00f411d8a11bdba2d62d0afdd608ede11a60fe7",
+        "afterRefSha256": "758acd6bbbcc0cf47e0cf7f4f00f411d8a11bdba2d62d0afdd608ede11a60fe7",
+        "bytesEqual": true
+      },
+      {
+        "assetId": "original_se_fe412e44-3aec-4bc8-bc91-a8d1359b7ef0",
+        "beforeDecodedSha256": "75d9ffa588986df93f8616ff81632945d5e806ba173d7eb29c7df3b9a35d28a4",
+        "afterRefSha256": "75d9ffa588986df93f8616ff81632945d5e806ba173d7eb29c7df3b9a35d28a4",
+        "bytesEqual": true
+      },
+      {
+        "assetId": "original_se_080ff007-f918-41bf-91d5-dbf5121c833e",
+        "beforeDecodedSha256": "9d36bcddd20fa4e1db20f3ef64049d35c0c4cb7262c72fde419aeb32fdb6cf4f",
+        "afterRefSha256": "9d36bcddd20fa4e1db20f3ef64049d35c0c4cb7262c72fde419aeb32fdb6cf4f",
+        "bytesEqual": true
+      },
+      {
+        "assetId": "original_se_5aea3bab-deaa-4c08-a439-20a7962a75e5",
+        "beforeDecodedSha256": "ab9c97f6238ab8f2df9b85bbf8aff39a58db959adf0ee301616507277ade5fe7",
+        "afterRefSha256": "ab9c97f6238ab8f2df9b85bbf8aff39a58db959adf0ee301616507277ade5fe7",
+        "bytesEqual": true
+      }
+    ],
+    "strictDocumentFailureWaived": false
+  },
+  "authorship": {
+    "nativeTemplateReuse": [
+      "136-class/1243-skill database retained",
+      "existing warrior/mage classes and skill definitions",
+      "beodeul town/stamp assets and hand interior room authoring tools",
+      "existing actor/battler/monster art",
+      "default 새 프로젝트 title and unrelated cinematic opening",
+      "native shop, ATB battle, save/ending UI"
+    ],
+    "assistantAuthoredExtension": [
+      "four authored playable maps and their connections; original unused blank map retained",
+      "two actor stat/name/equipment configurations",
+      "three added troops; two added enemies and one enemy modified",
+      "herb and mana-potion items; equipment/item tuning",
+      "chief/boss/herb/shop/inn/savepoint event command pages",
+      "official ending/world-story definitions",
+      "two original BGM and three original SE WAV assets"
+    ],
+    "databaseChanges": {
+      "actors": {
+        "beforeCount": 136,
+        "afterCount": 136,
+        "added": 0,
+        "modified": 2
+      },
+      "classes": {
+        "beforeCount": 136,
+        "afterCount": 136,
+        "added": 0,
+        "modified": 0
+      },
+      "skills": {
+        "beforeCount": 1243,
+        "afterCount": 1243,
+        "added": 0,
+        "modified": 0
+      },
+      "items": {
+        "beforeCount": 1000,
+        "afterCount": 1002,
+        "added": 2,
+        "modified": 1
+      },
+      "equipment": {
+        "beforeCount": 86,
+        "afterCount": 87,
+        "added": 1,
+        "modified": 2
+      },
+      "enemies": {
+        "beforeCount": 106,
+        "afterCount": 108,
+        "added": 2,
+        "modified": 1
+      },
+      "troops": {
+        "beforeCount": 7,
+        "afterCount": 10,
+        "added": 3,
+        "modified": 0
+      },
+      "states": {
+        "beforeCount": 28,
+        "afterCount": 28,
+        "added": 0,
+        "modified": 0
+      },
+      "battleAnimations": {
+        "beforeCount": 60,
+        "afterCount": 60,
+        "added": 0,
+        "modified": 0
+      },
+      "elements": {
+        "beforeCount": 18,
+        "afterCount": 18,
+        "added": 0,
+        "modified": 0
+      },
+      "terrains": {
+        "beforeCount": 4,
+        "afterCount": 4,
+        "added": 0,
+        "modified": 0
+      },
+      "battleCommands": {
+        "beforeCount": 4,
+        "afterCount": 4,
+        "added": 0,
+        "modified": 0
+      },
+      "monsterSpecies": {
+        "beforeCount": 10,
+        "afterCount": 10,
+        "added": 0,
+        "modified": 0
+      },
+      "crops": {
+        "beforeCount": 0,
+        "afterCount": 0,
+        "added": 0,
+        "modified": 0
+      },
+      "lifeSkills": {
+        "beforeCount": 0,
+        "afterCount": 0,
+        "added": 0,
+        "modified": 0
+      }
+    },
+    "superficialDialogue": "Inn, shop, gate and first reward have actual state mutations. Completion claims of free loss recovery and usable save crystal are contradicted by runtime.",
+    "unsupportedArtNeeds": "No mandatory new art was needed to attempt the user story. Optional map-character golem representation is weak: farmer-like charset stands in for a golem. No human-selected artwork was approved or installed by evaluator."
+  },
+  "defects": [
+    {
+      "category": "gameplay",
+      "id": "loss-recovery",
+      "observed": "Boss defeat reaches inn with HP0/0; paid inn required for recovery.",
+      "evidence": "attempt-1/runtime-reobserve-2/observations/380.json"
+    },
+    {
+      "category": "runtime-code",
+      "id": "save-menu",
+      "observed": "System group Save opens Items twice.",
+      "inference": "playerStatusMenuController renderMenu rail validation falls back to items when passed group command save.",
+      "evidence": "attempt-1/runtime-reobserve-1/observations/061.json"
+    },
+    {
+      "category": "persistence",
+      "id": "boot-rewrite",
+      "observed": "UI save rev61 SHA differs from fresh browser boot rev62; maps/DB equal, five audio dataUrls externalized to refs, decoded bytes equal.",
+      "evidence": "attempt-1/persistence.json"
+    },
+    {
+      "category": "visual",
+      "id": "map-layout",
+      "observed": "Post-internal-repair quality warnings still fail: village empty46%,9x9; cave empty83%,8x8 and symmetry9.2x. Actual cave is expansive paving with sparse/repeated props, and boss battle uses a forest backdrop.",
+      "evidence": [
+        "layout-quality-receipt.json",
+        "attempt-1/runtime-reobserve-2/observations/136.png",
+        "attempt-1/runtime-reobserve-2/observations/264.png"
+      ]
+    },
+    {
+      "category": "visual-accessibility",
+      "id": "counter",
+      "observed": "Front counter interaction fails; side aisle reaches merchant and transactions work.",
+      "evidence": "attempt-1/runtime-reobserve-2/observations/027.png"
+    },
+    {
+      "category": "template-reuse",
+      "id": "title-opening",
+      "observed": "Title remains 새 프로젝트 and initial unrelated cinematic remains enabled.",
+      "evidence": "attempt-1/runtime-reobserve-1/initial-qa/01-title.png"
+    }
+  ],
+  "missingToolProposals": [
+    {
+      "proposal": "Extend play_walkthrough with an authenticated shipping-player browser mode",
+      "observedFailure": "Native Save opened Items instead of save slots twice; the authored boss-loss transfer reached the inn with both actors still at 0 HP. A settled model turn and static recoverAll command did not establish correct runtime behavior.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-1/observations/059.json",
+        "attempt-1/runtime-reobserve-1/observations/061.json",
+        "attempt-1/runtime-reobserve-2/observations/380.json"
+      ],
+      "existingCapability": "play_walkthrough and run_scene_test exist and explicitly run without a browser. verify_quest wraps scene simulation. run_action_combat_test has an asynchronous browser harness for action combat, not this menu/turn-battle/save route. This is an extension proposal, not a claim that scene testing is absent.",
+      "currentWorkaround": "External operator uses assistant-capability openGenrePlayer, prepareWebExport and compiled player.html, then real keyboard inputs plus read-only state/DOM observations. Paid inn recovery is a gameplay workaround for the failed boss-loss recovery.",
+      "input": {
+        "storedProjectSha256": "immutable canonical snapshot",
+        "target": "shipping player.html/export shim",
+        "scenario": "actual keyboard/pointer actions with native waits",
+        "assertions": [
+          "selected UI surface",
+          "gold/inventory deltas",
+          "party HP/MP",
+          "quest flags",
+          "fresh-context Continue"
+        ],
+        "budget": "bounded time and input counts",
+        "stateInjection": false
+      },
+      "output": {
+        "status": "pass/fail/unverified/environment-blocked per assertion",
+        "evidence": "source SHA, original input/controller log, actual screenshots and hashes, runtime errors, observed state deltas",
+        "mutation": "no project writes"
+      },
+      "negativeConditions": [
+        "Reject switch/inventory/health/currency/position injection as proof.",
+        "Wrong source SHA, unresolved controller timeout, missing PNG, hidden UI or incomplete battle remains unverified.",
+        "Scene-test success and model completion cannot satisfy browser assertions.",
+        "Do not silently repair product/game content during observation."
+      ],
+      "expectedGameplayAcceptance": [
+        "Save actually presents slots and a fresh context resumes the written progress.",
+        "Native boss defeat reaches a reachable recovery location with usable party vitals; retry succeeds without injected state.",
+        "Before-boss herb/report and post-clear repeated report yield no unauthorized rewards."
+      ],
+      "priority": "high; evidence interface and runtime defects must be separated"
+    },
+    {
+      "proposal": "Counter service binding helper for existing shop/inn events",
+      "observedFailure": "Standing at the shop counter (5,5), facing the merchant at (5,3), and confirming did not open dialogue. Counter tile (5,4) blocks movement. Walking around the left aisle to (4,3) allowed the native shop to open.",
+      "evidence": [
+        "attempt-1/runtime-reobserve-2/observations/027.json",
+        "attempt-1/runtime-reobserve-2/observations/027.png",
+        "attempt-1/runtime-reobserve-2/observations/039.json",
+        "attempt-1/runtime-reobserve-2/observations/043.json"
+      ],
+      "existingCapability": "place_npc, upsert_event and set_shop_stock exist. PlaySceneMovement.performAction checks the directly adjacent tile and then the underfoot tile; inspected TilesetDef/tools expose no counter interaction binding. The shop itself is implemented and its equipment/potion transactions passed.",
+      "currentWorkaround": "Walk behind the counter, move the merchant to the front, or author an accessible front interaction linked to a shared service event using existing event tools.",
+      "input": {
+        "mapId": "target map",
+        "serviceEventId": "existing shop/inn event",
+        "counterCells": "explicit contiguous tile coordinates",
+        "approachCells": "walkable front coordinates",
+        "binding": "shared native service invocation, not duplicated reward commands"
+      },
+      "output": {
+        "eventsOrBindings": "created IDs and references",
+        "reachability": "validated approach cells and counter collision preservation",
+        "issues": "blocked approach, invalid service, duplicate binding or missing path"
+      },
+      "negativeConditions": [
+        "Do not allow interaction through arbitrary walls or distant/diagonal counters.",
+        "Reject sealed approach cells or counter ownership conflicts.",
+        "Cancel and insufficient funds must preserve currency and items.",
+        "One confirm must invoke the service once; duplicate bindings must not charge twice."
+      ],
+      "expectedGameplayAcceptance": [
+        "At the front counter, normal confirm opens the existing shop while counter movement remains blocked.",
+        "Buy equipment and potion with exact currency/inventory deltas; cancellation and unaffordable purchase leave values unchanged."
+      ],
+      "priority": "medium; authoring/accessibility convenience, not evidence of a missing shop system"
+    }
+  ],
+  "observationIntegrity": {
+    "runtimeRoute": "compiled player.html with prepareWebExport and shipping export shim",
+    "observedProjectContentUnchanged": true,
+    "reobservationSourceSha256": "dadee402438d2ec33ab296590d4a5d5f846293f012e5eb0122ade33b9029092d",
+    "initialObserverFailure": "runtime-first navigation timed out; screenshot capture also failed. Preserved SUMMARY; separate same-source reobservation used120s navigation timeout.",
+    "controllerFailures": "Static route initially skipped blocked upper-priority tiles; timing/keyboard ownership/title cursor assumptions also caused observer failures. Preserved logs; no game repairs. Caption audit appended to observation SUMMARY.",
+    "readOnlyInstrumentation": "__oprnDebug.readState, scene vitals/skills/movement flags, DOM/controller snapshots; no switches, items, health, currency, levels, teleports or objectives injected.",
+    "images": "reviewed-image-hashes.json lists31 actually viewed images only.",
+    "priorRecords": "Canonical ai_conversations had0 prior rows. IndexedDB was not independently enumerated; helper used a fresh browser context. See prior-records.json.",
+    "operatorDeviation": "One controller copy was temporarily placed in experiment root and immediately moved into this case. No shared source/build/project data was edited; report does not claim perfect output-directory compliance.",
+    "postEndingTitleNavigation": "Some captions anticipated Continue while controller selected title Load or captured stale debug state. Only actual restored field636/637 and real slot UI are credited."
+  },
+  "cleanup": {
+    "ownedEditorHost": "helper closed after attempt1",
+    "ownedRuntimeHostAndBrowsers": "controller close printed OWNED PLAYER CLOSED",
+    "otherCasesLocksOrProcessesTouched": false,
+    "controllerProcess": "h.close stopped owned browser/server; residual readline process was then interrupted via its own PTY only",
+    "receipt": "cleanup-receipt.json",
+    "editorPortAcceptsConnection": false
+  },
+  "limitations": [
+    "One trial; no percentage/general genre success estimate.",
+    "No post-clear ordinary map reentry proof; no strict full runtime slot byte SHA capture.",
+    "Strict round-turn combat interpretation unverified: observed native ATB gauge.",
+    "Music data authored/preserved; audible musical quality not independently assessed.",
+    "Runtime player was exercised from the saved expanded attempt1 document; canonical rev62 audio representation change was separately inspected, not silently substituted."
+  ],
+  "independentPersistence": {
+    "basis": "Independent read-only comparison of saved snapshot, fresh-context snapshot and canonical SQLite current_json",
+    "projectId": "9f909e45-63e1-48de-8437-fb5f7b784a0d",
+    "revision": 62,
+    "storedSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+    "storedBytesSha256": "6c5f74f0ca7b3a7f257d6fe6c7449690fa21ccc5dd3eb754e22139bfa67556b7",
+    "storedEqualsReloaded": true,
+    "mapsEqualBeforeToReloaded": true,
+    "databaseEqualBeforeToReloaded": true,
+    "mapRowCount": 5
+  }
+}

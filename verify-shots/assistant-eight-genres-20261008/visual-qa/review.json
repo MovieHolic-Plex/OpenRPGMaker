@@ -1,0 +1,697 @@
+{
+  "at": "2026-10-08T05:52:45.982310+00:00",
+  "reviewer": "root-supervisor",
+  "postUserCorrection": true,
+  "criteria": "CONTRACT.md",
+  "caseReviews": [
+    {
+      "caseId": "monster-collect",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "revision": 33,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "미검증",
+          "observed": "상점과 체육관은 벽·시설 동선 없는 잔디와 소수 기물이다. 야외 시설 의도를 확정할 근거가 없어 실내라는 이유로 실패시키지 않는다. 장소 품질 통과는 주지 않는다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "조회한 정적 나무·집·기물의 조각은 완성된 모습이다. 전체 지형 조회에서 잘린 시트나 누락 자산은 발견하지 못했다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "마을→들판 (10,0), 들판→체육관 (10,0), 상점 귀환 (7,11)은 그림 없이 바닥에 투명 전이만 있다. 연결 기능과 출입구 인식이 다르다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "미검증",
+          "observed": "상점의 물품 테이블과 체육관의 기둥은 보이지만 모든 스타터·야생 개체의 필드/전투 외형 수락 검수는 끝나지 않았다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "미검증",
+          "observed": "실제 체육관에서 관장·주인공은 보았다. 모든 몬스터 형태·포획 단계의 외형 비교를 완료하지 않았다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "monster-collect",
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_blank_start-terrain.png",
+          "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+          "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+          "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "monster-collect",
+          "mapId": "map_town",
+          "name": "시작 마을",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_town-terrain.png",
+          "sha256": "158df88954e9d13c19c80826f092c247ed42ac6d6877fad4f841353bf0d9d500",
+          "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+          "sourceMapSha256": "644fcd400a2cf4b61603ac389b732570bf975cf91958a5cd0dba60c682b5d2f1",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "monster-collect",
+          "mapId": "map_field",
+          "name": "별빛 들판",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_field-terrain.png",
+          "sha256": "34bfa1236a5147375047931c35c46d4cbe5fdafff8227f928d57d4ac168914c5",
+          "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+          "sourceMapSha256": "addb79113d85b3212d08f053cd1a67485bdd4b1ca93f6730b9aee121d0350511",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "monster-collect",
+          "mapId": "map_shop",
+          "name": "마을 상점",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_shop-terrain.png",
+          "sha256": "c133f7f1ebf429a6a214bb8d8c45a04aae7514f4fe653749aa678376a8c39333",
+          "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+          "sourceMapSha256": "8490d6e5e25f72c98b4182213dfab22d2875b06266c17698f974cff3744aeebd",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "monster-collect",
+          "mapId": "map_gym",
+          "name": "풀잎 체육관",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_gym-terrain.png",
+          "sha256": "f5e336411b1ceb10b465e76dc494a12969095340f441b5d53c3e0b6089c74403",
+          "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+          "sourceMapSha256": "51fab7b3e6d2619c2b101a79ea71f705f69c5fe0a584a08592b4d33d627f8005",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "monster-collect",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/attempt-3/runtime-final/actual-gym-first-view.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/native-01.png",
+          "sha256": "f9aa79f2a37b131149bdbbfc675a84fefee65ba035504f8c1e43c5ca92b029ae",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 체육관: 시설 공간·표식 부족"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "story-cutscene",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+      "revision": 24,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "통과",
+          "observed": "완성 건물·정원·집 안 책장/책상/음악 기물이 보이며 집과 정원이라는 기본 장소는 읽힌다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "전체 지형에서 건물과 정원 조각, 집 벽·바닥·기물의 조립은 끊긴 표본 없이 보인다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "마지막 문을 막는 대상은 정원 바닥에 서 있는 사람 그림이다. 016 실제 장면에서 문 구조와 인물의 역할이 구분되지 않는다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "미검증",
+          "observed": "책·음악 기물과 꽃 식물이 보인다. 어떤 화분이 기억 대상인지 장소만으로 구별되는지는 미검증이며 탐색 자체를 오류로 판정하지 않는다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "실패",
+          "observed": "042 실제 첫 기억에서는 상태1인데 안내3/3이다. 대사 진도와 실제 상태가 맞지 않는다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "story-cutscene",
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/map_blank_start-terrain.png",
+          "sha256": "f24ade87736bb18492da22a407263ee048fb4b0b5cda42bb054dd23d9d0e715d",
+          "sourceProjectSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+          "sourceMapSha256": "14ccbb747741409d8c730ed16a11b42010b47dad344cd2df5ff01f3a25f015f0",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "story-cutscene",
+          "mapId": "map_house_interior",
+          "name": "오래된 집 실내",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/map_house_interior-terrain.png",
+          "sha256": "01e162e3e894c3364db22c3ecf8f9ecd36c67a9a6ccfa415fbb2f50171a737be",
+          "sourceProjectSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+          "sourceMapSha256": "b8a0c9cb94f74c02fae3215f50216f2ef4acc0412aa256cb03a0f4ba8b328c09",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "story-cutscene",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/attempt-2/runtime-repair-1/016-door-zero-guidance.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/native-02.png",
+          "sha256": "4c34aa12d49948044771f4581ad8f1b9591e28a020a16dfe447ac47370b163e0",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 마지막 문 안내: 문 대신 사람"
+        },
+        {
+          "caseId": "story-cutscene",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/attempt-2/runtime-repair-1/042-pot-first-count-notice.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/native-03.png",
+          "sha256": "9cb1d2a4e6a38fc5b8532deacfb32242e6d4a5edd9ba2daaf7d902364070e4a5",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 첫 기억: 상태1, 표시3/3"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "revision": 62,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "실패",
+          "observed": "map_cave_dungeon 24×24 전체는 판석으로 열린 사각 바닥이며 암반 외곽과 이어진 굴 통로가 없다. 동굴 형상 실패. 마을·상점·여관의 기본 장소 표현은 별도로 확인됐다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "실패",
+          "observed": "천장 3×3 조각을 (0,0),(10,0),(0,10),(18,10)에 고립 배치했고 벽 앞면은 (3,0),(6,0),(3,10),(8,16),(14,16)에 떠 있다. 천장 밑에 벽을 잇는 참고 계약을 충족하지 않는다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "동굴 귀환 (2,13)이 벽의 입구가 아닌 판석 바닥에 놓여 있다. 마을 동쪽 (39,14) 전이도 동굴 입구 그림이 없다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "실패",
+          "observed": "약초의 자리 (16,3)는 석판/제단이고 실제 243 장면에 약초가 구별되지 않는다. 녹색 옷 인물과 제단이 겹쳐 시각적 역할도 혼동된다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "실패",
+          "observed": "수호자 이벤트 (16,5)는 인간형 외형으로 보인다. 실제 전투의 골렘과 필드 외형이 일치하지 않는다. 전투 동작 성공이 이 실패를 해소하지 않는다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "adventure-jrpg",
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_blank_start-terrain.png",
+          "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+          "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+          "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "adventure-jrpg",
+          "mapId": "map_beodeul_small_village",
+          "name": "버들꽃 마을",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_beodeul_small_village-terrain.png",
+          "sha256": "3509f8bb8c24d4e4bac94e75d0c782efecf54c7a017eb9ef7c495ef0ac8dd4b4",
+          "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+          "sourceMapSha256": "ea0d50613357f47888c85e29fe657b49ff1d99009dc79a16b69bafd7eab3ebbe",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "adventure-jrpg",
+          "mapId": "map_village_shop",
+          "name": "버들꽃 상점",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_village_shop-terrain.png",
+          "sha256": "001bdb1df101ee15b9b17ba904a1e83dfcdd2db1dbc631df8e33c3e59e88173b",
+          "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+          "sourceMapSha256": "8a95baa46f14487e68182fe1ef114628be9a6d0e61053c268a19119c7ee53cb4",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "adventure-jrpg",
+          "mapId": "map_village_inn",
+          "name": "버들꽃 여관",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_village_inn-terrain.png",
+          "sha256": "10c699cb423848d697f964ed0e242f79f87c27db62cd9c653f1750b4dd240967",
+          "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+          "sourceMapSha256": "d810e1434a484c5f08a70dda12a7ae76897cca89b46e4cd357498b546f4e3057",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "adventure-jrpg",
+          "mapId": "map_cave_dungeon",
+          "name": "이끼 서린 동굴",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_cave_dungeon-terrain.png",
+          "sha256": "62c91d9c79e442e08a7482aa070ec5d9d0f641e7844f769ce6ad7f1770946fba",
+          "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+          "sourceMapSha256": "40479e5b1a30d5caa7f12b36d016267d964a30393fb6b40239a787a63bb00e6f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "adventure-jrpg",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/attempt-1/runtime-reobserve-2/observations/136.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/native-04.png",
+          "sha256": "084495093b0483d9a0aa7ecd27d5fc008849de31b2f12c354ab57e27536aba75",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 동굴: 열린 판석과 고립 조각"
+        },
+        {
+          "caseId": "adventure-jrpg",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/attempt-1/runtime-reobserve-2/observations/243.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/native-05.png",
+          "sha256": "356a76c0a754e262d982b5c6e23f94845a90e6f3ee1143208a7406db10b06ecf",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 약초 조사: 제단/사람, 약초 인식 불명확"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "horror-gallery",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "revision": 28,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "통과",
+          "observed": "세 방에 실제 벽·석재 바닥·액자·꽃 식물·금고가 보인다. 전시실 기본 표현은 통과, 공포 연출 전체는 미검증."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "세 지형 전체도와 corridor/vault 실제 장면에 벽·바닥·액자·책장이 읽히며 누락 자산으로 깨진 조립은 발견하지 못했다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "전시실→회랑, 회랑→금고실의 (9,3) 전이는 오른쪽 바닥 칸이며 해당 벽·바닥에 문이 없다. 아래쪽에 보이는 출구와 다른 전이 위치다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "통과",
+          "observed": "금고 자체와 조사할 액자는 실제 그림으로 존재한다. 숫자 입력·취소 기능 실패는 별도 판정이며 금고 그림이 없다고 판정하지 않는다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "실패",
+          "observed": "꽃잎1의 실제 화면에 하트5와 HP514/514가 남았다. 생명 자원과 HUD가 맞지 않는다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "horror-gallery",
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_blank_start-terrain.png",
+          "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+          "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+          "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "horror-gallery",
+          "mapId": "map_gallery_hall",
+          "name": "제1전시실 (로비)",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_hall-terrain.png",
+          "sha256": "02ca4feb8e4edd13bcfeeb8f8ea60bc115e82d4412a0ca773d839a2cfbce4ec8",
+          "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+          "sourceMapSha256": "fa463f710a5e59e787114dd3a6aa25c8c5799e35dc77b3016b4c299110653888",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "horror-gallery",
+          "mapId": "map_gallery_corridor",
+          "name": "제2전시실 (회랑)",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_corridor-terrain.png",
+          "sha256": "72f6357b8ef6530b6d85d2cba890572e475723a31f41ba513fbfe51515338dc5",
+          "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+          "sourceMapSha256": "10686a2696163ebf664d8fdd4d6d1d63907ea60df4a0fb177901e5c561e450f8",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "horror-gallery",
+          "mapId": "map_gallery_vault",
+          "name": "제3전시실 (금고실)",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_vault-terrain.png",
+          "sha256": "8096d158af3cf0ac51946834e3017af9f665cb7684290d8646e2bf65f8bdddeb",
+          "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+          "sourceMapSha256": "25157f55181c07eed09aeab1f1b0180e0f3a74eceadd4778294b753f4db05315",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "horror-gallery",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/runtime-content-first/corridor.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/native-06.png",
+          "sha256": "6bee557ede94171f7ad53666d261cd7d3565cab0acd35545b4825dca6177ad4b",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 회랑: 벽·액자와 출입구 위치"
+        },
+        {
+          "caseId": "horror-gallery",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/runtime-content-first/vault.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/native-07.png",
+          "sha256": "65b0c3abba4508d7692cbecc11ba9266603b2a8942d6335abe90f215555d03e1",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 금고실: 금고와 실내"
+        },
+        {
+          "caseId": "horror-gallery",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/attempt-2/runtime-reobserved/petals-one-default-hud.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/native-08.png",
+          "sha256": "7c858e910dfdf13b50b55710f847c054d50c90795755361146144ec4253792bf",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 꽃잎1: HUD514/514"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "school-horror",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "revision": 19,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "통과",
+          "observed": "교실의 칠판·책상/의자 6조, 복도의 벤치·게시 그림, 창고의 옷장·짐이 실제 지형과 게임 화면에 보인다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "전체 지형과 교실·복도 실제 장면에서 벽·바닥·기물이 기본적으로 조립돼 있다. 시대가 지정되지 않은 요청을 현대 재료가 아니라는 이유로 실패시키지 않는다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "복도→교실 (3,4)과 복도→창고 (17,3)은 눈에 보이는 문 없는 바닥 칸이다. 실제 005 복도 화면과 전이 좌표를 대조했다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "통과",
+          "observed": "실제 숨기 대상인 옷장이 창고 벽에 구별되고 교실 책상·창고 짐도 보인다. 숨기 기능은 기존 실제 플레이 영수증과 연결된다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "미검증",
+          "observed": "학교 등장인물·추격자의 전 상태 외형과 모든 숨기/포착 프레임을 새 시각 수락 기준으로 검수하지 않았다. 중세풍 주인공이 어울리는지는 미검증이다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "school-horror",
+          "mapId": "map_blank_start",
+          "name": "빈 맵",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_blank_start-terrain.png",
+          "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+          "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+          "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "school-horror",
+          "mapId": "map_classroom",
+          "name": "어두운 교실",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_classroom-terrain.png",
+          "sha256": "2daae23bea00d62eb2b79cc8c9a5452b155cea8ce4c9270b60b2dbb8481b9357",
+          "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+          "sourceMapSha256": "e2166872166179dd7a5d3aa7f2f6f711f4c4cf1d30cda23aa46f4c84e4fbf237",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "school-horror",
+          "mapId": "map_hallway",
+          "name": "적막한 복도",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_hallway-terrain.png",
+          "sha256": "bae8a6a958a2f546c972cd5e95700456b7c30644652a78940a8b84dbdfaa4657",
+          "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+          "sourceMapSha256": "7fcf3899c2017cfae71b02ed347bd5ec2fc77f2751c5e760a5ac55f2e610c5d9",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "school-horror",
+          "mapId": "map_storage",
+          "name": "지하 창고",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_storage-terrain.png",
+          "sha256": "4e5e8e9cfc688e8b6902e7243524a571a1acf671074733cb9fbd99fa407c40a5",
+          "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+          "sourceMapSha256": "c712e93f1094ba9bb8bd032da7095fd5a4cd4990e8bc9c00afe08ab97d5b8651",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "school-horror",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/002-classroom-after-original-opening.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/native-09.png",
+          "sha256": "ab73c0325f3f1399abded8e23b03645be8e1277dbf8afa41cbaa368f367bf6fb",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 교실: 칠판·책상/의자"
+        },
+        {
+          "caseId": "school-horror",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/005-hallway-ready-before-key.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/native-10.png",
+          "sha256": "66365e6e3433f02ee1cc87997741f24e63bf10624cf44347d10d32025e820efd",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 복도: 전이 칸에 문 그림 없음"
+        },
+        {
+          "caseId": "school-horror",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/attempt-3/runtime-final/044-pursuer-gives-up-native-hiding.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/native-11.png",
+          "sha256": "095cb46ba97f780dc06fe4d528d0f35cb4a6c344cf559fd9fe52ccd62b43d53d",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 창고: 옷장 숨기"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "farm-life",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "revision": 53,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "실패",
+          "observed": "정적 전체도에 집·가게는 보이지만 여섯 경작 칸의 경계와 위치가 읽히지 않는다. 작은 흙 패치 주변에 투명 조사 좌표가 섞여 있다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "조회한 집·가게와 기물의 정적 타일 조립 자체는 읽힌다. 재배 이벤트의 잘못된 캐릭터 그림은 배우·상태 축에서 실패다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "통과",
+          "observed": "집 문 아래 (4,8), 가게 문 아래 (17,10) 전이와 실내의 남쪽 출구 형상이 대응한다. 기능 왕복은 기존 native 영수증으로 확인됐다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "실패",
+          "observed": "밭 여섯 칸을 실제 장소에서 구별할 표면 표시가 부족하다. 첫 칸을 심은 실제 화면에는 씨앗/어린 작물 대신 나무 그림이 주인공을 가린다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "실패",
+          "observed": "last-repair-plot1-planted의 실제 stage1 작물이 나무 외형이다. 전체 성장 단계·물 준 상태의 외형과 기력 HUD 연결은 미검증이다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "farm-life",
+          "mapId": "map_blank_start",
+          "name": "햇살 농장",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_blank_start-terrain.png",
+          "sha256": "405853a6563a4526df2cd071a4ce9fa5bb065d54b6bd56e7d3f7188e04f3c70e",
+          "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+          "sourceMapSha256": "9d70c979ecb0ff50ad630d5f2c794bf871726062725ca8914903b16d17394aa7",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "farm-life",
+          "mapId": "map_farm_house",
+          "name": "농가 실내",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_farm_house-terrain.png",
+          "sha256": "74ab275eb05d60896663240c0f0824a5f405691de2e88a639ac9290a9613202a",
+          "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+          "sourceMapSha256": "7a262eb20e7031b29005e907a796d5bd5389e5c74792cb3688f79680316c4fd7",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        },
+        {
+          "caseId": "farm-life",
+          "mapId": "map_farm_shop",
+          "name": "마을 상점 실내",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_farm_shop-terrain.png",
+          "sha256": "c16d0f6741b487138faf7f423e5f2f0bd0f29af5a8ac4392bb9331bb8a461a95",
+          "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+          "sourceMapSha256": "f88506b86a3922c819ab01bbdd4a6f1821482cb2937232deac1bc6ab35202b8c",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "farm-life",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/attempt-3/runtime-interrupted-repair-b/last-repair-plot1-planted.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/native-12.png",
+          "sha256": "e6dfc64d5f2784c2c1fa2449bbb52df4a51067b66bcbbb35ea2cb9e5ead2df05",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 파종: 나무 외형이 주인공 가림"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "partner-raise",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+      "revision": 34,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "미검증",
+          "observed": "연구소·마당·훈련장은 한 잔디 맵의 NPC 자리로 제공된다. 그림은 수레·도로·나무이며 장소별 설비와 표지는 부족하다. 단일 맵이라는 사실 자체를 실패로 판정하지 않는다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "정적 도로·나무·수레·기물의 전체 조립에는 잘린 자산이나 빈 타일이 보이지 않았다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "통과",
+          "observed": "하나의 맵 안에서 실제 원래 입력으로 박사·파트너·훈련·가게에 접근했다. 별도 맵 출입구는 요청의 필수 조건이 아니었다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "미검증",
+          "observed": "슬라임 파트너는 실제 015 장면에 보인다. 각 서비스 장소가 안내 없이 구분되는지는 미검증이다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "실패",
+          "observed": "153 실제 진화 장면은 왕관 킹슬라임이라는 안내와 푸른 용 외형이다. 같은 개체의 성장 보존과 외형 의미 일치를 나눠 판정한다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "partner-raise",
+          "mapId": "map_blank_start",
+          "name": "몬스터 육성 연구 마을",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/partner-raise/map_blank_start-terrain.png",
+          "sha256": "a1b986264de6bab7e8ab27d266f8d485726cbcf4e92dbe17dc276b89e5b50fc6",
+          "sourceProjectSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+          "sourceMapSha256": "7c6ced4d6d18018afa0cde02ecf99ee9bb891fe92a8eef4ed556d08ff769a73f",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "partner-raise",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/attempt-2/runtime-reobservation/015-approach-yard.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/partner-raise/native-13.png",
+          "sha256": "e0f3c62819c7b746f0b9a883c991b14506058b9a5180ad8643b4a18931f0acba",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 마당: 파트너 슬라임"
+        },
+        {
+          "caseId": "partner-raise",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/partner-raise/native-14.png",
+          "sha256": "1acc645e190c49dc69fa820803359603050fe1a2e6c8c4335ffb8e498bf42120",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 진화: 킹슬라임 안내와 용"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    },
+    {
+      "caseId": "action-rpg",
+      "status": "fail",
+      "reviewer": "root-supervisor",
+      "sourceProjectSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+      "revision": 31,
+      "axes": [
+        {
+          "label": "장소 식별·형상",
+          "status": "통과",
+          "observed": "지형의 두 벽 띠와 틈, 실제 필드의 근접·투사체 적으로 작은 전장이 제공된다. 단순한 잔디 전장이라는 이유만으로 실패시키지 않는다."
+        },
+        {
+          "label": "타일 조립·레이어",
+          "status": "통과",
+          "observed": "전체 지형의 장벽·틈 자체는 연결된 조립이다. 벽 틈에 잠긴 문 상태가 표시되지 않는 문제는 출입구 축에서 실패다."
+        },
+        {
+          "label": "동선·출입구",
+          "status": "실패",
+          "observed": "잠긴 상태에도 벽 중앙에 열린 잔디 틈만 보인다. 실제 067 화면과 투명 잠금 이벤트를 대조했다. 잠김/해금 상태를 읽을 그림이 없다."
+        },
+        {
+          "label": "상호작용·목표물",
+          "status": "실패",
+          "observed": "실제 067 화면에서 근접 적 둘과 투사체 적 둘의 몸이 겹쳐 개체와 위협을 구분하기 어렵다. 조수의 적 생성 성공과 다른 문제다."
+        },
+        {
+          "label": "배우·UI·상태 일치",
+          "status": "미검증",
+          "observed": "공격·피격·회피·가드 각 상태의 시각 프레임을 모두 대조하지 않았다. 실제 기력 HUD가 있다는 사실만으로 해당 연출 전체를 통과시키지 않는다."
+        }
+      ],
+      "terrainMapsReviewed": [
+        {
+          "caseId": "action-rpg",
+          "mapId": "map_blank_start",
+          "name": "수호자의 시련 회랑",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/action-rpg/map_blank_start-terrain.png",
+          "sha256": "f5052386ace4a5425e5c03ca15fd122b9104c48bbf9f1ec6743ed7dfab29e766",
+          "sourceProjectSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+          "sourceMapSha256": "09dfa35f888648b145f2c7b56a75f6c1ef3e88482e04aa022d4bd008b70828ce",
+          "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+        }
+      ],
+      "nativeImagesReviewed": [
+        {
+          "caseId": "action-rpg",
+          "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/attempt-2/runtime-repair-1/067-safe-start-after-opening.png",
+          "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/action-rpg/native-15.png",
+          "sha256": "bfe9861ed0e2ba2b543e4a737b133ef4f89fdf563f1136d25fca99abb47d5d30",
+          "scope": "Actual compiled player screenshot; SUMMARY read before image. State/DOM receipts qualify claims.",
+          "observation": "실제 수선본: 적 겹침과 문 상태 표시 없음"
+        }
+      ],
+      "limits": "Terrain overview omits actors/events/state overlays. Selected native views, not all dynamic states. Unverified axes and excluded original blank maps are explicit."
+    }
+  ],
+  "referencesReviewed": [
+    "bd-pick-doc-dungeon-guide.md",
+    "bd-pick-doc-sea-cave.md",
+    "bd-pick-img-sea-cave-map.png",
+    "bd-pick-img-sea-cave-parts.png"
+  ],
+  "limits": "No product/game changes. Current terrain rendered via actual editor tile drawing; native images linked to their original attempt and state records. Reused inherited blank maps are listed, not treated as new authored games."
+}

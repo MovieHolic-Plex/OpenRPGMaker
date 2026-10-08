@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-08T04:40:22.403895+00:00",
+  "reviewer": "root-supervisor",
+  "productSourceChanged": false,
+  "earlierReceiptsPreserved": true,
+  "files": [
+    {
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/src/harnesses/assistant-capability/node/genreExperiment.mjs",
+      "sha256": "f54895d373258657a914371e93b8cb0c6d57839b07bf1004672f348c1ccb7ae4"
+    },
+    {
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/src/harnesses/assistant-capability/node/genreEntry.mjs",
+      "sha256": "b5c0dee0b430d8cbe5afc622146e5b539aae97dd6f6183bd4ae89d1eef1d2285"
+    },
+    {
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/src/harnesses/assistant-capability/node/genrePrepare.ts",
+      "sha256": "f731ce12168f6e29219415efe5e3eeb664fdd80912f7ec67254bf657073e12c5"
+    },
+    {
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/harness-data/assistant-capability/genre-seed.json",
+      "sha256": "8a61fe33dcfbc51dd28920e0b00db7a26f068fe66ae90b8df383f2db0c2b12af"
+    }
+  ],
+  "changesSinceEarlierReceipt": [
+    "Runtime observation serves actual stored uploaded asset bytes and MIME types",
+    "Immutable source/player/asset hashes recorded",
+    "No success reclassification for historical fresh reload failures"
+  ]
+}
