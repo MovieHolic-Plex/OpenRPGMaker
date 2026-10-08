@@ -244,6 +244,21 @@ def img_tag(im, k, alt=''):
     return f'<img src="{b64(im, k)}" width="{w}" alt="{alt}">'
 
 
+_LINE_REF = {}
+
+
+def line_ref(ln):
+    """줄의 화풍 기준 그림 = 기원 판(style-r1)의 그 글자 동굴 장면. 없으면 None."""
+    if ln not in _LINE_REF:
+        o = lines().get(ln, {}).get('origin', {})
+        try:
+            mod = load_round(o['round'])
+            _LINE_REF[ln] = mod.CANDIDATES['style.cave'][o['letter']]()[1]['vignette']
+        except (KeyError, SystemExit):
+            _LINE_REF[ln] = None
+    return _LINE_REF[ln]
+
+
 def cand_note(mod, key):
     notes = getattr(mod, 'NOTES', None) or getattr(mod, 'STYLE_NOTE', {})
     return notes.get(key, '')
@@ -299,6 +314,12 @@ def cmd_sheet(rid, force=False):
         for ln in ls:
             if not one_row:
                 H.append(f'<div class="lineh">줄 {ln} 「{ls[ln]["name"]}」</div><div class="row">')
+                ref = line_ref(ln)
+                if ref is not None:
+                    o = ls[ln]['origin']
+                    H.append(f'<div class="card ref"><h3>줄 기준</h3><div class="sub">{o["round"]} {o["letter"]} 동굴 장면(화풍 기준)</div>'
+                             f'<div class="imgs"><div>{img_tag(ref, 1)}<div class="lbl">1배</div></div>'
+                             f'<div>{img_tag(ref, 2)}<div class="lbl">2배</div></div></div></div>')
             if skipped(ln, item):
                 H.append(f'<div class="card"><h3>줄 {ln} — 뺌</h3><div class="sub">{skipped(ln, item)}</div></div>')
             for key in groups.get(ln, []):
@@ -308,10 +329,10 @@ def cmd_sheet(rid, force=False):
                 st = ps.get((item, ln))
                 st = st if st and st[0]['round'] == rid else None
                 star = (f' <span class="star">★ 줄 {ln} 고름</span>' if st and st[0]['letter'] == key and st[1] == 'current' else
-                        f' <span class="bad">VOID</span>' if st and st[0]['letter'] == key else '')
+                        ' <span class="bad">VOID</span>' if st and st[0]['letter'] == key else '')
                 gl = ' '.join(f'<span class="{"ok" if r["ok"] else ("bad" if r["level"] == "FAIL" else "w")}" title="{r["msg"]}">{r["code"]}{"✓" if r["ok"] else "✗"}</span>' for r in rs)
                 H.append(f'<div class="card{" picked" if "star" in star else ""}"><h3>후보 {key} <span class="sha">{sha[:8]}</span>{star}</h3>'
-                         f'<div class="sub">{cand_note(mod, key)}</div><div class="imgs">'
+                         f'<div class="sub">{meta.get("note") or cand_note(mod, key)}</div><div class="imgs">'
                          f'<div>{img_tag(im, 1)}<div class="lbl">원본 1배</div></div><div>{img_tag(im, 4)}<div class="lbl">4배</div></div>')
                 if 'vignette' in meta:
                     v = meta['vignette']
