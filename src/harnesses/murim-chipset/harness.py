@@ -187,7 +187,7 @@ def _merge(code_results):
         rs = by[code]
         bad = [(pid, r) for pid, r in rs if not r['ok']]
         msg = '; '.join(f'[{pid}] {r["msg"]}' for pid, r in bad) if bad else f'조각 {len(rs)}개 통과'
-        out.append(G._res(code, rs[0]['level'], not bad, msg))
+        out.append(G._res(code, rs[0][1]['level'], not bad, msg))
     return out
 
 
@@ -197,13 +197,12 @@ def check_candidate(rid, item, key, im, meta):
         rs = G.check_one(item, im, meta)
     else:
         ew, eh = item['size'][0] * tk.T, item['size'][1] * tk.T
-        rs = [G._res('Z', 'FAIL', im.size == (ew, eh), f'세트 {im.width}×{im.height} (계약 {ew}×{eh})')]
         crops = piece_crops(item, im)
         pm = (meta or {}).get('pieces', {})
-        per = []
+        per = [('세트', G._res('Z', 'FAIL', im.size == (ew, eh), f'세트 {im.width}×{im.height} (계약 {ew}×{eh})'))]
         for pid, (cim, pc) in crops.items():
             per += [(pid, r) for r in G.check_one(pc, cim, pm.get(pid, {}))]
-        rs += _merge(per)
+        rs = _merge(per)
         L = line_of(rid, key)
         style = line_style(L) if L else {}
         ref = style.get((item.get('styleRef') or [None])[0])

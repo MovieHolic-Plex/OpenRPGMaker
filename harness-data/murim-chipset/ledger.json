@@ -485,6 +485,359 @@
      "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
     }
    }
+  },
+  {
+   "at": "2026-10-08T09:45:01",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 1,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 8,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 8,
+     "fail": 1,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "11b95e916170a340837340888250d986ac7bfb9a79aaaf8a9e18f8195e611ca4"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:51:24",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "82f8db2335bf35aa3448d7092bc2be58d5a9643f984d6b2384c773dde4cf1f57"
+    },
+    "door_double": {
+     "A1": "d8aa97fc8fb19eda38bd679ff3c17e85bb52120d6904a5a5f21bf5cf3ef1e4fc",
+     "A2": "ba3995054cc568c1a874355a506b9f4ba3ba53af18d9f8627f6599590ff2d057",
+     "B1": "d08286e5db55bef589f0b82b240c26a237588d2c16c661dfe07ac97b504b8cad",
+     "B2": "d59a2967373a8168d171c34518390c732594f505a8ebacebfe763dc3ac43117b"
+    },
+    "stairs_wood": {
+     "A1": "853f47c09084d584f11581eac4a989e9efdada006effa7388123582c900e7a2d",
+     "A2": "681c924de149fa1be0159adbab0731543ac5083e8dea69d191c30311a0daba44",
+     "B1": "240672b0a2037fca7fa47f79d5e820e85b0f94a3bded2e37287756280d439c36",
+     "B2": "150d54c46fa50d62593e9b442795a5043989acb83a1a8624b875e0b414bb27c3"
+    },
+    "railing_upper": {
+     "A1": "6315935bc8e68611dccafeaa350cbf88bfa1b39024ad4d74f91d4167280d414b",
+     "A2": "ce68ae8ec6cbf4a4dbbac96277a203ce61f509f618bc1d894e20e5cbf18af776",
+     "B1": "8aa1a82f870f27d313e9c9bc4d1961808a940d66ad7d36003af3138cb64fef0e",
+     "B2": "8463f2ee191fc113e0694ad94c4e25970fc1b65b7e90df917e647cb85af15e7e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:51:48",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "82f8db2335bf35aa3448d7092bc2be58d5a9643f984d6b2384c773dde4cf1f57"
+    },
+    "door_double": {
+     "A1": "d8aa97fc8fb19eda38bd679ff3c17e85bb52120d6904a5a5f21bf5cf3ef1e4fc",
+     "A2": "ba3995054cc568c1a874355a506b9f4ba3ba53af18d9f8627f6599590ff2d057",
+     "B1": "d08286e5db55bef589f0b82b240c26a237588d2c16c661dfe07ac97b504b8cad",
+     "B2": "d59a2967373a8168d171c34518390c732594f505a8ebacebfe763dc3ac43117b"
+    },
+    "stairs_wood": {
+     "A1": "853f47c09084d584f11581eac4a989e9efdada006effa7388123582c900e7a2d",
+     "A2": "681c924de149fa1be0159adbab0731543ac5083e8dea69d191c30311a0daba44",
+     "B1": "240672b0a2037fca7fa47f79d5e820e85b0f94a3bded2e37287756280d439c36",
+     "B2": "150d54c46fa50d62593e9b442795a5043989acb83a1a8624b875e0b414bb27c3"
+    },
+    "railing_upper": {
+     "A1": "6315935bc8e68611dccafeaa350cbf88bfa1b39024ad4d74f91d4167280d414b",
+     "A2": "ce68ae8ec6cbf4a4dbbac96277a203ce61f509f618bc1d894e20e5cbf18af776",
+     "B1": "8aa1a82f870f27d313e9c9bc4d1961808a940d66ad7d36003af3138cb64fef0e",
+     "B2": "8463f2ee191fc113e0694ad94c4e25970fc1b65b7e90df917e647cb85af15e7e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:52:21",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "82f8db2335bf35aa3448d7092bc2be58d5a9643f984d6b2384c773dde4cf1f57"
+    },
+    "door_double": {
+     "A1": "d8aa97fc8fb19eda38bd679ff3c17e85bb52120d6904a5a5f21bf5cf3ef1e4fc",
+     "A2": "ba3995054cc568c1a874355a506b9f4ba3ba53af18d9f8627f6599590ff2d057",
+     "B1": "d08286e5db55bef589f0b82b240c26a237588d2c16c661dfe07ac97b504b8cad",
+     "B2": "d59a2967373a8168d171c34518390c732594f505a8ebacebfe763dc3ac43117b"
+    },
+    "stairs_wood": {
+     "A1": "853f47c09084d584f11581eac4a989e9efdada006effa7388123582c900e7a2d",
+     "A2": "681c924de149fa1be0159adbab0731543ac5083e8dea69d191c30311a0daba44",
+     "B1": "240672b0a2037fca7fa47f79d5e820e85b0f94a3bded2e37287756280d439c36",
+     "B2": "150d54c46fa50d62593e9b442795a5043989acb83a1a8624b875e0b414bb27c3"
+    },
+    "railing_upper": {
+     "A1": "6315935bc8e68611dccafeaa350cbf88bfa1b39024ad4d74f91d4167280d414b",
+     "A2": "ce68ae8ec6cbf4a4dbbac96277a203ce61f509f618bc1d894e20e5cbf18af776",
+     "B1": "8aa1a82f870f27d313e9c9bc4d1961808a940d66ad7d36003af3138cb64fef0e",
+     "B2": "8463f2ee191fc113e0694ad94c4e25970fc1b65b7e90df917e647cb85af15e7e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:52:23",
+   "stage": "gate",
+   "round": "frame-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 14,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "floor_wood_inn": {
+     "A1": "29a4e6a17145d1a75e8fb9881b1d0f8e938e8690aa9332ca2abd6e6f195f4423",
+     "A2": "ff8af949af02597fcd57b0cb2cb361cd226a3daece35c207575f8ad1b793425c",
+     "B1": "e8f37d2189bc6e8291124680ee13977e90d909defd86b06e00db2bf7a2297961",
+     "B2": "7256e4eff3016adc8a7c5e671a52151b9c66d29354f5b05f5da38d84a70e2783"
+    },
+    "floor_stone_yard": {
+     "A1": "153860fe87fa819c19ceb223884c269861f35c8a15b381e1c4b08a1181b2683b",
+     "A2": "94c33ac71e254c2f947c514b49f317fc3a211f323b6eb047e14e0f7df95cb833",
+     "B1": "9a2ec919ad8078106f29c81dc89f512becb32c0cf86b9320a3206d542d1f3f84",
+     "B2": "92ad86959ed13bfd67a36e652f0d0fd5508572268f481f34b6101d525b1f5914"
+    },
+    "wall_inn_set": {
+     "A1": "f6f296c0cbbe927def4ab9e175895f8a03da45f2df52dccff691ff66ec3e5ca3",
+     "A2": "20a5ad13abd96f04d43d7914aae462dda19e05446b3dfa3baa4064cde843e007",
+     "B1": "8cc5d4255667e3887adea417fbca12dad5ba4a3a103c1cd1aa82fb1cfc2353e5",
+     "B2": "a7cd919c4f8b76ffadff33489772f727b2ff1e174ec8ad742dd7c48149c741a1"
+    },
+    "roof_set": {
+     "A1": "4ec2f0d96830f163ffaa7707f44558bbb93c8634ad7e2dfaa7c4ae369e3eb583",
+     "A2": "05a334093cf2cec3d140157376c9cff49328ac10b5d26076af40adac8f224f6a",
+     "B1": "b0fd266d254199dc48e68c45459900363efffcb0c745ff47a583d4b5d7bf485d",
+     "B2": "82f8db2335bf35aa3448d7092bc2be58d5a9643f984d6b2384c773dde4cf1f57"
+    },
+    "door_double": {
+     "A1": "d8aa97fc8fb19eda38bd679ff3c17e85bb52120d6904a5a5f21bf5cf3ef1e4fc",
+     "A2": "ba3995054cc568c1a874355a506b9f4ba3ba53af18d9f8627f6599590ff2d057",
+     "B1": "d08286e5db55bef589f0b82b240c26a237588d2c16c661dfe07ac97b504b8cad",
+     "B2": "d59a2967373a8168d171c34518390c732594f505a8ebacebfe763dc3ac43117b"
+    },
+    "stairs_wood": {
+     "A1": "853f47c09084d584f11581eac4a989e9efdada006effa7388123582c900e7a2d",
+     "A2": "681c924de149fa1be0159adbab0731543ac5083e8dea69d191c30311a0daba44",
+     "B1": "240672b0a2037fca7fa47f79d5e820e85b0f94a3bded2e37287756280d439c36",
+     "B2": "150d54c46fa50d62593e9b442795a5043989acb83a1a8624b875e0b414bb27c3"
+    },
+    "railing_upper": {
+     "A1": "6315935bc8e68611dccafeaa350cbf88bfa1b39024ad4d74f91d4167280d414b",
+     "A2": "ce68ae8ec6cbf4a4dbbac96277a203ce61f509f618bc1d894e20e5cbf18af776",
+     "B1": "8aa1a82f870f27d313e9c9bc4d1961808a940d66ad7d36003af3138cb64fef0e",
+     "B2": "8463f2ee191fc113e0694ad94c4e25970fc1b65b7e90df917e647cb85af15e7e"
+    }
+   }
+  },
+  {
+   "at": "2026-10-08T09:52:23",
+   "stage": "gate",
+   "round": "style-r1",
+   "fail": 0,
+   "warn": 0,
+   "byLine": {
+    "A": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    },
+    "-": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 0
+    }
+   },
+   "hashes": {
+    "inn_floor_wood": {
+     "A": "edce7ac9817413881c2e9cd4f39d2776047f04cfcb4d813a11fbfffd6ea4a8d5",
+     "B": "3e3819e8085185175e422dcfd7321a0f67f765762c4643778f4469e7ff7bc6b2",
+     "C": "8638e5afdda9cab1ed00523eddead4e3a30ad3a663650e8a6ea40cd1f8324613"
+    },
+    "yard_floor_stone": {
+     "A": "24f1d980a484a99c40bea3569769338de379418a7db032fa5e4629021845b9b7",
+     "B": "92384a8ad19c1ce5d208325d9ba73753130392539c32fc585f921b0df20ef82c",
+     "C": "b57fe53eb1284cb4e701d1fa9c28978e4ef7d0be34c27a2cea33a4e07f2ae51e"
+    },
+    "inn_wall_pillar": {
+     "A": "b577e7fc889945d03dbda8ffcb7cf1f4b144f7f925e26b7e86d7ec446c15bd75",
+     "B": "cad17c3b2022ea849d4883b53f4b9d7a39f5e5f05392059feea162fee2e26c2a",
+     "C": "fa1e8b48d8761d8bf0007ac3530305c13d4838492d381864e789878502815b5b"
+    },
+    "roof_tile_eave": {
+     "A": "94b2b38dec9c20a680d21fd06be7c82fb52854cf6315e7c06cd09342b0c61c68",
+     "B": "cf242280f08b7d37e7b08ac3ff563c650b3ee0b7a796ea21274478e6235bbd27",
+     "C": "8374f4e7b57970f96825d4a6bcaa48403ea664919bcf67cd1760d9212f9d7939"
+    },
+    "training_dummy": {
+     "A": "cf76fc926786b4aead30e89d442793df49fe9432ac26140753a4dc13de6bf45a",
+     "B": "fbceade0d42324d4d02001aa7a71c834ee1b51e28532ed391e0422cc104090bd",
+     "C": "e43cb16561dbca7173587233aa25d2dee3c511bf006deaa5740b582d29757515"
+    },
+    "round_table_stools": {
+     "A": "71ee068cf61fef1ce93e406a93214acc7972188e59dd14a62b9e1421fe473aca",
+     "B": "be12d97ed35dc95a9a8470bad3810733e3a45030c62612c7abf8bb9155b825d2",
+     "C": "a77139510dfba9dbcd1ca41659cf0a7f38a6b378cf9e009b38f20f7c443cf7fd"
+    }
+   }
   }
  ]
 }

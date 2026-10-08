@@ -58,6 +58,15 @@
    "wave": "style",
    "module": "src/harnesses/murim-chipset/rounds/style_r1.py",
    "keys": "letter"
+  },
+  "frame-r1": {
+   "wave": "frame",
+   "module": "src/harnesses/murim-chipset/rounds/frame_r1.py",
+   "keys": "line",
+   "lines": [
+    "A",
+    "B"
+   ]
   }
  },
  "kinds": {
@@ -919,7 +928,8 @@
       1
      ],
      "kind": "roof",
-     "qMin": 0.6
+     "qMin": 0.6,
+     "qTopRow": false
     },
     {
      "id": "sm",
@@ -947,7 +957,8 @@
       1
      ],
      "kind": "roof",
-     "qMin": 0.6
+     "qMin": 0.6,
+     "qTopRow": false
     },
     {
      "id": "el",
