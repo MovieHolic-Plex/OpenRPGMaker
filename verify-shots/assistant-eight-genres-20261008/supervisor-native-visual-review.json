@@ -1,0 +1,21 @@
+{
+  "reviewer": "root supervisor",
+  "at": "2026-10-08T03:39:53.195595+00:00",
+  "images": [
+    {
+      "path": "partner-raise/attempt-2/runtime-reobservation/159-evolution-ending-visible.png",
+      "sha256": "189f2704a11b82f7c56c415f34dd3a18b507bdc3f3bd930e928bc5be46c8d096",
+      "observed": "The actual player displays the partner evolution ending. This screenshot alone does not prove identity retention or a Save/Continue cycle."
+    },
+    {
+      "path": "school-horror/attempt-3/runtime-final/034-capture-native-retry-options.png",
+      "sha256": "9d38037249b160adeb5fa16256e32d08e85c588aaffb7b462beebd09dc2c0499",
+      "observed": "This capture is the title screen with Continue selected, not a captured Game Over options screen. It supports return to title and cannot alone prove lack of checkpoint data."
+    },
+    {
+      "path": "action-rpg/attempt-1/runtime-adversarial/040-gate-open-state.png",
+      "sha256": "87dcdd7b57f64de30ea85354a28d8f5b5f563ab1e1d6b5aacb16c7ba3719623e",
+      "observed": "Player and living foes remain visible beside an open passage. Paired state receipt has sw_gate_open=true and sw_boss_defeated=false; compare enemy deaths in the full receipt."
+    }
+  ]
+}

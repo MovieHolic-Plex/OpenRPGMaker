@@ -4,6 +4,18 @@ import { resolve } from 'node:path';
 export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
   const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
+  if (stage === 'genre-prepare') {
+    const root = option('out');
+    if (!root) throw Error('genre-prepare --out <experiment root>');
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/genrePrepare.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
+  if (stage === 'genre-run') {
+    const root = option('out'), caseId = option('case');
+    if (!root || !caseId) throw Error('genre-run --out <experiment root> --case <genre>');
+    const child = spawn(process.execPath, [resolve('src/harnesses/assistant-capability/node/genreEntry.mjs'), ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
   if (stage === 'portals' || stage === 'portal-controls' || stage === 'portal-recheck' || (stage === 'review' && option('case') === 'map-portals')) {
     const root = option('out');
     if (!root) throw Error(`${stage} --out <새 실행 폴더>`);

@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-08T04:40:22.427377+00:00",
+  "files": [
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-auth-status.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-auth-status.json",
+      "sha256": "f52e2dceef2c80c0164eb75a99e97d6bb233659a2ab4157f051e2b768dffffae"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-existing-tool-audit.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-existing-tool-audit.json",
+      "sha256": "5d4e1e25f71f813fd8e072cae9dc4cd5f7310c955f2ec72718f0a2fc09da3aa3"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-expanded-visual-review.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-expanded-visual-review.json",
+      "sha256": "1348f7c63440a70f65143eacc7ab24292da65594487fd154644312058181fdb8"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-final-readback.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-final-readback.json",
+      "sha256": "c8cf3b7f15bab0e0ec5ce4189dea7564c574ba2eabcb54b83fc7e5d2c063b7da"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-helper-final-revision.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-helper-final-revision.json",
+      "sha256": "3961d309393c0ff798e9f6f884b03844c2af30343efe34c713ffdf39ad059d7a"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-helper-revision.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-helper-revision.json",
+      "sha256": "3d874c0868ef9e97e7473f03ba5ff8db575516d1952eebc25824a69faf6af894"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-initial-environment-receipts.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-initial-environment-receipts.json",
+      "sha256": "6612b1d6be72d51a1ad1e3f4e508c7fb839885a28539c15fa73036f73d6ba5f1"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-initial-visual-review.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-initial-visual-review.json",
+      "sha256": "c3152be36e740ad9080088b5e95a8adc5c8698259d5f65727191c799a05ebc8e"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-native-visual-review.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-native-visual-review.json",
+      "sha256": "6e29fab3afdd4772e65dfca8d23f1a686506df8a589f77534822aa5291a264fe"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-telemetry.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-telemetry.json",
+      "sha256": "2e85b258ec62072e8c3f87cc4034dd5b887eae8dcff77ad0d7984cc20eba220b"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/supervisor-worker-completion.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/supervisor-worker-completion.json",
+      "sha256": "297ee46fda0893bc73a9d0ea619df05308fad9089603d13e61ff881bf966954d"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/monster-collect-assessment.json",
+      "sha256": "3ea97b686051924e653ed7af101c7fb20d1682af68ad4a30d47a5a784706ba20",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/story-cutscene/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/story-cutscene-assessment.json",
+      "sha256": "03117cd376fa6d2ae11e8b72abcce4ad04f23ed131c399313fbe2d95ea518f95",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/adventure-jrpg/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/adventure-jrpg-assessment.json",
+      "sha256": "bda30ff18a3a083779e767411bd5f5974efe60cd7a4050a6535ab5afb082fdda",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/horror-gallery/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/horror-gallery-assessment.json",
+      "sha256": "4f967a155ab06d7907a2c79cd696354d3da490406a651d0db05812851876450f",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/school-horror/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/school-horror-assessment.json",
+      "sha256": "830edb79279c0222ea5af8d91cac6d557c861445070cff76140bd8cc7f2b8499",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/farm-life-assessment.json",
+      "sha256": "4c9e3bd96e9c306850db37d6455fcbcfc67c2e95542f56b9a193f5748a17333a",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/partner-raise-assessment.json",
+      "sha256": "32690ee0b659c1a48535ee1f2955cd7ebcc81fb9a41194454bb2963c90494741",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    },
+    {
+      "source": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/assessment.json",
+      "preserved": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/cases/action-rpg-assessment.json",
+      "sha256": "d18ae6169eb1a50f88910443e019f54e30a1d380a920a85b24baa173b962b53d",
+      "classification": "Worker assessment; supervisor qualifications are in comparison-data.json and REPORT.md"
+    }
+  ]
+}

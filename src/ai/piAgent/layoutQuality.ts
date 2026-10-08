@@ -1,3 +1,4 @@
+import { roomSpecOf } from "@/editor/handInterior/builder";
 import { tileAt } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 
@@ -34,6 +35,8 @@ export interface LayoutQualityIssue {
   readonly mapId: string;
   readonly stats: LayoutQualityStats;
   readonly problems: readonly string[];
+  /** 방 짓기 역할표 칩셋으로 지은 실내(build_hand_interior_room) — 빈 바닥은 메우지 말고 방을 줄인다. */
+  readonly interior?: boolean;
 }
 
 export function measureLayoutQuality(project: Project, map: GameMap): LayoutQualityStats | null {
@@ -170,12 +173,20 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
     const problems = layoutProblems(stats);
-    if (problems.length) issues.push({ mapId, stats, problems });
+    if (problems.length) issues.push({ mapId, stats, problems, ...(roomSpecOf(project.tilesets[map.tilesetId]) ? { interior: true } : {}) });
   }
   return issues;
 }
 
 export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): string {
+  // 실내는 「채워라」가 아니라 「줄여라」 — 2026-10-08 조수 시험: 24×18 상자 집에 빈 바닥 경고를 받자 서재 코너·화분을 흩뿌려 채웠다.
+  if (issues.length && issues.every((i) => i.interior)) {
+    return "[배치 품질 검사] 지은 실내가 비어 있다 — 가구를 흩뿌려 메우지 마라. 빈 바닥은 방이 너무 크다는 뜻이다.\n"
+      + issues.map((i) => `- ${i.mapId}: ${i.problems.join(" / ")}`).join("\n") + "\n"
+      + "고치는 법: build_hand_interior_room 을 같은 mapId·replace:true 로 다시 부르며 layout(방 구성 — program 또는 rooms 의 방 종류)을 준다. "
+      + "도구가 방마다 알맞은 크기로 배치를 짜고 제작자 예제 방의 가구 한 벌을 심는다. 이미 layout 으로 지었다면 방 수를 줄이거나 layout.rooms 의 w·h 를 줄인다. "
+      + "한 방만 비었다면 그 방 종류에 맞는 가구 한 벌(list_hand_interior_parts room)을 벽을 따라 놓는다. 사용자가 넓은 빈 방(무도회장 등)을 요청했다면 고치지 말고 그 이유를 보고에 적는다.";
+  }
   const lines = issues.map(issue => {
     const windows = issue.stats.emptiestWindows.map(r => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
     return `- ${issue.mapId}: ${issue.problems.join(" / ")}${windows ? `. 가장 빈 곳: ${windows}` : ""}`;

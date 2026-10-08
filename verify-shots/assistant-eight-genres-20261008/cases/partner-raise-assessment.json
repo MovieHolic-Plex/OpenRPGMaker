@@ -1,0 +1,368 @@
+{
+  "caseId": "partner-raise",
+  "label": "파트너 육성",
+  "completedAssessment": true,
+  "gameAcceptance": "fail",
+  "trialScope": "One case; exact first submission plus one explicit repair. No genre success percentage.",
+  "models": {
+    "outerRequested": "gpt-6.1-sol",
+    "outerEffortRequested": "high",
+    "internalNativeModel": "gemini-3.8-flash",
+    "classifierProviderObserved": "google-antigravity",
+    "piProviderStatus": "unverified",
+    "piProviderReason": "Shared receipt omitted provider body field; do not infer it from classifier header."
+  },
+  "project": {
+    "at": "2026-10-08T03:26:20.771198+00:00",
+    "readOnly": true,
+    "projectId": "9734eab9-6580-40ab-b18c-837704a6db8f",
+    "storedSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+    "revision": 34,
+    "sameAsSavedAndFreshEditorReload": true,
+    "aiConversationCount": 0,
+    "indexedDbOriginalEditorContext": "not observed; helper closed the authenticated editor context",
+    "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/partner-raise/project",
+    "foldedRawDocumentSha256": "301b00b0a74953102b08121cf1a6ac7cedc6853e4b5e65dca53f839d6e7e136d",
+    "expandedDocumentSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+    "expandedBytesMatchStoredSha": true,
+    "tilesetBlobsValid": true,
+    "hashExplanation": "current_json is folded; canonical current_sha256 hashes expanded tileset bytes. Raw folded hash is not document identity."
+  },
+  "frozenBuild": {
+    "sourceHead": "1476c6df3c9dcca60cd5dd4f2fa7b68ff0d6b9e1",
+    "indexSha256": "ab2f53756c2127b3ab164314aeae6c0e44d7a230c98cfad0c5affa5f553ff86e",
+    "compiledPlayerSha256": "d772311ff8a35a313b7e064e4db7bdf0a8ac31ee24e8dcf277c8b48aad66747f"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "kind": "exact natural-language first run",
+      "status": "fail",
+      "elapsedMs": 177702,
+      "observed": "Classifier request only, idle/no Pi events/no game content. Bounded evaluator stop of owned browser; helper originally waits45min. Checkpoint retains blank game.",
+      "receipts": [
+        "attempt-1/result.json",
+        "attempt-1/trace.json",
+        "attempt-1/before.json",
+        "attempt-1/after.json",
+        "attempt-1/operator-stop.json",
+        "attempt-1/runtime-first/qa/SUMMARY.md"
+      ]
+    },
+    {
+      "attempt": 2,
+      "kind": "explicit repair1 through real UI Pi command",
+      "status": "completed model turn; game fail",
+      "elapsedMs": 678211,
+      "modelDone": true,
+      "repairsUsed": 1,
+      "contentChanged": true,
+      "receipts": [
+        "repair-1.txt",
+        "attempt-2/result.json",
+        "attempt-2/trace.json",
+        "attempt-2/before.json",
+        "attempt-2/after.json",
+        "attempt-2/live.json",
+        "attempt-2/reloaded.json",
+        "attempt-2/persistence.json"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "requirement": "exactly one partner instance",
+      "status": "pass",
+      "observedBehavior": "Native party gained actor_partner once. Cancellation before acceptance gave nothing; repeated professor interaction retained one partner and unchanged grant totals.",
+      "staticCapability": "Two professor pages use sw_partner_received; guarded changeParty, two berries, one toy and 100G.",
+      "inference": "Singleton actor implements the playable partner. It is not a native MonsterInstance.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/006-cancel-initial-partner.json",
+        "attempt-2/runtime-reobservation/011-finish-acceptance-dialogue.json",
+        "attempt-2/runtime-reobservation/013-repeat-professor-end.json"
+      ],
+      "limitations": [
+        "Native monsterInstances and monsterParty remained empty. Unique actor ID is observed, not a native per-monster UID."
+      ]
+    },
+    {
+      "requirement": "consumable food/toy actual friendship change",
+      "status": "pass",
+      "observedBehavior": "Two berries were consumed individually: friendship 0→1→2; toy consumed: 2→4. Repeating either with zero inventory was refused without further friendship.",
+      "staticCapability": "Event item-condition forks decrement inventory and increase var_partner_friendship; items are normal goods, not native care profiles.",
+      "inference": "This is real numerical gameplay, using a global friendship variable for the sole actor partner.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/084-feed1-actual-state.json",
+        "attempt-2/runtime-reobservation/090-feed2-close-native-1.json",
+        "attempt-2/runtime-reobservation/096-feed-empty-refused-native-1.json",
+        "attempt-2/runtime-reobservation/102-toy1-close-native-1.json",
+        "attempt-2/runtime-reobservation/109-toy-empty-refused-native-1.json"
+      ],
+      "limitations": [
+        "Friendship is not associated with a native individual UID; post-evolution page no longer offers care."
+      ]
+    },
+    {
+      "requirement": "native training battle experience and levels",
+      "status": "pass",
+      "observedBehavior": "Original native battle controller: fled first battle with no reward, retried and won using user-facing F auto mode. First win gave EXP15 and 40G, partner Lv1→2. Second new battle gave EXP15 again (total30), 40G again. Result confirmations did not duplicate the same reward.",
+      "staticCapability": "Native battleProcessing canEscape/canLose; troop enemy EXP15/gold40, actor experience curve.",
+      "inference": "Battle and level growth are implemented; dialogue-only wording about every win increasing level is inaccurate for the second win.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/037-keyboard-native-flee.json",
+        "attempt-2/runtime-reobservation/038-confirm-flee-result.json",
+        "attempt-2/runtime-reobservation/047-native-auto-battle-control.json",
+        "attempt-2/runtime-reobservation/050-victory-dialogue-end.json",
+        "attempt-2/runtime-reobservation/133-repeat-native-auto.json",
+        "attempt-2/runtime-reobservation/134-repeat-reward-commit.json"
+      ],
+      "limitations": [
+        "Loss/death was not reached. Native actor mode uses hero and partner; native monster battleParty remains disabled."
+      ]
+    },
+    {
+      "requirement": "level plus friendship evolution gate",
+      "status": "pass",
+      "observedBehavior": "Lv1/friend0 refused; Lv2/friend0 refused; separate fresh actual play Lv1/friend2 refused. At Lv2/friend4, evolved flag, graphic change and real ending occurred.",
+      "staticCapability": "All-condition fork actor level≥2 AND global friendship≥2. promoteActor called but source class has no promotions.",
+      "inference": "The gate works for graphical evolution/ending. Intended class promotion fails; the event nevertheless announces success.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/020-early-evolution-refusal-end.json",
+        "attempt-2/runtime-reobservation/077-friendship-gate-refusal.json",
+        "attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.json",
+        "attempt-2/runtime-level-gate/024-level-gate-refusal-native-1.json"
+      ],
+      "limitations": [
+        "promoteActorSuccess=false; classOverrides remains empty. Not proof of successful species/class evolution."
+      ]
+    },
+    {
+      "requirement": "same individual retained across evolution",
+      "status": "pass",
+      "observedBehavior": "Party remains [actor_hero,actor_partner]. At evolution actor_partner stays Lv2, EXP30; friendship4, inventory and 30G remain unchanged. Character graphic override applies to the same actor ID.",
+      "staticCapability": "m2 actor graphic changes actor_partner; no remove/regrant command.",
+      "inference": "Live actor identity and growth are retained. Native per-monster identity and gameplay save retention are not established.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/152-evolution-select-eligible.json",
+        "attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.json",
+        "attempt-2/runtime-reobservation/159-evolution-ending-visible.json"
+      ],
+      "limitations": [
+        "Actor surrogate identity only; no native MonsterInstance UID. Save/Continue failed independently."
+      ]
+    },
+    {
+      "requirement": "real care-item shop and refusal",
+      "status": "pass",
+      "observedBehavior": "Native shop bought toy for100G (140→40) and rejected berry50G at40G without inventory/gold change. A second earned victory raised40→80; bought berry50G (80→30). Zero-item care refusal observed for both items.",
+      "staticCapability": "set_shop_stock creates normal native shop stock; berry50, toy100.",
+      "inference": "Actual economy, purchase and refusal are implemented.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/121-shop-buy-toy.json",
+        "attempt-2/runtime-reobservation/123-shop-insufficient-gold.json",
+        "attempt-2/runtime-reobservation/134-repeat-reward-commit.json",
+        "attempt-2/runtime-reobservation/144-berry-buy-actual.json",
+        "attempt-2/runtime-reobservation/096-feed-empty-refused-native-1.json",
+        "attempt-2/runtime-reobservation/109-toy-empty-refused-native-1.json"
+      ],
+      "limitations": []
+    },
+    {
+      "requirement": "evolution ending and save resume",
+      "status": "fail",
+      "observedBehavior": "Real celebration ending opens. Pre-evolution native System→Save selected with Enter/Z opens Items rather than save slots. Separate original-keyboard reproduction shows Save highlighted then Items. Fresh document on same native origin/namespace shows three empty load slots; Enter on slot1 refuses load.",
+      "staticCapability": "Ending defined and triggered; engine has native Save/Load and openSaveMenu. Game has no authored savepoint workaround.",
+      "inference": "Editor document persistence passes, but playable save/resume contract fails. No successful player save was observed.",
+      "evidence": [
+        "attempt-2/runtime-reobservation/159-evolution-ending-visible.json",
+        "attempt-2/runtime-reobservation/057-open-system-menu.json",
+        "attempt-2/runtime-reobservation/058-open-save-slots-before-evolution.json",
+        "attempt-2/runtime-reobservation/063-save-slots-z.json",
+        "attempt-2/runtime-level-gate/030-reobserve-system-submenu.json",
+        "attempt-2/runtime-level-gate/031-reobserve-system-save.json",
+        "attempt-2/runtime-level-gate/034-fresh-player-native-continue.json",
+        "attempt-2/runtime-level-gate/035-native-load-empty-refused.json"
+      ],
+      "limitations": [
+        "After evolution browser/context closed unexpectedly before next action. Post-evolution save/reload and ending reentry are environment-blocked, not passed. Save menu failure cause is not proved."
+      ]
+    }
+  ],
+  "adversarialChecks": {
+    "initialCancellation": "pass",
+    "repeatInitialPartner": "pass within live actor session",
+    "feedAndToyWithNoItem": "pass",
+    "trainingCancellation": "pass",
+    "nativeFleeNoRewardAndRetry": "pass",
+    "sameResultRepeatedReward": "pass for observed confirms",
+    "secondBattleReward": "pass; new battle only",
+    "evolveBeforeEitherIsolatedCondition": "pass",
+    "insufficientShopGold": "pass",
+    "preEvolutionSave": "fail original controller, twice observed",
+    "freshContinue": "fail no stored slot after save attempt",
+    "postEvolutionSave": "environment-blocked browser closure before next action",
+    "checkInstanceIdentity": "pass actor ID in live run; native monster UID unverified",
+    "lossDeathRetry": "unverified; no actual loss/death reached",
+    "mapReentry": "not authored: one map, native approach/reinteraction observed",
+    "endingReentry": "unverified runtime; static evolved page calls triggerEnding again without a separate ending guard"
+  },
+  "reuseAndExtension": {
+    "nativeTemplateReuse": [
+      "Inherited generic title/new project and unrelated dark castle opening",
+      "Default actor hero, native battle/status/shop/ending/save engines and existing common map/charset art"
+    ],
+    "assistantAuthored": [
+      "24×18 single outdoor map roads/props",
+      "actor_partner and two classes",
+      "Food/toy goods, friendship global variable, professor/shop/trainer/yard events",
+      "Training troop EXP15/gold40 and celebration ending"
+    ],
+    "nativeMonsterSystem": "not configured; no actual monster instances; defaults in before snapshot are not AI authorship",
+    "dialogueOnlyOrFalseClaims": [
+      "Class evolution success text despite failed promoteActor",
+      "Crown king slime claim with dragon map graphic",
+      "Every victory level-up wording despite second victory remaining Lv2",
+      "Research laboratory represented by outdoor professor, no building"
+    ]
+  },
+  "gameplayDefects": [
+    {
+      "issue": "Save keyboard selection opens Items",
+      "status": "fail",
+      "cause": "unproved; controller dispatch/focus defect suspected",
+      "evidence": [
+        "attempt-2/runtime-level-gate/030-reobserve-system-submenu.json",
+        "attempt-2/runtime-level-gate/031-reobserve-system-save.json",
+        "attempt-2/runtime-level-gate/034-fresh-player-native-continue.json"
+      ]
+    },
+    {
+      "issue": "Promotion failure ignored, success flag and ending proceed",
+      "status": "fail",
+      "observed": "flags.promoteActorSuccess=false; classOverrides={}; m2 characterGraphic changed",
+      "static": "class_partner_base has no promotions; native promoteActor requires an available promotion",
+      "evidence": [
+        "attempt-2/runtime-reobservation/153-evolution-celebrate-native-1.json",
+        "attempt-2/static-inspection.json"
+      ]
+    }
+  ],
+  "visualDefects": [
+    "Partner uses same human battle sprite as hero",
+    "Training straw dummy visually a blue slime",
+    "Evolved map form a blue dragon, not claimed king slime; overlaps nearby hero",
+    "No actual lab building and sparse outdoor space",
+    "Layout quality remains failed: empty floor68% versus≤30%, empty square8×8 versus≤5",
+    "Generic new-project title and unrelated inherited opening"
+  ],
+  "artNeeds": {
+    "status": "selection/semantic mapping gap observed; new art necessity unproved",
+    "needs": [
+      "Consistent small partner and evolved form across field, battle and menu",
+      "Visible lab/training/care/shop identities"
+    ],
+    "existingResourceWorkaround": "Choose matching existing approved resources and preview actual indices. No new art was generated, approved or installed by evaluator."
+  },
+  "assetAndReferenceIssues": {
+    "uploadedReceipts": 512,
+    "allObservedUploadedAssetsValid": true,
+    "scope": "Only resources requested in runtime-level-gate reobservation, not exhaustive asset audit",
+    "tileBlobsValid": true,
+    "modelReferenceRead": "Trace contains paginated read_tileset_reference completing town purpose; actual reference review by model is not evaluator quality proof",
+    "semanticGraphicsMismatch": true,
+    "runtimePageErrors": []
+  },
+  "persistence": {
+    "editorDocument": "pass strict stored SHA/revision and renderer maps/database; final expanded-byte digest independently matches",
+    "receipt": "attempt-2/persistence.json",
+    "finalReceipt": "final-canonical-receipt.json",
+    "bootTimeChanges": "No revision/hash change across fresh editor load or final observation",
+    "playerProgress": "fail before evolution; post-evolution environment-blocked"
+  },
+  "observationLimitations": [
+    "First natural route produced no Pi run; stop retained as failure, repair kept separate",
+    "Original runtime observer movement timing and keyboard-only pointer attempts failed; failures preserved and exact SHA reobserved without content changes",
+    "Late browser/context closure interrupted ending continuation; cause not established",
+    "Second boot runtime QA waitForRuntime timed out; failed SUMMARY/PNG preserved, subsequent original UI gameplay observed",
+    "No successful native player save; post-evolution Continue comparison cannot be claimed",
+    "Pi provider missing in receipt and original editor IndexedDB not observed",
+    "Loss/death and runtime ending replay not reached"
+  ],
+  "runtimeEvidence": [
+    "attempt-1/runtime-first/qa/SUMMARY.md",
+    "attempt-2/runtime-reobservation/SUMMARY.md",
+    "attempt-2/runtime-level-gate/boot-qa/SUMMARY.md",
+    "attempt-2/runtime-level-gate/SUMMARY.md",
+    "reviewed-images.json"
+  ],
+  "toolProposals": [
+    {
+      "name": "inspect_partner_lifecycle_contract",
+      "classification": "anticipated verification extension; existing care/evolution authoring capabilities are present",
+      "observedFailure": "Assistant walkthrough declares ending success while promoteActorSuccess=false, no class promotions exist, global friendship is detached from native instances, and battle/map species images conflict.",
+      "currentWorkaround": "Use read_monster_game / get_database_records, existing configure_monster_system, define_monster_species and give_starter_monsters if native instances are intended; inspect actual runtime mirrors and previews. Actor surrogate can work if class promotion is wired and appearance verified.",
+      "input": {
+        "projectId": "string",
+        "savedSha256": "full SHA",
+        "partnerSelector": "actorId or native instance selector",
+        "careItemIds": [
+          "food",
+          "toy"
+        ],
+        "evolutionTarget": "speciesId or classId",
+        "requiredLevel": "number",
+        "requiredFriendship": "number"
+      },
+      "output": "Read-only report of ownership/grant guards, per-individual or global friendship, consumption, battle growth, reachable evolution path, promotion success/failure branches, form sprite preview hashes, save fields; observed versus static assertions kept separate.",
+      "negativeConditions": [
+        "Reject missing/stale SHA or absent partner selector",
+        "Do not treat ending/switch alone as successful promotion",
+        "Do not generate or approve art",
+        "Do not create instances, change stats, grant rewards, or declare runtime observation from static inspection"
+      ],
+      "expectedGameplayAcceptance": "One acquisition, zero duplicate grant; consume both items then reject empty; earn XP by native battle; refuse each isolated evolution prerequisite; same identity/growth before and after valid form change. Failed transition must not announce success."
+    },
+    {
+      "name": "play_walkthrough shipping-save mode",
+      "classification": "extension of existing play_walkthrough, not a claim that gameplay walkthrough tools are absent",
+      "observedFailure": "Internal walkthroughs completed 23/23 and 22/22 ending steps, but actual compiled keyboard System→Save misroutes and fresh Load shows empty slots.",
+      "currentWorkaround": "Compiled player.html with prepareWebExport and runtime QA; original keyboard controllers plus labelled read-only snapshots. Existing openSaveMenu event can provide a savepoint workaround, authored only by internal AI.",
+      "input": {
+        "projectId": "string",
+        "savedSha256": "full SHA",
+        "compiledPlayerSha256": "full SHA",
+        "nativeInputSteps": "bounded key/menu actions",
+        "saveNamespace": "isolated native scope",
+        "expectedBeforeAfter": "partner ID, XP, level, friendship, form, inventory, gold"
+      },
+      "output": "Shipping-player SUMMARY, actual PNGs/hashes, original UI action receipt, native save slot write and fresh-document Load/Continue comparisons, timeouts and input ownership errors preserved.",
+      "negativeConditions": [
+        "No debug mutation, teleport or stat/switch injection",
+        "Fail if save slot absent or Continue cannot restore",
+        "Fail on stale project/player SHA",
+        "Never translate a simulator ending into a shipping pass",
+        "Keep editor document reload independent from player progress save"
+      ],
+      "expectedGameplayAcceptance": "Use original save UI before and after evolution; fresh document loads selected slot with exactly same partner identity/form/growth/care/economy and no repeated initial reward. Cancel must not write a slot."
+    }
+  ],
+  "codeAndWorkflowGaps": [
+    "Native Save submenu original-keyboard dispatch requires diagnosis/fix; not missing save authoring capability",
+    "Wire class promotion and honor failureBranch before evolution success; existing native tool/command capability",
+    "Completion gate should require shipping save/Continue and consistent species graphics, not ending alone",
+    "Native receipt should record sanitized Pi provider body field; controller should settle idle natural classification without waiting45min"
+  ],
+  "operatorCompliance": {
+    "contentAuthors": "Internal AI only",
+    "directToolAuthoring": false,
+    "contentOrDbPatches": false,
+    "sourceEdits": false,
+    "commitsOrStash": false,
+    "gatesVitestTypecheck": false,
+    "runtimeStateInjection": false,
+    "ownCaseOnly": true,
+    "ownedHostsAndBrowsersStopped": true,
+    "cleanupReceipt": "cleanup-receipt.json"
+  },
+  "completedAt": "2026-10-08T03:35:31.741940+00:00"
+}

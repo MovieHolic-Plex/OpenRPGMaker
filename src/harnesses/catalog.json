@@ -743,6 +743,16 @@
       "doc": "openwiki/harnesses/assistant-capability.md",
       "stages": [
         {
+          "id": "genre-prepare",
+          "title": "장르별 격리 정본",
+          "summary": "빈 프로젝트 여덟 개와 공용 SQLite 판본을 분리해 준비한다. 콘텐츠는 조수가 실제 입력창에서 만든다."
+        },
+        {
+          "id": "genre-run",
+          "title": "장르별 실제 제작",
+          "summary": "전용 포트·입력창으로 장르 게임을 제작하고 최초/보수 시도·모델 요청·엄격한 저장 재로드를 각각 보존한다."
+        },
+        {
           "id": "portals",
           "title": "출입구 실제 수행",
           "summary": "격리된 빈 맵에서 집·문·실내·마을 출구를 실제 입력창으로 저작하고 통행·왕복·보존·SQLite 재로드와 PNG를 남긴다."

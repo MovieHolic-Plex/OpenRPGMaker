@@ -1,0 +1,256 @@
+{
+  "at": "2026-10-08T05:32:51.694Z",
+  "renderer": "scripts/qa-game/render.mts using src/editor/mapTileDraw.ts",
+  "images": [
+    {
+      "caseId": "monster-collect",
+      "mapId": "map_blank_start",
+      "name": "빈 맵",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_blank_start-terrain.png",
+      "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "monster-collect",
+      "mapId": "map_town",
+      "name": "시작 마을",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_town-terrain.png",
+      "sha256": "158df88954e9d13c19c80826f092c247ed42ac6d6877fad4f841353bf0d9d500",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "sourceMapSha256": "644fcd400a2cf4b61603ac389b732570bf975cf91958a5cd0dba60c682b5d2f1",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "monster-collect",
+      "mapId": "map_field",
+      "name": "별빛 들판",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_field-terrain.png",
+      "sha256": "34bfa1236a5147375047931c35c46d4cbe5fdafff8227f928d57d4ac168914c5",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "sourceMapSha256": "addb79113d85b3212d08f053cd1a67485bdd4b1ca93f6730b9aee121d0350511",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "monster-collect",
+      "mapId": "map_shop",
+      "name": "마을 상점",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_shop-terrain.png",
+      "sha256": "c133f7f1ebf429a6a214bb8d8c45a04aae7514f4fe653749aa678376a8c39333",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "sourceMapSha256": "8490d6e5e25f72c98b4182213dfab22d2875b06266c17698f974cff3744aeebd",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "monster-collect",
+      "mapId": "map_gym",
+      "name": "풀잎 체육관",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/monster-collect/map_gym-terrain.png",
+      "sha256": "f5e336411b1ceb10b465e76dc494a12969095340f441b5d53c3e0b6089c74403",
+      "sourceProjectSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "sourceMapSha256": "51fab7b3e6d2619c2b101a79ea71f705f69c5fe0a584a08592b4d33d627f8005",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "story-cutscene",
+      "mapId": "map_blank_start",
+      "name": "빈 맵",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/map_blank_start-terrain.png",
+      "sha256": "f24ade87736bb18492da22a407263ee048fb4b0b5cda42bb054dd23d9d0e715d",
+      "sourceProjectSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+      "sourceMapSha256": "14ccbb747741409d8c730ed16a11b42010b47dad344cd2df5ff01f3a25f015f0",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "story-cutscene",
+      "mapId": "map_house_interior",
+      "name": "오래된 집 실내",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/story-cutscene/map_house_interior-terrain.png",
+      "sha256": "01e162e3e894c3364db22c3ecf8f9ecd36c67a9a6ccfa415fbb2f50171a737be",
+      "sourceProjectSha256": "a5a94b4b7d3569ce957a7881846e925d571d24e652ee995ba4ecf27a18cc8a5d",
+      "sourceMapSha256": "b8a0c9cb94f74c02fae3215f50216f2ef4acc0412aa256cb03a0f4ba8b328c09",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "mapId": "map_blank_start",
+      "name": "빈 맵",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_blank_start-terrain.png",
+      "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "mapId": "map_beodeul_small_village",
+      "name": "버들꽃 마을",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_beodeul_small_village-terrain.png",
+      "sha256": "3509f8bb8c24d4e4bac94e75d0c782efecf54c7a017eb9ef7c495ef0ac8dd4b4",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "sourceMapSha256": "ea0d50613357f47888c85e29fe657b49ff1d99009dc79a16b69bafd7eab3ebbe",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "mapId": "map_village_shop",
+      "name": "버들꽃 상점",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_village_shop-terrain.png",
+      "sha256": "001bdb1df101ee15b9b17ba904a1e83dfcdd2db1dbc631df8e33c3e59e88173b",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "sourceMapSha256": "8a95baa46f14487e68182fe1ef114628be9a6d0e61053c268a19119c7ee53cb4",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "mapId": "map_village_inn",
+      "name": "버들꽃 여관",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_village_inn-terrain.png",
+      "sha256": "10c699cb423848d697f964ed0e242f79f87c27db62cd9c653f1750b4dd240967",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "sourceMapSha256": "d810e1434a484c5f08a70dda12a7ae76897cca89b46e4cd357498b546f4e3057",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "mapId": "map_cave_dungeon",
+      "name": "이끼 서린 동굴",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/adventure-jrpg/map_cave_dungeon-terrain.png",
+      "sha256": "62c91d9c79e442e08a7482aa070ec5d9d0f641e7844f769ce6ad7f1770946fba",
+      "sourceProjectSha256": "6eae290cf1286e5a2d4edad6b88d797213acb8c03e37443f70d429e7aa735541",
+      "sourceMapSha256": "40479e5b1a30d5caa7f12b36d016267d964a30393fb6b40239a787a63bb00e6f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "horror-gallery",
+      "mapId": "map_blank_start",
+      "name": "빈 맵",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_blank_start-terrain.png",
+      "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+      "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "horror-gallery",
+      "mapId": "map_gallery_hall",
+      "name": "제1전시실 (로비)",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_hall-terrain.png",
+      "sha256": "02ca4feb8e4edd13bcfeeb8f8ea60bc115e82d4412a0ca773d839a2cfbce4ec8",
+      "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sourceMapSha256": "fa463f710a5e59e787114dd3a6aa25c8c5799e35dc77b3016b4c299110653888",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "horror-gallery",
+      "mapId": "map_gallery_corridor",
+      "name": "제2전시실 (회랑)",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_corridor-terrain.png",
+      "sha256": "72f6357b8ef6530b6d85d2cba890572e475723a31f41ba513fbfe51515338dc5",
+      "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sourceMapSha256": "10686a2696163ebf664d8fdd4d6d1d63907ea60df4a0fb177901e5c561e450f8",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "horror-gallery",
+      "mapId": "map_gallery_vault",
+      "name": "제3전시실 (금고실)",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/horror-gallery/map_gallery_vault-terrain.png",
+      "sha256": "8096d158af3cf0ac51946834e3017af9f665cb7684290d8646e2bf65f8bdddeb",
+      "sourceProjectSha256": "a14f2f321ea139abe1f43d45ef5641c8c0f95a081bec17c0592d00ac70ddd53c",
+      "sourceMapSha256": "25157f55181c07eed09aeab1f1b0180e0f3a74eceadd4778294b753f4db05315",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "school-horror",
+      "mapId": "map_blank_start",
+      "name": "빈 맵",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_blank_start-terrain.png",
+      "sha256": "20255be297ac3344d55af3229b11ecc75bc4f0f954a3d7d126c47ca157b189f7",
+      "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "sourceMapSha256": "6e50510ea4f06fd222fda94c3f362faf3aca870ba6d9bf395e0f86c20c1ed79f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "school-horror",
+      "mapId": "map_classroom",
+      "name": "어두운 교실",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_classroom-terrain.png",
+      "sha256": "2daae23bea00d62eb2b79cc8c9a5452b155cea8ce4c9270b60b2dbb8481b9357",
+      "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "sourceMapSha256": "e2166872166179dd7a5d3aa7f2f6f711f4c4cf1d30cda23aa46f4c84e4fbf237",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "school-horror",
+      "mapId": "map_hallway",
+      "name": "적막한 복도",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_hallway-terrain.png",
+      "sha256": "bae8a6a958a2f546c972cd5e95700456b7c30644652a78940a8b84dbdfaa4657",
+      "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "sourceMapSha256": "7fcf3899c2017cfae71b02ed347bd5ec2fc77f2751c5e760a5ac55f2e610c5d9",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "school-horror",
+      "mapId": "map_storage",
+      "name": "지하 창고",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/school-horror/map_storage-terrain.png",
+      "sha256": "4e5e8e9cfc688e8b6902e7243524a571a1acf671074733cb9fbd99fa407c40a5",
+      "sourceProjectSha256": "9f3278b2c1a21a54dd73f55fd11005a75a5b72f413f7d6dec0a5d674c9339f31",
+      "sourceMapSha256": "c712e93f1094ba9bb8bd032da7095fd5a4cd4990e8bc9c00afe08ab97d5b8651",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "farm-life",
+      "mapId": "map_blank_start",
+      "name": "햇살 농장",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_blank_start-terrain.png",
+      "sha256": "405853a6563a4526df2cd071a4ce9fa5bb065d54b6bd56e7d3f7188e04f3c70e",
+      "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "sourceMapSha256": "9d70c979ecb0ff50ad630d5f2c794bf871726062725ca8914903b16d17394aa7",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "farm-life",
+      "mapId": "map_farm_house",
+      "name": "농가 실내",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_farm_house-terrain.png",
+      "sha256": "74ab275eb05d60896663240c0f0824a5f405691de2e88a639ac9290a9613202a",
+      "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "sourceMapSha256": "7a262eb20e7031b29005e907a796d5bd5389e5c74792cb3688f79680316c4fd7",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "farm-life",
+      "mapId": "map_farm_shop",
+      "name": "마을 상점 실내",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/farm-life/map_farm_shop-terrain.png",
+      "sha256": "c16d0f6741b487138faf7f423e5f2f0bd0f29af5a8ac4392bb9331bb8a461a95",
+      "sourceProjectSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "sourceMapSha256": "f88506b86a3922c819ab01bbdd4a6f1821482cb2937232deac1bc6ab35202b8c",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "partner-raise",
+      "mapId": "map_blank_start",
+      "name": "몬스터 육성 연구 마을",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/partner-raise/map_blank_start-terrain.png",
+      "sha256": "a1b986264de6bab7e8ab27d266f8d485726cbcf4e92dbe17dc276b89e5b50fc6",
+      "sourceProjectSha256": "c0d2908365abfa7a0f00bd01cc46fdd2d852c7acda1ba89dd43e45b5761a82d3",
+      "sourceMapSha256": "7c6ced4d6d18018afa0cde02ecf99ee9bb891fe92a8eef4ed556d08ff769a73f",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    },
+    {
+      "caseId": "action-rpg",
+      "mapId": "map_blank_start",
+      "name": "수호자의 시련 회랑",
+      "path": "/home/main/.codex/worktrees/fbff/rpg-zzu/verify-shots/assistant-eight-genres-20261008/visual-qa/action-rpg/map_blank_start-terrain.png",
+      "sha256": "f5052386ace4a5425e5c03ca15fd122b9104c48bbf9f1ec6743ed7dfab29e766",
+      "sourceProjectSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+      "sourceMapSha256": "09dfa35f888648b145f2c7b56a75f6c1ef3e88482e04aa022d4bd008b70828ce",
+      "scope": "Complete terrain and props rendered with editor drawMapTileLayer; events, actors, state-dependent overlays and UI omitted; not a gameplay screenshot"
+    }
+  ]
+}

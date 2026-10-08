@@ -1,0 +1,135 @@
+{
+  "at": "2026-10-08T04:41:46.567Z",
+  "url": "http://100.73.251.77:8811/2026/10/08/01a1192d-fe97-75a1-9d2e-4ea5e875c1c0/internal-ai-game-audit.view.html",
+  "rows": 8,
+  "selections": [
+    {
+      "caseId": "monster-collect",
+      "requirements": 7,
+      "visibleProofGroup": "monster-collect"
+    },
+    {
+      "caseId": "story-cutscene",
+      "requirements": 7,
+      "visibleProofGroup": "story-cutscene"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "requirements": 7,
+      "visibleProofGroup": "adventure-jrpg"
+    },
+    {
+      "caseId": "horror-gallery",
+      "requirements": 7,
+      "visibleProofGroup": "horror-gallery"
+    },
+    {
+      "caseId": "school-horror",
+      "requirements": 7,
+      "visibleProofGroup": "school-horror"
+    },
+    {
+      "caseId": "farm-life",
+      "requirements": 8,
+      "visibleProofGroup": "farm-life"
+    },
+    {
+      "caseId": "partner-raise",
+      "requirements": 7,
+      "visibleProofGroup": "partner-raise"
+    },
+    {
+      "caseId": "action-rpg",
+      "requirements": 7,
+      "visibleProofGroup": "action-rpg"
+    }
+  ],
+  "widths": [
+    {
+      "width": 1024,
+      "viewport": 992,
+      "documentWidth": 992,
+      "bodyWidth": 992,
+      "tableWidths": [
+        {
+          "client": 992,
+          "scroll": 992
+        },
+        {
+          "client": 992,
+          "scroll": 992
+        },
+        {
+          "client": 992,
+          "scroll": 992
+        }
+      ],
+      "imageCount": 11
+    },
+    {
+      "width": 736,
+      "viewport": 704,
+      "documentWidth": 704,
+      "bodyWidth": 704,
+      "tableWidths": [
+        {
+          "client": 704,
+          "scroll": 704
+        },
+        {
+          "client": 704,
+          "scroll": 704
+        },
+        {
+          "client": 704,
+          "scroll": 704
+        }
+      ],
+      "imageCount": 11
+    },
+    {
+      "width": 360,
+      "viewport": 328,
+      "documentWidth": 328,
+      "bodyWidth": 328,
+      "tableWidths": [
+        {
+          "client": 328,
+          "scroll": 385
+        },
+        {
+          "client": 328,
+          "scroll": 328
+        },
+        {
+          "client": 328,
+          "scroll": 328
+        }
+      ],
+      "imageCount": 11
+    },
+    {
+      "width": 320,
+      "viewport": 288,
+      "documentWidth": 288,
+      "bodyWidth": 288,
+      "tableWidths": [
+        {
+          "client": 288,
+          "scroll": 385
+        },
+        {
+          "client": 288,
+          "scroll": 288
+        },
+        {
+          "client": 288,
+          "scroll": 288
+        }
+      ],
+      "imageCount": 11
+    }
+  ],
+  "pageErrors": [],
+  "pass": true
+}

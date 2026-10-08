@@ -1,0 +1,639 @@
+{
+  "caseId": "monster-collect",
+  "label": "몬스터 수집",
+  "scope": "One original authoring trial, at most two explicit model repair inputs, independent native shipping-player adversarial assessment. No success percentage.",
+  "overall": "fail",
+  "gameContentAuthored": true,
+  "completedGame": false,
+  "models": {
+    "outerAssignedModel": "gpt-6.1-sol",
+    "outerAssignedEffort": "high",
+    "internalPreservedModel": "gemini-3.8-flash",
+    "nativeProviderObservedOnAttempt3": "google-antigravity",
+    "evidence": [
+      "attempt-1/requests.json",
+      "attempt-2/requests.json",
+      "attempt-3/requests.json"
+    ],
+    "providerLimitation": "Attempt2 Pi receipts omitted provider; attempt3 read native request provider using updated common observation helper. Classification requests also explicitly google-antigravity. No internal provider/model replacement by evaluator."
+  },
+  "requirements": [
+    {
+      "requirement": "three-way starter choice grants exactly one",
+      "status": "pass",
+      "observedBehavior": "Real options show leaf/fire/water. Escape yields no monster and false selection switch. Separate native New Games choose each of the three; each grants exactly one species instance. Professor reentry gives no duplicate.",
+      "staticCapability": "Three exclusive giveMonster branches; selection switch guards later dialogue-only page.",
+      "inference": "No claim about concurrent internal AI mutation; only this saved case and native sequential gameplay.",
+      "evidence": [
+        "attempt-2/runtime-reobserve/observations.json#actual-starter-options",
+        "attempt-2/runtime-reobserve/observations.json#cancel-closed-no-grant",
+        "attempt-2/runtime-reobserve/observations.json#actual-reentry-starter-count",
+        "attempt-3/runtime-final/observations.json#starter-instance-water",
+        "attempt-3/runtime-final/observations.json#fire-strategy-native-grant",
+        "attempt-3/runtime-final/observations.json#third-starter-exactly-one",
+        "attempt-3/runtime-final/observations.json#third-starter-no-duplicate"
+      ]
+    },
+    {
+      "requirement": "native wild encounter and capture",
+      "status": "pass",
+      "observedBehavior": "Native grass movement starts both wild troop types. Two king-slime capture throws fail and a defeat follows. A later real ordinary slime capture succeeds: party monster_1→monster_1+monster_2, orb3→2, species_wild_slime level1, caughtAt field(9,5), HP11.",
+      "staticCapability": "Native monster collection/gen1 battle, capture item, species and weighted grass encounters exist.",
+      "inference": "Capture is functional; observed enemy HP107/324 and severe damage remain balance defects. Success does not establish easy early weakening.",
+      "evidence": [
+        "attempt-2/runtime-reobserve/observations.json#third-capture-final-state",
+        "attempt-3/runtime-final/observations.json#upper-grass-search-result",
+        "attempt-3/runtime-final/observations.json#native-capture-result-commit",
+        "attempt-3/runtime-final/observations.json#actual-captured-monster-in-party",
+        "attempt-3/runtime-final/wild-single-capture-outcome.png"
+      ]
+    },
+    {
+      "requirement": "shop purchase/sale and insufficient funds",
+      "status": "fail",
+      "observedBehavior": "Three real one-orb purchases:300→205→110→15G; orb3→4→5→6. Decline/cancel leave gold/items unchanged. With15G, retry shows insufficient funds and preserves state. Actual shop has Buy/Cancel only; selling unavailable.",
+      "staticCapability": "Shop stock exists; authored shop lacks allowSell/shopType enabling sale.",
+      "inference": "Existing generic event/shop authoring can enable sale. This is an authored omission, not proof that a sale tool is missing.",
+      "evidence": [
+        "attempt-2/runtime-reobserve/observations.json#actual-purchase-decline",
+        "attempt-2/runtime-reobserve/observations.json#money-short-rejection",
+        "attempt-2/runtime-reobserve/native-shop-stock.png",
+        "attempt-2/after.json"
+      ]
+    },
+    {
+      "requirement": "gym battle and badge-gated ending",
+      "status": "pass",
+      "observedBehavior": "Water starter loses twice; no badge/switch/reward on loss. Native Save/Load enables retry. Fresh native fire-starter run wins by actual Fire skill. After victory gold300→600 battle reward→1100 authored reward, badge1, badge switchtrue, celebration credits and THE END.",
+      "staticCapability": "Real uncapturable trainer troop and victory branch; ending condition requires badge switch.",
+      "inference": "Positive win and negative loss paths observed. An arbitrary direct premature-ending call was not injected or tested. Continuation after ending fails under the separate persistence/reward axes.",
+      "evidence": [
+        "attempt-3/runtime-final/observations.json#trainer-result-state",
+        "attempt-3/runtime-final/observations.json#water-rematch-result",
+        "attempt-3/runtime-final/observations.json#fire-first-turn-resolved",
+        "attempt-3/runtime-final/observations.json#native-badge-and-celebration-ending",
+        "attempt-3/runtime-final/native-congratulations-credits.png"
+      ]
+    },
+    {
+      "requirement": "no repeated starter or badge reward",
+      "status": "fail",
+      "observedBehavior": "Starter guarding passes. After real victory/ending, native Continue restores600G, no badge, false completion switch and leader p0. Revisit reopens battle; second real victory gives another300G (persisted900G), then500G and badge live1400G. Second Continue restores900G and again loses badge.",
+      "staticCapability": "Leader p1 is dialogue-only when badge switchtrue, but terminal ending prevents ordinary live reentry. BattleVictory autosave occurs before badge/switch/authored500G.",
+      "inference": "Two simultaneous badge items were not observed: the first badge is lost. The one-time completion/reward contract fails across ordinary Continue; repeated300G accumulation is observed. Live p1 interaction was not bypassed through injected switches.",
+      "evidence": [
+        "attempt-3/repeated-reward-receipt.json",
+        "attempt-3/ending-persistence-before-continue.json",
+        "attempt-3/runtime-final/observations.json#post-ending-actual-resumed-state",
+        "attempt-3/runtime-final/observations.json#repeat-reward-live-and-native-storage",
+        "attempt-3/runtime-final/observations.json#second-post-ending-reward-loss"
+      ]
+    },
+    {
+      "requirement": "reachable map connections",
+      "status": "pass",
+      "observedBehavior": "All six authored transfers walked: town↔shop, town↔field, field↔gym. Winding path was followed around tree collisions. No teleportation.",
+      "staticCapability": "Three create_transfer_pair connections persisted.",
+      "inference": "Reachability passes while visual wayfinding fails: shop portal(4,4) is invisible grass away from drawn house; north gates poorly marked.",
+      "evidence": [
+        "attempt-2/runtime-reobserve/observations.json#shop-map-loaded",
+        "attempt-2/runtime-reobserve/observations.json#shop-round-trip-complete",
+        "attempt-3/runtime-final/observations.json#field-entry",
+        "attempt-3/runtime-final/observations.json#gym-loaded",
+        "attempt-3/runtime-final/observations.json#gym-field-return-observed",
+        "attempt-3/runtime-final/observations.json#field-town-round-trip-complete"
+      ]
+    },
+    {
+      "requirement": "saved project and player save resume",
+      "status": "fail",
+      "observedBehavior": "Editor toolbar Save and fresh browser-context reload preserve revision33/full expanded SHA/maps/DB. Native manual Save→fresh document→manual Load and auto Continue restore eight observed state fields exactly. Post-ending Continue loses badge, completion switch and authored500G reward, enabling reward replay. Initial host boot also changed rev1/SHA to rev2 before task, separately recorded.",
+      "staticCapability": "Native manual/auto saves work; terminal milestone has no durable checkpoint after authored rewards.",
+      "inference": "Post-authoring editor persistence passes; whole player-progress requirement fails. Initial boot invariance is not silently waived by later equality.",
+      "evidence": [
+        "attempt-2/persistence.json",
+        "attempt-3/persistence.json",
+        "final-persistence-receipt.json",
+        "attempt-3/player-save-resume-receipt.json",
+        "attempt-3/ending-persistence-before-continue.json",
+        "initial-ai-records.json",
+        "attempt-1/baseline.json"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "name": "cancel starter",
+      "status": "pass",
+      "evidence": "attempt-2/runtime-reobserve#cancel-closed-no-grant"
+    },
+    {
+      "name": "return after receiving starter",
+      "status": "pass",
+      "evidence": "attempt-2/runtime-reobserve#actual-reentry-starter-count; attempt-3/runtime-final#third-starter-no-duplicate"
+    },
+    {
+      "name": "decline/cancel purchase",
+      "status": "pass",
+      "evidence": "attempt-2/runtime-reobserve#actual-purchase-decline and quantity Escape"
+    },
+    {
+      "name": "insufficient money",
+      "status": "pass",
+      "evidence": "attempt-2/runtime-reobserve#money-short-rejection"
+    },
+    {
+      "name": "lose trainer battle",
+      "status": "pass",
+      "evidence": "attempt-3/runtime-final#trainer-result-state and native Save/Load retry",
+      "limit": "Game over, not the authored unused defeat-branch text; canLose:false."
+    },
+    {
+      "name": "revisit gym after victory",
+      "status": "fail",
+      "evidence": "attempt-3/repeated-reward-receipt.json",
+      "limit": "Live completed-state reentry is blocked by terminal ending; actual ordinary Continue/revisit repeats rewards."
+    },
+    {
+      "name": "save and resume",
+      "status": "fail",
+      "subcases": {
+        "manualSaveFreshDocumentLoad": "pass",
+        "autosaveFreshDocumentContinue": "pass",
+        "postEndingContinue": "fail"
+      }
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "inputMode": "natural",
+      "firstOriginalPreserved": true,
+      "execution": "environment-blocked",
+      "modelDone": false,
+      "elapsedMs": 242248,
+      "contentChanged": false,
+      "reason": "Classifier500: OAuth client env missing; no Pi run. Operator interrupted only owned idle browser after preserved checkpoint.",
+      "evidence": "attempt-1/classifier-error-receipt.json; attempt-1/observation-interruption.json; attempt-1/result.json"
+    },
+    {
+      "attempt": 2,
+      "inputMode": "pi-command",
+      "repairNumber": 1,
+      "execution": "pass",
+      "modelDone": true,
+      "elapsedMs": 702890,
+      "contentChanged": true,
+      "evidence": "attempt-2/trace.json; requests.json; after.json; persistence.json",
+      "limit": "Model turn and scene-test successes do not prove completed game."
+    },
+    {
+      "attempt": 3,
+      "inputMode": "pi-command",
+      "repairNumber": 2,
+      "execution": "environment-blocked",
+      "modelDone": false,
+      "elapsedMs": 343660,
+      "contentChanged": false,
+      "reason": "Native Pi plan worker start timed out; no authoring application, two stream_closed events, no done. Same saved SHA as attempt2.",
+      "evidence": "attempt-3/native-log-outcome.json; result.json; requests.json; persistence.json",
+      "launchIncident": "attempt-3-launch-blocked preserves earlier queued SIGTERM before any host or model request; same final repair subsequently submitted once."
+    }
+  ],
+  "persistence": {
+    "postAuthoringEditorSaveFreshContextReload": "pass",
+    "initialBootStrictInvariance": "fail",
+    "initialBoot": {
+      "before": {
+        "projectId": "6474fc54-7a7b-4ae3-aadb-bcf6e2cf6a4e",
+        "revision": 1,
+        "sha256": "5590baaef6094cfcdf2c5c9e7fb32ee0fa0bf3d053784a2f0de9d42a2342f065"
+      },
+      "after": {
+        "projectId": "6474fc54-7a7b-4ae3-aadb-bcf6e2cf6a4e",
+        "revision": 2,
+        "sha256": "b81d4312d5c6d6fe023ca1bd3d092d4fae996d53e05951bedefbb02e5b0605ce"
+      },
+      "reason": "Stored revision/SHA changed before first model submission; cause not independently established. Not silently normalized into a pass."
+    },
+    "finalReceipt": {
+      "projectId": "6474fc54-7a7b-4ae3-aadb-bcf6e2cf6a4e",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/monster-collect/project",
+      "revision": 33,
+      "fullStoredSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "storedBytesHashMatches": true,
+      "equalsLastEditorFreshReloadSha": true,
+      "separateMapRowsEqualFinalSavedSnapshot": true,
+      "databaseEqualsFinalSavedSnapshot": true,
+      "tilesetBlobs": [
+        {
+          "tilesetId": "beodeul_city",
+          "expectedSha256": "7931f9500bdfc40e3aff7299542e6d79136f1bd5183e944438c2ab49a96b8845",
+          "actualSha256": "7931f9500bdfc40e3aff7299542e6d79136f1bd5183e944438c2ab49a96b8845",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_warm_trees",
+          "expectedSha256": "b58b3d9a34c6975a1b8302992a90a76b1266406e9ef229dfa96efbc1da9f02e0",
+          "actualSha256": "b58b3d9a34c6975a1b8302992a90a76b1266406e9ef229dfa96efbc1da9f02e0",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_door",
+          "expectedSha256": "1485cec6761ce5ffb0d4a19e3021143d3b806d9809bbb0502445efb6ad131011",
+          "actualSha256": "1485cec6761ce5ffb0d4a19e3021143d3b806d9809bbb0502445efb6ad131011",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_ground",
+          "expectedSha256": "6eb7492bc3317cdd4efc09885a7578944bdb7281d4306303b2cb73a470ba8079",
+          "actualSha256": "6eb7492bc3317cdd4efc09885a7578944bdb7281d4306303b2cb73a470ba8079",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_architecture",
+          "expectedSha256": "53560384d959d083041072e403d3f76ca3fabbb7acd2fea0a272275a47ad9d94",
+          "actualSha256": "53560384d959d083041072e403d3f76ca3fabbb7acd2fea0a272275a47ad9d94",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_forms",
+          "expectedSha256": "5ceb3d6aae37728806faeec2ab4d317d7d65c9f5ef93cb1d7e34033ffe50fcb4",
+          "actualSha256": "5ceb3d6aae37728806faeec2ab4d317d7d65c9f5ef93cb1d7e34033ffe50fcb4",
+          "valid": true
+        },
+        {
+          "tilesetId": "beodeul_reviewed",
+          "expectedSha256": "fc17493c7ef3ef60e6da4aab523fa2a0b2846d53f4fa78cfead45d3dbaeb0f61",
+          "actualSha256": "fc17493c7ef3ef60e6da4aab523fa2a0b2846d53f4fa78cfead45d3dbaeb0f61",
+          "valid": true
+        },
+        {
+          "tilesetId": "joseon_baram",
+          "expectedSha256": "40c2003be4ebbd13689bff7fc6e4f91be753d022f4aff6881c0864da5086f59f",
+          "actualSha256": "40c2003be4ebbd13689bff7fc6e4f91be753d022f4aff6881c0864da5086f59f",
+          "valid": true
+        },
+        {
+          "tilesetId": "modern_city",
+          "expectedSha256": "53fd0ba79491f39dc27988f7a72f88a8ce33a21bc9e5f69a2be80dff75a8fecd",
+          "actualSha256": "53fd0ba79491f39dc27988f7a72f88a8ce33a21bc9e5f69a2be80dff75a8fecd",
+          "valid": true
+        },
+        {
+          "tilesetId": "jp_city",
+          "expectedSha256": "450f7cb435687c5f2b4d65f436af5053cc06ded90490cb66d708d226f1c9b37e",
+          "actualSha256": "450f7cb435687c5f2b4d65f436af5053cc06ded90490cb66d708d226f1c9b37e",
+          "valid": true
+        },
+        {
+          "tilesetId": "wizarding_world",
+          "expectedSha256": "b6df4a2850c8993f5718f25cdcb4d126c5367fca9a25183cd51ec821498099de",
+          "actualSha256": "b6df4a2850c8993f5718f25cdcb4d126c5367fca9a25183cd51ec821498099de",
+          "valid": true
+        },
+        {
+          "tilesetId": "worldmap_selected",
+          "expectedSha256": "667bbee64b0e66cee9a234d8bfe86f0196f83ff45b3f0ee152ccdab59667e111",
+          "actualSha256": "667bbee64b0e66cee9a234d8bfe86f0196f83ff45b3f0ee152ccdab59667e111",
+          "valid": true
+        },
+        {
+          "tilesetId": "worldmap_authoring",
+          "expectedSha256": "97179c0deb393d2929e61ce310d1b4cbe3195ea424c7db5f23f395d71ac42802",
+          "actualSha256": "97179c0deb393d2929e61ce310d1b4cbe3195ea424c7db5f23f395d71ac42802",
+          "valid": true
+        },
+        {
+          "tilesetId": "atlas_biome_interior",
+          "expectedSha256": "94224a56705389faeb0487a494192316f5930def6eaed7964eec7a1d71763156",
+          "actualSha256": "94224a56705389faeb0487a494192316f5930def6eaed7964eec7a1d71763156",
+          "valid": true
+        },
+        {
+          "tilesetId": "oprn_atlas_vehicles",
+          "expectedSha256": "9a558996be4b61179115766954c0babac38fb673164ed6d5c198daa6c579dd90",
+          "actualSha256": "9a558996be4b61179115766954c0babac38fb673164ed6d5c198daa6c579dd90",
+          "valid": true
+        },
+        {
+          "tilesetId": "scarloxy_chipset_grassland",
+          "expectedSha256": "0965ea72fb87af7658a6e616b9ac2d3de3b78079603e5ef0959b39e8d99cc3ae",
+          "actualSha256": "0965ea72fb87af7658a6e616b9ac2d3de3b78079603e5ef0959b39e8d99cc3ae",
+          "valid": true
+        },
+        {
+          "tilesetId": "scarloxy_chipset_wilds",
+          "expectedSha256": "19ac6057203c29662bd8823fb71a08546f662e428e3306054014f8c33ce31f40",
+          "actualSha256": "19ac6057203c29662bd8823fb71a08546f662e428e3306054014f8c33ce31f40",
+          "valid": true
+        },
+        {
+          "tilesetId": "scarloxy_chipset_indoor",
+          "expectedSha256": "e7857a0d9c6bd48a828afa0524b268ae4b43765ba3bf9f5b298da716099aa26b",
+          "actualSha256": "e7857a0d9c6bd48a828afa0524b268ae4b43765ba3bf9f5b298da716099aa26b",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_climate",
+          "expectedSha256": "fabb3bd02a16d9ba9814b3a8949c3d70850a570a5191be74ddbdbe17dfb5b275",
+          "actualSha256": "fabb3bd02a16d9ba9814b3a8949c3d70850a570a5191be74ddbdbe17dfb5b275",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_coast",
+          "expectedSha256": "dbc64168798bb2dc76326fac75d70ccaf6aa953b895e0e09336cd44444856423",
+          "actualSha256": "dbc64168798bb2dc76326fac75d70ccaf6aa953b895e0e09336cd44444856423",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_dungeon",
+          "expectedSha256": "7c73aacb38b773187cd12452fff55200f1e8b8e5e6c48b933f2cac41948e01ae",
+          "actualSha256": "7c73aacb38b773187cd12452fff55200f1e8b8e5e6c48b933f2cac41948e01ae",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_gyms",
+          "expectedSha256": "e766f3c7cf76ca9a4b53f12e8bdf7e3c5f5b3144022f4e5a13639b5094fb88df",
+          "actualSha256": "e766f3c7cf76ca9a4b53f12e8bdf7e3c5f5b3144022f4e5a13639b5094fb88df",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_overworld",
+          "expectedSha256": "21bc8fc746db0be7bd53b7c68fa9458e11a8015bcb763abd92eba72c206a6a12",
+          "actualSha256": "21bc8fc746db0be7bd53b7c68fa9458e11a8015bcb763abd92eba72c206a6a12",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_rooms",
+          "expectedSha256": "3216ea7d85b09152fa6c45132e8a1d5ffb27cee579d5ecec71c0b264caf5f697",
+          "actualSha256": "3216ea7d85b09152fa6c45132e8a1d5ffb27cee579d5ecec71c0b264caf5f697",
+          "valid": true
+        },
+        {
+          "tilesetId": "monster_wild",
+          "expectedSha256": "f7c75c43e8a9091ea7a3e35e312aa68c9c4c984be05eb91fef6112b4b2526b11",
+          "actualSha256": "f7c75c43e8a9091ea7a3e35e312aa68c9c4c984be05eb91fef6112b4b2526b11",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_overworld",
+          "expectedSha256": "2602ad0c7c2ef5c54b1cd1f8e468aba901a985c1ce50282a6dedc921839b6274",
+          "actualSha256": "2602ad0c7c2ef5c54b1cd1f8e468aba901a985c1ce50282a6dedc921839b6274",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_wild",
+          "expectedSha256": "b8f528d4c28c6aaee5ebfa27b71a991f6c580c68367e0fd5e5fba60c9d915b53",
+          "actualSha256": "b8f528d4c28c6aaee5ebfa27b71a991f6c580c68367e0fd5e5fba60c9d915b53",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_coast",
+          "expectedSha256": "149b3149523d47d1d1158c7bfa74bc7e9f0e1c1820d253e50085666fe8c74bc0",
+          "actualSha256": "149b3149523d47d1d1158c7bfa74bc7e9f0e1c1820d253e50085666fe8c74bc0",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_climate",
+          "expectedSha256": "d3f476add000af4f37d93d5b4f314654a1980cbe4d12c3c87342b0111a846ac9",
+          "actualSha256": "d3f476add000af4f37d93d5b4f314654a1980cbe4d12c3c87342b0111a846ac9",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_rooms",
+          "expectedSha256": "11acafc969329247fd1066537bc6d7a9704596a5317933e36345eb6acdc4c458",
+          "actualSha256": "11acafc969329247fd1066537bc6d7a9704596a5317933e36345eb6acdc4c458",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_dungeon",
+          "expectedSha256": "bee922a2cb52cad26bec93a3dde0ceb063bd314400884a26449e083da0b1f354",
+          "actualSha256": "bee922a2cb52cad26bec93a3dde0ceb063bd314400884a26449e083da0b1f354",
+          "valid": true
+        },
+        {
+          "tilesetId": "emerald_monster_gyms",
+          "expectedSha256": "beca0c9d4915dc78c17b04a3124d7c9a493feb3203b43f91a4980388e05ca21f",
+          "actualSha256": "beca0c9d4915dc78c17b04a3124d7c9a493feb3203b43f91a4980388e05ca21f",
+          "valid": true
+        },
+        {
+          "tilesetId": "atlas_cartography",
+          "expectedSha256": "1a0b48c5501f0b4da7fffc16fbdf9fa731244b6b3b30b7460cccff7bdbc0fb7b",
+          "actualSha256": "1a0b48c5501f0b4da7fffc16fbdf9fa731244b6b3b30b7460cccff7bdbc0fb7b",
+          "valid": true
+        },
+        {
+          "tilesetId": "shared_hand_interior_harness",
+          "expectedSha256": "86afe72a4e70c011a8cdc03101e56cf98ddb7bd172defb066c4d4d4ade1db12b",
+          "actualSha256": "86afe72a4e70c011a8cdc03101e56cf98ddb7bd172defb066c4d4d4ade1db12b",
+          "valid": true
+        },
+        {
+          "tilesetId": "shared_worldmap_selected",
+          "expectedSha256": "2d6550695b6a08de9ff159451527a860f43f2aab9c85ad5adb8118dff1adc036",
+          "actualSha256": "2d6550695b6a08de9ff159451527a860f43f2aab9c85ad5adb8118dff1adc036",
+          "valid": true
+        }
+      ],
+      "runtimeQAEditedCanonicalContent": false,
+      "foldedStoredBytesSha256": "884dc7cabd1c3e88be6266780380f66876bc5fceae50798faba310ac50def62e",
+      "foldedBytesExpectedToDifferFromExpandedIdentity": true,
+      "actualExpandedStoredSha256": "7d8b2455242eb39633b65130af0030d8353c4fce4725cd7e4e61856d7a2631d7",
+      "hashContract": "electron/local-store/tilesetFold.ts: current_sha256 hashes expanded text; exact raw tileset marker substitution, preserving all bytes/order. Read-only observation."
+    },
+    "player": "Manual/auto resume matches eight observed fields; ending milestone rolls back and repeat300G persists."
+  },
+  "reuse": {
+    "largeSharedCampaignBuilderCalled": false,
+    "nativeTemplateReuse": "Seed10 species, 106 enemies,7 troops,1000 items and existing art/type/skill records. Existing wild enemies keepHP324/107. Existing presentation/menu engines reused.",
+    "assistantAuthoredExtension": "Four new active maps plus unused blank map retained; six transfer events; professor/merchant/leader event pages; badge item, trainer enemy/troop, ending, grass route and five-entry native menu. DB items1000→1001/enemies106→107/troops7→8; species remain10.",
+    "superficialClaims": "Answer says sale/buyback normalized and all scenes passed; runtime shows no Sell. Real native capture/battle/badge are implemented; they are not dialogue-only substitutes."
+  },
+  "visual": {
+    "status": "fail",
+    "observed": [
+      "Sparse town has invisible shop portal apart from actual house",
+      "Shop and gym use outdoor grass/beodeul props without indoor walls",
+      "Field winding path is walkable but north portals lack clear markers",
+      "Battle/menu monster art and text readable in reviewed screenshots",
+      "Default title remains 새 프로젝트; credits author Deep was not supplied by user"
+    ],
+    "unsupportedArtNeeds": "No custom art was required or created. Native/bundled art reuse observed; evaluator approved none.",
+    "reviewedImages": "reviewed-images.json",
+    "prematureImages": "Several first screenshots show fade/loading/empty terminal shell; retained but not used as final visual evidence."
+  },
+  "assetReferences": {
+    "mapTilesets": [
+      {
+        "tilesetId": "beodeul_city",
+        "referenceDocumentCount": 0,
+        "referenceSourceTilesetId": null,
+        "referenceDocumentCountExpandedRuntime": 16,
+        "foldedReferenceCountIsNotRuntimeAvailability": true
+      }
+    ],
+    "nativeReferenceReads": "Internal AI listed references three times but did not call read_tileset_reference in captured112 tool calls.",
+    "runtimeAssetReceipts": [
+      "attempt-3/runtime-final/asset-receipts.json"
+    ],
+    "artAuthoring": "No generated art or human-selected art installed by evaluator. Existing bundled monsters/Actor1/beodeul props reused.",
+    "visualLimitation": "No custom town/gym/monster silhouettes commissioned. No missing-art requirement inferred from this small game prompt.",
+    "finalRuntime": {
+      "pageErrors": [],
+      "assetRequestReceipts": 512,
+      "uniqueAssets": 256,
+      "allObservedAssetHashesMatch": true
+    }
+  },
+  "codeAndToolGaps": {
+    "existingToolsNotMissing": [
+      "Native capture/battle/shop purchase and sale events exist",
+      "upsert_enemy/define_monster_species exist",
+      "openSaveMenu/place_savepoint exist",
+      "build_hand_interior_room exists; failed twice and AI fell back to grass maps"
+    ],
+    "observedRuntimeDefects": [
+      "Default nested System→Save resets to Items; direct authored Save menu works",
+      "BattleVictory autosave precedes badge and victory-branch state, ending does not preserve that milestone in Continue"
+    ],
+    "observedEnvironmentDefects": [
+      "First classifier credential-client configuration error",
+      "Final Pi worker-start timeout",
+      "Common observer sees stream_closed as settled even when modelDone:false"
+    ],
+    "proposals": [
+      {
+        "name": "verify_shipping_journey",
+        "classification": "new read-only verification tool; existing basic authoring tools are present",
+        "observedFailure": "Internal scene-test successes and completion claims missed missing Sell and real post-ending Continue reward rollback/replay.",
+        "existingCapabilityChecked": "run_scene_test executes fixed ticks without browser; review_monster_game explicitly structure/resources only and playbackVerified:false.",
+        "currentWorkaround": "External shipping player.html/export-shim QA with genuine keys, read-only state, saved-source SHA, storage receipts and reviewed screenshots.",
+        "input": {
+          "projectId": "canonical project",
+          "savedSha256": "required full expanded identity",
+          "requirements": "named axes",
+          "scenario": "native controls, UI conditions and expected observed outcomes",
+          "buildSha256": "frozen shipping build"
+        },
+        "output": {
+          "perRequirement": "pass/fail/unverified/environment-blocked",
+          "evidence": "native key trace, scene/DOM snapshots, PNG hashes, project/build identity, save receipts, errors"
+        },
+        "negativeConditions": [
+          "Reject wrong source/build SHA or editor Test Play substitution",
+          "No set/inventory/HP/teleport/objective injection",
+          "No static or model-done evidence promoted to gameplay PASS",
+          "Stop and preserve native UI/host/provider failure; re-observe exact SHA separately"
+        ],
+        "expectedGameplayAcceptance": "Cancel all starters, select each, reenter; Buy/No/insufficient/Sell with real quantities; walk grass/capture; lose/retry/win gym; ending→Continue preserves badge and repeat NPC grants zero gold/items."
+      },
+      {
+        "name": "commit_progress_milestone",
+        "classification": "proposed authored runtime command plus authoring tool; closes durable terminal-reward gap",
+        "observedFailure": "First ending live1100G/badge1/switchtrue but autosave600G/no badge/false; Continue repeats battle300G. Second ending1400G then Continue900G/no badge.",
+        "existingCapabilityChecked": "checkpointSave is an in-session checkpoint; openSaveMenu is available; battleVictory autosave happens before authored victory branch. No authored durable milestone command found in inspected command/tool catalog.",
+        "currentWorkaround": "Author an openSaveMenu pause after rewards and before ending, or separate reward and terminal interaction so a user can manually save; this requires explicit gameplay handling of cancel and is not automatic atomic completion.",
+        "input": {
+          "milestoneId": "stable one-time key",
+          "battleEventId": "existing event",
+          "successCondition": "actual trainer victory",
+          "rewardBatch": "battle reward plus authored badge/gold/switch",
+          "next": "endingId",
+          "checkpointPolicy": "durable game save respecting save restrictions"
+        },
+        "output": {
+          "authoring": "reviewable event/command diff and resource references",
+          "runtimeReceipt": "committed/rejected/already-complete with reward deltas and durable checkpoint identity"
+        },
+        "negativeConditions": [
+          "No reward on loss/escape/cancel",
+          "Already-complete milestone returns zero deltas",
+          "No silent completion if durable storage write fails",
+          "Respect save disabled and authored event ownership; do not fabricate victory or new resources"
+        ],
+        "expectedGameplayAcceptance": "Actual fire victory commits badge1/switchtrue/1100G before terminal screen. Fresh native Continue keeps those values. Revisit grants zero badge and zero gold; no repeat battle300G farming."
+      },
+      {
+        "name": "inspect_encounter_balance",
+        "classification": "proposed read-only balance inspection, not missing encounter/capture authoring",
+        "observedFailure": "Seed enemies reused at HP107/324 with attack36/57 against level5 startersHP17–18. Two king-slime capture failures and two flee failures led to losses. Water gym skill does5 while response does17; fire skill wins in one hit.",
+        "existingCapabilityChecked": "upsert_enemy and define_monster_species exist; read_monster_game checks authored structure and imposes72-map/full campaign size, not this brief’s effective starting battle outcomes.",
+        "currentWorkaround": "Read saved enemy/species/type/skill data, then manually play native battles and edit only through internal AI tool calls.",
+        "input": {
+          "startingChoices": "authored three starter branches and native initial items",
+          "encounters": "reachable first wild and gym troops",
+          "battleModel": "actual configured engine formula",
+          "budget": "ordinary turns, healing stock and capture items"
+        },
+        "output": {
+          "effectiveStats": "HP/damage/skill resources/type matchups/catch odds using same runtime formulas",
+          "risks": "early death, impossible weakening under supplied budget, starter matchup spread",
+          "scope": "static estimate only; shipping acceptance separately required"
+        },
+        "negativeConditions": [
+          "No party level/HP/currency injection",
+          "No automatic reward or species changes",
+          "Report unknown formula/resource as unverified",
+          "Do not label difficult optional route globally impossible from one loss"
+        ],
+        "expectedGameplayAcceptance": "Native initial grass battle permits visible weakening plus a capture attempt; failure can be retried with authored recovery. Report each starter’s real gym path and distinguish one-hit fire win from water loss."
+      },
+      {
+        "name": "configure_monster_campaign schema improvement",
+        "classification": "existing-tool enhancement",
+        "observedFailure": "Five calls fail in sequence on id/speciesIds/speciesNotes/badge.cityMapId; final campaign definition absent.",
+        "existingCapabilityChecked": "Tool exists but definition schema is only type:object; full campaign reviewer requires72 maps/60 species.",
+        "currentWorkaround": "Read validation/schema source and submit all fields, or use direct menu/event authoring as AI did here.",
+        "input": {
+          "definition": "typed required fields with IDs, notes, badge map/switch and goals",
+          "scope": "small campaign or full campaign"
+        },
+        "output": {
+          "validation": "all missing/invalid references together",
+          "authoring": "validated definition plus preserved existing content diff"
+        },
+        "negativeConditions": [
+          "No silent whole campaign replacement",
+          "Do not force72 maps for a four-map brief",
+          "Reject unknown IDs and duplicate badge identities before mutation"
+        ],
+        "expectedGameplayAcceptance": "One valid small-campaign configuration connects the actual three species/one badge/four maps; native menu and badge-gated ending match it, with save/reentry checked separately."
+      }
+    ]
+  },
+  "evidence": {
+    "firstRun": "attempt-1",
+    "firstRepair": "attempt-2",
+    "secondRepair": "attempt-3",
+    "finalRuntime": "attempt-3/runtime-final/SUMMARY.md",
+    "nativeRequests": [
+      "attempt-1/requests.json",
+      "attempt-2/requests.json",
+      "attempt-3/requests.json"
+    ],
+    "playerSaveExport": "attempt-3/native-player-save-export.json",
+    "reviewedImageHashes": "reviewed-images.json"
+  },
+  "limitations": [
+    "One genre case and one original task; no cross-genre statistics",
+    "Original browser IndexedDB not independently queried: isolated helper contexts were created/closed; SQLite ai_conversations checked before run and at end, zero rows",
+    "Player observations use read-only debug/session/DOM plus genuine controls; no progress injection",
+    "Operator cursor/timing/TTY/selector mistakes retained separately; intended command names are not treated as actual actions",
+    "No artificial premature-ending call or switch injection; positive victory and negative defeat gates observed",
+    "Initial editor boot changed revision/SHA; later strict reload equality does not waive that separate failure"
+  ],
+  "operatorContract": {
+    "repositoryProductHarnessEdited": false,
+    "directContentRepairs": false,
+    "directRunToolCalls": false,
+    "fakeProviderOrRequests": false,
+    "commitsStashGatesVitestFullTypecheck": false,
+    "humanArtApprovals": false,
+    "writeScope": "own case directory",
+    "ownedHostsClosed": true,
+    "ownedBrowsersClosed": true
+  },
+  "completedAt": "2026-10-08T03:59:33.006684+00:00"
+}

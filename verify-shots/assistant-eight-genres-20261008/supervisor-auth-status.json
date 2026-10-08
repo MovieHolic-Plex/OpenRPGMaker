@@ -1,0 +1,56 @@
+[
+  {
+    "port": 19401,
+    "requestedProvider": "google-antigravity",
+    "at": "2026-10-08T02:48:33.876757+00:00",
+    "provider": "google-antigravity",
+    "connected": true,
+    "expired": false,
+    "env": false
+  },
+  {
+    "port": 19401,
+    "requestedProvider": "openai-codex",
+    "at": "2026-10-08T02:48:33.935815+00:00",
+    "provider": "openai-codex",
+    "connected": true,
+    "expired": false,
+    "env": false
+  },
+  {
+    "port": 19405,
+    "requestedProvider": "google-antigravity",
+    "at": "2026-10-08T02:48:33.992573+00:00",
+    "provider": "google-antigravity",
+    "connected": true,
+    "expired": false,
+    "env": false
+  },
+  {
+    "port": 19405,
+    "requestedProvider": "openai-codex",
+    "at": "2026-10-08T02:48:34.074172+00:00",
+    "provider": "openai-codex",
+    "connected": true,
+    "expired": false,
+    "env": false
+  },
+  {
+    "port": 19407,
+    "requestedProvider": "google-antigravity",
+    "at": "2026-10-08T02:48:34.136686+00:00",
+    "provider": "google-antigravity",
+    "connected": true,
+    "expired": false,
+    "env": false
+  },
+  {
+    "port": 19407,
+    "requestedProvider": "openai-codex",
+    "at": "2026-10-08T02:48:34.247699+00:00",
+    "provider": "openai-codex",
+    "connected": true,
+    "expired": false,
+    "env": false
+  }
+]

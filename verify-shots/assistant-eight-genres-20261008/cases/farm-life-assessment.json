@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 2,
+  "assessmentFinal": true,
+  "caseId": "farm-life",
+  "label": "농장 생활",
+  "at": "2026-10-08T03:58:24Z",
+  "outerEvaluator": {
+    "requestedModel": "gpt-6.1-sol",
+    "requestedEffort": "high",
+    "parentLaunchReceipt": {
+      "case": "farm-life",
+      "pid": 1871580,
+      "model": "gpt-6.1-sol",
+      "reasoningEffort": "high",
+      "port": 19406,
+      "startedAt": 1791426195.072723,
+      "exitCode": null
+    },
+    "nativeOuterProviderReceipt": "Not independently captured by case worker; parent launch metadata only"
+  },
+  "internalModel": {
+    "actualNativeModel": "gemini-3.8-flash",
+    "actualNativeProvider": "google-antigravity",
+    "nativeToolCount": 349,
+    "authenticatedProductModelPreserved": true,
+    "evidence": [
+      "attempt-2/native-start-authenticated-replay-receipt.json",
+      "attempt-3/native-start-authenticated-replay-receipt.json"
+    ],
+    "firstNaturalSubmissionNativeRequests": 0
+  },
+  "overallStatus": "fail",
+  "summary": "Last completed native trial fails gameplay. Final repair interrupted externally; preserved latest snapshot still reproduces cell2 and clear-day growth defects. No percentage estimate.",
+  "originalTrialPreserved": true,
+  "directContentRepairByOperator": false,
+  "stateInjection": false,
+  "repositoryOrHarnessCodeEdits": false,
+  "explicitRepairInstructions": 2,
+  "attempts": [
+    {
+      "attempt": 1,
+      "mode": "natural exact original prompt",
+      "status": "environment-blocked",
+      "nativePiRunObserved": false,
+      "elapsedMs": 266957,
+      "revision": 2,
+      "sha256": "966cd65890e127730a7d92835a27732a5c1591698ec010f49b6804bd81fcf636",
+      "evidence": [
+        "attempt-1/result.json",
+        "attempt-1/requests.json",
+        "attempt-1/trace-preserved.json",
+        "attempt-1/external-stop-receipt.json",
+        "attempt-1/stop-cleanup-correction.json"
+      ],
+      "limitation": "Idle classifier path never entered native Pi. Operator stopped idle collector after267s. Fresh context login warning is context-specific; not definitive root cause. Closed-browser helper errors are cleanup consequences."
+    },
+    {
+      "attempt": 2,
+      "mode": "repair1 pi-command through real ai-input/ai-send",
+      "status": "fail",
+      "nativePiRunObserved": true,
+      "modelCompleted": true,
+      "elapsedMs": 800562,
+      "revision": 45,
+      "sha256": "424531dd17d1edb560fc20c31275e602f19dd38ba2d7d3a388fbcce54d3e8511",
+      "evidence": [
+        "repair-1.txt",
+        "attempt-2/result.json",
+        "attempt-2/requests.json",
+        "attempt-2/trace.json",
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "attempt": 3,
+      "mode": "repair2 final pi-command through real ai-input/ai-send",
+      "status": "environment-blocked",
+      "nativePiRunObserved": true,
+      "modelCompleted": false,
+      "runnerExitCode": 143,
+      "runnerTerminationCause": "Unknown external SIGTERM; case evaluator did not initiate runner termination",
+      "lastCheckpointElapsedMs": 1291954,
+      "revision": 53,
+      "sha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "evidence": [
+        "repair-2.txt",
+        "attempt-3/trace-checkpoint.json",
+        "attempt-3/interrupted-result.json",
+        "attempt-3/orphan-run-cancel-receipt.json",
+        "attempt-3/native-after-cancel-replay-receipt.json",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ],
+      "limitation": "Owner runner absent, native relay left alive. Operator explicitly cancelled orphan run after preserving source/trace, then used real UI Save and fresh context to preserve existing canonical content. No third repair.",
+      "elapsedLimitation": "Only original helper last checkpoint elapsed is authoritative; runner exit occurred before evaluator observed143. Full completed-turn elapsed does not exist because trial was interrupted."
+    }
+  ],
+  "requirements": [
+    {
+      "name": "house/farm/shop connected",
+      "status": "pass",
+      "observedBehavior": "Observed actual portal travel into shop and house, bed and merchant reached by walking around furniture. Shop counter blocks straight approach but side approach works.",
+      "staticCapability": "Three authored maps and reciprocal portals.",
+      "inference": "Access passed; visual doorway placement is less obvious than coordinates.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "six usable farm cells",
+      "status": "fail",
+      "observedBehavior": "All six action cells accepted planting in attempt2, including three without turnip seeds. Cells share p1 type/stage/water variables. Last snapshot changes only cell1; actual cell2 still instant wrong harvest.",
+      "staticCapability": "Six events at (5..7,12..13); all reference p1 variables. Old farmable rectangle (5,7,3,2) retained under house.",
+      "inference": "Six event coordinates are not six independent crop states.",
+      "evidence": [
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-2/plot-state-alias-observation.json",
+        "attempt-3/static-observation.json"
+      ]
+    },
+    {
+      "name": "two actual crops and seed inventory",
+      "status": "fail",
+      "observedBehavior": "Starts100G, turnip seeds3/pumpkin seeds2/can1. Real seeds consumed. Pumpkin planted on cell1 attempt2 and cell2 attempt3 produces turnip.",
+      "staticCapability": "Actual crop definitions and seed items exist; turnip2 days/pumpkin3 days.",
+      "inference": "Two definitions passed; two functioning crop loops failed.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-3/static-observation.json"
+      ]
+    },
+    {
+      "name": "plant/water/sleep/grow/harvest loop",
+      "status": "fail",
+      "observedBehavior": "Attempt2 water immediately enables harvest. Last snapshot cell1 requires day stages and can harvest turnip after sleeps; cell2 still same-day pumpkin-to-turnip. Native farmPlots remains empty. Water spends var_energy10 while native energy100 stays unchanged.",
+      "staticCapability": "Custom variable/self-switch events shadow native farming; native time/energy and onDayEnd common event configured.",
+      "inference": "One partial custom loop works but full six-cell farming loop fails.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "different growth times and sell prices",
+      "status": "fail",
+      "observedBehavior": "40G real turnip sale observed; nonexistent pumpkin sale blocked in last snapshot. Cell2 pumpkin still instantly harvests turnip, so requested growth-time distinction fails.",
+      "staticCapability": "Definitions contain2/3-day stages and sell prices40/120; cell1 thresholds3/4 match stage1 start.",
+      "inference": "Price definitions and one actual sale do not prove two complete crop economies.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-3/static-observation.json"
+      ]
+    },
+    {
+      "name": "unwatered/rain growth rules",
+      "status": "fail",
+      "observedBehavior": "No operator watering: first clear day1 sleep keeps stage1. Actual rain day2 followed by sleep gives stage2/day3 clear. Another clear day3 without watering gives stage3/day4 clear. Common event falsely declares rain on clear day.",
+      "staticCapability": "Native weighted seasonal weather enabled. Custom sw_is_raining is set true from constant var_0001=3 <=3 each day and never synchronized to native weather.",
+      "inference": "Natural rain was observed; overall weather-dependent growth rule failed.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-3/static-observation.json"
+      ]
+    },
+    {
+      "name": "sell five harvests goal scene",
+      "status": "unverified",
+      "observedBehavior": "Attempt2 sold five nonexistent pumpkins: gold100->700/count5 and repeat congratulation despite no actual pumpkins. Last snapshot blocks zero-owned pumpkin and real turnip sale gives40G/count1. Latest genuine five-harvest goal not reached.",
+      "staticCapability": "Latest guarded sale sets completion switch once at count>=5 and awards100G, replacing repeat goal page.",
+      "inference": "Historical premature goal failure preserved; latest goal fix remains static/unverified.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-3/static-observation.json"
+      ]
+    },
+    {
+      "name": "time/energy/crops persist",
+      "status": "environment-blocked",
+      "observedBehavior": "Genuine latest crop stage1/customenergy90 existed during manual Save attempt. Two independent original shipped-player contexts System>Save confirmation opens Items, with no manual slot. Actual native transfer autosave exists: same-origin unchanged browser profile Continue restored map/position/gold/inventory/farmPlots/energy/gameTime/variables/switches/selfSwitches exactly. Auto checkpoint stage0 predates latest stage1 crop, so growing-save requirement remains unverified.",
+      "staticCapability": "Native save support exists; editor SQLite strict save/reload passes for revisions45 and53.",
+      "inference": "Editor persistence does not establish player Continue. Crop/time/energy continuity is unverified.",
+      "evidence": [
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl",
+        "attempt-2/persistence.json",
+        "attempt-3/persistence.json",
+        "attempt-3/runtime-autosave-continue/continue-receipt.json"
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "name": "plant without seeds",
+      "status": "fail",
+      "observedBehavior": "Attempt2 fourth, fifth and sixth turnip plant succeed after real three seeds exhausted; no inventory injected.",
+      "evidence": [
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "buy without enough gold",
+      "status": "pass",
+      "observedBehavior": "Latest actual two50G pumpkin seed buys spend100G; next Enter at0G rejects purchase and inventory stays3.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "inspect immature crop",
+      "status": "pass",
+      "observedBehavior": "Latest cell1 immature crop offers water/view without harvesting. Attempt2 one water nevertheless bypasses maturity.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "skip watering",
+      "status": "fail",
+      "observedBehavior": "Latest clear day3 unwatered crop advances stage2->3 after sleep.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "rain day",
+      "status": "fail",
+      "observedBehavior": "Natural rain day2 observed and growth occurred; custom rain remains true on actual clear day3 and produces invalid growth.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "harvest twice",
+      "status": "pass",
+      "observedBehavior": "Latest first-cell harvest produces turnip1, resets type/stage, immediate reentry offers empty planting; no second reward. This does not waive sale/alias exploits.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "sleep/day transition",
+      "status": "pass",
+      "observedBehavior": "Actual bed cancel keeps day1; sleep continues through pending common-event text to days2,3,4. Screenshot filenames alone are not date proof.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "save growing crops and resume",
+      "status": "environment-blocked",
+      "observedBehavior": "Manual Save fails to open slot UI while genuine stage1 crop exists. Actual native transfer autosave Continue tested with unedited same-origin browser profile; all captured state fields match older checkpoint(stage0). Latest growing crop save/Continue is not established.",
+      "evidence": [
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    }
+  ],
+  "additionalChecks": [
+    {
+      "name": "plant and sleep cancellation",
+      "status": "pass",
+      "observedBehavior": "Plant Escape cancel preserves seeds/flags. Bed no-sleep choice preserves day before actual sleep.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "premature goal and duplicated sale reward",
+      "status": "fail",
+      "observedBehavior": "Attempt2 five nonexistent pumpkin sales triggers goal. Latest zero-owned sale rejection passed; genuine latest threshold not observed.",
+      "evidence": [
+        "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "loss/death/retry",
+      "status": "unverified",
+      "observedBehavior": "No authored farm loss/death/retry path found or reached; no health/monster state injected."
+    },
+    {
+      "name": "shipping player boot",
+      "status": "pass",
+      "observedBehavior": "Runtime QA title/new-game2 beats, no boot errors. This gate covers boot only; gameplay verdict separate."
+    },
+    {
+      "name": "player Save/Continue UI",
+      "status": "fail",
+      "observedBehavior": "Repeated native keyboard System>Save selection enters Items in original UI. No slot success. Explicit fresh-context Load observation preserved.",
+      "evidence": [
+        "attempt-2/runtime-repair-1c/interaction-receipts.jsonl",
+        "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+      ]
+    },
+    {
+      "name": "actual native transfer autosave Continue",
+      "status": "pass",
+      "observedBehavior": "All11 compared actual saved state fields restored exactly, including time and custom/native energy; saved farmPlots empty/stage0. This is older autosave, not latest growing crop.",
+      "evidence": [
+        "attempt-3/runtime-autosave-continue/continue-receipt.json"
+      ]
+    }
+  ],
+  "persistence": {
+    "canonicalProjectId": "c30ce239-8002-4b9d-bf99-0e0cd6a9f005",
+    "canonicalDirectory": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/project",
+    "attempt2": {
+      "projectId": "c30ce239-8002-4b9d-bf99-0e0cd6a9f005",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/project",
+      "beforeRevision": 2,
+      "afterRevision": 45,
+      "reloadedRevision": 45,
+      "afterSha256": "424531dd17d1edb560fc20c31275e602f19dd38ba2d7d3a388fbcce54d3e8511",
+      "reloadedSha256": "424531dd17d1edb560fc20c31275e602f19dd38ba2d7d3a388fbcce54d3e8511",
+      "sameProject": true,
+      "sameStoredDocument": true,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true
+    },
+    "attempt3Rescue": {
+      "projectId": "c30ce239-8002-4b9d-bf99-0e0cd6a9f005",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/project",
+      "interruptedRevision": 53,
+      "afterRevision": 53,
+      "reloadedRevision": 53,
+      "afterSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "reloadedSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "sameProject": true,
+      "sameStoredDocument": true,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true,
+      "bootChanged": false,
+      "saveKind": "idle",
+      "operatorRescueThroughRealUI": true,
+      "modelCompletionObserved": false
+    },
+    "strictEditorPersistenceStatus": "pass",
+    "playerContinueStatus": "environment-blocked",
+    "bootChanges": "Attempt2 same revision45/SHA after Save and fresh reload. Attempt3 interrupted, UI Save and reload all same revision53/SHA; bootChanged false.",
+    "actualAutosaveContinue": {
+      "status": "pass",
+      "evidence": "attempt-3/runtime-autosave-continue/continue-receipt.json",
+      "sameOrigin": "http://127.0.0.1:34389",
+      "storageStateUsedUnchanged": true,
+      "canonicalUnchanged": true,
+      "comparisonEquality": {
+        "currentMapId": true,
+        "x": true,
+        "y": true,
+        "gold": true,
+        "inventory": true,
+        "farmPlots": true,
+        "energy": true,
+        "gameTime": true,
+        "variables": true,
+        "switches": true,
+        "selfSwitches": true
+      },
+      "autosaveTrigger": "transfer",
+      "savedGrowingCropStage": 0,
+      "latestUnsavedGrowingCropStage": 1,
+      "limitation": "Actual transfer checkpoint predates latest replant. No growing manual-save continuity pass."
+    }
+  },
+  "assetReferenceObservation": {
+    "nativeReuse": "Bundled beodeul building/prop kits, hand interior rooms, existing shared merchant charset, default hero/menu/kingdom opening. No new raster authored or human art approved.",
+    "authoredExtensions": "Three-map layout/portals, farm rectangles, crop/seed definitions, custom events/variables/common event, time/energy/weather settings, shop sale prices and goal branches.",
+    "superficialDialogue": "Attempt2 mature/sleep/rain/goal messages claim systems inconsistent with actual state. Last snapshot rain message contradicts native clear weather.",
+    "visualDefects": "Attempt2 grass plots invisible. Latest irregular dirt patch plus tall tree-like growing graphic for cell1; five other plots still invisible. Generic hero sword/equipment/kingdom opening remains unrelated to farm.",
+    "unsupportedArtNeeds": "Recognizable turnip/pumpkin growth-stage graphics and six readable plot indicators needed. No evidence engine cannot support them; this is asset selection/coverage quality, not a proven missing art API.",
+    "assetEvidence": "Saved live/source asset hydration reused by frozen player, no page errors in successful autosave continuation. Asset receipts/page errors remain in runtime folders."
+  },
+  "observationLimitations": [
+    "Player movement macros can overshoot or issue a first step during portal fade. Failures preserved; successful actions backed by exact read-only state receipts.",
+    "Some images captured during typewriter/common-event transitions. File names and shot notes are hypotheses, not proof. Reobservation receipts correct misnamed planting/sleep/save images.",
+    "Runtime QA initial 2-beat success is boot coverage only. No direct tools, simulator state injection, teleport, SQLite content patch or model fake was used.",
+    "Final native repair interrupted externally, so no model completion/automatic authoring success inferred.",
+    "Initial last Continue context was closed during asset loading. Re-observation of exact saved player bytes/real profile/same origin waited for native runtime and passed actual older autosave-state comparisons."
+  ],
+  "missingToolAssessment": {
+    "confirmedMissingEssentialFarmTools": false,
+    "existingToolsInvestigated": [
+      "define_crop",
+      "create_farm_plot",
+      "configure_time_system",
+      "upsert_life_system",
+      "configure_life_economy",
+      "set_sell_prices",
+      "upsert_item",
+      "upsert_event",
+      "upsert_common_event",
+      "create_transfer_pair",
+      "read_authoring_preset",
+      "run_scene_test",
+      "review_game_systems",
+      "openSaveMenu native event command"
+    ],
+    "reason": "Existing native farming, shop, time, energy, weather, save and event APIs exist. Failures here mostly composition/guard/alias errors, not proof an essential tool is absent.",
+    "proposals": [
+      {
+        "name": "Extend review_game_systems with farming consistency checks",
+        "classification": "Proposed existing-tool extension",
+        "observedFailure": "All six cells reference p1; native farmPlots empty while custom growth pages used; custom/native energy and rain diverge; attempt2 zero-inventory sales count toward goal. Existing source issues() primarily checks monster/menu/audio combinations.",
+        "currentWorkaround": "Read saved event/DB/system definitions, trace references and exercise actual player with read-only state/screenshot receipts.",
+        "input": {
+          "projectId": "owned project",
+          "mapIds": [
+            "farm",
+            "house",
+            "shop"
+          ],
+          "cropIds": [
+            "turnip",
+            "pumpkin"
+          ],
+          "goalVariableId": "shipped"
+        },
+        "output": "Non-mutating inconsistency report with event/page/command IDs, alias graph, missing inventory/energy guards, weather source and onDayEnd wiring, static vs gameplay-proof labels.",
+        "negativeConditions": [
+          "Never mutate state/content",
+          "Reject unresolved references",
+          "Never pass from dialogue/modelDone/simulator-only check",
+          "Do not treat shared p1 state as independent six plots",
+          "Do not expose auth/full prompts"
+        ],
+        "expectedGameplayAcceptanceCheck": "All six independent plots; no-seed/no-gold/immature/double-harvest guards; unwatered clear day stalls, natural rain grows; correct crops/prices; exactly five genuine sales goal once; growing save/Continue matches."
+      },
+      {
+        "name": "Atomic farming-loop authoring recipe",
+        "classification": "Higher-level proposed tool; underlying capabilities already exist",
+        "observedFailure": "Model reads farming preset yet mixes custom pages with native lifecycle and partially repairs only first cloned plot.",
+        "currentWorkaround": "Compose existing native tools/preset plus guarded events and validate each actual player interaction.",
+        "input": {
+          "farmMapId": "map",
+          "cells": "six explicit coordinates",
+          "cropDefinitions": "two seeds/harvest IDs/growth stages",
+          "sellPrices": "40/120",
+          "startingResources": "100G,seeds",
+          "dayWeatherEnergy": "authored rules",
+          "shopHousePortals": "valid anchors",
+          "goalCount": 5
+        },
+        "output": "Atomic authored plan/application receipt containing native plot/crop/slot wiring, independent IDs, shop/goal guards, referenced existing artwork and read-only acceptance scenario.",
+        "negativeConditions": [
+          "Reject duplicate/out-of-bounds/blocked cells",
+          "Reject missing crop/seed references",
+          "Guard item/gold/energy checks before mutation",
+          "Cancellation rolls back transaction",
+          "No unauthorized selected art",
+          "Never claim gameplay success before shipping-player observation"
+        ],
+        "expectedGameplayAcceptanceCheck": "Repeat same adversarial case with genuine input and observe actual state; all requested axes must individually pass, including save/Continue."
+      },
+      {
+        "name": "Authoring turn terminal-status receipt",
+        "classification": "Diagnostic proposal, not farming content tool",
+        "observedFailure": "Natural first request stayed idle without native request; collector awaited native stream for267s. Final owner runner vanished but host relay remained.",
+        "currentWorkaround": "Native request receipts, run replay, process ownership/checkpoints, explicit abort only owned orphan and saved-SHA reobservation.",
+        "input": {
+          "projectId": "owned project",
+          "turnId": "UI turn",
+          "nativeRunId": "optional"
+        },
+        "output": "Classifier/native/terminal phase, owner liveness, completion vs interruption, checkpoint SHA/revision and safe error category.",
+        "negativeConditions": [
+          "No content writes",
+          "Reject stale/cross-project run ID",
+          "No secrets/private reasoning/system prompt",
+          "Closed stream without done is interrupted, not success"
+        ],
+        "expectedGameplayAcceptanceCheck": "Exact first UI prompt yields terminal native success or explicit failure without false done; then actual gameplay still independently assessed."
+      }
+    ]
+  },
+  "cleanup": {
+    "caseId": "farm-life",
+    "attempt": 3,
+    "originalRunnerAlreadyGone": true,
+    "ownedNativeRunCancelled": true,
+    "relayClosedAfterCancel": true,
+    "checkpoint": {
+      "projectId": "c30ce239-8002-4b9d-bf99-0e0cd6a9f005",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/farm-life/project",
+      "interruptedRevision": 53,
+      "afterRevision": 53,
+      "reloadedRevision": 53,
+      "afterSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "reloadedSha256": "c7ab37e75af46bd029b73d57b41e718d886d4bc756efe0881c0997a5bbb51c89",
+      "sameProject": true,
+      "sameStoredDocument": true,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true,
+      "bootChanged": false,
+      "saveKind": "idle",
+      "operatorRescueThroughRealUI": true,
+      "modelCompletionObserved": false
+    },
+    "ownedHostTerminated": 2502047,
+    "onlyOwnedSlotLocksRemoved": [
+      2
+    ],
+    "otherCasesTouched": false,
+    "at": "2026-10-08T03:44:39.995Z",
+    "playerControllers": {
+      "stoppedOnlyOwnedReadlineControllers": [
+        {
+          "pid": 2022565,
+          "attempt": "1",
+          "name": "runtime-first",
+          "ownedBrowserAlreadyClosed": true
+        },
+        {
+          "pid": 2360372,
+          "attempt": "2",
+          "name": "runtime-repair-1",
+          "ownedBrowserAlreadyClosed": true
+        },
+        {
+          "pid": 2386838,
+          "attempt": "2",
+          "name": "runtime-repair-1b",
+          "ownedBrowserAlreadyClosed": true
+        },
+        {
+          "pid": 2556252,
+          "attempt": "2",
+          "name": "runtime-repair-1c",
+          "ownedBrowserAlreadyClosed": true
+        },
+        {
+          "pid": 2771780,
+          "attempt": "3",
+          "name": "runtime-interrupted-repair",
+          "ownedBrowserAlreadyClosed": true
+        },
+        {
+          "pid": 2789797,
+          "attempt": "3",
+          "name": "runtime-interrupted-repair-b",
+          "ownedBrowserAlreadyClosed": true
+        }
+      ],
+      "reason": "Browsers and servers had closed; readline kept Node processes alive",
+      "unrelatedProcessesTouched": false
+    }
+  },
+  "evidenceIndex": {
+    "plan": "PLAN.md",
+    "report": "REPORT.md",
+    "imageReviews": "reviewed-image-hashes.jsonl",
+    "runtime": [
+      "attempt-2/runtime-repair-1b/interaction-receipts.jsonl",
+      "attempt-2/runtime-repair-1c/interaction-receipts.jsonl",
+      "attempt-3/runtime-interrupted-repair-b/interaction-receipts.jsonl"
+    ],
+    "firstSnapshot": "attempt-1/live.json",
+    "repairSnapshots": [
+      "attempt-2/live.json",
+      "attempt-3/live.json"
+    ],
+    "requests": [
+      "attempt-1/requests.json",
+      "attempt-2/requests.json",
+      "attempt-3/requests.json"
+    ]
+  },
+  "runtimeImageReviewCount": 23
+}

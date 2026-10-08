@@ -1,0 +1,577 @@
+{
+  "caseId": "action-rpg",
+  "label": "2D 액션 RPG",
+  "updatedAt": "2026-10-08T03:59:25.685645+00:00",
+  "measurementStatus": "completed-with-final-repair-environment-blocked",
+  "gameOutcome": "fail",
+  "outerAgent": {
+    "model": "gpt-6.1-sol",
+    "reasoningEffort": "high",
+    "role": "one of eight external operators; no nested agents"
+  },
+  "internalAi": {
+    "nativeModel": "gemini-3.8-flash",
+    "nativeProvider": "google-antigravity",
+    "authenticatedProductModelPreserved": true,
+    "firstAgentProviderHeaderObserved": false,
+    "providerEvidence": "Intent and completion chat headers in attempt1; agent header in attempt2.",
+    "receipts": [
+      "attempt-1/requests.json",
+      "attempt-2/requests.json",
+      "attempt-3/requests.json"
+    ]
+  },
+  "requirements": [
+    {
+      "name": "safe start and accurate controls guide",
+      "status": "pass",
+      "firstRunStatus": "fail",
+      "lastCompletedRepairStatus": "pass",
+      "observedBehavior": "Safe start (10,12), HP514 stable before entering combat. First guide reversed bindings. Repair guide says C hold guard and direction+Shift dodge; real inputs match.",
+      "staticCapability": "Guide event stored in attempt-2/static-gameplay.json.",
+      "inference": "Guide progression claim remains false; control-key check alone passes.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/016-guide-wrong-bindings.json",
+        "attempt-2/runtime-repair-1/067-safe-start-after-opening.json",
+        "attempt-2/runtime-repair-1/076-guide-actual-c-guard-shift-dodge.json"
+      ],
+      "subchecks": []
+    },
+    {
+      "name": "actual melee and projectile enemies",
+      "status": "pass",
+      "firstRunStatus": "pass",
+      "lastCompletedRepairStatus": "pass",
+      "observedBehavior": "Melee enemies strike; archers emit visible projectiles (two in early gate screenshot) while no turn-based battle replaces field.",
+      "staticCapability": "Three native action profiles, enabled map/system action combat.",
+      "inference": "These are library assets and native runtime behavior, not new AI-authored combat engine.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/005-repair-gate-still-locked.json",
+        "attempt-2/runtime-repair-1/018-unguarded-same-enemy-window.json"
+      ],
+      "subchecks": []
+    },
+    {
+      "name": "field attack damages/kills enemies",
+      "status": "pass",
+      "firstRunStatus": "pass",
+      "lastCompletedRepairStatus": "pass",
+      "observedBehavior": "First sword swing removed slime_2, gold100->110. Repair ordinary Space kills original slime_1/2 and skel_1/2; gold reaches200; replacements have higher IDs.",
+      "staticCapability": "Enemy HP60/50, native sword cooldown350ms.",
+      "inference": "Repeated respawns prevent clear finite-wave completion semantics.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/103-actual-melee-swing.json",
+        "attempt-2/runtime-repair-1/023-attack-other-melee.json",
+        "attempt-2/runtime-repair-1/045-real-ranged-kill-from-south.json"
+      ],
+      "subchecks": []
+    },
+    {
+      "name": "enemy attacks damage player",
+      "status": "pass",
+      "firstRunStatus": "pass",
+      "lastCompletedRepairStatus": "pass",
+      "observedBehavior": "Standing in central attack lane reduced HP514->334; natural death HP0/game over. Same melee area HP433->409 during2.3sec unguarded wait.",
+      "staticCapability": "Melee12 and projectile15 attack profiles exist.",
+      "inference": "Exact attacker attribution for first death not independently logged.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/041-boss-room-before-any-kill.json",
+        "attempt-2/runtime-repair-1/018-unguarded-same-enemy-window.json"
+      ],
+      "subchecks": []
+    },
+    {
+      "name": "real dodge/guard/stamina",
+      "status": "unverified",
+      "firstRunStatus": "unverified",
+      "lastCompletedRepairStatus": "unverified",
+      "observedBehavior": "C hold6.5sec drains stamina85.33->0; HP453->433. Unguarded next2.3sec loses24HP. Clear-row directional Shift spends25 and opens250ms remaining iframe window; low-stamina attempt opens none.",
+      "staticCapability": "Native guard70%, drain20/sec; dodgecost25/iframe400ms, source damagePlayer rejects during dodge and applies guardedDamage.",
+      "inference": "Guard reduction consistent with observations, but same-strike controlled comparison and successful dodge rejection under that same strike were not independently observed.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/014-guard-under-melee-until-exhausted.json",
+        "attempt-2/runtime-repair-1/015-directional-dodge-near-melee.json",
+        "attempt-2/runtime-repair-1/018-unguarded-same-enemy-window.json",
+        "attempt-2/runtime-repair-1/041-dodge-on-open-south-row.json"
+      ],
+      "subchecks": [
+        {
+          "name": "guard and dodge stamina use",
+          "status": "pass"
+        },
+        {
+          "name": "directional dodge iframe window",
+          "status": "pass"
+        },
+        {
+          "name": "same-strike damage/rejection comparison",
+          "status": "unverified"
+        }
+      ]
+    },
+    {
+      "name": "kill-gated boss access",
+      "status": "fail",
+      "firstRunStatus": "fail",
+      "lastCompletedRepairStatus": "fail",
+      "observedBehavior": "First gate opens by player claim before any kill, actual early boss entry (10,2). Repair early door blocks. After actual four original kills gate switch remainsfalse.",
+      "staticCapability": "Repair opened-door page requires sw_gate_open; no command or spawn writes it. No persistKill/onKillSwitchId authored.",
+      "inference": "Repair gate is permanently unreachable; post-kill door interaction attempt stood at x11 and is not treated as verified.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/040-gate-open-state.json",
+        "attempt-1/runtime-adversarial/072-early-boss-access.json",
+        "attempt-2/runtime-repair-1/005-repair-gate-still-locked.json",
+        "attempt-2/runtime-repair-1/045-real-ranged-kill-from-south.json",
+        "attempt-2/runtime-repair-1/052-gate-permanently-locked-after-kills.json",
+        "attempt-2/static-gameplay.json"
+      ],
+      "subchecks": []
+    },
+    {
+      "name": "one-time reward/ending and save resume",
+      "status": "fail",
+      "firstRunStatus": "fail",
+      "lastCompletedRepairStatus": "fail",
+      "observedBehavior": "First chest grants500G+one potion while boss remainsHP730, then dialogue sets fake boss flag and THE END. Native menu Save twice renders Items. Fresh-context Continue real storage has all3slots empty.",
+      "staticCapability": "Repair chest now requires sw_boss_defeated, but nothing sets it; self-switchA blocks further rewards after completion. Native saveSlots supports killedFieldSpawns.",
+      "inference": "Repair reward/ending unreachable. Reentry duplicate-reward runtime check and actual saved-progress load remain unverified.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/074-reward-before-boss-kill.json",
+        "attempt-1/runtime-adversarial/082-repeat-chest-no-extra-reward.json",
+        "attempt-1/runtime-adversarial/051-open-system-menu.json",
+        "attempt-1/runtime-adversarial/053-open-save-slots.json",
+        "attempt-1/runtime-adversarial/061-save-keyboard-result.json",
+        "attempt-2/runtime-repair-1/063-continue-actual-slots.json",
+        "attempt-2/static-gameplay.json"
+      ],
+      "subchecks": [
+        {
+          "name": "boss-kill precedes reward",
+          "status": "fail"
+        },
+        {
+          "name": "one-time reward after true reentry",
+          "status": "unverified"
+        },
+        {
+          "name": "reachable ending after actual boss death",
+          "status": "fail"
+        },
+        {
+          "name": "manual native save flow",
+          "status": "fail"
+        },
+        {
+          "name": "progress restored via Continue",
+          "status": "unverified"
+        }
+      ]
+    }
+  ],
+  "adversarial": [
+    {
+      "name": "try boss gate early",
+      "status": "fail",
+      "firstRunStatus": "fail",
+      "repairStatus": "pass",
+      "observedBehavior": "Initial claim opens door while all five enemies fullHP. Repair early interaction blocks.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/040-gate-open-state.json",
+        "attempt-1/runtime-adversarial/072-early-boss-access.json",
+        "attempt-2/runtime-repair-1/005-repair-gate-still-locked.json"
+      ]
+    },
+    {
+      "name": "stand still under attack",
+      "status": "pass",
+      "observedBehavior": "HP falls and native game over appears without state injection.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/041-boss-room-before-any-kill.json",
+        "attempt-2/runtime-repair-1/018-unguarded-same-enemy-window.json"
+      ]
+    },
+    {
+      "name": "directional dodge against same strike",
+      "status": "unverified",
+      "observedBehavior": "Open-path dodge iframe/cost observed, blocked path and exhausted-cost attempts observed. Same-strike hit rejection not isolated.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/015-directional-dodge-near-melee.json",
+        "attempt-2/runtime-repair-1/041-dodge-on-open-south-row.json"
+      ]
+    },
+    {
+      "name": "guard and exhaust stamina",
+      "status": "pass",
+      "observedBehavior": "Guard held under melee drains stamina to0; damage is consistent with reduction. Exact same-strike reduction separately unverified.",
+      "evidence": [
+        "attempt-2/runtime-repair-1/014-guard-under-melee-until-exhausted.json"
+      ]
+    },
+    {
+      "name": "lose/retry",
+      "status": "pass",
+      "observedBehavior": "Death opens native game-over; return title and New Game restore HP514,100G,3potions,closed gate. Full restart only, no authored checkpoint/retry continuation.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/041-boss-room-before-any-kill.json",
+        "attempt-1/runtime-adversarial/047-retry-start-state.json"
+      ]
+    },
+    {
+      "name": "repeat chest after reentry",
+      "status": "unverified",
+      "observedBehavior": "Ending took over before reentry; later labelled reentry screenshot is actually opening. Repair chest unreachable. Static self-switchA exists.",
+      "evidence": [
+        "observation-label-corrections.json",
+        "attempt-1/runtime-adversarial/082-repeat-chest-no-extra-reward.json",
+        "attempt-1/runtime-adversarial/088-room-reentry-chest-no-extra-reward.json"
+      ]
+    },
+    {
+      "name": "save progress and resume",
+      "status": "fail",
+      "observedBehavior": "Native Save command renders Items twice; fresh real-storage Continue shows all empty slots. Restoration from successful save is unverified.",
+      "evidence": [
+        "attempt-1/runtime-adversarial/053-open-save-slots.json",
+        "attempt-1/runtime-adversarial/061-save-keyboard-result.json",
+        "attempt-2/runtime-repair-1/063-continue-actual-slots.json"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": 1,
+      "kind": "first exact task",
+      "elapsedMs": 751540,
+      "status": "completed",
+      "modelDone": true,
+      "gameComplete": false,
+      "path": "attempt-1"
+    },
+    {
+      "attempt": 2,
+      "kind": "first repair",
+      "elapsedMs": 457407,
+      "status": "completed",
+      "modelDone": true,
+      "gameComplete": false,
+      "path": "attempt-2"
+    },
+    {
+      "attempt": 3,
+      "kind": "second/final repair",
+      "status": "environment-blocked",
+      "modelDone": false,
+      "agentRequestObserved": false,
+      "observerExitCode": 143,
+      "path": "attempt-3/interruption-result.json"
+    }
+  ],
+  "persistence": {
+    "firstRunStatus": "fail",
+    "lastCompletedRepairStatus": "pass",
+    "first": {
+      "projectId": "cb035a5b-c212-4429-8568-1fa16716efe4",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/project",
+      "beforeRevision": 2,
+      "afterRevision": 26,
+      "reloadedRevision": 27,
+      "afterSha256": "88ae797cb133925b1534606f56e76eb685147f50876f55a2fb166bf9bd872adc",
+      "reloadedSha256": "02ac53403eb2fcdc88ae6a9b48ab0de58307bf3ae2ca871443b04d39ea238119",
+      "sameProject": true,
+      "sameStoredDocument": false,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true
+    },
+    "repair": {
+      "projectId": "cb035a5b-c212-4429-8568-1fa16716efe4",
+      "projectDir": "/home/main/.codex/worktrees/fbff/rpg-zzu/qa-runs/harnesses/assistant-capability/20261008-eight-genres-fbff/action-rpg/project",
+      "beforeRevision": 27,
+      "afterRevision": 31,
+      "reloadedRevision": 31,
+      "afterSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+      "reloadedSha256": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+      "sameProject": true,
+      "sameStoredDocument": true,
+      "rendererLoadObserved": true,
+      "rendererMapsAndDatabaseEqual": true
+    },
+    "firstBootChange": "Four custom audio dataURL representations became external refs; full SHA changed/revision26->27 despite map/database equality.",
+    "assets": "262 canonical asset records had matching bytes/SHA in independent read-only inspection.",
+    "finalPreservedSha": "61f230091a530c74e2432434dcc850d30ad2956498d997a93521216f717f67d1",
+    "finalRevision": 31,
+    "receipts": [
+      "final-canonical-receipt.json",
+      "attempt-1/persistence-diff.json",
+      "attempt-3/recovery-checkpoint.json",
+      "progression-producers.json"
+    ],
+    "playerProgressPersistenceStatus": "fail-native-save-flow; loaded-progress-unverified"
+  },
+  "reuse": {
+    "nativeTemplate": [
+      "default Allen party/equipment/potions/gold",
+      "action combat engine/HUD/stamina/dodge/guard",
+      "death/title/menus/save subsystem",
+      "inherited title/opening art and story",
+      "bundled beodeul grass/walls/guide/chest and shared monster images"
+    ],
+    "assistantAuthoredExtension": [
+      "20x15 one-map arena layout",
+      "three named enemy profiles and troops/spawns",
+      "edited sword/action config",
+      "guide/gate/chest events and ending condition",
+      "original generated BGM/SE"
+    ],
+    "superficialSystemSubstitution": [
+      "first gate trusts a user claim of kills",
+      "first chest sets boss-defeated switch despite live boss",
+      "repair says actual kill progression in guide but authors no producer"
+    ],
+    "turnBasedReplacementObserved": false
+  },
+  "visual": {
+    "status": "fail",
+    "findings": [
+      "sparse grass/wall layout",
+      "invisible locked gate has no visual state cue",
+      "oversized paired monster graphics overlap",
+      "unrelated inherited opening/title still says 새 프로젝트"
+    ],
+    "reviewedImages": [
+      {
+        "path": "attempt-1/runtime-first/001-original-start.png",
+        "sha256": "1edb1c26bfefaa5bcea2ddd35c5b39942787c75f8125b1eef1b9977623cd4a2f",
+        "reviewed": true,
+        "finding": "Default castle opening; bootstrap readiness is not playable-field proof."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/001-original-start.png",
+        "sha256": "aad7453d22402ed59f0b30952e7616daa7d87f5f7b3f6951e488c0539a3222f2",
+        "reviewed": true,
+        "finding": "Late boot loader; failed original runtime readiness."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/002-boot-after-timeout.png",
+        "sha256": "2601e855d43580b7804b9ce64db0b019bb14999b19808647f3b05ebb135c7c3c",
+        "reviewed": true,
+        "finding": "Sparse grass/walls; paired large monsters overlap; invisible gate."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/016-guide-wrong-bindings.png",
+        "sha256": "9fb544c0184677cc7d9d10b7db53be2235a206e764cd6cc7577da2195ccf264f",
+        "reviewed": true,
+        "finding": "Guide incorrectly says Shift guard / C dodge."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/038-early-gate-unconditional-open-text.png",
+        "sha256": "d5e73bebc2e88cc905a869fba7e572a39de42b99fa6235e807d740854782368e",
+        "reviewed": true,
+        "finding": "Manual gate opens with enemies still alive."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/041-boss-room-before-any-kill.png",
+        "sha256": "ca246f69083cae0174657c6b767f1be33293c2d876a26155e022726763057421",
+        "reviewed": true,
+        "finding": "Actual native game-over screen, title return only."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/051-open-system-menu.png",
+        "sha256": "368c71f43555c19ffc92f5bee588e3002ceb5ae42f21d8f7f2d541b1cb4b9262",
+        "reviewed": true,
+        "finding": "System submenu Save selected."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/053-open-save-slots.png",
+        "sha256": "93b049a1b15519daee370a859d050254c86c3a51025d84429e3aca04bca87061",
+        "reviewed": true,
+        "finding": "Save selection actually renders Items."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/074-reward-before-boss-kill.png",
+        "sha256": "d5cee0e704d0493e9084a48bcbee616c33173a5a0c69fde4576cbb115ab198ee",
+        "reviewed": true,
+        "finding": "Reward received with live boss; oversized monsters and sparse layout."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/082-repeat-chest-no-extra-reward.png",
+        "sha256": "17d3ec40df6bdf1e262fa8ebaadbe794d99e799f2ff1c71ef3f551a8fa8c8a7f",
+        "reviewed": true,
+        "finding": "THE END title; does not prove chest reentry."
+      },
+      {
+        "path": "attempt-1/runtime-adversarial/103-actual-melee-swing.png",
+        "sha256": "6ac2bf6cd4ed58dff266a026d4f3a4c8ab332e4a0a0a67c043a81bc84af6b594",
+        "reviewed": true,
+        "finding": "Native sword swing, damage number and +EXP/+G; slain enemy gone."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/005-repair-gate-still-locked.png",
+        "sha256": "11a57e8b90dfea9e9e70e5a6c676ce72282d06b3841aa646ddc71d08a14ee1eb",
+        "reviewed": true,
+        "finding": "Actual early-door locked dialogue and two visible projectiles."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/014-guard-under-melee-until-exhausted.png",
+        "sha256": "37bdffeb47fcae49b30f8d2bf945dda6b789f410eaf1c452641badd00c8be6a7",
+        "reviewed": true,
+        "finding": "Guard under melee, HP433/514, empty stamina bar."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/041-dodge-on-open-south-row.png",
+        "sha256": "e8f8cf7c70096eb0ec7367dc9cce1f572d1079f470ae7bf60515fbc7c60f37d3",
+        "reviewed": true,
+        "finding": "Actual directional dodge position/iframes/stamina receipt; picture alone not iframe proof."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/045-real-ranged-kill-from-south.png",
+        "sha256": "eeffe845a1100437faadcccf4620c01eb3f7d43e2d2361fc009e8b5cb342f25c",
+        "reviewed": true,
+        "finding": "Original archers killed; replacement archers spawn."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/063-continue-actual-slots.png",
+        "sha256": "02e83cf02cfcd28d795b1e49cdd42f80549038da1eb6b5b6bf4d1e2be7b5e2b8",
+        "reviewed": true,
+        "finding": "Fresh context Continue: all three real slots empty."
+      },
+      {
+        "path": "attempt-2/runtime-repair-1/076-guide-actual-c-guard-shift-dodge.png",
+        "sha256": "dc5c4d0b77f25a40c4cc009bcc1b8843f954fe457b3499d2517c08ffc52143d6",
+        "reviewed": true,
+        "finding": "Correct C-hold guard; Shift sentence partially typed at capture."
+      }
+    ],
+    "unsupportedArtNeeds": {
+      "status": "none-required",
+      "observed": "Existing shared art used; no custom art or human art approvals manufactured. Bespoke arena/gate art would improve presentation but is not a demonstrated engine requirement."
+    }
+  },
+  "missingToolProposals": [
+    {
+      "name": "Field-wave objective authoring helper / schema alignment",
+      "classification": "composition/discoverability improvement; existing kill primitive is present",
+      "observedFailure": "Initial model used claim dialog; repair incorrectly asserted no kill callback and left gates without producers.",
+      "existingCapability": "make_hunting_ground exposes persistKill/onKillSwitchId; recordFieldSpawnKill writes switch. make_action_enemy spawn schema omits these fields.",
+      "currentWorkaround": "Internal AI can remove old spawns, make four maxAlive1 persistent hunting spawns with distinct kill switches, and use AND page conditions; persistent boss has own kill switch. Final repair requested this but observer interrupted before agent run.",
+      "proposedInput": {
+        "mapId": "existing map",
+        "groups": [
+          {
+            "members": "existing enemy/troop/spawn IDs",
+            "requiredKills": "finite count"
+          }
+        ],
+        "boss": "spawn ID",
+        "gate": "event ID",
+        "reward": "existing event ID",
+        "persistence": "true"
+      },
+      "proposedOutput": "Atomic native spawns, switch conditions/producers, finite-wave contract, preview/diff and reachability diagnostics.",
+      "negativeConditions": [
+        "unknown resource/spawn/switch",
+        "spawn ID collision",
+        "early gate after subset kills",
+        "infinite respawn conflicting with finite clear",
+        "friendly/NPC death credited",
+        "duplicate reward or reset kills after load"
+      ],
+      "expectedGameplayAcceptance": "Cancel/early interaction leaves gate closed; each actual member death counted once; all four kills open gate; live boss blocks chest; real boss death permits exactly one reward/ending; native Save/Continue retains progress."
+    },
+    {
+      "name": "Pi dispatch for existing run_action_combat_test",
+      "classification": "existing tool integration gap, not missing tool",
+      "observedFailure": "Native tool calls fail async-harness-required in attempts1/2; completed turn nevertheless claims completion or substitutes run_scene_test.",
+      "existingCapability": "playTools declares async tool; assistantSession.executeVerificationTool contains browser path, but actual native calls hit synchronous fallback.",
+      "currentWorkaround": "External evaluator separately runs compiled player with ordinary inputs, exact source SHA and screenshots; this does not validate internal completion.",
+      "proposedInput": {
+        "mapId": "existing required tool argument",
+        "projectIdRevisionSha": "captured by runner",
+        "deadline": "owned runner timeout"
+      },
+      "proposedOutput": "Async actual shipping-player receipt tied to model-run/project/map/SHA with observed mechanics and original failure; completion contract consumes receipt.",
+      "negativeConditions": [
+        "cancelled/failed/stale/wrong-map receipt",
+        "model-supplied pass text",
+        "turn-based/static substitute",
+        "state injections presented as ordinary gameplay"
+      ],
+      "expectedGameplayAcceptance": "The authenticated Pi route launches/awaits existing browser verifier and cannot report verified action completion on fallback exception."
+    },
+    {
+      "name": "Native save-menu routing correction and UI probe",
+      "classification": "product code gap; save primitive already exists",
+      "observedFailure": "System > Save renders Items on two ordinary-key attempts. Continue then shows empty slots.",
+      "existingCapability": "saveSlots serializes kills; openSaveMenu event exists but controller renderMenu validates against root rail IDs and falls back to Items for save leaf.",
+      "currentWorkaround": "No successful UI workaround demonstrated; direct saveSlot/localStorage injection forbidden. Final repair asked internal AI to try existing event command; no agent request occurred.",
+      "proposedInput": {
+        "projectSha": "actual export SHA",
+        "commands": "native keyboard save/slot/Continue sequence"
+      },
+      "proposedOutput": "Real UI slot receipt and fresh-context equality/diff for actual saved session; route fix accepts valid leaf commands in group context.",
+      "negativeConditions": [
+        "root/leaf confusion",
+        "save disabled map",
+        "empty/corrupt/stale slot",
+        "teleported or injected progress",
+        "health/inventory/objective mismatch"
+      ],
+      "expectedGameplayAcceptance": "System Save and openSaveMenu both show slots; choose1 saves actual kills/location/HP/gold; fresh context Continue restores those values and spent reward remains spent."
+    }
+  ],
+  "codeAndToolGaps": [
+    "Pi async action verifier dispatch",
+    "native Save leaf routing",
+    "make_action_enemy spawn schema narrower than hunting-ground kill schema",
+    "first reload audio reference normalization changes strict document SHA"
+  ],
+  "environmentAndObserverFailures": [
+    {
+      "kind": "runtime-observation boot failure",
+      "evidence": "attempt-1/runtime-adversarial/boot/SUMMARY.md",
+      "reobservation": "fresh context on same immutable first SHA via real UI; preserved original timeout and inert-key observations"
+    },
+    {
+      "kind": "mouse intercept",
+      "evidence": "attempt-1/runtime-adversarial/observation-error-6.json",
+      "resolution": "Native keyboard only; no forced click or content change"
+    },
+    {
+      "kind": "final repair SIGTERM",
+      "evidence": "attempt-3/interruption-result.json",
+      "cause": "unestablished; no replacement request"
+    }
+  ],
+  "limitations": [
+    "One trial and one completed repair do not yield genre success rates.",
+    "Same-strike dodge rejection/damage comparison unverified.",
+    "True chest reentry duplicate-reward check unverified.",
+    "Successful manual Save/Continue cannot be assessed because native Save UI blocks; all actual Continue slots empty.",
+    "Post-kill gate recheck was at x11, not door x10; no false interaction pass.",
+    "Original authoring-browser IndexedDB records were not independently exported; SQLite ai_conversations remained zero, recovery fresh-context database existence observed.",
+    "Final repair was submitted through real UI but observer terminated before observed agent request; canonical revision31 unchanged."
+  ],
+  "operatorConstraints": {
+    "repositoryCodeEdited": false,
+    "directContentRepair": false,
+    "stateInjection": false,
+    "gatesVitestTypecheck": false,
+    "commitStash": false,
+    "humanArtApproval": false,
+    "originalFailuresOverwritten": false
+  },
+  "frozenBuild": {
+    "indexSha256": "ab2f53756c2127b3ab164314aeae6c0e44d7a230c98cfad0c5affa5f553ff86e",
+    "compiledPlayerSha256": "d772311ff8a35a313b7e064e4db7bdf0a8ac31ee24e8dcf277c8b48aad66747f"
+  },
+  "shutdown": {
+    "ownedHostsBrowsersStopped": true,
+    "canonicalPreserved": true,
+    "receipts": [
+      "owned-observer-cleanup.json",
+      "owned-final-cleanup.json",
+      "attempt-1/host.json",
+      "attempt-2/host.json",
+      "attempt-3/host.json"
+    ]
+  }
+}

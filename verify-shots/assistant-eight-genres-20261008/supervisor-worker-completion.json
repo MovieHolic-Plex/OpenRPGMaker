@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-08T04:28:47.656761+00:00",
+  "cases": [
+    {
+      "caseId": "monster-collect",
+      "outerPid": 1871572,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "b86aa3561489fd854c581a0fd1a3040e6e78a90edc40ab8f4c39acbeb75db6ff"
+    },
+    {
+      "caseId": "story-cutscene",
+      "outerPid": 1871573,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "60676ebd4e6978c815ea947c2c9cef547b09e59efef2cabd471b2b997974c0b7"
+    },
+    {
+      "caseId": "adventure-jrpg",
+      "outerPid": 1871574,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "ed49a62e81343a407675dbe2ec3db75820dc6ffd7019e29cf9abb91fd3e5959d"
+    },
+    {
+      "caseId": "horror-gallery",
+      "outerPid": 1871575,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "cd1717165f5f46f267c2642917ac8dbaaafb7040857cd6cd7b0dec24dcb9558b"
+    },
+    {
+      "caseId": "school-horror",
+      "outerPid": 1871577,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "48e8061d61e7d588656024a859522b4eb3a9b73a59983d64652aca39758b7fe9"
+    },
+    {
+      "caseId": "farm-life",
+      "outerPid": 1871580,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "ec8322ec330ed83b7caffc29d2da6232a6186a732622c82b05265fb89d283d31"
+    },
+    {
+      "caseId": "partner-raise",
+      "outerPid": 1871583,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "4fbb23c08b1a2d862f9d65f316ec253e6a8dbce3c177d7c72468490ff41ee97f"
+    },
+    {
+      "caseId": "action-rpg",
+      "outerPid": 1871595,
+      "configuredModel": "gpt-6.1-sol",
+      "configuredEffort": "high",
+      "pidAlive": false,
+      "finalMessagePresent": true,
+      "outerTurnCompleted": true,
+      "exitCode": "unavailable: original launcher no longer alive",
+      "reportSha256": "f27b7745a86b6d2c95377c4e9e1eab1a003dac2ea1f3d5e9f5841b7d3ea85fca"
+    }
+  ]
+}

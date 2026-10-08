@@ -1,0 +1,22 @@
+{
+  "reviewer": "root supervisor",
+  "at": "2026-10-08T02:54:04.948567+00:00",
+  "status": "observations only, no genre PASS",
+  "images": [
+    {
+      "path": "partner-raise/attempt-2/after.png",
+      "sha256": "c01152d978b53654d2e0db11920506cf32c991cc07c42dd546ec8766c2e25e2b",
+      "observed": "Road and scattered reused props visible; broad grassy empty areas remain; editor is not player proof."
+    },
+    {
+      "path": "monster-collect/attempt-2/after.png",
+      "sha256": "57ac913fe6f2654284afc54579ab629458ddb3b5694d75a12396250f9ed8b526",
+      "observed": "Editor screenshot shows selected old blank map. It cannot establish appearance of authored town/field/shop/gym or imply those maps are blank."
+    },
+    {
+      "path": "school-horror/attempt-2/runtime-partial/002-partial-project-after-original-opening.png",
+      "sha256": "0c60b4380eeec6691497cf83c908ef0638e40fb27deac9ba6239f980a8bf8e05",
+      "observed": "Shipping player is still on plain grass at the authored old start. Furnished school maps are not the starting scene in this partial snapshot."
+    }
+  ]
+}
