@@ -83,7 +83,7 @@ if (process.argv.includes("--publish")) {
   }
   const TS = project.tilesets.jp_city;
   const REGION_DIR = join(ROOT, "public/assets/region-references");
-  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "interior-inn-tavern-1f.oprn.json"), "utf8"));
+  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "jp-city-apartment-1k.oprn.json"), "utf8"));
   const slim = { id: TS.id, image: TS.image, tileSize: TS.tileSize, tilesPerRow: TS.tilesPerRow, count: TS.count, passability: TS.passability, priority: TS.priority, terrain: TS.terrain };
   const tsPath = join(ROOT, "src/project/jpCityPlaceReferences.ts");
   const snapPath = join(ROOT, "src/project/regionReferenceSnapshots.ts");

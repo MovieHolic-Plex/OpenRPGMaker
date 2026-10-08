@@ -373,7 +373,7 @@ if (PUBLISH) {
   const REGION_DIR = join(ROOT, "public/assets/region-references");
   const PLACE_ID = "jp-city-town-96x80";
   const NAME = "일본 도시 · 동네 한 장 (역 앞·상점가·주택가·신사·학교·공원)";
-  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "interior-inn-tavern-1f.oprn.json"), "utf8"));
+  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "jp-city-apartment-1k.oprn.json"), "utf8"));
   const mapOut = { ...MAP, name: NAME };
   const proj = structuredClone(tpl);
   proj.meta.title = NAME;

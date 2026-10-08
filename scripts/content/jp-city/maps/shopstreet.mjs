@@ -311,7 +311,7 @@ if (PUBLISH) {
   const REGION_DIR = join(ROOT, "public/assets/region-references");
   const PLACE_ID = "jp-city-shopstreet-48x40";
   const NAME = "일본 도시 · 상가 거리 (간선 교차로·생활도로·건널목)";
-  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "interior-inn-tavern-1f.oprn.json"), "utf8"));   // 기본 프로젝트 몸체를 빌려 온다(modern-city 와 같은 방식)
+  const tpl = JSON.parse(fs.readFileSync(join(REGION_DIR, "jp-city-apartment-1k.oprn.json"), "utf8"));   // 기본 프로젝트 몸체를 빌려 온다(modern-city 와 같은 방식)
   const mapOut = { ...MAP, name: NAME };
   const proj = structuredClone(tpl);
   proj.meta.title = NAME;
