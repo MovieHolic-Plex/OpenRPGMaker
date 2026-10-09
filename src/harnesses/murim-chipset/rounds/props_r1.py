@@ -90,40 +90,38 @@ def sh_run(y, x0, x1):
 # =============================================================================
 def weapon_rack_a1():
     g = Rows(32, 32)
-    # 윗 들보(기둥 위에 얹힘): 윗면 5~6행, 앞 7, 밑 8
-    g.put(1, 5, '5' + '6' * 27 + '65')
-    g.put(1, 6, '5' + '5' * 27 + '54')
-    g.put(1, 7, '4' + '4' * 27 + '43')
-    g.put(1, 8, '2' * 30)
-    # 기둥 둘
-    for y in range(9, 28):
+    # 윗 들보(기둥 위에 얹힘): 윗면 9~10, 앞 11, 밑 12 — 병기 끝이 들보 위로 8~9행 솟는다
+    g.put(1, 9, '5' + '6' * 27 + '65')
+    g.put(1, 10, '5' * 29 + '4')
+    g.put(1, 11, '4' * 29 + '3')
+    g.put(1, 12, '2' * 30)
+    for y in range(13, 28):
         g.put(3, y, '542')
         g.put(26, y, '542')
-    # 창 1 (x 8~9): 날 0~3, 술 4~6, 자루 7~25
-    g.block(8, 0, ['G.', 'GE', 'FD', 'EC'])
-    g.block(7, 4, ['wvut', 'vuts', '.ts.'])
-    # 창 2 (x 13~14): 두 행 낮게
-    g.block(13, 2, ['G.', 'GE', 'FD', 'EC'])
-    g.block(12, 6, ['wvut', 'vuts', '.ts.'])
-    # 관도 (x 19~20 자루, 날은 왼쪽으로 넓게)
-    g.block(17, 0, ['...G.', '..GF.', '.GFE.', 'GFEE.', 'FEED.', 'EEDC.', '.DDC.', '..DC.', '.YXWV'])
-    # 검 (x 23~24, 자루가 위)
-    g.block(23, 10, ['Y.', 'dc', 'cb', ])
-    g.put(22, 13, 'ZYXW')
+    # 창 둘: 잎 모양 쇠 날(빛 G F → 그늘 D C)·붉은 술·짙은 나무 자루
+    tip = ['.G..', '.GF.', 'FGEC', 'FGDC', '.ED.']
+    tassel = ['wvut', 'vuts', '.ts.']
+    g.block(6, 0, tip).block(6, 5, tassel)
+    g.block(11, 2, tip).block(11, 7, tassel)
+    # 관도: 넓게 휜 날(왼쪽 날이 밝다) + 금 코등이
+    g.block(16, 0, ['...GF.', '..GFE.', '.GFEDC', 'GFEEDC', 'FEEDC.', 'EEDC..', '.DDC..', 'YXWV..'])
+    # 검(자루가 위): 금 머리·짙은 자루·금 코등이·긴 쇠 몸
+    g.block(23, 4, ['.Y.', 'dc.', 'dc.', 'ZYXW'])
     for y in range(7, 26):
-        g.put(8, y, 'db')
-        if y >= 9:
-            g.put(13, y, 'db')
-            g.put(19, y, 'db')
-        if y >= 14:
-            g.put(23, y, 'FD')
-    g.put(23, 25, 'ED')
-    # 아래 받침 가로대(병기가 구멍에 꽂힌다): 윗면 17, 앞 18, 밑 19
-    g.put(6, 17, '5' * 20)
-    g.put(6, 18, '3' * 20)
-    g.put(6, 19, '2' * 20)
-    for x in (8, 13, 19, 23):     # 구멍 자리 — 자루가 가로대 앞을 지난다
-        g.put(x, 17, '21')
+        g.put(7, y, 'db')
+        if y >= 10:
+            g.put(12, y, 'db')
+        if y >= 8:
+            g.put(17, y, 'db')
+        if y >= 8:
+            g.put(23, y, 'GD')
+    g.put(23, 25, 'FC')
+    # 아래 받침 가로대(병기가 구멍에 꽂힌다): 윗면 20, 앞 21, 밑 22
+    g.put(6, 20, '5' * 20)
+    g.put(6, 21, '3' * 20)
+    g.put(6, 22, '2' * 20)
+    for x in (7, 12, 17, 23):
+        g.put(x, 20, '21')
     # 받침 틀: 윗면 26~27, 앞 28~29, 발 30~31
     g.put(1, 26, '5' + '6' * 28 + '5')
     g.put(1, 27, '5' * 29 + '4')
@@ -134,8 +132,8 @@ def weapon_rack_a1():
     g.put(26, 30, '43221')
     g.put(26, 31, '32110')
     g.shadow(sh_run(30, 6, 25) + sh_run(31, 6, 25) + [(31, 29), (31, 30), (31, 31), (30, 31)])
-    return draw(g.done(), leg('song'), 32, 32, (5, 7),
-                '줄 A · 밝은 소나무 틀(윗 들보·받침 틀 윗면)에 창 둘(붉은 술)·관도·검. 쇠는 청석 밝은 단, 자루는 짙은 나무 — 먹 윤곽 없음.')
+    return draw(g.done(), leg('song'), 32, 32, (9, 11),
+                '줄 A · 밝은 소나무 틀(윗 들보·받침 틀 윗면)에 창 둘(잎 모양 쇠 날·붉은 술)·관도·검을 꽂았다 — 병기 끝이 들보 위로 솟는다. 쇠는 청석 밝은 단, 자루는 짙은 나무.')
 
 
 def weapon_rack_b1():
@@ -279,39 +277,31 @@ def sandbag_frame_a1():
 # =============================================================================
 def meditation_mats_a1():
     g = Rows(32, 16)
-    # 왼쪽 큰 방석 하나: 넓은 윗면(부들 고리 셋 — 밝은 고리 S·T 와 골 Q)·앞 두께 2행(세로 엮음 결)
-    g.block(1, 7, [
-        '....RSSSSSSR....',
-        '..RSTTSSQQSSRQ..',
-        '.RSTSQQRRRQQSRQ.',
-        'RSTSQRSTTSRQSRQP',
-        'RSSQRSTSSSRQRQQP',
-        '.RSQQRRRRRQQRQP.',
-        '..QRRQQQQQQQQP..',
-        'OPQPOPQPOPQPOPON',
-        '.NONNONNONNONNN.',
+    # 납작한 부들 방석: 넓고 평평한 윗면에 고리 줄(Q) 두 겹 · 얇은 옆 두께(엮음 결)
+    mat = [
+        '...SSSSSSSSS...',
+        '.SSQQQQQQQQQSS.',
+        'SSQSSSSSSSSSQSP',
+        'SQSQQQQQQQQSQSP',
+        'SQSQSSTSSSQSQRQ',
+        'RSQSQQQQQQSQRQP',
+        '.RRQQQQQQQQQRP.',
+        'PQPQPQPQPQPQPQO',
+        '.NONONONONONON.',
+    ]
+    g.block(1, 7, mat)
+    # 오른쪽: 붉은 천 방석(얇게) 위에 부들 방석 하나를 겹쳐 쌓음
+    g.block(17, 10, [
+        '.tuvvvvvvvvvut.',
+        'tuvwwvvvvvvuuts',
+        'suuuuuuuuuuttsr',
+        'rsrsrsrsrsrsrsr',
+        '.rrrrrrrrrrrrr.',
     ])
-    # 오른쪽: 붉은 천 방석 위에 부들 방석을 겹쳐 쌓음(높이가 달라 나란한 두 덩이로 안 읽힌다)
-    g.block(18, 9, [
-        '.tuvvvvvvvut..',
-        'tuvwwvvvvuuts.',
-        'tuvvuuuuuutts.',
-        'sttttttttsssr.',
-        'rsrsrsrsrsrsr.',
-        '.rrrrrrrrrrr..',
-    ])
-    g.block(19, 3, [
-        '...RSSSSR...',
-        '.RSTTSQQSRQ.',
-        'RSTQRSSRQSQP',
-        'RSQRSTTSRQQP',
-        '.RQQRRRRQQP.',
-        'OPQPOPQPOPON',
-        '.NONNONNONN.',
-    ])
-    g.shadow(sh_run(15, 17, 17) + [(31, 13), (31, 14), (31, 15), (30, 15), (17, 13), (17, 14)])
-    return draw(g.done(), leg('song'), 32, 16, (7, 10),
-                '줄 A · 부들 방석: 바닥에 하나(고리 결 윗면·엮은 앞 두께), 붉은 천 방석 위에 하나를 겹쳐 쌓았다(높이가 달라 나란한 두 덩이로 안 읽힌다). 걸어 지나간다.')
+    g.block(17, 3, mat[:7] + ['PQPQPQPQPQPQPQO'])
+    g.shadow(sh_run(15, 16, 16) + [(31, 12), (31, 13), (31, 14), (31, 15), (16, 14), (16, 15)])
+    return draw(g.done(), leg('song'), 32, 16, (7, 12),
+                '줄 A · 납작한 부들 방석: 바닥에 하나(평평한 윗면에 고리 줄 두 겹·얇은 엮음 옆), 붉은 천 방석 위에 하나를 겹쳐 쌓았다. 걸어 지나간다.')
 
 
 # =============================================================================
@@ -457,22 +447,23 @@ def stele_a1():
 # 8. 작은 청동 향로 (1×1) — 세 발·귀 둘·재 위 향 셋
 # =============================================================================
 def censer_small_a1():
+    # 어두운 청동(금 1~4단, 빛 쪽만 밝게)·재(청석)·소나무 향 셋(끝만 붉게). 그늘 쪽 = 청동 0~1단
     rows = [
         "................",
         "................",
         "................",
-        "......s.s.s.....",
-        "......s.s.s.....",
-        "...61.s.r.s.41..",
-        "...41.......21..",
-        "...5666666651...",
-        "..56DEEEEEDC41..",
-        "..5544444433211.",
-        "..4566554433211.",
-        "..165656453421..",
-        "...1444313221...",
-        "....3211.121....",
-        "....31...21.10..",
+        "......u.u.u.....",
+        "......p.p.p.....",
+        "...43.p.o.p.31..",
+        "...31.......21..",
+        "...4555555541...",
+        "..45CDDDDDCB31..",
+        "..4433333322110.",
+        "..3433333222110.",
+        "..14X4X4X3W211..",
+        "...1333222111...",
+        "....2110.010....",
+        "....21...10.10..",
         "....10...10.00..",
     ]
     g = Rows(16, 16).block(0, 0, rows)
@@ -546,11 +537,10 @@ THICKET_STALKS = [(3, '53'), (10, '42'), (17, '53'), (24, '42'), (29, '53')]   #
 def bamboo_thicket_a1():
     g = Rows(32, 32)
     # 잎 덩이 바탕(속 그늘): 위는 잎 끝만, 아래로 짙어진다
-    for y in range(2, 18):
-        base = '3' if y < 6 else '2' if y < 13 else '1'
-        g.put(0, y, base * 32)
-    for x in (1, 4, 7, 12, 15, 18, 22, 25, 28, 31):
-        g.r[2][x] = '.'
+    top = [3, 2, 2, 3, 4, 4, 3, 2, 2, 2, 3, 5, 5, 4, 3, 2, 3, 3, 4, 5, 4, 3, 2, 2, 3, 4, 4, 3, 2, 2, 3, 3]   # 열마다 덩이 윗선(감아 이어짐)
+    for x in range(32):
+        for y in range(top[x], 18):
+            g.r[y][x] = '3' if y < 6 else '2' if y < 13 else '1'
     for x in (0, 9, 13, 20, 26):
         g.r[18][x] = '1'
         g.r[18][(x + 1) % 32] = '1'
@@ -1090,53 +1080,52 @@ def herb_stove_a1():
 # =============================================================================
 # 21. 전고(북) (2×2) — 북면 위로 붉은 몸통 윗면이 보이는 큰 북 + 소나무 받침
 # =============================================================================
-DRUM_FACE = [      # 20×17. 테 = 주칠(빛 v·그늘 t s) + 금 징(Y·X), 가죽 = 황토 밝은 단(빛 T S → 그늘 Q P)
-    ".......vYvvYv.......",
-    "....vYvvTTTTvvYu....",
-    "...vvTTTTTTSSSSuu...",
-    "..YvTTSSSSSSSSSSuY..",
-    ".vvTSSSSSSSSSSSSRut.",
-    ".vTSSSSSSSSSSSSRRRt.",
-    "YvSSSSSSSSSSSSSRRRtX",
-    "vSSSSSSSSSSSSRRRRRRt",
-    "uSSSSSSSSSSSRRRRRRQs",
-    "uSSSSSSSSSRRRRRRRQQs",
-    "XuRRRRRRRRRRRRRQQQsX",
-    ".uRRRRRRRRRRRRQQQQs.",
-    ".utRRRRRRRRRRQQQQss.",
-    "..XtQRRRRRRRQQQQsX..",
-    "...ttQQQQQQQQPPss...",
-    "....tXtsPPPPssXs....",
-    ".......sXssX........",
+DRUM_FACE = [      # 22×11 — 하늘 쪽으로 젖힌 북면(위에서 보면 납작한 타원). 테 = 주칠 + 금 징, 가죽 = 황토 밝은 단(가장자리 한 단 어두운 고리)
+    "......vYvvYvvYvv......",
+    "...vYvSSSSSSSSSSvYu...",
+    "..vvSSSSSSTTSSSSSRut..",
+    ".YSSSSTTTTTTTSSSSRRRt.",
+    "vvSSSTTTTTTTSSSSSRRRtX",
+    "YvSSSTTTTTTSSSSSRRRQXt",
+    "vuSSSSSSSSSSRRRRRRQQts",
+    ".uRSSSSSSSSRRRRRRQQQs.",
+    "..utRRRRRRRRQQQQQQts..",
+    "...tXtQQQQQQQQQQtXs...",
+    "......sXssXssXss......",
 ]
+DRUM_BODY_BOTTOM = [6, 7, 8, 8, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 9, 9, 8, 8, 7, 6]   # 열마다 북면 아래끝 행(손으로 정한 표)
 
 
 def war_drum_a1():
     g = Rows(32, 32)
-    # 받침(소나무): 북 양옆에 바짝 붙은 다리 둘 + 아래 가로대 둘
-    for y in range(10, 32):
-        g.put(4, y, '52')
-        g.put(26, y, '42')
-    g.put(3, 9, '654')
-    g.put(25, 9, '653')
-    g.put(4, 25, '5' * 24)
-    g.put(4, 26, '2' * 24)
-    g.put(4, 29, '4' * 24)
-    g.put(4, 30, '1' * 24)
-    g.put(3, 31, '321')
-    g.put(25, 31, '3210')
-    # 몸통 윗면(북면 위로 보이는 붉은 통) — 손으로 정한 폭, 금 징 한 줄
-    g.put(9, 3, 'w' * 14)
-    g.put(7, 4, 'v' + 'w' * 16 + 'v')
-    g.put(6, 5, 'v' + ''.join('Y' if k % 4 == 1 else 'w' for k in range(18)) + 'u')
-    g.put(6, 6, 'u' + 'v' * 18 + 't')
-    g.block(6, 7, DRUM_FACE)
-    # 북채 둘(아래 가로대에 걸침)
-    g.put(7, 27, 'vuxxxxxq')
-    g.put(17, 28, 'vuxxxxq')
-    g.shadow(sh_run(27, 15, 27) + sh_run(28, 6, 16) + sh_run(31, 6, 24) + [(28, 29), (28, 30), (29, 31), (28, 31)])
-    return draw(g.done(), leg('song'), 32, 32, (3, 6),
-                '줄 A · 소나무 받침에 얹은 큰 붉은 북: 북면 위로 붉은 몸통 윗면(금 징 한 줄)이 보이고, 북면은 밝은 가죽 원 하나·테에 금 징. 북채 둘은 아래 가로대에.')
+    # 받침(소나무): 양옆 다리 + 몸통을 받치는 반달 받침 + 아래 가로대
+    for y in range(9, 32):
+        g.put(2, y, '52')
+        g.put(28, y, '42')
+    g.put(1, 8, '654')
+    g.put(27, 8, '653')
+    g.put(2, 26, '5' * 28)
+    g.put(2, 27, '2' * 28)
+    g.put(1, 31, '321')
+    g.put(27, 31, '3210')
+    # 몸통 앞(북면 아래로 보이는 붉은 통): 열마다 북면 아래끝+1 ~ +8, 아래 테에 금 징
+    for k, b in enumerate(DRUM_BODY_BOTTOM):
+        x = 5 + k
+        tone = 'w' if k < 3 else 'v' if k < 9 else 'u' if k < 16 else 't' if k < 20 else 's'
+        for y in range(3 + b + 1, 3 + b + 8):
+            g.put(x, y, tone)
+        g.put(x, 3 + b + 8, 'Y' if k % 4 == 1 else 'X' if k < 11 else 'W')
+        g.put(x, 3 + b + 9, 's' if k < 16 else 'r')
+    for x in (4, 27):                          # 받침 고리(몸통을 끼운 소나무 띠)
+        for y in range(12, 20):
+            g.put(x, y, '4' if x == 4 else '2')
+    g.block(5, 3, DRUM_FACE)
+    # 북채 둘(아래 가로대 위)
+    g.put(7, 25, 'vuxxxxxq')
+    g.put(17, 24, 'vuxxxxq')
+    g.shadow(sh_run(28, 4, 29) + sh_run(29, 4, 29) + sh_run(31, 5, 26) + [(30, 29), (30, 30), (31, 30), (31, 31), (30, 31)])
+    return draw(g.done(), leg('song'), 32, 32, (3, 13),
+                '줄 A · 소나무 받침에 하늘 쪽으로 젖혀 건 큰 붉은 북: 위에서 보면 납작한 가죽 북면(테에 금 징)이 윗면이고, 그 아래로 붉은 몸통 앞과 아래 테 금 징이 보인다. 북채 둘.')
 
 
 # =============================================================================
@@ -1282,9 +1271,9 @@ LOG = ['.qxq.', 'qyRxp', 'xRQRp', 'qxRpo', '.ppo.']     # 통나무 끝 5×5: �
 
 def firewood_pile_a1():
     g = Rows(32, 16)
-    g.put(2, 0, 'q' + 'zyyyyyyyyyyyyyyy' + 'xq')     # 맨 위에 길게 누운 통나무(껍질 윗면이 밝다)
-    g.put(1, 1, 'qx' + 'yxxxxxxxxxxxxxxx' + 'qp')
-    g.put(1, 2, 'pq' + 'qqqqqqqqqqqqqqqq' + 'po')
+    g.put(4, 0, 'q' + 'zyyyyyyyyyy' + 'xq')          # 맨 위에 눕힌 통나무(더미 위에 얹힘, 껍질 윗면이 밝다)
+    g.put(3, 1, 'qx' + 'yxxxxxxxxxx' + 'qp')
+    g.put(3, 2, 'pq' + 'qqqqqqqqqqq' + 'po')
     for x in (4, 9):
         g.block(x, 3, LOG)
     for x in (2, 7, 12):
@@ -1293,7 +1282,7 @@ def firewood_pile_a1():
         g.block(x, 10, LOG)
     g.put(0, 15, 'oooooooooooooooooooo')
     # 모탕: 넓은 그루터기 윗면(나이테) + 껍질 앞면, 도끼(쇠 날·소나무 자루)가 비스듬히 박혔다
-    g.block(21, 8, [
+    g.block(18, 8, [
         '.qxyyyyxq.',
         'qyzRSSRzxp',
         'pqyxxxxyqo',
@@ -1303,9 +1292,9 @@ def firewood_pile_a1():
         'onnnnnnnnn',
         '.nnnnnnnn.',
     ])
-    g.put(28, 3, 'q').put(27, 4, 'x').put(27, 5, 'x').put(26, 6, 'x').put(26, 7, 'q')
-    g.block(23, 6, ['FGE', 'EFD', '.DC'])
-    g.shadow(sh_run(15, 20, 20) + [(31, 11), (31, 12), (31, 13), (31, 14), (31, 15), (20, 13), (20, 14)])
+    g.put(25, 3, 'q').put(24, 4, 'x').put(24, 5, 'x').put(23, 6, 'x').put(23, 7, 'q')
+    g.block(20, 6, ['FGE', 'EFD', '.DC'])
+    g.shadow([(28, 11), (28, 12), (28, 13), (28, 14), (28, 15), (29, 13), (29, 14), (29, 15)])
     return draw(g.done(), leg('song'), 32, 16, (0, 2),
                 '줄 A · 통나무 끝(나이테)이 보이게 아홉 개를 쌓고 맨 위에 하나를 길게 눕힌 장작(껍질 윗면)·오른쪽에 도끼가 비스듬히 박힌 넓은 모탕(윗면 나이테).')
 
