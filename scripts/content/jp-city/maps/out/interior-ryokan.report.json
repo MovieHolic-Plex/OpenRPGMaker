@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-ryokan",
+  "size": [
+   23,
+   20
+  ]
+ },
+ "start": [
+  1,
+  18
+ ],
+ "summary": "손 도트 실내 '일본 료칸(현관·접수·다다미 객실·남탕/여탕 노천탕)' 23×20 (jp-city-ryokan, jp_city) — 출입구에서 닿는 칸 152, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-ryokan",
+  "tilesetId": "jp_city",
+  "width": 23,
+  "height": 20,
+  "reachable": 152,
+  "floorCells": 202,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 1,
+    "y": 18
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 1,
+    "y": 19,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 152,
+ "ok": true
+}

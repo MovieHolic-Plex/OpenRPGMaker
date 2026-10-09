@@ -1,6 +1,6 @@
-# 일본 도시 — 일본 집 실내 가구 사전 4/9 (76종, 칸 번호 전체)
+# 일본 도시 — 일본 집 실내 가구 사전 4/11 (76종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **14465칸**, 16px 칸, 시트 1536×2416px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 항목: `id`(도구 objects[].id 에 그대로) · `ko` · `category`·`categoryKo`(방 분류 — `list_hand_interior_parts` 의 category 인자, 정본 `interior/categories.py`) · `block`(그림 원본 blocks/<block>.py) · `kind`(floor 바닥 가구 · wall 북쪽 벽 앞 · hang 벽면 윗줄 걸이 · flat 밟는 무늬) · `w`×`h`(키트 칸 = 솟은 칸 포함 그림 크기 — 바닥 발자국은 `cells` 의 dy≥0 칸이고 `desc` 의 「N×M칸」 도 발자국이다) · `up`(위로 솟은 px) ·
 `use`·`facing`·`surface`(윗면 → 탁상 물건)·`stairs`·`tags`(방)·`place`(놓는 곳)·`pair`(짝 가구)·`desc` · `cells`([dx, dy, 칸 번호, 층] — dy<0 은 발자국 위로 솟은 칸, 층 2 = 밟는 무늬·3 = 가구) ·

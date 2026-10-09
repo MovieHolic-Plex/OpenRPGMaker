@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-pachinko",
+  "size": [
+   17,
+   14
+  ]
+ },
+ "start": [
+  2,
+  12
+ ],
+ "summary": "손 도트 실내 '일본 파친코(パチンコ) 실내' 17×14 (jp-city-pachinko, jp_city) — 출입구에서 닿는 칸 81, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-pachinko",
+  "tilesetId": "jp_city",
+  "width": 17,
+  "height": 14,
+  "reachable": 81,
+  "floorCells": 141,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 12
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 2,
+    "y": 13,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 81,
+ "ok": true
+}

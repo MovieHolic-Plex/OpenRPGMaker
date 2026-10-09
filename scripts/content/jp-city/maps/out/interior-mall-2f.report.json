@@ -1,0 +1,62 @@
+{
+ "map": {
+  "id": "jp-city-mall-2f",
+  "size": [
+   24,
+   14
+  ]
+ },
+ "start": [
+  19,
+  4
+ ],
+ "summary": "손 도트 실내 '쇼핑몰 2층 — 푸드코트·영화관 입구·에스컬레이터' 24×14 (jp-city-mall-2f, jp_city) — 출입구에서 닿는 칸 118, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-mall-2f",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 14,
+  "reachable": 118,
+  "floorCells": 206,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 19,
+    "y": 4
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 4,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 20,
+   "y": 4,
+   "to": "jp-city-mall-1f",
+   "reached": true
+  },
+  {
+   "x": 21,
+   "y": 4,
+   "to": "jp-city-mall-1f",
+   "reached": true
+  },
+  {
+   "x": 13,
+   "y": 3,
+   "to": "jp-city-cinema",
+   "reached": true
+  },
+  {
+   "x": 14,
+   "y": 3,
+   "to": "jp-city-cinema",
+   "reached": true
+  }
+ ],
+ "reach": 118,
+ "ok": true
+}

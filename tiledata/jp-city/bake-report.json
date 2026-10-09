@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 13224,
+  "count": 14465,
   "tilesPerRow": 96,
-  "rows": 138,
+  "rows": 151,
   "sheetPx": [
    1536,
-   2208
+   2416
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 9721,
+  "block_cells": 10962,
   "legacy": 366,
   "legacy_ids": [
    5137,
@@ -45,40 +45,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 9721
+   "block": 10962
   }
  },
  "pc_counts": {
-  "star": 5588,
-  "solid": 2589,
-  "floor": 3007,
-  "solidfloor": 903,
-  "flat": 616,
+  "star": 5796,
+  "solid": 2841,
+  "floor": 3671,
+  "solidfloor": 1006,
+  "flat": 630,
   "blank": 155
  },
  "kits": {
-  "total": 1049,
+  "total": 1160,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 873
+   "block-kit": 984
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 873
+  "block_kit": 984
  },
  "groups": {
-  "total": 315,
+  "total": 341,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 162
+   "block": 188
   }
  },
  "autotiles": {
@@ -171,15 +171,14 @@
    "dungeon_hospital",
    "dungeon_school",
    "dungeon_construction",
-   "dungeon_warehouse"
-  ],
-  "missing": [
+   "dungeon_warehouse",
    "interior_amuse",
    "interior_karaoke",
    "interior_famires",
    "interior_hotel",
    "interior_mall"
   ],
+  "missing": [],
   "on_disk_not_in_order": [],
   "detail": [
    {
@@ -421,11 +420,51 @@
     "groups": 9,
     "kits": 55,
     "notes": "지하상가·창고 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 4 · 벽면 5 · 천장 0 · 가구 55 · 탁자 0 · 탁상 0"
+   },
+   {
+    "name": "interior_amuse",
+    "cells": 214,
+    "autotiles": 0,
+    "groups": 4,
+    "kits": 22,
+    "notes": "오락실 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 2 · 벽면 2 · 천장 0 · 가구 22 · 탁자 0 · 탁상 3"
+   },
+   {
+    "name": "interior_karaoke",
+    "cells": 152,
+    "autotiles": 0,
+    "groups": 5,
+    "kits": 24,
+    "notes": "노래방·만화 카페 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 24 · 탁자 1 · 탁상 5"
+   },
+   {
+    "name": "interior_famires",
+    "cells": 214,
+    "autotiles": 0,
+    "groups": 4,
+    "kits": 13,
+    "notes": "패밀리 레스토랑·규동집 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 1 · 천장 0 · 가구 13 · 탁자 2 · 탁상 4"
+   },
+   {
+    "name": "interior_hotel",
+    "cells": 282,
+    "autotiles": 0,
+    "groups": 8,
+    "kits": 20,
+    "notes": "숙박 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 5 · 벽면 3 · 천장 0 · 가구 20 · 탁자 2 · 탁상 4"
+   },
+   {
+    "name": "interior_mall",
+    "cells": 379,
+    "autotiles": 0,
+    "groups": 5,
+    "kits": 32,
+    "notes": "쇼핑몰·영화관 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 32 · 탁자 2 · 탁상 4"
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 1049,
+  "kits_checked": 1160,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -482,7 +521,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 609
+   "in": 720
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -492,9 +531,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 13224,
-  "kits_checked": 1049,
-  "groups_checked": 315,
+  "tiles_checked": 14465,
+  "kits_checked": 1160,
+  "groups_checked": 341,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -509,10 +548,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "544e5e58009daddf1bb4d618be5c0a9e06ba0148",
+ "sheet_hash": "27bce2897d4f00a148215f48da13d5e8bcad349f",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1049,
+  "kits_checked": 1160,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -569,7 +608,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 609
+   "in": 720
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -579,9 +618,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 13224,
-  "kits_checked": 1049,
-  "groups_checked": 315,
+  "tiles_checked": 14465,
+  "kits_checked": 1160,
+  "groups_checked": 341,
   "autotiles_checked": 17
  },
  "files": {

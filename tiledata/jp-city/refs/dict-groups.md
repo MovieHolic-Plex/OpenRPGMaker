@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (315개)
+# 일본 도시 — 타일 그룹 사전 (341개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **14465칸**, 16px 칸, 시트 1536×2416px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 81, wall 87, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 97, wall 97, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -338,6 +338,32 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-wall-wh-warehouse-wall","name":"실내 벽면 · 창고 골함석 벽","role":"wall","layer":"lower","n":16,"from":12916,"to":12931},
 {"id":"jp:interior-wall-wh-service-wall","name":"실내 벽면 · 콘크리트 뒷벽(배관)","role":"wall","layer":"lower","n":16,"from":12932,"to":12947},
 {"id":"jp:interior-wall-wh-office-wall","name":"실내 벽면 · 창고 사무실 벽(낡은 조립 패널)","role":"wall","layer":"lower","n":16,"from":12948,"to":12963},
-{"id":"jp:interior-wall-wh-container-wall","name":"실내 벽면 · 쌓인 컨테이너 옆면(벽)","role":"wall","layer":"lower","n":40,"from":12964,"to":13003}
+{"id":"jp:interior-wall-wh-container-wall","name":"실내 벽면 · 쌓인 컨테이너 옆면(벽)","role":"wall","layer":"lower","n":40,"from":12964,"to":13003},
+{"id":"jp:interior-floor-am-carpet","name":"실내 바닥 · 게임 센터 카펫","role":"terrain","layer":"lower","n":64,"from":13224,"to":13287},
+{"id":"jp:interior-floor-am-pachinko-carpet","name":"실내 바닥 · 파친코 붉은 카펫","role":"terrain","layer":"lower","n":64,"from":13288,"to":13351},
+{"id":"jp:interior-wall-am-wall","name":"실내 벽면 · 게임 센터 검은 벽(네온 띠)","role":"wall","layer":"lower","n":11,"from":13352,"to":13362},
+{"id":"jp:interior-wall-am-mirror-wall","name":"실내 벽면 · 파친코 거울 벽","role":"wall","layer":"lower","n":14,"from":13363,"to":13376},
+{"id":"jp:interior-floor-kr-corridor","name":"실내 바닥 · 노래방 복도 카펫(짙은 감색 + 유도등 점)","role":"terrain","layer":"lower","n":32,"from":13438,"to":13469},
+{"id":"jp:interior-floor-kr-room-floor","name":"실내 바닥 · 노래방 방 카펫(보라 마름모 무늬)","role":"terrain","layer":"lower","n":16,"from":13470,"to":13485},
+{"id":"jp:interior-floor-kr-cafe-floor","name":"실내 바닥 · 만화 카페 회색 카펫 타일","role":"terrain","layer":"lower","n":16,"from":13486,"to":13501},
+{"id":"jp:interior-wall-kr-wall","name":"실내 벽면 · 방음 벽(짙은 보라 누빔 패드)","role":"wall","layer":"lower","n":4,"from":13502,"to":13505},
+{"id":"jp:interior-wall-kr-cafe-wall","name":"실내 벽면 · 만화 카페 벽(크림 + 짙은 나무 허리판)","role":"wall","layer":"lower","n":6,"from":13506,"to":13511},
+{"id":"jp:interior-floor-fr-floor","name":"실내 바닥 · 패밀리 레스토랑 나무 쪽마루","role":"terrain","layer":"lower","n":44,"from":13590,"to":13633},
+{"id":"jp:interior-floor-fr-kitchen-floor","name":"실내 바닥 · 레스토랑 주방 미끄럼 방지 타일","role":"terrain","layer":"lower","n":32,"from":13634,"to":13665},
+{"id":"jp:interior-floor-fr-gyudon-floor","name":"실내 바닥 · 규동집 갈색 타일","role":"terrain","layer":"lower","n":48,"from":13666,"to":13713},
+{"id":"jp:interior-wall-fr-wall","name":"실내 벽면 · 패밀리 레스토랑 크림 벽 + 나무 허리판","role":"wall","layer":"lower","n":16,"from":13714,"to":13729},
+{"id":"jp:interior-floor-ht-lobby-floor","name":"실내 바닥 · 호텔 로비 석재","role":"terrain","layer":"lower","n":52,"from":13804,"to":13855},
+{"id":"jp:interior-floor-ht-corridor-carpet","name":"실내 바닥 · 호텔 복도 카펫","role":"terrain","layer":"lower","n":4,"from":13856,"to":13859},
+{"id":"jp:interior-floor-ht-room-carpet","name":"실내 바닥 · 객실 카펫","role":"terrain","layer":"lower","n":16,"from":13860,"to":13875},
+{"id":"jp:interior-floor-ht-ryokan-wood","name":"실내 바닥 · 료칸 복도 마루","role":"terrain","layer":"lower","n":28,"from":13876,"to":13903},
+{"id":"jp:interior-floor-ht-onsen-stone","name":"실내 바닥 · 온천 돌 바닥","role":"terrain","layer":"lower","n":64,"from":13904,"to":13967},
+{"id":"jp:interior-wall-ht-hotel-wall","name":"실내 벽면 · 호텔 벽면(베이지 벽지)","role":"wall","layer":"lower","n":4,"from":13968,"to":13971},
+{"id":"jp:interior-wall-ht-ryokan-wall","name":"실내 벽면 · 료칸 벽면(흙벽·나무 기둥)","role":"wall","layer":"lower","n":16,"from":13972,"to":13987},
+{"id":"jp:interior-wall-ht-onsen-wall","name":"실내 벽면 · 온천 나무 판 벽","role":"wall","layer":"lower","n":14,"from":13988,"to":14001},
+{"id":"jp:interior-floor-ml-floor","name":"실내 바닥 · 몰 광택 타일","role":"terrain","layer":"lower","n":64,"from":14086,"to":14149},
+{"id":"jp:interior-floor-ml-shop-floor","name":"실내 바닥 · 가게 나무 바닥","role":"terrain","layer":"lower","n":56,"from":14150,"to":14205},
+{"id":"jp:interior-floor-ml-cinema-carpet","name":"실내 바닥 · 영화관 카펫","role":"terrain","layer":"lower","n":64,"from":14206,"to":14269},
+{"id":"jp:interior-wall-ml-wall","name":"실내 벽면 · 몰 흰 패널 벽","role":"wall","layer":"lower","n":8,"from":14270,"to":14277},
+{"id":"jp:interior-wall-ml-cinema-wall","name":"실내 벽면 · 극장 천 벽","role":"wall","layer":"lower","n":10,"from":14278,"to":14287}
 ]
 ```

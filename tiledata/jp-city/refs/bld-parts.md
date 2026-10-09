@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 부품 사전 (id 전체 목록)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **14465칸**, 16px 칸, 시트 1536×2416px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 `build_jp_city_building` 이 받는 id 의 **전체** 목록이다. 칸 배열(어느 칸 번호가 어느 자리인지)은 이어지는 「띠 사전」·「부착물 사전」 문서에 있다. id 를 지어내면 `UNKNOWN_PART`.
 제한: 폭 최소 3칸 · 한 층 = 2줄 · 한 칸 위층 최대 2장(띠 + 부착물 하나).

@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 49132
+   "chars": 52605
   },
   {
    "id": "jp-autotile",
@@ -65,10 +65,10 @@
   },
   {
    "id": "jp-interior",
-   "name": "일본 도시 · 일본 집 실내 (가구 609종 · 바닥 52 · 벽면 44)",
-   "documents": 14,
-   "images": 24,
-   "chars": 382557
+   "name": "일본 도시 · 일본 집 실내 (가구 720종 · 바닥 68 · 벽면 54)",
+   "documents": 16,
+   "images": 27,
+   "chars": 461516
   },
   {
    "id": "jp-interior-shop",
@@ -82,34 +82,41 @@
    "name": "일본 도시 · 일본 학교·역·사무실 실내 (7곳, 맵 14장)",
    "documents": 15,
    "images": 14,
-   "chars": 115063
+   "chars": 115099
   },
   {
    "id": "jp-interior-dungeon",
    "name": "일본 도시 · 현대 던전 (8곳, 맵 17장)",
    "documents": 18,
    "images": 17,
-   "chars": 183721
+   "chars": 186390
+  },
+  {
+   "id": "jp-interior-leisure",
+   "name": "일본 도시 · 오락·숙박·상업 실내 (9곳, 맵 12장)",
+   "documents": 13,
+   "images": 12,
+   "chars": 102932
   },
   {
    "id": "jp-errors",
    "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
    "documents": 3,
    "images": 1,
-   "chars": 15492
+   "chars": 15493
   }
  ],
  "totals": {
-  "categories": 14,
-  "documents": 128,
-  "images": 242,
-  "chars": 1454695,
+  "categories": 15,
+  "documents": 143,
+  "images": 257,
+  "chars": 1642765,
   "maxDocChars": 52857,
   "maxImagePx": 820
  },
- "tilesEmitted": 12593,
- "kitsEmitted": 1049,
- "kitArrayItemsRoundtrip": 1049,
+ "tilesEmitted": 13834,
+ "kitsEmitted": 1160,
+ "kitArrayItemsRoundtrip": 1160,
  "unknownTokens": [
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f",
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f-24x16",
@@ -143,28 +150,39 @@
   "jp-interior-ex-bakery:jp-city-bakery",
   "jp-interior-ex-barber:jp-city-barber",
   "jp-interior-ex-bookstore:jp-city-bookstore",
+  "jp-interior-ex-business-hotel-1f:jp-city-business-hotel-1f",
+  "jp-interior-ex-business-hotel-floor:jp-city-business-hotel-floor",
+  "jp-interior-ex-cinema:jp-city-cinema",
   "jp-interior-ex-clinic:jp-city-clinic",
   "jp-interior-ex-construction-1f:jp-city-construction-1f",
   "jp-interior-ex-construction-2f:jp-city-construction-2f",
+  "jp-interior-ex-famires:jp-city-famires",
   "jp-interior-ex-florist:jp-city-florist",
+  "jp-interior-ex-game-center:jp-city-game-center",
   "jp-interior-ex-gym:jp-city-gym",
+  "jp-interior-ex-gyudon:jp-city-gyudon",
   "jp-interior-ex-harbor-warehouse-1:jp-city-harbor-warehouse-1",
   "jp-interior-ex-harbor-warehouse-2:jp-city-harbor-warehouse-2",
   "jp-interior-ex-hiraya:jp-city-hiraya",
   "jp-interior-ex-house-1f:jp-city-house-1f",
   "jp-interior-ex-house-2f:jp-city-house-2f",
   "jp-interior-ex-izakaya:jp-city-izakaya",
+  "jp-interior-ex-karaoke:jp-city-karaoke",
   "jp-interior-ex-kindergarten:jp-city-kindergarten",
   "jp-interior-ex-kissaten:jp-city-kissaten",
   "jp-interior-ex-koban:jp-city-koban",
   "jp-interior-ex-konbini:jp-city-konbini",
   "jp-interior-ex-laundry:jp-city-laundry",
+  "jp-interior-ex-mall-1f:jp-city-mall-1f",
+  "jp-interior-ex-mall-2f:jp-city-mall-2f",
+  "jp-interior-ex-manga-cafe:jp-city-manga-cafe",
   "jp-interior-ex-mansion-2ldk:jp-city-mansion-2ldk",
   "jp-interior-ex-mansion-corridor:jp-city-mansion-corridor",
   "jp-interior-ex-mansion-lobby:jp-city-mansion-lobby",
   "jp-interior-ex-mokuchin:jp-city-mokuchin",
   "jp-interior-ex-office-1f:jp-city-office-1f",
   "jp-interior-ex-office-floor:jp-city-office-floor",
+  "jp-interior-ex-pachinko:jp-city-pachinko",
   "jp-interior-ex-parking-b1:jp-city-parking-b1",
   "jp-interior-ex-parking-b2:jp-city-parking-b2",
   "jp-interior-ex-pharmacy:jp-city-pharmacy",
@@ -172,6 +190,7 @@
   "jp-interior-ex-ramen:jp-city-ramen",
   "jp-interior-ex-ruin-school-1f:jp-city-ruin-school-1f",
   "jp-interior-ex-ruin-school-2f:jp-city-ruin-school-2f",
+  "jp-interior-ex-ryokan:jp-city-ryokan",
   "jp-interior-ex-school-1f:jp-city-school-1f",
   "jp-interior-ex-school-2f:jp-city-school-2f",
   "jp-interior-ex-school-3f:jp-city-school-3f",
@@ -189,6 +208,15 @@
   "jp-interior-ex-undermall-1:jp-city-undermall-1",
   "jp-interior-ex-undermall-2:jp-city-undermall-2",
   "jp-interior-ex-yaoya:jp-city-yaoya",
+  "jp-interior-leisure-index:jp-city-business-hotel-1f-13x9",
+  "jp-interior-leisure-index:jp-city-famires-18x13",
+  "jp-interior-leisure-index:jp-city-game-center-18x14",
+  "jp-interior-leisure-index:jp-city-gyudon-11x10",
+  "jp-interior-leisure-index:jp-city-karaoke-20x17",
+  "jp-interior-leisure-index:jp-city-mall-1f-24x16",
+  "jp-interior-leisure-index:jp-city-manga-cafe-17x14",
+  "jp-interior-leisure-index:jp-city-pachinko-17x14",
+  "jp-interior-leisure-index:jp-city-ryokan-23x20",
   "jp-interior-p3-index:jp-city-gym-21x15",
   "jp-interior-p3-index:jp-city-kindergarten-18x12",
   "jp-interior-p3-index:jp-city-mansion-lobby-9x12",
@@ -233,7 +261,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "dc4ba8eaf08e69249e6591cb6959f57d119bfb1e7acaa114f406e428b7c7bda6",
-  "images": "5f9093187e8d0bee555570427629588b84ead08c8849267c6329f07e9cd41d2e"
+  "json": "aa94cb94a3cc3cfa6a2cf55cb7481b3f34d2de59e08bd199867537e49f7c3426",
+  "images": "88b7a59e9f967c48a47b18c3b18cf3d771534944f9f3a029765b133879427940"
  }
 }
