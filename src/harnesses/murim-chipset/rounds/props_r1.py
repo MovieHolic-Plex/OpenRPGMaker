@@ -412,13 +412,13 @@ def stele_a1():
         "...FFFFFFFFFE...",
         "...FEEEEEEEDC...",
         "...FEDDDDDDDC...",
-        "...FED.....DC...",
+        "...FEDCCCCCDC...",
         "...FEDEEEEDDC...",
-        "...FEDEDDEDDC...",
         "...FEDEEEEDDC...",
-        "...FEDEEDEDDC...",
         "...FEDEEEEDDC...",
-        "...FEDEDEEDDC...",
+        "...FEDEEEEDDC...",
+        "...FEDEEEEDDC...",
+        "...FEDEEEEDDC...",
         "...FEDEEEEDDC...",
         "...FEDDDDDDDC...",
         "...FEEEEEEEDC...",
@@ -436,10 +436,9 @@ def stele_a1():
         ".BBBBBBBBBBBBBB.",
     ]
     g = Rows(16, 32).block(0, 0, rows)
-    g.put(6, 10, 'CCCCC')
     g.shadow([(15, 25), (15, 26), (15, 27), (15, 28), (15, 29), (15, 30), (15, 31), (13, 20), (13, 21)])
     return draw(g.done(), leg('shi'), 16, 32, (1, 4),
-                '줄 A · 청석 비석: 구름 띠를 두른 둥근 머리(윗면 밝게)·테두리 띠 안 면(글자 없음, 결만)·두 단 받침돌.')
+                '줄 A · 청석 비석: 구름 띠를 두른 둥근 머리(윗면 밝게)·테두리 띠 안 민 면(글자·무늬 없음)·두 단 받침돌.')
 
 
 
@@ -1522,6 +1521,13 @@ def stone_pavilion_a1():
         g.put(a, y, 'F')
         g.put(b, y, 'E')
     g.put(6, 62, 'E' * 68)
+    # 정자 안 바닥(기단 윗면이 뒤 기둥까지 이어진다): 뒤로 갈수록 좁은 육각 — 행마다 손으로 정한 폭, 판석 줄눈
+    for y in range(36, 56):
+        a = 20 - (y - 36) * 6 // 20
+        b = 59 + (y - 36) * 6 // 20
+        g.put(a, y, ''.join('E' if (x + (y // 6) * 5) % 11 == 0 or y % 6 == 0 else 'F' for x in range(a, b + 1)))
+        g.put(a, y, 'G')
+        g.put(b, y, 'D')
     front = {63: (6, 18, 61, 73), 64: (6, 18, 61, 73), 65: (7, 19, 60, 72), 66: (7, 19, 60, 72), 67: (8, 20, 59, 71),
              68: (8, 20, 59, 71), 69: (9, 21, 58, 70), 70: (9, 21, 58, 70), 71: (10, 22, 57, 69), 72: (10, 22, 57, 69),
              73: (11, 23, 56, 68), 74: (12, 24, 55, 67)}
@@ -1610,6 +1616,11 @@ def stone_pavilion_b1():
     g.put(5, 65, 'C' * 70)
     g.put(5, 70, 'C' * 70)
     g.put(5, 71, 'B' * 70)
+    # 정자 안 바닥(장대석 윗면이 뒤 기둥까지)
+    for y in range(38, 58):
+        g.put(8, y, ''.join('E' if (x - 8) % 23 == 0 or y % 7 == 0 else 'F' for x in range(8, 72)))
+        g.put(8, y, 'G')
+        g.put(71, y, 'D')
     for k, y in enumerate(range(62, 80)):
         g.put(32, y, ('G' if k % 3 == 0 else 'E' if k % 3 == 1 else 'C') * 16)
         g.put(32, y, 'F')
