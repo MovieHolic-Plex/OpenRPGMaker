@@ -62,6 +62,8 @@ User-requested reusable human selection harness. `src/harnesses/pokemon-characte
 
 ## Portable harness (2026-10-05)
 
+> **공개 저장소에는 없다** — 닌텐도 원작 걷기 그림을 판형으로 쓰므로 `scripts/oss/publicSet.mjs` 가 빼고 `.gitignore` 로 막았다(2026-10-09). 내부 체크아웃의 로컬 사본에서만 쓴다. `harness-data/pokemon-character-casting/`·`references/` 도 같은 이유로 공개본에서 빠졌다.
+
 For new editor-independent work, use **`harness/pokemon-like-characters/`**. Copy that directory alone;
 `node cli.mjs doctor|templates|prepare|new|render|queue|serve|status|verify|export` runs without the editor,
 Vite, project storage, API credentials, or runtime npm packages. Node24 and Python3.10+/Pillow12.1.1 are required.

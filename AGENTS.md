@@ -48,6 +48,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
 - **몬스터 수집 게임의 주인공·NPC 걷기 도트 또는 오프닝 클립을 생성·교체할 때** → `pokemon-character-motion` · 시드 `harness-data/pokemon-character-motion/seed.json` · `npm run harness -- pokemon-character-motion <단계>` · 문서 `openwiki/harnesses/pokemon-character-motion.md`. 구조 관문과 해시에 묶인 재생 검수 후에만 build 한다.
 - **포켓몬류 NPC 후보를 만들고 사용자가 Allow/Deny하도록 할 때** → `pokemon-character-casting` · `npm run harness -- pokemon-character-casting prepare|serve|status|build` · 문서 `openwiki/harnesses/pokemon-character-casting.md`. 현재 패키지의 사용자 Allow가 필수이며 조수·감독자가 대신 승인하지 않는다. 신규·변경된 걷기 후보는 공용 등록에서도 같은 현재 판정을 확인한다.
+  - **공개 저장소에는 없다** — 닌텐도 원작 걷기 그림을 판형으로 쓰므로 `scripts/oss/publicSet.mjs` 가 빼고 `.gitignore` 로 막았다(2026-10-09). 내부 체크아웃의 로컬 사본에서만 쓴다.
   - **에디터 독립 재사용:** `harness/pokemon-like-characters/`의 README.md와 AGENTS.md를 읽고 `node cli.mjs`로 실행한다. 이 폴더만 복사해 사용할 수 있으며 기본 export는 native PNG/GIF/sprite.json이다. 기존 에디터 후보/판정 저장소와 분리한다.
 - **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
   → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
