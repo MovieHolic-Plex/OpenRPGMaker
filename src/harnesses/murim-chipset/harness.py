@@ -7,8 +7,13 @@
   gate <판>                        draw + 기계 관문(P Z Q F S R J Y G K / WARN T L N OUTLINE CONTRAST). 줄별로 센다. FAIL 이 있으면 종료코드 1
   sheet <판> [--force]             draw + gate + ~/claude-viz/murim-<판>.html (FAIL 이 있으면 --force 없이는 안 쓴다)
   pick <판> <항목> <후보> [--note]  사람이 고른 후보를 해시에 묶어 (항목, 줄)마다 기록, picked/<줄>/<항목>.png 로 복사
+       [--by delegated --basis "…" --review <판정 json>]  사용자가 고르기를 위임한 경우(2026-10-08) — 독립 검수 판정 파일의
+                                    그 후보 항목(PASS, 또는 FIX 뒤 fixed_sha256)이 현재 그림 해시와 맞을 때만 기록한다. by·basis·review 가 기록에 남는다.
   reject <판> <항목> <후보> --why   사람이 버린 후보와 이유
   status                           판·관문·줄별 고른 것(현재 그림 해시와 맞는지) 현황 + 외곽선 규칙 경고·굽기 전에 다듬을 목록
+  bake --prepare-gate              고른 것(현재 해시)의 기물 조각을 공용 오브젝트 게이트 판정용 items.jsonl·PNG 로 내놓는다(.tmp/murim-bake/gate/)
+  bake --dry                       번들을 쓰지 않고 .tmp/murim-bake/dry/ 에만 시트·정의·참고문서·장소를 그린다(게이트 영수증 현황만 보고)
+  bake                             실제 굽기 — 기물 조각마다 require_pass(bundle). 하나라도 거절이면 아무것도 쓰지 않는다. 건너뛰기 옵션 없음
 
 줄(line): 화풍을 하나로 고정하지 않고 컨셉 줄(seed `lines`, 예: A 밝은 문파 · B 강남 무관)마다 따로 고른다.
   - 화풍 판(seed rounds.<판>.keys = "letter", style-r1): 후보 글자 = 줄. 줄이 아닌 글자(style-r1 C)는 고를 수 없다.
@@ -25,6 +30,8 @@
   - 관문 OUTLINE·CONTRAST 는 WARN 이다(고른 것만 굽기 전에 다듬을 목록, status). 이미 그린 판의 그림은 사람이 고르는 중이라 고치지 않는다.
 
 감독·에이전트는 pick 을 스스로 부르지 않는다. 사람이 고른 후보를 받아 적을 때만 쓴다.
+예외: 사용자가 고르기를 명시적으로 위임했을 때(2026-10-08 「니가 알아서 올리고 다 해라」)만 `--by delegated` 로, 독립 검수 판정 파일을 근거로 기록한다.
+화풍 판(style-r1)의 사용자 고르기는 그대로 둔다.
 """
 import argparse
 import base64
@@ -53,6 +60,15 @@ LEDGER = os.path.join(DATA, 'ledger.json')
 PICKED = os.path.join(DATA, 'picked')
 JOSEON_PALETTE = os.path.join(REPO, 'scripts', 'content', 'lib', 'joseon', 'harness', 'palette.json')
 LETTERS = 'ABCDE'
+# 공용 오브젝트 게이트 종류(src/harnesses/_core/object_gate KINDS 와 같은 목록 — 모듈이 있으면 그쪽을 쓴다)
+GATE_KINDS = ('tall_furniture', 'low_furniture', 'seat', 'frame', 'container', 'round_body', 'column', 'box', 'structure', 'figure',
+              'organic', 'flat', 'wall_mounted', 'other')
+try:  # noqa: SIM105
+    sys.path.insert(0, os.path.join(tk.REPO, 'src', 'harnesses', '_core'))
+    from object_gate import KINDS as _GK  # type: ignore
+    GATE_KINDS = tuple(_GK)
+except Exception:  # 게이트 모듈이 아직 없는 체크아웃 — 위 목록으로 점검만 한다
+    pass
 KEY_RE = re.compile(r'^([A-Z])(\d+)$')
 
 
@@ -526,6 +542,8 @@ def cmd_sheet(rid, force=False):
         H.append(f'<h2>{it["title"]} <span style="color:#8e877c;font-size:13px">({item} · {tiles} · {it["layer"]}{" · 반복 " + tl if tl else ""}'
                  f'{" · 조각 " + str(len(it["pieces"])) if it.get("pieces") else ""})</span></h2>')
         H.append(f'<div class="lead">{it["brief"]}</div><ul class="crit">' + ''.join(f'<li>{c}</li>' for c in it['criteria']) + '</ul>')
+        if it.get('walkGrid'):
+            H.append('<div class="sub pieces">통행 격자(칸, 위 → 아래): <code>' + ' / '.join(it['walkGrid']) + f'</code> — {it.get("walkNote", "")}</div>')
         if it.get('pieces'):
             H.append('<div class="sub pieces">조각: ' + ' · '.join(
                 f'<b>{pc["id"]}</b> {pc["title"]}({pc["size"][0]}×{pc["size"][1]}{", 반복 " + pc["tileable"] if pc.get("tileable") else ""})'
@@ -559,7 +577,8 @@ def cmd_sheet(rid, force=False):
                 H.append(f'<div class="card"><h3>후보 {key}{star}</h3><div class="sub">{meta.get("note", "")}</div>')
                 H.append('<div class="badges">' + ''.join(badge(r) for r in rs) + '</div><div class="imgs">')
                 H.append(fig(im, 1, '1×'))
-                H.append(fig(im, 4 if im.width <= 64 else 3, f'{4 if im.width <= 64 else 3}×'))
+                zk = getattr(mod, 'SHEET_ZOOM', None) or (4 if im.width <= 64 else 3)   # 판이 정하면 그 배율(props-r1 은 대형도 4배)
+                H.append(fig(im, zk, f'{zk}×'))
                 if tl and not it.get('pieces'):
                     nx = 3
                     ny = 3 if 'y' in tl else 1
@@ -633,7 +652,30 @@ def picked_path(line, item):
     return os.path.join(PICKED, line, f'{item}.png')
 
 
-def cmd_pick(rid, item, key, note):
+def review_entry(review, rid, item, key):
+    """독립 검수 판정 파일에서 (판, 항목, 후보) 항목. 위임 고르기의 근거."""
+    path = review if os.path.isabs(review) else os.path.join(REPO, review)
+    if not os.path.exists(path):
+        raise SystemExit(f'판정 파일이 없다: {review}')
+    R = json.load(open(path, encoding='utf-8'))
+    hit = [p for p in R.get('picks', []) if p['round'] == rid and p['item'] == item and p.get('candidate') == key]
+    if not hit:
+        raise SystemExit(f'판정 파일 {review} 에 {rid} {item} {key} 가 없다 — 검수 받지 않은 후보는 위임으로 고를 수 없다')
+    return os.path.relpath(path, REPO), hit[-1]
+
+
+def cmd_pick(rid, item, key, note, by='user', basis='', review=None):
+    if by not in ('user', 'delegated'):
+        raise SystemExit('--by 는 user 또는 delegated')
+    rv = None
+    if by == 'delegated':
+        if not basis or not review:
+            raise SystemExit('위임 고르기는 --basis(사용자 위임 근거)와 --review(독립 검수 판정 파일)가 둘 다 필요하다')
+        rv = review_entry(review, rid, item, key)
+        if rv[1].get('verdict') not in ('PASS', 'FIX'):
+            raise SystemExit(f'판정 {rv[1].get("verdict")} — 위임 고르기는 PASS 또는 고친 FIX 만')
+        if rv[1].get('verdict') == 'FIX' and not rv[1].get('fixed_sha256'):
+            raise SystemExit('판정 FIX 인데 fixed_sha256 이 없다 — 고친 뒤 판정 파일에 고친 해시를 적어야 한다')
     man_p = os.path.join(RUNS, rid, 'manifest.json')
     if not os.path.exists(man_p):
         raise SystemExit(f'판 {rid} 의 manifest 가 없다 — sheet {rid} 를 먼저(사람이 본 시트가 있어야 고를 수 있다)')
@@ -649,13 +691,18 @@ def cmd_pick(rid, item, key, note):
     cur, im = current_hash(rid, item, key)
     if cur != shown:
         raise SystemExit(f'시트 이후 그림이 바뀌었다(시트 {shown[:12]} ≠ 현재 {str(cur)[:12]}). sheet {rid} 를 다시 만들어 사람에게 다시 보여야 한다')
+    if rv:
+        judged = rv[1].get('fixed_sha256') or rv[1]['sha256']
+        if cur != judged:
+            raise SystemExit(f'판정 파일의 그림({judged[:12]}) ≠ 현재 그림({cur[:12]}) — 판정 뒤 그림이 바뀌었다. 다시 검수 받아야 한다')
     os.makedirs(os.path.join(PICKED, line), exist_ok=True)
     im.save(picked_path(line, item))
     L = ledger()
     L['picks'] = [p for p in L['picks'] if not (p['item'] == item and (p.get('line') or p['letter']) == line)] + [
-        {'round': rid, 'item': item, 'line': line, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': 'user'}]
+        dict({'round': rid, 'item': item, 'line': line, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': by},
+             **({'basis': basis, 'review': rv[0], 'verdict': rv[1].get('verdict'), 'fixed': bool(rv[1].get('fixed_sha256'))} if rv else {}))]
     save_ledger(L)
-    print(f'고름 기록: {item} · {line_label(line)} ← {rid} {key} ({cur[:12]}) → harness-data/murim-chipset/picked/{line}/{item}.png')
+    print(f'고름 기록({by}): {item} · {line_label(line)} ← {rid} {key} ({cur[:12]}) → harness-data/murim-chipset/picked/{line}/{item}.png')
 
 
 def cmd_reject(rid, item, key, why):
@@ -697,7 +744,7 @@ def cmd_status():
     s = seed()
     L = ledger()
     ps = pick_state()
-    print(f'무림 칩셋 — 계열 {s["family"]} · 타일셋 {s["tileset"]["id"]} ({s["tileset"]["status"]}, 번들에 굽지 않음)')
+    print(f'무림 칩셋 — 계열 {s["family"]} · 타일셋 {s["tileset"]["id"]} ({s["tileset"]["status"]}, 굽기는 bake 단계 — 게이트 통과분만)')
     for rid in s['rounds']:
         runs = [r for r in L['runs'] if r['round'] == rid]
         last = runs[-1] if runs else None
@@ -717,7 +764,7 @@ def cmd_status():
             for it in its:
                 if (it['id'], lid) in ps:
                     p, st = ps[(it['id'], lid)]
-                    print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {st}')
+                    print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {st}' + ('' if p.get('by', 'user') == 'user' else f' (위임 · {p.get("verdict", "")})'))
     stray = [k for k in ps if k[1] not in lines()]
     for k in stray:
         print(f'  줄 아닌 고름 기록 {k}: {ps[k][1]}')
@@ -822,6 +869,24 @@ def cmd_validate():
                 if not (isinstance(px, list) and len(px) == 2 and isinstance(at, list) and len(at) == 2
                         and all(abs(a_ * tk.T - b_) < 1e-6 for a_, b_ in zip(at, px))):
                     errs.append(f'{i}: layout.place.{slot}: at(칸) × 16 = px 여야 한다')
+        wg = it.get('walkGrid')
+        if wg is not None:   # 칸 단위 통행 격자: X 막힘 · U 지나감(그림이 사람 위 ★) · F 지나감(바닥 높이 그림) · . 빈 칸
+            if len(wg) != it['size'][1] or any(len(r_) != it['size'][0] or set(r_) - set('XUF.') for r_ in wg):
+                errs.append(f'{i}: walkGrid 는 {it["size"][1]}줄 × {it["size"][0]}칸, 글자 X·U·F·. 만')
+            if not it.get('walkNote'):
+                errs.append(f'{i}: walkGrid 에는 walkNote(칸 뜻)가 필요하다')
+        for pc in it.get('pieces', []):
+            pwg = pc.get('walkGrid')
+            if pwg is not None and (len(pwg) != pc['size'][1] or any(len(r_) != pc['size'][0] or set(r_) - set('XUF.') for r_ in pwg)):
+                errs.append(f'{i}.{pc["id"]}: 조각 walkGrid 는 {pc["size"][1]}줄 × {pc["size"][0]}칸, 글자 X·U·F·.')
+        gk = [it.get('gateKind')] + [pc.get('gateKind') for pc in it.get('pieces', [])]
+        for g_ in gk:
+            if g_ is not None and g_ not in GATE_KINDS:
+                errs.append(f'{i}: gateKind {g_} 는 공용 오브젝트 게이트 종류가 아니다({", ".join(GATE_KINDS)})')
+        if it['wave'] != 'style' and it['kind'] == 'object' and not any(gk):
+            errs.append(f'{i}: 기물(kind object)은 gateKind 가 필요하다(조각 세트면 조각마다)')
+        if it['kind'] in ('tile', 'wall', 'roof') and it.get('gateKind'):
+            errs.append(f'{i}: 바닥·벽·지붕은 게이트 kind 를 쓰지 않는다(기존 관문만)')
         style_ids = {x['id'] for x in s['items'] if x['wave'] == 'style'}
         for r_ in it.get('styleRef', []):
             if r_ not in style_ids:
@@ -898,11 +963,24 @@ def cmd_validate():
                     errs.append(f'판 {rid} {item}: 후보 키 {k} 는 <줄><번호>(줄 {",".join(LN)})')
                     continue
                 per.setdefault(m.group(1), []).append(k)
+            need = r.get('minPerLine', 2)   # props-r1 처럼 항목이 많은 판은 줄마다 1개(시드 minPerLine)
             for l_ in want:
-                if len(per.get(l_, [])) < 2:
-                    errs.append(f'판 {rid} {item}: 줄 {l_} 후보가 2개 미만')
+                if len(per.get(l_, [])) < need:
+                    errs.append(f'판 {rid} {item}: 줄 {l_} 후보가 {need}개 미만')
     rep = G.palette_report(JOSEON_PALETTE)
     errs += [f'팔레트: {f}' for f in rep['fail']]
+    bk = s.get('bake')
+    if bk:
+        if bk.get('tilesetId') != s['tileset']['id'] or not bk.get('prefix', '').startswith('mur'):
+            errs.append('bake.tilesetId = tileset.id, bake.prefix 는 mur- 로')
+        for r_ in bk.get('rounds', []):
+            if r_ not in s['rounds']:
+                errs.append(f'bake.rounds: {r_} 판이 없다')
+        for a_, b_ in bk.get('supersededStyle', {}).items():
+            if a_ not in ids or b_ not in ids:
+                errs.append(f'bake.supersededStyle {a_} → {b_}: 항목이 없다')
+        if any(k for k in bk.get('gate', {}) if 'skip' in k.lower() and k != 'noSkip'):
+            errs.append('bake.gate 에 건너뛰기 설정을 두지 않는다')
     for e in errs:
         print('✗', e)
     print(f'시드 항목 {len(ids)} · 묶음 {len(s["waves"])} · 줄 {len(LN)} · 판 {len(s["rounds"])} — ' + ('통과' if not errs else f'오류 {len(errs)}'))
@@ -919,8 +997,14 @@ def main(argv=None):
     p = sub.add_parser('gate'); p.add_argument('round')
     p = sub.add_parser('sheet'); p.add_argument('round'); p.add_argument('--force', action='store_true')
     p = sub.add_parser('pick'); p.add_argument('round'); p.add_argument('item'); p.add_argument('key', help='후보 키 — 화풍 판은 글자(=줄), 이후 판은 <줄><번호>'); p.add_argument('--note', default='')
+    p.add_argument('--by', default='user', choices=['user', 'delegated'], help='고른 이 — 기본 user(사람). delegated 는 사용자가 위임했을 때만')
+    p.add_argument('--basis', default='', help='위임 근거(사용자 말·날짜)'); p.add_argument('--review', default=None, help='위임 고르기의 독립 검수 판정 파일')
     p = sub.add_parser('reject'); p.add_argument('round'); p.add_argument('item'); p.add_argument('key'); p.add_argument('--why', default='')
     sub.add_parser('status')
+    p = sub.add_parser('bake')
+    g_ = p.add_mutually_exclusive_group()
+    g_.add_argument('--prepare-gate', action='store_true', help='게이트 판정용 items.jsonl·PNG 만 내놓는다')
+    g_.add_argument('--dry', action='store_true', help='.tmp 아래에만 그린다(번들 산출물을 쓰지 않는다)')
     a = ap.parse_args(argv)
     if a.cmd == 'validate':
         return cmd_validate()
@@ -935,11 +1019,16 @@ def main(argv=None):
     if a.cmd == 'sheet':
         cmd_sheet(a.round, a.force); return 0
     if a.cmd == 'pick':
-        cmd_pick(a.round, a.item, a.key.upper(), a.note); return 0
+        cmd_pick(a.round, a.item, a.key.upper(), a.note, a.by, a.basis, a.review); return 0
     if a.cmd == 'reject':
         cmd_reject(a.round, a.item, a.key.upper(), a.why); return 0
     if a.cmd == 'status':
         cmd_status(); return 0
+    if a.cmd == 'bake':
+        import bake as B  # noqa: E402  (같은 폴더 — 굽기·게이트·참고문서·장소)
+        if a.prepare_gate:
+            return B.prepare_gate()
+        return B.run(dry=a.dry)
     return 2
 
 

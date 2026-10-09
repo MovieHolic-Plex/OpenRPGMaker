@@ -70,12 +70,29 @@ TOP = {
 TABLE_META = {'top': (13, 20), 'ellipse': (12, 21), 'band': 22, 'foot': 31}
 
 
-def table(face, band, legs, legend, deco=(), note=''):
+def ktop(light, shade):
+    """TOP 계약 모양은 그대로, 먹(K) 대신 재료 밝은 단(위·왼쪽 테두리)·1단(아래·오른쪽 테두리). 먹 윤곽 없는 후보용."""
+    out = {}
+    for y in range(12, 23):
+        r = []
+        for x, ch in enumerate(TOP[y]):
+            if ch != 'K':
+                r.append(ch)
+                continue
+            up = y == 12 or TOP.get(y - 1, '.' * 32)[x] == '.'
+            lf = TOP[y][x - 1] == '.'
+            r.append(light if (up or (lf and y <= 16)) else shade)
+        out[y] = ''.join(r)
+    return out
+
+
+def table(face, band, legs, legend, deco=(), note='', top=None):
     """face = 13~19행 윗면 안쪽(행마다 F 자리 수만큼), band = 19~21행 두께 띠(행마다 B 자리 수만큼),
     legs = 23~31행(9행, 32폭), deco = [(행들, x, y)] 윗면 위 소품."""
     rows = ['.' * 32] * 12
+    top = top or TOP
     for y in range(12, 23):
-        t = TOP[y]
+        t = top[y]
         f = iter(face.get(y, ''))
         b = iter(band.get(y, ''))
         out = []
@@ -109,18 +126,18 @@ def table_a1():
         19: "44444433333333",
     }
     band = {19: "3221", 20: "332211", 21: "33332222222111"}
-    legs = [
-        R((13, "K5432K"), (19, "~~~~~~~")),
-        R((13, "K5432K"), (19, "~~~~~")),
-        R((13, "K5432K")),
-        R((13, "KuutsK")),
-        R((13, "K5432K")),
-        R((12, "KK5432KK")),
-        R((10, "KK55443322KK")),
-        R((9, "K554443332221K"), (23, "~~")),
-        R((9, "KKKKKKKKKKKKKK"), (23, "~~~~")),
+    legs = [                                      # 먹 윤곽 없이: 왼쪽 밝은 단 6, 오른쪽 그늘 1(mu 1단)
+        R((13, "654321"), (19, "~~~~~~~")),
+        R((13, "654321"), (19, "~~~~~")),
+        R((13, "654321")),
+        R((13, "wuutsr")),
+        R((13, "654321")),
+        R((12, "66543211")),
+        R((10, "665544332211")),
+        R((9, "65544433322211"), (23, "~~")),
+        R((9, "11111111111111"), (23, "~~~~")),
     ]
-    return table(face, band, legs, leg('mu'), note='줄 A · style A 그대로 짙은 나무 둥근 탁자. 가운데 기둥 하나(주칠 고리)·넓게 벌어진 받침 발이 칸 아래 경계에 닿는다.')
+    return table(face, band, legs, leg('mu'), top=ktop('5', '1'), note='줄 A · style A 그대로 짙은 나무 둥근 탁자. 가운데 기둥 하나(주칠 고리)·넓게 벌어진 받침 발이 칸 아래 경계에 닿는다.')
 
 
 def table_a2():
@@ -170,19 +187,19 @@ def table_b1():
         "aaadccccba",
         "...aaaaaa.",
     ]
-    legs = [                                      # 벌어진 다리 둘 + 가로대(윗면 밝은 줄·아랫면 그늘)
-        R((10, "K43K"), (18, "K32K"), (22, "~~")),
-        R((10, "K43K"), (18, "K32K"), (22, "~")),
-        R((9, "K43K"), (19, "K32K")),
-        R((9, "K43KKKKKKK32K")),
-        R((9, "K435555443K2K")),
-        R((8, "K43KKKKKKKKK32K")),
-        R((7, "K43K"), (21, "K32K")),
-        R((6, "KK43K"), (21, "K32KK"), (26, "~")),
-        R((6, "KKKKK"), (21, "KKKKK"), (26, "~~~")),
+    legs = [                                      # 벌어진 다리 둘 + 가로대(윗면 밝은 줄·아랫면 그늘) — 먹 대신 song 밝은 단/0~1단
+        R((10, "5430"), (18, "4320"), (22, "~~~")),
+        R((10, "5430"), (18, "4320"), (22, "~~")),
+        R((9, "5430"), (19, "4320")),
+        R((9, "5435555555320")),
+        R((9, "5435555443120")),
+        R((8, "543000000000320")),
+        R((7, "5430"), (21, "4320")),
+        R((6, "55430"), (21, "43200"), (26, "~~")),
+        R((6, "11100"), (21, "11000"), (26, "~~~~")),
     ]
     deco = [(teapot, 7, 12)]   # 찻주전자 하나만 — 둥근 덩이 둘이 나란하면 눈처럼 읽힌다. 뒤 걸상 앉는 면을 가리지 않게 왼쪽
-    return table(face, band, legs, leg('song'), deco,
+    return table(face, band, legs, leg('song'), deco, top=ktop('5', '0'),
                  note='줄 B · style B 그대로 밝은 소나무 탁자·주칠 두께 띠·자사 찻주전자 하나(짙은 흙빛, 먹 점 없음). 벌어진 다리 둘에 가로대.')
 
 
@@ -234,15 +251,16 @@ def stool(rows, legend, shadow=((12, 15), (13, 14), (13, 15)), note=''):
 
 def stool_a1():
     return stool([
-        "..KKKKKK..",
-        ".K665555K.",
-        "K55555444K",
-        "KKKKKKKKKK",
-        "K5u44u3u2K",
-        "K55444332K",
-        "K44333322K",
-        ".KKKKKKKK.",
-    ], leg('mu'), note='줄 A · style A 그대로 짙은 나무 북 걸상·주칠 징 한 줄.')
+        "..665555..",
+        ".66555544.",
+        "6655554431",
+        "5uuuuuuur1",
+        "5444333221",
+        "4333322211",
+        "3322221111",
+        ".11111111.",
+    ], leg('mu'), shadow=((12, 14), (12, 15), (13, 14), (13, 15), (14, 15)),
+        note='줄 A · style A 그대로 짙은 나무 북 걸상·주칠 징 한 줄. 먹 윤곽 없이 밝은 단(위·왼쪽)·1단(아래·오른쪽).')
 
 
 def stool_a2():
@@ -260,15 +278,16 @@ def stool_a2():
 
 def stool_b1():
     return stool([
-        "..KKKKKK..",
-        ".K666665K.",
-        "K65555554K",
-        "KKKKKKKKKK",
-        ".K544443K.",
-        ".KttttssK.",
-        "K55444332K",
-        "KKKKKKKKKK",
-    ], leg('song'), shadow=((13, 14), (13, 15), (12, 13)), note='줄 B · 소나무 허리 잘록한 북 걸상·주칠 허리띠.')
+        "..666660..",
+        ".66666650.",
+        "6655555440",
+        "1000000000",
+        ".50....00.",
+        ".50....00.",
+        ".50....00.",
+        ".00....00.",
+    ], leg('song'), shadow=((5, 14), (6, 14), (7, 14), (8, 14), (6, 15), (7, 15), (8, 15), (12, 15), (13, 15), (13, 14), (14, 15), (11, 15)),
+        note='줄 B · 소나무 다리 둘 걸상(다리가 보인다). 먹 윤곽 없이 밝은 단(위·왼쪽)·song 0(아래·오른쪽).')
 
 
 def stool_b2():
@@ -345,6 +364,92 @@ ABACUS = [            # 주판 13×6: 짙은 테·판, 가운데 들보, 위 알
 ABACUS = [r.replace('k', 'K') for r in ABACUS]
 
 
+def deink(rows, light, shade, light_top=None):
+    """먹(K) 윤곽을 재질 단으로 바꾼 사본: 위·왼쪽이 트인 K = light(밝은 단), 아래·오른쪽이 트인 K = shade(재질 1단), 안쪽 K = shade.
+    공용 상수를 건드리지 않고 고른 후보만 먹 없이 칠하려는 것."""
+    lt = light_top or light
+    h, w = len(rows), len(rows[0])
+
+    def at(y, x):
+        return rows[y][x] if 0 <= y < h and 0 <= x < w else '.'
+    out = []
+    for y in range(h):
+        line = ''
+        for x in range(w):
+            c = rows[y][x]
+            if c != 'K':
+                line += c
+            elif at(y - 1, x) == '.':
+                line += lt
+            elif at(y, x - 1) == '.':
+                line += light
+            else:
+                line += shade
+        out.append(line)
+    return out
+
+
+_MINSTEP = {'mu': 1, 'wa': 1, 'zhu': 1, 'zhuz': 1, 'cao': 1}
+
+
+def deink_mat(rows, legend, inner='a', top_up=1):
+    """먹(K) 을 안쪽 이웃 재질의 단으로 바꾼 사본(재질 인식).
+    위가 트인 K = 안쪽 이웃 +top_up 단(밝게), 왼쪽이 트인 K = 안쪽 이웃 그대로,
+    아래·오른쪽이 트인 K = 안쪽 이웃 -1 단(먹 밝기 아래로는 안 내림), 안쪽 K = inner."""
+    h, w = len(rows), len(rows[0])
+    inv = {}
+    for ch, v in legend.items():
+        if isinstance(v, tuple):
+            inv.setdefault(v, ch)
+
+    def at(y, x):
+        return rows[y][x] if 0 <= y < h and 0 <= x < w else '.'
+
+    def sample(y, x, dy, dx):
+        y += dy
+        x += dx
+        while 0 <= y < h and 0 <= x < w:
+            c = rows[y][x]
+            if c not in 'K.~':
+                return c
+            y += dy
+            x += dx
+        return None
+
+    def shift(c, d):
+        v = legend.get(c)
+        if not isinstance(v, tuple):
+            return c
+        ramp, st = v
+        lo = _MINSTEP.get(ramp, 0)
+        n = min(6, max(lo, st + d))
+        return inv.get((ramp, n), c)
+    out = []
+    for y in range(h):
+        line = ''
+        for x in range(w):
+            c = rows[y][x]
+            if c != 'K':
+                line += c
+                continue
+            if at(y - 1, x) == '.':
+                s_ = sample(y, x, 1, 0)
+                line += shift(s_, top_up) if s_ else inner
+            elif at(y, x - 1) == '.':
+                s_ = sample(y, x, 0, 1)
+                line += s_ if s_ else inner
+            elif at(y + 1, x) == '.':
+                s_ = sample(y, x, -1, 0)
+                line += shift(s_, -1) if s_ else inner
+            elif at(y, x + 1) == '.':
+                s_ = sample(y, x, 0, -1)
+                line += shift(s_, -1) if s_ else inner
+            else:
+                line += inner
+        out.append(line)
+    return out
+
+
 def counter_a1():
     pan = ["KvvvvvvvvvvvtK", "KvuuuuuuuuuutK", "KvuuuuuuuuuutK", "KvuuuuuuuuuutK",
            "KvuuuuuuuuuutK", "KvuuuuuuuuuutK", "KtttttttttttsK"]
@@ -363,7 +468,10 @@ def counter_a1():
     rows += ["Kd" + "c" * 44 + "bK", "Kd" + "c" * 44 + "bK", "K" + "b" * 46 + "K", "K" + "a" * 46 + "K", "K" * 48]
     ledger = ["KKKKKKKKK", "KkkkkkkkK", "KtttttttK", "KsssssssK", "KKKKKKKKK"]
     stone = [".KKKK.", "KAABBK", "KBBCCK", "KKKKKK"]
-    deco = [(ABACUS, 5, 9), (ledger, 23, 10), (stone, 36, 11)]
+    rows = deink(rows, 'e', 'a', 'f')
+    rows[4] = "e" + "4" * 46 + "a"      # 윗판 앞 모서리 mu 4 띠(두 줄: 4·5행)
+    rows[5] = "e" + "4" * 45 + "3a"
+    deco = [(deink(ABACUS, 'd', 'a', 'e'), 5, 9), (deink(ledger, 'u', 'r', 'v'), 23, 10), (deink(stone, 'E', 'A', 'F'), 36, 11)]
     return counter(rows, leg('mu'), deco, '줄 A · 짙은 나무 계산대(윗면 결)·앞면 주칠 판 셋·짙은 굽. 위에 주판·장부(붉은 겉장)·벼루.')
 
 
@@ -416,7 +524,8 @@ def counter_b1():
     rows += ["K" + "c" * 46 + "K", "K" + "a" * 46 + "K", "K" + "C" * 46 + "K", "K" + "B" * 46 + "K", "K" * 48]
     tea = ["KKKKKKKKK", "KndcndcnK", "KnnnnnnnK", "KKKKKKKKK"]      # 쟁반 위 자사 잔 둘(흰 점 없이)
     teapot = ["....ab....", "..aeeddca.", "baeedddcaa", "badddcccba", "..abbbbba."]
-    deco = [(ABACUS, 6, 9), (tea, 26, 11), (teapot, 37, 9)]
+    rows = deink(rows, '6', '0', '6')
+    deco = [(deink(ABACUS, 'd', 'a', 'e'), 6, 9), (deink(tea, 'e', 'a', 'f'), 26, 11), (teapot, 37, 9)]
     L_ = leg('song')
     L_['a'] = ('mu', 1)
     return counter(rows, L_, deco,
@@ -515,9 +624,9 @@ def stove_a2():
         R((1, "K" + "F" * 28 + "K")),
         R((1, "KF" + "E" * 26 + "DK")),
         R((1, "KE" + "E" * 25 + "DDK")),
-        R((1, "KE" + "D" * 25 + "CCK")),
+        R((1, "KE" + "E" * 25 + "DDK")),
+        R((1, "KE" + "E" * 25 + "DDK")),
         R((1, "K" + "D" * 26 + "CCK")),
-        R((1, "K" + "C" * 26 + "BBK")),
         R((1, "K" * 30)),
         front28("6" * 26 + "55"),
         front28("5" * 26 + "44"),
@@ -537,9 +646,10 @@ def stove_a2():
         R((1, "K" * 30), (31, "~")),
     ]
     assert len(rows) == 32, len(rows)
+    rows = deink_mat(rows, L_)
     cv = canvas(rows, L_, 32, 32)
-    stamp(cv, POT_BIG, L_, 3, 6)
-    stamp(cv, POT_SMALL, L_, 17, 8)
+    stamp(cv, POT_BIG_N, L_, 3, 4)       # 솥 밑이 윗판 안쪽에 앉고 앞으로 윗판 윗면 2~3행이 보이게
+    stamp(cv, POT_SMALL_N, L_, 17, 6)
     return cv, {'top': (9, 14), 'note': '줄 A · 청석 윗판 아궁이·뒤 오른쪽에 흰 회벽 굴뚝·큰 솥과 작은 솥(소나무 뚜껑)·앞면 넓은 아궁이 하나에 장작과 불빛.'}
 
 
@@ -566,6 +676,28 @@ POT_SMALL[1] = ".KpooooonK"[:9] + "."
 POT_SMALL[1] = ".KpooonnK."
 
 
+POT_BIG_N = [          # 먹 없는 쇠솥 14×9: 소나무 뚜껑 둥근 윗면 + 손잡이 꼭지 + 쇠 테 띠 + 몸
+    "......pp......",
+    "....mpoonm....",
+    "..mpppooonnlm.",
+    ".mpooooonnnllm",
+    "CEFEEEEEEEEEEC",
+    "BDEDDDDDDDDDCB",
+    ".BDCCCCCCCCBA.",
+    "..BBBBBBBBAA..",
+    "...AAAAAAAA...",
+]
+POT_SMALL_N = [        # 먹 없는 작은 솥 10×7
+    "....pp....",
+    "..mpoonm..",
+    ".mpooonnlm",
+    "CEFEEEEEEC",
+    ".CDDDDDDB.",
+    ".BCCCCCBA.",
+    "..AAAAAA..",
+]
+
+
 def stove_b1():
     # 황토 아궁이: 윗판 황토, 앞 모서리에 청회 기와 턱, 큰 솥·작은 솥, 앞면 넓은 아궁이 하나(불빛)와 장작 두 개비
     rows = ['.' * 32] * 8 + [
@@ -573,8 +705,8 @@ def stove_b1():
         R((1, "K" + "6" * 27 + "5K")),
         R((1, "K6" + "5" * 26 + "4K")),
         R((1, "K" + "5" * 27 + "4K")),
-        R((1, "K" + "4" * 26 + "33K")),
-        R((1, "K" + "4" * 26 + "33K")),
+        R((1, "K" + "5" * 26 + "44K")),
+        R((1, "K" + "5" * 26 + "44K")),
         R((0, "K" + "WV" * 15 + "K")),
         R((0, "K" + "TS" * 15 + "K")),
         R((0, "K" * 32)),
@@ -597,10 +729,11 @@ def stove_b1():
     rows = [r_ for r_ in rows]
     assert len(rows) == 32, len(rows)
     L_ = leg('huang')
+    rows = deink_mat(rows, L_)
     cv = canvas(rows, L_, 32, 32)
-    stamp(cv, POT_BIG, L_, 2, 6)
-    stamp(cv, POT_SMALL, L_, 19, 8)
-    return cv, {'top': (9, 13), 'note': '줄 B · 황토 아궁이(앞 모서리 청회 기와 턱)·큰 솥과 작은 솥(소나무 뚜껑)·앞면 넓은 아궁이에 장작과 불빛.'}
+    stamp(cv, POT_BIG_N, L_, 2, 3)       # 솥 밑이 윗판 안쪽에 앉고 앞으로 윗판 윗면 2행이 보이게
+    stamp(cv, POT_SMALL_N, L_, 19, 5)
+    return cv, {'top': (9, 14), 'note': '줄 B · 황토 아궁이(앞 모서리 청회 기와 턱)·큰 솥과 작은 솥(소나무 뚜껑)·앞면 넓은 아궁이에 장작과 불빛.'}
 
 
 STEAMER = [            # 대나무 대신 소나무 찜통 세 층 12×13 (뚜껑 윗면 + 층 띠) — 아래는 쇠솥 테
@@ -712,7 +845,9 @@ JAR_S = [              # 9×11 작은 독
 
 
 def jars_a1():
-    return jars([(JAR_S, 0, 5), (JAR_S, 22, 5), (JAR_A, 10, 2)], leg('mu'),
+    L_ = leg('mu')
+    js, ja = deink_mat(JAR_S, L_), deink_mat(JAR_A, L_)
+    return jars([(js, 0, 5), (js, 22, 5), (ja, 10, 2)], L_,
                 '줄 A · 짙은 갈색 유약 독 셋(가운데 큰 독)·붉은 천으로 입을 막고 끈으로 묶었다.', (6, 8),
                 shadow=((31, 14), (31, 15), (21, 15)))
 
@@ -760,10 +895,60 @@ JAR_H = [              # 11×14 황토 독: 붉은 천·새끼줄(황토 밝은 
 ]
 
 
+def deep_shade(rows, legend, spare_light=False):
+    """그늘 쪽(오른쪽·아래가 트인) 가장자리를 재질 어두운 단으로: 황토 0단, 붉은 천 1단(먹 아님).
+    바닥(붉은 줄)과의 대비를 지키는 그늘 쪽 예외."""
+    h, w = len(rows), len(rows[0])
+    inv = {v: k for k, v in legend.items() if isinstance(v, tuple)}
+    out = []
+    for y in range(h):
+        cs = list(rows[y])
+        for x in range(w):
+            c = cs[x]
+            v = legend.get(c)
+            if c in '.~' or not isinstance(v, tuple):
+                continue
+            right = x + 1 >= w or rows[y][x + 1] == '.'
+            below = y + 1 >= h or rows[y + 1][x] == '.'
+            if spare_light:
+                up = y == 0 or rows[y - 1][x] == '.'
+                left = x == 0 or rows[y][x - 1] == '.'
+                if up:
+                    continue
+            if right or below:
+                tgt = (v[0], 0 if v[0] in ('huang', 'jin') else min(v[1], 1))
+                cs[x] = inv.get(tgt, c)
+        out.append(''.join(cs))
+    return out
+
+
+def lift_light(rows, legend, d=3):
+    """빛 쪽(위·왼이 트이고 오른쪽·아래는 막힌) 가장자리의 0~1단을 d 단 밝힌다(그늘 쪽은 건드리지 않음)."""
+    h, w = len(rows), len(rows[0])
+    inv = {v: k for k, v in legend.items() if isinstance(v, tuple)}
+    out = []
+    for y in range(h):
+        cs = list(rows[y])
+        for x in range(w):
+            v = legend.get(cs[x])
+            if cs[x] in '.~' or not isinstance(v, tuple) or v[1] > 1:
+                continue
+            up = y == 0 or rows[y - 1][x] == '.'
+            left = x == 0 or rows[y][x - 1] == '.'
+            right = x + 1 >= w or rows[y][x + 1] == '.'
+            below = y + 1 >= h or rows[y + 1][x] == '.'
+            if (up or left) and not (right or below):
+                cs[x] = inv.get((v[0], min(6, v[1] + d)), cs[x])
+        out.append(''.join(cs))
+    return out
+
+
 def jars_b1():
-    return jars([(JAR_H, 0, 2), (JAR_S, 11, 5), (JAR_H, 20, 2)], leg('huang'),
+    L_ = leg('huang')
+    jh, js = deep_shade(deink_mat(JAR_H, L_), L_), deep_shade(deink_mat(JAR_S, L_), L_)
+    return jars([(jh, 0, 2), (js, 11, 5), (jh, 20, 2)], L_,
                 '줄 B · 황토 독 둘(새끼줄 두 줄)·작은 독 하나, 붉은 천으로 입을 막았다.', (3, 5),
-                shadow=((31, 14), (31, 15)))
+                shadow=((31, 14), (31, 15), (10, 15), (19, 15), (9, 15), (20, 15)))
 
 
 STAND = [              # 낮은 소나무 받침 32×4: 윗면 2행 + 앞면 + 발
@@ -791,27 +976,27 @@ def board(rows, legend, note, top):
 
 
 def menu_a1():
-    slips = "kk" + "KutKk" * 4 + "kk"
-    ends = "kk" + "KssKk" * 4 + "kk"
+    slips = "kk" + "rutrk" * 4 + "kk"
+    ends = "kk" + "rssrk" * 4 + "kk"
     rows = [
         R(),
-        R((2, "K" * 28)),
-        R((2, "K" + "f" * 25 + "eK")),
-        R((2, "K" + "e" * 24 + "ddK")),
-        R((1, "K" * 30)),
-        R((2, "Kc" + "k" * 24 + "bK")),
-        R((2, "Kc" + slips + "bK")),
-        R((2, "Kc" + slips + "bK")),
-        R((2, "Kc" + slips + "bK")),
-        R((2, "Kc" + slips + "bK")),
-        R((2, "Kc" + ends + "bK")),
-        R((2, "Kc" + "j" * 24 + "bK")),
-        R((2, "K" + "b" * 26 + "K")),
-        R((2, "K" * 28), (30, "~")),
+        R((2, "e" + "f" * 26 + "b")),
+        R((2, "e" + "f" * 25 + "db")),
+        R((2, "d" + "e" * 25 + "cb")),
+        R((1, "c" + "b" * 28 + "a")),
+        R((2, "cc" + "k" * 24 + "ba")),
+        R((2, "cc" + slips + "ba")),
+        R((2, "cc" + slips + "ba")),
+        R((2, "cc" + slips + "ba")),
+        R((2, "cc" + slips + "ba")),
+        R((2, "cc" + ends + "ba")),
+        R((2, "cc" + "j" * 24 + "ba")),
+        R((2, "c" + "b" * 26 + "a")),
+        R((2, "a" * 28), (30, "~")),
         R((3, "~" * 28)),
         R(),
     ]
-    return board(rows, leg('bai'), '줄 A · 짙은 나무 갓(윗면 2행)·테를 두른 흰 판에 붉은 종이 띠 넷(글자 없음).', (2, 4))
+    return board(rows, leg('bai'), '줄 A · 짙은 나무 갓(윗면 3행, 먹선 없음)·테를 두른 흰 판에 붉은 종이 띠 넷(글자 없음).', (1, 4))
 
 
 def menu_a2():
@@ -854,23 +1039,25 @@ def menu_a2():
 def menu_b1():
     rows = [
         R(),
-        R((2, "K" * 28)),
-        R((2, "K" + "z" * 25 + "yK")),
-        R((2, "K" + "y" * 24 + "xxK")),
-        R((1, "K" * 30)),
-        R((2, "Kv" + "u" * 24 + "tK")),
-        R((2, "Ku" + "QQPQQPQQPQQPQQPQQPQQPQQP" + "sK")),
-        R((2, "Ku" + "PPOPPOPPOPPOPPOPPOPPOPPO" + "sK")),
-        R((2, "Ku" + "PPOPPOPPOPPOPPOPPOPPOPPO" + "sK")),
-        R((2, "Ku" + "OONOONOONOONOONOONOONOON" + "sK")),
-        R((2, "Ku" + "t" * 24 + "sK")),
-        R((2, "K" + "s" * 26 + "K")),
-        R((2, "K" * 28), (30, "~")),
-        R((3, "KxK"), (11, "KxK"), (19, "KxK"), (27, "KxK")),
-        R((3, "KyK"), (11, "KyK"), (19, "KyK"), (27, "KyK"), (30, "~")),
-        R((4, "K"), (12, "K"), (20, "K"), (28, "K")),
+        R((2, "y" + "z" * 26 + "x")),
+        R((2, "y" + "z" * 25 + "yx")),
+        R((2, "x" + "y" * 25 + "xX")),
+        R((1, "t" + "s" * 28 + "r")),
+        R((2, "tv" + "u" * 24 + "sr")),
+        R((2, "tu" + "QQPQQPQQPQQPQQPQQPQQPQQP" + "sr")),
+        R((2, "tu" + "PPOPPOPPOPPOPPOPPOPPOPPO" + "sr")),
+        R((2, "tu" + "PPOPPOPPOPPOPPOPPOPPOPPO" + "sr")),
+        R((2, "tu" + "OONOONOONOONOONOONOONOON" + "sr")),
+        R((2, "tu" + "t" * 24 + "sr")),
+        R((2, "t" + "s" * 26 + "r")),
+        R((2, "r" * 28), (30, "~")),
+        R((3, "yxX"), (11, "yxX"), (19, "yxX"), (27, "yxX")),
+        R((3, "yXX"), (11, "yXX"), (19, "yXX"), (27, "yXX"), (30, "~")),
+        R((4, "X"), (12, "X"), (20, "X"), (28, "X")),
     ]
-    return board(rows, leg('huang'), '줄 B · 금 갓(윗면 2행)·주칠 테 안에 황토 종이 띠 여덟·아래 금 술 넷(글자 없음).', (2, 4))
+    L_ = {**leg('huang'), '@': ('jin', 0)}
+    rows = deep_shade(rows, L_)
+    return board(rows, L_, '줄 B · 금 갓(윗면 3행, 먹선 없음)·주칠 테 안에 황토 종이 띠 여덟·아래 금 술 넷(글자 없음).', (1, 4))
 
 
 def menu_b2():
@@ -950,7 +1137,9 @@ def lantern_a1():
         R16((3, "KeeeeddccK"), (13, "~")),
         R16((3, "KKKKKKKKKK"), (13, "~~")),
     ]
-    return lantern_set(hang, stand, leg('zhu'), '줄 A · 둥근 붉은 종이 등롱(금 뚜껑 윗면·밝은 가운데)·매다는 것은 끈과 술, 세우는 것은 짙은 나무 기둥과 받침.',
+    L_ = {**leg('zhu'), '@': ('jin', 0)}
+    hang, stand = deep_shade(deink_mat(hang, L_), L_, True), deep_shade(deink_mat(stand, L_), L_, True)
+    return lantern_set(hang, stand, L_, '줄 A · 둥근 붉은 종이 등롱(금 뚜껑 윗면·밝은 가운데)·매다는 것은 끈과 술, 세우는 것은 짙은 나무 기둥과 받침.',
                        (3, 5), (3, 5))
 
 
@@ -1032,7 +1221,9 @@ def lantern_b1():
         R16((3, "KyyxxXXXK"), (12, "~~")),
         R16((3, "KKKKKKKKK"), (12, "~~")),
     ]
-    return lantern_set(hang, stand, leg('zhu'), '줄 B · 길쭉한 붉은 등롱(금 뚜껑 윗면·금 술)·세우는 것은 금 기둥과 금 받침 위 작은 등롱.',
+    L_ = {**leg('zhu'), '@': ('jin', 0)}
+    hang, stand = (lift_light(deep_shade(deink_mat(r, L_), L_), L_) for r in (hang, stand))
+    return lantern_set(hang, stand, L_, '줄 B · 길쭉한 붉은 등롱(금 뚜껑 윗면·금 술)·세우는 것은 금 기둥과 금 받침 위 작은 등롱.',
                        (3, 5), (1, 3))
 
 
