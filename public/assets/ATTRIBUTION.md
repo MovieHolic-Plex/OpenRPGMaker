@@ -384,3 +384,13 @@ Beodeul building review round 3 (2026-10-05): `beodeul-architecture/review-r3-bu
 - Round 6 curved roof correction: four hand-authored 4px shingle cels compared against the native tile relief, staggered course origins, and individually chosen curved courses in `src/harnesses/beodeul-building-review/node/round6_courses.py`; original Beodeul roof colors, directional face shading, final palette-index grids retained. Private failed texture iterations remain in the harness provenance and are not published as candidates.
 
 - Beodeul house candidates, round 7 (review only): 25 explicit native-pixel assemblies, preserving the original Beodeul texture scale and current human-approved round 6 roof parts. Arched glazed windows, shuttered windows and balcony rails are authored palette grids. Complete final grids and native rectangle provenance: `harness-data/beodeul-building-review/round7-detail-sources.json`; author/reproducer: `src/harnesses/beodeul-building-review/node/author_round7.py`, `bake_round7.py`. Chrono Trigger, FF6, Secret of Mana and Breath of Fire II screenshots informed massing observations only; no foreign game pixels are asset inputs. Existing native attribution terms apply. New candidates require human approval before runtime installation.
+
+
+## Silver-haired swordswoman (2026-10-03)
+
+`generated/charset-battlers/silver-swordswoman.png` and
+`generated/charset-battlers/cast/silver-swordswoman.png` are original OPRN pixel
+artwork, drawn directly on the final 48px grid by
+`scripts/asset-gen/charset-battler/silver-swordswoman.py`. All 24 battle cells and
+21 cast cells use 16 opaque colors and binary alpha. No source image or
+image-generation model is used. Repository code/asset policy applies.

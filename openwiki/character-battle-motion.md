@@ -38,9 +38,10 @@
 
 ## 그림의 접촉점
 
-`scripts/content/measure-battle-contact-bounds.py`는 277개 배포 시트(사람 73, 비인간 파티 64, 적 140)의
+`scripts/content/measure-battle-contact-bounds.py`는 278개 배포 시트(사람 74, 비인간 파티 64, 적 140)의
 idle/strike/attack 알파 경계와 SHA-256을 `src/assets/battleContactBounds.json`에 기록한다.
 그림을 바꾸면 이 스크립트로 다시 측정한다. 실제 PNG는 수정하지 않는다.
+독립 원화 `charset-battler-silver-swordswoman`(2026-10-03)도 이 접촉 경계 표에 등록되어 있다.
 
 `battleContactGeometry.ts`는 그 메타데이터를 동기 조회한다. 일반 스킬은 strike, 창 계열과 통상 공격은
 실제로 펼쳐진 attack 칸을 사용한다. 알려진 시트에서는 무기 길이가 이미 경계에 포함되어 있으므로
