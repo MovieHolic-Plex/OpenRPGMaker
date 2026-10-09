@@ -395,7 +395,8 @@ def cmd_sheet(rid, force=False):
         H.append(f'<h2>{item} — {it["title"]}' + (' <span class="sub">· 줄 공통</span>' if common(item) else '')
                  + f'</h2><p class="lead">{it["brief"]}<br><span class="sub">받아들일 기준: '
                  + ' · '.join(it.get('accept', [])) + f' · 통행 의도: {it.get("walk", "")}'
-                 + (f' · 크기 {it["size"][0]}×{it["size"][1]}칸 · 층 {it["layer"]}')
+                 + (f' · 그림 {it["size"][0]}×{it["size"][1]}칸' + (f' · 한 조각 {it["footprint"][0]}×{it["footprint"][1]}칸' if it.get('footprint') else '')
+                    + f' · 층 {it["layer"]}')
                  + (f' · 상태 {" / ".join(it["states"])}' if it.get('states') else '')
                  + (f' · 장면 {it["frames"]}' if it.get('frames') else '')
                  + (f'<br>줄 공통인 까닭: {common(item)}' if common(item) else '') + '</span></p>')
@@ -676,9 +677,10 @@ def cmd_validate():
                 errs.append(f'{it["id"]}: 기준 그림 {r} 이 refs 에 없다')
         if 'common' in it and not it['common']:
             errs.append(f'{it["id"]}: common(줄 공통)은 이유 문자열이어야 한다')
+        fw, fh = it.get('footprint', it['size'])   # 한 상태·한 조각이 차지하는 칸(그림 size 는 상태·변형을 옆으로 붙인 크기)
         for st, rows in it.get('walk_grid', {}).items():
-            if len(rows) != it['size'][1] or any(len(r) != it['size'][0] or set(r) - set('ox★') for r in rows):
-                errs.append(f'{it["id"]}: 통행 격자 {st} 는 {it["size"][0]}×{it["size"][1]} 의 o/x/★ 여야 한다')
+            if len(rows) != fh or any(len(r) != fw or set(r) - set('ox★') for r in rows):
+                errs.append(f'{it["id"]}: 통행 격자 {st} 는 {fw}×{fh}(footprint) 의 o/x/★ 여야 한다')
             if it.get('states') and st not in it['states']:
                 errs.append(f'{it["id"]}: 통행 격자 상태 {st} 가 states 에 없다')
     for ln, info in lines().items():
