@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **162쪽 / 5591KB / 약 1,630,828 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **162쪽 / 5593KB / 약 1,631,387 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -25,8 +25,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 64KB | 6KB | 725 | ~18,890 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1147 | ~54,177 |
-| `openwiki/editor-workflows-misc.md` | 88KB | 33KB | 619 | ~24,614 |
-| `openwiki/harnesses/interview-scene-bank.md` | 55KB | 38KB | 194 | ~17,104 |
+| `openwiki/editor-workflows-misc.md` | 89KB | 33KB | 624 | ~24,890 |
+| `openwiki/harnesses/interview-scene-bank.md` | 56KB | 38KB | 197 | ~17,387 |
 | `openwiki/harnesses/super-harness.md` | 102KB | 4KB | 1063 | ~32,225 |
 | `openwiki/jp-city.md` | 65KB | 9KB | 351 | ~19,072 |
 | `openwiki/runtime-battle.md` | 336KB | 32KB | 1930 | ~98,296 |
@@ -1164,7 +1164,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L291` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 88KB · 619줄 · ~24,614 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 89KB · 624줄 · ~24,890 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
   - `L11` 왼쪽 「기물」 — 바로 고르기 (2026-10-07)
@@ -1172,20 +1172,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L30` 팔레트·맵 목록·진행의 표시 비용 (2026-10-04, UX 감사 2차)
   - `L81` 새 게임 인터뷰의 선택 배경 (2026-10-04)
   - `L89` 첫 사용자 시작과 저장 안내 (2026-10-03)
-  - `L101` New-project name and player title (2026-09-07)
-  - `L111` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
-  - `L177` Game export delivery (2026-09-06)
-  - `L288` Audio descriptions and live resource ownership
-  - `L381` Genre-neutral authoring launcher and journey (2026-08-24)
-- `L439` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
-- `L468` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
-- `L492` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
-- `L506` 맵 설정 가독성·편집 연속성 (2026-09-05)
-- `L516` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
-- `L529` Authoring viewport navigation (issue 693, 2026-09-08)
-  - `L571` Common expression recovery (2026-09-17)
-  - `L591` 제작자 페이지에서 타일셋 받기 (2026-09-24)
-- `L604` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
+  - `L106` New-project name and player title (2026-09-07)
+  - `L116` 걸을 때 적 만나기 — rectangle authoring (2026-09-06)
+  - `L182` Game export delivery (2026-09-06)
+  - `L293` Audio descriptions and live resource ownership
+  - `L386` Genre-neutral authoring launcher and journey (2026-08-24)
+- `L444` 편집기 z 층 밴드와 토스트 (2026-08-30, PR #308)
+- `L473` 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
+- `L497` 커스텀 셀렉트는 열릴 때 modalStack 층이 된다 (2026-08-30)
+- `L511` 맵 설정 가독성·편집 연속성 (2026-09-05)
+- `L521` 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+- `L534` Authoring viewport navigation (issue 693, 2026-09-08)
+  - `L576` Common expression recovery (2026-09-17)
+  - `L596` 제작자 페이지에서 타일셋 받기 (2026-09-24)
+- `L609` 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
 
 ### `openwiki/editor-workflows.md` — 2KB · 28줄 · ~586 토큰
 
@@ -1426,11 +1426,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L85` 공간 감독의 공급자 오류 복구 (2026-10-05)
   - `L91` 부착 소품의 실제 받침 대기 (2026-10-06)
 
-### `openwiki/harnesses/interview-scene-bank.md` — 55KB · 194줄 · ~17,104 토큰 · 통째읽기 잘림
+### `openwiki/harnesses/interview-scene-bank.md` — 56KB · 197줄 · ~17,387 토큰 · 통째읽기 잘림
 
 - `L19` 제작과 검수
 - `L53` 앱 연결
-- `L75` 현재 제작 결과
+- `L78` 현재 제작 결과
 
 ### `openwiki/harnesses/joseon-baram.md` — 15KB · 105줄 · ~4,358 토큰
 
