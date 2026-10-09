@@ -4,7 +4,7 @@
 export const PUBLIC_EXCLUDE = [
   ".omo", ".superpowers", ".vite-cache", ".kiro", ".infisical.json",
   "verify-shots", "output", "reports", "evidence", "docs", "design", "deprecated", "asset-backups",
-  "new-editor", "infra", "rpg_maker_skills",
+  "infra", "rpg_maker_skills",
   "AI조수-작성방식-보고서.pdf", "problem.md", "review.md", "dbaudit.mjs",
   "Start RPG Maker.command",
   // 닌텐도 원작 걷기 그림(pret/pokeemerald)과 그것을 판형으로 쓴 후보. ATTRIBUTION 이 스스로 원작이라고 밝힌다.
