@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { HAND_INTERIOR_SPEC, JP_INTERIOR_SPEC } from "@/editor/handInterior/builder";
 import { layoutCandidates } from "@/editor/handInterior/layout";
 import { composeHandInteriorRooms } from "@/editor/handInterior/rooms";
-import { placeTemplateItems, programKinds, roomTemplates } from "@/editor/handInterior/templates";
+import { clusterShifts, placeTemplateItems, programKinds, roomTemplates, shiftItems, templateClusters } from "@/editor/handInterior/templates";
 import { piLayoutRepairPrompt } from "@/ai/piAgent/layoutQuality";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -39,6 +39,18 @@ describe("배치 후보", () => {
     });
   }
 
+  it("방이 견본보다 작아지지 않는다(아래에서 위로 짜기)", () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const [c] = layoutCandidates("jp_city", { program: "house-1f", seed }, JP_INTERIOR_SPEC, 1);
+      for (const rm of c!.rooms) {
+        const t = roomTemplates("jp_city").find((x) => x.id === rm.template);
+        if (!t || t.h <= 2) continue;
+        expect(rm.x1 - rm.x0 + 1, `${seed} ${rm.id}`).toBeGreaterThanOrEqual(t.w);
+        expect(rm.y1 - rm.y0 + 1, `${seed} ${rm.id}`).toBeGreaterThanOrEqual(t.h);
+      }
+    }
+  });
+
   it("seed 가 다르면 다른 배치가 나온다", () => {
     const a = layoutCandidates("jp_city", { program: "house-1f", seed: 1 }, JP_INTERIOR_SPEC, 1)[0]!;
     const b = layoutCandidates("jp_city", { program: "house-1f", seed: 2 }, JP_INTERIOR_SPEC, 1)[0]!;
@@ -60,6 +72,30 @@ describe("build_hand_interior_room layout", () => {
     expect(d.layout.rooms.reduce((a, x) => a + (x.furniture?.placed ?? 0), 0)).toBeGreaterThan(25);
     const again = runTool(ctx, "build_hand_interior_room", { tileset: "jp_city", mapId: d.mapId, replace: true, floor: "flooring", wall: "cloth", ...d.rebuild });
     expect(again.ok, again.summary).toBe(true);
+  });
+
+  it("견본 가구가 거의 다 들어간다", () => {
+    for (const seed of [2, 3, 4]) {
+      const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", name: "집", floor: "flooring", wall: "cloth", layout: { program: "house-1f", seed } });
+      expect(r.ok, r.summary).toBe(true);
+      const d = r.data as { layout: { rooms: { furniture?: { placed: number; dropped: number } }[] } };
+      const placed = d.layout.rooms.reduce((a, x) => a + (x.furniture?.placed ?? 0), 0), dropped = d.layout.rooms.reduce((a, x) => a + (x.furniture?.dropped ?? 0), 0);
+      expect(dropped / (placed + dropped)).toBeLessThan(0.1);
+    }
+  });
+
+  it("넓힌 방에서도 붙은 가구 덩이(식탁+의자)는 서로의 자리를 지킨다", () => {
+    const S = JP_INTERIOR_SPEC;
+    const t = roomTemplates("jp_city").find((x) => x.kind === "ldk")!;
+    const room = { x0: 1, y0: 1, w: t.w + 3, h: t.h + 2 };
+    for (const c of templateClusters(t, S)) {
+      const [sx, sy] = clusterShifts(t, c, room.w, room.h)[0]!;
+      const moved = shiftItems(t, c, sx, sy, room);
+      c.members.forEach((k, i) => {
+        if (t.items[k]!.t === "l") return;
+        expect([moved[i]!.x - t.items[k]!.x, moved[i]!.y - t.items[k]!.y]).toEqual([sx + 1, sy + 1]);
+      });
+    }
   });
 
   it("layout 과 plan 을 같이 주면 거부한다", () => {
