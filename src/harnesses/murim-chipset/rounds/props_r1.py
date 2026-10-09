@@ -19,7 +19,11 @@
 
 meta: 'top' = 윗면 행 범위(관문 F), 세트(돌사자)는 meta['pieces'][조각]['top'].
 """
-from tk import Cv, T, grid, stamp
+import json
+import os
+
+from tk import DATA, T, grid
+import frame_r1 as F
 
 ROUND = 'props-r1'
 WAVE = 'props'
@@ -1768,3 +1772,336 @@ CANDIDATES = {
     'prop_stone_pavilion': {'A1': stone_pavilion_a1, 'B1': stone_pavilion_b1},
     'prop_bronze_ding': {'A1': bronze_ding_a1},
 }
+
+
+# ---------------------------------------------------------------------------
+# 시트: 항목마다 줄 바닥 위 보기(PREVIEWS) · 줄별 큰 장면 둘(scenes)
+# ---------------------------------------------------------------------------
+import frame_r1 as F    # noqa: E402  (같은 번호 frame-r1 벽·마루·마당을 장면 바탕으로 쓴다)
+
+
+def _seed():
+    import json
+    import os
+    from tk import DATA
+    return json.load(open(os.path.join(DATA, 'seed.json'), encoding='utf-8'))
+
+
+def _img(w, h, fill=(0, 0, 0, 0)):
+    from PIL import Image
+    return Image.new('RGBA', (w, h), fill)
+
+
+def _x2(im):
+    from PIL import Image
+    return im.resize((im.width * 2, im.height * 2), Image.NEAREST)
+
+
+def _tile_fill(v, floor, x0=0, y0=0, w=None, h=None):
+    w = w or v.width
+    h = h or v.height
+    for x in range(x0, x0 + w, floor.width):
+        for y in range(y0, y0 + h, floor.height):
+            v.alpha_composite(floor.crop((0, 0, min(floor.width, x0 + w - x), min(floor.height, y0 + h - y))), (x, y))
+
+
+def _preview(iid):
+    it = next(x for x in _seed()['items'] if x['id'] == iid)
+    gid = it.get('contrastGround') or _seed()['outlineRule']['contrastGround']['props']
+
+    def fn(crops, style):
+        im = crops.get('_')
+        if im is None:      # 세트(돌사자): 조각을 한 칸 띄워 문 양옆처럼
+            l, r = crops['l'], crops['r']
+            im = _img(l.width + r.width + 32, l.height)
+            im.alpha_composite(l, (0, 0))
+            im.alpha_composite(r, (l.width + 32, 0))
+        rep = 3 if it.get('tileable') == 'x' else 1
+        v = _img(im.width * rep + 32, im.height + 32)
+        fl = style.get(gid)
+        if fl is not None:
+            _tile_fill(v, fl)
+        for k in range(rep):
+            v.alpha_composite(im, (16 + k * im.width, 16))
+        cap = f'줄 바닥({gid}) 위' + (' · 가로 3번 이어 깔기' if rep > 1 else '')
+        return [(cap + ' (4배로 보임)', _x2(v))]
+    return fn
+
+
+PREVIEWS = {iid: _preview(iid) for iid in [
+    'prop_weapon_rack', 'prop_archery_target', 'prop_sandbag_frame', 'prop_meditation_mats', 'prop_stone_lions', 'prop_stone_lantern',
+    'prop_stele', 'prop_censer_small', 'prop_bamboo_pot', 'prop_bamboo_thicket', 'prop_plum_bonsai', 'prop_garden_rock', 'prop_well',
+    'prop_water_jar', 'prop_tea_table', 'prop_writing_desk', 'prop_folding_screen', 'prop_scroll_shelf', 'prop_medicine_cabinet',
+    'prop_herb_stove', 'prop_war_drum', 'prop_gong_frame', 'prop_banner_pole', 'prop_hand_cart', 'prop_firewood_pile',
+    'prop_sect_gate', 'prop_stone_pavilion', 'prop_bronze_ding']}
+
+SCENE_HEAD = ('<h2>줄별 큰 장면 둘 (3배) — 문파 앞마당 16×13 칸 · 객잔·약방 안 11×9 칸</h2>'
+              '<p class="lead">바닥·벽은 frame-r1 같은 번호 후보(마당 돌바닥·풀 가장자리, 객잔 벽·마루), 기물은 이 판 후보다. '
+              '줄 B 장면에서 B1 이 없는 기물(재질이 줄 A 와 같은 것)은 A1 을 그대로 썼다. 사람은 Actor1(크기 비교). '
+              '앞마당: 대숲·산문 패루·돌사자·석등·깃발 장대·과녁·무기 걸이·모래주머니·정. 안: 서가·약재장·약탕 화로·물독·병풍·찻상·서안·방석·분재.</p>')
+
+
+def _crops(iid, im):
+    it = next(x for x in _seed()['items'] if x['id'] == iid)
+    return {pc['id']: im.crop((pc['at'][0] * T, pc['at'][1] * T, (pc['at'][0] + pc['size'][0]) * T, (pc['at'][1] + pc['size'][1]) * T))
+            for pc in it['pieces']}
+
+
+def _frame(iid, key):
+    """frame-r1 같은 번호(없으면 A1) 후보를 조각으로."""
+    c = F.CANDIDATES[iid]
+    cv, _ = (c.get(key) or c['A1'])()
+    return _crops(iid, cv.img())
+
+
+YARD_SCENE_MASK = [   # 16×13 칸: 1 = 돌바닥 마당, 0 = 풀(마당 바깥)
+    "0000000000000000",
+    "0000000000000000",
+    "0000000000000000",
+    "0011111111111100",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0011111111111100",
+    "0000000000000000",
+]
+
+
+def scenes(get, style, actor, key):
+    out = {}
+
+    def g(iid):
+        im = get(iid)
+        return im if im is not None else get(iid, 'A1')
+
+    need = ['prop_sect_gate', 'prop_bamboo_thicket', 'prop_stone_lions', 'prop_stone_lantern', 'prop_banner_pole', 'prop_archery_target',
+            'prop_weapon_rack', 'prop_sandbag_frame', 'prop_bronze_ding']
+    P = {i: g(i) for i in need}
+    if all(v is not None for v in P.values()):
+        yard = _frame('floor_stone_yard', key)
+        v = _img(16 * T, 13 * T, (0, 0, 0, 255))
+        v.alpha_composite(F.yard_patch(yard, style.get('yard_floor_stone'), YARD_SCENE_MASK), (0, 0))
+        for x in range(0, 16 * T, 32):                       # 뒤 대숲 띠
+            v.alpha_composite(P['prop_bamboo_thicket'], (x, 0))
+            v.alpha_composite(P['prop_bamboo_thicket'], (x, 12))
+        v.alpha_composite(P['prop_sect_gate'], (5 * T, 1 * T))
+        v.alpha_composite(P['prop_banner_pole'], (2 * T, 2 * T))
+        v.alpha_composite(P['prop_banner_pole'], (13 * T, 2 * T))
+        lions = P['prop_stone_lions']
+        v.alpha_composite(lions['l'], (4 * T, 5 * T))
+        v.alpha_composite(lions['r'], (11 * T, 5 * T))
+        v.alpha_composite(P['prop_stone_lantern'], (3 * T, 7 * T))
+        v.alpha_composite(P['prop_stone_lantern'], (12 * T, 7 * T))
+        v.alpha_composite(P['prop_bronze_ding'], (6 * T, 7 * T))
+        v.alpha_composite(P['prop_weapon_rack'], (1 * T, 9 * T))
+        v.alpha_composite(P['prop_sandbag_frame'], (12 * T, 9 * T))
+        v.alpha_composite(P['prop_archery_target'], (14 * T, 9 * T))
+        v.alpha_composite(actor, (7 * T + 4, 4 * T + 8))     # 문간 아래
+        v.alpha_composite(actor, (4 * T + 4, 10 * T - 8))
+        out['문파 앞마당 16×13: 대숲·산문 패루·돌사자·석등·깃발·정·무기 걸이·모래주머니·과녁'] = v
+    need2 = ['prop_scroll_shelf', 'prop_medicine_cabinet', 'prop_herb_stove', 'prop_water_jar', 'prop_folding_screen', 'prop_tea_table',
+             'prop_writing_desk', 'prop_meditation_mats', 'prop_plum_bonsai', 'prop_bamboo_pot', 'prop_censer_small']
+    Q = {i: g(i) for i in need2}
+    if all(v is not None for v in Q.values()):
+        wall, floor = _frame('wall_inn_set', key), _frame('floor_wood_inn', key)
+        v = _img(11 * T, 9 * T, (0, 0, 0, 255))
+        v.alpha_composite(F.wall_patch(wall, ('l', 'm', 'win', 'm', 'r')), (0, 0))
+        fl = [floor['foot']] * 6
+        for bx in range(6):
+            v.alpha_composite(floor['foot'], (bx * 32, 32))
+        st = style.get('inn_floor_wood')
+        rows_ = ((floor['v1'], floor['v2'], st, floor['v3'], floor['v1'], floor['v2']),
+                 (floor['v3'], st, floor['v1'], floor['v2'], st, floor['v3']),
+                 (floor['v2'], floor['v1'], floor['v3'], st, floor['v2'], floor['v1']))
+        for by, row in enumerate(rows_):
+            for bx, im in enumerate(row):
+                v.alpha_composite(im if im is not None else floor['v1'], (bx * 32, 64 + by * 32))
+        v = v.crop((0, 0, 11 * T, 9 * T))
+        v.alpha_composite(Q['prop_scroll_shelf'], (0, 1 * T))
+        v.alpha_composite(Q['prop_medicine_cabinet'], (2 * T, 1 * T))
+        v.alpha_composite(Q['prop_herb_stove'], (4 * T, 2 * T))
+        v.alpha_composite(Q['prop_water_jar'], (5 * T, 2 * T))
+        v.alpha_composite(Q['prop_bamboo_pot'], (6 * T, 1 * T))
+        v.alpha_composite(Q['prop_folding_screen'], (8 * T, 1 * T))
+        v.alpha_composite(Q['prop_writing_desk'], (1 * T, 5 * T))
+        v.alpha_composite(Q['prop_censer_small'], (3 * T, 5 * T + 0))
+        v.alpha_composite(Q['prop_tea_table'], (6 * T, 5 * T))
+        v.alpha_composite(Q['prop_plum_bonsai'], (7 * T, 4 * T))
+        v.alpha_composite(Q['prop_meditation_mats'], (6 * T, 7 * T))
+        v.alpha_composite(actor, (4 * T + 4, 6 * T - 4))
+        out['객잔·약방 안 11×9: 서가·약재장·약탕 화로·물독·대나무 화분·병풍 / 서안·향로·찻상·분재·방석'] = v
+    return out
+
+
+
+# =============================================================================
+# 시트: 줄 바닥 위 보기(PREVIEWS) · 큰 장면 둘(scenes)
+# =============================================================================
+def _img(w, h, fill=(0, 0, 0, 0)):
+    from PIL import Image
+    return Image.new('RGBA', (w, h), fill)
+
+
+def _x2(im):
+    from PIL import Image
+    return im.resize((im.width * 2, im.height * 2), Image.NEAREST)
+
+
+_SEED = {}
+
+
+def _seed():
+    if not _SEED:
+        _SEED.update({it['id']: it for it in json.load(open(os.path.join(DATA, 'seed.json'), encoding='utf-8'))['items']})
+    return _SEED
+
+
+def _floor(style, it, w, h):
+    """항목의 줄 바닥(contrastGround, 없으면 마당 돌)을 w×h 로 깐다."""
+    fl = style.get(it.get('contrastGround') or 'yard_floor_stone')
+    v = _img(w, h, (0, 0, 0, 255))
+    if fl is not None:
+        for x in range(0, w, fl.width):
+            for y in range(0, h, fl.height):
+                v.alpha_composite(fl, (x, y))
+    return v
+
+
+def _whole(iid, crops):
+    """세트(돌사자)는 조각을 seed 자리대로 다시 붙인다."""
+    if '_' in crops:
+        return crops['_']
+    it = _seed()[iid]
+    im = _img(it['size'][0] * T, it['size'][1] * T)
+    for pc in it['pieces']:
+        im.alpha_composite(crops[pc['id']], (pc['at'][0] * T, pc['at'][1] * T))
+    return im
+
+
+def _on_floor(iid):
+    def fn(crops, style):
+        it = _seed()[iid]
+        im = _whole(iid, crops)
+        reps = 3 if it.get('tileable') == 'x' else 1
+        pad = T // 2
+        v = _floor(style, it, im.width * reps + 2 * pad, im.height + 2 * pad)
+        for k in range(reps):
+            v.alpha_composite(im, (pad + k * im.width, pad))
+        cap = f'줄 바닥({it.get("contrastGround") or "yard_floor_stone"}) 위' + (' · 가로 3번 이어 붙임' if reps > 1 else '')
+        return [(cap, _x2(v))]
+    return fn
+
+
+PREVIEWS = {iid: _on_floor(iid) for iid in CANDIDATES}
+
+SCENE_HEAD = ('<h2>큰 장면 둘 (3배) — 줄마다: 문파 앞마당 16×12 칸 · 객잔·약방 안 10×8 칸</h2>'
+              '<p class="lead">바닥·벽은 frame-r1 의 같은 줄 후보(A → A1, B → B1)와 style-r1 그 줄 조각이다. 기물은 이 판의 그 줄 후보이고, '
+              '줄 B 에 B1 이 없는 항목(재질이 줄 B 와 다르지 않은 것)은 A1 을 그대로 놓았다. 대숲은 가로로 이어 깔았다. 사람은 Actor1(크기 비교). '
+              '깊이 순서: 위 줄(뒤) → 아래 줄(앞). 산문·정자는 지나가는 칸(walkGrid U)이 사람 위에 그려진다는 뜻이지만 장면은 그림만 겹쳐 보인다.</p>')
+
+
+def _crops_of(item_id, im):
+    it = _seed()[item_id]
+    return {pc['id']: im.crop((pc['at'][0] * T, pc['at'][1] * T, (pc['at'][0] + pc['size'][0]) * T, (pc['at'][1] + pc['size'][1]) * T))
+            for pc in it['pieces']}
+
+
+def _frame(key):
+    """frame-r1 같은 줄 후보(A1·B1)의 벽·마루·마당 조각."""
+    fk = key[0] + '1'
+    w = F.CANDIDATES['wall_inn_set'][fk]()[0].img()
+    f = F.CANDIDATES['floor_wood_inn'][fk]()[0].img()
+    y = F.CANDIDATES['floor_stone_yard'][fk]()[0].img()
+    return _crops_of('wall_inn_set', w), _crops_of('floor_wood_inn', f), _crops_of('floor_stone_yard', y)
+
+
+YARD_SCENE_MASK = [   # 16×12 — 1 = 돌 마당, 0 = 풀. 위 두 줄은 대숲 밑 풀, 양옆 풀 띠
+    "0000000000000000",
+    "0000000000000000",
+    "0011111111111100",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0111111111111110",
+    "0011111111111100",
+    "0000000000000000",
+]
+
+
+def scenes(get, style, actor, key):
+    def pick(iid):
+        im = get(iid)
+        if im is None:
+            im = get(iid, 'A1')
+        if isinstance(im, dict):
+            return _whole(iid, im)
+        return im
+
+    need = ['prop_sect_gate', 'prop_stone_lions', 'prop_stone_lantern', 'prop_banner_pole', 'prop_archery_target', 'prop_weapon_rack',
+            'prop_bamboo_thicket', 'prop_bronze_ding', 'prop_war_drum', 'prop_sandbag_frame', 'prop_scroll_shelf', 'prop_medicine_cabinet',
+            'prop_herb_stove', 'prop_tea_table', 'prop_folding_screen', 'prop_water_jar']
+    P = {iid: pick(iid) for iid in need + ['prop_meditation_mats', 'prop_writing_desk', 'prop_bamboo_pot', 'prop_plum_bonsai', 'prop_censer_small',
+                                            'prop_well', 'prop_stele', 'prop_gong_frame']}
+    if any(P[i] is None for i in need):
+        return {}
+    wall, floor, yard = _frame(key)
+    out = {}
+
+    def at(v, iid, tx, ty, dx=0, dy=0):
+        v.alpha_composite(P[iid], (tx * T + dx, ty * T + dy))
+
+    # ---- 1. 문파 앞마당 16×12
+    v = _img(16 * T, 12 * T, (0, 0, 0, 255))
+    v.alpha_composite(F.yard_patch(yard, style.get('yard_floor_stone'), YARD_SCENE_MASK), (0, 0))
+    lions = get('prop_stone_lions') or get('prop_stone_lions', 'A1')
+    for tx in range(0, 16, 2):                       # 뒤: 대숲 띠
+        at(v, 'prop_bamboo_thicket', tx, 0)
+    at(v, 'prop_banner_pole', 1, 1)
+    at(v, 'prop_banner_pole', 14, 1)
+    at(v, 'prop_sect_gate', 5, 0)
+    at(v, 'prop_stone_lantern', 3, 2)
+    at(v, 'prop_stone_lantern', 12, 2)
+    v.alpha_composite(lions['l'], (4 * T, 3 * T))
+    v.alpha_composite(lions['r'], (11 * T, 3 * T))
+    at(v, 'prop_war_drum', 13, 4)
+    at(v, 'prop_weapon_rack', 1, 5)
+    at(v, 'prop_archery_target', 14, 6)
+    at(v, 'prop_bronze_ding', 6, 6)
+    dm = style.get('training_dummy')
+    if dm is not None:
+        v.alpha_composite(dm, (3 * T, 8 * T))
+    at(v, 'prop_sandbag_frame', 11, 8)
+    v.alpha_composite(actor, (8 * T - 4, 10 * T - 16))
+    out['문파 앞마당 16×12: 대숲 띠·산문 패루·깃발 장대 둘·석등 둘·돌사자 한 쌍·전고 / 무기 걸이·과녁·청동 정·목인장(style)·모래주머니 틀'] = v
+
+    # ---- 2. 객잔·약방 안 10×8
+    v = _img(10 * T, 8 * T, (0, 0, 0, 255))
+    v.alpha_composite(F.wall_patch(wall, ('l', 'm', 'win', 'm', 'r')).crop((0, 0, 10 * T, 2 * T)), (0, 0))
+    st = style.get('inn_floor_wood')
+    for bx in range(0, 10, 2):
+        v.alpha_composite(floor['foot'], (bx * T, 2 * T))
+    tiles = [floor['v1'], floor['v2'], st if st is not None else floor['v1'], floor['v3']]
+    for by in range(2):
+        for bx in range(5):
+            v.alpha_composite(tiles[(bx + by * 2) % 4], (bx * 2 * T, (4 + by * 2) * T))
+    at(v, 'prop_scroll_shelf', 0, 1)
+    at(v, 'prop_medicine_cabinet', 2, 1)
+    at(v, 'prop_bamboo_pot', 4, 1)
+    at(v, 'prop_folding_screen', 7, 1)
+    at(v, 'prop_water_jar', 9, 2)
+    at(v, 'prop_herb_stove', 3, 3)
+    at(v, 'prop_writing_desk', 0, 4)
+    at(v, 'prop_tea_table', 6, 4)
+    at(v, 'prop_meditation_mats', 6, 5)
+    at(v, 'prop_censer_small', 5, 2)
+    at(v, 'prop_plum_bonsai', 9, 6)
+    v.alpha_composite(actor, (4 * T - 4, 5 * T - 16))
+    out['객잔·약방 안 10×8: 벽(frame-r1)·서가·약재장·대나무 화분·병풍·물독 / 약탕 화로·작은 향로 / 서안·찻상·명상 방석·매화 분재'] = v
+    return out
