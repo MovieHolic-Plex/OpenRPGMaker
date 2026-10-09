@@ -1,1 +1,0 @@
-에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님. Base=expert_m; original artwork Nintendo/Game Freak/Creatures. Source hash/mapping in recipe.json. Native crops and original right-facing flip only. No independent-hand-art claim.

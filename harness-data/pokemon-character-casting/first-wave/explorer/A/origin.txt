@@ -1,1 +1,0 @@
-브렌던 원본 몸·걷기에서 머리 행과 팔레트를 수정한 파생 후보. 완전 신규 원화 아님. Source original artwork Nintendo/Game Freak/Creatures; source hash and exact head/palette edits recorded in recipe.json. No raster reduction or automatic body pose transformation.

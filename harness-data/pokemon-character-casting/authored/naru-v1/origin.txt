@@ -1,2 +1,0 @@
-Codex가 16×32 픽셀 행을 직접 작성한 새 캐릭터입니다. 에메랄드 원작은 비율·걷기 참고로 관찰했고, 원작 픽셀 복사·색 교체·축소는 하지 않았습니다. 12포즈를 각각 작성하고 Python으로 PNG와 GIF를 출력했습니다.
-Explicit 16x32 palette rows authored by Codex GPT-6. Twelve independently specified poses; Python only renders and packs the rows. Full source grid is embedded in recipe.json. Emerald originals observed for proportion and timing, not used as input pixels.

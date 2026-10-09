@@ -1,1 +1,0 @@
-Emerald mom template derivative. Original artwork Nintendo / Game Freak / Creatures. Codex GPT-6 authored hair/clothing/backpack row patches and selected palette edits. Original body/gait/face retained. Exact template source and replayable edits in recipe.json. Not independently drawn from scratch.
