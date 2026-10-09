@@ -1,13 +1,13 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { prepareProjectInterviewStartup } from '@/editor/projectInterviewStartup';
 import { store } from '@/project/store';
-import { setPendingAiBootIntent } from '@/editor/aiBootIntent';
+import { applyPendingAiBootIntent, peekAiAssistantDraft, setPendingAiBootIntent } from '@/editor/aiBootIntent';
 import { isAssistantEndpointReady } from '@/ai/assistantEndpoint';
 import { interviewBrief } from './helpers/gameDesignBrief';
 import { configureProjectInterviewBootPreparation } from '@/editor/projectInterviewBootPreparation';
 import type { Project } from '@/project/types';
 vi.mock('@/project/store', () => ({store:{getCurrent:vi.fn(),getProjectIdentity:vi.fn(),update:vi.fn(),replace:vi.fn(),flush:vi.fn()}}));
-vi.mock('@/editor/aiBootIntent', () => ({setPendingAiBootIntent:vi.fn()}));
+vi.mock('@/editor/aiBootIntent', () => ({setPendingAiBootIntent:vi.fn(),applyPendingAiBootIntent:vi.fn(),peekAiAssistantDraft:vi.fn()}));
 vi.mock('@/ai/assistantEndpoint', () => ({resolveSurfaceAiConfig:vi.fn(()=>({})),isAssistantEndpointReady:vi.fn(()=>true)}));
 vi.mock('@/editor/panels/aiConnectionStatus', () => ({getAiConnectionStatus:vi.fn(()=>({})),refreshAiConnectionStatus:vi.fn(async()=>{}),AI_CONNECTION_STATUS_CHANGED_EVENT:'oprn:ai-connection-status-changed'}));
 vi.mock('@/project/playableSegment', () => ({withVerifiedPlayableSegment:vi.fn(()=>null)}));
@@ -16,6 +16,7 @@ let project: Project;
 let scope = 0;
 beforeEach(()=>{
  vi.clearAllMocks();
+ vi.mocked(peekAiAssistantDraft).mockReturnValue('existing user draft');
  configureProjectInterviewBootPreparation(async()=>{});
  project={system:{},gameDesignBrief:{...interviewBrief('story-cutscene'),generationPending:true}} as Project;
  vi.mocked(store.getCurrent).mockImplementation(()=>project);
@@ -23,6 +24,25 @@ beforeEach(()=>{
  vi.mocked(store.update).mockImplementation(fn=>{fn(project);});
  vi.mocked(store.flush).mockResolvedValue({kind:'saved'} as Awaited<ReturnType<typeof store.flush>>);
  vi.mocked(isAssistantEndpointReady).mockReturnValue(true);
+});
+it('shows the internal request immediately in an empty composer, but enables execution only after preparation and save',async()=>{
+ vi.mocked(peekAiAssistantDraft).mockReturnValue('');
+ let ready!: () => void;
+ configureProjectInterviewBootPreparation(()=>new Promise(resolve=>{ready=resolve;}));
+ const startup=prepareProjectInterviewStartup();
+ expect(setPendingAiBootIntent).toHaveBeenCalledOnce();
+ const [preview,options]=vi.mocked(setPendingAiBootIntent).mock.calls[0]!;
+ expect(preview).toContain('"id":"P03"');
+ expect(options).toMatchObject({autoSend:false,team:true});
+ expect(options?.displayText).not.toContain('"id":"P03"');
+ expect(applyPendingAiBootIntent).toHaveBeenCalledOnce();
+ expect(store.flush).not.toHaveBeenCalled();
+ await vi.waitFor(()=>expect(ready).toBeTypeOf('function'));
+ ready();await startup;
+ expect(store.flush).toHaveBeenCalledOnce();
+ expect(setPendingAiBootIntent).toHaveBeenCalledTimes(2);
+ expect(vi.mocked(setPendingAiBootIntent).mock.calls[1]![1]).toMatchObject({autoSend:true,team:true});
+ expect(applyPendingAiBootIntent).toHaveBeenCalledOnce();
 });
 it('publishes model-only tasks after canonical save, with a short display and a one-turn team option',async()=>{
  vi.mocked(store.flush).mockImplementation(async()=>{

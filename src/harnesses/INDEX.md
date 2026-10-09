@@ -24,6 +24,7 @@
 | `game-concepts` | 새 게임 컨셉 카드 | 장르 무관 | `harness-data/game-concepts/seed.json` | `openwiki/harnesses/game-concepts.md` |
 | `murim-chipset` | 무림 칩셋 도트 (murim_wuxia · oprn-murim) | 장르 무관 | `harness-data/murim-chipset/seed.json` | `openwiki/harnesses/murim-chipset.md` |
 | `dungeon-chipset` | 던전 칩셋 도트 (beodeul_dungeon · oprn-atlas) | 장르 무관 | `harness-data/dungeon-chipset/seed.json` | `openwiki/harnesses/dungeon-chipset.md` |
+| `interview-scene-bank` | 인터뷰 선택 배경 | 장르 무관 | `harness-data/interview-scene-bank/seed.json` | `openwiki/harnesses/interview-scene-bank.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -415,5 +416,23 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `pick` — 고르기(사람): 사람이 시트에서 고른 후보(화풍 판은 줄 글자, 이후 판은 <줄><번호>)를 시트 때 해시(--sha 앞자리)와 현재 그림 해시로 대조해 ledger.json 에 (항목, 줄)마다 기록하고 picked/<줄>/<항목>.png 로 복사한다.
 - `reject` — 버리기(사람): 사람이 버린 후보와 이유를 그림 해시와 함께 기록한다(다음 판의 「하지 말 것」).
 - `status` — 현황: 판별 그림·관문·시트 유무와 줄별·묶음별 고른 것(현재 해시와 맞는지)을 보여 준다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## interview-scene-bank — 인터뷰 선택 배경
+
+1,457개 누적 선택의 장면·프롬프트를 고정하고 원본 무결성과 해시에 묶인 실제 도트·선택 검수를 모두 통과한 그림만 배포한다.
+
+**이럴 때 쓴다:**
+- 새 게임 인터뷰의 누적 선택 배경을 대량 생성·검수·배포할 때
+
+**단계** (`npm run harness -- interview-scene-bank <단계>`):
+- `plan` — 장면 계획: 실제 질문에서 1,457개 고유 장면과 누적 프롬프트를 만든다.
+- `batch` — 다음 열 장: 합격작을 건너뛰고 미제작·탈락 장면 열 개의 생성 작업을 내보낸다.
+- `import` — 후보 등록: --key <장면> --image <원본>으로 생성 원본과 해시를 보관한다.
+- `gate` — 원본 무결성 관문: 전체 배경 비율·불투명·해시·중복을 검사하고 크기와 색 수는 진단으로 기록한다. 도트 표현은 실제 시각 검수한다.
+- `review` — 실제 그림 검수: --key <장면> --verdict <JSON>으로 원본 해시에 묶인 판정을 등록한다.
+- `build` — 합격작 배포: 규격과 시각 판정이 모두 유효한 그림만 앱 매니페스트에 넣는다.
+- `status` — 제작 현황: 미제작·규격 탈락·검수 대기·합격 수를 보고한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

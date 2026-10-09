@@ -1,0 +1,14 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 관계·연애 — 대화와 사건을 통해 가까워지고, 선택에 따라 관계와 결말이 달라져요.
+SELECTED FACTS:
+1. 이야기의 시작: 조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.
+2. 중심 플레이: 갈등 속에서 선택하며 — 중요한 순간에 누구를 믿고 어떻게 행동할지 정해요.
+LATEST CHOICE: 중심 플레이: 갈등 속에서 선택하며 — 중요한 순간에 누구를 믿고 어떻게 행동할지 정해요.
+SCENE ID: romance--town--choice. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+HIGH pulled-back oblique ordinary modern rural neighborhood. TWO real neighboring house GATES compact LEFT x8-40%, actual CLOSED plain BOOKS by first vs folded ordinary SCARF by second, divided real thresholds show meaningful trust alternatives. TWO full EMPTY simple undecorated wooden garden STOOLS LEFT x15-30% on shared bare walkway. No text/painted marks. TWO-answer prefix: no selected mood/progression/scope, no forced Y fork/multiple suitor pairs/final event. Right half quiet town depth, no essential right-side stool/door/prop. New high diagonal SMALL gates/stools, not old near-left-open giant threshold/far-right blue stool.

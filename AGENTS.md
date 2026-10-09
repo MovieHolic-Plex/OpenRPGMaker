@@ -93,6 +93,10 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- game-concepts produce|draw|check|serve|status|publish|bundle` · 문서 `openwiki/harnesses/game-concepts.md`
   → 사람이 http://mdc-server:18321/ 에서 받은 것만 스토어에 게시한다. 감독이 대신 고르지 않는다. 운영 게시는 `--target prod --yes-prod`.
 
+- **새 게임 인터뷰의 누적 선택 배경을 대량 생성·검수·배포할 때**
+  → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`
+  → 1,457개 선택 조합을 계획하고, 원본 도트 규격과 해시에 묶인 실제 그림 검수를 모두 통과한 배경만 배포한다.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 
