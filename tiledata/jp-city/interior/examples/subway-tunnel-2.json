@@ -1,0 +1,461 @@
+{
+ "name": "지하철 보선 터널 B2 — 선로 분기부·환기 기계실",
+ "plan": [
+  "########################",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "####.#######.######.####",
+  "#.......#.......#......#",
+  "#.......#.......#......#",
+  "#.......#.......#......#",
+  "#.......#.......#......#",
+  "########################"
+ ],
+ "floor": "ug-tunnel-floor",
+ "wall": "ug-tunnel-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 22,
+   "y1": 14,
+   "floor": "ug-room-floor",
+   "wall": "ug-room-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ug-refuge-niche",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "ug-ladder-up",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "ug-item-lantern",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "ug-emergency-phone",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "ug-emergency-phone",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "ug-puddle",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "ug-debris",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "ug-track-crossing",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "ug-track-crossing",
+   "x": 20,
+   "y": 4
+  },
+  {
+   "id": "ug-track-crossing",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "ug-point-machine",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "ug-signal",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "ug-signal",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 19,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "id": "ug-walkway-rail",
+   "x": 22,
+   "y": 8
+  },
+  {
+   "id": "ug-maint-cart",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "ug-debris",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "ug-debris",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "ug-debris",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "ug-debris",
+   "x": 10,
+   "y": 7
+  },
+  {
+   "id": "ug-puddle",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "ug-puddle",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 19,
+   "y": 10
+  },
+  {
+   "id": "ug-fan",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "ug-fan",
+   "x": 5,
+   "y": 13
+  },
+  {
+   "id": "ug-panel",
+   "x": 3,
+   "y": 13
+  },
+  {
+   "id": "ug-locker",
+   "x": 7,
+   "y": 13
+  },
+  {
+   "id": "ug-light-off",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "ug-light-off",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "ug-debris",
+   "x": 6,
+   "y": 14
+  },
+  {
+   "id": "ug-panel",
+   "x": 9,
+   "y": 13
+  },
+  {
+   "id": "ug-panel",
+   "x": 10,
+   "y": 13
+  },
+  {
+   "id": "ug-cable-rack",
+   "x": 13,
+   "y": 13
+  },
+  {
+   "id": "ug-locker",
+   "x": 15,
+   "y": 13
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 11,
+   "y": 11
+  },
+  {
+   "id": "ug-locker",
+   "x": 17,
+   "y": 13
+  },
+  {
+   "id": "ug-locker",
+   "x": 18,
+   "y": 13
+  },
+  {
+   "id": "ug-cable-rack",
+   "x": 20,
+   "y": 13
+  },
+  {
+   "id": "ug-item-firstaid",
+   "x": 22,
+   "y": 13
+  },
+  {
+   "id": "ug-debris",
+   "x": 18,
+   "y": 14
+  }
+ ],
+ "tables": [
+  {
+   "style": "ug-track",
+   "x": 1,
+   "y": 4,
+   "w": 3,
+   "h": 2
+  },
+  {
+   "style": "ug-track",
+   "x": 5,
+   "y": 4,
+   "w": 15,
+   "h": 2
+  },
+  {
+   "style": "ug-track",
+   "x": 21,
+   "y": 4,
+   "w": 2,
+   "h": 2
+  },
+  {
+   "style": "ug-track",
+   "x": 14,
+   "y": 6,
+   "w": 6,
+   "h": 2
+  },
+  {
+   "style": "ug-track",
+   "x": 21,
+   "y": 6,
+   "w": 2,
+   "h": 2
+  }
+ ],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "subway-junction",
+   "x0": 1,
+   "y0": 1,
+   "x1": 22,
+   "y1": 9
+  },
+  {
+   "room": "subway-vent",
+   "x0": 1,
+   "y0": 10,
+   "x1": 7,
+   "y1": 14
+  },
+  {
+   "room": "subway-relay",
+   "x0": 9,
+   "y0": 10,
+   "x1": 15,
+   "y1": 14
+  },
+  {
+   "room": "subway-store",
+   "x0": 17,
+   "y0": 10,
+   "x1": 22,
+   "y1": 14
+  }
+ ],
+ "start": [
+  3,
+  3
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 2,
+   "y": 3,
+   "toMapId": "jp-city-subway-tunnel-1",
+   "toX": 12,
+   "toY": 4,
+   "direction": "up"
+  }
+ ],
+ "locks": [
+  {
+   "x": 4,
+   "y": 10,
+   "key": "B2 환기 기계실 열쇠",
+   "why": "환기 기계실 철문 — 열쇠는 동쪽 자재 창고 사물함(17,13)."
+  }
+ ],
+ "open": [
+  {
+   "x0": 1,
+   "y0": 7,
+   "x1": 13,
+   "y1": 9,
+   "why": "선로 분기부 보수 기지(보스 자리)"
+  }
+ ]
+}

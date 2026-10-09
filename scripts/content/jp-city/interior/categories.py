@@ -93,19 +93,67 @@ CATEGORIES = [
     # (우체국 끝)
     # ── 4묶음(2026-10-08~): 현대 던전. 블록마다 자기 칸 아래에만. ──
     # [dungeon_underground ug-]
+    ('tunnel', '지하철 보선 터널', ['ug-track-crossing', 'ug-walkway-rail', 'ug-signal', 'ug-cable-rack', 'ug-emergency-phone', 'ug-refuge-niche',
+                               'ug-maint-cart', 'ug-fan', 'ug-ladder-up', 'ug-hatch-down', 'ug-point-machine', 'ug-debris', 'ug-panel', 'ug-locker',
+                               'ug-door-steel', 'ug-light-off', 'ug-light-emergency', 'ug-item-toolbox', 'ug-item-lantern']),
+    ('sewer', '하수도', ['ug-grate', 'ug-pipe-h', 'ug-pipe-v', 'ug-valve', 'ug-manhole-ladder', 'ug-sluice', 'ug-puddle', 'ug-trash-pile',
+                       'ug-rat-hole', 'ug-pump', 'ug-item-firstaid']),
     # (지하 끝)
 
     # [dungeon_hospital hp-]
+    ('ruin-hospital', '폐병원 병동·수술실', ['hp-bed-rusty', 'hp-curtain-torn', 'hp-iv-stand', 'hp-wheelchair', 'hp-stretcher', 'hp-nurse-station',
+                                        'hp-chart-rack', 'hp-med-cart', 'hp-op-table', 'hp-op-light', 'hp-monitor-cart', 'hp-xray-box',
+                                        'hp-morgue-drawers', 'hp-boiler', 'hp-elevator-dead', 'hp-bench-torn-s', 'hp-bench-torn-n', 'hp-pipes',
+                                        'hp-item-medkit', 'hp-item-keybox', 'hp-item-records', 'hp-item-locker']),
+    ('ruin-debris', '잔해·흔적', ['hp-bed-overturned', 'hp-debris', 'hp-papers', 'hp-glass', 'hp-ceiling-fallen', 'hp-puddle', 'hp-door-broken',
+                                 'hp-door-locked', 'hp-light-flicker', 'hp-chair-fallen', 'hp-shelf-fallen', 'hp-emergency-light']),
     # (폐병원 끝)
 
     # [dungeon_school as-]
+    ('ruin-school', '폐교', ['as-desk-dusty-n', 'as-desk-toppled', 'as-chair-toppled', 'as-blackboard-cracked', 'as-podium-broken', 'as-locker-open',
+                           'as-piano-broken', 'as-bookshelf-fallen', 'as-bookshelf-dusty', 'as-staff-desk-dusty', 'as-lab-bench-dusty',
+                           'as-music-chair-n', 'as-window-broken', 'as-floor-hole', 'as-debris', 'as-stairs-up-broken', 'as-stairwell-down',
+                           'as-door-locked', 'as-shoe-locker-rot', 'as-vines', 'as-vines-floor', 'as-leaves', 'as-puddle', 'as-exit-light',
+                           'as-item-diary', 'as-item-key-hook', 'as-item-toolbox', 'as-item-photo-box']),
     # (폐교 끝)
 
     # [dungeon_construction cs-]
+    ('construction', '공사장', ['cs-scaffold', 'cs-rebar', 'cs-cement-bags', 'cs-steel-beam', 'cs-cable-drum', 'cs-cone', 'cs-barrier', 'cs-work-light',
+                             'cs-shaft-hole', 'cs-ladder-up', 'cs-ladder-down', 'cs-generator', 'cs-site-office', 'cs-tarp', 'cs-stairs-up-bare',
+                             'cs-stairwell-down', 'cs-column-bare', 'cs-site-gate', 'cs-fallen-board', 'cs-rubble', 'cs-debris', 'cs-puddle',
+                             'cs-item-toolbox', 'cs-item-helmet-shelf', 'cs-item-blueprint']),
+    ('parking', '지하 주차장', ['cs-pillar', 'cs-parking-line', 'cs-parking-line-h', 'cs-parking-line-corner', 'cs-car-a', 'cs-car-b', 'cs-wheel-stop',
+                             'cs-ramp-arrow', 'cs-ramp-arrow-e', 'cs-fire-hose', 'cs-pay-machine', 'cs-shutter', 'cs-light-off', 'cs-exit-light',
+                             'cs-ramp-up', 'cs-ramp-down', 'cs-item-car-trunk']),
     # (공사장 끝)
 
     # [dungeon_warehouse wh-]
+    ('undermall', '지하상가', ['wh-shopfront-shutter', 'wh-shopfront-shutter-b', 'wh-shopfront-half', 'wh-shop-window', 'wh-mall-pillar',
+                            'wh-mall-bench', 'wh-guide-board', 'wh-escalator-stopped', 'wh-escalator-down', 'wh-shutter-gate', 'wh-shutter-crawl',
+                            'wh-vending-dark', 'wh-cart-abandoned', 'wh-exit-sign', 'wh-emergency-lamp', 'wh-fluor-broken', 'wh-pump',
+                            'wh-panel-board', 'wh-pipes', 'wh-fountain-dry', 'wh-debris-paper', 'wh-glass-shards', 'wh-puddle',
+                            'wh-fallen-panel', 'wh-rubble', 'wh-toppled-shelf', 'wh-item-bag', 'wh-item-locker', 'wh-item-firstaid']),
+    ('warehouse', '항만 창고', ['wh-container-h', 'wh-container-h-blue', 'wh-container-h-green', 'wh-container-v', 'wh-container-v-blue',
+                             'wh-container-v-green', 'wh-pallet', 'wh-pallet-rack', 'wh-forklift', 'wh-crate', 'wh-drum', 'wh-rope-coil',
+                             'wh-rolling-door', 'wh-wicket-door', 'wh-catwalk-ladder', 'wh-ladder-hatch', 'wh-catwalk-rail', 'wh-office-cabin',
+                             'wh-chain-hoist', 'wh-light-hang', 'wh-light-off', 'wh-tarp-pile', 'wh-item-crate-open', 'wh-item-safe',
+                             'wh-item-manifest', 'wh-item-toolbox']),
     # (창고 끝)
+    # ── 5묶음(2026-10-09~): 오락·숙박·상업 실내. 블록마다 자기 칸 아래에만. ──
+    # [interior_amuse am-]
+    # (오락실 끝)
+
+    # [interior_karaoke kr-]
+    # (노래방 끝)
+
+    # [interior_famires fr-]
+    # (패밀리 레스토랑 끝)
+
+    # [interior_hotel ht-]
+    # (숙박 끝)
+
+    # [interior_mall ml-]
+    # (쇼핑몰 끝)
 ]
 
 BY_ID = {}

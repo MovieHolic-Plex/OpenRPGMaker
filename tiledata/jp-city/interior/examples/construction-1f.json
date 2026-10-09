@@ -1,0 +1,431 @@
+{
+ "name": "공사 중 빌딩 1층(자재 야적·현장 사무실·갱도)",
+ "plan": [
+  "######################",
+  "#..............#.....#",
+  "#..............#.....#",
+  "#..............#.....#",
+  "#..............#.....#",
+  "#..............#.....#",
+  "#..............#.....#",
+  "#..............###.###",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "##..##################"
+ ],
+ "floor": "cs-slab",
+ "wall": "cs-wall-bare",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 15,
+   "y0": 8,
+   "x1": 20,
+   "y1": 9,
+   "floor": "cs-slab",
+   "wall": "cs-plywood-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "cs-cement-bags",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "cs-rubble",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "cs-barrier",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "cs-barrier",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "cs-barrier",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "cs-barrier",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "cs-puddle",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 13,
+   "y": 11
+  },
+  {
+   "id": "cs-work-light",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "cs-rubble",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "cs-cone",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 15,
+   "y": 12
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 17,
+   "y": 12
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 19,
+   "y": 12
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "cs-puddle",
+   "x": 7,
+   "y": 13
+  },
+  {
+   "id": "cs-puddle",
+   "x": 8,
+   "y": 13
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 15,
+   "y": 13
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 17,
+   "y": 13
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 19,
+   "y": 13
+  },
+  {
+   "id": "cs-cone",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "cs-cone",
+   "x": 4,
+   "y": 14
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 7,
+   "y": 14
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "cs-site-gate",
+   "x": 2,
+   "y": 15
+  },
+  {
+   "id": "cs-site-gate",
+   "x": 3,
+   "y": 15
+  },
+  {
+   "id": "cs-rebar",
+   "x": 5,
+   "y": 14
+  },
+  {
+   "id": "cs-steel-beam",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "cs-tarp",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "cs-site-office",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "cs-item-helmet-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cs-item-toolbox",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "cs-shaft-hole",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "cs-stairs-up-bare",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cs-generator",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "cs-cable-drum",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "cs-ladder-up",
+   "x": 20,
+   "y": 10
+  },
+  {
+   "id": "cs-cable-drum",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "cs-work-light",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "cs-fallen-board",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "cs-item-toolbox",
+   "x": 20,
+   "y": 14
+  },
+  {
+   "id": "cs-shutter",
+   "x": 18,
+   "y": 7
+  },
+  {
+   "id": "cs-item-blueprint",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "cs-tarp",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "cs-rebar",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "cs-light-off",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "cs-light-off",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "cs-light-off",
+   "x": 17,
+   "y": 1
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "materialstore",
+   "x0": 15,
+   "y0": 0,
+   "x1": 21,
+   "y1": 7
+  },
+  {
+   "room": "siteoffice",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 6
+  },
+  {
+   "room": "shaftcore",
+   "x0": 7,
+   "y0": 0,
+   "x1": 14,
+   "y1": 8
+  },
+  {
+   "room": "scaffoldmaze",
+   "x0": 13,
+   "y0": 8,
+   "x1": 21,
+   "y1": 15
+  },
+  {
+   "room": "shaftcore",
+   "x0": 7,
+   "y0": 9,
+   "x1": 12,
+   "y1": 12
+  },
+  {
+   "room": "siteyard",
+   "x0": 0,
+   "y0": 0,
+   "x1": 21,
+   "y1": 15
+  }
+ ],
+ "start": [
+  2,
+  14
+ ],
+ "exitWidth": 2,
+ "locks": [
+  {
+   "x": 18,
+   "y": 7,
+   "key": "자재 창고 열쇠",
+   "why": "자재 창고 셔터 — 열쇠는 현장 사무실 곁 공구함"
+  }
+ ],
+ "links": [
+  {
+   "x": 9,
+   "y": 3,
+   "toMapId": "jp-city-construction-2f",
+   "toX": 11,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 10,
+   "y": 3,
+   "toMapId": "jp-city-construction-2f",
+   "toX": 11,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 20,
+   "y": 10,
+   "toMapId": "jp-city-construction-2f",
+   "toX": 19,
+   "toY": 12,
+   "direction": "up"
+  }
+ ]
+}

@@ -1,0 +1,331 @@
+{
+ "name": "폐교 2층(음악실·음악 준비실·도서실·무너진 복도)",
+ "plan": [
+  "########################",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "#..........#..#........#",
+  "######.#####.###.####.##",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "########################"
+ ],
+ "floor": "as-corridor-dirty",
+ "wall": "as-wall-peel",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 10,
+   "y1": 7,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 12,
+   "y0": 0,
+   "x1": 13,
+   "y1": 7,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 15,
+   "y0": 0,
+   "x1": 22,
+   "y1": 7,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 13,
+   "y0": 8,
+   "x1": 22,
+   "y1": 10,
+   "wall": "as-wall-vine"
+  }
+ ],
+ "objects": [
+  {
+   "id": "as-blackboard-cracked",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "as-window-broken",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "as-vines",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "as-piano-broken",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "as-bookshelf-dusty",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "as-chair-toppled",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "as-leaves",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "as-music-chair-n",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "as-music-chair-n",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "as-chair-toppled",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "as-music-chair-n",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "as-chair-toppled",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "as-debris",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "as-puddle",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "as-door-locked",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "as-vines",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "as-locker-open",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "as-debris",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "as-item-toolbox",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "door-open-western",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "as-bookshelf-dusty",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "as-window-broken",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "as-item-diary",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "as-bookshelf-dusty",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "as-vines",
+   "x": 22,
+   "y": 1
+  },
+  {
+   "id": "as-bookshelf-fallen",
+   "x": 18,
+   "y": 4
+  },
+  {
+   "id": "as-bookshelf-fallen",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "as-bookshelf-fallen",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "as-bookshelf-fallen",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "as-leaves",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "as-leaves",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "id": "as-stairwell-down",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "as-exit-light",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "as-puddle",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "as-debris",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 17,
+   "y": 11
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 18,
+   "y": 11
+  },
+  {
+   "id": "as-debris",
+   "x": 19,
+   "y": 11
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 20,
+   "y": 11
+  },
+  {
+   "id": "as-item-photo-box",
+   "x": 22,
+   "y": 12
+  },
+  {
+   "id": "as-leaves",
+   "x": 11,
+   "y": 11
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "ruinmusic",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 8
+  },
+  {
+   "room": "ruinprep",
+   "x0": 11,
+   "y0": 0,
+   "x1": 13,
+   "y1": 8
+  },
+  {
+   "room": "ruinlibrary",
+   "x0": 14,
+   "y0": 0,
+   "x1": 23,
+   "y1": 8
+  },
+  {
+   "room": "ruincorridor",
+   "x0": 0,
+   "y0": 9,
+   "x1": 23,
+   "y1": 13
+  }
+ ],
+ "start": [
+  3,
+  12
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 1,
+   "y": 12,
+   "toMapId": "jp-city-ruin-school-1f",
+   "toX": 1,
+   "toY": 11,
+   "direction": "down"
+  },
+  {
+   "x": 2,
+   "y": 12,
+   "toMapId": "jp-city-ruin-school-1f",
+   "toX": 2,
+   "toY": 11,
+   "direction": "down"
+  }
+ ],
+ "locks": [
+  {
+   "x": 6,
+   "y": 8,
+   "key": "음악실 열쇠",
+   "why": "쇠사슬 감긴 음악실 문(보스 방) — 열쇠는 1층 과학실 사진 상자(14,16)"
+  }
+ ]
+}

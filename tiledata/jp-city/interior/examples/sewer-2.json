@@ -1,0 +1,318 @@
+{
+ "name": "하수 본관 — 합류 수조·펌프실·맨홀 탈출구",
+ "plan": [
+  "######################",
+  "#..........#.........#",
+  "#..........#.........#",
+  "#..........#.........#",
+  "#..........#.........#",
+  "#..........####.######",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "######################"
+ ],
+ "floor": "ug-sewer-floor",
+ "wall": "ug-sewer-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 12,
+   "y0": 1,
+   "x1": 20,
+   "y1": 4,
+   "floor": "ug-room-floor",
+   "wall": "ug-room-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ug-ladder-up",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "ug-valve",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "ug-valve",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "ug-item-firstaid",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "ug-puddle",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "ug-puddle",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "ug-puddle",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "ug-debris",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "ug-debris",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "ug-debris",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "ug-grate",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "ug-grate",
+   "x": 17,
+   "y": 9
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "ug-pump",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "ug-pump",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "ug-panel",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "ug-panel",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "ug-locker",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-v",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "ug-manhole-ladder",
+   "x": 20,
+   "y": 8
+  },
+  {
+   "id": "ug-valve",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "ug-rat-hole",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "ug-light-off",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "ug-puddle",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "ug-item-toolbox",
+   "x": 20,
+   "y": 12
+  },
+  {
+   "id": "ug-debris",
+   "x": 19,
+   "y": 11
+  },
+  {
+   "id": "ug-debris",
+   "x": 12,
+   "y": 11
+  }
+ ],
+ "tables": [
+  {
+   "style": "ug-tank",
+   "x": 3,
+   "y": 6,
+   "w": 6,
+   "h": 5
+  },
+  {
+   "style": "ug-channel",
+   "x": 9,
+   "y": 9,
+   "w": 2,
+   "h": 2
+  },
+  {
+   "style": "ug-channel",
+   "x": 12,
+   "y": 9,
+   "w": 5,
+   "h": 2
+  },
+  {
+   "style": "ug-channel",
+   "x": 18,
+   "y": 9,
+   "w": 3,
+   "h": 2
+  }
+ ],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "sewer-confluence",
+   "x0": 1,
+   "y0": 1,
+   "x1": 10,
+   "y1": 12
+  },
+  {
+   "room": "sewer-pump",
+   "x0": 12,
+   "y0": 1,
+   "x1": 20,
+   "y1": 4
+  },
+  {
+   "room": "sewer-walkway",
+   "x0": 11,
+   "y0": 5,
+   "x1": 20,
+   "y1": 12
+  }
+ ],
+ "start": [
+  2,
+  4
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 2,
+   "y": 3,
+   "toMapId": "jp-city-sewer-1",
+   "toX": 19,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 20,
+   "y": 8,
+   "toMapId": "jp-city-sewer-1",
+   "toX": 2,
+   "toY": 12,
+   "direction": "up"
+  }
+ ],
+ "locks": [
+  {
+   "x": 15,
+   "y": 5,
+   "key": "펌프실 열쇠",
+   "why": "펌프실 철문 — 열쇠는 남동쪽 막다른 둑 공구함(20,12)."
+  }
+ ],
+ "open": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 10,
+   "y1": 5,
+   "why": "합류 수조 북쪽 둑(보스 자리)"
+  }
+ ]
+}

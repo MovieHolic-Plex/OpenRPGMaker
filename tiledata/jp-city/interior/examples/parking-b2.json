@@ -1,0 +1,365 @@
+{
+ "name": "지하 주차장 B2(침수 구역·방재 창고)",
+ "plan": [
+  "########################",
+  "#......#...............#",
+  "#......#...............#",
+  "#......#...............#",
+  "#......#...............#",
+  "#......#...............#",
+  "###.####...............#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "########################"
+ ],
+ "floor": "cs-parking-floor-dark",
+ "wall": "cs-parking-wall-dark",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 1,
+   "x1": 6,
+   "y1": 5,
+   "floor": "cs-slab",
+   "wall": "cs-wall-bare"
+  }
+ ],
+ "objects": [
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "cs-cone",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "cs-cone",
+   "x": 19,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "cs-cone",
+   "x": 19,
+   "y": 5
+  },
+  {
+   "id": "cs-ramp-arrow",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "cs-pillar",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "cs-pillar",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "cs-cone",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "cs-rubble",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "cs-rubble",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 21,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 22,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "cs-pillar",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "cs-pillar",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "cs-rubble",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "cs-rubble",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "cs-rubble",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "cs-pillar",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "cs-puddle",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "cs-rubble",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "cs-barrier",
+   "x": 14,
+   "y": 10
+  },
+  {
+   "id": "cs-barrier",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "cs-puddle",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "cs-puddle",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "cs-puddle",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "cs-barrier",
+   "x": 17,
+   "y": 11
+  },
+  {
+   "id": "cs-debris",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "cs-pillar",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 16,
+   "y": 12
+  },
+  {
+   "id": "cs-ramp-up",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "cs-car-a",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "cs-shutter",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "cs-car-b",
+   "x": 19,
+   "y": 10
+  },
+  {
+   "id": "cs-item-car-trunk",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "cs-item-helmet-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cs-item-toolbox",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "cs-tarp",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "cs-light-off",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "cs-light-off",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "cs-exit-light",
+   "x": 18,
+   "y": 1
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "bousaistore",
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 6
+  },
+  {
+   "room": "parkingbay",
+   "x0": 8,
+   "y0": 0,
+   "x1": 19,
+   "y1": 5
+  },
+  {
+   "room": "parkingaisle",
+   "x0": 0,
+   "y0": 0,
+   "x1": 23,
+   "y1": 13
+  }
+ ],
+ "start": [
+  21,
+  4
+ ],
+ "inner": true,
+ "locks": [
+  {
+   "x": 3,
+   "y": 6,
+   "key": "B2 방재 창고 열쇠",
+   "why": "방재 창고 셔터 — 열쇠는 B1 기계실 공구함"
+  }
+ ],
+ "links": [
+  {
+   "x": 21,
+   "y": 3,
+   "toMapId": "jp-city-parking-b1",
+   "toX": 20,
+   "toY": 13,
+   "direction": "up"
+  },
+  {
+   "x": 22,
+   "y": 3,
+   "toMapId": "jp-city-parking-b1",
+   "toX": 20,
+   "toY": 13,
+   "direction": "up"
+  }
+ ]
+}

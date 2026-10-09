@@ -1,0 +1,99 @@
+[
+ {
+  "file": "ruin-school-1f",
+  "maps": [
+   "ruin-school-1f",
+   "ruin-school-2f"
+  ],
+  "placeId": "jp-city-ruin-school-1f-24x18",
+  "dungeon": true,
+  "name": "폐교(버려진 시골 학교) 던전",
+  "kind": "ruin-school",
+  "kindKo": "폐교",
+  "alias": [
+   "廃校",
+   "폐교",
+   "abandoned school",
+   "廃墟の学校",
+   "버려진 학교",
+   "haunted school"
+  ],
+  "building": "jp_school_ruin",
+  "roomKinds": {
+   "ruingenkan": [
+    "무너진 현관(昇降口)",
+    [
+     "廃校の昇降口",
+     "폐교 현관",
+     "ruined school entrance"
+    ]
+   ],
+   "ruincorridor": [
+    "폐교 복도",
+    [
+     "廃校の廊下",
+     "폐교 복도",
+     "ruined school corridor"
+    ]
+   ],
+   "ruinclassroom": [
+    "폐교 교실",
+    [
+     "廃教室",
+     "버려진 교실",
+     "abandoned classroom"
+    ]
+   ],
+   "ruinstaffroom": [
+    "폐교 교무실",
+    [
+     "廃校の職員室",
+     "버려진 교무실",
+     "abandoned staff room"
+    ]
+   ],
+   "ruinlab": [
+    "폐교 과학실",
+    [
+     "廃校の理科室",
+     "버려진 과학실",
+     "abandoned science lab"
+    ]
+   ],
+   "ruinmusic": [
+    "폐교 음악실",
+    [
+     "廃校の音楽室",
+     "버려진 음악실",
+     "abandoned music room"
+    ]
+   ],
+   "ruinprep": [
+    "폐교 음악 준비실",
+    [
+     "音楽準備室",
+     "음악 준비실",
+     "music prep room"
+    ]
+   ],
+   "ruinlibrary": [
+    "폐교 도서실",
+    [
+     "廃校の図書室",
+     "버려진 도서실",
+     "abandoned school library"
+    ]
+   ]
+  },
+  "rules": [
+   "맵 둘 — 1층 ruin-school-1f(거리 건물 jp_school_ruin 문과 잇는 주 맵, 맨 아래 2칸 출입구) · 2층 ruin-school-2f(inner). 계단은 1층 복도 서쪽 끝의 부서진 콘크리트 계단 as-stairs-up-broken(1~2,10) → 2층 계단통 as-stairwell-down(1~2,11) 옆 (3,12), 2층 계단통 아랫줄 → 1층 계단 앞 (1~2,11).",
+   "1층 흐름: 무너진 현관(금 간 타일 as-tile-cracked, 썩은 신발장 as-shoe-locker-rot·잔해 더미 as-debris·낙엽) → 북쪽으로 ㄱ자로 꺾이는 복도(얼룩진 비닐 as-corridor-dirty, 동서 2줄) → 복도 북쪽에 교실 A·교실 B·교무실, 남쪽에 과학실. 갈림길은 현관이 복도와 만나는 곳과 문마다.",
+   "1층 고리: 교실 A 는 앞문(3,7)·뒷문(6,7) 두 개라 복도 → 교실 A → 복도로 한 바퀴 돈다(넘어진 책상 as-desk-toppled 사이로). 교실 B 는 문 하나(13,7)의 막다른 방 — 마루 구멍 as-floor-hole 이 방을 반쯤 막아 구불구불 돌아 들어간 북쪽 (11,3)에 일기장 상자 as-item-diary(단서).",
+   "1층 잠긴 문: 과학실 문(12,12) 쇠사슬 문 as-door-locked — 「과학실 열쇠」는 교무실(막다른 방) 북쪽 벽 열쇠 고리판 as-item-key-hook(21,1, 아래 칸 (21,3)에서 조사). 교무실 동남 구석 (22,6) 녹슨 공구함 as-item-toolbox(보물). 과학실 안 동남 구석 (14,16) 사진 상자 as-item-photo-box 에서 2층 「음악실 열쇠」.",
+   "2층 흐름: 계단통(서쪽 끝) → 동서 복도 2줄 → 복도 북쪽에 음악실(보스 방, 잠긴 문 (6,8))·음악 준비실(막다른 방, 문 (12,8), 안쪽 (13,7) 공구함)·도서실(문 (16,8)·(21,8) 두 개). 복도 동쪽은 무너져(마루 구멍·잔해 x 17~20) 아랫줄 한 칸만 남고, 끝 (22,12)이 막다른 곳(사진 상자).",
+   "2층 고리: 복도의 무너진 1칸 길과 도서실(두 문)을 지나는 길이 한 바퀴를 이룬다. 도서실 안은 넘어진 서가 as-bookshelf-fallen 가 엇갈린 미로 — 북쪽 벽 서가 사이 막다른 칸 (18,3)에 일기장 상자(마지막 단서) — 넘어진 서가를 돌아 (17,3)에서 조사.",
+   "몬스터를 둘 곳: 1층 무너진 현관(넓은 타일 바닥)·교실 A, 2층 복도 서쪽. 보스 방 = 2층 음악실 — 부서진 그랜드 피아노 as-piano-broken(5,3) 앞 빈 바닥(4~8, 4~7)에 보스, 문 (6,8)은 「음악실 열쇠」로 연다. 잠금·몬스터·조사는 조수가 이벤트로 단다(타일은 걸을 수 있다).",
+   "평면·가구는 tiledata/jp-city/interior/examples/ruin-school-1f.json · ruin-school-2f.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로(locks 는 이벤트 자리 안내). 짓는 순서: 두 층을 links 없이 → links 넣어 replace:true. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-ruin-school-1f-24x18\"}). 정상 학교 본관(school-1f)과 평면이 다르다 — 섞어 쓰지 않는다."
+  ]
+ }
+]

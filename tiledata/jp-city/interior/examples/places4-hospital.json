@@ -1,0 +1,153 @@
+[
+ {
+  "file": "abandoned-hospital-1f",
+  "maps": [
+   "abandoned-hospital-1f",
+   "abandoned-hospital-2f",
+   "abandoned-hospital-b1"
+  ],
+  "placeId": "jp-city-abandoned-hospital-1f-24x16",
+  "name": "폐병원(버려진 종합병원) 던전",
+  "kind": "hospital_ruin",
+  "kindKo": "폐병원",
+  "alias": [
+   "廃病院",
+   "廃墟病院",
+   "폐병원",
+   "폐허 병원",
+   "버려진 병원",
+   "abandoned hospital",
+   "haikyo hospital"
+  ],
+  "building": "jp_hospital_ruin",
+  "dungeon": true,
+  "roomKinds": {
+   "hosplobby": [
+    "폐병원 대기 로비",
+    [
+     "待合ロビー",
+     "外来待合",
+     "대기실",
+     "로비",
+     "hospital lobby"
+    ]
+   ],
+   "hospexam": [
+    "외래 진찰실",
+    [
+     "診察室",
+     "外来",
+     "진찰실",
+     "exam room"
+    ]
+   ],
+   "hospdispensary": [
+    "약제실",
+    [
+     "薬剤部",
+     "調剤室",
+     "약국",
+     "dispensary"
+    ]
+   ],
+   "hospstairs": [
+    "계단실",
+    [
+     "階段室",
+     "계단",
+     "stair hall"
+    ]
+   ],
+   "hospcorridor": [
+    "병원 복도",
+    [
+     "廊下",
+     "病棟廊下",
+     "복도",
+     "hospital corridor"
+    ]
+   ],
+   "hospward": [
+    "병실",
+    [
+     "病室",
+     "入院病棟",
+     "병동",
+     "ward"
+    ]
+   ],
+   "hospnurse": [
+    "간호사 스테이션",
+    [
+     "ナースステーション",
+     "詰所",
+     "간호사실",
+     "nurse station"
+    ]
+   ],
+   "hospsurgery": [
+    "수술실",
+    [
+     "手術室",
+     "オペ室",
+     "수술방",
+     "operating room"
+    ]
+   ],
+   "hosptreat": [
+    "처치실",
+    [
+     "処置室",
+     "치료실",
+     "treatment room"
+    ]
+   ],
+   "hospmorgue": [
+    "영안실",
+    [
+     "霊安室",
+     "안치실",
+     "morgue"
+    ]
+   ],
+   "hospboiler": [
+    "보일러실",
+    [
+     "ボイラー室",
+     "機械室",
+     "기관실",
+     "boiler room"
+    ]
+   ],
+   "hospstore": [
+    "창고",
+    [
+     "倉庫",
+     "物品庫",
+     "비품실",
+     "storeroom"
+    ]
+   ],
+   "hospmachine": [
+    "기계실·배관",
+    [
+     "機械室",
+     "電気室",
+     "전기실",
+     "machine room"
+    ]
+   ]
+  },
+  "rules": [
+   "던전 맵 셋 — 1층 abandoned-hospital-1f(거리와 잇는 주 맵 24×16, 맨 아래 2칸 부서진 정문) · 2층 abandoned-hospital-2f(병동, inner) · 지하 abandoned-hospital-b1(영안실·보일러실, inner). 계단 x 를 층마다 맞춘다: 1층 계단실의 올라가는 sc-stairs-up (21,3)(x21-22) 발칸 → 2층 계단참 (20,15), 2층 내려가는 계단통 sc-stairwell-down (21,14) 아랫줄 (21,15)(22,15) → 1층 계단 앞 (21,4)/(22,4). 1층 내려가는 계단통 sc-stairwell-down (18,3) 아랫줄 (18,4)(19,4) → 지하 계단 앞 (18,4)/(19,4), 지하 올라가는 sc-stairs-up (18,3) 발칸 → 1층 (20,4).",
+   "1층 흐름: 정문(바닥에 유리 조각 hp-glass) → 대기 로비(기둥 둘, 북쪽을 보는 찢긴 대기 의자 hp-bench-torn-n 두 줄, 넘어진 의자 hp-chair-fallen, 더러운 접수 카운터 hp-nurse-station 넷 + 뒤 의자) → 동서 복도(멈춘 엘리베이터 hp-elevator-dead, 떨어진 천장판 hp-ceiling-fallen, 이동 침대) → 북쪽 외래 진찰실 1·2(의사 책상·판독 상자·찢긴 커튼, 두 방은 뒤쪽 통로 (5,3)로 이어져 복도와 한 바퀴 도는 고리) · 약제실(잠김) · 계단실(트인 2칸). 로비 서쪽·동쪽 끝은 잔해가 쌓인 막다른 구석.",
+   "잠긴 문과 열쇠(차례대로 푼다): ① 1층 외래 진찰실 1 사물함 hp-item-locker (3,3) 에서 「보일러실 열쇠」 → 지하 보일러실 문 (11,6) ② 보일러실 안 열쇠함 hp-item-keybox (11,1) 에서 「수술실 열쇠」 → 2층 수술실 문 (18,6) ③ 2층 간호사 스테이션 열쇠함 hp-item-keybox (14,1) 에서 「약제실 열쇠」 → 1층 약제실 문 (14,6). 잠긴 문 칸은 체인 감긴 문 hp-door-locked(걸을 수 있는 문 틈) — 잠금·열기는 이벤트로 단다.",
+   "보물·단서 자리(막다른 곳): 1층 약제실 구급함 hp-item-medkit (16,5) · 로비 서쪽 구석 진료 기록 상자 hp-item-records (1,14). 2층 병실 203 진료 기록 (5,15) · 처치실 구급함 (14,15). 지하 영안실 기록 상자 (7,4) · 창고 구급함 (8,14). 열쇠 셋은 위 사물함·열쇠함.",
+   "몬스터를 둘 넓은 곳: 1층 대기 로비(기둥 둘레), 2층 병동 복도(동서 2줄 — 서쪽은 넘어진 침대 hp-bed-overturned 가 반쯤 막아 1칸으로 비켜 간다), 지하 계단 홀(가운데 보일러 hp-boiler 둘레를 도는 고리). 보스 방 = 2층 수술실(잠김) — 가운데 수술대 hp-op-table 위로 무영등 hp-op-light, 모니터 카트·약 카트·판독 상자·이동 침대, 수술대 둘레가 트였다.",
+   "2층 흐름: 계단참(시멘트) → 처치실(타일, 세로 틈 (15,14)) 또는 트인 3칸 → 병동 복도 → 북쪽 병실 201·202(녹슨 침대 hp-bed-rusty 둘, 찢긴 커튼 hp-curtain-torn, 링거 걸이 hp-iv-stand) · 간호사 스테이션(트인 칸 — 카운터 hp-nurse-station 셋, 끝 (14,6) 직원 틈, 뒤 차트 선반 hp-chart-rack) · 수술실(잠김), 남쪽 병실 203(막다른 곳)·처치실. 처치실 ↔ 계단참 ↔ 복도가 고리.",
+   "지하 흐름: 계단 홀(배관 hp-pipes, 서류 캐비닛·서버 랙, 떨어진 천장판, 보일러) → 동서 복도 → 북쪽 영안실(타일, 냉장 서랍 벽 hp-morgue-drawers, 이동 침대 — 막다른 곳) · 보일러실(잠김, 보일러·배관·열쇠함), 남쪽 창고(선반·넘어진 선반) ↔ 전기실(서버 랙) ↔ 배관 구석 — 세로 틈 (10,14)·(17,14)로 이어진 고리.",
+   "바닥·벽면: 1·2층 기본 hp-floor-dirty + hp-wall-peel(칠 벗겨진 벽·손잡이 레일), 수술실·처치실·영안실·약제실 hp-floor-tile-dirty + hp-wall-tile, 계단실·지하 hp-floor-conc + hp-wall-conc. 조명은 꺼지거나 깨진 형광등 hp-light-flicker 와 초록·빨강 비상등 hp-emergency-light 뿐. 피·시체·사람·뼈 그림은 없다 — 무서움은 어둠·잔해(hp-debris·hp-ceiling-fallen·hp-shelf-fallen)·흔적(hp-papers·hp-glass·hp-puddle)으로.",
+   "평면·가구는 tiledata/jp-city/interior/examples/abandoned-hospital-1f.json · abandoned-hospital-2f.json · abandoned-hospital-b1.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로(locks 는 이벤트 자리 표시). 짓는 순서: 세 맵을 links 없이 → links 넣어 replace:true. 거리 건물(폐병원 jp_hospital_ruin) 문과 잇기: link_jp_city_interior({door, place:\"jp-city-abandoned-hospital-1f-24x16\"})."
+  ]
+ }
+]

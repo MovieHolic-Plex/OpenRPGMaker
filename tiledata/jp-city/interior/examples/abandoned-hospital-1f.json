@@ -1,0 +1,451 @@
+{
+ "name": "폐병원 1층(로비·외래·약제실)",
+ "plan": [
+  "########################",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#....#.....#.....#.....#",
+  "#....#.....#.....#.....#",
+  "##.#####.#####.####..###",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#...#..#........#..#...#",
+  "#...#..............#...#",
+  "#...#..............#...#",
+  "#...#..............#...#",
+  "###########..###########"
+ ],
+ "floor": "hp-floor-dirty",
+ "wall": "hp-wall-peel",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 12,
+   "y0": 0,
+   "x1": 16,
+   "y1": 5,
+   "floor": "hp-floor-tile-dirty",
+   "wall": "hp-wall-tile"
+  },
+  {
+   "x0": 18,
+   "y0": 0,
+   "x1": 22,
+   "y1": 5,
+   "floor": "hp-floor-conc",
+   "wall": "hp-wall-conc"
+  }
+ ],
+ "objects": [
+  {
+   "id": "hp-xray-box",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "hp-light-flicker",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "pb-doctor-desk",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "hp-item-locker",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "hp-papers",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "hp-curtain-torn",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "hp-door-broken",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "hp-xray-box",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "pb-exam-bed",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "hp-curtain-torn",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "pb-doctor-desk",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "hp-wheelchair",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "door-open-western",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "hp-emergency-light",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "hp-shelf-fallen",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "hp-glass",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "hp-papers",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "id": "hp-item-medkit",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "hp-door-locked",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "sc-stairwell-down",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "hp-emergency-light",
+   "x": 20,
+   "y": 1
+  },
+  {
+   "id": "hp-puddle",
+   "x": 22,
+   "y": 5
+  },
+  {
+   "id": "hp-light-flicker",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "hp-emergency-light",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "hp-elevator-dead",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "hp-ceiling-fallen",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "hp-stretcher",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "hp-glass",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "hp-papers",
+   "x": 20,
+   "y": 10
+  },
+  {
+   "id": "hp-debris",
+   "x": 22,
+   "y": 9
+  },
+  {
+   "id": "hp-iv-stand",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "hp-nurse-station",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "hp-nurse-station",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "hp-nurse-station",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "hp-nurse-station",
+   "x": 15,
+   "y": 12
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "hp-papers",
+   "x": 13,
+   "y": 13
+  },
+  {
+   "id": "hp-bench-torn-n",
+   "x": 8,
+   "y": 14
+  },
+  {
+   "id": "hp-bench-torn-n",
+   "x": 5,
+   "y": 14
+  },
+  {
+   "id": "hp-chair-fallen",
+   "x": 9,
+   "y": 13
+  },
+  {
+   "id": "hp-chair-fallen",
+   "x": 10,
+   "y": 12
+  },
+  {
+   "id": "hp-puddle",
+   "x": 9,
+   "y": 11
+  },
+  {
+   "id": "hp-glass",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "hp-glass",
+   "x": 12,
+   "y": 14
+  },
+  {
+   "id": "hp-wheelchair",
+   "x": 18,
+   "y": 14
+  },
+  {
+   "id": "hp-debris",
+   "x": 18,
+   "y": 11
+  },
+  {
+   "id": "hp-iv-stand",
+   "x": 5,
+   "y": 12
+  },
+  {
+   "id": "hp-papers",
+   "x": 6,
+   "y": 13
+  },
+  {
+   "id": "hp-stretcher",
+   "x": 17,
+   "y": 12
+  },
+  {
+   "id": "hp-papers",
+   "x": 16,
+   "y": 14
+  },
+  {
+   "id": "hp-glass",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "hp-ceiling-fallen",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "hp-item-records",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "hp-papers",
+   "x": 2,
+   "y": 14
+  },
+  {
+   "id": "hp-med-cart",
+   "x": 22,
+   "y": 11
+  },
+  {
+   "id": "hp-chair-fallen",
+   "x": 21,
+   "y": 14
+  },
+  {
+   "id": "hp-puddle",
+   "x": 20,
+   "y": 12
+  },
+  {
+   "id": "hp-shelf-fallen",
+   "x": 21,
+   "y": 12
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-documents",
+   "x": 12,
+   "y": 12
+  }
+ ],
+ "start": [
+  11,
+  14
+ ],
+ "exitWidth": 2,
+ "links": [
+  {
+   "x": 21,
+   "y": 3,
+   "toMapId": "jp-city-abandoned-hospital-2f",
+   "toX": 20,
+   "toY": 15,
+   "direction": "left"
+  },
+  {
+   "x": 22,
+   "y": 3,
+   "toMapId": "jp-city-abandoned-hospital-2f",
+   "toX": 20,
+   "toY": 15,
+   "direction": "left"
+  },
+  {
+   "x": 18,
+   "y": 4,
+   "toMapId": "jp-city-abandoned-hospital-b1",
+   "toX": 18,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 19,
+   "y": 4,
+   "toMapId": "jp-city-abandoned-hospital-b1",
+   "toX": 19,
+   "toY": 4,
+   "direction": "down"
+  }
+ ],
+ "locks": [
+  {
+   "x": 14,
+   "y": 6,
+   "key": "약제실 열쇠",
+   "why": "약제실 철문 — 2층 간호사 스테이션 열쇠함(hp-item-keybox)에서 찾는다"
+  }
+ ],
+ "rooms": [
+  {
+   "room": "hospexam",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 6
+  },
+  {
+   "room": "hospdispensary",
+   "x0": 11,
+   "y0": 0,
+   "x1": 16,
+   "y1": 6
+  },
+  {
+   "room": "hospstairs",
+   "x0": 17,
+   "y0": 0,
+   "x1": 23,
+   "y1": 6
+  },
+  {
+   "room": "hospcorridor",
+   "x0": 0,
+   "y0": 7,
+   "x1": 23,
+   "y1": 10
+  },
+  {
+   "room": "hosplobby",
+   "x0": 0,
+   "y0": 11,
+   "x1": 23,
+   "y1": 15
+  }
+ ]
+}
