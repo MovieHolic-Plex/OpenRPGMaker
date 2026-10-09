@@ -107,10 +107,14 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
   `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/` 뒤에 그 이름이다.
   macOS 패키지는 아직 없다.
 
-### 윈도우 zip 은 리눅스에서 만든다 (2026-09-22 실측)
+### 윈도우 zip·단일 exe 는 리눅스에서 만든다 (2026-09-22, 갱신 2026-10-10)
 
-`electron-builder.config.mjs` 의 `win.target` 은 zip 하나뿐이라 **wine 없이 리눅스에서 빌드된다**.
-NSIS 설치본(`.exe`)을 넣으면 wine 이 필요해지지만, zip 타깃은 압축만 하므로 해당 없다.
+`electron-builder.config.mjs` 의 `win.target` 은 zip 과 NSIS portable 이고 **둘 다 wine 없이 리눅스에서 빌드된다**.
+electron-builder 가 `makensis`(nsis-3.0.4.1 · nsis-resources-3.4.1)를 내려받아 직접 돌리기 때문이다.
+실측 2026-10-10: wine 미설치 상태에서 최소 프로브(electron 38.8.6)로 `Probe 1.0.0.exe`(84MB)와,
+v0.185.0 에서 `OPRN Studio-0.185.0-portable.exe` 가 만들어졌다. wine 은 그 뒤 **실행 검증에만** 쓴다.
+(옛 문장의 "NSIS 설치본을 넣으면 wine 이 필요해진다" 는 사실과 다르다 — 설치본(inno/nsis)과
+portable 모두 패키징은 되고, wine 이 필요한 것은 만들어진 exe 를 리눅스에서 띄워 볼 때뿐이다.)
 
 ```bash
 # 릴리스 커밋에 체크아웃한 워크트리에서 (버전이 package.json 에서 온다)
@@ -138,8 +142,10 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
 - **asar 안을 직접 열어 확인하는 편이 빠르다.** 두 결함(시작 실패·번들 유출)은 여기서 잡혔다:
   `npx @electron/asar extract-file release/win-unpacked/resources/app.asar dist-electron/main.cjs`
   로 꺼내 `Invalid URL` 을 만들던 줄이 없는지, `dist/assets/main-*.js` 에서 dev 주소·키가 0건인지 본다.
-- **빌드는 wine 설치 전에 끝난다.** 실측에서 zip 은 wine 없이 만들어졌고, wine 은 그 뒤 실행 검증에만
+- **빌드는 wine 설치 전에 끝난다.** 실측에서 zip 과 portable exe 는 wine 없이 만들어졌고, wine 은 그 뒤 실행 검증에만
   썼다. 그러니 wine 설치 실패가 빌드를 막지는 않는다.
+- **단일 exe(portable)는 첫 실행 때 임시 폴더로 자동 해제한다.** 그래서 시작이 느리고 크다(≈0.8GB대).
+  true single binary 가 아니라 NSIS 자동 해제 래퍼다. zip 은 그대로 남긴다 — 폴더째 쓰는 사람과 자동화가 그 경로에 있다.
 
 ### 데스크톱 AI 워커는 네이티브 애드온을 옆에 둔다 (2026-09-27 실측)
 
