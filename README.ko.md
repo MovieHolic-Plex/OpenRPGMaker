@@ -31,7 +31,7 @@
 
 <div align="center">
 
-[무엇을 만들 수 있나](#무엇을-만들-수-있나) · [특징](#특징) · [빠른 시작](#빠른-시작) · [갤러리](#갤러리) · [라이선스](#라이선스)
+[다운로드](#다운로드) · [무엇을 만들 수 있나](#무엇을-만들-수-있나) · [특징](#특징) · [빠른 시작](#빠른-시작) · [갤러리](#갤러리) · [라이선스](#라이선스)
 
 </div>
 
@@ -62,9 +62,19 @@
 | 🛒 **에셋 스토어** | [store.openrpgmaker.com](https://store.openrpgmaker.com/) 에서 캐릭터·타일셋·맵 기물을 나누고 받습니다. |
 | 🌏 **4개 언어** | 에디터는 영어·중국어·일본어·한국어를 지원합니다. |
 
+## 다운로드
+
+설치 도구 없이 받을 수 있습니다. [최신 릴리스](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest). 아래 두 주소는 그 릴리스의 데스크톱 앱을 바로 받습니다.
+
+| | |
+|---|---|
+| Windows | [OPRN.Studio-windows.zip](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip) — 압축을 풀고 `OPRN Studio.exe` 를 실행 |
+| Linux | [OPRN.Studio-linux.AppImage](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage) — `chmod +x` 한 뒤 실행 |
+| macOS | 패키지는 아직 없습니다. 아래 소스 명령을 씁니다. |
+
 ## 빠른 시작
 
-[Node.js 24 LTS](https://nodejs.org/) 가 필요합니다.
+macOS 이거나 소스에서 실행할 때입니다. [Node.js 24 LTS](https://nodejs.org/) 가 필요합니다.
 
 ```bash
 npm ci

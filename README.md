@@ -31,7 +31,7 @@
 
 <div align="center">
 
-[What you can make](#what-you-can-make) · [Highlights](#highlights) · [Quick start](#quick-start) · [Gallery](#gallery) · [License](#license)
+[Download](#download) · [What you can make](#what-you-can-make) · [Highlights](#highlights) · [Quick start](#quick-start) · [Gallery](#gallery) · [License](#license)
 
 </div>
 
@@ -62,9 +62,19 @@ Everything is hand-made 16px pixel art, and the games you make are yours.
 | 🛒 **Asset store** | Share and download characters, tilesets and map objects at [store.openrpgmaker.com](https://store.openrpgmaker.com/). |
 | 🌏 **Four languages** | The editor speaks English, 中文, 日本語 and 한국어. |
 
+## Download
+
+Packaged builds are on the [latest release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest). These two links always download that release's desktop app.
+
+| | |
+|---|---|
+| Windows | [OPRN.Studio-windows.zip](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip) — unzip, then run `OPRN Studio.exe` |
+| Linux | [OPRN.Studio-linux.AppImage](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage) — `chmod +x` the file, then run it |
+| macOS | No packaged build yet. Use the source command below. |
+
 ## Quick start
 
-You need [Node.js 24 LTS](https://nodejs.org/).
+For macOS, or to run from source. You need [Node.js 24 LTS](https://nodejs.org/).
 
 ```bash
 npm ci

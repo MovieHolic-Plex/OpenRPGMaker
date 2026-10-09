@@ -102,6 +102,10 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
 - **서명·자동 업데이트는 아직 없다**(`publish: null`, 설계서 비목표). 채널이 생기면 `electron-builder` 의
   publish 설정과 latest.yml 을 같이 도입한다.
 - GitHub Release 파일 상한(2GB/파일) 안이므로 AppImage·dmg 모두 문제없다.
+- README 다운로드는 버전이 없는 이름을 쓴다. `scripts/release-desktop.mjs` 가 버전 파일과 함께
+  `OPRN.Studio-linux.AppImage`, `OPRN.Studio-windows.zip` 을 같은 릴리스에 올린다. 주소는
+  `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/` 뒤에 그 이름이다.
+  macOS 패키지는 아직 없다.
 
 ### 윈도우 zip 은 리눅스에서 만든다 (2026-09-22 실측)
 
