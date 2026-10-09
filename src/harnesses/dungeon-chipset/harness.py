@@ -15,6 +15,9 @@
   - 이후 판은 **줄마다** 후보를 그린다. 후보 키는 `<줄><번호>`(A1 A2 B1 …), pick 은 앞 글자로 줄을 안다.
   - 고르기 단위는 (항목, 줄). 고른 그림은 picked/<줄>/<항목>.png. 같은 (항목, 줄)을 다시 고르면 앞 기록을 바꾼다.
   - 줄 컨셉에 안 맞는 항목은 그 줄에서 빼도 된다 — 시드 lines.<줄>.skip 에 항목과 이유를 적는다(그 줄 후보를 그리지 않는다).
+  - 줄 공통 항목: 재질이 줄과 무관한 기물(나무·쇠·뼈·금 — 상자·통·횃불·사슬…)은 시드 항목에 `"common": "<이유>"` 를 적고
+    후보를 첫 줄 키(A1 A2 …) 하나로만 그린다. 고르기 단위는 (항목, 공통) — ledger line '*', 그림은 picked/common/<항목>.png.
+    CONTRAST 는 모든 줄 바닥에 대해 재고 가장 나쁜 줄을 보인다(어느 줄 바닥에 놓여도 묻히면 안 된다).
 
 외곽선 규칙(사용자 2026-10-08, seed rules.outline — 시연 http://mdc-server:18301/outline-before-after.html):
   - 지형(바닥·벽면·천장·물·용암)과 기물(상자·석순·잔돌·문…) 모두 **먹 윤곽 없이** 재질 자신의 명암으로 형태를 읽게 한다.
@@ -82,12 +85,29 @@ def skipped(line, item):
     return lines().get(line, {}).get('skip', {}).get(item)
 
 
+COMMON = '*'   # 줄 공통 항목의 고르기 줄
+
+
+def common(item):
+    """줄 공통 항목이면 이유(시드 항목 common), 아니면 None."""
+    return items_by_id().get(item, {}).get('common')
+
+
+def first_line():
+    return next(iter(lines()))
+
+
+def pick_key(item, line):
+    """(항목, 줄) 고르기 단위 — 줄 공통 항목은 줄과 상관없이 (항목, '*')."""
+    return (item, COMMON if common(item) else line)
+
+
 def pick_line(p):
     return p.get('line') or line_of(p['letter'])
 
 
 def picked_path(line, item):
-    return os.path.join(PICKED, line, f'{item}.png')
+    return os.path.join(PICKED, 'common' if line == COMMON else line, f'{item}.png')
 
 
 def ledger():
@@ -167,7 +187,13 @@ def run_gate(rendered):
         res[item] = {}
         for L, (im, meta) in cands.items():
             rs = G.check_one(items[item], im, meta) + [rc[L]]
-            ct = G.check_contrast(meta, line_floor(line_of(L)) if line_of(L) else None)
+            if common(item):   # 줄 공통: 어느 줄 바닥에 놓여도 묻히면 안 된다 — 줄마다 재고 합친다
+                cts = [(ln, G.check_contrast(meta, line_floor(ln))) for ln in lines()]
+                cts = [(ln, r) for ln, r in cts if r]
+                ct = (G._r('CONTRAST', 'WARN', all(r['ok'] for _, r in cts),
+                           ' / '.join(f'줄 {ln} 바닥: {r["msg"]}' for ln, r in cts)) if cts else None)
+            else:
+                ct = G.check_contrast(meta, line_floor(line_of(L)) if line_of(L) else None)
             res[item][L] = rs + ([ct] if ct else [])
     return res
 
@@ -366,8 +392,18 @@ def cmd_sheet(rid, force=False):
              '<span class="star">★</span> = 사람이 그 줄에서 고른 후보(현재 그림과 해시가 맞음).</p>')
     for item, cands in rendered.items():
         it = items[item]
-        H.append(f'<h2>{item} — {it["title"]}</h2><p class="lead">{it["brief"]}<br><span class="sub">받아들일 기준: '
-                 + ' · '.join(it.get('accept', [])) + f' · 통행 의도: {it.get("walk", "")}</span></p>')
+        H.append(f'<h2>{item} — {it["title"]}' + (' <span class="sub">· 줄 공통</span>' if common(item) else '')
+                 + f'</h2><p class="lead">{it["brief"]}<br><span class="sub">받아들일 기준: '
+                 + ' · '.join(it.get('accept', [])) + f' · 통행 의도: {it.get("walk", "")}'
+                 + (f' · 크기 {it["size"][0]}×{it["size"][1]}칸 · 층 {it["layer"]}')
+                 + (f' · 상태 {" / ".join(it["states"])}' if it.get('states') else '')
+                 + (f' · 장면 {it["frames"]}' if it.get('frames') else '')
+                 + (f'<br>줄 공통인 까닭: {common(item)}' if common(item) else '') + '</span></p>')
+        if it.get('walk_grid'):
+            H.append('<div class="row">' + ''.join(
+                f'<div class="card"><h3>통행 격자 — {st}</h3><pre class="sub" style="font:13px/1.2 ui-monospace,monospace;margin:0">'
+                + '\n'.join(rows) + '</pre></div>' for st, rows in it['walk_grid'].items())
+                + '<div class="card"><div class="sub">o 걸음 · x 막힘 · ★ 사람 뒤로 지나감(윗칸) · 칸 = 16px</div></div></div>')
         H.append('<div class="row">')
         for key in it.get('refs', []):
             rim, label = ref_image(key)
@@ -397,12 +433,14 @@ def cmd_sheet(rid, force=False):
                 im, meta = cands[key]
                 sha = man['items'][item][key]['sha256']
                 rs = res[item][key]
-                st = ps.get((item, ln))
+                st = ps.get(pick_key(item, ln))
                 st = st if st and st[0]['round'] == rid else None
-                star = (f' <span class="star">★ 줄 {ln} 고름</span>' if st and st[0]['letter'] == key and st[1] == 'current' else
+                who = '줄 공통' if common(item) else f'줄 {ln}'
+                star = (f' <span class="star">★ {who} 고름</span>' if st and st[0]['letter'] == key and st[1] == 'current' else
                         ' <span class="bad">VOID</span>' if st and st[0]['letter'] == key else '')
                 gl = ' '.join(f'<span class="{"ok" if r["ok"] else ("bad" if r["level"] == "FAIL" else "w")}" title="{r["msg"]}">{r["code"]}{"✓" if r["ok"] else "✗"}</span>' for r in rs)
-                H.append(f'<div class="card{" picked" if "star" in star else ""}"><h3>후보 {key} <span class="sha">{sha[:8]}</span>{star}</h3>'
+                H.append(f'<div class="card{" picked" if "star" in star else ""}"><h3>후보 {key} · {who}'
+                         + ('' if common(item) else f' 「{ls[ln]["name"]}」') + f' <span class="sha">{sha[:8]}</span>{star}</h3>'
                          f'<div class="sub">{meta.get("note") or cand_note(mod, key)}</div><div class="imgs">'
                          f'<div>{img_tag(im, 1)}<div class="lbl">원본 1배</div></div><div>{img_tag(im, 4)}<div class="lbl">4배</div></div>')
                 if 'anim' in meta:
@@ -478,6 +516,10 @@ def cmd_pick(rid, item, key, sha, note):
         raise SystemExit(f'후보 {key} 의 줄을 모른다 — 시드 lines: {", ".join(lines())} (화풍 판은 글자, 이후 판은 <줄><번호>)')
     if skipped(ln, item):
         raise SystemExit(f'{item} 은 줄 {ln} 에서 뺀 항목이다: {skipped(ln, item)}')
+    if common(item):
+        if ln != first_line():
+            raise SystemExit(f'{item} 은 줄 공통 항목이다 — 후보 키는 {first_line()}<번호>')
+        ln = COMMON
     man_p = os.path.join(RUNS, rid, 'manifest.json')
     if not os.path.exists(man_p):
         raise SystemExit(f'판 {rid} 의 manifest 가 없다 — sheet {rid} 를 먼저(사람이 본 시트가 있어야 고를 수 있다)')
@@ -493,11 +535,15 @@ def cmd_pick(rid, item, key, sha, note):
     out = picked_path(ln, item)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     im.save(out)
+    if ln == COMMON:
+        ln_label = '공통'
+    else:
+        ln_label = ln
     L = ledger()
     L['picks'] = [p for p in L['picks'] if not (p['item'] == item and pick_line(p) == ln)] + [
         {'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'note': note, 'at': now(), 'by': 'user'}]
     save_ledger(L)
-    print(f'고름 기록: {item} 줄 {ln} ← {rid} {key} ({cur[:12]}) → {os.path.relpath(out, REPO)}')
+    print(f'고름 기록: {item} 줄 {ln_label} ← {rid} {key} ({cur[:12]}) → {os.path.relpath(out, REPO)}')
 
 
 def cmd_reject(rid, item, key, why):
@@ -509,6 +555,8 @@ def cmd_reject(rid, item, key, why):
     cur, _ = current_hash(rid, item, key)
     if cur is None:
         raise SystemExit(f'{rid} 에 {item} {key} 후보가 없다')
+    if common(item):
+        ln = COMMON
     L = ledger()
     L['rejects'].append({'round': rid, 'item': item, 'line': ln, 'letter': key, 'sha256': cur, 'why': why, 'at': now(), 'by': 'user'})
     save_ledger(L)
@@ -556,13 +604,14 @@ def cmd_status():
         print(f'줄 {ln} 「{info["name"]}」 — {info["concept"]}')
         for w, its in waves.items():
             live = [i for i in its if not skipped(ln, i['id'])]
-            got = [i for i in live if (i['id'], ln) in ps and ps[(i['id'], ln)][1] == 'current']
+            got = [i for i in live if pick_key(i['id'], ln) in ps and ps[pick_key(i['id'], ln)][1] == 'current']
             cut = len(its) - len(live)
             print(f'  묶음 {w}: {len(got)}/{len(live)} 고름' + (f' (뺀 항목 {cut})' if cut else ''))
             for it in its:
-                if (it['id'], ln) in ps:
-                    p, st = ps[(it['id'], ln)]
-                    print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {p["sha256"][:8]}  {st}')
+                if pick_key(it['id'], ln) in ps:
+                    p, st = ps[pick_key(it['id'], ln)]
+                    print(f'    {it["id"]:22} {p["round"]} {p["letter"]:3} {p["sha256"][:8]}  {st}'
+                          + ('  (줄 공통)' if common(it['id']) else ''))
     print(f'버림 기록 {len(L["rejects"])}건')
     polish_report(L, ps)
 
@@ -596,9 +645,14 @@ def cmd_list(wave=None):
     for it in seed()['items']:
         if wave and it['wave'] != wave:
             continue
-        marks = ' '.join(('-' if skipped(ln, it['id']) else
-                          '★' if (it['id'], ln) in ps and ps[(it['id'], ln)][1] == 'current' else '·') + ln
-                         for ln in lines())
+        if common(it['id']):
+            k = pick_key(it['id'], None)
+            marks = ('★' if k in ps and ps[k][1] == 'current' else '·') + '공통'
+            marks = marks.ljust(len(' '.join('·' + ln for ln in lines())))
+        else:
+            marks = ' '.join(('-' if skipped(ln, it['id']) else
+                              '★' if (it['id'], ln) in ps and ps[(it['id'], ln)][1] == 'current' else '·') + ln
+                             for ln in lines())
         print(f'{marks}  {it["wave"]:6} {it["id"]:22} {it["size"][0]}×{it["size"][1]} {it["layer"]:5} {it["kind"]:11} {it["title"]}')
 
 
@@ -620,6 +674,13 @@ def cmd_validate():
         for r in it.get('refs', []):
             if r not in s['refs']:
                 errs.append(f'{it["id"]}: 기준 그림 {r} 이 refs 에 없다')
+        if 'common' in it and not it['common']:
+            errs.append(f'{it["id"]}: common(줄 공통)은 이유 문자열이어야 한다')
+        for st, rows in it.get('walk_grid', {}).items():
+            if len(rows) != it['size'][1] or any(len(r) != it['size'][0] or set(r) - set('ox★') for r in rows):
+                errs.append(f'{it["id"]}: 통행 격자 {st} 는 {it["size"][0]}×{it["size"][1]} 의 o/x/★ 여야 한다')
+            if it.get('states') and st not in it['states']:
+                errs.append(f'{it["id"]}: 통행 격자 상태 {st} 가 states 에 없다')
     for ln, info in lines().items():
         if len(ln) != 1 or not ln.isupper():
             errs.append(f'줄 id {ln!r} 는 대문자 한 글자여야 한다(후보 키 <줄><번호> 의 앞 글자)')
@@ -660,7 +721,12 @@ def cmd_validate():
                     errs.append(f'판 {rid} {item}: 후보 키 {key} — 화풍 판은 줄 글자, 이후 판은 <줄><번호>')
                 elif skipped(ln, item):
                     errs.append(f'판 {rid} {item}: 줄 {ln} 에서 뺀 항목인데 후보 {key} 가 있다')
-            if not style:
+                elif common(item) and ln != first_line():
+                    errs.append(f'판 {rid} {item}: 줄 공통 항목인데 후보 {key} — 키는 {first_line()}<번호> 하나로')
+            if not style and common(item):
+                if not mod.CANDIDATES[item]:
+                    errs.append(f'판 {rid} {item}: 줄 공통 후보가 없다')
+            elif not style:
                 for ln in lines():
                     if not skipped(ln, item) and not any(line_of(k) == ln for k in mod.CANDIDATES[item]):
                         errs.append(f'판 {rid} {item}: 줄 {ln} 후보가 없다(뺄 거면 lines.{ln}.skip 에 이유)')
