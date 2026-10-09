@@ -1,0 +1,18 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 추리·미스터리 — 공간을 조사하고 증언과 증거를 비교하며 사건의 진실에 다가가요.
+SELECTED FACTS:
+1. 사건의 시작: 사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.
+2. 중심 플레이: 장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.
+3. 분위기: 위협이 있는 긴장으로 — 조사 중 위험이 찾아와 판단을 서둘러야 해요.
+LATEST CHOICE: 분위기: 위협이 있는 긴장으로 — 조사 중 위험이 찾아와 판단을 서둘러야 해요.
+SCENE ID: mystery--missing--inspect--danger. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+Familiar empty room with abandoned personal object and abruptly unfinished routine: disappearance without body, photograph or assumed killer.
+Specific prominent physical clue and surrounding marks are foregrounded for close inspection.
+MOOD: Unstable fractured threshold and visibly precarious empty route introduce immediate environmental danger; no invented attacker or corpse.
+FRESH SHOT: elevated near-corner view. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. No people, creature appearance, open books, writing-like marks, logos, flag emblems, blur or collage.

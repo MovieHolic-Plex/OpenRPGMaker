@@ -1,0 +1,22 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.
+SELECTED FACTS:
+1. 모험의 이유: 소중한 사람을 찾으러 — 사라진 사람의 흔적을 따라 떠나요.
+2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.
+LATEST CHOICE: 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.
+SCENE ID: adventure--reunion--battle. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Empty abandoned travelers stopping place, a plain personal keepsake and interrupted trail hint at seeking a missing loved one. No photograph, face, writing, prechosen relationship or corpse.
+SHOT: wide lateral composition with overlapping spatial layers; no obligatory left tree or setting sun. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: Defensible terrain and tactical cover emphasize strategic confrontation; no visible enemy, hero or unchosen species.
+MANDATORY REDRAW CORRECTION: 전술 엄폐 지형은 보이지만 소중한 사람을 찾는 시작 설정의 개인 유품·끊긴 흔적이 빠졌다. 전경에 무지 개인 유품과 이어지다 끊긴 여행 흔적을 분명히 추가하여 전투 선택과 함께 남긴다.
+No flags or emblem logos. Every foreground edge crisp pixels. All latest and earlier choices prominent as actual objects.
+FINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.
+FINAL CORRECTION — FULL REDRAW: 소중한 사람의 유품과 발자국은 복구했지만 전투 선택이 보이지 않는다. 전경과 중경에 방패 거치대·바리케이드·엄폐물·서로 다른 접근로가 있는 빈 전술 훈련 공간을 크게 그린다. 유품과 중단된 여행 흔적은 함께 보존한다.
+MAIN FOCAL SUBJECT: empty tactical training/defense space with several physical shields in an unmarked rack, substantial freestanding barricades, offset cover and several approach lanes. This MUST occupy the left and middle, not be replaced by generic travel backpacks. Preserve the selected premise through one prominent prop. No humans, creatures, flag emblems, text or diagrams.
+CRAFT CONSTRAINT: No emblem flags, open pages, writing, humanoid statues, or foreground blur. For investigation, use specific physical clues and spatial relationships rather than written evidence boards. Strong hard pixel clusters throughout.

@@ -1,0 +1,20 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.
+SELECTED FACTS:
+1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.
+2. 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.
+LATEST CHOICE: 중심 플레이: 동료와 전략적인 전투 — 상대의 특징을 보고 함께 대응해요.
+SCENE ID: adventure--mission--battle. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Village errand departure, unmarked sealed parcel and provisions beside a rural threshold, path forward. No crest text, writing or unselected apocalypse.
+SHOT: elevated near-corner view, focal prop prominent left, environment receding right. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: Defensible terrain and tactical cover emphasize strategic confrontation; no visible enemy, hero or unchosen species.
+FINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.
+FINAL CORRECTION — FULL REDRAW: 세 배낭과 시골 출발 구도가 동료 선택 장면과 반복되고 전투가 없다. 무지 소포를 들고 빈 방어 훈련 구역에 도착한 새 구도로 완전히 바꾼다. 전면에 방패 거치대·바리케이드·엄폐물과 접근로를 크게 보여준다. 선택된 전투를 표현하는 장비는 허용하되 인물·적은 금지한다.
+MAIN FOCAL SUBJECT: empty tactical training/defense space with several physical shields in an unmarked rack, substantial freestanding barricades, offset cover and several approach lanes. This MUST occupy the left and middle, not be replaced by generic travel backpacks. Preserve the selected premise through one prominent prop. No humans, creatures, flag emblems, text or diagrams.
+CRAFT CONSTRAINT: No emblem flags, open pages, writing, humanoid statues, or foreground blur. For investigation, use specific physical clues and spatial relationships rather than written evidence boards. Strong hard pixel clusters throughout.

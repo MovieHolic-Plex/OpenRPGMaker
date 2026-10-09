@@ -1,0 +1,18 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 관계·연애 — 대화와 사건을 통해 가까워지고, 선택에 따라 관계와 결말이 달라져요.
+SELECTED FACTS:
+1. 이야기의 시작: 다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.
+2. 중심 플레이: 갈등 속에서 선택하며 — 중요한 순간에 누구를 믿고 어떻게 행동할지 정해요.
+LATEST CHOICE: 중심 플레이: 갈등 속에서 선택하며 — 중요한 순간에 누구를 믿고 어떻게 행동할지 정해요.
+SCENE ID: romance--campus--choice. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Recognizably modern brick university after spring rain; reunion implied by two separated closed plain books. No fantasy castle.
+SHOT: near eye-level sheltered viewpoint framed by appropriate architecture, not generic foliage. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: A divided threshold and two conflicting meaningful objects evoke a consequential trust choice; not interface icons.
+MANDATORY REDRAW CORRECTION (supersedes decorative habits): 중앙 날개 달린 사람 형태의 동상이 금지된 인물 외형을 고정한다. 모든 사람·인체 형태 조각을 없애고 갈라지는 길과 책 두 권으로 갈등을 표현한다.
+NO decorative flags, emblems, heraldry, icons, labels, or logos. No humanoid statue. Every foreground edge must be crisp pixel clusters, never blurred. The latest choice must be tangible and prominent. Reference is pixel craft only, never its scenery.

@@ -25,6 +25,7 @@ import { GAME_CONCEPTS_HARNESS } from "../game-concepts/harness";
 import { MURIM_CHIPSET_HARNESS } from "../murim-chipset/harness";
 import { DUNGEON_CHIPSET_HARNESS } from "../dungeon-chipset/harness";
 import { OBJECT_GATE_HARNESS } from "../object-gate/harness";
+import { INTERVIEW_SCENE_BANK_HARNESS } from "../interview-scene-bank/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -47,6 +48,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   MURIM_CHIPSET_HARNESS,
   DUNGEON_CHIPSET_HARNESS,
   OBJECT_GATE_HARNESS,
+  INTERVIEW_SCENE_BANK_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

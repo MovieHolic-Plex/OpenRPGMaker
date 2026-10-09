@@ -1,0 +1,23 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.
+SELECTED FACTS:
+1. 첫 동료: 신뢰를 얻어 동료로 — 도움을 주고 교감한 뒤 함께 떠나요.
+2. 중심 플레이: 파트너와 깊이 교감 — 함께 겪는 사건으로 신뢰와 관계가 달라져요.
+3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.
+4. 진행 방식: 한 지역의 사건을 따라가기 — 주민의 부탁과 단서가 새로운 조우로 이어져요.
+5. 첫 제작 범위: 첫 탐험과 성장 한 번 — 동료와 한 지역을 탐험하고 성장을 경험해요.
+LATEST CHOICE: 첫 제작 범위: 첫 탐험과 성장 한 번 — 동료와 한 지역을 탐험하고 성장을 경험해요.
+SCENE ID: monster--bond--partner--warm--case--episode. This identifier is metadata; never draw it.
+
+ONE independent 16-bit SNES pixel-art interview background. Large coherent square clusters and staircase contours, flat 2-4-tone shades across all planes, no painting/gradients/antialiasing/blur/bloom/filter.
+VERY DISTANT WIDE VIEW. Every selected shelter, full roof/chimney/both eaves, walls, floor/base and prop is small, WHOLE with background visible around it. No edge cuts. Every meaningful feature stays before actual right input controls x60.3%. Right only quiet continuous woods, no landmark castle or required prop.
+EARNED TRUST and DEEP PARTNER CARE: one whole personal care nook with a mended plain soft blanket, a distinctly separate EMPTY padded resting mat, and a separate OPEN bowl with visibly BLUE water. The blanket and EMPTY padding must be visibly two different components, not one folded cloth hiding both. No creatures, eggs, cages, collection equipment or team training stations. No identity invented.
+Warm sunset companionship, plain undecorated surfaces; material seams/cloth trim allowed, printed logos not allowed. No people, text, directional signs, logos, UI, books, papers, flags or banners.
+LOCAL CASE: one WHOLE small OPEN local refuge with full roof, empty floor and threshold, a tipped EMPTY hollow wooden pail and a short physical earth trace on the LEFT. No different village or three-way habitats.
+GROWTH: larger EMPTY protected GROUND personal rest mat beside the blanket and BLUE water; no return home/table. Camera: UPPER LEFT whole OPEN local refuge/pail/earth trace; LOWER LEFT whole larger EMPTY ground care mat, blanket and water.
+FINAL CAMERA: zoomed OUT distant scene, all selected forms WHOLE and small on LEFT with visible surrounding woodland. No roof/chimney/body intersecting any image edge. No castle, distant settlement, landmark, furniture or meaningful selected feature on the RIGHT. Actual INNER columns/stairs completely before input controls. Native output unchanged; no input images. Independently compose a new shot, not a reskin.

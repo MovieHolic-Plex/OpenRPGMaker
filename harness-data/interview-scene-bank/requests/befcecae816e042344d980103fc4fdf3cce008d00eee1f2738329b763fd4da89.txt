@@ -1,0 +1,20 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 추리·미스터리 — 공간을 조사하고 증언과 증거를 비교하며 사건의 진실에 다가가요.
+SELECTED FACTS:
+1. 사건의 시작: 열려서는 안 되는 장소 — 어떤 계기로 감춰진 공간에 들어가요.
+2. 중심 플레이: 증거를 맞춰 가설을 확인 — 모은 단서를 제시하고 추론의 결과를 봐요.
+LATEST CHOICE: 중심 플레이: 증거를 맞춰 가설을 확인 — 모은 단서를 제시하고 추론의 결과를 봐요.
+SCENE ID: mystery--place--evidence. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Slid bookcase reveals narrow hidden stone doorway and downward stairs, brass key on foreground floor. CLOSED plain-spined books only; no words or unchosen culprit.
+SHOT: intimate side-on detail of a meaningful object with readable surroundings. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: Represent the selected play through environment props without people or writing.
+EVIDENCE PLAY MOTIF: Compare linked physical clues in a tangible spatial relationship. No labels, notes, paper diagrams, icons or detective corkboard; the player connects objects and infers truth.
+PIXEL AND CHOICE CRAFT: Keep all selected physical motifs. If a new mood is selected, embody it with sharp stepped lighting, weather and object arrangement; never blurred fog or smooth glow. Do not reduce the change to recoloring: use different camera, weather, foreground details and meaningful props. No flags/emblems, people, open written pages or humanoid ornaments.
+MANDATORY FRESH SHOT CORRECTION: 열쇠와 책장 문만 반복되어 단서 연결의 최신 선택이 드러나지 않는다. 낮은 바닥 시점으로 완전히 바꾸고, 떨어진 황동 문판·그 판이 빠진 잠금장치·그 사이 먼지 속 이동 흔적을 함께 보이게 한다. 기존 열쇠와 비밀 책장 통로는 유지한다. 연결은 실제 물건과 흔적으로 보여주고 도표·화살표·글자는 쓰지 않는다.
+CRAFT: Every edge remains hard coherent pixel clusters. No text, emblems, humanoid statues, blur or smooth gradients. If ROMANCE bittersweet is selected, prefer worn keepsakes, departing-season leaves, gentle rain and muted cool stepped light rather than another cheerful cherry-blossom sunset. If ROMANCE secret is selected, use intimate enclosed spatial layers, physically closed containers and strong discrete shadow contrasts. Do not add literal mystery crime or a murderer.
