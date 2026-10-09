@@ -589,7 +589,8 @@ def yard_b1():
         # 장대석 경계석: 이음을 칸 안(8px)에 두어 칸 경계에서 돌이 끊기지 않게
         for (x, y, w, h, side) in curb_rects(oo)[pid]:
             if w == 16 or h == 16:
-                stone_b_side(m, x, y, w, h, 4, side, ring=[(-5, 9, 4), (4, 7, 4)])
+                # 돌 하나가 16px 를 한 바퀴 감는다 → 이음 한 줄/주기. 가로 줄눈 행은 v1 줄 경계(y=11)에 맞춘다
+                stone_b_side(m, x, y, w, h, 4, side, ring=[(-5 if w >= h else 11, 16, 4)])
             else:
                 stone_b_side(m, x, y, w, h, 4, side)
 
@@ -953,15 +954,15 @@ DY_HIGH = [8, 7, 6, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1, 0, 0, 0]
 
 # --- 줄 A · 후보 1: style 수키와(볼록 기와 + 골, 8px)·둥근 막새·주칠 서까래 끝. 용마루는 민무늬, 끝에 치미(꼬리 들린 장식).
 A1_ROOF = {
-    'ridge': ["K" * 16, rep16("DEED"), "D" * 16, rep16("CCCCCCCB"), "B" * 16, rep16("BBBABBBB"), "A" * 16, rep16("OCCBAOAA")],
-    'slope': courses({'lip': "AFFEDABB", 'body': "AEEDCABB", 'body2': "AEDDCABB", 'joint': "OCCBAOAA"},
+    'ridge': ["C" * 16, rep16("DEED"), "D" * 16, rep16("CCCCCCCB"), "B" * 16, rep16("BBBABBBB"), "A" * 16, rep16("ACCBAAAA")],
+    'slope': courses({'lip': "AFFEDABB", 'body': "AEEDCABB", 'body2': "AEDDCABB", 'joint': "ACCBAAAA"},
                      ['lip', 'body', 'body2', 'joint'] * 4),
-    'eave': [rep16("OCDDCOAA"), rep16("DFEEDBAA"), rep16("DEEEDBAA"), rep16("CDDDCKAA"),
-             rep16("KCCCKKKK"), "K" * 16, rep16("KvuKKvuK"), rep16("KutKKutK")],
-    'vL': ["KFEA", "KEDA", "KEDA", "KBBA"], 'vR': ["AEDK", "AEDK", "ADCK", "ABBK"], 'vx': 4,
-    'ornL': ["..KKK...", ".KEDK...", ".KDCKKKK", "..KDCCDE", "...KCCDD", "...KBCCC", "....KBBB", "....KAAA"],
+    'eave': [rep16("ACDDCAAA"), rep16("DFEEDBAA"), rep16("DEEEDBAA"), rep16("CDDDCAAA"),
+             rep16("ACCCAAAA"), "A" * 16, rep16("rvurrvur"), rep16("rutrrutr")],
+    'vL': ["CFEA", "CEDA", "CEDA", "CBBA"], 'vR': ["AEDA", "AEDA", "ADCA", "ABBA"], 'vx': 4,
+    'ornL': ["..CCC...", ".CEDA...", ".CDCAAAA", "..CDCCDE", "...CCCDD", "...CBCCC", "....CBBB", "....CAAA"],
     'dy': DY_SOFT,
-    'tipL': [(0, 1, 'K'), (1, 1, 'K'), (0, 2, 'K')],
+    'tipL': [(0, 1, 'C'), (1, 1, 'C'), (0, 2, 'A')],
 }
 
 
@@ -989,14 +990,14 @@ def roof_a2():
 # --- 줄 B · 후보 1: style 비늘 평기와(8×4, 단마다 반 장 어긋남)·주칠 처마판과 금 점. 용마루 끝은 제비꼬리(燕尾).
 B_SCALE = {'s0': "ABBBBBBA", 's1': "BCDDDDCB", 's2': "CDEEEEDC", 's3': "BDEFEEDB"}
 B1_ROOF = {
-    'ridge': ["K" * 16, "E" * 16, "D" * 16, rep16("CCCB"), "B" * 16, "A" * 16, "K" * 16, rep16("ABBBBBBA")],
+    'ridge': ["D" * 16, "E" * 16, "D" * 16, rep16("CCCB"), "B" * 16, "A" * 16, "A" * 16, rep16("ABBBBBBA")],
     'slope': courses(B_SCALE, ['s0', 's1', 's2', 's3'] * 4, [0, 0, 0, 0, 4, 4, 4, 4] * 2),
-    'eave': [rep16("BDEEEEDB"), rep16("ACDDDDCA"), rep16("KACCCCAK"), rep16("KKAAAAKK"),
-             "v" * 16, rep16("uuuyyuuu"), "s" * 16, "K" * 16],
-    'vL': ["KEDA", "KEDA", "KDCA", "KBAA"], 'vR': ["ADCK", "ADCK", "ACBK", "AABK"], 'vx': 4,
-    'ornL': ["KK......", "KEK.....", ".KEK....", ".KDEKKKK", "..KDDEEE", "...KDDDD", "....KCCC", "....KBBB"],
+    'eave': [rep16("CDEFFEDC"), rep16("BDEEEEDB"), rep16("ACDDDDCA"), rep16("AAAAAAAA"),
+             "v" * 16, rep16("uuuyyuuu"), "s" * 16, "r" * 16],
+    'vL': ["CEDA", "CEDA", "CDCA", "CBAA"], 'vR': ["ADCA", "ADCA", "ACBA", "AABA"], 'vx': 4,
+    'ornL': ["DD......", "DED.....", ".DEA....", ".DDEAAAA", "..CDDEEE", "...CDDDD", "....CCCC", "....CBBB"],
     'dy': DY_SOFT,
-    'tipL': [(0, 2, 'K'), (0, 3, 'v')],
+    'tipL': [(0, 2, 'A'), (0, 3, 'v')],
     'tops': ROOF_TOPS_B,
 }
 
@@ -1100,7 +1101,7 @@ def door_b2():
 # ---------------------------------------------------------------------------
 # 6. 나무 계단 (2×3, 물체) — 화면 위(북)로 올라간다. 위는 위층으로 뚫린 어둠, 디딤판(밝은 윗면 2행)·챌판(어두운 앞면 2행)이 번갈아.
 # ---------------------------------------------------------------------------
-def stair_rows(rail_l, rail_r, tread, riser, top_dark, post_l, post_r):
+def stair_rows(rail_l, rail_r, tread, riser, top_dark, post_l, post_r, top_edge=None, bot_edge=None):
     """rail_* = 줄마다 난간 글자열(손으로, 폭 자유, 행 주기 반복), tread/riser = 디딤판·챌판 2행씩(안쪽 폭 그대로 손으로 쓴 행),
     top_dark = 위층으로 뚫린 어둠 행들, post_* = 아래 끝 기둥(행 목록). 반환 48행 32폭.
     0~1행 투명(위 귀퉁이), 2행 먹 윤곽, 맨 아래 46행 먹 윤곽·47행 그림자."""
@@ -1112,10 +1113,10 @@ def stair_rows(rail_l, rail_r, tread, riser, top_dark, post_l, post_r):
     while len(body) < 43:
         body += tread + riser
     body = body[:43]
-    rows = ["." * 32, "." * 32, "K" * 32]
+    rows = ["." * 32, "." * 32, top_edge or "K" * 32]
     for j, r in enumerate(body):
         rows.append(rail_l[j % len(rail_l)] + r + rail_r[j % len(rail_r)])
-    rows += ["K" * 32, "~" * 32]
+    rows += [bot_edge or "K" * 32, "~" * 32]
     assert len(rows) == 48, len(rows)
     for k, r in enumerate(post_l):
         y = 47 - len(post_l) + k
@@ -1130,14 +1131,18 @@ def stair_rows(rail_l, rail_r, tread, riser, top_dark, post_l, post_r):
 STAIR_LEG = dict(WL)
 STAIR_LEG.update({str(i): ('song', i) for i in range(7)})
 POST_A = ["KKKKKK", "KwvvuK", "KvuutK", "KuuttK", "KuttsK", "KtssrK"]
+POST_A1L = ["uvvvvu", "uwvvur", "uvuutr", "uuuttr", "uuttsr", "rtssrr"]
+POST_A1R = ["uvvvvr", "uwvvur", "uvuutr", "uuuttr", "uuttsr", "rtssrr"]
 
 
 def stairs_a1():
-    rows = stair_rows(rail_l=["Kvut"], rail_r=["vutK"],
-                      tread=["666666655666666666666665", "555555555554455555554444"],
+    # 먹 윤곽 없음: 밝은 쪽(위·왼쪽)=주칠 4단, 그늘쪽(아래·오른쪽)=주칠 1단, 맨 윗줄·구멍 아랫줄은 나무 1단
+    rows = stair_rows(rail_l=["uvut"], rail_r=["vutr"],
+                      tread=["666666655666666666666665", "555555555554455555554444", "555555555555555555555555"],
                       riser=["333333333333333333333333", "222222222222222222222222"],
-                      top_dark=["Z" * 24, "Z" * 24, "a" * 24, "K" * 24],
-                      post_l=POST_A, post_r=POST_A)
+                      top_dark=["Z" * 24, "Z" * 24, "a" * 24, "a" * 24],
+                      post_l=POST_A1L, post_r=POST_A1R,
+                      top_edge="u" * 4 + "a" * 24 + "u" * 4, bot_edge="r" * 32)
     return grid(rows, STAIR_LEG), {'top': (7, 9), 'note': '줄 A · 밝은 소나무 디딤판(윗면 2행)·챌판, 양옆 주칠 손잡이(윗면 밝은 줄)·아래 기둥 머리. 위는 위층으로 뚫린 어둠.'}
 
 
@@ -1156,12 +1161,14 @@ def stairs_a2():
 
 
 def stairs_b1():
-    post = ["KKKKKK", "KzyyxK", "KyxxwK", "KvuutK", "KuttsK", "KtssrK"]
-    rows = stair_rows(rail_l=["Kvut", "Kvut", "Kvut", "Kxyt"], rail_r=["vutK", "vutK", "vutK", "xytK"],
-                      tread=["eeeeeeeeeeeeeeeeeeeeeeed", "ddddddddcddddddddddddccc"],
+    postl = ["uzzyxu", "uyxxwr", "uvuutr", "uuttsr", "uttssr", "rtssrr"]
+    postr = ["uzzyxr", "uyxxwr", "uvuutr", "uuttsr", "uttssr", "rtssrr"]
+    rows = stair_rows(rail_l=["uvut", "uvut", "uvut", "uxyt"], rail_r=["vutr", "vutr", "vutr", "xytr"],
+                      tread=["eeeeeeeeeeeeeeeeeeeeeeed", "ddddddddcddddddddddddccc", "dddddddddddddddddddddddd"],
                       riser=["bbbbbbbbbbbbbbbbbbbbbbbb", "aaaaaaaaaaaaaaaaaaaaaaaa"],
-                      top_dark=["Z" * 24, "Z" * 24, "K" * 24],
-                      post_l=post, post_r=post)
+                      top_dark=["Z" * 24, "Z" * 24, "a" * 24],
+                      post_l=postl, post_r=postr,
+                      top_edge="u" * 4 + "a" * 24 + "u" * 4, bot_edge="r" * 32)
     return grid(rows, dict(WL)), {'top': (6, 8), 'note': '줄 B · 붉은 칠 짙은 나무 디딤판·주칠 손잡이에 금 테 마디(4행마다)·기둥 머리 금 갓. 위는 위층으로 뚫린 어둠.'}
 
 
@@ -1184,20 +1191,20 @@ def stairs_b2():
 def rail_a1():
     unit = [   # 16폭 반복: 손잡이 윗면 2행·손잡이 앞면·동자(3px) 사이 비침·아래 띠
         "................",
-        "KKKKKKKKKKKKKKKK",
-        "wwwwwwwwwwwwwwww",
+        "uuuuuuuuuuuuuuuu",
+        "vvvvvvvvvvvvvvvv",
         "vvvvvvvvvvvvvvvv",
         "ssssssssssssssss",
-        "KvuKKKKKKvuKKKKK",
-        "Kvt.....Kvt.....",
-        "Kvt.....Kvt.....",
-        "Kvt.....Kvt.....",
-        "Kvt.....Kvt.....",
-        "Kvt.....Kvt.....",
-        "KvuKKKKKKvuKKKKK",
+        "uvurrrrruvurrrrr",
+        "uvt.....uvt.....",
+        "uvt.....uvt.....",
+        "uvt.....uvt.....",
+        "uvt.....uvt.....",
+        "uvt.....uvt.....",
+        "uvurrrrruvurrrrr",
         "vvvvvvvvvvvvvvvv",
         "ssssssssssssssss",
-        "KKKKKKKKKKKKKKKK",
+        "rrrrrrrrrrrrrrrr",
         "~~~~~~~~~~~~~~~~",
     ]
     return grid([r * 3 for r in unit], WL), {'top': (2, 4), 'note': '줄 A · 주칠 난간: 손잡이 윗면 2행·동자 8px 간격(사이로 뒤가 비친다)·아래 띠. 가로 반복.'}
@@ -1228,20 +1235,20 @@ def rail_a2():
 def rail_b1():
     unit = [   # 16폭: 짙은 나무 손잡이(윗면 넓게) + 주칠 꽃병 모양 동자 둘(가운데 금 띠), 사이로 비친다
         "................",
-        "KKKKKKKKKKKKKKKK",
+        "eeeeeeeeeeeeeeee",
         "eeeeeeeeeeeeeeee",
         "dddddddddddddddd",
+        "bbbbbbbbbbbbbbbb",
+        ".uvtr....uvtr...",
+        ".uvtr....uvtr...",
+        "uvuutr..uvuutr..",
+        "uvuyutr.uvuyutr.",
+        "uvuutr..uvuutr..",
+        ".uvtr....uvtr...",
+        ".uvtr....uvtr...",
         "aaaaaaaaaaaaaaaa",
-        ".KvtK....KvtK...",
-        ".KvtK....KvtK...",
-        "KvuutK..KvuutK..",
-        "KvyxtK..KvyxtK..",
-        "KvuutK..KvuutK..",
-        ".KvtK....KvtK...",
-        ".KvtK....KvtK...",
-        "KKKKKKKKKKKKKKKK",
         "dddddddddddddddd",
-        "KKKKKKKKKKKKKKKK",
+        "aaaaaaaaaaaaaaaa",
         "~~~~~~~~~~~~~~~~",
     ]
     return grid([r * 3 for r in unit], WL), {'top': (2, 4), 'note': '줄 B · 짙은 나무 손잡이(윗면 넓게)·주칠 꽃병 모양 동자(가운데 금 띠) 8px 간격·짙은 나무 아래 띠. 가로 반복.'}
