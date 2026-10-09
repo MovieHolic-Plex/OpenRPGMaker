@@ -1,0 +1,384 @@
+{
+ "name": "밤의 지하상가 B2 — 연결 통로·빈 가게·기계실·분수 광장",
+ "inner": true,
+ "plan": [
+  "########################",
+  "#.....#.......#........#",
+  "#.....#.......#........#",
+  "#.....#.......#........#",
+  "#.....#.......#..####..#",
+  "#.....###.#####..####..#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "##.############.########",
+  "#.......#..............#",
+  "#.......#..............#",
+  "#.......#..............#",
+  "#.......#..............#",
+  "#.......#..............#",
+  "#.......#..............#",
+  "########################"
+ ],
+ "floor": "wh-mall-floor",
+ "wall": "wh-mall-wall",
+ "zones": [
+  {
+   "x0": 7,
+   "y0": 0,
+   "x1": 13,
+   "y1": 4,
+   "floor": "wh-office-floor",
+   "wall": "wh-service-wall"
+  },
+  {
+   "x0": 0,
+   "y0": 9,
+   "x1": 7,
+   "y1": 16,
+   "floor": "wh-warehouse-floor",
+   "wall": "wh-service-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "wh-escalator-stopped",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "wh-mall-bench",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "wh-guide-board",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "wh-puddle",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "wh-shutter-crawl",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "wh-toppled-shelf",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "wh-item-bag",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "wh-vending-dark",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "wh-vending-dark",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "wh-mall-pillar",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "wh-cart-abandoned",
+   "x": 22,
+   "y": 7
+  },
+  {
+   "id": "wh-fluor-broken",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "wh-exit-sign",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "wh-puddle",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "wh-fluor-broken",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "wh-puddle",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "of-fire-door",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "wh-panel-board",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "wh-pipes",
+   "x": 3,
+   "y": 12
+  },
+  {
+   "id": "wh-pipes",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "wh-item-firstaid",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "wh-pump",
+   "x": 4,
+   "y": 14
+  },
+  {
+   "id": "wh-drum",
+   "x": 1,
+   "y": 15
+  },
+  {
+   "id": "wh-drum",
+   "x": 2,
+   "y": 15
+  },
+  {
+   "id": "wh-puddle",
+   "x": 3,
+   "y": 13
+  },
+  {
+   "id": "wh-item-toolbox",
+   "x": 7,
+   "y": 15
+  },
+  {
+   "id": "wh-shutter-gate",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "wh-shopfront-shutter",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "wh-shopfront-half",
+   "x": 17,
+   "y": 12
+  },
+  {
+   "id": "wh-shopfront-shutter-b",
+   "x": 19,
+   "y": 12
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "wh-fountain-dry",
+   "x": 15,
+   "y": 13
+  },
+  {
+   "id": "wh-mall-pillar",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "wh-mall-pillar",
+   "x": 20,
+   "y": 14
+  },
+  {
+   "id": "wh-mall-bench",
+   "x": 12,
+   "y": 15
+  },
+  {
+   "id": "wh-rubble",
+   "x": 22,
+   "y": 15
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 18,
+   "y": 14
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 13,
+   "y": 13
+  },
+  {
+   "id": "wh-fallen-panel",
+   "x": 9,
+   "y": 15
+  }
+ ],
+ "rooms": [
+  {
+   "room": "wh-mall-street",
+   "x0": 0,
+   "y0": 0,
+   "x1": 5,
+   "y1": 8
+  },
+  {
+   "room": "wh-empty-shop",
+   "x0": 7,
+   "y0": 0,
+   "x1": 13,
+   "y1": 4
+  },
+  {
+   "room": "wh-mall-street",
+   "x0": 14,
+   "y0": 0,
+   "x1": 23,
+   "y1": 8
+  },
+  {
+   "room": "wh-mall-street",
+   "x0": 6,
+   "y0": 5,
+   "x1": 13,
+   "y1": 8
+  },
+  {
+   "room": "wh-machine",
+   "x0": 0,
+   "y0": 9,
+   "x1": 7,
+   "y1": 16
+  },
+  {
+   "room": "wh-fountain-plaza",
+   "x0": 9,
+   "y0": 9,
+   "x1": 23,
+   "y1": 16
+  }
+ ],
+ "start": [
+  3,
+  3
+ ],
+ "locks": [
+  {
+   "x": 15,
+   "y": 9,
+   "key": "분수 광장 셔터 열쇠",
+   "why": "보스 자리 분수 광장 앞 격자 셔터 — 열쇠는 기계실 구석 공구함(7,15)"
+  }
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 3,
+   "toMapId": "jp-city-undermall-1",
+   "toX": 22,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 2,
+   "y": 3,
+   "toMapId": "jp-city-undermall-1",
+   "toX": 22,
+   "toY": 4,
+   "direction": "up"
+  }
+ ]
+}

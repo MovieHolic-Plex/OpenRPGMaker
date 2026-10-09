@@ -1,0 +1,286 @@
+{
+ "name": "공사 중 빌딩 2층(기둥 층·철골 구역)",
+ "plan": [
+  "######################",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........#........#",
+  "#...........####.#####",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "######################"
+ ],
+ "floor": "cs-slab",
+ "wall": "cs-mesh-sheet",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 12,
+   "y0": 9,
+   "x1": 20,
+   "y1": 10,
+   "floor": "cs-slab",
+   "wall": "cs-plywood-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "cs-cement-bags",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "cs-work-light",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "cs-work-light",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "cs-column-bare",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "cs-cement-bags",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "cs-column-bare",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "cs-column-bare",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "cs-column-bare",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "cs-column-bare",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "cs-puddle",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "cs-scaffold",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "cs-barrier",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 8,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 10,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "cs-cone",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "cs-stairwell-down",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cs-ladder-down",
+   "x": 20,
+   "y": 11
+  },
+  {
+   "id": "cs-shaft-hole",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "cs-shutter",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "cs-item-helmet-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cs-item-toolbox",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "cs-item-blueprint",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "id": "cs-steel-beam",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "cs-generator",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "cs-cable-drum",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "id": "cs-light-off",
+   "x": 5,
+   "y": 1
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "steelzone",
+   "x0": 12,
+   "y0": 0,
+   "x1": 21,
+   "y1": 8
+  },
+  {
+   "room": "pillarfloor",
+   "x0": 0,
+   "y0": 0,
+   "x1": 21,
+   "y1": 13
+  }
+ ],
+ "start": [
+  11,
+  4
+ ],
+ "inner": true,
+ "locks": [
+  {
+   "x": 16,
+   "y": 8,
+   "key": "철골 구역 열쇠",
+   "why": "보스가 있는 철골 구역 셔터 — 열쇠는 1층 자재 창고의 설계도 통"
+  }
+ ],
+ "links": [
+  {
+   "x": 9,
+   "y": 4,
+   "toMapId": "jp-city-construction-1f",
+   "toX": 9,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 10,
+   "y": 4,
+   "toMapId": "jp-city-construction-1f",
+   "toX": 10,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 20,
+   "y": 12,
+   "toMapId": "jp-city-construction-1f",
+   "toX": 20,
+   "toY": 11,
+   "direction": "down"
+  }
+ ]
+}

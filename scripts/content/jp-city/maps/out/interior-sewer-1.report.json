@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-sewer-1",
+  "size": [
+   22,
+   14
+  ]
+ },
+ "start": [
+  2,
+  13
+ ],
+ "summary": "손 도트 실내 '하수도 점검로 — 수문·물길·작업원 대기소·점검실' 22×14 (jp-city-sewer-1, jp_city) — 출입구에서 닿는 칸 99, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-sewer-1",
+  "tilesetId": "jp_city",
+  "width": 22,
+  "height": 14,
+  "reachable": 99,
+  "floorCells": 164,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 13
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [
+   {
+    "x": 2,
+    "y": 13,
+    "width": 1
+   }
+  ],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 20,
+   "y": 4,
+   "to": "jp-city-sewer-2",
+   "reached": true
+  }
+ ],
+ "reach": 99,
+ "ok": true
+}

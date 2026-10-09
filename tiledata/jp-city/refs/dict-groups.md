@@ -1,9 +1,9 @@
-# 일본 도시 — 타일 그룹 사전 (281개)
+# 일본 도시 — 타일 그룹 사전 (315개)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
-역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 65, wall 69, water 3.
+역할별 개수: building 26, fence 6, prop 95, roof 17, terrain 81, wall 87, water 3.
 id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
 정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
 
@@ -300,5 +300,44 @@ id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = �
 {"id":"jp:interior-wall-po-wall","name":"실내 벽면 · 우체국 벽(흰 벽 + 빨강 띠)","role":"wall","layer":"lower","n":8,"from":11245,"to":11252},
 {"id":"jp:interior-wall-mc-wall","name":"실내 벽면 · 공용부 벽(타일 판 + 돌 띠)","role":"wall","layer":"lower","n":8,"from":11253,"to":11260},
 {"id":"jp:interior-wall-mc-corridor-wall","name":"실내 벽면 · 외복도 세대 벽(흰 벽 + 기둥)","role":"wall","layer":"lower","n":16,"from":11261,"to":11276}
+]
+```
+
+```json
+[
+{"id":"jp:interior-floor-ug-tunnel-floor","name":"실내 바닥 · 터널 보선 통로 바닥(어두운 콘크리트·자갈)","role":"terrain","layer":"lower","n":64,"from":11385,"to":11448},
+{"id":"jp:interior-floor-ug-sewer-floor","name":"실내 바닥 · 하수도 점검로 바닥(젖은 콘크리트)","role":"terrain","layer":"lower","n":64,"from":11449,"to":11512},
+{"id":"jp:interior-floor-ug-room-floor","name":"실내 바닥 · 기계실·대피실 바닥(닳은 녹회색 칠)","role":"terrain","layer":"lower","n":64,"from":11513,"to":11576},
+{"id":"jp:interior-wall-ug-tunnel-wall","name":"실내 벽면 · 터널 벽(세그먼트 판·케이블 줄)","role":"wall","layer":"lower","n":16,"from":11577,"to":11592},
+{"id":"jp:interior-wall-ug-sewer-wall","name":"실내 벽면 · 하수도 벽(이끼 낀 벽돌·콘크리트 아치)","role":"wall","layer":"lower","n":16,"from":11593,"to":11608},
+{"id":"jp:interior-wall-ug-room-wall","name":"실내 벽면 · 기계실 벽(칠 벗겨진 블록)","role":"wall","layer":"lower","n":16,"from":11609,"to":11624},
+{"id":"jp:interior-floor-hp-floor-dirty","name":"실내 바닥 · 얼룩진 리놀륨(폐병원)","role":"terrain","layer":"lower","n":64,"from":11726,"to":11789},
+{"id":"jp:interior-floor-hp-floor-tile-dirty","name":"실내 바닥 · 더러운 작은 타일(수술실·영안실)","role":"terrain","layer":"lower","n":64,"from":11790,"to":11853},
+{"id":"jp:interior-floor-hp-floor-conc","name":"실내 바닥 · 젖은 시멘트 바닥(지하)","role":"terrain","layer":"lower","n":64,"from":11854,"to":11917},
+{"id":"jp:interior-wall-hp-wall-peel","name":"실내 벽면 · 칠이 벗겨진 병원 벽","role":"wall","layer":"lower","n":16,"from":11918,"to":11933},
+{"id":"jp:interior-wall-hp-wall-tile","name":"실내 벽면 · 금 간 타일 벽(수술실·영안실)","role":"wall","layer":"lower","n":16,"from":11934,"to":11949},
+{"id":"jp:interior-wall-hp-wall-conc","name":"실내 벽면 · 얼룩진 시멘트 벽(지하)","role":"wall","layer":"lower","n":16,"from":11950,"to":11965},
+{"id":"jp:interior-floor-as-wood-rotten","name":"실내 바닥 · 썩고 들뜬 교실 마루","role":"terrain","layer":"lower","n":64,"from":12065,"to":12128},
+{"id":"jp:interior-floor-as-corridor-dirty","name":"실내 바닥 · 얼룩진 폐교 복도","role":"terrain","layer":"lower","n":64,"from":12129,"to":12192},
+{"id":"jp:interior-floor-as-tile-cracked","name":"실내 바닥 · 금 간 현관 타일","role":"terrain","layer":"lower","n":64,"from":12193,"to":12256},
+{"id":"jp:interior-wall-as-wall-peel","name":"실내 벽면 · 칠 벗겨진 폐교 벽","role":"wall","layer":"lower","n":16,"from":12257,"to":12272},
+{"id":"jp:interior-wall-as-wall-vine","name":"실내 벽면 · 덩굴 낀 폐교 벽","role":"wall","layer":"lower","n":16,"from":12273,"to":12288},
+{"id":"jp:interior-floor-cs-slab","name":"실내 바닥 · 맨 콘크리트 슬래브(공사 중)","role":"terrain","layer":"lower","n":64,"from":12356,"to":12419},
+{"id":"jp:interior-floor-cs-parking-floor","name":"실내 바닥 · 지하 주차장 에폭시 바닥","role":"terrain","layer":"lower","n":64,"from":12420,"to":12483},
+{"id":"jp:interior-floor-cs-parking-floor-dark","name":"실내 바닥 · 지하 주차장 바닥(아래층, 더 어둡고 젖음)","role":"terrain","layer":"lower","n":52,"from":12484,"to":12535},
+{"id":"jp:interior-wall-cs-wall-bare","name":"실내 벽면 · 맨 콘크리트 벽면(거푸집 자국)","role":"wall","layer":"lower","n":16,"from":12536,"to":12551},
+{"id":"jp:interior-wall-cs-plywood-wall","name":"실내 벽면 · 가설 합판 벽면","role":"wall","layer":"lower","n":16,"from":12552,"to":12567},
+{"id":"jp:interior-wall-cs-parking-wall","name":"실내 벽면 · 지하 주차장 벽면(흰·노랑 띠)","role":"wall","layer":"lower","n":15,"from":12568,"to":12582},
+{"id":"jp:interior-wall-cs-parking-wall-dark","name":"실내 벽면 · 지하 주차장 벽면(아래층, 바랜 띠·물때)","role":"wall","layer":"lower","n":16,"from":12583,"to":12598},
+{"id":"jp:interior-wall-cs-mesh-sheet","name":"실내 벽면 · 비계 안전망 시트 벽면","role":"wall","layer":"lower","n":12,"from":12599,"to":12610},
+{"id":"jp:interior-floor-wh-mall-floor","name":"실내 바닥 · 지하상가 석재 바닥(밤)","role":"terrain","layer":"lower","n":64,"from":12740,"to":12803},
+{"id":"jp:interior-floor-wh-warehouse-floor","name":"실내 바닥 · 창고 콘크리트 바닥(바퀴 자국·기름)","role":"terrain","layer":"lower","n":64,"from":12804,"to":12867},
+{"id":"jp:interior-floor-wh-office-floor","name":"실내 바닥 · 창고 사무실 바닥(낡은 P타일)","role":"terrain","layer":"lower","n":16,"from":12868,"to":12883},
+{"id":"jp:interior-floor-wh-grating","name":"실내 바닥 · 캣워크 철망 바닥(그레이팅)","role":"terrain","layer":"lower","n":16,"from":12884,"to":12899},
+{"id":"jp:interior-wall-wh-mall-wall","name":"실내 벽면 · 지하상가 벽(꺼진 간판 띠 + 기둥 판)","role":"wall","layer":"lower","n":16,"from":12900,"to":12915},
+{"id":"jp:interior-wall-wh-warehouse-wall","name":"실내 벽면 · 창고 골함석 벽","role":"wall","layer":"lower","n":16,"from":12916,"to":12931},
+{"id":"jp:interior-wall-wh-service-wall","name":"실내 벽면 · 콘크리트 뒷벽(배관)","role":"wall","layer":"lower","n":16,"from":12932,"to":12947},
+{"id":"jp:interior-wall-wh-office-wall","name":"실내 벽면 · 창고 사무실 벽(낡은 조립 패널)","role":"wall","layer":"lower","n":16,"from":12948,"to":12963},
+{"id":"jp:interior-wall-wh-container-wall","name":"실내 벽면 · 쌓인 컨테이너 옆면(벽)","role":"wall","layer":"lower","n":40,"from":12964,"to":13003}
 ]
 ```

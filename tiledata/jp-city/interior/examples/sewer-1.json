@@ -1,0 +1,372 @@
+{
+ "name": "하수도 점검로 — 수문·물길·작업원 대기소·점검실",
+ "plan": [
+  "######################",
+  "#....#.......#.......#",
+  "#....#.......#.......#",
+  "#....#.......#.......#",
+  "#....#.......#.......#",
+  "##.###.......####.####",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "##.###################"
+ ],
+ "floor": "ug-sewer-floor",
+ "wall": "ug-sewer-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 1,
+   "x1": 4,
+   "y1": 4,
+   "floor": "ug-room-floor",
+   "wall": "ug-room-wall"
+  },
+  {
+   "x0": 14,
+   "y0": 1,
+   "x1": 20,
+   "y1": 4,
+   "floor": "ug-room-floor",
+   "wall": "ug-room-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ug-locker",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "ug-item-lantern",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "ug-light-off",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "ug-emergency-phone",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "ug-door-steel",
+   "x": 17,
+   "y": 5
+  },
+  {
+   "id": "ug-sluice",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "ug-item-firstaid",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "ug-light-off",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "ug-valve",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "ug-valve",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "ug-rat-hole",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "ug-puddle",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "ug-puddle",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "ug-panel",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "ug-panel",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "ug-pump",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "ug-pipe-v",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "ug-hatch-down",
+   "x": 20,
+   "y": 4
+  },
+  {
+   "id": "ug-valve",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "ug-light-emergency",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "ug-light-off",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "ug-light-off",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "ug-light-off",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "ug-rat-hole",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "ug-valve",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "ug-valve",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "ug-item-toolbox",
+   "x": 20,
+   "y": 8
+  },
+  {
+   "id": "ug-debris",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "ug-debris",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "ug-grate",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "ug-grate",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "ug-grate",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "id": "ug-puddle",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "ug-puddle",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "ug-puddle",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "ug-debris",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "ug-debris",
+   "x": 17,
+   "y": 11
+  },
+  {
+   "id": "ug-trash-pile",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 18,
+   "y": 12
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 19,
+   "y": 12
+  },
+  {
+   "id": "ug-pipe-h",
+   "x": 20,
+   "y": 12
+  }
+ ],
+ "tables": [
+  {
+   "style": "ug-channel",
+   "x": 8,
+   "y": 4,
+   "w": 2,
+   "h": 5
+  },
+  {
+   "style": "ug-channel",
+   "x": 1,
+   "y": 9,
+   "w": 3,
+   "h": 2
+  },
+  {
+   "style": "ug-channel",
+   "x": 5,
+   "y": 9,
+   "w": 7,
+   "h": 2
+  },
+  {
+   "style": "ug-channel",
+   "x": 13,
+   "y": 9,
+   "w": 5,
+   "h": 2
+  },
+  {
+   "style": "ug-channel",
+   "x": 19,
+   "y": 9,
+   "w": 2,
+   "h": 2
+  }
+ ],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "sewer-standby",
+   "x0": 1,
+   "y0": 1,
+   "x1": 4,
+   "y1": 4
+  },
+  {
+   "room": "sewer-inspection",
+   "x0": 14,
+   "y0": 1,
+   "x1": 20,
+   "y1": 4
+  },
+  {
+   "room": "sewer-walkway",
+   "x0": 1,
+   "y0": 5,
+   "x1": 20,
+   "y1": 13
+  },
+  {
+   "room": "sewer-walkway",
+   "x0": 6,
+   "y0": 1,
+   "x1": 12,
+   "y1": 4
+  }
+ ],
+ "start": [
+  2,
+  13
+ ],
+ "links": [
+  {
+   "x": 20,
+   "y": 4,
+   "toMapId": "jp-city-sewer-2",
+   "toX": 2,
+   "toY": 4,
+   "direction": "down"
+  }
+ ],
+ "locks": [
+  {
+   "x": 17,
+   "y": 5,
+   "key": "점검실 열쇠",
+   "why": "점검실 철문 — 열쇠는 서쪽 작업원 대기소 사물함(1,3). 점검실 바닥 점검구로 하수 본관(합류 수조)에 내려간다."
+  }
+ ]
+}

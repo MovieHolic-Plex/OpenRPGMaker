@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-subway-tunnel-1",
+  "size": [
+   24,
+   14
+  ]
+ },
+ "start": [
+  18,
+  13
+ ],
+ "summary": "손 도트 실내 '지하철 보선 터널 B1 — 보선 통로·대피실·기계실·계전실' 24×14 (jp-city-subway-tunnel-1, jp_city) — 출입구에서 닿는 칸 83, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-subway-tunnel-1",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 14,
+  "reachable": 83,
+  "floorCells": 161,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 18,
+    "y": 13
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 18,
+    "y": 13,
+    "width": 2
+   }
+  ],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 13,
+   "y": 4,
+   "to": "jp-city-subway-tunnel-2",
+   "reached": true
+  }
+ ],
+ "reach": 83,
+ "ok": true
+}

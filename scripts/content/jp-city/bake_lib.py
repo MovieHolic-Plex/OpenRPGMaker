@@ -8,7 +8,9 @@ import numpy as np
 from PIL import Image
 
 T = 16
-TPR = 48                     # 열 수는 처음에 확정하고 다시 바꾸지 않는다(바꾸면 ensureJpCityTileset 이 칸 표를 통째 교체한다)
+TPR = 96                     # 열 수. 2026-10-08 48 → 96(4묶음 던전으로 칸이 48열×4096px 한도 12288 을 넘었다).
+                             # 칸 번호는 그대로(번호 = 시트 위 순서), 그림 위치만 다시 놓는다 — ensureJpCityTileset 이 48열 사본을 같은 시트로 보고
+                             # tilesPerRow 만 고친다(RELAYOUT_FROM). 다시 바꿀 일이 생기면 그 목록에 옛 열 수를 더한다.
 MAX_H = 4096
 MARKER = (0xe0, 0x40, 0xc0)
 

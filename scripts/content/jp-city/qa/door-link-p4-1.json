@@ -1,0 +1,10 @@
+[
+ { "building": "A2", "example": "subway-tunnel-1", "maps": ["subway-tunnel-1", "subway-tunnel-2"] },
+ { "building": "B1a", "example": "sewer-1", "maps": ["sewer-1", "sewer-2"] },
+ { "building": "A1b", "example": "abandoned-hospital-1f", "maps": ["abandoned-hospital-1f", "abandoned-hospital-2f", "abandoned-hospital-b1"] },
+ { "building": "B1b", "example": "ruin-school-1f", "maps": ["ruin-school-1f", "ruin-school-2f"] },
+ { "building": "A1c", "example": "construction-1f", "maps": ["construction-1f", "construction-2f"] },
+ { "building": "B2", "example": "parking-b1", "maps": ["parking-b1", "parking-b2"] },
+ { "building": "E1", "example": "undermall-1", "maps": ["undermall-1", "undermall-2"] },
+ { "building": "A1a", "example": "harbor-warehouse-1", "maps": ["harbor-warehouse-1", "harbor-warehouse-2"] }
+]

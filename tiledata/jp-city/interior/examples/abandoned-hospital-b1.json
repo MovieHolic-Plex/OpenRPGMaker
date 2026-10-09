@@ -1,0 +1,366 @@
+{
+ "name": "폐병원 지하(영안실·보일러실·창고)",
+ "plan": [
+  "########################",
+  "#.......#.....#........#",
+  "#.......#.....#........#",
+  "#.......#.....#........#",
+  "#.......#.....#........#",
+  "#.......#.....#........#",
+  "###.#######.###........#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#####.#######.####.....#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#.........#......#.....#",
+  "########################"
+ ],
+ "floor": "hp-floor-conc",
+ "wall": "hp-wall-conc",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 7,
+   "y1": 5,
+   "floor": "hp-floor-tile-dirty",
+   "wall": "hp-wall-tile"
+  }
+ ],
+ "objects": [
+  {
+   "id": "hp-light-flicker",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "hp-morgue-drawers",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "hp-stretcher",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "hp-puddle",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "hp-item-records",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "hp-door-broken",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "hp-boiler",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "hp-item-keybox",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "hp-pipes",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "hp-puddle",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "hp-debris",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "hp-door-locked",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "hp-pipes",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "hp-emergency-light",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "hp-debris",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "of-server-rack",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "hp-ceiling-fallen",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "hp-boiler",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "hp-puddle",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "hp-glass",
+   "x": 21,
+   "y": 9
+  },
+  {
+   "id": "hp-shelf-fallen",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 22,
+   "y": 8
+  },
+  {
+   "id": "hp-papers",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "hp-light-flicker",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "hp-pipes",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "hp-stretcher",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "hp-puddle",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "hp-debris",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "hp-papers",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 2,
+   "y": 14
+  },
+  {
+   "id": "pb-lost-found-shelf",
+   "x": 3,
+   "y": 14
+  },
+  {
+   "id": "hp-shelf-fallen",
+   "x": 6,
+   "y": 15
+  },
+  {
+   "id": "hp-item-medkit",
+   "x": 8,
+   "y": 14
+  },
+  {
+   "id": "hp-door-broken",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "of-server-rack",
+   "x": 12,
+   "y": 14
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 14,
+   "y": 14
+  },
+  {
+   "id": "of-server-rack",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "hp-puddle",
+   "x": 13,
+   "y": 15
+  },
+  {
+   "id": "hp-debris",
+   "x": 15,
+   "y": 15
+  },
+  {
+   "id": "hp-door-broken",
+   "x": 13,
+   "y": 11
+  },
+  {
+   "id": "hp-shelf-fallen",
+   "x": 19,
+   "y": 12
+  },
+  {
+   "id": "hp-debris",
+   "x": 22,
+   "y": 11
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 21,
+   "y": 15
+  },
+  {
+   "id": "hp-puddle",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "hp-wheelchair",
+   "x": 22,
+   "y": 13
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  18,
+  4
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 18,
+   "y": 3,
+   "toMapId": "jp-city-abandoned-hospital-1f",
+   "toX": 20,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 19,
+   "y": 3,
+   "toMapId": "jp-city-abandoned-hospital-1f",
+   "toX": 20,
+   "toY": 4,
+   "direction": "up"
+  }
+ ],
+ "locks": [
+  {
+   "x": 11,
+   "y": 6,
+   "key": "보일러실 열쇠",
+   "why": "보일러실 철문 — 1층 외래 진찰실 1 사물함(hp-item-locker)에서 찾는다"
+  }
+ ],
+ "rooms": [
+  {
+   "room": "hospmorgue",
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 6
+  },
+  {
+   "room": "hospboiler",
+   "x0": 8,
+   "y0": 0,
+   "x1": 14,
+   "y1": 6
+  },
+  {
+   "room": "hospstairs",
+   "x0": 15,
+   "y0": 0,
+   "x1": 23,
+   "y1": 10
+  },
+  {
+   "room": "hospcorridor",
+   "x0": 0,
+   "y0": 7,
+   "x1": 14,
+   "y1": 10
+  },
+  {
+   "room": "hospstore",
+   "x0": 0,
+   "y0": 11,
+   "x1": 10,
+   "y1": 16
+  },
+  {
+   "room": "hospmachine",
+   "x0": 11,
+   "y0": 11,
+   "x1": 17,
+   "y1": 16
+  },
+  {
+   "room": "hospmachine",
+   "x0": 18,
+   "y0": 11,
+   "x1": 23,
+   "y1": 16
+  }
+ ]
+}

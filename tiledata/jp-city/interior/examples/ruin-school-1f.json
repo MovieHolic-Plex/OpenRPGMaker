@@ -1,0 +1,484 @@
+{
+ "name": "폐교 1층(무너진 현관·교실·교무실·과학실)",
+ "plan": [
+  "########################",
+  "#.......#......#.......#",
+  "#.......#......#.......#",
+  "#.......#......#.......#",
+  "#.......#......#.......#",
+  "#.......#......#.......#",
+  "#.......#......#.......#",
+  "###.##.######.####.#####",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "############.###.......#",
+  "########.......#.......#",
+  "########.......#.......#",
+  "########.......#.......#",
+  "########.......#.......#",
+  "##################..####"
+ ],
+ "floor": "as-corridor-dirty",
+ "wall": "as-wall-peel",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 7,
+   "y1": 6,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 9,
+   "y0": 0,
+   "x1": 14,
+   "y1": 6,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 16,
+   "y0": 0,
+   "x1": 22,
+   "y1": 6,
+   "floor": "as-wood-rotten"
+  },
+  {
+   "x0": 16,
+   "y0": 7,
+   "x1": 22,
+   "y1": 9,
+   "wall": "as-wall-vine"
+  },
+  {
+   "x0": 16,
+   "y0": 12,
+   "x1": 22,
+   "y1": 16,
+   "floor": "as-tile-cracked"
+  },
+  {
+   "x0": 8,
+   "y0": 12,
+   "x1": 14,
+   "y1": 16,
+   "floor": "as-tile-cracked",
+   "wall": "as-wall-vine"
+  }
+ ],
+ "objects": [
+  {
+   "id": "as-vines",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "as-blackboard-cracked",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "as-window-broken",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "as-leaves",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "as-podium-broken",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "as-leaves",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "as-desk-dusty-n",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "as-desk-dusty-n",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "as-desk-toppled",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "as-desk-dusty-n",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "as-desk-toppled",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "as-chair-toppled",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "as-puddle",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "as-desk-dusty-n",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "as-desk-dusty-n",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "as-debris",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "as-blackboard-cracked",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "as-window-broken",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "as-item-diary",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "as-locker-open",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "as-desk-toppled",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "as-leaves",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "as-puddle",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "as-window-broken",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "as-vines",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "as-item-key-hook",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "as-bookshelf-dusty",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "as-locker-open",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "as-staff-desk-dusty",
+   "x": 17,
+   "y": 4
+  },
+  {
+   "id": "as-staff-desk-dusty",
+   "x": 20,
+   "y": 4
+  },
+  {
+   "id": "as-chair-toppled",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "as-debris",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "as-item-toolbox",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "door-open-western",
+   "x": 18,
+   "y": 7
+  },
+  {
+   "id": "as-stairs-up-broken",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "as-exit-light",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "as-exit-light",
+   "x": 20,
+   "y": 8
+  },
+  {
+   "id": "as-debris",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "as-puddle",
+   "x": 10,
+   "y": 11
+  },
+  {
+   "id": "as-floor-hole",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "as-leaves",
+   "x": 21,
+   "y": 10
+  },
+  {
+   "id": "as-door-locked",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "as-window-broken",
+   "x": 9,
+   "y": 13
+  },
+  {
+   "id": "as-vines",
+   "x": 14,
+   "y": 13
+  },
+  {
+   "id": "as-locker-open",
+   "x": 8,
+   "y": 15
+  },
+  {
+   "id": "as-lab-bench-dusty",
+   "x": 10,
+   "y": 16
+  },
+  {
+   "id": "as-puddle",
+   "x": 12,
+   "y": 16
+  },
+  {
+   "id": "as-locker-open",
+   "x": 14,
+   "y": 15
+  },
+  {
+   "id": "as-item-photo-box",
+   "x": 14,
+   "y": 16
+  },
+  {
+   "id": "as-shoe-locker-rot",
+   "x": 16,
+   "y": 13
+  },
+  {
+   "id": "as-debris",
+   "x": 20,
+   "y": 13
+  },
+  {
+   "id": "as-shoe-locker-rot",
+   "x": 21,
+   "y": 13
+  },
+  {
+   "id": "as-leaves",
+   "x": 18,
+   "y": 14
+  },
+  {
+   "id": "as-debris",
+   "x": 21,
+   "y": 15
+  },
+  {
+   "id": "as-shoe-locker-rot",
+   "x": 16,
+   "y": 16
+  },
+  {
+   "id": "as-vines-floor",
+   "x": 20,
+   "y": 16
+  },
+  {
+   "id": "as-debris",
+   "x": 22,
+   "y": 16
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "ruinclassroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 7
+  },
+  {
+   "room": "ruinclassroom",
+   "x0": 8,
+   "y0": 0,
+   "x1": 14,
+   "y1": 7
+  },
+  {
+   "room": "ruinstaffroom",
+   "x0": 15,
+   "y0": 0,
+   "x1": 23,
+   "y1": 7
+  },
+  {
+   "room": "ruincorridor",
+   "x0": 0,
+   "y0": 8,
+   "x1": 23,
+   "y1": 11
+  },
+  {
+   "room": "ruinlab",
+   "x0": 8,
+   "y0": 12,
+   "x1": 14,
+   "y1": 17
+  },
+  {
+   "room": "ruingenkan",
+   "x0": 15,
+   "y0": 12,
+   "x1": 23,
+   "y1": 17
+  }
+ ],
+ "start": [
+  18,
+  16
+ ],
+ "exitWidth": 2,
+ "links": [
+  {
+   "x": 1,
+   "y": 10,
+   "toMapId": "jp-city-ruin-school-2f",
+   "toX": 3,
+   "toY": 12,
+   "direction": "right"
+  },
+  {
+   "x": 2,
+   "y": 10,
+   "toMapId": "jp-city-ruin-school-2f",
+   "toX": 3,
+   "toY": 12,
+   "direction": "right"
+  }
+ ],
+ "locks": [
+  {
+   "x": 12,
+   "y": 12,
+   "key": "과학실 열쇠",
+   "why": "쇠사슬 감긴 과학실 문 — 열쇠는 교무실 열쇠 고리판(21,1)"
+  }
+ ]
+}

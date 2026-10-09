@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-undermall-2",
+  "size": [
+   24,
+   17
+  ]
+ },
+ "start": [
+  3,
+  3
+ ],
+ "summary": "손 도트 실내 '밤의 지하상가 B2 — 연결 통로·빈 가게·기계실·분수 광장' 24×17 (jp-city-undermall-2, jp_city) — 출입구에서 닿는 칸 135, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-undermall-2",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 17,
+  "reachable": 135,
+  "floorCells": 178,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 3,
+    "y": 3
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 2,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 1,
+   "y": 3,
+   "to": "jp-city-undermall-1",
+   "reached": true
+  },
+  {
+   "x": 2,
+   "y": 3,
+   "to": "jp-city-undermall-1",
+   "reached": true
+  }
+ ],
+ "reach": 135,
+ "ok": true
+}

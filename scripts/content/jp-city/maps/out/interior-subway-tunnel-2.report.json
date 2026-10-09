@@ -1,0 +1,44 @@
+{
+ "map": {
+  "id": "jp-city-subway-tunnel-2",
+  "size": [
+   24,
+   16
+  ]
+ },
+ "start": [
+  3,
+  3
+ ],
+ "summary": "손 도트 실내 '지하철 보선 터널 B2 — 선로 분기부·환기 기계실' 24×16 (jp-city-subway-tunnel-2, jp_city) — 출입구에서 닿는 칸 103, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-subway-tunnel-2",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 16,
+  "reachable": 103,
+  "floorCells": 203,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 3,
+    "y": 3
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 2,
+   "y": 3,
+   "to": "jp-city-subway-tunnel-1",
+   "reached": true
+  }
+ ],
+ "reach": 103,
+ "ok": true
+}

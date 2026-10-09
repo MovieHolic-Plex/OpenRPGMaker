@@ -1,0 +1,291 @@
+{
+ "name": "항만 창고 중이층 — 캣워크·사무실·밀수품 방",
+ "inner": true,
+ "plan": [
+  "######################",
+  "#......#.............#",
+  "#......#.............#",
+  "#......#.............#",
+  "#......#.............#",
+  "#......#.............#",
+  "###.#########.########",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "#...##########.......#",
+  "#....................#",
+  "#....................#",
+  "#....................#",
+  "######################"
+ ],
+ "floor": "wh-grating",
+ "wall": "wh-warehouse-wall",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 6,
+   "floor": "wh-office-floor",
+   "wall": "wh-office-wall"
+  },
+  {
+   "x0": 8,
+   "y0": 0,
+   "x1": 21,
+   "y1": 6,
+   "floor": "wh-warehouse-floor",
+   "wall": "wh-warehouse-wall"
+  },
+  {
+   "x0": 4,
+   "y0": 11,
+   "x1": 13,
+   "y1": 13,
+   "wall": "wh-container-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "door-open-western",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "wh-item-locker",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "of-desk",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "wh-item-manifest",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "wh-crate",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "wh-wicket-door",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "wh-tarp-pile",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "wh-tarp-pile",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "wh-item-crate-open",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "wh-item-bag",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "wh-light-hang",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "wh-light-off",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "wh-rope-coil",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "wh-light-off",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "wh-light-hang",
+   "x": 17,
+   "y": 7
+  },
+  {
+   "id": "wh-chain-hoist",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "wh-pallet",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "wh-drum",
+   "x": 20,
+   "y": 9
+  },
+  {
+   "id": "wh-ladder-hatch",
+   "x": 19,
+   "y": 13
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 16,
+   "y": 14
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 17,
+   "y": 14
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 18,
+   "y": 14
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "wh-catwalk-rail",
+   "x": 20,
+   "y": 14
+  },
+  {
+   "id": "wh-crate",
+   "x": 20,
+   "y": 11
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "wh-puddle",
+   "x": 10,
+   "y": 14
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "wh-exit-sign",
+   "x": 12,
+   "y": 12
+  }
+ ],
+ "rooms": [
+  {
+   "room": "wh-mezz-office",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 6
+  },
+  {
+   "room": "wh-smuggle",
+   "x0": 8,
+   "y0": 0,
+   "x1": 21,
+   "y1": 6
+  },
+  {
+   "room": "wh-catwalk",
+   "x0": 0,
+   "y0": 7,
+   "x1": 21,
+   "y1": 15
+  }
+ ],
+ "start": [
+  18,
+  13
+ ],
+ "locks": [
+  {
+   "x": 13,
+   "y": 6,
+   "key": "밀수품 방 열쇠",
+   "why": "밀수품 방(보스 자리) 쪽문 — 열쇠는 서쪽 중이층 사무실(막다른 방) 사물함 wh-item-locker (1,3)"
+  }
+ ],
+ "links": [
+  {
+   "x": 19,
+   "y": 13,
+   "toMapId": "jp-city-harbor-warehouse-1",
+   "toX": 20,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

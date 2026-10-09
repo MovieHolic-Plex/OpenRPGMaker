@@ -1,0 +1,455 @@
+{
+ "name": "밤의 지하상가 B1 — 셔터 거리·광장",
+ "plan": [
+  "##########################",
+  "#.....#............#.....#",
+  "#.....#............#.....#",
+  "#.....#............#.....#",
+  "#.....#............#.....#",
+  "###.#####.##########.#####",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#...########....######...#",
+  "#........................#",
+  "#........................#",
+  "#.....................####",
+  "###########..#############"
+ ],
+ "floor": "wh-mall-floor",
+ "wall": "wh-mall-wall",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 5,
+   "y1": 5,
+   "floor": "wh-office-floor",
+   "wall": "wh-office-wall"
+  },
+  {
+   "x0": 6,
+   "y0": 0,
+   "x1": 19,
+   "y1": 5,
+   "floor": "wh-warehouse-floor",
+   "wall": "wh-service-wall"
+  },
+  {
+   "x0": 20,
+   "y0": 0,
+   "x1": 25,
+   "y1": 5,
+   "floor": "wh-mall-floor",
+   "wall": "wh-service-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "wh-item-locker",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "of-desk",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-file-cabinet",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "of-desk-chair-e",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "wh-item-firstaid",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "door-open-western",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "door-open-western",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "wh-pallet-rack",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "wh-crate",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "wh-drum",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "wh-item-crate-open",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "wh-puddle",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "wh-light-off",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "wh-shutter-gate",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "wh-escalator-down",
+   "x": 23,
+   "y": 3
+  },
+  {
+   "id": "wh-fallen-panel",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 21,
+   "y": 4
+  },
+  {
+   "id": "wh-puddle",
+   "x": 22,
+   "y": 4
+  },
+  {
+   "id": "wh-exit-sign",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 22,
+   "y": 1
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-shutter",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-shutter-b",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "wh-vending-dark",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-half",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-shutter",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "wh-shop-window",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-shutter-b",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "id": "wh-shopfront-shutter",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "id": "wh-vending-dark",
+   "x": 23,
+   "y": 8
+  },
+  {
+   "id": "wh-cart-abandoned",
+   "x": 24,
+   "y": 10
+  },
+  {
+   "id": "wh-exit-sign",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 24,
+   "y": 6
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "wh-puddle",
+   "x": 19,
+   "y": 10
+  },
+  {
+   "id": "wh-fallen-panel",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "wh-mall-bench",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "wh-mall-pillar",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "wh-mall-pillar",
+   "x": 15,
+   "y": 11
+  },
+  {
+   "id": "wh-guide-board",
+   "x": 14,
+   "y": 12
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 13,
+   "y": 13
+  },
+  {
+   "id": "wh-rubble",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "wh-puddle",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "wh-fluor-broken",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "wh-emergency-lamp",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "wh-exit-sign",
+   "x": 18,
+   "y": 12
+  },
+  {
+   "id": "wh-puddle",
+   "x": 8,
+   "y": 14
+  },
+  {
+   "id": "wh-debris-paper",
+   "x": 17,
+   "y": 14
+  },
+  {
+   "id": "wh-item-toolbox",
+   "x": 21,
+   "y": 14
+  },
+  {
+   "id": "wh-toppled-shelf",
+   "x": 22,
+   "y": 13
+  },
+  {
+   "id": "wh-item-bag",
+   "x": 24,
+   "y": 13
+  },
+  {
+   "id": "wh-glass-shards",
+   "x": 23,
+   "y": 11
+  }
+ ],
+ "rooms": [
+  {
+   "room": "wh-security",
+   "x0": 0,
+   "y0": 0,
+   "x1": 5,
+   "y1": 5
+  },
+  {
+   "room": "wh-backyard",
+   "x0": 6,
+   "y0": 0,
+   "x1": 19,
+   "y1": 5
+  },
+  {
+   "room": "wh-escalator-hall",
+   "x0": 20,
+   "y0": 0,
+   "x1": 25,
+   "y1": 5
+  },
+  {
+   "room": "wh-mall-street",
+   "x0": 0,
+   "y0": 6,
+   "x1": 25,
+   "y1": 10
+  },
+  {
+   "room": "wh-mall-plaza",
+   "x0": 12,
+   "y0": 11,
+   "x1": 15,
+   "y1": 15
+  },
+  {
+   "room": "wh-backpassage",
+   "x0": 0,
+   "y0": 11,
+   "x1": 11,
+   "y1": 15
+  },
+  {
+   "room": "wh-backpassage",
+   "x0": 16,
+   "y0": 11,
+   "x1": 21,
+   "y1": 15
+  },
+  {
+   "room": "wh-mall-nook",
+   "x0": 22,
+   "y0": 11,
+   "x1": 25,
+   "y1": 15
+  }
+ ],
+ "start": [
+  11,
+  14
+ ],
+ "exitWidth": 2,
+ "locks": [
+  {
+   "x": 20,
+   "y": 5,
+   "key": "B1 통로 셔터 열쇠",
+   "why": "에스컬레이터(B2로 내려가는 곳) 앞 격자 셔터 — 열쇠는 서쪽 경비실 사물함(1,3)"
+  }
+ ],
+ "links": [
+  {
+   "x": 23,
+   "y": 4,
+   "toMapId": "jp-city-undermall-2",
+   "toX": 3,
+   "toY": 3,
+   "direction": "down"
+  },
+  {
+   "x": 24,
+   "y": 4,
+   "toMapId": "jp-city-undermall-2",
+   "toX": 3,
+   "toY": 3,
+   "direction": "down"
+  }
+ ]
+}

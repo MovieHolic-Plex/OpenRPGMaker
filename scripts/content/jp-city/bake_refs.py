@@ -5,7 +5,7 @@
   python3 scripts/content/jp-city/bake_refs.py --dump      먼저 엔진 덤프를 새로 돌린다(약 3분: npx tsx tiledata/jp-city/refs/engine_dump.mts)
 
 입력  src/assets/jpCityTileset.json (칸 번호·그룹·오토타일·키트) · src/assets/jpCityBuildingSpec.json (건물 부품 사전·완성 예제 25)
-      public/assets/jp-city/jp-city-chipset.png (48열 16px 시트) · tiledata/jp-city/{pins,kit-index,bake-report}.json
+      public/assets/jp-city/jp-city-chipset.png (96열 16px 시트) · tiledata/jp-city/{pins,kit-index,bake-report}.json
       tiledata/jp-city/refs/engine-results.json  ← engine_dump.mts 가 만든 **진짜 도구·엔진 실측**
         (build_jp_city_building · paint_tiles · fill_region · lay_path · stamp_object · stamp_layer_block 을 실제로 호출한 결과,
          isPassable · passabilityOf · tileLayerPolicy · autotileEngine 판정)
@@ -169,6 +169,26 @@ def contact_sheet(ids, cols, scale, label=True, bg=(46, 46, 54, 255), pad=3):
 IMAGES = collections.OrderedDict()      # 이름 → (분류, 기록)
 
 
+def keep_img(name, caption, cat):
+    """실측 화면(verify-shots)이 없는 체크아웃에서 이미 구운 그림을 그대로 등록한다(공개 저장소는 verify-shots 를 싣지 않는다)."""
+    assert os.path.exists(os.path.join(IMG_DIR, f'{name}.png')), name
+    rec = dict(id=f'{PFX}img-{name}', name=f'{name}.png', caption=caption, dataUrl=f'{IMG_URL}/{name}.png')
+    IMAGES[name] = (cat, rec)
+    return rec['id']
+
+
+def runtime_shot(*parts):
+    """출하 플레이어 실측 화면 verify-shots/jp-city/<parts>. 없으면 None."""
+    p = os.path.join(ROOT, 'verify-shots', 'jp-city', *parts)
+    return Image.open(p).convert('RGBA') if os.path.exists(p) else None
+
+
+def shot_img(name, shot, label, caption, cat):
+    """실측 화면 한 장을 ¾ 로 줄여 패널로 굽는다. 실측이 없으면 이미 구운 그림을 그대로 쓴다."""
+    if shot is None: return keep_img(name, caption, cat)
+    return save_img(name, panels([(label, shot.resize((shot.width * 3 // 4, shot.height * 3 // 4), Image.NEAREST))]), caption, cat)
+
+
 def save_img(name, im, caption, cat):
     """긴 변 820 초과는 만들지 않는다(호출자가 쪼갠다)."""
     assert max(im.size) <= 820, (name, im.size)
@@ -294,7 +314,8 @@ for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roa
                ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior'), ('interior_doors', 'interior'),
                ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
                ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
-               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior')):
+               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior'),
+               ('interior_amuse', 'interior'), ('interior_karaoke', 'interior'), ('interior_famires', 'interior'), ('interior_hotel', 'interior'), ('interior_mall', 'interior')):
     for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -2383,16 +2404,16 @@ def img_trn():
     save_img('transit-concourse', full, f'さくら町駅 콘코스 {W}×{H}칸(원본 해상도): 매표기·출구 계단·역무실·개찰구+칸막이·승강장 계단·점자 유도 블록. 배열 `jp-transit-ex`.', C_TRN)
     pl = render({'1': _PLAT['lowerTiles'], '2': _PLAT['lowerOverlayTiles'], '3': _PLAT['upperTiles'], '4': _PLAT['upperOverlayTiles']}, _PLAT['width'], _PLAT['height'])
     save_img('transit-platform', pl, f'さくら町駅 승강장 {_PLAT["width"]}×{_PLAT["height"]}칸(원본 해상도): 뒷벽·선로 2줄·승강장 끝·기둥·LED·매단 역명판·올라가는 계단. 지하철은 런타임이 그린다(`jp-img-transit-runtime`).', C_TRN)
-    rt = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 'subway-stop.png')).convert('RGBA')
-    rt2 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 't0.png')).convert('RGBA')
+    rt = runtime_shot('transit-runtime', 'subway-stop.png')
+    rt2 = runtime_shot('transit-runtime', 't0.png')
     tm = render({'1': _TRAM['lowerTiles'], '2': _TRAM['lowerOverlayTiles'], '3': _TRAM['upperTiles'], '4': _TRAM['upperOverlayTiles']}, _TRAM['width'], _TRAM['height'])
     save_img('transit-tramstreet', tm, f'노면전차 거리 {_TRAM["width"]}×{_TRAM["height"]}칸(원본 해상도): 건물·보도·동쪽행 차로·복선 레일+센터 전주+가선·서쪽행 안전지대 섬·서쪽행 차로·보도, 4칸 횡단보도+보행 신호기, 지하철 출입구. 배열 `jp-transit-ex` 맨 아래.', C_TRN)
-    rt3 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'tram-runtime', 'tram-stop.png')).convert('RGBA')
-    save_img('transit-runtime-tram', panels([('안전지대 섬 옆에 선 서쪽행 노면전차(문 연 그림) — 섬 위에서 위를 보고 「조사」로 탄다', rt3.resize((rt3.width * 3 // 4, rt3.height * 3 // 4), Image.NEAREST))]),
+    rt3 = runtime_shot('tram-runtime', 'tram-stop.png')
+    shot_img('transit-runtime-tram', rt3, '안전지대 섬 옆에 선 서쪽행 노면전차(문 연 그림) — 섬 위에서 위를 보고 「조사」로 탄다',
              '출하 플레이어 실제 화면(scripts/content/jp-city/qa/tram-street.probe.mjs): 노면전차 거리. 위는 동쪽행 전차, 아래 차로는 서쪽행 택시, 전차 집전기가 가선에 닿는다.', C_TRN)
-    save_img('transit-runtime', panels([('승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다', rt.resize((rt.width * 3 // 4, rt.height * 3 // 4), Image.NEAREST))]),
+    shot_img('transit-runtime', rt, '승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다',
              '출하 플레이어 실제 화면(scripts/qa/runtime/transit.probe.mjs): 승강장에 선 지하철. 노선은 승강장 맵 `transit`.', C_TRN)
-    save_img('transit-runtime-road', panels([('学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스', rt2.resize((rt2.width * 3 // 4, rt2.height * 3 // 4), Image.NEAREST))]),
+    shot_img('transit-runtime-road', rt2, '学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스',
              '출하 플레이어 실제 화면: 小学校 앞 생활도로에 `set_map_transit auto` 로 깐 차 흐름과 学校前 버스 정류장. 동쪽행은 위 두 줄, 서쪽행은 아래 두 줄.', C_TRN)
     er = EBT['errors']
     for key, nm in (('fenceGap', 'fence'), ('stairsBench', 'stairs')):
@@ -2577,7 +2598,8 @@ add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 �
 _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
                           'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
                           'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
-                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
+                          'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
@@ -2733,11 +2755,50 @@ if _P3:
         add_doc(C_INT3, f"interior-ex-{_m}", f"일본 도시 · 일본 학교·역·사무실 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
 
 
+# 4묶음 — 현대 던전(지하철 보선 터널·하수도·폐병원·폐교·공사 중 빌딩·지하 주차장·지하상가·항만 창고). 표: examples/places4*.json (dungeon:true)
+_P4 = [p for _f4 in sorted(os.listdir(_EXD)) if _f4.startswith('places4') and _f4.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f4), encoding='utf-8'))]
+_P4_FILES = [m for p in _P4 for m in (p.get('maps') or [p['file']])]
+for _p in _P4:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P4:
+    C_INT4 = new_cat('interior-dungeon', f'일본 도시 · 현대 던전 ({len(_P4)}곳, 맵 {len(_P4_FILES)}장)',
+                     '지하철 보선 터널·하수도·폐병원·폐교·공사 중 빌딩·지하 주차장·밤의 지하상가·항만 창고: 장소 목록(장소 id·가져오기·거리 문 잇기·구역 이동·잠긴 문·보물 자리), '
+                     '맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p4_index():
+        rows = [[f"`{p['placeId']}`", p['name'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P4]
+        locks = []
+        for p in _P4:
+            for m in (p.get('maps') or [p['file']]):
+                ex = json.load(open(os.path.join(_EXD, m + '.json'), encoding='utf-8'))
+                for l in ex.get('locks') or []: locks.append([f"`jp-city-{m}`", f"({l['x']},{l['y']})", l['key'], l.get('why', '')])
+        return f'''# 일본 도시 — 현대 던전 장소 {len(_P4)}곳
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 맵 여러 장(구역·층 — 사다리·계단·맨홀·경사로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 첫 맵에만 잇는다(안쪽 구역은 맨 아래 줄이 막혀 있다).
+던전은 가게 규칙과 다르다: 통로가 1칸이어도 되고, 막다른 곳(보물·단서 자리 `*-item-*`, use search)·갈림길·한 바퀴 도는 고리가 있다. 넓은 곳(예제 `open`)은 몬스터·보스 자리다.
+**잠긴 문**은 그림만 문이고 통행은 열려 있다 — 아래 표의 칸에 이벤트(열쇠 아이템이 있으면 통과, 없으면 막고 대사)를 단다. 열쇠는 장소 rules 문장이 말하는 막다른 방의 보물 자리에 둔다. 사람(경비·작업자)·몬스터는 Actor1·전투 이벤트로 놓는다(그림에 없다).
+
+{md_table(['장소 id', '이름', '맵(예제 문서)', '짜임'], rows)}
+
+## 잠긴 문 (예제 `locks`)
+{md_table(['맵', '칸', '열쇠', '이유'], locks) if locks else '(없음)'}
+
+## 없는 것
+몬스터·NPC·잠금 이벤트 자체(조수가 단다), 어둠 연출(조명은 그림의 꺼진 등·비상등뿐 — 화면 색조는 이벤트로). 피·시체·사람 그림은 일부러 없다.
+'''
+
+    add_doc(C_INT4, 'interior-dungeon-index', '일본 도시 · 현대 던전 · 장소 목록·잠긴 문·가져오기·거리 문 잇기', doc_in_p4_index())
+    for _m in _P4_FILES:
+        add_doc(C_INT4, f"interior-ex-{_m}", f"일본 도시 · 현대 던전 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else C_INT2))
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else C_INT2)))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)

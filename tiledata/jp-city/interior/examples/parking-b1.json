@@ -1,0 +1,444 @@
+{
+ "name": "지하 주차장 B1(주차 칸·기계실)",
+ "plan": [
+  "########################",
+  "#................#.....#",
+  "#................#.....#",
+  "#................#.....#",
+  "#................#.....#",
+  "#................#.....#",
+  "#................###.###",
+  "#......................#",
+  "#......................#",
+  "###.##.................#",
+  "#....#.................#",
+  "#....#.................#",
+  "#....#.................#",
+  "#....#.................#",
+  "#....#.................#",
+  "##..####################"
+ ],
+ "floor": "cs-parking-floor",
+ "wall": "cs-parking-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 18,
+   "y0": 1,
+   "x1": 22,
+   "y1": 5,
+   "floor": "cs-slab",
+   "wall": "cs-wall-bare"
+  }
+ ],
+ "objects": [
+  {
+   "id": "cs-parking-line",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-h",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "cs-pillar",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "cs-pillar",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "cs-rubble",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "cs-pillar",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "cs-puddle",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "cs-rubble",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "cs-puddle",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "cs-puddle",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "cs-wheel-stop",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "cs-parking-line",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "cs-pillar",
+   "x": 16,
+   "y": 10
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "cs-cone",
+   "x": 9,
+   "y": 11
+  },
+  {
+   "id": "cs-barrier",
+   "x": 10,
+   "y": 11
+  },
+  {
+   "id": "cs-barrier",
+   "x": 11,
+   "y": 11
+  },
+  {
+   "id": "cs-parking-line-corner",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "cs-debris",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "cs-debris",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "cs-barrier",
+   "x": 7,
+   "y": 13
+  },
+  {
+   "id": "cs-rubble",
+   "x": 10,
+   "y": 13
+  },
+  {
+   "id": "cs-ramp-arrow-e",
+   "x": 16,
+   "y": 13
+  },
+  {
+   "id": "cs-rubble",
+   "x": 10,
+   "y": 14
+  },
+  {
+   "id": "cs-rubble",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "cs-puddle",
+   "x": 13,
+   "y": 14
+  },
+  {
+   "id": "cs-car-a",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cs-car-b",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "cs-car-a",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "cs-item-car-trunk",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cs-shutter",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "cs-generator",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "cs-cable-drum",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "cs-item-toolbox",
+   "x": 22,
+   "y": 5
+  },
+  {
+   "id": "of-fire-door",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "cs-pay-machine",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "cs-fire-hose",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "cs-exit-light",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "cs-ramp-down",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "cs-cone",
+   "x": 21,
+   "y": 14
+  },
+  {
+   "id": "cs-rubble",
+   "x": 22,
+   "y": 14
+  },
+  {
+   "id": "cs-car-b",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "cs-car-a",
+   "x": 21,
+   "y": 9
+  },
+  {
+   "id": "cs-light-off",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "cs-light-off",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "cs-exit-light",
+   "x": 6,
+   "y": 1
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "parkinglobby",
+   "x0": 0,
+   "y0": 9,
+   "x1": 5,
+   "y1": 15
+  },
+  {
+   "room": "machineroom",
+   "x0": 17,
+   "y0": 0,
+   "x1": 23,
+   "y1": 6
+  },
+  {
+   "room": "parkingbay",
+   "x0": 0,
+   "y0": 0,
+   "x1": 16,
+   "y1": 5
+  },
+  {
+   "room": "parkingaisle",
+   "x0": 0,
+   "y0": 0,
+   "x1": 23,
+   "y1": 15
+  }
+ ],
+ "start": [
+  2,
+  14
+ ],
+ "exitWidth": 2,
+ "locks": [
+  {
+   "x": 20,
+   "y": 6,
+   "key": "기계실 열쇠",
+   "why": "기계실 셔터 — 열쇠는 빨간 왜건 옆에 열어 둔 트렁크 짐"
+  }
+ ],
+ "links": [
+  {
+   "x": 21,
+   "y": 13,
+   "toMapId": "jp-city-parking-b2",
+   "toX": 21,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 22,
+   "y": 13,
+   "toMapId": "jp-city-parking-b2",
+   "toX": 22,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

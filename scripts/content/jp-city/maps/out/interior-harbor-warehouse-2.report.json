@@ -1,0 +1,44 @@
+{
+ "map": {
+  "id": "jp-city-harbor-warehouse-2",
+  "size": [
+   22,
+   16
+  ]
+ },
+ "start": [
+  18,
+  13
+ ],
+ "summary": "손 도트 실내 '항만 창고 중이층 — 캣워크·사무실·밀수품 방' 22×16 (jp-city-harbor-warehouse-2, jp_city) — 출입구에서 닿는 칸 128, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-harbor-warehouse-2",
+  "tilesetId": "jp_city",
+  "width": 22,
+  "height": 16,
+  "reachable": 128,
+  "floorCells": 153,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 18,
+    "y": 13
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 19,
+   "y": 13,
+   "to": "jp-city-harbor-warehouse-1",
+   "reached": true
+  }
+ ],
+ "reach": 128,
+ "ok": true
+}

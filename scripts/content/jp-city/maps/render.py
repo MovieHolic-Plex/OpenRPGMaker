@@ -8,7 +8,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..', '..'))
 SHEET = Image.open(os.path.join(ROOT, 'public/assets/jp-city/jp-city-chipset.png')).convert('RGBA')
-COLS = 48; T = 16
+COLS = SHEET.width // 16; T = 16          # 열 수는 시트 폭에서(48 → 96열 다시 놓기 2026-10-08)
 def tile(i): return SHEET.crop(((i % COLS) * T, (i // COLS) * T, (i % COLS) * T + T, (i // COLS) * T + T))
 def render(m):
     W, H = m['width'], m['height']

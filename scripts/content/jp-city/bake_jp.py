@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""번들 타일셋 jp_city 굽기 — 이식한 일본 키트(2880칸 + 카탈로그)와 계약 블록(blocks/*.py)을 합쳐 48열 시트·정의 JSON 을 쓴다.
+"""번들 타일셋 jp_city 굽기 — 이식한 일본 키트(2880칸 + 카탈로그)와 계약 블록(blocks/*.py)을 합쳐 96열 시트·정의 JSON 을 쓴다.
 
   python3 scripts/content/jp-city/bake_jp.py [--dry] [--selftest] [--out-root DIR]
 
 입력  tiledata/jp-city/sources/jp_shopstreet16.png + .catalog.json   (16열 2880칸, 행인 칸 851~1005 는 투명 자리)
       scripts/content/jp-city/blocks/<이름>.py                       (BLOCK_ORDER 에 이름으로 고정한 것만, 없으면 건너뜀)
-출력  public/assets/jp-city/jp-city-chipset.png      시트(48열, 16px 칸, 높이 ≤ 4096)
+출력  public/assets/jp-city/jp-city-chipset.png      시트(96열, 16px 칸, 높이 ≤ 4096)
       src/assets/jpCitySheet.json                    {count, tilesPerRow}
       src/assets/jpCityTileset.json                  타일셋 정의(통행·층·이름표·그룹·오토타일·구조 키트)
       tiledata/jp-city/pins.json                     자리 키 → 칸 번호(앞 번호 불변, 새 칸은 끝에)
@@ -42,7 +42,8 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_shell', 'interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
                'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
-               'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse']
+               'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
+               'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -592,8 +593,9 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     assert math.ceil(count / TPR) * 16 <= BL.MAX_H, ('시트 높이 4096px 초과', count)
     legacy = [t for t in range(count) if t not in cells.img]
     for t in legacy:
-        if old_png is not None and (t % TPR + 1) * 16 <= old_png.width and (t // TPR + 1) * 16 <= old_png.height:
-            cells.img[t] = BL.norm(BL.read_cell(old_png, t))
+        otpr = old_png.width // 16 if old_png is not None else TPR      # 옛 시트의 열 수(48열 → 96열 다시 놓기)
+        if old_png is not None and (t // otpr + 1) * 16 <= old_png.height:
+            cells.img[t] = BL.norm(BL.read_cell(old_png, t, otpr))
         else:
             cells.img[t] = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
     sheet_img = BL.render_sheet(cells.img, count)
@@ -657,7 +659,7 @@ def bake(out_root, dry=False, blocks_dir=BLOCKS_DIR, block_order=None, quiet=Fal
     # 재조립 픽셀 일치 (메모리 시트 → 정의로 다시 조립해 원본과 비교)
     res['reassembly'] = verify_reassembly(sheet_img, data['structureKits'], expected)
     res['definition_checks'] = BL.check_definition(data)
-    # 원본 2880칸이 48열로 옮겨져도 같은 그림인가
+    # 원본 2880칸이 96열로 옮겨져도 같은 그림인가
     diff = [i for i in range(N_ORIG) if not BL.same_image(BL.read_cell(sheet_img, i), src.raw_img[i])]
     res['relayout_identical'] = dict(cells=N_ORIG, mismatched=len(diff), ids=diff[:10])
     # 팔레트·알파
