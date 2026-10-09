@@ -39,7 +39,8 @@ const DEFAULT_SIZE: Record<string, [number, number]> = {
 };
 /** 지나다니는 방 — 문 나무의 가지가 여기서 뻗는다. 나머지(화장실·욕실·침실…)는 끝방이 되도록 점수를 준다. */
 const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common)$/u;
-const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^hall$/u, /^corridor$/u, /_shop$|^shop$/u, HUB];
+// 손님이 드는 방(가게·주점·대청)이 복도보다 먼저 — 여관이 복도로 들어가 주점을 거치게 짜였다(2026-10-09).
+const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /_shop$|^shop$|^tavern$|^great_hall$|^konbini$|^supermarket$|^common$/u, /^hall$/u, /^corridor$/u, HUB];
 /** 기본으로 트는 쌍(종류). */
 const OPEN_DEFAULT: [string, string][] = [["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"]];
 /** 일본 집 문 기물(사양에 있을 때만). */
@@ -135,6 +136,45 @@ function slice(rect: Rect, list: Want[], entrance: string, r: () => number): Map
 }
 
 /**
+ * 아래에서 위로 짜는 분할(2026-10-09) — 방마다 목표 크기(견본 크기)를 먼저 정하고, 둘씩 묶을 때 가로면 너비를 더하고(+칸막이 1)
+ * 높이는 큰 쪽, 세로면 그 반대로 바깥 크기를 정한다. 그래서 어떤 방도 견본보다 작아지지 않는다(작아지면 가구가 빠지거나 엉킨다).
+ * 작은 쪽은 남는 만큼 늘어나고, 건물 바깥에 닿은 남는 부분은 trimToTarget 이 깎아 ㄱ·ㄷ자 외곽이 된다.
+ */
+interface Tree { w: number; h: number; leaf?: Want; vertical?: boolean; a?: Tree; b?: Tree }
+function buildTree(list: Want[], entrance: string, r: () => number): Tree {
+  if (list.length === 1) return { w: list[0]!.tw, h: list[0]!.th, leaf: list[0]! };
+  const area = (ws: Want[]) => ws.reduce((s, w) => s + w.tw * w.th, 0);
+  const total = area(list);
+  const options: { k: number; dev: number }[] = [];
+  for (let k = 1; k < list.length; k++) options.push({ k, dev: Math.abs(area(list.slice(0, k)) / total - 0.5) + r() * 0.2 });
+  options.sort((x, y) => x.dev - y.dev);
+  const k = options[Math.min(options.length - 1, Math.floor(r() * Math.min(2, options.length)))]!.k;
+  let A = list.slice(0, k), B = list.slice(k);
+  const ta0 = buildTree(A, entrance, r), tb0 = buildTree(B, entrance, r);
+  // 가로로 붙일지 세로로 쌓을지: 바깥 상자가 덜 길쭉하고 덜 비는 쪽(조금 무작위)
+  const cost = (w: number, h: number) => w * h - (ta0.w * ta0.h + tb0.w * tb0.h) + Math.max(w / h, h / w) * 6 + r() * 6;
+  const vw = ta0.w + 1 + tb0.w, vh = Math.max(ta0.h, tb0.h), hw = Math.max(ta0.w, tb0.w), hh = ta0.h + 1 + tb0.h;
+  const vertical = cost(vw, vh) < cost(hw, hh);
+  let ta = ta0, tb = tb0;
+  if (!vertical && A.some((w) => w.id === entrance)) { [A, B] = [B, A]; [ta, tb] = [tb, ta]; }   // 출구 방 쪽이 아래
+  return vertical ? { w: vw, h: vh, vertical, a: ta, b: tb } : { w: hw, h: hh, vertical, a: ta, b: tb };
+}
+function placeTree(t: Tree, rect: Rect, out: Map<string, Rect>, r: () => number) {
+  if (t.leaf) { out.set(t.leaf.id, rect); return; }
+  const extra = t.vertical ? rect.w - t.w : rect.h - t.h;
+  const toA = Math.round(extra * r());
+  if (t.vertical) {
+    const wA = t.a!.w + toA;
+    placeTree(t.a!, { x: rect.x, y: rect.y, w: wA, h: rect.h }, out, r);
+    placeTree(t.b!, { x: rect.x + wA + 1, y: rect.y, w: rect.w - wA - 1, h: rect.h }, out, r);
+  } else {
+    const hA = t.a!.h + toA;
+    placeTree(t.a!, { x: rect.x, y: rect.y, w: rect.w, h: hA }, out, r);
+    placeTree(t.b!, { x: rect.x, y: rect.y + hA + 1, w: rect.w, h: rect.h - hA - 1 }, out, r);
+  }
+}
+
+/**
  * 가른 칸이 목표보다 크면 건물 바깥에 닿은 변(위·왼쪽·오른쪽, 출구 방이 아니면 아래도)을 목표 크기까지 깎는다 —
  * 깎인 자리는 건물 밖이 되어 바깥 모양이 ㄱ·ㄷ자로 꺾인다. 큰 방이 텅 비는 것(2026-10-08 시험: 복도 11×7)을 막는다.
  */
@@ -193,7 +233,15 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     let H = Math.max(...wants.map((w) => w.minH), Math.ceil(total * slack / W));
     if (req.maxWidth) W = Math.min(W, req.maxWidth - 2);
     if (req.maxHeight) H = Math.min(H, req.maxHeight - 2);
-    const rects = slice({ x: 1, y: 1, w: W, h: H }, order, entrance, r);
+    // 짝수 번 시도는 아래에서 위로(견본보다 작은 방이 없다), 홀수 번은 바깥 크기를 먼저 정하고 가르는 옛 방식 —
+    // 크기 제한(maxWidth·maxHeight)에 걸려 앞쪽이 안 될 때를 위해 남긴다.
+    let rects: Map<string, Rect> | null;
+    if (trial % 2 === 0) {
+      const tree = buildTree(order, entrance, r);
+      if ((req.maxWidth && tree.w > req.maxWidth - 2) || (req.maxHeight && tree.h > req.maxHeight - 2)) continue;
+      rects = new Map(); placeTree(tree, { x: 1, y: 1, w: tree.w, h: tree.h }, rects, r);
+      W = tree.w; H = tree.h;
+    } else rects = slice({ x: 1, y: 1, w: W, h: H }, order, entrance, r);
     if (!rects) continue;
     trimToTarget(rects, wants, entrance, W, H);
     { // 깎고 남은 빈 바깥 줄·열을 떼어 낸다
@@ -232,9 +280,17 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     const notes: string[] = [];
     for (const w of wants) {
       const rc = rects.get(w.id)!;
-      score += (Math.abs(rc.w - w.tw) + Math.abs(rc.h - w.th)) / (w.tw + w.th) * 4;
+      // 견본보다 작은 방은 가구가 다 안 들어가 크게 감점(2026-10-09: 줄인 부엌에서 가구 절반이 빠졌다), 큰 방은 덜.
+      const short = Math.max(0, w.tw - rc.w) + Math.max(0, w.th - rc.h), extra = Math.max(0, rc.w - w.tw) + Math.max(0, rc.h - w.th);
+      score += (short * 3 + extra * 1.5) / (w.tw + w.th) * 4;
       const asp = Math.max(rc.w / rc.h, rc.h / rc.w);
       if (asp > 2.6 && !/hall|corridor/u.test(w.kind)) score += (asp - 2.6) * 2;
+    }
+    { // 건물 전체: 깎인 빈 자리가 많거나 너무 길쭉하면 감점(2026-10-09: 아래에서 위로 짜니 35×21·53×14 같은 건물이 1등이었다)
+      const roomArea = [...rects.values()].reduce((a, q) => a + q.w * q.h, 0);
+      score += Math.max(0, (BW - 2) * (BH - 2) - roomArea * 1.25) / total * 6;
+      const basp = Math.max(BW / BH, BH / BW);
+      if (basp > 1.7) score += (basp - 1.7) * 3;
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
     for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;   // 트는 쌍(부엌↔거실…)은 붙어 있는 편이 좋다
@@ -243,7 +299,11 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     for (const w of wants) if (!HUB.test(w.kind) && w.id !== entrance && (deg.get(w.id) ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
     const connect: HandInteriorConnect[] = tree.map((e) => {
       const A = byId.get(e.a)!, B = byId.get(e.b)!;
-      if (isOpen(e.a, e.b)) return { a: e.a, b: e.b, open: true };
+      // 위·아래로 트는 쌍은 아래 방 북쪽 벽면을 살리려고 가운데 3칸만 튼다(현관 띠처럼 벽 없는 방이 아래면 전부).
+      if (isOpen(e.a, e.b)) {
+        const lower = rects.get(e.a)!.y > rects.get(e.b)!.y ? A : B;
+        return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span: 3 } : { a: e.a, b: e.b, open: true };
+      }
       const pick = (w: Want) => DOOR_OF[w.kind]?.[e.kind];
       const door = pick(A) ?? pick(B);
       return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };

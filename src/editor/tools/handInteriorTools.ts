@@ -498,8 +498,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       rooms: { type: "array", description: "방 사각형 목록(plan 대신) — 바닥 칸 x0..x1·y0..y1(맨 위 두 줄은 벽면), 방 밖은 전부 벽. 사이 1칸 = 칸막이, 맞닿음 = 트인 한 방(ㄱ·ㄷ자), 2칸 이상 = 두꺼운 벽. floor·wall 은 그 방 바닥·벽면.",
         items: { type: "object", properties: { id: { type: "string" }, x0: { type: "integer", minimum: 1 }, y0: { type: "integer", minimum: 1 }, x1: { type: "integer" }, y1: { type: "integer" },
           floor: { type: "string", enum: FLOOR_IDS }, wall: { type: "string", enum: WALL_IDS } }, required: ["id", "x0", "y0", "x1", "y1"], additionalProperties: false } },
-      connect: { type: "array", description: "1칸 칸막이를 사이에 둔 두 방을 문으로 잇는다 — 위·아래 방은 1칸 틈, 왼·오른 방은 3줄 틈(셋째 줄이 통로). at = 문 자리(가로 칸막이 x · 세로 칸막이 통로 y), door = 문 기물 id(일본 집: fusuma-open·door-open-toilet·door-side-sliding…, none = 틈만).",
-        items: { type: "object", properties: { a: { type: "string" }, b: { type: "string" }, at: { type: "integer" }, door: { type: "string" } }, required: ["a", "b"], additionalProperties: false } },
+      connect: { type: "array", description: "1칸 칸막이를 사이에 둔 두 방을 문으로 잇는다 — 위·아래 방은 1칸 틈, 왼·오른 방은 3줄 틈(셋째 줄이 통로). at = 문 자리(가로 칸막이 x · 세로 칸막이 통로 y), door = 문 기물 id(일본 집: fusuma-open·door-open-toilet·door-side-sliding…, none = 틈만). open = 칸막이를 걷어 트기(span 을 주면 위·아래 방 사이 span 칸만 튼다 — 아래 방 북쪽 벽면이 남는다).",
+        items: { type: "object", properties: { a: { type: "string" }, b: { type: "string" }, at: { type: "integer" }, door: { type: "string" }, open: { type: "boolean" }, span: { type: "integer", minimum: 1 } }, required: ["a", "b"], additionalProperties: false } },
       exit: { type: "object", description: "남쪽 출구 — room(맨 아래 줄에 닿은 방 id)·x(생략 시 그 방 가운데)·width(기본 1). 생략하면 가장 아래 방.",
         properties: { room: { type: "string" }, x: { type: "integer" }, width: { type: "integer", minimum: 1 } }, required: ["room"], additionalProperties: false },
       exitWidth: { type: 'integer', minimum: 1, maximum: 120, description: '남쪽 출구의 실제 가로 폭. 기본 1칸. 외부 문 폭과 일치해야 하며 한 칸 문에 두 칸 출구를 연결하지 않는다.' },
@@ -640,7 +640,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         ...(composed ? { plan: composed.plan, openings: composed.openings } : {}),
         ...(picked && composed ? {
           layout: { variant: picked.variant, variants: picked.variants, score: picked.c.score, notes: picked.c.notes, picture: layoutAscii(picked.c, composed.plan),
-            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, template: r.template, furniture: furnished?.[r.id] })) },
+            rooms: picked.c.rooms.map((r, i) => ({ letter: String.fromCharCode(65 + (i % 26)), id: r.id, kind: r.kind, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, template: furnished?.[r.id]?.template ?? r.template, furniture: furnished?.[r.id] })) },
           // 이 집을 손보려면 이 값을 그대로 rooms·connect·exit·objects… 로 넘기고 replace:true(가구를 빼거나 더해서)
           rebuild: { rooms: picked.c.rooms.map(({ kind: _k, template: _t, ...r }) => r), connect: picked.c.connect, exit: picked.c.exit,
             objects: (input.objects ?? []).filter((o) => !composed.doors.some((d) => d.id === o.id && d.x === o.x && d.y === o.y)), tables: input.tables, goods: input.goods, lines: input.lines, daises: input.daises },

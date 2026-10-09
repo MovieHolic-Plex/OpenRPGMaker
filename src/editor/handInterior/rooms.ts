@@ -24,6 +24,9 @@ export interface HandInteriorConnect {
   readonly door?: string;
   /** 칸막이를 겹친 구간 전체에서 걷어 두 방을 트인 한 공간으로 잇는다(현관↔복도, 부엌↔거실). 문 기물은 달지 않는다. */
   readonly open?: boolean;
+  /** open 인 위·아래 방 사이에서 칸막이를 걷을 칸 수(at 이 왼쪽 끝, 생략하면 가운데). 생략하면 겹친 구간 전체. 아래 방의 북쪽 벽면을 남겨
+   *  벽 가구·걸이를 둘 수 있게 한다(2026-10-09: 부엌↔거실을 통째로 트니 거실 TV보드·책장·에어컨이 걸 벽을 잃었다). */
+  readonly span?: number;
 }
 export interface HandInteriorExit { readonly room: string; readonly x?: number; readonly width?: number }
 
@@ -33,7 +36,7 @@ export interface ComposedRooms {
   readonly doors: HandInteriorObject[];
   readonly exit: { readonly x: number; readonly y: number; readonly width: number };
   /** 이은 문마다 실제 틈 자리(조수가 가구를 문 앞에 놓지 않도록 돌려준다). */
-  readonly openings: { readonly a: string; readonly b: string; readonly x: number; readonly y: number; readonly kind: "h" | "v" }[];
+  readonly openings: { readonly a: string; readonly b: string; readonly x: number; readonly y: number; readonly kind: "h" | "v"; readonly open?: boolean }[];
 }
 
 const fail = (message: string, code = "rooms-invalid"): never => { throw new HandInteriorError(message, code); };
@@ -71,7 +74,7 @@ export function composeHandInteriorRooms(
   };
 
   const doors: HandInteriorObject[] = [];
-  const openings: { a: string; b: string; x: number; y: number; kind: "h" | "v" }[] = [];
+  const openings: { a: string; b: string; x: number; y: number; kind: "h" | "v"; open?: boolean }[] = [];
   for (const c of connect) {
     const A = byId.get(c.a) ?? fail(`connect: 방 "${c.a}" 이 없다`), B = byId.get(c.b) ?? fail(`connect: 방 "${c.b}" 이 없다`);
     const [top, bot] = A.y1 < B.y0 ? [A, B] : B.y1 < A.y0 ? [B, A] : [undefined, undefined];
@@ -79,7 +82,14 @@ export function composeHandInteriorRooms(
     if (top && bot && bot.y0 - top.y1 === 2) {
       const ox0 = Math.max(top.x0, bot.x0), ox1 = Math.min(top.x1, bot.x1);
       if (ox0 > ox1) fail(`connect ${c.a}–${c.b}: 위아래로 겹치는 열이 없다`);
-      if (c.open) { for (let x = ox0; x <= ox1; x++) g[top.y1 + 1]![x] = "."; openings.push({ a: c.a, b: c.b, x: ox0, y: top.y1 + 1, kind: "h" }); continue; }
+      if (c.open && c.span && c.span < ox1 - ox0 + 1) {
+        const x0 = c.at ?? Math.floor((ox0 + ox1 + 1 - c.span) / 2);
+        if (x0 < ox0 || x0 + c.span - 1 > ox1) fail(`connect ${c.a}–${c.b}: at=${x0}·span=${c.span} 이 두 방이 겹치는 열 ${ox0}~${ox1} 밖`);
+        for (let x = x0; x < x0 + c.span; x++) g[top.y1 + 1]![x] = ".";
+        openings.push({ a: c.a, b: c.b, x: x0 + Math.floor((c.span - 1) / 2), y: top.y1 + 1, kind: "h" });
+        continue;
+      }
+      if (c.open) { for (let x = ox0; x <= ox1; x++) g[top.y1 + 1]![x] = "."; openings.push({ a: c.a, b: c.b, x: ox0, y: top.y1 + 1, kind: "h", open: true }); continue; }
       const x = c.at ?? Math.floor((ox0 + ox1) / 2), y = top.y1 + 1;
       if (x < ox0 || x > ox1) fail(`connect ${c.a}–${c.b}: at=${x} 는 두 방이 겹치는 열 ${ox0}~${ox1} 밖`);
       g[y]![x] = ".";
@@ -88,7 +98,7 @@ export function composeHandInteriorRooms(
       openings.push({ a: c.a, b: c.b, x, y, kind: "h" });
     } else if (left && right && right.x0 - left.x1 === 2) {
       const oy0 = Math.max(left.y0, right.y0), oy1 = Math.min(left.y1, right.y1);
-      if (c.open) { if (oy0 > oy1) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 없다`); for (let y = oy0; y <= oy1; y++) g[y]![left.x1 + 1] = "."; openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: oy1, kind: "v" }); continue; }
+      if (c.open) { if (oy0 > oy1) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 없다`); for (let y = oy0; y <= oy1; y++) g[y]![left.x1 + 1] = "."; openings.push({ a: c.a, b: c.b, x: left.x1 + 1, y: oy1, kind: "v", open: true }); continue; }
       // 통로 줄 p: 두 방 모두 벽면 아래(맨 위 두 줄 제외)이고, 틈 세 줄(p-2..p)이 겹친 구간 안.
       const lo = oy0 + 2, hi = oy1;
       if (lo > hi) fail(`connect ${c.a}–${c.b}: 옆으로 겹친 줄이 ${Math.max(0, oy1 - oy0 + 1)}줄 — 세로 칸막이 문은 겹친 줄 3줄 이상(위 두 줄은 칸막이 끝 벽면)`);
