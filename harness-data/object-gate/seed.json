@@ -1,0 +1,13 @@
+{
+  "schema": "oprn-object-gate-seed/1",
+  "note": "공용 오브젝트 게이트. 규칙 원본은 src/harnesses/_core/objectGate/rules.ts, 문서 openwiki/harnesses/object-gate.md.",
+  "receipts": "harness-data/object-gate/receipts/<sha[:2]>/<sha>.json",
+  "profiles": "harness-data/object-gate/profiles/<profileHash>.json",
+  "calibration": "harness-data/object-gate/calibration/<set>/{labels.json,*.png}",
+  "contexts": {
+    "bundle": "번들 시트 굽기 — pass 만, 덮어쓰기 없음",
+    "shared": "공용 DB(shared-content.sqlite) 게시 — pass 만, 덮어쓰기 없음",
+    "store": "에셋 스토어 팩 — pass 만, 덮어쓰기 없음",
+    "workshop-local": "에디터 공방이 사용자 프로젝트 칩셋에 굽기 — pass 또는 사람의 「그래도 넣기」"
+  }
+}
