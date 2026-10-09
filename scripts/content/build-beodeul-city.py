@@ -685,3 +685,5 @@ print(json.dumps(stats))
 import subprocess, sys as _sys
 if count == 23936 and (ROOT / "tiledata/beodeul-variants/picks.json").exists():
     subprocess.run([_sys.executable, str(ROOT / "scripts/content/beodeul-picks/bake_picks.py")], check=True)
+# 키 큰 물체는 땅에 닿는 줄만 막는다 — 시트·표를 다시 구우면 통행이 원래대로 돌아가므로 규약을 다시 적용한다.
+subprocess.run([_sys.executable, str(ROOT / "scripts/content/beodeul-kits/contract.py"), "apply"], check=True)

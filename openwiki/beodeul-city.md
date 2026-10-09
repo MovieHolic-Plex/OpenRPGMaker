@@ -507,3 +507,12 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 공용 배선은 bundled.ts/geometry/defaultAssets/createBeodeulCityTileset/ensureBundledTilesets와 `beodeulForms.ts`다. source 본체6/그림자6/기초6 도장을 city에 translateTiles로 이식하며 새·기존 프로젝트 양쪽에서 참고문서 `beodeul-forms`를 갖는다. 그림자2층→본체3층→기초4층을 같은 원점에 놓고 각각의 벽 접점을 따른다. 기초/그림자의 통행 ★가 벽 X를 덮지 않는다. 길1층은 별도로 연결한다. 조수는 같은 실루엣3개를 나란히 놓지 않고 폭/높이/용마루/별채가 다른 몸체를 조합한다.
 
 새 지도 `map_beodeul_forms_village`는 50×50/16동/아치 다리2개다. 이전 다섯 지도와 기존 사용 칸의 통행을 보존한다. 전체16개 문앞과 다리 둑까지 실제 canMove 도로 경로를 확인한다. 여관 입구(35,13)를 anvil로 막은 실제 변조는 true→false로 검출한다. 50×50 재현 `scripts/content/lib/beodeul-forms-village.mts`, 자료 준비 `prepare-beodeul-forms-references.mts`, 정본 API 저장·별도 프로세스 재로드·전용 player.html 화면 `verify-shots/beodeul-forms/`. 외장 저작이며 실내/거래/문 전이 이벤트를 추가한 것은 아니다.
+
+## JRPG 장소 확장 웨이브 4·5 · 보정 패스 · 장소 팩 (2026-10-08)
+
+공용 `beodeul_city` 꼬리 칸(23,936~)에 JRPG 장소(크로노 트리거→FF6풍)를 손 도트로 더했다. 장소 목록·번호 묶음 정본은 `tiledata/beodeul-variants/waves.json`(`places`·`var`·`groups`; 웨이브 4=12곳, 웨이브 5=`event-props`), 굽기는 `scripts/content/beodeul-picks/bake_picks.py`(append-only, 번호 안정). 허용 분류는 bake_picks.py `CAT_KO` 키뿐이다(`waves.json catKo` 는 비어 있다).
+
+- **웨이브 5**: 장소별 전투 배경 31장(640×360, `tiledata/beodeul-variants/battle-bg-*/<slug>.png`)과 이벤트 소품 37종(`event-props`: 저장 수정·워프 패드·문·상자·레버·발판·횃불 등, 4프레임 띠 포함). `evfloor_*` 로 시작하는 파트는 걷기 바닥 장식(decal)로 굽는다.
+- **보정 패스**(`tiledata/beodeul-kits/WAVE-BRIEF-4.md`): 실제 조수(헤드리스 Pi)에게 시켰더니 키트는 잘 깔지만 **연못·풀밭·눈밭을 사각형으로 칠했다**. 불규칙한 덩이를 칠할 유일한 길은 16변형 오토타일 그룹이라, 장소마다 「시그니처 땅 덩이 오토타일」(연못·풀 덩이·눈·용암·모래 언덕…)을 추가하고 `check-autotile.png` 로 이음매를 확인한다. 1차 6곳 반영, 2차(극장·제국 도시·최종 탑·공장·비공정·미래 폐허) 진행.
+- **장소 팩**(`scripts/content/beodeul-picks/build_place_packs.py --all` → `build/place-packs/<slug>/`, gitignore): 장소 하나의 칸·키트·오토타일·띠·참고문서를 0번부터 빽빽이(한 줄 32칸) 다시 매긴 작은 타일셋으로 묶는다. 문서 속 칸 번호도 같은 표로 바꾸며 표에 없는 번호가 남으면 빌드를 멈춘다. 팩 안내서 2단계를 「바탕 먼저 채우기·오토타일 덩이」로 고쳐 쓰고 「바탕 칸」 표(바닥 표본 키트의 대표 칸)를 문서에 붙인다. 자체 바탕이 없는 장소는 `EXTRA_KITS` 로 이웃 장소 바닥 표본을 빌린다(사막 성←사막 피라미드 모래·언덕). 올리기: `store-server/scripts/placePacks.ts`(`--dry` 검증, `--base`/`--dev`/`--link-token`, 이미 있으면 skip, `--new-version`). 전투 배경은 `backdrop` 에셋 `버들항 전투 배경 · <장소>`.
+- **받은 사람의 조수 시험**: `bun scripts/qa/place-pack-install.mts <slug> <out.json> --map <id>:WxH --bare`(팩만 있는 빈 프로젝트) → `bun scripts/pi-agent.mts --project … --task … --log-args`. 실측 1회차(사막 성 팩): 키트는 잘 깔렸으나 **바탕을 채우지 않아** 맵이 빈 갈색이 됐고(팩에 일반 모래 바탕 없음), 200턴·22분이 걸렸다 → 위의 바탕 규칙·EXTRA_KITS 로 보강. 시간대·날씨 변형은 보류.

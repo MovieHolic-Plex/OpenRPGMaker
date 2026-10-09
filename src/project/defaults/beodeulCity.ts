@@ -106,7 +106,10 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     // 더 새 번들에서 저장된 사본(꼬리가 더 긴 것)은 칸 표를 줄이지 않는다.
     if (tileset.count > data.count) return familyFixed;
     const extended = extendPickedParts(tileset);
-    return mergeShippedKits(tileset) || extended || familyFixed;
+    const kits = mergeShippedKits(tileset);
+    const walk = syncFootprintTiles(tileset);
+    const groups = mergeWaveGroups(tileset);
+    return kits || extended || walk || groups || familyFixed;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -124,6 +127,38 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     tileset.referenceDocuments = tileset.referenceDocuments.map(category => shipped.has(category.id) ? structuredClone(shipped.get(category.id)!) : category);
   }
   return true;
+}
+
+/** 웨이브 장소 조각의 16변형 오토타일 그룹(`beodeul_wave_*`)과 조수 메타(`beodeul_wave:*`) — 번들 것으로 바꾸거나 더한다. */
+function mergeWaveGroups(tileset: TilesetDef): boolean {
+  let changed = false;
+  const sync = <T extends { id: string }>(current: T[] | undefined, shipped: T[], prefix: string): T[] => {
+    const own = (current ?? []).filter(item => !item.id.startsWith(prefix));
+    const ship = shipped.filter(item => item.id.startsWith(prefix));
+    const before = (current ?? []).filter(item => item.id.startsWith(prefix));
+    if (JSON.stringify(before) !== JSON.stringify(ship)) changed = true;
+    return [...own, ...structuredClone(ship)];
+  };
+  tileset.autotileGroups = sync(tileset.autotileGroups, data.autotileGroups as unknown as AutotileGroup[], "beodeul_wave_");
+  tileset.tileGroups = sync(tileset.tileGroups, data.tileGroups as unknown as TileGroupMetadata[], "beodeul_wave:");
+  return changed;
+}
+
+/**
+ * 키 큰 물체(나무·가로등·동상…)는 땅에 닿는 줄만 막고 그 위 칸은 지나갈 수 있다(위 칸은 캐릭터를 가린다) —
+ * scripts/content/beodeul-kits/contract.py 가 열어 둔 칸 번호가 `footprintOpened` 이다. 픽스 전에 저장된 프로젝트의 칸 표는
+ * 꼬리 앞쪽이 동기화되지 않으므로 이 칸들만 번들 값으로 맞춘다.
+ */
+function syncFootprintTiles(tileset: TilesetDef): boolean {
+  const opened = (data as { footprintOpened?: number[] }).footprintOpened ?? [];
+  const shippedPass = data.passability as PassFlag[];
+  let changed = false;
+  for (const tile of opened) {
+    if (tile >= tileset.count) continue;
+    if (JSON.stringify(tileset.passability[tile]) !== JSON.stringify(shippedPass[tile])) { tileset.passability[tile] = structuredClone(shippedPass[tile]!); changed = true; }
+    if (tileset.priority[tile] !== data.priority[tile]) { tileset.priority[tile] = data.priority[tile] as "lower" | "upper"; changed = true; }
+  }
+  return changed;
 }
 
 /** Cell tables from BEODEUL_CITY_BASE_COUNT on are the bundle's: copy them in (and grow the copy to the shipped count). */

@@ -219,7 +219,7 @@ const stampTilesetObject: ToolDefinition = {
         { code: "out-of-bounds", mapId: map.id, x: ox, y: oy },
       );
     }
-    const writes: { index: number; x: number; y: number; layer: "lowerTiles" | "upperTiles" | "upperOverlayTiles"; tile: number }[] = [];
+    const writes: { index: number; x: number; y: number; layer: "lowerTiles" | "lowerOverlayTiles" | "upperTiles" | "upperOverlayTiles"; tile: number }[] = [];
     for (let ry = 0; ry < repeatY; ry += 1) for (let rx = 0; rx < repeatX; rx += 1) {
       kit.rows.forEach((row, dy) => {
         for (let dx = 0; dx < kit.width; dx += 1) {
@@ -228,6 +228,8 @@ const stampTilesetObject: ToolDefinition = {
           const index = y * map.width + x;
           const upper = row.upperTiles?.[dx] ?? -1;
           const lower = row.tiles[dx] ?? -1;
+          const shade = row.lowerOverlayTiles?.[dx] ?? -1;
+          if (shade >= 0) writes.push({ index, x, y, layer: "lowerOverlayTiles", tile: shade });
           if (upper >= 0) writes.push({ index, x, y, layer: "upperTiles", tile: upper });
           if (lower >= 0) writes.push({ index, x, y, layer: "lowerTiles", tile: lower });
         }
@@ -347,6 +349,7 @@ const stampTilesetObject: ToolDefinition = {
       }
     }
     if (writes.some((w) => w.layer === "upperOverlayTiles") && !map.upperOverlayTiles) map.upperOverlayTiles = new Array(map.width * map.height).fill(-1);
+    if (writes.some((w) => w.layer === "lowerOverlayTiles") && !map.lowerOverlayTiles) map.lowerOverlayTiles = new Array(map.width * map.height).fill(-1);
     for (const w of writes) map[w.layer]![w.index] = w.tile;
     const cells = [...new Map(writes.map((w) => [w.index, w])).values()];
     const blockedCells = cells.filter((c) => !isPassable(draft, map, c.x, c.y)).map((c) => ({ x: c.x, y: c.y }));

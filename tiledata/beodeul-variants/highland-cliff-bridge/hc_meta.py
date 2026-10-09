@@ -1,0 +1,110 @@
+# 고원 절벽과 하늘 다리 — 내보낼 조각 목록(이름, 그리는 함수, kind, 한글 이름, 설명, 놓는 법, 막는 아랫줄, 층, 역할, 걷기).
+# 팩 하나로 닫힌다: 맨 바탕 표본(ground-*) · 땅 덩이 오토타일(autotile-*) · 절벽 앞면 조각 · 다리·계단·비탈 · 식생 · 소품을 모두 이 폴더에 둔다.
+import hc_build as B, hc_props as P, hc_ground as G, hc_auto as A, hc_cliff as C
+
+_T = '키 큰 부드러운 물체: 맨 아랫줄(밑동)만 막히고 위 칸은 걷기 + 위층(가림). '
+_S = '단단한 몸통: 아랫줄이 막히고 윗면은 걷기 + 위층. '
+_D = '땅 장식: 걷기 + 사람 아래. '
+_AT = '16변형 오토타일(칸 번호 = 위 1 + 오른쪽 2 + 아래 4 + 왼쪽 8, 왼쪽 위 칸 0). 아래층 투명 덧그림(밑 땅이 보인다). '
+_CF = ('절벽 앞면 조각(1칸 폭 x 3줄 = 천장 밑 벽 규칙의 앞면 3줄). 높은 땅이 남쪽으로 끝나는 줄 바로 아래 3줄에 열마다 하나씩 놓는다. '
+       '칸 전부 막힘. 결은 이어 찍어도 맞물린다(가운데 조각 a·b·c 를 섞어 반복이 안 보이게). ')
+
+PARTS = [
+    # ---------------------------------------------------------------- 맨 바탕 표본 (3x3, 이음새 없음)
+    ('ground-highland-grass', lambda: G.ground_grass(('tuft',)), 'floor', '고원 풀밭',
+     '버들항 칩셋 풀 셋(잔디·들풀·그늘 풀)을 덩이로 섞고 큰 풀 포기·작은 풀 포기를 찍은 얼룩진 고원 풀 3x3. 이 장소의 기본 땅.',
+     '걷기. 지도 전체(하늘 칸 빼고)를 먼저 이 풀로 칠한 뒤 아래 오토타일 덩이를 얹는다.', 0, None, 'terrain', True),
+    ('ground-highland-tufts', lambda: G.ground_grass(('tufts', 'tuft', 'flower'), seed=8, mottle=.3), 'floor', '풀 포기 무성한 풀밭',
+     '큰 풀 포기가 빽빽하고 흰 별꽃이 섞인 변화 바닥 3x3.', '걷기. 고원 가장자리·나무 둘레 풀에 섞어 깐다(같은 풀밭 안에서 칸마다 섞는다).', 0, None, 'terrain', True),
+    ('ground-dry-grass', G.ground_dry, 'floor', '마른 고원 풀', '누런 올리브빛으로 마른 고원 풀(칩셋 들풀 결) + 푸른 풀 점 3x3. 바람 센 고원 마루.',
+     '걷기. 넓게 덮을 때만. 풀밭 사이 얼룩은 autotile-dry-grass 덩이로.', 0, None, 'terrain', True),
+    ('ground-dirt', G.ground_dirt, 'floor', '맨땅', '밟아 다진 누런 흙 + 잔 자갈 + 마른 풀 줄기 3x3. autotile-dirt-path 속 칸과 같은 결이라 이어진다.',
+     '걷기. 비탈 발치 마당·다리 끝 쉼터 한가운데. 둘레는 autotile-dirt-path 로 감싸 풀과 들쭉날쭉하게 잇는다.', 0, None, 'terrain', True),
+    ('ground-sky-clear', lambda: G.sky_sample('clear'), 'floor', '맑은 하늘', '협곡·벼랑 너머로 보이는 푸른 하늘(단색 + 옅은 가로 결) 3x3.',
+     '막힘(하늘 = 떨어지는 곳). 하늘 칸의 기본. 세 하늘 표본을 3x3 덩이마다 섞고 좌우를 뒤집어 깔면 격자 반복이 보이지 않는다(맑은 하늘 7 : 뭉게 2 : 흐름 1).',
+     0, None, 'terrain', False),
+    ('ground-sky-puffs', lambda: G.sky_sample('puffs', 3), 'floor', '뭉게구름 하늘', '작은 뭉게구름 둘(윗모 흰빛 · 밑 푸른 그늘)이 뜬 하늘 3x3. 구름은 가장자리 3px 안쪽.',
+     '막힘. ground-sky-clear 사이에 드문드문(이웃끼리 붙이지 않는다).', 0, None, 'terrain', False),
+    ('ground-sky-drift', lambda: G.sky_sample('drift', 5), 'floor', '흐르는 구름 하늘', '가로로 길게 흐르는 엷은 구름 + 작은 구름 하늘 3x3.', '막힘. 하늘 칸 열에 하나 정도.',
+     0, None, 'terrain', False),
+    ('ground-cliff-face', C.face_sample, 'wall', '절벽 앞면 표본', '주황·갈색 층진 비늘 돌 + 세로 결 주름 절벽 앞면 3x3(앞면 3줄 높이 그대로).',
+     '막힘. 가로로만 이어 붙인다(세로로 쌓지 않는다 — 앞면은 언제나 3줄). 열마다 다른 조각이 필요하면 cliff_face_a/b/c.', 3, None, 'wall', False),
+    # ---------------------------------------------------------------- 땅 덩이 오토타일
+    ('autotile-dirt-path', A.autotile_path, 'autotile', '맨땅 길', '밟아 다진 누런 흙길 16변형: 끝은 풀이 먹어 든 들쭉날쭉 + 길 안으로 든 풀 잎 + 둘레 풀 그늘.',
+     _AT + '걷기. 폭 2칸으로 굽이치게 이어 그리고(lay_path), 다리 끝·계단 위아래·비탈 발치에 닿게. 맨땅 마당(ground-dirt) 둘레도 이것.', 0, 'lower', 'terrain', True),
+    ('autotile-dry-grass', A.autotile_dry, 'autotile', '마른 풀 덩이', '누런 올리브 마른 풀 덩이 16변형: 가장자리는 화소마다 성겨지며 푸른 풀에 섞인다(둑·테 없음) + 올리브 풀 포기.',
+     _AT + '걷기. 고원·마당 빈 풀밭에 3~15칸 얼룩 덩이로(고원 마루에 더 많이). 외톨이 칸·한 줄 띠는 만들지 않는다.', 0, 'lower', 'terrain', True),
+    ('autotile-crop-rows', A.autotile_crop, 'autotile', '밭 이랑', '가로 이랑(흙 윗면 빛 · 고랑 그늘) 위 채소 잎 줄 16변형, 가장자리 흙 두둑 + 남쪽 두둑 앞면.',
+     _AT + '막힘(작물). 비탈 발치·아랫들에 둥근 덩이(5x5 이상)로. 둘레 한쪽에 fence_short, 드나드는 길은 덩이 밖으로.', 1, 'lower', 'terrain', False),
+    ('autotile-cliff-lip', C.autotile_lip, 'autotile', '고원 끝 흙 턱(절벽 가장자리 풀 덮임)',
+     '높은 땅이 절벽 앞면·낮은 땅으로 끝나는 가장자리: 주황 흙덩이가 둥글게 울퉁불퉁한 턱 + 턱 위로 늘어진 풀 술. 속(15)은 투명.',
+     _AT + '걷기(턱 칸은 높은 땅). 고원 칸 전체에 칠한다 — 이웃이 「같은 높이 이상의 땅이나 하늘」이면 있음, 「더 낮은 땅·절벽 앞면」이면 없음으로 센다. '
+     '그러면 남쪽 절벽 꼭대기·계단 옆 꺾인 곳에만 턱이 생긴다.', 0, 'lower', 'terrain', True),
+    ('autotile-sky-rim', C.autotile_skyrim, 'autotile', '하늘 가장자리(벼랑 끝 풀 덮임)',
+     '하늘 칸의 땅 쪽 가장자리: 풀이 하늘 쪽으로 둥글게 비어져 나오고 주황 흙 턱 + 짙은 바위 모가 하늘과 맞닿는다. 속(15)은 투명(하늘 표본이 보인다).',
+     _AT + '막힘(하늘). 하늘 칸 전체에 칠한다 — 이웃이 하늘·절벽 앞면이면 있음, 땅이면 없음. 고원 북쪽 끝·협곡 옆 가장자리가 직선으로 보이지 않게 된다. '
+     '땅이 하늘 바로 위(북쪽)에 있으면 이 대신 절벽 앞면(cliff_drop_*)을 3줄 놓는다.', 1, 'lower', 'terrain', False),
+    # ---------------------------------------------------------------- 절벽 앞면 조각
+    ('cliff_face_a', lambda: C.cliff_piece('mid', 3), 'wall', '절벽 앞면(가운데 a)', '층진 비늘 돌 앞면 1x3칸. 위 턱 밑 그늘 + 늘어진 풀 술, 발치 그늘 + 풀 술.', _CF, 3, None, 'wall', False),
+    ('cliff_face_b', lambda: C.cliff_piece('mid', 7), 'wall', '절벽 앞면(가운데 b)', '결 자리가 다른 가운데 앞면 1x3칸.', _CF, 3, None, 'wall', False),
+    ('cliff_face_c', lambda: C.cliff_piece('mid', 12), 'wall', '절벽 앞면(가운데 c, 주름)', '세로 결 주름이 지나는 가운데 앞면 1x3칸.', _CF, 3, None, 'wall', False),
+    ('cliff_face_wide', lambda: C.cliff_piece('wide', 20), 'wall', '절벽 앞면(넓은 4칸)', '4칸 이어진 앞면 4x3칸(한 번에 찍는 넓은 벽).', _CF, 3, None, 'wall', False),
+    ('cliff_end_w', lambda: C.cliff_piece('end_w', 3), 'wall', '절벽 서쪽 끝(바깥 모서리)', '앞면 서쪽 끝: 위 모서리가 둥글게 깎이고 3px 가 돌아 들어가며 어두워진다(바깥은 투명 = 옆 땅/하늘이 보인다).',
+     _CF + '앞면 줄의 서쪽 끝 열에. 바깥쪽 칸은 같은 줄의 낮은 땅이나 하늘이어야 한다.', 3, None, 'wall', False),
+    ('cliff_end_e', lambda: C.cliff_piece('end_e', 3), 'wall', '절벽 동쪽 끝(바깥 모서리)', '앞면 동쪽 끝(서쪽 끝의 거울 짝).', _CF + '앞면 줄의 동쪽 끝 열에.', 3, None, 'wall', False),
+    ('cliff_inner_w', lambda: C.cliff_piece('inner_w', 3), 'wall', '절벽 안 모서리(서쪽에 높은 땅)', '서쪽에 높은 땅 옆면이 붙는 안 모서리: 2px 짙은 골.',
+     _CF + '앞면이 서쪽의 더 튀어나온 고원에 막혀 끝나는 열에. 그 고원 칸에는 autotile-cliff-lip 의 옆 턱이 생긴다.', 3, None, 'wall', False),
+    ('cliff_inner_e', lambda: C.cliff_piece('inner_e', 3), 'wall', '절벽 안 모서리(동쪽에 높은 땅)', '동쪽에 높은 땅이 붙는 안 모서리(거울 짝).', _CF, 3, None, 'wall', False),
+    ('cliff_drop_a', lambda: C.cliff_piece('mid', 5, foot='sky'), 'wall', '하늘로 떨어지는 절벽(가운데)',
+     '밑이 하늘인 절벽 앞면 1x3칸: 아래 끝이 울퉁불퉁 들려 이빨처럼 끝나고 그 밑으로 하늘이 보인다(바위 밑면 짙게).',
+     _CF + '앞면 밑이 하늘 칸일 때(협곡·갈라진 틈 위). 밑 칸에는 하늘 표본을 깐다.', 3, None, 'wall', False),
+    ('cliff_drop_b', lambda: C.cliff_piece('mid', 9, foot='sky'), 'wall', '하늘로 떨어지는 절벽(가운데 b)', '결 자리가 다른 들린 밑동 앞면 1x3칸.', _CF, 3, None, 'wall', False),
+    ('cliff_drop_end_w', lambda: C.cliff_piece('end_w', 5, foot='sky'), 'wall', '하늘로 떨어지는 절벽 서쪽 끝', '들린 밑동 + 서쪽 바깥 모서리 1x3칸.', _CF, 3, None, 'wall', False),
+    ('cliff_drop_end_e', lambda: C.cliff_piece('end_e', 5, foot='sky'), 'wall', '하늘로 떨어지는 절벽 동쪽 끝', '들린 밑동 + 동쪽 바깥 모서리 1x3칸.', _CF, 3, None, 'wall', False),
+    # ---------------------------------------------------------------- 다리·계단·비탈
+    ('bridge_h', lambda: B.bridge_h(7), 'object', '회색 널판 다리(가로)',
+     '하늘 위 동서로 놓인 널판 다리 7x4칸: 1줄 뒤 난간(뾰족 말뚝 + 가로대 둘), 2·3줄 남북 널판 바닥(못 점), 바닥 앞 낮은 난간, 4줄 앞 보 + X자 트러스.',
+     '2·3줄(바닥)만 걷기, 1줄 난간·4줄 트러스 막힘. 양 끝 1칸씩 고원 땅에 걸치게 놓고 그 끝에 맨땅 길을 잇는다. 길이는 bridge_h_end_w + bridge_h_mid x n + bridge_h_end_e 로 맞춘다.',
+     1, None, 'building', False),
+    ('bridge_h_end_w', lambda: B.bridge_h_part('end_w'), 'object', '가로 다리 서쪽 끝', '굵은 끝 기둥이 선 다리 서쪽 끝 1x4칸.', '2·3줄 걷기. 서쪽 고원 끝 칸에.', 1, None, 'building', False),
+    ('bridge_h_mid', lambda: B.bridge_h_part('mid'), 'object', '가로 다리 가운데', '이어 찍는 다리 가운데 1x4칸(트러스 한 칸).', '2·3줄 걷기. 하늘 칸 수만큼 이어 찍는다.', 1, None, 'building', False),
+    ('bridge_h_end_e', lambda: B.bridge_h_part('end_e'), 'object', '가로 다리 동쪽 끝', '굵은 끝 기둥이 선 다리 동쪽 끝 1x4칸.', '2·3줄 걷기. 동쪽 고원 끝 칸에.', 1, None, 'building', False),
+    ('bridge_v', lambda: B.bridge_v(6), 'object', '회색 널판 다리(세로)',
+     '남북으로 놓인 널판 다리 3x6칸: 가운데 동서 널판 바닥, 양옆 난간(말뚝 머리 + 가로대 두 줄), 북쪽 끝 기둥, 남쪽 끝 앞 보 + 트러스 앞면.',
+     '가운데 열만 걷기, 양옆 난간 열 막힘. 동서로 갈라진 하늘 틈(절벽 앞면 3줄 + 하늘 2줄 이상)을 건너, 남북 끝이 땅에 1칸씩 걸치게. 길이는 h 로 맞춘다.',
+     0, None, 'building', False),
+    ('stone_stairs', B.stone_stairs, 'object', '돌 계단', '절벽 앞면을 뚫고 내려가는 버들항 돌 계단 2x3칸(디딤 12단, 양옆 바위 볼).',
+     '걷기(계단). 절벽 앞면 3줄 자리를 2열 대신한다. 위아래 끝에 맨땅 길을 닿게 하고 위쪽 곁에 cairn 하나.', 0, None, 'prop', True),
+    ('terrace_ramp', B.terrace_ramp, 'object', '밭 이랑 경사(계단식 비탈)', '채소 잎 줄이 덮은 흙 이랑 단이 6px 마다 내려가는 경사 3x3칸.',
+     '걷기. 절벽 앞면 3줄 자리를 3열 대신하고, 양옆에 vine_slope_w·vine_slope_e 를 붙인다(덩굴 비탈 2 + 이랑 3 + 덩굴 비탈 2 = 7열). 발치에 맨땅 마당과 밭.', 0, None, 'prop', True),
+    ('vine_slope_w', lambda: B.vine_slope('w'), 'wall', '덩굴 비탈(서쪽)', '대각선 아래 = 절벽 바위, 위 = 이랑 쪽으로 내려가는 경사를 세로 덩굴이 덮은 2x3칸.',
+     '막힘. terrace_ramp 의 서쪽 2열(앞면 자리).', 3, None, 'wall', False),
+    ('vine_slope_e', lambda: B.vine_slope('e'), 'wall', '덩굴 비탈(동쪽)', 'vine_slope_w 의 거울 짝 2x3칸.', '막힘. terrace_ramp 의 동쪽 2열.', 3, None, 'wall', False),
+    # ---------------------------------------------------------------- 식생
+    ('oak_big', lambda: P.oak_big(1), 'tree', '활엽 큰 나무', '굵은 줄기 + 뿌리 벌림 + 회녹색 둥근 수관(잎 덩이 다섯, 속 가지 틈) 3x4칸. 고원 전망 자리 앵커.',
+     _T + '밑동 가운데 1칸 막힘. 벼랑 가장자리·길 갈림에 하나, 덩이로 둘셋.', 1, None, 'tree', False),
+    ('oak_small', lambda: P.oak_small(2), 'tree', '어린 활엽수', '가는 줄기 + 동그란 회녹색 수관 2x3칸.', _T + '밑동 2칸 막힘. 큰 나무 곁에 덩이로.', 1, None, 'tree', False),
+    ('fir_tall', lambda: P.fir_tall(3), 'tree', '전나무', '아래가 넓은 잎 층을 겹쳐 쌓은 가는 전나무 1x4칸(회녹색).', _T + '밑동 1칸 막힘. 고원 북쪽 끝·비탈 위에 2~4그루 덩이.', 1, None, 'tree', False),
+    ('fir_young', lambda: P.fir_young(4), 'tree', '어린 전나무', '1x2칸 어린 전나무.', _T + '밑동 1칸 막힘. 전나무 덩이 가장자리.', 1, None, 'tree', False),
+    ('bush_round', lambda: P.bush_round(9), 'object', '둥근 덤불', '풀색 잎 덩이 셋 2x2칸.', _S + '아랫줄 막힘. 길가·나무 밑.', 1, None, 'prop', False),
+    ('bush_autumn', lambda: P.bush_autumn(10), 'object', '주황 낙엽 덤불', '밑은 푸르고 위는 주황으로 물든 덤불 2x2칸.', _S + '아랫줄 막힘. 절벽 발치·바위 곁에 하나둘.', 1, None, 'prop', False),
+    ('bush_small', lambda: P.bush_small(11), 'object', '작은 덤불', '1x1칸 덤불.', _S + '칸 막힘.', 1, None, 'prop', False),
+    ('tallgrass', lambda: P.tallgrass(12), 'decal', '키 큰 풀 포기', '큰 풀 포기 둘 + 작은 포기 1x1칸.', _D + '풀밭 곳곳·바위 둘레.', 0, None, 'decal', True),
+    ('flowers_white', lambda: P.flowers_white(13), 'decal', '흰 별꽃', '다섯 잎 흰 꽃 2~4 1x1칸.', _D + '고원 풀밭에 드문드문.', 0, None, 'decal', True),
+    ('pebbles', lambda: P.pebbles(8), 'decal', '잔돌', '회색 잔돌 + 주황 부스러기 1x1칸.', _D + '절벽 발치·길가.', 0, None, 'decal', True),
+    # ---------------------------------------------------------------- 바위·소품
+    ('boulder_dan', lambda: P.boulder_dan(5), 'object', '주황 바위', '절벽에서 떨어져 나온 둥근 주황 바위 덩이 2x2칸(혹 셋).', _S + '아랫줄 막힘. 절벽 발치 1~2줄 안에.', 1, None, 'prop', False),
+    ('rock_pair', lambda: P.rock_pair(6), 'object', '바위 무리', '주황 큰 바위 + 회색 돌 둘 + 자갈 3x2칸.', _S + '아랫줄 막힘.', 1, None, 'prop', False),
+    ('rock_small', lambda: P.rock_small(7), 'object', '작은 돌', '1x1칸 회색 돌.', _S + '칸 막힘. 길가·절벽 발치.', 1, None, 'prop', False),
+    ('stump', lambda: P.stump(14), 'object', '그루터기', '나이테 윗면 그루터기 1x1칸.', _S + '칸 막힘.', 1, None, 'prop', False),
+    ('log_fallen', lambda: P.log_fallen(15), 'object', '쓰러진 통나무', '가로로 누운 통나무 3x1칸(끝 나이테, 이끼 점).', _S + '칸 전부 막힘. 전망 자리 앞(앉는 자리)에.', 1, None, 'prop', False),
+    ('signpost', lambda: P.signpost(16), 'object', '갈림길 표지', '말뚝 + 서로 다른 쪽을 가리키는 화살 판 둘 1x2칸(글자 없음).', _T + '밑동 막힘. 길 갈림 모서리에.', 1, None, 'prop', False),
+    ('cairn', lambda: P.cairn(17), 'object', '돌무더기 표지', '납작한 돌 다섯을 쌓은 길 표지 1x2칸.', _T + '밑동 막힘. 계단 위·비탈 위 곁에.', 1, None, 'prop', False),
+    ('fence_short', lambda: P.fence_short(18), 'object', '낮은 나무 울타리', '말뚝 + 가로대 둘 3x1칸.', _S + '칸 전부 막힘. 밭 한쪽 가장자리에.', 1, None, 'fence', False),
+    ('bridge_post', lambda: P.bridge_post(22), 'object', '다리 끝 기둥', '밧줄 감긴 굵은 회색 기둥 1x2칸.', _T + '밑동 막힘. 다리 양 끝 곁(길 밖)에 짝으로.', 1, None, 'prop', False),
+    ('hanging_vines', lambda: P.hanging_vines(19), 'decal', '늘어진 덩굴', '절벽 턱에서 늘어진 덩굴 가닥 1x2칸.', '절벽 앞면 위 장식(통행 판정 없음 — 앞면은 원래 막힘). 앞면 열 6~8개에 하나.', 0, None, 'decal', True),
+    ('cliff_roots', lambda: P.cliff_roots(20), 'decal', '드러난 뿌리', '절벽 앞면에 드러난 굽은 뿌리 1x1칸.', '절벽 앞면 위 장식. 나무가 선 고원 끝 아래.', 0, None, 'decal', True),
+    ('cloud_bank', lambda: P.cloud_bank(21, 4, 2), 'decal', '큰 구름 덩이', '하늘 칸 위에 띄우는 큰 뭉게구름 4x2칸(투명 바탕).',
+     '맨 위 장식(하늘 칸은 원래 막힘). 하늘 표본의 작은 구름 사이에 한 화면 1~2개 — 격자 반복을 깨는 용도.', 0, None, 'decal', False),
+    ('cloud_bank_s', lambda: P.cloud_bank(23, 3, 2), 'decal', '구름 덩이(작은)', '3x2칸 구름.', '맨 위 장식.', 0, None, 'decal', False),
+]

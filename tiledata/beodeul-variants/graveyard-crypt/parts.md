@@ -1,0 +1,61 @@
+# 공동묘지와 지하 묘소 — 새 조각
+
+손 도트(Pillow, 버들항 7단 램프·pz.fin 윤곽)로 새로 그린 조각만 적는다. 칸 = 16px.
+
+- `parts/tomb_round.png` (16x16 px) — 둥근 비석: 둥근 머리의 낮은 돌 비석, 이끼가 낀다. / 1x1칸
+- `parts/tomb_cross.png` (16x32 px) — 십자 비석: 계단 받침 위의 가는 돌 십자가(가로대 윗면이 보인다). / 1x2칸
+- `parts/tomb_slab.png` (16x16 px) — 판석 비석: 봉분 앞에 세운 윗면이 뾰족한 판석 비석. / 1x1칸
+- `parts/obelisk.png` (16x48 px) — 오벨리스크: 사각 첨탑형 기념비(1×3), 아랫쪽에 이끼. / 1x3칸
+- `parts/mourner.png` (16x32 px) — 두건 쓴 조상: 두건을 쓰고 손을 모은 얼굴 없는 석상. / 1x2칸
+- `parts/crypt_chest_tomb.png` (32x32 px) — 상자 무덤: 십자 홈이 새겨진 큰 돌 상자 무덤(윗면+앞면). / 2x2칸
+- `parts/grave_mound.png` (16x16 px) — 봉분과 나무 십자: 흙 봉분에 나무 십자가를 꽂은 옛 무덤. / 1x1칸
+- `parts/open_grave.png` (32x32 px) — 파 놓은 무덤: 구덩이와 오른쪽 흙더미, 꽂힌 삽(2×2). / 2x2칸
+- `parts/urn_pedestal.png` (16x32 px) — 항아리 받침: 사각 받침 위의 붉은 띠 장례 항아리. / 1x2칸
+- `parts/dead_tree.png` (32x48 px) — 고목: 잎 없는 큰 고목, 옹이 구멍과 휜 가지(2×3). / 2x3칸
+- `parts/dead_tree_small.png` (16x32 px) — 작은 고목: 가지만 남은 키 작은 고목(1×2). / 1x2칸
+- `parts/stump.png` (16x16 px) — 나이테 그루터기: 베어 낸 나무 그루터기, 윗면 나이테가 보인다. / 1x1칸
+- `parts/lamp_post.png` (16x48 px) — 푸른 불 가로등: 철제 기둥과 푸른 불꽃 유리등(1×3). / 1x3칸
+- `parts/crypt_gate.png` (48x48 px) — 가족 납골 철문: 돌 아치와 쇠창살 잠긴 납골문(3×3). / 3x3칸
+- `parts/mausoleum.png` (96x64 px) — 영묘: 평지붕 윗면과 기둥 둘, 닫힌 어두운 문의 작은 영묘(6×4). 지붕 두 줄은 걷기+가림. / 6x4칸
+- `parts/mausoleum_steps.png` (32x16 px) — 영묘 계단: 영묘 문 앞 두 단 돌계단(2×1). / 2x1칸
+- `parts/cypress.png` (16x48 px) — 사이프러스: 좁고 어두운 불꽃 모양 침엽수(1×3). / 1x3칸
+- `parts/tomb_leaning.png` (16x16 px) — 기운 비석: 오른쪽으로 기운 낡은 비석과 풀. / 1x1칸
+- `parts/stone_bench.png` (32x16 px) — 돌 벤치: 두 받침 위에 판석을 얹은 묘지 벤치(2×1). / 2x1칸
+- `parts/sarcophagus_carved.png` (32x32 px) — 조각 석관: 십자 능선 뚜껑과 앞면 홈 부조의 석관(2×2). / 2x2칸
+- `parts/coffin_wood.png` (32x32 px) — 나무 관: 못 박힌 쇠띠 둘린 나무 관(2×2, 윗면 육각). / 2x2칸
+- `parts/candelabra.png` (16x32 px) — 푸른 촛대: 세 갈래 쇠 촛대와 푸른 불꽃(1×2). / 1x2칸
+- `parts/statue_angel.png` (32x48 px) — 날개 천사 석상: 날개 접은 천사 석상과 사각 받침(2×3). / 2x3칸
+- `parts/gargoyle.png` (16x32 px) — 가고일: 붉은 눈의 웅크린 돌 짐승(1×1.5). / 1x2칸
+- `parts/bone_pile.png` (16x16 px) — 해골 더미: 해골 셋과 정강이뼈 X(1×1). / 1x1칸
+- `parts/wall_cross.png` (16x16 px) — 벽 십자 부조: 벽 앞면에 새긴 십자 홈. / 1x1칸
+- `parts/wall_sconce.png` (16x16 px) — 푸른 벽 횃불: 벽 앞면의 쇠 고리 횃불과 푸른 불꽃. / 1x1칸
+- `parts/wall_niche_stack.png` (16x32 px) — 납골 칸: 관 끝과 해골이 보이는 벽 속 2단 칸(1×2). / 1x2칸
+- `parts/iron_door.png` (16x32 px) — 묘소 철문: 자물쇠 달린 띠 철판 아치문(1×2). / 1x2칸
+- `parts/cobweb.png` (16x16 px) — 거미줄: 벽 모서리에서 퍼지는 반투명 거미줄. / 1x1칸
+- `parts/crypt_stairs.png` (32x32 px) — 지하 계단 입구: 어둠으로 내려가는 돌 계단 입구(2×2). / 2x2칸
+- `parts/wilted_flowers.png` (16x16 px) — 시든 꽃다발: 무덤 앞에 놓인 시든 붉은 꽃다발. / 1x1칸
+- `parts/raven_tomb.png` (16x16 px) — 까마귀 앉은 비석: 비석 위에 앉은 검은 까마귀. / 1x1칸
+- `parts/gate_pillar.png` (16x48 px) — 묘지 문기둥: 구슬 얹은 네모 돌기둥(1×3). / 1x3칸
+- `parts/gate_arch_top.png` (64x16 px) — 쇠 문 아치: 문기둥 사이를 잇는 굽은 쇠 띠와 금빛 십자(4×1). / 4x1칸
+- `parts/fog_patch.png` (32x16 px) — 안개 덩이: 반투명 푸른 안개 덩이(2×1). / 2x1칸
+- `parts/fog_patch_small.png` (16x16 px) — 작은 안개: 반투명 푸른 안개 덩이(1×1). / 1x1칸
+- `parts/pumpkin_lantern.png` (16x16 px) — 호박 등: 속에서 불이 새는 잭 랜턴. / 1x1칸
+- `parts/grass_tuft.png` (16x16 px) — 시든 풀: 회녹색 시든 풀 다발. / 1x1칸
+- `parts/skeleton_hand.png` (16x16 px) — 솟은 해골 손: 흙에서 솟은 해골 손. / 1x1칸
+- `parts/wisp.png` (16x16 px) — 도깨비불: 바닥 위에 뜬 푸른 불. / 1x1칸
+- `parts/candle_cluster.png` (16x16 px) — 무덤 초: 무덤 앞 푸른 불꽃 초 세 개. / 1x1칸
+- `parts/lamp_glow.png` (64x64 px) — 푸른 빛무리: 가로등·촛대·횃불 위에 얹는 반투명 푸른 빛무리(4×4). / 4x4칸
+- `parts/ground-mist.png` (48x48 px) — 안개 낀 풀밭: 푸른 안개가 번진 어두운 풀밭 3×3 표본. / 3x3칸
+- `parts/ground-road.png` (48x48 px) — 이끼 낀 돌길: 이끼 낀 둥근 돌 바닥 3×3 표본. / 3x3칸
+- `parts/ground-crypt.png` (48x48 px) — 지하 판석: 어두운 큰 판석 바닥 3×3 표본. / 3x3칸
+- `parts/ground-crypt-cracked.png` (48x48 px) — 금 간 이끼 판석: 금과 이끼가 낀 판석 3×3 표본. / 3x3칸
+- `parts/face_crypt_3h.png` (48x48 px) — 묘소 벽 앞면(3줄): 이끼 낀 어두운 쌓은 돌 벽 앞면, 3칸 폭 표본. / 3x3칸
+- `parts/face_crypt_2h.png` (48x32 px) — 묘소 벽 앞면(2줄): 같은 돌, 2줄 높이(복도용). / 3x2칸
+- `parts/face_cemwall_2h.png` (48x32 px) — 묘지 담 앞면: 이끼 낀 회색 돌담 앞면, 윗단 밝은 갓돌. / 3x2칸
+- `parts/ground-cliff.png` (48x48 px) — 묘지 담 앞면(3줄): 이끼 낀 회색 돌담 앞면 3줄 높이. / 3x3칸
+- `parts/ceiling_crypt.png` (48x48 px) — 묘소 천장: 어두운 천장 + 밝은 테두리, 방 모서리 포함 3×3 표본. / 3x3칸
+- `parts/autotile-fence.png` (64x64 px) — 철 울타리: 뾰족 창살 철 울타리 16변형(위 1·오른쪽 2·아래 4·왼쪽 8). / 4x4칸
+- `parts/autotile-dirt.png` (64x64 px) — 밟힌 흙길: 풀 위에 덮는 흙길 가장자리 16변형. / 4x4칸
+- `parts/autotile-mist.png` (64x64 px) — 안개 띠: 이웃 쪽으로 이어지고 바깥으로 옅어지는 반투명 안개 16변형. / 4x4칸
+
+합계 **55** 종.

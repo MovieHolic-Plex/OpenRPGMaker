@@ -1,0 +1,495 @@
+{
+"size": [
+64,
+48
+],
+"name": "main",
+"title": "비 젖은 언덕 거리와 분수 광장",
+"description": "비 내리는 폐허 도시 — 언덕 위 시계탑·무너진 극장, 옹벽 쇠문, 집 줄과 젖은 판석 거리, 분수 광장",
+"steps": [
+{
+"op": "fill",
+"ground": "ground-wetcobble"
+},
+{
+"op": "rect",
+"ground": "ground-bigflag",
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 13
+},
+{
+"op": "rect",
+"ground": "ground-mossflag",
+"x": 0,
+"y": 0,
+"w": 64,
+"h": 2
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 0,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 3,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 6,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 9,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 12,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 15,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 18,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 21,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 24,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 36,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 39,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 42,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 45,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 48,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 51,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 54,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 57,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 60,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "face-mossy-retaining",
+"x": 63,
+"y": 13
+},
+{
+"op": "stamp",
+"kit": "iron-gate",
+"x": 30,
+"y": 13
+},
+{
+"op": "line",
+"ground": "ground-wetflag",
+"from": [
+30,
+16
+],
+"to": [
+30,
+47
+],
+"width": 4
+},
+{
+"op": "line",
+"ground": "ground-wetflag",
+"from": [
+0,
+27
+],
+"to": [
+63,
+27
+],
+"width": 3
+},
+{
+"op": "rect",
+"ground": "ground-bigflag",
+"x": 22,
+"y": 31,
+"w": 20,
+"h": 10
+},
+{
+"op": "line",
+"ground": "ground-wetflag",
+"from": [
+0,
+43
+],
+"to": [
+63,
+43
+],
+"width": 2
+},
+{
+"op": "stamp",
+"kit": "theatre-ruin",
+"x": 8,
+"y": 3
+},
+{
+"op": "stamp",
+"kit": "clock-tower",
+"x": 21,
+"y": 0
+},
+{
+"op": "stamp",
+"kit": "ruin-house",
+"x": 37,
+"y": 4
+},
+{
+"op": "stamp",
+"kit": "gable-tall",
+"x": 46,
+"y": 2
+},
+{
+"op": "stamp",
+"kit": "stair-house",
+"x": 54,
+"y": 2
+},
+{
+"op": "stamp",
+"kit": "statue-weathered",
+"x": 18,
+"y": 9
+},
+{
+"op": "stamp",
+"kit": "column-fallen",
+"x": 13,
+"y": 11
+},
+{
+"op": "stamp",
+"kit": "rubble-masonry",
+"x": 44,
+"y": 11
+},
+{
+"op": "stamp",
+"kit": "lamppost-lit",
+"x": 28,
+"y": 9
+},
+{
+"op": "stamp",
+"kit": "lamppost-lit",
+"x": 35,
+"y": 9
+},
+{
+"op": "stamp",
+"kit": "bench-wet",
+"x": 24,
+"y": 11
+},
+{
+"op": "stamp",
+"kit": "notice-column",
+"x": 4,
+"y": 9
+},
+{
+"op": "stamp",
+"kit": "planter-cypress",
+"x": 2,
+"y": 8
+},
+{
+"op": "stamp",
+"kit": "gable-tall",
+"x": 1,
+"y": 16
+},
+{
+"op": "stamp",
+"kit": "shop-house",
+"x": 6,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "gable-low",
+"x": 12,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "stair-house",
+"x": 17,
+"y": 16
+},
+{
+"op": "stamp",
+"kit": "shop-house",
+"x": 35,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "gable-tall",
+"x": 41,
+"y": 16
+},
+{
+"op": "stamp",
+"kit": "ruin-house",
+"x": 46,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "gable-low",
+"x": 52,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "shop-house",
+"x": 57,
+"y": 18
+},
+{
+"op": "stamp",
+"kit": "laundry-line",
+"x": 48,
+"y": 17
+},
+{
+"op": "stamp",
+"kit": "fountain-rain",
+"x": 31,
+"y": 34
+},
+{
+"op": "stamp",
+"kit": "lamp-double-lit",
+"x": 24,
+"y": 32
+},
+{
+"op": "stamp",
+"kit": "lamp-double-lit",
+"x": 38,
+"y": 32
+},
+{
+"op": "stamp",
+"kit": "bench-wet",
+"x": 26,
+"y": 38
+},
+{
+"op": "stamp",
+"kit": "bench-wet",
+"x": 36,
+"y": 38
+},
+{
+"op": "stamp",
+"kit": "notice-column",
+"x": 23,
+"y": 37
+},
+{
+"op": "stamp",
+"kit": "planter-cypress",
+"x": 40,
+"y": 36
+},
+{
+"op": "blob",
+"brush": "puddle",
+"cx": 34,
+"cy": 39,
+"rx": 2.5,
+"ry": 1.2,
+"seed": 3
+},
+{
+"op": "stamp",
+"kit": "stair-house",
+"x": 1,
+"y": 31
+},
+{
+"op": "stamp",
+"kit": "gable-low",
+"x": 8,
+"y": 33
+},
+{
+"op": "stamp",
+"kit": "shop-house",
+"x": 13,
+"y": 33
+},
+{
+"op": "stamp",
+"kit": "gable-tall",
+"x": 45,
+"y": 31
+},
+{
+"op": "stamp",
+"kit": "shop-house",
+"x": 50,
+"y": 33
+},
+{
+"op": "stamp",
+"kit": "gable-low",
+"x": 56,
+"y": 33
+},
+{
+"op": "stamp",
+"kit": "cart-tarp",
+"x": 19,
+"y": 39
+},
+{
+"op": "stamp",
+"kit": "crates-tarp",
+"x": 44,
+"y": 40
+},
+{
+"op": "stamp",
+"kit": "barrels-wet",
+"x": 62,
+"y": 40
+},
+{
+"op": "stamp",
+"kit": "rain-barrel",
+"x": 5,
+"y": 44
+},
+{
+"op": "stamp",
+"kit": "drain-grate",
+"x": 30,
+"y": 46
+},
+{
+"op": "stamp",
+"kit": "lamppost-lit",
+"x": 10,
+"y": 44
+},
+{
+"op": "stamp",
+"kit": "lamppost-lit",
+"x": 52,
+"y": 44
+},
+{
+"op": "blob",
+"brush": "puddle",
+"cx": 16,
+"cy": 45,
+"rx": 3,
+"ry": 1.2,
+"seed": 5
+},
+{
+"op": "blob",
+"brush": "puddle",
+"cx": 47,
+"cy": 46,
+"rx": 3.5,
+"ry": 1.1,
+"seed": 7
+},
+{
+"op": "stamp",
+"kit": "umbrella-dropped",
+"x": 40,
+"y": 45
+},
+{
+"op": "stamp",
+"kit": "leaves-wet",
+"x": 25,
+"y": 46
+}
+]
+}

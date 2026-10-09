@@ -28,10 +28,22 @@ IMG_DIR = ROOT / "public/assets/beodeul-city/references/picks"
 MD_DIR = ROOT / "tiledata/beodeul-city/references"
 REG_JSON = VAR / "pick-cells.json"
 REG_PNG = VAR / "pick-cells.png"
+# 팩 전용 장소(waves.json "packOnly")는 공용 시트에 굽지 않는다. BEODEUL_PACK_SCRATCH=<폴더> 로 돌리면 모든 출력이 그 폴더로 가고,
+# 팩 전용 장소만 빈 등록부에서 굽는다(build_place_packs.py --scratch 가 읽는다).
+SCRATCH = os.environ.get("BEODEUL_PACK_SCRATCH")
+if SCRATCH:
+    _s = pathlib.Path(SCRATCH)
+    SHEET_PATH = _s / "beodeul-city-chipset.png"; TS_PATH = _s / "beodeulCityTileset.json"; SHEET_JSON = _s / "beodeulCitySheet.json"
+    REF_PATH = _s / "beodeulCityReferences.json"; IMG_DIR = _s / "references/picks"; MD_DIR = _s / "references-md"
+    REG_JSON = _s / "pick-cells.json"; REG_PNG = _s / "pick-cells.png"
+    IMG_DIR.mkdir(parents=True, exist_ok=True); MD_DIR.mkdir(parents=True, exist_ok=True)
 BASE = 23936          # 버들항 v8 시트의 칸 수. 이 앞은 build-beodeul-city.py 소유, 뒤는 이 스크립트 소유.
 T = 16
 KIT_PREFIX = "bd-pick-"
 CAT_PREFIX = "beodeul-picks-"
+AUTOTILE_PREFIX = "beodeul_wave_"          # 웨이브 16변형 오토타일 그룹 id 접두사(autotileGroups)
+TILEGROUP_PREFIX = "beodeul_wave:"         # 같은 것의 tileGroups(조수 메타) id 접두사
+def slug_of(stem): return re.sub(r"[^a-z0-9]+", "-", stem.lower()).strip("-")
 
 # 장소: 슬러그 → (한글 이름, 분류 키(themes), 변형 묶음)
 PLACES = {
@@ -56,6 +68,34 @@ GROUPS = {
     4: ("special", "특수 던전·랜드마크", "곶 등대·난파선 암초·화산 동굴·마법사의 탑"),
     5: ("field", "필드", "해안 절벽길·깊은 숲길·산길 고개·밀밭 로마 가도 — 마을 사이를 잇는 길 넷"),
 }
+# ---- 웨이브(사람 선택 없이 규약 SPEC.md 로 만든 새 장소): tiledata/beodeul-variants/waves.json ----
+#   {"places": {slug: [한글 이름, [분류…]]}, "catKo": {키: 한글}, "groups": {"7": [id, 이름, 설명]}, "var": {slug: 묶음 번호}}
+WAVES_PATH = VAR / "waves.json"
+WAVES = json.loads(WAVES_PATH.read_text(encoding="utf-8")) if WAVES_PATH.exists() else {}
+PLACES.update({k: (v[0], v[1]) for k, v in WAVES.get("places", {}).items()})
+CAT_KO.update(WAVES.get("catKo", {}))
+GROUPS.update({int(k): tuple(v) for k, v in WAVES.get("groups", {}).items()})
+PACK_ONLY = set(WAVES.get("packOnly", []))
+WAVE_VAR = {k: v for k, v in WAVES.get("var", {}).items() if (k in PACK_ONLY) == bool(SCRATCH)}
+
+def wave_items():
+    """waves.json 의 장소마다 parts/*.png · render-1x.png 를 항목으로(상태 wave — 사람 선택 없음)."""
+    out = []
+    for place, var in WAVE_VAR.items():
+        d = VAR / place
+        for f in sorted((d / "parts").glob("*.png")):
+            out.append(dict(id=f"var{var}/{place}/parts/{f.name}", var=var, place=place, rel=f"{place}/parts/{f.name}", kind="part", status="wave", choice=None, note=""))
+        if (d / "render-1x.png").exists():
+            out.append(dict(id=f"var{var}/{place}/render-1x.png", var=var, place=place, rel=f"{place}/render-1x.png", kind="map", status="wave", choice=None, note=""))
+    return out
+
+def passable_auto(pm):
+    return not (pm.get("role") in ("fence", "wall") or pm.get("passable") is False or "모든 변형 막힘" in (pm.get("rules") or ""))
+
+def part_meta(place):
+    f = VAR / place / "partmeta.json"
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+
 FALLBACK = {"hall": "회관", "board": "판자 더미", "pile": "더미", "bin": "광석 통", "buffer": "선로 끝 막이", "bollard": "계류 말뚝",
             "netrack": "그물 걸이", "ice_boat": "얼음 위 배", "ice_row": "얼음 덩이 줄", "ice_hole": "얼음 구멍", "boss": "감독관 집",
             "barrel": "통", "crates": "상자 더미", "bench": "벤치", "lamp": "등불", "well": "우물", "stall": "노점", "shed": "헛간",
@@ -123,12 +163,12 @@ def classify(stem):
     if re.search(r"(^face_|ground-cliff|ground-tcliff|^ceiling)", s): return "wall"
     if re.search(r"(^ground-|^floor_|^mosaic_|grate_floor|glow_moss_floor|^rug$|^datemat$|^vine_field$)", s): return "floor"
     if re.search(r"(jetty_|footbridge|gangway|bridge|stair)", s): return "walk"
-    if re.search(r"(^heath_|^fern_|^wild_|^alpine_|^scree_|^stones_|^toadstools_|^shells$|^ember_|^bones$|^rubble|^seaweed_)", s): return "decal"
+    if re.search(r"(^heath_|^fern_|^wild_|^alpine_|^scree_|^stones_|^toadstools_|^shells$|^ember_|^bones$|^rubble|^seaweed_|^evfloor_)", s): return "decal"
     if re.search(r"(^fir_|^fir$|^pine|^palm|^olive_|mangrove|cypress|^snag|tree$|^tree)", s): return "tree"
     return "object"
 
-ROLE = {"decal": "prop", "liquid": "water", "wall": "wall", "floor": "terrain", "walk": "terrain", "tree": "prop", "object": "prop"}
-KIND_KO = {"liquid": "물·용암 표본", "wall": "벽 앞면·절벽·천장 표본", "floor": "바닥 표본", "walk": "걸음 구조물(다리·계단·잔교)", "tree": "나무", "object": "물체", "decal": "바닥 소품(걸음)"}
+ROLE = {"autotile": "terrain", "decal": "prop", "liquid": "water", "wall": "wall", "floor": "terrain", "walk": "terrain", "tree": "prop", "object": "prop"}
+KIND_KO = {"autotile": "16변형 오토타일", "liquid": "물·용암 표본", "wall": "벽 앞면·절벽·천장 표본", "floor": "바닥 표본", "walk": "걸음 구조물(다리·계단·잔교)", "tree": "나무", "object": "물체", "decal": "바닥 소품(걸음)"}
 
 def cell_bytes(im): return hashlib.sha1(im.tobytes()).hexdigest()
 
@@ -189,7 +229,7 @@ class Registry:
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--dry", action="store_true"); args = ap.parse_args()
     snap = json.loads((VAR / "picks.json").read_text())
-    items = [i for i in snap["items"] if i["status"] in ("after", "unpicked-after", "before")]
+    items = ([] if SCRATCH else [i for i in snap["items"] if i["status"] in ("after", "unpicked-after", "before")]) + wave_items()
     parts = [i for i in items if i["kind"] == "part"]
     maps = {i["place"]: i for i in items if i["kind"] == "map"}
     TS = json.loads(TS_PATH.read_text())
@@ -207,18 +247,25 @@ def main():
             by_hash[h] = dict(img=im, items=[]); order.append(h)
         by_hash[h]["items"].append(it)
     kits, ids, rows_out = [], set(), []
+    auto_groups, auto_meta = [], []
     for h in order:
         g = by_hash[h]; first = g["items"][0]
         place = first["place"]; stem = pathlib.Path(first["rel"]).stem
         desc = parse_desc(place, stem)
         ko = short_name(stem, desc)
         kind = classify(stem)
+        pm = part_meta(place).get(stem, {})
+        if stem.startswith("autotile-"): kind = "autotile"
+        if pm.get("kind") in KIND_KO: kind = pm["kind"]
+        if pm.get("desc"): desc = pm["desc"]
+        if pm.get("ko"): ko = pm["ko"]
         im = g["img"]
         nfr = frames_of(stem, desc, im)
         frames = [im.crop((k * im.width // nfr, 0, (k + 1) * im.width // nfr, im.height)) for k in range(nfr)]
         padded = [pad(fr, kind) for fr in frames]
         _, w, hh = padded[0]
         brows = blocked_rows(kind, w, hh) if kind in ("object", "tree") else 0
+        if kind in ("object", "tree") and isinstance(pm.get("brows"), int): brows = max(1, min(hh, pm["brows"]))
         places = sorted({x["place"] for x in g["items"]}, key=lambda p: list(PLACES).index(p))
         pko = PLACES[place][0]
         lower, upper = [], []
@@ -235,6 +282,9 @@ def main():
                         slot, pri = "lower", "lower"
                     else:
                         slot, pri = "upper", ("lower" if passable else "upper")
+                elif kind == "autotile":
+                    passable = not (pm.get("role") in ("fence", "wall") or pm.get("passable") is False or "모든 변형 막힘" in (pm.get("rules") or ""))
+                    slot, pri = "upper", ("lower" if passable else "upper")        # 위층 투명 오토타일(울타리는 막힘, 땅 덧그림은 걸음)
                 elif kind in ("walk", "decal"):
                     slot, pri, passable = "upper", "lower", True                 # 사람 아래에 그려지는 걸음 덧그림
                 else:
@@ -244,7 +294,7 @@ def main():
                 # 바닥 표본 중 길·광장 표본은 road/plaza 태그 — 도시 형태 자(cityForm)와 빈 바닥 지표가 길·광장으로 읽는다
                 floor_tag = "road" if re.search(r"ground-(road|path)$", stem) else "plaza" if re.search(r"ground-(plaza|deck)$", stem) else "floor"
                 tag = {"liquid": "water", "wall": "wall", "floor": floor_tag, "walk": "bridge" if "bridge" in stem or "jetty" in stem or "gang" in stem else "stair" if "stair" in stem else "walk",
-                       "tree": "tree", "object": "prop", "decal": "decal"}[kind]
+                       "tree": "tree", "object": "prop", "decal": "decal", "autotile": "fence" if pm.get("role") in ("fence", "wall") else "autotile"}[kind]
                 meta = dict(label=f"버들항 장소 · {ko}", description=f"버들항 {pko} {ko} ({'땅' if slot == 'lower' else '윗부분'}), {'막힘' if mark == 'solid' else '걸음'}",
                             tags=["버들항", "버들항 장소", tag, *(["floor"] if tag in ("road", "plaza") else [])], defaultLayer=slot, passage=mark, source="bundled-default")
                 t = reg.add_run(cells, slot, pri, passable, meta)
@@ -259,6 +309,8 @@ def main():
         if kind in ("object", "tree"):
             rule = (f"땅(풀·포석·바닥) 위에 찍는다. 아래 {brows}줄 막힘, 그 위 {hh - brows}줄은 ★(사람 위에 그려짐). " if hh > brows else f"땅 위에 찍는다. {hh}줄 모두 막힘. ") + \
                    ("나무는 밑동 1칸만 막힌다. 덩이로 심고(일렬 금지) 수관이 맵 밖으로 잘리지 않게. " if kind == "tree" else "문 앞 칸·길·다리 끝을 막지 않는다. 같은 조각을 일렬로 세우지 않는다. ")
+        elif kind == "autotile":
+            rule = f"16변형 오토타일 시트 4×4(칸 번호 = 위 1 + 오른쪽 2 + 아래 4 + 왼쪽 8). 낱칸으로 찍지 말고 자동타일 그룹 `{AUTOTILE_PREFIX}{place}-{slug_of(stem)}` 를 붓·채우기·lay_path 로 칠한다. 위층 덧그림이라 땅은 지워지지 않는다. " + ("막힘." if not passable_auto(pm) else "걸음, 사람 아래.") + (" " + pm["rules"] if pm.get("rules") else "")
         elif kind == "decal":
             rule = "바닥 소품 — 걸음, 사람 아래에 그려진다. 풀·꽃·자갈·뼈는 덩이로 흩는다(일렬·격자 금지). 길 한가운데에는 두지 않는다."
         elif kind == "walk":
@@ -274,12 +326,22 @@ def main():
                    ai=dict(description=f"{desc or ko} — {where}. 고른 조각(tiledata/beodeul-variants/{first['rel']}, {first['status']}).",
                            placementRules=rule, tags=["버들항", "버들항 장소", *[CAT_KO[c] for c in cats], *[PLACES[p][0] for p in places], KIND_KO[kind]],
                            role=ROLE[kind], repeatability="repeat" if kind in ("floor", "liquid", "wall") else "fixed",
-                           layerHome="upper" if kind in ("object", "tree") else ("lower" if all(u < 0 for r in upper for u in r) else "perCell"),
+                           layerHome="upper" if kind in ("object", "tree", "autotile") else ("lower" if all(u < 0 for r in upper for u in r) else "perCell"),
                            themes=[*cats, *[CAT_KO[c] for c in cats]]))
         if kid in DOORS:   # 문 칸 — find_pick_doors.py 가 그림에서 찾은 것(tiledata/beodeul-variants/pick-doors.json)
             d = DOORS[kid]
             kit["parts"] = [dict(id="door", kind="entrance", dx=d["dx"], dy=d["dy"], w=1, h=1, note="문 칸(윗부분 그림, 그림에서 찾음) — 문 칸 자체는 막힘, 그 아래 칸이 문 앞 길")]
         kits.append(kit)
+        if kind == "autotile" and w == 4 and hh == 4:
+            ids16 = [upper[y][x] for y in range(4) for x in range(4)]
+            gid = f"{AUTOTILE_PREFIX}{place}_{slug_of(stem).replace('-', '_')}"
+            members = sorted({t for t in ids16 if t >= 0})
+            auto_groups.append(dict(id=gid, name=f"버들항 {pko} · {ko}", neighborhood=4, memberTileIds=members, connectTileIds=members,
+                                    variantMap={str(m): ids16[m] for m in range(16)}, layer=("lower" if passable_auto(pm) else "upper"), edgeConnects=False))   # 걷는 투명 덧그림은 lower 그룹(2층에 칠한다 — 1층에 칠하면 투명 부분이 검게 뚫리고, 3층은 소품이 덮어쓴다), 막힘은 upper(3층)
+            auto_meta.append(dict(id=f"{TILEGROUP_PREFIX}{place}-{slug_of(stem)}", name=f"버들항 {pko} · {ko}", role="fence" if pm.get("role") in ("fence", "wall") else "terrain",
+                                  source="bundled-default", tileIds=members, defaultLayer="upper", confidence="high",
+                                  description=f"{desc or ko} — 16변형 위층 오토타일(이웃 4방향). 그룹 `{gid}`, 키트 `{kid}`(칸 번호 = 위1+오른2+아래4+왼8).",
+                                  placementRules=rule))
         rows_out.append(dict(kit=kid, ko=ko, kind=kind, w=w, h=hh, brows=brows, frames=nfr, places=places, var=first["var"],
                              status=[x["status"] for x in g["items"]], rel=first["rel"]))
 
@@ -310,6 +372,8 @@ def main():
             TS["passability"].append({d: True for d in ("up", "down", "left", "right")})
             TS["priority"].append("lower"); TS["terrain"].append(0); TS["tileMeta"].append(dict(empty_meta))
     TS["count"] = count
+    TS["autotileGroups"] = [g for g in TS.get("autotileGroups", []) if not g["id"].startswith(AUTOTILE_PREFIX)] + auto_groups
+    TS["tileGroups"] = [g for g in TS.get("tileGroups", []) if not g["id"].startswith(TILEGROUP_PREFIX)] + auto_meta
     TS["structureKits"] = [k for k in TS["structureKits"] if not k["id"].startswith(KIT_PREFIX)] + kits
     TS_PATH.write_text(json.dumps(TS, ensure_ascii=False, separators=(",", ":")) + "\n")
     SHEET_JSON.write_text(json.dumps(dict(count=count, tilesPerRow=128)) + "\n")
@@ -455,10 +519,14 @@ def main():
     # 마을 배치 문법 문서(author_beodeul_town theme)를 다시 넣는다 — 위에서 고른 조각 용도를 새로 썼으므로
     import importlib.util
     spec = importlib.util.spec_from_file_location("add_layout_grammar", pathlib.Path(__file__).with_name("add_layout_grammar.py"))
-    mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
+    if not SCRATCH:
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); mod.main()
     print(json.dumps(dict(count=count, newCells=[BASE, count - 1], registry=len(reg.cells), kits=len(kits),
                           categories=len(new_cats), documents=sum(len(c["documents"]) for c in new_cats), images=sum(len(c["images"]) for c in new_cats),
                           docChars=sum(len(d_["markdown"]) for c in new_cats for d_ in c["documents"]))))
 
 if __name__ == "__main__":
     main()
+    # 꼬리 칸 표를 다시 썼으니 키 큰 물체의 걷기 규약(맨 아랫줄만 막음)을 다시 적용한다.
+    import subprocess, sys
+    subprocess.run([sys.executable, str(ROOT / "scripts/content/beodeul-kits/contract.py"), "apply"], check=True)

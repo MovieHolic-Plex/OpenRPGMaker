@@ -1,0 +1,412 @@
+{
+ "places": {
+  "plains-highroad": [
+   "초원 하이로드",
+   [
+    "field"
+   ]
+  ],
+  "ice-cave": [
+   "얼음 동굴",
+   [
+    "dungeon",
+    "snow"
+   ]
+  ],
+  "graveyard-crypt": [
+   "공동묘지·지하 묘소",
+   [
+    "dungeon",
+    "field"
+   ]
+  ],
+  "dark-fortress": [
+   "마왕성",
+   [
+    "dungeon",
+    "landmark"
+   ]
+  ],
+  "mine-tunnels": [
+   "광산 갱도",
+   [
+    "dungeon",
+    "mine"
+   ]
+  ],
+  "ancient-forest": [
+   "고대 숲 던전",
+   [
+    "dungeon",
+    "forest"
+   ]
+  ],
+  "rock-cave": [
+   "일반 암석 동굴",
+   [
+    "dungeon"
+   ]
+  ],
+  "tower-interior": [
+   "탑 내부·계단 던전",
+   [
+    "dungeon"
+   ]
+  ],
+  "ruined-village": [
+   "폐허 마을",
+   [
+    "village",
+    "field"
+   ]
+  ],
+  "swamp-dungeon": [
+   "늪 던전",
+   [
+    "dungeon",
+    "swamp"
+   ]
+  ],
+  "mountain-fortress": [
+   "산악 요새",
+   [
+    "field",
+    "landmark"
+   ]
+  ],
+  "volcano-field": [
+   "화산 지대 필드",
+   [
+    "field"
+   ]
+  ],
+  "desert-pyramid": [
+   "사막 피라미드",
+   [
+    "field",
+    "desert"
+   ]
+  ],
+  "prehistoric-village": [
+   "원시 마을·화산 계곡",
+   [
+    "village",
+    "volcano"
+   ]
+  ],
+  "ice-age-field": [
+   "빙하기 설원",
+   [
+    "field",
+    "snow"
+   ]
+  ],
+  "future-ruins": [
+   "미래 폐허",
+   [
+    "field",
+    "landmark"
+   ]
+  ],
+  "sky-city": [
+   "하늘 도시·부유섬",
+   [
+    "village",
+    "landmark"
+   ]
+  ],
+  "time-rift": [
+   "시간의 틈",
+   [
+    "landmark"
+   ]
+  ],
+  "airship": [
+   "비행선 갑판·내부",
+   [
+    "landmark"
+   ]
+  ],
+  "machine-factory": [
+   "기계 공장·지하 연구소",
+   [
+    "landmark",
+    "dungeon"
+   ]
+  ],
+  "opera-stage": [
+   "극장·무대와 객석",
+   [
+    "landmark",
+    "village"
+   ]
+  ],
+  "ghost-train": [
+   "유령 열차·숲 간이역",
+   [
+    "landmark",
+    "forest"
+   ]
+  ],
+  "empire-city": [
+   "제국 도시·철의 성채",
+   [
+    "village",
+    "landmark"
+   ]
+  ],
+  "wasteland-world": [
+   "붕괴 후 황폐 필드",
+   [
+    "field",
+    "landmark"
+   ]
+  ],
+  "final-tower": [
+   "최종 탑·부유 조각",
+   [
+    "dungeon",
+    "landmark"
+   ]
+  ],
+  "desert-castle": [
+   "사막 성·오아시스",
+   [
+    "desert",
+    "landmark"
+   ]
+  ],
+  "rain-ruin-town": [
+   "비 내리는 수직 폐허 도시",
+   [
+    "village",
+    "coast"
+   ]
+  ],
+  "veldt-coliseum": [
+   "대초원·투기장",
+   [
+    "field",
+    "landmark"
+   ]
+  ],
+  "cultist-tower": [
+   "신도의 탑",
+   [
+    "dungeon",
+    "landmark"
+   ]
+  ],
+  "mansion-art-city": [
+   "귀족 저택·예술 도시",
+   [
+    "village",
+    "landmark"
+   ]
+  ],
+  "eastern-castle": [
+   "동양풍 성·닌자 마을",
+   [
+    "village",
+    "landmark"
+   ]
+  ],
+  "event-props": [
+   "이벤트 소품",
+   [
+    "landmark",
+    "dungeon",
+    "village",
+    "field"
+   ]
+  ],
+  "airship-dock": [
+   "비행선 정박 부두",
+   [
+    "landmark",
+    "field"
+   ]
+  ],
+  "bamboo-valley": [
+   "대나무 숲 계곡",
+   [
+    "forest",
+    "field"
+   ]
+  ],
+  "bleak-moor": [
+   "음산한 황야",
+   [
+    "field",
+    "swamp"
+   ]
+  ],
+  "clockwork-tower": [
+   "시계탑 내부",
+   [
+    "dungeon",
+    "landmark"
+   ]
+  ],
+  "european-quarter-stone": [
+   "석조 유럽 시가지",
+   [
+    "village"
+   ]
+  ],
+  "european-quarter-timber": [
+   "유럽 목골 구시가",
+   [
+    "village"
+   ]
+  ],
+  "european-quarter-verdigris": [
+   "녹청 지붕 저택가",
+   [
+    "village"
+   ]
+  ],
+  "european-tavern-cellar": [
+   "선술집 지하·주방",
+   [
+    "village",
+    "dungeon"
+   ]
+  ],
+  "gothic-village": [
+   "안개 낀 고딕 마을",
+   [
+    "village"
+   ]
+  ],
+  "haunted-manor": [
+   "폐가 저택 내부",
+   [
+    "dungeon"
+   ]
+  ],
+  "lantern-river-town": [
+   "등불 수향 마을",
+   [
+    "village",
+    "coast"
+   ]
+  ],
+  "natural-forest-clearing": [
+   "자연 숲 마당",
+   [
+    "forest"
+   ]
+  ],
+  "steam-city": [
+   "증기 도시 거리",
+   [
+    "village"
+   ]
+  ],
+  "wuxia-sect-mountain": [
+   "산중 무림 문파",
+   [
+    "mountain",
+    "landmark"
+   ]
+  ]
+ },
+ "var": {
+  "plains-highroad": 7,
+  "ice-cave": 7,
+  "graveyard-crypt": 7,
+  "dark-fortress": 7,
+  "mine-tunnels": 7,
+  "ancient-forest": 7,
+  "rock-cave": 8,
+  "tower-interior": 8,
+  "ruined-village": 8,
+  "swamp-dungeon": 8,
+  "mountain-fortress": 8,
+  "volcano-field": 8,
+  "desert-pyramid": 8,
+  "prehistoric-village": 9,
+  "ice-age-field": 9,
+  "future-ruins": 9,
+  "sky-city": 9,
+  "time-rift": 9,
+  "airship": 9,
+  "machine-factory": 10,
+  "opera-stage": 10,
+  "ghost-train": 10,
+  "empire-city": 10,
+  "wasteland-world": 10,
+  "final-tower": 10,
+  "desert-castle": 10,
+  "rain-ruin-town": 10,
+  "veldt-coliseum": 10,
+  "cultist-tower": 10,
+  "mansion-art-city": 10,
+  "eastern-castle": 10,
+  "event-props": 11,
+  "airship-dock": 12,
+  "bamboo-valley": 12,
+  "bleak-moor": 12,
+  "clockwork-tower": 12,
+  "european-quarter-stone": 12,
+  "european-quarter-timber": 12,
+  "european-quarter-verdigris": 12,
+  "european-tavern-cellar": 12,
+  "gothic-village": 12,
+  "haunted-manor": 12,
+  "lantern-river-town": 12,
+  "natural-forest-clearing": 12,
+  "steam-city": 12,
+  "wuxia-sect-mountain": 12
+ },
+ "groups": {
+  "7": [
+   "wave1",
+   "웨이브 1 · 필드·던전",
+   "초원 하이로드·얼음 동굴·묘지·마왕성·광산 갱도·고대 숲 — SPEC.md 규약으로 만든 JRPG 필드·던전 여섯"
+  ],
+  "8": [
+   "wave2",
+   "웨이브 2 · JRPG 필수 나머지",
+   "암석 동굴·탑 내부·폐허 마을·늪 던전·산악 요새·화산 필드·사막 피라미드 — 웨이브 1 반려 사유(질감·정체불명 구조물)를 막은 비교 QA 판"
+  ],
+  "9": [
+   "wave3",
+   "웨이브 3 · 시대·하늘 (크로노류)",
+   "원시 마을·빙하기 설원·미래 폐허(기계 재질 기준)·하늘 도시·시간의 틈·비행선 — 일반 어휘로 만든 시대 여행·하늘 장소"
+  ],
+  "10": [
+   "wave4",
+   "웨이브 4 · FF6·크로노 확장",
+   "기계 공장·극장·유령 열차·제국 도시·황폐 필드·최종 탑·사막 성·비 내리는 폐허 도시·대초원 투기장·신도의 탑·귀족 저택·예술 도시·동양풍 성 — 비교 시트 QA 를 통과한 장소"
+  ],
+  "11": [
+   "wave5",
+   "웨이브 5 · 이벤트 소품",
+   "저장 수정·이동 발판·차원문·회복 샘·보물상자·레버·바닥 스위치·문·횃불·착륙장·표지판 — 어느 장소에서나 쓰는 상호작용 소품 키트(애니메이션 띠 포함)"
+  ],
+  "12": [
+   "wave6",
+   "웨이브 6 · 장르 팩(스팀펑크·무협·고딕·유럽풍)",
+   "공용 시트에 굽지 않는 장소 팩 전용 장소 — 스팀펑크·동양 무협·고딕 호러·유럽풍 시가지·자연 숲. 스토어 장소 팩으로만 배포"
+  ]
+ },
+ "catKo": {},
+ "packOnly": [
+  "airship-dock",
+  "bamboo-valley",
+  "bleak-moor",
+  "clockwork-tower",
+  "european-quarter-stone",
+  "european-quarter-timber",
+  "european-quarter-verdigris",
+  "european-tavern-cellar",
+  "gothic-village",
+  "haunted-manor",
+  "lantern-river-town",
+  "natural-forest-clearing",
+  "steam-city",
+  "wuxia-sect-mountain"
+ ]
+}

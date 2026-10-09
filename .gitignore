@@ -341,3 +341,5 @@ qa-runs/
 /public/places-mockup.html
 /store-server/deploy/
 /store-server/scripts/install-staging.sh
+/build/place-packs/
+/build/pack-scratch/

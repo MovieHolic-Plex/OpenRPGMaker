@@ -327,6 +327,8 @@ export interface TileGraft {
 export interface StructureKitRow {
   tiles: number[];
   upperTiles?: number[];
+  /** 2층(바닥 위 덧그림) — 접지 그림자처럼 땅을 지우지 않고 얹는 칸. 조수의 stamp_tileset_object 만 쓴다. */
+  lowerOverlayTiles?: number[];
 }
 
 // 스탬프 출처 유니언: 붓질 학습·DB 작성·실내 카탈로그.

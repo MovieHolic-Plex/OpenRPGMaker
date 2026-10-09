@@ -21,6 +21,17 @@ export function tilesetHasLayerClassification(tileset: TilesetDef): boolean {
 }
 
 const kitUpperOnlyCache = new WeakMap<TilesetDef, ReadonlySet<number>>();
+const upperAutotileCache = new WeakMap<TilesetDef, ReadonlySet<number>>();
+/** layer="upper" 오토타일 그룹의 멤버 칸 — 바닥 위에 겹치는 투명 덧그림이라 3층이 홈이다.
+ * 이 판정이 없으면 붓이 가득 칸을 1층에 놓고(1층은 lower 그룹만 다시 맞춘다) 가장자리 변형이 생기지 않아 네모 덩이가 된다. */
+function upperAutotileMembers(tileset: TilesetDef): ReadonlySet<number> {
+  let set = upperAutotileCache.get(tileset);
+  if (set) return set;
+  set = new Set((tileset.autotileGroups ?? []).filter((group) => group.layer === "upper").flatMap((group) => group.memberTileIds));
+  upperAutotileCache.set(tileset, set);
+  return set;
+}
+
 /** 이 타일셋의 구조 키트가 upperTiles 로만 쓰고 tiles(1층)로는 한 번도 쓰지 않는 칸. */
 function bundledKitUpperOnlyTiles(tileset: TilesetDef): ReadonlySet<number> {
   let set = kitUpperOnlyCache.get(tileset);
@@ -42,6 +53,7 @@ export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome 
   // 1) 사용자가 DB 타일셋 편집기에서 명시한 레이어가 최우선.
   const override = userTileLayerOverride(tileset, tile);
   if (override) return override;
+  if (upperAutotileMembers(tileset).has(tile)) return "upper";
   // Arbitrary atlases have no RM2K tile-number semantics. Explicit priority is authoritative.
   if (isCustomTileset(tileset)) {
     // 받침(layerBacking)까지 적힌 칸은 저자가 층을 정한 덧그림이다(몬스터 키트의 울타리·눈더미·얼음 바위 71칸).
