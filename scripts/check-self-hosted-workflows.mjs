@@ -23,6 +23,11 @@ const DIR = ".github/workflows";
 /** 호스티드가 불가피한 워크플로. 키는 파일명, 값은 **왜** 인지. */
 const ALLOW = new Map([
   [
+    "security-audit.yml",
+    "공개 pull_request 의 비신뢰 코드를 self-hosted 러너에서 실행하면 안 된다. 이 감사는 " +
+      "호스티드 러너에서 파일명만 보고하고 npm ci --ignore-scripts 로 의존성만 검사한다.",
+  ],
+  [
     "mac-onboarding.yml",
     "macOS 러너는 이 박스로 self-host 할 수 없다(리눅스 박스). 분당 10배 과금이라 " +
       "저장소 수준에서 disabled_manually 로 꺼 둔 상태다 — 켤 거면 비용을 먼저 판단하라.",

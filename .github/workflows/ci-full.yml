@@ -40,7 +40,7 @@ jobs:
     # 러너가 1개라 앞선 잡을 기다릴 수 있다. self-hosted 잡 상한은 5일이라 여유롭게 잡아도 된다.
     timeout-minutes: 240
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
         run: |
