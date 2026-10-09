@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 최신 vX.Y.Z GitHub Release 에 리눅스 AppImage 와 윈도우 zip 이 없으면
+// 최신 vX.Y.Z GitHub Release 에 리눅스 AppImage · 윈도우 zip · 윈도우 단일 exe(portable)가 없으면
 // 그 태그에서 빌드해 올린다. 이미 있으면 바로 끝난다.
 // 20분짜리 버전 제안과 분리한다. 패키징은 CPU 를 한 차례 다 쓴다.
 
@@ -105,10 +105,28 @@ function deliverWindowsZip(zipPath, version) {
   console.log(`[release-desktop] 윈도우 zip 전달: ${deliverHost} ${outWin} (${localSize} bytes, ${result})`);
 }
 
+/** 단일 실행 exe(portable)를 SFTP 로 올리고 원격 크기를 대조한다. 압축을 풀지 않는다 — 그대로 실행한다. */
+function deliverWindowsExe(exePath) {
+  const name = exePath.split("/").pop();
+  const localSize = statSync(exePath).size;
+  const ssh = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=15"];
+  const listing = execFileSync("sftp", ["-b", "-", ...ssh, "-P", "22", deliverHost], {
+    input: `put "${exePath}" "${deliverDir}/${name}"\nls -l "${deliverDir}/${name}"\n`,
+    encoding: "utf8",
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+  const line = listing.split("\n").find((row) => row.includes(name) && !row.startsWith("sftp>"));
+  const remoteSize = Number(line?.trim().split(/\s+/)[4]);
+  if (remoteSize !== localSize) throw new Error(`원격 exe 크기 불일치: 로컬 ${localSize}, 원격 ${remoteSize || "(없음)"}`);
+  console.log(`[release-desktop] 윈도우 단일 exe 전달: ${deliverHost} ${deliverDir}/${name} (${localSize} bytes)`);
+}
+
 function hasDesktop(names) {
   const appImage = names.some((name) => name.endsWith(".AppImage"));
   const winZip = names.some((name) => name.endsWith(".zip") && name.includes("win"));
-  return appImage && winZip;
+  // 단일 exe(portable)도 필수다 — 없으면 다음 실행이 다시 빌드한다(2026-10-10 추가).
+  const winExe = names.some((name) => name.endsWith(".exe"));
+  return appImage && winZip && winExe;
 }
 
 takeLock();
@@ -118,7 +136,7 @@ try {
   const tag = latestVersionTag();
   const names = assetNames(tag);
   if (hasDesktop(names)) {
-    console.log(`[release-desktop] ${tag} 에 AppImage·윈도우 zip 이 이미 있음`);
+    console.log(`[release-desktop] ${tag} 에 AppImage·윈도우 zip·단일 exe 가 이미 있음`);
     process.exit(0);
   }
 
@@ -141,21 +159,26 @@ try {
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
-    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "--x64"],
+    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "portable", "--x64"],
     { cwd: buildRoot, stdio: "inherit", env },
   );
 
   const outDir = join(buildRoot, "dist-packages");
   const files = readdirSync(outDir)
-    .filter((name) => name.endsWith(".AppImage") || (name.endsWith(".zip") && name.includes("win")))
+    .filter((name) => name.endsWith(".AppImage") || (name.endsWith(".zip") && name.includes("win")) || name.endsWith(".exe"))
     .map((name) => join(outDir, name));
-  if (files.length < 2) throw new Error(`산출물이 부족합니다: ${files.join(", ") || "(없음)"}`);
+  const missing = [".AppImage", "win.zip", ".exe"].filter((need) => !files.some((file) => file.includes(need)));
+  if (missing.length) throw new Error(`산출물이 부족합니다(${missing.join(", ")}): ${files.join(", ") || "(없음)"}`);
 
   // README 의 /releases/latest/download/ 주소는 버전 없는 이름을 본다.
+  const stableName = (file) => {
+    if (file.endsWith(".AppImage")) return "OPRN.Studio-linux.AppImage";
+    if (file.endsWith(".exe")) return "OPRN.Studio-windows.exe";
+    return "OPRN.Studio-windows.zip";
+  };
   const stable = [];
   for (const file of files) {
-    const base = file.endsWith(".AppImage") ? "OPRN.Studio-linux.AppImage" : "OPRN.Studio-windows.zip";
-    const alias = join(outDir, base);
+    const alias = join(outDir, stableName(file));
     if (alias !== file) {
       copyFileSync(file, alias);
       stable.push(alias);
@@ -171,6 +194,15 @@ try {
     } catch (error) {
       // 릴리스는 이미 올라갔다. 전달만 실패로 남기고 다음 수동 전달에 맡긴다.
       console.error(`[release-desktop] 윈도우 zip 전달 실패: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  const winExe = files.find((file) => file.endsWith(".exe"));
+  if (deliverHost && winExe) {
+    try {
+      deliverWindowsExe(winExe);
+    } catch (error) {
+      console.error(`[release-desktop] 윈도우 exe 전달 실패: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 } catch (error) {

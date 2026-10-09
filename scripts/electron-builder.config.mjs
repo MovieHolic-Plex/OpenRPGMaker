@@ -36,9 +36,11 @@ export default {
     category: "Development",
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.win32-*.node"],
   },
-  // zip 은 압축만 하므로 리눅스에서 wine 없이 만든다. NSIS exe 는 wine 이 필요하다.
+  // zip 은 압축만 하고, NSIS exe(portable)는 electron-builder 가 내려받은 makensis 를 직접 돌려
+  // 리눅스에서도 만든다 — 실측 2026-10-10: wine 없이 nsis-3.0.4.1/nsis-resources-3.4.1 만 내려받아 생성됨.
+  // 사용자는 zip 안의 폴더를 풀지 않고 단일 exe 하나만 받아 실행할 수 있다(첫 실행은 자동 해제로 느리다).
   win: {
-    target: ["zip"],
+    target: ["zip", "portable"],
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
   },
   // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
