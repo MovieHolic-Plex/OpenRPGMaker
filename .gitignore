@@ -140,10 +140,6 @@ handoff.md
 # 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
 # 생성물이 쌓이는 하위 디렉터리만 무시한다.
 /report-assets/shots/
-# Next.js 빌드 산출물. 실측: community-site/.next/ 가 516파일 108MB 로 커밋돼 있었고
-# .gitignore 에 .next 규칙이 아예 없었다. turbopack 캐시(.sst) · 서버 청크 · manifest ·
-# trace · BUILD_ID · .tsbuildinfo 전부 `npm run build` 로 재생성된다.
-# 덤으로 sourcemap 에 다른 사람 홈 경로(C:\Users\hyeon\...)가 8개 파일에 박혀 있었다.
 .next/
 # 루트에 흘린 일회성 리포트 HTML. 정본은 날짜 접두사가 붙은 docs/ 다.
 # 실측: 루트에 8건(1.4MB)이 커밋돼 있었고 문서 링크는 0건이었다.
@@ -339,5 +335,3 @@ qa-runs/
 /tiledata/rasak-modern/
 /tiledata/refmap/
 /public/places-mockup.html
-/store-server/deploy/
-/store-server/scripts/install-staging.sh
